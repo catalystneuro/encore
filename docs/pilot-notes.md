@@ -258,8 +258,8 @@ notebook takes about five minutes locally.
 
 ## 000147, Guan et al. 2022 (2026-10-13): second attempt by an agent following the protocol
 
-Outcome before verification: twelve claims reproduced, one not reproduced,
-seven blocked. **Not yet verified.** See
+Outcome: twelve claims reproduced, one not reproduced, seven blocked, the
+same before and after verification. See
 [`attempts/000147-guan-2022-01.yaml`](../attempts/000147-guan-2022-01.yaml).
 
 The agent was given the repository and protocol `pilot-2`, and told not to
@@ -315,7 +315,46 @@ of order in nearly every unit, with the first seconds of each run stored
 before the end of the previous one. `cue_location`, `Run` and `TrialNumber`
 have no descriptions, and electrode coordinates and impedances are NaN.
 
+### Verification, in GitHub Actions
+
+Both verification rounds and both revisions ran in the
+[Agent run](../.github/workflows/attempt.yml) workflow, and their transcripts
+and reports are in [`transcripts/000147/`](../transcripts/000147).
+
+1. Round 1 agreed with all twenty outcomes. It tested the helpers on
+   synthetic data and found no leakage. It raised that the 70% figure holds
+   under one of three denominators, that per-run distances are inflated
+   about fivefold by small-sample noise estimates, and that the gaze result
+   could come from the structure of the task's screens.
+2. The first revision added the outputs asked for. Cue location stays
+   decodable with folds that never split a screen or a run, against nulls
+   that shuffle within them. It also found that one model file's condition
+   order had never been checked, and corrected a finding.
+3. Round 2 agreed with all twenty and quoted four sentences that went
+   further than the numbers, including one that called the trial start the
+   cue where the data show only that it is consistent with it.
+4. The second revision fixed them and decoded position within the screen,
+   which does not explain the location signal.
+
+### Lessons from running in Actions
+
+- **A first run in a new environment fails in ways a local run does not.**
+  Six runs failed before one completed: a missing sandbox dependency twice
+  (bubblewrap, then socat), a mistyped token twice, and the credential scrub
+  forcing permission mode `default`. A one-turn preflight now checks the
+  token, the mode, that the agent's shell starts, and that its commands
+  cannot see the token, so each of these fails in two minutes.
+- **One run went through without a shell and still looked successful.** The
+  verifier worked around the missing shell by reading the notebook with
+  Grep, and its report was good, but it could not run the synthetic tests
+  round 1 requires. A run that succeeds is not a run that could do its job.
+  Kept as `verifier-1-no-shell.md`.
+- **The author's prose still overreaches in the same ways.** Round 2 found
+  the same kind of overstatement as in every earlier attempt: an inference
+  stated as a fact, a bound quoted for one variant only.
+
 ### Cost
 
-About 280,000 tokens and 25 minutes for the author. The notebook runs in
-76 seconds.
+About 280,000 tokens and 25 minutes for the author. The revisions took 10
+and a few minutes, the verification rounds 4 and 2. The notebook runs in
+about 90 seconds.
