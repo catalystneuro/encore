@@ -155,6 +155,24 @@ Entries are re-run on a schedule. When an agent-deposited entry breaks, the
 failure dispatches an agent to repair it, and the repair goes through the same
 gates and verification. A person is only pulled in when the repair fails.
 
+## Dashboard
+
+The public site is static and is built from the files above by
+`tools/build_site.py`; there is no server.
+
+- **Overview:** headline numbers, outcomes overall and by technique, why claims
+  were blocked, findings by kind, and verification. Every number and bar links
+  to the matching filtered list.
+- **Dandisets, Claims, Findings:** three lists over all attempts, each with
+  filters, search, sorting and pagination. The view is kept in the URL, so any
+  filtered list can be linked.
+- **A page per attempted dandiset** at `dandisets/<id>/`, with tabs for claims,
+  findings, verification, method differences and provenance. It is complete
+  HTML and is the page an archive would link to. Each claim has its own anchor.
+- **`api/dandiset/<id>.json`:** the same results for one dandiset, for other
+  sites to fetch.
+- **Executed notebooks** under `notebooks/`, from CI.
+
 ## Repository layout
 
 ```

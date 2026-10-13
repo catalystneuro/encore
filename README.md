@@ -66,8 +66,12 @@ python tools/entry.py check entries/<name>   # metadata and conventions
 python tools/entry.py run   entries/<name>   # execute from a clean environment
 ```
 
-The dashboard is one static page built from these files by
-`python tools/build_site.py`, and is republished on every push to `main`.
+The dashboard is a static site built from these files by
+`python tools/build_site.py` and republished on every push to `main`: an
+overview, filterable lists of dandisets, claims and findings, and a page per
+attempted dandiset. Every filtered view is a link. `python tools/build_site.py
+--demo 150 --output /tmp/demo` builds it from made-up attempts, to see how it
+behaves at scale.
 
 Notebooks stream their data from the archive and must compute every result
 from it: `check` rejects embedded data, embedded images and figures read from

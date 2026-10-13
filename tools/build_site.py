@@ -1,16 +1,33 @@
-"""Build the public dashboard: one static page from the registry's own files.
+"""Build the public dashboard: a static site from the registry's own files.
 
     python tools/build_site.py [--output site]
+    python tools/build_site.py --demo 150 --output /tmp/demo-site
 
 Reads targets/dandisets.json, targets/pilot.yaml, claims/, attempts/ and
-entries/, and writes <output>/index.html (self-contained, no external
-resources) and <output>/registry.json (the same data, for other sites).
+entries/, and writes:
+
+    index.html                    overview: numbers, breakdowns, latest attempts
+    dandisets/index.html          every target, filterable and paginated
+    claims/index.html             every claim across all attempts
+    findings/index.html           every finding about the data
+    dandisets/<id>/index.html     one static page per attempted dandiset
+    data/{dandisets,claims,findings}.json   rows for the three list pages
+    api/dandiset/<id>.json        one dandiset's results, for other sites
+    registry.json                 everything, as before
+    assets/                       app.css and list.js from tools/site_assets/
 
 If <output>/notebooks/<entry>/<notebook>.html exists (the executed notebooks
-CI keeps on the `executed` branch), the page links to it.
+CI keeps on the `executed` branch), pages link to it.
+
+The list pages are rendered in the browser by assets/list.js from the JSON
+rows; filters, search, sort and page are kept in the URL, so every view is a
+link. Dandiset pages are complete HTML and need no JavaScript.
 
 The trust tier of an attempt is derived from its verifications: the latest
 verification decides, and it counts only if it agrees with every outcome.
+
+`--demo N` builds from N made-up attempts on real targets, to see and test the
+site at scale. A demo build says so on every page; never publish one.
 
 Requires `pyyaml`.
 """
@@ -21,11 +38,14 @@ import argparse
 import datetime
 import html
 import json
+import random
+import shutil
 from pathlib import Path
 
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
+ASSETS = Path(__file__).resolve().parent / "site_assets"
 REPO_URL = "https://github.com/catalystneuro/reproduction-registry"
 
 OUTCOMES = {  # key: (label, css class, icon)
@@ -35,15 +55,15 @@ OUTCOMES = {  # key: (label, css class, icon)
     "blocked": ("Blocked", "blocked", "⊘"),
 }
 BLOCKED_BY = {
-    "data_missing": "data missing from the dandiset",
-    "metadata_insufficient": "metadata insufficient",
-    "methods_underspecified": "methods underspecified",
-    "data_unreadable": "data unreadable",
-    "too_large": "too large to analyse",
-    "other": "other",
+    "data_missing": "Data missing from the dandiset",
+    "metadata_insufficient": "Metadata insufficient",
+    "methods_underspecified": "Methods underspecified",
+    "data_unreadable": "Data unreadable",
+    "too_large": "Too large to analyse",
+    "other": "Other",
 }
 TIERS = {
-    "runs": "Runs in CI",
+    "runs": "Runs in CI, not yet verified",
     "agent_verified": "Verified by an independent agent",
     "human_verified": "Verified by a person",
     "author_endorsed": "Endorsed by a paper author",
@@ -56,8 +76,10 @@ FINDING_KINDS = {
     "methods_unavailable": "Methods not available",
     "other": "Other",
 }
+STATUS = {"attempted": "Attempted", "pilot": "In the pilot", "open": "Not yet attempted"}
 VERIFICATION_TIER = {"agent": "agent_verified", "person": "human_verified",
                      "paper_author": "author_endorsed"}
+CAUTION = "A failure to reproduce is not a finding that the paper is wrong."
 
 
 def load_yaml(path: Path):
@@ -73,6 +95,16 @@ def tier_of(attempt: dict) -> str:
     agreed = {r["claim"] for r in latest.get("results", []) if r.get("agrees")}
     return VERIFICATION_TIER.get(latest["kind"], "runs") if claims <= agreed else "runs"
 
+
+def squash(text) -> str:
+    return " ".join((text or "").split())
+
+
+def short_species(name: str) -> str:
+    return (name or "").split(" - ")[-1].strip()
+
+
+# --- collecting ---------------------------------------------------------------
 
 def collect(executed: Path | None = None) -> dict:
     queue = json.loads((ROOT / "targets" / "dandisets.json").read_text())
@@ -91,6 +123,8 @@ def collect(executed: Path | None = None) -> dict:
         a = load_yaml(path)
         known = claims.get((a["dandiset"], a["paper"]), {})
         entry = entries.get(a.get("entry"))
+        verifications = a.get("verifications") or []
+        disagreed = {r["claim"] for v in verifications for r in v["results"] if not r.get("agrees")}
         attempts.append({
             "id": a["id"],
             "dandiset": a["dandiset"],
@@ -99,29 +133,36 @@ def collect(executed: Path | None = None) -> dict:
             "date": str(a["date"]),
             "kind": a["provenance"]["kind"],
             "accountable": a["provenance"]["accountable"]["name"],
+            "agent": a["provenance"].get("agent"),
             "tier": tier_of(a),
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
+            "description": squash(entry.get("description")) if entry else None,
             "notebooks": [n["path"] for n in entry["notebooks"]] if entry else [],
             "executed": [f'notebooks/{a["entry"]}/{Path(n["path"]).stem}.html'
                          for n in (entry["notebooks"] if entry else [])
                          if executed and (executed / a["entry"] / f'{Path(n["path"]).stem}.html').is_file()],
             "outcomes": [{
                 "claim": o["claim"],
-                "statement": known.get(o["claim"], {}).get("statement", o["claim"]),
+                "statement": squash(known.get(o["claim"], {}).get("statement", o["claim"])),
                 "source": known.get(o["claim"], {}).get("source"),
                 "outcome": o["outcome"],
                 "blocked_by": o.get("blocked_by"),
-                "notes": " ".join((o.get("notes") or "").split()),
-                "deviations": [" ".join(d.split()) for d in o.get("deviations") or []],
+                "notes": squash(o.get("notes")),
+                "deviations": [squash(d) for d in o.get("deviations") or []],
+                "disagreed": o["claim"] in disagreed,
             } for o in a["outcomes"]],
-            "findings": [{"kind": f["kind"], "statement": " ".join(f["statement"].split())}
+            "findings": [{"kind": f["kind"], "statement": squash(f["statement"])}
                          for f in a.get("findings") or []],
             "verifications": [{
-                "date": str(v["date"]), "kind": v["kind"],
+                "date": str(v["date"]), "kind": v["kind"], "by": squash(v.get("by")),
+                "reviewed": squash(v.get("reviewed")),
                 "agreed": sum(1 for r in v["results"] if r.get("agrees")),
                 "of": len(v["results"]),
-            } for v in a.get("verifications") or []],
+                "disagreements": [{"claim": r["claim"], "outcome": r.get("outcome"),
+                                   "reason": squash(r.get("reason"))}
+                                  for r in v["results"] if not r.get("agrees")],
+            } for v in verifications],
         })
 
     attempted = {a["dandiset"] for a in attempts}
@@ -133,344 +174,351 @@ def collect(executed: Path | None = None) -> dict:
             "dandiset": t["dandiset"], "name": t["name"], "size_gb": t["size_gb"],
             "files": t["asset_count"], "status": status,
             "paper": papers[0]["doi"], "paper_title": papers[0]["title"] or t["name"],
+            "papers": [p["doi"] for p in t["papers"]],
             "n_papers": len(t["papers"]),
-            "approach": "; ".join(a.replace(" approach", "") for a in t["approaches"][:2]),
+            "technique": sorted({part.replace(" approach", "").strip()
+                                 for a in t["approaches"] if a for part in a.split(";") if part.strip()}),
+            "species": sorted({short_species(s) for s in t["species"] if s}),
         })
-
-    counts = {k: 0 for k in OUTCOMES}
-    for a in attempts:
-        for o in a["outcomes"]:
-            counts[o["outcome"]] += 1
-    return {
+    return finish({
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
         "queue_counts": queue["counts"],
-        "outcome_counts": counts,
         "attempts": attempts,
         "targets": targets,
-    }
+        "demo": False,
+    })
 
 
-# --- rendering ----------------------------------------------------------------
+def finish(data: dict) -> dict:
+    """Totals, and each target's status, derived from the attempts."""
+    counts = {k: 0 for k in OUTCOMES}
+    for a in data["attempts"]:
+        for o in a["outcomes"]:
+            counts[o["outcome"]] += 1
+    data["outcome_counts"] = counts
+    attempted = {a["dandiset"] for a in data["attempts"]}
+    for t in data["targets"]:
+        if t["dandiset"] in attempted:
+            t["status"] = "attempted"
+    return data
+
+
+def demo(data: dict, n: int, seed: int = 1) -> dict:
+    """Replace the attempts with n made-up ones on real targets, to test at scale."""
+    rng = random.Random(seed)
+    figures = ["Figure 1C", "Figure 2A", "Figure 2D", "Figure 3B", "Figure 4E", "Figure 5", "Extended Data 2",
+               "Results, section 2"]
+    words = ("firing rate tuning population response selectivity latency decoding accuracy correlation "
+             "modulation trial stimulus cells neurons layer region session behaviour choice reward").split()
+
+    def sentence(k):
+        return " ".join(rng.choice(words) for _ in range(k)).capitalize() + "."
+
+    attempts = []
+    for t in data["targets"][:n]:
+        n_claims = rng.randint(4, 20)
+        weights = rng.choice([(6, 2, 1, 2), (3, 2, 1, 6), (8, 1, 0, 1), (2, 3, 3, 4)])
+        outcomes = []
+        for i in range(n_claims):
+            outcome = rng.choices(list(OUTCOMES), weights)[0]
+            outcomes.append({
+                "claim": f"claim-{i + 1}", "statement": sentence(rng.randint(10, 24)),
+                "source": rng.choice(figures), "outcome": outcome,
+                "blocked_by": rng.choice(list(BLOCKED_BY)) if outcome == "blocked" else None,
+                "notes": sentence(rng.randint(20, 50)),
+                "deviations": [sentence(rng.randint(8, 16)) for _ in range(rng.randint(0, 3))]
+                if outcome != "blocked" else [],
+                "disagreed": rng.random() < 0.08,
+            })
+        tier = rng.choices(list(TIERS), (3, 6, 2, 1))[0]
+        date = (datetime.date(2026, 10, 13) + datetime.timedelta(days=rng.randint(0, 200))).isoformat()
+        attempts.append({
+            "id": f"{t['dandiset']}-demo-01", "dandiset": t["dandiset"], "dandiset_version": "draft",
+            "paper": t["paper"], "date": date, "kind": "agent", "accountable": "Demo",
+            "agent": {"harness": "demo", "model": "demo", "protocol": "demo"}, "tier": tier,
+            "entry": f"{t['dandiset']}-demo", "entry_title": t["paper_title"],
+            "description": sentence(30), "notebooks": ["demo.ipynb"], "executed": [],
+            "outcomes": outcomes,
+            "findings": [{"kind": rng.choice(list(FINDING_KINDS)), "statement": sentence(rng.randint(12, 30))}
+                         for _ in range(rng.randint(1, 10))],
+            "verifications": [] if tier == "runs" else [{
+                "date": date, "kind": "agent", "by": "Demo verifier", "reviewed": "Demo",
+                "agreed": n_claims, "of": n_claims, "disagreements": []}],
+        })
+    out = dict(data, attempts=attempts, demo=True,
+               targets=[dict(t, status="pilot" if t["status"] == "pilot" else "open") for t in data["targets"]])
+    return finish(out)
+
+
+# --- flat rows for the list pages ----------------------------------------------
+
+def latest_attempts(data: dict) -> dict[str, dict]:
+    latest = {}
+    for a in sorted(data["attempts"], key=lambda a: (a["date"], a["id"])):
+        latest[a["dandiset"]] = a
+    return latest
+
+
+def outcome_counts(attempt: dict) -> dict:
+    return {k: sum(1 for o in attempt["outcomes"] if o["outcome"] == k) for k in OUTCOMES}
+
+
+def rows(data: dict) -> dict[str, list]:
+    latest = latest_attempts(data)
+    by_id = {t["dandiset"]: t for t in data["targets"]}
+    dandisets, claims, findings = [], [], []
+    for t in data["targets"]:
+        a = latest.get(t["dandiset"])
+        dandisets.append({
+            "id": t["dandiset"], "name": t["name"], "paper": t["paper"], "paper_title": t["paper_title"],
+            "technique": t["technique"], "species": t["species"], "size_gb": t["size_gb"], "files": t["files"],
+            "status": t["status"], "tier": a["tier"] if a else None, "date": a["date"] if a else None,
+            "counts": outcome_counts(a) if a else None,
+            "claims": len(a["outcomes"]) if a else None,
+            "failures": sum(1 for o in a["outcomes"] if o["outcome"] == "not_reproduced") if a else None,
+            "has": sorted({o["outcome"] for o in a["outcomes"]}) if a else [],
+            "page": f'dandisets/{t["dandiset"]}/' if a else None,
+        })
+    for a in latest.values():
+        t = by_id.get(a["dandiset"], {})
+        common = {"dandiset": a["dandiset"], "page": f'dandisets/{a["dandiset"]}/', "tier": a["tier"],
+                  "technique": t.get("technique", []), "species": t.get("species", []),
+                  "paper_title": t.get("paper_title") or a["entry_title"], "date": a["date"]}
+        for o in a["outcomes"]:
+            claims.append({**common, "claim": o["claim"], "statement": o["statement"], "source": o["source"],
+                           "outcome": o["outcome"], "blocked_by": o["blocked_by"], "notes": o["notes"],
+                           "deviations": o["deviations"], "disagreed": o["disagreed"],
+                           "verifier": "disagreed" if o["disagreed"] else None,
+                           "notebook": a["executed"][0] if a["executed"] else None})
+        for f in a["findings"]:
+            findings.append({**common, "kind": f["kind"], "statement": f["statement"]})
+    return {"dandisets": dandisets, "claims": claims, "findings": findings}
+
+
+# --- html pieces ---------------------------------------------------------------
 
 def e(text) -> str:
     return html.escape(str(text if text is not None else ""), quote=True)
 
 
-def chip(outcome: str) -> str:
+def chip(outcome: str, href: str | None = None) -> str:
     label, css, icon = OUTCOMES[outcome]
-    return f'<span class="chip {css}"><span class="icon" aria-hidden="true">{icon}</span>{label}</span>'
+    inner = f'<span class="icon" aria-hidden="true">{icon}</span>{label}'
+    return (f'<a class="chip {css}" href="{e(href)}">{inner}</a>' if href
+            else f'<span class="chip {css}">{inner}</span>')
 
 
-def bar(counts: dict, label: str, css: str = "bar") -> str:
-    """A single stacked bar of outcomes. Segments are separated by a small gap."""
+def bar(counts: dict, label: str, css: str = "bar", href=None) -> str:
+    """A stacked bar of outcomes. With `href`, each segment links to a filtered list."""
     total = sum(counts.values())
-    segments = "".join(
-        f'<div class="seg {OUTCOMES[k][1]}" style="flex:{n}" title="{OUTCOMES[k][0]}: {n} of {total}"></div>'
-        for k, n in counts.items() if n)
-    return f'<div class="{css}" role="img" aria-label="{e(label)}">{segments}</div>'
+    segments = []
+    for k, n in counts.items():
+        if not n:
+            continue
+        attrs = f'class="seg {OUTCOMES[k][1]}" style="flex:{n}" title="{OUTCOMES[k][0]}: {n} of {total}"'
+        segments.append(f'<a {attrs} href="{e(href(k))}" aria-label="{OUTCOMES[k][0]}: {n}"></a>' if href
+                        else f'<span {attrs}></span>')
+    return f'<div class="{css}" role="img" aria-label="{e(label)}">{"".join(segments)}</div>'
 
 
-def legend(counts: dict, compact: bool = False) -> str:
+def legend(counts: dict, compact: bool = False, href=None) -> str:
     items = []
     for key, (label, css, icon) in OUTCOMES.items():
         n = counts[key]
         if compact and not n:
             continue
-        text = label.lower() if compact else label
-        items.append(f'<li><span class="swatch {css}" aria-hidden="true">{icon}</span>'
-                     f'<strong>{n}</strong> {text}</li>')
+        text = f'<strong>{n}</strong> {label.lower() if compact else label}'
+        if href:
+            text = f'<a href="{e(href(key))}">{text}</a>'
+        items.append(f'<li><span class="swatch {css}" aria-hidden="true">{icon}</span>{text}</li>')
     return f'<ul class="legend{" compact" if compact else ""}">{"".join(items)}</ul>'
 
 
-def claim_item(o: dict) -> str:
-    blocked = f'<span class="why">{e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
+def tier_badge(tier: str, href: str | None = None) -> str:
+    verified = tier != "runs"
+    text = ("✓ " if verified else "") + (TIERS[tier] if verified else "Not yet verified")
+    css = "tier" + ("" if verified else " pending")
+    return f'<a class="{css}" href="{e(href)}">{e(text)}</a>' if href else f'<span class="{css}">{e(text)}</span>'
+
+
+def claim_item(o: dict, root: str) -> str:
+    blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
     notes = f'<p class="notes">{e(o["notes"])}</p>' if o["notes"] else ""
     deviations = ""
     if o["deviations"]:
         items = "".join(f"<li>{e(d)}</li>" for d in o["deviations"])
+        plural = "s" if len(o["deviations"]) != 1 else ""
         deviations = (f'<details class="deviations"><summary>{len(o["deviations"])} '
-                      f'difference{"s" if len(o["deviations"]) != 1 else ""} from the paper\'s method'
+                      f"difference{plural} from the paper's method"
                       f'</summary><ul>{items}</ul></details>')
     caveat = ('<p class="caveat">This may reflect a limit of the attempt, not of the paper. '
               'Check the reasoning and the differences in method.</p>'
               if o["outcome"] in ("not_reproduced", "partially_reproduced") else "")
-    return (f'<li class="claim" data-outcome="{o["outcome"]}">'
-            f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}</div>'
+    disagreed = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
+    link = f'{root}claims/?outcome={o["outcome"]}'
+    return (f'<li class="claim" id="claim-{e(o["claim"])}">'
+            f'<div class="claim-head">{chip(o["outcome"], link)}{source}{blocked}{disagreed}</div>'
             f'<p class="statement">{e(o["statement"])}</p>{notes}{caveat}{deviations}</li>')
 
 
-def attempt_card(a: dict) -> str:
-    counts = {k: sum(1 for o in a["outcomes"] if o["outcome"] == k) for k in OUTCOMES}
-    tested = [o for o in a["outcomes"] if o["outcome"] != "blocked"]
-    blocked = [o for o in a["outcomes"] if o["outcome"] == "blocked"]
-    order = {"not_reproduced": 0, "partially_reproduced": 1, "reproduced": 2}
-    tested.sort(key=lambda o: order[o["outcome"]])
+_ROWS: dict = {}
 
-    sections = []
-    if tested:
-        sections.append(f'<h4>Claims tested <span class="count">{len(tested)}</span></h4>'
-                        f'<ul class="claims">{"".join(claim_item(o) for o in tested)}</ul>')
-    if blocked:
-        reasons = {}
-        for o in blocked:
-            reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
-        why = ", ".join(f"{n} {BLOCKED_BY.get(k, k)}" for k, n in reasons.items())
-        sections.append(
-            f'<details class="group"><summary><h4>Claims that could not be tested '
-            f'<span class="count">{len(blocked)}</span></h4><span class="muted small">{e(why)}</span></summary>'
-            f'<ul class="claims">{"".join(claim_item(o) for o in blocked)}</ul></details>')
-    if a["findings"]:
-        items = "".join(
-            f'<li><span class="kind">{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</span>'
-            f'<span>{e(f["statement"])}</span></li>' for f in a["findings"])
-        sections.append(
-            f'<details class="group"><summary><h4>Found about the dandiset '
-            f'<span class="count">{len(a["findings"])}</span></h4>'
-            f'<span class="muted small">for the data owner and the archive</span></summary>'
-            f'<ul class="findings">{items}</ul></details>')
 
-    if a["verifications"]:
-        rounds = "; ".join(f'{e(v["date"])}, agreed with {v["agreed"]} of {v["of"]} outcomes'
-                           for v in a["verifications"])
-        verification = (f'<p class="muted small">Checked by {"an independent agent" if a["verifications"][-1]["kind"] == "agent" else "a person"} '
-                        f'in {len(a["verifications"])} round{"s" if len(a["verifications"]) != 1 else ""}: {rounds}.</p>')
-    else:
-        verification = '<p class="muted small">Not yet checked by an independent verifier.</p>'
+def rows_cache(data: dict) -> dict:
+    key = id(data)
+    if key not in _ROWS:
+        _ROWS.clear()
+        _ROWS[key] = rows(data)
+    return _ROWS[key]
 
-    actions = [f'<a class="button" href="{e(p)}">Open the executed notebook</a>' for p in a["executed"][:1]]
-    actions += [f'<a href="https://doi.org/{e(a["paper"])}">Paper</a>',
-                f'<a href="https://dandiarchive.org/dandiset/{e(a["dandiset"])}">Dandiset {e(a["dandiset"])}</a>']
-    if a["entry"]:
-        actions.append(f'<a href="{REPO_URL}/tree/main/entries/{e(a["entry"])}">Code</a>')
-    actions.append(f'<a href="{REPO_URL}/blob/main/attempts/{e(a["id"])}.yaml">Attempt record</a>')
 
-    verified = a["tier"] != "runs"
-    tier = (f'<span class="tier {"ok" if verified else "pending"}">'
-            f'{"✓ " if verified else ""}{e(TIERS[a["tier"]] if verified else "Not yet verified")}</span>')
-    who = "an agent" if a["kind"] == "agent" else "a person"
-    n = len(a["outcomes"])
-    return f'''<details class="card" id="attempt-{e(a["id"])}">
-  <summary>
-    <div class="card-title">
-      <h3>{e(a["entry_title"] or a["id"])}</h3>
-      {tier}
-    </div>
-    <p class="muted small">Dandiset {e(a["dandiset"])} · {n} claim{"s" if n != 1 else ""} · attempted {e(a["date"])} by {who}</p>
-    <div class="card-outcomes">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
-  </summary>
-  <div class="card-body">
-    <p class="actions">{" ".join(actions)}</p>
-    {"".join(sections)}
-    {verification}
+def shell(data: dict, title: str, root: str, active: str, body: str, scripts: str = "") -> str:
+    r = rows_cache(data)
+    tabs = [("overview", "Overview", root or "./", None),
+            ("dandisets", "Dandisets", f"{root}dandisets/", len({a["dandiset"] for a in data["attempts"]})),
+            ("claims", "Claims", f"{root}claims/", len(r["claims"])),
+            ("findings", "Findings", f"{root}findings/", len(r["findings"]))]
+    nav = ""
+    for key, label, href, n in tabs:
+        current = ' aria-current="page"' if key == active else ""
+        count = f'<span class="n">{n:,}</span>' if n is not None else ""
+        nav += f'<a class="tab" href="{href}"{current}>{label}{count}</a>'
+    banner = '<div class="demo">Demo data: made-up attempts, for testing the site only</div>' if data["demo"] else ""
+    home = root or "./"
+    return f'''<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{e(title)}</title>
+<meta name="description" content="Which findings of papers can be reproduced from the open data on the DANDI Archive.">
+<link rel="stylesheet" href="{root}assets/app.css"></head><body>
+{banner}<nav class="top" aria-label="Sections"><div class="wrap">
+  <a class="brand" href="{home}">Reproduction registry</a>{nav}
+</div></nav>
+<div class="wrap">
+{body}
+<footer>Generated {e(data["generated"][:10])} from the registry's files ·
+<a href="{root}registry.json">Data as JSON</a> · <a href="{REPO_URL}">Repository</a> ·
+<a href="{REPO_URL}/blob/main/docs/design.md">How it works</a>. Outcomes describe what one attempt could reproduce from
+the data in the dandiset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
+a judgement of the paper.</footer>
+</div>
+{scripts}
+</body></html>
+'''
+
+
+def caution_block() -> str:
+    return f'''<details class="caution" id="caution">
+  <summary><span><strong>{CAUTION}</strong> It may be a failure of the attempt.
+  <span class="open">Read more</span></span></summary>
+  <div class="body">
+    <p>An outcome says what one attempt could recover from the data in a dandiset, with the methods available to it. A
+    “not reproduced” or “partially reproduced” outcome can come from a mistake or a limitation in the agent’s analysis,
+    from methods the paper does not describe fully, from data that is not in the dandiset, or from a dandiset that
+    differs from what the paper analysed. “Blocked” means the claim could not be tested at all.</p>
+    <p>Most attempts are made by AI agents. Where a page says so, the attempt has been checked by a second, independent
+    agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
+    from the paper’s. Authors who think an attempt is wrong can <a href="{REPO_URL}/issues">open an issue</a>.</p>
   </div>
 </details>'''
 
 
-CSS = """
-:root{--surface:#fcfcfb;--panel:#ffffff;--line:#e4e3de;--text:#0b0b0b;--text2:#52514e;--muted:#898781;
---good:#0ca30c;--warning:#fab219;--critical:#d03b3b;--blocked:#898781;--link:#1d5fb8;--accent:#1d5fb8;--hover:#f4f3ef}
-@media (prefers-color-scheme:dark){:root{--surface:#1a1a19;--panel:#232322;--line:#3a3a37;--text:#ffffff;
---text2:#c3c2b7;--muted:#898781;--link:#8ab4f0;--accent:#8ab4f0;--hover:#2b2b29}}
-*{box-sizing:border-box}
-html{scroll-behavior:smooth;scroll-padding-top:64px}
-body{margin:0;background:var(--surface);color:var(--text);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
-a{color:var(--link)}
-.wrap{max-width:1040px;margin:0 auto;padding:0 16px}
-nav.top{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
-nav.top .wrap{display:flex;align-items:center;gap:20px;height:52px}
-nav.top .brand{font-weight:650;color:var(--text);text-decoration:none;margin-right:auto;white-space:nowrap}
-nav.top a.link{color:var(--text2);text-decoration:none;font-size:.92rem;white-space:nowrap}
-nav.top a.link:hover{color:var(--text)}
-@media (max-width:560px){nav.top a.link.optional{display:none}}
-header.hero{padding:36px 0 8px}
-h1{font-size:2rem;line-height:1.15;margin:0 0 10px;letter-spacing:-.01em}
-h2{font-size:1.3rem;margin:0 0 6px}
-h3{font-size:1.05rem;margin:0;line-height:1.35}
-h4{font-size:.92rem;margin:0;font-weight:650;display:inline}
-p{margin:0 0 10px}
-section{margin-top:48px}
-.lede{color:var(--text2);max-width:66ch;font-size:1.05rem}
-.sub{color:var(--text2);max-width:70ch;margin-bottom:16px}
-.muted{color:var(--muted)}.small{font-size:.85rem}
-.count{display:inline-block;min-width:1.5em;padding:0 6px;margin-left:4px;border-radius:999px;background:var(--hover);
-color:var(--text2);font-size:.78rem;font-weight:600;text-align:center}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin:22px 0 0}
-.tile{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
-.tile .n{font-size:1.9rem;font-weight:650;line-height:1.1;font-variant-numeric:tabular-nums}
-.tile .l{color:var(--text2);font-size:.88rem}
-.overview{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px}
-.bar{display:flex;gap:2px;height:14px;margin:10px 0}
-.bar.mini{height:8px;width:160px;flex:none;margin:0}
-.seg{border-radius:4px;min-width:5px}
-.seg.good,.swatch.good{background:var(--good)}.seg.warning,.swatch.warning{background:var(--warning)}
-.seg.critical,.swatch.critical{background:var(--critical)}.seg.blocked,.swatch.blocked{background:var(--blocked)}
-.legend{list-style:none;display:flex;flex-wrap:wrap;gap:6px 18px;padding:0;margin:0;color:var(--text2);font-size:.9rem}
-.legend strong{color:var(--text);font-variant-numeric:tabular-nums}
-.legend.compact{gap:4px 14px;font-size:.84rem}
-.swatch{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:4px;margin-right:6px;
-color:#fff;font-size:.7rem;vertical-align:-3px}
-.legend.compact .swatch{width:14px;height:14px;font-size:.58rem;margin-right:5px;vertical-align:-2px}
-.swatch.warning{color:#0b0b0b}
-.caution{margin:16px 0 0;padding:0;border-top:1px solid var(--line);font-size:.92rem;color:var(--text2)}
-.caution summary{cursor:pointer;padding:12px 0 0;list-style:none;display:flex;gap:10px;align-items:baseline}
-.caution summary::-webkit-details-marker{display:none}
-.caution summary::before{content:"!";flex:none;display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;
-background:var(--warning);color:#0b0b0b;font-size:.72rem;font-weight:700}
-.caution summary strong{color:var(--text)}
-.caution .more{color:var(--link);white-space:nowrap}
-.caution[open] .more{display:none}
-.caution .body{padding:8px 0 0 28px;max-width:74ch}
-.toolbar{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:0 0 12px}
-.toolbar .spacer{flex:1}
-button.ghost{font:inherit;font-size:.85rem;color:var(--text2);background:none;border:1px solid var(--line);border-radius:6px;
-padding:4px 10px;cursor:pointer}
-button.ghost:hover{background:var(--hover);color:var(--text)}
-.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;margin:0 0 12px;overflow:hidden}
-.card>summary{list-style:none;cursor:pointer;padding:16px 20px 16px 44px;position:relative}
-.card>summary::-webkit-details-marker{display:none}
-.card>summary::before{content:"";position:absolute;left:20px;top:22px;width:8px;height:8px;border-right:2px solid var(--muted);
-border-bottom:2px solid var(--muted);transform:rotate(-45deg);transition:transform .15s}
-.card[open]>summary::before{transform:rotate(45deg)}
-.card>summary:hover{background:var(--hover)}
-.card>summary:focus-visible,.group>summary:focus-visible,.caution summary:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
-.card-title{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 12px;margin-bottom:2px}
-.card-title h3{flex:1 1 320px}
-.card-outcomes{display:flex;flex-wrap:wrap;align-items:center;gap:8px 14px;margin-top:8px}
-.card-body{padding:4px 20px 18px 44px;border-top:1px solid var(--line)}
-@media (max-width:560px){.card>summary{padding-left:38px;padding-right:14px}.card>summary::before{left:15px}
-.card-body{padding-left:14px;padding-right:14px}}
-.tier{font-size:.78rem;font-weight:600;border-radius:999px;padding:1px 10px;white-space:nowrap;border:1px solid var(--line)}
-.tier.ok{color:var(--text)}.tier.pending{color:var(--text2);border-style:dashed}
-.actions{display:flex;flex-wrap:wrap;align-items:center;gap:8px 16px;margin:14px 0 6px;font-size:.9rem}
-a.button{display:inline-block;background:var(--accent);color:var(--surface);text-decoration:none;font-weight:600;
-border-radius:6px;padding:6px 12px}
-a.button:hover{filter:brightness(1.1)}
-.card-body>h4,.group>summary{display:block;margin:20px 0 4px}
-.group>summary{cursor:pointer;list-style:none;padding:6px 0;display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px}
-.group>summary::-webkit-details-marker{display:none}
-.group>summary::before{content:"+";color:var(--muted);font-weight:600;width:10px}
-.group[open]>summary::before{content:"−"}
-.claims,.findings{list-style:none;padding:0;margin:0}
-.claim{border-top:1px solid var(--line);padding:12px 0}
-.claims .claim:first-child{border-top:0}
-.claim-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:4px}
-.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;
-padding:1px 10px 1px 4px;font-size:.8rem;font-weight:600;white-space:nowrap}
-.chip .icon{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;color:#fff;font-size:.7rem}
-.chip.good .icon{background:var(--good)}.chip.warning .icon{background:var(--warning);color:#0b0b0b}
-.chip.critical .icon{background:var(--critical)}.chip.blocked .icon{background:var(--blocked)}
-.source,.why{color:var(--muted);font-size:.82rem}
-.why::before{content:"· "}
-.statement{margin:0 0 4px;font-weight:500;max-width:80ch}
-.notes{color:var(--text2);font-size:.9rem;margin:0;max-width:80ch}
-.caveat{font-size:.82rem;color:var(--muted);margin:4px 0 0}
-.deviations{font-size:.85rem;color:var(--text2);margin-top:6px}
-.deviations summary{cursor:pointer;color:var(--muted)}
-.deviations ul{margin:6px 0 0;padding-left:20px;max-width:78ch}
-.findings li{display:grid;grid-template-columns:170px 1fr;gap:4px 12px;padding:8px 0;border-top:1px solid var(--line);
-font-size:.9rem;color:var(--text2)}
-.findings li:first-child{border-top:0}
-@media (max-width:640px){.findings li{grid-template-columns:1fr}}
-.kind{font-size:.76rem;font-weight:600;color:var(--text);align-self:start;justify-self:start;border:1px solid var(--line);
-border-radius:4px;padding:1px 6px}
-.controls{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px;align-items:center}
-.controls input,.controls select{font:inherit;padding:7px 10px;border:1px solid var(--line);border-radius:6px;
-background:var(--panel);color:var(--text)}
-.controls input{flex:1;min-width:200px}
-.table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px;background:var(--panel)}
-table{border-collapse:collapse;width:100%;font-size:.88rem}
-th,td{text-align:left;padding:8px 12px;border-bottom:1px solid var(--line);vertical-align:top}
-th{color:var(--text2);font-weight:600;white-space:nowrap;position:sticky;top:0;background:var(--panel)}
-th button{font:inherit;font-weight:600;color:inherit;background:none;border:0;padding:0;cursor:pointer}
-th button:hover{color:var(--text)}
-th[aria-sort="ascending"] button::after{content:" ↑"}th[aria-sort="descending"] button::after{content:" ↓"}
-td.num,th.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
-tbody tr:hover{background:var(--hover)}
-tr:last-child td{border-bottom:0}
-.status{font-size:.78rem;font-weight:600;border:1px solid var(--line);border-radius:4px;padding:0 6px;white-space:nowrap;
-color:var(--text2);text-decoration:none}
-a.status{color:var(--link)}
-.empty{padding:20px;text-align:center;color:var(--muted)}
-footer{margin:56px 0 40px;color:var(--muted);font-size:.85rem;border-top:1px solid var(--line);padding-top:16px}
-"""
+# --- pages ---------------------------------------------------------------------
 
-JS = """
-const cards=[...document.querySelectorAll('details.card')];
-function openFromHash(){const el=location.hash&&document.getElementById(location.hash.slice(1));
-if(el&&el.tagName==='DETAILS'){el.open=true;el.scrollIntoView();}}
-addEventListener('hashchange',openFromHash);openFromHash();
-const toggle=document.getElementById('toggle-all');
-if(toggle)toggle.addEventListener('click',()=>{const open=cards.some(c=>!c.open);cards.forEach(c=>c.open=open);
-toggle.textContent=open?'Collapse all':'Expand all';});
-const tbody=document.querySelector('#queue tbody'),rows=[...tbody.rows];
-const q=document.getElementById('q'),st=document.getElementById('st'),shown=document.getElementById('shown'),
-empty=document.getElementById('empty');
-function apply(){const t=q.value.trim().toLowerCase(),s=st.value;let n=0;
-rows.forEach(r=>{const ok=(!t||r.dataset.text.includes(t))&&(!s||r.dataset.status===s);r.hidden=!ok;if(ok)n++;});
-shown.textContent=n+' of '+rows.length;empty.hidden=n>0;}
-q.addEventListener('input',apply);st.addEventListener('change',apply);apply();
-document.querySelectorAll('#queue th[data-key]').forEach(th=>th.querySelector('button').addEventListener('click',()=>{
-const dir=th.getAttribute('aria-sort')==='ascending'?-1:1,key=th.dataset.key,num=th.classList.contains('num');
-document.querySelectorAll('#queue th').forEach(h=>h.removeAttribute('aria-sort'));
-th.setAttribute('aria-sort',dir===1?'ascending':'descending');
-rows.sort((a,b)=>{const x=a.dataset[key],y=b.dataset[key];return dir*(num?x-y:x.localeCompare(y));});
-rows.forEach(r=>tbody.appendChild(r));}));
-"""
-
-STATUS_LABEL = {"attempted": "Attempted", "pilot": "In the pilot", "open": "Not yet attempted"}
+def breakdown(title: str, items: list[tuple[str, int, str]], more: str | None = None) -> str:
+    """A panel of horizontal bars: (label, count, link) per row."""
+    if not items:
+        return ""
+    top = max(n for _, n, _ in items)
+    body = "".join(
+        f'<a class="label" href="{e(href)}">{e(label)}</a>'
+        f'<div class="track"><a class="hbar" href="{e(href)}" style="width:{100 * n / top:.1f}%" '
+        f'aria-label="{e(label)}: {n}"></a></div><span class="num">{n:,}</span>'
+        for label, n, href in items)
+    link = f'<a class="more" href="{e(more)}">See all</a>' if more else ""
+    return f'<div class="panel"><h2>{link}{e(title)}</h2><div class="rows">{body}</div></div>'
 
 
-def render(data: dict) -> str:
-    attempts, targets = data["attempts"], data["targets"]
-    n_claims = sum(data["outcome_counts"].values())
-    attempted = len({a["dandiset"] for a in attempts})
-    findings = sum(len(a["findings"]) for a in attempts)
+def attempt_row(a: dict, root: str) -> str:
+    counts = outcome_counts(a)
+    page = f'{root}dandisets/{e(a["dandiset"])}/'
+    return (f'<div class="row drow"><div class="id"><a href="{page}">{e(a["dandiset"])}</a></div>'
+            f'<div><p class="title"><a href="{page}">{e(a["entry_title"] or a["id"])}</a></p>'
+            f'<div class="meta">{bar(counts, "Outcomes", "bar mini")}{legend(counts, compact=True)}</div></div>'
+            f'<div class="right">{tier_badge(a["tier"])}<span class="small muted">{e(a["date"])}</span></div></div>')
+
+
+def page_overview(data: dict) -> str:
+    r = rows_cache(data)
+    counts = data["outcome_counts"]
+    n_claims = sum(counts.values())
+    latest = latest_attempts(data)
     in_queue = data["queue_counts"]["with_a_paper"]
+    verified = sum(1 for a in latest.values() if a["tier"] != "runs")
     tiles = [
-        (f"{attempted} <span class='of'>of {in_queue}</span>", "dandisets attempted"),
-        (n_claims, "claims attempted"),
-        (sum(1 for a in attempts if a["tier"] != "runs"), "attempts independently verified"),
-        (findings, "findings about the data"),
+        (f'{len(latest):,} <span class="of">of {in_queue}</span>', "dandisets attempted", "dandisets/?status=attempted"),
+        (f"{n_claims:,}", "claims attempted", "claims/"),
+        (f"{verified:,}", "attempts independently verified",
+         "dandisets/?tier=agent_verified,human_verified,author_endorsed"),
+        (f'{len(r["findings"]):,}', "findings about the data", "findings/"),
     ]
-    tile_html = "".join(f'<div class="tile"><div class="n">{n}</div><div class="l">{e(label)}</div></div>'
-                        for n, label in tiles)
-    ordered = sorted(attempts, key=lambda a: (a["date"], a["dandiset"]), reverse=True)
-    cards = "".join(attempt_card(a) for a in ordered) or '<p class="muted">No attempts yet.</p>'
-    by_dandiset = {a["dandiset"]: a["id"] for a in ordered}
-    order = {"attempted": 0, "pilot": 1, "open": 2}
-    body_rows = []
-    for t in sorted(targets, key=lambda t: (order[t["status"]], t["dandiset"])):
-        text = e(f'{t["dandiset"]} {t["name"]} {t["paper_title"]} {t["approach"]}'.lower())
-        more = f' <span class="muted">+{t["n_papers"] - 1}</span>' if t["n_papers"] > 1 else ""
-        status = (f'<a class="status" href="#attempt-{e(by_dandiset[t["dandiset"]])}">Attempted →</a>'
-                  if t["dandiset"] in by_dandiset else f'<span class="status">{STATUS_LABEL[t["status"]]}</span>')
-        body_rows.append(
-            f'<tr data-status="{t["status"]}" data-text="{text}" data-dandiset="{e(t["dandiset"])}" '
-            f'data-paper="{e((t["paper_title"] or "").lower())}" data-size="{t["size_gb"]}" data-files="{t["files"]}">'
-            f'<td><a href="https://dandiarchive.org/dandiset/{e(t["dandiset"])}">{e(t["dandiset"])}</a></td>'
-            f'<td><a href="https://doi.org/{e(t["paper"])}">{e(t["paper_title"])}</a>{more}</td>'
-            f'<td>{e(t["approach"])}</td><td class="num">{t["size_gb"]:,.1f} GB</td>'
-            f'<td class="num">{t["files"]:,}</td><td>{status}</td></tr>')
-    overview = (bar(data["outcome_counts"], f"Outcomes of {n_claims} claims attempted") + legend(data["outcome_counts"])
-                if n_claims else '<p class="muted">No claims attempted yet.</p>')
-    return f'''<!doctype html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Reproduction registry</title>
-<meta name="description" content="Which findings of papers can be reproduced from the open data on the DANDI Archive.">
-<style>{CSS}.tile .of{{font-size:1rem;font-weight:500;color:var(--muted)}}</style></head><body>
-<nav class="top" aria-label="Sections"><div class="wrap">
-  <a class="brand" href="#top">Reproduction registry</a>
-  <a class="link" href="#attempts">Attempts</a>
-  <a class="link" href="#queue-section">Queue</a>
-  <a class="link optional" href="{REPO_URL}/blob/main/docs/design.md">How it works</a>
-  <a class="link optional" href="{REPO_URL}">GitHub</a>
-</div></nav>
-<div class="wrap" id="top">
-<header class="hero">
+    tile_html = "".join(f'<a class="tile" href="{href}"><div class="n">{n}</div><div class="l">{e(label)}</div></a>'
+                        for n, label, href in tiles)
+
+    if n_claims:
+        outcomes = (bar(counts, f"Outcomes of {n_claims} claims", href=lambda k: f"claims/?outcome={k}")
+                    + legend(counts, href=lambda k: f"claims/?outcome={k}"))
+    else:
+        outcomes = '<p class="muted">No claims attempted yet.</p>'
+
+    by_technique: dict = {}
+    for c in r["claims"]:
+        for t in c["technique"] or ["(none)"]:
+            by_technique.setdefault(t, {k: 0 for k in OUTCOMES})[c["outcome"]] += 1
+    technique_rows = ""
+    for t, c in sorted(by_technique.items(), key=lambda kv: -sum(kv[1].values()))[:8]:
+        label = "Not stated" if t == "(none)" else t
+        technique_rows += (
+            f'<a class="label" href="claims/?technique={e(t)}">{e(label)}</a>'
+            + bar(c, f"{label}: {sum(c.values())} claims", href=lambda k, t=t: f"claims/?technique={t}&outcome={k}")
+            + f'<span class="num">{sum(c.values()):,}</span>')
+    technique_panel = (f'<div class="panel"><h2>Outcomes by technique</h2><div class="rows">{technique_rows}</div></div>'
+                       if technique_rows else "")
+
+    blocked: dict = {}
+    for c in r["claims"]:
+        if c["outcome"] == "blocked":
+            blocked[c["blocked_by"]] = blocked.get(c["blocked_by"], 0) + 1
+    kinds: dict = {}
+    for f in r["findings"]:
+        kinds[f["kind"]] = kinds.get(f["kind"], 0) + 1
+    tiers: dict = {}
+    for a in latest.values():
+        tiers[a["tier"]] = tiers.get(a["tier"], 0) + 1
+
+    def ordered(counts_by_key, labels, link):
+        return [(labels.get(k, k), n, link(k)) for k, n in sorted(counts_by_key.items(), key=lambda kv: -kv[1])]
+
+    panels = "".join([
+        technique_panel,
+        breakdown("Why claims could not be tested",
+                  ordered(blocked, BLOCKED_BY, lambda k: f"claims/?outcome=blocked&blocked_by={k}"),
+                  "claims/?outcome=blocked"),
+        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"findings/?kind={k}"),
+                  "findings/"),
+        breakdown("Verification of attempts",
+                  ordered(tiers, TIERS, lambda k: f"dandisets/?status=attempted&tier={k}"),
+                  "dandisets/?status=attempted"),
+    ])
+
+    recent = sorted(latest.values(), key=lambda a: (a["date"], a["dandiset"]), reverse=True)[:6]
+    recent_html = "".join(attempt_row(a, "") for a in recent) or '<p class="empty">No attempts yet.</p>'
+
+    redirect = json.dumps({a["id"]: a["dandiset"] for a in data["attempts"]})
+    body = f'''<header class="page" id="top">
   <h1>Can the findings of a paper be reproduced from its open data?</h1>
   <p class="lede">Agents and people take papers whose data is on the <a href="https://dandiarchive.org">DANDI Archive</a>
   and try to reproduce their key findings from that data alone. Every finding gets an outcome, whether or not it
@@ -478,73 +526,304 @@ def render(data: dict) -> str:
   <div class="tiles">{tile_html}</div>
 </header>
 <main>
-  <section aria-labelledby="h-outcomes" style="margin-top:28px">
-    <div class="overview">
-      <h2 id="h-outcomes">Outcomes of the {n_claims} claims attempted</h2>
-      {overview}
-      <details class="caution">
-        <summary><span><strong>A failure to reproduce is not a finding that the paper is wrong.</strong>
-        It may be a failure of the attempt. <span class="more">Read more</span></span></summary>
-        <div class="body">
-          <p>An outcome says what one attempt could recover from the data in a dandiset, with the methods available
-          to it. A “not reproduced” or “partially reproduced” outcome can come from a mistake or a limitation in the
-          agent’s analysis, from methods the paper does not describe fully, from data that is not in the dandiset, or
-          from a dandiset that differs from what the paper analysed. “Blocked” means the claim could not be tested at all.</p>
-          <p>Most attempts are made by AI agents. Where a card says so, the attempt has been checked by a second,
-          independent agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways
-          its analysis differs from the paper’s. Authors who think an attempt is wrong can
-          <a href="{REPO_URL}/issues">open an issue</a>.</p>
-        </div>
-      </details>
+  <div class="panel">
+    <h2>Outcomes of the {n_claims:,} claims attempted</h2>
+    {outcomes}
+    {caution_block()}
+  </div>
+  <div class="grid2" style="margin-top:16px">{panels}</div>
+  <div class="panel" style="padding:0">
+    <h2 style="padding:18px 20px 0"><a class="more" href="dandisets/?status=attempted">See all</a>Latest attempts</h2>
+    <div class="results" style="border:0;border-radius:0 0 10px 10px">{recent_html}</div>
+  </div>
+</main>'''
+    scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
+               'if(h&&m[h[1]])location.replace("dandisets/"+m[h[1]]+"/");})();</script>')
+    return shell(data, "Reproduction registry", "", "overview", body, scripts)
+
+
+LISTS = {
+    "dandisets": {
+        "title": "Dandisets", "noun": "dandisets", "data": "data/dandisets.json",
+        "intro": "Every public dandiset on DANDI whose metadata names a paper. Attempted ones open a page with the "
+                 "claims tested, what was found about the data, and the executed notebook.",
+        "facets": [("status", "Status"), ("has", "Has a claim that is"), ("tier", "Verification"),
+                   ("technique", "Technique"), ("species", "Species")],
+        "sorts": [("-date", "Most recently attempted"), ("id", "Dandiset number"),
+                  ("-id", "Dandiset number, newest first"), ("-failures", "Most claims not reproduced"),
+                  ("size_gb", "Smallest"), ("-size_gb", "Largest"), ("paper_title", "Paper title")],
+        "csv": None,
+    },
+    "claims": {
+        "title": "Claims", "noun": "claims", "data": "data/claims.json",
+        "intro": "Every finding that an attempt set out to test, across all dandisets. Open a claim for the reasoning "
+                 "and how the test differed from the paper’s method.",
+        "facets": [("outcome", "Outcome"), ("blocked_by", "Why blocked"), ("tier", "Verification"),
+                   ("verifier", "Verifier"), ("technique", "Technique"), ("species", "Species")],
+        "sorts": [("-date", "Most recent"), ("dandiset", "Dandiset"), ("outcome", "Outcome")],
+        "csv": ["dandiset", "claim", "outcome", "blocked_by", "source", "statement", "notes", "tier", "paper_title"],
+    },
+    "findings": {
+        "title": "Findings about the data", "noun": "findings", "data": "data/findings.json",
+        "intro": "What attempts found about the dandisets themselves, whatever the outcome of the claims: wrong or "
+                 "missing metadata, missing data, undocumented selection. For data owners and curators.",
+        "facets": [("kind", "Kind"), ("technique", "Technique"), ("species", "Species")],
+        "sorts": [("-date", "Most recent"), ("dandiset", "Dandiset"), ("kind", "Kind")],
+        "csv": ["dandiset", "kind", "statement", "paper_title"],
+    },
+}
+
+
+def page_list(data: dict, kind: str) -> str:
+    spec = LISTS[kind]
+    outcome_labels = {k: v[0] for k, v in OUTCOMES.items()}
+    config = {
+        "kind": kind, "root": "../", "data": spec["data"], "noun": spec["noun"], "csv": spec["csv"],
+        "facets": [{"key": k, "label": label} for k, label in spec["facets"]],
+        "sorts": [{"key": k, "label": label} for k, label in spec["sorts"]],
+        "outcomes": {k: list(v) for k, v in OUTCOMES.items()},
+        "order": {"outcome": list(OUTCOMES), "has": list(OUTCOMES), "status": list(STATUS), "tier": list(TIERS)},
+        "labels": {
+            "outcome": outcome_labels, "has": outcome_labels,
+            "blocked_by": {**BLOCKED_BY, "(none)": "Not blocked"},
+            "tier": {**TIERS, "runs": "Not yet verified", "(none)": "Not attempted"},
+            "status": STATUS, "kind": FINDING_KINDS,
+            "verifier": {"disagreed": "Disagreed at first", "(none)": "No disagreement"},
+            "technique": {"(none)": "Not stated"}, "species": {"(none)": "Not stated"},
+        },
+    }
+    export = '<button class="ghost" id="export" type="button">Download CSV</button>' if spec["csv"] else ""
+    caution = (f'<p class="small muted" style="margin-top:6px">{CAUTION} It may be a failure of the attempt. '
+               f'<a href="../#caution">More</a></p>' if kind == "claims" else "")
+    body = f'''<header class="page">
+  <h1>{e(spec["title"])}</h1>
+  <p class="sub">{spec["intro"]}</p>{caution}
+</header>
+<main class="layout">
+  <details class="facets" id="facets" open><summary>Filters</summary><div id="facet-list"></div></details>
+  <div>
+    <div class="listbar">
+      <input id="q" type="search" placeholder="Search {e(spec["noun"])}" aria-label="Search {e(spec["noun"])}">
+      <select class="ghost" id="sort" aria-label="Sort by"></select>
+      {export}
     </div>
-  </section>
-  <section aria-labelledby="attempts">
-    <div class="toolbar"><h2 id="attempts">Attempts</h2><span class="spacer"></span>
-      <button class="ghost" id="toggle-all" type="button">Expand all</button></div>
-    <p class="sub">One card per dandiset attempted. Open a card for each claim’s outcome and reasoning, what was found
-    about the data, and the executed notebook.</p>
-    {cards}
-  </section>
-  <section aria-labelledby="queue-section">
-    <h2 id="queue-section">The queue</h2>
-    <p class="sub">Of {data["queue_counts"]["public_dandisets"]} public dandisets on DANDI, {in_queue} name a paper in
-    their metadata (as of {e(data["queue_generated"][:10])}). These are the targets.</p>
-    <div class="controls">
-      <input id="q" type="search" placeholder="Search by dandiset, paper or technique" aria-label="Search the queue">
-      <select id="st" aria-label="Filter by status"><option value="">All statuses</option>
-        <option value="attempted">Attempted</option><option value="pilot">In the pilot</option>
-        <option value="open">Not yet attempted</option></select>
-      <span id="shown" class="muted small" aria-live="polite"></span>
-    </div>
-    <div class="table-wrap"><table id="queue">
-      <thead><tr><th data-key="dandiset"><button type="button">Dandiset</button></th>
-      <th data-key="paper"><button type="button">Paper</button></th><th>Technique</th>
-      <th class="num" data-key="size"><button type="button">Size</button></th>
-      <th class="num" data-key="files"><button type="button">Files</button></th><th>Status</th></tr></thead>
-      <tbody>{"".join(body_rows)}</tbody></table>
-      <p class="empty" id="empty" hidden>No targets match.</p></div>
-  </section>
-</main>
-<footer>Generated {e(data["generated"][:10])} from the registry's files · <a href="registry.json">Data as JSON</a> ·
-<a href="{REPO_URL}">Repository</a>. Outcomes describe what one attempt could reproduce from the data in the dandiset,
-with the methods available. A failure to reproduce may be a failure of the agent, and is not a judgement of the paper.</footer>
-</div>
-<script>{JS}</script>
-</body></html>
-'''
+    <div class="listbar"><strong id="count" aria-live="polite"></strong><span class="grow"></span>
+      <button class="ghost" id="clear" type="button" hidden>Clear filters</button></div>
+    <div class="active" id="active"></div>
+    <div class="results" id="results"><p class="empty">Loading…</p></div>
+    <nav class="pager" id="pager" aria-label="Pages"></nav>
+    <noscript><p class="empty">This list needs JavaScript. The same data is in
+    <a href="../{spec["data"]}">{spec["data"]}</a>.</p></noscript>
+  </div>
+</main>'''
+    scripts = (f'<script type="application/json" id="list-config">{json.dumps(config)}</script>'
+               f'<script src="../assets/list.js"></script>')
+    return shell(data, f'{spec["title"]} · Reproduction registry', "../", kind, body, scripts)
+
+
+TABS_JS = """<script>(function(){
+document.documentElement.classList.add('js');
+var tabs=[].slice.call(document.querySelectorAll('.tabs button')),
+panels=tabs.map(function(t){return document.getElementById(t.dataset.panel);});
+function show(id,push){tabs.forEach(function(t,i){var on=t.dataset.panel===id;t.setAttribute('aria-selected',on);
+panels[i].hidden=!on;});if(push)history.replaceState(null,'','#'+id);}
+function fromHash(){var h=location.hash.slice(1),el=h&&document.getElementById(h);
+if(!el){show(tabs[0].dataset.panel);return;}
+var panel=el.closest('.tabpanel');if(!panel){show(tabs[0].dataset.panel);return;}
+show(panel.id);if(el!==panel){var d=el.closest('details');if(d)d.open=true;el.scrollIntoView();}}
+tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.panel,true);});});
+addEventListener('hashchange',fromHash);fromHash();})();</script>"""
+
+
+def page_dandiset(data: dict, dandiset: str) -> str:
+    root = "../../"
+    all_attempts = sorted((a for a in data["attempts"] if a["dandiset"] == dandiset),
+                          key=lambda a: (a["date"], a["id"]))
+    a = all_attempts[-1]
+    target = next((t for t in data["targets"] if t["dandiset"] == dandiset), None)
+    counts = outcome_counts(a)
+    n = len(a["outcomes"])
+    order = {"not_reproduced": 0, "partially_reproduced": 1, "reproduced": 2}
+    tested = sorted((o for o in a["outcomes"] if o["outcome"] != "blocked"), key=lambda o: order[o["outcome"]])
+    blocked = [o for o in a["outcomes"] if o["outcome"] == "blocked"]
+
+    claims_html = ""
+    if tested:
+        claims_html += (f'<h3 style="margin-top:14px">Tested <span class="count">{len(tested)}</span></h3>'
+                        f'<ul class="claims">{"".join(claim_item(o, root) for o in tested)}</ul>')
+    if blocked:
+        reasons: dict = {}
+        for o in blocked:
+            reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
+        why = ", ".join(f"{count} {BLOCKED_BY.get(k, k).lower()}" for k, count in reasons.items())
+        claims_html += (f'<details class="group" open><summary><h3>Could not be tested '
+                        f'<span class="count">{len(blocked)}</span></h3>'
+                        f'<span class="muted small">{e(why)}</span></summary>'
+                        f'<ul class="claims">{"".join(claim_item(o, root) for o in blocked)}</ul></details>')
+
+    findings_html = "".join(
+        f'<li><span><a class="kind" href="{root}findings/?kind={e(f["kind"])}">'
+        f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{e(f["statement"])}</span></li>'
+        for f in a["findings"]) or '<li><span></span><span class="muted">None recorded.</span></li>'
+
+    if a["verifications"]:
+        rounds = ""
+        for i, v in enumerate(a["verifications"], 1):
+            dis = ""
+            for d in v["disagreements"]:
+                theirs = OUTCOMES[d["outcome"]][0] if d["outcome"] in OUTCOMES else "not given"
+                dis += (f'<li><a href="#claim-{e(d["claim"])}">{e(d["claim"])}</a>: the verifier’s outcome was '
+                        f'“{e(theirs)}”. {e(d["reason"])}</li>')
+            dis = f'<ul style="margin:6px 0 0;padding-left:20px">{dis}</ul>' if dis else ""
+            reviewed = f' Reviewed: {e(v["reviewed"])}' if v["reviewed"] else ""
+            rounds += (f'<li><span><strong>Round {i}</strong><br><span class="muted">{e(v["date"])}</span></span>'
+                       f'<span>Agreed with {v["agreed"]} of {v["of"]} outcomes. {e(v["by"])}.{reviewed}{dis}</span></li>')
+        verification_html = f'<ul class="plain">{rounds}</ul>'
+    else:
+        verification_html = ('<p class="muted" style="margin-top:14px">This attempt has not yet been checked by an '
+                             'independent verifier.</p>')
+
+    deviations: dict = {}
+    for o in a["outcomes"]:
+        for d in o["deviations"]:
+            deviations.setdefault(d, []).append(o["claim"])
+    if deviations:
+        items = ""
+        for d, cs in sorted(deviations.items(), key=lambda kv: -len(kv[1])):
+            links = " ".join(f'<a class="tag" href="#claim-{e(c)}">{e(c)}</a>' for c in cs)
+            items += f'<li style="grid-template-columns:1fr"><span>{e(d)}</span><span>{links}</span></li>'
+        deviations_html = f'<ul class="plain">{items}</ul>'
+    else:
+        deviations_html = '<p class="muted" style="margin-top:14px">None recorded.</p>'
+
+    agent = a.get("agent") or {}
+    provenance = [("Attempt", f'<a href="{REPO_URL}/blob/main/attempts/{e(a["id"])}.yaml">{e(a["id"])}</a>'
+                   if not data["demo"] else e(a["id"])),
+                  ("Date", e(a["date"])),
+                  ("Made by", ("An agent" if a["kind"] == "agent" else "A person") + f', run by {e(a["accountable"])}'),
+                  ("Dandiset version", e(a["dandiset_version"] or "not recorded"))]
+    if a["kind"] == "agent":
+        provenance += [("Harness", e(agent.get("harness", "not recorded"))),
+                       ("Model", e(agent.get("model", "not recorded"))),
+                       ("Protocol", e(agent.get("protocol", "not recorded")))]
+    if len(all_attempts) > 1:
+        provenance.append(("Earlier attempts", ", ".join(
+            f'<a href="{REPO_URL}/blob/main/attempts/{e(x["id"])}.yaml">{e(x["id"])}</a> ({e(x["date"])})'
+            for x in all_attempts[:-1])))
+    provenance_html = "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in provenance)
+
+    actions = [f'<a class="button" href="{root}{e(p)}">Open the executed notebook</a>' for p in a["executed"][:1]]
+    actions += [f'<a href="https://doi.org/{e(a["paper"])}">Paper</a>',
+                f'<a href="https://dandiarchive.org/dandiset/{e(dandiset)}">Dandiset {e(dandiset)} on DANDI</a>']
+    if a["entry"] and not data["demo"]:
+        actions.append(f'<a href="{REPO_URL}/tree/main/entries/{e(a["entry"])}">Code</a>')
+    actions.append(f'<a href="{root}api/dandiset/{e(dandiset)}.json">JSON</a>')
+
+    tags = ""
+    if target:
+        tags = " ".join(
+            [f'<a class="tag" href="{root}dandisets/?technique={e(t)}">{e(t)}</a>' for t in target["technique"]]
+            + [f'<a class="tag" href="{root}dandisets/?species={e(s)}">{e(s)}</a>' for s in target["species"]]
+            + [f'<span class="tag">{target["size_gb"]:,.1f} GB</span>',
+               f'<span class="tag">{target["files"]:,} files</span>'])
+
+    latest = latest_attempts(data)
+    same_paper = [t for t in data["targets"] if target and t["dandiset"] != dandiset
+                  and set(t["papers"]) & set(target["papers"])]
+    related = ""
+    if same_paper:
+        links = ""
+        for t in same_paper:
+            if t["dandiset"] in latest:
+                links += f'<a href="../{e(t["dandiset"])}/">Dandiset {e(t["dandiset"])}</a> '
+            else:
+                links += (f'<span><a href="https://dandiarchive.org/dandiset/{e(t["dandiset"])}">Dandiset '
+                          f'{e(t["dandiset"])}</a> <span class="muted">(not attempted)</span></span> ')
+        related = (f'<div class="panel" style="margin-top:28px"><h2>Other dandisets that name the same paper</h2>'
+                   f'<div class="related">{links}</div></div>')
+    ids = sorted(latest)
+    i = ids.index(dandiset)
+    prev_link = f'<a href="../{ids[i - 1]}/">← Dandiset {ids[i - 1]}</a>' if i > 0 else "<span></span>"
+    next_link = f'<a href="../{ids[i + 1]}/">Dandiset {ids[i + 1]} →</a>' if i < len(ids) - 1 else "<span></span>"
+
+    tab_defs = [("claims", "Claims", n), ("findings", "Findings about the data", len(a["findings"])),
+                ("verification", "Verification", len(a["verifications"])),
+                ("differences", "Method differences", len(deviations)), ("provenance", "Provenance", None)]
+    tab_buttons = ""
+    for key, label, c in tab_defs:
+        count = f' <span class="count">{c}</span>' if c is not None else ""
+        tab_buttons += f'<button type="button" role="tab" data-panel="{key}" aria-selected="false">{label}{count}</button>'
+
+    heading = a["entry_title"] or (target or {}).get("paper_title") or a["id"]
+    tier_link = f'{root}dandisets/?status=attempted&tier={a["tier"]}'
+    show_caution = counts["not_reproduced"] or counts["partially_reproduced"]
+    body = f'''<header class="page">
+  <p class="crumbs"><a href="{root}dandisets/">Dandisets</a> / {e(dandiset)}</p>
+  <div class="dhead"><h1>{e(heading)}</h1>{tier_badge(a["tier"], tier_link)}</div>
+  <p class="sub">{e(a["description"] or "")}</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
+  <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
+  <p class="actions">{" ".join(actions)}</p>
+  {caution_block() if show_caution else ""}
+</header>
+<main>
+  <div class="tabs" role="tablist">{tab_buttons}</div>
+  <section class="tabpanel" id="claims"><h2>Claims</h2>{claims_html}</section>
+  <section class="tabpanel" id="findings"><h2>Findings about the data</h2>
+    <p class="sub small" style="margin-top:12px">What this attempt found about the dandiset itself, for its owner and
+    the archive.</p>
+    <ul class="findings">{findings_html}</ul></section>
+  <section class="tabpanel" id="verification"><h2>Verification</h2>{verification_html}</section>
+  <section class="tabpanel" id="differences"><h2>Method differences</h2>
+    <p class="sub small" style="margin-top:12px">How the tests differed from the paper’s method or data, and the claims
+    each applies to.</p>
+    {deviations_html}</section>
+  <section class="tabpanel" id="provenance"><h2>Provenance</h2>
+    <dl class="kv" style="margin-top:14px">{provenance_html}</dl></section>
+  {related}
+  <div class="prevnext">{prev_link}{next_link}</div>
+</main>'''
+    return shell(data, f"Dandiset {dandiset} · Reproduction registry", root, "dandisets", body, TABS_JS)
+
+
+# --- writing -------------------------------------------------------------------
+
+def build(data: dict, output: Path) -> None:
+    r = rows_cache(data)
+    output.mkdir(parents=True, exist_ok=True)
+    shutil.copytree(ASSETS, output / "assets", dirs_exist_ok=True)
+    for sub in ("dandisets", "claims", "findings", "data", "api/dandiset"):
+        (output / sub).mkdir(parents=True, exist_ok=True)
+    (output / "index.html").write_text(page_overview(data))
+    for kind in LISTS:
+        (output / kind / "index.html").write_text(page_list(data, kind))
+        (output / "data" / f"{kind}.json").write_text(json.dumps(r[kind], separators=(",", ":")) + "\n")
+    for dandiset, attempt in latest_attempts(data).items():
+        page = output / "dandisets" / dandiset
+        page.mkdir(exist_ok=True)
+        (page / "index.html").write_text(page_dandiset(data, dandiset))
+        (output / "api" / "dandiset" / f"{dandiset}.json").write_text(json.dumps({
+            "dandiset": dandiset, "page": f"dandisets/{dandiset}/", "generated": data["generated"],
+            "caution": CAUTION + " It may be a failure of the attempt.",
+            "outcome_counts": outcome_counts(attempt), "attempt": attempt,
+        }, indent=1) + "\n")
+    (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--output", type=Path, default=ROOT / "site")
+    parser.add_argument("--demo", type=int, metavar="N",
+                        help="build from N made-up attempts, to test the site at scale; never publish")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     data = collect(args.output / "notebooks")
-    (args.output / "index.html").write_text(render(data))
-    (args.output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
-    print(f"wrote {args.output / 'index.html'} ({len(data['attempts'])} attempts, "
-          f"{len(data['targets'])} targets)")
+    if args.demo:
+        data = demo(data, args.demo)
+    build(data, args.output)
+    print(f"wrote {args.output} ({len(data['attempts'])} attempts, {len(data['targets'])} targets"
+          f"{', DEMO DATA' if data['demo'] else ''})")
     return 0
 
 
