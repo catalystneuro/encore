@@ -96,6 +96,16 @@
   };
   const tier = (r) => r.tier
     ? `<span class="tier${r.tier === 'runs' ? ' pending' : ''}">${esc(r.tier === 'runs' ? 'Not yet verified' : '✓ ' + label('tier', r.tier))}</span>` : '';
+  // 38464.5 GB reads better as 38.5 TB, and 40982 files as 41k files (exact figure on hover).
+  const size = (gb) => {
+    const [v, unit] = gb >= 1000 ? [gb / 1000, 'TB'] : gb >= 1 ? [gb, 'GB'] : [gb * 1000, 'MB'];
+    const text = `${v >= 100 ? Math.round(v) : v >= 10 ? v.toFixed(1) : v.toFixed(v < 1 ? 2 : 1)} ${unit}`;
+    return `<span title="${gb.toLocaleString()} GB">${text}</span>`;
+  };
+  const files = (n) => {
+    const text = n >= 1e6 ? `${(n / 1e6).toFixed(1)}M` : n >= 1e4 ? `${Math.round(n / 1e3)}k` : n.toLocaleString();
+    return `<span title="${n.toLocaleString()} files">${text} file${n === 1 ? '' : 's'}</span>`;
+  };
   const tags = (list) => (list || []).map((t) => `<span class="tag">${esc(t)}</span>`).join(' ');
 
   const render = {
@@ -108,8 +118,7 @@
         <div class="id"><a href="${href}">${esc(r.id)}</a></div>
         <div><p class="title"><a href="${href}">${esc(r.paper_title || r.name)}</a></p>
           <div class="meta">${tags(r.technique)} ${tags(r.species)}
-            <span>${r.size_gb.toLocaleString(undefined, { maximumFractionDigits: 1 })} GB</span>
-            <span>${r.files.toLocaleString()} files</span>
+            ${size(r.size_gb)} ${files(r.files)}
             <a href="https://doi.org/${esc(r.paper)}">Paper</a></div>
           ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}</div>` : ''}</div>
         <div class="right">${right}</div></div>`;

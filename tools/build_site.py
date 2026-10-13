@@ -100,6 +100,18 @@ def squash(text) -> str:
     return " ".join((text or "").split())
 
 
+def human_size(gb: float) -> str:
+    """38464.5 -> '38.5 TB'; 0.05 -> '50 MB'."""
+    value, unit = (gb / 1000, "TB") if gb >= 1000 else (gb, "GB") if gb >= 1 else (gb * 1000, "MB")
+    return f"{value:.0f} {unit}" if value >= 100 else f"{value:.1f} {unit}"
+
+
+def human_count(n: int, noun: str) -> str:
+    """40982 -> '41k files'; 1 -> '1 file'."""
+    text = f"{n / 1e6:.1f}M" if n >= 1e6 else f"{round(n / 1e3)}k" if n >= 1e4 else f"{n:,}"
+    return f"{text} {noun}{'' if n == 1 else 's'}"
+
+
 def short_species(name: str) -> str:
     return (name or "").split(" - ")[-1].strip()
 
@@ -663,7 +675,7 @@ def page_list(data: dict, kind: str) -> str:
         "outcomes": {k: list(v) for k, v in OUTCOMES.items()},
         "order": {"outcome": list(OUTCOMES), "has": list(OUTCOMES), "status": list(STATUS), "tier": list(TIERS)},
         "labels": {
-            "outcome": outcome_labels, "has": outcome_labels,
+            "outcome": outcome_labels, "has": {**outcome_labels, "(none)": "Not attempted"},
             "blocked_by": {**BLOCKED_BY, "(none)": "Not blocked"},
             "tier": {**TIERS, "runs": "Not yet verified", "(none)": "Not attempted"},
             "status": STATUS, "kind": FINDING_KINDS,
@@ -851,8 +863,8 @@ def page_dandiset(data: dict, dandiset: str) -> str:
         tags = " ".join(
             [f'<a class="tag" href="{root}dandisets/?technique={e(t)}">{e(t)}</a>' for t in target["technique"]]
             + [f'<a class="tag" href="{root}dandisets/?species={e(s)}">{e(s)}</a>' for s in target["species"]]
-            + [f'<span class="tag">{target["size_gb"]:,.1f} GB</span>',
-               f'<span class="tag">{target["files"]:,} files</span>'])
+            + [f'<span class="tag" title="{target["size_gb"]:,.1f} GB">{human_size(target["size_gb"])}</span>',
+               f'<span class="tag" title="{target["files"]:,} files">{human_count(target["files"], "file")}</span>'])
 
     current = current_attempts(data)
     same_paper = [t for t in data["targets"] if target and t["dandiset"] != dandiset

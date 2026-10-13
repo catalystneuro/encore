@@ -154,3 +154,15 @@ def test_the_overview_stays_small_at_scale(tmp_path):
     assert (tmp_path / "index.html").stat().st_size < 100_000
     assert "Demo data" in (tmp_path / "index.html").read_text()
     assert broken_links(tmp_path) == []
+
+
+@pytest.mark.parametrize("gb, text", [(38464.5, "38.5 TB"), (1379.1, "1.4 TB"), (352.1, "352 GB"),
+                                      (17.2, "17.2 GB"), (1.86, "1.9 GB"), (0.05, "50.0 MB"), (0.57, "570 MB")])
+def test_sizes_are_shown_in_a_readable_unit(gb, text):
+    assert site.human_size(gb) == text
+
+
+@pytest.mark.parametrize("n, text", [(40982, "41k files"), (3855, "3,855 files"), (1, "1 file"),
+                                     (1234567, "1.2M files")])
+def test_file_counts_are_shortened_when_large(n, text):
+    assert site.human_count(n, "file") == text
