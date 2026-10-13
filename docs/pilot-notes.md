@@ -376,8 +376,11 @@ what prompted it:
   value, and `expected` may hold several numbers (000207 notes).
 - **Criteria** are written before each claim's analysis, after the data check
   if need be, with what had been seen stated (000207 notes).
-- **Several readings** of a number: the criterion names the one the text
-  supports beforehand, and the notebook shows all (000147 point 3).
+- **Several readings** of a number: the criterion lists the plausible readings
+  beforehand, a match under any of them counts as reproduced, and the
+  notebook shows all of them (000147 point 3). Decided after review: being
+  generous here is preferred to letting the paper's wording turn a result
+  into a partial one.
 - **Claims of absence** are judged by the paper's own test (000147 point 5).
 - **Criterion against statement**: the criterion decides; the notes say
   whether the rest of the statement holds (000147 point 4).
