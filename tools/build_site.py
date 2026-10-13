@@ -8,10 +8,8 @@ entries/, and writes:
 
     index.html                    overview: numbers, breakdowns, latest attempts
     dandisets/index.html          every target, filterable and paginated
-    claims/index.html             every claim across all attempts
-    findings/index.html           every finding about the data
     dandisets/<id>/index.html     one static page per attempted dandiset
-    data/{dandisets,claims,findings}.json   rows for the three list pages
+    data/dandisets.json           rows for the list page
     api/dandiset/<id>.json        one dandiset's results, for other sites
     registry.json                 everything, as before
     assets/                       app.css and list.js from tools/site_assets/
@@ -345,8 +343,11 @@ def rows(data: dict) -> dict[str, list]:
             "claims": len(outcomes) if atts else None,
             "failures": sum(1 for o in outcomes if o["outcome"] == "not_reproduced") if atts else None,
             "has": sorted({o["outcome"] for o in outcomes}),
+            "blocked_by": sorted({o["blocked_by"] for o in outcomes if o["blocked_by"]}),
             "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["dandiset"])),
             "page": f'dandisets/{t["dandiset"]}/' if atts else None,
+            "findings": sum(len(a["findings"]) for a in atts) if atts else None,
+            "found": sorted({f["kind"] for a in atts or [] for f in a["findings"]}),
         })
     for atts in current.values():
         for a in atts:
@@ -427,7 +428,7 @@ def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
                       f"difference{plural} from the paper's method"
                       f'</summary><ul>{items}</ul></details>')
     disagreed = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
-    link = f'{root}claims/?outcome={o["outcome"]}'
+    link = f'{root}dandisets/?has={o["outcome"]}'
     shown = ""
     nb = notebook_of(attempt, o.get("notebook")) if attempt else None
     if nb:
@@ -453,9 +454,7 @@ def rows_cache(data: dict) -> dict:
 def shell(data: dict, title: str, root: str, active: str, body: str, scripts: str = "") -> str:
     r = rows_cache(data)
     tabs = [("overview", "Overview", root or "./", None),
-            ("dandisets", "Dandisets", f"{root}dandisets/", len({a["dandiset"] for a in data["attempts"]})),
-            ("claims", "Claims", f"{root}claims/", len(r["claims"])),
-            ("findings", "Findings", f"{root}findings/", len(r["findings"]))]
+            ("dandisets", "Dandisets", f"{root}dandisets/", len({a["dandiset"] for a in data["attempts"]}))]
     nav = ""
     for key, label, href, n in tabs:
         current = ' aria-current="page"' if key == active else ""
@@ -553,17 +552,17 @@ def page_overview(data: dict) -> str:
     verified = sum(1 for atts in current.values() if weakest_tier(atts) != "runs")
     tiles = [
         (f'{len(current):,} <span class="of">of {in_queue}</span>', "dandisets attempted", "dandisets/?status=attempted"),
-        (f"{n_claims:,}", "claims attempted", "claims/"),
+        (f"{n_claims:,}", "claims attempted", "dandisets/?status=attempted"),
         (f"{verified:,}", "dandisets independently verified",
          "dandisets/?tier=agent_verified,human_verified,author_endorsed"),
-        (f'{len(r["findings"]):,}', "findings about the data", "findings/"),
+        (f'{len(r["findings"]):,}', "findings about the data", "dandisets/?status=attempted"),
     ]
     tile_html = "".join(f'<a class="tile" href="{href}"><div class="n">{n}</div><div class="l">{e(label)}</div></a>'
                         for n, label, href in tiles)
 
     if n_claims:
-        outcomes = (bar(counts, f"Outcomes of {n_claims} claims", href=lambda k: f"claims/?outcome={k}")
-                    + legend(counts, href=lambda k: f"claims/?outcome={k}"))
+        outcomes = (bar(counts, f"Outcomes of {n_claims} claims", href=lambda k: f"dandisets/?has={k}")
+                    + legend(counts, href=lambda k: f"dandisets/?has={k}"))
     else:
         outcomes = '<p class="muted">No claims attempted yet.</p>'
 
@@ -575,8 +574,8 @@ def page_overview(data: dict) -> str:
     for t, c in sorted(by_technique.items(), key=lambda kv: -sum(kv[1].values()))[:8]:
         label = "Not stated" if t == "(none)" else t
         technique_rows += (
-            f'<a class="label" href="claims/?technique={e(t)}">{e(label)}</a>'
-            + bar(c, f"{label}: {sum(c.values())} claims", href=lambda k, t=t: f"claims/?technique={t}&outcome={k}")
+            f'<a class="label" href="dandisets/?status=attempted&technique={e(t)}">{e(label)}</a>'
+            + bar(c, f"{label}: {sum(c.values())} claims", href=lambda k, t=t: f"dandisets/?technique={t}&has={k}")
             + f'<span class="num">{sum(c.values()):,}</span>')
     technique_panel = (f'<div class="panel"><h2>Outcomes by technique</h2><div class="rows">{technique_rows}</div></div>'
                        if technique_rows else "")
@@ -599,10 +598,10 @@ def page_overview(data: dict) -> str:
     panels = "".join([
         technique_panel,
         breakdown("Why claims could not be tested",
-                  ordered(blocked, BLOCKED_BY, lambda k: f"claims/?outcome=blocked&blocked_by={k}"),
-                  "claims/?outcome=blocked"),
-        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"findings/?kind={k}"),
-                  "findings/"),
+                  ordered(blocked, BLOCKED_BY, lambda k: f"dandisets/?blocked_by={k}"),
+                  "dandisets/?has=blocked"),
+        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"dandisets/?found={k}"),
+                  "dandisets/?status=attempted"),
         breakdown("Verification of attempted dandisets",
                   ordered(tiers, TIERS, lambda k: f"dandisets/?status=attempted&tier={k}"),
                   "dandisets/?status=attempted"),
@@ -641,29 +640,12 @@ LISTS = {
         "title": "Dandisets", "noun": "dandisets", "data": "data/dandisets.json",
         "intro": "Every public dandiset on DANDI whose metadata names a paper. Attempted ones open a page with the "
                  "claims tested, what was found about the data, and the executed notebook.",
-        "facets": [("status", "Status"), ("has", "Has a claim that is"), ("tier", "Verification"),
-                   ("technique", "Technique"), ("species", "Species")],
+        "facets": [("status", "Status"), ("has", "Has a claim that is"), ("blocked_by", "Has a claim blocked by"),
+                   ("tier", "Verification"), ("found", "Findings about the data"), ("technique", "Technique"), ("species", "Species")],
         "sorts": [("-date", "Most recently attempted"), ("id", "Dandiset number"),
                   ("-id", "Dandiset number, newest first"), ("-failures", "Most claims not reproduced"),
                   ("size_gb", "Smallest"), ("-size_gb", "Largest"), ("paper_title", "Paper title")],
         "csv": None,
-    },
-    "claims": {
-        "title": "Claims", "noun": "claims", "data": "data/claims.json",
-        "intro": "Every finding that an attempt set out to test, across all dandisets. Open a claim for the reasoning "
-                 "and how the test differed from the paper’s method.",
-        "facets": [("outcome", "Outcome"), ("blocked_by", "Why blocked"), ("tier", "Verification"),
-                   ("verifier", "Verifier"), ("technique", "Technique"), ("species", "Species")],
-        "sorts": [("-date", "Most recent"), ("dandiset", "Dandiset"), ("outcome", "Outcome")],
-        "csv": ["dandiset", "claim", "outcome", "blocked_by", "source", "statement", "notes", "tier", "paper_title"],
-    },
-    "findings": {
-        "title": "Findings about the data", "noun": "findings", "data": "data/findings.json",
-        "intro": "What attempts found about the dandisets themselves, whatever the outcome of the claims: wrong or "
-                 "missing metadata, missing data, undocumented selection. For data owners and curators.",
-        "facets": [("kind", "Kind"), ("technique", "Technique"), ("species", "Species")],
-        "sorts": [("-date", "Most recent"), ("dandiset", "Dandiset"), ("kind", "Kind")],
-        "csv": ["dandiset", "kind", "statement", "paper_title"],
     },
 }
 
@@ -679,19 +661,17 @@ def page_list(data: dict, kind: str) -> str:
         "order": {"outcome": list(OUTCOMES), "has": list(OUTCOMES), "status": list(STATUS), "tier": list(TIERS)},
         "labels": {
             "outcome": outcome_labels, "has": {**outcome_labels, "(none)": "Not attempted"},
-            "blocked_by": {**BLOCKED_BY, "(none)": "Not blocked"},
+            "blocked_by": {**BLOCKED_BY, "(none)": "No blocked claim"},
             "tier": {**TIERS, "runs": "Not yet verified", "(none)": "Not attempted"},
-            "status": STATUS, "kind": FINDING_KINDS,
+            "status": STATUS, "found": {**FINDING_KINDS, "(none)": "None recorded"},
             "verifier": {"disagreed": "Disagreed at first", "(none)": "No disagreement"},
             "technique": {"(none)": "Not stated"}, "species": {"(none)": "Not stated"},
         },
     }
     export = '<button class="ghost" id="export" type="button">Download CSV</button>' if spec["csv"] else ""
-    caution = (f'<p class="small muted" style="margin-top:6px">{CAUTION} It may be a failure of the attempt. '
-               f'<a href="../#caution">More</a></p>' if kind == "claims" else "")
     body = f'''<header class="page">
   <h1>{e(spec["title"])}</h1>
-  <p class="sub">{spec["intro"]}</p>{caution}
+  <p class="sub">{spec["intro"]}</p>
 </header>
 <main class="layout">
   <details class="facets" id="facets" open><summary>Filters</summary><div id="facet-list"></div></details>
@@ -794,7 +774,7 @@ def page_dandiset(data: dict, dandiset: str) -> str:
 
     all_findings = [f for a in atts for f in a["findings"]]
     findings_html = "".join(
-        f'<li><span><a class="kind" href="{root}findings/?kind={e(f["kind"])}">'
+        f'<li><span><a class="kind" href="{root}dandisets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{e(f["statement"])}</span></li>'
         for f in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
 
@@ -936,7 +916,7 @@ def build(data: dict, output: Path) -> None:
     r = rows_cache(data)
     output.mkdir(parents=True, exist_ok=True)
     shutil.copytree(ASSETS, output / "assets", dirs_exist_ok=True)
-    for sub in ("dandisets", "claims", "findings", "data", "api/dandiset"):
+    for sub in ("dandisets", "data", "api/dandiset"):
         (output / sub).mkdir(parents=True, exist_ok=True)
     (output / "index.html").write_text(page_overview(data))
     for kind in LISTS:

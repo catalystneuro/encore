@@ -163,9 +163,11 @@ The public site is static and is built from the files above by
 - **Overview:** headline numbers, outcomes overall and by technique, why claims
   were blocked, findings by kind, and verification. Every number and bar links
   to the matching filtered list.
-- **Dandisets, Claims, Findings:** three lists over all attempts, each with
-  filters, search, sorting and pagination. The view is kept in the URL, so any
-  filtered list can be linked.
+- **Dandisets:** a list of every target, with filters (status, outcomes of
+  its claims, why claims were blocked, verification, kinds of finding,
+  technique, species), search, sorting and pagination. The view is kept in the
+  URL, so any filtered list can be linked. Each attempted dandiset links to
+  its findings.
 - **A page per attempted dandiset** at `dandisets/<id>/`, with tabs for claims,
   findings, verification, method differences and provenance. It is complete
   HTML and is the page an archive would link to. Each claim has its own anchor.
