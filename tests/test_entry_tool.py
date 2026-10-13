@@ -176,3 +176,8 @@ def test_handover_removes_the_conclusions(repo):
     sources = [c.source for c in nbformat.read(out / "analysis.ipynb", as_version=4).cells]
     assert sources == [nb.cells[0].source, "Data check note."]
     assert (out / "demo.yaml").is_file()
+
+
+def test_invalid_yaml_in_an_attempt_is_reported(repo):
+    (repo / "attempts" / "broken.yaml").write_text("notes: Confirmed: no\n  x: [\n")
+    assert any("broken.yaml: not valid YAML" in e for e in errors(repo))
