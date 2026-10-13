@@ -23,6 +23,9 @@ Where parameters come from:
 - WUC similarity: rsatoolbox's "cosine_cov" method, which the authors' code
   uses.
 - MIN_RATE_TUNING, 0.1 Hz: the paper's methods for the tuning analysis.
+- The layout of the cue grid (grid_coordinates): three rows and four columns
+  from the paper's Figure 1a legend; the order of the index on it is not in the
+  files or the paper, so two orders are offered.
 - BIN, 50 ms bins from -1 to 3 s, and the 200 ms decoding window of the
   alignment check: a common choice, not from the paper.
 
@@ -41,7 +44,7 @@ from dataclasses import dataclass
 import numpy as np
 import pandas as pd
 from sklearn.covariance import OAS
-from sklearn.model_selection import StratifiedKFold
+from sklearn.model_selection import GroupKFold, StratifiedKFold
 
 DANDISET = "000147"
 VERSION = "0.221122.2256"
@@ -65,7 +68,7 @@ MODEL_URL = ("https://raw.githubusercontent.com/AndersenLab-Caltech/fingers_rsa/
 @dataclass
 class Session:
     name: str                 # e.g. "2018-09-17a"
-    trials: pd.DataFrame      # one row per trial: run, finger, finger_pred, cue_location, start_time
+    trials: pd.DataFrame      # one row per trial: run, trial_number, screen, finger, finger_pred, cue_location, ...
     counts: np.ndarray        # spikes in WINDOW, shape (trials, units)
     binned: np.ndarray        # spikes in BIN_EDGES bins around the cue, shape (trials, units, bins)
     info: dict                # values read from the file, for the data check
@@ -116,11 +119,17 @@ def load_session(name: str, url: str) -> Session:
                                "stop_time": f["intervals/epochs/stop_time"][:],
                                "run": f["intervals/epochs/Run"][:].astype(int)})
         info = {
+            "trial_column_descriptions": {k: tr[k].attrs.get("description", "") for k in _text(tr.attrs["colnames"])},
+            "units_columns": _text(units.attrs["colnames"]),
             "session_description": f["session_description"][()].decode(),
             "session_id": f["general/session_id"][()].decode(),
             "subject_id": f["general/subject/subject_id"][()].decode(),
         }
 
+    # The paper's methods: each screen shows the 12 grid positions, and each is cued once
+    # (12 trials) before the next screen. Screen and position within it are counted per run.
+    trials["screen"] = (trials.trial_number - 1) // 12
+    trials["position_in_screen"] = (trials.trial_number - 1) % 12
     starts = trials.start_time.to_numpy()
     n_units = len(index)
     counts = np.zeros((len(trials), n_units), dtype=np.int32)
@@ -160,6 +169,7 @@ def load_session(name: str, url: str) -> Session:
               & (epochs.stop_time >= row["last"] - 1e-6)).any())
         for r, row in run_bounds.iterrows()]
     window_rate = counts.sum(axis=0) / (len(trials) * (WINDOW[1] - WINDOW[0]))
+    recorded = float((first[:, 1] - first[:, 0]).sum())
     info.update({
         "n_units": n_units,
         "n_spikes": int(len(spikes)),
@@ -178,6 +188,7 @@ def load_session(name: str, url: str) -> Session:
         "runs_inside_epochs": f"{sum(run_in_epoch)} of {len(run_in_epoch)}",
         "window_rate_hz_median": round(float(np.median(window_rate)), 2),
         "window_rate_hz_range": (round(float(window_rate.min()), 3), round(float(window_rate.max()), 1)),
+        "session_rate_hz": np.diff(index, prepend=0) / recorded,   # all spikes over the observation intervals
     })
     return Session(name=name, trials=trials, counts=counts, binned=binned, info=info)
 
@@ -190,8 +201,9 @@ def load_all(version: str = VERSION) -> list[Session]:
         return list(pool.map(lambda kv: load_session(*kv), urls.items()))
 
 
-def load_model_rdm(name: str) -> np.ndarray:
-    """A model RDM from the authors' repository, as a vector in PAIRS order."""
+def load_model_rdm(name: str) -> tuple[np.ndarray, list[str]]:
+    """A model RDM from the authors' repository, as a vector in PAIRS order, and the
+    condition order stored in the file (which must be FINGERS)."""
     import h5py
 
     url = MODEL_URL.format(urllib.parse.quote(name))
@@ -199,10 +211,23 @@ def load_model_rdm(name: str) -> np.ndarray:
         data = response.read()
     with h5py.File(io.BytesIO(data), "r") as f:
         vector = f["dissimilarities"][0]
-        if "pattern_descriptors/condition" in f:
-            order = _text(f["pattern_descriptors/condition"][:])
-            assert order == FINGERS, f"model {name} has conditions {order}"
-    return np.asarray(vector, dtype=float)
+        key = next(k for k in ["condition", "finger"] if f"pattern_descriptors/{k}" in f)
+        order = _text(f[f"pattern_descriptors/{key}"][:])
+    assert order == FINGERS, f"model {name} has conditions {order}"
+    return np.asarray(vector, dtype=float), order
+
+
+def grid_coordinates(cue_location: np.ndarray, layout: str) -> np.ndarray:
+    """Column and row (x, y) of a cue location index 1 to 12 on the grid of three rows and
+    four columns (the paper's Figure 1a legend). The files do not say how the index maps
+    onto the grid, so the layout is an assumption: "row-major" numbers along the rows,
+    "column-major" down the columns. A flip of either axis does not change a linear fit."""
+    i = np.asarray(cue_location) - 1
+    if layout == "row-major":
+        return np.column_stack([i % 4, i // 4]).astype(float)
+    if layout == "column-major":
+        return np.column_stack([i // 3, i % 3]).astype(float)
+    raise ValueError(layout)
 
 
 # --- classification -------------------------------------------------------------
@@ -222,15 +247,20 @@ def diag_lda_predict(X: np.ndarray, means: np.ndarray, var: np.ndarray, classes)
     return np.asarray(classes)[np.argmin(d, axis=1)]
 
 
-def diag_lda_cv(X: np.ndarray, y: np.ndarray, folds: int | None = None, rng=None) -> np.ndarray:
+def diag_lda_cv(X: np.ndarray, y: np.ndarray, folds: int | None = None, rng=None,
+                groups: np.ndarray | None = None) -> np.ndarray:
     """Cross-validated diagonal LDA predictions. folds=None is leave-one-out.
 
+    With `groups`, the folds are GroupKFold folds, so that no group (for example a
+    screen of the grid task) is split between training and test sets.
     Equal class priors; the classes here are balanced. Features with zero
     within-class variance in the training set are ignored.
     """
     classes = np.unique(y)
     pred = np.empty(len(y), dtype=y.dtype)
-    if folds is None:
+    if groups is not None:
+        splits = GroupKFold(folds).split(X, y, groups)
+    elif folds is None:
         splits = [(np.delete(np.arange(len(y)), i), np.array([i])) for i in range(len(y))]
     else:
         seed = None if rng is None else int(rng.integers(2**31))

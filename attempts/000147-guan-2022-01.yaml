@@ -64,16 +64,27 @@ outcomes:
   measured: 0.8789
   notes: With FDR correction over all units and fingers pooled, 87.9% of 958 units are tuned to at
     least one finger. FDR within each session gives 87.5%, within each unit 83.9%, and no
-    correction 91.7%. No unit fell below the 0.1 Hz cutoff.
+    correction 91.7%. No unit fell below the 0.1 Hz cutoff, whether the rate is taken in the
+    window over all trials (lowest 0.113 Hz) or over the whole recording (lowest 0.147 Hz).
   deviations:
   - The FDR family is not stated in the paper; the measured value pools all units and fingers.
   - Student's t-test with equal variances; the paper does not say which form of the t-test.
 - claim: fig1s6a-gaze-regression
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The trials table gives the cue location as an index from 1 to 12 on the 3 by 4 grid, with
-    no description and no map to screen coordinates, so the x and y coordinates cannot be
-    regressed on.
+  notebook: reproduce_guan_2022.ipynb
+  output: claim:fig1s6a-gaze-regression
+  notes: The trials table gives the cue location as an index from 1 to 12 on the grid of three rows
+    and four columns, described only as a screen location index, with no map to the grid or to
+    screen coordinates. As a check, the coordinates were regressed on spike counts under the two
+    plain orders of the index. Ordinary least squares gives a cross-validated r2 below 0 for both
+    coordinates in all ten sessions under both orders. Ridge regression gives r2 up to 0.097 for x
+    and 0.104 for y, with both coordinates at or below 0.05 in 5 (row order) or 6 (column order)
+    of the ten sessions. The result depends on the regression as well as on the unknown layout.
+  deviations:
+  - The check assumes the index runs along the rows or down the columns; neither is documented.
+  - The paper does not say whether its regression was regularised, so both ordinary least squares
+    and ridge regression are shown, each with eight unshuffled folds per session.
 - claim: fig1s6b-gaze-classification
   outcome: not_reproduced
   notebook: reproduce_guan_2022.ipynb
@@ -82,7 +93,11 @@ outcomes:
     (binomial p = 1e-12), above all 500 label shuffles across trials (highest 10.0%) and all 500
     shuffles within finger (highest 10.2%). The authors' classifier gives 11.2%, and removing each
     finger's mean activity first gives 11.7%. Five of the ten sessions are above chance at
-    p < 0.05. The cued finger is classified at 93.4% from the same features.
+    p < 0.05. With folds that never split a screen the accuracy is 11.1%, above all 200 shuffles of
+    location within screens (highest 9.8%), and with folds that never split a run it is 11.3%.
+    Every screen cues each location once; location and position within the screen are weakly
+    associated over all trials (chi-square p = 0.037). The cued finger is classified at 93.4% from
+    the same features.
   deviations:
   - Eight stratified folds within each session; the paper does not say how this classifier was
     cross-validated, and the authors' code uses eight folds for its classifiers.
@@ -147,11 +162,15 @@ outcomes:
   notes: The session by model interaction is t(16) = 1.47, one-tailed p = 0.080 toward the
     unstructured model (paper t(6) = 0.50, p = 0.32). The WUC with the PC-IP model alone declines
     across sessions (slope -0.009 per session, p = 0.038); the slopes for the unstructured and MC
-    models are not significant (p = 0.20 and 0.23).
+    models are not significant (p = 0.20 and 0.23). In other specifications the trend is also not
+    significant. The same t read with 6 degrees of freedom gives p = 0.096; the difference between
+    the unstructured and PC-IP fits regressed on session gives t(8) = 1.30, p = 0.116; with the MC
+    model in place of PC-IP the slope is negative (p = 0.84).
   deviations:
   - Ordinary least squares on the twenty session-by-model WUC values, with sixteen residual degrees
     of freedom. The paper's t(6) implies a different model or degrees of freedom, which it does
     not describe, and its code for this test is not in the repository.
+  - Three specifications are shown, since the paper's t(6) is not explained.
   - No Bayes factor is computed.
 - claim: fig3b-confused-pairs-no-increase
   outcome: reproduced
@@ -174,7 +193,8 @@ outcomes:
   notebook: reproduce_guan_2022.ipynb
   output: claim:fig3s1-all-pairs-small-decrease
   notes: Over all ten pairs the session and run coefficients are negative in all six estimates, and
-    Cohen's f2 is 0.006 for session and 0.012 for run (paper 0.008 and 0.005). In the main
+    Cohen's f2 is 0.006 for session and 0.012 for run in the main regression, and 0.017 and 0.013
+    with the session's noise covariance (paper 0.008 and 0.005). In the main
     regression the session decrease is t(8) = -2.28, p = 0.052, and the run decrease t(83) = -3.12,
     p = 0.0025. With the session's noise covariance they are t(8) = -3.76, p = 0.0055, and
     t(83) = -3.29, p = 0.0015, against the paper's t(8) = -4.0, p = 0.004, and t(82) = -2.4,
@@ -183,7 +203,9 @@ outcomes:
   - The same regression and choices as fig3b-confused-pairs-no-increase.
   - The session decrease is significant at 0.05 only in the variant with the session's noise
     covariance; the pre-registered criterion asks for negative coefficients and small effect
-    sizes, not significance.
+    sizes, not significance. The per-run fold covariance inflates the distances of the main
+    regression, so the variant with the session's covariance is the better estimate of the
+    session term.
 - claim: fig4e-muscle-before-somatotopy
   outcome: blocked
   blocked_by: data_missing
@@ -198,7 +220,8 @@ outcomes:
 - claim: fig4s4-well-isolated-units
   outcome: blocked
   blocked_by: data_missing
-  notes: The units table has spike times, observation intervals and electrodes only. There are no
+  notes: The units table has spike times, observation intervals, electrodes and electrode groups
+    only, the same in every file. There are no
     waveforms, features or L-ratio values from which to select well-isolated units, and the
     representational dynamics part also needs the missing component models.
 findings:
@@ -220,9 +243,10 @@ findings:
     times give the same counts, but tools that assume ascending spike times could be misled near
     run boundaries.
 - kind: other
-  statement: The cue location is an index from 1 to 12 with no description and no map to the 3 by
-    4 grid on the screen. The trials table's Run and TrialNumber columns have no description, and
-    the start time is not described as the cue onset, though the data show that it is.
+  statement: The cue location is an index from 1 to 12, described as the screen location index of
+    the cue, with no map to the grid of three rows and four columns or to screen coordinates. The
+    trials table's Run and TrialNumber columns read "no description", and the start time has only
+    the NWB default description, though the data show that it is the cue onset.
 - kind: other
   statement: Electrode coordinates and impedances are missing (NaN), and the participant is
     identified as P1 in the files and as NS in the paper.
@@ -233,3 +257,160 @@ findings:
   statement: The two published versions hold the same ten files. The earlier version, which the
     authors' download script pins, names the bioRxiv preprint; the later one names the eLife paper.
     Neither says which of the paper's tasks the data cover.
+verifications:
+- date: 2026-10-13
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the
+    helper module, the claims file and the paper's full text (PMC9555862). For the blocked claims
+    the verifier checked the archive's asset list and metadata and the authors' repository.
+  results:
+  - claim: recording-counts
+    agrees: true
+    outcome: reproduced
+    reason: 95.8 (SD 6.7) units and 408.0 (SD 40.8) trials per session, 4080 trials in total.
+  - claim: fig1b-online-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: 0.8596 over 4016 trials, trial-weighted SD 0.036. The shuffle null has mean 0.169,
+      agreeing with the paper's chance level of 17%. Session 1 has 64 No-Go trials, not the 84 in
+      the Methods, and 4080 minus 64 matches the paper's own total.
+  - claim: fig1b-errors-middle-ring-pinky
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced under one reading. 264/379 = 0.697 when the denominator is errors between two
+      fingers; 0.468 with all errors and 0.592 with errors on finger trials. The paper does not
+      name the denominator, but only the first reading gives "the majority (70%)". Listed as a
+      problem affecting a conclusion, since the outcome depends on an assumed definition.
+    response: No change. The dependence on the denominator was already recorded as a deviation and
+      all three fractions are printed. The outcome is kept because only one reading gives the
+      paper's figure.
+  - claim: fig1s4a-offline-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Diagonal LDA with leave-one-out gives 0.934 (SD 0.016) over 4080 trials, within 0.02
+      of 0.92. The authors' 8-fold pipeline gives 0.924.
+  - claim: fig1s4b-calibration-accuracy
+    agrees: true
+    outcome: blocked
+    reason: The archive has 10 assets, all with the session description "individual-finger press,
+      main task", and the trial counts (4080) match the main task only.
+  - claim: fig1s5-tuned-fraction
+    agrees: true
+    outcome: reproduced
+    reason: 0.879 with FDR over all units pooled (0.875 with FDR per session), against 0.89 plus or
+      minus 0.05. No units fell below 0.1 Hz. The 0.1 Hz exclusion uses the in-window rate, while
+      the paper may mean the session-wide rate (does not affect a conclusion).
+    response: Added the rate over the whole recording. Its lowest value is 0.147 Hz, so no unit is
+      excluded by either definition.
+  - claim: fig1s6a-gaze-regression
+    agrees: true
+    outcome: blocked
+    reason: Blocked (metadata_insufficient), partly testable. cue_location is a 1 to 12 index with
+      no map to screen coordinates, and the authors' repo config also lists only 1 to 12. The
+      regression could have been run under row-major and column-major 3 by 4 layouts. Given 1s6b,
+      it is not safe to assume r2 is about 0.
+    response: Added the regression under both layouts, with ordinary least squares and with ridge
+      regression. OLS gives r2 below 0 in all sessions; ridge gives up to 0.104, with both
+      coordinates at or below 0.05 in 5 or 6 of ten sessions. The outcome stays blocked, since the
+      layout is unknown and the result depends on the regression.
+  - claim: fig1s6b-gaze-classification
+    agrees: true
+    outcome: not_reproduced
+    reason: Pooled cue-location accuracy is 0.1154, above the shuffle null's 95% range of 0.0755 to
+      0.0944, with 0 of 500 shuffles reaching it; the within-finger null and finger-mean removal
+      give the same picture, and 5 of 10 sessions have binomial p < 0.05. The effect is small (11.5%
+      against 8.3%), but the criterion fails. Screen- or run-level location counts and location
+      accuracy with folds split by screen were not shown, which would rule out a temporal-structure
+      artefact, though the design makes one unlikely.
+    response: Added the screen structure (all 340 screens cue each location once), a test of
+      location against position within the screen (p = 0.037), and accuracy with folds that never
+      split a screen (11.1%, above all 200 within-screen shuffles, highest 9.8%) or a run (11.3%).
+      The outcome is unchanged.
+  - claim: fig1s6c-control-task
+    agrees: true
+    outcome: blocked
+    reason: The control task is not in any of the 10 assets.
+  - claim: fig2d-rdm-structure
+    agrees: true
+    outcome: reproduced
+    reason: The largest of the middle, ring and pinky distances is 0.482 and the smallest thumb
+      distance 0.641 (max-scaled). The criterion holds in 9 of 10 individual sessions.
+  - claim: fig2f-able-bodied-over-unstructured
+    agrees: true
+    outcome: reproduced
+    reason: The WUC difference is 0.0998, bootstrap 95% CI 0.074 to 0.127, higher in 10 of 10
+      sessions. The bootstrap t-test is a reconstruction, but the criteria use CIs, so outcomes are
+      unaffected. The condition-order assert in load_model_rdm runs only if
+      pattern_descriptors/condition exists, and the notebook never prints whether it did (does not
+      affect a conclusion).
+    response: load_model_rdm now reads the condition order from either descriptor the files use
+      (condition or finger), fails if neither is present, and the data check prints it. It is T, I,
+      M, R, P in all three model files. The bootstrap test is unchanged.
+  - claim: fig2s5-mc-over-pcip
+    agrees: true
+    outcome: reproduced
+    reason: MC minus PC-IP CI is 0.060 to 0.112. Mean WUC with MC is 0.969 against a lower noise
+      ceiling of 0.984 (margin -0.015, within the criterion's -0.05). It reaches the lower ceiling
+      in only 1 of 10 sessions. The p-value is 7.9e-5 against the paper's 1.9e-6.
+  - claim: fig2-typical-among-individuals
+    agrees: true
+    outcome: blocked
+    reason: Individual-participant fMRI RDMs are in neither the dandiset nor the authors' archived
+      repo, whose models folder holds only the MC, PC-IP and unstructured files.
+  - claim: rdm-consistency
+    agrees: true
+    outcome: reproduced
+    reason: Borderline. Mean r = 0.928 (SD 0.041, min 0.817, max 0.990) against 0.90 plus or minus
+      0.03.
+  - claim: fig3a-no-trend-to-unstructured
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, weakly. The interaction t(16) = 1.47, one-tailed p = 0.080, meets the
+      criterion, but the statistic is three times the paper's t(6) = 0.50, the p-value is near the
+      threshold, and WUC with PC-IP itself falls over sessions (p = 0.038). The df and the model
+      specification may differ from the authors', and a slightly different specification could
+      cross 0.05.
+    response: Added two other specifications and the main t read with 6 df. The one-tailed p is
+      0.096 with 6 df, 0.116 for the difference between the unstructured and PC-IP fits regressed
+      on session, and 0.84 with the MC model. None crosses 0.05, so the outcome is kept. The
+      authors' exact specification could not be checked; their code for this test is not in the
+      repository.
+  - claim: fig3b-confused-pairs-no-increase
+    agrees: true
+    outcome: reproduced
+    reason: The session coefficient is negative (t = -3.56, one-tailed p = 0.996) and so is the run
+      coefficient (t = -1.05, p = 0.85); the same holds in all variants. The run-term df is 83
+      against the paper's 82, and the paper also reports t(74) for the same test (does not affect
+      a conclusion).
+    response: No change to the df; the dandiset has 85 runs, as already recorded.
+  - claim: fig3s1-all-pairs-small-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced on the criterion; significance only partly. Both coefficients are negative
+      and f2 is 0.0064 and 0.0119. The paper's significant session decrease appears only with the
+      session noise covariance (p = 0.0055); in the main variant p = 0.052. Per-run RDMs use fold
+      covariances from about 8 trials, of rank about 3 across about 95 units, so OAS shrinks toward
+      a tiny identity and the distances inflate (5.06 against 0.68); directions are unchanged, but
+      the significance of the session term depends on the variant.
+    response: Added f2 for the session-covariance variant (0.017 and 0.013, still below 0.02). The
+      conclusion now says that the per-run fold covariance inflates the distances and that the
+      session-covariance variant is the better estimate of the session term. The main regression
+      is kept as it was pre-registered; the outcome is unchanged.
+  - claim: fig4e-muscle-before-somatotopy
+    agrees: true
+    outcome: blocked
+    reason: The Muscle, Somatomorphic and Usage RDMs are named in the repo's configs, but the .hdf5
+      files are gitignored and not in the archived commit or the dandiset.
+  - claim: fig4s1-model-selection
+    agrees: true
+    outcome: blocked
+    reason: Same component models missing.
+  - claim: fig4s4-well-isolated-units
+    agrees: true
+    outcome: blocked
+    reason: The asset metadata lists only Units and ElectrodeGroup as measured variables; no
+      waveforms or L-ratio are described. Printing the units table's columns would have confirmed
+      the block directly.
+    response: The data check now prints the units table's columns, the same in every file
+      (spike_times, obs_intervals, electrodes, electrode_group).
