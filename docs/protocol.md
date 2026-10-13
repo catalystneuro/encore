@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-1`. Record this version in the attempt's provenance.
+Version: `pilot-2`. Record this version in the attempt's provenance.
 
 This is what an agent, or a person, does to attempt a target and deposit the
 result. It is written from the first two pilot attempts
@@ -40,7 +40,10 @@ Do this before any analysis.
 Descriptive metadata is often wrong. For every quantity the analysis uses,
 check the description against the values: units and ranges, sampling rates,
 counts of subjects, sessions, trials and cells, the size of an arena, which
-conditions exist. Where they disagree, trust the data, say so in the notebook,
+conditions exist. Show that every data stream shares the clock of the trial
+tables, using a contrast between conditions where an overall check cannot
+tell a response from an offset, and name any session where this could not be
+established. Where they disagree, trust the data, say so in the notebook,
 and record it as a finding.
 
 ### 3. Write the entry
@@ -53,7 +56,8 @@ module.
   download files to disk or read local paths.
 - **Compute every result from the data.** No embedded numbers, arrays or
   images, and no figures read from files.
-- **Fix every random seed.**
+- **Fix every random seed**, and give each claim's section its own generator,
+  so that adding a cell earlier does not change its numbers.
 - **Put loading and reusable measures in a helper module**, so later notebooks
   on the dandiset can import it. Say in its docstring where a parameter comes
   from: the paper's methods, or a common choice when the methods were not
@@ -106,6 +110,10 @@ Write `attempts/<entry name>-<nn>.yaml`.
     part.
   - `not_reproduced`: the analysis ran and the result differs.
   - `blocked`: the claim could not be tested; give `blocked_by` and say why.
+    When the paper states a chance level or false-positive rate for a
+    selection, compute it with your procedure. If yours is far from the
+    paper's, the procedures differ, and the outcome is `blocked` with
+    `methods_underspecified` even though the analysis ran.
 - **`deviations`**: every way the test differed from the paper's method or
   data. One session of four, a substituted model, a threshold the paper does
   not state.
@@ -134,7 +142,8 @@ Do not verify your own attempt. Give the verifier:
 
 After the first round, fix what it found, re-run, and hand over the full
 executed notebook for the second round. Record each round under
-`verifications`, saying what was reviewed. An outcome the verifier disagrees
+`verifications`, saying what was reviewed. Give the verifier's reasons in its
+own words, and what you changed in reply under `response`. An outcome the verifier disagrees
 with is either changed, with the reason, or left with the disagreement
 recorded.
 
