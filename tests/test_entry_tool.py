@@ -1,0 +1,129 @@
+"""Tests for tools/entry.py: the checks a deposit has to pass."""
+
+from __future__ import annotations
+
+import shutil
+import sys
+from pathlib import Path
+
+import nbformat
+import pytest
+import yaml
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "tools"))
+
+import entry as tool  # noqa: E402
+
+ENTRY = {
+    "schema_version": 1, "name": "demo", "type": "reproduction", "title": "Demo",
+    "description": "A demo entry.", "license": "Apache-2.0",
+    "notebooks": [{"path": "analysis.ipynb"}],
+    "related": [{"id": "dandi:000001", "relation": "uses_data"},
+                {"id": "doi:10.1000/demo", "relation": "reproduces"}],
+}
+CLAIMS = {"schema_version": 1, "dandiset": "000001", "paper": "doi:10.1000/demo",
+          "claims": [{"id": "fig1", "statement": "Something rises.", "source": "Figure 1"}]}
+ATTEMPT = {
+    "schema_version": 1, "id": "demo-01", "dandiset": "000001", "paper": "doi:10.1000/demo",
+    "date": "2026-10-13", "entry": "demo",
+    "provenance": {"kind": "agent", "accountable": {"name": "Someone"},
+                   "agent": {"harness": "h", "model": "m", "protocol": "p"}},
+    "outcomes": [{"claim": "fig1", "outcome": "reproduced", "notebook": "analysis.ipynb",
+                  "output": "claim:fig1"}],
+}
+
+
+def notebook(code: str, tags=("claim:fig1",), outputs=False):
+    nb = nbformat.v4.new_notebook()
+    cell = nbformat.v4.new_code_cell(code)
+    cell.metadata["tags"] = list(tags)
+    if outputs:
+        cell.outputs = [nbformat.v4.new_output("stream", name="stdout", text="1\n")]
+        cell.execution_count = 1
+    nb.cells.append(cell)
+    return nb
+
+
+@pytest.fixture
+def repo(tmp_path, monkeypatch):
+    """A minimal registry with one valid entry, its claims and one attempt."""
+    shutil.copytree(REPO / "schemas", tmp_path / "schemas")
+    entry_dir = tmp_path / "entries" / "demo"
+    entry_dir.mkdir(parents=True)
+    (entry_dir / "entry.yaml").write_text(yaml.safe_dump(ENTRY))
+    (entry_dir / "requirements.in").write_text("numpy\n")
+    (entry_dir / "requirements.lock.txt").write_text("numpy==2.0.0\n")
+    nbformat.write(notebook('DANDISET = "000001"\nprint(1)'), entry_dir / "analysis.ipynb")
+    (tmp_path / "claims" / "000001").mkdir(parents=True)
+    (tmp_path / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(CLAIMS))
+    (tmp_path / "attempts").mkdir()
+    (tmp_path / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(ATTEMPT))
+    monkeypatch.setattr(tool, "ROOT", tmp_path)
+    return tmp_path
+
+
+def errors(repo: Path) -> list[str]:
+    return tool.check(repo / "entries" / "demo").errors
+
+
+def test_a_valid_entry_passes(repo):
+    assert errors(repo) == []
+
+
+def test_an_unlisted_notebook_is_an_error(repo):
+    nbformat.write(notebook('"000001"'), repo / "entries" / "demo" / "extra.ipynb")
+    assert any("extra.ipynb: notebook is not listed" in e for e in errors(repo))
+
+
+def test_committed_outputs_are_an_error(repo):
+    nbformat.write(notebook('"000001"', outputs=True), repo / "entries" / "demo" / "analysis.ipynb")
+    assert any("without outputs" in e for e in errors(repo))
+
+
+def test_a_notebook_must_name_its_dandiset(repo):
+    nbformat.write(notebook("print(1)"), repo / "entries" / "demo" / "analysis.ipynb")
+    assert any("names dandiset 000001" in e for e in errors(repo))
+
+
+def test_a_helper_may_name_the_dandiset(repo):
+    entry_dir = repo / "entries" / "demo"
+    nbformat.write(notebook("import helper"), entry_dir / "analysis.ipynb")
+    (entry_dir / "helper.py").write_text('DANDISET = "000001"\n')
+    (entry_dir / "entry.yaml").write_text(yaml.safe_dump({**ENTRY, "helpers": ["helper.py"]}))
+    assert errors(repo) == []
+
+
+@pytest.mark.parametrize("code, message", [
+    ('"000001"\nx = [' + ", ".join(["0.5"] * 300) + "]", "literal of more than"),
+    ('"000001"\nimg = plt.imread("figure2.png")', "reads an image file"),
+    ('"000001"\nsrc = "data:image/png;base64,AAAA"', "encoded image"),
+])
+def test_results_must_be_computed_from_the_data(repo, code, message):
+    nbformat.write(notebook(code), repo / "entries" / "demo" / "analysis.ipynb")
+    assert any(message in e for e in errors(repo))
+
+
+def test_an_unlocked_requirement_is_an_error(repo):
+    (repo / "entries" / "demo" / "requirements.in").write_text("numpy\nscipy\n")
+    assert any("scipy is required but not locked" in e for e in errors(repo))
+
+
+def test_an_attempt_must_point_at_a_known_claim_and_a_tagged_cell(repo):
+    attempt = {**ATTEMPT, "outcomes": [
+        {"claim": "fig9", "outcome": "reproduced", "notebook": "analysis.ipynb", "output": "claim:fig9"}]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    found = errors(repo)
+    assert any("claim 'fig9' is not in the claims file" in e for e in found)
+    assert any("no cell tagged 'claim:fig9'" in e for e in found)
+
+
+def test_a_blocked_outcome_needs_a_reason(repo):
+    attempt = {**ATTEMPT, "outcomes": [{"claim": "fig1", "outcome": "blocked"}]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert any("blocked_by" in e for e in errors(repo))
+
+
+def test_the_entry_name_must_match_its_directory(repo):
+    (repo / "entries" / "demo" / "entry.yaml").write_text(yaml.safe_dump({**ENTRY, "name": "other"}))
+    assert any("must match the directory name" in e for e in errors(repo))

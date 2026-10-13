@@ -4,17 +4,39 @@
   "description": "Draft. To be revised after the pilot. An attempt is recorded whether or not it produced a working notebook.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "id", "dandiset", "paper", "date", "provenance", "outcomes"],
+  "required": [
+    "schema_version",
+    "id",
+    "dandiset",
+    "paper",
+    "date",
+    "provenance",
+    "outcomes"
+  ],
   "properties": {
-    "schema_version": {"const": 1},
-    "id": {"type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"},
-    "dandiset": {"type": "string", "pattern": "^[0-9]{6}$"},
+    "schema_version": {
+      "const": 1
+    },
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+    },
+    "dandiset": {
+      "type": "string",
+      "pattern": "^[0-9]{6}$"
+    },
     "dandiset_version": {
       "description": "The version the attempt read, e.g. 0.220127.0436 or draft.",
       "type": "string"
     },
-    "paper": {"type": "string", "pattern": "^doi:10\\.[0-9]{4,9}/.+$"},
-    "date": {"type": "string", "format": "date"},
+    "paper": {
+      "type": "string",
+      "pattern": "^doi:10\\.[0-9]{4,9}/.+$"
+    },
+    "date": {
+      "type": "string",
+      "format": "date"
+    },
     "entry": {
       "description": "The entry this attempt produced (its name), if any.",
       "type": "string"
@@ -22,28 +44,53 @@
     "provenance": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["kind", "accountable"],
+      "required": [
+        "kind",
+        "accountable"
+      ],
       "properties": {
-        "kind": {"enum": ["agent", "person"]},
+        "kind": {
+          "enum": [
+            "agent",
+            "person"
+          ]
+        },
         "accountable": {
           "description": "The person or organisation responsible for this attempt.",
           "type": "object",
           "additionalProperties": false,
-          "required": ["name"],
+          "required": [
+            "name"
+          ],
           "properties": {
-            "name": {"type": "string"},
-            "orcid": {"type": "string", "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$"},
-            "ror": {"type": "string"}
+            "name": {
+              "type": "string"
+            },
+            "orcid": {
+              "type": "string",
+              "pattern": "^[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[0-9X]$"
+            },
+            "ror": {
+              "type": "string"
+            }
           }
         },
         "agent": {
           "description": "Required when kind is agent.",
           "type": "object",
           "additionalProperties": false,
-          "required": ["harness", "model", "protocol"],
+          "required": [
+            "harness",
+            "model",
+            "protocol"
+          ],
           "properties": {
-            "harness": {"type": "string"},
-            "model": {"type": "string"},
+            "harness": {
+              "type": "string"
+            },
+            "model": {
+              "type": "string"
+            },
             "protocol": {
               "description": "Version of the reproduction protocol the agent followed.",
               "type": "string"
@@ -59,26 +106,67 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["claim", "outcome"],
+        "required": [
+          "claim",
+          "outcome"
+        ],
         "properties": {
-          "claim": {"description": "Claim id from the target's claims file.", "type": "string"},
-          "outcome": {"enum": ["reproduced", "partially_reproduced", "not_reproduced", "blocked"]},
+          "claim": {
+            "description": "Claim id from the target's claims file.",
+            "type": "string"
+          },
+          "outcome": {
+            "enum": [
+              "reproduced",
+              "partially_reproduced",
+              "not_reproduced",
+              "blocked"
+            ]
+          },
           "blocked_by": {
             "description": "Required when outcome is blocked.",
-            "enum": ["data_missing", "metadata_insufficient", "methods_underspecified",
-                     "data_unreadable", "too_large", "other"]
+            "enum": [
+              "data_missing",
+              "metadata_insufficient",
+              "methods_underspecified",
+              "data_unreadable",
+              "too_large",
+              "other"
+            ]
           },
           "notes": {
             "description": "What differs, or what was missing, stated factually.",
             "type": "string"
           },
-          "notebook": {"description": "Path of the notebook within the entry.", "type": "string"},
-          "output": {"description": "Which output shows the result, e.g. a cell tag.", "type": "string"},
-          "measured": {"description": "The value obtained, for claims with an expected value.", "type": "number"}
+          "notebook": {
+            "description": "Path of the notebook within the entry.",
+            "type": "string"
+          },
+          "output": {
+            "description": "Which output shows the result, e.g. a cell tag.",
+            "type": "string"
+          },
+          "measured": {
+            "description": "The value obtained, for claims with an expected value.",
+            "type": "number"
+          }
         },
         "allOf": [
-          {"if": {"properties": {"outcome": {"const": "blocked"}}},
-           "then": {"required": ["blocked_by", "notes"]}}
+          {
+            "if": {
+              "properties": {
+                "outcome": {
+                  "const": "blocked"
+                }
+              }
+            },
+            "then": {
+              "required": [
+                "blocked_by",
+                "notes"
+              ]
+            }
+          }
         ]
       }
     },
@@ -87,30 +175,88 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["date", "kind", "by", "results"],
+        "required": [
+          "date",
+          "kind",
+          "by",
+          "results"
+        ],
         "properties": {
-          "date": {"type": "string", "format": "date"},
-          "kind": {"enum": ["agent", "person", "paper_author"]},
-          "by": {"type": "string"},
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "kind": {
+            "enum": [
+              "agent",
+              "person",
+              "paper_author"
+            ]
+          },
+          "by": {
+            "type": "string"
+          },
           "results": {
             "type": "array",
             "items": {
               "type": "object",
               "additionalProperties": false,
-              "required": ["claim", "agrees"],
+              "required": [
+                "claim",
+                "agrees"
+              ],
               "properties": {
-                "claim": {"type": "string"},
-                "agrees": {"type": "boolean"},
-                "reason": {"type": "string"}
+                "claim": {
+                  "type": "string"
+                },
+                "agrees": {
+                  "type": "boolean"
+                },
+                "reason": {
+                  "type": "string"
+                },
+                "outcome": {
+                  "description": "The outcome the verifier would give.",
+                  "enum": [
+                    "reproduced",
+                    "partially_reproduced",
+                    "not_reproduced",
+                    "blocked"
+                  ]
+                }
               }
             }
+          },
+          "reviewed": {
+            "description": "What was reviewed, e.g. a commit, when the attempt changed afterwards.",
+            "type": "string"
           }
         }
       }
     }
   },
   "allOf": [
-    {"if": {"properties": {"provenance": {"properties": {"kind": {"const": "agent"}}}}},
-     "then": {"properties": {"provenance": {"required": ["agent"]}}}}
+    {
+      "if": {
+        "properties": {
+          "provenance": {
+            "properties": {
+              "kind": {
+                "const": "agent"
+              }
+            }
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "provenance": {
+            "required": [
+              "agent"
+            ]
+          }
+        }
+      }
+    }
   ]
 }

@@ -186,7 +186,8 @@ if their authors want.
    small and varied. An
    agent attempts each with a person watching. The purpose is to learn which
    outcomes and blocking reasons actually occur and what a verifier needs.
-   The schemas below are revised from what the pilot shows.
+   The schemas below are revised from what the pilot shows. Lessons from
+   each attempt are collected in [`pilot-notes.md`](pilot-notes.md).
 2. **Deposit path.** Schemas, the automated gates, the agent contributor kit
    (one command that locks, lints and runs an entry locally, and a guide to
    the conventions).

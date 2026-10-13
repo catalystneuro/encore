@@ -1,0 +1,98 @@
+name: Check entries
+
+# Every push and pull request: the tooling's unit tests, and the metadata and
+# convention checks for every entry. Entries whose files changed are also
+# executed from a clean environment built from their lock file.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      entry:
+        description: "Run this entry (its directory name); empty to run none"
+        default: ''
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    outputs:
+      entries: ${{ steps.changed.outputs.entries }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install --no-cache-dir uv pyyaml jsonschema nbformat pytest
+
+      - name: Unit tests
+        run: python -m pytest -q tests
+
+      - name: Check every entry
+        run: |
+          status=0
+          for dir in entries/*/; do
+            echo "::group::${dir}"
+            python tools/entry.py check "$dir" || status=1
+            echo "::endgroup::"
+          done
+          exit $status
+
+      - name: List the entries to run
+        id: changed
+        run: |
+          if [ '${{ github.event_name }}' = 'workflow_dispatch' ]; then
+            names='${{ inputs.entry }}'
+          else
+            if [ '${{ github.event_name }}' = 'pull_request' ]; then
+              base=$(git merge-base "origin/${{ github.base_ref }}" HEAD)
+            else
+              base='${{ github.event.before }}'
+              git cat-file -e "$base^{commit}" 2>/dev/null || base='HEAD~1'
+            fi
+            names=$(git diff --name-only "$base" HEAD -- entries | cut -d/ -f2 | sort -u)
+          fi
+          entries=$(for n in $names; do [ -f "entries/$n/entry.yaml" ] && echo "$n"; done \
+            | python -c "import json,sys; print(json.dumps(sys.stdin.read().split()))")
+          echo "entries=$entries" >> "$GITHUB_OUTPUT"
+          echo "Entries to run: $entries"
+
+  run:
+    needs: check
+    if: needs.check.outputs.entries != '[]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        entry: ${{ fromJSON(needs.check.outputs.entries) }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Install dependencies
+        run: pip install --no-cache-dir uv pyyaml jsonschema nbformat
+
+      - name: Execute the entry's notebooks
+        run: python tools/entry.py run "entries/${{ matrix.entry }}" --output-dir "$RUNNER_TEMP/executed"
+
+      - name: Keep the executed notebooks
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: executed-${{ matrix.entry }}
+          path: |
+            ${{ runner.temp }}/executed/*.ipynb
+            ${{ runner.temp }}/executed/result.json

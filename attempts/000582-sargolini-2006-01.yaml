@@ -1,0 +1,82 @@
+schema_version: 1
+id: 000582-sargolini-2006-01
+dandiset: "000582"
+dandiset_version: 0.251111.2151
+paper: doi:10.1126/science.1125572
+date: 2026-10-13
+entry: 000582-sargolini-2006
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: not recorded
+    protocol: pilot-0
+outcomes:
+- claim: layer2-grid
+  outcome: partially_reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:layer2-grid
+  notes: Layer II has the highest grid scores (median 0.33 against 0.10 in the deeper layers).
+    With a grid-score threshold of 0.3, 54% of layer II cell-sessions are grid cells, more than
+    in any other layer. Against the stricter chance level from shuffled spike trains (0.61), 22
+    of 70 (31%) are, the same as layer III (34%) and above layers V and VI (18% each). Whether
+    grid cells are the majority in layer II depends on the criterion, and the paper's was not
+    available (closed access). The dandiset is described as a sample without saying how cells
+    were selected, and most sessions last 10 minutes.
+- claim: deep-hd-conjunctive
+  outcome: reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:deep-hd-conjunctive
+  notes: Head-direction tuning above chance in 58% (layer III), 91% (V) and 73% (VI) of cells
+    against 12% in layer II, which holds within the one rat recorded in both. Conjunctive cells
+    are 62 of 396 in the deeper layers and 2 of 43 in layer II. Uses only the 71 sessions with
+    two tracking LEDs. Counts are of cell-sessions from few rats, so they are not independent.
+- claim: speed
+  outcome: reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:speed
+  notes: The correlation of firing rate with running speed has a positive median in every cell
+    type (0.28 to 0.58) against -0.06 for time-shifted spike trains, and 20% to 33% of cells in
+    each type pass the 95th percentile of the shuffles where 5% are expected. Tested for each
+    type as a population, not for each cell.
+verifications:
+- date: 2026-10-13
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: First draft, before the enclosure-size fix. The author's conclusions were withheld.
+  results:
+  - claim: layer2-grid
+    agrees: false
+    outcome: not_reproduced
+    reason: In that draft, 13 of 71 layer II cell-sessions passed the grid threshold, below layer
+      III. The verifier also pointed out that the 1 m enclosure was assumed and never checked.
+      That was a real error; 23 sessions used larger enclosures and the rate maps were clipping
+      them. The attempt was corrected.
+  - claim: deep-hd-conjunctive
+    agrees: true
+    outcome: reproduced
+  - claim: speed
+    agrees: true
+    outcome: reproduced
+    reason: At population level only. Asked for a shuffle control, which was added.
+- date: 2026-10-13
+  kind: agent
+  by: The same independent agent, second round
+  reviewed: The corrected notebook, with the author's conclusions.
+  results:
+  - claim: layer2-grid
+    agrees: true
+    outcome: partially_reproduced
+    reason: 22 of 70 layer II cell-sessions pass the shuffle threshold, level with layer III and
+      about twice layers V and VI; not a majority at that criterion. Flagged that the statistics
+      treat cell-sessions as independent and that the layer II cells come from few rats; a
+      per-rat table was added afterwards and was not reviewed.
+  - claim: deep-hd-conjunctive
+    agrees: true
+    outcome: reproduced
+  - claim: speed
+    agrees: true
+    outcome: reproduced
+    reason: At population level. 20% to 33% of cells per type pass a chance level that 5% should.
