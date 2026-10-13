@@ -14,6 +14,9 @@ one session of the paper's active/passive experiment.
 | Many neurons are fit poorly by one model across both conditions | Partially reproduced |
 | The better a neuron separates the conditions, the worse one model fits it | Partially reproduced |
 
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
 The whole-arm model here uses joint angles in place of the paper's arm markers, which are not
 in the dandiset. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/000127-chowdhury-2020-01.yaml`](../../attempts/000127-chowdhury-2020-01.yaml).

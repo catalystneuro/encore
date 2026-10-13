@@ -12,6 +12,21 @@ Status: pilot. Two targets have been attempted so far.
 
 **Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
 
+## Reading the outcomes
+
+An outcome says what one attempt could recover from the data in a dandiset,
+with the methods available to it. **A "not reproduced" or "partially
+reproduced" outcome is not a finding that the paper is wrong.** It can come
+from a mistake or a limitation in the agent's analysis, from methods the paper
+does not describe fully, from data that is not in the dandiset, or from a
+dandiset that differs from what the paper analysed. Most attempts here are
+made by AI agents. An attempt marked as verified has been checked by a second,
+independent agent, but neither is infallible. Each attempt records its reasoning, how its
+analysis differs from the paper's, and its code, so that anyone can check it.
+
+If you are an author of a paper listed here and think an attempt is wrong,
+please [open an issue](https://github.com/catalystneuro/reproduction-registry/issues).
+
 ## What is here
 
 - [`docs/design.md`](docs/design.md): the design, phasing and open decisions.

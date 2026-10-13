@@ -191,8 +191,11 @@ def attempt_card(a: dict) -> str:
             deviations = (f'<details class="deviations"><summary>{len(o["deviations"])} '
                           f'difference{"s" if len(o["deviations"]) != 1 else ""} from the paper\'s method'
                           f'</summary><ul>{items}</ul></details>')
+        caveat = ('<p class="caveat">This may reflect a limit of the attempt, not of the paper. '
+                  'Check the reasoning and the differences in method.</p>'
+                  if o["outcome"] in ("not_reproduced", "partially_reproduced") else "")
         claims.append(f'<li><div class="claim-head">{chip(o["outcome"])}{blocked}{source}</div>'
-                      f'<p class="statement">{e(o["statement"])}</p>{notes}{deviations}</li>')
+                      f'<p class="statement">{e(o["statement"])}</p>{notes}{caveat}{deviations}</li>')
     findings = "".join(
         f'<li><span class="kind">{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</span> {e(f["statement"])}</li>'
         for f in a["findings"])
@@ -253,6 +256,10 @@ a{color:var(--link)}
 .swatch{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:4px;margin-right:6px;
 color:#fff;font-size:.7rem;vertical-align:-3px}
 .swatch.warning{color:#0b0b0b}
+.caution{margin:18px 0 0;padding:14px 16px;border:1px solid var(--line);border-left:4px solid var(--warning);
+border-radius:8px;background:var(--panel);max-width:80ch;font-size:.93rem;color:var(--text2)}
+.caution p:last-child{margin-bottom:0}.caution strong{color:var(--text)}
+.caveat{font-size:.82rem;color:var(--muted);margin:4px 0 0}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px 20px;margin:0 0 16px}
 .claims,.findings{list-style:none;padding:0;margin:0}
 .claims li{border-top:1px solid var(--line);padding:12px 0}
@@ -346,6 +353,17 @@ def render(data: dict) -> str:
   <section aria-labelledby="h-outcomes">
     <h2 id="h-outcomes">Outcomes of the claims attempted</h2>
     {outcome_bar(data["outcome_counts"])}
+    <aside class="caution" role="note">
+      <p><strong>How to read these.</strong> An outcome says what one attempt could recover from the data in a
+      dandiset, with the methods available to it. A “not reproduced” or “partially reproduced” outcome
+      <strong>is not a finding that the paper is wrong</strong>. It can come from a mistake or a limitation in
+      the agent’s analysis, from methods the paper does not describe fully, from data that is not in the
+      dandiset, or from a dandiset that differs from what the paper analysed.</p>
+      <p>Most attempts are made by AI agents. Where a card says so, the attempt has been checked by a second,
+      independent agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs from the
+      paper’s. Authors who think an attempt is wrong can
+      <a href="{REPO_URL}/issues">open an issue</a>.</p>
+    </aside>
   </section>
   <section aria-labelledby="h-attempts">
     <h2 id="h-attempts">Attempts</h2>
@@ -368,8 +386,9 @@ def render(data: dict) -> str:
       <tbody>{"".join(body_rows)}</tbody></table></div>
   </section>
 </main>
-<footer>Generated {e(data["generated"][:10])} from the registry's files. Outcomes describe what could be
-reproduced from the data in the dandiset, with the methods available; they are not judgements of the papers.</footer>
+<footer>Generated {e(data["generated"][:10])} from the registry's files. Outcomes describe what one attempt
+could reproduce from the data in the dandiset, with the methods available. A failure to reproduce may be a
+failure of the agent, and is not a judgement of the paper.</footer>
 <script>{JS}</script>
 </body></html>
 '''

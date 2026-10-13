@@ -208,14 +208,18 @@ if their authors want.
 
 Each has a proposed default, used until decided otherwise.
 
-1. **Are failed attempts public?** Proposed: yes. They are the data-quality
-   result. Wording is factual and names the reason category.
+1. **Are failed attempts public?** Decided (2026-10-13): yes, and without
+   waiting to tell the authors first. Wording is factual and names the reason
+   category. The README, the dashboard and every entry with such an outcome
+   say that a failure to reproduce may be a failure of the agent and is not a
+   judgement of the paper.
 2. **Who is the author of an agent-written notebook?** Proposed: the person or
    organisation that ran the agent is the accountable party in provenance; the
    agent is recorded but is not an author. No DOI below `human_verified`, and
    the DOI's creators are the people who verified and take responsibility.
 3. **Are paper authors and data owners contacted?** Proposed: not during the
-   pilot. Afterwards, a report per dandiset that owners can opt into.
+   pilot. Afterwards, a report per dandiset that owners can opt into. Authors
+   who disagree with an attempt can open an issue on the repository.
 4. **Copyright of paper figures.** Proposed: store references (DOI and figure
    number) and the claim in words, not copies of figures. The verifier fetches
    the paper at check time.

@@ -9,6 +9,9 @@ on [DANDI:000582](https://dandiarchive.org/dandiset/000582/0.251111.2151).
 | Grid cells colocalized with head-direction and conjunctive cells in the deeper layers | Reproduced |
 | All cell types were modulated by running speed | Reproduced |
 
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
 The claims are from the paper's abstract; the paper is not open access and its full text and
 methods were not used. The attempt record, with the reasons, is
 [`attempts/000582-sargolini-2006-01.yaml`](../../attempts/000582-sargolini-2006-01.yaml).

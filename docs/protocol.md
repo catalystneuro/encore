@@ -115,6 +115,11 @@ Write `attempts/<entry name>-<nn>.yaml`.
 - **`provenance`**: who is accountable, and for an agent the harness, model
   and this protocol's version.
 
+If any outcome is `not_reproduced` or `partially_reproduced`, the entry's
+`README.md` and the notebook's summary carry this sentence: "A failure to
+reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method."
+
 ### 6. Hand over for verification
 
 Do not verify your own attempt. Give the verifier:
