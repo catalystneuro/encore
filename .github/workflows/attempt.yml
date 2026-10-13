@@ -163,7 +163,9 @@ jobs:
           python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" \
             --report "$out/transcripts/$DANDISET/$ROLE-report.md" --title "$name"
           if [[ "$ROLE" == author* ]]; then
-            git add -A && git diff --cached --binary > "$out/changes.patch"
+            # Only the registry's own files: the sandbox leaves placeholder files for the paths it
+            # protects (.bashrc, .gitconfig, ...) in the working directory.
+            git add -A -- attempts claims entries README.md && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
           fi
           rm -f "$RUNNER_TEMP/run.jsonl"
