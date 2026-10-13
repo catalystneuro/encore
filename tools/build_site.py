@@ -107,6 +107,7 @@ def collect() -> dict:
                 "outcome": o["outcome"],
                 "blocked_by": o.get("blocked_by"),
                 "notes": " ".join((o.get("notes") or "").split()),
+                "deviations": [" ".join(d.split()) for d in o.get("deviations") or []],
             } for o in a["outcomes"]],
             "findings": [{"kind": f["kind"], "statement": " ".join(f["statement"].split())}
                          for f in a.get("findings") or []],
@@ -158,7 +159,7 @@ def chip(outcome: str) -> str:
 def outcome_bar(counts: dict) -> str:
     total = sum(counts.values())
     if not total:
-        return '<p class="muted">No claims tested yet.</p>'
+        return '<p class="muted">No claims attempted yet.</p>'
     segments, legend = [], []
     for key, (label, css, icon) in OUTCOMES.items():
         n = counts[key]
@@ -167,7 +168,7 @@ def outcome_bar(counts: dict) -> str:
         if n:
             segments.append(f'<div class="seg {css}" style="flex:{n}" '
                             f'title="{label}: {n} of {total}"></div>')
-    return (f'<div class="bar" role="img" aria-label="Outcomes of {total} claims tested">'
+    return (f'<div class="bar" role="img" aria-label="Outcomes of {total} claims attempted">'
             + "".join(segments) + f'</div><ul class="legend">{"".join(legend)}</ul>')
 
 
@@ -178,8 +179,14 @@ def attempt_card(a: dict) -> str:
             if o["blocked_by"] else ""
         source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
         notes = f'<p class="notes">{e(o["notes"])}</p>' if o["notes"] else ""
+        deviations = ""
+        if o["deviations"]:
+            items = "".join(f"<li>{e(d)}</li>" for d in o["deviations"])
+            deviations = (f'<details class="deviations"><summary>{len(o["deviations"])} '
+                          f'difference{"s" if len(o["deviations"]) != 1 else ""} from the paper\'s method'
+                          f'</summary><ul>{items}</ul></details>')
         claims.append(f'<li><div class="claim-head">{chip(o["outcome"])}{blocked}{source}</div>'
-                      f'<p class="statement">{e(o["statement"])}</p>{notes}</li>')
+                      f'<p class="statement">{e(o["statement"])}</p>{notes}{deviations}</li>')
     findings = "".join(
         f'<li><span class="kind">{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</span> {e(f["statement"])}</li>'
         for f in a["findings"])
@@ -249,6 +256,9 @@ padding:1px 10px 1px 4px;font-size:.82rem;font-weight:600;white-space:nowrap}
 .source{color:var(--muted);font-size:.82rem}
 .statement{margin:0 0 4px;font-weight:500}
 .notes{color:var(--text2);font-size:.9rem;margin:0}
+.deviations{font-size:.85rem;color:var(--text2);margin-top:6px}
+.deviations summary{cursor:pointer;color:var(--muted)}
+.deviations ul{margin:6px 0 0;padding-left:20px}
 .findings li{padding:6px 0;font-size:.92rem;color:var(--text2)}
 .kind{display:inline-block;font-size:.75rem;font-weight:600;color:var(--text);border:1px solid var(--line);
 border-radius:4px;padding:0 6px;margin-right:6px}
@@ -288,7 +298,7 @@ def render(data: dict) -> str:
     tiles = [
         (data["queue_counts"]["with_a_paper"], "dandisets on DANDI that name a paper"),
         (attempted, "dandisets attempted"),
-        (n_claims, "claims tested"),
+        (n_claims, "claims attempted"),
         (findings, "findings about the data"),
     ]
     tile_html = "".join(f'<div class="tile"><div class="n">{n}</div><div class="l">{e(label)}</div></div>'
@@ -324,7 +334,7 @@ def render(data: dict) -> str:
 <main>
   <div class="tiles">{tile_html}</div>
   <section aria-labelledby="h-outcomes">
-    <h2 id="h-outcomes">Outcomes of the claims tested</h2>
+    <h2 id="h-outcomes">Outcomes of the claims attempted</h2>
     {outcome_bar(data["outcome_counts"])}
   </section>
   <section aria-labelledby="h-attempts">

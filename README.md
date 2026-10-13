@@ -8,7 +8,7 @@ here: the notebooks when it works, and the reason when it does not.
   accurate enough to support the findings of its paper.
 - **For analysts:** working notebooks to build new analyses on.
 
-Status: pilot. One target has been attempted so far.
+Status: pilot. Two targets have been attempted so far.
 
 **Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
 
@@ -32,6 +32,7 @@ Status: pilot. One target has been attempted so far.
 | Dandiset | Paper | Reproduced | Partially | Not reproduced | Blocked | Entry |
 |---|---|---|---|---|---|---|
 | [000582](https://dandiarchive.org/dandiset/000582) | [Sargolini et al. 2006](https://doi.org/10.1126/science.1125572) | 2 | 1 | 0 | 0 | [`000582-sargolini-2006`](entries/000582-sargolini-2006) |
+| [000127](https://dandiarchive.org/dandiset/000127) | [Chowdhury et al. 2020](https://doi.org/10.7554/eLife.48198) | 4 | 2 | 0 | 4 | [`000127-chowdhury-2020`](entries/000127-chowdhury-2020) |
 
 ## Working on an entry
 

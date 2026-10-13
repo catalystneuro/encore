@@ -58,11 +58,17 @@ The registry records **claims that were tested**, not just notebooks that run.
   or one person. An attempt always produces a record, whether or not it
   produces a working notebook. Each claim gets an outcome:
   - `reproduced`: the result matches the paper.
-  - `partially_reproduced`: the same effect, with stated differences.
+  - `partially_reproduced`: the effect is present but weaker, or holds only
+    in part.
   - `not_reproduced`: the analysis ran and the result differs.
   - `blocked`: the analysis could not be done, with a reason category:
     `data_missing`, `metadata_insufficient`, `methods_underspecified`,
     `data_unreadable`, `too_large`, `other`.
+
+  The outcome describes the result. How the test differed from the paper's
+  method or data (one session of four, a substituted model) is recorded
+  separately as the outcome's deviations, so that "partially reproduced" always
+  means something about the effect.
 - **Entry.** A directory of notebooks with metadata, as in the example-notebooks
   registry. An attempt that produces notebooks produces an entry. Entries that
   are not reproductions (data orientation, new analyses) have no claims.
