@@ -45,6 +45,10 @@ env:
   MODEL: ${{ inputs.model }}
   BRANCH: attempt/${{ inputs.dandiset }}
   CLAUDE_CODE_VERSION: 2.1.284
+  # The tools the agent may use without asking. With CLAUDE_CODE_SUBPROCESS_ENV_SCRUB set, Claude
+  # Code forces permission mode `default`, so this list and --permission-prompts none decide what
+  # runs: anything else is refused.
+  TOOLS: Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Agent,TodoWrite
 
 jobs:
   run:
@@ -111,14 +115,14 @@ jobs:
           set +e -uo pipefail
           cd "$RUNNER_TEMP"
           claude -p "Reply with the single word ok." --model "$MODEL" --max-turns 1 \
-            --output-format stream-json --verbose --permission-mode dontAsk --permission-prompts none \
+            --output-format stream-json --verbose --permission-prompts none --allowedTools "$TOOLS" \
             > preflight.jsonl 2> preflight.err
           mode=$(jq -r 'select(.type=="system" and .subtype=="init") | .permissionMode' preflight.jsonl)
           result=$(jq -r 'select(.type=="result") | .result' preflight.jsonl)
           echo "permission mode: $mode; reply: $result"
           tail -c 1000 preflight.err
           [ "$result" = ok ] || { echo "::error::The CLAUDE_CODE_OAUTH_TOKEN secret did not authenticate: $result"; exit 1; }
-          [ "$mode" = dontAsk ] || { echo "::error::Claude Code started in permission mode $mode, not dontAsk"; exit 1; }
+          [ "$mode" = default ] || { echo "::error::Claude Code started in permission mode $mode, not default"; exit 1; }
 
       - name: Run the agent
         id: agent
@@ -135,8 +139,7 @@ jobs:
           claude -p "$(cat "$RUNNER_TEMP/prompt.md")" \
             --model "$MODEL" \
             --output-format stream-json --verbose --forward-subagent-text \
-            --permission-mode dontAsk --permission-prompts none \
-            --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Agent,TodoWrite" \
+            --permission-prompts none --allowedTools "$TOOLS" \
             > "$RUNNER_TEMP/run.jsonl" 2> "$RUNNER_TEMP/stderr.txt"
           status=$?
           echo "claude exited with $status"
