@@ -91,7 +91,10 @@ jobs:
           pip install --no-cache-dir uv pyyaml jsonschema nbformat
 
       - name: Write the prompt
-        run: python tools/agent_run.py prompt "$ROLE" "$DANDISET" --model "$MODEL" > "$RUNNER_TEMP/prompt.md"
+        run: |
+          python tools/agent_run.py prompt "$ROLE" "$DANDISET" --model "$MODEL" > "$RUNNER_TEMP/prompt.md"
+          # The workflow's own tools, copied before the agent can change the checkout.
+          cp tools/transcript.py tools/progress.py "$RUNNER_TEMP/"
 
       - name: Prepare the verifier's materials, and remove the repository
         if: startsWith(inputs.role, 'verifier')
@@ -101,7 +104,6 @@ jobs:
           python tools/entry.py run "entries/$entry"
           python tools/entry.py handover "entries/$entry"
           python tools/agent_run.py package "$ROLE" "$DANDISET" "$RUNNER_TEMP/work"
-          cp tools/transcript.py "$RUNNER_TEMP/"
           cd "$RUNNER_TEMP" && find "$GITHUB_WORKSPACE" -mindepth 1 -delete
           ls -la "$RUNNER_TEMP/work"
 
@@ -133,6 +135,8 @@ jobs:
 
       - name: Run the agent
         id: agent
+        # Shorter than the job's limit, so that the transcript is still exported when it is reached.
+        timeout-minutes: 300
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'
@@ -147,7 +151,7 @@ jobs:
             --model "$MODEL" \
             --output-format stream-json --verbose --forward-subagent-text \
             --permission-prompts none --allowedTools "$TOOLS" \
-            > "$RUNNER_TEMP/run.jsonl" 2> "$RUNNER_TEMP/stderr.txt"
+            2> "$RUNNER_TEMP/stderr.txt" | tee "$RUNNER_TEMP/run.jsonl" | python "$RUNNER_TEMP/progress.py"
           status=$?
           echo "claude exited with $status"
           tail -c 2000 "$RUNNER_TEMP/stderr.txt" || true
@@ -158,7 +162,7 @@ jobs:
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$DANDISET"
-          tool=tools/transcript.py; [ -f "$tool" ] || tool="$RUNNER_TEMP/transcript.py"
+          tool="$RUNNER_TEMP/transcript.py"
           name="$DANDISET · $ROLE · run ${{ github.run_id }}"
           python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" \
             --report "$out/transcripts/$DANDISET/$ROLE-report.md" --title "$name"

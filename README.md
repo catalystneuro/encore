@@ -65,7 +65,12 @@ gh workflow run attempt.yml -f dandiset=000147 -f role=author
 The roles, in order, are `author`, `verifier-1`, `author-revise-1`,
 `verifier-2` and `author-revise-2`. Each run commits its changes and its
 cleaned transcript and report to the branch `attempt/<dandiset>`; a person
-reads the transcript and opens the pull request. See
+reads the transcript and opens the pull request. While a run is going, its
+log shows one line per message and tool call, without tool output:
+
+```bash
+gh run watch <run id> --exit-status
+``` See
 [`transcripts/`](transcripts).
 
 ## Working on an entry
