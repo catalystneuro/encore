@@ -82,16 +82,18 @@ def test_every_page_is_built(built):
         assert (out / "dandisets" / dandiset / "index.html").is_file()
         api = json.loads((out / "api" / "dandiset" / f"{dandiset}.json").read_text())
         assert api["dandiset"] == dandiset and "caution" in api
+        assert api["attempts"] and "entries" in api
 
 
 def test_rows_match_the_attempts(built):
     data, out = built
-    latest = site.latest_attempts(data)
+    current = site.current_attempts(data)
+    attempts = [a for atts in current.values() for a in atts]
     rows = {kind: json.loads((out / "data" / f"{kind}.json").read_text()) for kind in site.LISTS}
     assert len(rows["dandisets"]) == data["queue_counts"]["with_a_paper"]
-    assert len(rows["claims"]) == sum(len(a["outcomes"]) for a in latest.values())
-    assert len(rows["findings"]) == sum(len(a["findings"]) for a in latest.values())
-    assert sum(1 for r in rows["dandisets"] if r["status"] == "attempted") == len(latest)
+    assert len(rows["claims"]) == sum(len(a["outcomes"]) for a in attempts)
+    assert len(rows["findings"]) == sum(len(a["findings"]) for a in attempts)
+    assert sum(1 for r in rows["dandisets"] if r["status"] == "attempted") == len(current)
 
 
 def test_no_internal_link_is_broken(built):
@@ -108,12 +110,41 @@ def test_pages_load_nothing_from_other_sites(built):
 
 def test_every_claim_has_an_anchor_on_its_dandiset_page(built):
     data, out = built
-    for dandiset, attempt in site.latest_attempts(data).items():
+    for dandiset, attempts in site.current_attempts(data).items():
         page = (out / "dandisets" / dandiset / "index.html").read_text()
-        for outcome in attempt["outcomes"]:
-            assert f'id="claim-{outcome["claim"]}"' in page
-        assert site.CAUTION in page or not any(
-            o["outcome"] in ("not_reproduced", "partially_reproduced") for o in attempt["outcomes"])
+        for attempt in attempts:
+            for outcome in attempt["outcomes"]:
+                assert f'id="claim-{outcome["claim"]}"' in page
+
+
+def test_the_caution_is_on_the_overview_and_not_on_dandiset_pages(built):
+    data, out = built
+    assert site.CAUTION in (out / "index.html").read_text()
+    for dandiset in site.current_attempts(data):
+        assert site.CAUTION not in (out / "dandisets" / dandiset / "index.html").read_text()
+
+
+def test_a_dandiset_page_lists_every_notebook_of_every_entry_that_uses_it(built):
+    data, out = built
+    for dandiset in site.current_attempts(data):
+        page = (out / "dandisets" / dandiset / "index.html").read_text()
+        entries = site.entries_for(data, dandiset)
+        assert entries, dandiset
+        for entry in entries:
+            for notebook in entry["notebooks"]:
+                assert notebook["path"] in page
+        assert "Open the executed notebook" not in page
+
+
+def test_a_dandiset_can_have_attempts_on_several_papers():
+    def attempt(i, paper, date):
+        return {"id": f"x-{i}", "dandiset": "000001", "paper": paper, "date": date, "tier": "runs",
+                "outcomes": [{"claim": f"c{i}", "outcome": "reproduced"}], "findings": []}
+    data = {"attempts": [attempt(1, "10.1/a", "2026-01-01"), attempt(2, "10.1/b", "2026-01-02"),
+                         attempt(3, "10.1/a", "2026-01-03")]}
+    current = site.current_attempts(data)["000001"]
+    assert [a["id"] for a in current] == ["x-2", "x-3"]          # the latest per paper
+    assert site.outcome_counts(current)["reproduced"] == 2
 
 
 def test_the_overview_stays_small_at_scale(tmp_path):

@@ -117,6 +117,16 @@ def collect(executed: Path | None = None) -> dict:
     for path in sorted((ROOT / "entries").glob("*/entry.yaml")):
         data = load_yaml(path)
         entries[data["name"]] = data
+    titles = {p["doi"]: p["title"] for t in queue["targets"] for p in t["papers"]}
+
+    def notebooks_of(entry: dict) -> list[dict]:
+        out = []
+        for n in entry["notebooks"]:
+            page = f'notebooks/{entry["name"]}/{Path(n["path"]).stem}.html'
+            out.append({"path": n["path"], "title": n.get("title") or n["path"],
+                        "executed": page if executed and (executed / entry["name"] / Path(page).name).is_file()
+                        else None})
+        return out
 
     attempts = []
     for path in sorted((ROOT / "attempts").glob("*.yaml")):
@@ -130,6 +140,7 @@ def collect(executed: Path | None = None) -> dict:
             "dandiset": a["dandiset"],
             "dandiset_version": a.get("dandiset_version"),
             "paper": a["paper"].removeprefix("doi:"),
+            "paper_title": titles.get(a["paper"].removeprefix("doi:").lower()),
             "date": str(a["date"]),
             "kind": a["provenance"]["kind"],
             "accountable": a["provenance"]["accountable"]["name"],
@@ -138,16 +149,14 @@ def collect(executed: Path | None = None) -> dict:
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
             "description": squash(entry.get("description")) if entry else None,
-            "notebooks": [n["path"] for n in entry["notebooks"]] if entry else [],
-            "executed": [f'notebooks/{a["entry"]}/{Path(n["path"]).stem}.html'
-                         for n in (entry["notebooks"] if entry else [])
-                         if executed and (executed / a["entry"] / f'{Path(n["path"]).stem}.html').is_file()],
+            "notebooks": notebooks_of(entry) if entry else [],
             "outcomes": [{
                 "claim": o["claim"],
                 "statement": squash(known.get(o["claim"], {}).get("statement", o["claim"])),
                 "source": known.get(o["claim"], {}).get("source"),
                 "outcome": o["outcome"],
                 "blocked_by": o.get("blocked_by"),
+                "notebook": o.get("notebook"),
                 "notes": squash(o.get("notes")),
                 "deviations": [squash(d) for d in o.get("deviations") or []],
                 "disagreed": o["claim"] in disagreed,
@@ -180,11 +189,25 @@ def collect(executed: Path | None = None) -> dict:
                                  for a in t["approaches"] if a for part in a.split(";") if part.strip()}),
             "species": sorted({short_species(s) for s in t["species"] if s}),
         })
+    entry_list = []
+    for entry in entries.values():
+        related = entry.get("related", [])
+        entry_list.append({
+            "name": entry["name"], "type": entry["type"], "title": entry["title"],
+            "description": squash(entry.get("description")),
+            "dandisets": sorted({r["id"].split(":", 1)[1].split("/")[0] for r in related
+                                 if r["id"].startswith("dandi:")}),
+            "papers": [r["id"].split(":", 1)[1] for r in related if r["id"].startswith("doi:")],
+            "derived_from": [r["id"].split(":", 1)[1] for r in related
+                             if r["id"].startswith("entry:") and r["relation"] == "derived_from"],
+            "notebooks": notebooks_of(entry),
+        })
     return finish({
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
         "queue_counts": queue["counts"],
         "attempts": attempts,
+        "entries": entry_list,
         "targets": targets,
         "demo": False,
     })
@@ -226,6 +249,7 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
                 "claim": f"claim-{i + 1}", "statement": sentence(rng.randint(10, 24)),
                 "source": rng.choice(figures), "outcome": outcome,
                 "blocked_by": rng.choice(list(BLOCKED_BY)) if outcome == "blocked" else None,
+                "notebook": None if outcome == "blocked" else rng.choice(["figures.ipynb", "behaviour.ipynb"]),
                 "notes": sentence(rng.randint(20, 50)),
                 "deviations": [sentence(rng.randint(8, 16)) for _ in range(rng.randint(0, 3))]
                 if outcome != "blocked" else [],
@@ -235,10 +259,13 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
         date = (datetime.date(2026, 10, 13) + datetime.timedelta(days=rng.randint(0, 200))).isoformat()
         attempts.append({
             "id": f"{t['dandiset']}-demo-01", "dandiset": t["dandiset"], "dandiset_version": "draft",
-            "paper": t["paper"], "date": date, "kind": "agent", "accountable": "Demo",
+            "paper": t["paper"], "paper_title": t["paper_title"], "date": date, "kind": "agent",
+            "accountable": "Demo",
             "agent": {"harness": "demo", "model": "demo", "protocol": "demo"}, "tier": tier,
             "entry": f"{t['dandiset']}-demo", "entry_title": t["paper_title"],
-            "description": sentence(30), "notebooks": ["demo.ipynb"], "executed": [],
+            "description": sentence(30),
+            "notebooks": [{"path": "figures.ipynb", "title": "Figures", "executed": None},
+                          {"path": "behaviour.ipynb", "title": "Behaviour", "executed": None}],
             "outcomes": outcomes,
             "findings": [{"kind": rng.choice(list(FINDING_KINDS)), "statement": sentence(rng.randint(12, 30))}
                          for _ in range(rng.randint(1, 10))],
@@ -246,53 +273,86 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
                 "date": date, "kind": "agent", "by": "Demo verifier", "reviewed": "Demo",
                 "agreed": n_claims, "of": n_claims, "disagreements": []}],
         })
-    out = dict(data, attempts=attempts, demo=True,
+    entries = [{"name": a["entry"], "type": "reproduction", "title": a["entry_title"],
+                "description": a["description"], "dandisets": [a["dandiset"]], "papers": [a["paper"]],
+                "derived_from": [], "notebooks": a["notebooks"]} for a in attempts]
+    out = dict(data, attempts=attempts, entries=entries, demo=True,
                targets=[dict(t, status="pilot" if t["status"] == "pilot" else "open") for t in data["targets"]])
     return finish(out)
 
 
 # --- flat rows for the list pages ----------------------------------------------
 
-def latest_attempts(data: dict) -> dict[str, dict]:
-    latest = {}
+TIER_ORDER = list(TIERS)
+
+
+def current_attempts(data: dict) -> dict[str, list[dict]]:
+    """For each dandiset, the latest attempt on each of its papers, oldest first."""
+    latest: dict = {}
     for a in sorted(data["attempts"], key=lambda a: (a["date"], a["id"])):
-        latest[a["dandiset"]] = a
-    return latest
+        latest[(a["dandiset"], a["paper"])] = a
+    out: dict = {}
+    for a in sorted(latest.values(), key=lambda a: (a["date"], a["id"])):
+        out.setdefault(a["dandiset"], []).append(a)
+    return out
 
 
-def outcome_counts(attempt: dict) -> dict:
-    return {k: sum(1 for o in attempt["outcomes"] if o["outcome"] == k) for k in OUTCOMES}
+def outcome_counts(attempts) -> dict:
+    """Outcome totals over one attempt or a list of them."""
+    attempts = [attempts] if isinstance(attempts, dict) else attempts
+    return {k: sum(1 for a in attempts for o in a["outcomes"] if o["outcome"] == k) for k in OUTCOMES}
+
+
+def weakest_tier(attempts: list[dict]) -> str:
+    """A dandiset is only as verified as its least verified attempt."""
+    return min((a["tier"] for a in attempts), key=TIER_ORDER.index)
+
+
+def entries_for(data: dict, dandiset: str) -> list[dict]:
+    """Every entry whose metadata says it uses this dandiset."""
+    return [en for en in data["entries"] if dandiset in en["dandisets"]]
+
+
+def notebook_of(attempt: dict, path: str | None) -> dict | None:
+    return next((n for n in attempt["notebooks"] if n["path"] == path), None)
 
 
 def rows(data: dict) -> dict[str, list]:
-    latest = latest_attempts(data)
+    current = current_attempts(data)
     by_id = {t["dandiset"]: t for t in data["targets"]}
     dandisets, claims, findings = [], [], []
     for t in data["targets"]:
-        a = latest.get(t["dandiset"])
+        atts = current.get(t["dandiset"])
+        outcomes = [o for a in atts or [] for o in a["outcomes"]]
         dandisets.append({
             "id": t["dandiset"], "name": t["name"], "paper": t["paper"], "paper_title": t["paper_title"],
             "technique": t["technique"], "species": t["species"], "size_gb": t["size_gb"], "files": t["files"],
-            "status": t["status"], "tier": a["tier"] if a else None, "date": a["date"] if a else None,
-            "counts": outcome_counts(a) if a else None,
-            "claims": len(a["outcomes"]) if a else None,
-            "failures": sum(1 for o in a["outcomes"] if o["outcome"] == "not_reproduced") if a else None,
-            "has": sorted({o["outcome"] for o in a["outcomes"]}) if a else [],
-            "page": f'dandisets/{t["dandiset"]}/' if a else None,
+            "status": t["status"], "tier": weakest_tier(atts) if atts else None,
+            "date": max(a["date"] for a in atts) if atts else None,
+            "counts": outcome_counts(atts) if atts else None,
+            "claims": len(outcomes) if atts else None,
+            "failures": sum(1 for o in outcomes if o["outcome"] == "not_reproduced") if atts else None,
+            "has": sorted({o["outcome"] for o in outcomes}),
+            "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["dandiset"])),
+            "page": f'dandisets/{t["dandiset"]}/' if atts else None,
         })
-    for a in latest.values():
-        t = by_id.get(a["dandiset"], {})
-        common = {"dandiset": a["dandiset"], "page": f'dandisets/{a["dandiset"]}/', "tier": a["tier"],
-                  "technique": t.get("technique", []), "species": t.get("species", []),
-                  "paper_title": t.get("paper_title") or a["entry_title"], "date": a["date"]}
-        for o in a["outcomes"]:
-            claims.append({**common, "claim": o["claim"], "statement": o["statement"], "source": o["source"],
-                           "outcome": o["outcome"], "blocked_by": o["blocked_by"], "notes": o["notes"],
-                           "deviations": o["deviations"], "disagreed": o["disagreed"],
-                           "verifier": "disagreed" if o["disagreed"] else None,
-                           "notebook": a["executed"][0] if a["executed"] else None})
-        for f in a["findings"]:
-            findings.append({**common, "kind": f["kind"], "statement": f["statement"]})
+    for atts in current.values():
+        for a in atts:
+            t = by_id.get(a["dandiset"], {})
+            common = {"dandiset": a["dandiset"], "page": f'dandisets/{a["dandiset"]}/', "tier": a["tier"],
+                      "technique": t.get("technique", []), "species": t.get("species", []),
+                      "paper_title": a.get("paper_title") or t.get("paper_title") or a["entry_title"],
+                      "date": a["date"]}
+            for o in a["outcomes"]:
+                nb = notebook_of(a, o.get("notebook"))
+                claims.append({**common, "claim": o["claim"], "statement": o["statement"], "source": o["source"],
+                               "outcome": o["outcome"], "blocked_by": o["blocked_by"], "notes": o["notes"],
+                               "deviations": o["deviations"], "disagreed": o["disagreed"],
+                               "verifier": "disagreed" if o["disagreed"] else None,
+                               "notebook": nb["executed"] if nb else None,
+                               "notebook_title": nb["title"] if nb else None})
+            for f in a["findings"]:
+                findings.append({**common, "kind": f["kind"], "statement": f["statement"]})
     return {"dandisets": dandisets, "claims": claims, "findings": findings}
 
 
@@ -342,7 +402,7 @@ def tier_badge(tier: str, href: str | None = None) -> str:
     return f'<a class="{css}" href="{e(href)}">{e(text)}</a>' if href else f'<span class="{css}">{e(text)}</span>'
 
 
-def claim_item(o: dict, root: str) -> str:
+def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
@@ -354,14 +414,17 @@ def claim_item(o: dict, root: str) -> str:
         deviations = (f'<details class="deviations"><summary>{len(o["deviations"])} '
                       f"difference{plural} from the paper's method"
                       f'</summary><ul>{items}</ul></details>')
-    caveat = ('<p class="caveat">This may reflect a limit of the attempt, not of the paper. '
-              'Check the reasoning and the differences in method.</p>'
-              if o["outcome"] in ("not_reproduced", "partially_reproduced") else "")
     disagreed = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
     link = f'{root}claims/?outcome={o["outcome"]}'
+    shown = ""
+    nb = notebook_of(attempt, o.get("notebook")) if attempt else None
+    if nb:
+        where = (f'<a href="{root}{e(nb["executed"])}">{e(nb["title"])}</a>' if nb["executed"]
+                 else e(nb["title"]))
+        shown = f'<p class="caveat">Shown in the notebook {where}.</p>'
     return (f'<li class="claim" id="claim-{e(o["claim"])}">'
             f'<div class="claim-head">{chip(o["outcome"], link)}{source}{blocked}{disagreed}</div>'
-            f'<p class="statement">{e(o["statement"])}</p>{notes}{caveat}{deviations}</li>')
+            f'<p class="statement">{e(o["statement"])}</p>{notes}{shown}{deviations}</li>')
 
 
 _ROWS: dict = {}
@@ -393,9 +456,11 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title)}</title>
 <meta name="description" content="Which findings of papers can be reproduced from the open data on the DANDI Archive.">
+<script>try{{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}}catch(e){{}}</script>
 <link rel="stylesheet" href="{root}assets/app.css"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
   <a class="brand" href="{home}">Reproduction registry</a>{nav}
+  <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
 <div class="wrap">
 {body}
@@ -405,15 +470,27 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 the data in the dandiset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
 a judgement of the paper.</footer>
 </div>
+{THEME_JS}
 {scripts}
 </body></html>
 '''
 
 
+THEME_JS = """<script>(function(){
+var b=document.getElementById('theme'),order=['auto','light','dark'],icon={auto:'\u25d0',light:'\u2600',dark:'\u263e'},
+name={auto:'Auto',light:'Light',dark:'Dark'};
+function get(){try{var t=localStorage.getItem('theme');return t==='light'||t==='dark'?t:'auto';}catch(e){return 'auto';}}
+function show(t){b.firstChild.textContent=icon[t];b.lastChild.textContent=name[t];
+b.setAttribute('aria-label','Colour theme: '+name[t].toLowerCase()+'. Change theme');}
+b.addEventListener('click',function(){var t=order[(order.indexOf(get())+1)%3];
+try{t==='auto'?localStorage.removeItem('theme'):localStorage.setItem('theme',t);}catch(e){}
+if(t==='auto')delete document.documentElement.dataset.theme;else document.documentElement.dataset.theme=t;show(t);});
+show(get());})();</script>"""
+
+
 def caution_block() -> str:
-    return f'''<details class="caution" id="caution">
-  <summary><span><strong>{CAUTION}</strong> It may be a failure of the attempt.
-  <span class="open">Read more</span></span></summary>
+    return f'''<div class="caution" id="caution">
+  <p class="lead"><strong>{CAUTION}</strong> It may be a failure of the attempt.</p>
   <div class="body">
     <p>An outcome says what one attempt could recover from the data in a dandiset, with the methods available to it. A
     “not reproduced” or “partially reproduced” outcome can come from a mistake or a limitation in the agent’s analysis,
@@ -423,7 +500,7 @@ def caution_block() -> str:
     agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
     from the paper’s. Authors who think an attempt is wrong can <a href="{REPO_URL}/issues">open an issue</a>.</p>
   </div>
-</details>'''
+</div>'''
 
 
 # --- pages ---------------------------------------------------------------------
@@ -453,15 +530,16 @@ def attempt_row(a: dict, root: str) -> str:
 
 def page_overview(data: dict) -> str:
     r = rows_cache(data)
-    counts = data["outcome_counts"]
+    current = current_attempts(data)
+    attempts = [a for atts in current.values() for a in atts]
+    counts = outcome_counts(attempts)
     n_claims = sum(counts.values())
-    latest = latest_attempts(data)
     in_queue = data["queue_counts"]["with_a_paper"]
-    verified = sum(1 for a in latest.values() if a["tier"] != "runs")
+    verified = sum(1 for atts in current.values() if weakest_tier(atts) != "runs")
     tiles = [
-        (f'{len(latest):,} <span class="of">of {in_queue}</span>', "dandisets attempted", "dandisets/?status=attempted"),
+        (f'{len(current):,} <span class="of">of {in_queue}</span>', "dandisets attempted", "dandisets/?status=attempted"),
         (f"{n_claims:,}", "claims attempted", "claims/"),
-        (f"{verified:,}", "attempts independently verified",
+        (f"{verified:,}", "dandisets independently verified",
          "dandisets/?tier=agent_verified,human_verified,author_endorsed"),
         (f'{len(r["findings"]):,}', "findings about the data", "findings/"),
     ]
@@ -496,8 +574,9 @@ def page_overview(data: dict) -> str:
     for f in r["findings"]:
         kinds[f["kind"]] = kinds.get(f["kind"], 0) + 1
     tiers: dict = {}
-    for a in latest.values():
-        tiers[a["tier"]] = tiers.get(a["tier"], 0) + 1
+    for atts in current.values():
+        tier = weakest_tier(atts)
+        tiers[tier] = tiers.get(tier, 0) + 1
 
     def ordered(counts_by_key, labels, link):
         return [(labels.get(k, k), n, link(k)) for k, n in sorted(counts_by_key.items(), key=lambda kv: -kv[1])]
@@ -509,12 +588,12 @@ def page_overview(data: dict) -> str:
                   "claims/?outcome=blocked"),
         breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"findings/?kind={k}"),
                   "findings/"),
-        breakdown("Verification of attempts",
+        breakdown("Verification of attempted dandisets",
                   ordered(tiers, TIERS, lambda k: f"dandisets/?status=attempted&tier={k}"),
                   "dandisets/?status=attempted"),
     ])
 
-    recent = sorted(latest.values(), key=lambda a: (a["date"], a["dandiset"]), reverse=True)[:6]
+    recent = sorted(attempts, key=lambda a: (a["date"], a["dandiset"]), reverse=True)[:6]
     recent_html = "".join(attempt_row(a, "") for a in recent) or '<p class="empty">No attempts yet.</p>'
 
     redirect = json.dumps({a["id"]: a["dandiset"] for a in data["attempts"]})
@@ -635,40 +714,88 @@ tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.pa
 addEventListener('hashchange',fromHash);fromHash();})();</script>"""
 
 
+ENTRY_TYPES = {"orientation": "Orientation", "reproduction": "Reproduction", "analysis": "Analysis"}
+
+
+def notebooks_panel(data: dict, dandiset: str, root: str) -> tuple[str, int]:
+    """The entries that use this dandiset, each with all of its notebooks."""
+    entries = entries_for(data, dandiset)
+    count = sum(len(en["notebooks"]) for en in entries)
+    if not entries:
+        return '<p class="muted" style="margin-top:14px">No notebooks use this dandiset yet.</p>', 0
+    out = ""
+    for en in entries:
+        items = ""
+        for nb in en["notebooks"]:
+            links = []
+            if nb["executed"]:
+                links.append(f'<a href="{root}{e(nb["executed"])}">Executed, with outputs</a>')
+            if not data["demo"]:
+                links.append(f'<a href="{REPO_URL}/blob/main/entries/{e(en["name"])}/{e(nb["path"])}">Source</a>')
+            items += (f'<li style="grid-template-columns:1fr max-content"><span><strong>{e(nb["title"])}</strong><br>'
+                      f'<span class="muted small">{e(nb["path"])}</span></span>'
+                      f'<span>{" · ".join(links) or "Not yet executed"}</span></li>')
+        others = [d for d in en["dandisets"] if d != dandiset]
+        also = (" Also uses " + ", ".join(f"dandiset {e(d)}" for d in others) + ".") if others else ""
+        built_on = (" Builds on " + ", ".join(e(x) for x in en["derived_from"]) + ".") if en["derived_from"] else ""
+        code = ("" if data["demo"] else
+                f' <a href="{REPO_URL}/tree/main/entries/{e(en["name"])}">All files</a>')
+        out += (f'<div class="entry"><p style="margin:18px 0 2px"><span class="tag">{e(ENTRY_TYPES.get(en["type"], en["type"]))}</span> '
+                f'<strong>{e(en["title"])}</strong></p>'
+                f'<p class="sub small">{e(en["description"])}{also}{built_on}{code}</p>'
+                f'<ul class="plain">{items}</ul></div>')
+    return out, count
+
+
 def page_dandiset(data: dict, dandiset: str) -> str:
     root = "../../"
-    all_attempts = sorted((a for a in data["attempts"] if a["dandiset"] == dandiset),
-                          key=lambda a: (a["date"], a["id"]))
-    a = all_attempts[-1]
+    atts = current_attempts(data)[dandiset]
+    earlier = [a for a in data["attempts"] if a["dandiset"] == dandiset and a not in atts]
     target = next((t for t in data["targets"] if t["dandiset"] == dandiset), None)
-    counts = outcome_counts(a)
-    n = len(a["outcomes"])
+    counts = outcome_counts(atts)
+    n = sum(counts.values())
     order = {"not_reproduced": 0, "partially_reproduced": 1, "reproduced": 2}
-    tested = sorted((o for o in a["outcomes"] if o["outcome"] != "blocked"), key=lambda o: order[o["outcome"]])
-    blocked = [o for o in a["outcomes"] if o["outcome"] == "blocked"]
 
+    # Claims, grouped by paper when the dandiset has attempts on more than one.
     claims_html = ""
-    if tested:
-        claims_html += (f'<h3 style="margin-top:14px">Tested <span class="count">{len(tested)}</span></h3>'
-                        f'<ul class="claims">{"".join(claim_item(o, root) for o in tested)}</ul>')
-    if blocked:
-        reasons: dict = {}
-        for o in blocked:
-            reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
-        why = ", ".join(f"{count} {BLOCKED_BY.get(k, k).lower()}" for k, count in reasons.items())
-        claims_html += (f'<details class="group" open><summary><h3>Could not be tested '
-                        f'<span class="count">{len(blocked)}</span></h3>'
-                        f'<span class="muted small">{e(why)}</span></summary>'
-                        f'<ul class="claims">{"".join(claim_item(o, root) for o in blocked)}</ul></details>')
+    for a in atts:
+        paper = a.get("paper_title") or a["paper"]
+        claims_html += (f'<p class="sub small" style="margin:14px 0 0">From the paper '
+                        f'<a href="https://doi.org/{e(a["paper"])}">{e(paper)}</a></p>')
+        tested = sorted((o for o in a["outcomes"] if o["outcome"] != "blocked"), key=lambda o: order[o["outcome"]])
+        blocked = [o for o in a["outcomes"] if o["outcome"] == "blocked"]
+        if tested:
+            claims_html += (f'<h3 style="margin-top:14px">Tested <span class="count">{len(tested)}</span></h3>'
+                            f'<ul class="claims">{"".join(claim_item(o, root, a) for o in tested)}</ul>')
+        if blocked:
+            reasons: dict = {}
+            for o in blocked:
+                reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
+            why = ", ".join(f"{count} {BLOCKED_BY.get(k, k).lower()}" for k, count in reasons.items())
+            claims_html += (f'<details class="group" open><summary><h3>Could not be tested '
+                            f'<span class="count">{len(blocked)}</span></h3>'
+                            f'<span class="muted small">{e(why)}</span></summary>'
+                            f'<ul class="claims">{"".join(claim_item(o, root, a) for o in blocked)}</ul></details>')
 
+    all_findings = [f for a in atts for f in a["findings"]]
     findings_html = "".join(
         f'<li><span><a class="kind" href="{root}findings/?kind={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{e(f["statement"])}</span></li>'
-        for f in a["findings"]) or '<li><span></span><span class="muted">None recorded.</span></li>'
+        for f in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
 
-    if a["verifications"]:
+    notebooks_html, n_notebooks = notebooks_panel(data, dandiset, root)
+
+    verification_html, n_rounds = "", 0
+    for a in atts:
+        if len(atts) > 1:
+            verification_html += f'<p class="sub small" style="margin:14px 0 0">Attempt {e(a["id"])}</p>'
+        if not a["verifications"]:
+            verification_html += ('<p class="muted" style="margin-top:14px">Not yet checked by an independent '
+                                  'verifier.</p>')
+            continue
         rounds = ""
         for i, v in enumerate(a["verifications"], 1):
+            n_rounds += 1
             dis = ""
             for d in v["disagreements"]:
                 theirs = OUTCOMES[d["outcome"]][0] if d["outcome"] in OUTCOMES else "not given"
@@ -678,15 +805,13 @@ def page_dandiset(data: dict, dandiset: str) -> str:
             reviewed = f' Reviewed: {e(v["reviewed"])}' if v["reviewed"] else ""
             rounds += (f'<li><span><strong>Round {i}</strong><br><span class="muted">{e(v["date"])}</span></span>'
                        f'<span>Agreed with {v["agreed"]} of {v["of"]} outcomes. {e(v["by"])}.{reviewed}{dis}</span></li>')
-        verification_html = f'<ul class="plain">{rounds}</ul>'
-    else:
-        verification_html = ('<p class="muted" style="margin-top:14px">This attempt has not yet been checked by an '
-                             'independent verifier.</p>')
+        verification_html += f'<ul class="plain">{rounds}</ul>'
 
     deviations: dict = {}
-    for o in a["outcomes"]:
-        for d in o["deviations"]:
-            deviations.setdefault(d, []).append(o["claim"])
+    for a in atts:
+        for o in a["outcomes"]:
+            for d in o["deviations"]:
+                deviations.setdefault(d, []).append(o["claim"])
     if deviations:
         items = ""
         for d, cs in sorted(deviations.items(), key=lambda kv: -len(kv[1])):
@@ -696,28 +821,30 @@ def page_dandiset(data: dict, dandiset: str) -> str:
     else:
         deviations_html = '<p class="muted" style="margin-top:14px">None recorded.</p>'
 
-    agent = a.get("agent") or {}
-    provenance = [("Attempt", f'<a href="{REPO_URL}/blob/main/attempts/{e(a["id"])}.yaml">{e(a["id"])}</a>'
-                   if not data["demo"] else e(a["id"])),
-                  ("Date", e(a["date"])),
-                  ("Made by", ("An agent" if a["kind"] == "agent" else "A person") + f', run by {e(a["accountable"])}'),
-                  ("Dandiset version", e(a["dandiset_version"] or "not recorded"))]
-    if a["kind"] == "agent":
-        provenance += [("Harness", e(agent.get("harness", "not recorded"))),
-                       ("Model", e(agent.get("model", "not recorded"))),
-                       ("Protocol", e(agent.get("protocol", "not recorded")))]
-    if len(all_attempts) > 1:
-        provenance.append(("Earlier attempts", ", ".join(
-            f'<a href="{REPO_URL}/blob/main/attempts/{e(x["id"])}.yaml">{e(x["id"])}</a> ({e(x["date"])})'
-            for x in all_attempts[:-1])))
-    provenance_html = "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in provenance)
+    provenance_html = ""
+    for a in atts:
+        agent = a.get("agent") or {}
+        record = (e(a["id"]) if data["demo"] else
+                  f'<a href="{REPO_URL}/blob/main/attempts/{e(a["id"])}.yaml">{e(a["id"])}</a>')
+        rows_ = [("Attempt record", record), ("Paper", f'<a href="https://doi.org/{e(a["paper"])}">'
+                                                     f'{e(a.get("paper_title") or a["paper"])}</a>'),
+                 ("Date", e(a["date"])),
+                 ("Made by", ("An agent" if a["kind"] == "agent" else "A person") + f', run by {e(a["accountable"])}'),
+                 ("Dandiset version", e(a["dandiset_version"] or "not recorded"))]
+        if a["kind"] == "agent":
+            rows_ += [("Harness", e(agent.get("harness", "not recorded"))),
+                      ("Model", e(agent.get("model", "not recorded"))),
+                      ("Protocol", e(agent.get("protocol", "not recorded")))]
+        provenance_html += ('<dl class="kv" style="margin-top:14px">'
+                            + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows_) + "</dl>")
+    if earlier:
+        provenance_html += ('<p class="sub small" style="margin-top:14px">Earlier attempts: ' + ", ".join(
+            f'{e(x["id"])} ({e(x["date"])})' for x in earlier) + "</p>")
 
-    actions = [f'<a class="button" href="{root}{e(p)}">Open the executed notebook</a>' for p in a["executed"][:1]]
-    actions += [f'<a href="https://doi.org/{e(a["paper"])}">Paper</a>',
-                f'<a href="https://dandiarchive.org/dandiset/{e(dandiset)}">Dandiset {e(dandiset)} on DANDI</a>']
-    if a["entry"] and not data["demo"]:
-        actions.append(f'<a href="{REPO_URL}/tree/main/entries/{e(a["entry"])}">Code</a>')
-    actions.append(f'<a href="{root}api/dandiset/{e(dandiset)}.json">JSON</a>')
+    actions = [f'<a href="https://dandiarchive.org/dandiset/{e(dandiset)}">View on DANDI</a>']
+    actions += [f'<a href="https://doi.org/{e(a["paper"])}">Paper</a>' for a in atts] if len(atts) == 1 else []
+    actions += [f'<a href="{root}api/dandiset/{e(dandiset)}.json">JSON</a>',
+                f'<a href="{root}#caution">How to read outcomes</a>']
 
     tags = ""
     if target:
@@ -727,59 +854,61 @@ def page_dandiset(data: dict, dandiset: str) -> str:
             + [f'<span class="tag">{target["size_gb"]:,.1f} GB</span>',
                f'<span class="tag">{target["files"]:,} files</span>'])
 
-    latest = latest_attempts(data)
+    current = current_attempts(data)
     same_paper = [t for t in data["targets"] if target and t["dandiset"] != dandiset
                   and set(t["papers"]) & set(target["papers"])]
     related = ""
     if same_paper:
         links = ""
         for t in same_paper:
-            if t["dandiset"] in latest:
+            if t["dandiset"] in current:
                 links += f'<a href="../{e(t["dandiset"])}/">Dandiset {e(t["dandiset"])}</a> '
             else:
                 links += (f'<span><a href="https://dandiarchive.org/dandiset/{e(t["dandiset"])}">Dandiset '
                           f'{e(t["dandiset"])}</a> <span class="muted">(not attempted)</span></span> ')
         related = (f'<div class="panel" style="margin-top:28px"><h2>Other dandisets that name the same paper</h2>'
                    f'<div class="related">{links}</div></div>')
-    ids = sorted(latest)
+    ids = sorted(current)
     i = ids.index(dandiset)
     prev_link = f'<a href="../{ids[i - 1]}/">← Dandiset {ids[i - 1]}</a>' if i > 0 else "<span></span>"
     next_link = f'<a href="../{ids[i + 1]}/">Dandiset {ids[i + 1]} →</a>' if i < len(ids) - 1 else "<span></span>"
 
-    tab_defs = [("claims", "Claims", n), ("findings", "Findings about the data", len(a["findings"])),
-                ("verification", "Verification", len(a["verifications"])),
+    tab_defs = [("claims", "Claims", n), ("findings", "Findings about the data", len(all_findings)),
+                ("notebooks", "Notebooks", n_notebooks), ("verification", "Verification", n_rounds),
                 ("differences", "Method differences", len(deviations)), ("provenance", "Provenance", None)]
     tab_buttons = ""
     for key, label, c in tab_defs:
         count = f' <span class="count">{c}</span>' if c is not None else ""
         tab_buttons += f'<button type="button" role="tab" data-panel="{key}" aria-selected="false">{label}{count}</button>'
 
-    heading = a["entry_title"] or (target or {}).get("paper_title") or a["id"]
-    tier_link = f'{root}dandisets/?status=attempted&tier={a["tier"]}'
-    show_caution = counts["not_reproduced"] or counts["partially_reproduced"]
+    name = (target or {}).get("name") or atts[-1]["entry_title"] or dandiset
+    tier = weakest_tier(atts)
+    tier_link = f'{root}dandisets/?status=attempted&tier={tier}'
     body = f'''<header class="page">
   <p class="crumbs"><a href="{root}dandisets/">Dandisets</a> / {e(dandiset)}</p>
-  <div class="dhead"><h1>{e(heading)}</h1>{tier_badge(a["tier"], tier_link)}</div>
-  <p class="sub">{e(a["description"] or "")}</p>
+  <div class="dhead"><h1>Dandiset {e(dandiset)}</h1>{tier_badge(tier, tier_link)}</div>
+  <p class="sub">{e(name)}</p>
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   <p class="actions">{" ".join(actions)}</p>
-  {caution_block() if show_caution else ""}
 </header>
 <main>
   <div class="tabs" role="tablist">{tab_buttons}</div>
   <section class="tabpanel" id="claims"><h2>Claims</h2>{claims_html}</section>
   <section class="tabpanel" id="findings"><h2>Findings about the data</h2>
-    <p class="sub small" style="margin-top:12px">What this attempt found about the dandiset itself, for its owner and
-    the archive.</p>
+    <p class="sub small" style="margin-top:12px">What attempts found about the dandiset itself, for its owner and the
+    archive.</p>
     <ul class="findings">{findings_html}</ul></section>
+  <section class="tabpanel" id="notebooks"><h2>Notebooks</h2>
+    <p class="sub small" style="margin-top:12px">Every registered entry that uses this dandiset. An entry can hold
+    several notebooks, and can use more than one dandiset.</p>
+    {notebooks_html}</section>
   <section class="tabpanel" id="verification"><h2>Verification</h2>{verification_html}</section>
   <section class="tabpanel" id="differences"><h2>Method differences</h2>
     <p class="sub small" style="margin-top:12px">How the tests differed from the paper’s method or data, and the claims
     each applies to.</p>
     {deviations_html}</section>
-  <section class="tabpanel" id="provenance"><h2>Provenance</h2>
-    <dl class="kv" style="margin-top:14px">{provenance_html}</dl></section>
+  <section class="tabpanel" id="provenance"><h2>Provenance</h2>{provenance_html}</section>
   {related}
   <div class="prevnext">{prev_link}{next_link}</div>
 </main>'''
@@ -798,14 +927,15 @@ def build(data: dict, output: Path) -> None:
     for kind in LISTS:
         (output / kind / "index.html").write_text(page_list(data, kind))
         (output / "data" / f"{kind}.json").write_text(json.dumps(r[kind], separators=(",", ":")) + "\n")
-    for dandiset, attempt in latest_attempts(data).items():
+    for dandiset, attempts in current_attempts(data).items():
         page = output / "dandisets" / dandiset
         page.mkdir(exist_ok=True)
         (page / "index.html").write_text(page_dandiset(data, dandiset))
         (output / "api" / "dandiset" / f"{dandiset}.json").write_text(json.dumps({
             "dandiset": dandiset, "page": f"dandisets/{dandiset}/", "generated": data["generated"],
             "caution": CAUTION + " It may be a failure of the attempt.",
-            "outcome_counts": outcome_counts(attempt), "attempt": attempt,
+            "outcome_counts": outcome_counts(attempts), "attempts": attempts,
+            "entries": entries_for(data, dandiset),
         }, indent=1) + "\n")
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
 

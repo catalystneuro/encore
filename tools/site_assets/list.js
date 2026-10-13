@@ -119,7 +119,7 @@
       const dev = r.deviations.length
         ? `<p><strong>Differences from the paper's method</strong></p><ul>${r.deviations.map((d) => `<li>${esc(d)}</li>`).join('')}</ul>` : '';
       const disagreed = r.disagreed ? '<span class="tag">verifier disagreed at first</span>' : '';
-      const nb = r.notebook ? ` · <a href="${root + r.notebook}">Executed notebook</a>` : '';
+      const nb = r.notebook ? ` · <a href="${root + r.notebook}">Notebook: ${esc(r.notebook_title)}</a>` : '';
       return `<div class="row">
         <div class="head">${chip(r.outcome)}<span class="source">${esc(r.source || '')}</span>${why}${disagreed}</div>
         <p class="title"><a href="${root + r.page}#claim-${esc(r.claim)}">${esc(r.statement)}</a></p>
