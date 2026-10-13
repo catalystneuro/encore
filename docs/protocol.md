@@ -10,6 +10,11 @@ There are two roles. The **author** makes the attempt. The **verifier** checks
 it and must not be the author: for agents, a separate run with a separate
 context that has not seen the author's reasoning.
 
+Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
+workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
+`verifier-2`, `author-revise-2`. Each run's transcript and final report are
+kept in [`transcripts/<dandiset>/`](../transcripts).
+
 ## Author
 
 ### 1. Establish what can be tested

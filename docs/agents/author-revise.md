@@ -1,0 +1,7 @@
+You are the author of the reproduction attempt `{attempt}` (entry `entries/{entry}`) in the reproduction registry, checked out in the current directory. An independent verifier has reviewed it; its round-{round} report is `{report}`. Follow docs/protocol.md, step 6 ("Hand over for verification") and the rules it refers to.
+
+For each point in the report: fix what it found, or say why not. Add any output it asked for. Where it disagrees with an outcome, either change the outcome and say why, or keep it and record the disagreement. Re-run the entry with `python tools/entry.py all entries/{entry}` and make every conclusion match the new numbers. Record the round under `verifications` in the attempt record: for each claim, whether the verifier agreed, the outcome it would give, its reason in its own words (quote or closely paraphrase the report, do not add to it), and what you changed in reply under `response`. Do not commit or push: the workflow commits your changes.
+
+Save any text of the paper you download under `paper/`. Write prose plainly: no em dashes, never the word "rather". YAML plain scalars must not contain ": ".
+
+Your final message is a short report: what changed in the outcomes, what you added or corrected, and anything you did not do and why.

@@ -3,8 +3,8 @@
     python tools/build_site.py [--output site]
     python tools/build_site.py --demo 150 --output /tmp/demo-site
 
-Reads targets/dandisets.json, targets/pilot.yaml, claims/, attempts/ and
-entries/, and writes:
+Reads targets/dandisets.json, targets/pilot.yaml, claims/, attempts/,
+entries/ and transcripts/, and writes:
 
     index.html                    overview: numbers, breakdowns, latest attempts
     dandisets/index.html          every target, filterable and paginated
@@ -212,7 +212,10 @@ def collect(executed: Path | None = None) -> dict:
                              if r["id"].startswith("entry:") and r["relation"] == "derived_from"],
             "notebooks": notebooks_of(entry),
         })
+    transcripts = {d.name: sorted(p.name for p in d.glob("*.md"))
+                   for d in sorted((ROOT / "transcripts").glob("*")) if d.is_dir()}
     return finish({
+        "transcripts": transcripts,
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
         "queue_counts": queue["counts"],
@@ -832,6 +835,14 @@ def page_dandiset(data: dict, dandiset: str) -> str:
                       ("Protocol", e(agent.get("protocol", "not recorded")))]
         provenance_html += ('<dl class="kv" style="margin-top:14px">'
                             + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows_) + "</dl>")
+    runs = data.get("transcripts", {}).get(dandiset, [])
+    if runs and not data["demo"]:
+        items = "".join(f'<li><a href="{REPO_URL}/blob/main/transcripts/{e(dandiset)}/{e(name)}">{e(name)}</a></li>'
+                        for name in runs)
+        provenance_html += ('<h3 style="margin-top:18px">Transcripts of the agent runs</h3>'
+                            '<p class="sub small">Each run’s prompt, messages and tool calls, with long output cut '
+                            'and the text of the paper left out, and its final report.</p>'
+                            f'<ul style="margin:6px 0 0;padding-left:20px">{items}</ul>')
     if earlier:
         provenance_html += ('<p class="sub small" style="margin-top:14px">Earlier attempts: ' + ", ".join(
             f'{e(x["id"])} ({e(x["date"])})' for x in earlier) + "</p>")

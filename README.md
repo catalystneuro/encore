@@ -52,6 +52,21 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000127](https://dandiarchive.org/dandiset/000127) | [Chowdhury et al. 2020](https://doi.org/10.7554/eLife.48198) | 4 | 2 | 0 | 4 | [`000127-chowdhury-2020`](entries/000127-chowdhury-2020) |
 | [000207](https://dandiarchive.org/dandiset/000207) | [Zheng et al. 2022](https://doi.org/10.1038/s41593-022-01020-w) | 5 | 1 | 0 | 14 | [`000207-zheng-2022`](entries/000207-zheng-2022) |
 
+## Agent runs
+
+Attempts by agents are made in GitHub Actions, one role at a time, on the
+subscription token in the `CLAUDE_CODE_OAUTH_TOKEN` secret:
+
+```bash
+gh workflow run attempt.yml -f dandiset=000147 -f role=author
+```
+
+The roles, in order, are `author`, `verifier-1`, `author-revise-1`,
+`verifier-2` and `author-revise-2`. Each run commits its changes and its
+cleaned transcript and report to the branch `attempt/<dandiset>`; a person
+reads the transcript and opens the pull request. See
+[`transcripts/`](transcripts).
+
 ## Working on an entry
 
 An entry is a directory under `entries/` with an `entry.yaml`, a
