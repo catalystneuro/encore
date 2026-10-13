@@ -60,9 +60,11 @@ Do this before any analysis.
      come first; say in the file's opening comment what results you had seen
      when you wrote the criteria.
    - When a reported number can be read in more than one way (which trials
-     form the denominator, which subset is meant), name in the criterion the
-     reading the paper's text supports, before the analysis. The notebook
-     shows every reasonable reading.
+     form the denominator, which subset is meant), list in the criterion the
+     readings the paper's text plausibly allows, before the analysis. The
+     claim is reproduced if the result matches under any of them. The
+     notebook shows every reading, the notes say which ones match, and the
+     ambiguity is recorded as a deviation.
    - For a claim of absence ("no difference", "did not change"), the
      criterion names the test and threshold the paper used. The claim is
      reproduced when that test does not find the effect and not reproduced
