@@ -10,6 +10,8 @@ here: the notebooks when it works, and the reason when it does not.
 
 Status: pilot. One target has been attempted so far.
 
+**Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
+
 ## What is here
 
 - [`docs/design.md`](docs/design.md): the design, phasing and open decisions.
@@ -44,6 +46,9 @@ python tools/entry.py lock  entries/<name>   # pin the environment
 python tools/entry.py check entries/<name>   # metadata and conventions
 python tools/entry.py run   entries/<name>   # execute from a clean environment
 ```
+
+The dashboard is one static page built from these files by
+`python tools/build_site.py`, and is republished on every push to `main`.
 
 Notebooks stream their data from the archive and must compute every result
 from it: `check` rejects embedded data, embedded images and figures read from
