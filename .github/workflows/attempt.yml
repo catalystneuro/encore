@@ -82,9 +82,9 @@ jobs:
 
       - name: Install Claude Code and the registry's tools
         run: |
-          # The credential scrub runs the agent's commands under bubblewrap, which needs
-          # unprivileged user namespaces; Ubuntu 24.04 restricts them by default.
-          sudo apt-get install -y -q bubblewrap
+          # The credential scrub runs the agent's commands in a sandbox built on bubblewrap and
+          # socat. Bubblewrap needs unprivileged user namespaces; Ubuntu 24.04 restricts them.
+          sudo apt-get install -y -q bubblewrap socat
           sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
           bwrap --ro-bind / / --unshare-all true && echo "bubblewrap works"
           npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
@@ -105,7 +105,7 @@ jobs:
           cd "$RUNNER_TEMP" && find "$GITHUB_WORKSPACE" -mindepth 1 -delete
           ls -la "$RUNNER_TEMP/work"
 
-      - name: Check the token and the permission mode
+      - name: Check the token, the permission mode and the agent's shell
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'
@@ -114,14 +114,21 @@ jobs:
         run: |
           set +e -uo pipefail
           cd "$RUNNER_TEMP"
-          claude -p "Reply with the single word ok." --model "$MODEL" --max-turns 1 \
+          # The agent runs one shell command: the length of the token as its commands see it (0 when
+          # the scrub removed it), and a marker that shows the sandboxed shell started.
+          claude -p 'Use the Bash tool to run exactly this command: printf "%s:" "$(printenv CLAUDE_CODE_OAUTH_TOKEN | wc -c)"; echo shell-ok. Then reply with only the line it printed.' \
+            --model "$MODEL" --max-turns 3 \
             --output-format stream-json --verbose --permission-prompts none --allowedTools "$TOOLS" \
             > preflight.jsonl 2> preflight.err
           mode=$(jq -r 'select(.type=="system" and .subtype=="init") | .permissionMode' preflight.jsonl)
           result=$(jq -r 'select(.type=="result") | .result' preflight.jsonl)
           echo "permission mode: $mode; reply: $result"
           tail -c 1000 preflight.err
-          [ "$result" = ok ] || { echo "::error::The CLAUDE_CODE_OAUTH_TOKEN secret did not authenticate: $result"; exit 1; }
+          case "$result" in
+            *"Failed to authenticate"*) echo "::error::The CLAUDE_CODE_OAUTH_TOKEN secret did not authenticate: $result"; exit 1;;
+          esac
+          [[ "$result" == *shell-ok* ]] || { echo "::error::The agent's shell did not run: $result"; exit 1; }
+          [[ "$result" =~ (^|[^0-9])0:shell-ok ]] || { echo "::error::The token is visible to the agent's commands"; exit 1; }
           [ "$mode" = default ] || { echo "::error::Claude Code started in permission mode $mode, not default"; exit 1; }
 
       - name: Run the agent
