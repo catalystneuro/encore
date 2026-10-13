@@ -29,6 +29,6 @@ the commit the paper archived. The attempt record, with the reasons and the diff
 paper's method, is
 [`attempts/000147-guan-2022-01.yaml`](../../attempts/000147-guan-2022-01.yaml).
 
-- `reproduce_guan_2022.ipynb`: the analysis. It takes under two minutes.
+- `reproduce_guan_2022.ipynb`: the analysis. A run takes about 90 s, streaming the data from the archive.
 - `ppcfingers.py`: loading the sessions, the crossnobis RDM, diagonal LDA and the other measures.
   Other notebooks on this dandiset can import it.

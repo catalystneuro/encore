@@ -97,7 +97,10 @@ outcomes:
     location within screens (highest 9.8%), and with folds that never split a run it is 11.3%.
     Every screen cues each location once; location and position within the screen are weakly
     associated over all trials (chi-square p = 0.037). The cued finger is classified at 93.4% from
-    the same features.
+    the same features. With folds that never split a run, 11.3% is above all 200 shuffles of
+    location within runs (highest 9.8%). Position within the screen is itself decoded at 10.5%,
+    above all 200 shuffles within screens (highest 9.5%), but after removing each position's mean
+    activity location is still classified at 11.1%.
   deviations:
   - Eight stratified folds within each session; the paper does not say how this classifier was
     cross-validated, and the authors' code uses eight folds for its classifiers.
@@ -246,7 +249,8 @@ findings:
   statement: The cue location is an index from 1 to 12, described as the screen location index of
     the cue, with no map to the grid of three rows and four columns or to screen coordinates. The
     trials table's Run and TrialNumber columns read "no description", and the start time has only
-    the NWB default description, though the data show that it is the cue onset.
+    the NWB default description. Decoding the finger over time is consistent with a start time at
+    the cue onset, but does not pin it to the cue within a few hundred milliseconds.
 - kind: other
   statement: Electrode coordinates and impedances are missing (NaN), and the participant is
     identified as P1 in the files and as NS in the paper.
@@ -300,7 +304,8 @@ verifications:
     outcome: reproduced
     reason: 0.879 with FDR over all units pooled (0.875 with FDR per session), against 0.89 plus or
       minus 0.05. No units fell below 0.1 Hz. The 0.1 Hz exclusion uses the in-window rate, while
-      the paper may mean the session-wide rate (does not affect a conclusion).
+      the paper may mean the session-wide rate. At most a few units could change (does not affect a
+      conclusion).
     response: Added the rate over the whole recording. Its lowest value is 0.147 Hz, so no unit is
       excluded by either definition.
   - claim: fig1s6a-gaze-regression
@@ -319,7 +324,8 @@ verifications:
     outcome: not_reproduced
     reason: Pooled cue-location accuracy is 0.1154, above the shuffle null's 95% range of 0.0755 to
       0.0944, with 0 of 500 shuffles reaching it; the within-finger null and finger-mean removal
-      give the same picture, and 5 of 10 sessions have binomial p < 0.05. The effect is small (11.5%
+      give the same picture, and 5 of 10 sessions have binomial p < 0.05. The finger half of the
+      criterion holds (0.934 against a null of 0.155 to 0.181). The effect is small (11.5%
       against 8.3%), but the criterion fails. Screen- or run-level location counts and location
       accuracy with folds split by screen were not shown, which would rule out a temporal-structure
       artefact, though the design makes one unlikely.
@@ -340,7 +346,7 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: The WUC difference is 0.0998, bootstrap 95% CI 0.074 to 0.127, higher in 10 of 10
-      sessions. The bootstrap t-test is a reconstruction, but the criteria use CIs, so outcomes are
+      sessions. Paired p = 5.9e-5 against the paper's 5.7e-5. The bootstrap t-test is a reconstruction, but the criteria use CIs, so outcomes are
       unaffected. The condition-order assert in load_model_rdm runs only if
       pattern_descriptors/condition exists, and the notebook never prints whether it did (does not
       affect a conclusion).
@@ -414,3 +420,132 @@ verifications:
       the block directly.
     response: The data check now prints the units table's columns, the same in every file
       (spike_times, obs_intervals, electrodes, electrode_group).
+- date: 2026-10-13
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the second run, with its conclusion cells and summary,
+    the helper module, the README and this attempt record, against the verifier's round-1 points.
+  results:
+  - claim: recording-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Separately, the README's "It takes under two minutes"
+      cannot be checked since no runtime is printed; it does not bear on any conclusion.
+    response: The README now gives the run time reported by the run tool, about 90 s (91 s and 89 s in two runs).
+  - claim: fig1b-online-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+  - claim: fig1b-errors-middle-ring-pinky
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, but only under the between-finger denominator. The outcome still rests on an
+      assumed denominator; with all errors the fraction is 0.468, with errors on finger trials
+      0.592. This cannot be fixed from the data and is recorded as a deviation.
+    response: No change. The deviation and the three fractions stay as they are.
+  - claim: fig1s4a-offline-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Separately, "So the start time marks the cue" (dataset
+      checks and summary) and "the data show that it is the cue onset" (the record's finding) are
+      not fully supported. The finger is at chance before the start time, first exceeds 0.4 in the
+      window centred at 0.6 s, and peaks at 1.0 to 1.5 s. That fits a start time at the cue, but a
+      shift of a few hundred ms would look much the same; "consistent with the cue onset" is what
+      the data support. This bears on every window-based claim, though the decoding curve makes a
+      large offset unlikely.
+    response: The dataset checks, the summary and the finding now say the decoding curve is
+      consistent with a start time at the cue onset but does not pin it within a few hundred
+      milliseconds. No outcome changes.
+  - claim: fig1s4b-calibration-accuracy
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+  - claim: fig1s5-tuned-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The lowest whole-recording rate is 0.147 Hz, so no unit is excluded either way.
+      The record dropped the round-1 note that at most a few units could change.
+    response: Added that note to the round-1 reason.
+  - claim: fig1s6a-gaze-regression
+    agrees: true
+    outcome: blocked
+    reason: Blocked is right. OLS meets the criterion under both layouts, ridge fails it under both,
+      and the layout is unknown.
+  - claim: fig1s6b-gaze-classification
+    agrees: true
+    outcome: not_reproduced
+    reason: 0.1154 against a shuffle null whose maximum is 0.0998; with folds by screen 0.1110
+      against a within-screen null whose maximum is 0.0980. The run-fold result (0.1130) has no
+      null printed, so "or runs" in the conclusion rests only on the accuracy staying close to the
+      others. Location against position within the screen gives p = 0.037 and is not followed up;
+      the within-screen shuffle also breaks that association, so a signal tied to time within the
+      screen is not excluded. Decoding position within the screen, or removing its means before
+      decoding location, would settle it. This affects how the result is read, not the outcome.
+      The record dropped the round-1 note that the finger half of the criterion holds.
+    response: Added a null for the run folds (200 shuffles of location within runs, highest 9.8%,
+      none reaching 11.3%). Added both checks. Position within the screen is decoded at 10.5%,
+      above all 200 shuffles within screens (highest 9.5%), so time within the screen is present in
+      the activity; after removing each position's mean activity, location is still classified at
+      11.1%. The conclusion now says the location signal is not explained by position within the
+      screen. The outcome is unchanged. Restored the finger note in the round-1 reason.
+  - claim: fig1s6c-control-task
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+  - claim: fig2d-rdm-structure
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+  - claim: fig2f-able-bodied-over-unstructured
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The condition order is T, I, M, R, P in all three model files and the loader now
+      fails if no order is stored. The bootstrap test is unchanged, disclosed and acceptable. The
+      record dropped the round-1 paired p = 5.9e-5.
+    response: Restored the paired p in the round-1 reason.
+  - claim: fig2s5-mc-over-pcip
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+  - claim: fig2-typical-among-individuals
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+  - claim: rdm-consistency
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+  - claim: fig3a-no-trend-to-unstructured
+    agrees: true
+    outcome: reproduced
+    reason: Every specification has a one-tailed p of 0.080 or more, from 0.096 to 0.84 in the
+      added ones. The authors' t(6) specification is still unknown, and the PC-IP fit falls over
+      sessions (p = 0.038), which leaves the reproduced weaker than it reads.
+    response: The conclusion now also says that the outcome rests on specifications chosen here and
+      that one closer to the authors' could give a different p-value. The outcome is kept.
+  - claim: fig3b-confused-pairs-no-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The run-term df stays at 83, disclosed and acceptable.
+  - claim: fig3s1-all-pairs-small-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees on the criterion; the coefficients are negative in all variants and f2 is at most
+      0.017. The summary's "f2 at most 0.012" is true only for the main regression; with the
+      session's noise covariance f2 for the session term is 0.0172. The paper's significant session
+      decrease appears only in the session-covariance variant (p = 0.0055); the main regression
+      gives p = 0.052.
+    response: The summary now says f2 at most 0.017. The dependence of the session term's
+      significance on the covariance was already stated; no change there.
+  - claim: fig4e-muscle-before-somatotopy
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+  - claim: fig4s1-model-selection
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+  - claim: fig4s4-well-isolated-units
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. The units columns are now printed.
