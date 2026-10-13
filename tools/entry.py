@@ -16,12 +16,14 @@ tied to the data:
 - notebooks are committed without outputs;
 - the lock file is present and newer requirements are not left unlocked;
 - each notebook, or a helper it imports, names the dandiset the entry uses;
+- each notebook has a cell tagged `sanity` that prints what was loaded;
 - no notebook or helper embeds a large literal array or an encoded image, or
   reads a figure from somewhere else.
 
 `run` builds a fresh virtual environment from the lock file and executes each
 notebook through a Jupyter kernel, in the entry directory. The executed copies
-go to --output-dir (default: executed/<name>/, which git ignores).
+go to --output-dir (default: executed/<name>/, which git ignores). A notebook
+that takes longer than --max-minutes fails, even if it ran without error.
 
 Requires `uv` on PATH, and `pyyaml`, `jsonschema` and `nbformat` to run this
 script itself. The entry's own dependencies come only from its lock file.
@@ -137,6 +139,8 @@ def check(entry_dir: Path) -> Report:
         nb = nbformat.read(path, as_version=4)
         if any(c.cell_type == "code" and (c.get("outputs") or c.get("execution_count")) for c in nb.cells):
             report.error(rel / name, "commit notebooks without outputs (clear them before committing)")
+        if not any("sanity" in c.metadata.get("tags", []) for c in nb.cells if c.cell_type == "code"):
+            report.error(rel / name, "no code cell tagged `sanity` (the data check; see docs/protocol.md)")
         code = code_of(path)
         for dandiset in dandisets:
             if dandiset not in code and dandiset not in helper_code:
@@ -196,7 +200,7 @@ def lock(entry_dir: Path) -> int:
     return r.returncode
 
 
-def run(entry_dir: Path, output_dir: Path, timeout: int) -> int:
+def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
     entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
     output_dir.mkdir(parents=True, exist_ok=True)
     venv = output_dir / ".venv"
@@ -219,12 +223,15 @@ def run(entry_dir: Path, output_dir: Path, timeout: int) -> int:
             cwd=entry_dir, capture_output=True, text=True)
         seconds = round(time.time() - started)
         ok = r.returncode == 0
+        error = None if ok else r.stderr[-3000:]
+        if ok and seconds > max_minutes * 60:
+            ok = False
+            error = f"took {seconds / 60:.0f} minutes; the limit is {max_minutes:.0f}"
         failed |= not ok
-        results.append({"notebook": name, "ok": ok, "seconds": seconds,
-                        "error": None if ok else r.stderr[-3000:]})
+        results.append({"notebook": name, "ok": ok, "seconds": seconds, "error": error})
         print(f"{'pass' if ok else 'FAIL'}  {name}  ({seconds} s)")
         if not ok:
-            print(r.stderr[-3000:], file=sys.stderr)
+            print(error, file=sys.stderr)
     (output_dir / "result.json").write_text(json.dumps(
         {"entry": entry["name"], "python": PYTHON_VERSION, "results": results}, indent=1) + "\n")
     return 1 if failed else 0
@@ -237,6 +244,8 @@ def main() -> int:
     parser.add_argument("entry", type=Path, help="the entry directory, e.g. entries/000582-sargolini-2006")
     parser.add_argument("--output-dir", type=Path, help="where executed notebooks go")
     parser.add_argument("--timeout", type=int, default=3600, help="seconds allowed per cell")
+    parser.add_argument("--max-minutes", type=float, default=30,
+                        help="a notebook that takes longer than this fails")
     args = parser.parse_args()
 
     entry_dir = args.entry.resolve()
@@ -253,7 +262,7 @@ def main() -> int:
         print(f"{len(report.errors)} error(s)")
         if report.errors or args.command == "check":
             return 1 if report.errors else 0
-    return run(entry_dir, output_dir, args.timeout)
+    return run(entry_dir, output_dir, args.timeout, args.max_minutes)
 
 
 if __name__ == "__main__":

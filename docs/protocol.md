@@ -1,0 +1,161 @@
+# Protocol for an attempt
+
+Version: `pilot-1`. Record this version in the attempt's provenance.
+
+This is what an agent, or a person, does to attempt a target and deposit the
+result. It is written from the first two pilot attempts
+([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+
+There are two roles. The **author** makes the attempt. The **verifier** checks
+it and must not be the author: for agents, a separate run with a separate
+context that has not seen the author's reasoning.
+
+## Author
+
+### 1. Establish what can be tested
+
+Do this before any analysis.
+
+1. Get the paper. Use the full text when it is open access; otherwise the
+   abstract, and say so. Do not copy figures.
+2. List the dandiset's files and read its metadata from the archive. Open a
+   file and list what it holds.
+3. Work out which of the paper's subjects, sessions, conditions and measured
+   variables are in the dandiset. A dandiset that names a paper may hold only
+   part of its data.
+4. Write the claims file, `claims/<dandiset>/<doi with / replaced by ->.yaml`.
+   - One claim per finding, at the level of a figure panel or a reported
+     number when the full text is available. Cover the paper's main findings,
+     including those the dandiset cannot test.
+   - `statement`: the finding in words. `source`: where the paper shows it.
+   - `expected`: the reported number and a tolerance, when there is one.
+   - `criterion`: for a claim without a number ("similar", "many", "tended
+     to"), how it will be judged. Write this before running the analysis.
+5. Decide now which claims are blocked, and why: `data_missing`,
+   `metadata_insufficient`, `methods_underspecified`, `data_unreadable`,
+   `too_large`.
+
+### 2. Check the data against its description
+
+Descriptive metadata is often wrong. For every quantity the analysis uses,
+check the description against the values: units and ranges, sampling rates,
+counts of subjects, sessions, trials and cells, the size of an arena, which
+conditions exist. Where they disagree, trust the data, say so in the notebook,
+and record it as a finding.
+
+### 3. Write the entry
+
+An entry is a directory `entries/<dandiset>-<first author>-<year>/` holding
+`entry.yaml`, `requirements.in`, one or more notebooks, and usually a helper
+module.
+
+- **Stream the data** from the archive, at a pinned dandiset version. Do not
+  download files to disk or read local paths.
+- **Compute every result from the data.** No embedded numbers, arrays or
+  images, and no figures read from files.
+- **Fix every random seed.**
+- **Put loading and reusable measures in a helper module**, so later notebooks
+  on the dandiset can import it. Say in its docstring where a parameter comes
+  from: the paper's methods, or a common choice when the methods were not
+  available.
+- **Keep it fast.** Reduce the data to what the analysis needs as it loads.
+  Aim for under ten minutes; CI fails a notebook over thirty. If the analysis
+  runs many small model fits, limit linear-algebra threads to one.
+
+The notebook has these parts, in this order:
+
+1. **Header.** The paper, the dandiset and version, whether the full text was
+   used, and a table of the claims saying which are tested and which blocked.
+2. **Data check.** A cell tagged `sanity` that prints what was loaded: counts
+   by subject, session and condition, and the ranges and units of every
+   variable used. State each check of the metadata against the data.
+3. **One section per tested claim.** Quote the claim. The cells that show the
+   result carry the tag `claim:<id>`.
+   - Print the numbers the conclusion rests on; a figure alone is not enough.
+   - Give the range of every plotted quantity, or say how many points fall
+     outside the axes.
+   - When cells or trials come from several animals, break the result down by
+     animal.
+   - When a threshold or criterion is a choice, show how the result changes
+     with it.
+   - Report how many fits failed, did not converge or had nothing to fit.
+   - End with a short conclusion beginning "**Result: ...**". Every sentence
+     in it must be backed by a number printed above it.
+4. **Summary.** A table of all claims and outcomes, how the analysis differs
+   from the paper's, and what was found about the dandiset.
+
+### 4. Lock, check and run
+
+```bash
+python tools/entry.py lock entries/<name>
+python tools/entry.py all  entries/<name>    # check, then run from a clean environment
+```
+
+Commit notebooks without outputs. Read the executed copy in
+`executed/<name>/` and confirm the conclusions still match the numbers: counts
+near a threshold can move when a random split changes.
+
+### 5. Record the attempt
+
+Write `attempts/<entry name>-<nn>.yaml`.
+
+- **One outcome per claim**, including blocked ones. The outcome describes the
+  result, not the method:
+  - `reproduced`: the result matches the claim.
+  - `partially_reproduced`: the effect is present but weaker, or holds only in
+    part.
+  - `not_reproduced`: the analysis ran and the result differs.
+  - `blocked`: the claim could not be tested; give `blocked_by` and say why.
+- **`deviations`**: every way the test differed from the paper's method or
+  data. One session of four, a substituted model, a threshold the paper does
+  not state.
+- **`notes`**: the numbers behind the outcome, stated factually.
+- **`findings`**: what the attempt found about the dandiset, whatever the
+  outcomes. These are for the data owner and the archive.
+- **`provenance`**: who is accountable, and for an agent the harness, model
+  and this protocol's version.
+
+### 6. Hand over for verification
+
+Do not verify your own attempt. Give the verifier:
+
+- the executed notebook with the conclusion cells and the summary removed;
+- the helper module;
+- the claims file;
+- the paper's text if it is open access, otherwise its abstract.
+
+After the first round, fix what it found, re-run, and hand over the full
+executed notebook for the second round. Record each round under
+`verifications`, saying what was reviewed. An outcome the verifier disagrees
+with is either changed, with the reason, or left with the disagreement
+recorded.
+
+## Verifier
+
+Be skeptical. Do not assume the analysis is right.
+
+### Round 1: without the author's conclusions
+
+1. Read the notebook, the helper module and the relevant parts of the paper.
+2. Check the code: that every number derives from the loaded data; that
+   selection, conditions and analysis windows follow the paper; units; leakage
+   between training and test data; the statistics; anything assumed and never
+   checked. Test helper functions on synthetic inputs where that is cheap.
+3. For each tested claim, decide your own outcome from the notebook's outputs.
+4. For each blocked claim, check the archive itself (its file list and
+   metadata), not the notebook, and say whether any part could be tested.
+5. Report: your outcome and reason for each claim; a list of problems, each
+   marked as affecting a conclusion or not; and what you could not check and
+   what output would have let you.
+
+### Round 2: with the author's conclusions
+
+1. Say whether you agree with each stated outcome.
+2. Check every sentence of the conclusions and the summary against the
+   outputs. Quote any that the numbers do not support.
+3. Say which of your earlier points are resolved, and list what remains that
+   bears on a conclusion.
+
+The verifier does not edit the entry. It does not download the dandiset or
+re-run the whole notebook; if a check needs that, it asks for the output to be
+added.

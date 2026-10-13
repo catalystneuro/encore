@@ -34,7 +34,7 @@ ATTEMPT = {
 }
 
 
-def notebook(code: str, tags=("claim:fig1",), outputs=False):
+def notebook(code: str, tags=("claim:fig1", "sanity"), outputs=False):
     nb = nbformat.v4.new_notebook()
     cell = nbformat.v4.new_code_cell(code)
     cell.metadata["tags"] = list(tags)
@@ -74,6 +74,11 @@ def test_a_valid_entry_passes(repo):
 def test_an_unlisted_notebook_is_an_error(repo):
     nbformat.write(notebook('"000001"'), repo / "entries" / "demo" / "extra.ipynb")
     assert any("extra.ipynb: notebook is not listed" in e for e in errors(repo))
+
+
+def test_a_notebook_needs_a_data_check_cell(repo):
+    nbformat.write(notebook('"000001"', tags=("claim:fig1",)), repo / "entries" / "demo" / "analysis.ipynb")
+    assert any("tagged `sanity`" in e for e in errors(repo))
 
 
 def test_committed_outputs_are_an_error(repo):
