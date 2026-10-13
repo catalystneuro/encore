@@ -119,30 +119,10 @@
         <div><p class="title"><a href="${href}">${esc(r.paper_title || r.name)}</a></p>
           <div class="meta">${tags(r.technique)} ${tags(r.species)}
             ${size(r.size_gb)} ${files(r.files)}
-            <a href="https://doi.org/${esc(r.paper)}">Paper</a></div>
+            <a href="https://doi.org/${esc(r.paper)}">Paper</a>
+            ${r.page ? `<a href="${root + r.page}#findings">Findings (${r.findings})</a>` : ''}</div>
           ${r.status === 'attempted' ? `<div class="meta" style="margin-top:6px">${miniBar(r.counts)}</div>` : ''}</div>
         <div class="right">${right}</div></div>`;
-    },
-    claims(r) {
-      const why = r.blocked_by ? `<span class="why">· ${esc(label('blocked_by', r.blocked_by))}</span>` : '';
-      const dev = r.deviations.length
-        ? `<p><strong>Differences from the paper's method</strong></p><ul>${r.deviations.map((d) => `<li>${esc(d)}</li>`).join('')}</ul>` : '';
-      const disagreed = r.disagreed ? '<span class="tag">verifier disagreed at first</span>' : '';
-      const nb = r.notebook ? ` · <a href="${root + r.notebook}">Notebook: ${esc(r.notebook_title)}</a>` : '';
-      return `<div class="row">
-        <div class="head">${chip(r.outcome)}<span class="source">${esc(r.source || '')}</span>${why}${disagreed}</div>
-        <p class="title"><a href="${root + r.page}#claim-${esc(r.claim)}">${esc(r.statement)}</a></p>
-        <div class="meta"><a href="${root + r.page}">Dandiset ${esc(r.dandiset)}</a><span>${esc(r.paper_title || '')}</span>${tier(r)}</div>
-        ${r.notes || dev ? `<details><summary>Reasoning${r.deviations.length ? ` and ${r.deviations.length} method difference${r.deviations.length > 1 ? 's' : ''}` : ''}</summary>
-          ${r.notes ? `<p>${esc(r.notes)}</p>` : ''}${dev}
-          <p><a href="${root + r.page}#claim-${esc(r.claim)}">Open in the dandiset's page</a>${nb}</p></details>` : ''}</div>`;
-    },
-    findings(r) {
-      return `<div class="row">
-        <div class="head"><span class="kind">${esc(label('kind', r.kind))}</span>
-          <a href="${root + r.page}#findings">Dandiset ${esc(r.dandiset)}</a>
-          <span class="source">${esc(r.paper_title || '')}</span></div>
-        <p class="title" style="font-weight:400">${esc(r.statement)}</p></div>`;
     },
   }[cfg.kind];
 

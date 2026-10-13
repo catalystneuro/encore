@@ -75,7 +75,7 @@ def built(tmp_path_factory):
 
 def test_every_page_is_built(built):
     data, out = built
-    for page in ("index.html", "dandisets/index.html", "claims/index.html", "findings/index.html",
+    for page in ("index.html", "dandisets/index.html",
                  "assets/app.css", "assets/list.js", "assets/favicon.svg", "assets/favicon-32.png",
                  "assets/favicon-180.png", "registry.json"):
         assert (out / page).is_file(), page
@@ -92,8 +92,8 @@ def test_rows_match_the_attempts(built):
     attempts = [a for atts in current.values() for a in atts]
     rows = {kind: json.loads((out / "data" / f"{kind}.json").read_text()) for kind in site.LISTS}
     assert len(rows["dandisets"]) == data["queue_counts"]["with_a_paper"]
-    assert len(rows["claims"]) == sum(len(a["outcomes"]) for a in attempts)
-    assert len(rows["findings"]) == sum(len(a["findings"]) for a in attempts)
+    assert sum(r["claims"] or 0 for r in rows["dandisets"]) == sum(len(a["outcomes"]) for a in attempts)
+    assert sum(r["findings"] or 0 for r in rows["dandisets"]) == sum(len(a["findings"]) for a in attempts)
     assert sum(1 for r in rows["dandisets"] if r["status"] == "attempted") == len(current)
 
 
@@ -174,3 +174,15 @@ def test_every_page_declares_the_favicon(built):
     for page in list(out.glob("*.html")) + list(out.glob("*/index.html")) + list(out.glob("dandisets/*/index.html")):
         href = re.search(r'<link rel="icon" href="([^"]+)"', page.read_text()).group(1)
         assert (page.parent / href).resolve().is_file(), page
+
+
+def test_findings_are_reached_from_the_dandisets_list(built):
+    data, out = built
+    assert not (out / "findings").exists() and not (out / "claims").exists()
+    rows = json.loads((out / "data" / "dandisets.json").read_text())
+    for dandiset, attempts in site.current_attempts(data).items():
+        row = next(r for r in rows if r["id"] == dandiset)
+        assert row["findings"] == sum(len(a["findings"]) for a in attempts)
+        assert row["found"] == sorted({f["kind"] for a in attempts for f in a["findings"]})
+        assert 'id="findings"' in (out / row["page"] / "index.html").read_text()
+    assert "#findings" in (REPO / "tools" / "site_assets" / "list.js").read_text()

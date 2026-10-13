@@ -69,8 +69,8 @@ python tools/entry.py handover entries/<name>  # the verifier's package, without
 
 The dashboard is a static site built from these files by
 `python tools/build_site.py` and republished on every push to `main`: an
-overview, filterable lists of dandisets, claims and findings, and a page per
-attempted dandiset. Every filtered view is a link. `python tools/build_site.py
+overview, a filterable list of dandisets, and a page per attempted dandiset
+with its claims and its findings about the data. Every filtered view is a link. `python tools/build_site.py
 --demo 150 --output /tmp/demo` builds it from made-up attempts, to see how it
 behaves at scale.
 
