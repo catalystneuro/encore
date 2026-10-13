@@ -469,6 +469,9 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <title>{e(title)}</title>
 <meta name="description" content="Which findings of papers can be reproduced from the open data on the DANDI Archive.">
 <script>try{{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}}catch(e){{}}</script>
+<link rel="icon" href="{root}assets/favicon.svg" type="image/svg+xml">
+<link rel="alternate icon" href="{root}assets/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="{root}assets/favicon-180.png">
 <link rel="stylesheet" href="{root}assets/app.css"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
   <a class="brand" href="{home}">Reproduction registry</a>{nav}

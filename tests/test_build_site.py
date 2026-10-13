@@ -76,7 +76,8 @@ def built(tmp_path_factory):
 def test_every_page_is_built(built):
     data, out = built
     for page in ("index.html", "dandisets/index.html", "claims/index.html", "findings/index.html",
-                 "assets/app.css", "assets/list.js", "registry.json"):
+                 "assets/app.css", "assets/list.js", "assets/favicon.svg", "assets/favicon-32.png",
+                 "assets/favicon-180.png", "registry.json"):
         assert (out / page).is_file(), page
     for dandiset in {a["dandiset"] for a in data["attempts"]}:
         assert (out / "dandisets" / dandiset / "index.html").is_file()
@@ -166,3 +167,10 @@ def test_sizes_are_shown_in_a_readable_unit(gb, text):
                                      (1234567, "1.2M files")])
 def test_file_counts_are_shortened_when_large(n, text):
     assert site.human_count(n, "file") == text
+
+
+def test_every_page_declares_the_favicon(built):
+    _, out = built
+    for page in list(out.glob("*.html")) + list(out.glob("*/index.html")) + list(out.glob("dandisets/*/index.html")):
+        href = re.search(r'<link rel="icon" href="([^"]+)"', page.read_text()).group(1)
+        assert (page.parent / href).resolve().is_file(), page
