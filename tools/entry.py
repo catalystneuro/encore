@@ -74,11 +74,18 @@ def schema(name: str) -> Draft202012Validator:
     return Draft202012Validator(json.loads((ROOT / "schemas" / f"{name}.schema.json").read_text()))
 
 
-def validate(report: Report, path: Path, schema_name: str) -> dict | None:
+def load(report: Report, path: Path):
+    """The parsed file, or None after reporting that it is not valid YAML."""
     try:
-        data = yaml.safe_load(path.read_text())
+        return yaml.safe_load(path.read_text())
     except yaml.YAMLError as e:
         report.error(path.relative_to(ROOT), f"not valid YAML: {e}")
+        return None
+
+
+def validate(report: Report, path: Path, schema_name: str) -> dict | None:
+    data = load(report, path)
+    if data is None:
         return None
     for err in sorted(schema(schema_name).iter_errors(_plain(data)), key=lambda e: list(e.path)):
         where = "/".join(str(p) for p in err.path) or "(top level)"
@@ -170,15 +177,13 @@ def check(entry_dir: Path) -> Report:
             _derivation_checks(report, rel / name, (entry_dir / name).read_text())
 
     # Claims and attempts that go with this entry.
-    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
-        validate(report, path, "claims")
     claims_by_target = {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
-        data = yaml.safe_load(path.read_text()) or {}
+        data = validate(report, path, "claims") or {}
         claims_by_target[(data.get("dandiset"), data.get("paper"))] = {c["id"] for c in data.get("claims", [])}
     for path in sorted((ROOT / "attempts").glob("*.yaml")):
-        attempt = yaml.safe_load(path.read_text()) or {}
-        if attempt.get("entry") != entry["name"]:
+        attempt = load(report, path)
+        if not isinstance(attempt, dict) or attempt.get("entry") != entry["name"]:
             continue
         validate(report, path, "attempt")
         where = path.relative_to(ROOT)
