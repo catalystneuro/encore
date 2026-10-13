@@ -1,0 +1,270 @@
+schema_version: 1
+id: 000207-zheng-2022-01
+dandiset: "000207"
+dandiset_version: 0.220216.0323
+paper: doi:10.1038/s41593-022-01020-w
+date: 2026-10-13
+entry: 000207-zheng-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code
+    model: not recorded
+    protocol: pilot-1
+outcomes:
+- claim: fig2a-order-accuracy
+  outcome: reproduced
+  notebook: reproduce_zheng_2022.ipynb
+  output: claim:fig2a-order-accuracy
+  measured: 0.528
+  notes: Time discrimination accuracy is 0.528 across a hard boundary, 0.728 with no boundary and
+    0.720 with a soft boundary (paper 0.53, 0.73, 0.73). It is lower across a hard boundary in 18
+    of 19 subjects (paired p < 1e-6 against both).
+  deviations:
+  - 19 of the paper's 20 subjects; the twentieth is not in the dandiset.
+  - Trials without a response are kept as coded in the file; leaving them out moves no mean by
+    more than 0.01.
+  - Paired tests over subjects are added to the paper's one-way ANOVA.
+- claim: fig2b-order-reaction-time
+  outcome: reproduced
+  notebook: reproduce_zheng_2022.ipynb
+  output: claim:fig2b-order-reaction-time
+  measured: 2.054
+  notes: Mean reaction time is 2.05 s across a hard boundary, 1.62 s with no boundary and 1.54 s
+    with a soft boundary (paper 2.10, 1.62, 1.59 s), longer across a hard boundary in 18 of 19
+    subjects. The file's RT column is used, which runs from the disappearance of the frames.
+  deviations:
+  - 19 of the paper's 20 subjects.
+  - Trials without a response have an RT of 0 in the file and are kept; leaving them out gives
+    2.08, 1.64 and 1.56 s.
+- claim: fig2c-order-confidence
+  outcome: reproduced
+  notebook: reproduce_zheng_2022.ipynb
+  output: claim:fig2c-order-confidence
+  measured: 1.975
+  notes: Mean confidence is 1.98 across a hard boundary, 2.45 with no boundary and 2.51 with a
+    soft boundary (paper 1.95, 2.52, 2.59), lower across a hard boundary in 18 of 19 subjects.
+  deviations:
+  - 19 of the paper's 20 subjects.
+  - Trials without a response have a confidence of 0 in the file and are kept; leaving them out
+    gives 2.00, 2.48 and 2.55.
+- claim: edfig2a-recognition-similar
+  outcome: reproduced
+  notebook: reproduce_zheng_2022.ipynb
+  output: claim:edfig2a-recognition-similar
+  notes: Scene recognition accuracy over targets and foils is 0.738, 0.739 and 0.718 for clips
+    with no, a soft and a hard boundary (paper 0.76, 0.75, 0.75), with no difference in a one-way
+    ANOVA (F(2, 54) = 0.38, p = 0.69). Accuracy for hard-boundary clips is the lowest in every
+    variant, by 0.01 to 0.05, without reaching significance.
+  deviations:
+  - 19 of the paper's 20 subjects.
+  - The paper does not say whether foils are counted. Targets and foils are; targets alone give
+    0.737, 0.718 and 0.688 (p = 0.59).
+- claim: fig2def-recognition-vs-boundary-distance
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The dandiset does not give the position of a tested frame within its clip, only whether
+    it came from the first or the second half (frameA or frameB in its name). For clips with soft
+    or hard boundaries the frame names also do not identify the clip.
+- claim: fig3c-boundary-cells
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2022.ipynb
+  output: claim:fig3c-boundary-cells
+  measured: 0.0018
+  notes: 1 of 549 units (0.18%) meets the Methods' definition of a boundary cell, against 42 of
+    580 (7.24%) in the paper. At least one cell appears in 42 of 300 label shuffles. The count is
+    0 or 1 in 20 repeats of the permutation tests, 1 with either alternative set of soft
+    boundaries, 2 at alpha = 0.10, and 10 to 15 under a looser reading that pools conditions. The
+    chance level here is 0.03% against the paper's 2.11%, so the paper's procedure was probably
+    looser than its Methods' wording. The authors' published code was read and contains no cell
+    selection, so it could not settle this. The outcome is the same under every reading tried.
+  deviations:
+  - 549 units from 18 sessions against the paper's 580 from 19. Subject 19 is left out because
+    its spike times are not on the clock of the trial tables, and the dandiset's units differ
+    from the paper's in number and in their split by region.
+  - The paper's "permutation t-test" is implemented as a sign-flip test for before against after
+    and a one-sided label-permutation test between conditions, with 1000 permutations.
+  - Soft-boundary trials are every soft boundary of a session, in SB clips and in HB clips (75
+    per session). The Methods do not say; this follows the authors' published plotting code
+    (B01_raster_psth_encoding_BAligned_BSep_NWB.m, lines 29 to 37). The first soft boundary of
+    each SB clip, used before that code was read, is kept in the notebook as an alternative.
+  - Each condition is tested on its own, five tests per class, which is the literal reading of
+    the Methods. The authors' published code has no cell selection to check this against.
+  - 300 label shuffles for the chance level instead of 1000.
+- claim: fig3g-event-cells
+  outcome: partially_reproduced
+  notebook: reproduce_zheng_2022.ipynb
+  output: claim:fig3g-event-cells
+  measured: 0.0128
+  notes: 7 of 549 units (1.28%) meet the Methods' definition of an event cell, more than in any of
+    300 label shuffles (mean 1.22, maximum 6), but about a fifth of the paper's 36 of 580 (6.20%).
+    The count is 5 to 8 over 20 repeats of the permutation tests. Whether it exceeds chance
+    depends on the reading. With the first soft boundary of SB clips as the SB trials there are 5
+    cells and 3 of 300 shuffles give as many; without the 13 HB clips that have a soft boundary
+    before the hard one there are 2; at alpha = 0.10 there are 12. The proportion is far below
+    the paper's under every reading.
+  deviations:
+  - The same as for fig3c-boundary-cells.
+- claim: fig3-cell-regions
+  outcome: not_reproduced
+  notebook: reproduce_zheng_2022.ipynb
+  output: claim:fig3-cell-regions
+  notes: No boundary cell among 53 parahippocampal units (paper 18 of 68). Event cells are 2 of
+    267 in the hippocampus, the lowest proportion and within its chance level, 3 of 229 in the
+    amygdala and 2 of 53 in the parahippocampal gyrus. With 8 cells in all, regional proportions
+    carry little information.
+  deviations:
+  - The same as for fig3c-boundary-cells.
+- claim: fig3dh-no-onset-response
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The dandiset does not say which units the paper classified as boundary or event cells,
+    and the Methods' definitions select 1 and 7 units here, fewer than the 10 of each that the
+    claim's criterion requires. The authors' published code does not select or list the cells.
+    The notebook reports that none of the 8 responds to clip onsets or offsets.
+- claim: edfig5-clip-onset-cells
+  outcome: reproduced
+  notebook: reproduce_zheng_2022.ipynb
+  output: claim:edfig5-clip-onset-cells
+  measured: 0.179
+  notes: 98 of 549 units (17.9%) fire more after clip onset, against 13.1% in the paper; the gap
+    of 4.8 points is just inside the tolerance of 5, and 98 is more than a proportion of 13.1%
+    would plausibly give (p = 9e-4). 26 units (4.7%) fire more after clip offset, the chance
+    level, against 0.7% in the paper. Seven sessions hold 82 of the 98 onset-responsive units.
+    None of the 8 boundary and event cells found responds to onsets or offsets, which is too few
+    to judge that part of the claim.
+  deviations:
+  - 549 units from 18 sessions against the paper's 580 from 19.
+  - The paper's one-tailed test does not state its direction; an increase is tested. A decrease
+    is found in 3.1% of units at onset.
+  - The permutation test is a sign-flip test with 1000 permutations.
+- claim: fig3j-response-latency
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the paper's boundary and event cells, which the dandiset does not label; 1 and 7
+    are found here, fewer than the 10 of each that the claim's criterion requires.
+- claim: fig3-outside-mtl
+  outcome: blocked
+  blocked_by: data_missing
+  notes: All 565 units in the dandiset are in the hippocampus, amygdala or parahippocampal gyrus.
+    The paper's 405 units from other areas are not included.
+- claim: fig4c-boundary-cells-predict-recognition
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Scene recognition trials with soft or hard boundaries cannot be linked to the clip they
+    test. Their frame names carry 10 distinct numbers, with up to 12 trials per number, where the
+    clips are numbered 1 to 30. The authors' published code links nothing either; it groups test
+    trials only by boundary type. The paper's boundary cells are not labelled.
+- claim: fig4h-event-cells-phase-predicts-order
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds spike times only. There are no local field potentials from which to
+    compute theta phase.
+- claim: fig5d-state-shift
+  outcome: partially_reproduced
+  notebook: reproduce_zheng_2022.ipynb
+  output: claim:fig5d-state-shift
+  notes: After a hard boundary the distance from the state at the boundary is larger than in clips
+    with no boundary (9.03 against 7.42, p = 0.0001) and larger than before the boundary (after
+    minus before 0.84 against 0.04, p = 0.004); 12 of 18 subjects show it alone. After a soft
+    boundary the distance is larger than without a boundary (8.15, p = 0.002) but equally large
+    before the boundary (after minus before 0.00, p = 0.55). That the shift completes within
+    300 ms was not shown.
+  deviations:
+  - 549 units from 18 sessions against the paper's 580 from 19.
+  - Pseudo-trials are matched across subjects by clip name; the paper does not say how.
+  - Principal components are fitted on the three condition averages from 1 s before to 1.5 s
+    after the boundary, giving 22 components for 99% of the variance against the paper's 55.
+  - A trial is z-scored from 1 s before to 8 s after clip onset; the paper says "the entire
+    trial".
+  - Clips with soft boundaries are aligned to their first soft boundary, one pseudo-trial per
+    clip. The authors' published code does not cover this analysis.
+  - The comparison with the second before the boundary is this attempt's; the paper shows curves.
+- claim: fig5ij-state-shift-predicts-memory
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the memory outcome of each clip with a soft or hard boundary. Test trials of those
+    conditions cannot be linked to clips, in either memory test, and the authors' published code
+    contains no mapping.
+- claim: fig6-reinstatement
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs each scene recognition trial paired with the encoding of its clip. That is possible
+    only for clips with no boundary, which are the control condition of the claim.
+- claim: fig6i-reinstatement-timing
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig6-reinstatement. The time of the tested frame within its clip is not given either.
+- claim: fig6jm-reinstatement-confidence
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig6-reinstatement.
+- claim: fig6no-false-alarm-similarity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The similarity ratings of targets and foils, collected from a separate group of raters,
+    are not in the dandiset. The trials could not be linked to clips either.
+findings:
+- kind: metadata_error
+  statement: In the most recent published version (0.230530.1822) the spike times of subjects 13,
+    17 and 18 are shifted by 191.5, -16.8 and 9.3 s against the encoding trials, which did not
+    move, so spikes and clips no longer line up. The version the paper cites (0.220216.0323)
+    does not have this shift.
+- kind: metadata_error
+  statement: The spike times of subject 19 are near -7.02e12 s while its events run from 0 to
+    2892 s, in both versions read. Its 16 units cannot be aligned to the task.
+- kind: identifier_missing
+  statement: Scene recognition and time discrimination trials with soft or hard boundaries cannot
+    be linked to the clips they test. Their frame names are numbered differently from the clips
+    (10 distinct numbers in recognition, 1 to 60 in time discrimination, against clips 1 to 30).
+    The position of a tested frame within its clip is not given.
+- kind: identifier_missing
+  statement: The dandiset does not say which units the paper classified as boundary cells or
+    event cells, so the paper's selection cannot be compared with a new one cell by cell.
+- kind: data_missing
+  statement: The dandiset has no local field potentials, no units outside the medial temporal
+    lobe (the paper has 405), no similarity ratings and no stimuli, and it lacks the behaviour of
+    one of the paper's 20 subjects.
+- kind: selection_undocumented
+  statement: The dandiset has 565 medial temporal lobe units where the paper analyses 580, with a
+    different split by region (hippocampus 279 against 343, amygdala 233 against 169,
+    parahippocampal gyrus 53 against 68). Nothing says how the two sets relate.
+- kind: metadata_error
+  statement: Several column descriptions do not match the values. stimCategory holds 0, 1, 2 and
+    is described as 1, 2, 3. A missing second or third boundary is stored as the clip's start
+    time and described as 0. The accuracy code 0 for "no response" is never used; trials without
+    a response are coded incorrect, or, in 20 time discrimination trials, correct. resp_value is
+    1 for those trials and described as -1. RT is measured from the disappearance of the frames,
+    which its description does not say, and is negative in 151 time discrimination trials.
+- kind: metadata_error
+  statement: The events series holds 43 entries with a code 0 that its description does not list,
+    with timestamps as low as -7.0e12 s. The spike times have no stated unit.
+- kind: methods_unavailable
+  statement: The paper's Methods do not specify the permutation test, which soft boundaries are
+    used, or how trials are matched across subjects for the pseudopopulation. The definitions of
+    boundary and event cells, read literally, give a chance level about seventy times lower than
+    the paper reports.
+- kind: methods_unavailable
+  statement: The code the dandiset links to (github.com/rutishauserlab/cogboundary-zheng, commit
+    60f7ece) is four scripts that plot rasters from the NWB files. It contains none of the
+    paper's analyses, no cell selection, chance level, statistics, state-space or reinstatement
+    analysis, and nothing that links a tested frame to its clip.
+- kind: metadata_error
+  statement: The authors' plotting code drops missing boundaries by testing for a stored time
+    above 0. In version 0.220216.0323 a missing boundary is stored as the clip's start time, so
+    the code would keep 150 soft-boundary rows where 75 exist and its fixed row ranges for the
+    three conditions would be wrong. In version 0.230530.1822 missing boundaries are NaN and the
+    code works, but that version has the shifted spike times.
+- kind: other
+  statement: Methods and published code disagree on the firing-rate traces. The Methods give a
+    200 ms window moved in 2 ms steps; the code uses 10 ms bins smoothed with a Gaussian window
+    of 20 bins. The code shows 0.5 s before and 1 s after a boundary. It also treats every soft
+    boundary, including those inside hard-boundary clips, as a soft-boundary trial (75 per
+    session), which the Methods do not state.
+- kind: other
+  statement: Four hard-boundary clips (HB_7, HB_11, HB_14, HB_15) drive strong population
+    activity in the half second before the hard boundary; all contain a soft boundary between
+    2.75 and 3.40 s. This raises the baseline of a before-against-after test of the hard
+    boundary.

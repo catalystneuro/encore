@@ -155,3 +155,46 @@ Outcome: four claims reproduced, two partially, four blocked. See
 One to four minutes of compute per run locally. The attempt and two
 verification rounds took one working session; the verifier used roughly as
 many tokens as the attempt.
+
+## 000207, Zheng et al. 2022 (2026-10-13): first attempt by an agent following the protocol
+
+Outcome: five claims reproduced, two partially, two not reproduced, eleven
+blocked. **Not yet verified**: the pilot was paused during the first
+verification round. See
+[`attempts/000207-zheng-2022-01.yaml`](../attempts/000207-zheng-2022-01.yaml).
+
+This attempt was made by an agent given only the repository and
+[`protocol.md`](protocol.md), to test whether the protocol can be followed by
+someone who did not write it. It could: the entry passed the checks first
+time. Notes for when the pilot resumes:
+
+- **Open question on the main outcome.** The paper reports 42 of 580 boundary
+  cells against a chance level of 2.11%. Following the Methods literally gives
+  1 of 549 with a chance level near 0.03%. Chance levels that far apart mean
+  the two procedures are not the same, so `blocked` with
+  `methods_underspecified` may describe this better than `not_reproduced`.
+  The verifier was asked to weigh this and had not reported.
+- **The lab's linked code did not contain the analysis.** It plots rasters.
+  The protocol should have the author check what a linked repository holds,
+  consult it before writing criteria, and record the commit read.
+- **Which dandiset version to pin is not in the protocol**, and it decided
+  whether three sessions were usable: the latest version has spike times
+  shifted against the events in three subjects.
+- **Criteria written "before the analysis" were in practice written after the
+  data check**, which already shows results. The protocol should either accept
+  that and require disclosure, or have claims written before data is opened.
+- **Tolerances are invented by the author.** One claim landed at 0.049 against
+  a self-set 0.05. A default rule is needed.
+- **Claims that depend on another claim's result** (analyses of cells that
+  were not found) have no defined outcome.
+- **Schema gaps:** one expected value per claim where papers report several;
+  one blocking reason per outcome; no finding kind for a data error or for
+  published code and data that disagree.
+- **Tooling gaps:** `check` does not confirm every claim has an outcome, that
+  versions agree across files, or that nothing reads local paths. A `handover`
+  command to build the verifier's package would replace ad hoc scripts.
+- **Cost.** About 400,000 tokens for the author across two rounds, several
+  times the first two targets: twenty claims and a dandiset with real problems.
+
+The full feedback from the agent, twenty points, should be worked through
+before the next attempt.
