@@ -201,3 +201,24 @@ def test_notebooks_run_on_a_kernel_of_the_entrys_own_environment(repo, monkeypat
     execute, options = next((c, k) for c, k in commands if c[1:4] == ["-m", "jupyter", "nbconvert"])
     assert f"--ExecutePreprocessor.kernel_name={name}" in execute
     assert options["env"]["JUPYTER_PATH"].startswith(venv)
+
+
+def test_a_claim_may_have_several_expected_values_and_depend_on_another(repo):
+    claims = {**CLAIMS, "claims": [
+        {"id": "fig1", "statement": "S.", "source": "Figure 1",
+         "expected": [{"quantity": "a", "value": 0.5, "tolerance": 0.05}, {"quantity": "b", "value": 2.0}]},
+        {"id": "fig2", "statement": "T.", "source": "Figure 2", "depends_on": ["fig1"]}]}
+    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    attempt = {**ATTEMPT, "outcomes": ATTEMPT["outcomes"] + [{"claim": "fig2", "outcome": "blocked",
+                                                              "blocked_by": "other", "notes": "n"}],
+               "inputs": [{"what": "model RDMs", "source": "https://github.com/x/y at abc123"}],
+               "findings": [{"kind": "format_error", "statement": "Spike times are not sorted."}]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert errors(repo) == []
+
+
+def test_a_claim_cannot_depend_on_one_that_is_not_there(repo):
+    claims = {**CLAIMS, "claims": CLAIMS["claims"] + [
+        {"id": "fig2", "statement": "T.", "source": "Figure 2", "depends_on": ["fig9"]}]}
+    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    assert any("depends on 'fig9'" in e for e in errors(repo))
