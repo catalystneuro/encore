@@ -22,7 +22,8 @@ tied to the data:
   reads a figure from somewhere else.
 
 `run` builds a fresh virtual environment from the lock file and executes each
-notebook through a Jupyter kernel, in the entry directory. The executed copies
+notebook through a Jupyter kernel installed in that environment, in the entry
+directory. The executed copies
 go to --output-dir (default: executed/<name>/, which git ignores). A notebook
 that takes longer than --max-minutes fails, even if it ran without error.
 
@@ -40,6 +41,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import re
 import shutil
 import subprocess
@@ -239,11 +241,15 @@ def lock(entry_dir: Path) -> int:
 def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
     entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
     output_dir.mkdir(parents=True, exist_ok=True)
-    venv = output_dir / ".venv"
+    venv = (output_dir / ".venv").resolve()
     python = venv / "bin" / "python"
+    # A kernel of the entry's own environment, under a name no other kernel on the machine has, so
+    # nbconvert cannot pick up some other "python3" kernel (a user's or a conda install's).
+    kernel = f"registry-{entry_dir.name}"
     for cmd in (["uv", "venv", "--quiet", "--clear", "--python", PYTHON_VERSION, str(venv)],
                 ["uv", "pip", "install", "--quiet", "--python", str(python),
-                 "-r", str(entry_dir / "requirements.lock.txt"), *HARNESS]):
+                 "-r", str(entry_dir / "requirements.lock.txt"), *HARNESS],
+                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
         if subprocess.run(cmd).returncode != 0:
             print(f"error: could not build the environment ({' '.join(cmd[:3])})", file=sys.stderr)
             return 1
@@ -254,9 +260,10 @@ def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> 
         started = time.time()
         r = subprocess.run(
             [str(python), "-m", "jupyter", "nbconvert", "--to", "notebook", "--execute",
-             f"--ExecutePreprocessor.timeout={timeout}", "--ExecutePreprocessor.kernel_name=python3",
+             f"--ExecutePreprocessor.timeout={timeout}", f"--ExecutePreprocessor.kernel_name={kernel}",
              "--output-dir", str(output_dir.resolve()), "--output", name, name],
-            cwd=entry_dir, capture_output=True, text=True)
+            cwd=entry_dir, capture_output=True, text=True,
+            env={**os.environ, "JUPYTER_PATH": str(venv / "share" / "jupyter")})
         seconds = round(time.time() - started)
         ok = r.returncode == 0
         error = None if ok else r.stderr[-3000:]
