@@ -143,8 +143,15 @@ Outcome: four claims reproduced, two partially, four blocked. See
 - The metadata names the paper without saying which part of it the data
   covers.
 
+- **A notebook that is fast locally can be thirty times slower in CI.** The
+  first CI run of this entry took 49 minutes against under four locally,
+  nearly all of it in thousands of small model fits, each using several
+  linear-algebra threads on a runner with few cores. Limiting those fits to one
+  thread fixed it. The runtime that counts is the one in CI, and the check
+  should fail an entry that comes close to the time limit.
+
 ### Cost
 
-About four minutes of compute per run. The attempt and two verification rounds
-took one working session; the verifier used roughly as many tokens as the
-attempt.
+One to four minutes of compute per run locally. The attempt and two
+verification rounds took one working session; the verifier used roughly as
+many tokens as the attempt.

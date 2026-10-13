@@ -24,6 +24,7 @@ from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import PoissonRegressor
 from sklearn.preprocessing import StandardScaler
+from threadpoolctl import threadpool_limits
 
 DANDISET = "000127"
 VERSION = "0.220113.0359"
@@ -249,6 +250,13 @@ def cross_validate(models: dict[str, np.ndarray], counts: np.ndarray, passive: n
     Scoring single folds of one trial type leaves about 35 trials, too few for
     a stable pseudo-R2 at these spike counts.
     """
+    # Thousands of tiny fits: letting the linear-algebra library use several
+    # threads for each one makes them far slower, not faster.
+    with threadpool_limits(limits=1):
+        return _cross_validate(models, counts, passive, within, rng)
+
+
+def _cross_validate(models, counts, passive, within, rng) -> dict:
     n = len(passive)
     types = {"active": ~passive, "passive": passive}
     fold_scores = {name: [] for name in models}
