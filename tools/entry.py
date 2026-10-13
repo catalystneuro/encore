@@ -4,6 +4,7 @@
     python tools/entry.py check entries/<name>   # validate metadata and conventions
     python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
     python tools/entry.py all   entries/<name>   # check, then run
+    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
 
 `lock` compiles the entry's requirements.in (direct dependencies only) into
 requirements.lock.txt with every version pinned.
@@ -25,6 +26,12 @@ notebook through a Jupyter kernel, in the entry directory. The executed copies
 go to --output-dir (default: executed/<name>/, which git ignores). A notebook
 that takes longer than --max-minutes fails, even if it ran without error.
 
+`handover` builds what a verifier is given in its first round
+(docs/protocol.md): the executed notebooks with the conclusions removed (every
+markdown cell that begins "**Result:" and everything from the "## Summary"
+heading on), the helper modules and the claims files, in
+executed/<name>/handover/. Run the entry first.
+
 Requires `uv` on PATH, and `pyyaml`, `jsonschema` and `nbformat` to run this
 script itself. The entry's own dependencies come only from its lock file.
 """
@@ -34,6 +41,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import shutil
 import subprocess
 import sys
 import time
@@ -50,6 +58,7 @@ MAX_LITERAL_NUMBERS = 200                 # more numbers than this in one litera
 
 EMBEDDED_IMAGE = re.compile(r"data:image/|iVBORw0KGgo|/9j/4AAQ")
 READS_A_FIGURE = re.compile(r"""(imread|Image\.open|IPython\.display\.Image|display\.Image)\s*\(""")
+LOCAL_PATH = re.compile(r"""["'](?:~/|/(?:Users|home|tmp|mnt|media|Volumes|data|scratch)/|[A-Za-z]:[\\/])""")
 LONG_LITERAL = re.compile(r"[\[(]\s*(?:-?\d+\.?\d*(?:e-?\d+)?\s*,\s*){%d,}" % MAX_LITERAL_NUMBERS)
 
 
@@ -128,10 +137,16 @@ def check(entry_dir: Path) -> Report:
             if name and not name.startswith("#") and name not in pinned:
                 report.error(rel / "requirements.lock.txt", f"{name} is required but not locked; re-run lock")
 
-    dandisets = [r["id"].split(":", 1)[1].split("/")[0]
-                 for r in entry.get("related", []) if r["id"].startswith("dandi:")]
-    if entry.get("type") in ("orientation", "reproduction") and not dandisets:
-        report.error(rel / "entry.yaml", "an orientation or reproduction entry must relate to a dandiset")
+    used = [r["id"].split(":", 1)[1].partition("/")
+            for r in entry.get("related", []) if r["id"].startswith("dandi:")]
+    dandisets = [d for d, _, _ in used]
+    versions = {d: v for d, _, v in used}
+    if entry.get("type") in ("orientation", "reproduction"):
+        if not dandisets:
+            report.error(rel / "entry.yaml", "an orientation or reproduction entry must relate to a dandiset")
+        for d, v in versions.items():
+            if not v:
+                report.error(rel / "entry.yaml", f"pin the version of dandiset {d}, as dandi:{d}/<version>")
     helper_code = "\n".join((entry_dir / h).read_text() for h in helpers if (entry_dir / h).is_file())
 
     for name in [n for n in listed if n in present]:
@@ -145,6 +160,10 @@ def check(entry_dir: Path) -> Report:
         for dandiset in dandisets:
             if dandiset not in code and dandiset not in helper_code:
                 report.error(rel / name, f"neither the notebook nor a helper names dandiset {dandiset}")
+            version = versions[dandiset]
+            if version and version not in code and version not in helper_code:
+                report.error(rel / name, f"neither the notebook nor a helper names version {version} "
+                                         f"of dandiset {dandiset}, which entry.yaml pins")
         _derivation_checks(report, rel / name, code)
     for name in helpers:
         if (entry_dir / name).is_file():
@@ -162,10 +181,20 @@ def check(entry_dir: Path) -> Report:
         if attempt.get("entry") != entry["name"]:
             continue
         validate(report, path, "attempt")
+        where = path.relative_to(ROOT)
+        pinned = versions.get(attempt.get("dandiset"))
+        if pinned and attempt.get("dandiset_version") != pinned:
+            report.error(where, f"dandiset_version {attempt.get('dandiset_version')!r} differs from "
+                                f"{pinned!r} in entry.yaml")
         known = claims_by_target.get((attempt.get("dandiset"), attempt.get("paper")))
         if known is None:
-            report.error(path.relative_to(ROOT), "no claims file for this dandiset and paper")
+            report.error(where, "no claims file for this dandiset and paper")
             continue
+        recorded = [o.get("claim") for o in attempt.get("outcomes", [])]
+        for claim in sorted(known - set(recorded)):
+            report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
+        for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
+            report.error(where, f"claim {claim!r} has more than one outcome")
         for outcome in attempt.get("outcomes", []):
             if outcome.get("claim") not in known:
                 report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is not in the claims file")
@@ -185,6 +214,8 @@ def _derivation_checks(report: Report, where, code: str) -> None:
         report.error(where, "contains an encoded image; figures must be computed from the data")
     if READS_A_FIGURE.search(code):
         report.error(where, "reads an image file; figures must be computed from the data")
+    if LOCAL_PATH.search(code):
+        report.error(where, "names a local path; stream the data from the archive")
     if LONG_LITERAL.search(code):
         report.error(where, f"contains a literal of more than {MAX_LITERAL_NUMBERS} numbers; "
                             "results must be computed from the data")
@@ -237,10 +268,51 @@ def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> 
     return 1 if failed else 0
 
 
+# --- handover -----------------------------------------------------------------
+
+def strip_conclusions(nb):
+    """The notebook without the author's conclusions, for a verifier's first round."""
+    kept = []
+    for cell in nb.cells:
+        text = cell.source.lstrip()
+        if cell.cell_type == "markdown" and text.startswith("## Summary"):
+            break
+        if cell.cell_type == "markdown" and text.startswith("**Result:"):
+            continue
+        kept.append(cell)
+    nb.cells = kept
+    return nb
+
+
+def handover(entry_dir: Path, output_dir: Path) -> int:
+    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+    target = output_dir / "handover"
+    target.mkdir(parents=True, exist_ok=True)
+    for notebook in entry["notebooks"]:
+        executed = output_dir / notebook["path"]
+        if not executed.is_file():
+            print(f"error: no executed copy of {notebook['path']} in {output_dir}; run the entry first",
+                  file=sys.stderr)
+            return 1
+        nb = strip_conclusions(nbformat.read(executed, as_version=4))
+        nbformat.write(nb, target / notebook["path"])
+    for helper in entry.get("helpers", []):
+        shutil.copy(entry_dir / helper, target / helper)
+    papers = {r["id"] for r in entry.get("related", []) if r["relation"] == "reproduces"}
+    dandisets = {r["id"].split(":", 1)[1].split("/")[0]
+                 for r in entry.get("related", []) if r["id"].startswith("dandi:")}
+    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+        claims = yaml.safe_load(path.read_text()) or {}
+        if claims.get("dandiset") in dandisets and claims.get("paper") in papers:
+            shutil.copy(path, target / path.name)
+    print(f"wrote {target}")
+    return 0
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__,
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["lock", "check", "run", "all"])
+    parser.add_argument("command", choices=["lock", "check", "run", "all", "handover"])
     parser.add_argument("entry", type=Path, help="the entry directory, e.g. entries/000582-sargolini-2006")
     parser.add_argument("--output-dir", type=Path, help="where executed notebooks go")
     parser.add_argument("--timeout", type=int, default=3600, help="seconds allowed per cell")
@@ -255,6 +327,8 @@ def main() -> int:
 
     if args.command == "lock":
         return lock(entry_dir)
+    if args.command == "handover":
+        return handover(entry_dir, output_dir)
     if args.command in ("check", "all"):
         report = check(entry_dir)
         for line in report.errors:

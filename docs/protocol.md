@@ -129,6 +129,9 @@ Do not verify your own attempt. Give the verifier:
 - the claims file;
 - the paper's text if it is open access, otherwise its abstract.
 
+`python tools/entry.py handover entries/<name>` builds the first three in
+`executed/<name>/handover/` from the executed copy.
+
 After the first round, fix what it found, re-run, and hand over the full
 executed notebook for the second round. Record each round under
 `verifications`, saying what was reviewed. An outcome the verifier disagrees
