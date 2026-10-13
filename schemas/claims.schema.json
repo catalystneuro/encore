@@ -1,0 +1,50 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Claims proposed for one target (a dandiset and one of its papers)",
+  "description": "Draft. To be revised after the pilot.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "dandiset", "paper", "claims"],
+  "properties": {
+    "schema_version": {"const": 1},
+    "dandiset": {"type": "string", "pattern": "^[0-9]{6}$"},
+    "paper": {"type": "string", "pattern": "^doi:10\\.[0-9]{4,9}/.+$"},
+    "claims": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "statement", "source"],
+        "properties": {
+          "id": {
+            "description": "Stable within the file, e.g. fig2b.",
+            "type": "string",
+            "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+          },
+          "statement": {
+            "description": "The finding in one or two sentences, in words. Not a copy of the figure.",
+            "type": "string",
+            "minLength": 1
+          },
+          "source": {
+            "description": "Where the paper shows it, e.g. 'Figure 2B' or 'Results, paragraph 3'.",
+            "type": "string"
+          },
+          "expected": {
+            "description": "A reported number that can be checked automatically.",
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["quantity", "value"],
+            "properties": {
+              "quantity": {"type": "string"},
+              "value": {"type": "number"},
+              "tolerance": {"type": "number", "minimum": 0},
+              "unit": {"type": "string"}
+            }
+          }
+        }
+      }
+    }
+  }
+}
