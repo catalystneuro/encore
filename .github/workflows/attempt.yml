@@ -76,6 +76,11 @@ jobs:
 
       - name: Install Claude Code and the registry's tools
         run: |
+          # The credential scrub runs the agent's commands under bubblewrap, which needs
+          # unprivileged user namespaces; Ubuntu 24.04 restricts them by default.
+          sudo apt-get install -y -q bubblewrap
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+          bwrap --ro-bind / / --unshare-all true && echo "bubblewrap works"
           npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
           pip install --no-cache-dir uv pyyaml jsonschema nbformat
 
