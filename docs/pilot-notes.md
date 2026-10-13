@@ -358,3 +358,41 @@ and reports are in [`transcripts/000147/`](../transcripts/000147).
 About 280,000 tokens and 25 minutes for the author. The revisions took 10
 and a few minutes, the verification rounds 4 and 2. The notebook runs in
 about 90 seconds.
+
+## Protocol pilot-3 (2026-10-13)
+
+Revised from the open points above, before the fifth attempt. Each change and
+what prompted it:
+
+- **Version to pin**: the cited version, else the latest unless an earlier
+  one matches the paper better (000207 notes; 000147 point 8).
+- **Linked code** is read before criteria are written, with the commit
+  recorded. The Methods decide the main result and the code's choice is shown
+  as a variant when they disagree (000207 notes; 000147 point 12).
+- **Outside inputs** are allowed only when the paper itself compares with
+  them, they are public and pinned, and they are listed under a new `inputs`
+  field (000147 points 1 and 2).
+- **Tolerances** default to the paper's own uncertainty, else 10% of the
+  value, and `expected` may hold several numbers (000207 notes).
+- **Criteria** are written before each claim's analysis, after the data check
+  if need be, with what had been seen stated (000207 notes).
+- **Several readings** of a number: the criterion names the one the text
+  supports beforehand, and the notebook shows all (000147 point 3).
+- **Claims of absence** are judged by the paper's own test (000147 point 5).
+- **Criterion against statement**: the criterion decides; the notes say
+  whether the rest of the statement holds (000147 point 4).
+- **Dependent claims** are declared with `depends_on` and inherit a blocking
+  reason (000207 notes).
+- **Blocking categories** are defined, with one main reason and others in
+  the notes (000207 verification; 000147 point 2).
+- **New finding kinds**: `format_error`, `code_mismatch`,
+  `paper_inconsistency` (000207 notes; 000147 point 10).
+- **Clock check** example for data with spikes and a trial table only, and
+  "consistent with" for what a check supports without proving (000147 point
+  6; 000147 round 2).
+- **Notebook outputs**: a null for every comparison with chance, counts of
+  everything dropped, and bounds quoted for every variant (000147 point 13;
+  000147 round 2). Breakdown by session when there is one subject (point 7).
+- **Handover**: the verifier fetches the paper itself (000147 point 11).
+
+Point 9 (the notebook kernel) was a tool bug and is fixed.

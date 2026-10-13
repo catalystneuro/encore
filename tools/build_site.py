@@ -72,6 +72,9 @@ FINDING_KINDS = {
     "identifier_missing": "Identifier missing",
     "selection_undocumented": "Selection not documented",
     "methods_unavailable": "Methods not available",
+    "format_error": "File format error",
+    "code_mismatch": "Published code disagrees",
+    "paper_inconsistency": "Paper inconsistent",
     "other": "Other",
 }
 STATUS = {"attempted": "Attempted", "pilot": "In the pilot", "open": "Not yet attempted"}

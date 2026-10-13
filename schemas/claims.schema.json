@@ -49,33 +49,57 @@
             "type": "string"
           },
           "expected": {
-            "description": "A reported number that can be checked automatically.",
-            "type": "object",
-            "additionalProperties": false,
-            "required": [
-              "quantity",
-              "value"
-            ],
-            "properties": {
-              "quantity": {
-                "type": "string"
+            "description": "The reported numbers the claim rests on, each with a tolerance: one, or a list.",
+            "oneOf": [
+              {
+                "$ref": "#/$defs/expected"
               },
-              "value": {
-                "type": "number"
-              },
-              "tolerance": {
-                "type": "number",
-                "minimum": 0
-              },
-              "unit": {
-                "type": "string"
+              {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "$ref": "#/$defs/expected"
+                }
               }
-            }
+            ]
           },
           "criterion": {
             "description": "For a claim without a number, how it will be judged. Written before the analysis is run.",
             "type": "string"
+          },
+          "depends_on": {
+            "description": "Ids of claims in this file whose result this one uses.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
           }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "expected": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "quantity",
+        "value"
+      ],
+      "properties": {
+        "quantity": {
+          "type": "string"
+        },
+        "value": {
+          "type": "number"
+        },
+        "tolerance": {
+          "type": "number",
+          "minimum": 0
+        },
+        "unit": {
+          "type": "string"
         }
       }
     }

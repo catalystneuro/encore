@@ -182,7 +182,12 @@ def check(entry_dir: Path) -> Report:
     claims_by_target = {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         data = validate(report, path, "claims") or {}
-        claims_by_target[(data.get("dandiset"), data.get("paper"))] = {c["id"] for c in data.get("claims", [])}
+        ids = {c["id"] for c in data.get("claims", [])}
+        claims_by_target[(data.get("dandiset"), data.get("paper"))] = ids
+        for c in data.get("claims", []):
+            for other in c.get("depends_on", []):
+                if other not in ids:
+                    report.error(path.relative_to(ROOT), f"claim {c['id']!r} depends on {other!r}, which is not in the file")
     for path in sorted((ROOT / "attempts").glob("*.yaml")):
         attempt = load(report, path)
         if not isinstance(attempt, dict) or attempt.get("entry") != entry["name"]:
