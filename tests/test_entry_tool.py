@@ -181,3 +181,23 @@ def test_handover_removes_the_conclusions(repo):
 def test_invalid_yaml_in_an_attempt_is_reported(repo):
     (repo / "attempts" / "broken.yaml").write_text("notes: Confirmed: no\n  x: [\n")
     assert any("broken.yaml: not valid YAML" in e for e in errors(repo))
+
+
+def test_notebooks_run_on_a_kernel_of_the_entrys_own_environment(repo, monkeypatch, tmp_path):
+    commands = []
+
+    def fake_run(cmd, **kwargs):
+        commands.append((cmd, kwargs))
+        return type("Done", (), {"returncode": 0, "stderr": ""})()
+
+    monkeypatch.setattr(tool.subprocess, "run", fake_run)
+    out = tmp_path / "executed"
+    assert tool.run(repo / "entries" / "demo", out, timeout=60, max_minutes=30) == 0
+    venv = str((out / ".venv").resolve())
+    install = next(c for c, _ in commands if c[1:3] == ["-m", "ipykernel"])
+    assert install[install.index("--prefix") + 1] == venv
+    name = install[install.index("--name") + 1]
+    assert name != "python3"
+    execute, options = next((c, k) for c, k in commands if c[1:4] == ["-m", "jupyter", "nbconvert"])
+    assert f"--ExecutePreprocessor.kernel_name={name}" in execute
+    assert options["env"]["JUPYTER_PATH"].startswith(venv)
