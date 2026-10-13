@@ -64,6 +64,7 @@ pip install uv pyyaml jsonschema nbformat
 python tools/entry.py lock  entries/<name>   # pin the environment
 python tools/entry.py check entries/<name>   # metadata and conventions
 python tools/entry.py run   entries/<name>   # execute from a clean environment
+python tools/entry.py handover entries/<name>  # the verifier's package, without the conclusions
 ```
 
 The dashboard is a static site built from these files by
