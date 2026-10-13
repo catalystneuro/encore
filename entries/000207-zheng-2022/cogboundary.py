@@ -175,6 +175,15 @@ def read_session(subject: str, url: str) -> Session:
     return Session(subject, units, region, side, encoding, recognition, order, sanity)
 
 
+def file_tree(url: str) -> list:
+    """Every group and dataset in one file, with the shape of each dataset."""
+    lines = []
+    with _open(url) as f:
+        f.visititems(lambda name, obj: lines.append(
+            f"{name} {obj.shape}" if hasattr(obj, "shape") else f"{name}/"))
+    return lines
+
+
 def load_sessions(version: str = VERSION, subjects=None) -> list:
     """Stream every file of the dandiset (or only `subjects`) at one version."""
     urls = asset_urls(version)
@@ -316,6 +325,14 @@ def find_cells_pooled(session: Session, rng, soft: str = "authors", alpha: float
     times, kinds = boundary_times(session.encoding, soft)
     pre = spike_counts(session.units, times, -WINDOW, 0.0)
     post = spike_counts(session.units, times, 0.0, WINDOW)
+    boundary, event = classify_pooled(pre, post, kinds, rng, alpha, n)
+    return pd.DataFrame({"subject": session.subject, "unit": np.arange(len(session.units)),
+                         "region": session.region, "boundary": boundary, "event": event})
+
+
+def classify_pooled(pre: np.ndarray, post: np.ndarray, kinds: np.ndarray, rng, alpha: float = ALPHA,
+                    n: int = PERMUTATIONS) -> tuple:
+    """The labels of `find_cells_pooled` from spike counts before and after each boundary."""
     nb, hb = kinds == "NB", kinds == "HB"
     cut, rest = ~nb, ~hb
     boundary = ((paired_permutation_p(pre[:, cut], post[:, cut], rng, n) < alpha)
@@ -324,17 +341,17 @@ def find_cells_pooled(session: Session, rng, soft: str = "authors", alpha: float
     event = ((paired_permutation_p(pre[:, hb], post[:, hb], rng, n) < alpha)
              & (paired_permutation_p(pre[:, rest], post[:, rest], rng, n) >= alpha)
              & (two_sample_permutation_p(post[:, hb], post[:, rest], rng, n) < alpha))
-    return pd.DataFrame({"subject": session.subject, "unit": np.arange(len(session.units)),
-                         "region": session.region, "boundary": boundary, "event": event})
+    return boundary, event
 
 
 def chance_counts(sessions: list, rng, shuffles: int, soft: str = "authors", n: int = PERMUTATIONS,
-                  alpha: float = ALPHA) -> pd.DataFrame:
+                  alpha: float = ALPHA, pooled: bool = False) -> pd.DataFrame:
     """Cells selected after shuffling the condition labels of each session's boundaries.
 
     One row per shuffle; columns are the number of boundary and event cells in
     each region and overall. This is the paper's chance-level procedure with
-    `shuffles` repetitions (the paper used 1000).
+    `shuffles` repetitions (the paper used 1000). With `pooled`, the cells are
+    selected by the looser reading of `find_cells_pooled`.
     """
     prepared = []
     for s in sessions:
@@ -346,7 +363,10 @@ def chance_counts(sessions: list, rng, shuffles: int, soft: str = "authors", n: 
         row = {f"{label} {region}": 0 for label in ("boundary", "event") for region in REGIONS}
         for region, kinds, pre, post in prepared:
             shuffled = rng.permutation(kinds)
-            boundary, event = classify(response_tests(pre, post, shuffled, rng, n), alpha)
+            if pooled:
+                boundary, event = classify_pooled(pre, post, shuffled, rng, alpha, n)
+            else:
+                boundary, event = classify(response_tests(pre, post, shuffled, rng, n), alpha)
             for r in REGIONS:
                 row[f"boundary {r}"] += int(boundary[region == r].sum())
                 row[f"event {r}"] += int(event[region == r].sum())

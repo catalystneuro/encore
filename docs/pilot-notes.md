@@ -158,9 +158,9 @@ many tokens as the attempt.
 
 ## 000207, Zheng et al. 2022 (2026-10-13): first attempt by an agent following the protocol
 
-Outcome: five claims reproduced, two partially, two not reproduced, eleven
-blocked. **Not yet verified**: the pilot was paused during the first
-verification round. See
+Outcome after verification: five claims reproduced, one partially, fourteen
+blocked. Before verification it was five reproduced, two partially, two not
+reproduced and eleven blocked. See
 [`attempts/000207-zheng-2022-01.yaml`](../attempts/000207-zheng-2022-01.yaml).
 
 This attempt was made by an agent given only the repository and
@@ -173,7 +173,7 @@ time. Notes for when the pilot resumes:
   1 of 549 with a chance level near 0.03%. Chance levels that far apart mean
   the two procedures are not the same, so `blocked` with
   `methods_underspecified` may describe this better than `not_reproduced`.
-  The verifier was asked to weigh this and had not reported.
+  Settled in verification; see below.
 - **The lab's linked code did not contain the analysis.** It plots rasters.
   The protocol should have the author check what a linked repository holds,
   consult it before writing criteria, and record the commit read.
@@ -196,5 +196,62 @@ time. Notes for when the pilot resumes:
 - **Cost.** About 400,000 tokens for the author across two rounds, several
   times the first two targets: twenty claims and a dandiset with real problems.
 
-The full feedback from the agent, twenty points, should be worked through
-before the next attempt.
+The full feedback from the agent, twenty points, was not saved with the
+repository and could not be recovered. The points above are the ones
+recorded.
+
+### Verification (resumed 2026-10-13)
+
+The two rounds were run with `tools/entry.py handover`, added for this.
+
+1. Round 1, without the conclusions, agreed with the four behavioural
+   outcomes, the state shift and the blocked claims. It disagreed on the three
+   cell-count claims. In simulation, the paper's five-test definition under
+   label shuffling stayed near or below 1% chance for every response profile
+   tried, so the paper's 2.11% cannot come from the procedure as written. It
+   also found that the spike clock was not established for 12 of 18 sessions,
+   which bore on every claim about neurons.
+2. The author added the outputs it asked for. A clock scan on each kind of
+   clip alone showed the late peak in hard-boundary clips only, a response
+   on an aligned clock, in 17 of the 18 sessions. Chance levels for the looser
+   readings (0.10% and 0.55%) were also far from the paper's. The three
+   cell-count claims became `blocked`, `methods_underspecified`.
+3. Round 2 agreed with all twenty outcomes. It flagged one sentence the
+   numbers contradicted (regional ordering under the pooled reading), two
+   that overstated the clock check, stale p-values, a header that still
+   counted the old outcomes, and round-1 reasons recorded in words it had not
+   used. All were corrected.
+
+### Lessons from the verification
+
+- **A chance level the stated procedure cannot reach shows the paper used
+  another procedure.** When the paper states a chance level for a selection, the
+  attempt should compute its own. If they are far apart, the procedures
+  differ, and the outcome is `blocked` with `methods_underspecified` even
+  though the analysis ran. Added to the protocol.
+- **Clock checks need a condition contrast.** An overall onset scan could not
+  tell a response to hard boundaries from an onset response displaced by a
+  wrong clock. The same scan by condition could. Every stream should be
+  shown to share the trial tables' clock, with the sessions where this could
+  not be established named.
+- **One random stream for the whole notebook makes numbers drift.** Adding
+  cells early in the notebook changed p-values in the last section, which
+  left the conclusions stale. Each claim's section now gets its own
+  generator. Added to the protocol.
+- **The record has to keep the verifier's words apart from the author's
+  answers.** Paraphrased reasons with the author's responses mixed in were
+  the one thing the verifier objected to in the record. Verification results
+  now have a `response` field.
+- **The blocking categories overlap.** Author and verifier disagreed on eight
+  blocked claims between `metadata_insufficient` and `data_missing` (a
+  missing identifier linking trials to clips) or `other` (too few cells
+  under the claim's own rule). Neither changes what is missing; the
+  categories need definitions.
+- **Edits after round 1 are of the same kind as in the earlier attempts.**
+  Round 2 found no new analysis problem, only text that the new numbers had
+  overtaken.
+
+### Cost
+
+The verifier used about 210,000 tokens over the two rounds. Each run of the
+notebook takes about five minutes locally.

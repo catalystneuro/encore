@@ -10,9 +10,7 @@ they remembered.
 |---|---|
 | Order memory is at chance across a hard boundary, with slower and less confident answers (three claims) | Reproduced |
 | Scene recognition accuracy is the same for the three kinds of clip | Reproduced |
-| 7.2% of neurons are boundary cells | Not reproduced |
-| 6.2% of neurons are event cells | Partially reproduced |
-| Boundary cells are commonest in the parahippocampal gyrus, event cells in the hippocampus | Not reproduced |
+| 7.2% of neurons are boundary cells; 6.2% are event cells; their distribution over regions (three claims) | Blocked: methods underspecified |
 | 13% of neurons respond to clip onsets and almost none to clip offsets | Reproduced |
 | The population state shifts after soft and hard boundaries | Partially reproduced |
 | Onset responses and latencies of boundary and event cells (two claims) | Blocked: metadata insufficient |
@@ -20,12 +18,14 @@ they remembered.
 | Cells outside the medial temporal lobe; theta phase locking; similarity of foils (three claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-reasoning and the differences from the paper's method. This attempt has not yet been checked by
-an independent verifier.
+reasoning and the differences from the paper's method. It has been checked in two
+rounds by an independent agent, which agreed with every outcome.
 
-The laboratory's published code was read; it only plots rasters, so the cell definitions follow
-the paper's Methods, with the code's set of soft-boundary trials. Other readings are shown in
-the notebook and give the same outcomes.
+The cell counts were computed, but the procedure behind the paper's counts could not be
+determined. The laboratory's published code only plots rasters, and no reading of the Methods
+tried in the notebook gives a chance level near the paper's 2.11%, so those three claims are
+blocked. Under a looser reading the data do hold boundary and event cells beyond chance, at a
+lower proportion than the paper's.
 
 The notebook pins version 0.220216.0323, the one the paper cites. In the most recent version
 the spike times of three subjects are shifted against the trial tables; the notebook shows this.

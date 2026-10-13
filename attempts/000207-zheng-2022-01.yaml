@@ -65,21 +65,25 @@ outcomes:
 - claim: fig2def-recognition-vs-boundary-distance
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The dandiset does not give the position of a tested frame within its clip, only whether
-    it came from the first or the second half (frameA or frameB in its name). For clips with soft
+  notes: The dandiset does not give the position of a tested frame within its clip. Its name says
+    frameA or frameB, which by the paper's Methods (one frame from each half) is probably the
+    first or the second half; no column states it. For clips with soft
     or hard boundaries the frame names also do not identify the clip.
 - claim: fig3c-boundary-cells
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_zheng_2022.ipynb
   output: claim:fig3c-boundary-cells
   measured: 0.0018
-  notes: 1 of 549 units (0.18%) meets the Methods' definition of a boundary cell, against 42 of
-    580 (7.24%) in the paper. At least one cell appears in 42 of 300 label shuffles. The count is
-    0 or 1 in 20 repeats of the permutation tests, 1 with either alternative set of soft
-    boundaries, 2 at alpha = 0.10, and 10 to 15 under a looser reading that pools conditions. The
-    chance level here is 0.03% against the paper's 2.11%, so the paper's procedure was probably
-    looser than its Methods' wording. The authors' published code was read and contains no cell
-    selection, so it could not settle this. The outcome is the same under every reading tried.
+  notes: The analysis was run, but the procedure behind the paper's count could not be
+    determined. 1 of 549 units (0.18%) meets the Methods' definition of a boundary cell, against
+    42 of 580 (7.24%) in the paper. The paper's chance level is 2.11%; the literal definition
+    gives 0.03% here, alpha = 0.10 gives 0.10% and a looser pooled reading 0.55%, and the
+    verifier found in simulation that the five-test definition stays at or below about 1% for
+    every response profile it tried. No reading tried here produces the paper's chance level, so the paper's
+    count came from a different procedure. Under the pooled reading there are 15 boundary cells
+    (2.73%), more than in any of 300 shuffles. The authors' published code contains no cell
+    selection. Recorded as not_reproduced before verification.
   deviations:
   - 549 units from 18 sessions against the paper's 580 from 19. Subject 19 is left out because
     its spike times are not on the clock of the trial tables, and the dandiset's units differ
@@ -94,27 +98,30 @@ outcomes:
     the Methods. The authors' published code has no cell selection to check this against.
   - 300 label shuffles for the chance level instead of 1000.
 - claim: fig3g-event-cells
-  outcome: partially_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_zheng_2022.ipynb
   output: claim:fig3g-event-cells
   measured: 0.0128
-  notes: 7 of 549 units (1.28%) meet the Methods' definition of an event cell, more than in any of
-    300 label shuffles (mean 1.22, maximum 6), but about a fifth of the paper's 36 of 580 (6.20%).
-    The count is 5 to 8 over 20 repeats of the permutation tests. Whether it exceeds chance
-    depends on the reading. With the first soft boundary of SB clips as the SB trials there are 5
-    cells and 3 of 300 shuffles give as many; without the 13 HB clips that have a soft boundary
-    before the hard one there are 2; at alpha = 0.10 there are 12. The proportion is far below
-    the paper's under every reading.
+  notes: As fig3c-boundary-cells. 7 of 549 units (1.28%) meet the Methods' definition of an event
+    cell, more than in any of 300 label shuffles (mean 1.22, maximum 6), but about a fifth of the
+    paper's 36 of 580 (6.20%). At alpha = 0.10 there are 12 (2.19%, above all 300 shuffles) and
+    under the pooled reading 10 (1.82%, 4 of 300 shuffles as many). The chance levels of these
+    readings are 0.22%, 0.72% and 0.65%, against the paper's 2.26%. Recorded as
+    partially_reproduced before verification.
   deviations:
   - The same as for fig3c-boundary-cells.
 - claim: fig3-cell-regions
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_zheng_2022.ipynb
   output: claim:fig3-cell-regions
-  notes: No boundary cell among 53 parahippocampal units (paper 18 of 68). Event cells are 2 of
-    267 in the hippocampus, the lowest proportion and within its chance level, 3 of 229 in the
-    amygdala and 2 of 53 in the parahippocampal gyrus. With 8 cells in all, regional proportions
-    carry little information.
+  notes: Depends on the cell selections of fig3c-boundary-cells and fig3g-event-cells, whose
+    procedure could not be determined. With the literal definition there is no boundary cell
+    among 53 parahippocampal units (paper 18 of 68), and event cells are 2 of 267 in the
+    hippocampus, 3 of 229 in the amygdala and 2 of 53 in the parahippocampal gyrus. The
+    dandiset's split of units by region also differs from the paper's. Recorded as
+    not_reproduced before verification.
   deviations:
   - The same as for fig3c-boundary-cells.
 - claim: fig3dh-no-onset-response
@@ -132,7 +139,10 @@ outcomes:
   notes: 98 of 549 units (17.9%) fire more after clip onset, against 13.1% in the paper; the gap
     of 4.8 points is just inside the tolerance of 5, and 98 is more than a proportion of 13.1%
     would plausibly give (p = 9e-4). 26 units (4.7%) fire more after clip offset, the chance
-    level, against 0.7% in the paper. Seven sessions hold 82 of the 98 onset-responsive units.
+    level, against 0.7% in the paper. Seven sessions hold 82 of the 98 onset-responsive units; the
+    other eleven have 16 of 359 (4.5%), about chance, so the overall proportion averages over
+    sessions that differ widely. The spike clock is shown to be aligned for ten of those eleven;
+    for subject 3 (1 of 31 units responsive) it could not be established.
     None of the 8 boundary and event cells found responds to onsets or offsets, which is too few
     to judge that part of the claim.
   deviations:
@@ -169,19 +179,22 @@ outcomes:
   notes: After a hard boundary the distance from the state at the boundary is larger than in clips
     with no boundary (9.03 against 7.42, p = 0.0001) and larger than before the boundary (after
     minus before 0.84 against 0.04, p = 0.004); 12 of 18 subjects show it alone. After a soft
-    boundary the distance is larger than without a boundary (8.15, p = 0.002) but equally large
+    boundary the distance is larger than without a boundary (8.15, p = 0.003) but equally large
     before the boundary (after minus before 0.00, p = 0.55). That the shift completes within
     300 ms was not shown.
   deviations:
   - 549 units from 18 sessions against the paper's 580 from 19.
   - Pseudo-trials are matched across subjects by clip name; the paper does not say how.
   - Principal components are fitted on the three condition averages from 1 s before to 1.5 s
-    after the boundary, giving 22 components for 99% of the variance against the paper's 55.
+    after the boundary, giving 22 components for 99% of the variance against the paper's 55. The
+    averages are of the same trials that are then compared.
   - A trial is z-scored from 1 s before to 8 s after clip onset; the paper says "the entire
     trial".
   - Clips with soft boundaries are aligned to their first soft boundary, one pseudo-trial per
     clip. The authors' published code does not cover this analysis.
   - The comparison with the second before the boundary is this attempt's; the paper shows curves.
+  - Two SB clips have their first soft boundary less than 1 s after onset. Leaving them out gives
+    the same result (SB after minus before -0.03, p = 0.59; HB 0.84, p = 0.003).
 - claim: fig5ij-state-shift-predicts-memory
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -268,3 +281,200 @@ findings:
     activity in the half second before the hard boundary; all contain a soft boundary between
     2.75 and 3.40 s. This raises the baseline of a before-against-after test of the hard
     boundary.
+verifications:
+- date: 2026-10-13
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1, the notebook at commit 8284b56 executed, with the author's conclusions and
+    summary withheld, the helper module and the claims file. Outcomes below are compared with
+    those recorded before verification.
+  results:
+  - claim: fig2a-order-accuracy
+    agrees: true
+    outcome: reproduced
+  - claim: fig2b-order-reaction-time
+    agrees: true
+    outcome: reproduced
+  - claim: fig2c-order-confidence
+    agrees: true
+    outcome: reproduced
+  - claim: edfig2a-recognition-similar
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, noting that if the paper's
+      accuracy means hit rate on targets, hard-boundary clips are 0.062 below the paper and the claim
+      would be partially reproduced. The paper does not say which.
+  - claim: fig2def-recognition-vs-boundary-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees; would classify the reason as
+      data_missing. Could not confirm that no column gives a frame's position in its clip, because
+      the notebook did not print the column list.
+    response: The column list and the file tree were added to the data check.
+  - claim: fig3c-boundary-cells
+    agrees: false
+    outcome: blocked
+    reason: Blocked by methods_underspecified. In simulation the
+      five-test conjunction under label shuffling stayed at or below about 1% chance for every
+      response profile tried, so the paper's 2.11% cannot come from the procedure as written, and
+      failing to match 42 cells does not show the effect is absent.
+    response: Adopted, after adding the chance levels of the alpha = 0.10 and pooled readings,
+      none of which reaches 2.11%.
+  - claim: fig3g-event-cells
+    agrees: false
+    outcome: blocked
+    reason: As fig3c-boundary-cells.
+    response: Adopted.
+  - claim: fig3-cell-regions
+    agrees: false
+    outcome: blocked
+    reason: Follows from fig3c-boundary-cells and fig3g-event-cells.
+    response: Adopted.
+  - claim: fig3dh-no-onset-response
+    agrees: true
+    outcome: blocked
+    reason: Agrees that fewer than 10 cells are found under the
+      claim's own rule; would classify the reason as other.
+  - claim: edfig5-clip-onset-cells
+    agrees: true
+    outcome: reproduced
+    reason: Agrees by the criterion, with 0.2 points to spare,
+      and notes that the proportion averages strongly responsive sessions with ones near chance.
+      Raised that the spike clock of 12 of 18 sessions was not established, which bears on every
+      claim about neurons.
+    response: The scan was added for each kind of clip alone; see round 2.
+  - claim: fig3j-response-latency
+    agrees: true
+    outcome: blocked
+    reason: As fig3dh-no-onset-response.
+  - claim: fig3-outside-mtl
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the archive's electrode locations.
+  - claim: fig4c-boundary-cells-predict-recognition
+    agrees: true
+    outcome: blocked
+    reason: Agrees; would classify as data_missing.
+  - claim: fig4h-event-cells-phase-predicts-order
+    agrees: true
+    outcome: blocked
+    reason: Confirmed. The archive's asset metadata
+      lists units only, and the files are 1.3 to 5.2 MB.
+  - claim: fig5d-state-shift
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Raised that SB clips with an early first
+      boundary may weaken the soft-boundary result, and that the PCA is fitted on averages of the
+      trials it compares.
+    response: The first check was added; the second is recorded as a deviation.
+  - claim: fig5ij-state-shift-predicts-memory
+    agrees: true
+    outcome: blocked
+  - claim: fig6-reinstatement
+    agrees: true
+    outcome: blocked
+  - claim: fig6i-reinstatement-timing
+    agrees: true
+    outcome: blocked
+  - claim: fig6jm-reinstatement-confidence
+    agrees: true
+    outcome: blocked
+  - claim: fig6no-false-alarm-similarity
+    agrees: true
+    outcome: blocked
+- date: 2026-10-13
+  kind: agent
+  by: The same independent agent as round 1
+  reviewed: Round 2, the notebook executed after the round-1 changes, with the conclusions and
+    summary, the helper module, the entry README and this record. Its other findings were a
+    header that still counted the outcomes from before verification, a summary sentence on
+    chance levels that covered only four readings, and round-1 reasons recorded in words it had
+    not used. All were corrected.
+  results:
+  - claim: fig2a-order-accuracy
+    agrees: true
+    outcome: reproduced
+  - claim: fig2b-order-reaction-time
+    agrees: true
+    outcome: reproduced
+  - claim: fig2c-order-confidence
+    agrees: true
+    outcome: reproduced
+  - claim: edfig2a-recognition-similar
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Flagged that the notebook's statement that the result holds for targets
+      alone is true of the ANOVA only; for targets alone the HB hit rate is 0.062 from the
+      paper's value.
+    response: The sentence was corrected.
+  - claim: fig2def-recognition-vs-boundary-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees; would classify the reason as data_missing. The column list now printed
+      confirms that no column gives a frame's position in its clip. The frameA/frameB reading is
+      inferred from the file names.
+    response: The note now says the reading is inferred.
+  - claim: fig3c-boundary-cells
+    agrees: true
+    outcome: blocked
+  - claim: fig3g-event-cells
+    agrees: true
+    outcome: blocked
+  - claim: fig3-cell-regions
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Quoted a sentence the printed numbers contradict. Under the pooled reading
+      the parahippocampal gyrus has the highest proportion of boundary cells, the paper's
+      ordering.
+    response: The sentence now reports the ordering and that it was not tested against chance.
+  - claim: fig3dh-no-onset-response
+    agrees: true
+    outcome: blocked
+    reason: Agrees; would classify the reason as other.
+  - claim: edfig5-clip-onset-cells
+    agrees: true
+    outcome: reproduced
+    reason: Agrees by the criterion (17.9% against an upper bound of 18.1%) and would treat it
+      as fragile. The by-kind scan settles the spike clock for 17 of 18 sessions, ruling out an
+      offset of about 4 s; subject 3 shows no clear peak and its alignment is not established.
+      Offsets under about 0.3 s are not tested.
+    response: The notebook and notes now say the clock is shown aligned for 17 sessions, not
+      subject 3, and give the reason the HB-only peak rules out an offset.
+  - claim: fig3j-response-latency
+    agrees: true
+    outcome: blocked
+    reason: Agrees; would classify the reason as other.
+  - claim: fig3-outside-mtl
+    agrees: true
+    outcome: blocked
+  - claim: fig4c-boundary-cells-predict-recognition
+    agrees: true
+    outcome: blocked
+    reason: Agrees; would classify the reason as data_missing.
+  - claim: fig4h-event-cells-phase-predicts-order
+    agrees: true
+    outcome: blocked
+  - claim: fig5d-state-shift
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Two p-values in the conclusion were stale after the re-run.
+    response: The section now has its own random generator, and the p-values were updated.
+  - claim: fig5ij-state-shift-predicts-memory
+    agrees: true
+    outcome: blocked
+    reason: Agrees; would classify the reason as data_missing.
+  - claim: fig6-reinstatement
+    agrees: true
+    outcome: blocked
+    reason: Agrees; would classify the reason as data_missing.
+  - claim: fig6i-reinstatement-timing
+    agrees: true
+    outcome: blocked
+    reason: Agrees; would classify the reason as data_missing.
+  - claim: fig6jm-reinstatement-confidence
+    agrees: true
+    outcome: blocked
+    reason: Agrees; would classify the reason as data_missing.
+  - claim: fig6no-false-alarm-similarity
+    agrees: true
+    outcome: blocked
