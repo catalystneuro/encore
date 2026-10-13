@@ -6,6 +6,9 @@ Reads targets/dandisets.json, targets/pilot.yaml, claims/, attempts/ and
 entries/, and writes <output>/index.html (self-contained, no external
 resources) and <output>/registry.json (the same data, for other sites).
 
+If <output>/notebooks/<entry>/<notebook>.html exists (the executed notebooks
+CI keeps on the `executed` branch), the page links to it.
+
 The trust tier of an attempt is derived from its verifications: the latest
 verification decides, and it counts only if it agrees with every outcome.
 
@@ -71,7 +74,7 @@ def tier_of(attempt: dict) -> str:
     return VERIFICATION_TIER.get(latest["kind"], "runs") if claims <= agreed else "runs"
 
 
-def collect() -> dict:
+def collect(executed: Path | None = None) -> dict:
     queue = json.loads((ROOT / "targets" / "dandisets.json").read_text())
     pilot = {t["dandiset"] for t in load_yaml(ROOT / "targets" / "pilot.yaml")["targets"]}
     claims = {}
@@ -100,6 +103,9 @@ def collect() -> dict:
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
             "notebooks": [n["path"] for n in entry["notebooks"]] if entry else [],
+            "executed": [f'notebooks/{a["entry"]}/{Path(n["path"]).stem}.html'
+                         for n in (entry["notebooks"] if entry else [])
+                         if executed and (executed / a["entry"] / f'{Path(n["path"]).stem}.html').is_file()],
             "outcomes": [{
                 "claim": o["claim"],
                 "statement": known.get(o["claim"], {}).get("statement", o["claim"]),
@@ -197,8 +203,11 @@ def attempt_card(a: dict) -> str:
     verification = f'<p class="muted small">Verification rounds: {rounds}.</p>' if rounds else ""
     links = [f'<a href="https://dandiarchive.org/dandiset/{e(a["dandiset"])}">Dandiset {e(a["dandiset"])}</a>',
              f'<a href="https://doi.org/{e(a["paper"])}">Paper</a>']
+    for path in a["executed"]:
+        label = "Executed notebook" if len(a["executed"]) == 1 else f"Executed: {Path(path).stem}"
+        links.insert(0, f'<a class="primary" href="{e(path)}">{e(label)}</a>')
     if a["entry"]:
-        links.append(f'<a href="{REPO_URL}/tree/main/entries/{e(a["entry"])}">Notebooks</a>')
+        links.append(f'<a href="{REPO_URL}/tree/main/entries/{e(a["entry"])}">Source</a>')
     links.append(f'<a href="{REPO_URL}/blob/main/attempts/{e(a["id"])}.yaml">Attempt record</a>')
     who = "An agent" if a["kind"] == "agent" else "A person"
     return f'''<article class="card" id="attempt-{e(a["id"])}">
@@ -264,6 +273,7 @@ padding:1px 10px 1px 4px;font-size:.82rem;font-weight:600;white-space:nowrap}
 border-radius:4px;padding:0 6px;margin-right:6px}
 .tier{display:inline-block;font-size:.8rem;font-weight:600;border:1px solid var(--line);border-radius:4px;padding:1px 8px}
 .links{font-size:.9rem;margin:14px 0 0}
+.links a.primary{font-weight:600}
 .controls{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}
 .controls input,.controls select{font:inherit;padding:6px 10px;border:1px solid var(--line);border-radius:6px;
 background:var(--panel);color:var(--text)}
@@ -370,8 +380,8 @@ def main() -> int:
                                      formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--output", type=Path, default=ROOT / "site")
     args = parser.parse_args()
-    data = collect()
     args.output.mkdir(parents=True, exist_ok=True)
+    data = collect(args.output / "notebooks")
     (args.output / "index.html").write_text(render(data))
     (args.output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
     print(f"wrote {args.output / 'index.html'} ({len(data['attempts'])} attempts, "

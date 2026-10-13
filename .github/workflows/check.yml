@@ -3,6 +3,9 @@ name: Check entries
 # Every push and pull request: the tooling's unit tests, and the metadata and
 # convention checks for every entry. Entries whose files changed are also
 # executed from a clean environment built from their lock file.
+#
+# On main, the executed notebooks are rendered to HTML and kept on the
+# `executed` branch, one folder per entry, for the dashboard to publish.
 
 on:
   pull_request:
@@ -11,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       entry:
-        description: "Run this entry (its directory name); empty to run none"
+        description: "Run this entry (its directory name), or `all`; empty to run none"
         default: ''
 
 permissions:
@@ -52,6 +55,7 @@ jobs:
         run: |
           if [ '${{ github.event_name }}' = 'workflow_dispatch' ]; then
             names='${{ inputs.entry }}'
+            if [ "$names" = 'all' ]; then names=$(ls entries); fi
           else
             if [ '${{ github.event_name }}' = 'pull_request' ]; then
               base=$(git merge-base "origin/${{ github.base_ref }}" HEAD)
@@ -96,3 +100,53 @@ jobs:
           path: |
             ${{ runner.temp }}/executed/*.ipynb
             ${{ runner.temp }}/executed/result.json
+
+  publish:
+    # Keep the executed notebooks of this run, rendered to HTML, on the
+    # `executed` branch. Only for main: a pull request's code is not trusted
+    # with write access.
+    needs: [check, run]
+    if: always() && needs.check.outputs.entries != '[]' && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: executed-branch
+      cancel-in-progress: false
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - run: pip install --no-cache-dir nbconvert
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: executed-*
+
+      - name: Render to HTML
+        run: |
+          set -euo pipefail
+          mkdir -p out
+          for dir in artifacts/executed-*/; do
+            entry=$(basename "$dir"); entry=${entry#executed-}
+            mkdir -p "out/$entry"
+            cp "$dir/result.json" "out/$entry/" 2>/dev/null || true
+            for nb in "$dir"*.ipynb; do
+              [ -f "$nb" ] || continue
+              jupyter nbconvert --to html --output-dir "out/$entry" "$nb"
+            done
+          done
+          find out -type f | sort
+
+      - name: Push to the executed branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: executed
+          publish_dir: ./out
+          keep_files: true
+          commit_message: "Executed notebooks from ${{ github.sha }}"
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
