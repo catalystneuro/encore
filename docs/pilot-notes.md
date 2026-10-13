@@ -255,3 +255,67 @@ The two rounds were run with `tools/entry.py handover`, added for this.
 
 The verifier used about 210,000 tokens over the two rounds. Each run of the
 notebook takes about five minutes locally.
+
+## 000147, Guan et al. 2022 (2026-10-13): second attempt by an agent following the protocol
+
+Outcome before verification: twelve claims reproduced, one not reproduced,
+seven blocked. **Not yet verified.** See
+[`attempts/000147-guan-2022-01.yaml`](../attempts/000147-guan-2022-01.yaml).
+
+The agent was given the repository and protocol `pilot-2`, and told not to
+read these notes or other attempts. It ran as a subagent of a person's local
+session, before the Actions workflow existed, so its transcript holds that
+person's configuration and is not published. Its report on the protocol is
+recorded here in full, so it is not lost as the 000207 feedback was.
+
+### What the author reported about the protocol
+
+1. The protocol does not say whether comparison data from outside the
+   dandiset may be used. The agent read the fMRI model RDMs from the authors'
+   repository at the commit the paper archived, and recorded it as a
+   deviation.
+2. No blocking category fits a missing external input, such as model RDMs
+   that are not published anywhere. It used `data_missing`.
+3. The protocol does not say what the outcome is when a number matches under
+   only one reasonable reading. The paper's 70% of errors matches only when
+   errors involving No-Go trials are left out. It called the claim reproduced,
+   showed all three readings, and listed it as a deviation.
+4. It does not say whether the claim's statement or its criterion governs
+   when the statement includes a p-value the criterion does not. It followed
+   the criterion and recorded the difference.
+5. The outcomes fit a claim of absence poorly. A small but significant gaze
+   effect, where the paper reports none, becomes `not_reproduced`.
+6. The clock check's "contrast between conditions" had to be invented for a
+   dataset with only spikes and a trial table. It decoded the finger in time
+   windows around the trial start.
+7. The per-animal breakdown does not apply to one participant. It broke
+   results down by session.
+8. The protocol does not say how to choose between published versions with
+   identical files. It took the later one, because that names the paper.
+9. `tools/entry.py run` is not isolated: it executes with the first Jupyter
+   kernel named `python3` it finds, which on the machine used was miniconda,
+   not the locked environment. The first run failed on a missing package. It
+   worked around this; the tool needs fixing.
+10. No finding kind fits a file-format error (spike times stored out of
+    order) or an inconsistency inside the paper. It used `other`.
+11. The handover command does not include the paper's text.
+12. The paper leaves out some methods the authors' code supplies, and the code
+    differs from the paper in places (OAS against Ledoit-Wolf shrinkage,
+    8-fold against leave-one-out cross-validation). Each is a deviation.
+13. Its own gap: the notebook does not count features dropped for zero
+    variance.
+
+### Findings about the dandiset
+
+The dandiset holds the main task of all ten sessions, with counts matching the
+paper, but not the calibration or control tasks, waveforms or sorting
+metrics. The model RDMs the main comparisons need are not in it; two are in
+the authors' repository and the rest were found nowhere. Spike times are out
+of order in nearly every unit, with the first seconds of each run stored
+before the end of the previous one. `cue_location`, `Run` and `TrialNumber`
+have no descriptions, and electrode coordinates and impedances are NaN.
+
+### Cost
+
+About 280,000 tokens and 25 minutes for the author. The notebook runs in
+76 seconds.

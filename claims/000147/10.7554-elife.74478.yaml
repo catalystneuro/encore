@@ -1,0 +1,148 @@
+# Claims for Guan, Aflalo et al. (2022) on dandiset 000147.
+# Source: the paper's Results, figure legends and Methods (open access, eLife and PMC9555862).
+# Written before the analysis was run.
+schema_version: 1
+dandiset: "000147"
+paper: doi:10.7554/elife.74478
+claims:
+- id: recording-counts
+  statement: Over 10 sessions the recordings yielded 95.8 (SD 6.7) sorted neurons and 408 (SD 40.8)
+    trials of the main finger task per session.
+  source: Results, "Intracortical recordings during finger flexion"
+  expected:
+    quantity: mean number of sorted units per session
+    value: 95.8
+    tolerance: 0.5
+  criterion: The mean and SD of units per session match 95.8 and 6.7 to one decimal, and the mean
+    and SD of trials per session match 408 and 40.8 to the nearest trial.
+- id: fig1b-online-accuracy
+  statement: Online BCI classification of the cued finger was 86% accurate (SD 4% across sessions,
+    weighted by trials) over 4016 trials in 10 sessions, against a chance level of 17%. No-Go trials
+    of the first session are excluded because the classifier could not output No-Go that day.
+  source: Figure 1b, Figure 1-figure supplement 3, Results
+  expected:
+    quantity: online classification accuracy
+    value: 0.86
+    tolerance: 0.01
+- id: fig1b-errors-middle-ring-pinky
+  statement: Most (70%) of the online classification errors were middle-ring or ring-pinky
+    confusions.
+  source: Results, "Representational structure did not trend toward task optimum"; Figure 1b
+  expected:
+    quantity: fraction of online errors that confuse middle with ring or ring with pinky
+    value: 0.70
+    tolerance: 0.03
+- id: fig1s4a-offline-accuracy
+  statement: Offline classification of the cued finger from sorted firing rates in the window 0.5
+    to 1.5 s after the cue, with diagonal LDA and leave-one-out cross-validation within each session,
+    was 92% accurate (SD 2% across sessions) over 4080 trials.
+  source: Figure 1-figure supplement 4a, Results, Methods "Finger classification"
+  expected:
+    quantity: offline cross-validated classification accuracy
+    value: 0.92
+    tolerance: 0.02
+- id: fig1s4b-calibration-accuracy
+  statement: In the calibration task, offline cross-validated finger classification was 96%
+    accurate (SD 3%) over 530 trials in nine sessions.
+  source: Figure 1-figure supplement 4b, Results
+  expected:
+    quantity: offline classification accuracy, calibration task
+    value: 0.96
+    tolerance: 0.02
+- id: fig1s5-tuned-fraction
+  statement: Most (89%) neurons were significantly tuned to at least one finger movement, by a
+    two-tailed t-test of each finger's firing rate in the 0.5 to 1.5 s window against No-Go trials,
+    p < 0.05 after FDR correction, with neurons below 0.1 Hz excluded and neurons pooled across
+    sessions.
+  source: Results, Figure 1-figure supplement 5, Methods "Single-unit tuning to finger flexion"
+  expected:
+    quantity: fraction of neurons tuned to at least one finger
+    value: 0.89
+    tolerance: 0.05
+- id: fig1s6a-gaze-regression
+  statement: Linear regression could not decode the cue's screen coordinates from neural activity
+    in the attempted-movement window; cross-validated r2 was close to 0 in every session.
+  source: Figure 1-figure supplement 6a
+  criterion: Cross-validated r2 at or below 0.05 for both coordinates in every session.
+- id: fig1s6b-gaze-classification
+  statement: A diagonal LDA classifier could not classify the cue location from neural activity in
+    the attempted-movement window.
+  source: Figure 1-figure supplement 6b
+  criterion: Pooled cross-validated accuracy for the 12 cue locations lies inside the central 95%
+    of accuracies obtained with shuffled location labels, while finger accuracy from the same
+    features and classifier is far above its own shuffled range.
+- id: fig1s6c-control-task
+  statement: Fingers could not be classified from neural activity during the control task, in
+    which the participant viewed the cues without attempting movements.
+  source: Figure 1-figure supplement 6c
+- id: fig2d-rdm-structure
+  statement: In the session-averaged representational dissimilarity matrix (cross-validated
+    Mahalanobis distance, window 0.5 to 1.5 s, No-Go excluded), the thumb is distinct, while the
+    middle, ring and pinky fingers are close.
+  source: Figure 2d and 2e, Results
+  criterion: Every distance among the middle, ring and pinky fingers is smaller than every distance
+    involving the thumb, in the session-averaged RDM.
+- id: fig2f-able-bodied-over-unstructured
+  statement: The measured RDMs match the able-bodied PC-IP fMRI model better than the unstructured
+    (pairwise-equidistant) model, by whitened unbiased cosine similarity (WUC), p = 5.7e-5.
+  source: Figure 2f, Results
+  criterion: The bootstrap distribution over sessions of the WUC difference (able-bodied PC-IP minus
+    unstructured) has its 95% interval above zero.
+- id: fig2s5-mc-over-pcip
+  statement: The measured RDMs match the able-bodied motor cortex (MC) fMRI model better than the
+    able-bodied PC-IP fMRI model (p = 1.9e-6), and the WUC with the MC model is close to the noise
+    ceiling.
+  source: Figure 2-figure supplement 5a, Results
+  criterion: The bootstrap 95% interval of the WUC difference (MC minus PC-IP) is above zero, and the
+    mean WUC with the MC model is at or above the lower noise ceiling minus 0.05.
+- id: fig2-typical-among-individuals
+  statement: Compared with the RDMs of individual able-bodied fMRI participants, participant NS's
+    average PC-IP RDM was statistically typical (permutation test, p = 0.55).
+  source: Results, Figure 2-figure supplement 4
+- id: rdm-consistency
+  statement: The finger RDMs were consistent across sessions, with an average pairwise correlation
+    between session RDMs of r = 0.90 (SD 0.04, min 0.83, max 0.99).
+  source: Results, "Representational structure did not trend toward task optimum"
+  expected:
+    quantity: mean pairwise Pearson correlation between session RDMs
+    value: 0.90
+    tolerance: 0.03
+- id: fig3a-no-trend-to-unstructured
+  statement: Over sessions the model fit did not trend from the able-bodied model toward the
+    unstructured model (session by model interaction t(6) = 0.50, one-tailed p = 0.32).
+  source: Figure 3a, Results
+  criterion: In a regression of WUC on session index, model and their interaction, the interaction
+    in the direction of the unstructured model is not significant (one-tailed p > 0.05).
+- id: fig3b-confused-pairs-no-increase
+  statement: The distances between the most confused finger pairs (middle-ring and ring-pinky) did
+    not increase across sessions (one-tailed p > 0.99) or across runs within sessions (one-tailed
+    p = 0.67).
+  source: Figure 3b, Results, Methods "Measuring changes in the representational structure"
+  criterion: In a regression of the middle-ring and ring-pinky distances of per-run RDMs on finger
+    pair, session index and run index, neither the session nor the run coefficient is significantly
+    positive (one-tailed p > 0.05).
+- id: fig3s1-all-pairs-small-decrease
+  statement: Across all finger pairs the inter-finger distances did not increase; they decreased
+    slightly across sessions (t(8) = -4.0, two-tailed p = 0.004) and across runs within sessions
+    (t(82) = -2.4, p = 0.019), with very small effect sizes (Cohen's f2 of 0.008 and 0.005).
+  source: Figure 3-figure supplement 1, Results
+  criterion: The session and run coefficients for all ten pairs are negative, and each Cohen's f2
+    is below 0.02.
+- id: fig4e-muscle-before-somatotopy
+  statement: In a time-resolved decomposition of the RDM into muscle and somatotopy component
+    models, the muscle model emerged 170 ms before the somatotopy model (two-sided Wilcoxon
+    signed-rank test across sessions, p = 0.002).
+  source: Figure 4e, Figure 4-figure supplement 2
+  expected:
+    quantity: start time of somatotopy model minus start time of muscle model
+    value: 0.170
+    tolerance: 0.05
+    unit: s
+- id: fig4s1-model-selection
+  statement: Among combinations of the hand-usage, muscle and somatotopy models, the hand usage plus
+    somatotopy and muscle plus somatotopy combinations matched the data best.
+  source: Figure 4-figure supplement 1, Results
+- id: fig4s4-well-isolated-units
+  statement: The able-bodied match and the representational dynamics hold when only well-isolated
+    units (lowest third of L-ratio) are used.
+  source: Figure 4-figure supplement 4
