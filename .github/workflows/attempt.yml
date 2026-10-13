@@ -50,6 +50,8 @@ jobs:
   run:
     runs-on: ubuntu-latest
     timeout-minutes: 340
+    outputs:
+      started: ${{ steps.agent.outputs.started }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -119,6 +121,7 @@ jobs:
           [ "$mode" = dontAsk ] || { echo "::error::Claude Code started in permission mode $mode, not dontAsk"; exit 1; }
 
       - name: Run the agent
+        id: agent
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'
@@ -127,6 +130,7 @@ jobs:
           DISABLE_TELEMETRY: '1'
         run: |
           set +e -uo pipefail     # keep going when claude fails, to report how
+          echo "started=true" >> "$GITHUB_OUTPUT"
           if [[ "$ROLE" == verifier* ]]; then cd "$RUNNER_TEMP/work"; fi
           claude -p "$(cat "$RUNNER_TEMP/prompt.md")" \
             --model "$MODEL" \
@@ -140,7 +144,7 @@ jobs:
           exit $status
 
       - name: Export the transcript and collect the changes
-        if: always()
+        if: always() && steps.agent.outputs.started == 'true'
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$DANDISET"
@@ -165,7 +169,8 @@ jobs:
 
   commit:
     needs: run
-    if: always() && needs.run.result != 'cancelled'
+    # Only when the agent was started; a run that failed before has nothing to commit.
+    if: always() && needs.run.result != 'cancelled' && needs.run.outputs.started == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
