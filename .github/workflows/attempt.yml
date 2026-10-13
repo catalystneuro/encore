@@ -1,0 +1,171 @@
+name: Agent run
+
+# One agent run on a target, in a clean environment: the author's attempt, a
+# verification round, or the author's revision after one (docs/protocol.md).
+# Started by hand from the Actions tab or with
+#   gh workflow run attempt.yml -f dandiset=000147 -f role=author
+#
+# The agent runs on a fresh runner with no personal configuration, on the
+# subscription token in the CLAUDE_CODE_OAUTH_TOKEN secret. Its job can read the
+# repository but not write to it, keeps no GitHub credentials in the checkout,
+# and strips credentials from the commands the agent runs. A verifier sees only
+# its materials: the checkout is deleted before it starts.
+#
+# The second job, which runs no agent, commits what the run produced to the
+# branch attempt/<dandiset>: the author's changes, and the run's transcript and
+# final report under transcripts/<dandiset>/, cleaned by tools/transcript.py.
+# The raw transcript is not uploaded. A person reads the transcript and opens
+# the pull request.
+
+on:
+  workflow_dispatch:
+    inputs:
+      dandiset:
+        description: "Dandiset id, e.g. 000147"
+        required: true
+      role:
+        description: "Which run"
+        required: true
+        type: choice
+        options: [author, verifier-1, author-revise-1, verifier-2, author-revise-2]
+      model:
+        description: "Model"
+        default: claude-opus-5-5
+
+permissions:
+  contents: read
+
+concurrency:
+  group: attempt-${{ inputs.dandiset }}
+  cancel-in-progress: false
+
+env:
+  DANDISET: ${{ inputs.dandiset }}
+  ROLE: ${{ inputs.role }}
+  MODEL: ${{ inputs.model }}
+  BRANCH: attempt/${{ inputs.dandiset }}
+  CLAUDE_CODE_VERSION: 2.1.284
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 340
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Start from the attempt's branch if it exists
+        run: |
+          [[ "$DANDISET" =~ ^[0-9]{6}$ ]] || { echo "::error::Not a dandiset id: $DANDISET"; exit 1; }
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
+            git fetch origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
+          elif [ "$ROLE" != author ]; then
+            echo "::error::No branch $BRANCH; run the author first"; exit 1
+          fi
+          git log --oneline -1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Install Claude Code and the registry's tools
+        run: |
+          npm install -g "@anthropic-ai/claude-code@$CLAUDE_CODE_VERSION"
+          pip install --no-cache-dir uv pyyaml jsonschema nbformat
+
+      - name: Write the prompt
+        run: python tools/agent_run.py prompt "$ROLE" "$DANDISET" --model "$MODEL" > "$RUNNER_TEMP/prompt.md"
+
+      - name: Prepare the verifier's materials, and remove the repository
+        if: startsWith(inputs.role, 'verifier')
+        run: |
+          set -euo pipefail
+          entry=$(python tools/agent_run.py entry "$ROLE" "$DANDISET")
+          python tools/entry.py run "entries/$entry"
+          python tools/entry.py handover "entries/$entry"
+          python tools/agent_run.py package "$ROLE" "$DANDISET" "$RUNNER_TEMP/work"
+          cp tools/transcript.py "$RUNNER_TEMP/"
+          cd "$RUNNER_TEMP" && find "$GITHUB_WORKSPACE" -mindepth 1 -delete
+          ls -la "$RUNNER_TEMP/work"
+
+      - name: Run the agent
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'
+          CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1'
+          DISABLE_AUTOUPDATER: '1'
+          DISABLE_TELEMETRY: '1'
+        run: |
+          set -uo pipefail
+          if [[ "$ROLE" == verifier* ]]; then cd "$RUNNER_TEMP/work"; fi
+          claude -p "$(cat "$RUNNER_TEMP/prompt.md")" \
+            --model "$MODEL" \
+            --output-format stream-json --verbose --forward-subagent-text \
+            --permission-mode dontAsk --permission-prompts none \
+            --allowedTools "Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Agent,TodoWrite" \
+            > "$RUNNER_TEMP/run.jsonl" 2> "$RUNNER_TEMP/stderr.txt"
+          status=$?
+          echo "claude exited with $status"
+          tail -c 2000 "$RUNNER_TEMP/stderr.txt" || true
+          exit $status
+
+      - name: Export the transcript and collect the changes
+        if: always()
+        run: |
+          set -euo pipefail
+          out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$DANDISET"
+          tool=tools/transcript.py; [ -f "$tool" ] || tool="$RUNNER_TEMP/transcript.py"
+          name="$DANDISET · $ROLE · run ${{ github.run_id }}"
+          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" \
+            --report "$out/transcripts/$DANDISET/$ROLE-report.md" --title "$name"
+          if [[ "$ROLE" == author* ]]; then
+            git add -A && git diff --cached --binary > "$out/changes.patch"
+            git diff --cached --stat
+          fi
+          rm -f "$RUNNER_TEMP/run.jsonl"
+          cat "$out/transcripts/$DANDISET/$ROLE-report.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: agent-run
+          path: ${{ runner.temp }}/out
+          retention-days: 14
+          if-no-files-found: ignore
+
+  commit:
+    needs: run
+    if: always() && needs.run.result != 'cancelled'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: agent-run
+          path: out
+
+      - name: Commit to the attempt's branch
+        run: |
+          set -euo pipefail
+          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
+            git fetch origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
+          else
+            git checkout -b "$BRANCH"
+          fi
+          if [ -s out/changes.patch ]; then git apply --index out/changes.patch; fi
+          cp -r out/transcripts . && git add transcripts
+          git -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' \
+            commit -m "Agent run on $DANDISET: $ROLE (${{ needs.run.result }})" \
+            -m "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          git push origin "$BRANCH"
