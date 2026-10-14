@@ -65,12 +65,10 @@ gh workflow run attempt.yml -f dandiset=000147 -f role=author
 The roles, in order, are `author`, `verifier-1`, `author-revise-1`,
 `verifier-2` and `author-revise-2`. Each run commits its changes and its
 cleaned transcript and report to the branch `attempt/<dandiset>`; a person
-reads the transcript and opens the pull request. While a run is going, its
-log shows one line per message and tool call, without tool output:
-
-```bash
-gh run watch <run id> --exit-status
-``` See
+reads the transcript and opens the pull request. While a run is going, the
+"Run the agent" step of its page in the Actions tab shows one line per message
+and tool call, without tool output. GitHub serves a step's log through the API
+and `gh` only after the step ends, so the page is the place to follow it. See
 [`transcripts/`](transcripts).
 
 ## Working on an entry
