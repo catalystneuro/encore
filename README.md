@@ -55,10 +55,11 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [001097](https://dandiarchive.org/dandiset/001097) | [Liu et al. 2024](https://doi.org/10.1038/s41586-024-07916-w) | 7 | 2 | 3 | 12 | [`001097-liu-2024`](entries/001097-liu-2024) |
 | [000625](https://dandiarchive.org/dandiset/000625) | [Geiller et al. 2020](https://doi.org/10.1016/j.neuron.2020.09.013) | 4 | 4 | 6 | 12 | [`000625-geiller-2020`](entries/000625-geiller-2020) |
 | [000035](https://dandiarchive.org/dandiset/000035) | [Scala et al. 2021](https://doi.org/10.1038/s41586-020-2907-3) | 3 (+2) | 1 (+1) | 0 | 9 (+1) | [`000035-scala-2021`](entries/000035-scala-2021) |
-| [001453](https://dandiarchive.org/dandiset/001453) | [Fouke et al. 2025](https://doi.org/10.1016/j.cub.2025.04.027) | 2 (+5) | 0 (+1) | 0 (+2) | 10 | [`001453-fouke-2025`](entries/001453-fouke-2025) |
+| [001453](https://dandiarchive.org/dandiset/001453) | [Fouke et al. 2025](https://doi.org/10.1016/j.cub.2025.04.027) | 7 | 1 | 2 | 10 | [`001453-fouke-2025`](entries/001453-fouke-2025) |
 
-Counts are of claims that rest on the dandiset alone. Claims that also use
-data from outside the dandiset are counted apart, in brackets.
+Counts are of claims that rest on the dandiset, including those that take
+names for its own codes from elsewhere. Claims that also use data from
+outside the dandiset are counted apart, in brackets.
 
 ## Agent runs
 
@@ -70,7 +71,8 @@ gh workflow run attempt.yml -f dandiset=000147 -f role=author
 ```
 
 The roles, in order, are `author`, `verifier-1`, `author-revise-1`,
-`verifier-2` and `author-revise-2`. To run whole attempts on several dandisets at once,
+`verifier-2` and `author-revise-2`, then `verifier-3` and `author-revise-3`
+when the final revision proposed a change of outcome. To run whole attempts on several dandisets at once,
 each going through all five roles in order:
 
 ```bash

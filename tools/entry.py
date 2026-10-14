@@ -179,11 +179,13 @@ def check(entry_dir: Path) -> Report:
             _derivation_checks(report, rel / name, (entry_dir / name).read_text())
 
     # Claims and attempts that go with this entry.
-    claims_by_target = {}
+    claims_by_target, labels_used = {}, {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         data = validate(report, path, "claims") or {}
         ids = {c["id"] for c in data.get("claims", [])}
         claims_by_target[(data.get("dandiset"), data.get("paper"))] = ids
+        labels_used[(data.get("dandiset"), data.get("paper"))] = any(
+            c.get("data") == "with_labels" for c in data.get("claims", []))
         for c in data.get("claims", []):
             for other in c.get("depends_on", []):
                 if other not in ids:
@@ -199,6 +201,12 @@ def check(entry_dir: Path) -> Report:
             report.error(where, f"dandiset_version {attempt.get('dandiset_version')!r} differs from "
                                 f"{pinned!r} in entry.yaml")
         known = claims_by_target.get((attempt.get("dandiset"), attempt.get("paper")))
+        if labels_used.get((attempt.get("dandiset"), attempt.get("paper"))):
+            kinds = {f.get("kind") for f in attempt.get("findings") or []}
+            if not attempt.get("inputs") or not kinds & {"metadata_insufficient", "identifier_missing"}:
+                report.error(where, "claims take names for the dandiset's codes from elsewhere (`with_labels`), so "
+                                    "list the source under `inputs` and record the missing names as a finding "
+                                    "(metadata_insufficient or identifier_missing)")
         if known is None:
             report.error(where, "no claims file for this dandiset and paper")
             continue
@@ -207,15 +215,17 @@ def check(entry_dir: Path) -> Report:
             report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
         for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
             report.error(where, f"claim {claim!r} has more than one outcome")
-        rounds = attempt.get("verifications") or []
-        agreed = {r["claim"]: r.get("outcome") for r in (rounds[-1]["results"] if rounds else [])
-                  if r.get("agrees") and r.get("outcome")}
+        # The latest round that reviewed a claim decides it; a third round may review only some.
+        agreed = {}
+        for rnd in attempt.get("verifications") or []:
+            for r in rnd["results"]:
+                agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
         for outcome in attempt.get("outcomes", []):
             verified = agreed.get(outcome.get("claim"))
             if verified and outcome.get("outcome") != verified:
                 report.error(where, f"claim {outcome.get('claim')!r} is {outcome.get('outcome')!r}, but the last "
-                                    f"verification agreed with {verified!r}; record the change as proposed, or "
-                                    "verify it in another round")
+                                    f"verification agreed with {verified!r}; record the change under `proposed`, "
+                                    "and verify it in another round")
             if outcome.get("claim") not in known:
                 report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is not in the claims file")
             notebook = outcome.get("notebook")

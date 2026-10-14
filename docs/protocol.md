@@ -1,9 +1,9 @@
 # Protocol for an attempt
 
-Version: `pilot-5`. Record this version in the attempt's provenance.
+Version: `pilot-6`. Record this version in the attempt's provenance.
 
 This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the first five pilot attempts
+result. It is written from the eight pilot attempts
 ([pilot notes](pilot-notes.md)); the reasons for the rules are there.
 
 There are two roles. The **author** makes the attempt. The **verifier** checks
@@ -12,7 +12,8 @@ context that has not seen the author's reasoning.
 
 Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
 workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`. Each run's transcript and final report are
+`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
+of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
 kept in [`transcripts/<dandiset>/`](../transcripts).
 
 ## Author
@@ -30,7 +31,9 @@ Do this before any analysis.
    variables are in the dandiset. A dandiset that names a paper may hold only
    part of its data. Check for recordings deposited more than once (identical
    traces, frame counts or annotations), report each pair, and count each
-   recording once.
+   recording once. Where the analysis treats a unit as the same across
+   sessions, show that it is, or state it as an assumption and also give
+   results per session.
 4. Choose the version to pin. Pin the version the paper cites. If it cites
    none, pin the most recent published version, unless an earlier one matches
    the paper better. Say why in the notebook's header. If versions differ in
@@ -40,7 +43,9 @@ Do this before any analysis.
    Methods leave a choice open and the code settles it, follow the code and
    say so. Where they disagree, follow the Methods for the main result and
    show the code's choice as a variant. Record both as deviations or
-   findings.
+   findings. When more sources disagree (the Methods, the analysis code, the
+   stimulus software), the Methods come first, then the paper's analysis
+   code, then other software; show each other choice as a variant.
 6. Decide what comes from outside the dandiset. Data from elsewhere may be
    used only when the paper itself relies on it (a model, a reference
    dataset, measurements of the same cells made by another method), it is
@@ -50,17 +55,28 @@ Do this before any analysis.
 
    The registry judges the dandiset, so claims that use outside data are
    kept apart:
-   - Each claim says what its test uses: `data: dandiset` (the default) or
-     `data: with_inputs`. The two kinds are counted apart, and only the
-     first counts towards what is said about the dandiset.
+   - Each claim says what its test uses: `data: dandiset` (the default),
+     `data: with_labels` or `data: with_inputs`. Only `with_inputs` claims
+     are counted apart; the others count towards what is said about the
+     dandiset.
+   - `with_labels` is for outside sources that only name or map codes the
+     dandiset already holds, such as stimulus names for its stimulus codes.
+     They bring in no measurements. A link claim must confirm the names, and
+     the missing names are recorded as a finding (`metadata_insufficient`).
    - When outside data has to be matched to the dandiset's cells, sessions or
      subjects, a claim of its own tests the link: how records are matched
-     (an identifier, or something else), what fraction match, and whether
+     (an identifier, or, where there is none, summary values the paper or
+     its code published, such as per-condition medians), what fraction
+     match, and whether
      the matched records agree on what both describe, such as counts,
      layers, or the paper's own per-cell tables. A dandiset that cannot be
      linked to the data it was published with is a finding about the
-     dandiset. Every `with_inputs` claim lists the link claim in
-     `depends_on`, so it is blocked when the link fails.
+     dandiset. Every claim that needs the match lists the link claim in
+     `depends_on`, so it is blocked when the link fails. When the link holds
+     only in part, the dependent claims are still tested, and their notes say
+     how the partial link bears on them. A label that differs only in
+     spelling (one cell type named two ways) is the same label: criteria
+     compare identity, not spelling.
    - Outside data supplies only what the dandiset lacks, such as a label for
      each cell. The analysis runs on the dandiset's data.
    - The notes of a `with_inputs` claim say which side a difference comes
@@ -98,13 +114,16 @@ Do this before any analysis.
      reproduced when that test does not find the effect and not reproduced
      when it does; give the size of the effect either way. The rule for
      several readings does not apply: absence is judged on the paper's test
-     alone.
+     alone, as written, even when the test mixes in a condition that does
+     not belong (show the cleaner test as a variant).
    - If a criterion turns out unable to decide (two candidates tied), break
      the tie as the paper's methods or code imply, record it as a deviation,
      and show the other result.
    - `depends_on`: the claims whose result this one uses, such as the cells
      another claim selects.
-8. Decide now which claims are blocked, and why. Give the main reason under
+8. Decide now which claims are blocked, and why; a block that depends on a
+   selection (too few units under the claim's own rule) is decided once the
+   selection is made. Give the main reason under
    `blocked_by` and any others in the notes:
    - `data_missing`: something the claim needs is not in the dandiset, or for
      an outside input, not public. Say whether it exists elsewhere.
@@ -116,7 +135,9 @@ Do this before any analysis.
    - `data_unreadable` and `too_large`.
    - `not_runnable`: the paper's method cannot be run here, because its
      software cannot be installed in a locked environment or it cannot run
-     within the time limit. Say what was tried.
+     within the time limit. Say what was tried. For an outside input that is
+     public but slow to fetch, use this only when the notebook itself shows
+     the fetch does not fit the limit; otherwise test the claim.
    - `other`: say what, for example too few units under the claim's own rule.
 
    A claim that depends on a blocked claim is blocked for the same reason.
@@ -219,7 +240,10 @@ Write `attempts/<entry name>-<nn>.yaml`.
   not state.
 - **`notes`**: the numbers behind the outcome, stated factually.
 - **`measured`**: the value obtained, or one per expected value in the same
-  order.
+  order. When several readings match, record the first reading the criterion
+  lists.
+- **`proposed`**: on an outcome, a change of outcome found after the last
+  verification round, with its `reason` (see "Hand over for verification").
 - **`inputs`**: everything used that is not in the dandiset, each with where
   it came from (a DOI, or a repository at a commit).
 - **`findings`**: what the attempt found about the dandiset, whatever the
@@ -258,11 +282,15 @@ own words, and what you changed in reply under `response`. An outcome the verifi
 with is either changed, with the reason, or left with the disagreement
 recorded.
 
-An outcome may not differ from the one the last verification round agreed
-with: `tools/entry.py check` fails if it does. The final revision corrects
-text and adds the outputs the verifier asked for. If it finds that an
-outcome should change, it keeps the verified outcome, says so in the notes
-as a proposed change, and the change waits for another round.
+An outcome may not differ from the one the latest verification round of that
+claim agreed with: `tools/entry.py check` fails if it does. The final
+revision corrects text and adds the outputs the verifier asked for. If it
+finds that an outcome should change, it keeps the verified outcome and writes
+the change under `proposed` on that outcome, with the analysis behind it in
+the notebook. A third round then settles it: `verifier-3` reviews only the
+proposed changes, and `author-revise-3` applies those it agreed with and
+records the round. A change that needs an analysis not yet run waits for a
+new attempt.
 
 ## Verifier
 
@@ -292,6 +320,12 @@ Be skeptical. Do not assume the analysis is right.
 
 Take counts of claims and outcomes from the attempt record, not from a
 report or a summary table.
+
+### Round 3: proposed changes
+
+Run only when the final revision proposed changes of outcome. Review each
+proposal and the analysis behind it as in round 1, and say whether you agree
+with the proposed outcome. Nothing else is reviewed.
 
 The verifier does not edit the entry. It does not download the dandiset or
 re-run the whole notebook; if a check needs that, it asks for the output to be

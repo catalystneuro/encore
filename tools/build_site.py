@@ -176,6 +176,7 @@ def collect(executed: Path | None = None) -> dict:
                 "deviations": [squash(d) for d in o.get("deviations") or []],
                 "disagreed": o["claim"] in disagreed,
                 "data": known.get(o["claim"], {}).get("data", "dandiset"),
+                "proposed": o.get("proposed"),
             } for o in a["outcomes"]],
             "findings": [{"kind": f["kind"], "statement": squash(f["statement"])}
                          for f in a.get("findings") or []],
@@ -321,9 +322,9 @@ def outcome_counts(attempts, outside: bool = False) -> dict:
     reflect the outside data does not count as a judgement of the dandiset.
     """
     attempts = [attempts] if isinstance(attempts, dict) else attempts
-    which = "with_inputs" if outside else "dandiset"
+    # Names for the dandiset's own codes taken from elsewhere (`with_labels`) count as the dandiset.
     return {k: sum(1 for a in attempts for o in a["outcomes"]
-                   if o["outcome"] == k and o.get("data", "dandiset") == which) for k in OUTCOMES}
+                   if o["outcome"] == k and (o.get("data") == "with_inputs") == outside) for k in OUTCOMES}
 
 
 def outside_note(attempts, root: str = "") -> str:
@@ -449,7 +450,15 @@ def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
     tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
     if o.get("data") == "with_inputs":
         tags += '<span class="tag">uses data from outside the dandiset</span>'
+    elif o.get("data") == "with_labels":
+        tags += '<span class="tag">names its codes from outside the dandiset</span>'
+    if o.get("proposed"):
+        tags += (f'<span class="tag">change to {e(OUTCOMES[o["proposed"]["outcome"]][0].lower())} '
+                 f'proposed</span>')
     body = f'<p class="notes">{e(o["notes"])}</p>' if o["notes"] else ""
+    if o.get("proposed"):
+        body += (f'<p class="notes"><strong>Proposed after the last verification, not yet verified:</strong> '
+                 f'{e(OUTCOMES[o["proposed"]["outcome"]][0].lower())}. {e(squash(o["proposed"]["reason"]))}</p>')
     if o["deviations"]:
         items = "".join(f"<li>{e(d)}</li>" for d in o["deviations"])
         body += (f'<p class="deviations-title">How the test differed from the paper’s method</p>'

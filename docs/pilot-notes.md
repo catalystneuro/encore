@@ -716,3 +716,28 @@ missing names are themselves the main finding about this dandiset.
 The author took 37 minutes, the revisions 20 and 8, and the rounds 3 and 2.
 The notebook runs in about 4 minutes.
 
+## Protocol pilot-6 (2026-10-14), at the end of the pilot
+
+- **A third round settles proposed changes.** A change of outcome found
+  after the last round goes under a new `proposed` field. When there is one,
+  the attempt sequence runs `verifier-3`, which reviews only the proposals,
+  and `author-revise-3`, which applies those it agreed with. `check` holds
+  each claim to the latest round that reviewed it. 001097's `fig2e` carries
+  such a proposal now; 000035's untested claim needs an analysis that was
+  never run and waits for a new attempt.
+- **Names for the dandiset's own codes count as the dandiset.** A new kind,
+  `data: with_labels`, for outside sources that only name or map codes the
+  dandiset holds. A link claim confirms the names, and the missing names
+  are a finding. 001453's eight claims of this kind count on the dandiset:
+  seven reproduced, one partially, two not reproduced and ten blocked.
+- **From the authors' reports** (000625, 000035 and 001453): unit identity
+  across sessions shown or stated as an assumption; Methods first, then the
+  paper's code, then other software when they disagree; links matched on
+  published summary values where there is no identifier; a partial link
+  still lets dependent claims run, with a note; labels compared by identity,
+  not spelling; a slow outside input is `not_runnable` only when the
+  notebook shows it does not fit; blocks that depend on a selection decided
+  after it; absence claims judged on the paper's test as written; the first
+  listed reading recorded under `measured`; and the author prompt points at
+  the newest entry as its example.
+
