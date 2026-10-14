@@ -207,7 +207,15 @@ def check(entry_dir: Path) -> Report:
             report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
         for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
             report.error(where, f"claim {claim!r} has more than one outcome")
+        rounds = attempt.get("verifications") or []
+        agreed = {r["claim"]: r.get("outcome") for r in (rounds[-1]["results"] if rounds else [])
+                  if r.get("agrees") and r.get("outcome")}
         for outcome in attempt.get("outcomes", []):
+            verified = agreed.get(outcome.get("claim"))
+            if verified and outcome.get("outcome") != verified:
+                report.error(where, f"claim {outcome.get('claim')!r} is {outcome.get('outcome')!r}, but the last "
+                                    f"verification agreed with {verified!r}; record the change as proposed, or "
+                                    "verify it in another round")
             if outcome.get("claim") not in known:
                 report.error(path.relative_to(ROOT), f"claim {outcome.get('claim')!r} is not in the claims file")
             notebook = outcome.get("notebook")

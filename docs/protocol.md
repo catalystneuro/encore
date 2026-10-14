@@ -1,9 +1,9 @@
 # Protocol for an attempt
 
-Version: `pilot-3`. Record this version in the attempt's provenance.
+Version: `pilot-4`. Record this version in the attempt's provenance.
 
 This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the first four pilot attempts
+result. It is written from the first five pilot attempts
 ([pilot notes](pilot-notes.md)); the reasons for the rules are there.
 
 There are two roles. The **author** makes the attempt. The **verifier** checks
@@ -28,7 +28,9 @@ Do this before any analysis.
    file and list everything it holds, including every column of every table.
 3. Work out which of the paper's subjects, sessions, conditions and measured
    variables are in the dandiset. A dandiset that names a paper may hold only
-   part of its data.
+   part of its data. Check for recordings deposited more than once (identical
+   traces, frame counts or annotations), report each pair, and count each
+   recording once.
 4. Choose the version to pin. Pin the version the paper cites. If it cites
    none, pin the most recent published version, unless an earlier one matches
    the paper better. Say why in the notebook's header. If versions differ in
@@ -53,7 +55,8 @@ Do this before any analysis.
    - `expected`: each reported number the claim rests on, with a tolerance.
      Use the paper's own uncertainty when it gives one (a confidence
      interval, or the stated spread); otherwise 10% of the reported value.
-     Give the reason for any other tolerance.
+     For a reported range ("2 to 13%"), the claim holds inside the range
+     widened by 10% of each bound. Give the reason for any other tolerance.
    - `criterion`: how the claim will be judged, for any claim that is not
      settled by its expected values alone ("similar", "many", "tended to").
      Write it before running the analysis of that claim. The data check may
@@ -65,10 +68,20 @@ Do this before any analysis.
      claim is reproduced if the result matches under any of them. The
      notebook shows every reading, the notes say which ones match, and the
      ambiguity is recorded as a deviation.
+   - Method choices the paper leaves open and that can change the outcome
+     (how folds are formed, what a measure is compared with, how a penalty
+     is chosen) are fixed in the criterion before the analysis. The outcome
+     is judged on that choice; other choices are shown as variants and do not
+     change it.
    - For a claim of absence ("no difference", "did not change"), the
      criterion names the test and threshold the paper used. The claim is
      reproduced when that test does not find the effect and not reproduced
-     when it does; give the size of the effect either way.
+     when it does; give the size of the effect either way. The rule for
+     several readings does not apply: absence is judged on the paper's test
+     alone.
+   - If a criterion turns out unable to decide (two candidates tied), break
+     the tie as the paper's methods or code imply, record it as a deviation,
+     and show the other result.
    - `depends_on`: the claims whose result this one uses, such as the cells
      another claim selects.
 8. Decide now which claims are blocked, and why. Give the main reason under
@@ -81,6 +94,9 @@ Do this before any analysis.
      procedure well enough to repeat it (see also chance levels, under
      "Record the attempt").
    - `data_unreadable` and `too_large`.
+   - `not_runnable`: the paper's method cannot be run here, because its
+     software cannot be installed in a locked environment or it cannot run
+     within the time limit. Say what was tried.
    - `other`: say what, for example too few units under the claim's own rule.
 
    A claim that depends on a blocked claim is blocked for the same reason.
@@ -93,7 +109,8 @@ counts of subjects, sessions, trials and cells, the size of an arena, which
 conditions exist. Show that every data stream shares the clock of the trial
 tables, using a contrast between conditions where an overall check cannot
 tell a response from an offset (with spikes and a trial table only, decoding
-a task variable in windows around the trial start does this), and name any
+a task variable in windows around the trial start does this; for continuous
+sessions, decoding the annotations with the labels shifted in time), and name any
 session where this could not be established. A description that a check
 supports but does not prove is reported as consistent with the data, not as
 shown. Where they disagree, trust the data, say so in the notebook,
@@ -141,7 +158,9 @@ The notebook has these parts, in this order:
    - Quote a bound or an effect size for every variant you show, not only the
      main one.
    - End with a short conclusion beginning "**Result: ...**". Every sentence
-     in it must be backed by a number printed above it.
+     in it must be backed by a number printed above it. Analyses run outside
+     the notebook, while preparing, may be mentioned as not run here, but
+     never decide an outcome or supply a number in the record.
 4. **Summary.** A table of all claims and outcomes, how the analysis differs
    from the paper's, and what was found about the dandiset.
 
@@ -179,6 +198,8 @@ Write `attempts/<entry name>-<nn>.yaml`.
   data. One session of four, a substituted model, a threshold the paper does
   not state.
 - **`notes`**: the numbers behind the outcome, stated factually.
+- **`measured`**: the value obtained, or one per expected value in the same
+  order.
 - **`inputs`**: everything used that is not in the dandiset, each with where
   it came from (a DOI, or a repository at a commit).
 - **`findings`**: what the attempt found about the dandiset, whatever the
@@ -187,7 +208,9 @@ Write `attempts/<entry name>-<nn>.yaml`.
   `selection_undocumented`, `methods_unavailable`, `format_error` (files that
   break their own format, such as unsorted spike times), `code_mismatch`
   (published code that disagrees with the paper or the data),
-  `paper_inconsistency` (the paper disagrees with itself) and `other`.
+  `paper_inconsistency` (the paper disagrees with itself),
+  `metadata_insufficient` (a variable without a description or a needed
+  mapping) and `other`.
 - **`provenance`**: who is accountable, and for an agent the harness, model
   and this protocol's version.
 
@@ -215,6 +238,12 @@ own words, and what you changed in reply under `response`. An outcome the verifi
 with is either changed, with the reason, or left with the disagreement
 recorded.
 
+An outcome may not differ from the one the last verification round agreed
+with: `tools/entry.py check` fails if it does. The final revision corrects
+text and adds the outputs the verifier asked for. If it finds that an
+outcome should change, it keeps the verified outcome, says so in the notes
+as a proposed change, and the change waits for another round.
+
 ## Verifier
 
 Be skeptical. Do not assume the analysis is right.
@@ -240,6 +269,9 @@ Be skeptical. Do not assume the analysis is right.
    outputs. Quote any that the numbers do not support.
 3. Say which of your earlier points are resolved, and list what remains that
    bears on a conclusion.
+
+Take counts of claims and outcomes from the attempt record, not from a
+report or a summary table.
 
 The verifier does not edit the entry. It does not download the dandiset or
 re-run the whole notebook; if a check needs that, it asks for the output to be

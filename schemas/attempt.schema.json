@@ -132,6 +132,7 @@
               "methods_underspecified",
               "data_unreadable",
               "too_large",
+              "not_runnable",
               "other"
             ]
           },
@@ -148,8 +149,19 @@
             "type": "string"
           },
           "measured": {
-            "description": "The value obtained, for claims with an expected value.",
-            "type": "number"
+            "description": "The values obtained, for claims with expected values: one number, or one per expected value, in the same order.",
+            "oneOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "number"
+                }
+              }
+            ]
           },
           "deviations": {
             "description": "How the test differed from the paper's method or data, e.g. one session of four, or a substituted model.",
@@ -264,6 +276,7 @@
               "metadata_error",
               "data_missing",
               "identifier_missing",
+              "metadata_insufficient",
               "selection_undocumented",
               "methods_unavailable",
               "format_error",

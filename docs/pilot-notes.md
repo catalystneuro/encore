@@ -402,7 +402,7 @@ Point 9 (the notebook kernel) was a tool bug and is fixed.
 
 ## 001097, Liu et al. 2024 (2026-10-14): first attempt under pilot-3, entirely in Actions
 
-Outcome: seven claims reproduced, three partially, two not reproduced and
+Outcome: seven claims reproduced, two partially, three not reproduced and
 twelve blocked. See
 [`attempts/001097-liu-2024-01.yaml`](../attempts/001097-liu-2024-01.yaml)
 and the transcripts in [`transcripts/001097/`](../transcripts/001097).
@@ -441,9 +441,10 @@ not reproduced to partially reproduced. Round 2 had suspected the ridge
 penalty choice broke the ordering of the three models; with the penalty
 chosen by cross-validation the ordering holds, by 0.0003. The author says
 the choice was not made in advance and the test is still weak. No verifier
-has seen the change. As in 000582, the record cannot say "verified up to
-here"; a third round, or a rule that an outcome may not change after the
-last round without one, is needed.
+has seen the change. As in 000582, the record could not say "verified up to
+here". Protocol pilot-4 made the rule that an outcome may not differ from
+the last round's agreed outcome, and this claim was set back to not
+reproduced, with the change recorded as proposed.
 
 ### What the author reported about the protocol
 
@@ -489,3 +490,30 @@ last round without one, is needed.
 The author took about 55 minutes, the revisions 43 and 30, and the
 verification rounds 5 and 3. The notebook runs in about 8 minutes.
 
+
+## Protocol pilot-4 (2026-10-14)
+
+Revised after 001097. Each change and what prompted it:
+
+- **Outcomes cannot change after the last verification.** `tools/entry.py
+  check` fails when an outcome differs from the one the last round agreed
+  with; the final revision records a proposed change in the notes instead.
+  001097's `fig2e` was set back to its verified outcome under this rule
+  (001097, 000582).
+- **Method choices that can change the outcome are fixed beforehand**, and
+  other choices are variants (001097 point 5; the `fig2e` penalty).
+- **Claims of absence are judged on the paper's test alone**, outside the
+  rule for several readings (001097 point 3).
+- **Ties** are broken as the methods or code imply, and recorded (point 4).
+- **Ranges** as tolerances: the range widened by 10% of each bound (point 8).
+- **`not_runnable`**, a blocking reason for methods whose software cannot be
+  installed or run in time (point 1).
+- **Analyses outside the notebook** never decide an outcome (point 2).
+- **`measured`** may hold one value per expected value (point 7).
+- **`metadata_insufficient`** as a finding kind (point 6).
+- **Duplicate recordings** are checked and counted once (point 10).
+- **Clock check** for continuous sessions (point 9).
+- **Verifiers take counts from the record** (the round-2 miscount).
+
+The ten 001097 claims blocked as `other` for want of the paper's model
+fitting are left as they are; new attempts use `not_runnable`.
