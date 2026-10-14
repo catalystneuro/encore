@@ -1,0 +1,614 @@
+schema_version: 1
+id: 001453-fouke-2025-01
+dandiset: "001453"
+dandiset_version: 0.250518.1950
+paper: doi:10.1016/j.cub.2025.04.027
+date: 2026-10-14
+entry: 001453-fouke-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-5
+inputs:
+- what: Names of the stimulus codes (the conversion of stimulus names to codes, its printed list of
+    codes, and its own labels for codes 9 to 13), the trial processing parameters, the spatial
+    scale of 10 pixels per mm, the per-stimulus medians it printed, used as reference values
+    for the link claim, and the DC pairs its printed Tukey test for Figure 1D finds significant,
+    used as reference values for fig1d-dc-no-modulation. From the paper's analysis notebook
+    Fig1-S1.ipynb.
+  source: https://gitlab.oit.duke.edu/ean26/danionella_omr_neuralcircuits2025 at commit
+    33a5c297ff4ab6ff49f6bdd96139e9fdd867025c
+- what: Stimulus names in protocol order, from the protocol file
+    resources/protocols/sevenrep_twentyonestim.hdf of the stimulus software pandastim.
+  source: https://github.com/Naumann-Lab/pandastim at commit 7d9d1610be442c5a933e2575c071c64577e6312f
+outcomes:
+- claim: stimulus-code-link
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:stimulus-code-link
+  notes: Codes are matched by their integer value. All 21 codes are in the dandiset, including
+    every code the analysis uses. Through the link, 17 of 18 species and stimulus speed medians
+    are within 10% of the values printed by Fig1-S1.ipynb (DC static is 10.52 against 11.9
+    mm/s), and the angular velocities differ from the printed ones by a median of 0.02 deg/s.
+    The fish counts (25 ZF, 12 DC) match the code's lists; fish cannot be matched one by one, as
+    no identifier links the dandiset's subjects to the code's folders. The static window is the
+    code's (first 35 s of the code-20 block, measured from 3 s), and no fish median is exactly 0,
+    so the code's exclusion of zero medians changes nothing. On codes 9 and 11 the ZF medians
+    are 0.02 and 1.59 deg/s. Over 3 to 35 s DC turn more to the right for code 11 than for code 9
+    (median difference 5.82 deg/s, 10 of 12 fish, Wilcoxon p = 0.0093), and ZF go the same way
+    without significance (1.66 deg/s, 16 of 25 fish, p = 0.141). If fish turn with lateral motion
+    as they do with medial motion, code 11 is lateral right, as the protocol file has it; the
+    data do not show that they do, so the assignment is not settled.
+  deviations:
+  - The code's filter on a `vel` column is not applied to DC trials, as the DC files have no such
+    series; this is the remaining difference that may explain the one DC static value outside
+    10%.
+  - The timing of the DC stimulus labels could not be confirmed from the turning response (the
+    contrast is 4.6 deg/s with true labels and 0.1 with shifted ones); the DC labels are taken as
+    they are.
+- claim: fig1d-dc-faster-all-codes
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1d-dc-faster-all-codes
+  notes: Over all 21 codes, the median over fish and code values is 94.0 pixels/s for DC and 55.2
+    for ZF; species effect F = 78.4, p = 6.3e-18. The ANOVA treats each fish and code value as
+    independent; with one value per fish, DC 87.4 against ZF 52.9 pixels/s, Mann-Whitney p = 0.02.
+    With positions resampled to 30 Hz, 95.2 against 53.8 (p = 1.3e-08). DC are faster within
+    each frame-rate group.
+  deviations:
+  - Tested over all stimulus codes without their names; the paper's figure uses nine whole-field
+    stimuli.
+  - The comparison assumes one spatial scale for all rigs, which the files do not state.
+- claim: fig1d-median-velocity
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1d-median-velocity
+  measured:
+  - 9.87
+  - 6.41
+  notes: All four readings put both values within tolerance; (a) median of stimulus medians DC
+    10.02 and ZF 6.39 mm/s, (b) median of fish and stimulus values 9.87 and 6.41 (given as
+    measured), (c) median of fish medians 9.36 and 6.33, (d) median of trials 9.88 and 6.28.
+    Species effect F = 20.8, p = 7.5e-06. With 30 Hz positions DC 9.43 to 10.15 and ZF 6.07 to
+    6.30 (p = 0.0011). Without the trial rejection (4487 trials in place of 4458) readings (a) to
+    (c) are unchanged and (d) gives DC 9.85 and ZF 6.30 (p = 6.7e-06).
+  deviations:
+  - The paper does not say how the overall median is taken; four readings are shown, and all
+    match.
+  - 25 ZF, where the paper states 26.
+  - Speeds rely on the code's scale of 10 pixels per mm, which the dandiset does not state.
+- claim: fig1d-zf-forward-faster-than-static
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1d-zf-forward-faster-than-static
+  measured:
+  - 4.84
+  - 8.78
+  notes: ZF static 4.84 mm/s over 18 fish and forward 8.78 mm/s over 25 fish. Of 18 fish with
+    both, 14 are faster to forward motion (median difference 3.67 mm/s, Wilcoxon p = 0.0077).
+    The static value is 8.31 mm/s in the 5 fish from 167 to 171 Hz files and 4.50 in the 13
+    from 32 to 35 Hz files. Static is the start of the blank block after all motion trials (4 hours
+    in the protocol, 0.2 to 787.3 min in the files), one period per fish, and 7 ZF have none.
+  deviations:
+  - 25 ZF, where the paper states 26.
+- claim: fig1d-dc-no-modulation
+  outcome: not_reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1d-dc-no-modulation
+  notes: By the paper's test (Tukey's HSD over the 18 species and stimulus groups) 3 of 36 DC
+    pairs differ, all static against a motion direction (backward left, backward right, forward
+    left; adjusted p 0.030 to 0.049). The DC static values come from 9 fish and include one at
+    106.5 mm/s and two near 0. Among the eight directions no DC pair differs (smallest adjusted
+    p 0.999), DC per-stimulus medians span 8.81 to 10.52 mm/s (ratio 1.19, ZF 2.03), and a
+    one-way ANOVA across the nine DC stimuli gives p = 0.479 (ZF p = 0.00082). With values above
+    100 mm/s left out, no DC pair differs. The same Tukey test finds no ZF pair over the 18
+    groups (smallest p 0.835). The printed output of Fig1-S1.ipynb finds the same three DC pairs
+    significant (adjusted p 0.0236, 0.0373 and 0.0397), so the paper's own test disagrees with
+    the claim and this result matches the paper's computation. The DC-sub-2 static value of 106.5
+    mm/s is one trial measured over a 14.6 s motion phase in a 100 mm dish, likely a tracking
+    artefact. It passes the code's speed check because the check covers 0 to 35 s (21.9 mm/s from
+    the stored `dist`, 92.5 from positions); computing the check from positions, or leaving out zero
+    medians as the code does, gives the same 3 pairs. The outcome is a property of the paper's test
+    on this data, not evidence that DC modulate their speed with stimulus direction.
+  deviations:
+  - The DC static block is the code's window, but the code's filter on DC `vel` cannot be
+    applied (DC static 10.52 against the code's printed 11.9 mm/s).
+- claim: fig1d-dc-faster-oblique
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1d-dc-faster-oblique
+  notes: Under reading (b), motion at 90 degrees or more, DC are significantly faster than ZF for
+    right (p = 0.0002) and backward right (p = 0.0047), 2 of 4; under reading (a), the
+    intercardinal directions, for 1 of 4 (backward right). Backward motion also differs
+    (p = 0.0002).
+  deviations:
+  - The legend's "oblique" can be read two ways; the claim is reproduced under one of them (b)
+    and not under the other (a).
+- claim: fig1g-follow-direction
+  outcome: partially_reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1g-follow-direction
+  notes: ZF turn with the motion; the rightward minus leftward difference is positive in 23 of 25
+    fish (median 29.51 deg/s, one-sided Wilcoxon p = 9.8e-07). DC do not by this test; 7 of 12
+    positive, median 0.88 deg/s, p = 0.151, and the DC median for left motion is +0.25 deg/s,
+    the same sign as the paper's code printed (+0.3). DC turn right to right motion (8.67 deg/s).
+  deviations:
+  - The paper gives no test for following the direction; the per-fish rightward minus leftward
+    difference and its test were chosen here before the analysis.
+- claim: fig1h-zf-higher-angular-acceleration
+  outcome: not_reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1h-zf-higher-angular-acceleration
+  notes: With angular acceleration as the Methods define it, DC are higher than ZF for all nine
+    stimuli (medians 143 to 191 against 55.4 to 66.4 deg/s2, Kruskal-Wallis p below 0.05/9 for
+    each), the reverse of the claim. Per-fish medians, and the files at 128 to 171 Hz alone
+    (ZF 84.9, DC 178.6 deg/s2, p = 6.3e-05), give the same. The quantity Fig1-S1.ipynb computes
+    gives ZF higher with p below 0.05/9 for 7 of 9 stimuli; it divides the heading change per
+    frame by the file's mean frame interval, which in DC files is a median 8.73 times the frame
+    interval (ZF 1.37), as DC files hold only trial frames. Part of the DC values may be tracking
+    noise. In the 3 s stationary phase the DC median is 205 deg/s2, higher than the 171 during
+    motion (per fish median ratio 1.24, p = 0.016), but ZF are also higher at rest (66.9 and 60.8,
+    ratio 1.07, p = 0.00012), so this does not separate the species. In frames where the fish is
+    still (below 1 mm/s) DC are higher than ZF (per-fish medians 72.4 and 34.9 deg/s2, Mann-Whitney
+    p = 0.00014), and DC are higher in every speed band (at 5 mm/s or more, 207 and 85.8). The
+    outputs cannot say whether the higher values in moving DC are noise or turning during
+    continuous swimming. With the heading from the unwrapped `f0_theta` DC are higher still (218
+    to 278 against ZF 61.8 to 77.3 deg/s2, 0 of 9). The reversal should not be read as evidence
+    against the paper.
+  deviations:
+  - Follows the Methods' definition (degrees per second squared) on heading resampled to 30 Hz;
+    the code's quantity, which disagrees with the Methods, is shown as a variant.
+  - Heading is taken from the cumulative sum of `f0_vtheta`, as the code does; in DC files it does
+    not match `f0_theta`.
+- claim: figs1e-dc-respond-less-monocular
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:figs1e-dc-respond-less-monocular
+  notes: Species effect F = 23.3, p = 2.5e-06. DC turn less toward the stimulus than ZF for
+    medial stimuli (3.26 against 13.48 deg/s, p = 0.0003) and binocular ones (2.87 against 21.87,
+    p = 0.0002). For lateral stimuli DC are below ZF only nominally (-1.07 against -0.13 deg/s,
+    p = 0.96); neither species turns toward lateral motion. With the protocol file's assignment of
+    codes 9 and 11, the lateral medians change sign and DC are no longer below ZF there, which
+    would make the claim partially reproduced. The DC turning to codes 9 and 11 leans toward the
+    protocol file's assignment (see stimulus-code-link), so the lateral part is fragile.
+  deviations:
+  - Codes 9 and 11 are assigned as the figure code has them; the stimulus software's conversion
+    has them the other way, and the data do not settle it.
+- claim: fig1c-continuous-vs-bouts
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1c-continuous-vs-bouts
+  notes: The median-to-mean ratio of instantaneous speed is 0.306 in ZF (25 fish, 0.244 to 0.580)
+    and 0.908 in DC (12 fish, 11 above 0.74, one at 0.140), Mann-Whitney p = 5.4e-05. It holds in
+    files at 128 to 171 Hz alone (0.298 against 0.898, p = 0.0028) and in forward trials alone.
+  deviations:
+  - The paper shows this with representative traces and a bout analysis whose bout files are not
+    in the dandiset; the measure was chosen here before the analysis.
+- claim: fig1cef-representative-values
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The numbers come from single representative fish and trials. Fig1-S1.ipynb selects them
+    by the index of a data folder and a trial number (for example DC folder 29, trial 79), and the
+    dandiset gives no mapping from those folders to its subjects, nor the original file names.
+- claim: fig2d-shared-architecture
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The two-photon imaging data are not in the dandiset, which holds only freely swimming
+    tracking. The GitLab repository the paper names for "all behavioral and imaging data" holds
+    notebooks only, and no other dandiset of this lab or paper was found on the archive.
+- claim: fig2g-dsi-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
+- claim: fig2h-fewer-motion-responsive
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
+- claim: fig2k-more-monocular
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
+- claim: fig2l-bi-ratio
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
+- claim: fig3e-longer-swims
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The head-fixed tail tracking recorded during imaging is not in the dandiset, nor in the
+    paper's GitLab repository.
+- claim: fig3cd-zf-turn-more
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The head-fixed tail tracking is not in the dandiset, nor in the paper's GitLab repository.
+- claim: fig4f-longer-on-duration
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the imaging and the head-fixed tail tracking, neither of which is in the dandiset.
+- claim: fig4hi-vspn-lateralized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the imaging, the tail tracking and the registration to the mapzebrain atlas, none
+    of which is in the dandiset.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the freely swimming tracking of Figure 1 and Figure S1. The
+    two-photon imaging and the head-fixed tail tracking behind Figures 2 to 4 are not in it, and
+    the GitLab repository the paper names for all behavioural and imaging data holds analysis
+    notebooks only. Nine of the paper's main findings cannot be tested.
+- kind: metadata_insufficient
+  statement: The stimulus codes 0 to 20 have no names or description in the files or the
+    dandiset metadata. They can be named only from the paper's analysis notebook and the protocol
+    file of its stimulus software.
+- kind: code_mismatch
+  statement: The paper's analysis notebook labels code 9 as lateral right and 11 as lateral left,
+    while its conversion of the stimulus software's names gives the reverse (it carries a remap
+    that swaps them). The data do not settle which is right; zebrafish barely turn to either, and
+    Danionella turn more to the right for code 11, which fits the stimulus software's assignment
+    only if the fish turn with lateral motion.
+- kind: metadata_error
+  statement: Subject ids 0 to 11 are each used for one zebrafish and one Danionella cerebrum, so
+    subject_id does not identify an animal. The archive's summary counts 25 subjects and lists
+    only Danio rerio; the files hold 37 fish of two species.
+- kind: metadata_error
+  statement: f0_vtheta is stated in radians/s but holds the heading change per frame in radians,
+    and f0_vx and f0_vy are stated in pixels/s but are per frame. In most Danionella files the sum
+    of f0_vtheta over a trial does not match the change of f0_theta (median ratios 0.09 to 0.89).
+- kind: other
+  statement: 18 of 25 zebrafish files and 1 of 12 Danionella files are sampled at 32 to 35 Hz,
+    where the Methods state tracking at more than 150 Hz. Their timestamp intervals are regular
+    (28.8 to 30.8 ms) and their trials last the protocol's 35 s, so these are the acquisition
+    rates. Some measures differ with frame rate, such as the zebrafish static speed (8.31 against
+    4.50 mm/s).
+- kind: metadata_insufficient
+  statement: No spatial scale is given; positions are in pixels. They are consistent with the 10
+    pixels per mm in the paper's code, except one Danionella file (sub-5) whose positions reach
+    1490 pixels against about 1120 in the others.
+- kind: other
+  statement: Zebrafish and Danionella files were exported differently. Zebrafish files keep
+    untracked frames and frames between trials; Danionella files hold only tracked trial frames
+    and add a `dist` series. The paper's code filters Danionella frames on a `vel` column that is
+    not in the files.
+- kind: code_mismatch
+  statement: The paper's code computes the angular acceleration of Figure 1H as the heading change
+    per frame divided by the file's mean frame interval, an angular velocity. In Danionella files
+    the mean interval includes the gaps between trials (a median 8.73 times the frame interval),
+    which scales their values down. With the Methods' definition Danionella have the higher
+    angular acceleration.
+- kind: code_mismatch
+  statement: Figure 1H and its legend state a Kruskal-Wallis test with Bonferroni correction; the
+    code runs two-sample Kolmogorov-Smirnov tests, and its loop selects the stimulus with a
+    variable left from an earlier loop, so the nine tests compare the same stimulus.
+- kind: code_mismatch
+  statement: The Results state that Danionella lack the direction-dependent speed modulation of
+    zebrafish, but the Tukey test printed by Fig1-S1.ipynb for Figure 1D finds three Danionella
+    pairs significant (static against backward left, backward right and forward left, adjusted p
+    0.024 to 0.040), as this attempt does.
+- kind: other
+  statement: The `dist` series of the Danionella files does not agree with the positions; over the
+    first 35 s of a trial its sum is a median 1.11 times the path length of the smoothed
+    positions, with a 5th to 95th percentile of 0.31 to 3.79. The paper's speed check uses it,
+    though computing the check from positions passes the same trials.
+- kind: code_mismatch
+  statement: The Figure 1D legend gives 26 zebrafish; the paper's code lists 25, its ANOVA
+    degrees of freedom fit 25, and the dandiset holds 25.
+- kind: selection_undocumented
+  statement: The dandiset holds the 25 zebrafish and 12 Danionella the code keeps after exclusion
+    (its comments give 28 and 40 recorded). The dandiset does not say that the excluded fish were
+    left out or why.
+verifications:
+- date: '2026-10-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper's accepted manuscript (PMC12218792). The verifier
+    listed the version's assets through the DANDI API and ran synthetic checks of angular_acceleration,
+    trial_measures and the steadiness measure.
+  results:
+  - claim: stimulus-code-link
+    agrees: true
+    outcome: reproduced
+    reason: All 13 codes the analysis uses are present. 17 of 18 species x stimulus speed medians are
+      within 10% of the paper code's printed values; the one miss is DC static, 10.52 against 11.9.
+      Angular velocities match to a median of 0.02 deg/s. ZF turning to code 9 is +0.02 deg/s and to
+      code 11 is +1.59 deg/s, so the sign cannot settle which of them is lateral right. It asked for
+      the code's static window and the DC static values it gives, and for per-fish turning time
+      courses for codes 9 and 11 against medial codes 10 and 13, by species.
+    response: Read the code's handling of code 20 in Fig1-S1.ipynb. It keeps the first 35 s of each
+      code-20 trial number and measures from 3 s, the same frames as here; its exclusion of zero
+      medians applies to no fish here, so the DC static miss remains, with the DC `vel` filter as the
+      remaining difference. Added the number and length of code-20 blocks, the zero-median variant,
+      and per-fish turning for codes 9, 10, 11 and 13 in 4 s bins. DC turn more to the right for
+      code 11 than 9 (5.82 deg/s, 10 of 12 fish, p = 0.0093), ZF the same way without significance;
+      the notes now say this leans toward the protocol file's assignment if fish turn with lateral
+      motion. Added the untested timing of the DC labels to the deviations. Outcome unchanged.
+  - claim: fig1d-dc-faster-all-codes
+    agrees: true
+    outcome: reproduced
+    reason: Species effect F=78.4, p=6e-18. DC median 94.0 px/s against ZF 55.2 px/s. The ANOVA treats
+      each fish x code value as independent. A Mann-Whitney test on the per-fish medians gives
+      p=0.02, which still passes.
+    response: Added the per-fish Mann-Whitney test to the notebook (DC 87.4 against ZF 52.9 px/s,
+      p = 0.02) and to the notes.
+  - claim: fig1d-median-velocity
+    agrees: true
+    outcome: reproduced
+    reason: Under all four readings both values are within tolerance; reading (b) gives DC 9.87 and ZF
+      6.41 mm/s. Species effect p=7.5e-6 with 305 residual df, the same df as the paper's code. The
+      30 Hz variant also passes (9.79 and 6.08, p=0.0011).
+    response: No change to the outcome. While answering point 2 it turned out that the variant without
+      trial rejection was the same as the main analysis, as rejected trials had no measures; the
+      helper now measures every trial, and the variant gives DC 9.85 and ZF 6.30 under reading (d),
+      the other readings unchanged (p = 6.7e-06).
+  - claim: fig1d-zf-forward-faster-than-static
+    agrees: true
+    outcome: reproduced
+    reason: ZF static 4.84 mm/s (18 fish) and forward 8.78 mm/s (25 fish); both within tolerance.
+    response: No change needed. The static window is now shown to be the code's (see
+      stimulus-code-link).
+  - claim: fig1d-dc-no-modulation
+    agrees: true
+    outcome: not_reproduced
+    reason: The pre-specified Tukey test finds 3 significant DC pairs, all against DC static (adjusted
+      p 0.030 to 0.049). These come from one fish x stimulus value, DC-sub-2 static at 106.5 mm/s.
+      Without static, or without values above 100 mm/s, no DC pair is significant. The speed
+      rejection for DC uses the stored `dist` series over 0 to 35 s and lets through 11 DC trials
+      whose measured speed is above 100 mm/s. It asked for a per-trial table of the dist-based check
+      speed next to the position-based speed for those trials, and the effect on the Tukey test of
+      computing the check from positions.
+    response: Added the table. The 11 DC trials have dist-based check speeds of 4.8 to 21.9 mm/s and
+      position-based ones of 31.4 to 96.5 mm/s, so both checks pass them; 9 of them have a motion
+      phase under 1 s, and DC-sub-2 static is 106.5 mm/s over 14.6 s. With the check from positions
+      no trial changes and the Tukey test gives the same 3 pairs. Added the Tukey output printed by
+      Fig1-S1.ipynb, which finds the same three DC pairs (adjusted p 0.0236, 0.0373, 0.0397); the
+      notes and a new finding say the paper's own test disagrees with the claim. Outcome unchanged.
+  - claim: fig1d-dc-faster-oblique
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (marginal). Reading (b), which matches the Results' wording "oblique motion
+      (>90 degrees)", gives right p=0.0002 and backward_right p=0.0047, both below 0.0056, so 2 of
+      4. backward_left misses at p=0.0071. Reading (a), the intercardinal directions, gives 1 of 4.
+    response: No change needed.
+  - claim: fig1g-follow-direction
+    agrees: true
+    outcome: partially_reproduced
+    reason: ZF right-minus-left is 29.5 deg/s, 23 of 25 fish positive, p=1e-6. DC is 0.88 deg/s, 7 of
+      12 positive, p=0.15. DC's left median is +0.25 deg/s, and the paper code's printed value is
+      also +0.3 deg/s.
+    response: No change needed.
+  - claim: fig1h-zf-higher-angular-acceleration
+    agrees: true
+    outcome: not_reproduced
+    reason: Under the Methods definition DC is higher on all 9 stimuli, so 0 of 9 meet the criterion.
+      The code's own quantity gives 7 of 9 but divides by a mean frame interval that is 8.7 times the
+      true one for DC (1.4 times for ZF). There is no check of the tracking-noise floor; DC acceleration on static
+      trials is the same as on every motion stimulus, heading noise of 1 to 2 degrees gives values
+      close to the DC ones, and DC `f0_vtheta` does not sum to the change in `f0_theta`. The outcome
+      stands, but the reversal may be an artefact and should not be read as evidence against the
+      paper. It asked for DC and ZF acceleration in the 0 to 3 s stationary phase, and the same
+      measure from unwrapped `f0_theta`.
+    response: Added both. DC are higher in the stationary phase (205 deg/s2) than during motion (171;
+      ZF 66.9 and 60.8), and from the unwrapped `f0_theta` DC are higher still (218 to 278 against
+      ZF 61.8 to 77.3, 0 of 9). The conclusion, the notes and the summary now say the DC values may
+      be a tracking-noise floor and the reversal is not evidence against the paper. Outcome
+      unchanged.
+  - claim: figs1e-dc-respond-less-monocular
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (fragile). Species effect p=2.5e-6. Medial DC 3.26 against ZF 13.48 deg/s,
+      p=0.0003. Lateral DC -1.07 against ZF -0.13, p=0.96. The lateral condition is met only by noise
+      around zero. Under the protocol file's 9/11 assignment DC is higher on lateral, which would
+      make the outcome partial.
+    response: Outcome kept, as the claims file fixes the figure code's assignment. The conclusion and
+      the notes now say the lateral part is fragile and that the new DC time courses lean toward the
+      protocol file's assignment, under which the result would be partially reproduced.
+  - claim: fig1c-continuous-vs-bouts
+    agrees: true
+    outcome: reproduced
+    reason: Steadiness ZF 0.306 against DC 0.908, p=5e-5. It holds in the 128 to 171 Hz files only
+      (p=0.003) and in forward trials only.
+    response: No change needed.
+  - claim: fig1cef-representative-values
+    agrees: true
+    outcome: blocked
+    reason: Blocked (methods_underspecified). Neither the paper nor the archive identifies the
+      representative fish or trials. I agree nothing can be tested. Population values exist, for
+      example DC forward median 9.69 mm/s against the representative 13.7, but they test a
+      different quantity.
+    response: Kept blocked_by metadata_insufficient, as the paper's code names the fish by folder and
+      trial and the dandiset lacks the mapping from those folders to its subjects.
+  - claim: fig2d-shared-architecture
+    agrees: true
+    outcome: blocked
+    reason: Confirmed from the API, 37 assets, all behavior NWB files with only BehavioralTimeSeries.
+      No other DANDI dandiset matches "Danionella".
+    response: No change needed.
+  - claim: fig2g-dsi-similar
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2d.
+    response: No change needed.
+  - claim: fig2h-fewer-motion-responsive
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2d.
+    response: No change needed.
+  - claim: fig2k-more-monocular
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2d.
+    response: No change needed.
+  - claim: fig2l-bi-ratio
+    agrees: true
+    outcome: blocked
+    reason: Same as fig2d.
+    response: No change needed.
+  - claim: fig3e-longer-swims
+    agrees: true
+    outcome: blocked
+    reason: No head-fixed tail tracking in the archive.
+    response: No change needed.
+  - claim: fig3cd-zf-turn-more
+    agrees: true
+    outcome: blocked
+    reason: Same as fig3e.
+    response: No change needed.
+  - claim: fig4f-longer-on-duration
+    agrees: true
+    outcome: blocked
+    reason: No imaging or tail data in the archive.
+    response: No change needed.
+  - claim: fig4hi-vspn-lateralized
+    agrees: true
+    outcome: blocked
+    reason: Same as fig4f.
+    response: No change needed.
+- date: '2026-10-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The second executed notebook in full, with the conclusion cells and the summary, the helper
+    module, the claims file and the attempt record. The verifier did not download the paper again.
+  results:
+  - claim: stimulus-code-link
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The DC static miss (10.52 against 11.9) is still unexplained beyond the missing
+      `vel` filter, but no longer affects an outcome, because the paper's own Tukey test gives the
+      same three pairs.
+    response: No change to the outcome. Corrected the text that called the code-20 block 4 hours; it
+      now gives the protocol's 4 hours and the 0.2 to 787.3 min the files hold.
+  - claim: fig1d-dc-faster-all-codes
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The per-fish Mann-Whitney test resolves the point on independence in the ANOVA
+      (p = 0.02).
+    response: No change needed.
+  - claim: fig1d-median-velocity
+    agrees: true
+    outcome: reproduced
+    reason: Agree.
+    response: No change needed.
+  - claim: fig1d-zf-forward-faster-than-static
+    agrees: true
+    outcome: reproduced
+    reason: Agree. The notes say "the start of a 4-hour blank block"; four hours is the protocol's
+      length, and the files hold code-20 blocks of 0.2 to 787.3 min.
+    response: The notes and the notebook now give the protocol's 4 hours and the observed 0.2 to 787.3
+      min.
+  - claim: fig1d-dc-no-modulation
+    agrees: true
+    outcome: not_reproduced
+    reason: The criterion is met, 3 of 36 DC pairs significant, and the paper code's printed Tukey
+      output finds the same three pairs. All three come from one DC-sub-2 static trial at 106.5 mm/s
+      over 14.6 s in a 100 mm dish, almost certainly a tracking artefact. A reader should take the
+      outcome as a property of the paper's test on this data, not as evidence that DC modulate their
+      speed. "Two at 0.0" sits next to "no fish median is exactly 0" and should say "near 0". The
+      Summary and the finding on `dist` read as if `dist` caused the fast trials to pass, while the
+      check from positions passes the same trials and the cause is the 0 to 35 s window. Cell 17
+      gives one exception to the short motion phases where there are two (DC-sub-2 forward_backward,
+      7.3 s at 132.1 mm/s, and DC-sub-2 static).
+    response: Outcome kept. The conclusion and the notes now say "near 0", call the DC-sub-2 static
+      value a likely tracking artefact, and say the outcome is a property of the paper's test on this
+      data, not evidence that DC modulate speed. The trial-measures text lists both long trials and
+      names the 0 to 35 s window as the reason they pass; the Summary bullet and the `dist` finding
+      now say the check from positions passes the same trials.
+  - claim: fig1d-dc-faster-oblique
+    agrees: true
+    outcome: reproduced
+    reason: Agree, but it is marginal. It passes under reading (b) only, with 2 of 4 stimuli.
+    response: No change needed; the notes and deviations already say this.
+  - claim: fig1g-follow-direction
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree.
+    response: No change needed.
+  - claim: fig1h-zf-higher-angular-acceleration
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 9 stimuli meet the criterion under the Methods definition, and 0 of 9 with the heading
+      from `f0_theta`. "DC values are as high at rest as during motion, which suggests a tracking-noise
+      floor" claims more than the outputs show, since ZF are also higher at rest than during motion
+      (ratio 1.07, p = 0.00012), and the notes leave out the ZF test. The direct test is missing,
+      acceleration in frames where the fish is still, by species. Until then the reversal may come
+      from noise or from DC's continuous swimming.
+    response: Outcome kept. Added the requested output, angular acceleration by speed band and in frames
+      below 1 and 2 mm/s, by species. Still DC are higher than ZF (72.4 against 34.9 deg/s2 below
+      1 mm/s, p = 0.00014), and DC are higher in every speed band (207 against 85.8 at 5 mm/s or more).
+      The conclusion, the notes and the Summary now give the ZF rest test, drop "suggests a
+      tracking-noise floor", and say that part of the DC values may be noise but the outputs cannot
+      say whether the higher values in moving DC are noise or turning. Added the ZF figure (1.4 times)
+      to the round-1 reason.
+  - claim: figs1e-dc-respond-less-monocular
+    agrees: true
+    outcome: reproduced
+    reason: Agree, under the 9/11 assignment the claims file fixes. Both species turn right more to code
+      11 than to code 9 (DC 10 of 12 fish, p = 0.0093), and both turn with the motion for medial and
+      binocular stimuli, so the protocol file's assignment (11 = lateral right) is the more likely
+      one. Under it DC are not below ZF on lateral stimuli and the claim would be partially
+      reproduced. The reproduced label rests on the assignment the data argue against, and on a 0.95
+      deg/s difference (p = 0.96).
+    response: Outcome kept, as the verifier agrees and the claims file fixes the assignment. The notes
+      already say the lateral part is fragile and would be partially reproduced under the protocol
+      file's assignment; the verifier's reading that the data favour that assignment is recorded
+      here.
+  - claim: fig1c-continuous-vs-bouts
+    agrees: true
+    outcome: reproduced
+    reason: Agree.
+    response: No change needed.
+  - claim: fig1cef-representative-values
+    agrees: true
+    outcome: blocked
+    reason: Agree. The record keeps `metadata_insufficient` in place of the suggested
+      `methods_underspecified`, because the code names the fish by folder and the dandiset has no
+      mapping from folders to subjects; the verifier accepts that.
+    response: No change needed.
+  - claim: fig2d-shared-architecture
+    agrees: true
+    outcome: blocked
+    reason: Agree (data_missing).
+    response: No change needed.
+  - claim: fig2g-dsi-similar
+    agrees: true
+    outcome: blocked
+    reason: Agree (data_missing).
+    response: No change needed.
+  - claim: fig2h-fewer-motion-responsive
+    agrees: true
+    outcome: blocked
+    reason: Agree (data_missing).
+    response: No change needed.
+  - claim: fig2k-more-monocular
+    agrees: true
+    outcome: blocked
+    reason: Agree (data_missing).
+    response: No change needed.
+  - claim: fig2l-bi-ratio
+    agrees: true
+    outcome: blocked
+    reason: Agree (data_missing).
+    response: No change needed.
+  - claim: fig3e-longer-swims
+    agrees: true
+    outcome: blocked
+    reason: Agree (data_missing).
+    response: No change needed.
+  - claim: fig3cd-zf-turn-more
+    agrees: true
+    outcome: blocked
+    reason: Agree (data_missing).
+    response: No change needed.
+  - claim: fig4f-longer-on-duration
+    agrees: true
+    outcome: blocked
+    reason: Agree (data_missing).
+    response: No change needed.
+  - claim: fig4hi-vspn-lateralized
+    agrees: true
+    outcome: blocked
+    reason: Agree (data_missing).
+    response: No change needed.

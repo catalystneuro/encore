@@ -1,0 +1,209 @@
+# Claims for Fouke, He, Loring & Naumann (2025) on dandiset 001453.
+# Source: the accepted author manuscript in PubMed Central (PMC12218792), full text, read
+# from its Results, figure legends and STAR Methods. The version of record is not open access.
+#
+# When these criteria were written, the author had seen the data check only: the file list,
+# subject metadata, frame rates, units, trial structure and stimulus codes of every file, and
+# the extent of positions. No claim's analysis had been run. The author had also read the
+# outputs printed in the paper's own analysis notebook (Fig1-S1.ipynb, GitLab commit 33a5c29),
+# which include per-stimulus median speeds and angular velocities and its statistics.
+#
+# The dandiset holds only the freely swimming tracking data of Figure 1 and Figure S1. Its
+# stimulus codes 0 to 20 carry no names. The names come from the paper's code and from the
+# stimulus software's protocol file (see stimulus-code-link), so the claims that need them
+# use outside data and depend on that claim.
+#
+# Method choices fixed here, from the paper's Fig1-S1.ipynb where the Methods are silent: a
+# trial is one stim_index; tracked frames only; positions smoothed with a Savitzky-Golay filter
+# (21 frames, order 2); trials rejected when the absolute cumulative heading change exceeds
+# 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or the mean speed exceeds
+# 100 mm/s; measures taken from 3 s to 35 s after the first frame (the 3 s stationary phase is
+# left out); speed is path length over time, at 10 pixels per mm; angular velocity is the
+# summed heading change over time; each fish's value for a stimulus is the median over its
+# trials, and a species' value is the median over fish.
+schema_version: 1
+dandiset: "001453"
+paper: doi:10.1016/j.cub.2025.04.027
+claims:
+- id: stimulus-code-link
+  statement: The dandiset's stimulus codes can be linked to the stimuli the paper names, using
+    the paper's analysis code and the protocol file of its stimulus software, and the values
+    computed through that link agree with those the paper's code printed.
+  source: Data and Code Availability; the paper's Fig1-S1.ipynb at GitLab commit 33a5c29
+  data: with_inputs
+  criterion: Records are matched by the integer stimulus code. The link holds (reproduced) when
+    every code the analysis uses (0 to 7, 9, 10, 11, 13 and 20) occurs in the dandiset, and the
+    species' median speeds for the nine whole-field stimuli computed here are within 10% of the
+    values printed in Fig1-S1.ipynb for at least 14 of the 18 species and stimulus pairs. It is
+    partially reproduced for 9 to 13 pairs and not reproduced below 9. The fish cannot be
+    matched one to one, as no identifier links the dandiset's subjects to the code's folders;
+    the counts per species are compared instead. The sign of the zebrafish turning response
+    to codes 9 and 11 is reported, as the code and the protocol file disagree on which of them
+    is lateral right.
+- id: fig1d-dc-faster-all-codes
+  statement: Danionella cerebrum (DC) swim at a higher median velocity than zebrafish (ZF)
+    across the visual stimuli.
+  source: Results, first section; Figure 1D
+  criterion: Tested without stimulus names, over all 21 stimulus codes. For each fish and code
+    the median over trials of the trial speed in pixels per second; a two-way ANOVA (type II)
+    of these values on species, code and their interaction. Reproduced when the species effect
+    has p < 0.05 and the DC median over all fish and code values exceeds the ZF median.
+- id: fig1d-median-velocity
+  statement: Across the whole-field stimuli DC have a higher median velocity than ZF (9.8
+    against 6.4 mm/s), with a significant main effect of species in a two-way ANOVA.
+  source: Results, first section; Figure 1D
+  data: with_inputs
+  depends_on:
+  - stimulus-code-link
+  expected:
+  - quantity: DC median velocity over whole-field stimuli
+    value: 9.8
+    tolerance: 0.98
+    unit: mm/s
+  - quantity: ZF median velocity over whole-field stimuli
+    value: 6.4
+    tolerance: 0.64
+    unit: mm/s
+  criterion: Over the nine whole-field stimuli (static, and the eight directions), the paper
+    does not say how the overall median is taken. The readings are (a) the median of the nine
+    per-stimulus species medians; (b) the median over all fish and stimulus values pooled;
+    (c) the median over fish of each fish's median across stimuli; (d) the median over all
+    passing trials pooled. Reproduced when, under one reading, both values are within
+    tolerance and the species effect of a two-way ANOVA (type II) on fish-by-stimulus values
+    has p < 0.05 with DC higher. Partially reproduced when the ANOVA holds but no reading
+    puts both values within tolerance.
+- id: fig1d-zf-forward-faster-than-static
+  statement: ZF modulate their velocity with the direction of motion; forward motion
+    increases their median velocity (static 5.0 mm/s, forward 8.8 mm/s).
+  source: Results, first section; Figure 1D
+  data: with_inputs
+  depends_on:
+  - stimulus-code-link
+  expected:
+  - quantity: ZF median velocity, static
+    value: 5.0
+    tolerance: 0.5
+    unit: mm/s
+  - quantity: ZF median velocity, forward
+    value: 8.8
+    tolerance: 0.88
+    unit: mm/s
+- id: fig1d-dc-no-modulation
+  statement: DC lack the direction-dependent velocity modulation seen in ZF.
+  source: Results, first section; Figure 1D legend
+  data: with_inputs
+  depends_on:
+  - stimulus-code-link
+  criterion: A claim of absence, judged on the paper's test, a two-way ANOVA followed by
+    Tukey's HSD (family-wise alpha 0.05) over all 18 species and stimulus groups of
+    fish-by-stimulus median speeds, as in Fig1-S1.ipynb. Reproduced when no pair of DC
+    stimuli differs significantly; not reproduced when any does. The range of DC
+    per-stimulus medians and the ZF pairs that differ are reported either way.
+- id: fig1d-dc-faster-oblique
+  statement: DC swim at a significantly higher velocity than ZF for oblique stimuli.
+  source: Figure 1D legend
+  criterion: Per stimulus, ZF against DC fish-by-stimulus median speeds with Tukey's HSD on the
+    two groups, at the Bonferroni level 0.05/9, as in Fig1-S1.ipynb. "Oblique" can be read as
+    (a) the intercardinal directions forward right, forward left, backward right and backward
+    left, or (b) the motion of 90 degrees or more used for turning in the Results (right,
+    left, backward right, backward left). Reproduced when, under one reading, at least two of
+    its four stimuli show DC significantly faster than ZF.
+  data: with_inputs
+  depends_on:
+  - stimulus-code-link
+- id: fig1g-follow-direction
+  statement: Both species follow the direction of optic flow, turning right (positive angular
+    velocity) to rightward motion and left to leftward motion.
+  source: Figure 1G; Results, second section
+  data: with_inputs
+  depends_on:
+  - stimulus-code-link
+  criterion: For each fish, the mean of its median angular velocities for the rightward
+    stimuli (right, forward right, backward right) minus the mean for the leftward stimuli
+    (left, forward left, backward left). Reproduced when this difference is greater than zero
+    in each species by a one-sided Wilcoxon signed-rank test at p < 0.05; partially reproduced
+    when it holds in one species only. The per-stimulus species medians are reported as well.
+- id: fig1h-zf-higher-angular-acceleration
+  statement: Across directional stimuli ZF have higher angular acceleration than DC, and the
+    distributions of the two species differ for every stimulus.
+  source: Results, second section; Figure 1H (Kruskal-Wallis test with Bonferroni correction)
+  data: with_inputs
+  depends_on:
+  - stimulus-code-link
+  criterion: Angular acceleration as the Methods define it (degrees per second squared), from
+    the heading resampled to 30 Hz so that files with different frame rates are treated alike,
+    smoothed with a 7-sample rolling median before and after each derivative as the code does;
+    absolute values between 10 and 1000 degrees per second squared kept, frames 0 to 35 s
+    into each passing trial, as in Fig1-S1.ipynb. Per stimulus, a Kruskal-Wallis test of ZF
+    against DC frames at p < 0.05/9. Reproduced when, for all nine whole-field stimuli, the
+    test is significant and the ZF median is higher; partially reproduced when that holds for
+    five to eight; not reproduced otherwise. The quantity Fig1-S1.ipynb computes under this
+    name (heading change per frame divided by the file's mean frame interval) is shown as a
+    variant, as is a test on per-fish medians.
+- id: figs1e-dc-respond-less-monocular
+  statement: DC generally respond less than ZF to monocular stimuli, suggesting that they need
+    more visual motion input to drive the optomotor response.
+  source: Results, second section; Figure S1E
+  data: with_inputs
+  depends_on:
+  - stimulus-code-link
+  criterion: As in Fig1-S1.ipynb, the angular velocity toward the stimulated direction (left
+    stimuli sign-flipped), per fish, pooled into static, medial (codes 10 and 13), lateral
+    (9 and 11, with 9 as lateral right, as the figure code has it) and binocular (3 and 2).
+    Reproduced when a two-way ANOVA (type II) on species and category has a species effect at
+    p < 0.05 and the DC median is below the ZF median for both medial and lateral; partially
+    reproduced when the species effect holds and DC is lower for one of the two. The
+    protocol file's assignment of 9 and 11 is shown as a variant.
+- id: fig1c-continuous-vs-bouts
+  statement: ZF swim in discrete bouts separated by glides, while DC swim continuously at a
+    relatively constant velocity.
+  source: Results, first section; Figure 1C and Figure S1D
+  criterion: The paper shows this with representative traces and a bout analysis whose bout
+    files are not in the dandiset, so a measure is fixed here. Per trial, positions resampled
+    to 30 Hz between 3 and 35 s, instantaneous speed, and the ratio of its median to its mean
+    (near 1 for steady swimming, low for bursts); per fish, the median over all trials of all
+    stimulus codes. Reproduced when the ZF fish have lower ratios than the DC fish by a
+    two-sided Mann-Whitney test at p < 0.05.
+- id: fig1cef-representative-values
+  statement: In representative trials ZF bouts reach a peak velocity of 44.7 mm/s with a median
+    of 1.8 mm/s, DC swim at a median of 13.7 mm/s to forward motion; to oblique motion ZF show
+    a median angular velocity of 12.0 degrees/s and median peak angular acceleration of 174
+    degrees/s2, and DC an average peak of 103 degrees/s2 to rightward motion.
+  source: Results, first and second sections; Figure 1C, 1E and 1F
+- id: fig2d-shared-architecture
+  statement: Both species have spatially intermixed, direction-selective neurons enriched in the
+    pretectum and anterior hindbrain, and share the major functional response types.
+  source: Figure 2B to 2F
+- id: fig2g-dsi-similar
+  statement: The average direction selectivity index is similar in ZF and DC (0.62 against 0.66,
+    p > 0.05, Student's t-test, 5 fish each).
+  source: Figure 2G
+- id: fig2h-fewer-motion-responsive
+  statement: ZF tend to have a higher proportion of motion-responsive neurons than DC (0.13
+    against 0.06, p = 0.059).
+  source: Figure 2H
+- id: fig2k-more-monocular
+  statement: DC have a higher proportion of purely monocular neurons than ZF (0.37 against 0.16,
+    p < 0.05).
+  source: Figure 2K
+- id: fig2l-bi-ratio
+  statement: The binocularity index ratio is higher in ZF than in DC (0.72 against 0.24, p =
+    0.010).
+  source: Figure 2L
+- id: fig3e-longer-swims
+  statement: Head-fixed DC perform longer swims than ZF (median 0.75 s against 0.29 s, p <
+    0.0001).
+  source: Figure 3E and 3F
+- id: fig3cd-zf-turn-more
+  statement: Head-fixed ZF show larger directional tail angles than DC to turn-inducing stimuli,
+    and shorten their swims for oblique stimuli while DC do not.
+  source: Figure 3C and 3D
+- id: fig4f-longer-on-duration
+  statement: Swim-onset-associated neurons in DC have a longer active (ON) phase than in ZF,
+    while non-motor-associated neurons have similar ON durations.
+  source: Figure 4E and 4F
+- id: fig4hi-vspn-lateralized
+  statement: Motor-associated neurons in the putative ventromedial spinal projection neurons of
+    both species encode turn direction in a lateralized way, correlating more with ipsilateral
+    turns.
+  source: Figure 4H and 4I
