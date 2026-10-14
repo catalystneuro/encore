@@ -58,15 +58,23 @@ def test_long_tool_output_is_cut(tmp_path):
     assert "more lines not kept" in text
 
 
-def test_refuses_to_write_private_content(tmp_path, monkeypatch, capsys):
+def test_private_content_is_removed_and_reported_without_its_text(tmp_path, monkeypatch, capsys):
     run = RUN + [call("e", "Bash", command="cat /Users/someone/.ssh/id_rsa"),
                  result("e", "-----BEGIN OPENSSH PRIVATE KEY-----\nme@example.com")]
     source, output = write_run(tmp_path / "run.jsonl", run), tmp_path / "out.md"
     monkeypatch.setattr(sys, "argv", ["transcript.py", str(source), str(output)])
-    assert tool.main() == 1
-    assert not output.exists()
-    err = capsys.readouterr().err
-    assert "a home directory path" in err and "a private key" in err and "an e-mail address" in err
+    assert tool.main() == 0
+    text, err = output.read_text(), capsys.readouterr().err
+    for kind in ("a home directory path", "a private key", "an e-mail address"):
+        assert f"[removed: {kind}]" in text and kind in err
+    for secret in ("someone", "me@example.com", "BEGIN OPENSSH"):
+        assert secret not in text and secret not in err
+    assert "python analysis.py" in text
+
+
+def test_code_is_not_taken_for_an_e_mail_address():
+    for code in ("Xd@np.ones((3, 3))", "w = A@B.T", "y = X@np.linalg.inv(C)"):
+        assert tool.redact(code)[1] == []
 
 
 def test_a_home_directory_can_be_rewritten(tmp_path):
@@ -74,4 +82,4 @@ def test_a_home_directory_can_be_rewritten(tmp_path):
                  result("e", "drwxr-xr-x  5 someone  staff  160 registry")]
     text = tool.render(write_run(tmp_path / "run.jsonl", run), "Demo", home="/Users/someone")
     assert "ls ~/dev/registry" in text and "someone" not in text
-    assert tool.private_content(text) == []
+    assert tool.redact(text)[1] == []

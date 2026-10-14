@@ -11,8 +11,8 @@ the verifier sees only its materials. [`tools/transcript.py`](../tools/transcrip
 turns the raw transcript into these files. It keeps the prompt, every message
 and every tool call. It leaves out the session context, thinking, the text of
 fetched pages and of the paper, and all but the first lines of each tool
-result, and it refuses to write a transcript that still holds an e-mail
-address, a token or a home directory path.
+result, and it replaces anything left that looks like an e-mail address, a
+token or a home directory path with a note saying what was removed.
 
 The 000207 verifier transcript is from a run on a person's machine before the
 workflow existed, exported the same way. The transcripts of the first three
