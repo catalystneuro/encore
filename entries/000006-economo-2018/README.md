@@ -2,7 +2,8 @@
 
 Tests the findings in the abstract of [Economo et al. (2018)](https://doi.org/10.1038/s41586-018-0642-9)
 that [DANDI:000006](https://dandiarchive.org/dandiset/000006/0.220126.1855) can test. The paper is not
-open access, so only its abstract was used. The dandiset holds silicon probe recordings from the
+open access, so the claims were written from its abstract. The public legends of Extended Data
+Figs 5 to 10, read after the first verification round, are used in variants only. The dandiset holds silicon probe recordings from the
 anterior lateral motor cortex of 12 mice in a delayed response task, with tagged PTupper (thalamus-projecting)
 and PTlower (medulla-projecting) units.
 
