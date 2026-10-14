@@ -1,0 +1,139 @@
+schema_version: 1
+id: 001754-knierim-2000-01
+dandiset: "001754"
+dandiset_version: 0.260728.1352
+paper: doi:10.1038/72910
+date: 2026-10-14
+entry: 001754-knierim-2000
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-6
+outcomes:
+- claim: flight-spatial-code
+  outcome: partially_reproduced
+  notebook: reproduce_knierim_2000.ipynb
+  output: claim:flight-spatial-code
+  notes: On flight day 9, 13 of 25 Rat1 units (0.52) have spatial information above the 95th
+    percentile of 500 circular-shift shuffles on the Escher staircase (binomial p = 3.6e-11
+    against 0.05), but 3 of 28 Rat2 units (0.107, p = 0.16). By the criterion this is reproduced in
+    one of the two judged sessions. On flight day 4, 10 of 20 Rat1 units, 0 of 16 Rat2 units, and 9
+    of 16 and 2 of 19 Rat3 units in its two ES epochs are significant. Rat1 FD9 gives 0.40 at p <
+    0.01 and 0.54 with 100 spikes or more. Rat2's units are not selective with the shared position
+    trace in any window, and Rat1's units are selective in Rat2's FD4 ES epoch (7 of 15), so the
+    trace in Rat2's epochs may not be Rat2's position. In MC epochs 0 to 2 units per session are
+    significant. The "three orthogonal surfaces" part of the abstract is tested apart, and blocked.
+  deviations:
+  - The paper's Methods were not available; the selection (50 spikes at a known position), the
+    32 x 32 binning, the shuffle and the thresholds are common choices fixed in the claims file.
+  - Occupancy is the original analysis's occupancy map for the epoch, and shuffled spikes take the
+    nearest position sample within 0.25 s, as the dandiset gives position only at spike times.
+  - Robust is read as at least half of the units significant in each flight day 9 session.
+- claim: three-orthogonal-surfaces
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The dandiset holds one two-dimensional pixel position per time from one camera. Nothing in
+    the files, the dandiset metadata or the conversion code describes the camera's view or the
+    track layout, so pixels cannot be assigned to the three surfaces. The NASA record of the study
+    (OSD-968) mentions two synchronised cameras; a second view is not in the dandiset.
+- claim: si-comparable-to-preflight
+  outcome: reproduced
+  notebook: reproduce_knierim_2000.ipynb
+  output: claim:si-comparable-to-preflight
+  notes: Flight day 9 ES rate maps (64, Rats 1 and 2) have a median spatial information of 1.385
+    bits/spike against 1.448 for preflight ES maps (53); two-sided Mann-Whitney p = 0.45, difference
+    -0.064 bits/spike, ratio 0.96. Per rat, CEL-named maps only, maps with a peak of 1 Hz or more,
+    MC maps and all flight maps all give p of 0.20 or more. Rat2's FD9 ES maps have a median of
+    1.343 bits/spike although only 3 of its 28 units are significant against shuffles, so the rate
+    maps' spatial information does not show that Rat2's cells were selective.
+  deviations:
+  - The source is the dandiset's description of the paper's findings, not the paper's text.
+  - The paper's test is unknown; a two-sided Mann-Whitney U test at 0.05 was fixed in advance.
+  - Spatial information comes from the original rate maps, without correction for the number of
+    spikes, as the preflight files hold no position.
+  - The -999 bins and the lost-position bin [63, 0] are left out of each map.
+- claim: fd4-abnormal-selectivity
+  outcome: not_reproduced
+  notebook: reproduce_knierim_2000.ipynb
+  output: claim:fd4-abnormal-selectivity
+  notes: Flight day 4 ES rate maps (107, Rats 1 to 3) have a median of 1.214 bits/spike against
+    1.441 preflight (98); one-sided Mann-Whitney p = 0.055, above the criterion's 0.05 (ratio
+    0.84). The FD4 median is lower in each rat (ratios 0.65 to 0.88), significantly only for Rat1
+    (p = 0.032); with maps of peak rate 1 Hz or more p = 0.0095. FD4 against FD9 for Rats 1 and 2
+    gives 1.148 against 1.385 (p = 0.21). The spike-based fraction of significant units is 21 of 71
+    on FD4 and 16 of 53 on FD9 (p = 0.55). The direction agrees with the claim and the test falls
+    just short.
+  deviations:
+  - The source is the dandiset's description of the paper's findings, not the paper's text.
+  - Abnormal selectivity is read as lower spatial information; the description does not say what
+    was abnormal.
+  - The paper's test is unknown; a one-sided Mann-Whitney U test at 0.05 was fixed in advance.
+- claim: fig3-stability-across-sessions
+  outcome: reproduced
+  notebook: reproduce_knierim_2000.ipynb
+  output: claim:fig3-stability-across-sessions
+  notes: In Rat3's two flight day 4 ES epochs, the 15 units with 50 or more spikes in each have a
+    median rate-map correlation of 0.538 (range -0.108 to 0.849), above the 95th percentile of 1000
+    re-paired medians (0.091, p = 0.001) and above 0.5; 8 of 15 exceed 0.5. With smoothing of 0.5
+    to 2 bins and 50 or 100 spikes the median is 0.312 to 0.704, always above its null (p = 0.001);
+    at 0.5 bins it is below 0.5. The dandiset's rate maps paired by their ~N names give a median of
+    0.157, as the names do not identify cells. In the second epoch 2 of 19 units are significant
+    against 9 of 16 in the first.
+  deviations:
+  - Only the title of Figure 3 was available; which sessions it compares is unknown. The test uses
+    the only pair of same-track sessions with position on one day.
+  - Assumes that a tetrode and cluster id names the same neuron in both epochs; the dandiset does
+    not say so and holds no waveforms to check it.
+- claim: theta-normal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No file holds EEG or any continuous voltage; the files hold units, epochs, position and
+    rate maps. The NASA record OSD-968 lists spike files, rate-map files, legacy metadata and NWB
+    copies, and no EEG; its 272 MB processed archive was not opened.
+- claim: ripples-normal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No EEG in the dandiset, nor listed in OSD-968 (see theta-normal).
+findings:
+- kind: metadata_error
+  statement: The Rat1 and Rat2 files of each flight day hold the same position trace (98.6 to 98.8%
+    of samples at common timestamps within 2 pixels), presented as each rat's position. Rat1's
+    units are spatially selective with it, Rat2's are not in any window, and Rat1's units are also
+    selective in Rat2's flight day 4 ES epoch. Whose position the trace is during Rat2's task epochs
+    is not stated and could not be established.
+- kind: data_missing
+  statement: Position is given only at spike times (taken from the spike files), so occupancy
+    cannot be computed from the files' position, and the preflight files have no position at all.
+- kind: identifier_missing
+  statement: The rate-map `source_file` names are Windows 8.3 short names (ESCELL~1 to ~4, then
+    hashed names such as ES2BC0~1), so `cell_number`, read from the ~N suffix, is not a cell number.
+    It equals the cluster id of the best-matching unit in 84 of 211 unit-epochs, and the rate maps
+    cannot be linked to units as the table's description says. The long names are in the NASA
+    archive (OSD-968), whose description names files like BL2.cell5.
+- kind: metadata_insufficient
+  statement: Rate maps use -999 for unvisited bins, which the column description (rate in Hz) does
+    not state. The tracker's lost position (0, 255), 5 to 12% of position samples, is counted in the
+    original occupancy maps (bin [63, 0], up to 19% of an occupancy map in flight).
+- kind: other
+  statement: Eight rate maps are identical copies of another map in the same file, some stored under
+    a different tetrode (for example Rat1 FD4 TT1 and TT11 ESCELL~1, and four maps of Rat2 FD4 under
+    TT13, TT19 and TT22).
+- kind: metadata_insufficient
+  statement: Units merge per-epoch spike files that share a tetrode and cluster id; nothing states
+    that a cluster id names the same neuron in different epochs. The unit table lacks the
+    `session_type` and `source_file` columns the conversion's README lists, so a unit's spikes
+    cannot be traced to their spike file.
+- kind: data_missing
+  statement: The dandiset's description reports normal theta and sharp waves and ripples in the
+    hippocampal EEG, but no EEG is in the dandiset.
+- kind: other
+  statement: Spike times are given to 10 ms in five files and to 1 ms or finer in three; 2 to 15% of
+    within-unit intervals are zero. In the Rat1 flight day 4 file two baseline epochs overlap
+    (2525 to 3390 s and 2720 to 3390 s).
+- kind: metadata_insufficient
+  statement: The age is "/" for every subject, and the position's pixel scale and camera view are
+    not described.

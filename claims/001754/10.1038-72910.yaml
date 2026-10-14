@@ -1,0 +1,88 @@
+# Claims for Knierim, McNaughton & Poe (2000) on dandiset 001754.
+# Source: the paper is not open access. Only its abstract (the first paragraph shown on the
+# publisher's page) and the titles of its three figures were available. Claims marked as from the
+# dandiset description are taken from the description the data owners gave the dandiset, which
+# summarises the paper's findings; they could not be checked against the paper's text.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata, the epochs, units, positions and rate maps of every file; that the Rat1 and Rat2 files
+# of the same flight day share one position trace; that each labelled ES or MC epoch's position
+# histogram matches its own occupancy map best; that rate maps use -999 for unvisited bins and that
+# the tracker's missing-position value (0, 255) falls in occupancy bin [63, 0]; and the correlation
+# between unit spike-count maps and rate maps used to test the rate-map identifiers. No spatial
+# information, shuffle or stability analysis had been run.
+#
+# Method choices fixed here, as no Methods were available. Position is the dandiset's video
+# pixel position (0 to 255), binned as the rate maps are (4 pixels per bin, 64 x 64), then merged
+# 2 x 2 into 32 x 32 bins. Samples at (0, 255) are missing tracking and are dropped, and the
+# occupancy bin [63, 0] is left out. Occupancy is the rate-map occupancy map of the epoch (the
+# dandiset holds position only at spike times); bins with fewer than 5 counts are left out.
+# Spatial information is Skaggs' bits per spike. A unit is a tetrode and cluster id within one
+# epoch, with at least 50 spikes at a known position.
+schema_version: 1
+dandiset: "001754"
+paper: doi:10.1038/72910
+claims:
+- id: flight-spatial-code
+  statement: Hippocampal neurons recorded on the space shuttle form a robust spatial code on the
+    three-dimensional Escher staircase track in weightlessness.
+  source: Abstract; dandiset description ("Place cells eventually demonstrated normal spatially
+    specific firing")
+  criterion: For each in-flight Escher staircase (ES) epoch, each unit's spatial information is
+    compared with 500 shuffles in which the spike train is shifted circularly within the epoch by
+    20 s or more and each shifted spike takes the position of the nearest position sample within
+    0.25 s (spikes without one are dropped). A unit is significant when its spatial information
+    exceeds the 95th percentile of its shuffles. Judged on the two flight day 9 sessions (Rat1 and
+    Rat2), as the claim is that the code can form. Reproduced when in both the fraction of
+    significant units is at least 0.5; partially reproduced when it is above chance (one-sided
+    binomial test against 0.05, p < 0.01) in both but below 0.5 in one or both, or reproduced in
+    one only; not reproduced otherwise. The flight day 4 sessions (Rats 1 to 3) are reported, as
+    are other thresholds.
+- id: three-orthogonal-surfaces
+  statement: The spatial code covers each of the three orthogonal surfaces of the Escher
+    staircase.
+  source: Abstract
+  criterion: Would need each position assigned to one of the track's three surfaces, and the
+    place fields counted per surface.
+- id: si-comparable-to-preflight
+  statement: In flight, spatial information content of place cells is comparable to preflight
+    levels.
+  source: Dandiset description (not checked against the paper's text)
+  criterion: A claim of absence. The paper's test is not known; the test is fixed here as a
+    two-sided Mann-Whitney U test at alpha 0.05 of spatial information (bits per spike) computed
+    from the dandiset's rate maps (rate_map and occupancy_map, -999 bins and bin [63, 0] left
+    out), flight day 9 ES maps against preflight ES maps, Rats 1 and 2 pooled (Rat3 has no flight
+    day 9). All rate maps of the session type with a positive mean rate are used, each distinct
+    map once (identical maps in one file are counted once). Reproduced when the test finds no
+    difference, not reproduced when it does; the median difference is given either way. Shown
+    as variants, not deciding the outcome - per rat, maps whose name contains CEL only, maps with
+    a peak rate of 1 Hz or more, Magic Carpet (MC) maps, and all flight maps.
+- id: fd4-abnormal-selectivity
+  statement: On the first in-flight exposures (flight day 4) spatial selectivity was abnormal.
+  source: Dandiset description (not checked against the paper's text)
+  criterion: Abnormal is read as lower spatial information. Spatial information from the rate
+    maps as in si-comparable-to-preflight, flight day 4 ES maps (Rats 1 to 3, both Rat3 ES
+    epochs) against preflight ES maps (Rats 1 to 3). Reproduced when the flight day 4 median is
+    lower and a one-sided Mann-Whitney U test gives p < 0.05; not reproduced otherwise. Flight day
+    4 against flight day 9 (Rats 1 and 2) and the spike-based fraction of significant units of
+    flight-spatial-code by day are reported.
+- id: fig3-stability-across-sessions
+  statement: Place fields are stable across sessions.
+  source: Figure 3 (title only; which sessions the figure compares is not known)
+  criterion: Tested on the only pair of sessions on the same track and day with known position,
+    the two ES epochs of Rat3 on flight day 4. A unit is the same tetrode and cluster id in both
+    epochs, with at least 50 spikes at a known position in each. Rate maps on 32 x 32 bins, spike
+    counts and occupancy each smoothed with a Gaussian of 1 bin; Pearson correlation over bins with
+    at least 5 occupancy counts in both epochs. The median same-unit correlation is compared with
+    the medians of 1000 random re-pairings of units between the epochs. Reproduced when it exceeds
+    the 95th percentile of the re-paired medians and is above 0.5; partially reproduced when it
+    exceeds the 95th percentile but is 0.5 or below; not reproduced otherwise. The correlation of
+    the dandiset's rate maps for the two epochs is shown as a variant.
+- id: theta-normal
+  statement: Hippocampal EEG showed normal theta rhythm during locomotion in flight.
+  source: Dandiset description (not checked against the paper's text)
+  criterion: Would need the hippocampal EEG.
+- id: ripples-normal
+  statement: Hippocampal EEG showed normal sharp waves and ripples during quiet rest in flight.
+  source: Dandiset description (not checked against the paper's text)
+  criterion: Would need the hippocampal EEG.
