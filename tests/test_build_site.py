@@ -196,3 +196,16 @@ def test_claims_using_outside_data_are_counted_apart():
     assert alone["reproduced"] == 1 and alone["blocked"] == 1 and alone["not_reproduced"] == 0
     assert outside["not_reproduced"] == 1 and sum(outside.values()) == 1
     assert "1 claim that also uses data" in site.outside_note([attempt])
+
+
+def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
+    data, out = built
+    for dandiset, attempts in site.current_attempts(data).items():
+        page = (out / "dandisets" / dandiset / "index.html").read_text()
+        assert 'id="claim-filter"' in page and 'id="claim-pager"' in page
+        for attempt in attempts:
+            for o in attempt["outcomes"]:
+                assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"><details><summary>' in page
+            for nb in attempt["notebooks"]:
+                if any(o.get("notebook") == nb["path"] for o in attempt["outcomes"]):
+                    assert f'Notebook <code>{nb["path"]}</code>' in page
