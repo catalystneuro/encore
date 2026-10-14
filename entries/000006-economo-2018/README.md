@@ -19,11 +19,14 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The epochs, trial and unit selection and the selectivity test follow the analysis code on the
-paper's Figshare record (doi:10.25378/janelia.7007846). The spike times in the files are not sorted,
+paper's Figshare record (doi:10.25378/janelia.7007846). Applied to the paper's processed data on that
+record, the code's selection gives the paper's 61 PTupper and 69 PTlower units. The dandiset holds 44
+and 56 of them, as 11 sessions are missing from it. Variants rerun every test on the paper's units
+and give the same outcomes. The spike times in the files are not sorted,
 and consecutive trials overlap on the files' clock; the notebook shows this and checks that it does
 not change the outcomes. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/000006-economo-2018-01.yaml`](../../attempts/000006-economo-2018-01.yaml).
 
-- `reproduce_economo_2018.ipynb`: the analysis. It takes about a minute, half of it streaming the files.
-- `alm.py`: loading the files, the code's unit inclusion rule, epoch rates, the selectivity test and
-  its label-shuffle null. Other notebooks on this dandiset can import it.
+- `reproduce_economo_2018.ipynb`: the analysis. It takes about three minutes, most of it streaming the files and the processed data.
+- `alm.py`: loading the files and the paper's processed data, the code's unit inclusion rule, epoch
+  rates, the selectivity test and its label-shuffle null, and the single-unit decoding accuracy. Other notebooks on this dandiset can import it.

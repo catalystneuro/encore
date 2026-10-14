@@ -18,7 +18,10 @@ inputs:
     Projections.m, CDCorrelation.m), read for the epochs, the trial and unit selection, the
     selectivity test and the coding direction measures; and the processed data file
     data_structure_anm372906_WR40_psth.mat, read in the data check only, to show how the spike
-    times of the files were built. Both from Ephys.zip.
+    times of the files were built. Both from Ephys.zip. After the first verification round, all
+    14 processed data files were read, in the data check (how the spike times of every session were
+    built, and which of the paper's units the dandiset holds) and in variants that rerun each test on
+    the paper's 61 PTupper and 69 PTlower units. No outcome rests on them.
   source: Figshare doi:10.25378/janelia.7007846, version 1 (file 13292708)
 outcomes:
 - claim: pt-types-transcriptomic
@@ -50,14 +53,20 @@ outcomes:
     (rank-sum p < 0.01); the label-shuffle null has a 99th percentile of 0.040 (p = 0.001). PTupper
     29 of 44, PTlower 43 of 56; every animal 25% to 85%. 76 units at p < 0.05 and 67 at
     p < 0.001. The selective units lie at nominal depths of 430 to 1600 um; the files give no layer
-    per unit, so the statement's "layer 5" is not checked.
+    per unit, so the statement's "layer 5" is not checked. With one session per animal 26 of 36
+    units are selective (p = 0.001), and among the paper's 130 units from its processed data 89 are
+    (p = 0.001).
   deviations:
   - Abstract only; the criterion and the shuffle test of chance are this attempt's.
   - Epoch rates are spike counts on the file's clock; the paper's code averaged a causally smoothed
     PSTH of spikes already assigned to trials. Leaving out the spikes that overlap the next trial,
     as far as the stored order shows them, gives 73 of 100.
   - Units recorded on different days in one animal are counted separately, as in the code; they
-    may be the same neurons.
+    may be the same neurons (44 of 100 lie within 20 um of a unit of the same animal on another
+    day, and the files hold no waveforms). A variant keeps one session per animal.
+  - The dandiset holds 44 of the paper's 61 PTupper and 56 of its 69 PTlower units; the code's
+    inclusion rule gives the paper's counts on its processed data and the same decision for every
+    unit the dandiset holds.
 - claim: pt-upper-early-preparatory
   outcome: reproduced
   notebook: reproduce_economo_2018.ipynb
@@ -65,7 +74,9 @@ outcomes:
   notes: 27 of 44 included PTupper units (0.614) are selective in the sample epoch (-2.5 to
     -2.1 s), against a null 99th percentile of 0.045 (p = 0.001); in the baseline epoch 2 of 44
     (p = 0.079). All 8 PTupper animals have sample-selective units (25% to 100%). 0.795 at
-    p < 0.05, 0.432 at p < 0.001; 26 of 44 without flagged spikes.
+    p < 0.05, 0.432 at p < 0.001; 26 of 44 without flagged spikes. One session per animal gives 8
+    of 20 (null 99th percentile 0.100, p = 0.001); the paper's 61 PTupper units give 40 of 61
+    (p = 0.001).
   deviations:
   - Abstract only; "early" is read as the code's sample epoch, the first 400 ms after the pole
     comes in.
@@ -77,7 +88,9 @@ outcomes:
     p = 0.001). (b) The cosine similarity of sample and late delay d' is 0.495, against a shuffle
     null median of 0.182 and 95th percentile of 0.433 (p = 0.016). The code's Pearson correlation
     gives r = 0.496 (p = 0.0006). 17 of the 27 sample-selective units keep the sign of their d' in
-    the late delay. Both parts hold without flagged spikes and without the trials marked not good.
+    the late delay. Both parts hold without flagged spikes, without the trials marked not good,
+    with one session per animal ((a) 12 of 20, p = 0.001; (b) cosine 0.670, p = 0.006) and on the
+    paper's 61 PTupper units ((a) 38 of 61, p = 0.001; (b) cosine 0.514, p = 0.002).
   deviations:
   - The code compares coding directions with bootstraps and plots the correlation; the shuffle
     test of the similarity is this attempt's.
@@ -91,7 +104,10 @@ outcomes:
     (0.30 in the sample epoch, 0.90 in the late delay); the other three animals stay between 0.44
     and 0.77 in all three epochs. At p < 0.001 both parts hold (p = 0.0033 and 0.018), at p < 0.05
     neither (0.054 and 0.14). The response epoch rate differs from baseline in 53 of 56 PTlower
-    units and 37 of 44 PTupper units.
+    units and 37 of 44 PTupper units. The variants give the same split. With one session per
+    animal (16 units) part (a) holds (p = 0.016) and part (b) does not (p = 0.23). On the paper's
+    69 PTlower units from its processed data, (a) holds (0.507 against 0.652, p = 0.049) and (b)
+    does not (0.551, p = 0.37); there both parts hold at p < 0.001 and neither at p < 0.05.
   deviations:
   - Abstract only; "mainly late" is read as more units selective late than in the sample epoch,
     and "motor commands" as selectivity in the first 400 ms after the go cue (a change from
@@ -108,13 +124,30 @@ outcomes:
     (Mann-Whitney p = 0.30 and 0.93). The code's coding-direction variant goes the abstract's way.
     The sample to late delay similarity is 0.473 +/- 0.214 for PTupper and 0.216 +/- 0.204 for
     PTlower, with PTupper higher in 83 of 100 bootstraps. Without the bootstrap, PTupper's
-    similarity is above its shuffle null (p = 0.007) and PTlower's is not (0.177, p = 0.43).
+    similarity is above its shuffle null (p = 0.007) and PTlower's is not (0.177, p = 0.43). On
+    the paper's 130 units from its processed data, (a) is 0.656 against 0.507 (p = 0.062) and (b)
+    is reversed (0.551 against 0.770, p = 0.007 for the reverse); with one session per animal, (a)
+    p = 0.28 and (b) is reversed (0.438 against 0.800). The paper's measure of early information
+    (Extended Data Fig. 9, single-unit decoding accuracy in the sample epoch, at least 70%) goes the
+    abstract's way, with 7 of 44 PTupper against 1 of 56 PTlower units here (Fisher p = 0.012) and
+    12 of 61 against 1 of 69 on the paper's units (p = 0.0005), where the legend gives 15 of 61
+    against 3 of 69. Part (a) is thus supported under the paper's measure but not under the
+    criterion's; part (b) is reversed under every variant.
   deviations:
   - Abstract only; the comparison of fractions between types is this attempt's reading of the
     contrast in the abstract, and the paper may compare the types differently.
   - Each animal holds one type (8 PTupper and 4 PTlower animals), so type and animal are
     confounded; the PTlower recordings include sessions in both hemispheres.
+  - The dandiset lacks 17 of the paper's 61 PTupper and 13 of its 69 PTlower units; the variant on
+    the paper's units gives the same outcome.
 findings:
+- kind: data_missing
+  statement: 11 sessions of the paper's processed data (Figshare doi:10.25378/janelia.7007846) that
+    hold tagged units are not in the dandiset. They hold 17 of the 61 PTupper and 13 of the 69
+    PTlower units the paper analysed, so the dandiset holds 44 and 56. Every tagged unit the
+    dandiset does hold is in the processed data with the same label and the same inclusion
+    decision under the paper's code. The dandiset's description says some files were found to be
+    broken and were left out, without naming them.
 - kind: data_missing
   statement: The dandiset holds the electrophysiology only. The transcriptomic and anatomical data
     behind four of the abstract's findings (the two PT types and their projection targets) are not
@@ -139,6 +172,107 @@ findings:
     undescribed empty values ([], 0, blank). Sex is U and genotype empty for every mouse, the
     electrode positions are all zero, and every electrode group gives layer 5 whatever the depth.
 - kind: other
-  statement: In the paper's processed data the first ten trials of the session checked have spike
-    windows shifted by about 2.7 s against the other trials; the paper's code leaves out the first
-    ten trials of each unit, which hides this. The files carry the same shift.
+  statement: In the paper's processed data, in every one of the 53 sessions the dandiset holds, the
+    spike windows of the first ten trials start later relative to the pole than those of the other
+    trials (by about 2.7 s in the session examined in detail); the paper's code leaves out the first
+    ten trials of each unit, which hides this. The files carry the same shift, as their spike times
+    equal the processed ones in every unit.
+verifications:
+- date: 2026-10-14
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first run with the conclusion cells and the summary
+    removed, the helper module and the claims file. The header still listed the outcomes.
+  results:
+  - claim: pt-types-transcriptomic
+    agrees: true
+    outcome: blocked
+    reason: The archive holds only 53 NWB ephys files (Units, ElectrodeGroup, BehavioralEvents). No
+      RNA-seq (the paper puts it in GEO GSE119182) and no reconstructions.
+    response: No change.
+  - claim: pt-types-shared-targets
+    agrees: true
+    outcome: blocked
+    reason: There is no anatomy in the dandiset or the asset metadata. The units only carry
+      cell_type labels.
+    response: No change.
+  - claim: pt-upper-thalamus-projection
+    agrees: true
+    outcome: blocked
+    reason: PTupper is a label only. Neither the files nor the asset metadata name an injection
+      site or projection target, and the label-to-target mapping comes from external MATLAB code.
+    response: No change.
+  - claim: pt-lower-medulla-projection
+    agrees: true
+    outcome: blocked
+    reason: Same as for pt-upper-thalamus-projection.
+    response: No change.
+  - claim: pt-preparatory-activity
+    agrees: true
+    outcome: reproduced
+    reason: 72 of 100 units are delay-selective; the shuffle null has median 0.010 and 99th
+      percentile 0.040, p = 0.001. This holds for each type, in all 12 animals (0.25 to 0.85), at
+      thresholds 0.05 to 0.001, and in both variants. Layer cannot be checked. Problems it listed
+      across claims, marked as affecting a conclusion, are that the unit counts disagree with the
+      paper (61 PTupper and 69 PTlower in the Extended Data legends) and the notebook never checks
+      this, and that units on consecutive days may be the same neuron, so unit-level p-values may
+      overstate n. Marked as not affecting a conclusion are the trial overlap (11.7% of baseline
+      spikes flagged, a lower bound), the clock left unverified in 7 sessions, spikes_per_trial
+      dividing by last - first where the trial count is last - first + 1, the decoding check
+      z-scoring with the left-out trial, a baseline fraction (about 3%, 4.5% for PTupper) that hints
+      at slight inflation, and the outcome table left in the header.
+    response: Added a data check that reads all of the paper's processed data. The code's inclusion
+      rule there gives 61 and 69 units, and every tagged unit of the dandiset gets the same decision
+      as in the processed data. The difference comes from 11 sessions missing from the dandiset
+      (recorded as a data_missing finding). Added variants with one session per animal and on the
+      paper's 130 units (26 of 36 and 89 of 130 selective, both p = 0.001), and the depths of
+      units by session. The spike times of all 1149 units in all 53 sessions equal those of the
+      processed data, which checks the clock of the 7 sessions the decoding could not; the 5
+      included units in them are listed with their p-values. The spikes per trial follow the code, which divides by range(eventTrials),
+      so they were kept and the reason is now in a comment. The decoding check now z-scores with
+      the training trials only; its numbers barely moved (median 0.893). The overlap and the baseline
+      fraction were already shown and are left as stated. The outcomes were removed from the header
+      table.
+  - claim: pt-upper-early-preparatory
+    agrees: true
+    outcome: reproduced
+    reason: 27 of 44 PTupper units are sample-selective, against a null 99th percentile of 0.045,
+      p = 0.001. The baseline reference is 2 of 44, and the variants agree.
+    response: Added variants with one session per animal (8 of 20, p = 0.001) and on the paper's 61
+      PTupper units (40 of 61, p = 0.001).
+  - claim: pt-upper-persistent
+    agrees: true
+    outcome: reproduced
+    reason: (a) 27 of 44 are late-delay selective, p = 0.001. (b) The cosine is 0.495 against a null
+      95th percentile of 0.433, p = 0.016 (0.007 with another seed). The Pearson variant gives
+      r = 0.50, p = 6e-4. Persistence is moderate, as only 17 of 27 sample-selective units keep
+      their sign.
+    response: Added variants with one session per animal and on the paper's 61 PTupper units; both
+      parts hold in each.
+  - claim: pt-lower-late-and-motor
+    agrees: true
+    outcome: partially_reproduced
+    reason: (a) sample 0.482 against late delay 0.714, McNemar p = 0.0096, which holds. (b) sample
+      against response 0.643, p = 0.088, which fails. This depends on the threshold, as at
+      p < 0.001 both parts pass and at p < 0.05 neither does. The partial outcome is fragile in both
+      directions, the unit counts differ from the paper's 69, and units pooled across sessions may
+      be the same neuron.
+    response: Added variants with one session per animal and on the paper's 69 PTlower units from
+      its processed data. Both give the same split, (a) holding and (b) not; the threshold
+      dependence is the same on the paper's units. The 15 PTlower units left out here are left out
+      by the paper's code too. Outcome kept.
+  - claim: pt-types-differ-in-timing
+    agrees: true
+    outcome: not_reproduced
+    reason: (a) sample 27/44 against 27/56, p = 0.134. (b) is reversed, response PTlower 0.643
+      against PTupper 0.841 (p = 0.022 for PTupper > PTlower). The by-animal comparison agrees. The
+      paper's own measure points the other way, as the coding-direction variant has PTupper 0.47
+      against PTlower 0.22, consistent with Extended Data Fig. 7c; that variant does not change the
+      outcome. It asked for a test with the measure of Extended Data Fig. 9 (single-unit decoding
+      accuracy in the sample epoch, at least 70%, paper 15/61 against 3/69).
+    response: Added the Extended Data Fig. 9 measure, following decodingAccuracy.m and doROC.m. It
+      supports part (a), with 7 of 44 against 1 of 56 here (p = 0.012) and 12 of 61 against 1 of 69 on
+      the paper's units. Added variants with one session per animal and on the paper's 130 units.
+      Under both, part (a) is not significant by the criterion and part (b) stays reversed (on the
+      paper's units 0.551 against 0.770, p = 0.007 for the reverse), so the reversal does not
+      come from the missing units. Outcome kept, as the criterion decides it.

@@ -199,6 +199,7 @@ def unit_record(session: dict, unit: pd.Series, exclude_bad: bool = False,
     lo, hi = first + EDGE_TRIALS, min(last, last_hit) - EDGE_TRIALS
     idx = np.arange(len(trials))
     in_range = (idx >= lo) & (idx <= hi)
+    # The code divides by range(eventTrials), the last trial with a spike minus the first.
     rec["spikes_per_trial"] = len(in_trial) / max(last - first, 1)
     scored = in_range & (trials.response != "early lick").to_numpy() & ~trials.stim.to_numpy()
     if exclude_bad:
@@ -271,13 +272,14 @@ def decode_direction(session: dict, window: tuple[float, float], shift: int = 0)
         keep &= np.arange(len(t)) < len(t) - shift
     cue = t.cue_abs.to_numpy()[keep]
     y = labels[keep]
-    x = np.column_stack([epoch_rates(np.sort(sp), cue, window) for sp in session["units"].spikes])
-    sd = x.std(axis=0)
-    x = (x - x.mean(axis=0)) / np.where(sd > 0, sd, 1)
+    raw = np.column_stack([epoch_rates(np.sort(sp), cue, window) for sp in session["units"].spikes])
     correct = 0
     for i in range(len(y)):
         others = np.ones(len(y), bool)
         others[i] = False
+        # z-score with the mean and spread of the training trials only
+        mu, sd = raw[others].mean(axis=0), raw[others].std(axis=0)
+        x = (raw - mu) / np.where(sd > 0, sd, 1)
         c1 = x[others & y].mean(axis=0)
         c0 = x[others & ~y].mean(axis=0)
         guess = np.sum((x[i] - c1) ** 2) < np.sum((x[i] - c0) ** 2)
@@ -337,10 +339,30 @@ def mcnemar_one_sided(first_only: int, second_only: int) -> float:
     return float(stats.binomtest(second_only, n, 0.5, alternative="greater").pvalue) if n else 1.0
 
 
-# The paper's processed data, used only in the data check to show how the files' spike times
-# were built. Ephys.zip of doi:10.25378/janelia.7007846 (version 1), file 13292708.
+def roc_accuracy(rates: np.ndarray, is_right: np.ndarray) -> float:
+    """Single-unit decoding accuracy of trial type, as doROC.m and decodingAccuracy.m
+    (Extended Data Fig. 9): the best fraction of trials classified correctly by one threshold
+    on the trial rates, with the polarity chosen by the area under the ROC curve."""
+    thresholds = np.unique(rates)
+    above = rates[None, :] >= thresholds[:, None]
+    n_r, n_l = is_right.sum(), (~is_right).sum()
+    tp = (above & is_right).sum(axis=1) / n_r
+    fp = (above & ~is_right).sum(axis=1) / n_l
+    auc = abs(np.trapezoid(tp, fp))
+    right_high = ((above & is_right).sum(axis=1) + (~above & ~is_right).sum(axis=1)) / len(rates)
+    right_low = ((above & ~is_right).sum(axis=1) + (~above & is_right).sum(axis=1)) / len(rates)
+    return float((right_high if auc >= 0.5 else right_low).max())
+
+
+# The paper's processed data, Ephys.zip of doi:10.25378/janelia.7007846 (version 1), file
+# 13292708. One file per animal and recording period (two for anm369962 and anm369963), each
+# holding several sessions. Read in the data check to show how the files' spike times were
+# built and which of the paper's units the dandiset holds, and in variants that rerun the
+# tests on the paper's units.
 FIGSHARE_EPHYS_ZIP = "https://ndownloader.figshare.com/files/13292708"
 FIGSHARE_CHECK_FILE = "Code/ProcessedData/data_structure_anm372906_WR40_psth.mat"
+# defineDataset.m: group 1 ("MP", medulla-projecting) holds these animals, group 2 ("TP") the rest
+MP_ANIMALS = ("anm369962", "anm369963", "anm369964", "anm372794")
 
 
 class _Seekable(io.RawIOBase):
@@ -382,14 +404,108 @@ def compare_with_processed(session: dict, mat: dict, index: int = 0) -> tuple[pd
     lo = np.full(len(t), np.inf)
     hi = np.full(len(t), -np.inf)
     for j, number in enumerate(np.atleast_1d(meta.unitNum)):
-        unit = obj.eventSeriesHash.value[j]
-        rel = np.asarray(unit.eventTimes, float)
-        trial = np.asarray(unit.eventTrials).astype(int) - 1
+        unit = np.atleast_1d(obj.eventSeriesHash.value)[j]
+        rel = np.atleast_1d(unit.eventTimes).astype(float)
+        trial = np.atleast_1d(unit.eventTrials).astype(int) - 1
         stored = session["units"].set_index("id").spikes.get(int(number))
         same = stored is not None and len(stored) == len(rel) and np.allclose(stored, cue_abs[trial] + rel, atol=2e-5)
-        rows.append({"unit": int(number), "spikes": len(rel), "equal_in_stored_order": bool(same)})
+        rows.append({"unit": int(number), "spikes": len(rel), "in_file": stored is not None,
+                     "equal_in_stored_order": bool(same)})
         np.minimum.at(lo, trial, rel)
         np.maximum.at(hi, trial, rel)
     spans = pd.DataFrame({"first": lo, "last": hi, "pole_in": (t.pole_in - t.cue).to_numpy(),
                           "start_spacing": np.r_[np.diff(t.start.to_numpy()), np.nan]})
     return pd.DataFrame(rows), spans
+
+
+def processed_members() -> list[str]:
+    """Names of the processed data files in Ephys.zip."""
+    url = requests.head(FIGSHARE_EPHYS_ZIP, allow_redirects=True, timeout=60).url
+    with zipfile.ZipFile(_Seekable(remfile.File(url))) as z:
+        return sorted(n for n in z.namelist() if n.endswith("_psth.mat"))
+
+
+def processed_session_units(mat: dict, index: int, member: str) -> list[dict]:
+    """The code's inclusion rule (loadAndProcessData.m, ObjToLickPSTH) applied to the tagged
+    units of session `index` of a processed file, with each unit's epoch rates on its correct
+    trials. Spike times in the processed data are seconds from the go cue, with the trial of
+    each spike (1-based)."""
+    obj, meta, tt = (np.atleast_1d(mat[k])[index] for k in ("obj", "meta", "tt"))
+    subject = member.split("data_structure_")[1].split("_")[0]
+    session = str(meta.filename).split("_")[-1].split(".")[0].replace("-", "")
+    hit, left, right = (np.asarray(getattr(tt, k), bool) for k in ("hit", "L", "R"))
+    scored = ~np.asarray(tt.lickearly, bool) & ~np.asarray(tt.stim, bool)
+    trial_no = np.arange(1, len(hit) + 1)
+    last_hit = trial_no[hit].max()
+    numbers = np.atleast_1d(meta.unitNum)
+    quality = np.atleast_1d(meta.unitQuality)
+    depth = np.atleast_1d(meta.depth)
+    out = []
+    for j, number in enumerate(numbers):
+        if not 1000 < number < 2000:
+            continue
+        unit = np.atleast_1d(obj.eventSeriesHash.value)[j]
+        times = np.atleast_1d(unit.eventTimes).astype(float)
+        trials = np.atleast_1d(unit.eventTrials).astype(int)
+        first, last = max(trials.min(), 1), trials.max()
+        in_range = (trial_no >= first + EDGE_TRIALS) & (trial_no <= min(last, last_hit) - EDGE_TRIALS)
+        rec = {"subject": subject, "session": session, "id": int(number),
+               "cell_type": "PTlower" if subject in MP_ANIMALS else "PTupper",
+               "quality": str(quality[j]), "depth": float(depth[j]),
+               "spikes_per_trial": len(times) / max(np.ptp(trials), 1)}
+        for side, of_side in (("L", left), ("R", right)):
+            hits = in_range & scored & of_side & hit
+            misses = in_range & scored & of_side & ~hit
+            rec[f"n_correct_{side}"] = int(hits.sum())
+            rec[f"performance_{side}"] = hits.sum() / (hits.sum() + misses.sum()) if hits.sum() + misses.sum() else np.nan
+        reasons = []
+        if rec["quality"] not in GOOD_QUALITY:
+            reasons.append("quality")
+        if rec["n_correct_L"] <= MIN_CORRECT or rec["n_correct_R"] <= MIN_CORRECT:
+            reasons.append("too few correct trials")
+        if rec["spikes_per_trial"] <= MIN_SPIKES_PER_TRIAL:
+            reasons.append("low rate")
+        if not (rec["performance_L"] > MIN_PERFORMANCE and rec["performance_R"] > MIN_PERFORMANCE):
+            reasons.append("performance")
+        rec["included"] = not reasons
+        rec["reason"] = ", ".join(reasons)
+        use = in_range & scored & hit & (left | right)
+        rec["is_right"] = right[use]
+        rec["rates"] = {}
+        for name, (a, b) in EPOCHS.items():
+            inside = (times >= a) & (times < b)
+            counts = np.bincount(trials[inside], minlength=len(hit) + 1)[1:]
+            rec["rates"][name] = counts[use] / (b - a)
+        out.append(rec)
+    return out
+
+
+def read_processed(sessions: list[dict]) -> tuple[list[dict], pd.DataFrame, pd.DataFrame]:
+    """Read every processed file. Returns the tagged unit records of every processed session
+    (`processed_session_units`); per unit of every session also in the dandiset, whether the
+    file's spike times equal trial start + go cue + the processed time in stored order; and per
+    such session, the start of the processed spike windows relative to the pole coming in, for
+    the first ten trials and for the others."""
+    by_key = {(s["subject"], s["session"]): s for s in sessions}
+    records, storage, shifts = [], [], []
+    for member in processed_members():
+        mat = read_figshare_processed(member)
+        for i in range(len(np.atleast_1d(mat["meta"]))):
+            recs = processed_session_units(mat, i, member)
+            meta = np.atleast_1d(mat["meta"])[i]
+            subject = member.split("data_structure_")[1].split("_")[0]
+            session = str(meta.filename).split("_")[-1].split(".")[0].replace("-", "")
+            s = by_key.get((subject, session))
+            for r in recs:
+                r["in_dandiset"] = s is not None
+            records.extend(recs)
+            if s is None:
+                continue
+            per_unit, spans = compare_with_processed(s, mat, i)
+            storage.append(per_unit.assign(subject=subject, session=session))
+            offset = (spans["first"] - spans["pole_in"]).replace([np.inf, -np.inf], np.nan)
+            shifts.append({"subject": subject, "session": session, "trials": len(spans),
+                           "first 10: first - pole_in": offset.iloc[:EDGE_TRIALS].median(),
+                           "others: first - pole_in": offset.iloc[EDGE_TRIALS:].median()})
+        del mat
+    return records, pd.concat(storage, ignore_index=True), pd.DataFrame(shifts)
