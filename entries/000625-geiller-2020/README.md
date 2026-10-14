@@ -20,7 +20,8 @@ one of the paper's six subtypes.
 | Spatially selective PVBC more stable than SomC | Not reproduced |
 | PVBC most and CCKC least stable within session | Partially reproduced |
 | Stability across sessions lower but above chance | Partially reproduced |
-| Depth, SWR, novel-context, goal-oriented learning, VIP and classifier findings (12 claims) | Blocked |
+| Depth, SWR, novel-context, goal-oriented learning, VIP and classifier findings (11 claims) | Blocked |
+| BiC more likely to be spatially modulated again in other sessions (3 BiC, too few) | Blocked |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.

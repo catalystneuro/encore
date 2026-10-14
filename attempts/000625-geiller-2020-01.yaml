@@ -44,18 +44,19 @@ outcomes:
   measured: 0.095
   notes: Averaged over sessions, 90.5% of the 74 ROIs in the six subtypes are positively
     correlated with velocity and 0.095 negatively, inside 0.088 to 0.108. Among all 228 imaged
-    ROIs 96.5% are positive and 0.035 negative, outside the tolerance; per session the fraction
-    negative among all ROIs is 0.065, 0.111 and 0.089. The claim holds under the six-subtype
-    reading. The sign of r changes between sessions in 17 of the 74 subtyped ROIs (7 of 15 CCKC);
-    18 are negative in at least one session and 7 on average, so averaging over sessions lowers
-    the negative fraction and the all-ROI reading fails because of it. The result is close to the
-    edge of the range (6 of 74 would fall below it).
+    ROIs 96.5% are positive and 0.035 negative, outside the tolerance. The claim holds under the
+    six-subtype reading, and only because r is averaged over sessions; per session that reading
+    gives 0.055, 0.143 and 0.164, all outside the range. Per session the all-ROI reading gives
+    0.065, 0.111 and 0.089, in range in session 21322 only. The sign of r changes between
+    sessions in 17 of the 74 subtyped ROIs (7 of 15 CCKC); 18 are negative in at least one session
+    and 7 on average. The result is at the edge of the range; 6 or 8 of 74 would fall outside it.
   deviations:
   - One mouse, three sessions, where the paper has seven mice.
   - Frame rates for sessions 21324 and 21322 fitted from the data; on the stated clock 28% of ROIs
     in session 21322 are negatively correlated.
   - Velocity smoothed with a Gaussian of 0.5 s, a width the paper does not give; 0 and 1 s change
-    no fraction shown by more than 0.005.
+    the averaged fractions by no more than 0.005 under either reading, and a per-session fraction
+    by at most 0.014.
   - Correlations averaged over sessions on the assumption that the ROI index is the same cell,
     which the data are consistent with but do not show.
   - The denominator can be read two ways; the six-subtype reading matches and the all-ROI reading
@@ -161,13 +162,16 @@ outcomes:
   measured: 0.664
   notes: On average 66.4% of ROIs have a negative field (47.0%, 74.5% and 77.7% by session),
     against 10.8% on the surrogate and 12.7 ± 8.3% in the paper. Under the paper's rule the two
-    kinds of field are coupled, as a strong positive field raises the rotated shuffles at every
-    bin and pushes the bins outside the field below the 5th percentile. On average 55.8% of ROIs
-    have both kinds, 10.6% only a negative field and 13.9% only a positive one. Counting only ROIs
-    with a negative field and no positive field gives 10.6%, inside the paper's range, but that
-    variant is not the paper's stated rule and was chosen after the result, so the outcome is
-    kept. The 66.4% is therefore not comparable to the paper's 12.7% as a measure of negative
-    selectivity.
+    kinds of field are coupled, as a strong field raises the rotated shuffles at every bin. On
+    synthetic cells, a cell with only a positive field is also flagged negative, and a cell with
+    only a negative field is flagged positive under the rule without the peak. With the positive
+    rule without the peak, 55.8% of ROIs on average have both kinds, 10.6% only a negative field
+    and 13.9% only a positive one. The coupling explains part of the 66.4%, not all of it; 78.4%
+    of ROIs with a positive field have a negative field, and so do 37.7% of ROIs without one, about
+    3.5 times the surrogate rate. Counting only ROIs with a negative field and no positive field
+    gives 10.6%, inside the paper's range, but that variant depends on the positive rule without
+    the peak (65.3% with the peak rule), excludes real negative cells flagged positive, and was
+    chosen after the result, so the outcome is kept.
   deviations:
   - As for fig4-fraction-spatial.
 - claim: fig4d-decoding
@@ -197,7 +201,10 @@ outcomes:
   output: claim:fig4f-selectivity-no-difference
   notes: One-way ANOVA across the six subtypes of the selectivity index of selected cells gives
     p = 0.17, so no difference is found. Subtype means range from 0.012 to 0.033 with a standard
-    deviation of 0.020 across cells. The indices are small, as dF/F has a baseline near 0.12.
+    deviation of 0.020 across cells. The tuning curves of the selected subtyped cells have a
+    median minimum of 0.158 dF/F and a median maximum of 0.255; subtracting each curve's minimum
+    raises the median index from 0.016 to 0.307. The test compares near-flat curves and has
+    little power.
   deviations:
   - Selection without the peak rule in two sessions, as for fig4d-decoding, so the cells are
     many more than the paper's spatially selective cells.
@@ -417,12 +424,14 @@ verifications:
     reason: 0.010 with the 100% peak rule and 0.698 without it, against 0.175 ± 0.064. Only 1.1% of ROIs
       have a tuning peak above 1.0 dF/F. The 50% peak variant (0.130) would fall in range but is not an
       allowed reading. The no-peak rule is anti-conservative (surrogate false-positive rate 0.04 to 0.16
-      per session).
+      per session; its own AR-noise test gave 0.22 positive and 0.20 negative).
     response: No change needed; the notes already give the surrogate rates.
   - claim: fig4-fraction-negative
     agrees: true
     outcome: not_reproduced
-    reason: 0.664 against 0.127 ± 0.083. Positive and negative fields are mechanically coupled; out-of-field
+    reason: 0.664 against 0.127 ± 0.083. Positive and negative fields are mechanically coupled; on synthetic
+      data a cell with only a positive field was also flagged negative, and a cell with only a negative
+      field was flagged positive under the no-peak rule. Out-of-field
       bins sit below the shuffled 5th percentile because rotated curves spread the field everywhere, so
       the estimate is not comparable to the paper's 12.7%. The notebook neither reports the overlap of
       the two sets nor discusses it (affects a conclusion).
@@ -513,4 +522,177 @@ verifications:
     outcome: blocked
     reason: The stored labels contain no VIP, CR, M2R or ISI classes. ISI3 is identifiable in VGAT-Cre
       mice per the paper, but no such label is present.
+    response: No change needed.
+- date: '2026-10-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook after the first revision, with the conclusion cells and the summary,
+    the helper module, the claims file, the README, the attempt record and the paper's full text (PMC7736348).
+  results:
+  - claim: fig1-cells-per-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig1-depth-distribution
+    agrees: true
+    outcome: blocked
+    reason: Cell 5 prints the PlaneSegmentation columns, the pixel_mask fields (no z), the mask ranges and
+      the placeholder ImagingPlane fields. Blocked is confirmed.
+    response: No change needed.
+  - claim: fig2c-most-positive
+    agrees: true
+    outcome: reproduced
+    reason: It passes its stated criterion but is fragile. It is reproduced only under the six-subtype reading
+      after averaging over sessions; that reading gives 0.055, 0.143 and 0.164 per session, all outside the
+      range. The all-ROI reading would fail in two of three sessions even without averaging, so the notes'
+      statement that the all-ROI reading fails because of averaging is not supported. One of 74 ROIs flipping
+      sign would end the match. The smoothing and clock variants are printed only for the all-ROI denominator,
+      not for the six-subtype reading that carries the outcome. The notes should say that averaging is what
+      makes the six-subtype reading pass.
+    response: The variants cell now prints the six-subtype fraction, averaged and per session, for each smoothing
+      and the stated clock (averaged 0.095 for every smoothing; per session the change is at most 0.014). The
+      result cell and notes now say that the six-subtype reading passes only because of averaging, give its
+      per-session fractions, drop the claim that the all-ROI reading fails because of averaging, and say the
+      all-ROI reading is in range in session 21322 only. Outcome kept.
+  - claim: fig2c-cck-negative
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig2c-subtypes-differ
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig2c-ngfc-less-modulated
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig2d-negative-cells-in-oriens
+    agrees: true
+    outcome: blocked
+    reason: Blocked is confirmed by the PlaneSegmentation and ImagingPlane output in cell 5.
+    response: No change needed.
+  - claim: s2-lags
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. Minor, the record's round-1 reason gives p of at least 0.82 where
+      cell 33 shows 0.816, which rounds to 0.82.
+    response: No change; the round-1 reason quotes the verifier's own report, and 0.816 rounds to 0.82.
+  - claim: s2-cck-run-stop
+    agrees: true
+    outcome: partially_reproduced
+    reason: CCKC give -0.005, 0.024 and -0.023 per session (cell 36). The partially_reproduced outcome stands.
+    response: No change needed.
+  - claim: s3-subtype-classification
+    agrees: true
+    outcome: blocked
+    reason: Blocked is confirmed, with fig1-depth-distribution.
+    response: No change needed.
+  - claim: fig3-swr-pvbc-vs-somc
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig3-swr-bimodal
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig4-fraction-spatial
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. The record leaves out its AR-noise false-positive rates (0.22 positive,
+      0.20 negative) from its round-1 reason.
+    response: Added the AR-noise rates to the round-1 reason.
+  - claim: fig4-fraction-negative
+    agrees: true
+    outcome: not_reproduced
+    reason: The outcome is unaffected, but the coupling explanation is overstated. The 55.8% and 10.6% use the
+      positive set without the peak rule, which the text does not say; with the peak rule the same variant
+      gives 0.653. ROIs with no positive field still have negative fields at 0.377, about 3.5 times the surrogate
+      rate of 0.108, so the coupling explains part of the 66.4%, not all of it. The notebook never shows the
+      coupling itself, which rests on its round-1 synthetic test that the record does not cite; that test also
+      showed a cell with only a negative field flagged positive under the rule without the peak, so the negative-only
+      variant excludes some real negative cells.
+    response: The notebook now runs the rule on synthetic cells on the real position of one session; a cell with
+      only a positive field is flagged negative, and a cell with only a negative field is flagged positive under
+      the rule without the peak (not with the peak rule). It also prints the negative-field rate among ROIs with
+      a positive field (0.784). The result cell and notes now name the positive rule behind 55.8% and 10.6%, give
+      0.653 with the peak rule, say the coupling explains part of the 66.4% and not all of it, with 0.377 among
+      ROIs without a positive field, and say the negative-only variant excludes real negative cells. The synthetic
+      finding was added to the round-1 reason. Outcome kept.
+  - claim: fig4d-decoding
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig4e-bic-recurrence
+    agrees: true
+    outcome: blocked
+    reason: In round 1 it would have recorded blocked with data_missing. The record cites the protocol's example
+      of too few units under the claim's own rule, which it could not check as the protocol was not among its
+      materials. The outcome itself is not in question.
+    response: blocked_by kept as other. docs/protocol.md, step 1, lists under other "too few units under the
+      claim's own rule"; the claim's criterion needs at least 5 BiC and the data hold 3. The README counted this
+      claim among the depth, SWR, context, learning, VIP and classifier findings; it now has its own row.
+  - claim: fig4f-selectivity-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: It passes its stated criterion but is fragile. The statement that the indices are small because
+      dF/F has a baseline near 0.12 in every bin is consistent with the median dF/F (0.11 to 0.13, cell 5), but
+      no output shows the per-bin baseline of the tuning curves or that it causes the small indices.
+    response: Added the minimum, mean and maximum of the selected subtyped cells' tuning curves (medians 0.158,
+      0.205 and 0.255 dF/F) and the index after subtracting each curve's minimum (median 0.307 against 0.016).
+      The text now states these numbers in place of the baseline near 0.12. Outcome kept.
+  - claim: fig4h-pvbc-more-stable
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. It averages over sessions, so it depends on ROI identity across sessions,
+      which is unresolvable from the data and disclosed.
+    response: No change; the deviation already states it.
+  - claim: s6-within-session-order
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. It depends on ROI identity across sessions, which is unresolvable
+      and disclosed.
+    response: No change needed.
+  - claim: s6-later-lower-above-chance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. ROI identity across sessions is unresolvable and bears on whether
+      above chance fails because of drift or a mismatched mapping. The session order is unresolvable and decides
+      which pairs stand in for 1 h and 24 h. Both are disclosed.
+    response: No change; both are stated in the notes, deviations and findings.
+  - claim: fig5-context-decorrelation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig5-novel-context-decrease
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig6-reward-somc-bic
+    agrees: true
+    outcome: blocked
+    reason: Only reward and water intervals exist, and there is no lick record. Blocked is confirmed.
+    response: No change needed.
+  - claim: fig6-old-zone
+    agrees: true
+    outcome: blocked
+    reason: Only reward and water intervals exist, and there is no lick record. Blocked is confirmed.
+    response: No change needed.
+  - claim: fig7-vip-subtypes-immobility
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; TG19 is a strategy 1 mouse.
+    response: No change needed.
+  - claim: fig7-isi-correlations
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
     response: No change needed.
