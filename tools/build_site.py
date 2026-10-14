@@ -497,6 +497,8 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="stylesheet" href="{root}assets/app.css"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
   <a class="brand" href="{home}">Reproduction registry</a>{nav}
+  <a class="tab ext" href="{REPO_URL}">GitHub</a>
+  <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
 <div class="wrap">
