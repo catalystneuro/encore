@@ -209,3 +209,10 @@ def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
             for nb in attempt["notebooks"]:
                 if any(o.get("notebook") == nb["path"] for o in attempt["outcomes"]):
                     assert f'Notebook <code>{nb["path"]}</code>' in page
+
+
+def test_claims_with_outside_names_count_as_the_dandiset():
+    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "with_labels"},
+                            {"claim": "b", "outcome": "reproduced", "data": "with_inputs"}]}
+    assert site.outcome_counts(attempt)["reproduced"] == 1
+    assert site.outcome_counts(attempt, outside=True)["reproduced"] == 1

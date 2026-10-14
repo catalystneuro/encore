@@ -3,9 +3,11 @@
     python tools/agent_run.py prompt  ROLE DANDISET [--model M] > prompt.md
     python tools/agent_run.py package ROLE DANDISET DEST
     python tools/agent_run.py entry   ROLE DANDISET        # the entry directory's name, if any
+    python tools/agent_run.py proposals ROLE DANDISET      # "true" if the attempt has proposed changes
 
 ROLE is one of author, verifier-1, author-revise-1, verifier-2, author-revise-2,
-the order in which an attempt goes through docs/protocol.md. The prompts are
+the order in which an attempt goes through docs/protocol.md, and verifier-3 and
+author-revise-3, the third round that settles changes proposed after the second. The prompts are
 docs/agents/<role>.md with the target's details filled in. A run's transcript
 and final report are kept as transcripts/<dandiset>/<role>.md and
 <role>-report.md (tools/transcript.py writes them).
@@ -29,7 +31,8 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = {"author": "author", "verifier-1": "verifier-1", "author-revise-1": "author-revise",
-             "verifier-2": "verifier-2", "author-revise-2": "author-revise"}   # role -> docs/agents/<name>.md
+             "verifier-2": "verifier-2", "author-revise-2": "author-revise",
+             "verifier-3": "verifier-3", "author-revise-3": "author-revise-3"}   # role -> docs/agents/<name>.md
 ROLES = tuple(TEMPLATES)
 
 
@@ -86,7 +89,7 @@ def package(role: str, dandiset: str, dest: Path) -> None:
         for f in source.iterdir():
             shutil.copy(f, dest / f.name)
         return
-    if role != "verifier-2":
+    if role not in ("verifier-2", "verifier-3"):
         raise SystemExit("error: only verifier roles get a package")
     entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
     for n in entry["notebooks"]:
@@ -98,11 +101,19 @@ def package(role: str, dandiset: str, dest: Path) -> None:
         shutil.copy(path, dest / path.name)
     shutil.copy(ROOT / "attempts" / f"{record['id']}.yaml", dest / f"{record['id']}.yaml")
     shutil.copy(ROOT / "transcripts" / dandiset / "verifier-1-report.md", dest / "round-1-report.md")
+    if role == "verifier-3":
+        shutil.copy(ROOT / "transcripts" / dandiset / "verifier-2-report.md", dest / "round-2-report.md")
+
+
+def proposals(dandiset: str) -> list[str]:
+    """The claims of the latest attempt on a dandiset that carry a proposed change of outcome."""
+    found = attempt_of(dandiset)
+    return [o["claim"] for o in (found[0]["outcomes"] if found else []) if o.get("proposed")]
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("command", choices=["prompt", "package", "entry"])
+    parser.add_argument("command", choices=["prompt", "package", "entry", "proposals"])
     parser.add_argument("role", choices=ROLES)
     parser.add_argument("dandiset")
     parser.add_argument("dest", nargs="?", type=Path)
@@ -110,6 +121,8 @@ def main() -> int:
     args = parser.parse_args()
     if args.command == "prompt":
         sys.stdout.write(fill(args.role, args.dandiset, args.model))
+    elif args.command == "proposals":
+        print("true" if proposals(args.dandiset) else "false")
     elif args.command == "entry":
         found = attempt_of(args.dandiset)
         print(found[1].name if found else "")

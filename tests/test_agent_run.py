@@ -32,3 +32,8 @@ def test_a_verifier_prompt_names_the_pinned_version():
 def test_a_revision_needs_the_verifiers_report():
     with pytest.raises(SystemExit, match="run verifier-1 first"):
         tool.fill("author-revise-1", "000207", "m")
+
+
+def test_proposals_are_found_from_the_record():
+    assert tool.proposals("001097") == ["fig2e-glm-behaviour-explains-little"]
+    assert tool.proposals("001453") == []

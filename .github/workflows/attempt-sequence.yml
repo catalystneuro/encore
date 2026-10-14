@@ -2,7 +2,7 @@ name: Attempt sequence
 
 # A whole attempt on one dandiset: the author, the first verification round,
 # the author's revision, the second round and the final revision, each an Agent
-# run (attempt.yml). Each step starts when the one before has succeeded, so a
+# run (attempt.yml), and a third round when the final revision proposed changes. Each step starts when the one before has succeeded, so a
 # failure stops this dandiset's attempt and leaves its branch as the last good
 # step left it. Called by pipeline.yml, once per dandiset.
 
@@ -46,4 +46,35 @@ jobs:
     needs: verifier-2
     uses: ./.github/workflows/attempt.yml
     with: {dandiset: "${{ inputs.dandiset }}", role: author-revise-2, model: "${{ inputs.model }}"}
+    secrets: inherit
+  proposals:
+    # Whether the final revision proposed changes of outcome, which a third round settles.
+    needs: author-revise-2
+    runs-on: ubuntu-latest
+    outputs:
+      found: ${{ steps.look.outputs.found }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: attempt/${{ inputs.dandiset }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - id: look
+        env:
+          DANDISET: ${{ inputs.dandiset }}
+        run: |
+          pip install --no-cache-dir pyyaml
+          echo "found=$(python tools/agent_run.py proposals author "$DANDISET")" >> "$GITHUB_OUTPUT"
+  verifier-3:
+    needs: proposals
+    if: needs.proposals.outputs.found == 'true'
+    uses: ./.github/workflows/attempt.yml
+    with: {dandiset: "${{ inputs.dandiset }}", role: verifier-3, model: "${{ inputs.model }}"}
+    secrets: inherit
+  author-revise-3:
+    needs: verifier-3
+    uses: ./.github/workflows/attempt.yml
+    with: {dandiset: "${{ inputs.dandiset }}", role: author-revise-3, model: "${{ inputs.model }}"}
     secrets: inherit

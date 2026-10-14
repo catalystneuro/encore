@@ -249,3 +249,30 @@ def test_a_claim_may_say_it_uses_outside_data(repo):
     claims["claims"][0]["data"] = "elsewhere"
     (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
     assert any("data" in e for e in errors(repo))
+
+
+def test_a_later_round_decides_the_claims_it_reviews(repo):
+    round2 = {"date": "2026-10-13", "kind": "agent", "by": "v",
+              "results": [{"claim": "fig1", "agrees": True, "outcome": "not_reproduced"}]}
+    round3 = {"date": "2026-10-14", "kind": "agent", "by": "v",
+              "results": [{"claim": "fig1", "agrees": True, "outcome": "reproduced"}]}
+    attempt = {**ATTEMPT, "verifications": [round2]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert any("last verification agreed with 'not_reproduced'" in e for e in errors(repo))
+    attempt["outcomes"] = [{**ATTEMPT["outcomes"][0], "outcome": "not_reproduced",
+                            "proposed": {"outcome": "reproduced", "reason": "A later analysis."}}]
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert errors(repo) == []
+    attempt = {**ATTEMPT, "verifications": [round2, round3]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert errors(repo) == []
+
+
+def test_names_from_outside_need_a_source_and_a_finding(repo):
+    claims = {**CLAIMS, "claims": [{**CLAIMS["claims"][0], "data": "with_labels"}]}
+    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    assert any("with_labels" in e for e in errors(repo))
+    attempt = {**ATTEMPT, "inputs": [{"what": "stimulus names", "source": "https://example.org at abc"}],
+               "findings": [{"kind": "metadata_insufficient", "statement": "Codes have no names."}]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert errors(repo) == []
