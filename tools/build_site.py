@@ -58,6 +58,7 @@ BLOCKED_BY = {
     "methods_underspecified": "Methods underspecified",
     "data_unreadable": "Data unreadable",
     "too_large": "Too large to analyse",
+    "not_runnable": "Method cannot be run here",
     "other": "Other",
 }
 TIERS = {
@@ -70,6 +71,7 @@ FINDING_KINDS = {
     "metadata_error": "Metadata error",
     "data_missing": "Data missing",
     "identifier_missing": "Identifier missing",
+    "metadata_insufficient": "Description missing",
     "selection_undocumented": "Selection not documented",
     "methods_unavailable": "Methods not available",
     "format_error": "File format error",

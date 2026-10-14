@@ -222,3 +222,21 @@ def test_a_claim_cannot_depend_on_one_that_is_not_there(repo):
         {"id": "fig2", "statement": "T.", "source": "Figure 2", "depends_on": ["fig9"]}]}
     (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
     assert any("depends on 'fig9'" in e for e in errors(repo))
+
+
+def test_an_outcome_cannot_change_after_the_last_verification(repo):
+    verified = {"date": "2026-10-13", "kind": "agent", "by": "v",
+                "results": [{"claim": "fig1", "agrees": True, "outcome": "not_reproduced"}]}
+    attempt = {**ATTEMPT, "verifications": [verified]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert any("last verification agreed with 'not_reproduced'" in e for e in errors(repo))
+    attempt["outcomes"] = [{**ATTEMPT["outcomes"][0], "outcome": "not_reproduced"}]
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert errors(repo) == []
+
+
+def test_measured_may_hold_one_value_per_expected_value(repo):
+    attempt = {**ATTEMPT, "outcomes": [{**ATTEMPT["outcomes"][0], "measured": [0.65, 0.23]},
+                                       ]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert errors(repo) == []
