@@ -240,10 +240,15 @@ def intervals(behaviour: pd.DataFrame, labels: list[str], channel: str | None = 
 
 def raster(behaviour: pd.DataFrame, labels: list[str], n_frames: int, channel: str | None = None,
            rate: float = RATE) -> np.ndarray:
-    """1 where any of the labels is annotated, at the imaging rate."""
+    """1 where any of the labels is annotated, at the imaging rate.
+
+    An annotation covers frames from its start up to, not including, its stop; one shorter than a
+    frame still marks the frame it starts in.
+    """
     r = np.zeros(n_frames, bool)
     for start, stop in intervals(behaviour, labels, channel):
-        r[int(round(start * rate)): min(int(round(stop * rate)) + 1, n_frames)] = True
+        a = int(round(start * rate))
+        r[a: min(max(int(round(stop * rate)), a + 1), n_frames)] = True
     return r
 
 
@@ -343,13 +348,15 @@ def _ridge_weights(G: np.ndarray, H: np.ndarray, alpha: float, exclude: np.ndarr
 
 
 def cv_ridge(X: np.ndarray, Y: np.ndarray, exclude: np.ndarray | None = None, folds: int = 10,
-             alphas=(1e0, 1e1, 1e2, 1e3, 1e4, 1e5), rng: np.random.Generator | None = None) -> np.ndarray:
+             alphas=(1e0, 1e1, 1e2, 1e3, 1e4, 1e5), rng: np.random.Generator | None = None,
+             return_pred: bool = False):
     """Cross-validated R2 of every column of Y from X.
 
     Folds are contiguous blocks of time; with `rng`, frames are assigned to folds at random
     instead. The penalty is chosen per target on a fifth of each training set (its last fifth,
     or a random fifth), then the model is refit on the whole training set. R2 is computed on the
-    pooled held-out predictions.
+    pooled held-out predictions. With `return_pred`, the held-out predictions and the fold of
+    each frame are returned too.
     """
     from threadpoolctl import threadpool_limits
 
@@ -384,9 +391,31 @@ def cv_ridge(X: np.ndarray, Y: np.ndarray, exclude: np.ndarray | None = None, fo
                 ex = None if exclude is None else exclude[cols]
                 W = _ridge_weights(G, H[:, cols], a, ex)
                 pred[np.ix_(test, cols)] = (X[test] - mx) @ W + my[cols]
-    ss_res = ((Y - pred) ** 2).sum(0)
-    ss_tot = ((Y - Y.mean(0)) ** 2).sum(0)
-    return 1 - ss_res / ss_tot
+    r2 = pooled_r2(Y, pred)
+    return (r2, pred, fold_of) if return_pred else r2
+
+
+def pooled_r2(Y: np.ndarray, pred: np.ndarray) -> np.ndarray:
+    """R2 of every column over all frames, against the mean of the whole column."""
+    return 1 - ((Y - pred) ** 2).sum(0) / ((Y - Y.mean(0)) ** 2).sum(0)
+
+
+def intercept_predictions(Y: np.ndarray, fold_of: np.ndarray) -> np.ndarray:
+    """Held-out predictions of a model with only an intercept: the mean of the training frames."""
+    pred = np.empty_like(Y)
+    for f in np.unique(fold_of):
+        pred[fold_of == f] = Y[fold_of != f].mean(0)
+    return pred
+
+
+def within_fold_r2(Y: np.ndarray, pred: np.ndarray, fold_of: np.ndarray) -> np.ndarray:
+    """R2 of every column computed within each held-out fold, against that fold's own mean,
+    averaged over folds."""
+    out = []
+    for f in np.unique(fold_of):
+        y, p = Y[fold_of == f], pred[fold_of == f]
+        out.append(1 - ((y - p) ** 2).sum(0) / ((y - y.mean(0)) ** 2).sum(0))
+    return np.mean(out, 0)
 
 
 # --- clock check ---------------------------------------------------------------------
@@ -424,3 +453,19 @@ def shifted_decoding(y: np.ndarray, labels: np.ndarray, shifts: list[int], rng: 
             pred[test] = clf.predict(pca.transform(yy[test]))
         out.append(balanced_accuracy_score(ll, pred))
     return np.array(out)
+
+
+# --- file contents -------------------------------------------------------------------
+
+def list_objects(path: str, version: str = VERSION, under=("analysis", "processing")) -> list[tuple]:
+    """Every group and dataset under the given top-level groups of a file: name, shape, type."""
+    import h5py
+    import remfile
+
+    out = []
+    with h5py.File(remfile.File(_url(path, version)), "r") as f:
+        def visit(name, obj):
+            if name.split("/")[0] in under:
+                out.append((name, getattr(obj, "shape", None), obj.attrs.get("neurodata_type", "")))
+        f.visititems(visit)
+    return out

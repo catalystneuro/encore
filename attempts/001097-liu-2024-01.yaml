@@ -28,9 +28,12 @@ outcomes:
   output: claim:fig1b-accepting-escalates
   notes: Over the first 600 s after male entry the mean probability of accepting behaviour rises
     (Spearman 0.74, p = 3e-6, 69 annotated trials; 0.59, p = 6e-4, 58 receptive trials), from 0.11
-    in the first third of the 20-s bins to 0.20 in the last. Resistance peaks in the third bin
-    (0.15) and falls to 0.07 in the last third. Within single mice the accepting correlation is
-    positive in 12 of 23, so the rise is a property of the pooled trials.
+    in the first third of the 20-s bins to 0.19 in the last. Resistance peaks in the third bin
+    (0.14) and falls to 0.07 in the last third. Later bins hold fewer trials (69 down to 11); with
+    the same 63 trials in each of the first 15 bins the rise remains (Spearman 0.63, p = 0.012, 0.080
+    to 0.151). Within single mice the accepting correlation is positive in 12 of 23, and within
+    single trials in 33 of 58 (median 0.01, sign test p = 0.36), so the rise is a property of the
+    pooled trials.
   deviations:
   - 69 distinct annotated trials from 23 mice, where the paper has 74 from 28; the paper's trials
     are not identified.
@@ -76,10 +79,10 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_liu_2024.ipynb
   output: claim:fig1g-social-in-bouts-and-intervals
-  notes: Over the 69 annotated trials females show social behaviour for 64.9% of each copulation
-    bout and 23.0% of each interbout interval on average, against 62% and 23%. Over receptive
-    trials the interval value is 18.6%, outside the tolerance, and pooled over time the values are
-    75% and 12%.
+  notes: Over the 69 annotated trials females show social behaviour for 63.3% of each copulation
+    bout and 21.8% of each interbout interval on average, against 62% and 23%. This is the only one
+    of the four readings that matches; over receptive trials the interval value is 17.4%, outside
+    the tolerance, and pooled over time the values are 74% and 11%.
   deviations:
   - 69 distinct annotated trials from 23 mice, where the paper has 74 from 28.
   - Social behaviour follows the Methods' grouping, which leaves out staying.
@@ -87,26 +90,35 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_liu_2024.ipynb
   output: claim:fig2c-few-tuned-cells
-  notes: In the 15 receptive sessions (1,335 cells), 6.4% (approach) to 35.3% (wiggle) of cells are
-    tuned to a behaviour, median 20.8% over 12 behaviours, against about 2 to 13%. Nine of the 12
-    exceed 15%. The shuffle test alone passes 18% to 75% of cells.
+  notes: In the 15 receptive sessions (1,335 cells), 6.9% (approach) to 37.4% (dart) of cells are
+    tuned to a behaviour, median 22.0% over the 11 behaviours with enough bins, against about 2 to
+    13%. Eight of the 11 exceed 15%. The shuffle test alone passes 21% to 75% of cells. Comparing
+    pairs of behaviours, as the Methods describe, tunes 15.4% to 57.6% over 20 pairs (median
+    39.3%), with none within 1 to 15%.
   deviations:
   - Each behaviour is compared with every other 1-s bin of the interaction. The Methods compare
     two behaviours without saying which pairs Figure 2c uses, and only this comparison was set out
-    before the analysis; a narrower comparison may tune fewer cells.
+    before the analysis. Pairs of behaviours are shown as a variant, added after the first round
+    of verification.
   - A bin belongs to a behaviour when the behaviour covers at least half of it; the shuffle
     permutes bin labels. Neither is stated in the paper.
 - claim: fig2e-glm-behaviour-explains-little
   outcome: not_reproduced
   notebook: reproduce_liu_2024.ipynb
   output: claim:fig2e-glm-behaviour-explains-little
-  measured: -0.048
-  notes: With tenfold contiguous cross-validation, the mean cvR2 over 1,335 cells is -0.078 from
-    female behaviours, -0.011 from male behaviours and -0.048 from both (mouse means -0.050, 0.010
-    and -0.012), against 0.08, 0.14 and 0.15; 829 to 1,018 cells score below zero. The ordering
-    fails because both behaviours together do worse than male behaviours alone. The paper's point
-    that behaviour explains little of the activity holds. With frames assigned to folds at random,
-    a variant not named in the criterion, the means are 0.234, 0.207 and 0.323.
+  measured: -0.057
+  notes: With tenfold contiguous cross-validation, the mean cvR2 over 1,335 cells is -0.077 from
+    female behaviours, -0.013 from male behaviours and -0.057 from both (mouse means -0.050, 0.008
+    and -0.017), against 0.08, 0.14 and 0.15; 829 to 1,027 cells score below zero. The ordering
+    fails because both behaviours together do worse than male behaviours alone. A model with only
+    an intercept scores -0.086 under the same folds, so the negative values come from the fold
+    design; the gain over it is 0.009, 0.073 and 0.029 (mouse means 0.031, 0.089 and 0.064), still
+    below the paper's values. R2 within single folds is dominated by the same offsets (medians
+    -0.61 to -0.71, intercept -0.70). With frames assigned to folds at random, a variant not named
+    in the criterion, the means are 0.229, 0.207 and 0.322, with neighbouring frames in both
+    training and test sets. The outcome follows the criterion, but the test is weak, since no
+    design here separates behaviour from the slow drift of the traces. The paper's point that
+    behaviour explains little of the activity holds under every design.
   deviations:
   - Lags in 1-s steps over 0 to 10 s, not every frame, to keep the run short.
   - Contiguous folds, the ridge penalty chosen per cell on the last fifth of each training set,
@@ -118,8 +130,9 @@ outcomes:
   output: claim:fig2f-glm-coupling
   measured: 0.450
   notes: Adding the instantaneous activity of the other cells gives a mean cvR2 of 0.450 over cells
-    (0.434 over mouse means), against 0.46; 75 of 1,335 cells remain below zero. With random folds
-    it is 0.815.
+    (0.434 over mouse means), against 0.46; 73 of 1,335 cells remain below zero. The gain over the
+    intercept-only baseline is 0.536. With random folds it is 0.814. It shares the fold design
+    questioned for fig2e-glm-behaviour-explains-little.
   deviations:
   - As for fig2e-glm-behaviour-explains-little. Coupling uses the other cells at the same time
     point; the Methods do not say whether coupling filters had lags.
@@ -131,8 +144,9 @@ outcomes:
     ACHW above 25 s and the mean is 15.5 s, against 30% and 20 s. The first-crossing rule gives the
     same, and the other readings give 10 to 17% and 9.9 to 13.1 s. Per mouse the fraction runs from
     0 to 0.48, and four mice reach 0.28 or more; the lower panel of Figure 2i has n = 4 mice, which
-    are not identified. The mean ACHW is still longer than the mean interbout interval (14.0 s),
-    as the paper says.
+    are not identified. Ending the window at the last annotation, a variant that drops the
+    unannotated imaging at the end of 7 sessions, gives 15.5 to 19.7% and 12.7 to 15.0 s. The mean
+    ACHW is still longer than the mean interbout interval (14.0 s), as the paper says.
   deviations:
   - The ACHW follows the authors' code (the lag closest to 0.5, up to 50 s), where the Methods say
     the lag where the function reaches 0.5; both are shown.
@@ -140,7 +154,12 @@ outcomes:
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: No annotation marks the pencil-cup period. In 17 sessions imaging continues for up to 7
-    minutes after the last annotation, which may be that period, but the files do not say so.
+    minutes after the last annotation, which may be that period, but the files do not say so. An
+    exploratory look, not judged, at the 7 receptive sessions with at least 3 minutes of it (544
+    cells, where the paper has 470 from 5 mice) finds a shorter mean ACHW in the tail than over the
+    interaction (4.0 to 11.5 s against 7.3 to 17.9 s), but against a stretch of the interaction of
+    the same length the tail is longer in 5 of 7 sessions, so the difference comes from the window
+    length.
 - claim: fig3a-rslds-fit
   outcome: blocked
   blocked_by: other
@@ -157,7 +176,10 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: Needs rSLDS fits to the 15 receptive sessions, which are in the dandiset; see
-    fig3a-rslds-fit for why they cannot be run here.
+    fig3a-rslds-fit for why they cannot be run here. The Methods also find the integration
+    dimension by partial least squares onto a ramp (Extended Data Figure 3d,e). That gives a
+    direction but no time constants, so it cannot test this claim, and using it for the ramp and
+    persistence claims would assume the ramp they test; it is not used.
 - claim: ed3s-integrator-model
   outcome: blocked
   blocked_by: other
@@ -166,7 +188,10 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: Needs the integration dimension from rSLDS fits; see fig3a-rslds-fit. The Methods do not
-    define the ideal ramp either.
+    define the ideal ramp either. An exploratory look, not judged, in the two natural-cycle mice
+    with deposited weights, with a ramp chosen here (0 before male entry, rising linearly to the end
+    of the annotation), finds r2 above 0.5 in 0 of 44 weighted cells in m541 and 1 of 14 in mouse
+    543, against 56%; these are not the paper's 15 receptive sessions.
 - claim: fig3k-perturbation-relaxation
   outcome: blocked
   blocked_by: data_missing
@@ -210,7 +235,11 @@ outcomes:
   - Two mice, where the paper has four; the weights of only two are deposited, and the file
     labelled m542 holds mouse 543's cells.
   - The authors' weights are applied to the stored traces of each day; the paper's projection
-    procedure and normalisation are not described, and min-max over the three days is used.
+    procedure and normalisation are not described, and min-max over the three days is used. The
+    cell order was checked after the first round of verification; 171 of 176 cells (m541) and 71 of
+    72 (543) best match the session cell of the same index. The per-mouse files' own traces were
+    processed differently (same-index median correlation 0.86 and 0.80), but the projections from
+    them and from the stored traces correlate at 0.94 to 0.96.
   - The integration factor is not labelled in the files; it is chosen by the longer ACHW of its
     receptive-day projection. Both factors reach the code's 50-s cap in m541, so the tie was broken
     with lags up to 300 s, a step not set out in the criterion.
@@ -245,6 +274,8 @@ outcomes:
   notes: Over 42 trials from 6 mice the area under the population mean does not correlate with the
     percentage of time in accepting behaviour under any of three readings (r2 0.015, 0.003 and
     0.027; p 0.45, 0.73 and 0.30). Within mice the Spearman correlations run from -0.67 to 0.52.
+    Without the two sessions that fail the clock check (m928 day 2, m940 day 7), r2 is 0.011, 0.005
+    and 0.025 over 40 trials.
   deviations:
   - 42 trials where the paper has 50.
   - The window of the area under the curve is not stated; three readings were set out before the
@@ -253,7 +284,9 @@ findings:
 - kind: data_missing
   statement: No rSLDS fits or latent factors are deposited apart from the per-cell weights of two
     mice, though the dandiset's description says it contains low-dimensional latent factors from
-    dynamical models. The paper's central line-attractor results can only be checked by refitting.
+    dynamical models. The per-mouse files hold under analysis only a table of two weight columns,
+    and under processing one trace series and the annotations; there are no latent time series or
+    dynamics matrices. The paper's central line-attractor results can only be checked by refitting.
 - kind: data_missing
   statement: The sessions with optogenetic inhibition of VMHvl during imaging (Figure 3h-k,
     Extended Data Figure 5) are not in the dandiset.
@@ -264,9 +297,17 @@ findings:
 - kind: identifier_missing
   statement: One mouse is labelled 543 in its natural-cycle files and m543 in its receptive session.
 - kind: metadata_error
-  statement: The same recording is filed under two experiments twice. m764's natural-cycle day 1 has
-    the same traces and annotations as its primed ovariectomy session, and m776's primed session
-    has the same traces as its male-inhibition session, with different annotations.
+  statement: The same recording is filed under two experiments five times. m764's natural-cycle day
+    1 has the same traces and annotations as its primed ovariectomy session; m776's primed session
+    has the same traces as its male-inhibition session, with different annotations; and day 3 of
+    the ovariectomy series of m438, m541 and m551 has the same traces as the mouse's primed
+    session, with annotations that differ in m541 and m551 and an interaction of 290.7 against
+    274.6 s in m438.
+- kind: other
+  statement: The traces in the two per-mouse files, which carry the rSLDS weights, were processed
+    differently from the session files of the same recordings (same-index median correlation 0.86
+    and 0.80, rising with smoothing of the session traces), and the files do not say how. The cell
+    order matches the session files.
 - kind: other
   statement: Which natural-cycle days were receptive is not recorded, and the female's behaviour is
     not annotated on most of those days, so the paper's definition of a receptive day cannot be
@@ -292,3 +333,205 @@ findings:
 - kind: methods_unavailable
   statement: The linked code holds demonstration notebooks, not the code for the paper's figures,
     so the GLM, choice-probability, decoder and projection procedures cannot be checked against it.
+verifications:
+- date: 2026-10-14
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the
+    helper module, the claims file and the paper's full text (PMC11499253). For the blocked claims
+    the verifier checked the archive's asset list and metadata through the DANDI REST API. It did
+    not run the notebook or stream any file.
+  results:
+  - claim: fig1b-accepting-escalates
+    agrees: true
+    outcome: reproduced
+    reason: Accepting Spearman 0.74 (p 3e-6) and 0.59 (p 6e-4); resistance peaks at bin 2 and falls
+      to 0.07. Both parts hold in both trial sets. Only 12 of 23 mice have a positive correlation on
+      their own. Trial count per bin falls from 69 to 11, so late bins contain only long trials, and
+      the escalation may partly reflect which trials remain (does not affect a conclusion).
+    response: Added the trial count in every bin for both trial sets, the correlation within single
+      trials (positive in 33 of 58, median 0.01, p = 0.36) and the mean curve over the first 300 s
+      from the 63 trials that cover all of it (Spearman 0.63, p = 0.012). The outcome is kept; the
+      notes say the rise holds with a fixed set of trials but not within single trials.
+  - claim: fig1c-responsive-dominates
+    agrees: true
+    outcome: reproduced
+    reason: All four readings (0.841, 0.844, 0.829, 0.835) are inside 0.755 to 0.923.
+    response: No change needed; the values are unchanged after the raster fix.
+  - claim: fig1d-male-drives-mating
+    agrees: true
+    outcome: reproduced
+    reason: The mean of per-trial ratios over all annotated trials is 11.75, inside 10.17 to 12.43,
+      and is the paper's own measure. The other five readings (7.1 to 9.3) are outside, and 11.75 is
+      pulled up by one trial at 79.3. It passes on 1 of 6 readings and depends on outlier trials
+      (does not affect a conclusion).
+    response: No change; the dependence on one reading was already recorded as a deviation and in
+      the notes.
+  - claim: fig1e-interbout-interval
+    agrees: true
+    outcome: reproduced
+    reason: With 0.1-s merging, 14.00, 14.86 and 14.61 s, all inside 12.33 to 15.07. Duplicate
+      detection is incomplete; it covers only the 3-day series, and marks m438 WT day 1 as a
+      duplicate on frame count alone although its male annotation count differs (does not affect a
+      conclusion).
+    response: Duplicate detection now covers the 7-day series too and prints the evidence for each
+      pair. m438 natural-cycle day 1 has the same frames and interaction length (808.4 against 808.5
+      s) as its receptive session and a trace match of 0.78, against 0.33 and 0.44 for its other
+      days, and three same-recording pairs with identical traces also have different annotations,
+      so it stays marked. No 7-day session matches the receptive session of m928, m930 or m940. The
+      trial sets and the numbers are unchanged.
+  - claim: fig1g-social-in-bouts-and-intervals
+    agrees: true
+    outcome: reproduced
+    reason: Mean of per-bout fractions over all annotated trials, 0.649 in bouts and 0.230 in
+      intervals, both inside tolerance. The pooled and receptive-only readings fail, so this rests on
+      one reading. Separately, the raster extends each annotation by one frame past its stop time
+      (does not affect a conclusion).
+    response: Fixed the raster so an annotation covers frames up to, not including, its stop, with
+      a check in the data-check cell that fails on the old code, and made the bout and interval
+      segments use the same convention. The values are now 0.633 and 0.218, still within tolerance,
+      and the notes say this is the only matching reading of four.
+  - claim: fig2c-few-tuned-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: Tuned share is 6.4 to 35.3% across behaviours, median 20.8%, so even the partial rule
+      fails. The Methods compute choice probability between pairs of behaviours, while the notebook
+      compares each behaviour against all other interaction bins, so ramping cells score high for
+      behaviours that happen late; this likely inflates the numbers. The shuffle null ignores
+      autocorrelation, as the paper's does.
+    response: Added choice probability between pairs of behaviours as a variant. It tunes more cells,
+      15.4% to 57.6% over 20 pairs (median 39.3%), so the comparison set does not explain the
+      difference. With the raster fix the main result is 6.9% to 37.4% over 11 behaviours, median
+      22.0%. Outcome kept.
+  - claim: fig2e-glm-behaviour-explains-little
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, low confidence. Contiguous folds give -0.078, -0.011 and -0.048; random
+      folds 0.234, 0.207 and 0.323; the ordering and the below-0.25 rule fail under both. Contiguous
+      folds punish slow drift; on synthetic drifting traces without behaviour an intercept-only
+      model scored -0.07, and 1,018 of 1,335 cells are below 0 for female behaviours. No
+      intercept-only baseline is reported. Choosing the penalty on the last fifth of the training
+      set may be unreliable. Random folds leak information through autocorrelation.
+    response: Added the intercept-only cvR2 under the same folds (-0.086), the gain of each model
+      over it (0.009, 0.073 and 0.029), and R2 within each fold (medians -0.61 to -0.71, intercept
+      -0.70). Outcome kept, and the notes now say the test is weak because no design here separates
+      behaviour from the slow drift. The penalty selection was not changed.
+  - claim: fig2f-glm-coupling
+    agrees: true
+    outcome: reproduced
+    reason: 0.450 over cells and 0.434 over mouse means, inside 0.414 to 0.506. It depends on fig2e,
+      whose pipeline is questionable.
+    response: Added the gain over the intercept-only baseline (0.536) and a note that it shares the
+      fold design of fig2e. Outcome kept.
+  - claim: fig2i-persistent-cells
+    agrees: true
+    outcome: not_reproduced
+    reason: The best reading gives 0.200 of cells above 25 s and a mean of 15.5 s; targets are 0.27
+      to 0.33 and 18 to 22 s. Per mouse the share ranges from 0 to 0.48. The Fig. 2i legend gives n
+      = 4 mice for the bottom panel while the notebook pools all 15, and the whole-recording reading
+      includes up to 7 min of unannotated imaging after the interaction.
+    response: Added a window from the start of imaging to the last annotation (15.5 to 19.7%, 12.7
+      to 15.0 s). The four mice of the legend are not identified, so no subset was chosen; the per
+      mouse breakdown was already shown. Outcome kept.
+  - claim: ed3b-pencil-cup
+    agrees: true
+    outcome: blocked
+    reason: No label marks the pencil cup. The data may still be there; the Methods say imaging
+      continued 3 to 5 min under the pencil cup, and 7 receptive sessions have 1 to 7 min of
+      unannotated imaging after the last annotation, four of them with 469 cells against the paper's
+      470 neurons from 5 mice. An exploratory test of this tail is possible.
+    response: Added the list of sessions with an unannotated tail and an exploratory comparison of
+      ACHW in the tail with the interaction and with a stretch of the interaction of the same
+      length. The tail is shorter than the whole interaction but not than the length-matched
+      stretch (longer in 5 of 7). Kept blocked, since the files do not say what the tail holds.
+  - claim: fig3a-rslds-fit
+    agrees: true
+    outcome: blocked
+    reason: Needs rSLDS fits; the ssm package does not build in the environment.
+  - claim: fig3c-integration-dimension
+    agrees: true
+    outcome: blocked
+    reason: Same as fig3a; by the notebook's own timing the 15 fits would take about 2 h, so the
+      build failure is the real block. The Methods give a partial-least-squares regression onto a
+      ramp as an independent way to find the integration dimension, which the notebook never
+      considers; using it for the ramp and persistence claims would be partly circular.
+    response: The notes now say why partial least squares is not used; it gives a direction but no
+      time constants, and would assume the ramp the other claims test.
+  - claim: ed3s-integrator-model
+    agrees: true
+    outcome: blocked
+    reason: Needs the integration dimension in 15 mice.
+  - claim: ed4b-single-cell-ramps
+    agrees: true
+    outcome: blocked
+    reason: Could be partly tested in the 2 mice with deposited weights, by correlating the weighted
+      cells with an ideal ramp on the receptive day.
+    response: Added this as an exploratory check with a ramp chosen here; 0 of 44 and 1 of 14
+      weighted cells have r2 above 0.5. Kept blocked, since the ramp is not defined in the paper and
+      these are 2 natural-cycle mice, not the 15 receptive sessions.
+  - claim: fig3k-perturbation-relaxation
+    agrees: true
+    outcome: blocked
+    reason: Confirmed in the asset list; no perturbation sessions and no LED labels, and the laser_on
+      epochs belong to the male-inhibition experiment and last about 300 s.
+  - claim: fig4b-persistence-during-intervals
+    agrees: true
+    outcome: blocked
+    reason: Needs the integration dimension. With weights, only m541's receptive day is usable, and
+      it has 7 intromissions.
+  - claim: fig4d-persistence-male-inhibition
+    agrees: true
+    outcome: blocked
+    reason: None of the 8 male-inhibition mice has deposited weights.
+  - claim: fig4h-peak-before-ejaculation
+    agrees: true
+    outcome: blocked
+    reason: Ejaculation is annotated in 12 sessions, but none of them has weights.
+  - claim: fig5c-attractor-receptive-days
+    agrees: true
+    outcome: blocked
+    reason: Needs a dynamics matrix for each day; only one set of loadings per mouse is deposited.
+      A list of every object under analysis and processing in the per-mouse files would show
+      whether latent time series or dynamics matrices are there.
+    response: Added the list. The per-mouse files hold only the two weight columns, one trace series
+      and the annotations; there are no latent series or dynamics matrices.
+  - claim: ed6e-projection-unreceptive-days
+    agrees: true
+    outcome: partially_reproduced
+    reason: In m541 mounting values are 0.616 on the receptive day against 0.232 and 0.191; in mouse
+      543 0.608 against 0.643 and 0.626, so the criterion holds in one mouse. This depends on the
+      cell order of the weights, which is never checked; a correlation of about 0.8 for the same
+      recording also means the per-mouse traces were processed differently, and the scaling is not
+      checked. The factor in m541 is chosen with lags up to 300 s where the code caps at 50 s, but
+      the outcome holds either way (does not affect a conclusion).
+    response: Added the check. 171 of 176 and 71 of 72 cells best match the session cell of the same
+      index; the same-index correlation peaks at zero shift and rises when the session traces are
+      smoothed, and the projections from the per-mouse and stored traces correlate at 0.94 to 0.96
+      with the same factor chosen. Recorded the processing difference as a finding. Outcome kept.
+  - claim: ed7-achw-across-cycle
+    agrees: true
+    outcome: partially_reproduced
+    reason: Weighted cells are longer on the receptive day in both mice (28.4 against 17.2 s, p
+      2e-5; 26.7 against 9.1 s, p 2e-4). Other cells do not change in m541 (p 0.23) but do in 543 (p
+      0.005). Same dependency on the cell order. The weighted cells are selected from a model fitted
+      on the receptive day, which favours cells slow on that day; the paper has the same
+      circularity (does not affect a conclusion).
+    response: The cell order is now checked (see ed6e-projection-unreceptive-days). The selection
+      is the paper's and was not changed. Outcome kept.
+  - claim: ed9j-ovx-hormone-priming
+    agrees: true
+    outcome: blocked
+    reason: Needs rSLDS fits; no weights for the ovariectomy series.
+  - claim: fig5k-receptivity-correlation
+    agrees: true
+    outcome: blocked
+    reason: The 42 trials are present but have no fits or weights.
+  - claim: ed10c-population-mean-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: The slope is not significant under any of the three readings (r2 0.015, 0.003, 0.027; p
+      0.30 to 0.73). The notebook has 42 trials where the paper has 50. m928 WT_7d day 2 fails the
+      clock check but stays in without comment (does not affect a conclusion).
+    response: The clock-check result is now stated in the notebook (two sessions, m928 day 2 and
+      m940 day 7, fail it), and a variant without them gives r2 0.011, 0.005 and 0.025 over 40
+      trials. Outcome kept.

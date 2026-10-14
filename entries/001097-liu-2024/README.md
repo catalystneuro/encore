@@ -30,7 +30,7 @@ registry's environment and time limit; two of them are tested with the authors' 
 for two mice. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001097-liu-2024-01.yaml`](../../attempts/001097-liu-2024-01.yaml).
 
-- `reproduce_liu_2024.ipynb`: the analysis. It takes about five minutes.
+- `reproduce_liu_2024.ipynb`: the analysis. It takes about seven minutes.
 - `vmhvl.py`: listing and streaming the files, preprocessing as in the authors' code, behaviour
   rasters and bouts, the autocorrelation half-width, choice probability, the ridge GLM and the
   clock check. Other notebooks on this dandiset can import it.
