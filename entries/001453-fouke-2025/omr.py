@@ -264,21 +264,29 @@ def acceleration_frames(session: dict, passing: set) -> pd.DataFrame:
 
     kind "methods": the Methods' definition on the cumulative sum of `f0_vtheta`; "theta": the
     same on the unwrapped `f0_theta`; "code": Fig1-S1.ipynb's quantity. `stationary` marks values
-    in the first 3 s, before the grating moves.
+    in the first 3 s, before the grating moves. `speed_mm_s` is the fish's speed at the same time,
+    from raw positions resampled to 30 Hz and smoothed with the 7-sample rolling median.
     """
     out = []
     for number, code, idx in trials(session):
         if (session["path"], number) not in passing:
             continue
         t, vth, th = session["t"][idx], session["f0_vtheta"][idx], session["f0_theta"][idx]
+        x, y = session["f0_x"][idx], session["f0_y"][idx]
         keep = (t < t[0] + TRIAL_LIMIT_S) & (t > 0)
-        t, vth, th = t[keep], vth[keep], th[keep]
+        t, vth, th, x, y = t[keep], vth[keep], th[keep], x[keep], y[keep]
         if len(t) < 3:
             continue
         window = (t > t[0]) & (t < t[0] + TRIAL_LIMIT_S)
         start = t[0]
         tw = t[window]
         coded = code_angular_acceleration(vth, session["code_dt"])[window]
+        if len(tw) >= 2 and tw[-1] - tw[0] >= 2 / COMMON_HZ:
+            grid, (gx, gy) = _resample(tw, [x[window], y[window]])
+            inst = _rolling_median(np.hypot(np.diff(gx), np.diff(gy)) * COMMON_HZ / PX_PER_MM)
+            speed_at = lambda times: np.interp(times, grid[1:], inst)
+        else:
+            speed_at = lambda times: np.full(len(times), np.nan)
         for kind, (times, values) in (("methods", angular_acceleration(tw, np.cumsum(vth[window]))),
                                       ("theta", angular_acceleration(tw, np.unwrap(th[window]))),
                                       ("code", (tw, coded))):
@@ -286,7 +294,8 @@ def acceleration_frames(session: dict, passing: set) -> pd.DataFrame:
             out.append(pd.DataFrame({"fish": fish_key(session), "species": fish_key(session)[:2],
                                      "code": code, "kind": kind,
                                      "stationary": (times[ok] - start) < MOTION_START_S,
-                                     "accel": values[ok].astype(np.float32)}))
+                                     "accel": values[ok].astype(np.float32),
+                                     "speed_mm_s": speed_at(times[ok]).astype(np.float32)}))
     return pd.concat(out, ignore_index=True) if out else pd.DataFrame()
 
 
