@@ -3,7 +3,11 @@
 A target is a public, non-empty dandiset that names at least one paper in its
 metadata (`relatedResource`). For each one this records the dandiset, its
 size and data standards, and the papers, so an agent can pick one up and
-try to reproduce the papers' key findings from the data.
+try to reproduce the papers' key findings from the data. It also records any
+sign that CatalystNeuro converted the dandiset (`catalystneuro`): a related
+resource in a catalystneuro GitHub repository, or a contributor affiliated
+with CatalystNeuro or with a catalystneuro.com address. Problems an attempt
+finds in those can be fixed in our own conversion code.
 
 The queue is regenerated from the archive on each run. Anything that records
 work done on a target (who claimed it, what was reproduced) lives with the
@@ -91,6 +95,22 @@ def papers(metadata: dict) -> list[dict]:
     return out
 
 
+def catalystneuro(metadata: dict) -> list[str]:
+    """Signs in the metadata that CatalystNeuro converted the dandiset, one line each."""
+    signs = []
+    for r in metadata.get("relatedResource") or []:
+        url = r.get("url") or ""
+        if "github.com/catalystneuro/" in url.lower():
+            signs.append(f"conversion code at {url}")
+    for c in metadata.get("contributor") or []:
+        affiliations = [a.get("name") or "" for a in c.get("affiliation") or []]
+        if (any("catalystneuro" in a.lower().replace(" ", "") for a in affiliations)
+                or (c.get("email") or "").lower().endswith("@catalystneuro.com")
+                or "catalystneuro.com" in (c.get("url") or "").lower()):
+            signs.append(f"contributor {c.get('name')} of CatalystNeuro")
+    return signs
+
+
 def target(summary: dict) -> dict | None:
     dandiset_id = summary["identifier"]
     metadata = get(f"{API}/dandisets/{dandiset_id}/versions/draft/")
@@ -108,6 +128,7 @@ def target(summary: dict) -> dict | None:
         "species": [s.get("name") for s in assets.get("species") or []],
         "approaches": [s.get("name") for s in assets.get("approach") or []],
         "papers": found,
+        "catalystneuro": catalystneuro(metadata),
     }
 
 
@@ -134,6 +155,7 @@ def main() -> int:
             "with_a_paper": len(with_paper),
             "with_a_published_version": sum(1 for t in with_paper if t["published_version"]),
             "papers": len({p["doi"] for t in with_paper for p in t["papers"]}),
+            "converted_by_catalystneuro": sum(1 for t in with_paper if t["catalystneuro"]),
         },
         "targets": with_paper,
     }

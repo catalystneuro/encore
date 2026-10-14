@@ -216,3 +216,11 @@ def test_claims_with_outside_names_count_as_the_dandiset():
                             {"claim": "b", "outcome": "reproduced", "data": "with_inputs"}]}
     assert site.outcome_counts(attempt)["reproduced"] == 1
     assert site.outcome_counts(attempt, outside=True)["reproduced"] == 1
+
+
+def test_dandisets_converted_by_catalystneuro_can_be_filtered(built):
+    data, out = built
+    rows = json.loads((out / "data" / "dandisets.json").read_text())
+    ours = {t["dandiset"] for t in data["targets"] if t["catalystneuro"]}
+    assert ours and {r["id"] for r in rows if r["converted"] == "catalystneuro"} == ours
+    assert ("converted", "Converted by") in site.LISTS["dandisets"]["facets"]

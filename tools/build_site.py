@@ -205,6 +205,7 @@ def collect(executed: Path | None = None) -> dict:
             "technique": sorted({part.replace(" approach", "").strip()
                                  for a in t["approaches"] if a for part in a.split(";") if part.strip()}),
             "species": sorted({short_species(s) for s in t["species"] if s}),
+            "catalystneuro": t.get("catalystneuro") or [],
         })
     entry_list = []
     for entry in entries.values():
@@ -375,6 +376,7 @@ def rows(data: dict) -> dict[str, list]:
             "page": f'dandisets/{t["dandiset"]}/' if atts else None,
             "findings": sum(len(a["findings"]) for a in atts) if atts else None,
             "found": sorted({f["kind"] for a in atts or [] for f in a["findings"]}),
+            "converted": "catalystneuro" if t["catalystneuro"] else "other",
         })
     for atts in current.values():
         for a in atts:
@@ -675,7 +677,8 @@ LISTS = {
         "intro": "Every public dandiset on DANDI whose metadata names a paper. Attempted ones open a page with the "
                  "claims tested, what was found about the data, and the executed notebook.",
         "facets": [("status", "Status"), ("has", "Has a claim that is"), ("blocked_by", "Has a claim blocked by"),
-                   ("tier", "Verification"), ("found", "Findings about the data"), ("technique", "Technique"), ("species", "Species")],
+                   ("tier", "Verification"), ("found", "Findings about the data"),
+                   ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
         "sorts": [("-date", "Most recently attempted"), ("id", "Dandiset number"),
                   ("-id", "Dandiset number, newest first"), ("-failures", "Most claims not reproduced"),
                   ("size_gb", "Smallest"), ("-size_gb", "Largest"), ("paper_title", "Paper title")],
@@ -698,6 +701,7 @@ def page_list(data: dict, kind: str) -> str:
             "blocked_by": {**BLOCKED_BY, "(none)": "No blocked claim"},
             "tier": {**TIERS, "runs": "Not yet verified", "(none)": "Not attempted"},
             "status": STATUS, "found": {**FINDING_KINDS, "(none)": "None recorded"},
+            "converted": {"catalystneuro": "CatalystNeuro", "other": "Others or not stated"},
             "verifier": {"disagreed": "Disagreed at first", "(none)": "No disagreement"},
             "technique": {"(none)": "Not stated"}, "species": {"(none)": "Not stated"},
         },
@@ -928,6 +932,9 @@ def page_dandiset(data: dict, dandiset: str) -> str:
         tags = " ".join(
             [f'<a class="tag" href="{root}dandisets/?technique={e(t)}">{e(t)}</a>' for t in target["technique"]]
             + [f'<a class="tag" href="{root}dandisets/?species={e(s)}">{e(s)}</a>' for s in target["species"]]
+            + ([f'<a class="tag" href="{root}dandisets/?converted=catalystneuro" '
+                f'title="{e("; ".join(target["catalystneuro"]))}">Converted by CatalystNeuro</a>']
+               if target["catalystneuro"] else [])
             + [f'<span class="tag" title="{target["size_gb"]:,.1f} GB">{human_size(target["size_gb"])}</span>',
                f'<span class="tag" title="{target["files"]:,} files">{human_count(target["files"], "file")}</span>'])
 
