@@ -164,14 +164,15 @@ jobs:
           out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$DANDISET"
           tool="$RUNNER_TEMP/transcript.py"
           name="$DANDISET · $ROLE · run ${{ github.run_id }}"
-          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" \
-            --report "$out/transcripts/$DANDISET/$ROLE-report.md" --title "$name"
+          # The author's changes first, so that nothing in the transcript can lose them.
           if [[ "$ROLE" == author* ]]; then
             # Only the registry's own files: the sandbox leaves placeholder files for the paths it
             # protects (.bashrc, .gitconfig, ...) in the working directory.
             git add -A -- attempts claims entries README.md && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
           fi
+          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" \
+            --report "$out/transcripts/$DANDISET/$ROLE-report.md" --title "$name"
           rm -f "$RUNNER_TEMP/run.jsonl"
           cat "$out/transcripts/$DANDISET/$ROLE-report.md" >> "$GITHUB_STEP_SUMMARY"
 
@@ -185,8 +186,9 @@ jobs:
 
   commit:
     needs: run
-    # Only when the agent was started; a run that failed before has nothing to commit.
-    if: always() && needs.run.result != 'cancelled' && needs.run.outputs.started == 'true'
+    # Whenever the agent was started, also when the run was cancelled or failed, so that its
+    # transcript and partial work are kept; the commit message says how the run ended.
+    if: always() && needs.run.outputs.started == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write

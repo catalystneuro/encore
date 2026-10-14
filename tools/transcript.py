@@ -17,9 +17,10 @@ run:
   default `paper/`, where the prompts tell agents to keep a paper's text;
 - all but the first lines of every other tool result.
 
-It refuses to write the record, and names what it found, when the result still
-holds something that looks private: an e-mail address, a token or key, a
-private key block, or a path in a home directory. --home DIR rewrites DIR to
+Anything left that looks private, an e-mail address, a token or key, a
+private key block or a path in a home directory, is replaced by a note saying
+what was removed, and each removal is reported by kind and line, never by its
+text. --home DIR rewrites DIR to
 `~`, and the user's name elsewhere to `user`, for a run exported from a local
 machine. Runs in CI on a fresh runner
 have none of these; the check is there in case one is exported from elsewhere.
@@ -40,8 +41,10 @@ REMINDER = re.compile(r"<system-reminder>.*?</system-reminder>", re.S)
 RUNNER_HOME = re.compile(r"/home/runner/work/[^/\s]+/[^/\s]+/?")
 
 PRIVATE = {
+    # A real top-level domain, so that code such as `X@np.ones` is not taken for an address.
     "an e-mail address": re.compile(r"\b[A-Za-z0-9._%+-]+@(?!(?:anthropic\.com|users\.noreply\.github\.com)\b)"
-                                    r"[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}\b"),
+                                    r"(?:[A-Za-z0-9-]+\.)+(?:com|org|net|edu|gov|mil|int|io|ai|co|me|info|"
+                                    r"[a-z]{2})\b(?!\()"),
     "an Anthropic key or token": re.compile(r"sk-ant-[A-Za-z0-9_-]{10,}"),
     "a GitHub token": re.compile(r"\b(?:ghp|gho|ghu|ghs|ghr)_[A-Za-z0-9]{20,}|github_pat_[A-Za-z0-9_]{20,}"),
     "an AWS key": re.compile(r"\bAKIA[0-9A-Z]{16}\b"),
@@ -170,12 +173,14 @@ def final_message(path: Path) -> str:
     return last
 
 
-def private_content(text: str) -> list[str]:
-    found = []
+def redact(text: str) -> tuple[str, list[str]]:
+    """The text with anything that looks private replaced, and where each removal was (kind and line)."""
+    removed = []
     for what, pattern in PRIVATE.items():
         for m in pattern.finditer(text):
-            found.append(f"{what}: {m.group(0)[:40]!r} near line {text.count(chr(10), 0, m.start()) + 1}")
-    return found
+            removed.append(f"{what} near line {text.count(chr(10), 0, m.start()) + 1}")
+        text = pattern.sub(f"[removed: {what}]", text)
+    return text, removed
 
 
 def main() -> int:
@@ -191,10 +196,11 @@ def main() -> int:
     text = render(args.source, args.title, tuple(args.omit or ["paper/"]), args.home)
     report = final_message(args.source)
     report = redact_home(report, args.home)
-    found = private_content(text) + (private_content(report) if args.report else [])
-    if found:
-        print("error: not written; the transcript still holds:", *found, sep="\n  ", file=sys.stderr)
-        return 1
+    text, removed = redact(text)
+    report, removed_from_report = redact(report)
+    for where, items in (("transcript", removed), ("report", removed_from_report if args.report else [])):
+        if items:
+            print(f"removed from the {where}:", *items, sep="\n  ", file=sys.stderr)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(text)
     print(f"wrote {args.output} ({len(text) // 1024} KB)")
