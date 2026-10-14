@@ -86,8 +86,10 @@ def load_session(path: str, url: str) -> dict:
     """One fish: its metadata, and the frames that belong to a trial.
 
     Frames outside a trial (no stim_index) are dropped, and the static block (code 20, hours
-    long) is cut to its first 60 s. Before that, the file's mean frame interval over tracked
-    frames is kept as `code_dt`, which Fig1-S1.ipynb uses for its angular acceleration.
+    long) is cut to its first 60 s. Fig1-S1.ipynb treats code 20 like any trial number and keeps
+    its first 35 s, so the cut keeps every frame the measures use. Before that, the file's mean
+    frame interval over tracked frames is kept as `code_dt`, which Fig1-S1.ipynb uses for its
+    angular acceleration, with the timestamp intervals (`dt_ms`) and the code-20 block's length.
     """
     with h5py.File(remfile.File(url), "r") as f:
         subject = f["general/subject"]
@@ -114,10 +116,16 @@ def load_session(path: str, url: str) -> dict:
     session["n_tracked"] = int(tracked.sum())
     session["frame_hz"] = float(1 / np.median(np.diff(t)))
     session["code_dt"] = float(np.mean(np.diff(t[tracked])))
+    dt = np.diff(t)
+    session["dt_ms"] = {"median": 1000 * float(np.median(dt)), "p5": 1000 * float(np.percentile(dt, 5)),
+                        "p95": 1000 * float(np.percentile(dt, 95)), "max": 1000 * float(dt.max()),
+                        "within_10pct": float(np.mean(np.abs(dt / np.median(dt) - 1) <= 0.1))}
     session["x_range"] = (float(np.nanmin(data["f0_x"])), float(np.nanmax(data["f0_x"])))
     session["y_range"] = (float(np.nanmin(data["f0_y"])), float(np.nanmax(data["f0_y"])))
     in_trial = ~np.isnan(data["stim_index"])
     static = in_trial & (data["stimulus"] == 20)
+    session["static_blocks"] = int(len(np.unique(data["stim_index"][static])))
+    session["static_s"] = float(t[static][-1] - t[static][0]) if static.any() else 0.0
     if static.any():
         start = t[static][0]
         in_trial &= ~(static & (t > start + 60))
@@ -161,6 +169,11 @@ def _resample(t: np.ndarray, values: list[np.ndarray], hz: float = COMMON_HZ):
 def trial_measures(session: dict) -> pd.DataFrame:
     """One row per trial: whether it passes the code's criteria, and its measures.
 
+    Measures are computed for every trial long enough to have them, so that variants can apply
+    other rejections; `passes` is the code's criteria, and `reason` says why a trial fails.
+    check_speed_mm_s: the code's speed check, 0 to 35 s, from the stored `dist` in DC files and
+    from smoothed positions in ZF files; check_speed_pos_mm_s: the same from smoothed positions
+    in both (variant).
     speed_mm_s: path length of the smoothed positions from 3 to 35 s over that time (Fig1-S1).
     speed30_mm_s: the same from raw positions resampled to 30 Hz (variant).
     angvel_deg_s: summed heading change from 3 to 35 s over that time (Fig1-S1).
@@ -178,20 +191,22 @@ def trial_measures(session: dict) -> pd.DataFrame:
             continue
         xs = savgol_filter(x, SAVGOL_WINDOW, SAVGOL_ORDER, mode="nearest")
         ys = savgol_filter(y, SAVGOL_WINDOW, SAVGOL_ORDER, mode="nearest")
+        step_pos = np.concatenate([[0], np.hypot(np.diff(xs), np.diff(ys))])
         if session["has_dist"]:      # DC files carry `dist`, which the code uses in its check
             step = session["dist"][idx].copy()
             step[0] = 0
         else:
-            step = np.concatenate([[0], np.hypot(np.diff(xs), np.diff(ys))])
+            step = step_pos
         w35 = t < t[0] + TRIAL_LIMIT_S
         w10 = t < t[0] + 10
         cum10 = abs(np.sum(vth[w10]) * 180 / np.pi)
         cum35 = abs(np.sum(vth[w35]) * 180 / np.pi)
         span = t[w35][-1] - t[0]
         speed_check = (np.nansum(step[w35]) / PX_PER_MM) / span if span > 0 else np.inf
-        if cum10 > MAX_CUM_ANGLE_10S or cum35 > MAX_CUM_ANGLE_35S or speed_check > MAX_SPEED_MM_S:
-            row["reason"] = "criteria"
-            continue
+        speed_check_pos = (np.sum(step_pos[w35]) / PX_PER_MM) / span if span > 0 else np.inf
+        row.update(cum10_deg=cum10, cum35_deg=cum35, check_speed_mm_s=speed_check,
+                   check_speed_pos_mm_s=speed_check_pos)
+        fails = cum10 > MAX_CUM_ANGLE_10S or cum35 > MAX_CUM_ANGLE_35S or speed_check > MAX_SPEED_MM_S
         keep = w35 & (t > 0)
         t, xs, ys, vth, xr, yr = t[keep], xs[keep], ys[keep], vth[keep], x[keep], y[keep]
         if len(t) < 2:
@@ -203,7 +218,7 @@ def trial_measures(session: dict) -> pd.DataFrame:
             continue
         tm = t[motion]
         duration = tm[-1] - tm[0]
-        row.update(passes=True, reason="", duration_s=duration,
+        row.update(passes=not fails, reason="criteria" if fails else "", duration_s=duration,
                    speed_mm_s=_path_length(xs[motion], ys[motion]) / duration / PX_PER_MM,
                    angvel_deg_s=np.sum(vth[motion]) / duration * 180 / np.pi)
         if duration > 2 / COMMON_HZ:
@@ -218,19 +233,20 @@ def _rolling_median(values: np.ndarray, window: int = ROLLING) -> np.ndarray:
     return pd.Series(values).rolling(window, min_periods=1).median().to_numpy()
 
 
-def angular_acceleration(t: np.ndarray, vtheta: np.ndarray) -> np.ndarray:
+def angular_acceleration(t: np.ndarray, heading: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Absolute angular acceleration (deg/s^2) as the Methods define it, at 30 Hz.
 
-    Heading is the cumulative sum of the per-frame change, resampled to 30 Hz; angular velocity
-    and acceleration are its first and second differences over time, each smoothed with the
-    code's 7-sample rolling median.
+    `heading` (radians) is resampled to 30 Hz; angular velocity and acceleration are its first
+    and second differences over time, each smoothed with the code's 7-sample rolling median.
+    The main measure takes the heading as the cumulative sum of `f0_vtheta`, as the code does;
+    a variant passes the unwrapped `f0_theta`. Returns the times of the values and the values.
     """
     if len(t) < 3 or t[-1] - t[0] < 3 / COMMON_HZ:
-        return np.array([])
-    _, (heading,) = _resample(t, [np.cumsum(vtheta)])
-    omega = _rolling_median(np.diff(heading) * COMMON_HZ)
+        return np.array([]), np.array([])
+    grid, (resampled,) = _resample(t, [heading])
+    omega = _rolling_median(np.diff(resampled) * COMMON_HZ)
     alpha = _rolling_median(np.diff(omega) * COMMON_HZ)
-    return np.abs(alpha) * 180 / np.pi
+    return grid[2:], np.abs(alpha) * 180 / np.pi
 
 
 def code_angular_acceleration(vtheta: np.ndarray, code_dt: float) -> np.ndarray:
@@ -244,23 +260,33 @@ def code_angular_acceleration(vtheta: np.ndarray, code_dt: float) -> np.ndarray:
 
 
 def acceleration_frames(session: dict, passing: set) -> pd.DataFrame:
-    """Per-frame absolute angular acceleration, 0 to 35 s into each passing trial, both ways."""
+    """Per-frame absolute angular acceleration, 0 to 35 s into each passing trial.
+
+    kind "methods": the Methods' definition on the cumulative sum of `f0_vtheta`; "theta": the
+    same on the unwrapped `f0_theta`; "code": Fig1-S1.ipynb's quantity. `stationary` marks values
+    in the first 3 s, before the grating moves.
+    """
     out = []
     for number, code, idx in trials(session):
         if (session["path"], number) not in passing:
             continue
-        t, vth = session["t"][idx], session["f0_vtheta"][idx]
+        t, vth, th = session["t"][idx], session["f0_vtheta"][idx], session["f0_theta"][idx]
         keep = (t < t[0] + TRIAL_LIMIT_S) & (t > 0)
-        t, vth = t[keep], vth[keep]
+        t, vth, th = t[keep], vth[keep], th[keep]
         if len(t) < 3:
             continue
         window = (t > t[0]) & (t < t[0] + TRIAL_LIMIT_S)
-        methods = angular_acceleration(t[window], vth[window])
+        start = t[0]
+        tw = t[window]
         coded = code_angular_acceleration(vth, session["code_dt"])[window]
-        for kind, values in (("methods", methods), ("code", coded)):
-            values = values[(values > ACCEL_RANGE[0]) & (values < ACCEL_RANGE[1])]
+        for kind, (times, values) in (("methods", angular_acceleration(tw, np.cumsum(vth[window]))),
+                                      ("theta", angular_acceleration(tw, np.unwrap(th[window]))),
+                                      ("code", (tw, coded))):
+            ok = (values > ACCEL_RANGE[0]) & (values < ACCEL_RANGE[1])
             out.append(pd.DataFrame({"fish": fish_key(session), "species": fish_key(session)[:2],
-                                     "code": code, "kind": kind, "accel": values.astype(np.float32)}))
+                                     "code": code, "kind": kind,
+                                     "stationary": (times[ok] - start) < MOTION_START_S,
+                                     "accel": values[ok].astype(np.float32)}))
     return pd.concat(out, ignore_index=True) if out else pd.DataFrame()
 
 
