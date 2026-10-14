@@ -166,8 +166,7 @@ def load_cell(job):
         v_units=sorted({s["v_unit"] for s in sweeps}),
         i_units=sorted({s["i_unit"] for s in sweeps if s["i_unit"]}),
         zero_kinds=sorted({s["kind"] for s in sweeps if s["i"] is None}),
-        step_onsets=(min(onsets), max(onsets)) if onsets else (np.nan, np.nan),
-        step_offsets=(min(offsets), max(offsets)) if offsets else (np.nan, np.nan),
+        step_onsets=onsets, step_offsets=offsets,     # s, one per sweep with a nonzero step
         v_min=float(min(s["v"].min() for s in sweeps)),
         v_max=float(max(s["v"].max() for s in sweeps)),
         hash_first=hashlib.md5(sweeps[0]["v"].tobytes()).hexdigest(),
@@ -461,7 +460,7 @@ def knn_family_confusion(X, families, classes, k=10):
 
     Neighbours are drawn from all rows. A cell whose neighbours' majority family is not one of
     `classes` is not counted. Ties go to the alphabetically first family (np.unique, as in the
-    code). Returns the row-normalized confusion matrix and the number of cells counted per row.
+    code), so an IT/ET tie goes to ET. Returns the row-normalized confusion matrix and the number of cells counted per row.
     """
     from sklearn.neighbors import NearestNeighbors
     families = np.asarray(families, dtype=object)
