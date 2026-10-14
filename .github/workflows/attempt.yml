@@ -202,7 +202,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: agent-run
+          # Named for the dandiset and role: in a pipeline, several dandisets run inside one
+          # workflow run, and an artifact name shared between them made a commit job pick up
+          # another dandiset's results.
+          name: agent-run-${{ inputs.dandiset }}-${{ inputs.role }}
           path: ${{ runner.temp }}/out
           retention-days: 14
           if-no-files-found: ignore
@@ -222,7 +225,10 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: agent-run
+          # Named for the dandiset and role: in a pipeline, several dandisets run inside one
+          # workflow run, and an artifact name shared between them made a commit job pick up
+          # another dandiset's results.
+          name: agent-run-${{ inputs.dandiset }}-${{ inputs.role }}
           path: out
 
       - name: Commit to the attempt's branch
@@ -233,7 +239,15 @@ jobs:
           else
             git checkout -b "$BRANCH"
           fi
-          if [ -s out/changes.patch ]; then git apply --index out/changes.patch; fi
+          # Refuse anything that is not this dandiset's: a guard against results being mixed up.
+          others=$(ls out/transcripts | grep -vx "$DANDISET" || true)
+          [ -z "$others" ] || { echo "::error::Transcripts for other dandisets: $others"; exit 1; }
+          if [ -s out/changes.patch ]; then
+            stray=$(git apply --numstat out/changes.patch | cut -f3 \
+              | grep -vE "^((attempts|claims|entries)/.*$DANDISET|README\.md$)" || true)
+            [ -z "$stray" ] || { echo "::error::Changes outside dandiset $DANDISET: $stray"; exit 1; }
+            git apply --index out/changes.patch
+          fi
           # A transcript with nothing but its title means the agent never started; keep it out.
           for f in out/transcripts/*/*.md; do [ "$(wc -l < "$f")" -gt 2 ] || rm "$f"; done
           cp -r out/transcripts . && git add transcripts
