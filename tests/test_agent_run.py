@@ -37,3 +37,15 @@ def test_a_revision_needs_the_verifiers_report():
 def test_proposals_are_found_from_the_record():
     assert tool.proposals("001097") == ["fig2e-glm-behaviour-explains-little"]
     assert tool.proposals("001453") == []
+
+
+def test_an_author_on_a_dandiset_with_an_attempt_gets_the_repeat_prompt():
+    text = tool.fill("author", "001754", "m", version="draft")
+    assert "001754-knierim-2000-01" in text and "attempts/001754-knierim-2000-02.yaml" in text
+    assert "Use version draft" in text and "{" not in text
+
+
+def test_a_first_author_without_a_version_picks_a_published_one():
+    assert tool.attempt_of("001933") is None
+    text = tool.fill("author", "001933", "m")
+    assert "pinned published version" in text and "Use version" not in text

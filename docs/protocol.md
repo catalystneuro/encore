@@ -292,6 +292,19 @@ proposed changes, and `author-revise-3` applies those it agreed with and
 records the round. A change that needs an analysis not yet run waits for a
 new attempt.
 
+## Repeat attempts
+
+When a dandiset changes after an attempt, for example after its owners fix
+what an attempt found, a new attempt tests the new version. It keeps the
+claims file, updates the entry in place to the new version, re-runs every
+check and claim, and says for each finding of the earlier attempt whether it
+is fixed. Its record is the next number (`-02`), with its own outcomes and
+verification rounds; the earlier record stays as it was. A draft can be
+used when the fixes are not yet published, with its modification time
+recorded, since a draft can change. The author is started with
+`-f version=draft` (or a version number), and `docs/agents/author-again.md`
+is its prompt.
+
 ## Verifier
 
 Be skeptical. Do not assume the analysis is right.

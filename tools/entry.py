@@ -190,6 +190,8 @@ def check(entry_dir: Path) -> Report:
             for other in c.get("depends_on", []):
                 if other not in ids:
                     report.error(path.relative_to(ROOT), f"claim {c['id']!r} depends on {other!r}, which is not in the file")
+    mine = [p for p in sorted((ROOT / "attempts").glob("*.yaml"))
+            if isinstance(load(Report(), p), dict) and load(Report(), p).get("entry") == entry["name"]]
     for path in sorted((ROOT / "attempts").glob("*.yaml")):
         attempt = load(report, path)
         if not isinstance(attempt, dict) or attempt.get("entry") != entry["name"]:
@@ -197,7 +199,8 @@ def check(entry_dir: Path) -> Report:
         validate(report, path, "attempt")
         where = path.relative_to(ROOT)
         pinned = versions.get(attempt.get("dandiset"))
-        if pinned and attempt.get("dandiset_version") != pinned:
+        # The entry streams the version of its latest attempt; earlier attempts keep the version they used.
+        if pinned and path == mine[-1] and attempt.get("dandiset_version") != pinned:
             report.error(where, f"dandiset_version {attempt.get('dandiset_version')!r} differs from "
                                 f"{pinned!r} in entry.yaml")
         known = claims_by_target.get((attempt.get("dandiset"), attempt.get("paper")))
