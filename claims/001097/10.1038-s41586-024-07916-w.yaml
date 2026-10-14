@@ -1,0 +1,252 @@
+# Claims for Liu, Nair et al. (2024) on dandiset 001097.
+# Source: the paper's Results, figure legends, Extended Data legends and Methods (open access,
+# CC BY, PMC11499253). Code read: github.com/neuralcomputation/hypothalamic-dynamics at commit
+# 28fee70fce99949ff34f6ae43937d5e99606dd81, and github.com/lindermanlab/ssm at commit
+# eb6c8aa33e5311d3564075807dec340759dd8081.
+#
+# Written before the analysis of each tested claim was run. What had been seen when the criteria
+# were written: the file list of every published version; the contents of every file (shapes,
+# rates, behaviour labels and counts per session); that some sessions duplicate others; that the
+# per-mouse file labelled m542 holds the neural data of mouse 543; the distributions of the
+# deposited rSLDS weights; and, while deciding how to treat the rSLDS claims, the time constants
+# of a two-dimensional linear dynamical system and of one 10-iteration rSLDS fit on the 15
+# receptive sessions (see the blocked claims). No result of a tested claim had been computed.
+schema_version: 1
+dandiset: "001097"
+paper: doi:10.1038/s41586-024-07916-w
+claims:
+- id: fig1b-accepting-escalates
+  statement: During mating the probability of accepting behaviours (lordosis, wiggle) increases
+    gradually over the interaction, while resistance behaviours (dart, top up, kick, turn) first
+    increase and then slowly decrease.
+  source: Figure 1b, Extended Data Figure 1a, Results "Dynamics of female behaviours in mating"
+  criterion: Per trial, the fraction of each 20-s bin occupied by each group, from male entry
+    (into_male_cage) to 600 s after it, averaged over trials (bins with fewer than 5 trials are
+    dropped). Accepting escalates if the Spearman correlation of the mean curve with time is
+    positive with p below 0.05 and the mean of the last third of the bins exceeds that of the first
+    third. Resistance rises then falls if the peak of the mean curve, after a 3-bin running mean,
+    is later than the first bin and within the first two thirds, and the mean of the last third is
+    below the peak. Trial sets read in turn are all trials with female annotations, and only
+    receptive trials (any lordosis or wiggle), because the paper's 74 trials are not identified.
+    Reproduced if both parts hold under a reading; partially if one part holds.
+- id: fig1c-responsive-dominates
+  statement: Females spend 83.9% of their mating behaviour time in male-responsive behaviours
+    (accepting, resistance, staying) and 16.1% in self-initiated ones (approach, sniff, check
+    genital area).
+  source: Figure 1c, Results
+  expected:
+    quantity: fraction of female mating behaviour time that is male-responsive
+    value: 0.839
+    tolerance: 0.084
+  criterion: Responsive time is the summed duration of lordose, wiggle, stay, dart, top up, kick
+    and turn; self-initiated is approach, sniff and check genital. Readings are the mean over
+    trials of the per-trial fraction, and the pooled fraction over all trials, each on all
+    annotated trials and on receptive trials. Reproduced if any reading is within the tolerance.
+- id: fig1d-male-drives-mating
+  statement: Males spend 11.3 times more time in self-initiated mating behaviours (sniff, mount,
+    intromission) than females do in theirs (approach, sniff, check genital area).
+  source: Figure 1d, Results
+  expected:
+    quantity: ratio of male to female self-initiated mating time
+    value: 11.3
+    tolerance: 1.13
+  criterion: Readings are the mean over trials of the per-trial ratio (trials with some female
+    self-initiated time), the ratio of summed times, and the median per-trial ratio, each on all
+    annotated trials and on receptive trials. Reproduced if any reading is within the tolerance;
+    partially if every reading is above 1 but none within it.
+- id: fig1e-interbout-interval
+  statement: Male copulation (mounting and intromission) comes in bouts separated by interbout
+    intervals with a mean of 13.7 s (1,685 bouts and 1,611 intervals in 74 trials).
+  source: Figure 1e, Results
+  expected:
+    quantity: mean interbout interval
+    value: 13.7
+    tolerance: 1.37
+    unit: s
+  criterion: A bout is a run of mount and intromission annotations. Readings for the merging of
+    annotations into bouts are gaps of at most 0.1 s, gaps of at most 1 s, and no merging; trial
+    sets are all trials with female annotations, receptive trials, and all distinct sessions with
+    male annotations outside the male-inhibition experiment. Reproduced if any reading is within
+    the tolerance. The counts of bouts and intervals are reported but not judged, as the trial
+    set differs.
+- id: fig1g-social-in-bouts-and-intervals
+  statement: Females show social behaviours (accepting, resistance and appetitive) for 62% of the
+    duration of each male copulation bout and continue them for 23% of each interbout interval.
+  source: Figure 1g, Results
+  expected:
+  - quantity: fraction of copulation bout time with female social behaviour
+    value: 0.62
+    tolerance: 0.062
+  - quantity: fraction of interbout interval time with female social behaviour
+    value: 0.23
+    tolerance: 0.023
+  criterion: Social behaviours are lordose, wiggle, dart, top up, kick, turn, approach and sniff
+    (the Methods' grouping, which leaves out stay). Bouts merge annotations with gaps of at most
+    0.1 s. Readings are the mean over bouts (or intervals) of the per-bout fraction and the pooled
+    time fraction, on all annotated trials and on receptive trials. Reproduced if both numbers are
+    within tolerance under one reading; partially if one is.
+- id: fig2c-few-tuned-cells
+  statement: Only a small percentage of VMHvl alpha-cells (approximately 2 to 13%) are tuned to
+    any one mating behaviour by choice probability; most show mixed selectivity.
+  source: Figure 2c, Extended Data Figure 2a,b, Methods "Choice probability"
+  criterion: In the 15 receptive sessions, 1-s bins of the z-scored trace; a bin belongs to a
+    behaviour when the behaviour covers at least half of it. Choice probability is the ROC area for
+    behaviour bins against the other bins of the interaction (male entry to end of annotation); a
+    cell is tuned if it is above 0.7 or below 0.3 and outside 2 SD of 1000 label shuffles.
+    Behaviours with at least 10 bins in at least 5 mice are analysed. Reproduced if the pooled
+    percentage of tuned cells is between 1% and 15% for every behaviour analysed (the paper says
+    "approximately"); partially if the median over behaviours is in that range.
+- id: fig2e-glm-behaviour-explains-little
+  statement: A linear model of each neuron's activity from behaviour explains little of its
+    variance, with mean cross-validated R2 of 0.08 from female behaviours, 0.14 from male
+    behaviours and 0.15 from both.
+  source: Figure 2e, Extended Data Figure 2c,d, Methods "GLM"
+  expected:
+  - quantity: mean cvR2, female behaviours
+    value: 0.08
+    tolerance: 0.008
+  - quantity: mean cvR2, male behaviours
+    value: 0.14
+    tolerance: 0.014
+  - quantity: mean cvR2, female and male behaviours
+    value: 0.15
+    tolerance: 0.015
+  criterion: In the 15 receptive sessions, during the interaction, ridge regression of each
+    z-scored trace on binary behaviour rasters at lags of 0 to 10 s, tenfold contiguous
+    cross-validation, R2 of the pooled held-out predictions. Readings are the mean over all cells
+    and the mean of per-mouse means. Reproduced if all three values are within tolerance under a
+    reading; partially if the ordering (female below male, both at least male) holds and all
+    three are below 0.25, the paper's point being that behaviour explains little.
+- id: fig2f-glm-coupling
+  statement: Adding the activity of the other simultaneously imaged neurons as regressors raises
+    the mean cross-validated R2 to 0.46.
+  source: Figure 2f, Methods "GLM"
+  expected:
+    quantity: mean cvR2 with coupling
+    value: 0.46
+    tolerance: 0.046
+  criterion: As for fig2e-glm-behaviour-explains-little, with the instantaneous activity of every
+    other cell added. Reproduced if the value is within tolerance under a reading; partially if it
+    is at least twice the behaviour-only value but outside tolerance.
+  depends_on:
+  - fig2e-glm-behaviour-explains-little
+- id: fig2i-persistent-cells
+  statement: About 30% of cells have an autocorrelation half-width (ACHW) longer than 25 s, and the
+    mean ACHW is 20 s, longer than the mean interbout interval.
+  source: Figure 2i, Results, Methods "Calculation of ACHW"
+  expected:
+  - quantity: fraction of cells with ACHW above 25 s
+    value: 0.30
+    tolerance: 0.03
+  - quantity: mean ACHW
+    value: 20
+    tolerance: 2
+    unit: s
+  criterion: ACHW as in the authors' code (MATLAB-style autocorrelation, the lag whose value is
+    closest to 0.5, lags to 50 s), on the 15 receptive sessions. Readings are the whole recording
+    and the interaction only, each smoothed as in the code (9-frame moving average) and
+    unsmoothed, pooled over cells. Reproduced if both numbers are within tolerance under one
+    reading; partially if one is.
+- id: ed3b-pencil-cup
+  statement: The ACHW of the same cells is shorter when the male is behind a perforated pencil cup
+    (14.3 s) than during free interaction (19.6 s), 470 neurons from 5 mice.
+  source: Extended Data Figure 3a-c, Results
+- id: fig3a-rslds-fit
+  statement: An rSLDS fit to each receptive mating trial explains 64.08% (SD 6.8) of the variance of
+    the neural trajectories, n = 15 mice.
+  source: Figure 3a, Results
+- id: fig3c-integration-dimension
+  statement: The rSLDS reveals one integration dimension with a long time constant (110.7 +- 13.6 s)
+    compared with the next (24.5 +- 5.1 s), forming an approximate line attractor; n = 15 mice,
+    P = 6.5e-5.
+  source: Figure 3b,c,e, Results
+- id: ed3s-integrator-model
+  statement: A single-state linear dynamical system driven by male sniff, mount and intromission
+    predicts activity in the integration dimension with cvR2 of 0.88 +- 0.02 and an intrinsic time
+    constant above 200 s.
+  source: Extended Data Figure 3r-u, Results
+  depends_on:
+  - fig3c-integration-dimension
+- id: ed4b-single-cell-ramps
+  statement: Of neurons contributing to the integration dimension, 56% correlate with an ideal ramp
+    with r2 above 0.5, but they peak at different times.
+  source: Extended Data Figure 4a-d, Results
+  depends_on:
+  - fig3c-integration-dimension
+- id: fig3k-perturbation-relaxation
+  statement: Transient optogenetic inhibition of VMHvl pushes population activity off the line
+    attractor, after which it relaxes back to the attractor, as the flow field fit to unperturbed
+    data predicts; n = 3 mice.
+  source: Figure 3h-k, Extended Data Figure 5c-j, Results
+- id: fig4b-persistence-during-intervals
+  statement: Activity in the integration dimension during copulation interbout intervals is as high
+    as in the preceding bout, so a decoder cannot tell bouts from intervals (0.52 against a shuffle
+    of 0.49, n = 4 mice, P = 0.2).
+  source: Figure 4a,b, Results
+  depends_on:
+  - fig3c-integration-dimension
+- id: fig4d-persistence-male-inhibition
+  statement: When male mating is stopped for minutes by optogenetic activation of the male's VMH,
+    activity in the female's integration dimension stays elevated; n = 4 mice.
+  source: Figure 4c,d, Results
+  depends_on:
+  - fig3c-integration-dimension
+- id: fig4h-peak-before-ejaculation
+  statement: Activity in the integration dimension peaks just before ejaculation and drops
+    immediately after; n = 4 mice.
+  source: Figure 4g,h, Results
+  depends_on:
+  - fig3c-integration-dimension
+- id: fig5c-attractor-receptive-days
+  statement: Over the natural oestrus cycle, rSLDS models fit on receptive days have a line
+    attractor and those fit on unreceptive days do not (line-attractor score 1.9 +- 0.2 against
+    0.05 +- 0.02, n = 4 mice, P = 0.02).
+  source: Figure 5b-f, Results
+- id: ed6e-projection-unreceptive-days
+  statement: Projected onto the integration dimension found on the receptive day, activity on
+    unreceptive days does not ramp and stays low during male mounting (normalised value 0.09 on
+    unreceptive against 0.69 on receptive days, n = 4 mice).
+  source: Figure 5g,h, Extended Data Figure 6c-f, Results
+  criterion: Uses the authors' deposited rSLDS weights for the two mice that have them (m541, and
+    the file labelled m542, whose cells are those of mouse 543). The receptive day is the one whose
+    recording is also deposited as the mouse's receptive session. The integration factor is the
+    one whose receptive-day projection has the longer ACHW, signed so that it is higher after male
+    entry than before. The projection is the weights times each day's z-scored activity, min-max
+    normalised over the three days together (variant, normalised by the receptive day's range).
+    Reproduced if in both mice the mean normalised value during mounting is higher on the
+    receptive day than on each unreceptive day; partially if in one mouse. The paper's values are
+    compared, not judged, since n differs.
+- id: ed7-achw-across-cycle
+  statement: Cells weighted on the integration dimension have shorter ACHW on unreceptive than on
+    receptive days (16.1 +- 0.8 s against 25.2 +- 1.5 s, P < 0.001), while cells that do not
+    contribute to it do not change.
+  source: Extended Data Figure 7a-h, Results
+  criterion: Same mice, days, factor and data as ed6e-projection-unreceptive-days. Weighted cells
+    have an absolute weight above one SD of the weights (the authors' code). ACHW as in
+    fig2i-persistent-cells, smoothed as in the code. Two-sample KS test, as in Extended Data
+    Figure 7c,d, of receptive against unreceptive days (both pooled, and each separately).
+    Reproduced if, in both mice, weighted cells have a longer mean ACHW on the receptive day with
+    KS p below 0.05 and other cells show no difference at p 0.05; partially if the first part holds
+    in both mice or both parts in one.
+  depends_on:
+  - ed6e-projection-unreceptive-days
+- id: ed9j-ovx-hormone-priming
+  statement: Attractor dynamics disappear after ovariectomy and return after hormone priming.
+  source: Extended Data Figure 9j-n, Results
+- id: fig5k-receptivity-correlation
+  statement: In oestrogen-injected females, the area under the curve of the integration dimension
+    correlates with the percentage of time spent in accepting behaviours (r2 = 0.62, P < 0.0001, n
+    = 50 trials), and not with resistance or appetitive behaviours.
+  source: Figure 5i-l, Extended Data Figure 10b, Results
+- id: ed10c-population-mean-uncorrelated
+  statement: In the same trials, the area under the curve of the population mean of all neurons
+    does not correlate with the percentage of time spent in accepting behaviours.
+  source: Extended Data Figure 10c,d, Results
+  criterion: The 42 oestrogen-injected sessions (WT_7d). Accepting percentage is lordose plus wiggle
+    time over the time from male entry to the end of the annotation. The area under the curve of
+    the population mean of the z-scored traces is read three ways, because the window is not
+    given; from male entry to the end of annotation after subtracting the mean of the 60 s before
+    entry, the same without subtraction, and the 200 s from first male contact after subtraction.
+    The test is linear regression, as in the paper. Following the protocol's rule for readings,
+    reproduced if the slope is not significant (p at least 0.05) under any reading, and not
+    reproduced if it is significant under all; the r2 of every reading is given either way.
