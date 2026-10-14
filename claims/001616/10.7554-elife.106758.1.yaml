@@ -1,0 +1,309 @@
+# Claims for Gerken, Darcher et al., "Decoding movie content from neuronal population activity in
+# the human medial temporal lobe", eLife reviewed preprint 106758 version 1, on dandiset 001616.
+# Source: the full text of the reviewed preprint (open access, from the eLife API) and its
+# supplementary file 598791_file03.pdf (Tables S1 and S2).
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata of both published versions, the contents of every file, the units per patient and per
+# brain region, the subjects' sex and age, the annotations and watchlogs, and the label counts.
+# While timing the logistic regression on one fold for the label Summer, the author also saw that
+# fold's validation and test kappa (validation 0.26 to 0.30, test 0.42 to 0.48 over four values
+# of C). No other claim's analysis had been run. The author had read the dataset's code (GitHub
+# mormannlab/SUMMER at commit 59fc242), including the values its plotting notebooks hold for the
+# LSTM results by region and by gap size.
+#
+# Method choices fixed here, where the Methods leave them open:
+# - Time base. Spikes (milliseconds, recording clock) are mapped to movie time through the cleaned
+#   watchlog of each patient; spikes during pauses (repeated presentation timestamps) are dropped.
+# - Responsive neurons (Methods, after Mormann et al. 2008). Pseudo-trials are label onsets in the
+#   movie annotations preceded by at least 1000 ms without the label; for labels with a duration
+#   (not camera or scene cuts) the label must also last at least 1000 ms (Results). Baseline is
+#   the spike count from -1000 to 0 ms divided by 10; the stimulus period is 19 overlapping 100 ms
+#   bins starting every 50 ms from 0 to 900 ms. Each bin is compared with the baseline across
+#   pseudo-trials by a two-sided Wilcoxon signed-rank test, and the 19 p-values are combined by
+#   Simes' procedure. A neuron that spikes in fewer than a third of the pseudo-trials gets p = 1.
+#   The paper states two thresholds (Methods alpha 0.01; Results, Figure 2 and Table S1 0.001);
+#   both are readings. The dataset's code uses the ZETA test instead; it is shown as a variant.
+# - Regions are the dandiset's `brain_region` per unit. H is AH, MH and PH together, as in the
+#   dataset's code (REGION_ALTERNATIVE_NAMES). FF, LG and PRC are outside the paper's regions.
+# - Decoding samples are the 80 ms bins of the analysis portion of the film given in
+#   `movie_binning_info` (credits excluded), each labelled by its first frame. Camera and scene
+#   cut labels are set to 1 for frames within 520 ms after a cut onset (Methods, for camera cuts;
+#   applied to scene cuts too). For Indoor/Outdoor, indoor is 1, outdoor 0, and frames marked 99
+#   are left out. Splits follow the dataset's code (ML_framework/dataloader.py) with a 32 s gap
+#   plus the 1.6 s window, which gives 30822, 7194 and 7194 samples, as the paper's 30800, 7200 and
+#   7200; fold f is the test set and fold f+1 the validation set.
+# - Logistic regression (Methods): the summed spike count of each neuron from 800 ms before to
+#   800 ms after the bin, z-scored with training statistics, L1 penalty, liblinear solver,
+#   class weights balanced (the paper oversamples the minority class), C chosen on the validation
+#   kappa from 0.001, 0.003, 0.01 and 0.03, prediction at probability 0.5. Performance is
+#   Cohen's kappa on the test set, mean and SEM over the five folds. Chance is tested by shuffling
+#   the test labels 1000 times (Methods).
+schema_version: 1
+dandiset: "001616"
+paper: doi:10.7554/elife.106758.1
+claims:
+- id: dataset-composition
+  statement: The data are 2286 single and multi-units from 29 patients (17 female), 30 to 137 units
+    per patient, in the amygdala (580), hippocampus (794), entorhinal cortex (440), parahippocampal
+    cortex (373) and piriform cortex (99).
+  source: Results, first paragraph; Figure 1d; Patient-wise decoding performance
+  expected:
+  - quantity: patients
+    value: 29
+    tolerance: 0
+  - quantity: units
+    value: 2286
+    tolerance: 0
+  - quantity: female patients
+    value: 17
+    tolerance: 0
+  - quantity: units in the amygdala
+    value: 580
+    tolerance: 58
+  - quantity: units in the hippocampus
+    value: 794
+    tolerance: 79.4
+  - quantity: units in the entorhinal cortex
+    value: 440
+    tolerance: 44
+  - quantity: units in the parahippocampal cortex
+    value: 373
+    tolerance: 37.3
+  - quantity: units in the piriform cortex
+    value: 99
+    tolerance: 9.9
+  criterion: Counts of patients, units and female patients are exact, as the dandiset should hold
+    the recordings the paper analysed. Regions as fixed in the opening comment. Reproduced when
+    every value is within tolerance and units per patient range from 30 to 137; partially
+    reproduced when the patient, unit and sex counts match but a region count does not; not
+    reproduced when the patient or unit count differs.
+- id: fig2b-phc-camera-cuts
+  statement: Over half of the parahippocampal neurons responded to camera cuts (193 of 373, 51.74%).
+  source: Results, Stimulus-aligned responsive neurons; Figure 2b; Table S1
+  expected:
+    quantity: fraction of PHC units responsive to camera cuts
+    value: 51.74
+    tolerance: 5.17
+    unit: percent
+  criterion: Responsive neurons by the Methods' test as fixed in the opening comment. The fraction
+    is compared, as the dandiset's PHC count differs from the paper's; the count is reported
+    against 193. Readings are alpha 0.001 and alpha 0.01; reproduced when the fraction is within
+    tolerance under either; partially reproduced when it is outside tolerance but above 25% under
+    either; not reproduced otherwise.
+- id: tables1-camera-cuts-regions
+  statement: Camera cuts evoked responses in a large share of neurons in every region (amygdala
+    46.90%, entorhinal cortex 45.68%, hippocampus 38.92%).
+  source: Table S1; Results, Stimulus-aligned responsive neurons
+  depends_on:
+  - fig2b-phc-camera-cuts
+  expected:
+  - quantity: fraction of A units responsive to camera cuts
+    value: 46.90
+    tolerance: 4.69
+    unit: percent
+  - quantity: fraction of EC units responsive to camera cuts
+    value: 45.68
+    tolerance: 4.57
+    unit: percent
+  - quantity: fraction of H units responsive to camera cuts
+    value: 38.92
+    tolerance: 3.89
+    unit: percent
+  criterion: Same test and readings as fig2b-phc-camera-cuts. Reproduced when all three fractions
+    are within tolerance under one reading; partially reproduced when not, but every region has
+    more than 25% responsive units under one reading; not reproduced otherwise.
+- id: fig2b-phc-scene-cuts
+  statement: Few parahippocampal neurons responded to scene cuts (25 of 373, 6.70%), but the
+    modulation was consistent across the responsive neurons (cluster permutation test, p = 0.018).
+  source: Results, Stimulus-aligned responsive neurons; Figure 2b; Table S1
+  expected:
+    quantity: fraction of PHC units responsive to scene cuts
+    value: 6.70
+    tolerance: 2.54
+    unit: percent
+  criterion: The tolerance is the 95% binomial interval of a proportion of 6.70% among the paper's
+    373 units (1.96 times the standard error); 10% of the value (0.67 points) is smaller than the
+    sampling error of a count of 25. Readings alpha 0.001 and 0.01. The cluster permutation test
+    as in the Methods (z-scored trial-averaged rate per unit in 100 ms bins from -1000 to 1000 ms,
+    two-sided independent t-test per bin between responsive and non-responsive units, clusters of
+    adjacent bins with p < 0.005, summed absolute t, 1000 permutations of the unit labels,
+    p of a cluster the fraction of permutations whose largest cluster sum exceeds it).
+    Reproduced when, under one reading, the fraction is within tolerance and the largest cluster
+    has p < 0.05; partially reproduced when one of the two holds; not reproduced otherwise.
+- id: tables1-few-semantic-responses
+  statement: Only a few neurons responded to the onset of semantic features (Summer 46, Tom 216,
+    Persons 6 and Outdoor 4 of 2286 neurons), in contrast to camera cuts (1025).
+  source: Abstract; Results, Stimulus-aligned responsive neurons; Table S1
+  expected:
+  - quantity: units responsive to Summer
+    value: 46
+    tolerance: 13.2
+  - quantity: units responsive to Tom
+    value: 216
+    tolerance: 21.6
+  criterion: The tolerance for Summer is the 95% binomial interval of 46 among 2286 units (10% of
+    46 is smaller than its sampling error); for Tom 10%. Readings alpha 0.001 and 0.01. Reproduced
+    when, under one reading, both counts are within tolerance and every semantic label tested
+    (Summer, Tom, McKenzie, Persons, Indoor, Outdoor, Summer Presence) has fewer than 10% of all
+    units responsive while camera cuts have more than 25%; partially reproduced when that contrast
+    holds but a count is outside tolerance; not reproduced otherwise.
+- id: tables1-no-indoor-response
+  statement: No neuron responded to the onset of indoor scenes.
+  source: Results, Stimulus-aligned responsive neurons; Table S1
+  criterion: A claim of absence, judged on the paper's test at alpha 0.001, the threshold stated in
+    the same Results paragraph. Reproduced when no unit is responsive to Indoor onsets; not
+    reproduced when any is. The count at alpha 0.01 and the counts for McKenzie and Summer
+    Presence (also 0 in Table S1) are reported as variants.
+- id: results-cluster-regions
+  statement: By the cluster permutation test, parahippocampal neurons responded to the largest set
+    of features (Summer, Persons, Camera Cuts, Scene Cuts, Outdoor), compared with the hippocampus
+    (Tom, Camera Cuts, Outdoor), the amygdala (Camera Cuts) and the entorhinal cortex (none).
+  source: Results, Stimulus-aligned responsive neurons
+  depends_on:
+  - fig2b-phc-camera-cuts
+  criterion: The cluster test of fig2b-phc-scene-cuts is run for 8 labels (Summer, Tom, McKenzie,
+    Persons, Camera Cuts, Scene Cuts, Indoor, Outdoor) in 4 regions (A, H, EC, PHC); a cell is
+    significant when its largest cluster has p < 0.05; with fewer than 2 responsive units a cell
+    is not significant. Readings alpha 0.001 and 0.01 for the responsive split. Reproduced when,
+    under one reading, at least 28 of the 32 cells agree with the paper's list and PHC has the
+    most significant labels; partially reproduced when one of the two holds or at least 24 cells
+    agree; not reproduced otherwise.
+- id: fig3b-single-neuron-threshold
+  statement: Thresholding the activity of single neurons does not reliably predict whether Summer
+    is on screen; most neurons perform near chance, below the population decoder.
+  source: Results, Decoding from neuronal activity; Figure 3b; Methods, Single-neuron decoding
+    performance
+  criterion: For each unit, the summed spike count from 800 ms before to 800 ms after each sample;
+    on each fold's validation set the threshold and its direction (above or below) that maximise
+    kappa among up to 50 quantiles of the counts; kappa of that rule on the test set, averaged
+    over the five folds. Reproduced when the median unit's kappa is below 0.05 and no unit reaches
+    the paper's population kappa for Summer (0.31); partially reproduced when one of the two holds;
+    not reproduced otherwise.
+- id: fig3c-logreg-characters-location
+  statement: A logistic regression on spike counts decodes characters and location about as well as
+    the LSTM; pooled over patients it reaches kappa 0.28 for Summer and 0.31 for Indoor/Outdoor.
+  source: Results, Choice of architecture and Patient-wise decoding performance; Figure 3c; Figure 4a
+  expected:
+  - quantity: kappa for Summer, logistic regression, pooled
+    value: 0.28
+    tolerance: 0.055
+  - quantity: kappa for Indoor/Outdoor, logistic regression, pooled
+    value: 0.31
+    tolerance: 0.060
+  criterion: The tolerances are the SEMs over folds the paper gives for these labels (Table S2,
+    LSTM), the nearest stated spread, as the paper gives none for the logistic regression. The
+    logistic regression as fixed in the opening comment. Reproduced when both values are within
+    tolerance and Tom, McKenzie and Persons each reach at least the LSTM value less its SEM (0.17,
+    0.235, 0.312); partially reproduced when 3 or 4 of these 5 conditions hold; not reproduced
+    otherwise. Permutation p-values per fold are reported.
+- id: fig3c-logreg-cuts-lower
+  statement: For scene and camera cuts the logistic regression performs below the LSTM, by 0.1 and
+    0.07, that is about kappa 0.10 and 0.11.
+  source: Results, Choice of architecture; Figure 3c; Table S2
+  expected:
+  - quantity: kappa for Scene Cuts, logistic regression
+    value: 0.10
+    tolerance: 0.032
+  - quantity: kappa for Camera Cuts, logistic regression
+    value: 0.11
+    tolerance: 0.015
+  criterion: The values are the LSTM's (Table S2, 0.20 and 0.18) less the stated drops, and the
+    tolerances the LSTM's SEMs, the nearest stated spread. Reproduced when both values are within
+    tolerance; partially reproduced when both are below the LSTM values and above chance
+    (permutation p < 0.001 in every fold) but one or both are outside tolerance; not reproduced
+    otherwise.
+- id: fig3e-temporal-gap
+  statement: Without temporal gaps between training, validation and test samples, decoding of Summer
+    is almost perfect (kappa 0.99), and it falls to 0.31 as the gap grows to 32 s.
+  source: Results, Avoiding spurious decoding performance; Figure 3e; Figure S9
+  criterion: Tested with the logistic regression in place of the LSTM. A random split assigns each
+    sample at random to training, validation and test in the proportions of the 32 s split, five
+    times; gaps of 4, 8, 16 and 32 s use the dataset's code layout. Reproduced when the random-split
+    kappa is at least 0.9 and above the 32 s value; partially reproduced when it exceeds the 32 s
+    value by at least 0.2 but is below 0.9; not reproduced otherwise.
+- id: fig4-patients-below-pooled
+  statement: Decoding from a single patient's neurons is lower than from the pooled population; no
+    patient matches the pooled performance, for Summer, Scene Cuts or Indoor/Outdoor.
+  source: Results, Patient-wise decoding performance; Figure 4
+  depends_on:
+  - fig3c-logreg-characters-location
+  criterion: The logistic regression per patient, same folds and procedure as the pooled model.
+    Reproduced when, for all three labels, every patient's mean kappa is below the pooled mean
+    kappa; partially reproduced when this holds for two labels; not reproduced otherwise.
+- id: fig4-named-patients
+  statement: For Summer, patients 7, 10, 15 and 22 exceed kappa 0.2; for Indoor/Outdoor, patients 2,
+    13, 20 and 25 exceed 0.2.
+  source: Results, Patient-wise decoding performance; Figure 4b and 4d
+  depends_on:
+  - fig4-patients-below-pooled
+  criterion: Assumes the dandiset's subject ids are the paper's patient numbers; the dandiset and
+    paper give no mapping. Of the 8 named patient and label pairs, reproduced when at least 7 have
+    mean kappa above 0.2; partially reproduced for 4 to 6; not reproduced below 4. The patients
+    above 0.2 here are listed either way.
+- id: fig5-region-decoding
+  statement: Decoding from single regions depends on the feature; the amygdala is best and the
+    hippocampus worst for Summer, and the parahippocampal cortex is best and the amygdala worst
+    for Indoor/Outdoor.
+  source: Results, Parahippocampal cortex drives decoding; Amygdala drives decoding; Figure 5
+  criterion: Tested with the logistic regression in place of the LSTM, restricted to the units of
+    one region (A, H, EC, PHC as fixed in the opening comment). The four orderings are A highest
+    and H lowest for Summer, PHC highest and A lowest for Indoor/Outdoor, by mean kappa.
+    Reproduced when all four hold; partially reproduced when 2 or 3 hold; not reproduced otherwise.
+- id: fig6-responsive-subsets
+  statement: Responsive neurons drive decoding of camera cuts but not of Summer; without them,
+    Summer is decoded about as well as from all neurons while camera cuts drop the most, and
+    responsive neurons alone decode camera cuts about as well as all neurons but Summer less well.
+  source: Results, Decoding with non-responsive versus responsive neurons; Figure 6
+  depends_on:
+  - fig2b-phc-camera-cuts
+  - tables1-few-semantic-responses
+  criterion: Tested with the logistic regression in place of the LSTM, over all regions together.
+    Responsive units at alpha 0.001. Conditions (a) Summer without responsive units is at least
+    the complete kappa less 0.05; (b) Summer with responsive units only is below the complete
+    kappa less 0.05; (c) the drop without responsive units is larger for camera cuts than for
+    Summer; (d) camera cuts with responsive units only is at least the complete kappa less 0.05.
+    Reproduced when all four hold; partially reproduced when 2 or 3 hold; not reproduced
+    otherwise. Size-matched non-responsive sets (three draws) are shown as a variant.
+- id: fig7b-top500-overlap
+  statement: Across the five rankings of neurons by logistic regression weights for Summer, the top
+    500 neurons share 78 neurons, against about 1 expected by chance.
+  source: Results, Top-ranked neurons; Figure 7b; Methods, Intersection of top-performing neurons
+  expected:
+    quantity: units common to the top 500 of all five rankings
+    value: 78
+    tolerance: 7.8
+  criterion: Twenty sub-splits, four per test fold, each taking one of the other four folds as
+    validation and the remaining three as training; each fit as the pooled logistic regression.
+    Ranking per test fold as in the Methods (units grouped by the number of the four models with a
+    non-zero coefficient, then by mean absolute coefficient); units tied at zero are ordered by a
+    seeded random draw. Chance is computed for 2286 units and five sets of 500. Reproduced when the
+    overlap is within tolerance; partially reproduced when it is outside tolerance but at least ten
+    times chance; not reproduced otherwise.
+- id: fig3c-lstm-decoding
+  statement: An LSTM decodes every label above chance from the pooled population, with kappa 0.36
+    for Persons, 0.31 for Indoor/Outdoor, 0.31 for Summer, 0.32 for McKenzie, 0.23 for Tom, 0.20
+    for Scene Cuts and 0.18 for Camera Cuts.
+  source: Results, Decoding from neuronal activity; Figure 3c; Table S2
+  expected:
+  - quantity: kappa for Persons
+    value: 0.36
+    tolerance: 0.048
+  - quantity: kappa for Summer
+    value: 0.31
+    tolerance: 0.055
+  - quantity: kappa for Camera Cuts
+    value: 0.18
+    tolerance: 0.015
+- id: fig3d-temporal-shuffle
+  statement: Shuffling the order of time bins in the test data lowers the LSTM's performance, most
+    for visual transitions.
+  source: Results, Choice of architecture; Figure 3d
+- id: fig5-faces-presence
+  statement: Face labels decode slightly better than character labels (Summer 0.33, Tom 0.27), and
+    Summer Presence (0.27) is decoded best from the amygdala (0.26).
+  source: Results, Differences in character's visual appearances; Figure 5b and 5c
+- id: fig7a-500-neurons
+  statement: Decoding Summer from the 500 top-ranked neurons gives the peak performance (kappa 0.38),
+    above that of the full population.
+  source: Results, Training on pre-selections of top-ranked neurons; Figure 7a
