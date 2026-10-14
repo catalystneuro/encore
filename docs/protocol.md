@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-4`. Record this version in the attempt's provenance.
+Version: `pilot-5`. Record this version in the attempt's provenance.
 
 This is what an agent, or a person, does to attempt a target and deposit the
 result. It is written from the first five pilot attempts
@@ -42,11 +42,31 @@ Do this before any analysis.
    show the code's choice as a variant. Record both as deviations or
    findings.
 6. Decide what comes from outside the dandiset. Data from elsewhere may be
-   used only when the paper itself compares its data with something taken
-   from elsewhere (a model, a reference dataset), it is public, and it is
-   pinned: a DOI, or a repository at a commit. Record each under `inputs` in
-   the attempt. A claim whose outside input is not public is blocked with
-   `data_missing`, and its notes say where you looked.
+   used only when the paper itself relies on it (a model, a reference
+   dataset, measurements of the same cells made by another method), it is
+   public, and it is pinned: a DOI, or a repository at a commit. Record each
+   under `inputs` in the attempt. A claim whose outside input is not public
+   is blocked with `data_missing`, and its notes say where you looked.
+
+   The registry judges the dandiset, so claims that use outside data are
+   kept apart:
+   - Each claim says what its test uses: `data: dandiset` (the default) or
+     `data: with_inputs`. The two kinds are counted apart, and only the
+     first counts towards what is said about the dandiset.
+   - When outside data has to be matched to the dandiset's cells, sessions or
+     subjects, a claim of its own tests the link: how records are matched
+     (an identifier, or something else), what fraction match, and whether
+     the matched records agree on what both describe, such as counts,
+     layers, or the paper's own per-cell tables. A dandiset that cannot be
+     linked to the data it was published with is a finding about the
+     dandiset. Every `with_inputs` claim lists the link claim in
+     `depends_on`, so it is blocked when the link fails.
+   - Outside data supplies only what the dandiset lacks, such as a label for
+     each cell. The analysis runs on the dandiset's data.
+   - The notes of a `with_inputs` claim say which side a difference comes
+     from as far as the outputs show: whether the dandiset's measures match
+     the paper's per-cell values where those are published, and whether the
+     outside labels match the paper's counts.
 7. Write the claims file, `claims/<dandiset>/<doi with / replaced by ->.yaml`.
    - One claim per finding, at the level of a figure panel or a reported
      number when the full text is available. Cover the paper's main findings,

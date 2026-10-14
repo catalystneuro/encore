@@ -186,3 +186,13 @@ def test_findings_are_reached_from_the_dandisets_list(built):
         assert row["found"] == sorted({f["kind"] for a in attempts for f in a["findings"]})
         assert 'id="findings"' in (out / row["page"] / "index.html").read_text()
     assert "#findings" in (REPO / "tools" / "site_assets" / "list.js").read_text()
+
+
+def test_claims_using_outside_data_are_counted_apart():
+    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dandiset"},
+                            {"claim": "b", "outcome": "not_reproduced", "data": "with_inputs"},
+                            {"claim": "c", "outcome": "blocked"}]}
+    alone, outside = site.outcome_counts(attempt), site.outcome_counts(attempt, outside=True)
+    assert alone["reproduced"] == 1 and alone["blocked"] == 1 and alone["not_reproduced"] == 0
+    assert outside["not_reproduced"] == 1 and sum(outside.values()) == 1
+    assert "1 claim that also uses data" in site.outside_note([attempt])

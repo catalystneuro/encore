@@ -175,6 +175,7 @@ def collect(executed: Path | None = None) -> dict:
                 "notes": squash(o.get("notes")),
                 "deviations": [squash(d) for d in o.get("deviations") or []],
                 "disagreed": o["claim"] in disagreed,
+                "data": known.get(o["claim"], {}).get("data", "dandiset"),
             } for o in a["outcomes"]],
             "findings": [{"kind": f["kind"], "statement": squash(f["statement"])}
                          for f in a.get("findings") or []],
@@ -233,11 +234,8 @@ def collect(executed: Path | None = None) -> dict:
 
 def finish(data: dict) -> dict:
     """Totals, and each target's status, derived from the attempts."""
-    counts = {k: 0 for k in OUTCOMES}
-    for a in data["attempts"]:
-        for o in a["outcomes"]:
-            counts[o["outcome"]] += 1
-    data["outcome_counts"] = counts
+    data["outcome_counts"] = outcome_counts(data["attempts"])
+    data["outcome_counts_with_outside_data"] = outcome_counts(data["attempts"], outside=True)
     attempted = {a["dandiset"] for a in data["attempts"]}
     for t in data["targets"]:
         if t["dandiset"] in attempted:
@@ -315,10 +313,30 @@ def current_attempts(data: dict) -> dict[str, list[dict]]:
     return out
 
 
-def outcome_counts(attempts) -> dict:
-    """Outcome totals over one attempt or a list of them."""
+def outcome_counts(attempts, outside: bool = False) -> dict:
+    """Outcome totals over one attempt or a list of them.
+
+    By default only the claims that rest on the dandiset alone; with `outside`, only the claims that
+    also use data from elsewhere. The two are never added together, so that an outcome that may
+    reflect the outside data does not count as a judgement of the dandiset.
+    """
     attempts = [attempts] if isinstance(attempts, dict) else attempts
-    return {k: sum(1 for a in attempts for o in a["outcomes"] if o["outcome"] == k) for k in OUTCOMES}
+    which = "with_inputs" if outside else "dandiset"
+    return {k: sum(1 for a in attempts for o in a["outcomes"]
+                   if o["outcome"] == k and o.get("data", "dandiset") == which) for k in OUTCOMES}
+
+
+def outside_note(attempts, root: str = "") -> str:
+    """A line with the outcomes of the claims that also use outside data, when there are any."""
+    counts = outcome_counts(attempts, outside=True)
+    m = sum(counts.values())
+    if not m:
+        return ""
+    claims = "1 claim that also uses" if m == 1 else f"{m} claims that also use"
+    return (f'<p class="sub small" style="margin-top:8px">Counted separately: {claims} data from outside '
+            f'the dandiset.</p>'
+            f'<div class="summary">{bar(counts, f"Outcomes of {m} claims using outside data", "bar mini")}'
+            f'{legend(counts, compact=True)}</div>')
 
 
 def weakest_tier(attempts: list[dict]) -> str:
@@ -436,6 +454,8 @@ def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
                       f"difference{plural} from the paper's method"
                       f'</summary><ul>{items}</ul></details>')
     disagreed = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
+    if o.get("data") == "with_inputs":
+        disagreed += '<span class="tag">uses data from outside the dandiset</span>'
     link = f'{root}dandisets/?has={o["outcome"]}'
     shown = ""
     nb = notebook_of(attempt, o.get("notebook")) if attempt else None
@@ -628,8 +648,8 @@ def page_overview(data: dict) -> str:
 </header>
 <main>
   <div class="panel">
-    <h2>Outcomes of the {n_claims:,} claims attempted</h2>
-    {outcomes}
+    <h2>Outcomes of the {n_claims:,} claims that rest on the dandiset alone</h2>
+    {outcomes}{outside_note(attempts)}
     {caution_block()}
   </div>
   <div class="grid2" style="margin-top:16px">{panels}</div>
@@ -901,6 +921,7 @@ def page_dandiset(data: dict, dandiset: str) -> str:
   <p class="sub">{e(name)}</p>
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
+  {outside_note(atts)}
   <p class="actions">{" ".join(actions)}</p>
 </header>
 <main>
@@ -945,7 +966,8 @@ def build(data: dict, output: Path) -> None:
         (output / "api" / "dandiset" / f"{dandiset}.json").write_text(json.dumps({
             "dandiset": dandiset, "page": f"dandisets/{dandiset}/", "generated": data["generated"],
             "caution": CAUTION + " It may be a failure of the attempt.",
-            "outcome_counts": outcome_counts(attempts), "attempts": attempts,
+            "outcome_counts": outcome_counts(attempts),
+            "outcome_counts_with_outside_data": outcome_counts(attempts, outside=True), "attempts": attempts,
             "entries": entries_for(data, dandiset),
         }, indent=1) + "\n")
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
