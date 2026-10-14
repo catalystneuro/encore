@@ -800,3 +800,26 @@ annotations; a broken identifier inside the dandiset; one trace shared by
 two subjects as a kind of duplicate; and conversion code read in place of
 paper code.
 
+### 000130, Sohn, Narain, Meirhaeghe and Jazayeri 2019
+
+Nine claims reproduced, four partially, seven not reproduced and three
+blocked, all on the dandiset alone; both rounds agreed with every outcome
+and nothing was proposed. The dandiset is the Neural Latents Benchmark copy
+of one session of monkey H, out of the paper's 29 sessions over two
+monkeys; the recurrent network claims are blocked for lack of the model.
+Its `iti` description has Short and Long reversed, `tp` is a median 18 ms
+longer than the event times give, the 283 test trials have no task
+variables, and the outlier flags could not be reproduced with the paper's
+mixture model.
+
+The author's first point is a flaw in the pilot-4 rule for claims of
+absence: judged on the paper's own test, a signed-rank test over the 4 of 8
+datasets in the dandiset can never reach p < 0.05, so two absence claims
+were reproduced automatically, one against clear evidence. The other points:
+adapting the paper's statistics to a subset; the 10% tolerance for R2 near
+1 or small proportions; no blocking reason for claims about a model; no
+place to record code that was read but holds none of the analyses; a clock
+check that confounds response latency with offset; GPFA fits that vary in
+the third digit with fixed seeds; a bug fixed after seeing outputs; and an
+ambiguous one-tailed test in the paper.
+
