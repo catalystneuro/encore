@@ -61,7 +61,8 @@ outcomes:
   notes: The predicted SD of tp correlates positively with the observed one in all 4 datasets (r =
     0.28 to 0.91), but the bias R2 reaches 0.8 in 2 of 4 (0.12, 0.67, 0.87, 0.98). The poorly fit
     datasets are the eye ones, whose Short slopes exceed 1, with wm = 0.013 and 0.025. All fits
-    converged. Table S3 was not available, so wm and wp (0.09 to 0.11) are not compared.
+    converged. Table S3 was not available, so the fitted wm (0.013 to 0.117) and wp (0.090 to 0.106)
+    are not compared.
   deviations:
   - Fit to one session per effector and direction; the paper pools sessions.
   - The prior is taken as continuous uniform over each range, as the Results describe; the task used
@@ -140,7 +141,8 @@ outcomes:
   notebook: reproduce_sohn_2019.ipynb
   output: claim:encoding-bayes-beats-linear
   notes: The Bayesian RMSE is lower in 4 of 4 datasets for Long and 3 of 4 for Short (Hand Right Short
-    0.99 against 0.80). Differences are 0.045 to 0.573 spikes/s. With the RMSE weighted by trial
+    0.99 against 0.80). Where the Bayesian model wins it is better by 0.045 to 0.573 spikes/s; in Hand
+    Right Short it is worse by 0.186. With the RMSE weighted by trial
     counts, as in the fit, the counts are the same. In the matched control period of the Long prior
     (short-in-long-control) the Bayesian model is also better in 3 of 4 datasets, so in this
     session the advantage is not specific to the support of the prior.
@@ -205,8 +207,11 @@ outcomes:
     Neural Latents Benchmark's trial-by-trial variant gives r = -0.195 to -0.740 (mean -0.519), 7 of 8
     conditions with p < 0.05. With speed and tp z-scored within each ts trial by trial, as in the
     paper's control, r = -0.317 (Short, 481 trials, p = 1.1e-12) and -0.201 (Long, 502 trials, p =
-    5.5e-06), negative in 8 of 8 dataset-priors and p < 0.05 in 6. Residuals on ts of the 20 condition
-    means give +0.084 and -0.283.
+    5.5e-06), negative in 8 of 8 dataset-priors and p < 0.05 in 6. A Poisson null at constant rates
+    with each trial's own duration gives mean null r of -0.071 (Short) and -0.033 (Long) over 20
+    simulations, and the observed values are below every null value, so the shorter averaging of
+    short trials accounts for a small part. Residuals on ts of the 20 condition means give +0.084 and
+    -0.283.
   deviations:
   - 20 points per prior, where the paper had 40.
 - claim: alt-speed-unmodulated
@@ -221,7 +226,12 @@ outcomes:
     95th percentile. With only the trials of the longest ts, which last the whole support, slopes
     are -0.106 to +0.529 per 100 ms and outside the null's 95% range in 1 of 8 (below it). The
     bootstrap intervals over trials are biased upward (the point estimate is below the interval in
-    2 of 8) and are not used. The session shows no modulation beyond what noise produces.
+    2 of 8) and are not used. The observed slopes are below the null mean in 8 of 8 with all trials
+    and in 8 of 8 with fixed trials, while the null's mean speed over the support is below the
+    observed one in 7 of 8 (null / observed 0.65 to 1.18), so the null is not noisier than the data.
+    This points to a speed that falls during the support, if the units' noise is no larger than
+    Poisson; it was not tested further. The session shows no speed increase beyond what noise
+    produces.
   deviations:
   - 4 datasets, where the paper had 8.
   - Speed from smoothed trial-averaged rates with attrition in 20 ms bins of 48 units; the paper's
@@ -248,8 +258,9 @@ outcomes:
     last 200 ms. Distances do fall overall (the distance at Go is below that 800 ms earlier in 26 of
     32). With 75% of the variance the median minimum is 80 ms before Go and in the full space 40 ms,
     which would meet the criterion, so the outcome depends on the number of components. With one
-    component (eye datasets, 16 curves) the minima are crossings; the distance at Go is more than 10
-    times the minimum in 5 of these. With at least 2 components the median minimum is 230 ms before
+    component (eye datasets, 16 curves) the signed difference changes sign at the minimum in 12, so
+    those minima are crossings; 4 have the minimum at Go (3 of them not crossings), and the distance
+    at Go is more than 10 times the minimum in 5. With at least 2 components the median minimum is 230 ms before
     Go, with at least 3 it is 70 ms before Go.
   deviations:
   - The paper's test (one-tailed signed-rank, p = 1.5e-4) cannot be read unambiguously; the criterion
@@ -261,10 +272,9 @@ outcomes:
   output: claim:gpfa-variance-inverted-u
   notes: The quadratic coefficient is negative in 5 of 8 dataset-priors; one-tailed signed-rank p =
     0.125 (paper 0.0273). Cross-validation chose 8 latent dimensions in all 4 datasets, the larger
-    candidate. GPFA values vary in the third significant digit between runs; the counts and p values
-    did not change over four runs. 12 latents, scored on the same folds as a variant, beat 8 in all 4
+    candidate. 12 latents, scored on the same folds as a variant, beat 8 in all 4
     datasets; with them the coefficient is negative in 5 of 8, p = 0.125. After 100 EM iterations the
-    training log-likelihood still rose by less than 0.1% over the last 25 iterations.
+    training log-likelihood still rose by 0.064 to 0.085% over the last 25 iterations.
   deviations:
   - Latent dimensionality chosen only from 4 and 8, with 100 EM iterations, to keep the run short;
     the paper's cross-validation range is not stated.
@@ -301,7 +311,8 @@ outcomes:
 findings:
 - kind: data_missing
   statement: The dandiset holds one recording session (2016-12-11) of monkey H, with 54 units, where
-    the paper analyses 17 sessions of H and 12 of monkey G (617 and 741 units). The dandiset's
+    the paper analyses 17 sessions of H and 12 of monkey G (617 and 741 units recorded, 536 and 636
+    kept for analysis). The dandiset's
     description does not say that it holds one session of the paper's 29 or which one. The 48 units
     that pass the paper's rate rule match its count for the single session of H used for GPFA.
 - kind: data_missing
@@ -329,8 +340,9 @@ findings:
   statement: The paper's analysis code is available only on request. The code the dandiset links
     (nlb_tools) loads the data and scores benchmark models, and holds none of the paper's analyses.
 - kind: paper_inconsistency
-  statement: The Results give the GPFA sessions as N = 48 for monkey H and N = 107 for monkey G, the
-    Methods as N = 48 in H and 96 in G.
+  statement: For the single high-yield session of each monkey used for GPFA, the Results give the
+    number of neurons as N = 48 for monkey H and N = 107 for monkey G, the Methods as N = 48 in H and
+    96 in G.
 verifications:
 - date: '2026-10-14'
   kind: agent
@@ -524,4 +536,166 @@ verifications:
     outcome: blocked
     reason: The API reports numberOfSubjects 1, and the only path is sub-Haydn/. No part can be
       tested.
+    response: No change.
+- date: '2026-10-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The second executed notebook in full, with its conclusion cells and summary, the README
+    and this attempt record. The verifier could not get the paper's text (PMC's BioC service returned
+    429 and Europe PMC 500), so the figures taken from the paper were not checked against it.
+  results:
+  - claim: beh-slopes
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome as the claims-file criterion defines it.
+    response: No change.
+  - claim: beh-overlap-prior
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome as the claims-file criterion defines it.
+    response: No change.
+  - claim: beh-sigmoid-increments
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the claims-file criterion defines it.
+    response: No change.
+  - claim: beh-long-more-bias
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the claims-file criterion defines it.
+    response: No change.
+  - claim: beh-bayes-model
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The record's "wm and wp (0.09 to 0.11)" is wrong; cell 25 gives wp from 0.090 to
+      0.106 but wm from 0.013 to 0.117. Tables S1 to S3 are still not available, so the fitted wm and
+      wp cannot be compared.
+    response: Corrected the ranges in the notes. The tables remain unavailable.
+  - claim: glm-prior-ts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The chance levels are far below the observed fractions; they use only 5 shuffles,
+      and the shifted labels still agree with the true ones on about half the trials, which makes that
+      null conservative.
+    response: No change.
+  - claim: dfr-overlap-support
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; 192 of 200 bootstrap samples peak at 480 to 640 ms.
+    response: No change.
+  - claim: pca-dimensionality
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The outcome fails on unnormalised rates but passes in 8 of 8 with z-scored rates;
+      keeping it on the criterion fixed beforehand is correct, and the dependence is stated. Pooling
+      across sessions cannot be tested with one session.
+    response: No change.
+  - claim: encoding-r2
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the match to te is reproduced and specificity to u is not shown. The Summary's
+      statement that z-scoring removes the encoding axis's advantage over random axes is not
+      supported; with z-scored rates u's R2 is above the median random axis in all 8 dataset-priors,
+      and what is lost is beating 95% of random axes (0 of 8).
+    response: Corrected the Summary to say that with z-scored rates u still scores above the median
+      random axis in 8 of 8 but above 95% of random axes in none.
+  - claim: encoding-bayes-beats-linear
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The short-in-long control shows the same Bayesian advantage. The range "0.045 to
+      0.573" covers only the datasets where the Bayesian model wins and leaves out Hand Right Short at
+      +0.186.
+    response: The conclusion and the notes now give the range for the datasets where the Bayesian
+      model wins and Hand Right Short (+0.186) separately.
+  - claim: short-in-long-control
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced only because a test over 4 datasets cannot fail; the record now says this
+      plainly.
+    response: No change.
+  - claim: neural-long-more-bias
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the claims-file criterion defines it.
+    response: No change.
+  - claim: speed-vs-projection
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the residual correlations were added and the ts confound is stated.
+    response: No change.
+  - claim: initial-speed-biased
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the claims-file criterion defines it.
+    response: No change.
+  - claim: speed-predicts-tp
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. In the trial-by-trial variant each trial's speed is measured from Set to its own
+      Go, so shorter trials have a larger share of bins near Go and fewer bins to average noise over,
+      which could produce a negative speed-tp correlation within ts by itself. It is unchecked; a
+      Poisson null with matched durations would settle it. The outcome is judged on condition means.
+    response: Added that null (cell 65). With constant-rate Poisson units and each trial's own
+      duration, the mean null r is -0.071 (Short) and -0.033 (Long) over 20 simulations; the observed
+      -0.317 and -0.201 are below every null value. The duration accounts for a small part. Outcome
+      unchanged.
+  - claim: alt-speed-unmodulated
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced only because the test cannot fail. The observed slopes are below the Poisson
+      null in 16 of 16 comparisons, so either the null overstates the noise or speed falls during the
+      support; comparing the null's mean speed with the observed mean speed would tell which. Until
+      then the wording "no speed modulation beyond what noise produces" is not supported.
+    response: Added the comparison (cell 70). The null's mean speed is below the observed one in 7 of
+      8 (ratio 0.65 to 1.18), so the null is not noisier than the data, which points to a speed that
+      falls during the support if the units' noise is no larger than Poisson. The conclusion and the
+      notes now say this and say that only a speed increase beyond noise is ruled out. The outcome
+      stays as the paper's test fixes it; no change is proposed, since the test cannot detect a change
+      and the fall was not tested.
+  - claim: alt-transient-parallel
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; p for the longest ts stays at or below 0.039 in every variant except soft
+      normalisation (0.055).
+    response: No change.
+  - claim: alt-threshold-monotonic
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, but the outcome depends on the number of components (-210 ms at 60% of the
+      variance, -80 ms at 75%, -40 ms in the full space, -230 ms with at least 2 and -70 ms with at
+      least 3 components). "In the eye datasets, with 1 component (16 curves), the minima are
+      crossings" is overstated; the distance at Go is more than 10 times the minimum in only 5 of the
+      16, and 4 have their minimum at Go.
+    response: Added a direct count of crossings (cells 76 and 77); the signed difference changes sign
+      at the minimum in 12 of the 16 one-component curves, and 4 have the minimum at Go (3 of them
+      not crossings). The conclusion and the notes now give these counts. The dependence on the number
+      of components remains stated; outcome unchanged as the criterion's 60% fixes it.
+  - claim: gpfa-variance-inverted-u
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. 12 latents beat 8 in all 4 datasets, so the best value is again the top of the
+      grid, and the training log-likelihood is still rising after 100 EM iterations. The record's
+      "the counts and p values did not change over four runs" is shown by no cell. Cell 84 says "0.065
+      to 0.085%" where cell 83 prints 0.067 to 0.084%.
+    response: Removed the statements about repeated runs from the notes and cell 84. The gain over the
+      last 25 iterations is now quoted from this run's output (0.064 to 0.085%).
+  - claim: gpfa-mean-sigmoid
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome as the claims-file criterion defines it.
+    response: No change.
+  - claim: rnn-curved-manifold
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked by data_missing.
+    response: No change.
+  - claim: rnn-perturbation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked by data_missing.
+    response: No change.
+  - claim: monkey-g
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked by data_missing.
     response: No change.

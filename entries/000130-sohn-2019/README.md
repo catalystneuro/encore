@@ -37,6 +37,6 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000130-sohn-2019-01.yaml`](../../attempts/000130-sohn-2019-01.yaml).
 
-- `reproduce_sohn_2019.ipynb`: the analysis. It takes about seven minutes, most of it fitting GPFA.
+- `reproduce_sohn_2019.ipynb`: the analysis. It takes about thirteen minutes, most of it fitting GPFA.
 - `rsg.py`: loading the files, unit selection, population rates with attrition, PCA and normalisation, the encoding
   axis, the Bayesian observer and the GPFA fits. Other notebooks on this dandiset can import it.
