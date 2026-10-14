@@ -26,7 +26,8 @@ maps cannot be linked to units, and there is no EEG. The
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001754-knierim-2000-01.yaml`](../../attempts/001754-knierim-2000-01.yaml).
 
-- `reproduce_knierim_2000.ipynb`: the analysis. It takes about five minutes.
+- `reproduce_knierim_2000.ipynb`: the analysis. It takes about five minutes; its last code cell prints the run
+  time (5.1 minutes in the latest run).
 - `neurolab.py`: loading the files, the original rate maps and their spatial information, and the
   spike-based spatial information with its shuffle test. Other notebooks on this dandiset can import
   it.
