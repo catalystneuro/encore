@@ -240,3 +240,12 @@ def test_measured_may_hold_one_value_per_expected_value(repo):
                                        ]}
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
     assert errors(repo) == []
+
+
+def test_a_claim_may_say_it_uses_outside_data(repo):
+    claims = {**CLAIMS, "claims": [{**CLAIMS["claims"][0], "data": "with_inputs"}]}
+    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    assert errors(repo) == []
+    claims["claims"][0]["data"] = "elsewhere"
+    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    assert any("data" in e for e in errors(repo))

@@ -574,3 +574,25 @@ too few BiC cells (`other` against `data_missing`); the record keeps both.
 The author took 65 minutes, the revisions 27 and 11, and the rounds 4 and 2.
 The notebook runs in about 7.5 minutes.
 
+## Protocol pilot-5 (2026-10-14)
+
+Before 000035, whose paper rests on transcriptomic data that is not on
+DANDI. The registry judges the dandiset, and an outcome that combines the
+dandiset with outside data cannot say which of them failed. So:
+
+- Each claim says whether its test uses the dandiset alone or the dandiset
+  with outside data (`data: dandiset` or `with_inputs`), and the dashboard
+  and README count the two apart. Only the first counts towards what is
+  said about the dandiset.
+- When outside data must be matched to the dandiset's cells, sessions or
+  subjects, a claim of its own tests the link, and every claim that needs
+  the match depends on it. A dandiset that cannot be linked to the data it
+  was published with is itself a finding.
+- Outside data supplies only what the dandiset lacks, such as a label per
+  cell, and the notes of a joint claim say which side a difference comes
+  from.
+
+000147's six claims that use the authors' model RDMs, or need fMRI or model
+RDMs that are not public, are now marked `with_inputs`, and its attempt
+lists the repository under `inputs`. Its outcomes are unchanged.
+
