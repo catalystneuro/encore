@@ -9,3 +9,5 @@ Your materials, in the current directory: the re-executed notebook with all conc
 3. Say which of your round-1 points are resolved, and list what remains that bears on a conclusion.
 
 Report concisely, in that structure. Your final message is the report and nothing else.
+
+Run every command in the foreground and wait for it to finish, however long it takes: the run ends when you stop, and anything still running is lost.

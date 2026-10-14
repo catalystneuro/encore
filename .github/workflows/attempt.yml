@@ -49,6 +49,9 @@ env:
   # Code forces permission mode `default`, so this list and --permission-prompts none decide what
   # runs: anything else is refused.
   TOOLS: Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Agent,TodoWrite
+  # Tools that only make sense in a session someone comes back to. In a headless run, ending the
+  # turn ends the run, so an agent that schedules a wakeup or watches a background job loses it.
+  NOT_TOOLS: ScheduleWakeup,CronCreate,CronDelete,CronList,Monitor,RemoteTrigger,Workflow
 
 jobs:
   run:
@@ -143,6 +146,10 @@ jobs:
           CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1'
           DISABLE_AUTOUPDATER: '1'
           DISABLE_TELEMETRY: '1'
+          # Commands run in the foreground until they finish: a notebook run can take many minutes.
+          CLAUDE_CODE_DISABLE_BACKGROUND_TASKS: '1'
+          BASH_DEFAULT_TIMEOUT_MS: '3600000'
+          BASH_MAX_TIMEOUT_MS: '7200000'
         run: |
           set +e -uo pipefail     # keep going when claude fails, to report how
           echo "started=true" >> "$GITHUB_OUTPUT"
@@ -150,7 +157,7 @@ jobs:
           claude -p "$(cat "$RUNNER_TEMP/prompt.md")" \
             --model "$MODEL" \
             --output-format stream-json --verbose --forward-subagent-text \
-            --permission-prompts none --allowedTools "$TOOLS" \
+            --permission-prompts none --allowedTools "$TOOLS" --disallowedTools "$NOT_TOOLS" \
             2> "$RUNNER_TEMP/stderr.txt" | tee "$RUNNER_TEMP/run.jsonl" | python "$RUNNER_TEMP/progress.py"
           status=$?
           echo "claude exited with $status"
