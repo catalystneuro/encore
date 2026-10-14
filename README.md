@@ -8,7 +8,7 @@ here: the notebooks when it works, and the reason when it does not.
   accurate enough to support the findings of its paper.
 - **For analysts:** working notebooks to build new analyses on.
 
-Status: pilot. Six of the eight pilot targets have been attempted and checked by an
+Status: pilot. Seven of the eight pilot targets have been attempted and checked by an
 independent agent.
 
 **Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
@@ -54,6 +54,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000147](https://dandiarchive.org/dandiset/000147) | [Guan et al. 2022](https://doi.org/10.7554/eLife.74478) | 9 (+3) | 0 | 1 | 4 (+3) | [`000147-guan-2022`](entries/000147-guan-2022) |
 | [001097](https://dandiarchive.org/dandiset/001097) | [Liu et al. 2024](https://doi.org/10.1038/s41586-024-07916-w) | 7 | 2 | 3 | 12 | [`001097-liu-2024`](entries/001097-liu-2024) |
 | [000625](https://dandiarchive.org/dandiset/000625) | [Geiller et al. 2020](https://doi.org/10.1016/j.neuron.2020.09.013) | 4 | 4 | 6 | 12 | [`000625-geiller-2020`](entries/000625-geiller-2020) |
+| [000035](https://dandiarchive.org/dandiset/000035) | [Scala et al. 2021](https://doi.org/10.1038/s41586-020-2907-3) | 3 (+2) | 1 (+1) | 0 | 9 (+1) | [`000035-scala-2021`](entries/000035-scala-2021) |
 
 Counts are of claims that rest on the dandiset alone. Claims that also use
 data from outside the dandiset are counted apart, in brackets.
