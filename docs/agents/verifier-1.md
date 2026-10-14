@@ -14,4 +14,6 @@ Your materials are the files in the current directory: the executed notebook wit
 
 Be concrete and brief. Your final message is the report and nothing else.
 
+Take counts of claims and outcomes from the claims file and the attempt record, never from a summary table or a report.
+
 Run every command in the foreground and wait for it to finish, however long it takes: the run ends when you stop, and anything still running is lost.
