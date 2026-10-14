@@ -20,7 +20,7 @@ Where the parameters come from:
   posterior mean, and an offset per prior; GPFA on single trials with cross-validation.
 - Common choices made here where the Methods leave it open (see the claims file): kernel width
   read as SD; rates averaged per 20 ms bin and then smoothed; no normalisation of rates before
-  PCA; difference vectors for the encoding axis averaged up to the middle of the support;
+  PCA (soft normalisation and z-scoring, `unit_scale`, are variants); difference vectors for the encoding axis averaged up to the middle of the support;
   speed as the mean step between successive 20 ms states; the GPFA latent dimensionality chosen
   from `GPFA_DIMS` by 3-fold cross-validation, and `GPFA_EM_ITERS` EM iterations.
 - The flag `is_outlier` in the trial table is the paper's mixture-model exclusion and is used as
@@ -189,18 +189,29 @@ def production_rates(spikes, units, trials: pd.DataFrame, stop_ms: float | None 
 # --- population measures -------------------------------------------------------------------
 
 class PCA:
-    """PCA on stacked rate matrices, keeping the components that reach `kept` of the variance."""
+    """PCA on stacked rate matrices, keeping the components that reach `kept` of the variance,
+    and at least `min_n`."""
 
-    def __init__(self, matrices: list, kept: float = VAR_KEPT):
+    def __init__(self, matrices: list, kept: float = VAR_KEPT, min_n: int = 1):
         data = np.vstack(matrices)
         self.mean = data.mean(0)
         _, s, vt = np.linalg.svd(data - self.mean, full_matrices=False)
         self.explained = s ** 2 / np.sum(s ** 2)
-        self.n = int(np.searchsorted(np.cumsum(self.explained), kept - 1e-12) + 1)
+        self.n = max(int(np.searchsorted(np.cumsum(self.explained), kept - 1e-12) + 1), min_n)
         self.components = vt[: self.n]
 
     def __call__(self, x: np.ndarray) -> np.ndarray:
         return (x - self.mean) @ self.components.T
+
+
+def unit_scale(matrices: list, how: str) -> np.ndarray:
+    """Divisor per unit for normalised rates, from the stacked matrices (bins x units):
+    `soft`, the range plus 5 spikes/s (soft normalisation, a common choice; the Methods do
+    not say whether rates were normalised), or `z`, the SD."""
+    data = np.vstack(matrices)
+    if how == "soft":
+        return np.ptp(data, axis=0) + 5.0
+    return np.maximum(data.std(0), 1e-9)
 
 
 def encoding_axis(states: np.ndarray, times: np.ndarray, t_min: float, t_max: float) -> np.ndarray:
@@ -371,36 +382,59 @@ def _quiet_elephant():
     logging.getLogger(elephant.utils.__file__).setLevel(logging.ERROR)
 
 
-def fit_gpfa(spiketrains, rng: np.random.Generator):
-    """GPFA with the latent dimensionality from `GPFA_DIMS` chosen by 3-fold cross-validated
-    log-likelihood. Returns the model fit on all trials, the chosen dimensionality and the
-    cross-validated scores."""
+def gpfa_folds(n: int, rng: np.random.Generator) -> np.ndarray:
+    """Fold (0, 1 or 2) of each of `n` trials for 3-fold cross-validation."""
+    return rng.permutation(n) % 3
+
+
+def gpfa_cv_score(spiketrains, folds: np.ndarray, dim: int) -> float:
+    """Summed test log-likelihood of GPFA with `dim` latents over the folds."""
     import contextlib
     import io
-    import logging
     import warnings
 
     import quantities as pq
     from elephant.gpfa import GPFA
 
     _quiet_elephant()
-    folds = rng.permutation(len(spiketrains)) % 3
-    scores = {}
+    total = 0.0
     with warnings.catch_warnings(), contextlib.redirect_stdout(io.StringIO()):
         warnings.simplefilter("ignore")
-        for dim in GPFA_DIMS:
-            total = 0.0
-            for k in range(3):
-                train = [s for s, f in zip(spiketrains, folds) if f != k]
-                test = [s for s, f in zip(spiketrains, folds) if f == k]
-                m = GPFA(bin_size=BIN_MS * pq.ms, x_dim=dim, em_max_iters=GPFA_EM_ITERS)
-                m.fit(train)
-                total += m.score(test)
-            scores[dim] = total
-        best = max(scores, key=scores.get)
-        model = GPFA(bin_size=BIN_MS * pq.ms, x_dim=best, em_max_iters=GPFA_EM_ITERS)
+        for k in range(3):
+            train = [s for s, f in zip(spiketrains, folds) if f != k]
+            test = [s for s, f in zip(spiketrains, folds) if f == k]
+            m = GPFA(bin_size=BIN_MS * pq.ms, x_dim=dim, em_max_iters=GPFA_EM_ITERS)
+            m.fit(train)
+            total += m.score(test)
+    return total
+
+
+def gpfa_model(spiketrains, dim: int):
+    """GPFA with `dim` latents fit on all trials. Its `fit_info["log_likelihoods"]` holds the
+    training log-likelihood every fifth EM iteration (elephant's default)."""
+    import contextlib
+    import io
+    import warnings
+
+    import quantities as pq
+    from elephant.gpfa import GPFA
+
+    _quiet_elephant()
+    with warnings.catch_warnings(), contextlib.redirect_stdout(io.StringIO()):
+        warnings.simplefilter("ignore")
+        model = GPFA(bin_size=BIN_MS * pq.ms, x_dim=dim, em_max_iters=GPFA_EM_ITERS)
         model.fit(spiketrains)
-    return model, best, scores
+    return model
+
+
+def fit_gpfa(spiketrains, rng: np.random.Generator):
+    """GPFA with the latent dimensionality from `GPFA_DIMS` chosen by 3-fold cross-validated
+    log-likelihood. Returns the model fit on all trials, the chosen dimensionality, the
+    cross-validated scores and the folds."""
+    folds = gpfa_folds(len(spiketrains), rng)
+    scores = {dim: gpfa_cv_score(spiketrains, folds, dim) for dim in GPFA_DIMS}
+    best = max(scores, key=scores.get)
+    return gpfa_model(spiketrains, best), best, scores, folds
 
 
 def gpfa_transform(model, spiketrains):

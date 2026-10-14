@@ -23,12 +23,12 @@ of monkey G; monkey G and the recurrent network models are not in the dandiset.
 | Larger projection at Set, slower trajectory | Partially reproduced |
 | Initial speed biased toward the mean | Reproduced |
 | Speed predicts tp | Partially reproduced |
-| Speed unmodulated during the support | Reproduced (the test cannot detect an effect; the speed rises in all 8) |
+| Speed unmodulated during the support | Reproduced (the test cannot detect an effect; the slopes are no larger than noise gives) |
 | Parallel trajectories after Set | Not reproduced |
 | Distances fall steadily up to Go | Not reproduced |
 | Inverted-U variance of single-trial projections | Not reproduced |
 | Sigmoidal mean of single-trial projections | Reproduced |
-| Recurrent network models (two claims) | Blocked |
+| Recurrent network models (two claims) | Blocked: data missing |
 | The results hold in monkey G | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -38,5 +38,5 @@ The attempt record, with the reasons and the differences from the paper's method
 [`attempts/000130-sohn-2019-01.yaml`](../../attempts/000130-sohn-2019-01.yaml).
 
 - `reproduce_sohn_2019.ipynb`: the analysis. It takes about seven minutes, most of it fitting GPFA.
-- `rsg.py`: loading the files, unit selection, population rates with attrition, PCA, the encoding
+- `rsg.py`: loading the files, unit selection, population rates with attrition, PCA and normalisation, the encoding
   axis, the Bayesian observer and the GPFA fits. Other notebooks on this dandiset can import it.
