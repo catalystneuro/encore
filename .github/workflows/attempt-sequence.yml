@@ -1,0 +1,49 @@
+name: Attempt sequence
+
+# A whole attempt on one dandiset: the author, the first verification round,
+# the author's revision, the second round and the final revision, each an Agent
+# run (attempt.yml). Each step starts when the one before has succeeded, so a
+# failure stops this dandiset's attempt and leaves its branch as the last good
+# step left it. Called by pipeline.yml, once per dandiset.
+
+on:
+  workflow_call:
+    inputs:
+      dandiset:
+        type: string
+        required: true
+      model:
+        type: string
+        default: claude-opus-5-5
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  author:
+    uses: ./.github/workflows/attempt.yml
+    with: {dandiset: "${{ inputs.dandiset }}", role: author, model: "${{ inputs.model }}"}
+    secrets: inherit
+  verifier-1:
+    needs: author
+    uses: ./.github/workflows/attempt.yml
+    with: {dandiset: "${{ inputs.dandiset }}", role: verifier-1, model: "${{ inputs.model }}"}
+    secrets: inherit
+  author-revise-1:
+    needs: verifier-1
+    uses: ./.github/workflows/attempt.yml
+    with: {dandiset: "${{ inputs.dandiset }}", role: author-revise-1, model: "${{ inputs.model }}"}
+    secrets: inherit
+  verifier-2:
+    needs: author-revise-1
+    uses: ./.github/workflows/attempt.yml
+    with: {dandiset: "${{ inputs.dandiset }}", role: verifier-2, model: "${{ inputs.model }}"}
+    secrets: inherit
+  author-revise-2:
+    needs: verifier-2
+    uses: ./.github/workflows/attempt.yml
+    with: {dandiset: "${{ inputs.dandiset }}", role: author-revise-2, model: "${{ inputs.model }}"}
+    secrets: inherit

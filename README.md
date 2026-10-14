@@ -69,7 +69,15 @@ gh workflow run attempt.yml -f dandiset=000147 -f role=author
 ```
 
 The roles, in order, are `author`, `verifier-1`, `author-revise-1`,
-`verifier-2` and `author-revise-2`. Each run commits its changes and its
+`verifier-2` and `author-revise-2`. To run whole attempts on several dandisets at once,
+each going through all five roles in order:
+
+```bash
+gh workflow run pipeline.yml -f dandisets="000628 000939 001075" -f max_parallel=3
+```
+
+All runs share the subscription's usage limits, so more in parallel reaches
+them sooner. Each run commits its changes and its
 cleaned transcript and report to the branch `attempt/<dandiset>`; a person
 reads the transcript and opens the pull request. While a run is going, the
 "Run the agent" step of its page in the Actions tab shows one line per message

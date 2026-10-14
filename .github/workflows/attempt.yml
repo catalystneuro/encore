@@ -4,6 +4,7 @@ name: Agent run
 # verification round, or the author's revision after one (docs/protocol.md).
 # Started by hand from the Actions tab or with
 #   gh workflow run attempt.yml -f dandiset=000147 -f role=author
+# or as one step of a whole attempt by attempt-sequence.yml and pipeline.yml.
 #
 # The agent runs on a fresh runner with no personal configuration, on the
 # subscription token in the CLAUDE_CODE_OAUTH_TOKEN secret. Its job can read the
@@ -31,6 +32,21 @@ on:
       model:
         description: "Model"
         default: claude-opus-5-5
+  # Called by attempt-sequence.yml, which runs the five roles of one attempt in order.
+  workflow_call:
+    inputs:
+      dandiset:
+        type: string
+        required: true
+      role:
+        type: string
+        required: true
+      model:
+        type: string
+        default: claude-opus-5-5
+    secrets:
+      CLAUDE_CODE_OAUTH_TOKEN:
+        required: true
 
 permissions:
   contents: read
