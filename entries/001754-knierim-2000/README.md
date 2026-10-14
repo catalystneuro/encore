@@ -8,7 +8,7 @@ its abstract, the titles of its figures, and the dandiset's description of its f
 
 | Claim | Outcome |
 |---|---|
-| A robust spatial code on the Escher staircase in flight | Partially reproduced |
+| A robust spatial code on the Escher staircase in flight | Partially reproduced (a change to not reproduced is proposed) |
 | The code covers each of the three orthogonal surfaces | Blocked: metadata insufficient |
 | Spatial information in flight comparable to preflight | Reproduced |
 | Abnormal spatial selectivity on flight day 4 | Not reproduced |
@@ -20,11 +20,13 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The Rat1 and Rat2 files of each flight day share one position trace, and Rat2's units are not
-spatially selective with it. The rate maps cannot be linked to units, and there is no EEG. The
+spatially selective with it. The description places the preflight recordings on a flat
+rectangular track, but the files label them as Escher staircase and Magic Carpet epochs. The rate
+maps cannot be linked to units, and there is no EEG. The
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001754-knierim-2000-01.yaml`](../../attempts/001754-knierim-2000-01.yaml).
 
-- `reproduce_knierim_2000.ipynb`: the analysis. It takes about two minutes.
+- `reproduce_knierim_2000.ipynb`: the analysis. It takes about five minutes.
 - `neurolab.py`: loading the files, the original rate maps and their spatial information, and the
   spike-based spatial information with its shuffle test. Other notebooks on this dandiset can import
   it.

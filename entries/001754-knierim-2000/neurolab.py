@@ -20,7 +20,8 @@ so every parameter below is a common choice, fixed in the claims file before the
 - `UNVISITED = -999`: the rate maps' value for bins without occupancy.
 - `MIN_OCC = 5` occupancy counts per bin, `MIN_SPIKES = 50` spikes at a known position per unit.
 - Shuffles shift spikes circularly by at least `MIN_SHIFT_S = 20` s and take the position of the
-  nearest position sample within `MAX_LOOKUP_S = 0.25` s.
+  nearest position sample within `MAX_LOOKUP_S = 0.25` s. A spike, real or shifted, whose nearest
+  sample is the lost position is dropped.
 """
 
 from __future__ import annotations
@@ -66,11 +67,16 @@ def _column(group, name):
 
 
 def h5_tree(path_url: tuple[str, str]) -> list[str]:
-    """Every dataset in a file, with its shape, type and description or unit."""
+    """Every group (with its neurodata type) and every dataset (with its shape, type and
+    description or unit) in a file, outside the format specifications."""
     lines = []
     with h5py.File(remfile.File(path_url[1]), "r") as f:
         def visit(name, obj):
-            if isinstance(obj, h5py.Dataset) and not name.startswith("specifications"):
+            if name.startswith("specifications"):
+                return
+            if isinstance(obj, h5py.Group):
+                lines.append(f"{name}/  group  {_text(obj.attrs.get('neurodata_type', ''))}")
+            else:
                 note = obj.attrs.get("description", obj.attrs.get("unit", ""))
                 lines.append(f"{name}  {obj.shape}  {obj.dtype}  {_text(note)[:70]}")
         f.visititems(visit)
@@ -152,10 +158,11 @@ def skaggs_info(rate: np.ndarray, occ: np.ndarray) -> float:
     return float((p[nz] * (r[nz] / mean) * np.log2(r[nz] / mean)).sum())
 
 
-def rma_info(rate_map: np.ndarray, occ_map: np.ndarray) -> tuple[float, float, float]:
-    """(bits per spike, mean rate, peak rate) of one of the dandiset's rate maps."""
+def rma_info(rate_map: np.ndarray, occ_map: np.ndarray, min_occ: float = 1) -> tuple[float, float, float]:
+    """(bits per spike, mean rate, peak rate) of one of the dandiset's rate maps, over bins with
+    at least `min_occ` occupancy counts."""
     occ = clean_occupancy(occ_map)
-    occ[rate_map == UNVISITED] = 0
+    occ[(rate_map == UNVISITED) | (occ < min_occ)] = 0
     rate = np.where(occ > 0, rate_map, 0.0)
     keep = occ > 0
     mean = float((rate[keep] * occ[keep]).sum() / occ[keep].sum())
@@ -172,11 +179,15 @@ def rma_table(sessions: list[dict]) -> pd.DataFrame:
             duplicate = key in seen
             seen.add(key)
             info, mean, peak = rma_info(s["rate_maps"][i], s["occupancy_maps"][i])
+            occ = clean_occupancy(s["occupancy_maps"][i])
             rows.append({"rat": s["subject"], "day": s["day"], "type": m["type"],
                          "tetrode": m["tetrode"], "source_file": m["source_file"],
                          "cel_name": "CEL" in m["source_file"].upper(),
                          "duplicate": duplicate, "info": info, "mean_rate": mean,
-                         "peak_rate": peak})
+                         "peak_rate": peak,
+                         "info_occ5": rma_info(s["rate_maps"][i], s["occupancy_maps"][i], MIN_OCC)[0],
+                         "occupancy_total": occ.sum(),
+                         "rate_x_occupancy": float((np.clip(s["rate_maps"][i], 0, None) * occ).sum())})
     return pd.DataFrame(rows)
 
 
@@ -195,19 +206,20 @@ def merge_bins(a: np.ndarray, k: int = MERGE) -> np.ndarray:
 
 
 class PositionLookup:
-    """Positions of the pooled trace (valid samples only) at arbitrary times."""
+    """Positions of the pooled trace at arbitrary times."""
 
     def __init__(self, s: dict):
-        keep = s["valid"]
-        self.t = s["t"][keep]
-        self.row, self.col = bin_xy(s["xy"][keep])
+        self.t = s["t"]
+        self.valid = s["valid"]
+        self.row, self.col = bin_xy(s["xy"])
 
     def __call__(self, times: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """(found, row, column): found marks times with a sample within MAX_LOOKUP_S."""
+        """(found, row, column): found marks times whose nearest sample is within MAX_LOOKUP_S
+        and is not the lost position, so a spike at a lost position is dropped."""
         i = np.clip(np.searchsorted(self.t, times), 1, len(self.t) - 1)
         left_closer = np.abs(self.t[i - 1] - times) <= np.abs(self.t[i] - times)
         j = np.where(left_closer, i - 1, i)
-        found = np.abs(self.t[j] - times) <= MAX_LOOKUP_S
+        found = (np.abs(self.t[j] - times) <= MAX_LOOKUP_S) & self.valid[j]
         return found, self.row[j[found]], self.col[j[found]]
 
 
@@ -240,8 +252,12 @@ def spatial_info_spikes(rows: np.ndarray, cols: np.ndarray, occ32: np.ndarray) -
 
 
 def epoch_units(s: dict, start: float, stop: float, typ: str, rng: np.random.Generator,
-                n_shuffles: int = N_SHUFFLES) -> pd.DataFrame:
-    """Spatial information of every unit in one epoch with its shuffle distribution."""
+                n_shuffles: int = N_SHUFFLES, match_counts: bool = False) -> pd.DataFrame:
+    """Spatial information of every unit in one epoch with its shuffle distribution.
+
+    Shifted spikes without a position are dropped, so a shuffle can hold fewer spikes than the
+    unit. With `match_counts`, each shuffle is compared with the unit's information on a random
+    subsample of its own spikes of the same size (a variant; the main test compares all spikes)."""
     occ, _ = epoch_occupancy(s, start, stop, typ)
     occ32 = merge_bins(clean_occupancy(occ))
     lookup = PositionLookup(s)
@@ -255,18 +271,27 @@ def epoch_units(s: dict, start: float, stop: float, typ: str, rng: np.random.Gen
         row = {"rat": s["subject"], "day": s["day"], "epoch_start": start, "tetrode": u["tetrode"],
                "cluster": int(u["cluster"]), "spikes_in_epoch": len(sp), "spikes_used": n}
         if n < MIN_SPIKES:
-            out.append(row | {"info": np.nan, "p": np.nan, "null95": np.nan})
+            out.append(row | {"info": np.nan, "p": np.nan, "null95": np.nan, "null_mean": np.nan,
+                              "null_spikes_used": np.nan, "empty_shuffles": np.nan})
             continue
         info = spatial_info_spikes(r[keep], c[keep], occ32)
         null = np.empty(n_shuffles)
+        used = np.empty(n_shuffles)
+        observed = np.full(n_shuffles, info)
         shifts = rng.uniform(MIN_SHIFT_S, duration - MIN_SHIFT_S, n_shuffles)
         for k, shift in enumerate(shifts):
             shifted = start + (sp - start + shift) % duration
             f2, r2, c2 = lookup(shifted)
             k2 = occ32[r2 // MERGE, c2 // MERGE] >= MIN_OCC
             null[k] = spatial_info_spikes(r2[k2], c2[k2], occ32)
-        out.append(row | {"info": info, "p": float((null >= info).mean()),
-                          "null95": float(np.percentile(null, 95))})
+            used[k] = k2.sum()
+            if match_counts and used[k] < n:
+                pick = rng.choice(n, int(used[k]), replace=False)
+                observed[k] = spatial_info_spikes(r[keep][pick], c[keep][pick], occ32)
+        ok = np.isfinite(null)  # a shuffle in which no spike has a position has no value
+        out.append(row | {"info": info, "p": float((null[ok] >= observed[ok]).mean()),
+                          "null95": float(np.percentile(null[ok], 95)), "null_mean": float(null[ok].mean()),
+                          "null_spikes_used": float(used.mean()), "empty_shuffles": int((~ok).sum())})
     return pd.DataFrame(out)
 
 
