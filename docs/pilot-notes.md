@@ -741,3 +741,33 @@ The notebook runs in about 4 minutes.
   listed reading recorded under `measured`; and the author prompt points at
   the newest entry as its example.
 
+## After the pilot: the first batch (2026-10-14)
+
+Four dandisets run under pilot-6 through the attempt pipeline: 000006,
+001754, 000130 and 001616. The first pipeline run mixed results between
+dandisets because every agent run in it named its artifact `agent-run`; it
+was cancelled, the branches were rebuilt from each dandiset's own artifact,
+and artifacts are now named for the dandiset and role. The four in parallel
+then used up the subscription's session limit after about two and a half
+hours; the runs it cut short were restarted from where they began.
+
+### 000006, Economo et al. 2018
+
+Three claims reproduced, one partially, one not reproduced and four blocked,
+all on the dandiset alone; both rounds agreed with every outcome. The paper
+is paywalled, so the claims come from the abstract. The transcriptomic and
+anatomical data are not in the dandiset. Spike times are stored unsorted in
+1,120 of 1,149 units, written trial by trial as trial start plus time from
+the cue, so neighbouring trials overlap on the file's clock; `stop_time` is
+NaN in every file, and the two PT types are not described in the files.
+Each mouse has only one PT type, so comparing the types also compares
+animals.
+
+The author's points on the protocol: abstract-only claims carry no numbers,
+so every criterion is the author's own; whether other public parts of a
+paywalled paper may be read; whether background sentences in an abstract
+are claims; how to treat linked code that ships processed data; a clock
+check for data whose trials overlap; one neuron counted in several
+sessions; sessions too short for the clock check; and comparisons where
+each animal belongs to one group.
+
