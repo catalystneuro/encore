@@ -16,7 +16,7 @@ recorded at room temperature, is in dandiset 000008 and is not tested here.
 | The files are the cells of the paper's published table (with the paper's table) | Partially reproduced |
 | Features from the traces agree with the published ones (with the paper's table) | Reproduced |
 | Sst t-types keep their relative differences between 25 and 34 degrees (with the paper's room-temperature features) | Reproduced |
-| Transcriptomic and electrophysiological distances of Sst t-types correlate at 34 degrees | Blocked: not runnable (the reference expression data cannot be fetched within the time limit) |
+| Transcriptomic and electrophysiological distances of Sst t-types correlate at 34 degrees | Blocked: not tested (the reference expression data are public, but fetching them takes about 10 to 55 minutes depending on Zenodo's rate) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -26,7 +26,7 @@ published values for most cells. The attempt record, with the reasons and the di
 the paper's method, is
 [`attempts/000035-scala-2021-01.yaml`](../../attempts/000035-scala-2021-01.yaml).
 
-- `reproduce_scala_2021.ipynb`: the analysis. It takes about four minutes, including a timed request to Zenodo.
+- `reproduce_scala_2021.ipynb`: the analysis. It takes about three minutes, including a timed request to Zenodo.
 - `scala34.py`: streaming the files, the 17 electrophysiological features, the paper's
   representation and its nearest-neighbour family classifier. Other notebooks on this dandiset
   can import it.

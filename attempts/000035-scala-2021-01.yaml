@@ -185,11 +185,15 @@ outcomes:
     t-type in the single-cell 10x v2 reference data (Yao et al. 2021). The paper's code reads it
     from reduced-allen-data.zip on Zenodo (doi:10.5281/zenodo.5118962), member
     10X_cells_v2_AIBS.pickle. The notebook reads the archive's directory (87.9 MB compressed,
-    517.0 MB uncompressed) and times a 1 MB range request. The rate varies between runs. In the
-    three runs of this revision it was 27, 114 and 44 kB/s, about 55, 13 and 33 minutes for the
-    member, beyond the ten minutes a run should take in every run and beyond the 30 minute
-    limit in two. Fetching it in the run would make the
-    run's success depend on Zenodo's rate. The original
+    517.0 MB uncompressed) and times a 1 MB range request. In the delivered run the rate was
+    62 kB/s, about 24 minutes for the member. The rate varies between runs; in the earlier runs
+    of this attempt (not in the delivered notebook) it was 27, 114, 44, 149 and 58 kB/s, about
+    55, 13, 33, 10 and 25 minutes. A run that fetched the member would have exceeded the 30 minute
+    limit in two of these six runs and fitted in the others, so the claim was not tested. The
+    reference is public, and the verifier of round 2 holds that the claim is testable; the block
+    reflects this attempt's choice not to make the run depend on Zenodo's rate. Proposed change
+    for another round, fetch the member in the run, write a criterion for the claim (it has none),
+    and test it. The original
     reference data at NeMO are much larger. The electrophysiological half is computed from the
     dandiset as in the paper's code (cell 19 of physiological-temperature.ipynb), for 9 layer 5 Sst
     t-types with at least 5 cells (Sst Chodl left out), as the paper's code prints, with
@@ -372,3 +376,115 @@ verifications:
       not computed, as it is not the paper's method. Preparation-run timings removed from the notes.
       At the fastest of these rates the fetch would fit within the 30 minute limit, so the claim could
       be tested in a later round; that would change its outcome and needs another verification round.
+- date: '2026-10-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, with its conclusions and summary, the
+    helper module, the claims file, the README and this attempt record, with the paper.
+  results:
+  - claim: fig1-ttype-coverage
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing), as for the other eight claims on the main data set.
+    response: No change needed.
+  - claim: fig2-rrr-prediction
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: ed5-rrr-ion-channels
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig3d-families-separate
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig3d-morphology-combined
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig4c-distance-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig4d-it-depth
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig5a-ttypes-between-families
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig5b-ttype-variability
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: ed6-cohort
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (cell 10).
+    response: No change needed.
+  - claim: ed6-stimulus-protocol
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (cell 13, 174 of 185, 94.1%). The round 1 point on step timing is resolved, as
+      onsets and offsets are now checked per sweep and all 14,054 sweeps are 0.1 to 0.7 s.
+    response: No change needed.
+  - claim: ed6-it-et-overlap
+    agrees: true
+    outcome: reproduced
+    reason: The criterion is met (58.3% in cells 16 and 19d). The variants in cells 18 and 19 show the
+      overlap is one-sided and partly an imbalance effect, and the record now says so. A minor slip
+      that does not affect a conclusion, the comment in cell 17 says IT and ET cells come from three
+      mice, but its own crosstab shows four (MITSU, SCEAC, UEQOU and WPOGH).
+    response: The comment in cell 17 now says four mice, with ET cells from two of them. Outcome kept.
+  - claim: ed6-it-et-ap-threshold
+    agrees: true
+    outcome: reproduced
+    reason: Rank 2 of 17, p = 0.00035 (cell 23). The record now says the within-mouse threshold gap is
+      not significant.
+    response: No change needed.
+  - claim: link-cells
+    agrees: false
+    outcome: reproduced
+    reason: As in round 1. The only mismatch is the one-to-one PT/ET renaming. After renaming, agreement
+      is 1.000 (cell 26), and the claims file itself treats PT as ET. The record states the
+      disagreement correctly.
+    response: Outcome kept as partially_reproduced and the disagreement left recorded, for the reason
+      given in round 1, that the criterion written before the analysis compares t-type names.
+  - claim: link-features
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. 16 of 17 features at least 0.9, lowest 0.877 (cell 29).
+    response: No change needed.
+  - claim: ed6-sst-temperature
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Both parts hold (cell 34) and the variants agree (cell 35).
+    response: No change needed.
+  - claim: ed6-sst-transcriptomic-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees it was not tested, but not with the reason. Cell 39 printed a download rate of
+      149 kB/s, so the fetch takes about 10 minutes, inside the 30 minute limit. The README, cell 0,
+      the Summary and the record's notes and response say the data cannot be fetched within the time
+      limit and give rates of 27, 114 and 44 kB/s, none of which is this notebook's, and the statement
+      that the fetch is beyond ten minutes in every run is false for the run delivered. The reference
+      data are public and the electrophysiological half is already computed, so the claim is testable
+      and should be tested, not blocked. The text needs to be corrected to the rate actually observed,
+      or brought in line with a run that performs the test.
+    response: The text was corrected. The README, cell 0, the conclusion and the Summary now say the
+      claim was not tested, that the reference is public, and that the fetch takes about 10 to 55
+      minutes depending on Zenodo's rate. The notes give the rate of the delivered run (62 kB/s, about
+      24 minutes) and mark the rates of the earlier runs as not in the delivered notebook. The fetch
+      was not added, since in two of six runs it would have exceeded the 30 minute limit, and the
+      claim has no criterion; testing it is recorded in the notes as a proposed change for another
+      round. Outcome and blocked_by kept, as this is the final revision.
