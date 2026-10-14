@@ -12,7 +12,7 @@ miniscope imaging of VMHvl alpha-cells and annotations of male and female behavi
 | Mean interbout interval 13.7 s (Figure 1e) | Reproduced |
 | Social behaviour for 62% of bouts and 23% of intervals (Figure 1g) | Reproduced |
 | About 2 to 13% of cells tuned to a behaviour (Figure 2c) | Not reproduced |
-| Behaviour GLMs explain 8 to 15% of variance (Figure 2e) | Not reproduced |
+| Behaviour GLMs explain 8 to 15% of variance (Figure 2e) | Partially reproduced |
 | Adding the other cells raises it to 46% (Figure 2f) | Reproduced |
 | 30% of cells have ACHW above 25 s (Figure 2i) | Not reproduced |
 | The receptive-day dimension stays low on unreceptive days (Extended Data Figure 6e) | Partially reproduced |
@@ -30,7 +30,7 @@ registry's environment and time limit; two of them are tested with the authors' 
 for two mice. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001097-liu-2024-01.yaml`](../../attempts/001097-liu-2024-01.yaml).
 
-- `reproduce_liu_2024.ipynb`: the analysis. It takes about seven minutes.
+- `reproduce_liu_2024.ipynb`: the analysis. It ran in about eight minutes (486 s and 501 s in the last two runs).
 - `vmhvl.py`: listing and streaming the files, preprocessing as in the authors' code, behaviour
   rasters and bouts, the autocorrelation half-width, choice probability, the ridge GLM and the
   clock check. Other notebooks on this dandiset can import it.

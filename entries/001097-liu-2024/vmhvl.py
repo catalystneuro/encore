@@ -374,6 +374,7 @@ def cv_ridge(X: np.ndarray, Y: np.ndarray, exclude: np.ndarray | None = None, fo
             train = np.where(~test)[0]
             if rng is not None:
                 train = rng.permutation(train)
+
             def fit(rows):
                 mx, my = X[rows].mean(0), Y[rows].mean(0)
                 Xc, Yc = X[rows] - mx, Y[rows] - my
