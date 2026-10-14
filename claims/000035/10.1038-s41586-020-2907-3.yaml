@@ -1,0 +1,242 @@
+# Claims for Scala, Kobak et al. (2021), "Phenotypic variation of transcriptomic cell types in
+# mouse motor cortex", Nature 598:144-150, on dandiset 000035.
+# Source: the full text (open access, CC BY), read from Europe PMC (PMC8113357), and the paper's
+# code at https://github.com/berenslab/mini-atlas, commit 3bf98a524b8e48aa8647e1b9ae8f2351d9c712c9.
+#
+# Dandiset 000035 holds only the paper's follow-up recordings at physiological temperature
+# (Methods, "Experiments at physiological temperature"; Extended Data Fig. 6). The main data set
+# of 1,329 cells recorded at room temperature is in dandiset 000008, and the sequencing data and
+# morphologies are elsewhere, so the findings of Figs. 1 to 5 are listed here as blocked.
+#
+# What had been seen when these criteria were written: the dandiset's metadata and file list, one
+# file opened in full, and a survey of all 185 files giving the per-file metadata (t-type, layer,
+# soma depth, temperature, Cre line), the number of sweeps and the stimulus amplitude of each
+# sweep. So the counts in ed6-cohort and the stimulus ladder in ed6-stimulus-protocol were known
+# before their criteria were written. No electrophysiological feature had been computed, and the
+# paper's published feature tables had not been read, when the criteria were written.
+schema_version: 1
+dandiset: "000035"
+paper: doi:10.1038/s41586-020-2907-3
+claims:
+# --- The main data set (room temperature): not in this dandiset --------------------------------
+- id: fig1-ttype-coverage
+  statement: After quality control, 1,227 Patch-seq neurons from mouse primary motor cortex were
+    assigned to transcriptomic types, covering 77 of the 90 neuronal t-types of the reference
+    taxonomy.
+  source: Results, "Patch-seq of mouse primary motor cortex"; Figure 1a
+  expected:
+  - quantity: neurons with a t-type
+    value: 1227
+    tolerance: 0
+  - quantity: t-types covered
+    value: 77
+    tolerance: 0
+- id: fig2-rrr-prediction
+  statement: A sparse reduced-rank regression of 17 electrophysiological features on gene
+    expression, using 25 genes and a rank-5 latent space, reached a cross-validated R2 of 0.38,
+    with cross-validated correlations of 0.90, 0.74 and 0.67 between the first three pairs of
+    projections.
+  source: Results, "Distinct phenotypes of major families"; Figure 2
+  expected:
+  - quantity: cross-validated R2
+    value: 0.38
+    tolerance: 0.038
+  - quantity: correlation of the first projections
+    value: 0.90
+    tolerance: 0.09
+  - quantity: correlation of the second projections
+    value: 0.74
+    tolerance: 0.074
+  - quantity: correlation of the third projections
+    value: 0.67
+    tolerance: 0.067
+- id: ed5-rrr-ion-channels
+  statement: A reduced-rank regression restricted to ion channel genes did not perform much worse
+    than the full model, with a cross-validated R2 of 0.33 and correlations of 0.86, 0.71 and 0.56.
+  source: Results, "Distinct phenotypes of major families"; Extended Data Figure 5e-f
+  expected:
+  - quantity: cross-validated R2
+    value: 0.33
+    tolerance: 0.033
+  - quantity: correlation of the first projections
+    value: 0.86
+    tolerance: 0.086
+  - quantity: correlation of the second projections
+    value: 0.71
+    tolerance: 0.071
+  - quantity: correlation of the third projections
+    value: 0.56
+    tolerance: 0.056
+- id: fig3d-families-separate
+  statement: In a k-nearest-neighbour classification of cells into seven transcriptomic families
+    from electrophysiological features, the confusion matrix was mostly diagonal, with only the
+    ET and IT subclasses strongly overlapping.
+  source: Figure 3a, d
+- id: fig3d-morphology-combined
+  statement: Families were less separable by morphology than by electrophysiology among
+    inhibitory neurons, and most separable when electrophysiological and morphological features
+    were combined.
+  source: Figure 3b-d
+- id: fig4c-distance-correlation
+  statement: Across 200 pairs of t-types from the same family, the transcriptomic distance and the
+    electrophysiological distance between t-types were correlated with r = 0.60.
+  source: Figure 4c
+  expected:
+    quantity: Pearson correlation
+    value: 0.60
+    tolerance: 0.06
+- id: fig4d-it-depth
+  statement: Among IT t-types, transcriptomic distances were strongly correlated with differences
+    in average soma depth, r = 0.70.
+  source: Figure 4d
+  expected:
+    quantity: Pearson correlation
+    value: 0.70
+    tolerance: 0.07
+- id: fig5a-ttypes-between-families
+  statement: Most t-types were classified into their own family from electrophysiology, but some,
+    such as Sst Pvalb Calb2, Lamp5 Egln3_1 and Vip Mybpc1, were often classified into another
+    family.
+  source: Figure 5a
+- id: fig5b-ttype-variability
+  statement: Many t-types had a normalized total variance of electrophysiological features well
+    above that of k-means clusters, while some, such as Pvalb Vipr2_2, appeared homogeneous.
+  source: Figure 5b
+# --- The physiological-temperature cohort: this dandiset -------------------------------------
+- id: ed6-cohort
+  statement: At physiological temperature, 185 neurons were sequenced from 8 adult mice (7
+    Sst-Cre/Ai9 and 1 Pvalb-Cre/Ai9); 177 got a t-type (110 Sst, 43 IT, 12 ET, 10 Pvalb, 2 NP);
+    175 were in layer 5; electrophysiological features were extracted for 184.
+  source: Methods, "Experiments at physiological temperature"
+  expected:
+  - quantity: neurons
+    value: 185
+    tolerance: 0
+  - quantity: mice
+    value: 8
+    tolerance: 0
+  - quantity: Sst-Cre mice
+    value: 7
+    tolerance: 0
+  - quantity: Pvalb-Cre mice
+    value: 1
+    tolerance: 0
+  - quantity: neurons with a t-type
+    value: 177
+    tolerance: 0
+  - quantity: Sst neurons
+    value: 110
+    tolerance: 0
+  - quantity: IT neurons
+    value: 43
+    tolerance: 0
+  - quantity: ET neurons
+    value: 12
+    tolerance: 0
+  - quantity: Pvalb neurons
+    value: 10
+    tolerance: 0
+  - quantity: NP neurons
+    value: 2
+    tolerance: 0
+  - quantity: layer 5 neurons
+    value: 175
+    tolerance: 0
+  - quantity: neurons with electrophysiological features
+    value: 184
+    tolerance: 18.4
+  criterion: The counts of neurons, mice and labels are exact records, so their tolerance is zero.
+    The number of neurons with features depends on the feature extraction, so it takes the default
+    10%. A neuron counts as having features when all 17 features the paper uses are defined.
+    Families are read from the t-type names in the files, as the paper names them (L5 PT types
+    are ET). Reproduced if every count is within its tolerance; partially reproduced if the
+    neuron, mouse and family counts match and others do not.
+- id: ed6-stimulus-protocol
+  statement: Cells at physiological temperature were stimulated with the same paradigm as the main
+    data set, 600 ms current pulses from -200 pA upwards in 20 pA steps up to 1,380 pA, sometimes
+    stopped earlier.
+  source: Methods, "Patch-seq recording procedures" and "Experiments at physiological temperature"
+  criterion: For every file, the stimulus of each sweep is read from the file. A cell conforms when
+    every step lasts 600 ms (to within 1 ms), the first step is -200 pA, consecutive sweeps differ
+    by 20 pA (the 0 pA sweep included), and the largest step is at most 1,380 pA. Reproduced if all
+    cells conform; partially reproduced if at least 90% do; not reproduced otherwise.
+- id: ed6-it-et-overlap
+  statement: Follow-up experiments at 34 degrees C confirmed the electrophysiological overlap
+    between IT and ET neurons seen at room temperature.
+  source: Results, "Distinct phenotypes of major families"; Extended Data Figure 6a-g
+  criterion: The paper's family classifier (Fig. 3d) is applied to the 34 degree cells, as its
+    code does it. Representation, the 17 features with four log-transformed, standardized, all
+    17 principal components scaled by the standard deviation of the first. Classifier, k = 10
+    nearest neighbours by Euclidean distance, leave-one-out, neighbours drawn from all cells with
+    all features, the majority family among the neighbours; families scored are those present
+    among Sst, Pvalb, IT and ET (NP is not used, as in the paper). Overlap is confirmed
+    (reproduced) when at least 25% of ET cells are classified as IT or at least 25% of IT cells
+    as ET, the paper's own threshold for "classified into wrong families" in Fig. 5a. Partially
+    reproduced when the larger of the two is between 10% and 25%; not reproduced below 10%.
+    Variants shown that do not decide the outcome are layer 5 cells only, a class-balanced kNN
+    with IT subsampled to the number of ET cells, and a cross-validated logistic regression of
+    IT against ET.
+- id: ed6-it-et-ap-threshold
+  statement: At 34 degrees C, the AP threshold showed a prominent difference between layer 5 IT
+    and ET neurons.
+  source: Extended Data Figure 6e and its legend
+  criterion: Two-sided Mann-Whitney U test between layer 5 IT and layer 5 ET cells at 34 degrees,
+    the test the legend names, for each of the 17 features, without correction for multiple
+    comparisons, as in the paper. Reproduced if the AP threshold has p < 0.05 and is among the
+    three features with the smallest p; partially reproduced if p < 0.05 but it ranks lower; not
+    reproduced if p >= 0.05.
+- id: link-cells
+  statement: The dandiset's recordings are the cells of the paper's published table of the 34
+    degree cohort, with the same t-type, layer and soma depth.
+  source: Data availability; mini-atlas data/m1_patchseq_phys_temp_meta_data.csv
+  data: with_inputs
+  criterion: Cells are matched by the cell identifier stored in each file (cell_id) and the
+    table's Cell column. The link holds (reproduced) if at least 95% of the dandiset's cells match
+    and at least 95% of matched cells agree on t-type, on layer (the file's inferred layer against
+    the layer the paper's code computes from soma depth and cortical thickness) and on soma depth.
+    Partially reproduced if at least 95% match by identifier but agreement on a field is lower;
+    not reproduced otherwise.
+- id: link-features
+  statement: The electrophysiological features computed here from the dandiset's traces agree
+    with the paper's published features for the same cells.
+  source: Methods, "Extraction of electrophysiological features"; mini-atlas
+    data/m1_patchseq_phys_temp_ephys_features.csv
+  data: with_inputs
+  depends_on:
+  - link-cells
+  criterion: For each of the 17 features, Spearman correlation across matched cells between the
+    value computed here and the published value. Reproduced if the correlation is at least 0.9
+    for at least 15 of the 17 features and at least 0.8 for all; partially reproduced if at least
+    0.8 for at least 12; not reproduced otherwise. The extraction here is a re-implementation of
+    the paper's methods and code, so a disagreement may come from it; the notes say which.
+- id: ed6-sst-temperature
+  statement: For layer 5 Sst t-types, AP amplitude and AP width changed the most between room
+    temperature and 34 degrees C, but the relative differences between t-types stayed roughly
+    the same; AHP, input resistance, rebound and sag ratio changed little, and the relative
+    differences between t-types stayed the same.
+  source: Extended Data Figure 6h and its legend
+  data: with_inputs
+  depends_on:
+  - link-cells
+  - link-features
+  criterion: Room-temperature values are the paper's published features of its main data set;
+    34 degree values are computed here from the dandiset. Cells are layer 5 Sst cells (the
+    paper's code takes layer 5 from soma depth over cortical thickness, and leaves out excluded
+    cells at room temperature); t-types with at least 5 cells in both conditions, as in the
+    legend. For each of the six features, the shift is the median over those t-types of the
+    difference of t-type medians (34 minus 25 degrees), divided by the standard deviation of the
+    feature over all layer 5 Sst cells at room temperature. Part (i) holds if AP amplitude and AP
+    width have the two largest absolute shifts. For each feature, the Spearman correlation across
+    t-types between the t-type medians at the two temperatures; part (ii) holds if it is positive
+    for all six features and its median over the six is at least 0.5. Reproduced if both parts
+    hold, partially reproduced if one does, not reproduced if neither.
+- id: ed6-sst-transcriptomic-distance
+  statement: At physiological temperature, as at room temperature, morpho-electric properties of
+    layer 5 Sst neurons varied continuously across the transcriptomic landscape, and the
+    electrophysiological distance between Sst t-types correlated with their transcriptomic
+    distance.
+  source: Results, "Continuous phenotypic variation"; Extended Data Figure 6i
+  data: with_inputs
+  depends_on:
+  - link-cells
+  - link-features

@@ -1,0 +1,490 @@
+schema_version: 1
+id: 000035-scala-2021-01
+dandiset: "000035"
+dandiset_version: 0.211014.0808
+paper: doi:10.1038/s41586-020-2907-3
+date: 2026-10-14
+entry: 000035-scala-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-5
+inputs:
+- what: The paper's per-cell table of the 34 degree cohort (cell ids, t-types, layers, soma depth,
+    cortical thickness), data/m1_patchseq_phys_temp_meta_data.csv, used for link-cells.
+  source: https://github.com/berenslab/mini-atlas at commit 3bf98a524b8e48aa8647e1b9ae8f2351d9c712c9
+- what: The paper's published electrophysiological features of the 34 degree cohort,
+    data/m1_patchseq_phys_temp_ephys_features.csv, used for link-features and as a variant in
+    ed6-sst-temperature.
+  source: https://github.com/berenslab/mini-atlas at commit 3bf98a524b8e48aa8647e1b9ae8f2351d9c712c9
+- what: The paper's per-cell table and published electrophysiological features of the main
+    room-temperature data set, data/m1_patchseq_meta_data.csv and
+    data/m1_patchseq_ephys_features.csv, used for the 25 degree side of ed6-sst-temperature.
+  source: https://github.com/berenslab/mini-atlas at commit 3bf98a524b8e48aa8647e1b9ae8f2351d9c712c9
+outcomes:
+- claim: fig1-ttype-coverage
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The finding rests on the 1,329 cells of the main data set and their sequencing. The
+    dandiset holds only the 185 cells of the follow-up at 34 degrees, with their t-type labels
+    but no gene counts. The main data set's recordings are in dandiset 000008, its sequencing data
+    at NeMO (dat-kq04hua) and GEO (GSE163764), and its processed tables in the paper's repository.
+- claim: fig2-rrr-prediction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs gene expression and features of the main data set. The dandiset holds no gene
+    counts and none of the main data set's cells; they are in dandiset 000008 and at NeMO and GEO.
+- claim: ed5-rrr-ion-channels
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig2-rrr-prediction.
+- claim: fig3d-families-separate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the main data set's cells, which are in dandiset 000008. The same classifier was run
+    on the 34 degree cells for ed6-it-et-overlap, where Lamp5, Vip and CT cells are absent.
+- claim: fig3d-morphology-combined
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs morphological reconstructions, which are not in the dandiset (none were recovered in
+    the 34 degree experiments). They are in the Brain Image Library, with features in the paper's
+    repository.
+- claim: fig4c-distance-correlation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the main data set's cells (dandiset 000008) and the reference 10x expression data.
+- claim: fig4d-it-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the main data set's IT cells (their soma depths are in the paper's repository and
+    dandiset 000008) and the reference 10x expression data.
+- claim: fig5a-ttypes-between-families
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the main data set's cells, in dandiset 000008. The t-types named in the claim are
+    not among the 34 degree cells except Sst Pvalb Calb2.
+- claim: fig5b-ttype-variability
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the main data set's cells, in dandiset 000008.
+- claim: ed6-cohort
+  outcome: reproduced
+  notebook: reproduce_scala_2021.ipynb
+  output: claim:ed6-cohort
+  measured: [185, 8, 7, 1, 177, 110, 43, 12, 10, 2, 175, 185]
+  notes: Every count matches the Methods. All 17 features are defined for 185 cells against 184 in
+    the paper, within the 10% tolerance. Families are read from the t-type names in the files; the
+    12 ET cells are named L5 PT_1 to L5 PT_4 there.
+  deviations:
+  - The number of cells with features comes from the re-implemented extraction here; the paper's
+    table has no row for 20200406_sample_4.
+- claim: ed6-stimulus-protocol
+  outcome: partially_reproduced
+  notebook: reproduce_scala_2021.ipynb
+  output: claim:ed6-stimulus-protocol
+  notes: In all 185 cells every step lasts 600 ms and consecutive steps differ by 20 pA; all 14,054
+    sweeps with a nonzero step start at 0.1 s and end at 0.7 s, and 139 cells end at 1,380 pA. 174 of 185 (94.1%) conform to the whole ladder. Nine
+    cells of mouse_UEQOU end at 1,400 to 1,580 pA, and two cells of other mice start at -180 pA
+    and -100 pA and end above 1,380 pA. The intervals of 1.3 or 1.4 s between pulses cannot be
+    checked because every series has an undefined starting time.
+- claim: ed6-it-et-overlap
+  outcome: reproduced
+  notebook: reproduce_scala_2021.ipynb
+  output: claim:ed6-it-et-overlap
+  notes: With the paper's kNN classifier (k = 10, leave-one-out, 17-feature representation, all
+    185 cells), 58.3% of ET cells (7 of 12) are classified as IT and no IT cell as ET; Sst cells
+    are classified as Sst 100% of the time and Pvalb cells 60%. ET cells go to IT in both mice
+    with ET cells (1 of 3 and 6 of 9). The overlap is one-sided and partly reflects that IT cells
+    are 78% of IT and ET cells. With IT subsampled to 12 cells and an odd k (no ties), 10.5%
+    (k = 9) and 12.4% (k = 11) of ET cells go to IT and 33.4% and 36.5% of IT cells to ET; a
+    class-balanced logistic regression separates layer 5 IT from ET with a balanced accuracy of
+    0.83 against a shuffled-label null of 0.50 (p = 0.005). The result on layer 5 cells alone,
+    and without 20200406_sample_4 (the paper's 184 cells), is the same as on all cells (58.3% and
+    0%). All ET cells come from two mice. Within mouse_UEQOU alone (10 IT, 9 ET), the kNN
+    classifies 33.3% of ET cells as IT and 20.0% of IT cells as ET, and the logistic regression
+    reaches 0.78 (p = 0.025). The criterion does not require a test within mouse.
+  deviations:
+  - The paper shows the 34 degree comparison as feature distributions and two-feature scatter
+    plots (Extended Data Fig. 6a-g); it reports no classifier at 34 degrees. The test applies the
+    room-temperature classifier of Fig. 3d to the 34 degree cells, with four families present
+    instead of seven.
+  - Features are computed by the re-implementation here; link-features shows they agree with the
+    paper's.
+  - The main test uses all 185 cells, including 20200406_sample_4 (layer 5 IT), which the paper
+    leaves out; the 184-cell result is shown as a variant.
+- claim: ed6-it-et-ap-threshold
+  outcome: reproduced
+  notebook: reproduce_scala_2021.ipynb
+  output: claim:ed6-it-et-ap-threshold
+  notes: Layer 5 IT median -27.0 mV (43 cells) against ET -33.1 mV (12 cells), Mann-Whitney
+    p = 0.00035, area under the curve 0.84; second of 17 features after input resistance
+    (p = 0.0001). Without 20200406_sample_4, p = 0.00026 (42 IT cells). Same sign in both mice
+    with both subclasses, but within mouse_UEQOU alone the gap is smaller and not significant
+    (-29.3 against -31.8 mV, area under the curve 0.73, p = 0.094, 10 IT and 9 ET cells). All ET
+    cells come from two mice, so a difference between mice may contribute; the criterion does
+    not require a test within mouse. The ranking of the first two features is the one the
+    paper's code prints for 34 degrees.
+  deviations:
+  - The ranking covers the 17 features used here, not all 29 the paper's code ranks.
+  - The main test uses all 185 cells, including 20200406_sample_4, which the paper leaves out;
+    the 184-cell result is shown as a variant.
+- claim: link-cells
+  outcome: partially_reproduced
+  notebook: reproduce_scala_2021.ipynb
+  output: claim:link-cells
+  notes: All 185 files match a row of the paper's table by cell id and no row lacks a file. Family,
+    layer, soma depth and mouse agree for every cell; the files' inferred layer equals the layer
+    the paper's code computes from soma depth and cortical thickness. The t-type name agrees for
+    93.5% of cells, below the criterion's 95%, only because the 12 ET cells are named L5 PT_1 to
+    L5 PT_4 in the files and L5 ET_1 to L5 ET_4 in the table, one to one; with that renaming the
+    agreement is 100%. The partial outcome reflects the names, not a mismatch of cells. The
+    verifier of round 1 would call this reproduced; the outcome is kept because the criterion,
+    written before the analysis, compares t-type names.
+  deviations:
+  - The criterion did not anticipate renamed t-types and was applied as written, to the names.
+- claim: link-features
+  outcome: reproduced
+  notebook: reproduce_scala_2021.ipynb
+  output: claim:link-features
+  notes: 184 of the 185 cells are in the paper's feature table. The Spearman correlation between
+    the features computed here and the published ones is at least 0.9 for 16 of 17 features
+    and 0.877 for the lowest, the AP coefficient of variation. The median absolute difference is
+    zero to three decimals for all features but the AHP (0.011 mV). By mouse, 0.895
+    (mouse_UEQOU) to 0.995 of values are within 10% of the paper's. The maximum number of APs
+    differs between the Methods' and the code's definitions for 3 cells.
+  deviations:
+  - The extraction is a re-implementation of the paper's methods and code (scala34.py), not the
+    paper's code, which is under the Allen Institute's license.
+  - The maximum number of APs follows the Methods (sweeps with spikes in the 100 ms before or the
+    200 ms after the step are excluded before taking the maximum); the code's version is shown.
+- claim: ed6-sst-temperature
+  outcome: reproduced
+  notebook: reproduce_scala_2021.ipynb
+  output: claim:ed6-sst-temperature
+  notes: 147 layer 5 Sst cells at 25 degrees (published features) and 101 at 34 degrees (computed
+    here); seven t-types have at least 5 cells in both. Shifts in units of the 25 degree SD are AP
+    width -1.78, AP amplitude -1.66, input resistance -0.61, rebound -0.33, AHP -0.25 and sag
+    ratio -0.02, so AP width and amplitude change most. Spearman correlations of t-type medians
+    between temperatures are 0.75 (AP amplitude), 0.88 (AP width), 0.93 (AHP, input resistance,
+    rebound) and 0.96 (sag ratio), median 0.93. The same holds with the paper's published 34
+    degree features and with t-type means. In each of the 7 mice with such cells, the 34 degree
+    medians of AP amplitude and width lie below the room-temperature medians.
+  deviations:
+  - The room-temperature side uses the paper's published features of dandiset 000008's cells, not
+    features recomputed from that dandiset.
+  - The legend says the relative differences "stayed roughly the same"; the criterion turns this
+    into Spearman correlations of t-type medians and a shift measured in standard deviations.
+- claim: ed6-sst-transcriptomic-distance
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The transcriptomic distance between Sst t-types needs the average expression of each
+    t-type in the single-cell 10x v2 reference data (Yao et al. 2021). The paper's code reads it
+    from reduced-allen-data.zip on Zenodo (doi:10.5281/zenodo.5118962), member
+    10X_cells_v2_AIBS.pickle. The notebook reads the archive's directory (87.9 MB compressed,
+    517.0 MB uncompressed) and times a 1 MB range request. In the delivered run the rate was
+    62 kB/s, about 24 minutes for the member. The rate varies between runs; in the earlier runs
+    of this attempt (not in the delivered notebook) it was 27, 114, 44, 149 and 58 kB/s, about
+    55, 13, 33, 10 and 25 minutes. A run that fetched the member would have exceeded the 30 minute
+    limit in two of these six runs and fitted in the others, so the claim was not tested. The
+    reference is public, and the verifier of round 2 holds that the claim is testable; the block
+    reflects this attempt's choice not to make the run depend on Zenodo's rate. Proposed change
+    for another round, fetch the member in the run, write a criterion for the claim (it has none),
+    and test it. The original
+    reference data at NeMO are much larger. The electrophysiological half is computed from the
+    dandiset as in the paper's code (cell 19 of physiological-temperature.ipynb), for 9 layer 5 Sst
+    t-types with at least 5 cells (Sst Chodl left out), as the paper's code prints, with
+    distances between their mean standardized features of 1.54 to 5.24. It tests nothing
+    without the transcriptomic half. A proxy transcriptomic distance from the paper's own 34
+    degree Patch-seq counts was not computed, as it differs from the paper's method. The paper
+    reports the correlation and its p-value only inside the figure.
+findings:
+- kind: metadata_error
+  statement: Every voltage series states the unit volts and every stimulus series amperes, with a
+    conversion of 1, but the values are in millivolts (-150 to 67) and picoamperes (-200 to
+    1,580).
+- kind: metadata_insufficient
+  statement: Every series has an undefined (NaN) starting time, so the timing of sweeps relative
+    to each other is not recorded. Within a sweep the response and the stimulus share a clock
+    (onset at 0.1 s, offset at 0.7 s).
+- kind: metadata_insufficient
+  statement: The t-type of the 12 ET cells is stored under the older names L5 PT_1 to L5 PT_4,
+    which differ from the paper's and its tables' L5 ET_1 to L5 ET_4; no mapping is given. All
+    other t-type names match the paper's table.
+- kind: metadata_error
+  statement: The dandiset's description repeats the main data set's "over 1300 neurons"; the
+    dandiset holds 185 neurons of the follow-up at 34 degrees.
+- kind: metadata_error
+  statement: In the published version the contributor list has a placeholder "Last, First" with
+    Zizhen Yao's ORCID, the brain region is typed as a disorder, and the assets summary gives no
+    approach or measurement technique. The unpublished draft corrects these.
+- kind: other
+  statement: Eleven cells were stimulated beyond the 1,380 pA the Methods give (up to 1,580 pA),
+    and two of them started at -180 pA and -100 pA, not -200 pA. Nine of the eleven are from one
+    mouse (mouse_UEQOU).
+- kind: code_mismatch
+  statement: The paper's code takes the maximum number of APs before excluding sweeps with spikes
+    outside the step, and looks for those spikes over the whole trace before and after the step;
+    the Methods exclude such sweeps first and look 100 ms before and 200 ms after. The two
+    definitions differ for 3 of the 185 cells.
+- kind: paper_inconsistency
+  statement: The Methods build the electrophysiological representation from 17 principal
+    components of 17 features and later call it "the 16-dimensional electrophysiological
+    representation"; the paper's code uses all 17.
+- kind: paper_inconsistency
+  statement: The legend of Extended Data Fig. 6j describes it as "the same analysis as in (c)",
+    but in the paper's code panel j is the 34 degree version of panel i (the Sst overlay and the
+    transcriptomic-distance correlation), not of panel c.
+verifications:
+- date: '2026-10-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier listed the version's assets through the
+    DANDI API and ran synthetic checks of the helper functions (input resistance, time constant, sag,
+    rebound, spike counts, rheobase, family_of, layer_from_depth, knn_family_confusion).
+  results:
+  - claim: fig1-ttype-coverage
+    agrees: true
+    outcome: blocked
+    reason: The DANDI API lists 185 assets for this version, all icephys NWB files (1.66 GB), all from
+      the 34 degree cohort. The room-temperature cells, sequencing and morphologies are not in 000035.
+    response: No change needed.
+  - claim: fig2-rrr-prediction
+    agrees: true
+    outcome: blocked
+    reason: Same reason. No gene expression in the dandiset.
+    response: No change needed.
+  - claim: ed5-rrr-ion-channels
+    agrees: true
+    outcome: blocked
+    reason: Same reason.
+    response: No change needed.
+  - claim: fig3d-families-separate
+    agrees: true
+    outcome: blocked
+    reason: The room-temperature cohort is not in 000035. The notebook runs the same kNN on the 34 degree
+      cells, but that belongs to ed6-it-et-overlap.
+    response: No change needed.
+  - claim: fig3d-morphology-combined
+    agrees: true
+    outcome: blocked
+    reason: No morphologies in the dandiset (the Methods say morphologies were not recovered at 34 degrees).
+    response: No change needed.
+  - claim: fig4c-distance-correlation
+    agrees: true
+    outcome: blocked
+    reason: Needs room-temperature cells and 10x reference expression.
+    response: No change needed.
+  - claim: fig4d-it-depth
+    agrees: true
+    outcome: blocked
+    reason: Needs room-temperature IT cells and expression.
+    response: No change needed.
+  - claim: fig5a-ttypes-between-families
+    agrees: true
+    outcome: blocked
+    reason: Needs room-temperature cells across all families.
+    response: No change needed.
+  - claim: fig5b-ttype-variability
+    agrees: true
+    outcome: blocked
+    reason: Same reason.
+    response: No change needed.
+  - claim: ed6-cohort
+    agrees: true
+    outcome: reproduced
+    reason: All 11 exact counts match, and 185 cells with all 17 features against 184 is within 18.4. The
+      counts are read from labels stored in the files, so this checks consistency, not independent
+      derivation.
+    response: No change needed.
+  - claim: ed6-stimulus-protocol
+    agrees: true
+    outcome: partially_reproduced
+    reason: 174 of 185 cells conform (94.1%). Nine cells from mouse UEQOU go above 1,380 pA (up to 1,580),
+      and two start at -180 or -100 pA. Separately (does not affect a conclusion), the step duration was
+      checked only as min offset minus min onset and max offset minus max onset, not per sweep, and the
+      onset and offset values were never printed.
+    response: The helper now keeps the onset and offset of every sweep, the duration is checked per sweep,
+      and the notebook prints their distributions. All 14,054 sweeps with a nonzero step start at 0.1 s and
+      end at 0.7 s. Outcome kept.
+  - claim: ed6-it-et-overlap
+    agrees: true
+    outcome: reproduced
+    reason: 58.3% of ET cells are classified as IT, above the 25% threshold, and IT as ET is 0%. The class-
+      balanced logistic regression separates L5 IT from ET at balanced accuracy 0.83 (p = 0.005), so the
+      overlap is partial and the kNN number is driven partly by the 43 to 12 imbalance. Problems that do
+      not affect a conclusion - all 185 cells are used though the paper excluded 20200406_sample_4; with
+      k = 10 the balanced variant sends 5 to 5 ties to ET, which inflates IT as ET and deflates ET as IT, and
+      an odd k would fix it; confounding by mouse is not addressed, as all ET cells come from two mice and
+      within UEQOU 6 of 9 ET cells are classified as IT against 1 of 3 in MITSU; ties in
+      knn_family_confusion go to ET, which is conservative. It asked for the confusion matrix on the 184
+      published cells and an IT and ET comparison within UEQOU.
+    response: Added the confusion matrix without 20200406_sample_4 (58.3% and 0%, unchanged). The balanced
+      variant now uses k = 9 and k = 11 on the same subsamples (ET as IT 10.5% and 12.4%, IT as ET 33.4% and
+      36.5%). Added kNN and logistic regression within mouse_UEQOU (kNN ET as IT 33.3%, IT as ET 20.0%;
+      balanced accuracy 0.78, p = 0.025). The tie rule is now stated in the helper's docstring. The
+      notebook prints the 17 computed features of every cell as CSV. Notes and conclusion updated; outcome
+      kept.
+  - claim: ed6-it-et-ap-threshold
+    agrees: true
+    outcome: reproduced
+    reason: AP threshold ranks 2 of 17, p = 3.5e-4, and the paper's own 34 degree code gives the same top
+      two features. Removing 20200406_sample_4 would, if anything, strengthen the difference. Inside UEQOU
+      the threshold gap is smaller (-31.8 against -29.3 mV); the criteria do not require a within-mouse test.
+    response: Added the test without 20200406_sample_4 (p = 0.00026, 42 IT cells) and within mouse_UEQOU
+      (area under the curve 0.73, p = 0.094). The notes and conclusion now say that the gap within UEQOU is
+      not significant and that a difference between mice may contribute. Outcome kept.
+  - claim: link-cells
+    agrees: false
+    outcome: reproduced
+    reason: 185 of 185 cells match, and layer, soma depth and mouse agree 100%. Literal t-type agreement is
+      93.5% because the files say L5 PT_k where the table says L5 ET_k. The mapping is one-to-one, and after
+      renaming agreement is 100%. The claims file itself treats PT as ET.
+    response: Outcome kept as partially_reproduced and the disagreement recorded in the notes, the
+      conclusion and the summary. The criterion, written before the analysis, compares t-type names, and
+      the renaming is reported as a finding about the dandiset.
+  - claim: link-features
+    agrees: true
+    outcome: reproduced
+    reason: 16 of 17 features have Spearman at least 0.9 and all 17 at least 0.8 (lowest AP CV, 0.877).
+    response: No change needed.
+  - claim: ed6-sst-temperature
+    agrees: true
+    outcome: reproduced
+    reason: The two largest absolute shifts are AP width (-1.78 SD) and AP amplitude (-1.66 SD). Spearman is
+      positive for all six features, median 0.93, over 7 t-types. Cell selection matches the paper's code,
+      and the result is unchanged with the published 34 degree features.
+    response: No change needed.
+  - claim: ed6-sst-transcriptomic-distance
+    agrees: true
+    outcome: blocked
+    reason: Blocked as too_large or data_missing. No expression data in 000035; the paper's code takes RNA
+      distances from the 10x_cells_v2_AIBS reference, gitignored in mini-atlas and held at NeMO. The
+      electrophysiological half could have been computed from the dandiset, and a proxy RNA distance from
+      the 34 degree Patch-seq counts in mini-atlas was also feasible, though it differs from the paper's
+      method. Neither was done. The notebook says the data could not be fetched within the time limit, but
+      no cell shows a fetch attempt.
+    response: The notebook now reads the directory of the Zenodo archive the paper's code uses
+      (doi:10.5281/zenodo.5118962; the member is 87.9 MB compressed) and times a 1 MB range request (27, 114
+      and 44 kB/s in three runs, about 55, 13 and 33 minutes for the member), and computes the electrophysiological distance
+      matrix of the 9 layer 5 Sst t-types as the paper's code does. blocked_by kept as not_runnable, since
+      the reference is public and the limit is the transfer time. The proxy from the Patch-seq counts was
+      not computed, as it is not the paper's method. Preparation-run timings removed from the notes.
+      At the fastest of these rates the fetch would fit within the 30 minute limit, so the claim could
+      be tested in a later round; that would change its outcome and needs another verification round.
+- date: '2026-10-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, with its conclusions and summary, the
+    helper module, the claims file, the README and this attempt record, with the paper.
+  results:
+  - claim: fig1-ttype-coverage
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing), as for the other eight claims on the main data set.
+    response: No change needed.
+  - claim: fig2-rrr-prediction
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: ed5-rrr-ion-channels
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig3d-families-separate
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig3d-morphology-combined
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig4c-distance-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig4d-it-depth
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig5a-ttypes-between-families
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: fig5b-ttype-variability
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked (data_missing).
+    response: No change needed.
+  - claim: ed6-cohort
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (cell 10).
+    response: No change needed.
+  - claim: ed6-stimulus-protocol
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (cell 13, 174 of 185, 94.1%). The round 1 point on step timing is resolved, as
+      onsets and offsets are now checked per sweep and all 14,054 sweeps are 0.1 to 0.7 s.
+    response: No change needed.
+  - claim: ed6-it-et-overlap
+    agrees: true
+    outcome: reproduced
+    reason: The criterion is met (58.3% in cells 16 and 19d). The variants in cells 18 and 19 show the
+      overlap is one-sided and partly an imbalance effect, and the record now says so. A minor slip
+      that does not affect a conclusion, the comment in cell 17 says IT and ET cells come from three
+      mice, but its own crosstab shows four (MITSU, SCEAC, UEQOU and WPOGH).
+    response: The comment in cell 17 now says four mice, with ET cells from two of them. Outcome kept.
+  - claim: ed6-it-et-ap-threshold
+    agrees: true
+    outcome: reproduced
+    reason: Rank 2 of 17, p = 0.00035 (cell 23). The record now says the within-mouse threshold gap is
+      not significant.
+    response: No change needed.
+  - claim: link-cells
+    agrees: false
+    outcome: reproduced
+    reason: As in round 1. The only mismatch is the one-to-one PT/ET renaming. After renaming, agreement
+      is 1.000 (cell 26), and the claims file itself treats PT as ET. The record states the
+      disagreement correctly.
+    response: Outcome kept as partially_reproduced and the disagreement left recorded, for the reason
+      given in round 1, that the criterion written before the analysis compares t-type names.
+  - claim: link-features
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. 16 of 17 features at least 0.9, lowest 0.877 (cell 29).
+    response: No change needed.
+  - claim: ed6-sst-temperature
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Both parts hold (cell 34) and the variants agree (cell 35).
+    response: No change needed.
+  - claim: ed6-sst-transcriptomic-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees it was not tested, but not with the reason. Cell 39 printed a download rate of
+      149 kB/s, so the fetch takes about 10 minutes, inside the 30 minute limit. The README, cell 0,
+      the Summary and the record's notes and response say the data cannot be fetched within the time
+      limit and give rates of 27, 114 and 44 kB/s, none of which is this notebook's, and the statement
+      that the fetch is beyond ten minutes in every run is false for the run delivered. The reference
+      data are public and the electrophysiological half is already computed, so the claim is testable
+      and should be tested, not blocked. The text needs to be corrected to the rate actually observed,
+      or brought in line with a run that performs the test.
+    response: The text was corrected. The README, cell 0, the conclusion and the Summary now say the
+      claim was not tested, that the reference is public, and that the fetch takes about 10 to 55
+      minutes depending on Zenodo's rate. The notes give the rate of the delivered run (62 kB/s, about
+      24 minutes) and mark the rates of the earlier runs as not in the delivered notebook. The fetch
+      was not added, since in two of six runs it would have exceeded the 30 minute limit, and the
+      claim has no criterion; testing it is recorded in the notes as a proposed change for another
+      round. Outcome and blocked_by kept, as this is the final revision.
