@@ -5,3 +5,5 @@ For each point in the report: fix what it found, or say why not. Add any output 
 Save any text of the paper you download under `paper/`. Write prose plainly: no em dashes, never the word "rather". YAML plain scalars must not contain ": ".
 
 Your final message is a short report: what changed in the outcomes, what you added or corrected, and anything you did not do and why.
+
+Run every command in the foreground and wait for it to finish, however long it takes: the run ends when you stop, and anything still running is lost.

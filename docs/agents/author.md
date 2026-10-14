@@ -9,3 +9,5 @@ Provenance: kind agent; accountable name "CatalystNeuro"; harness "Claude Code (
 Write prose plainly: no em dashes, never the word "rather", no bold except the "**Result: ...**" openers the protocol requires. YAML plain scalars must not contain ": " (colon space). If something in the protocol is ambiguous or does not fit this dataset, make a reasonable choice and record it.
 
 Your final message is a report with: (1) the outcome per claim in a table; (2) what was found about the dandiset; (3) every point where the protocol was unclear, wrong, or missing something, numbered, each with what you did; (4) the runtime and anything that failed. Be concise.
+
+Run every command in the foreground and wait for it to finish, however long it takes: the run ends when you stop, and anything still running is lost.

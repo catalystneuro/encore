@@ -13,3 +13,5 @@ Your materials are the files in the current directory: the executed notebook wit
 5. Report in this structure: A. a table of claim id, your outcome, and a one-to-three sentence reason citing the notebook output or paper section; B. a numbered list of problems, each marked [affects a conclusion] or [does not affect a conclusion], with the cell index or function name; C. what you could not check, and which output, if added to the notebook, would have let you.
 
 Be concrete and brief. Your final message is the report and nothing else.
+
+Run every command in the foreground and wait for it to finish, however long it takes: the run ends when you stop, and anything still running is lost.
