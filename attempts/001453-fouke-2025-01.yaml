@@ -1,0 +1,256 @@
+schema_version: 1
+id: 001453-fouke-2025-01
+dandiset: "001453"
+dandiset_version: 0.250518.1950
+paper: doi:10.1016/j.cub.2025.04.027
+date: 2026-10-14
+entry: 001453-fouke-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-5
+inputs:
+- what: Names of the stimulus codes (the conversion of stimulus names to codes, its printed list of
+    codes, and its own labels for codes 9 to 13), the trial processing parameters, the spatial
+    scale of 10 pixels per mm, and the per-stimulus medians it printed, used as reference values
+    for the link claim. From the paper's analysis notebook Fig1-S1.ipynb.
+  source: https://gitlab.oit.duke.edu/ean26/danionella_omr_neuralcircuits2025 at commit
+    33a5c297ff4ab6ff49f6bdd96139e9fdd867025c
+- what: Stimulus names in protocol order, from the protocol file
+    resources/protocols/sevenrep_twentyonestim.hdf of the stimulus software pandastim.
+  source: https://github.com/Naumann-Lab/pandastim at commit 7d9d1610be442c5a933e2575c071c64577e6312f
+outcomes:
+- claim: stimulus-code-link
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:stimulus-code-link
+  notes: Codes are matched by their integer value. All 21 codes are in the dandiset, including
+    every code the analysis uses. Through the link, 17 of 18 species and stimulus speed medians
+    are within 10% of the values printed by Fig1-S1.ipynb (DC static is 10.52 against 11.9
+    mm/s), and the angular velocities differ from the printed ones by a median of 0.02 deg/s.
+    The fish counts (25 ZF, 12 DC) match the code's lists; fish cannot be matched one by one, as
+    no identifier links the dandiset's subjects to the code's folders. The data do not settle
+    which of codes 9 and 11 is lateral right; the ZF medians are 0.02 and 1.59 deg/s.
+  deviations:
+  - The code's filter on a `vel` column is not applied to DC trials, as the DC files have no such
+    series; this may explain the one DC static value outside 10%.
+- claim: fig1d-dc-faster-all-codes
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1d-dc-faster-all-codes
+  notes: Over all 21 codes, the median over fish and code values is 94.0 pixels/s for DC and 55.2
+    for ZF; species effect F = 78.4, p = 6.3e-18. With positions resampled to 30 Hz, 95.2
+    against 53.8 (p = 1.3e-08). DC are faster within each frame-rate group.
+  deviations:
+  - Tested over all stimulus codes without their names; the paper's figure uses nine whole-field
+    stimuli.
+  - The comparison assumes one spatial scale for all rigs, which the files do not state.
+- claim: fig1d-median-velocity
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1d-median-velocity
+  measured:
+  - 9.87
+  - 6.41
+  notes: All four readings put both values within tolerance; (a) median of stimulus medians DC
+    10.02 and ZF 6.39 mm/s, (b) median of fish and stimulus values 9.87 and 6.41 (given as
+    measured), (c) median of fish medians 9.36 and 6.33, (d) median of trials 9.88 and 6.28.
+    Species effect F = 20.8, p = 7.5e-06. With 30 Hz positions DC 9.43 to 10.15 and ZF 6.07 to
+    6.30 (p = 0.0011); without trial rejection the values are unchanged.
+  deviations:
+  - The paper does not say how the overall median is taken; four readings are shown, and all
+    match.
+  - 25 ZF, where the paper states 26.
+  - Speeds rely on the code's scale of 10 pixels per mm, which the dandiset does not state.
+- claim: fig1d-zf-forward-faster-than-static
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1d-zf-forward-faster-than-static
+  measured:
+  - 4.84
+  - 8.78
+  notes: ZF static 4.84 mm/s over 18 fish and forward 8.78 mm/s over 25 fish. Of 18 fish with
+    both, 14 are faster to forward motion (median difference 3.67 mm/s, Wilcoxon p = 0.0077).
+    The static value is 8.31 mm/s in the 5 fish from 167 to 171 Hz files and 4.50 in the 13
+    from 32 to 35 Hz files. Static is the start of a 4-hour blank block after all motion trials,
+    one period per fish, and 7 ZF have none.
+  deviations:
+  - 25 ZF, where the paper states 26.
+- claim: fig1d-dc-no-modulation
+  outcome: not_reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1d-dc-no-modulation
+  notes: By the paper's test (Tukey's HSD over the 18 species and stimulus groups) 3 of 36 DC
+    pairs differ, all static against a motion direction (backward left, backward right, forward
+    left; adjusted p 0.030 to 0.049). The DC static values come from 9 fish and include one at
+    106.5 mm/s and two at 0.0. Among the eight directions no DC pair differs (smallest adjusted
+    p 0.999), DC per-stimulus medians span 8.81 to 10.52 mm/s (ratio 1.19, ZF 2.03), and a
+    one-way ANOVA across the nine DC stimuli gives p = 0.479 (ZF p = 0.00082). With values above
+    100 mm/s left out, no DC pair differs. The same Tukey test finds no ZF pair over the 18
+    groups (smallest p 0.835).
+  deviations:
+  - The DC static block may hold different frames from the paper's, as the code's filter on DC
+    `vel` cannot be applied (DC static 10.52 against the code's printed 11.9 mm/s).
+- claim: fig1d-dc-faster-oblique
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1d-dc-faster-oblique
+  notes: Under reading (b), motion at 90 degrees or more, DC are significantly faster than ZF for
+    right (p = 0.0002) and backward right (p = 0.0047), 2 of 4; under reading (a), the
+    intercardinal directions, for 1 of 4 (backward right). Backward motion also differs
+    (p = 0.0002).
+  deviations:
+  - The legend's "oblique" can be read two ways; the claim is reproduced under one of them (b)
+    and not under the other (a).
+- claim: fig1g-follow-direction
+  outcome: partially_reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1g-follow-direction
+  notes: ZF turn with the motion; the rightward minus leftward difference is positive in 23 of 25
+    fish (median 29.51 deg/s, one-sided Wilcoxon p = 9.8e-07). DC do not by this test; 7 of 12
+    positive, median 0.88 deg/s, p = 0.151, and the DC median for left motion is +0.25 deg/s,
+    the same sign as the paper's code printed (+0.3). DC turn right to right motion (8.67 deg/s).
+  deviations:
+  - The paper gives no test for following the direction; the per-fish rightward minus leftward
+    difference and its test were chosen here before the analysis.
+- claim: fig1h-zf-higher-angular-acceleration
+  outcome: not_reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1h-zf-higher-angular-acceleration
+  notes: With angular acceleration as the Methods define it, DC are higher than ZF for all nine
+    stimuli (medians 143 to 191 against 55.4 to 66.4 deg/s2, Kruskal-Wallis p below 0.05/9 for
+    each), the reverse of the claim. Per-fish medians, and the files at 128 to 171 Hz alone
+    (ZF 84.9, DC 178.6 deg/s2, p = 6.3e-05), give the same. The quantity Fig1-S1.ipynb computes
+    gives ZF higher with p below 0.05/9 for 7 of 9 stimuli; it divides the heading change per
+    frame by the file's mean frame interval, which in DC files is a median 8.73 times the frame
+    interval (ZF 1.37), as DC files hold only trial frames.
+  deviations:
+  - Follows the Methods' definition (degrees per second squared) on heading resampled to 30 Hz;
+    the code's quantity, which disagrees with the Methods, is shown as a variant.
+  - Heading is taken from the cumulative sum of `f0_vtheta`, as the code does; in DC files it does
+    not match `f0_theta`.
+- claim: figs1e-dc-respond-less-monocular
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:figs1e-dc-respond-less-monocular
+  notes: Species effect F = 23.3, p = 2.5e-06. DC turn less toward the stimulus than ZF for
+    medial stimuli (3.26 against 13.48 deg/s, p = 0.0003) and binocular ones (2.87 against 21.87,
+    p = 0.0002). For lateral stimuli DC are below ZF only nominally (-1.07 against -0.13 deg/s,
+    p = 0.96); neither species turns toward lateral motion. With the protocol file's assignment of
+    codes 9 and 11, the lateral medians change sign and DC are no longer below ZF there, which
+    would make the claim partially reproduced.
+  deviations:
+  - Codes 9 and 11 are assigned as the figure code has them; the stimulus software's conversion
+    has them the other way, and the data do not settle it.
+- claim: fig1c-continuous-vs-bouts
+  outcome: reproduced
+  notebook: reproduce_fouke_2025.ipynb
+  output: claim:fig1c-continuous-vs-bouts
+  notes: The median-to-mean ratio of instantaneous speed is 0.306 in ZF (25 fish, 0.244 to 0.580)
+    and 0.908 in DC (12 fish, 11 above 0.74, one at 0.140), Mann-Whitney p = 5.4e-05. It holds in
+    files at 128 to 171 Hz alone (0.298 against 0.898, p = 0.0028) and in forward trials alone.
+  deviations:
+  - The paper shows this with representative traces and a bout analysis whose bout files are not
+    in the dandiset; the measure was chosen here before the analysis.
+- claim: fig1cef-representative-values
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The numbers come from single representative fish and trials. Fig1-S1.ipynb selects them
+    by the index of a data folder and a trial number (for example DC folder 29, trial 79), and the
+    dandiset gives no mapping from those folders to its subjects, nor the original file names.
+- claim: fig2d-shared-architecture
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The two-photon imaging data are not in the dandiset, which holds only freely swimming
+    tracking. The GitLab repository the paper names for "all behavioral and imaging data" holds
+    notebooks only, and no other dandiset of this lab or paper was found on the archive.
+- claim: fig2g-dsi-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
+- claim: fig2h-fewer-motion-responsive
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
+- claim: fig2k-more-monocular
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
+- claim: fig2l-bi-ratio
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
+- claim: fig3e-longer-swims
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The head-fixed tail tracking recorded during imaging is not in the dandiset, nor in the
+    paper's GitLab repository.
+- claim: fig3cd-zf-turn-more
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The head-fixed tail tracking is not in the dandiset, nor in the paper's GitLab repository.
+- claim: fig4f-longer-on-duration
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the imaging and the head-fixed tail tracking, neither of which is in the dandiset.
+- claim: fig4hi-vspn-lateralized
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the imaging, the tail tracking and the registration to the mapzebrain atlas, none
+    of which is in the dandiset.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the freely swimming tracking of Figure 1 and Figure S1. The
+    two-photon imaging and the head-fixed tail tracking behind Figures 2 to 4 are not in it, and
+    the GitLab repository the paper names for all behavioural and imaging data holds analysis
+    notebooks only. Nine of the paper's main findings cannot be tested.
+- kind: metadata_insufficient
+  statement: The stimulus codes 0 to 20 have no names or description in the files or the
+    dandiset metadata. They can be named only from the paper's analysis notebook and the protocol
+    file of its stimulus software.
+- kind: code_mismatch
+  statement: The paper's analysis notebook labels code 9 as lateral right and 11 as lateral left,
+    while its conversion of the stimulus software's names gives the reverse (it carries a remap
+    that swaps them). The data do not settle which is right, as zebrafish barely turn to either.
+- kind: metadata_error
+  statement: Subject ids 0 to 11 are each used for one zebrafish and one Danionella cerebrum, so
+    subject_id does not identify an animal. The archive's summary counts 25 subjects and lists
+    only Danio rerio; the files hold 37 fish of two species.
+- kind: metadata_error
+  statement: f0_vtheta is stated in radians/s but holds the heading change per frame in radians,
+    and f0_vx and f0_vy are stated in pixels/s but are per frame. In most Danionella files the sum
+    of f0_vtheta over a trial does not match the change of f0_theta (median ratios 0.09 to 0.89).
+- kind: other
+  statement: 18 of 25 zebrafish files and 1 of 12 Danionella files are sampled at 32 to 35 Hz,
+    where the Methods state tracking at more than 150 Hz. Some measures differ with frame rate,
+    such as the zebrafish static speed (8.31 against 4.50 mm/s).
+- kind: metadata_insufficient
+  statement: No spatial scale is given; positions are in pixels. They are consistent with the 10
+    pixels per mm in the paper's code, except one Danionella file (sub-5) whose positions reach
+    1490 pixels against about 1120 in the others.
+- kind: other
+  statement: Zebrafish and Danionella files were exported differently. Zebrafish files keep
+    untracked frames and frames between trials; Danionella files hold only tracked trial frames
+    and add a `dist` series. The paper's code filters Danionella frames on a `vel` column that is
+    not in the files.
+- kind: code_mismatch
+  statement: The paper's code computes the angular acceleration of Figure 1H as the heading change
+    per frame divided by the file's mean frame interval, an angular velocity. In Danionella files
+    the mean interval includes the gaps between trials (a median 8.73 times the frame interval),
+    which scales their values down. With the Methods' definition Danionella have the higher
+    angular acceleration.
+- kind: code_mismatch
+  statement: Figure 1H and its legend state a Kruskal-Wallis test with Bonferroni correction; the
+    code runs two-sample Kolmogorov-Smirnov tests, and its loop selects the stimulus with a
+    variable left from an earlier loop, so the nine tests compare the same stimulus.
+- kind: code_mismatch
+  statement: The Figure 1D legend gives 26 zebrafish; the paper's code lists 25, its ANOVA
+    degrees of freedom fit 25, and the dandiset holds 25.
+- kind: selection_undocumented
+  statement: The dandiset holds the 25 zebrafish and 12 Danionella the code keeps after exclusion
+    (its comments give 28 and 40 recorded). The dandiset does not say that the excluded fish were
+    left out or why.
