@@ -8,7 +8,7 @@ its abstract, the titles of its figures, and the dandiset's description of its f
 
 | Claim | Outcome |
 |---|---|
-| A robust spatial code on the Escher staircase in flight | Partially reproduced (a change to not reproduced is proposed) |
+| A robust spatial code on the Escher staircase in flight | Not reproduced |
 | The code covers each of the three orthogonal surfaces | Blocked: metadata insufficient |
 | Spatial information in flight comparable to preflight | Reproduced |
 | Abnormal spatial selectivity on flight day 4 | Not reproduced |
