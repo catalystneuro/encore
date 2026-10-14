@@ -96,6 +96,18 @@ def _text(x):
     return x.decode() if isinstance(x, bytes) else str(x)
 
 
+def _tree(group, prefix: str = "") -> list[str]:
+    """Every dataset under an HDF5 group, as 'path shape'."""
+    import h5py
+    out = []
+    for k in group:
+        if isinstance(group[k], h5py.Group):
+            out += _tree(group[k], f"{prefix}{k}/")
+        else:
+            out.append(f"{prefix}{k} {group[k].shape}")
+    return out
+
+
 def load_session(path: str, version: str = VERSION) -> Session:
     """Stream one session. Only the traces, labels and behaviour are read, not the raw images."""
     import h5py
@@ -137,6 +149,23 @@ def load_session(path: str, version: str = VERSION) -> Session:
         "subject": {k: _text(f["general/subject"][k][()]) for k in f["general/subject"]},
         "experiment description": " ".join(_text(f["general/experiment_description"][()]).split()),
     }
+    meta.update({
+        "PlaneSegmentation columns": sorted(k for k in seg if isinstance(seg[k], h5py.Dataset)),
+        "pixel_mask fields": list(seg["pixel_mask"].dtype.names),
+        "pixel_mask x range": (int(seg["pixel_mask"]["x"].min()), int(seg["pixel_mask"]["x"].max())),
+        "pixel_mask y range": (int(seg["pixel_mask"]["y"].min()), int(seg["pixel_mask"]["y"].max())),
+        "reference images": list(seg["reference_images"]),
+        "imaging plane fields": sorted(plane),
+        "imaging plane location": _text(plane["location"][()]),
+        "imaging plane origin_coords (um)": plane["origin_coords"][()].tolist(),
+        "imaging plane grid_spacing (um)": plane["grid_spacing"][()].tolist(),
+        "acquisition": _tree(f["acquisition"]),
+        "processing/behavior": _tree(f["processing/behavior"]),
+        "raw image series starting_time (s)": {k: float(f["acquisition"][k]["starting_time"][()])
+                                               for k in f["acquisition"] if "TwoPhoton" in k},
+        "file_create_date": [_text(x) for x in f["file_create_date"][()]],
+        "timestamps_reference_time": _text(f["timestamps_reference_time"][()]),
+    })
     return Session(
         path=path,
         session_id=_text(f["general/session_id"][()]),

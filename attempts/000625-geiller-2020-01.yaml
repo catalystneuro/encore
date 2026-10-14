@@ -33,8 +33,9 @@ outcomes:
 - claim: fig1-depth-distribution
   outcome: blocked
   blocked_by: data_missing
-  notes: The files hold no depth or 3D coordinates of the ROIs; the masks are given in each ROI's
-    own cropped frame. The paper's Z-stacks and coordinates are not public as far as the dandiset
+  notes: The files hold no depth or 3D coordinates of the ROIs. The plane segmentation has only
+    id and pixel_mask (x, y, weight, no z); the masks lie on a strip of the 231 cropped frames side
+    by side, and the imaging plane's origin_coords and grid_spacing are placeholders. The paper's Z-stacks and coordinates are not public as far as the dandiset
     and the paper's repository show.
 - claim: fig2c-most-positive
   outcome: reproduced
@@ -45,7 +46,10 @@ outcomes:
     correlated with velocity and 0.095 negatively, inside 0.088 to 0.108. Among all 228 imaged
     ROIs 96.5% are positive and 0.035 negative, outside the tolerance; per session the fraction
     negative among all ROIs is 0.065, 0.111 and 0.089. The claim holds under the six-subtype
-    reading.
+    reading. The sign of r changes between sessions in 17 of the 74 subtyped ROIs (7 of 15 CCKC);
+    18 are negative in at least one session and 7 on average, so averaging over sessions lowers
+    the negative fraction and the all-ROI reading fails because of it. The result is close to the
+    edge of the range (6 of 74 would fall below it).
   deviations:
   - One mouse, three sessions, where the paper has seven mice.
   - Frame rates for sessions 21324 and 21322 fitted from the data; on the stated clock 28% of ROIs
@@ -97,7 +101,9 @@ outcomes:
   output: claim:s2-lags
   notes: Positively correlated ROIs lag velocity (median -1.67 s), as stated. The 8 negatively
     correlated ROIs have a larger median absolute lag (2.06 s against 1.67 s, one-sided p = 0.60),
-    and the same direction holds in each session taken alone. Figure S2 itself was not available.
+    and the same direction holds in each session taken alone. Lags are averaged over sessions even
+    where the sign of r changes; keeping only ROIs with the same sign in every session leaves 1
+    negatively correlated ROI, too few to test. Figure S2 itself was not available.
   deviations:
   - One mouse; the paper's Figure S2 was not available, so the criterion rests on the Results text.
   - Lags depend on imaging and behaviour starting together at time 0, which the files state and
@@ -109,7 +115,9 @@ outcomes:
   notes: At run stops the other five subtypes drop by 0.06 to 0.10 dF/F while CCKC stay flat on
     average (-0.003), a significant difference (one-sided Mann-Whitney p = 0.0009 at separations
     of 3, 5 and 10 s). CCKC do not rise on average, which the criterion requires. The 6 negatively
-    correlated CCKC rise (0.084) and the other 9 fall (-0.061).
+    correlated CCKC rise (0.084) and the other 9 fall (-0.061). By session the mean CCKC response is
+    -0.005, 0.024 and -0.023, while every other subtype falls in every session (-0.021 to -0.173);
+    the CCKC negatively correlated in a session rise in all three (0.019, 0.123 and 0.102).
   deviations:
   - One mouse; event separation of 5 s chosen for "several seconds", with 3 and 10 s shown.
 - claim: s3-subtype-classification
@@ -152,7 +160,14 @@ outcomes:
   output: claim:fig4-fraction-negative
   measured: 0.664
   notes: On average 66.4% of ROIs have a negative field (47.0%, 74.5% and 77.7% by session),
-    against 10.8% on the surrogate and 12.7 ± 8.3% in the paper.
+    against 10.8% on the surrogate and 12.7 ± 8.3% in the paper. Under the paper's rule the two
+    kinds of field are coupled, as a strong positive field raises the rotated shuffles at every
+    bin and pushes the bins outside the field below the 5th percentile. On average 55.8% of ROIs
+    have both kinds, 10.6% only a negative field and 13.9% only a positive one. Counting only ROIs
+    with a negative field and no positive field gives 10.6%, inside the paper's range, but that
+    variant is not the paper's stated rule and was chosen after the result, so the outcome is
+    kept. The 66.4% is therefore not comparable to the paper's 12.7% as a measure of negative
+    selectivity.
   deviations:
   - As for fig4-fraction-spatial.
 - claim: fig4d-decoding
@@ -214,7 +229,9 @@ outcomes:
     cells (p = 0.047), not with shuffles within subtype (p = 0.10), and for neither two-day pair
     (p = 0.075 and 0.53).
   deviations:
-  - Sessions 2.5 h and 54 to 56 h apart stand in for 1 h and 24 h.
+  - Sessions 2.5 h and 54 to 56 h apart stand in for 1 h and 24 h. The order rests on the stated
+    start times, which put 21333 first although its id is the highest; nothing else in the files
+    dates the sessions.
   - The ROI index is taken as the same cell across sessions; tuning curves of the same index
     agree above a shuffled null only for one pair, so a failure here may reflect the ROI mapping.
 - claim: fig5-context-decorrelation
@@ -270,7 +287,14 @@ findings:
     of the paper's analyses use, and no lick record.
 - kind: metadata_error
   statement: All three sessions are described as "session 1 of 4", and the experiment description
-    names four random-foraging sessions; only three are in the dandiset.
+    names four random-foraging sessions; only three are in the dandiset. The session ids (21322,
+    21324, 21333) and the start times (21333 two days before the other two) give different
+    orders, and nothing else in the files dates the sessions.
+- kind: metadata_insufficient
+  statement: The pixel masks lie on a strip of the 231 cropped frames side by side (x from 0 to
+    10625), the imaging plane's origin_coords (0, 0) and grid_spacing (50, 50 um) are
+    placeholders, and there are no reference images, so a ROI has no position in the field of
+    view or in depth.
 - kind: selection_undocumented
   statement: The dandiset holds one of the paper's 16 mice and only its random-foraging sessions,
     without saying which part of the paper it covers.
@@ -284,3 +308,209 @@ findings:
   statement: With the paper's place-field rule, which requires a peak above 100% dF/F, 1.0% of
     ROIs qualify, as only 1.1% of tuning curves reach 1.0 dF/F. The dF/F in the files may be
     scaled or smoothed differently from the paper's.
+verifications:
+- date: '2026-10-14'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The first executed notebook with the conclusion cells and the summary removed, the helper
+    module, the claims file and the paper's full text (PMC7736348). The verifier checked the archive's
+    version and asset metadata through the DANDI REST API, and ran synthetic checks of place_fields, run_events,
+    sparsity_index, velocity_correlation, decode_position and lap_tuning.
+  results:
+  - claim: fig1-cells-per-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Imaged ROIs (231 in files, 228 imaged at least once) fall inside 226.6 ± 27.3. ROIs with a
+      subtype (74 in the six subtypes, 83 not UNIDENTIFIED) fall below the 92.6 to 149.4 range under both
+      allowed readings.
+    response: No change needed.
+  - claim: fig1-depth-distribution
+    agrees: true
+    outcome: blocked
+    reason: No depth or z coordinate is read. The asset metadata lists only one PlaneSegmentation and
+      ImagingPlane per file. It could not confirm from the REST API that no depth or z coordinate exists,
+      for example a z field in pixel_mask, ImagingPlane origin_coords or grid_spacing, or per-ROI offsets
+      in the cropped image series.
+    response: The data check now prints the PlaneSegmentation columns (id, pixel_mask, pixel_mask_index),
+      the pixel_mask fields (x, y, weight, no z) and their ranges, and the ImagingPlane fields with origin_coords
+      (0, 0) and grid_spacing (50, 50) um. The masks lie on a strip of the 231 crops side by side, so
+      they give no position. Outcome kept; notes and a finding updated.
+  - claim: fig2c-most-positive
+    agrees: true
+    outcome: reproduced
+    reason: Under the six-subtype reading, 0.905 are positive and 0.095 (7/74) negative, inside 0.088
+      to 0.108. The all-ROI reading gives 0.035, far outside. The result is fragile, as 6/74 would fail.
+      Averaging r over sessions cuts the all-ROI negative fraction from 0.065 to 0.111 per session to
+      0.035, which is why fig2c passes only under the 74-ROI reading (affects a conclusion). The frame-rate
+      fit maximises the population-speed correlation, which is partly circular, though the independent
+      evidence is strong (does not affect a conclusion). It asked for a per-ROI table of r in each session
+      for the subtyped ROIs.
+    response: Added the per-ROI table of r in each session for the 74 subtyped ROIs. The sign changes
+      between sessions in 17 of them (7 of 15 CCKC); 18 are negative in at least one session and 7 on
+      average. The notes now say that averaging lowers the negative fraction and that the result is near
+      the edge of the range. Outcome kept.
+  - claim: fig2c-cck-negative
+    agrees: true
+    outcome: reproduced
+    reason: 6 of 15 CCKC are negative (0.40, which is at least 0.35), against 1 of 59 in the other five
+      subtypes; one-sided Fisher p = 1.7e-4.
+    response: No change needed.
+  - claim: fig2c-subtypes-differ
+    agrees: true
+    outcome: reproduced
+    reason: ANOVA p = 0.0015. The difference is driven by CCKC, as Tukey is significant only for PVBC-CCKC
+      and CCKC-IvC/NGFC. Only one of three sessions is significant on its own.
+    response: No change needed; the notes already state both points.
+  - claim: fig2c-ngfc-less-modulated
+    agrees: true
+    outcome: not_reproduced
+    reason: IvC/NGFC mean r is 0.511 against 0.484 for the pooled four subtypes, the wrong direction;
+      Mann-Whitney p = 0.58 for both r and |r|. Only session 21324 alone goes the claimed way.
+    response: No change needed.
+  - claim: fig2d-negative-cells-in-oriens
+    agrees: true
+    outcome: blocked
+    reason: No depth or layer per ROI.
+    response: The new output on the plane segmentation and imaging plane (see fig1-depth-distribution)
+      shows there is none.
+  - claim: s2-lags
+    agrees: true
+    outcome: not_reproduced
+    reason: The median lag of positive ROIs is -1.67 s, which meets the criterion. But negative ROIs have
+      larger |lag| (2.06 s), not smaller; p = 0.60, and every session gives p of at least 0.82. Lags are
+      averaged across sessions even when the sign of r flips between them (affects a conclusion).
+    response: Added a variant keeping only ROIs whose r has the same sign in every session; it leaves
+      1 negatively correlated ROI, too few to test, so the per-session results stand as the check. Notes
+      updated. Outcome kept.
+  - claim: s2-cck-run-stop
+    agrees: true
+    outcome: partially_reproduced
+    reason: CCKC run-stop responses are higher than the other subtypes (Mann-Whitney p about 9e-4 at 3,
+      5 and 10 s separation). The mean CCKC run-stop response is -0.003, not positive; only the 6 negatively
+      correlated CCKC respond positively (0.084). It asked for per-session CCKC run-stop means, to show
+      whether the near-zero average hides a session-dependent sign. run_events thresholds a jittery speed
+      trace, though event counts look plausible (does not affect a conclusion).
+    response: Added per-session run-stop means by subtype. CCKC give -0.005, 0.024 and -0.023, while every
+      other subtype falls in every session (-0.021 to -0.173); the CCKC negatively correlated in a session
+      rise in all three. Notes updated. Outcome kept.
+  - claim: s3-subtype-classification
+    agrees: true
+    outcome: blocked
+    reason: No depth, and one mouse with 74 labelled ROIs. The dF/F and velocity feature sets exist, so
+      a weak cell-wise variant could be run but would not be comparable.
+    response: No change needed.
+  - claim: fig3-swr-pvbc-vs-somc
+    agrees: true
+    outcome: blocked
+    reason: variableMeasured has no ecephys or LFP series. Imaging is at 4.4 to 5.8 Hz, not the 40 Hz
+      SWR protocol.
+    response: No change needed.
+  - claim: fig3-swr-bimodal
+    agrees: true
+    outcome: blocked
+    reason: variableMeasured has no ecephys or LFP series. Imaging is at 4.4 to 5.8 Hz, not the 40 Hz
+      SWR protocol.
+    response: No change needed.
+  - claim: fig4-fraction-spatial
+    agrees: true
+    outcome: not_reproduced
+    reason: 0.010 with the 100% peak rule and 0.698 without it, against 0.175 ± 0.064. Only 1.1% of ROIs
+      have a tuning peak above 1.0 dF/F. The 50% peak variant (0.130) would fall in range but is not an
+      allowed reading. The no-peak rule is anti-conservative (surrogate false-positive rate 0.04 to 0.16
+      per session).
+    response: No change needed; the notes already give the surrogate rates.
+  - claim: fig4-fraction-negative
+    agrees: true
+    outcome: not_reproduced
+    reason: 0.664 against 0.127 ± 0.083. Positive and negative fields are mechanically coupled; out-of-field
+      bins sit below the shuffled 5th percentile because rotated curves spread the field everywhere, so
+      the estimate is not comparable to the paper's 12.7%. The notebook neither reports the overlap of
+      the two sets nor discusses it (affects a conclusion).
+    response: Added the overlap per session and its mean (55.8% both, 10.6% negative only, 13.9% positive
+      only) and a variant excluding ROIs also flagged positive (10.6%, inside the range). The coupling
+      follows from the paper's stated rule, which the helper implements, so it is explained in the notebook
+      and notes and not changed. The variant was chosen after the result and is not the paper's rule,
+      so the outcome is kept.
+  - claim: fig4d-decoding
+    agrees: true
+    outcome: not_reproduced
+    reason: Holds in 1 of 3 sessions; at least 2 are required. In 21333 the selected subset (25.2 cm)
+      is worse than random subsets (24.8 cm). In 21322 the 6 peak-rule cells give 1.97 times the all-ROI
+      error. Where the no-peak rule applies, the subset is 55 to 75% of ROIs, so this barely tests the
+      claim. Selection uses whole-session data including the held-out lap, which would only flatter the
+      subset (does not affect a conclusion).
+    response: No change; the size of the subset is already a deviation, and the selection leakage could
+      only favour the claim, which fails.
+  - claim: fig4e-bic-recurrence
+    agrees: true
+    outcome: blocked
+    reason: Only 3 BiC are imaged per session; the criterion needs 5. It would give blocked with data_missing.
+    response: Outcome kept as blocked. The reason is kept as other, since the protocol lists too few units
+      under the claim's own rule as an example of other; the BiC are in the data, only too few.
+  - claim: fig4f-selectivity-no-difference
+    agrees: true
+    outcome: reproduced
+    reason: ANOVA p = 0.17, which is at least 0.05. This is a null result with low power. The selection
+      is mostly the no-peak rule, so it covers nearly every subtyped ROI. The sparsity values (0.01 to
+      0.03) are near flat, so the ANOVA mostly compares noise (does not affect a conclusion).
+    response: No change; the notes already give the size of the indices and the selection.
+  - claim: fig4h-pvbc-more-stable
+    agrees: true
+    outcome: not_reproduced
+    reason: PVBC 0.678 (n = 22) against SomC 0.736 (n = 9), the opposite direction; t-test p = 0.42.
+    response: No change needed.
+  - claim: s6-within-session-order
+    agrees: true
+    outcome: partially_reproduced
+    reason: CCKC are the lowest (0.500), as claimed. The highest is SomC (0.606), with PVBC just below
+      (0.598); ANOVA p = 0.56.
+    response: No change needed.
+  - claim: s6-later-lower-above-chance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Across-session r is lower than within-session r for all three pairs (Wilcoxon p of 6.5e-5
+      or less). Above chance holds only for the same-day pair with all-ROI shuffling (p = 0.047, within-subtype
+      p = 0.10). Both two-day pairs fail (p = 0.075 and 0.53). Cross-session identity is assumed, and
+      the failure may reflect identity mismatch as much as drift (affects a conclusion). Session IDs run
+      21322 < 21324 < 21333 but the start times put 21333 two days earlier, which the notebook does not
+      note; if the timestamps are wrong, the stand-ins and the earlier session change (affects a conclusion).
+    response: The data check now prints the raw image series starting_time (0 s in every file), file_create_date
+      (all 2023-11-13) and timestamps_reference_time, and states that the ids and start times conflict
+      and nothing else dates the sessions. The order is noted in the section and as a deviation, and added
+      to a finding. The identity caveat was already in the notes. Outcome kept.
+  - claim: fig5-context-decorrelation
+    agrees: true
+    outcome: blocked
+    reason: All three asset session descriptions read Random foraging, session 1 of 4; there is no novel
+      belt.
+    response: No change needed.
+  - claim: fig5-novel-context-decrease
+    agrees: true
+    outcome: blocked
+    reason: All three asset session descriptions read Random foraging, session 1 of 4; there is no novel
+      belt.
+    response: No change needed.
+  - claim: fig6-reward-somc-bic
+    agrees: true
+    outcome: blocked
+    reason: Random-foraging sessions only. The loader reads reward and water epochs but no licking; whether
+      other BehavioralEpochs exist was not shown.
+    response: The data check now prints every dataset under acquisition and processing/behavior. Behavior
+      holds only the reward and water intervals; there is no lick record.
+  - claim: fig6-old-zone
+    agrees: true
+    outcome: blocked
+    reason: Random-foraging sessions only. The loader reads reward and water epochs but no licking; whether
+      other BehavioralEpochs exist was not shown.
+    response: As for fig6-reward-somc-bic.
+  - claim: fig7-vip-subtypes-immobility
+    agrees: true
+    outcome: blocked
+    reason: The stored labels contain no VIP, CR, M2R or ISI classes.
+    response: No change needed.
+  - claim: fig7-isi-correlations
+    agrees: true
+    outcome: blocked
+    reason: The stored labels contain no VIP, CR, M2R or ISI classes. ISI3 is identifiable in VGAT-Cre
+      mice per the paper, but no such label is present.
+    response: No change needed.
