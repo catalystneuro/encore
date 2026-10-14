@@ -276,3 +276,13 @@ def test_names_from_outside_need_a_source_and_a_finding(repo):
                "findings": [{"kind": "metadata_insufficient", "statement": "Codes have no names."}]}
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
     assert errors(repo) == []
+
+
+def test_only_the_latest_attempt_must_match_the_entrys_version(repo):
+    earlier = {**ATTEMPT, "dandiset_version": "0.230101.0000"}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(earlier))
+    (repo / "attempts" / "demo-02.yaml").write_text(yaml.safe_dump({**ATTEMPT, "id": "demo-02"}))
+    assert errors(repo) == []
+    (repo / "attempts" / "demo-02.yaml").write_text(yaml.safe_dump({**ATTEMPT, "id": "demo-02",
+                                                                   "dandiset_version": "0.230101.0000"}))
+    assert any("differs from" in e for e in errors(repo))

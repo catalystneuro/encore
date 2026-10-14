@@ -33,6 +33,9 @@ on:
       model:
         description: "Model"
         default: claude-opus-5-5
+      version:
+        description: "Dandiset version for the author (empty: a published version it chooses)"
+        default: ""
   # Called by attempt-sequence.yml, which runs the five roles of one attempt in order.
   workflow_call:
     inputs:
@@ -45,6 +48,9 @@ on:
       model:
         type: string
         default: claude-opus-5-5
+      version:
+        type: string
+        default: ""
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN:
         required: true
@@ -60,6 +66,7 @@ env:
   DANDISET: ${{ inputs.dandiset }}
   ROLE: ${{ inputs.role }}
   MODEL: ${{ inputs.model }}
+  VERSION: ${{ inputs.version }}
   BRANCH: attempt/${{ inputs.dandiset }}
   CLAUDE_CODE_VERSION: 2.1.284
   # The tools the agent may use without asking. With CLAUDE_CODE_SUBPROCESS_ENV_SCRUB set, Claude
@@ -112,7 +119,7 @@ jobs:
 
       - name: Write the prompt
         run: |
-          python tools/agent_run.py prompt "$ROLE" "$DANDISET" --model "$MODEL" > "$RUNNER_TEMP/prompt.md"
+          python tools/agent_run.py prompt "$ROLE" "$DANDISET" --model "$MODEL" ${VERSION:+--version "$VERSION"} > "$RUNNER_TEMP/prompt.md"
           # The workflow's own tools, copied before the agent can change the checkout.
           cp tools/transcript.py tools/progress.py "$RUNNER_TEMP/"
 

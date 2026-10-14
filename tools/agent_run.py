@@ -57,9 +57,24 @@ def attempt_of(dandiset: str) -> tuple[dict, Path] | None:
     return record, ROOT / "entries" / record["entry"]
 
 
-def fill(role: str, dandiset: str, model: str) -> str:
+def fill(role: str, dandiset: str, model: str, version: str | None = None) -> str:
     details = {"dandiset": dandiset, "model": model, "date": datetime.date.today().isoformat(),
                **target(dandiset)}
+    if version:
+        details["version_rule"] = (f"Use version {version} of the dandiset"
+                                   + (" (the draft: say in the notebook header when it was last modified, since a "
+                                      "draft can change)" if version == "draft" else "")
+                                   + ", and say in the notebook header that this version was asked for.")
+    else:
+        details["version_rule"] = ("Use a pinned published version of the dandiset and record in the notebook "
+                                   "header why you chose it.")
+    if role == "author" and attempt_of(dandiset):
+        # A repeat attempt: the dandiset changed since the last one.
+        record, entry_dir = attempt_of(dandiset)
+        n = int(record["id"].rsplit("-", 1)[1]) + 1
+        details.update(earlier=record["id"], earlier_version=record.get("dandiset_version"), entry=entry_dir.name,
+                       next_attempt=f'{record["id"].rsplit("-", 1)[0]}-{n:02d}')
+        return (ROOT / "docs" / "agents" / "author-again.md").read_text().format(**details)
     if role != "author":
         found = attempt_of(dandiset)
         if found is None:
@@ -118,9 +133,10 @@ def main() -> int:
     parser.add_argument("dandiset")
     parser.add_argument("dest", nargs="?", type=Path)
     parser.add_argument("--model", default="claude-opus-5-5")
+    parser.add_argument("--version", help="the dandiset version the author should use, e.g. draft")
     args = parser.parse_args()
     if args.command == "prompt":
-        sys.stdout.write(fill(args.role, args.dandiset, args.model))
+        sys.stdout.write(fill(args.role, args.dandiset, args.model, args.version))
     elif args.command == "proposals":
         print("true" if proposals(args.dandiset) else "false")
     elif args.command == "entry":
