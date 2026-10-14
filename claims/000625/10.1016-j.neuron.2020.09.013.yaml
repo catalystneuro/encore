@@ -1,0 +1,216 @@
+# Claims for Geiller, Vancura et al. (2020) on dandiset 000625.
+# Source: the full text of the NIH author manuscript (PMC7736348), Results, STAR Methods and
+# figure legends. The supplementary figures were not available; claims about them rest on the
+# Results text.
+#
+# What had been seen when these criteria were written: the file contents and the data check
+# (one mouse, three random-foraging sessions, 231 ROIs, 74 in the paper's six subtypes, of which
+# 3 BiC; no depth, LFP, licking, novel-context or goal-oriented sessions; the stated frame rate
+# wrong in two sessions). While testing the helper module, a trial run also showed: the fraction
+# of ROIs negatively correlated with velocity per session (0.07, 0.11, 0.09) and the per-subtype
+# mean correlations; the fraction of ROIs passing the place-field rule per session with the 100%
+# dF/F peak rule (0.005, 0.0, 0.027) and without it (0.54, 0.74, 0.79), and with negative fields
+# (0.46, 0.73, 0.80); and the decoding error from all ROIs in one session (13 cm). The criteria
+# below list the readings the paper's text allows, as they would have been listed without those
+# numbers.
+schema_version: 1
+dandiset: "000625"
+paper: doi:10.1016/j.neuron.2020.09.013
+claims:
+- id: fig1-cells-per-mouse
+  statement: About 227 interneurons were imaged per mouse (226.6 ± 27.3, mean ± std over 16
+    mice), and 121.0 ± 28.4 per mouse were assigned a putative subtype.
+  source: Results, first section
+  expected:
+  - quantity: imaged interneurons per mouse
+    value: 226.6
+    tolerance: 27.3
+  - quantity: interneurons assigned a subtype per mouse
+    value: 121.0
+    tolerance: 28.4
+  criterion: The tolerance is the paper's standard deviation over mice, since one mouse is
+    compared with the spread across mice. Imaged interneurons are the ROIs in the files. Two
+    readings of "assigned a subtype" are allowed, the ROIs labelled with one of the six subtypes
+    of Figures 1 to 6, and all ROIs not labelled UNIDENTIFIED (which adds the label NOTHING).
+- id: fig1-depth-distribution
+  statement: The layer distribution of each subtype along the CA1 depth axis is consistent with
+    earlier anatomical studies.
+  source: Figure 1F
+- id: fig2c-most-positive
+  statement: The majority of interneurons were positively correlated with running velocity, and
+    about 10% were negatively correlated, across all subtypes (156 negative and 1429 positive in
+    Figure 2D).
+  source: Results, locomotion section; Figure 2C, 2D
+  expected:
+    quantity: fraction of interneurons negatively correlated with velocity
+    value: 0.098
+    tolerance: 0.0098
+  criterion: The correlation of each ROI is the paper's (the signed Pearson r of largest absolute
+    value over lags from -5 to +5 s), averaged over the sessions in which the ROI was imaged.
+    Readings of the denominator allowed are all imaged ROIs and the ROIs in the six subtypes. The
+    claim holds if more than half the ROIs are positive and the fraction negative is within the
+    tolerance under either reading.
+- id: fig2c-cck-negative
+  statement: Negatively correlated cells were significantly enriched in CCKC, where nearly half of
+    cells were more active during immobility.
+  source: Results, locomotion section; Figure 2B, 2C
+  depends_on:
+  - fig2c-most-positive
+  criterion: The fraction of CCKC with a negative correlation is at least 0.35, and higher than in
+    the other five subtypes pooled with a one-sided Fisher exact test at p < 0.05.
+- id: fig2c-subtypes-differ
+  statement: The correlation with velocity differs between the six subtypes (one-way ANOVA,
+    p < 1e-10, with Tukey's post hoc test).
+  source: Figure 2C legend
+  depends_on:
+  - fig2c-most-positive
+  criterion: One-way ANOVA across the six subtypes at p < 0.05. The paper's p-value comes from
+    seven mice and is not expected here. Tukey's test is shown.
+- id: fig2c-ngfc-less-modulated
+  statement: IvC/NGFC were less modulated by locomotion than other subtypes.
+  source: Results, locomotion section; Figure 2C
+  depends_on:
+  - fig2c-most-positive
+  criterion: Two readings of "less modulated" are allowed, a lower correlation and a lower
+    absolute correlation. Either holds if IvC/NGFC are lower than PVBC, SomC, BiC and AAC pooled
+    (CCKC are left out, as their correlations are mixed in sign), with a one-sided Mann-Whitney
+    test at p < 0.05.
+- id: fig2d-negative-cells-in-oriens
+  statement: Negatively correlated cells were enriched in stratum oriens and positively correlated
+    cells in stratum pyramidale.
+  source: Figure 2D
+- id: s2-lags
+  statement: The activity of positively correlated cells followed changes in velocity by up to
+    several seconds, while the activity of negatively correlated cells was more tightly linked in
+    time to changes in velocity.
+  source: Results, locomotion section (Figure S2)
+  depends_on:
+  - fig2c-most-positive
+  criterion: The lag is the one at which the correlation peaks (negative when activity lags
+    velocity). The claim holds if the median lag of positively correlated ROIs is negative and the
+    absolute lags of negatively correlated ROIs are smaller than those of positively correlated
+    ROIs, with a one-sided Mann-Whitney test at p < 0.05. All imaged ROIs are used, as the claim
+    is made regardless of subtype.
+- id: s2-cck-run-stop
+  statement: Run-start and run-stop responses show that immobility-triggered activation is
+    specific to CCKC.
+  source: Results, locomotion section (Figure S2)
+  criterion: The run-stop response (mean dF/F in the 3 s after the event minus the 3 s before) is
+    positive on average for CCKC, and higher in CCKC than in the other five subtypes pooled with a
+    one-sided Mann-Whitney test at p < 0.05. Events must be separated by "several seconds"; 5 s is
+    used, and 3 s and 10 s are shown as variants.
+- id: s3-subtype-classification
+  statement: A deep network classified PV-expressing, SOM-expressing, CCK and IvC/NGFC cells from
+    dF/F, velocity and depth with accuracies of 64, 71, 60 and 59%.
+  source: Results, machine-learning section (Figure S3)
+- id: fig3-swr-pvbc-vs-somc
+  statement: During sharp-wave ripples PVBC were generally strongly modulated while most SomC were
+    not.
+  source: Figure 3D
+- id: fig3-swr-bimodal
+  statement: AAC and BiC showed bimodal modulation during sharp-wave ripples, and all subtypes but
+    CCKC and IvC/NGFC split into a modulated and a non-modulated group.
+  source: Figure 3E, 3F
+- id: fig4-fraction-spatial
+  statement: 17.5 ± 6.4% (mean ± sem over 6 mice, 3 sessions each) of interneurons, blind of
+    subtype, passed the test for significant spatial selectivity.
+  source: Results, spatial section; Figure 4
+  expected:
+    quantity: fraction of interneurons with a positive place field
+    value: 0.175
+    tolerance: 0.064
+  criterion: The fraction of imaged ROIs selected in each session, averaged over the three
+    sessions. Two readings of the rule are allowed, with the peak above 100% dF/F and without the
+    peak rule (in case the paper's dF/F was scaled differently). The claim holds if either is
+    within the tolerance, the paper's sem.
+- id: fig4-fraction-negative
+  statement: 12.7 ± 8.3% of interneurons (mean ± sem) had negative spatial selectivity, slightly
+    fewer than had positive selectivity.
+  source: Results, spatial section (Figure S5)
+  expected:
+    quantity: fraction of interneurons with a negative place field
+    value: 0.127
+    tolerance: 0.083
+  criterion: The fraction of imaged ROIs with a negative field in each session, averaged over the
+    three sessions, within the paper's sem.
+- id: fig4d-decoding
+  statement: Position decoded from the small subset of spatially selective interneurons was about
+    as accurate as from all interneurons, and more accurate than from as many randomly chosen
+    interneurons or with position shuffled.
+  source: Figure 4D
+  depends_on:
+  - fig4-fraction-spatial
+  criterion: Per session, a linear SVM decodes the position bin from lap-wise tuning curves,
+    leaving one lap out. The selected subset is the cells with a positive field under the peak
+    rule where a session has at least 5 of them, and otherwise without the peak rule. The claim
+    holds in a session if the error from the subset is at most 1.25 times the error from all
+    ROIs, below the mean error of 10 random subsets of the same size, and below the error with
+    dF/F shifted circularly against position. It holds overall if it holds in at least two of the
+    three sessions.
+- id: fig4e-bic-recurrence
+  statement: BiC had a higher probability than other subtypes of being spatially modulated again
+    in other sessions.
+  source: Figure 4E
+  criterion: Needs at least 5 BiC imaged; otherwise blocked.
+- id: fig4f-selectivity-no-difference
+  statement: The selectivity index of spatially selective cells did not differ between subtypes
+    (one-way ANOVA, p = 0.35).
+  source: Figure 4F
+  depends_on:
+  - fig4-fraction-spatial
+  criterion: One-way ANOVA across subtypes of the selectivity index of cells with a positive field
+    (averaged over the sessions in which a cell was selected), using the subtypes with at least 3
+    such cells. Selection follows the rule of fig4d-decoding (the peak rule
+    unless it gives too few cells). Not found (p >= 0.05) is reproduced. If fewer than two
+    subtypes have 3 cells, blocked.
+- id: fig4h-pvbc-more-stable
+  statement: Spatially selective PVBC had a more stable within-session recruitment (odd-even lap
+    correlation of tuning curves) than spatially selective SomC.
+  source: Figure 4H
+  depends_on:
+  - fig4-fraction-spatial
+  criterion: Needs at least 5 spatially selective PVBC and 5 SomC (selection as in
+    fig4d-decoding); otherwise blocked. Holds if PVBC have the higher mean odd-even correlation and
+    an unpaired t-test gives p < 0.05.
+- id: s6-within-session-order
+  statement: Within-session stability of tuning curves differed between subtypes, PVBC showing the
+    highest and CCKC the lowest odd-even correlations.
+  source: Results, spatial section (Figure S6A, S6B)
+  criterion: All imaged ROIs of each subtype, regardless of spatial selectivity, each ROI's
+    correlation averaged over sessions. Holds if PVBC have the highest and CCKC the lowest mean
+    among subtypes with at least 5 cells.
+- id: s6-later-lower-above-chance
+  statement: Tuning curve correlations of the same cells after 1 hour and after 24 hours were
+    lower than within-session correlations, and still higher than chance.
+  source: Results, spatial section (Figure S6I)
+  criterion: The same-day pair of sessions stands in for 1 hour and the pairs two days apart for
+    24 hours. The ROI with the same index is taken as the same cell, as the dandiset describes.
+    Lower is a paired Wilcoxon test against the within-session correlation of the earlier
+    session at p < 0.05. Chance is the mean correlation with cell identities shuffled; two
+    readings are allowed, shuffling among all ROIs and shuffling within subtype. Above chance is
+    p < 0.05 over 1000 shuffles. Both are tested on the ROIs in the six subtypes, and must hold
+    for the same-day pair and for both two-day pairs.
+- id: fig5-context-decorrelation
+  statement: Interneuron tuning curves decorrelated on exposure to a novel belt, more than with the
+    passage of time, and context could be decoded from population activity.
+  source: Figure 5B, 5C, 5D
+- id: fig5-novel-context-decrease
+  statement: PVBC, SomC, BiC and AAC decreased their activity in the first laps on a novel belt;
+    CCKC were not modulated.
+  source: Figure 5F, 5H
+- id: fig6-reward-somc-bic
+  statement: In goal-oriented learning, SomC and BiC had higher reward modulation indices than
+    other subtypes.
+  source: Figure 6D
+- id: fig6-old-zone
+  statement: After the reward zone moved, SomC and BiC activity increased at the old zone above
+    chance, and this decreased over the session.
+  source: Figure 6G, 6H
+- id: fig7-vip-subtypes-immobility
+  statement: VIP+/CCK+ and VIP+/M2R+ cells were negatively correlated with velocity, and all ISI
+    subtypes positively.
+  source: Figure 7C
+- id: fig7-isi-correlations
+  statement: VIP+/CR- cells and type III ISIs were less correlated with SomC and BiC than with PV+
+    cells.
+  source: Figure 7H, 7I
