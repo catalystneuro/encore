@@ -349,14 +349,16 @@ def _ridge_weights(G: np.ndarray, H: np.ndarray, alpha: float, exclude: np.ndarr
 
 def cv_ridge(X: np.ndarray, Y: np.ndarray, exclude: np.ndarray | None = None, folds: int = 10,
              alphas=(1e0, 1e1, 1e2, 1e3, 1e4, 1e5), rng: np.random.Generator | None = None,
-             return_pred: bool = False):
+             return_pred: bool = False, inner_folds: int | None = None):
     """Cross-validated R2 of every column of Y from X.
 
     Folds are contiguous blocks of time; with `rng`, frames are assigned to folds at random
     instead. The penalty is chosen per target on a fifth of each training set (its last fifth,
-    or a random fifth), then the model is refit on the whole training set. R2 is computed on the
-    pooled held-out predictions. With `return_pred`, the held-out predictions and the fold of
-    each frame are returned too.
+    or a random fifth), then the model is refit on the whole training set. With `inner_folds`,
+    the penalty is chosen instead by cross-validation over that many contiguous blocks of each
+    training set, summing the held-out error over the blocks. R2 is computed on the pooled
+    held-out predictions. With `return_pred`, the held-out predictions and the fold of each
+    frame are returned too.
     """
     from threadpoolctl import threadpool_limits
 
@@ -372,18 +374,22 @@ def cv_ridge(X: np.ndarray, Y: np.ndarray, exclude: np.ndarray | None = None, fo
             train = np.where(~test)[0]
             if rng is not None:
                 train = rng.permutation(train)
-            inner, val = train[: int(0.8 * len(train))], train[int(0.8 * len(train)):]
-
             def fit(rows):
                 mx, my = X[rows].mean(0), Y[rows].mean(0)
                 Xc, Yc = X[rows] - mx, Y[rows] - my
                 return Xc.T @ Xc, Xc.T @ Yc, mx, my
 
-            G, H, mx, my = fit(inner)
-            errs = []
-            for a in alphas:
-                W = _ridge_weights(G, H, a, exclude)
-                errs.append((((X[val] - mx) @ W + my - Y[val]) ** 2).sum(0))
+            if inner_folds is None:
+                splits = [(train[: int(0.8 * len(train))], train[int(0.8 * len(train)):])]
+            else:
+                blocks = np.array_split(train, inner_folds)
+                splits = [(np.concatenate(blocks[:k] + blocks[k + 1:]), blocks[k]) for k in range(inner_folds)]
+            errs = np.zeros((len(alphas), Y.shape[1]))
+            for inner, val in splits:
+                G, H, mx, my = fit(inner)
+                for n, a in enumerate(alphas):
+                    W = _ridge_weights(G, H, a, exclude)
+                    errs[n] += (((X[val] - mx) @ W + my - Y[val]) ** 2).sum(0)
             best = np.asarray(alphas)[np.argmin(errs, 0)]
             G, H, mx, my = fit(train)
             for a in np.unique(best):
