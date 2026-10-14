@@ -442,30 +442,25 @@ def tier_badge(tier: str, href: str | None = None) -> str:
 
 
 def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
+    """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
-    notes = f'<p class="notes">{e(o["notes"])}</p>' if o["notes"] else ""
-    deviations = ""
+    tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
+    if o.get("data") == "with_inputs":
+        tags += '<span class="tag">uses data from outside the dandiset</span>'
+    body = f'<p class="notes">{e(o["notes"])}</p>' if o["notes"] else ""
     if o["deviations"]:
         items = "".join(f"<li>{e(d)}</li>" for d in o["deviations"])
-        plural = "s" if len(o["deviations"]) != 1 else ""
-        deviations = (f'<details class="deviations"><summary>{len(o["deviations"])} '
-                      f"difference{plural} from the paper's method"
-                      f'</summary><ul>{items}</ul></details>')
-    disagreed = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
-    if o.get("data") == "with_inputs":
-        disagreed += '<span class="tag">uses data from outside the dandiset</span>'
-    link = f'{root}dandisets/?has={o["outcome"]}'
-    shown = ""
-    nb = notebook_of(attempt, o.get("notebook")) if attempt else None
-    if nb:
-        where = (f'<a href="{root}{e(nb["executed"])}">{e(nb["title"])}</a>' if nb["executed"]
-                 else e(nb["title"]))
-        shown = f'<p class="caveat">Shown in the notebook {where}.</p>'
-    return (f'<li class="claim" id="claim-{e(o["claim"])}">'
-            f'<div class="claim-head">{chip(o["outcome"], link)}{source}{blocked}{disagreed}</div>'
-            f'<p class="statement">{e(o["statement"])}</p>{notes}{shown}{deviations}</li>')
+        body += (f'<p class="deviations-title">How the test differed from the paper’s method</p>'
+                 f'<ul class="deviations">{items}</ul>')
+    if not body:
+        body = '<p class="notes muted">No explanation recorded.</p>'
+    # The chip is not a link here: inside the summary a click should open the claim.
+    return (f'<li class="claim" id="claim-{e(o["claim"])}" data-outcome="{e(o["outcome"])}"><details><summary>'
+            f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}</div>'
+            f'<p class="statement">{e(o["statement"])}</p></summary>'
+            f'<div class="claim-body">{body}</div></details></li>')
 
 
 _ROWS: dict = {}
@@ -723,6 +718,35 @@ def page_list(data: dict, kind: str) -> str:
     return shell(data, f'{spec["title"]} · Reproduction registry', "../", kind, body, scripts)
 
 
+CLAIMS_JS = """<script>(function(){
+// Claims tab: show claims by outcome and 20 to a page. Without this script every claim shows.
+var panel=document.getElementById('claims'),bar=document.getElementById('claim-filter'),
+pager=document.getElementById('claim-pager');if(!panel||!bar)return;
+var PER=20,items=[].slice.call(panel.querySelectorAll('li.claim')),state={f:'all',p:0},
+labels=[['all','All'],['reproduced','Reproduced'],['partially_reproduced','Partially reproduced'],
+['not_reproduced','Not reproduced'],['blocked','Blocked']];
+function match(li){return state.f==='all'||li.dataset.outcome===state.f;}
+function n(k){return items.filter(function(li){return k==='all'||li.dataset.outcome===k;}).length;}
+bar.innerHTML=labels.filter(function(l){return l[0]==='all'||n(l[0]);}).map(function(l){
+return '<button type="button" data-f="'+l[0]+'">'+l[1]+' <span class="count">'+n(l[0])+'</span></button>';}).join('');
+function draw(){var shown=items.filter(match),pages=Math.max(1,Math.ceil(shown.length/PER));
+if(state.p>=pages)state.p=pages-1;var page=shown.slice(state.p*PER,(state.p+1)*PER);
+items.forEach(function(li){li.hidden=page.indexOf(li)<0;});
+[].slice.call(panel.querySelectorAll('.claim-group')).forEach(function(g){
+g.hidden=!g.querySelector('li.claim:not([hidden])');});
+[].slice.call(bar.querySelectorAll('button')).forEach(function(b){b.setAttribute('aria-pressed',b.dataset.f===state.f);});
+if(pages<2){pager.innerHTML='';return;}
+var html='<span class="muted">'+(state.p*PER+1)+'–'+(state.p*PER+page.length)+' of '+shown.length+'</span><span class="grow"></span>'+
+'<button type="button" data-p="'+(state.p-1)+'"'+(state.p===0?' disabled':'')+' aria-label="Previous page">‹</button>';
+for(var i=0;i<pages;i++)html+='<button type="button" data-p="'+i+'"'+(i===state.p?' aria-current="page"':'')+'>'+(i+1)+'</button>';
+pager.innerHTML=html+'<button type="button" data-p="'+(state.p+1)+'"'+(state.p===pages-1?' disabled':'')+' aria-label="Next page">›</button>';}
+bar.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b)return;state.f=b.dataset.f;state.p=0;draw();});
+pager.addEventListener('click',function(ev){var b=ev.target.closest('button');if(!b||b.disabled)return;
+state.p=+b.dataset.p;draw();panel.scrollIntoView();});
+window.revealClaim=function(li){state.f='all';state.p=Math.floor(items.indexOf(li)/PER);draw();};
+draw();})();</script>"""
+
+
 TABS_JS = """<script>(function(){
 document.documentElement.classList.add('js');
 var tabs=[].slice.call(document.querySelectorAll('.tabs button')),
@@ -732,7 +756,8 @@ panels[i].hidden=!on;});if(push)history.replaceState(null,'','#'+id);}
 function fromHash(){var h=location.hash.slice(1),el=h&&document.getElementById(h);
 if(!el){show(tabs[0].dataset.panel);return;}
 var panel=el.closest('.tabpanel');if(!panel){show(tabs[0].dataset.panel);return;}
-show(panel.id);if(el!==panel){var d=el.closest('details');if(d)d.open=true;el.scrollIntoView();}}
+show(panel.id);if(el!==panel){if(window.revealClaim&&el.matches('li.claim'))window.revealClaim(el);[el.closest('details'),el.querySelector('details')].forEach(function(d){
+if(d)d.open=true;});var g=el.parentElement&&el.parentElement.closest('details');if(g)g.open=true;el.scrollIntoView();}}
 tabs.forEach(function(t){t.addEventListener('click',function(){show(t.dataset.panel,true);});});
 addEventListener('hashchange',fromHash);fromHash();})();</script>"""
 
@@ -785,17 +810,27 @@ def page_dandiset(data: dict, dandiset: str) -> str:
         paper = a.get("paper_title") or a["paper"]
         claims_html += (f'<p class="sub small" style="margin:14px 0 0">From the paper '
                         f'<a href="https://doi.org/{e(a["paper"])}">{e(paper)}</a></p>')
-        tested = sorted((o for o in a["outcomes"] if o["outcome"] != "blocked"), key=lambda o: order[o["outcome"]])
-        blocked = [o for o in a["outcomes"] if o["outcome"] == "blocked"]
-        if tested:
-            claims_html += (f'<h3 style="margin-top:14px">Tested <span class="count">{len(tested)}</span></h3>'
-                            f'<ul class="claims">{"".join(claim_item(o, root, a) for o in tested)}</ul>')
+        # One group per notebook, in the entry's order, then the claims no notebook tests.
+        rank = {**order, "blocked": 3}
+        for nb in a["notebooks"]:
+            mine = sorted((o for o in a["outcomes"] if o.get("notebook") == nb["path"]),
+                          key=lambda o: rank[o["outcome"]])
+            if not mine:
+                continue
+            title = (f'<a href="{root}{e(nb["executed"])}">{e(nb["title"])}</a>' if nb["executed"]
+                     else e(nb["title"]))
+            claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
+                            f'<span class="count">{len(mine)}</span></h3>'
+                            f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
+                            f'</p><ul class="claims">{"".join(claim_item(o, root, a) for o in mine)}</ul></div>')
+        listed = {n["path"] for n in a["notebooks"]}
+        blocked = [o for o in a["outcomes"] if o.get("notebook") not in listed]
         if blocked:
             reasons: dict = {}
             for o in blocked:
                 reasons[o["blocked_by"]] = reasons.get(o["blocked_by"], 0) + 1
             why = ", ".join(f"{count} {BLOCKED_BY.get(k, k).lower()}" for k, count in reasons.items())
-            claims_html += (f'<details class="group" open><summary><h3>Could not be tested '
+            claims_html += (f'<details class="group claim-group" open><summary><h3>Not tested in a notebook '
                             f'<span class="count">{len(blocked)}</span></h3>'
                             f'<span class="muted small">{e(why)}</span></summary>'
                             f'<ul class="claims">{"".join(claim_item(o, root, a) for o in blocked)}</ul></details>')
@@ -926,7 +961,10 @@ def page_dandiset(data: dict, dandiset: str) -> str:
 </header>
 <main>
   <div class="tabs" role="tablist">{tab_buttons}</div>
-  <section class="tabpanel" id="claims"><h2>Claims</h2>{claims_html}</section>
+  <section class="tabpanel" id="claims"><h2>Claims</h2>
+    <div class="subtabs" id="claim-filter" role="group" aria-label="Show claims by outcome"></div>
+    {claims_html}
+    <nav class="pager" id="claim-pager" aria-label="Pages of claims"></nav></section>
   <section class="tabpanel" id="findings"><h2>Findings about the data</h2>
     <p class="sub small" style="margin-top:12px">What attempts found about the dandiset itself, for its owner and the
     archive.</p>
@@ -944,7 +982,8 @@ def page_dandiset(data: dict, dandiset: str) -> str:
   {related}
   <div class="prevnext">{prev_link}{next_link}</div>
 </main>'''
-    return shell(data, f"Dandiset {dandiset} · Reproduction registry", root, "dandisets", body, TABS_JS)
+    return shell(data, f"Dandiset {dandiset} · Reproduction registry", root, "dandisets", body,
+                 CLAIMS_JS + TABS_JS)
 
 
 # --- writing -------------------------------------------------------------------
