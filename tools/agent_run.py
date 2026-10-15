@@ -7,7 +7,8 @@
 
 ROLE is one of author, verifier-1, author-revise-1, verifier-2, author-revise-2,
 the order in which an attempt goes through docs/protocol.md, and verifier-3 and
-author-revise-3, the third round that settles changes proposed after the second. The prompts are
+author-revise-3, the third round that settles changes proposed after the second. A last role,
+recorder, adds the finished attempt to README.md and docs/pilot-notes.md. The prompts are
 docs/agents/<role>.md with the target's details filled in. A run's transcript
 and final report are kept as transcripts/<dandiset>/<role>.md and
 <role>-report.md (tools/transcript.py writes them).
@@ -32,7 +33,8 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATES = {"author": "author", "verifier-1": "verifier-1", "author-revise-1": "author-revise",
              "verifier-2": "verifier-2", "author-revise-2": "author-revise",
-             "verifier-3": "verifier-3", "author-revise-3": "author-revise-3"}   # role -> docs/agents/<name>.md
+             "verifier-3": "verifier-3", "author-revise-3": "author-revise-3",
+             "recorder": "recorder"}   # role -> docs/agents/<name>.md
 ROLES = tuple(TEMPLATES)
 
 
