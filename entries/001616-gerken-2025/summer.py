@@ -179,6 +179,15 @@ def binned_counts(spikes_s: list[np.ndarray], edges_s: np.ndarray) -> np.ndarray
     return np.array([np.histogram(t, edges_s)[0] for t in spikes_s], dtype=np.int16)
 
 
+def sample_windows(spikes_s: list[np.ndarray], edges_s: np.ndarray, half: int = WINDOW_BINS) -> np.ndarray:
+    """Samples x units: spikes from `half` bins before to `half` bins after each bin of `edges_s`.
+    The bins are extended by `half` bins at each end, so windows at the edges of the analysis
+    portion count the spikes just outside it."""
+    step0, step1 = edges_s[1] - edges_s[0], edges_s[-1] - edges_s[-2]
+    ext = np.r_[edges_s[0] - step0 * np.arange(half, 0, -1), edges_s, edges_s[-1] + step1 * np.arange(1, half + 1)]
+    return window_sums(binned_counts(spikes_s, ext), half)[half:-half]
+
+
 def window_sums(counts: np.ndarray, half: int = WINDOW_BINS) -> np.ndarray:
     """Samples x units: spikes from `half` bins before to `half` bins after each bin (the bin
     itself included in the after part), truncated at the ends."""
@@ -216,7 +225,7 @@ def onsets(annotations: pd.DataFrame, label: str, value: int, min_absence: float
     `min_presence` is given, lasting at least that long. Times as in `annotations`."""
     a = annotations[(annotations.label == label) & (annotations.value == value)].sort_values("start")
     start, stop = a.start.to_numpy(), a.stop.to_numpy()
-    keep = np.r_[False, start[1:] - min_absence > stop[:-1]]
+    keep = start - min_absence > np.r_[-np.inf, stop[:-1]]
     if min_presence is not None:
         keep &= (stop - start) >= min_presence
     return start[keep]
@@ -371,10 +380,17 @@ def shuffled_kappas(y: np.ndarray, p: np.ndarray, rng: np.random.Generator, n: i
     return (po - pe) / (1 - pe) if pe < 1 else np.zeros(n)
 
 
+def permutation_p(fit: dict, rng: np.random.Generator, n: int = N_PERMUTATIONS) -> float:
+    """Test-set shuffle p of one fit: (1 + shuffles with kappa at least the observed) / (1 + n)."""
+    null = shuffled_kappas(fit["y_test"], fit["pred"], rng, n)
+    return float((1 + np.sum(null >= fit["kappa"])) / (1 + n))
+
+
 def fit_logreg(S: np.ndarray, y: np.ndarray, tr: np.ndarray, va: np.ndarray, te: np.ndarray,
                columns=None, c_grid=C_GRID) -> dict:
     """L1 logistic regression on window sums, z-scored with training statistics; C chosen on the
-    validation kappa. Samples whose label is not 0 or 1 are left out."""
+    validation kappa. Samples whose label is not 0 or 1 are left out. `l1_ratio=1.0` selects the
+    L1 penalty from scikit-learn 1.8 on (requirements.in); older versions would fit L2."""
     from sklearn.linear_model import LogisticRegression
     ok = (y == 0) | (y == 1)
     tr, va, te = tr[ok[tr]], va[ok[va]], te[ok[te]]

@@ -39,6 +39,13 @@
 #   kappa from 0.001, 0.003, 0.01 and 0.03, prediction at probability 0.5. Performance is
 #   Cohen's kappa on the test set, mean and SEM over the five folds. Chance is tested by shuffling
 #   the test labels 1000 times (Methods).
+#
+# The criteria of fig5-faces-presence and fig7a-500-neurons were added after the first
+# verification round, which pointed out that the logistic regression can stand in for the LSTM
+# there as it does for fig5-region-decoding. When they were written, the author had seen every
+# result of the first run (the pooled, per-patient and per-region kappas for Summer, Tom,
+# Indoor/Outdoor and the cuts, and the 20 sub-split fits and rankings of fig7b), but no kappa for
+# the face or presence labels and no fit on a subset of top-ranked units.
 schema_version: 1
 dandiset: "001616"
 paper: doi:10.7554/elife.106758.1
@@ -303,7 +310,27 @@ claims:
   statement: Face labels decode slightly better than character labels (Summer 0.33, Tom 0.27), and
     Summer Presence (0.27) is decoded best from the amygdala (0.26).
   source: Results, Differences in character's visual appearances; Figure 5b and 5c
+  depends_on:
+  - fig3c-logreg-characters-location
+  criterion: Tested with the logistic regression in place of the LSTM, as fixed in the opening
+    comment, on the dandiset's summer-faces, tom-faces and summer-presence labels. The face labels
+    hold only 0 and 1, so the frames the Methods exclude (a face neither shown nor clearly absent)
+    stay in as negatives. Three conditions, by mean kappa over the five folds; (a) Summer Faces
+    pooled is above Summer pooled; (b) Tom Faces pooled is above Tom pooled; (c) for Summer
+    Presence the amygdala is highest among A, H, EC and PHC. Reproduced when all three hold;
+    partially reproduced when one or two hold; not reproduced when none holds. Kappas by region
+    for all three labels and permutation p-values per fold are reported.
 - id: fig7a-500-neurons
   statement: Decoding Summer from the 500 top-ranked neurons gives the peak performance (kappa 0.38),
     above that of the full population.
   source: Results, Training on pre-selections of top-ranked neurons; Figure 7a
+  depends_on:
+  - fig7b-top500-overlap
+  criterion: Tested with the logistic regression in place of the LSTM. For each test fold, the
+    ranking of fig7b-top500-overlap from its four sub-splits; on each of these sub-splits a logistic
+    regression on the top k units of that ranking, scored on the shared test fold; kappa averaged
+    over the four sub-splits and then over the five test folds (Methods, nested cross-validation).
+    Sizes k of 23, 114, 150, 229, 500, 750, 1000, 1500 and 2286 units (1% to 100%, with the 500 and
+    150 the Results name). Reproduced when the kappa for 500 units is above that of all 2286 units
+    and is the highest of the sizes; partially reproduced when it is above that of all units but
+    another size is higher; not reproduced when it is not above that of all units.

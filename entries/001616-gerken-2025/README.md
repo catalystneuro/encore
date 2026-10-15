@@ -17,19 +17,26 @@ watched "500 Days of Summer", with 53 frame-wise annotations of the film.
 | The patients the paper names decode above 0.2 | Reproduced |
 | Decoding by region (amygdala for Summer, PHC for Indoor/Outdoor) | Partially reproduced |
 | Responsive units drive decoding of cuts, not of Summer | Blocked: methods underspecified |
+| Face and presence labels (Figure 5b, 5c) | Partially reproduced |
 | 78 units shared by the top 500 of five rankings | Partially reproduced |
-| LSTM results (Figures 3c, 3d, 5b, 7a; four claims) | Blocked: methods underspecified |
+| Peak decoding with the top 500 units (Figure 7a) | Partially reproduced |
+| LSTM results (Figures 3c, 3d; two claims) | Blocked: methods underspecified |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
 and the differences from the paper's method.
 
 The responsive-unit test of the Methods, as written, counts about 70% of units responsive even at
-random event times on this data, so the claims that rest on it could not be judged. The paper's
-LSTM is not published; its logistic regression is run instead where the paper uses it, and as a
-stand-in in three claims. The attempt record, with the reasons and the differences from the paper's
+random event times on this data, so the claims that rest on it could not be judged. The ZETA test
+of the dataset's code is calibrated but counts far fewer units than the paper. The paper's LSTM is
+not published; its logistic regression is run instead where the paper uses it, and as a stand-in
+in five claims. The attempt record, with the reasons and the differences from the paper's
 method, is [`attempts/001616-gerken-2025-01.yaml`](../../attempts/001616-gerken-2025-01.yaml).
 
-- `reproduce_gerken_2025.ipynb`: the analysis. It takes about 22 minutes on four cores.
+- `reproduce_gerken_2025.ipynb`: the analysis. It takes about 25 minutes on four cores.
+- `top_ranked_units.ipynb`: the ranking of units by their logistic regression weights and decoding
+  from the top-ranked units (Figure 7), about 9 minutes.
+- `responsive_zeta_cuts.ipynb` and `responsive_zeta_labels.ipynb`: the ZETA test of the dataset's
+  code for every unit, as a variant of the responsive-unit claims, about 22 and 14 minutes.
 - `summer.py`: loading the files, the time base through the watchlogs, the responsive-unit and
   cluster tests, the fold layout of the dataset's code and the logistic regression. Other notebooks
   on this dandiset can import it.
