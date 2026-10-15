@@ -40,12 +40,14 @@ def test_proposals_are_found_from_the_record():
 
 
 def test_an_author_on_a_dandiset_with_an_attempt_gets_the_repeat_prompt():
+    latest = tool.attempt_of("001754")[0]["id"]
+    n = int(latest.rsplit("-", 1)[1])
     text = tool.fill("author", "001754", "m", version="draft")
-    assert "001754-knierim-2000-01" in text and "attempts/001754-knierim-2000-02.yaml" in text
+    assert latest in text and f"attempts/001754-knierim-2000-{n + 1:02d}.yaml" in text
     assert "Use version draft" in text and "{" not in text
 
 
-def test_a_first_author_without_a_version_picks_a_published_one():
-    assert tool.attempt_of("001933") is None
+def test_a_first_author_without_a_version_picks_a_published_one(monkeypatch):
+    monkeypatch.setattr(tool, "attempt_of", lambda dandiset: None)
     text = tool.fill("author", "001933", "m")
     assert "pinned published version" in text and "Use version" not in text
