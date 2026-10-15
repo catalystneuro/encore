@@ -1,0 +1,236 @@
+# Claims for Chen, He et al. (2026), "Leucine-rich repeat kinase 2 impairs the release sites of
+# Parkinson's disease vulnerable dopamine axons", Nature Communications, on dandiset 001933.
+# Source: the open access full text (CC BY) and its Supplementary Information, read from the
+# Results, figure legends and Methods.
+#
+# When these criteria were written, the author had seen the data check only: the file list,
+# subject metadata, the optogenetic epochs table of every file (powers, train lengths, the
+# pseudorandom order), the frame times of the processed series, a check that the raw 470 nm
+# signal and the processed signal share a clock, and, per mouse and labelled power, the median
+# of a 0 to 0.5 s baseline-subtracted integral of the dF/F (used to check the clock and the power
+# labels; it shows, mouse by mouse, smaller responses in some Anxa1 G2019S mice). No group
+# statistics, per-mouse tests, spontaneous transients or effect sizes had been computed. The
+# author had also read the layout of the paper's source data file (Zenodo 10.5281/zenodo.19930567)
+# and found that, for mouse 4885, its eight 0.5 mW triggered traces of Figure 6C equal the
+# dandiset's dF/F from 1 s before each epoch labelled 0.5 mW.
+#
+# The dandiset holds only the fiber photometry and optogenetics of Figure 6 and Supplementary
+# Figures 7 and 8 (15 Anxa1-iCre and 12 Calb1-Cre mice). The immunostaining, proteomics,
+# western blots and super-resolution imaging of Figures 1 to 5 are not in it.
+#
+# Method choices fixed here. The signal is the dandiset's processed dF/F
+# (FiberPhotometryResponseSeriesDfOverF, 100 Hz, smoothed with a 20-sample moving mean), which is
+# the trace the paper's code analyses. A stimulation's onset is the first 100 Hz sample at or
+# after the epoch's start_time; its power is the epoch's power_in_mW. The evoked integral
+# follows the Methods ("integral of dF/F during the optogenetic-stimulation light-on period"):
+# the dF/F minus its mean from 1.0 s to 0.1 s before onset (the code's baseline, samples 1 to
+# 90 of its window, as the Methods give no baseline), integrated with the trapezoid rule over
+# the epoch's light-on period (start_time to stop_time), in % dF/F times seconds. The code's
+# window (0.1 s before to 1.0 s after onset, samples 91 to 200 of its intended -1 to +1.5 s
+# chunk) and the window its chunking_index.m computes as written (starting 1 s after onset)
+# are variants. Spontaneous transients follow the Methods: samples from 1 s before to 1.5 s
+# after every onset are removed, the rest is concatenated and z-scored, a transient is a run
+# above z = -1 that reaches z = 1 (runs touching either end are dropped, as the code does),
+# and its integral is the trapezoid integral of the unscaled dF/F over the run, in % dF/F
+# times seconds. Group tests are two-sample Student t-tests, one-tailed (G2019S lower), over
+# stimulations or transients pooled across mice, as the legends state. Cohen's d is the
+# difference of the WT and G2019S means over the pooled standard deviation.
+schema_version: 1
+dandiset: "001933"
+paper: doi:10.1038/s41467-026-75194-3
+claims:
+- id: source-data-link
+  statement: The dandiset's recordings are those behind the paper's Figure 6 and Supplementary
+    Figures 7 and 8, and the paper's published per-stimulation traces, evoked integrals and
+    spontaneous transient integrals can be recomputed from them.
+  source: Figure 6C to 6F, Supplementary Figures 7B, 7C, 8C to 8E; Source Data (Zenodo
+    10.5281/zenodo.19930567)
+  data: with_inputs
+  criterion: Records are matched by mouse ID (the number in the dandiset's subject_id against
+    id_animal), group (WT or GS), labelled power and the rank of the stimulation within its
+    power. Four parts are scored. (1) Every mouse in the source data is in the dandiset with
+    the same genotype and Cre line. (2) Each triggered trace (Figure 6C, Supplementary 7B and
+    8D) equals the dandiset's dF/F from 1 s before the matched onset to 1.5 s after it (largest
+    absolute difference below 1e-6). (3) Each published evoked integral (Figure 6E,
+    Supplementary 7C and 8E) equals the code's measure (samples 91 to 200 of that trace minus
+    the mean of samples 1 to 90, trapezoid rule in samples) up to one scale factor common to
+    all, reported, within a relative difference of 1e-4. (4) Per mouse, the number of
+    spontaneous transients and their sorted integrals (Figure 6F, Supplementary 8C) equal those
+    computed here, up to the same kind of common factor, under either the Methods' exclusion
+    window or the window the code computes as written; which one matches is reported.
+    Reproduced when each of the four parts matches for at least 95% of its records; partially
+    reproduced when every part matches for at least 50%; not reproduced otherwise. Whether the
+    figures use the power their legends state is reported.
+- id: fig6e-anxa1-evoked-reduced
+  statement: Optogenetically evoked dopamine release in the dorsolateral striatum (Anxa1+
+    projection region) at 0.5 mW is lower in LRRK2-G2019S than in LRRK2-WT mice (64 against 56
+    stimulations, p = 1.10e-20, one-tailed two-sample t-test).
+  source: Figure 6E (left), Results, last section
+  expected:
+  - quantity: G2019S stimulations at 0.5 mW
+    value: 64
+    tolerance: 0
+  - quantity: WT stimulations at 0.5 mW
+    value: 56
+    tolerance: 0
+  criterion: Evoked integrals at 0.5 mW, as fixed in the opening comment, pooled over Anxa1
+    mice. Reproduced when the counts match, the G2019S mean is lower and the one-tailed
+    Student t-test gives p < 0.05. The p-value is reported next to the paper's. The power the
+    paper's plotting code selects for this panel ('h', 4 mW in the dandiset's labels) and the
+    code's integration window are shown as variants.
+- id: fig6e-anxa1-evoked-per-mouse
+  statement: Seven of eight individual G2019S mice show significantly reduced evoked dopamine
+    release at 0.5 mW compared with the WT group; mouse 3743 does not.
+  source: Figure 6E (right) and legend; Results, last section
+  depends_on:
+  - fig6e-anxa1-evoked-reduced
+  expected:
+  - quantity: G2019S mice significantly below the WT group
+    value: 7
+    tolerance: 0
+  criterion: Each G2019S mouse's eight 0.5 mW integrals against all WT integrals, significant
+    when the mouse's mean is lower and p < 0.05/8. The test is stated as Welch's in the Methods
+    and the legend's asterisks, the legend's p-values are labelled one-tailed two-sample
+    t-tests, and the code runs MATLAB's ttest2 (Student, two-tailed). The readings are (a)
+    Welch one-tailed, (b) Welch two-tailed, (c) Student two-tailed, (d) Student one-tailed.
+    Reproduced when, under one reading, 7 of 8 are significant; partially reproduced when the
+    best reading gives 5, 6 or 8; not reproduced when it gives 4 or fewer. Whether 3743 is the
+    exception is reported.
+- id: supp7c-anxa1-evoked-all-powers
+  statement: The reduction of evoked dopamine release in Anxa1 G2019S mice holds at each of the
+    four stimulation powers, 0.1, 0.5, 1 and 4 mW (p from 2.39e-16 to 1.10e-20).
+  source: Supplementary Figure 7C; Results, last section
+  criterion: Evoked integrals per power, pooled over Anxa1 mice (64 G2019S against 56 WT
+    stimulations per power). Reproduced when for all four powers the G2019S mean is lower with
+    one-tailed Student p < 0.05; partially reproduced for one to three powers; not reproduced
+    for none.
+- id: fig6f-anxa1-spontaneous-reduced
+  statement: Spontaneous dopamine transients in the dorsolateral striatum are smaller in
+    G2019S than in WT mice (1064 against 798 transients, p = 2.75e-177, one-tailed two-sample
+    t-test), with 57 to 285 transients per mouse.
+  source: Figure 6F (left) and legend
+  expected:
+  - quantity: G2019S spontaneous transients
+    value: 1064
+    tolerance: 106.4
+  - quantity: WT spontaneous transients
+    value: 798
+    tolerance: 79.8
+  criterion: Spontaneous transient integrals, as fixed in the opening comment, pooled over
+    Anxa1 mice. Reproduced when both counts are within tolerance, every mouse has between 51.3
+    and 313.5 transients (the reported range widened by 10% of each bound), and the G2019S
+    mean is lower with one-tailed Student p < 0.05. Partially reproduced when the test holds
+    but a count is outside tolerance. The code's exclusion window as written is a variant.
+- id: fig6f-anxa1-spontaneous-per-mouse
+  statement: Six of eight individual G2019S mice show significantly smaller spontaneous
+    dopamine transients than the WT group; mice 4651 and 3743 do not.
+  source: Figure 6F (right) and legend; Results, last section
+  depends_on:
+  - fig6f-anxa1-spontaneous-reduced
+  expected:
+  - quantity: G2019S mice significantly below the WT group
+    value: 6
+    tolerance: 0
+  criterion: Each G2019S mouse's transient integrals against all WT transient integrals, with
+    the four readings and the threshold of fig6e-anxa1-evoked-per-mouse. Reproduced when, under
+    one reading, 6 of 8 are significant; partially reproduced when the best reading gives 4, 5,
+    7 or 8; not reproduced when it gives 3 or fewer. Whether 4651 and 3743 are the exceptions
+    is reported.
+- id: supp8c-calb1-spontaneous-not-reduced
+  statement: In the dorsomedial striatum (Calb1+ projection region), spontaneous dopamine
+    transients are not reduced in G2019S mice (970 against 682 transients, p = 0.98).
+  source: Supplementary Figure 8C; Results, last section
+  expected:
+  - quantity: G2019S spontaneous transients
+    value: 970
+    tolerance: 97
+  - quantity: WT spontaneous transients
+    value: 682
+    tolerance: 68.2
+  criterion: A claim of absence, judged on the paper's test, a one-tailed two-sample Student
+    t-test (G2019S lower) at p < 0.05 on transient integrals pooled over Calb1 mice.
+    Reproduced when the test does not find the effect (p >= 0.05) and not reproduced when it
+    does. The difference of means and Cohen's d are reported either way, and the counts are
+    compared with the expected values.
+- id: supp8e-calb1-evoked-reduced
+  statement: Evoked dopamine release in the dorsomedial striatum from Calb1+ neuron
+    stimulation is reduced in G2019S mice at each of four powers (56 against 40 stimulations
+    per power, p from 6.45e-05 to 0.001).
+  source: Supplementary Figure 8E (left); Results, last section
+  expected:
+  - quantity: G2019S stimulations per power
+    value: 56
+    tolerance: 0
+  - quantity: WT stimulations per power
+    value: 40
+    tolerance: 0
+  criterion: Evoked integrals per power (0.1, 0.5, 1 and 4 mW), pooled over Calb1 mice.
+    Reproduced when the counts match and for all four powers the G2019S mean is lower with
+    one-tailed Student p < 0.05; partially reproduced for one to three powers; not reproduced
+    for none.
+- id: supp8e-calb1-few-mice-reduced
+  statement: Only 2 of 7 G2019S mice show reduced Calb1+ evoked dopamine release relative to
+    the WT group.
+  source: Supplementary Figure 8E (right); Results, last section
+  depends_on:
+  - supp8e-calb1-evoked-reduced
+  expected:
+  - quantity: G2019S mice significantly below the WT group
+    value: 2
+    tolerance: 0
+  criterion: The legend does not say which power the per-mouse panel shows; the claim is
+    tested at 0.5 mW, the power of the Cohen's d comparison in the Results, and the other three
+    powers are shown as variants. Each G2019S mouse's eight integrals against all WT integrals,
+    significant when the mouse's mean is lower and p < 0.05/7, under readings (a) to (d) of
+    fig6e-anxa1-evoked-per-mouse. Reproduced when, under one reading, 2 of 7 are significant;
+    partially reproduced when the best reading gives 1, 3 or 4; not reproduced otherwise.
+- id: cohens-d-anxa1-larger
+  statement: The G2019S reduction of evoked release at 0.5 mW is much larger for Anxa1+ (Cohen's
+    d = 2.05) than for Calb1+ stimulation (d = 0.76).
+  source: Results, last section
+  depends_on:
+  - fig6e-anxa1-evoked-reduced
+  - supp8e-calb1-evoked-reduced
+  expected:
+  - quantity: Cohen's d, Anxa1, 0.5 mW
+    value: 2.05
+    tolerance: 0.205
+  - quantity: Cohen's d, Calb1, 0.5 mW
+    value: 0.76
+    tolerance: 0.076
+  criterion: Cohen's d as fixed in the opening comment, on 0.5 mW evoked integrals pooled over
+    mice. Reproduced when both values are within tolerance; partially reproduced when the
+    Anxa1 d is at least twice the Calb1 d but a value is outside tolerance; not reproduced
+    otherwise.
+- id: fig1d-lrrk2-enriched-vulnerable
+  statement: LRRK2 immunolabeling intensity is higher in Aldh1a1+ (vulnerable) than in
+    Aldh1a1- SNc dopamine neurons (p = 0.0008).
+  source: Figure 1B and 1D
+- id: fig2b-rab3-phosphorylation
+  statement: LRRK2 kinase inhibition with MLi-2 changes 289 phosphopeptides in striatal
+    synaptosomes of G2019S mice, including RAB3 T86.
+  source: Figure 2A to 2C
+- id: fig2eg-prab3-increased
+  statement: Phosphorylation of RAB3A and RAB3C is increased in the SNc of G2019S mice and
+    returns to WT levels with MLi-2.
+  source: Figure 2D to 2G
+- id: fig3d-rim-binds-unphosphorylated
+  statement: RIM1 and RIM2 bind unphosphorylated RAB3A in preference to RAB3A phosphorylated at
+    T86, while RILPL1 and RILPL2 prefer the phosphorylated form.
+  source: Figure 3D to 3F
+- id: fig4d-fewer-active-zones
+  statement: Fewer TH+/VAMP2+ striatal synaptosomes from G2019S mice contain bassoon, and the
+    remaining bassoon clusters are larger.
+  source: Figure 4D and 4E
+- id: fig4i-rim1-reduced
+  statement: RIM1 is reduced in striatal synaptosomes of G2019S mice (p = 0.0245) but not in
+    other striatal fractions or the SNc.
+  source: Figure 4H to 4L
+- id: fig5-bassoon-vulnerable-axons
+  statement: Bassoon cluster density is reduced and cluster volume increased in Aldh1a1+ but not
+    Aldh1a1- dopamine axons of G2019S mice, and the same holds in Anxa1+ axons.
+  source: Figure 5D, 5E, 5G and 5H
+- id: fig5j-no-axon-loss
+  statement: The volume occupied by TH+ fibres in the dorsal striatum does not differ between
+    G2019S and WT mice.
+  source: Figure 5I and 5J
