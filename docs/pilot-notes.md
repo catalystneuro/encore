@@ -823,3 +823,39 @@ check that confounds response latency with offset; GPFA fits that vary in
 the third digit with fixed seeds; a bug fixed after seeing outputs; and an
 ambiguous one-tailed test in the paper.
 
+### 001616, Gerken et al. 2025
+
+Six claims reproduced, five partially and nine blocked, all on the dandiset
+alone. Totals match the paper (29 patients, 2,286 units), but the counts by
+region do not, with no mapping between them. The paper's test of which
+neurons respond is not calibrated on these data (it flags about as many
+units at random times as at real onsets), and the dataset's own ZETA test,
+which is calibrated, flags far fewer than the paper reports (79 against
+1,025 for camera cuts), so the claims built on responsive units are
+blocked as `methods_underspecified`. The decoding claims with the paper's
+logistic regression reproduce; those about its LSTM were blocked or tested
+with the logistic regression as a stand-in. Findings: spike times are
+stored in milliseconds, which NWB does not allow; the face labels lack the
+"excluded" state the Methods use; an earlier version held 28 recordings
+twice; and the dataset's training code selects no hippocampal units,
+because no unit is labelled `H`.
+
+The author's first revision took 3 hours 24 minutes, mostly running the
+ZETA test on every unit, and moved two blocked claims to partially
+reproduced, as the protocol allows after round 1. `check` then held those
+claims to round 1's "blocked", a flaw now fixed (the rule starts at round
+2); to pass it the author recorded the round-1 verifier as disagreeing,
+explaining why in its response, and round 2 accepted that reading. The
+author's points on the protocol: an alpha as the paper's stated
+false-positive rate; claims blocked by dependence though their analyses
+ran; a stand-in model for claims about one that cannot be run; reference
+values taken from code; tolerances for small proportions; and regions that
+differ from the paper's.
+
+Two lessons for running the batch. A chain script edited while a chain was
+running broke that chain after its last step (bash reads a script as it
+runs), and the queue waiting on it stalled for eight hours; the scripts are
+not to be edited while a queue is running them. And an attempt's branch keeps the tools it started with, so
+a fix to the tooling reaches a running attempt only if its branch is
+rebased.
+
