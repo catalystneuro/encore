@@ -179,11 +179,13 @@ def check(entry_dir: Path) -> Report:
             _derivation_checks(report, rel / name, (entry_dir / name).read_text())
 
     # Claims and attempts that go with this entry.
-    claims_by_target, labels_used = {}, {}
+    claims_by_target, labels_used, kinds_by_target = {}, {}, {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         data = validate(report, path, "claims") or {}
         ids = {c["id"] for c in data.get("claims", [])}
         claims_by_target[(data.get("dandiset"), data.get("paper"))] = ids
+        kinds_by_target[(data.get("dandiset"), data.get("paper"))] = {
+            c["id"]: c.get("data", "dandiset") for c in data.get("claims", [])}
         labels_used[(data.get("dandiset"), data.get("paper"))] = any(
             c.get("data") == "with_labels" for c in data.get("claims", []))
         for c in data.get("claims", []):
@@ -224,7 +226,18 @@ def check(entry_dir: Path) -> Report:
         for rnd in (attempt.get("verifications") or [])[1:]:
             for r in rnd["results"]:
                 agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
+        kinds = kinds_by_target.get((attempt.get("dandiset"), attempt.get("paper")), {})
         for outcome in attempt.get("outcomes", []):
+            # A claim on data in another archive names where they are, so it is never blocked for missing data,
+            # and when it is tested the archive is an input.
+            if kinds.get(outcome.get("claim")) == "elsewhere":
+                if outcome.get("blocked_by") == "data_missing":
+                    report.error(where, f"claim {outcome.get('claim')!r} has its data in another archive "
+                                        "(`elsewhere`); test it there, or block it for the reason it cannot be "
+                                        "tested, not `data_missing`")
+                if outcome.get("outcome") != "blocked" and not attempt.get("inputs"):
+                    report.error(where, f"claim {outcome.get('claim')!r} was tested on data in another archive; "
+                                        "list them under `inputs`")
             verified = agreed.get(outcome.get("claim"))
             if verified and outcome.get("outcome") != verified:
                 report.error(where, f"claim {outcome.get('claim')!r} is {outcome.get('outcome')!r}, but the last "

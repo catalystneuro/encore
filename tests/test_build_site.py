@@ -192,7 +192,7 @@ def test_claims_using_outside_data_are_counted_apart():
     attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dandiset"},
                             {"claim": "b", "outcome": "not_reproduced", "data": "with_inputs"},
                             {"claim": "c", "outcome": "blocked"}]}
-    alone, outside = site.outcome_counts(attempt), site.outcome_counts(attempt, outside=True)
+    alone, outside = site.outcome_counts(attempt), site.outcome_counts(attempt, "with_inputs")
     assert alone["reproduced"] == 1 and alone["blocked"] == 1 and alone["not_reproduced"] == 0
     assert outside["not_reproduced"] == 1 and sum(outside.values()) == 1
     assert "1 claim that also uses data" in site.outside_note([attempt])
@@ -215,7 +215,19 @@ def test_claims_with_outside_names_count_as_the_dandiset():
     attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "with_labels"},
                             {"claim": "b", "outcome": "reproduced", "data": "with_inputs"}]}
     assert site.outcome_counts(attempt)["reproduced"] == 1
-    assert site.outcome_counts(attempt, outside=True)["reproduced"] == 1
+    assert site.outcome_counts(attempt, "with_inputs")["reproduced"] == 1
+
+
+def test_claims_on_data_in_other_archives_are_counted_on_their_own():
+    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dandiset"},
+                            {"claim": "b", "outcome": "blocked", "data": "elsewhere"},
+                            {"claim": "c", "outcome": "reproduced", "data": "with_inputs"}]}
+    assert sum(site.outcome_counts(attempt).values()) == 1
+    assert site.outcome_counts(attempt, "elsewhere")["blocked"] == 1
+    assert sum(site.outcome_counts(attempt, "with_inputs").values()) == 1
+    note = site.outside_note([attempt])
+    assert "1 claim on data the paper deposited in another archive" in note
+    assert "1 claim that also uses data from outside the dandiset" in note
 
 
 def test_dandisets_converted_by_catalystneuro_can_be_filtered(built):

@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-6`. Record this version in the attempt's provenance.
+Version: `pilot-7`. Record this version in the attempt's provenance.
 
 This is what an agent, or a person, does to attempt a target and deposit the
 result. It is written from the eight pilot attempts
@@ -56,9 +56,9 @@ Do this before any analysis.
    The registry judges the dandiset, so claims that use outside data are
    kept apart:
    - Each claim says what its test uses: `data: dandiset` (the default),
-     `data: with_labels` or `data: with_inputs`. Only `with_inputs` claims
-     are counted apart; the others count towards what is said about the
-     dandiset.
+     `data: with_labels`, `data: with_inputs` or `data: elsewhere`. The
+     `with_inputs` and `elsewhere` claims are counted apart, each group on
+     its own; the others count towards what is said about the dandiset.
    - `with_labels` is for outside sources that only name or map codes the
      dandiset already holds, such as stimulus names for its stimulus codes.
      They bring in no measurements. A link claim must confirm the names, and
@@ -79,6 +79,15 @@ Do this before any analysis.
      compare identity, not spelling.
    - Outside data supplies only what the dandiset lacks, such as a label for
      each cell. The analysis runs on the dandiset's data.
+   - `elsewhere` is for a claim whose data the dandiset does not hold at
+     all, because the paper deposited them in another public archive (for
+     example imaging in the BioImage Archive, proteomics in PRIDE, blots on
+     Zenodo). Give the archive and the pinned identifier under `where`.
+     Test the claim on those data, listing them under `inputs`, as for any
+     other claim. If it cannot be tested here, block it for the reason that
+     applies (`too_large`, `not_runnable`, `data_unreadable` and so on),
+     never `data_missing`. Data the paper names but that are not public
+     anywhere stay `data: dandiset`, blocked with `data_missing`.
    - The notes of a `with_inputs` claim say which side a difference comes
      from as far as the outputs show: whether the dandiset's measures match
      the paper's per-cell values where those are published, and whether the
@@ -125,8 +134,10 @@ Do this before any analysis.
    selection (too few units under the claim's own rule) is decided once the
    selection is made. Give the main reason under
    `blocked_by` and any others in the notes:
-   - `data_missing`: something the claim needs is not in the dandiset, or for
-     an outside input, not public. Say whether it exists elsewhere.
+   - `data_missing`: something the claim needs is not in the dandiset and
+     not public anywhere else, or for an outside input, not public. When the
+     paper deposited it in another public archive, the claim is
+     `data: elsewhere` instead (step 6).
    - `metadata_insufficient`: the data are there but cannot be interpreted or
      linked, for lack of a description, label, identifier or mapping.
    - `methods_underspecified`: neither the paper nor its code fixes the

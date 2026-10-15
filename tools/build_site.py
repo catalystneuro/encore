@@ -176,6 +176,7 @@ def collect(executed: Path | None = None) -> dict:
                 "deviations": [squash(d) for d in o.get("deviations") or []],
                 "disagreed": o["claim"] in disagreed,
                 "data": known.get(o["claim"], {}).get("data", "dandiset"),
+                "where": known.get(o["claim"], {}).get("where"),
                 "proposed": o.get("proposed"),
             } for o in a["outcomes"]],
             "findings": [{"kind": f["kind"], "statement": squash(f["statement"])}
@@ -237,7 +238,8 @@ def collect(executed: Path | None = None) -> dict:
 def finish(data: dict) -> dict:
     """Totals, and each target's status, derived from the attempts."""
     data["outcome_counts"] = outcome_counts(data["attempts"])
-    data["outcome_counts_with_outside_data"] = outcome_counts(data["attempts"], outside=True)
+    data["outcome_counts_with_outside_data"] = outcome_counts(data["attempts"], "with_inputs")
+    data["outcome_counts_elsewhere"] = outcome_counts(data["attempts"], "elsewhere")
     attempted = {a["dandiset"] for a in data["attempts"]}
     for t in data["targets"]:
         if t["dandiset"] in attempted:
@@ -315,30 +317,38 @@ def current_attempts(data: dict) -> dict[str, list[dict]]:
     return out
 
 
-def outcome_counts(attempts, outside: bool = False) -> dict:
-    """Outcome totals over one attempt or a list of them.
+def outcome_counts(attempts, group: str = "dandiset") -> dict:
+    """Outcome totals over one attempt or a list of them, for one group of claims.
 
-    By default only the claims that rest on the dandiset alone; with `outside`, only the claims that
-    also use data from elsewhere. The two are never added together, so that an outcome that may
-    reflect the outside data does not count as a judgement of the dandiset.
+    The groups are the claims that rest on the dandiset ("dandiset"), those that also use data from
+    elsewhere ("with_inputs"), and those on data the paper deposited in another archive ("elsewhere").
+    They are never added together, so that an outcome that may reflect outside data does not count as
+    a judgement of the dandiset.
     """
     attempts = [attempts] if isinstance(attempts, dict) else attempts
     # Names for the dandiset's own codes taken from elsewhere (`with_labels`) count as the dandiset.
+    groups = {"with_labels": "dandiset", None: "dandiset"}
     return {k: sum(1 for a in attempts for o in a["outcomes"]
-                   if o["outcome"] == k and (o.get("data") == "with_inputs") == outside) for k in OUTCOMES}
+                   if o["outcome"] == k and groups.get(o.get("data"), o.get("data")) == group) for k in OUTCOMES}
 
 
 def outside_note(attempts, root: str = "") -> str:
-    """A line with the outcomes of the claims that also use outside data, when there are any."""
-    counts = outcome_counts(attempts, outside=True)
-    m = sum(counts.values())
-    if not m:
-        return ""
-    claims = "1 claim that also uses" if m == 1 else f"{m} claims that also use"
-    return (f'<p class="sub small" style="margin-top:8px">Counted separately: {claims} data from outside '
-            f'the dandiset.</p>'
-            f'<div class="summary">{bar(counts, f"Outcomes of {m} claims using outside data", "bar mini")}'
-            f'{legend(counts, compact=True)}</div>')
+    """Lines with the outcomes of the claims that use outside data or other archives, when there are any."""
+    out = ""
+    for group, one, many, label in (
+            ("with_inputs", "1 claim that also uses data from outside the dandiset",
+             "claims that also use data from outside the dandiset", "claims using outside data"),
+            ("elsewhere", "1 claim on data the paper deposited in another archive",
+             "claims on data the paper deposited in other archives", "claims on data in other archives")):
+        counts = outcome_counts(attempts, group)
+        m = sum(counts.values())
+        if not m:
+            continue
+        text = one if m == 1 else f"{m} {many}"
+        out += (f'<p class="sub small" style="margin-top:8px">Counted separately: {text}.</p>'
+                f'<div class="summary">{bar(counts, f"Outcomes of {m} {label}", "bar mini")}'
+                f'{legend(counts, compact=True)}</div>')
+    return out
 
 
 def weakest_tier(attempts: list[dict]) -> str:
@@ -452,6 +462,8 @@ def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
     tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
     if o.get("data") == "with_inputs":
         tags += '<span class="tag">uses data from outside the dandiset</span>'
+    elif o.get("data") == "elsewhere":
+        tags += f'<span class="tag">data in {e(o.get("where") or "another archive")}</span>'
     elif o.get("data") == "with_labels":
         tags += '<span class="tag">names its codes from outside the dandiset</span>'
     if o.get("proposed"):
@@ -1024,7 +1036,8 @@ def build(data: dict, output: Path) -> None:
             "dandiset": dandiset, "page": f"dandisets/{dandiset}/", "generated": data["generated"],
             "caution": CAUTION + " It may be a failure of the attempt.",
             "outcome_counts": outcome_counts(attempts),
-            "outcome_counts_with_outside_data": outcome_counts(attempts, outside=True), "attempts": attempts,
+            "outcome_counts_with_outside_data": outcome_counts(attempts, "with_inputs"),
+            "outcome_counts_elsewhere": outcome_counts(attempts, "elsewhere"), "attempts": attempts,
             "entries": entries_for(data, dandiset),
         }, indent=1) + "\n")
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")

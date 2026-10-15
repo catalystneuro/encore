@@ -253,9 +253,25 @@ def test_a_claim_may_say_it_uses_outside_data(repo):
     claims = {**CLAIMS, "claims": [{**CLAIMS["claims"][0], "data": "with_inputs"}]}
     (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
     assert errors(repo) == []
-    claims["claims"][0]["data"] = "elsewhere"
+    claims["claims"][0]["data"] = "somewhere"
     (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
     assert any("data" in e for e in errors(repo))
+
+
+def test_a_claim_on_data_in_another_archive_names_it_and_is_tested_there(repo):
+    claims = {**CLAIMS, "claims": [{**CLAIMS["claims"][0], "data": "elsewhere"}]}
+    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    assert any("where" in e for e in errors(repo))
+    claims["claims"][0]["where"] = "PRIDE PXD000001"
+    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    assert any("list them under `inputs`" in e for e in errors(repo))
+    attempt = {**ATTEMPT, "inputs": [{"what": "proteomics", "source": "PRIDE PXD000001"}]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert errors(repo) == []
+    attempt = {**ATTEMPT, "outcomes": [{**ATTEMPT["outcomes"][0], "outcome": "blocked",
+                                        "blocked_by": "data_missing"}]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
+    assert any("not `data_missing`" in e for e in errors(repo))
 
 
 def test_a_later_round_decides_the_claims_it_reviews(repo):

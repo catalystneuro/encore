@@ -65,7 +65,9 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 
 Counts are of claims that rest on the dandiset, including those that take
 names for its own codes from elsewhere. Claims that also use data from
-outside the dandiset are counted apart, in brackets.
+outside the dandiset are counted apart, in brackets. Claims on data the
+paper deposited in other archives are not in this table; the dashboard
+shows them on each dandiset's page.
 
 ## Agent runs
 

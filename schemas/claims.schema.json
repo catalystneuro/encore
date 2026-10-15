@@ -76,14 +76,39 @@
             }
           },
           "data": {
-            "description": "What the claim's test uses: the dandiset alone (the default); the dandiset with names for its own codes taken from elsewhere (`with_labels`), which counts as the dandiset; or the dandiset with other data from elsewhere (`with_inputs`), which is counted apart. Outside sources are listed under `inputs` in the attempt.",
+            "description": "What the claim's test uses: the dandiset alone (the default); the dandiset with names for its own codes taken from elsewhere (`with_labels`), which counts as the dandiset; the dandiset with other data from elsewhere (`with_inputs`), which is counted apart; or data the paper deposited in another public archive, which the dandiset does not hold (`elsewhere`), counted apart from both. Outside sources that a test uses are listed under `inputs` in the attempt.",
             "enum": [
               "dandiset",
               "with_labels",
-              "with_inputs"
+              "with_inputs",
+              "elsewhere"
             ]
+          },
+          "where": {
+            "description": "For a claim with data `elsewhere`: the archive and the pinned identifier of the data, e.g. 'PRIDE PXD012345' or 'Zenodo doi:10.5281/zenodo.123'.",
+            "type": "string",
+            "minLength": 1
           }
-        }
+        },
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "data": {
+                  "const": "elsewhere"
+                }
+              },
+              "required": [
+                "data"
+              ]
+            },
+            "then": {
+              "required": [
+                "where"
+              ]
+            }
+          }
+        ]
       }
     }
   },
