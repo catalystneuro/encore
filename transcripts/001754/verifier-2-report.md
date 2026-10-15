@@ -1,69 +1,53 @@
-## 1. Outcomes
+## Round 2 verification: Knierim, McNaughton & Poe (2000) on DANDI 001754 (draft)
 
-The claims file lists 7 claims, and the attempt record gives an outcome for each of the 7.
+### 1. Outcomes
 
-| Claim | Recorded | Do I agree? |
-|---|---|---|
-| flight-spatial-code | partially_reproduced, with not_reproduced proposed | I agree with the proposed not_reproduced and no longer with partially_reproduced. The pre-specified run in cell 29 gives Rat1 FD9 12 of 25 (0.48) and Rat2 FD9 3 of 28 (p 0.16), and the criterion maps that to not_reproduced. The five repeats with 2000 shuffles give 11 or 12 of 25 (cell 30). The result still sits on the 0.5 bound: cell 23, which uses the corrected lookup with 200 shuffles, gives 13 of 25 (0.52). |
-| three-orthogonal-surfaces | blocked (metadata_insufficient) | Agree. |
-| si-comparable-to-preflight | reproduced | Agree under the criterion: p = 0.45, and every variant gives p ≥ 0.20 (cells 36 to 38). It is an absence claim, and it carries the caveats about the preflight apparatus and Rat2's position trace. |
-| fd4-abnormal-selectivity | not_reproduced | Agree. The one-sided p is 0.055 (cell 41), so the call is borderline and the variants split. |
-| fig3-stability-across-sessions | reproduced | Agree under the criterion: median r 0.537 against a null 95th percentile of 0.102 (cell 44). It depends on the smoothing and on the cluster-identity assumption. |
-| theta-normal | blocked (data_missing) | Agree. The unfiltered listing in cell 3 now supports it. |
-| ripples-normal | blocked (data_missing) | Agree. |
+The claims file has 7 claims. The attempt record gives 1 not_reproduced, 3 reproduced and 3 blocked. I agree with all seven.
 
-## 2. Statements the printed outputs do not support
+| Claim | Record | Agree | Note |
+|---|---|---|---|
+| flight-spatial-code | not_reproduced | Yes | Cell 34: Rat1 FD9 10/25 (0.40), Rat2 FD9 2/28 (0.071, p 0.41). The outcome holds even if Rat2 is set aside: Rat1 alone is below 0.5, so the "reproduced in one only" branch does not apply either. |
+| three-orthogonal-surfaces | blocked (metadata_insufficient) | Yes | Cell 41: no camera view, track layout or pixel scale. |
+| si-comparable-to-preflight | reproduced | Yes | Cell 43: p 0.45. Every variant has p ≥ 0.12 (cells 44, 45). It is a weak test (see 3). |
+| fd4-abnormal-selectivity | reproduced | Yes, fragile | Cell 49: p 0.024. Without Rat2 it is 0.035 on both versions (cell 51). It fails on the earlier version's maps with Rat2 (0.055, cell 50), on CEL names (0.073) and on MC maps (0.060). |
+| fig3-stability-across-sessions | reproduced | Yes | Cell 54: median r 0.537, null 95th percentile 0.102. At σ 0.5 the median is 0.315, which would make it partial. |
+| theta-normal, ripples-normal | blocked (data_missing) | Yes | Cells 3, 5 and 41. |
 
-- **Cell 33, cell 49 (Summary) and the attempt record (notes and proposed reason):**
-  - The repeats are reported as "repeats with 2000 shuffles and five other seeds give 11 or 12 of 25 (0.44 to 0.48)", with "Rat1 FD9 0.48 of units significant (0.44 to 0.48 in repeats)" in the Summary.
-  - The proposed reason says "With spikes at the lost position dropped … 12 of 25", and cell 33 says "with them dropped … the count is 12".
-  - All of this leaves out cell 23 (shown again in cell 32). It uses the same corrected `PositionLookup` inside `epoch_units` and gives 13 of 25 (0.52) for the same epoch.
-  - Across the seven runs the count is 11 to 13, which straddles the 0.5 bound. These sentences should say so.
-- **Cell 49 (Summary): "Three claims come from the dandiset's description … and one from a figure title alone."** The claims file sources four claims to the dandiset description: si-comparable, fd4, theta and ripples. Cell 0 makes the same miscount ("Three claims come from the dandiset's own description") while its own table lists four.
-- **Similar spike counts:**
-  - Cell 39 says "The compared sessions have similar spike counts". The si notes and the si response repeat this.
-  - For Rat2 the numbers do not support it. In cell 38 the FD9 median is 205 spikes against 352 preflight, and the median rate x occupancy is 5226 against 7628. Rat1 is similar (437 against 359).
-- **The fig3 notes ("with similar occupancy, spike counts and shuffle drops") and the fig3 response ("similar occupancy, spike counts and drops"):** cell 46 gives a median of 301 against 455 spikes used, and cell 47 itself says "more spikes per tested unit". Occupancy and drops are similar; spike counts are not.
-- **Cell 39 and the si notes, on rate x occupancy:** both state that rate x occupancy "is proportional to the spike count" without a qualifier. Cell 20 shows this only for flight maps (about 22 per spike) and says the preflight maps cannot be checked. The count-adjusted variant relies on this for the preflight maps.
-- **Not checkable from the printed outputs:**
-  - The OSD-968 contents: "two synchronised cameras" (cell 34 and the three-orthogonal notes) and "lists … no EEG" (cell 48 and the theta notes).
-  - The statement that the conversion code does not describe the track layout (three-orthogonal notes).
-  - The five-minute run time in the README.
-  
-  These are not wrong, but nothing in the notebook shows them.
+### 2. Statements the outputs do not support
 
-Every other number in the five Result cells, the Summary, the README and the attempt record's notes and findings matches the printed outputs. I checked each one against cells 15 to 46.
+- **Cell 52 (fd4 Result):** "FD4 is lower than FD9 for Rats 1 and 2 without significance … and on spike-based information minus the shuffle mean (0.025 against 0.211, p = 0.13; with Rat3, 0.232 against 0.211, p = 0.31)." With Rat3, FD4 is higher than FD9 (cell 49: 0.232 against 0.211), so "FD4 is lower" does not cover that case. The attempt record states the same numbers neutrally and is fine.
+- **Cell 60 (Summary) and README:** "gives 0.074 false positives over all flight ES epochs and up to 0.21 in one session." These two figures come from different nulls:
+  - 0.074 is the plain Poisson pooled rate.
+  - 0.21 (0.214) is the maximum under the sample-time null.
+  - Under the sample-time null, which the record says "reproduces the real drop rates", the pooled rate is 0.096 (cell 37). The plain-Poisson per-session maximum is 0.160.
+  - The sentence should give 0.096, or say which null each number comes from.
+- **Cell 47 and the record (si-comparable):** "a difference of up to about a quarter of the preflight level is not excluded." The interval in cell 46 is −29% to +22%, so a drop of up to 29% is not excluded. For Rat1 alone the bound is −40%. "About a quarter" understates the lower bound.
+- **Cell 57 (fig3):** "Units with the most stable fields are significant in the first epoch only, and for several of them…" One of the three examples, TT8 cluster 5, has r = 0.436, below the median of 0.537 (cell 56). It is not among the most stable units. This is minor; the null-95th-percentile numbers quoted are correct.
+- **Cannot be checked from these outputs:** the earlier-version figures in cell 39 and the record (Rat1 12/25, "11 to 13 over seven runs", shuffle drops 0.307 and 0.074). They come from the first attempt and are not printed here. Cell 7 does support "the draft's trace adds samples at the other rat's spike times".
 
-The verification `reason` fields restate my round-1 reasons faithfully, in close paraphrase. Two small notes:
+Every other number in the Result cells, the Summary, the README and the record notes matches cells 21 to 57. That includes 9/122 and 12/125, the per-session rates 0.160, 0.154, 0.037 and 0.214, the binomial p values 0.0035, 0.0026, 0.28 and 0.99, path length 20.5 to 91.6, MC 0 to 2 of 11 to 32, 1.855 against 1.076 (p 9.0e-7), rho 0.791, the interval −0.425 to 0.312, and the Rats 1 and 3 result 1.242 against 1.510 (p 0.035).
 
-- The flight-spatial-code reason folds in my problems 6 and 7 without my "does not affect a conclusion" labels. That is fair, because the lookup fix did change the count.
-- The fd4 and fig3 reasons keep my round-1 figures (16 of 53, r 0.538, null 0.091). The responses correctly give the updated ones.
+**My round-1 reasons in the record:** they are faithful paraphrases of my report, with the numbers right. Problem 7 (occupancy of 38 to 57 counts/s) is left out. I had marked it as not affecting a conclusion, and cell 18 states it.
 
-## 3. Round-1 points
+### 3. Round-1 points
 
 **Resolved:**
-
-- 1: per-unit p-values, Monte Carlo SEs and repeats are reported. What remains is the cell 23 omission above.
-- 6: the lookup is fixed, and the synthetic assert in cell 9 would fail with the old lookup.
-- 7: drop fractions and a count-matched variant are reported (cell 31).
-- 8: the listing is unfiltered (cell 3).
-- The 277.8 Hz part of 9: that peak sits in a bin with 55 occupancy counts.
-
-**Mostly resolved:**
-
-- 3: the bias variants (bins with ≥ 5 occupancy counts, count-adjusted) agree with the main tests. The caveats are the spike-count wording above and the unchecked proportionality for preflight maps.
+- **1. Trace attribution in Rat2's windows.** It is still unresolved, and the data cannot settle it. It no longer decides a conclusion:
+  - fd4 without Rat2 passes (p 0.035).
+  - si-comparable for Rat1 alone gives p 0.25.
+  - flight-spatial-code is not_reproduced with or without Rat2.
+  - Cell 30 adds the path length and the MC-window contrasts I asked for.
+- **2. fd4's dependence on the duplicated maps.** It is now stated, and the without-Rat2 test does not depend on version.
+- **3. si-comparable.** The split by spike-shuffle significance, the bootstrap interval and the missing equivalence margin are now reported (cells 46, 47).
+- **4. Shuffle false-positive rate at the real drop rates.** Measured in cell 37, and the outcome holds against it.
+- **6. Smoothing dependence** and **7. occupancy rate:** both stated.
 
 **Remaining, bearing on a conclusion:**
-
-- **2, whose position the trace holds in Rat2's epochs:** this is disclosed but unresolved (cells 23 and 25). It decides whether Rat2 FD9 is a valid judged session for flight-spatial-code. It also affects whether Rat2's rate maps belong in si-comparable and fd4.
-- **flight-spatial-code sits on the 0.5 bound:** the count is 11 to 13 of 25 across runs. The proposed not_reproduced follows the pre-specified run and the better-resolved repeats, but it is not robust.
-- **4, the preflight apparatus:** this is now stated (cells 17 and 18) but cannot be settled. It bears on si-comparable and fd4.
-- **5, fig3:**
-  - Cluster identity is still assumed. The mean-rate correlation is consistent with identity but does not show it.
-  - At 0.5 bins of smoothing the median r is 0.315 or 0.341, which would make the claim partially reproduced.
-  - In the second epoch 1 of 19 units is significant against 10 of 16 in the first, and this is unexplained. For example, TT4 cluster 1 has r = 0.820 but p = 0.14 in epoch 2.
-- **fd4 is borderline:** the criterion's test gives p = 0.055, while the peak ≥ 1 Hz and count-adjusted variants give p < 0.01.
-
-**Remaining, not bearing on a conclusion:** the zero inter-spike intervals (2 to 15%) are disclosed and unresolved.
-
-I saved the paper's abstract and figure titles in `paper/abstract.txt`, and the publisher page in `paper/nn0300_209.html`. The abstract says "a robust spatial code for three orthogonal surfaces", which matches the claims file.
+- **flight-spatial-code: the test's strictness on real spike trains is untested.** The Poisson calibration measures false positives only.
+  - Rat3 ES2 has units with stable fields (TT4/1 r 0.82, TT5/1 0.84, TT3/2 0.85) that do not pass. Their null 95th percentiles jump, for example TT4/1 from 1.33 to 4.31 (cell 56).
+  - Rat2 FD9 has the same null median as Rat1 FD9 (2.04) but a much higher median 95th percentile (3.57 against 2.60; cells 33, 36). Per unit it reaches 7.93 for TT13/11 (cell 35).
+  - Rat2's real units pass less often (2/28) than non-spatial trains placed at sample times (6/28).
+  - So the null is heavy-tailed for real trains in exactly the sessions that come out negative, and the notebook leaves this unexplained (cell 57). A low significant fraction is therefore weak evidence against a spatial code.
+  - The output that would settle it: the same test on real spike trains with their temporal structure kept but their positions decoupled (for example, ES1 spikes run against the ES2 trace), or the null's upper tail broken down by burst structure per unit.
+- **fd4-abnormal-selectivity: the pass is narrow.** On rate maps it rests on p of 0.024 and 0.035, and the spike-based measures do not show lower selectivity on FD4: 24/71 against 12/53 significant (p 0.94), and corrected information with Rat3 (p 0.31).
+- **si-comparable-to-preflight: the result cannot support "comparable".** There is no equivalence margin, the interval allows −29% (−40% for Rat1), and preflight may have been on a different apparatus (cells 21, 22). The outcome follows the criterion, but it shows only that no difference was detected.
