@@ -43,6 +43,7 @@ Where the parameters come from:
 from __future__ import annotations
 
 import io
+import json
 import urllib.parse
 import urllib.request
 
@@ -382,6 +383,12 @@ def zenodo_events(name: str) -> tuple[np.ndarray, np.ndarray, list[str]]:
     m = zenodo_mat(name)
     strings = [x[0][0] if x[0].size else "" for x in m["dg_Nlx2Mat_EventStrings"]]
     return m["dg_Nlx2Mat_Timestamps"].ravel() / 1e6, m["dg_Nlx2Mat_TTL"].ravel().astype(int), strings
+
+
+def zenodo_files() -> list[str]:
+    """Names of the files in the paper's Zenodo deposit."""
+    with urllib.request.urlopen(ZENODO_DATA.split("/files/")[0], timeout=120) as r:
+        return sorted(x["key"] for x in json.load(r)["files"])
 
 
 def zenodo_mat(name: str) -> dict:

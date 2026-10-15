@@ -24,17 +24,22 @@ inputs:
     (session126_events.mat), read in the data check for the time of its first event, which places
     the spike times on the raw signal's clock, and to show its event codes for fig5a-spike-reward.
   source: doi:10.5281/zenodo.14826579
+- what: The list of file names of the paper's Zenodo deposit, printed in the data check to show what
+    the deposit holds (insertion-yield, fig3a-dual-channel).
+  source: doi:10.5281/zenodo.14826579
 outcomes:
 - claim: insertion-yield
   outcome: blocked
   blocked_by: data_missing
   notes: The dandiset holds one or two sites per session and no list of the implanted sensors or of
-    which kept working, in its files or its metadata. The paper's Zenodo deposit has none either.
+    which kept working, in its files or its metadata. None of the ten file names of the paper's
+    Zenodo deposit, printed in the data check, points to such a list.
 - claim: chronic-duration
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: No implantation date is given in the files (subject, electrode or device fields) or the
-    dandiset metadata, so days post-implant cannot be computed. The two Monkey T sessions are 13
+  notes: The subject, device and electrode fields of the files hold no implantation date, and none
+    of the mentions of implantation in the files' general section or the dandiset metadata (all
+    printed in the data check) comes with a date, so days post-implant cannot be computed. The two Monkey T sessions are 13
     days apart, which matches the difference between the 483 and 496 days of the legends.
 - claim: fscv-waveform
   outcome: partially_reproduced
@@ -64,7 +69,8 @@ outcomes:
   notes: Monkey P's raw timestamps have a median interval of 33.333 µs (30 kHz) and Monkey T's
     series a rate of 32000 Hz. The Neuralynx settings of both Monkey T channels give a low cut of 0.1
     Hz and a high cut of 8000 Hz, inside the tolerance of 7500 Hz but not equal to it; the
-    dandiset's description also says 7500 Hz. Monkey P's file stores no filter settings.
+    dandiset's description also says 0.1 to 7500 Hz (printed). Monkey P's file stores no filter
+    settings; its notes, printed in full, and its electrode columns name no filter or cut-off.
 - claim: shape-task-structure
   outcome: reproduced
   notebook: reproduce_amjad_2025.ipynb
@@ -99,8 +105,8 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: The dandiset holds FSCV from site c8dg only. Site c8ds is not in it, and the Zenodo deposit
-    holds processed FSCV of c8dg only. The conversion notes list raw FSCV files with ten channels,
-    including c8ds, which were not deposited. The c8dg half can be tested and holds; the mean of the
+    holds processed FSCV of c8dg only; its one FSCV file is FSCV_trlists_c8dg_09132024_firsthalf.mat
+    (file list printed in the data check). The c8dg half can be tested and holds; the mean of the
     re-referenced dopamine over 0 to 3 s is above zero in 56 of 85 large-reward forced trials
     (65.9%), and in 58 of 85 with a baseline of the mean over -1 to 0 s.
 - claim: fig3a-redox-peaks
@@ -169,7 +175,9 @@ outcomes:
     difference from before the cue; on the unsmoothed envelope it holds over 0 to 0.5 s (ratio 0.834,
     p = 1.9e-08) and 0.125 to 0.5 s (ratio 0.671, p = 4.8e-19); in 0.1 s bins large and small do not
     differ before the cue (ratios 0.95 to 1.05), large is lower from 0.1 to 0.4 s (0.85, 0.59, 0.60)
-    and higher from 0.5 s on (1.32 to 1.49). The LFP's 1497 joins do not step (largest change at a
+    and higher from 0.5 s on (1.32 to 1.49). The criterion, lower power over 0 to 0.5 s, is met; the
+    bins fit a deeper suppression after large-reward cues and equally an earlier suppression with an
+    earlier rebound, so the part of the claim saying the suppression is greater is not shown. The LFP's 1497 joins do not step (largest change at a
     join 20.3 µV, below the 99.9th percentile of 26.0 µV over all samples), and 118 of 1172
     successful trials have one within -0.5 to 1 s of the cue, 23 to 36 in each reward and side
     condition. Trial 1501, absent from the Zenodo lists, is included; one trial of 570 cannot
@@ -252,7 +260,7 @@ findings:
     only with that shift. The file does not say the two use different clocks.
 - kind: format_error
   statement: In Monkey P's units table, unit 0 merges the unsorted (0) and poor-quality (-1)
-    thresholded spikes, including 7 spike times below 1 s and repeated times; the poor-quality spikes
+    thresholded spikes, including 7 spike times below 1 s and 3 repeated times; the poor-quality spikes
     of the thresholded table are not in time order.
 - kind: data_missing
   statement: Monkey P's file has no trials or events, so the reward-related firing of Figure 5A cannot
@@ -422,4 +430,120 @@ verifications:
     reason: 1 of 31,246 ISIs (0.003%) is under 1 ms, and the trough of -30.64 µV against noise of 5.41
       µV gives a ratio of 5.66, above the required 3. The raw spike-triggered mean (-26.4 µV) confirms
       the waveform units.
+    response: No change.
+- date: '2026-10-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision, the helper module, the claims file, the
+    attempt record, the README and its own round-1 report, with the paper's full text (PMC12183687).
+  results:
+  - claim: insertion-yield
+    agrees: true
+    outcome: blocked
+    reason: No sensor or implant log (cell 3). The record's note "The paper's Zenodo deposit has none
+      either" has no notebook output behind it.
+    response: The data check now prints the file names of the Zenodo deposit; the note says that none
+      of them points to a list of implanted sensors. Outcome unchanged.
+  - claim: chronic-duration
+    agrees: true
+    outcome: blocked
+    reason: No implant date; the sessions are 13 days apart, matching 496 - 483 (cell 3). The record's
+      "(subject, electrode or device fields)" has no output behind it; cell 3 prints only the subject's
+      age and searches the top-level values of the dandiset metadata.
+    response: The data check now prints the subject fields, device descriptions and electrode columns
+      of each file, and every mention of implantation in the files' general section and anywhere in
+      the dandiset metadata, with its context; none comes with a date. The notes say so. Outcome
+      unchanged.
+  - claim: fscv-waveform
+    agrees: true
+    outcome: partially_reproduced
+    reason: -0.347 V is outside -0.4 +- 0.04; the other three values pass. The conversion is 1 and the
+      offset 0 (cells 11, 22).
+    response: No change.
+  - claim: ephys-acquisition
+    agrees: true
+    outcome: reproduced
+    reason: 30000, 32000, 0.1 and 8000 Hz, all within tolerance (cell 25). Two statements rest on
+      output the notebook does not show; "Monkey P's file stores no filter settings" (the notes are
+      printed only up to 400 characters) and "the dandiset's description also says 7500 Hz" (that part
+      of the description is never printed).
+    response: Cell 25 now prints Monkey P's notes in full (654 characters), a search of the notes and
+      electrode columns for filter or cut-off settings (none), and the part of the dandiset
+      description that says 0.1 to 7500 Hz. Conclusion and notes cite these. Outcome unchanged.
+  - claim: shape-task-structure
+    agrees: true
+    outcome: reproduced
+    reason: 24.4% forced trials; complete blocks are 71 to 273 trials (cell 28).
+    response: No change.
+  - claim: zenodo-link
+    agrees: true
+    outcome: reproduced
+    reason: The lists agree on at least 99.82% of trials; r = 0.943 at 6 ms (cell 31).
+    response: No change.
+  - claim: fig3a-dual-channel
+    agrees: true
+    outcome: blocked
+    reason: No c8ds. The c8dg half is above zero in 56/85 trials (cell 37). The record's notes "the
+      Zenodo deposit holds processed FSCV of c8dg only" and "The conversion notes list raw FSCV files
+      with ten channels, including c8ds" have no notebook output behind them.
+    response: The data check now prints the Zenodo file list, whose one FSCV file is named for c8dg;
+      the notes cite it. The sentence about the conversion notes was removed, as the notebook does not
+      show it. Outcome unchanged.
+  - claim: fig3a-redox-peaks
+    agrees: true
+    outcome: blocked
+    reason: No offset puts the raw current on the trial clock (cell 13). The Summary (cell 48) says the
+      raw current "cannot be matched to the trial-aligned series or to the task at any offset", but cell
+      13 tests the large-against-small contrast at only nine shifts, and two give p < 0.05 (-10 s, p =
+      0.020; -30 s, p = 0.033); the record's finding is worded correctly ("or to the task at the stored
+      times"). Cell 14's "r about 0.1 to 0.2" is loose; the printed values are 0.164 to 0.202.
+    response: The Summary now says the raw current cannot be matched to the trial-aligned series at
+      any offset tried, or to the task at the stored times. Cell 14 gives r 0.16 to 0.20 and names the
+      two shifts with p below 0.05, saying a contrast with the task at some offset is not ruled out.
+      Outcome unchanged.
+  - claim: fig3b-beta-bursts
+    agrees: true
+    outcome: reproduced
+    reason: p = 9.5e-10 at the 75th percentile (cell 34). The conclusion now says this is not separate
+      evidence from fig4b. Cell 35's "falls again from 6 s after it (0.34 per s and below)" is wrong;
+      the 6.50 s bin is 0.39 per s.
+    response: Cell 35 now says 0.39 per s and below. Outcome unchanged.
+  - claim: fig4a-dopamine-reward
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.023, and p = 0.022 with the -1 to 0 s baseline (cell 37).
+    response: No change.
+  - claim: fig4b-beta-reward
+    agrees: true
+    outcome: reproduced
+    reason: p = 1e-08, with no pre-cue difference (cell 40). Cell 41's last sentence, "The suppression
+      is deeper after large-reward cues", is not supported; the 0.1 s bins show large-reward power
+      lower at 0.1 to 0.4 s (0.85, 0.59, 0.60) and higher from 0.5 s (1.32 to 1.49), and over 0 to 1 s
+      slightly higher (ratio 1.04). An earlier suppression and an earlier rebound would also produce
+      this. Round-1 point B4 is partly resolved; whether large reward makes the suppression deeper or
+      earlier is still open, and the bins point to timing. This does not change the outcome under the
+      criterion; it changes how the conclusion should describe the result.
+    response: Cell 41 now says power is lower after large-reward cues at 0.1 to 0.4 s and higher from
+      0.5 s on, that the bins fit a deeper suppression and equally an earlier suppression with an
+      earlier rebound, and that the criterion is met. The notes say the part of the claim that the
+      suppression is greater is not shown. Outcome unchanged, as the verifier said.
+  - claim: fig4c-beta-side
+    agrees: true
+    outcome: reproduced
+    reason: p = 1.6e-06 (cell 43).
+    response: No change.
+  - claim: fig5a-spike-reward
+    agrees: true
+    outcome: blocked
+    reason: The Zenodo TTL codes cannot be decoded; code 128 is absent and code 23 occurs only 20 times
+      (cell 19). Cell 20 and the record's format_error finding say "7 spike times below 1 s", but cell
+      19 prints "below 6800 s - 7" and a minimum of 0.0003 s; nothing printed shows that all 7 are
+      below 1 s.
+    response: Cell 19 now prints the count of spike times below 1 s for each unit of the units table
+      (7 for unit 0) and the repeated times (3); cell 20 and the finding say 3 repeated times. Outcome
+      unchanged.
+  - claim: fig5bc-unit-isolation
+    agrees: true
+    outcome: reproduced
+    reason: 0.003% of ISIs under 1 ms; trough/noise is 5.66 (cell 46).
     response: No change.
