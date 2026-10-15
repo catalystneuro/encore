@@ -28,9 +28,12 @@ On the draft, the rate maps are linked to their units, and the units, epochs, un
 positions and spike-time resolution are documented. The flight-day-4 result changed from the first
 attempt because the draft leaves out three rate maps that were identical copies of others; with
 them the test gives p = 0.055, without them 0.024; without Rat2 it gives 0.035 on either version.
-The shuffle test, calibrated with Poisson spike trains, gives 0.074 false positives over all flight
-ES epochs and up to 0.21 in one session, and the flight-day-9 outcome is the same against those
-rates. Rat2's units are still not spatially selective
+The shuffle test, calibrated with Poisson spike trains moved to position sample times, gives 0.096
+false positives over all flight ES epochs and up to 0.214 in one session (0.074 and 0.160 with
+plain Poisson trains), and the flight-day-9 outcome is the same against those rates. Real spike
+trains reversed in time give 2 of 122, so with real temporal structure the test is conservative,
+and it has less power for units whose spikes fall in a few periods, such as most of Rat2's.
+Rat2's units are still not spatially selective
 with the position trace in any window, and whose position the trace is in Rat2's task epochs is
 not established. The description still places the preflight recordings on a flat rectangular
 track and reports EEG, which no file holds. The attempt records, with the reasons and the
@@ -39,7 +42,7 @@ differences from the paper's method, are
 [`attempts/001754-knierim-2000-01.yaml`](../../attempts/001754-knierim-2000-01.yaml) (version
 0.260728.1352).
 
-- `reproduce_knierim_2000.ipynb`: the analysis. It takes about five minutes; its last code cell
+- `reproduce_knierim_2000.ipynb`: the analysis. It takes about seven minutes; its last code cell
   prints the run time.
 - `neurolab.py`: loading the files, the original rate maps and their spatial information, and the
   spike-based spatial information with its shuffle test. Other notebooks on this dandiset can import

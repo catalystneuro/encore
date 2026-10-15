@@ -51,11 +51,13 @@ outcomes:
     0.5 and Rat2 is not above chance, so neither the reproduced nor the partially reproduced rule is
     met. Repeats with 2000 shuffles and five other seeds give 10 or 11 of 25 for Rat1 and 2 of 28 for
     Rat2, and the run of 200 shuffles in the data check gives 10 and 2; 5 Rat1 units have p between
-    0.01 and 0.1. The outcome is the same as in 001754-knierim-2000-01, where Rat1 had 12 of 25 (11
-    to 13 over seven runs). Every real spike has a sample at its own time in both versions; the
-    draft's trace adds samples at the other rat's spike times in each window, so shifted spikes find
-    a sample more often and the shuffles change. Shifted spikes are now dropped about as often in
-    Rat2's FD9 ES epoch (median 0.058) as in Rat1's (0.060), against 0.307 and 0.074 before, and a
+    0.01 and 0.1. The outcome is the same as in 001754-knierim-2000-01, which recorded 12 of 25 for
+    Rat1 (11 to 13 over seven runs); on the earlier version's files the notebook gives 11 or 12 of 25
+    for Rat1 and 2 or 3 of 28 for Rat2 over five seeds. Every real spike has a sample at its own time
+    in both versions; the draft's trace adds samples at the other rat's spike times in each window, so
+    shifted spikes find a sample more often and the shuffles change. Shifted spikes are now dropped
+    about as often in Rat2's FD9 ES epoch (median 0.058) as in Rat1's (0.060), against 0.306 to 0.307
+    and 0.074 to 0.075 on the earlier version's files, and a
     count-matched variant gives 12 of 25 (0.48) for Rat1 and 2 of 28 for Rat2. With each unit's
     spikes replaced by a Poisson train of the same mean count, 9 of 122 flight ES units are
     significant (0.074, binomial p = 0.16 against 0.05), and 12 of 125 (0.096, p = 0.023) when each
@@ -64,7 +66,18 @@ outcomes:
     for Rat1 and 0.037 and 0.214 for Rat2. Against these fractions Rat1's 10 of 25 is still above
     chance (p = 0.0035 and 0.0026) and Rat2's 2 of 28 is not (p = 0.28 and 0.99), so the outcome
     is the same, though the criterion's 0.05 is below the false-positive fraction of some sessions.
-    The trace moves as a tracked animal would in Rat2's windows (median step 0.50 pixels and path
+    With each unit's real train reversed in time within its epoch, which keeps its bursts and changes
+    in rate and breaks its relation to the position, 2 of 122 flight ES units are significant (1 of
+    25 in Rat1's FD9 session, 0 of 27 in Rat2's), and Rat3's ES1 trains against the ES2 trace and the
+    reverse give 0 of 16 and 0 of 19, so with real temporal structure the test is conservative. A
+    unit's 95th percentile of the shuffles is nearly the same for its reversed train (Spearman rho
+    0.995), 1.7 to 2.3 times that of a Poisson train of the same count per session, and higher the
+    fewer 10 s periods hold its spikes (rho -0.874 with the effective fraction of 10 s bins filled)
+    and the fewer spikes it has (rho -0.601); the two explain 80% of its variance on a log scale.
+    Rat2's FD9 units are the most clumped (median 0.145 of the bins, against 0.190 to 0.358 in the
+    other sessions) and have the highest median 95th percentile (3.572). The test has less power for
+    such units, and its power was not measured, so a low fraction, Rat2's especially, is weak
+    evidence against a spatial code; the criterion's rule decides the outcome. The trace moves as a tracked animal would in Rat2's windows (median step 0.50 pixels and path
     length 33.0 pixels per second in its FD9 ES window), and units of neither rat are selective in
     any MC window (0 to 2 of 11 to 32), so neither settles whose position it is. Rat2's units are not
     selective with the trace in any window (1 of 16 and 2 of 28 in their own ES epochs, 0 of 15 and
@@ -120,8 +133,8 @@ outcomes:
     9.0e-7), but Rat2's 26 non-significant FD9 units have a median of 1.283, close to the preflight
     1.448. The bootstrap 95% interval of the FD9 minus preflight median difference is -0.425 to
     0.312 bits/spike (-29% to +22% of the preflight median); for Rat1 alone it is -0.750 to 0.543 (p =
-    0.25). The test has no equivalence margin, so a difference of up to about a quarter of the
-    preflight level is not excluded.
+    0.25). The test has no equivalence margin, so a drop of up to 29% of the preflight median (40%
+    for Rat1 alone) is not excluded, and the result shows only that no difference was detected.
   deviations:
   - The source is the dandiset's description of the paper's findings, not the paper's text.
   - The paper's test is unknown; a two-sided Mann-Whitney U test at 0.05 was fixed in advance.
@@ -182,7 +195,10 @@ outcomes:
     epoch (TT4 cluster 1, information against 95th percentile, 2.449 against 1.326 and then 3.592
     against 4.305; TT5 cluster 1, 0.910 against 0.504 and then 1.472 against 2.393); the epochs use
     348 and 299 bins with 5 or more occupancy counts. Poisson trains give 0 to 2 false positives in
-    either epoch. Why the shuffles reach higher information in the second epoch is not explained.
+    either epoch. These units fire fewer spikes in fewer 10 s periods in the second epoch (TT4
+    cluster 1, 1582 spikes filling an effective 0.267 of the 10 s bins and then 423 filling 0.096;
+    TT5 cluster 1, 8844 at 0.575 and then 2221 at 0.307), which raises the shuffles' 95th percentile
+    (see flight-spatial-code); the stability measure does not use the shuffle test.
   deviations:
   - Only the title of Figure 3 was available; which sessions it compares is unknown. The test uses
     the only pair of same-track sessions with position on one day.
@@ -341,4 +357,86 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Same as theta-normal.
+    response: No change.
+- date: '2026-10-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision of the draft, with its conclusions and
+    summary, the helper module, the claims file, the README and this attempt record, with the paper's
+    abstract and figure titles.
+  results:
+  - claim: flight-spatial-code
+    agrees: true
+    outcome: not_reproduced
+    reason: Rat1 FD9 10/25 (0.40), Rat2 FD9 2/28 (0.071, p 0.41). The outcome holds even if Rat2 is
+      set aside, as Rat1 alone is below 0.5. The test's strictness on real spike trains is untested,
+      as the Poisson calibration measures false positives only. Units with stable fields in Rat3 ES2
+      do not pass and their null 95th percentiles jump (TT4/1 from 1.33 to 4.31); Rat2 FD9 has the
+      same null median as Rat1 FD9 but a much higher median 95th percentile (3.57 against 2.60), up
+      to 7.93 for TT13/11; and Rat2's real units pass less often (2/28) than non-spatial trains at
+      sample times (6/28). The null is heavy-tailed for real trains in the sessions that come out
+      negative, which the notebook leaves unexplained, so a low significant fraction is weak evidence
+      against a spatial code. It asked for the test on real trains with their temporal structure kept
+      and their positions decoupled, or the null's upper tail broken down by burst structure per unit.
+      The summary and README give 0.074 and 0.21 from different nulls (0.096 pooled under the
+      sample-time null, 0.160 the plain-Poisson maximum), and the earlier-version figures (12/25, 11
+      to 13 over seven runs, drops 0.307 and 0.074) are not printed in this notebook.
+    response: Added real trains reversed in time within each flight ES epoch, and Rat3's ES1 trains
+      against the ES2 trace and the reverse. They give 2 of 122, and 0 of 16 and 0 of 19, significant,
+      so with real temporal structure the test is conservative. The null's 95th percentile is nearly
+      the same for the reversed train (rho 0.995), 1.7 to 2.3 times that of Poisson trains, and is
+      explained mostly by how few 10 s periods hold the unit's spikes and how few spikes it has (rho
+      -0.874 and -0.601, 80% of the variance on a log scale); Rat2's FD9 units are the most clumped.
+      The conclusion, summary and notes now say the test has less power for such units, its power was
+      not measured, and a low fraction is weak evidence against a spatial code. Added the test on the
+      earlier version's files over five seeds (Rat1 11 or 12 of 25, Rat2 2 or 3 of 28, shuffle drops
+      0.074 to 0.075 and 0.306 to 0.307), and the record now quotes these. The summary and README now
+      give 0.096 and 0.214 for the sample-time null and 0.074 and 0.160 for plain Poisson trains.
+      Outcome unchanged, with no proposed change, as the criterion's rule still gives not_reproduced.
+  - claim: three-orthogonal-surfaces
+    agrees: true
+    outcome: blocked
+    reason: No camera view, track layout or pixel scale (cell 41).
+    response: No change.
+  - claim: si-comparable-to-preflight
+    agrees: true
+    outcome: reproduced
+    reason: Main test p 0.45, and every variant has p of 0.12 or more. The result cannot support
+      "comparable", as there is no equivalence margin, the interval allows -29% (-40% for Rat1), and
+      preflight may have been on a different apparatus. The outcome follows the criterion, but it
+      shows only that no difference was detected. "A difference of up to about a quarter" understates
+      the lower bound of the interval (-29% to +22%).
+    response: The conclusion and notes now say a drop of up to 29% of the preflight median (40% for
+      Rat1 alone) is not excluded and that the result shows only that no difference was detected.
+      Outcome unchanged.
+  - claim: fd4-abnormal-selectivity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, fragile. Main test p 0.024; without Rat2 0.035 on both versions. It fails on the
+      earlier version's maps with Rat2 (0.055), on CEL names (0.073) and on MC maps (0.060). The pass
+      is narrow, and the spike-based measures do not show lower selectivity on FD4 (24/71 against
+      12/53, p 0.94; corrected information with Rat3, p 0.31). The conclusion's "FD4 is lower than
+      FD9" does not cover the case with Rat3, where FD4 is higher (0.232 against 0.211).
+    response: The conclusion now says that with Rat3's units added the shuffle-corrected measure is
+      higher on FD4 than on FD9 (0.232 against 0.211, p = 0.31). The narrowness of the pass and the
+      spike-based results were already stated in the conclusion and notes. Outcome unchanged.
+  - claim: fig3-stability-across-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Median r 0.537 against a null 95th percentile of 0.102; at sigma 0.5 the median is 0.315,
+      which would make it partial. "Units with the most stable fields" includes TT8 cluster 5, whose r
+      of 0.436 is below the median of 0.537.
+    response: The conclusion now speaks of units whose fields correlate across the epochs. It also
+      states, from the new outputs, that the stable units whose 95th percentile rises fire fewer
+      spikes in fewer 10 s periods in the second epoch (TT4 cluster 1, 1582 spikes at 0.267 of the
+      bins and then 423 at 0.096), which raises the shuffles' tail. Outcome unchanged.
+  - claim: theta-normal
+    agrees: true
+    outcome: blocked
+    reason: No EEG (cells 3, 5 and 41).
+    response: No change.
+  - claim: ripples-normal
+    agrees: true
+    outcome: blocked
+    reason: No EEG (cells 3, 5 and 41).
     response: No change.
