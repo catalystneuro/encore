@@ -57,6 +57,12 @@ def attempt_of(dandiset: str) -> tuple[dict, Path] | None:
     return record, ROOT / "entries" / record["entry"]
 
 
+def protocol_version() -> str:
+    """The protocol version stated at the top of docs/protocol.md."""
+    text = (ROOT / "docs" / "protocol.md").read_text()
+    return text.split("Version: `", 1)[1].split("`", 1)[0]
+
+
 def fill(role: str, dandiset: str, model: str, version: str | None = None) -> str:
     details = {"dandiset": dandiset, "model": model, "date": datetime.date.today().isoformat(),
                **target(dandiset)}
@@ -72,7 +78,16 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
         # A repeat attempt: the dandiset changed since the last one.
         record, entry_dir = attempt_of(dandiset)
         n = int(record["id"].rsplit("-", 1)[1]) + 1
+        earlier_protocol = record["provenance"]["agent"]["protocol"]
+        if version in (None, record.get("dandiset_version")) and earlier_protocol != protocol_version():
+            why = (f"The dandiset is unchanged; the protocol has changed since, and this attempt applies "
+                   f"{protocol_version()} to it. Read what changed in docs/pilot-notes.md, under the headings "
+                   f"for the protocol versions after {earlier_protocol} (read only those sections), and say in "
+                   f"the new record what the changes did.")
+        else:
+            why = "Since then the dandiset has changed, and this attempt tests what it holds now."
         details.update(earlier=record["id"], earlier_version=record.get("dandiset_version"), entry=entry_dir.name,
+                       earlier_protocol=earlier_protocol, why=why,
                        next_attempt=f'{record["id"].rsplit("-", 1)[0]}-{n:02d}')
         return (ROOT / "docs" / "agents" / "author-again.md").read_text().format(**details)
     if role != "author":
