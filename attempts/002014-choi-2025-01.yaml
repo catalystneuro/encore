@@ -75,7 +75,8 @@ outcomes:
   notes: The criterion holds, but the evidence for a single unit is weak. No ISI is under 1 ms (9 of 101732 under
     2 ms), and the mean waveform's trough of -56.4 µV is 4.79 times the SD across spikes at that sample. Neither
     part could easily fail. The shortest ISI, 1.562 ms, just exceeds the 48-sample (1.50 ms) waveform, so the
-    detector's dead time excludes ISIs under 1 ms, and every spike exceeds the 40 µV threshold, which nearly
+    detector's dead time excludes ISIs under 1 ms, and every one of the 101733 spikes exceeds the 40 µV threshold
+    (smallest peak 40.3 µV), which nearly
     forces the trough above twice the SD. Above the dead time, ISIs per ms at 1.56 to 3 ms are 0.106 times those
     at 10 to 30 ms (Plexon unit 0.204), which fits a refractory period in most spikes but does not rule out
     other units. Only 54411 of the Plexon unit's 90912 spikes lie within 0.2 ms of a spike of thresholded unit 1
@@ -153,7 +154,8 @@ findings:
     samples (18336 s).
 - kind: other
   statement: The stored spike times of the thresholded units are about 7.1 ms after the spike troughs in raw
-    c5d (per-spike trough lags of -7.4 to -6.9 ms).
+    c5d (in one 300 s segment of 1633 spikes, per-spike trough lags of -7.4 to -6.9 ms from the 10th to the 90th
+    percentile, 98.8% within 0.5 ms of -7.1 ms).
 - kind: metadata_error
   statement: The series "bipolar_lfp_series" is described as beta-band LFP but is broadband with line noise
     removed. Its values are already in volts, while it carries the raw int16 conversion factor (3.05e-8), which
@@ -242,7 +244,7 @@ verifications:
       48-sample waveform, so the detector's dead time rules out ISIs under 1 ms, and the 40 µV threshold all but
       forces the mean above 2 SD at the peak sample. The single unit reading is unsupported; only 54,411 of
       90,912 Plexon spikes fall within 0.2 ms of a thresholded spike, so unit 1 likely includes multi-unit
-      crossings. It asked for the fraction of Plexon ISIs under 1.6 ms, the detector's dead time, and the shapes
+      crossings. The Plexon unit has 1 ISI under 1 ms and 39 under 2 ms. It asked for the fraction of Plexon ISIs under 1.6 ms, the detector's dead time, and the shapes
       of the waveforms and waveforms_index datasets.
     response: Added the dead time (1.562 ms against a 1.50 ms waveform), the Plexon ISIs under it (14, 0.015%),
       the dataset shapes (waveforms 4883328 x 1, waveforms_index 101736, 48 samples per spike), and the ISI count
@@ -254,7 +256,9 @@ verifications:
     outcome: partially_reproduced
     reason: Median log-ratio is -0.158 for large and -0.125 for small (both below 0, large lower), Mann-Whitney
       p = 0.108, no trials dropped; no variant reaches p < 0.05 and the 0 to 0.3 s window reverses the sign. The
-      plot runs to the last sample of each 6 s filtered segment and is distorted there, and the paper's figure
+      Mann-Whitney test treats trials as independent while the LFP drifts slowly within the session. The
+      plot runs to the last sample of each 6 s filtered segment and is distorted there, though the ±1 s windows
+      used in the test are not affected, and the paper's figure
       shows trial-averaged power while the test uses the median of per-trial log ratios. It asked for the
       trial-averaged normalized power over 0 to 0.5 s per condition with a bootstrap CI, and the curve
       restricted to ±1.5 s.
@@ -302,4 +306,91 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Blocked, data_missing. The archive has no imaging or histology.
+    response: No change.
+- date: '2026-10-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the revision with its conclusions and summary, the helper module, the
+    claims file, the README and this record.
+  results:
+  - claim: fig8a-single-trial-dopamine
+    agrees: true
+    outcome: reproduced
+    reason: A weak test, as 64% of the 889 trials with a reference also exceed 1, and trial 133 ranks above 76.9%
+      of them. The criterion is inherently weak and was written after trial 133's values had been printed; this
+      is now disclosed but not removable.
+    response: No change; the weakness and the timing of the criterion are stated in the conclusion, notes and
+      summary.
+  - claim: fig8b-dopamine-large-vs-small
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.0035, and the within-block permutation gives p = 0.0045. Cell 17 says the largest |t| before V
+      is 2.04 while cell 16 prints 2.06. The Summary says the event table holds up to five copies of each event,
+      while 7221 stored trial-start events for 1412 distinct ones is 5.1 on average, so some events have more.
+    response: Corrected cell 17 to 2.06, and the Summary to about five copies on average, with the counts.
+  - claim: fig9a-spikes-task-aligned
+    agrees: true
+    outcome: reproduced
+    reason: Modulation is 0.49 against a null 95th percentile of 0.06. This depends on the 11812.11 s offset,
+      which cell 14 supports. Cell 15's "nearly every spike's trough lies between -7.4 and -6.9 ms" rests on the
+      10th and 90th percentiles, so 20% lie outside, and "Raw c5d shows a spike at every stored spike time" was
+      checked on only 1633 spikes in one 300 s segment. The finding's "-7.4 to -6.9 ms" reads as the full range.
+    response: Added the share of per-spike trough lags within 0.5 ms of the spike-triggered trough (98.8% of 1633).
+      Cell 15 and the finding now say the check covers one 300 s segment and that -7.4 to -6.9 ms is the 10th to
+      90th percentile.
+  - claim: fig9bc-unit-waveform-isi
+    agrees: true
+    outcome: reproduced
+    reason: Agree by the criterion only. The criterion can hardly fail, given the 1.562 ms dead time and the
+      40 µV threshold, and the data do not show a single unit (only 54411 of 90912 Plexon spikes coincide with
+      unit 1; the ISI ratio of 0.106 shows reduced but not absent short intervals), so "reproduced" carries
+      little evidence. "Every spike exceeds the 40 µV threshold" is checked on only the first 20000 of 101733
+      spikes, printed at three decimals; cell 30 loads all waveforms but never prints this fraction.
+    response: Cell 30 now prints the fraction over all 101733 spikes (1.000000, smallest peak 40.3 µV). Cells 13
+      and 31 and the notes cite it. Outcome unchanged, as the criterion decides it.
+  - claim: fig9d-beta-suppression-large
+    agrees: true
+    outcome: partially_reproduced
+    reason: Medians are -0.158 and -0.125, p = 0.108, block permutation p = 0.19. The result depends on choices
+      of band, windows and test that the paper does not state.
+    response: No change; the choices are listed under deviations.
+  - claim: recordings-two-monkeys
+    agrees: true
+    outcome: blocked
+    reason: Agree, data_missing.
+    response: No change.
+  - claim: scfe-functional-yield
+    agrees: true
+    outcome: blocked
+    reason: Agree, data_missing.
+    response: No change.
+  - claim: scfe-background-yield
+    agrees: true
+    outcome: blocked
+    reason: Agree, data_missing.
+    response: No change.
+  - claim: mcfe-functional-yield
+    agrees: true
+    outcome: blocked
+    reason: Agree, data_missing.
+    response: No change.
+  - claim: dopamine-signal-yield
+    agrees: true
+    outcome: blocked
+    reason: Agree, data_missing.
+    response: No change.
+  - claim: asepsis-cultures
+    agrees: true
+    outcome: blocked
+    reason: Agree, data_missing.
+    response: No change.
+  - claim: fig6-drainage-volume
+    agrees: true
+    outcome: blocked
+    reason: Agree, data_missing.
+    response: No change.
+  - claim: fig7-bone-growth-margins
+    agrees: true
+    outcome: blocked
+    reason: Agree, data_missing.
     response: No change.

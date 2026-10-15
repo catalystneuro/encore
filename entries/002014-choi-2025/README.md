@@ -22,6 +22,6 @@ and the data put them 11812.11 s later. The notebook measures the offset from th
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/002014-choi-2025-01.yaml`](../../attempts/002014-choi-2025-01.yaml).
 
-- `reproduce_choi_2025.ipynb`: the analysis. It takes about two minutes, most of it streaming the file.
+- `reproduce_choi_2025.ipynb`: the analysis. It takes a little over a minute (1.2 min in the last run), most of it streaming the file.
 - `chamber.py`: loading the file, the trial classes, the clock checks and the measures. Other notebooks on this
   dandiset can import it.
