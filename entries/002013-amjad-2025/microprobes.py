@@ -32,6 +32,9 @@ Where the parameters come from:
 - Dopamine re-referencing at the value cue: the Methods (background subtraction at the value cue).
 - Spike sorting conventions: the paper's spikes_PCA.m (Zenodo doi:10.5281/zenodo.10397773) takes
   Plexon unit 1 as the sorted unit and unit 0 as unsorted.
+- Monkey P's clock offset: the time of the first event ("Starting Recording") in the session's
+  Neuralynx events file on Zenodo (doi:10.5281/zenodo.14826579, session126_events.mat), read by
+  `zenodo_events`.
 - Burst threshold (75th percentile, at least 50 ms) and the noise estimate for spikes (median
   absolute deviation / 0.6745 of the 300 to 6000 Hz band) are common choices; the paper gives
   none.
@@ -238,6 +241,7 @@ def raw_fscv(f: h5py.File) -> dict:
             "volts": v["data"][:n], "volts_first": v["data"][:n * 50],
             "attrs": {k: r.attrs[k] for k in r.attrs if k not in ("object_id",)},
             "excitation_attrs": {k: v.attrs[k] for k in v.attrs if k not in ("object_id",)},
+            "excitation_data_attrs": dict(v["data"].attrs), "current_data_attrs": dict(r["data"].attrs),
             "unit": r["data"].attrs["unit"]}
 
 
@@ -251,10 +255,15 @@ def load_lfp(f: h5py.File) -> tuple[np.ndarray, np.ndarray, float]:
 
 def beta_power(x: np.ndarray, fs: float = LFP_RATE, band=BETA_BAND, order: int = BETA_ORDER,
                smooth_s: float = BETA_SMOOTH_S) -> np.ndarray:
+    """Squared Hilbert envelope of the beta band, smoothed with a Hanning window of smooth_s
+    seconds (none when smooth_s is 0)."""
     b, a = signal.butter(order, band, btype="band", fs=fs)
     y = signal.filtfilt(b, a, x)
+    env = np.abs(signal.hilbert(y)) ** 2
+    if smooth_s == 0:
+        return env
     w = np.hanning(int(round(smooth_s * fs)))
-    return np.convolve(np.abs(signal.hilbert(y)) ** 2, w / w.sum(), mode="same")
+    return np.convolve(env, w / w.sum(), mode="same")
 
 
 def window_mean(ts: np.ndarray, x: np.ndarray, events: np.ndarray, a: float, b: float) -> np.ndarray:
@@ -367,6 +376,13 @@ def spike_triggered_mean(t_raw: np.ndarray, x: np.ndarray, spikes: np.ndarray, o
 
 
 # ---------------------------------------------------------------------------------- Zenodo
+
+def zenodo_events(name: str) -> tuple[np.ndarray, np.ndarray, list[str]]:
+    """A Neuralynx events file of the Zenodo deposit: times (s), TTL values and event strings."""
+    m = zenodo_mat(name)
+    strings = [x[0][0] if x[0].size else "" for x in m["dg_Nlx2Mat_EventStrings"]]
+    return m["dg_Nlx2Mat_Timestamps"].ravel() / 1e6, m["dg_Nlx2Mat_TTL"].ravel().astype(int), strings
+
 
 def zenodo_mat(name: str) -> dict:
     """A .mat file of the paper's Zenodo deposit, read in memory."""
