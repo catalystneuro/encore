@@ -1024,3 +1024,41 @@ sessions share spike trains; a public input that refuses automated
 download (Dryad); criteria written after a data check that is itself the
 test; no default threshold for partial outcomes; and whether tables copied
 from the paper count as inputs.
+
+### 002013, Amjad et al. 2025
+
+Seven claims reproduced, one partially and five blocked on the dandiset,
+plus one claim linking the dandiset to the paper's Zenodo deposit,
+reproduced (trial lists agree for 99.8 to 100% of trials); both rounds
+agreed with every outcome. The paper describes microinvasive probes for
+recording dopamine and electrical activity in monkeys; the beta burst,
+reward and unit isolation claims reproduce, the dopamine reward effect
+weakly (p = 0.023, and not in the stored trial-aligned `da`).
+
+The dandiset was converted by CatalystNeuro (catalystneuro/schwerdt-lab-to-nwb,
+the same conversion as 002014), and many findings are the same: each event
+is stored about five times, once per overlapping trial window; trial
+conditions are not in the trials table; the FSCV table columns carry no
+units and the raw FSCV current is labelled amperes with values in the
+thousands; the bipolar LFP is stored in volts with a conversion factor that
+makes it picovolts; and the raw ephys of one session and the spike times of
+Monkey P are on different clocks from the rest of the file, by 9831.35 s and
+6800.666 s, with nothing saying so. In addition, one session's trial-aligned
+FSCV covers only the first half of its trials, the second recording site of
+Figure 3A is missing, the raw FSCV times are an interpolated grid that
+cannot be matched to the trials, Monkey P's file has no trials or events,
+and no implantation dates are given.
+
+The author's run succeeded, but its commit failed: the commit job switched
+to the attempt's branch, made before `tools/archive_transcripts.sh`
+existed, and then called that script (fixed by running it from the
+workflow's own ref). It was committed from the run's artifact. The run had
+also started from the files of an earlier run that the subscription's
+session limit cut short, because the chain's reset of the branch did not
+take. It started from a branch made before pilot-7 and followed
+pilot-6; the first revision, which saw pilot-7, changed the record's
+protocol to pilot-7 after checking that no claim needed the `elsewhere`
+kind. The author's points on the protocol: the data kind of a link claim
+whose source holds both labels and measurements; clock checks when the
+contrast is the claim itself; a criterion written after its result was
+seen in the data check; and linked code that holds none of the analysis.
