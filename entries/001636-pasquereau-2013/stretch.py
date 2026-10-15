@@ -1,43 +1,46 @@
-"""Loading and measures for the torque-perturbation (muscle stretch) trials of dandiset 001636.
+"""Loading and measures for the torque perturbation (muscle stretch) trials of dandiset 001636.
 
 Pasquereau & Turner (2013), Frontiers in Systems Neuroscience 7:98, doi:10.3389/fnsys.2013.00098.
 
-Each NWB file holds one recording session of one or two single units in M1 of monkey Venus or
-Leu, with a trials table (task events, torque perturbation type and onset), joint angle, torque
-command and, in Venus, rectified EMG. Files are streamed from the archive at the pinned version;
-nothing is written to disk.
+Each NWB file holds one recording session of one or two single units in M1 of monkey Venus (V,
+elbow task) or Leu (L, wrist task): a trials table with the task events and the torque
+perturbations, the manipulandum angle, the torque command and, in many Venus sessions, rectified
+EMG. Files are streamed from the archive at the pinned version; nothing is written to disk.
 
-The analog streams of a file are stored back to back: each trial's segment follows the previous
-one after a 3 s gap, but the segments are a few ms shorter than the trials, so the analog clock
-falls behind the trials table by about 4.5 ms per trial. `load_session` puts each segment back
-at the start time of its trial (`realign`), which the notebook checks against the torque
-command. Spike times are on the trials table's clock.
+Clocks. The source files were trialized; the conversion placed the trials one after another with
+3 s gaps. The trials table and the spike times use the trial durations of the behavioural
+software, but the analog streams (angle, torque, EMG) use their own sample counts, which are a
+few ms shorter per trial, so the stored analog clock falls further behind the trials table with
+every trial. `realign` puts each analog segment back at the start time of its trial. The notebook
+checks this against the torque command and the joint angle.
 
 Where the parameters come from:
 
-- From the paper's Methods: spike density functions made with a causal gamma kernel (k = 1.5,
-  theta = 20 ms) at 1 ms resolution (`GAMMA_K`, `GAMMA_THETA_MS`); baseline as the mean SDF over
-  the 500 ms before torque onset (`BASELINE_MS`); a ms-by-ms two-tailed t-test over the 200 ms
-  after onset at p < 0.002 (`DETECT_MS`, `P_THRESHOLD`); responses kept only when they begin 20
-  to 60 ms after onset (`ONSET_RANGE_MS`); at least 5 perturbations per direction (`MIN_REPS`);
-  the DSI and its categories; the three magnitude measures and the FWHM; the velocity
-  threshold of 5 deg/s and the 25 Hz low-pass of the joint angle; the EMG baseline (200 ms
-  before onset) and the m1 (15 to 40 ms) and m2 (41 to 80 ms) windows.
-- Chosen here, as the Methods leave them open (fixed in the claims file before the analysis):
-  the t-test compares the trials' SDF values at each ms with the cell's baseline rate (one
-  sample); the response ends where the SDF first returns within the threshold, searched to 500
-  ms (`OFFSET_SEARCH_MS`); the baseline for detection is that of the direction tested; the
-  low-pass is a zero-phase Hamming-window FIR of 101 taps; movement onset is the first time
-  after torque onset that velocity in the torque's direction exceeds 5 deg/s, peak velocity the
-  maximum in the first 200 ms and amplitude the maximum displacement in the first 300 ms; the
-  EMG response lasts while the session mean exceeds its baseline mean by 2 baseline SDs
-  (`EMG_SD`), searched from 10 to 150 ms.
+- The paper's Methods: spike density functions (SDF) made with a causal gamma kernel (k = 1.5,
+  theta = 20 ms) at 1 ms resolution; at least 5 perturbations per direction (`MIN_REPS`); the
+  baseline as the mean SDF over the 500 ms before torque onset; detection over the 200 ms after
+  onset at p < 0.002, two-tailed; responses kept only when they begin 20 to 60 ms after onset;
+  the offset where the SDF returns within the threshold; the three magnitude measures and the
+  FWHM; the DSI and its categories; the 25 Hz low-pass (Hamming window) and 5 deg/s velocity
+  threshold for the joint movement; the EMG baseline (200 ms before onset); the m1 (15 to 40 ms)
+  and m2 (41 to 80 ms) windows, from the Results.
+- Chosen here, where the Methods leave it open (fixed in the claims file before the analysis):
+  the threshold is applied to the trial-averaged SDF, as the mean +/- t * SD of its values over
+  the baseline, with t the two-tailed critical value at p = 0.002 (main; Figure 3's horizontal
+  threshold lines); the variant is a one-sample t-test of the single-trial SDFs against the
+  baseline mean at each ms (`detect(..., method="trials")`). A response begins where the SDF
+  crosses the threshold between 20 and 60 ms, having been inside it the ms before. Offsets are
+  searched up to 600 ms. The FIR low-pass has 101 taps at 1 kHz (21 at 100 Hz) and is applied
+  forwards and backwards. Movement onset is the first time after torque onset that the velocity
+  in the torque's direction exceeds 5 deg/s; peak velocity is its maximum over 0 to 200 ms and
+  amplitude the largest displacement over 0 to 300 ms from the mean angle of the 50 ms before
+  onset. An EMG response lasts while the session-average trace, less its baseline mean, exceeds
+  2 SD of the baseline (`EMG_SD`), from its first crossing between 10 and 150 ms.
 """
 
 from __future__ import annotations
 
-import re
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ProcessPoolExecutor
 
 import h5py
 import numpy as np
@@ -49,30 +52,29 @@ from scipy import signal, stats
 DANDISET_ID = "001636"
 DANDISET_VERSION = "0.260518.1819"
 
-MIN_REPS = 5                    # perturbations per direction for a cell to be studied
+MIN_REPS = 5
 GAMMA_K, GAMMA_THETA_MS = 1.5, 20.0
-KERNEL_MS = 300                 # kernel length; holds 99.9% of its mass
-SPIKE_WINDOW_MS = (-1500, 600)  # spikes kept around each torque onset
-SDF_START_MS = -1100            # first ms of the SDF (the kernel needs 300 ms of spikes before)
+KERNEL_MS = 400                 # kernel length; holds more than 99.9% of its mass
+SPIKE_WINDOW_S = (-1.8, 0.7)    # spikes kept around each torque onset
+GRID_MS = (-1400, 600)          # SDF grid around onset (the kernel needs 400 ms before)
 BASELINE_MS = (-500, 0)
 DETECT_MS = (0, 200)
-OFFSET_SEARCH_MS = 500
 ONSET_RANGE_MS = (20, 60)
-P_THRESHOLD = 0.002             # 0.01 / 5 independent comparisons
-PSEUDO_SHIFT_MS = -500          # pseudo onset for the false-positive check, within the hold
+P_THRESHOLD = 0.002
+PSEUDO_ONSET_MS = -600          # pseudo onset for the false-positive check, inside the hold
 
 ANALOG_WINDOW_MS = (-500, 500)
-LOWPASS_HZ, FIR_TAPS = 25.0, 101
+LOWPASS_HZ = 25.0
 VEL_THRESHOLD = 5.0             # deg/s
-PEAK_VEL_MS, AMPLITUDE_MS, ONSET_SEARCH_MS = 200, 300, 150
+PEAK_VEL_MS, AMPLITUDE_MS = 200, 300
 EMG_BASELINE_MS = (-200, 0)
 M1_MS, M2_MS = (15, 40), (41, 80)
-EMG_RESPONSE_MS = (10, 150)
+EMG_SEARCH_MS = (10, 150)
 EMG_SD = 2.0
-EMG_CHANNELS = ("EMGTricepsLongus1", "EMGTricepsLongus2", "EMGTricepsLateralis")
-
-DIRECTIONS = ("flexion", "extension")
-SIGN = {"flexion": 1.0, "extension": -1.0}   # flexion torque raises the joint angle (checked)
+EMG_CHANNELS = ("EMGTricepsLongus1", "EMGTricepsLongus2", "EMGTricepsLateralis",
+                "EMGBrachioradialis", "EMGDeltoidPosterior", "EMGTrapezius")
+SIGN = {"flexion": 1.0, "extension": -1.0}   # flexion torque raises the stored angle (checked)
+HOLD_WINDOW_S = (1.0, 2.5)      # after the center target appears; holds the torque onsets
 
 
 def asset_urls() -> list[tuple[str, str]]:
@@ -87,56 +89,33 @@ def _text(value) -> str:
     return value.decode() if isinstance(value, bytes) else str(value)
 
 
-def _ragged(group, name):
-    data, index = group[name][:], group[f"{name}_index"][:]
-    return np.split(data, index[:-1])
-
-
 def realign(timestamps: np.ndarray, trial_starts: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """Analog timestamps moved so that each trial's segment begins at its trial's start time.
 
-    Segments are separated by gaps longer than 1 s. Returns the moved timestamps and the index
-    of each segment's first sample. Raises if the number of segments differs from the trials.
+    Segments are separated by gaps over 1 s. Returns the moved timestamps and the index of each
+    segment's first sample. Raises if the number of segments differs from the number of trials.
     """
-    breaks = np.flatnonzero(np.diff(timestamps) > 1.0) + 1
-    first = np.r_[0, breaks]
+    first = np.r_[0, np.flatnonzero(np.diff(timestamps) > 1.0) + 1]
     if len(first) != len(trial_starts):
         raise ValueError(f"{len(first)} analog segments for {len(trial_starts)} trials")
     shift = np.repeat(trial_starts - timestamps[first], np.diff(np.r_[first, len(timestamps)]))
     return timestamps + shift, first
 
 
-def _window(t: np.ndarray, x: np.ndarray, t0: float, ms: tuple[int, int], step_ms: float) -> np.ndarray:
-    grid = t0 + np.arange(ms[0], ms[1] + step_ms / 2, step_ms) / 1000
-    i0, i1 = np.searchsorted(t, grid[0] - 0.05), np.searchsorted(t, grid[-1] + 0.05)
-    tt, xx = t[i0:i1], x[i0:i1]
-    if len(tt) < 2:
-        return np.full(len(grid), np.nan)
-    out = np.interp(grid, tt, xx)
-    out[(grid < tt[0]) | (grid > tt[-1])] = np.nan
+def _window(t: np.ndarray, x: np.ndarray, t0: float, ms: tuple[int, int], step_ms: int) -> np.ndarray:
+    """x sampled on t, read at t0 + ms[0] .. ms[1] in steps of step_ms (nearest sample, NaN outside)."""
+    grid = t0 + np.arange(ms[0], ms[1] + 1, step_ms) / 1000
+    i = np.clip(np.searchsorted(t, grid), 1, len(t) - 1)
+    i = np.where(np.abs(t[i - 1] - grid) < np.abs(t[i] - grid), i - 1, i)
+    out = x[i].astype(float)
+    out[np.abs(t[i] - grid) > step_ms / 2000 + 1e-6] = np.nan
     return out
 
 
-def _command_onset_ms(torque: np.ndarray, start_ms: int, threshold: float = 25.0) -> float:
-    """First ms where the torque command leaves its baseline (median of the first 100 ms)."""
-    base = np.nanmedian(torque[:100])
-    dev = np.abs(torque - base) > threshold
-    return float(np.argmax(dev) + start_ms) if dev.any() else np.nan
-
-
 def load_session(path: str, url: str) -> dict:
-    """One file: metadata, trials, units with spikes around each torque onset, and analog windows.
-
-    For each perturbation trial the joint angle, the torque command and the triceps EMG are
-    taken from -500 to +500 ms around the recorded onset on the realigned clock, at 1 ms steps
-    (interpolated; Venus files are at 1 kHz). The torque command's onset is also measured on the
-    stored clock (`command_onset_stored_ms`) for the data check. For every trial, the largest
-    deviation of the angle from its median over the last 1 s before the lateral target
-    (`hold_dev_deg`) shows whether the joint was perturbed during the hold.
-    """
+    """One file: metadata, trials, units (with spikes around each perturbation), analog windows."""
     with h5py.File(remfile.File(url), "r") as f:
-        general = f["general"]
-        session_id = _text(general["session_id"][()])
+        session_id = _text(f["general/session_id"][()])
         tr = f["intervals/trials"]
         trials = pd.DataFrame({
             "start": tr["start_time"][:], "stop": tr["stop_time"][:],
@@ -145,179 +124,185 @@ def load_session(path: str, url: str) -> dict:
             "reward": tr["reward_time"][:],
             "torque": [_text(v) for v in tr["torque_perturbation_type"][:]],
             "onset": tr["torque_perturbation_onset_time"][:],
+            "movement": [_text(v) for v in tr["movement_type"][:]],
+            "end_position": tr["derived_end_position"][:],
         })
         un = f["units"]
-        spikes = _ragged(un, "spike_times")
-        units = []
-        for i in range(len(un["id"])):
-            units.append({
-                "unit_name": int(_text(un["unit_name"][i])),
-                "type": _text(un["neuron_projection_type"][i]),
-                "antidromic_latency_ms": float(un["antidromic_latency_ms"][i]),
-                "also_in": _text(un["unit_also_in_session_id"][i]),
-                "is_post_mptp": bool(un["is_post_mptp"][i]),
-                "spikes": spikes[i],
-            })
+        data, index = un["spike_times"][:], un["spike_times_index"][:]
+        spikes = np.split(data, index[:-1])
+        units = [{"unit_name": int(un["unit_name"][i]),
+                  "type": _text(un["neuron_projection_type"][i]),
+                  "antidromic_latency_ms": float(un["antidromic_latency_ms"][i]),
+                  "also_in": _text(un["unit_also_in_session_id"][i]),
+                  "is_post_mptp": bool(un["is_post_mptp"][i]),
+                  "spikes": spikes[i]} for i in range(len(un["id"]))]
         acq = sorted(f["acquisition"].keys())
-        analog = {}
+        raw = {}
         if "ElbowAngle" in acq:
-            analog["t_stored"] = f["acquisition/ElbowAngle/timestamps"][:]
-            analog["angle"] = f["acquisition/ElbowAngle/data"][:].ravel()
-            analog["torque"] = f["acquisition/ElbowTorque/data"][:].ravel()
-            analog["emg_same_clock"] = True
+            raw["t"] = f["acquisition/ElbowAngle/timestamps"][:]
+            raw["angle"] = f["acquisition/ElbowAngle/data"][:, 0]
+            raw["torque_cmd"] = f["acquisition/ElbowTorque/data"][:]
+            raw["emg_same_clock"] = True
             for name in EMG_CHANNELS:
                 if name in acq:
-                    analog[name] = f[f"acquisition/{name}/data"][:].ravel()
-                    ts = f[f"acquisition/{name}/timestamps"]
-                    if ts.shape != analog["t_stored"].shape or not np.array_equal(ts[:], analog["t_stored"]):
-                        analog["emg_same_clock"] = False
-    subject = session_id.split("++")[0]
-    date = pd.Timestamp(session_id.split("++")[-1])
-    session = {"path": path, "session_id": session_id, "subject": subject, "date": date,
-               "post": "PostMPTP" in session_id, "acq": acq, "trials": trials, "units": units,
-               "n_flex": int((trials.torque == "flexion").sum()),
-               "n_ext": int((trials.torque == "extension").sum())}
-    session["unit_post_flags"] = sorted({u["is_post_mptp"] for u in units})
-    for u in units:      # every spike falls in a trial
-        s = u["spikes"]
-        k = np.searchsorted(trials.start.values, s, side="right") - 1
-        u["outside_trials"] = int(np.sum((k < 0) | (s > trials.stop.values[np.clip(k, 0, None)] + 0.010)))
-        u["sorted"] = bool(np.all(np.diff(s) >= 0))
-    if not analog:
-        return session
-    t_stored = analog["t_stored"]
-    session["analog_dt_ms"] = float(np.median(np.diff(t_stored)) * 1000)
-    session["torque_all_nan"] = bool(np.isnan(analog["torque"]).all())
-    session["emg_same_clock"] = analog["emg_same_clock"]
-    session["emg_channels"] = [c for c in EMG_CHANNELS if c in analog]
-    t_al, first = realign(t_stored, trials.start.values)
-    session["analog_lag_ms"] = (trials.start.values - t_stored[first]) * 1000
-    step = 1.0 if session["analog_dt_ms"] < 2 else round(session["analog_dt_ms"])
-    hold = []
-    for k, row in trials.iterrows():
-        if np.isfinite(row.lateral_on):
-            a = _window(t_al, analog["angle"], row.lateral_on, (-1000, 0), step)
-            hold.append(float(np.nanmax(np.abs(a - np.nanmedian(a)))))
-        else:
-            hold.append(np.nan)
-    trials["hold_dev_deg"] = hold
-    pert = []
-    for k, row in trials[trials.torque != "none"].iterrows():
-        w = {"trial": k, "direction": row.torque, "onset": row.onset}
-        w["angle"] = _window(t_al, analog["angle"], row.onset, ANALOG_WINDOW_MS, step)
-        w["torque_cmd"] = _window(t_al, analog["torque"], row.onset, ANALOG_WINDOW_MS, step)
-        stored = _window(t_stored, analog["torque"], row.onset, ANALOG_WINDOW_MS, step)
-        w["command_onset_ms"] = _command_onset_ms(w["torque_cmd"], ANALOG_WINDOW_MS[0])
-        w["command_onset_stored_ms"] = _command_onset_ms(stored, ANALOG_WINDOW_MS[0])
-        w["lag_ms"] = session["analog_lag_ms"][k]
-        for name in session["emg_channels"]:
-            w[name] = _window(t_al, analog[name], row.onset, ANALOG_WINDOW_MS, step)
-        pert.append(w)
-    session["perturbations"] = pert
-    return session
+                    raw[name] = f[f"acquisition/{name}/data"][:]
+                    ts = f[f"acquisition/{name}/timestamps"][:]
+                    raw["emg_same_clock"] &= bool(np.array_equal(ts, raw["t"]))
+    subject, _, state, depth, date = session_id.split("++")
+    s = {"path": path, "session_id": session_id, "subject": subject, "post": state == "PostMPTP",
+         "date": pd.Timestamp(date), "acq": acq, "trials": trials, "units": units}
+    pert = trials[trials.torque != "none"]
+    for u in units:
+        sp = u["spikes"]
+        u["sorted"] = bool(np.all(np.diff(sp) >= 0))
+        k = np.searchsorted(trials.start.values, sp, side="right") - 1
+        u["outside_trials"] = int(np.sum((k < 0) | (sp > trials.stop.values[np.clip(k, 0, None)] + 1e-6)))
+        isi = np.diff(sp)[np.diff(k) == 0]
+        u["isi_below_2ms"] = float(np.mean(isi < 0.002)) if len(isi) else np.nan
+        u["pert"] = [np.round((sp[(sp >= t0 + SPIKE_WINDOW_S[0]) & (sp < t0 + SPIKE_WINDOW_S[1])] - t0) * 1000)
+                     for t0 in pert.onset.values]
+    s["pert_direction"] = pert.torque.values
+    s["pert_trial"] = pert.index.values
+    if not raw:
+        return s
+    t = raw["t"]
+    s["analog_dt_ms"] = float(np.median(np.diff(t)) * 1000)
+    s["angle_all_nan"] = bool(np.isnan(raw["angle"]).all())
+    s["torque_all_nan"] = bool(np.isnan(raw["torque_cmd"]).all())
+    s["emg_same_clock"] = raw["emg_same_clock"]
+    s["emg_channels"] = [c for c in EMG_CHANNELS if c in raw]
+    t_al, first = realign(t, trials.start.values)
+    s["analog_lag_ms"] = (trials.start.values - t[first]) * 1000
+    # largest excursion of the angle from its median in the hold window of every trial, and the
+    # angle change over each active movement (lateral target to reward)
+    exc, move = [], []
+    for c, lat, rew in zip(trials.center_on.values, trials.lateral_on.values, trials.reward.values):
+        m = (t_al >= c + HOLD_WINDOW_S[0]) & (t_al < min(c + HOLD_WINDOW_S[1], lat))
+        a = raw["angle"][m]
+        exc.append(float(np.nanmax(np.abs(a - np.nanmedian(a)))) if m.sum() > 2 and not np.isnan(a).all() else np.nan)
+        i0, i1 = np.searchsorted(t_al, [lat, rew])
+        move.append(float(raw["angle"][min(i1, len(t_al) - 1)] - raw["angle"][min(i0, len(t_al) - 1)])
+                    if np.isfinite(lat) and np.isfinite(rew) else np.nan)
+    trials["hold_excursion_deg"] = exc
+    trials["active_angle_change"] = move
+    step = max(1, int(round(s["analog_dt_ms"])))
+    s["analog_step_ms"] = step
+    w = {}
+    for name in ["angle", "torque_cmd", *s["emg_channels"]]:
+        w[name] = np.array([_window(t_al, raw[name], t0, ANALOG_WINDOW_MS, step) for t0 in pert.onset.values])
+    # the torque command on the stored clock, for the data check
+    w["torque_cmd_stored"] = np.array([_window(t, raw["torque_cmd"], t0, ANALOG_WINDOW_MS, step)
+                                       for t0 in pert.onset.values])
+    s["windows"] = w
+    return s
+
+
+def _load(pu):
+    return load_session(*pu)
 
 
 def load_all(paths_urls, workers: int = 16) -> list[dict]:
-    with ThreadPoolExecutor(workers) as pool:
-        return list(pool.map(lambda pu: load_session(*pu), paths_urls))
+    """Every file, in parallel processes (h5py serializes calls within a process)."""
+    with ProcessPoolExecutor(workers) as pool:
+        return list(pool.map(_load, paths_urls, chunksize=2))
 
 
-# ---------------------------------------------------------------- spikes
+# ---------------------------------------------------------------- spike density and detection
 
 def gamma_kernel() -> np.ndarray:
-    """Causal gamma kernel at 1 ms steps, in spikes/s per spike."""
+    """Causal gamma kernel (k = 1.5, theta = 20 ms) at 1 ms steps, in spikes/s per spike."""
     t = np.arange(KERNEL_MS) + 0.5
     k = stats.gamma.pdf(t, a=GAMMA_K, scale=GAMMA_THETA_MS)
     return 1000 * k / k.sum()
 
 
 _KERNEL = gamma_kernel()
+GRID = np.arange(*GRID_MS)
 
 
-def sdf(spike_ms: np.ndarray, start_ms: int = SDF_START_MS, stop_ms: int = OFFSET_SEARCH_MS) -> np.ndarray:
-    """Spike density (spikes/s) from start_ms to stop_ms - 1, from spikes in ms relative to an event."""
-    lo = start_ms - KERNEL_MS
-    counts = np.bincount(np.floor(spike_ms[(spike_ms >= lo) & (spike_ms < stop_ms)] - lo).astype(int),
-                         minlength=stop_ms - lo)[:stop_ms - lo]
-    full = np.convolve(counts, _KERNEL)[:stop_ms - lo]
-    return full[KERNEL_MS:]
+def sdfs(rel_ms: list[np.ndarray]) -> np.ndarray:
+    """Single-trial SDFs (trials x GRID) from spike times in whole ms relative to onset."""
+    lo, n = GRID_MS[0] - KERNEL_MS, GRID_MS[1] - GRID_MS[0] + KERNEL_MS
+    out = np.empty((len(rel_ms), len(GRID)))
+    for i, r in enumerate(rel_ms):
+        r = r[(r >= lo) & (r < GRID_MS[1])].astype(int) - lo
+        counts = np.bincount(r, minlength=n)
+        out[i] = np.convolve(counts, _KERNEL)[KERNEL_MS:n]
+    return out
 
 
-def trial_sdfs(spikes: np.ndarray, onsets: np.ndarray, shift_ms: float = 0.0) -> np.ndarray:
-    """One SDF per onset (rows), on the grid SDF_START_MS .. OFFSET_SEARCH_MS - 1 ms."""
-    rows = []
-    for t0 in onsets:
-        rel = (spikes - t0) * 1000 - shift_ms
-        rows.append(sdf(rel))
-    return np.array(rows)
+def _mask(lo, hi, shift=0):
+    return (GRID >= lo + shift) & (GRID < hi + shift)
 
 
-GRID = np.arange(SDF_START_MS, OFFSET_SEARCH_MS)
+def detect(trial_sdfs: np.ndarray, shift_ms: int = 0, method: str = "mean") -> dict:
+    """Response of one cell to one torque direction.
 
-
-def _ms(lo, hi):
-    return (GRID >= lo) & (GRID < hi)
-
-
-def detect(sdfs: np.ndarray, paired: bool = False) -> dict:
-    """Response of one cell to one direction, by the Methods' ms-by-ms t-test.
-
-    sdfs: trials x GRID. The baseline is the mean SDF over BASELINE_MS. Each ms from 0 to
-    OFFSET_SEARCH_MS is tested two-tailed: one-sample against the baseline rate (main), or
-    paired against each trial's own baseline mean (variant, paired=True). A response is the
-    first crossing into significance (p < P_THRESHOLD) at 20 to 60 ms; a significant run that
-    is already under way at 20 ms is not one. It ends at the first non-significant ms.
+    method "mean" (main): the trial-averaged SDF against mean +/- t_crit * SD of its own values
+    over the 500 ms baseline. method "trials" (variant): one-sample two-tailed t-test of the
+    single-trial SDFs against the baseline mean, at each ms. shift_ms moves the onset (for the
+    false-positive check). Returns the baseline, the signed largest change over 0 to 200 ms, and
+    for a response its sign, onset, offset, magnitudes and FWHM.
     """
-    base_trials = sdfs[:, _ms(*BASELINE_MS)].mean(1)
-    base = float(base_trials.mean())
-    post = sdfs[:, _ms(0, OFFSET_SEARCH_MS)]
-    with np.errstate(all="ignore"):
-        if paired:
-            p = stats.ttest_rel(post, base_trials[:, None], axis=0).pvalue
-        else:
-            p = stats.ttest_1samp(post, base, axis=0).pvalue
-    p = np.where(np.isfinite(p), p, 1.0)
-    sig = p < P_THRESHOLD
-    mean = post.mean(0)
-    out = {"baseline": base, "n_trials": len(sdfs), "mean": mean, "responds": False}
-    starts = np.flatnonzero(sig[1:DETECT_MS[1]] & ~sig[:DETECT_MS[1] - 1]) + 1
-    starts = starts[(starts >= ONSET_RANGE_MS[0]) & (starts <= ONSET_RANGE_MS[1])]
-    # the largest change from baseline in the detection epoch, signed (for the DSI)
-    d = mean[:DETECT_MS[1]] - base
-    out["max_change_signed"] = float(d[np.argmax(np.abs(d))])
-    if not len(starts):
+    m = trial_sdfs.mean(0)
+    b = m[_mask(*BASELINE_MS, shift_ms)]
+    mu = float(b.mean())
+    post = GRID >= shift_ms
+    mp = m[post]
+    if method == "mean":
+        tcrit = stats.t.ppf(1 - P_THRESHOLD / 2, len(b) - 1)
+        thr = tcrit * b.std(ddof=1)
+        up, down = mp > mu + thr, mp < mu - thr
+        if thr == 0:          # no spikes in the baseline: any spike is not a test
+            up = down = np.zeros_like(mp, bool)
+    else:
+        with np.errstate(all="ignore"):
+            p = stats.ttest_1samp(trial_sdfs[:, post], mu, axis=0).pvalue
+        sig = np.where(np.isfinite(p), p, 1.0) < P_THRESHOLD
+        up, down = sig & (mp > mu), sig & (mp < mu)
+    d = mp[:DETECT_MS[1]] - mu
+    out = {"baseline": mu, "n_trials": len(trial_sdfs), "responds": False,
+           "max_change_signed": float(d[np.argmax(np.abs(d))]),
+           "any_crossing_0_200": bool((up[:DETECT_MS[1]] | down[:DETECT_MS[1]]).any())}
+    start = None
+    for t in range(ONSET_RANGE_MS[0], ONSET_RANGE_MS[1] + 1):
+        if up[t] and not up[t - 1]:
+            start, sign, beyond = t, 1.0, up
+            break
+        if down[t] and not down[t - 1]:
+            start, sign, beyond = t, -1.0, down
+            break
+    if start is None:
         return out
-    on = int(starts[0])
-    rest = np.flatnonzero(~sig[on:])
-    off = on + int(rest[0]) if len(rest) else OFFSET_SEARCH_MS
-    sign = 1.0 if mean[on] > base else -1.0
-    change = (mean[on:off] - base) * sign
-    signed = (mean - base) * sign
-    peak = on + int(np.argmax(change))
-    half = signed[peak] / 2
-    left = peak
-    while left > 0 and signed[left - 1] >= half:
+    rest = np.flatnonzero(~beyond[start:])
+    off = start + int(rest[0]) if len(rest) else len(mp)
+    ch = (mp - mu) * sign
+    resp = ch[start:off]
+    peak = start + int(np.argmax(resp))
+    half = ch[peak] / 2
+    left, right = peak, peak
+    while left > 0 and ch[left - 1] >= half:
         left -= 1
-    right = peak
-    while right < len(signed) - 1 and signed[right + 1] >= half:
+    while right < len(ch) - 1 and ch[right + 1] >= half:
         right += 1
-    out.update(responds=True, latency=on, offset=off, sign=sign,
-               mean_change=float(change.mean()), max_change=float(change.max()),
-               auc=float(change.sum() / 1000), fwhm=float(right - left + 1))
+    out.update(responds=True, sign=sign, latency=start, offset=off,
+               mean_rate=float(mp[start:off].mean()), mean_change=float(resp.mean()),
+               max_change=float(resp.max()), auc=float(resp.sum() / 1000),
+               fwhm=float(right - left + 1))
     return out
 
 
 def dsi(flex: dict, ext: dict) -> tuple[float, str]:
-    """Directional selectivity index and category of a torque-related cell.
+    """Directional selectivity index |1 - NP/P| and the cell's category.
 
-    DSI = |1 - NP/P|, with P and NP the signed largest changes from baseline over 0 to 200 ms
-    in the preferred (larger) and the other direction. Category: unidirectional when only one
-    direction has a response; with both, reciprocal when they have opposite signs, otherwise
-    bidirectional when DSI > 0.5 and non-directional when not.
+    P and NP are the signed largest changes from baseline over 0 to 200 ms in the preferred
+    (larger absolute change) and the other direction. Category, for a torque-related cell:
+    unidirectional when only one direction has a response; with both, reciprocal when they have
+    opposite signs, bidirectional when DSI > 0.5, otherwise non-directional.
     """
     a, b = flex["max_change_signed"], ext["max_change_signed"]
-    p_, np_ = (a, b) if abs(a) >= abs(b) else (b, a)
-    index = abs(1 - np_ / p_) if p_ != 0 else np.nan
+    p, nonp = (a, b) if abs(a) >= abs(b) else (b, a)
+    index = abs(1 - nonp / p) if p != 0 else np.nan
     if flex["responds"] and ext["responds"]:
         if flex["sign"] != ext["sign"]:
             cat = "reciprocal"
@@ -332,43 +317,48 @@ def dsi(flex: dict, ext: dict) -> tuple[float, str]:
 
 # ---------------------------------------------------------------- kinematics and EMG
 
-_FIR = signal.firwin(FIR_TAPS, LOWPASS_HZ, fs=1000.0, window="hamming")
-_AX = np.arange(ANALOG_WINDOW_MS[0], ANALOG_WINDOW_MS[1] + 1)
-
-
-def kinematics(angle: np.ndarray, direction: str) -> dict:
-    """Torque-evoked displacement of one trial, from the angle at 1 ms steps around onset."""
+def kinematics(angle: np.ndarray, direction: str, step_ms: int) -> dict:
+    """Torque-evoked displacement of one trial from its angle window (ANALOG_WINDOW_MS)."""
     if np.isnan(angle).any():
         return {"valid": False}
+    fs = 1000 / step_ms
+    taps = 101 if step_ms == 1 else 21
+    fir = signal.firwin(taps, LOWPASS_HZ, fs=fs, window="hamming")
+    smooth = signal.filtfilt(fir, [1.0], angle)
+    ax = np.arange(ANALOG_WINDOW_MS[0], ANALOG_WINDOW_MS[1] + 1, step_ms)
     s = SIGN[direction]
-    smooth = signal.filtfilt(_FIR, [1.0], angle)
-    vel = np.gradient(smooth) * 1000 * s
-    rel = (angle - angle[(_AX >= -50) & (_AX < 0)].mean()) * s
-    after = _AX >= 0
-    v, a = vel[after], rel[after]
-    pre_moving = bool(vel[(_AX >= -10) & (_AX < 0)].max() > VEL_THRESHOLD)
-    cross = np.flatnonzero(v[:ONSET_SEARCH_MS] > VEL_THRESHOLD)
-    return {"valid": bool(len(cross)) and not pre_moving,
-            "pre_moving": pre_moving,
-            "latency_ms": float(cross[0]) if len(cross) else np.nan,
-            "peak_velocity": float(v[:PEAK_VEL_MS].max()),
-            "amplitude": float(a[:AMPLITUDE_MS].max())}
+    vel = np.gradient(smooth) * fs * s
+    rel = (smooth - smooth[(ax >= -50) & (ax < 0)].mean()) * s
+    after = ax >= 0
+    v, a, t = vel[after], rel[after], ax[after]
+    cross = np.flatnonzero((v > VEL_THRESHOLD) & (t <= 150))
+    return {"valid": True,
+            "moving_before": bool(np.abs(vel[(ax >= -50) & (ax < 0)]).max() > VEL_THRESHOLD),
+            "latency_ms": float(t[cross[0]]) if len(cross) else np.nan,
+            "peak_velocity": float(v[t <= PEAK_VEL_MS].max()),
+            "amplitude": float(a[t <= AMPLITUDE_MS].max())}
 
 
-def emg_response(traces: np.ndarray, sd: float = EMG_SD) -> dict:
-    """Session-average EMG response, baseline-subtracted, from trials x 1 ms windows."""
+def emg_response(traces: np.ndarray, step_ms: int, sd: float = EMG_SD) -> dict:
+    """Session-average EMG response from trials x window traces, baseline subtracted."""
+    ax = np.arange(ANALOG_WINDOW_MS[0], ANALOG_WINDOW_MS[1] + 1, step_ms)
     mean = np.nanmean(traces, axis=0)
-    b = (_AX >= EMG_BASELINE_MS[0]) & (_AX < EMG_BASELINE_MS[1])
+    b = (ax >= EMG_BASELINE_MS[0]) & (ax < EMG_BASELINE_MS[1])
     norm = mean - mean[b].mean()
-    thr = sd * mean[b].std()
-    win = (_AX >= EMG_RESPONSE_MS[0]) & (_AX <= EMG_RESPONSE_MS[1])
-    above = np.flatnonzero(win & (norm > thr))
-    return {"m1": float(norm[(_AX >= M1_MS[0]) & (_AX <= M1_MS[1])].mean()),
-            "m2": float(norm[(_AX >= M2_MS[0]) & (_AX <= M2_MS[1])].mean()),
-            "onset_ms": float(_AX[above[0]]) if len(above) else np.nan,
-            "duration_ms": float(_AX[above[-1]] - _AX[above[0]] + 1) if len(above) else np.nan,
-            "trace": norm}
+    thr = sd * mean[b].std(ddof=1)
+    above = (norm > thr) & (ax >= EMG_SEARCH_MS[0])
+    cand = np.flatnonzero(above & (ax <= EMG_SEARCH_MS[1]))
+    out = {"m1": float(norm[(ax >= M1_MS[0]) & (ax <= M1_MS[1])].mean()),
+           "m2": float(norm[(ax >= M2_MS[0]) & (ax <= M2_MS[1])].mean()),
+           "onset_ms": np.nan, "duration_ms": np.nan, "trace": norm, "ax": ax}
+    if len(cand):
+        i0 = cand[0]
+        rest = np.flatnonzero(~above[i0:])
+        i1 = i0 + int(rest[0]) if len(rest) else len(ax)
+        out.update(onset_ms=float(ax[i0]), duration_ms=float((i1 - i0) * step_ms))
+    return out
 
 
 def short_type(t: str) -> str:
-    return {"pyramidal_tract_neuron": "PTN", "corticostriatal_neuron": "CSN"}.get(t, "other")
+    return {"pyramidal_tract_neuron": "PTN", "corticostriatal_neuron": "CSN",
+            "pyramidal_tract_and_corticostriatal_neuron": "dual"}.get(t, "NA")

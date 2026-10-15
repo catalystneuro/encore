@@ -1,0 +1,594 @@
+# Claims for Pasquereau & Turner (2013) on dandiset 001636.
+# Source: the full text in PubMed Central (PMC3840326, open access, CC BY), read from its Methods,
+# Results, Table 1 and figure legends, and its supplementary data sheet (DataSheet1.PDF), whose
+# table gives the neuronal results for each monkey separately.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata, the contents of the files, the counts of units by subject, MPTP state and projection
+# type, the number of torque perturbations per direction (none in any monkey L file), the timing
+# of the torque command against the trials table, the sign of the joint angle, which EMG channels
+# hold data, and the cross-referenced and repeated files. These counts showed that the monkey V
+# units with at least 5 perturbations per direction number 112 before and 159 after MPTP, with
+# 49 and 54 PTNs and 31 and 48 CSNs, as in the supplementary table. No SDF, response detection,
+# kinematic measure or EMG response had been computed.
+#
+# The dandiset marks no torque perturbation in any monkey L file, so every claim is tested on
+# monkey V (elbow), and the expected values are the paper's monkey V values where it gives them
+# (supplementary table). Where the paper gives only values pooled over both monkeys, these are
+# the expected values and the difference is a deviation.
+#
+# Method choices fixed here where the Methods leave them open (also in the helper's docstring):
+# - Cells studied: every unit of a monkey V file with at least 5 perturbations of each direction.
+#   Each unit is counted once (no unit appears in two files; see the data check).
+# - Baseline rate: mean over trials of the SDF over the 500 ms before onset, all perturbations.
+# - Detection: the trial-averaged SDF of one direction against its baseline mean +/- t * SD of
+#   its values over the 500 ms baseline, t the two-tailed critical value at p = 0.002 (Figure 3
+#   draws the threshold as horizontal lines on the mean SDF). A response begins where the SDF
+#   crosses the threshold between 20 and 60 ms after onset, having been inside it the ms before;
+#   the first such crossing is the response. Variant, shown but not deciding: a one-sample t-test
+#   of the single-trial SDFs against the baseline mean at each ms.
+# - The paper's threshold implies a family-wise false-positive rate of 0.01 per cell and
+#   direction over the 200 ms epoch. It is computed with the same procedure at a pseudo onset
+#   600 ms before the torque. If it is below 0.0033 or above 0.03 (a factor of 3 from 0.01), the
+#   procedures differ and the claims that use the selection of responses are blocked with
+#   methods_underspecified.
+# - Magnitudes, per response, over onset to offset with the sign of the response: mean change
+#   from baseline, maximum change, and area (spikes). FWHM is the width of the response at half
+#   its maximum change.
+# - DSI categories: unidirectional when only one direction responds; with both, reciprocal when
+#   the responses have opposite signs, bidirectional when DSI > 0.5, non-directional otherwise.
+# - Kinematics, per perturbation: 25 Hz Hamming FIR low-pass applied forwards and backwards,
+#   onset at 5 deg/s in the torque's direction, peak velocity over 0 to 200 ms, amplitude as the
+#   largest displacement over 0 to 300 ms. Session means per direction. A file whose trials repeat
+#   a block of another file's trials is left out of the session measures.
+# - EMG: triceps channels (two triceps longus and one triceps lateralis) for flexion torques,
+#   which stretch the triceps. Session-average trace less its mean over the 200 ms before onset;
+#   m1 and m2 are its means over 15 to 40 and 41 to 80 ms. A response starts at the first ms from
+#   10 to 150 ms above 2 SD of the baseline and lasts while it stays above. A channel is used in a
+#   session when its windows hold no NaN and its baseline SD is at least 1 A/D unit.
+# - Two-sample chi-square tests on 2 x 2 tables use the Yates correction (it gives the paper's
+#   chi-square of 32.3 and of 0.1 from its own counts).
+# - Tolerances. Means given with SD and n use 2 SD / sqrt(n) (the paper's spread turned into the
+#   uncertainty of a mean); means whose n the paper does not give, proportions and percentages
+#   use 10% of the value; the EMG durations use the paper's stated spread.
+schema_version: 1
+dandiset: "001636"
+paper: doi:10.3389/fnsys.2013.00098
+claims:
+- id: cell-counts
+  statement: In monkey V, 112 neurons were studied before MPTP and 159 after, of which 49 and 54
+    were PTNs and 31 and 48 CSNs; three neurons in all were activated from both the peduncle and
+    the putamen.
+  source: Supplementary table (monkey V); Results, Database; Table 1
+  expected:
+  - quantity: monkey V cells pre-MPTP
+    value: 112
+    tolerance: 11.2
+  - quantity: monkey V cells post-MPTP
+    value: 159
+    tolerance: 15.9
+  - quantity: monkey V PTNs pre-MPTP
+    value: 49
+    tolerance: 4.9
+  - quantity: monkey V PTNs post-MPTP
+    value: 54
+    tolerance: 5.4
+  - quantity: monkey V CSNs pre-MPTP
+    value: 31
+    tolerance: 3.1
+  - quantity: monkey V CSNs post-MPTP
+    value: 48
+    tolerance: 4.8
+  - quantity: cells activated from both sites (both monkeys)
+    value: 3
+    tolerance: 0.3
+  criterion: Counts of monkey V units with at least 5 perturbations per direction, by MPTP state
+    and projection type; dual-projecting units counted over all files. Reproduced when every
+    count is within tolerance.
+- id: monkey-l-perturbations
+  statement: In monkey L, 57 of 115 neurons before MPTP and 35 of 73 after responded to torque
+    perturbations of the wrist, and the monkey L responses enter all pooled results.
+  source: Supplementary table (monkey L); Table 1
+  criterion: Needs the torque perturbation trials of monkey L (direction and onset). Blocked if no
+    monkey L file marks them.
+- id: baseline-rate
+  statement: Before torque onset, the firing rate of M1 neurons was lower after MPTP, because PTN
+    rates fell (Mann-Whitney p < 0.001) while CSN rates did not change (p = 0.5). In monkey V the
+    rates were 12.6 and 8.9 spikes/s for all cells, 20.3 and 14.8 for PTNs, and 3.5 and 3.4 for
+    CSNs, before and after MPTP.
+  source: Supplementary table; Table 1; Results, Database
+  expected:
+  - quantity: M1 baseline rate pre-MPTP
+    value: 12.6
+    tolerance: 1.98
+    unit: spikes/s
+  - quantity: M1 baseline rate post-MPTP
+    value: 8.9
+    tolerance: 1.33
+    unit: spikes/s
+  - quantity: PTN baseline rate pre-MPTP
+    value: 20.3
+    tolerance: 2.46
+    unit: spikes/s
+  - quantity: PTN baseline rate post-MPTP
+    value: 14.8
+    tolerance: 2.72
+    unit: spikes/s
+  - quantity: CSN baseline rate pre-MPTP
+    value: 3.5
+    tolerance: 1.47
+    unit: spikes/s
+  - quantity: CSN baseline rate post-MPTP
+    value: 3.4
+    tolerance: 1.01
+    unit: spikes/s
+  depends_on:
+  - cell-counts
+  criterion: Mean baseline rate per group of cells studied. Reproduced when all six means are
+    within tolerance, the PTN rate is lower after MPTP (Mann-Whitney p < 0.05) and the CSN rate
+    does not differ (p >= 0.05). Partially reproduced when the two tests hold and some means are
+    outside tolerance, or the means hold and a test does not. The M1 test (p < 0.05/2 in the
+    paper) is reported.
+- id: ptn-faster-than-csn
+  statement: Before MPTP, PTNs fired much faster than CSNs at rest (Mann-Whitney p < 0.001).
+  source: Results, Database; Table 1
+  depends_on:
+  - cell-counts
+  criterion: Pre-MPTP baseline rates of monkey V PTNs and CSNs. Reproduced when PTNs are higher
+    with Mann-Whitney p < 0.001; partially when p < 0.05; not reproduced otherwise. The text
+    gives means of 16.3 and 3.6 spikes/s and Table 1 gives 18.3 and 3.2; these pooled values are
+    reported, not judged.
+- id: antidromic-latency
+  statement: PTN antidromic latencies did not change after MPTP (1.9 ms, p = 0.9), while CSN
+    latencies were longer (5.1 against 6.1 ms, p < 0.05/3).
+  source: Results, Database; Table 1
+  expected:
+  - quantity: PTN antidromic latency pre-MPTP
+    value: 1.9
+    tolerance: 0.22
+    unit: ms
+  - quantity: PTN antidromic latency post-MPTP
+    value: 1.9
+    tolerance: 0.2
+    unit: ms
+  - quantity: CSN antidromic latency pre-MPTP
+    value: 5.1
+    tolerance: 0.61
+    unit: ms
+  - quantity: CSN antidromic latency post-MPTP
+    value: 6.1
+    tolerance: 0.89
+    unit: ms
+  depends_on:
+  - cell-counts
+  criterion: Antidromic latency of monkey V PTNs and CSNs studied (the expected values pool both
+    monkeys). Reproduced when the CSN latency is longer after MPTP (Mann-Whitney p < 0.05/3),
+    the PTN latency does not differ (p >= 0.05), and the four means are within tolerance.
+    Partially reproduced when the two tests hold and a mean does not, or the reverse. A variant
+    adds every monkey L PTN and CSN unit, as their selection by perturbations cannot be made.
+- id: false-positive-rate
+  statement: The detection threshold, p < 0.01 divided by 5 independent comparisons, holds the
+    chance of a false response over the 200 ms epoch near 0.01.
+  source: Methods, Data analysis
+  expected:
+    quantity: false-positive rate per cell and direction over 0 to 200 ms
+    value: 0.01
+    tolerance: 0.02
+  depends_on:
+  - cell-counts
+  criterion: The same detection at a pseudo onset 600 ms before the torque, on the monkey V cells
+    studied, both directions. Reproduced when the fraction of cell-directions with any threshold
+    crossing over 0 to 200 ms is between 0.0033 and 0.03 (the factor-of-3 rule above; the
+    tolerance field gives the upper bound). The rate for a response with onset in 20 to 60 ms is
+    also reported.
+- id: torque-related-fractions
+  statement: In monkey V, 84 of 112 M1 neurons (75%) were torque-related before MPTP and 108 of
+    159 (68%) after; for PTNs 27 of 49 (55%) and 37 of 54 (68%); for CSNs 14 of 31 (45%) and 10
+    of 48 (21%).
+  source: Supplementary table; Table 1; Figure 3A
+  expected:
+  - quantity: M1 torque-related pre-MPTP
+    value: 75
+    tolerance: 7.5
+    unit: percent
+  - quantity: M1 torque-related post-MPTP
+    value: 68
+    tolerance: 6.8
+    unit: percent
+  - quantity: PTN torque-related pre-MPTP
+    value: 55
+    tolerance: 5.5
+    unit: percent
+  - quantity: PTN torque-related post-MPTP
+    value: 68
+    tolerance: 6.8
+    unit: percent
+  - quantity: CSN torque-related pre-MPTP
+    value: 45
+    tolerance: 4.5
+    unit: percent
+  - quantity: CSN torque-related post-MPTP
+    value: 21
+    tolerance: 2.1
+    unit: percent
+  depends_on:
+  - cell-counts
+  - false-positive-rate
+  criterion: A cell is torque-related when it has a response in at least one direction.
+    Reproduced when all six percentages are within tolerance; partially reproduced when at
+    least four are; not reproduced otherwise.
+- id: prevalence-unchanged
+  statement: MPTP did not change the fraction of torque-related neurons, in M1, in PTNs or in
+    CSNs (chi-square, p > 0.05/3).
+  source: Results, Torque-evoked neuronal responses, pre- vs. post-MPTP; Figure 3A
+  depends_on:
+  - torque-related-fractions
+  criterion: Absence claim, judged on the paper's test. A Yates-corrected chi-square test of
+    torque-related against not, pre against post, for monkey V M1, PTNs and CSNs. Reproduced when
+    none of the three has p < 0.05/3; not reproduced when any does. The size of each change is
+    given.
+- id: ptn-more-responsive
+  statement: PTNs responded to torque more often than CSNs (68% against 31% over both monkeys,
+    chi-square 32.3, p < 0.001).
+  source: Results, Torque-evoked neuronal responses, prevalence; Figure 3A
+  expected:
+  - quantity: monkey V PTNs torque-related, both states
+    value: 62.1
+    tolerance: 6.2
+    unit: percent
+  - quantity: monkey V CSNs torque-related, both states
+    value: 30.4
+    tolerance: 3.0
+    unit: percent
+  depends_on:
+  - torque-related-fractions
+  criterion: Pre and post pooled. The expected values are the monkey V counts of the
+    supplementary table (64 of 103 PTNs, 24 of 79 CSNs). Reproduced when both are within
+    tolerance and the Yates-corrected chi-square test gives p < 0.001 with PTNs higher;
+    partially reproduced when the test holds and a fraction does not, or the fractions hold
+    and p is between 0.001 and 0.05.
+- id: one-direction-half
+  statement: About half of the torque-related cells (124 of 284, 44%) responded to only one
+    direction of rotation.
+  source: Results, Torque-evoked neuronal responses, prevalence
+  expected:
+    quantity: torque-related cells responding in one direction only
+    value: 44
+    tolerance: 4.4
+    unit: percent
+  depends_on:
+  - torque-related-fractions
+  criterion: Monkey V, pre and post pooled (the paper's value pools both monkeys). Reproduced
+    when the percentage is within tolerance.
+- id: excitatory-majority
+  statement: Most torque responses were increases in firing (86% of M1 responses before and 88%
+    after MPTP; 70% and 75% for PTNs), and MPTP did not change the PTN balance (chi-square 0.1,
+    p = 0.7).
+  source: Table 1; Results, Torque-evoked neuronal responses, pre- vs. post-MPTP
+  expected:
+  - quantity: M1 responses that are increases, pre-MPTP
+    value: 86
+    tolerance: 8.6
+    unit: percent
+  - quantity: M1 responses that are increases, post-MPTP
+    value: 88
+    tolerance: 8.8
+    unit: percent
+  - quantity: PTN responses that are increases, pre-MPTP
+    value: 70
+    tolerance: 7.0
+    unit: percent
+  - quantity: PTN responses that are increases, post-MPTP
+    value: 75
+    tolerance: 7.5
+    unit: percent
+  depends_on:
+  - torque-related-fractions
+  criterion: Responses counted per direction, monkey V (the paper's values pool both monkeys).
+    The PTN part is an absence claim judged on a Yates-corrected chi-square test at p < 0.05.
+    Reproduced when the four percentages are within tolerance and the PTN test does not find a
+    change; partially reproduced when only one of these holds; not reproduced when neither.
+- id: magnitude-unchanged
+  statement: The magnitude of torque responses did not differ before and after MPTP, for M1 cells
+    or for PTNs, by any of three measures (mean change, maximum change, area; Kolmogorov-Smirnov
+    and Mann-Whitney, all p > 0.15).
+  source: Results, Torque-evoked neuronal responses, pre- vs. post-MPTP; Figure 4A
+  depends_on:
+  - torque-related-fractions
+  criterion: Absence claim, judged on the paper's tests. Responses counted per direction, both
+    directions pooled; for M1 and for PTNs, each of the three measures compared pre against post
+    with a two-sample Kolmogorov-Smirnov test and a Mann-Whitney test (12 tests). Reproduced when
+    none has p < 0.05; not reproduced when any does. Per-direction tests are shown as a variant.
+- id: venus-response-magnitudes
+  statement: In monkey V, the mean response magnitudes were 42.4 and 37.9 spikes/s for M1
+    flexion responses, 50.9 and 42.6 for M1 extension responses, 33.4 and 26.1 for PTN flexion
+    and 38.8 and 29.3 for PTN extension responses, before and after MPTP.
+  source: Supplementary table
+  expected:
+  - quantity: M1 flexion pre-MPTP
+    value: 42.4
+    tolerance: 4.24
+    unit: spikes/s
+  - quantity: M1 flexion post-MPTP
+    value: 37.9
+    tolerance: 3.79
+    unit: spikes/s
+  - quantity: M1 extension pre-MPTP
+    value: 50.9
+    tolerance: 5.09
+    unit: spikes/s
+  - quantity: M1 extension post-MPTP
+    value: 42.6
+    tolerance: 4.26
+    unit: spikes/s
+  - quantity: PTN flexion pre-MPTP
+    value: 33.4
+    tolerance: 3.34
+    unit: spikes/s
+  - quantity: PTN flexion post-MPTP
+    value: 26.1
+    tolerance: 2.61
+    unit: spikes/s
+  - quantity: PTN extension pre-MPTP
+    value: 38.8
+    tolerance: 3.88
+    unit: spikes/s
+  - quantity: PTN extension post-MPTP
+    value: 29.3
+    tolerance: 2.93
+    unit: spikes/s
+  depends_on:
+  - torque-related-fractions
+  criterion: The table does not say which measure "magnitude" is. Readings, in order, (a) the
+    maximum change from baseline, (b) the mean firing rate during the response, (c) the mean
+    change from baseline. Reproduced when all eight values are within tolerance under one
+    reading; partially reproduced when at least five are under one reading; not reproduced
+    otherwise.
+- id: latency-shorter
+  statement: Response latencies were shorter after MPTP for M1 cells and for PTNs, for flexion
+    and extension (Kolmogorov-Smirnov, all p < 0.05). In monkey V the means were 39.2 and 34.6 ms
+    (M1 flexion), 40.4 and 33.4 ms (M1 extension), 43.9 and 35.5 ms (PTN flexion) and 44.4 and
+    36.7 ms (PTN extension), before and after MPTP.
+  source: Results, Torque-evoked neuronal responses, pre- vs. post-MPTP; Figure 4B; supplementary
+    table
+  expected:
+  - quantity: M1 flexion latency pre-MPTP
+    value: 39.2
+    tolerance: 3.92
+    unit: ms
+  - quantity: M1 flexion latency post-MPTP
+    value: 34.56
+    tolerance: 3.46
+    unit: ms
+  - quantity: M1 extension latency pre-MPTP
+    value: 40.4
+    tolerance: 4.04
+    unit: ms
+  - quantity: M1 extension latency post-MPTP
+    value: 33.4
+    tolerance: 3.34
+    unit: ms
+  - quantity: PTN flexion latency pre-MPTP
+    value: 43.9
+    tolerance: 4.39
+    unit: ms
+  - quantity: PTN flexion latency post-MPTP
+    value: 35.5
+    tolerance: 3.55
+    unit: ms
+  - quantity: PTN extension latency pre-MPTP
+    value: 44.4
+    tolerance: 4.44
+    unit: ms
+  - quantity: PTN extension latency post-MPTP
+    value: 36.7
+    tolerance: 3.67
+    unit: ms
+  depends_on:
+  - torque-related-fractions
+  criterion: Response onset per direction. Reproduced when the post-MPTP latencies are shorter
+    with Kolmogorov-Smirnov p < 0.05 in all four comparisons (M1 and PTN, each direction) and at
+    least six of the eight means are within tolerance; partially reproduced when two or three
+    comparisons are significant and shorter, or all four are and fewer than six means hold; not
+    reproduced otherwise. The pooled means (M1 41 and 35 ms, PTN 46 and 38 ms) are reported under
+    two readings, responses per direction and each cell's earliest response.
+- id: latency-not-training
+  statement: The latency shortening was not a history effect; latencies did not correlate with
+    the days of training (monkey V Spearman |rho| = 0.02, p = 0.85).
+  source: Results, Torque-evoked neuronal responses, pre- vs. post-MPTP
+  depends_on:
+  - torque-related-fractions
+  criterion: Absence claim. Spearman correlation, over monkey V torque-related cells, of each
+    cell's latency (its earliest response) with the days since the first monkey V session in the
+    dandiset, pre and post pooled as the text reads. Reproduced when p >= 0.05; not reproduced
+    when p < 0.05. Within each state is shown as a variant.
+- id: fwhm-shorter-ptn
+  statement: Torque-evoked increases in PTN firing were briefer after MPTP; the FWHM fell from 73
+    to 50 ms over both monkeys (Mann-Whitney, p < 0.05 for each direction). In monkey V the PTN
+    FWHM was 97 and 52 ms for flexion and 57 and 41 ms for extension, before and after MPTP.
+  source: Results, Torque-evoked neuronal responses, pre- vs. post-MPTP; supplementary table
+  expected:
+  - quantity: PTN flexion FWHM pre-MPTP
+    value: 97
+    tolerance: 9.7
+    unit: ms
+  - quantity: PTN flexion FWHM post-MPTP
+    value: 52
+    tolerance: 5.2
+    unit: ms
+  - quantity: PTN extension FWHM pre-MPTP
+    value: 57
+    tolerance: 5.7
+    unit: ms
+  - quantity: PTN extension FWHM post-MPTP
+    value: 41
+    tolerance: 4.1
+    unit: ms
+  depends_on:
+  - torque-related-fractions
+  criterion: FWHM of monkey V PTN responses that are increases, per direction. Reproduced when
+    the FWHM is shorter after MPTP with Mann-Whitney p < 0.05 in both directions and at least
+    three of the four means are within tolerance; partially reproduced when one direction is
+    significant, or both are and fewer than three means hold; not reproduced otherwise. The
+    supplementary table may include decreases; the means over all PTN responses are reported.
+- id: dsi-reduced
+  statement: Directional selectivity fell after MPTP; reciprocal and unidirectional responses
+    became less common and bidirectional and non-directional ones more common (by about 10% of
+    torque-related M1 cells; chi-square 22.2, p < 0.001).
+  source: Results, Response directionality; Figure 6
+  depends_on:
+  - torque-related-fractions
+  criterion: Monkey V torque-related cells. Chi-square test of the four categories (2 x 4), pre
+    against post. Reproduced when the fraction of reciprocal plus unidirectional cells is lower
+    after MPTP and p < 0.001; partially reproduced when it is lower and p < 0.05, or lower by
+    at least 5 percentage points without significance; not reproduced otherwise.
+- id: venus-dsi
+  statement: In monkey V the mean DSI of torque-related cells was 0.72 and 0.66 for M1, 0.73 and
+    0.75 for PTNs and 0.81 and 0.83 for CSNs, before and after MPTP.
+  source: Supplementary table
+  expected:
+  - quantity: M1 DSI pre-MPTP
+    value: 0.72
+    tolerance: 0.087
+  - quantity: M1 DSI post-MPTP
+    value: 0.66
+    tolerance: 0.077
+  - quantity: PTN DSI pre-MPTP
+    value: 0.73
+    tolerance: 0.115
+  - quantity: PTN DSI post-MPTP
+    value: 0.75
+    tolerance: 0.132
+  - quantity: CSN DSI pre-MPTP
+    value: 0.81
+    tolerance: 0.214
+  - quantity: CSN DSI post-MPTP
+    value: 0.83
+    tolerance: 0.253
+  depends_on:
+  - torque-related-fractions
+  criterion: Mean DSI over torque-related cells; tolerances are 2 SD / sqrt(n) with n the
+    torque-related cells of the table. Reproduced when all six are within tolerance; partially
+    when at least four are; not reproduced otherwise.
+- id: dsi-not-baseline
+  statement: The loss of selectivity was not due to resting rates, as pre-torque rates did not
+    differ between directional categories (one-way ANOVA, F = 0.77, p = 0.46).
+  source: Results, Response directionality
+  depends_on:
+  - torque-related-fractions
+  criterion: Absence claim. One-way ANOVA of baseline rate across the four categories, monkey V
+    torque-related cells, pre and post pooled. Reproduced when p >= 0.05; not reproduced when
+    p < 0.05. Three groups (reciprocal and unidirectional merged) are shown as a variant.
+- id: kinematics-slower
+  statement: After MPTP, torque-induced displacements were slower and smaller; mean peak velocity
+    fell by 16.2% and amplitude by 6.6% (ANOVA, F > 515 and F > 49).
+  source: Results, Behavioral effects of MPTP; Figure 1
+  expected:
+  - quantity: change of peak velocity after MPTP
+    value: -16.2
+    tolerance: 1.62
+    unit: percent
+  - quantity: change of amplitude after MPTP
+    value: -6.6
+    tolerance: 0.66
+    unit: percent
+  criterion: Session means per direction, monkey V only (the paper's ANOVA has animal as a third
+    factor). Two-way ANOVA (type II) of MPTP state and direction with their interaction. The
+    change is the post mean over the pre mean, minus 1. Readings, in order, (a) both directions
+    pooled, (b) flexion only (Figure 1). Reproduced when both changes are within tolerance under
+    one reading and MPTP reduces both measures with ANOVA p < 0.01; partially reproduced when
+    both are reduced with p < 0.05 and a change is outside tolerance; not reproduced otherwise.
+- id: kinematic-latency-unchanged
+  statement: The latency of torque-induced displacements did not change after MPTP (F < 0.2, p >
+    0.05).
+  source: Results, Behavioral effects of MPTP; Figure 1
+  criterion: Absence claim. The MPTP effect in the two-way ANOVA of session mean movement onset
+    latency (monkey V). Reproduced when p >= 0.05; not reproduced when p < 0.05. The paper's
+    MPTP by direction interaction (F > 94) is reported.
+- id: emg-m2-larger
+  statement: The long-latency (m2, 41 to 80 ms) EMG response of the stretched triceps was larger
+    after MPTP (Kolmogorov-Smirnov, p < 0.05).
+  source: Results, Behavioral effects of MPTP; Figure 2
+  criterion: Session m2 values for flexion torques, pre against post, two-sample
+    Kolmogorov-Smirnov. The paper names one triceps longus; the dandiset has two channels, and
+    either may be the paper's. Reproduced when m2 is larger after MPTP (higher median) with
+    p < 0.05 for the triceps lateralis and for at least one triceps longus channel; partially
+    reproduced when this holds for one muscle only; not reproduced otherwise.
+- id: emg-duration-longer
+  statement: The total duration of EMG responses to torque increased after MPTP, from 57 +/- 6
+    to 79 +/- 3 ms (Kolmogorov-Smirnov, p < 0.001).
+  source: Results, Behavioral effects of MPTP; Figure 2
+  expected:
+  - quantity: EMG response duration pre-MPTP
+    value: 57
+    tolerance: 6
+    unit: ms
+  - quantity: EMG response duration post-MPTP
+    value: 79
+    tolerance: 3
+    unit: ms
+  criterion: Durations of the session-average responses of the three triceps channels to
+    flexion torques, pooled over channels. Reproduced when both means are within tolerance and
+    the durations are longer after MPTP with Kolmogorov-Smirnov p < 0.001; partially reproduced
+    when they are longer with p < 0.05 and a mean is outside tolerance; not reproduced
+    otherwise.
+- id: emg-onset-unchanged
+  statement: The latency of the earliest EMG responses did not change after MPTP (p > 0.05).
+  source: Results, Behavioral effects of MPTP
+  criterion: Absence claim. Onsets of the same responses as emg-duration-longer, pre against
+    post, two-sample Kolmogorov-Smirnov (the test the paper uses for the EMG). Reproduced when
+    p >= 0.05; not reproduced when p < 0.05.
+- id: emg-m1-weak
+  statement: The short-latency m1 component (15 to 40 ms) was poorly formed and generally much
+    smaller than the m2 component.
+  source: Results, Behavioral effects of MPTP; Figure 2
+  criterion: Session m1 and m2 of the three triceps channels for flexion torques, pre and post
+    separately. Reproduced when m2 exceeds m1 in at least 75% of channel-sessions and the median
+    of m1 / m2 is below 0.5 in both states; partially reproduced when this holds in one state;
+    not reproduced otherwise.
+- id: velocity-matched-magnitude
+  statement: In sessions with equivalent torque-induced velocities (130 to 200 deg/s), MPTP did
+    not change the magnitude of responses (Mann-Whitney, p = 0.19 for flexion and 0.46 for
+    extension, with 24 and 33 flexion and 22 and 31 extension responses).
+  source: Results, Torque-evoked neuronal responses, pre- vs. post-MPTP; Supplementary Figure 1
+  expected:
+  - quantity: flexion responses pre-MPTP
+    value: 24
+    tolerance: 2.4
+  - quantity: flexion responses post-MPTP
+    value: 33
+    tolerance: 3.3
+  - quantity: extension responses pre-MPTP
+    value: 22
+    tolerance: 2.2
+  - quantity: extension responses post-MPTP
+    value: 31
+    tolerance: 3.1
+  depends_on:
+  - torque-related-fractions
+  - kinematics-slower
+  criterion: Absence claim. Responses (monkey V) from sessions whose mean peak velocity for that
+    direction is 130 to 200 deg/s; maximum change from baseline compared pre against post with a
+    Mann-Whitney test per direction. Reproduced when neither direction has p < 0.05; not
+    reproduced when either does. The counts are reported against the expected values but do not
+    decide the outcome; the other magnitude measures are a variant.
+- id: session-correlations
+  statement: Across sessions, the mean PTN response latency did not correlate with the peak
+    velocity of the torque-induced movement (|rho| < 0.18) or with the m2 EMG response (|rho| <
+    0.26; Spearman, p > 0.05 with threshold 0.05/4).
+  source: Results, Analysis of neural-behavioral correlations
+  depends_on:
+  - torque-related-fractions
+  - kinematics-slower
+  - emg-m2-larger
+  criterion: Absence claim. Monkey V sessions with at least one torque-related PTN; the session's
+    mean PTN latency (earliest response per cell) against the session's mean peak velocity (both
+    directions) and its triceps longus channel 1 m2 for flexion torques. Spearman, threshold
+    p < 0.0125. Reproduced when neither correlation reaches it; not reproduced when either
+    does.
+- id: trial-correlations
+  statement: Trial by trial, PTN response latencies did not correlate with the peak velocity or
+    the m2 EMG response (Spearman |rho| < 0.34, p > 0.05).
+  source: Results, Analysis of neural-behavioral correlations
+  criterion: Needs a single-trial response latency, which the Methods do not define. Blocked
+    unless one is defined by the paper.
