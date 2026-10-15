@@ -50,7 +50,7 @@ outcomes:
     Poisson units at 2 Hz with 884 random events, so its false-positive rate is far from its alpha and
     the procedure differs from the paper's. The test compares integer counts in 100 ms bins with the baseline
     mean per 100 ms across hundreds of trials, which a signed-rank test finds different even without a
-    response. The dataset code's ZETA test (responsive_zeta_cuts.ipynb, all units) is calibrated (none
+    response. The dataset code's ZETA test (responsive_zeta_cuts.ipynb, all units) is not anticonservative (none
     of 400 units at random times at alpha 0.001, 1.0% at 0.01) and finds 35 of 293 PHC units (11.95%)
     at 0.001 and 67 (22.87%) at 0.01, below the paper's fraction; neither test as run here gives the paper's
     count.
@@ -100,7 +100,7 @@ outcomes:
     216), and 9.93 to 51.36% of units for each semantic label. At random times, as many as each label's
     onsets, it counts about as many (Summer 44.05% against 44.31% at the real onsets, Tom 50.26% against
     51.36%), so the counts are dominated by false positives. The code's onset rule (no minimum duration)
-    changes them little (1019 and 1191). The ZETA test of the dataset's code, calibrated at random times,
+    changes them little (1019 and 1191). The ZETA test of the dataset's code, conservative at random times,
     counts 11 for Summer and 13 for Tom (responsive_zeta_labels.ipynb), and 79 for camera cuts (paper
     1025).
   deviations:
@@ -510,3 +510,138 @@ verifications:
       held the block avoidable. Wrote a criterion before any fit on top-ranked units and ran it in top_ranked_units.ipynb
       for 23 to 2286 units with nested averaging. The top 500 beat all units (0.375 against 0.357) but
       229 units give the peak (0.394); outcome changed to partially_reproduced.
+- date: '2026-10-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebooks of the revision (the main notebook, top_ranked_units.ipynb, responsive_zeta_cuts.ipynb
+    and responsive_zeta_labels.ipynb) with their conclusions and summary, the helper module, the claims
+    file, the README and this record.
+  results:
+  - claim: dataset-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 5 gives 29 patients, 2286 units and 17 female patients, all exact. EC 493, PHC 293 and
+      PIC 68 fall outside their tolerances.
+    response: No change.
+  - claim: fig2b-phc-camera-cuts
+    agrees: true
+    outcome: blocked
+    reason: Cell 18 now shows the null rate at each label's own number of onsets, and the observed counts
+      sit at that rate. It found that the main notebook (cell 22), the ZETA notebooks, the README and the
+      record call the ZETA test calibrated, when at alpha 0.01 it flags 0.12 to 0.38% of units at random
+      times and zero hits in 400 or 800 units at 0.001 cannot show calibration; conservative or not anticonservative
+      is what the outputs support. ZETA still uses 100 resamplings, with 1000 compared only for PHC and
+      scene cuts.
+    response: The ZETA test is now called not anticonservative (cuts) or conservative (labels) in the notebooks,
+      the README and this record, and its counts are described as lower bounds. 1000 resamplings for every
+      unit and label were not run, as before, for time. Outcome unchanged.
+  - claim: tables1-camera-cuts-regions
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as one of the six responsive-unit claims; the observed counts sit at the null rate of
+      the test at random times.
+    response: No change.
+  - claim: fig2b-phc-scene-cuts
+    agrees: true
+    outcome: blocked
+    reason: The observed counts sit at the null rate; scene cuts 49.04% observed against 48.25% at random
+      times.
+    response: No change.
+  - claim: tables1-few-semantic-responses
+    agrees: true
+    outcome: blocked
+    reason: The observed counts sit at the null rate; Summer 44.31% observed against 44.05% at random times,
+      Tom 51.36% against 50.26%. It found that cell 21 names a notebook responsive_zeta.ipynb that does
+      not exist and says 11 labels, when the two ZETA notebooks cover 9 and do not run Tom Faces and Summer
+      Faces. It found the README false where it says ZETA counts far fewer units than the paper, for Outdoor
+      (8 against 4), Indoor (2 against 0) and McKenzie (1 against 0).
+    response: Cell 21 now names both ZETA notebooks and says they cover 9 labels, with Tom Faces and Summer
+      Faces not run as no responsive-unit claim uses them. The README now says ZETA counts fewer units
+      for camera cuts, scene cuts, Summer and Tom and a few more for Outdoor, Indoor and McKenzie. Outcome
+      unchanged.
+  - claim: tables1-no-indoor-response
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as one of the six responsive-unit claims; the observed counts sit at the null rate of
+      the test at random times.
+    response: No change.
+  - claim: results-cluster-regions
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as one of the six responsive-unit claims; the observed counts sit at the null rate of
+      the test at random times.
+    response: No change.
+  - claim: fig3b-single-neuron-threshold
+    agrees: true
+    outcome: reproduced
+    reason: Cells 41, 44, 49, 52 and 55 meet each criterion.
+    response: No change.
+  - claim: fig3c-logreg-characters-location
+    agrees: true
+    outcome: reproduced
+    reason: Cells 41, 44, 49, 52 and 55 meet each criterion.
+    response: No change.
+  - claim: fig3c-logreg-cuts-lower
+    agrees: true
+    outcome: reproduced
+    reason: Camera Cuts at 0.0961 clears its lower bound of 0.095 by only 0.001, and one Scene Cuts fold
+      is at chance (p = 0.89). The notes state both; the outcome is fragile but follows the criterion.
+    response: No change; the notes already state both.
+  - claim: fig3e-temporal-gap
+    agrees: true
+    outcome: reproduced
+    reason: Cells 41, 44, 49, 52 and 55 meet each criterion.
+    response: No change.
+  - claim: fig4-patients-below-pooled
+    agrees: true
+    outcome: reproduced
+    reason: Cells 41, 44, 49, 52 and 55 meet each criterion. Per-fold permutation p-values were added.
+    response: No change.
+  - claim: fig4-named-patients
+    agrees: true
+    outcome: reproduced
+    reason: It still assumes the subject ids are the paper's patient numbers, which is not resolved as the
+      Figure 4 image could not be retrieved, and patient 15 is at 0.197, just under 0.2.
+    response: No change. The mapping stays an assumption, stated in the notes and in the findings.
+  - claim: fig5-region-decoding
+    agrees: true
+    outcome: partially_reproduced
+    reason: Three of four orderings hold (cell 58).
+    response: No change.
+  - claim: fig5-faces-presence
+    agrees: true
+    outcome: partially_reproduced
+    reason: One of three conditions holds (cell 61). The criterion was written before these labels were
+      decoded.
+    response: No change.
+  - claim: fig6-responsive-subsets
+    agrees: true
+    outcome: blocked
+    reason: The subsets come from the uncalibrated test. The variant with only the non-responsive units
+      that spike gives drops of 0.062 for camera cuts and 0.060 for Summer (cell 64). It found that cell
+      65 says the drop with active units alone is no larger for camera cuts than for Summer, when it is
+      0.002 larger; about the same would match the numbers.
+    response: Cell 65 now says the drop is about the same for camera cuts and for Summer. Outcome unchanged.
+  - claim: fig7b-top500-overlap
+    agrees: true
+    outcome: partially_reproduced
+    reason: 95 common units against 78 plus or minus 7.8, which is about 83 times chance (top_ranked_units
+      cell 4).
+    response: No change.
+  - claim: fig7a-500-neurons
+    agrees: true
+    outcome: partially_reproduced
+    reason: The top 500 units give 0.375 against 0.357 for all units, but 229 units give a higher 0.394
+      (top_ranked_units cell 7). The 500-unit advantage (0.018) is smaller than either SEM (0.026, 0.029);
+      the criterion uses means, so the outcome stands.
+    response: No change.
+  - claim: fig3c-lstm-decoding
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig3d-temporal-shuffle
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
