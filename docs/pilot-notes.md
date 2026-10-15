@@ -969,3 +969,21 @@ code with a bug that was evidently not what was run; `measured` when no
 reading matches; the 10% tolerance for p-values like 1e-20; no category
 for data present but not the version the paper analysed; and a clock
 check that shows genotype differences before the criteria are written.
+
+## Protocol pilot-7 (2026-10-15): data in other archives
+
+001933 showed that a blocked claim can mean two different things. Eight of
+its claims rest on imaging, proteomics and blots that the paper deposited
+in the BioImage Archive, PRIDE and Zenodo; they were blocked with
+`data_missing`, the same reason as data that are public nowhere. pilot-7
+adds a fourth data kind, `elsewhere`, for a claim whose data the dandiset
+does not hold because the paper put them in another public archive. The
+claim names the archive and a pinned identifier under `where`, is tested on
+those data like any other claim, and is counted on its own, apart from the
+dandiset's claims and from `with_inputs` claims. It is never blocked with
+`data_missing`; if it cannot be tested here, the reason is the one that
+applies, such as `too_large` or `not_runnable`. `data_missing` now means
+public nowhere. The README table leaves these claims out, and each
+dandiset's page shows them in a line of their own.
+
+Attempts recorded under pilot-6 keep their claims as they are.
