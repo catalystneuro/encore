@@ -128,12 +128,17 @@ def load_fscv_table(f) -> dict[str, np.ndarray]:
 
 
 def reference_at(trace, t, t0, half=0.2):
-    """The trace minus its value at t0: linear interpolation, or the mean of non-NaN samples within
-    `half` s when the interpolation meets a NaN. NaN when neither exists."""
+    """The trace minus its value at t0: linear interpolation, or, when the interpolation meets a NaN,
+    linear interpolation between the nearest non-NaN samples before and after t0, if both lie within
+    `half` s. NaN otherwise."""
     v = np.interp(t0, t, trace)
     if np.isnan(v):
-        near = ~np.isnan(trace) & (np.abs(t - t0) <= half)
-        v = trace[near].mean() if near.any() else np.nan
+        ok = ~np.isnan(trace)
+        before, after = ok & (t <= t0), ok & (t >= t0)
+        if before.any() and after.any():
+            tb, ta = t[before].max(), t[after].min()
+            if t0 - tb <= half and ta - t0 <= half:
+                v = np.interp(t0, t[ok], trace[ok])
     return trace - v
 
 
@@ -290,3 +295,20 @@ def spike_triggered_raw(f, spike_times, start_s, duration_s, channel, half_ms=20
     idx = np.round((inside - start_s) * RAW_RATE).astype(int)
     snippets = np.array([x[i - w:i + w] for i in idx])
     return (np.arange(-w, w) / RAW_RATE * 1000), snippets
+
+
+def block_permutation_p(values, labels, blocks, statistic, n=2000, rng=None):
+    """Two-sided permutation p-value of `statistic(values[labels], values[~labels])`, with the labels
+    shuffled only within each block (consecutive trials), so that slow drift across the session is
+    kept in the null. NaN values are dropped first. Returns the observed statistic and p."""
+    ok = ~np.isnan(values)
+    values, labels, blocks = values[ok], labels[ok], blocks[ok]
+    obs = statistic(values[labels], values[~labels])
+    groups = [np.where(blocks == b)[0] for b in np.unique(blocks)]
+    null = np.empty(n)
+    for j in range(n):
+        perm = labels.copy()
+        for g in groups:
+            perm[g] = rng.permutation(labels[g])
+        null[j] = statistic(values[perm], values[~perm])
+    return obs, (np.sum(np.abs(null) >= abs(obs)) + 1) / (n + 1)

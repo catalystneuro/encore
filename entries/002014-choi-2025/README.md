@@ -7,10 +7,10 @@ electrode-yield results, and monkey J, are not in it.
 
 | Claim | Outcome |
 |---|---|
-| A single trial's dopamine fluctuates more after the value cue (Figure 8A) | Reproduced |
+| A single trial's dopamine fluctuates more after the value cue (Figure 8A) | Reproduced (weak test) |
 | Dopamine rises more for large than small reward trials (Figure 8B) | Reproduced |
 | Spikes at c5d aligned to the value cue (Figure 9A) | Reproduced, after correcting the spike clock |
-| Waveform and interspike intervals of the c5d unit (Figure 9B, C) | Reproduced |
+| Waveform and interspike intervals of the c5d unit (Figure 9B, C) | Reproduced by the criterion (weak evidence for a single unit) |
 | Beta power is suppressed more after large reward cues (Figure 9D) | Partially reproduced |
 | Recordings in two monkeys; electrode yields; cultures; drainage; bone growth (eight claims) | Blocked: data missing |
 
