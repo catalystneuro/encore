@@ -224,10 +224,17 @@ def test_a_claim_cannot_depend_on_one_that_is_not_there(repo):
     assert any("depends on 'fig9'" in e for e in errors(repo))
 
 
+def test_an_outcome_may_change_after_round_1(repo):
+    round1 = {"date": "2026-10-13", "kind": "agent", "by": "v",
+              "results": [{"claim": "fig1", "agrees": True, "outcome": "blocked"}]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump({**ATTEMPT, "verifications": [round1]}))
+    assert errors(repo) == []
+
+
 def test_an_outcome_cannot_change_after_the_last_verification(repo):
     verified = {"date": "2026-10-13", "kind": "agent", "by": "v",
                 "results": [{"claim": "fig1", "agrees": True, "outcome": "not_reproduced"}]}
-    attempt = {**ATTEMPT, "verifications": [verified]}
+    attempt = {**ATTEMPT, "verifications": [verified, verified]}
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
     assert any("last verification agreed with 'not_reproduced'" in e for e in errors(repo))
     attempt["outcomes"] = [{**ATTEMPT["outcomes"][0], "outcome": "not_reproduced"}]
@@ -256,14 +263,14 @@ def test_a_later_round_decides_the_claims_it_reviews(repo):
               "results": [{"claim": "fig1", "agrees": True, "outcome": "not_reproduced"}]}
     round3 = {"date": "2026-10-14", "kind": "agent", "by": "v",
               "results": [{"claim": "fig1", "agrees": True, "outcome": "reproduced"}]}
-    attempt = {**ATTEMPT, "verifications": [round2]}
+    attempt = {**ATTEMPT, "verifications": [round2, round2]}
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
     assert any("last verification agreed with 'not_reproduced'" in e for e in errors(repo))
     attempt["outcomes"] = [{**ATTEMPT["outcomes"][0], "outcome": "not_reproduced",
                             "proposed": {"outcome": "reproduced", "reason": "A later analysis."}}]
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
     assert errors(repo) == []
-    attempt = {**ATTEMPT, "verifications": [round2, round3]}
+    attempt = {**ATTEMPT, "verifications": [round2, round2, round3]}
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(attempt))
     assert errors(repo) == []
 

@@ -282,8 +282,11 @@ own words, and what you changed in reply under `response`. An outcome the verifi
 with is either changed, with the reason, or left with the disagreement
 recorded.
 
-An outcome may not differ from the one the latest verification round of that
-claim agreed with: `tools/entry.py check` fails if it does. The final
+After round 1 the revision may change outcomes, and round 2 reviews them.
+From round 2 on, an outcome may not differ from the one the latest
+verification round of that claim agreed with: `tools/entry.py check` fails
+if it does. A verifier's result is recorded as it gave it; never change
+`agrees` to get past this check. The final
 revision corrects text and adds the outputs the verifier asked for. If it
 finds that an outcome should change, it keeps the verified outcome and writes
 the change under `proposed` on that outcome, with the analysis behind it in
