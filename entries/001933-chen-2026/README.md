@@ -20,14 +20,15 @@ the claims of Figures 1 to 5, blocked in the first attempt, are now tested.
 | Anxa1 reduction at all four powers | Reproduced |
 | Anxa1 spontaneous transients smaller in G2019S | Reproduced |
 | 6 of 8 Anxa1 G2019S mice with smaller transients | Partially reproduced |
-| Calb1 spontaneous transients not reduced | Reproduced (p = 0.051, at the threshold) |
+| Calb1 spontaneous transients not reduced | Reproduced (p = 0.051, at the threshold; 0.040 to 0.079 as the window moves) |
 | Calb1 evoked release reduced at four powers | Reproduced |
 | Only 2 of 7 Calb1 G2019S mice reduced | Partially reproduced |
 | Cohen's d larger for Anxa1 (2.05) than Calb1 (0.76) | Not reproduced |
 
 On the data in other archives, counted apart: LRRK2 higher in Aldh1a1+ neurons, p-RAB3A and p-RAB3C raised in G2019S,
-RIM1/2 and RILPL1/2 binding, RIM1 lower in synaptosomes and no TH fibre loss are reproduced; fewer bassoon+
-synaptosomes and the bassoon changes in vulnerable axons are partially reproduced; and the phosphoproteomics claim
+RIM1 lower in synaptosomes and no TH fibre loss are reproduced; RIM1/2 and RILPL1/2 binding (three of four
+comparisons, as RILPL2 is found only in the p-RAB3A pulldowns), fewer bassoon+ synaptosomes and the bassoon changes
+in vulnerable axons are partially reproduced; and the phosphoproteomics claim
 (289 peptides, including RAB3 T86) is not reproduced, as in the deposited data the RAB3 T86 phosphopeptide is higher in
 the samples labelled MLi-2.
 
@@ -38,7 +39,7 @@ The Anxa1 recordings are those behind the paper's figures: its published traces 
 dF/F in the dandiset is not the one behind Supplementary Figure 8, so the Calb1 results here are of the dandiset's
 processing. The attempt record gives the reasons and the differences from the paper's method.
 
-- `reproduce_chen_2026.ipynb`: the analysis. It takes about nine minutes, most of it streaming the NWB files and
+- `reproduce_chen_2026.ipynb`: the analysis. It takes about ten minutes, most of it streaming the NWB files and
   the 168 synaptosome images.
 - `lrrk2.py`: loading the files, the evoked and spontaneous measures of the paper's Methods and code, the dF/F
   recomputed from the raw signal, and the paper's source data. Other notebooks on this dandiset can import it.

@@ -52,19 +52,23 @@ outcomes:
     traces, 0 of 384 integrals and the transient counts of 1 of 12 mice match. dF/F recomputed from the raw signal
     with the code's processing reproduces the stored Calb1 series (largest difference 1.47 % dF/F) but not the
     published traces (median differences 66 to 519 % dF/F; 22 to 88 at the best background fraction per mouse). The
-    published spontaneous values are 0.005 times the mean dF/F over each transient (ratio 0.004994 to 0.004999), so
-    part (4) as fixed, with integrals, matches for no mouse; with the transient mean it matches for 13 of 27 mice
-    within 1% (Anxa1 13 of 15; 4398 and 4007 each fail by one sorted value, 1.03% and 1.67%), and for none within the
-    1e-4 of part (3); integrals match for none at either tolerance. The four parts match for 1.0, 0.609, 0.609 and 0
-    of their records (0.481 with the transient mean), so the outcome is not reproduced under either measure. The
+    published spontaneous values are 0.005 times the trapezoid integral of each transient divided by its number of
+    samples (within-mouse spread of the ratio at most 2.2e-15; 15 of 15 Anxa1 mice and 0 of 12 Calb1 mice match at
+    1e-4), so part (4) as fixed, with integrals, matches for no mouse at either tolerance. The four parts match for
+    1.0, 0.609, 0.609 and 0 of their records, so the outcome is not reproduced. With the published measure in part
+    (4) they match for 1.0, 0.609, 0.609 and 0.556, which would be partially reproduced; the criterion fixed
+    integrals, so this is a variant. The mean dF/F over each transient comes close (13 of 15 Anxa1 mice within 1%,
+    none within 1e-4). The
     Calb1 mismatch is not one of epoch or power labels; searched over all 64 epochs and 8 powers of each mouse, no
     epoch is within 1e-6 of any of the 384 S8D traces (closest 15.7 to 150.8 % dF/F), and against the matched epochs
     the per-mouse median slopes are 0.21 to 0.75 and offsets -13.8 to 16.2 % dF/F. The Figure 6E integrals match the 0.5 mW epochs (120 of 120)
-    and none of the 4 mW ones. The published values reproduce the paper's statistics (Figure 6E p = 1.1e-20, Cohen's d
-    2.06 and 0.765), so the Calb1 differences come from the data, not from the paper's computation on them.
+    and none of the 4 mW ones. The published values reproduce the paper's statistics (Figure 6E p = 1.1e-20, Figure 6F
+    p = 2.75e-177, Cohen's d 2.06 and 0.765), so the Calb1 differences come from the data, not from the paper's
+    computation on them.
   deviations:
-  - The criterion fixed the integral of each spontaneous transient; the published values turned out to be the mean
-    dF/F over the transient. The mean is shown as a variant and does not change the outcome.
+  - The criterion fixed the integral of each spontaneous transient; the published values turned out to be 0.005 times
+    the integral divided by the duration of the transient. That measure, and the mean dF/F, are shown as variants and
+    do not change the outcome.
 - claim: fig6e-anxa1-evoked-reduced
   outcome: reproduced
   notebook: reproduce_chen_2026.ipynb
@@ -113,21 +117,23 @@ outcomes:
   - 1064
   - 798
   notes: The Methods' detection gives the paper's counts exactly (1064 and 798, 57 to 285 per mouse). Integrals GS 131.9
-    against WT 302.9 % dF/F x s, one-tailed p = 4.85e-72 (paper 2.75e-177). With the mean dF/F over each transient, the
-    measure of the published values, p = 2.23e-177. With mouse means, Welch p = 0.0318.
+    against WT 302.9 % dF/F x s, one-tailed p = 4.85e-72 (paper 2.75e-177). With the measure of the published values,
+    0.005 times the integral divided by the duration, p = 2.747e-177, the paper's value. With mouse means, Welch
+    p = 0.0318.
   deviations:
-  - The integral of each transient is used, as the Methods state; the paper's values are 0.005 times the mean dF/F over
-    the transient, shown as a variant.
+  - The integral of each transient is used, as the Methods state; the paper's values are 0.005 times the integral
+    divided by the duration of the transient, shown as a variant.
 - claim: fig6f-anxa1-spontaneous-per-mouse
   outcome: partially_reproduced
   notebook: reproduce_chen_2026.ipynb
   output: claim:fig6f-anxa1-spontaneous-per-mouse
   measured: 5
   notes: By the integral 5 of 8 GS mice are below the WT group under every reading; the exceptions are 3743
-    (p = 0.431), 4651 (mean 417, above the WT mean of 303) and 4652 (p = 0.0128). With the transient mean, the paper's
-    measure, the one-tailed Student test gives 6 of 8 with 3743 and 4651 as the exceptions and p-values close to the
-    legend's (4651 0.00819 against 0.008, 3742 5.38e-88 against 5.28e-88); the Welch tests give 7 there. The difference
-    from the paper comes from the measure; the paper's count follows the Student test of its legend.
+    (p = 0.431), 4651 (mean 417, above the WT mean of 303) and 4652 (p = 0.0128). With the paper's measure, 0.005 times the
+    integral divided by the duration, the one-tailed Student test gives 6 of 8 with 3743 and 4651 as the exceptions and
+    the legend's p-values (3742 5.28e-88, 4004 1.24e-95, 4652 6.21e-13, 4885 1.44e-49; 4651 0.00844 against 0.008);
+    the Welch tests give 7 there. The difference from the paper comes from the measure; the paper's count follows the
+    Student test of its legend.
   deviations:
   - The integral of each transient is used, as the Methods state; the paper's measure is shown as a variant.
 - claim: supp8c-calb1-spontaneous-not-reduced
@@ -138,8 +144,10 @@ outcomes:
   - 896
   - 635
   notes: The paper's test does not find the effect, one-tailed p = 0.0509, difference of means 21.1 % dF/F x s, Cohen's
-    d 0.085; the result sits at the threshold. With the transient mean GS are lower at p = 2.25e-09 (d 0.306), with the
-    code's exclusion window as written at p = 1.81e-05, and with mouse means Welch p = 0.402. The counts are within
+    d 0.085; the result sits at the threshold and is fragile. Moving either end of the exclusion window by up to 10
+    samples gives p from 0.0403 to 0.0792, below 0.05 in 59 of 121 windows. With the published measure (0.005 times
+    the integral divided by the duration) GS are lower at p = 2.45e-09 (d 0.305), with the transient mean at
+    p = 2.25e-09, with the code's exclusion window as written at p = 1.81e-05, and with mouse means Welch p = 0.402. The counts are within
     tolerance but differ from the paper's 970 and 682, and the Calb1 dF/F in the dandiset is not the one the paper
     analysed (source-data-link); the published values give p = 0.989.
   deviations:
@@ -207,9 +215,11 @@ outcomes:
     to 17.47). The RAB3 T86 peptide passes (p = 0.00892) but is lower with vehicle (difference -1.31), so neither part
     of the criterion holds. Centring each sample on its median, a step the criterion did not fix, gives 243 and 282
     peptides (282 within tolerance) and RAB3 T86 still higher with MLi-2 (difference -0.693, p = 0.0238). The paper's
-    volcano table equals the median-centred MLi-2 minus vehicle difference (slope -1.002; 178 of 4770 peptides share
-    the sign of vehicle minus MLi-2), gives 254 peptides at the legend's thresholds, and gives RAB3 T86 +0.688, which
-    the legend reads as higher with vehicle. As the samples are labelled, the RAB3 T86 phosphopeptide rises after
+    volcano table holds MLi-2 minus vehicle as the samples are labelled; on the 4340 peptides with all six values its
+    difference equals that difference plus a constant to within 1.6e-06, and against vehicle minus MLi-2 the residual
+    reaches 13. Its p-values are near those of a t-test on median-centred values but not equal (median gap in -log10 p
+    0.0088 Welch, 0.0161 Student). It gives 254 peptides at the legend's thresholds, and RAB3 T86 +0.688, which the
+    legend reads as higher with vehicle. As the samples are labelled, the RAB3 T86 phosphopeptide rises after
     MLi-2. RAB10 T73 does not change (0.15, p = 0.775), so the data cannot tell whether the labels or the figure's
     direction are swapped. Attempt -01 blocked this claim with data_missing under pilot-6; under pilot-7 it is tested
     on the PRIDE data.
@@ -237,20 +247,21 @@ outcomes:
   - The legend's two-way ANOVA has genotype and treatment factors on three groups; it is run as the equivalent one-way
     model with contrasts, which gives the legend's F values.
 - claim: fig3d-rim-binds-unphosphorylated
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_chen_2026.ipynb
   output: claim:fig3d-rim-binds-unphosphorylated
   notes: RIM1 (Q99NE5-7) and RIM2 are higher with RAB3A (log2 differences 2.42 and 2.17, paired p = 0.00361 and 0.0124)
     and RILPL1 higher with p-RAB3A (-6.02, p = 9.8e-05). RILPL2 is detected in all six p-RAB3A and in none of the RAB3A
-    pulldowns, so the paired test has no pair; with the Methods' imputation (seeded) it is higher with p-RAB3A (-7.92,
-    p = 1.21e-08), four of four. Without that step the count is three of four, which would be partially reproduced.
+    pulldowns, so the criterion's paired test has no pair and does not find it higher with p-RAB3A; three of four
+    comparisons hold. With the Methods' imputation (seeded), a variant, it is higher with p-RAB3A (-7.92,
+    p = 1.21e-08), and the limma table gives logFC -7.58, so the data point the way of the claim for RILPL2.
     The paper's p-values for RIM2 and RILPL1 (0.011, 0.002) are those of the paired test on intensities without the
     log (0.0109, 0.0022). The deposited limma table agrees in direction for every group. Its counts at the text's
     p-value < 0.05 and |log2FC| >= 1 are 121 and 32; the paper's 69 and 16 are the counts at adjusted p < 0.05.
     Attempt -01 blocked this claim with data_missing under pilot-6; under pilot-7 it is tested on the PRIDE data.
   deviations:
-  - The criterion cannot decide RILPL2, for which the paired test has no pair; it is decided by the Methods'
-    imputation followed by an unpaired t-test, and the result without it (three of four) is shown.
+  - RILPL2 has no pair for the criterion's paired test and is counted as not holding; the Methods' imputation followed
+    by an unpaired t-test, which gives four of four, is shown as a variant.
   - The tests use log2 intensities; the paper's p-values follow intensities without the log. Both are shown.
   - Replicates are paired in run order, as the paper does not give the pairing.
 - claim: fig4d-fewer-active-zones
@@ -262,8 +273,11 @@ outcomes:
     p = 0.0301, the paper's value); with one value per mouse p = 0.263 and 0.474. Part B does not. The Methods' FIJI
     procedure as re-implemented here gives, GS against WT, 48.8 against 52.4 % with bassoon (p = 0.459) and a bassoon
     area of 0.0682 against 0.0696 um2 (overlap, p = 0.805) or 0.132 against 0.141 um2 (bassoon particle, p = 0.206).
-    The re-implementation finds a median of 183 VAMP2 particles per image against the legend's about 1000, and
-    percentages more than twice the paper's, so part B may fail because of this attempt's segmentation. Attempt -01
+    The re-implementation keeps a median of 183 VAMP2 particles per image against the legend's about 1000; the
+    Default threshold alone gives a median of 1186 objects, of which the size limit keeps 193 and the circularity limit
+    183. Its percentages are more than twice the paper's, so part B may fail because of this attempt's segmentation,
+    and its null result is weak evidence against the claim. The OME metadata of 165 of 168 images confirm the channel
+    order. Attempt -01
     blocked this claim with data_missing under pilot-6; under pilot-7 it is tested on the Zenodo values and the
     BioImage Archive images.
   deviations:
@@ -350,9 +364,11 @@ findings:
   statement: Still present from attempt -01. plot_results.m selects power code 'h' (4 mW) for Figure 6E; the figure,
     its legend and the source data are at 0.5 mW.
 - kind: code_mismatch
-  statement: Still present from attempt -01. The Methods and transient_by_threshold.m give the integral of dF/F over
-    each spontaneous transient; the published values of Figure 6F and Supplementary Figure 8C are 0.005 times the mean
-    dF/F over each transient, and the code that computes them is not in the repository.
+  statement: Still present from attempt -01, and made more exact. The Methods and transient_by_threshold.m give the
+    integral of dF/F over each spontaneous transient; the published values of Figure 6F and Supplementary Figure 8C are
+    0.005 times the trapezoid integral divided by the number of samples in the transient (exact to 2.2e-15 in every
+    Anxa1 mouse; attempt -01 described them as about 0.005 times the mean dF/F), and the code that computes them is not
+    in the repository.
 - kind: paper_inconsistency
   statement: Still present from attempt -01. For the per-mouse comparisons of Figure 6 the Methods and the asterisks
     name Welch's test, the legends give one-tailed two-sample t-test p-values, and the code runs a two-tailed Student
@@ -364,7 +380,7 @@ findings:
   statement: New. In the synaptosome phosphoproteomics (PRIDE PXD065006, equal to Supplementary data 1) the RAB3 T86
     phosphopeptide is higher in the samples labelled MLi-2 than in those labelled vehicle (median-centred log2
     difference vehicle minus MLi-2 of -0.693, p = 0.0238), and the paper's volcano table holds MLi-2 minus vehicle
-    (slope -1.002 against vehicle minus MLi-2), while the Figure 2B legend reads a positive difference as higher with
+    (equal to it up to a constant within 1.6e-06 on 4340 peptides), while the Figure 2B legend reads a positive difference as higher with
     vehicle and the text reports less RAB3 phosphorylation with MLi-2. Either the sample labels of the deposit or the
     direction of Figure 2B is swapped.
 - kind: paper_inconsistency
@@ -402,3 +418,167 @@ findings:
   statement: New. The image analyses of Figures 1 and 5 ran in Imaris 10.1 with automatic or manually adjusted
     thresholds that are not deposited, and the Methods do not say how western blot bands were quantified, so these
     values cannot be recomputed from the images and blots that are deposited.
+- kind: metadata_error
+  statement: New. In BioImage Archive S-BIAD2074, the OME metadata of three images (BSN-area Export_ki4_BSN2, BSN3 and
+    BSN4) give an excitation of 488 nm for all three channels, where the other 165 images give 488, 561 and 640 nm and
+    the archive annotates bassoon, TH and VAMP2.
+verifications:
+- date: 2026-10-15
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed, the helper
+    modules and the claims file, with the paper. The verifier tested double_threshold, evoked_integrals, cohens_d,
+    twoway_anova and sidak_within on synthetic inputs, checked the column labels of the Figure 1D sheet and the OME
+    metadata of one synaptosome image. Report in transcripts/001933/verifier-1-report.md.
+  results:
+  - claim: source-data-link
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 24: mice match 100%, traces 60.9% and evoked integrals 60.9%, because Calb1 S8D/S8E is 0/384 for
+      both. Spontaneous integrals match 0% under either window, so part 4 is below 50% and the claim fails. Fig 6E
+      matches the 0.5 mW labels (120/120) and not the 4 mW labels (0/120). It found that the Calb1 dF/F is not the
+      trace behind Supplementary Fig. 8 (problem 1), that the scaled spontaneous values equal about 0.005 times the
+      mean dF/F of each transient, not the trapezoid integral the criterion prescribes (problem 2), and that the 6E
+      records are assigned power 0.5 by the loader, confirmed only indirectly (problem 9). It asked for an output that
+      fits candidate scalings at 1e-4, and for the deposited Calb1 processing parameters or a raw-to-dF/F
+      recomputation that matches even one S8D trace.'
+    response: Added part (4b), which fits the integral, the mean and the integral divided by the duration. The
+      published values are 0.005 times the trapezoid integral divided by the number of samples in the transient, exact
+      to 2.2e-15 in all 15 Anxa1 mice and matching none of the 12 Calb1 mice. The outcome is kept, as the criterion
+      fixed integrals; with the published measure part (4) is 0.556, which would be partially reproduced, and the notes
+      say so. The code_mismatch finding is corrected to this measure. The dandiset holds no Calb1 processing parameters
+      beyond those already used, and no recomputation from raw matched a published Calb1 trace (cells 26 and 27 as
+      before), so that point stays open. The 6E power is still assigned by the loader, as the sheet gives none.
+  - claim: fig6e-anxa1-evoked-reduced
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32: 64 vs 56 stimulations, GS 48.8 vs WT 128, one-tailed p = 1.16e-22 (paper 1.10e-20). The code
+      window gives 1.1e-20 exactly. Tests on one mean per mouse are much weaker (p = 4e-4) and mice 3742 and 4885
+      received 0.33 s trains; excluding them still gives p = 4e-17 (problems 8 and 11, not affecting a conclusion).'
+    response: No change; both points were already in the notes.
+  - claim: fig6e-anxa1-evoked-per-mouse
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 34: 7 of 8 significant under all four readings, and 3743 is the exception.'
+    response: No change.
+  - claim: supp7c-anxa1-evoked-all-powers
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 36: G2019S is lower at all 4 powers (p from 3.1e-15 to 1.2e-22). Code-window p-values equal the
+      paper''s at 0.1, 0.5 and 1 mW.'
+    response: No change.
+  - claim: fig6f-anxa1-spontaneous-reduced
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 40: counts are exactly 1064 and 798, and per-mouse counts run 57 to 285. One-tailed p = 4.85e-72
+      (paper 2.75e-177; the per-transient-mean variant gives 2.2e-177).'
+    response: Added the published measure (0.005 times the integral divided by the duration) as a variant; it gives
+      p = 2.747e-177, the paper's value. Outcome unchanged.
+  - claim: fig6f-anxa1-spontaneous-per-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 42: 5 of 8 under every reading, with 3743, 4651 and 4652 not significant. The per-transient-mean
+      variant under Student one-tailed gives the paper''s 6, with exactly 3743 and 4651 as the exceptions. The
+      mismatch of the measure makes this claim partial (problem 2).'
+    response: Added the published measure as a variant; under the one-tailed Student test it gives 6 of 8 with 3743
+      and 4651 as the exceptions and the legend's p-values. The outcome is kept, as the criterion fixed integrals, and
+      the notes say the difference comes from the measure.
+  - claim: supp8c-calb1-spontaneous-not-reduced
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 44: p = 0.0509, which is at least 0.05. Counts are 896 and 635, both within tolerance. The margin is
+      very thin and the Calb1 signal is not the paper''s (problems 1 and 6). Two variants reach p < 0.05 and would
+      reverse the outcome: the code''s window as written (1.8e-05) and the per-transient mean (2.2e-09). It asked how
+      sensitive the result is to changes of 1 to 10 samples in the exclusion window.'
+    response: Added p over the exclusion window with each end moved by up to 10 samples. p runs from 0.0403 to 0.0792
+      and is below 0.05 in 59 of 121 windows; the notes, conclusion, summary and README say the result is fragile.
+      Outcome kept, as the criterion fixes the Methods' window.
+  - claim: supp8e-calb1-evoked-reduced
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 46: 56 vs 40 stimulations, G2019S lower at all 4 powers (p from 6.3e-10 to 4.4e-07). With one mean
+      per mouse p = 0.04 to 0.09, not significant at 1 and 4 mW (problem 8, not affecting a conclusion).'
+    response: No change; the mouse-mean p-values were already in the notes.
+  - claim: supp8e-calb1-few-mice-reduced
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 48: at 0.5 mW the readings give 7, 6, 4 and 4. The best reading is 4, which the criterion counts as
+      partial. Two of 7 appears only at the variant powers 0.1 and 1 mW under the Student readings. The partial most
+      likely comes from the Calb1 trace, not from the biology (problem 1).'
+    response: No change; the notes already say the dandiset's Calb1 dF/F is not the paper's.
+  - claim: cohens-d-anxa1-larger
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 50: Anxa1 d = 2.21 (in tolerance) but Calb1 d = 1.40 (tolerance 0.684 to 0.836). The ratio is 1.58,
+      below 2. The paper''s own source values give 2.06 and 0.765, so the gap comes from the dandiset''s Calb1 trace.'
+    response: No change; the notes already say so.
+  - claim: fig1d-lrrk2-enriched-vulnerable
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 53: 16 sections, Aldh1a1+ higher, unpaired p = 4.65e-06 (paper 0.0008). It confirmed the column
+      labels in the sheet. The paper''s p matches a paired test over sections (0.00076) or an unpaired test on mouse
+      means (0.00082), not the legend''s test (problem 10, not affecting a conclusion).'
+    response: No change; this is already recorded as a paper_inconsistency finding.
+  - claim: fig2b-rab3-phosphorylation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 55: under both readings 1694 and 1810 peptides are altered (tolerance 260 to 318). RAB3 T86 is
+      altered but with difference -1.31, higher in the samples labelled MLi-2, the opposite of the direction required.
+      The deposited abundances are not normalized; median-centring gives 282, inside the tolerance. Either the sample
+      labels or the paper''s Difference are inverted relative to the legend (problem 3). It asked for an output that
+      recomputes the volcano table''s Difference and p with normalization, under both label assignments, and reports
+      exact agreement.'
+    response: Added that output. On the 4340 peptides with all six values, the table's difference equals MLi-2 minus
+      vehicle as labelled plus a constant to within 1.6e-06, with or without median-centring; against vehicle minus
+      MLi-2 the residual reaches 13. The p-values are close but not equal (median gap in -log10 p 0.0088 Welch, 0.0161
+      Student), so the paper's test or normalisation differs in a way that does not affect the difference. Which of
+      the labels or the figure is swapped still cannot be told from the data. Outcome unchanged.
+  - claim: fig2eg-prab3-increased
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 57: all 4 comparisons hold. F values and Sidak p-values equal the legend''s (8.593/0.0202,
+      11.33/0.0069, 14.76/0.0036, 7.398/0.0415). GS+MLi-2 does not differ from WT.'
+    response: No change.
+  - claim: fig3d-rim-binds-unphosphorylated
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Cell 59: RIM1, RIM2 and RILPL1 hold under the paired test. RILPL2 has no values in the RAB3A pulldowns, so
+      the paired test is undefined: 3 of 4. The closing decision replaces the criterion''s paired test with the
+      imputation variant for RILPL2, turning 3 of 4 into 4 of 4. RILPL2 is present in 6 of 6 p-RAB3A pulldowns and 0
+      of 6 RAB3A pulldowns, which supports the claim qualitatively, but the criterion''s test cannot score it
+      (problem 4).'
+    response: Changed from reproduced to partially reproduced. The criterion names the paired test and lists the
+      imputation as a variant, so the variant cannot decide the outcome; the tie-break rule of the protocol is for two
+      candidates tied, not for a test that has no pair. The notebook now decides on the paired test (3 of 4) and
+      shows the imputation as a variant; the notes, summary and README are updated.
+  - claim: fig4d-fewer-active-zones
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 61: (A) holds for both measures (4D p = 6.4e-05 lower; 4E p = 0.030 higher). (B) on the images finds
+      neither effect (p = 0.46, 0.81 and 0.21). The re-implementation finds a median of 183 VAMP2 particles per image
+      against the legend''s about 1000 and a WT bassoon+ percentage of 52% against 21%, so part B''s null result is
+      weak evidence; the channel order is taken from the archive annotation, not read per image (problem 5). It asked
+      for a per-image overlay or particle counts for a few images.'
+    response: Added the excitation wavelengths of every image from its OME metadata (165 of 168 confirm the order;
+      three give 488 nm for all channels, recorded as a new metadata_error finding), per-image counts before and after
+      the size and circularity limits (median 1186 objects above the threshold, 193 within the size limit, 183 kept),
+      a table for three images per genotype, and an overlay of one image. The conclusion and notes say part B is weak
+      evidence. Outcome unchanged.
+  - claim: fig4i-rim1-reduced
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 63: synaptosome RIM1 is lower in GS, p = 0.0245, the paper''s value exactly. S1 p = 0.90 and SNc
+      p = 0.94. n is 6 per genotype.'
+    response: No change.
+  - claim: fig5-bassoon-vulnerable-axons
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 65: with the duplicated WT section counted once, Aldh1a1+ density Sidak p = 0.058, so 5 of 6 parts
+      hold. As deposited, all 6 hold and the legend''s F and p values are reproduced exactly; the paper''s analysis
+      evidently counted the section twice (problem 7, not affecting a conclusion).'
+    response: No change.
+  - claim: fig5j-no-axon-loss
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 67: 12 vs 12 sections, p = 0.117, difference -0.071, d = -0.67.'
+    response: No change.

@@ -26,7 +26,8 @@ Where the parameters come from:
   concatenated and z-scored (sample standard deviation, as MATLAB's ``zscore``); a transient
   is a run of z > -1 that contains z > 1 (MATLAB ``imreconstruct``), runs touching either end
   are dropped as the code does, and the integral is the trapezoid integral of the unscaled
-  dF/F over the run.
+  dF/F over the run. The paper's published values are not this integral but 0.005 times
+  the integral divided by the run's duration; that measure is returned as well.
 """
 
 import hashlib
@@ -184,10 +185,13 @@ def double_threshold(z, low=-1.0, high=1.0):
 
 
 def spontaneous_trace(s, exclusion="methods"):
+    """The dF/F with the stimulation windows removed. ``exclusion`` is "methods", "code_as_written"
+    or a pair (samples before onset, samples after onset)."""
     x = s["dff"]
+    pre, post = {"methods": (100, 150), "code_as_written": (-100, 350)}.get(exclusion, exclusion)
     drop = np.zeros(len(x), bool)
     for on in s["onset"]:
-        a, b = (on - 100, on + 150) if exclusion == "methods" else (on + 100, on + 350)
+        a, b = on - pre, on + post
         drop[max(a, 0):min(b, len(x))] = True
     kept = x[~drop]
     return kept[~np.isnan(kept)]
@@ -195,14 +199,17 @@ def spontaneous_trace(s, exclusion="methods"):
 
 def spontaneous_transients(s, exclusion="methods"):
     """Integrals (% dF/F times seconds), peaks and means (% dF/F) of the spontaneous transients,
-    in time order."""
+    and the integral divided by the duration (% dF/F; the trapezoid integral in samples over the
+    number of samples), in time order. The published values of Figure 6F and Supplementary
+    Figure 8C are 0.005 times the last of these."""
     x = spontaneous_trace(s, exclusion)
     z = (x - x.mean()) / x.std(ddof=1)
     runs = double_threshold(z)
     auc = np.array([np.trapezoid(x[a:b + 1]) / FS for a, b in runs])
     peaks = np.array([x[a:b + 1].max() for a, b in runs])
     means = np.array([x[a:b + 1].mean() for a, b in runs])
-    return auc, peaks, means
+    per_duration = np.array([np.trapezoid(x[a:b + 1]) / (b - a + 1) for a, b in runs])
+    return auc, peaks, means, per_duration
 
 
 def raw_binned(s):

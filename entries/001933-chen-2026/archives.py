@@ -357,14 +357,16 @@ def bia_files(accession):
 
 
 def read_synaptosome_image(path, size=None):
-    """One synaptosome image of S-BIAD2074 (three channels), its md5 and pixel size in um."""
+    """One synaptosome image of S-BIAD2074 (three channels), its md5, pixel size in um and the
+    excitation wavelengths of its channels in order, from its OME metadata."""
     import tifffile
 
     content, md5 = fetch(BIA.format(n="074") + requests.utils.quote(path), size)
     with tifffile.TiffFile(io.BytesIO(content)) as tf:
         img = tf.asarray().astype(float)
         m = re.search(r'PhysicalSizeX="([0-9.]+)"', tf.ome_metadata or "")
-    return img, md5, float(m.group(1)) if m else np.nan
+        excitation = "/".join(re.findall(r'<Channel [^>]*ExcitationWavelength="([0-9.]+)"', tf.ome_metadata or ""))
+    return img, md5, float(m.group(1)) if m else np.nan, excitation
 
 
 def rolling_ball(channel, radius=33):
@@ -430,18 +432,23 @@ def particles(channel, pixel_um, area_um2, circularity=(0.30, 1.00)):
 def synaptosome_fraction(img, pixel_um, channels=(0, 1, 2)):
     """Figure 4D on one image: of the VAMP2 particles that are VAMP2+ and TH+, the percentage that
     are bassoon+. ``channels`` = (bassoon, TH, VAMP2)."""
+    from skimage.measure import label
+
     bsn, th, vamp = (rolling_ball(img[c]) for c in channels)
+    objects = {f"{n}_objects": int(label(ch >= ij_default_threshold(ch), connectivity=2).max())
+               for n, ch in (("bassoon", bsn), ("th", th), ("vamp2", vamp))}  # before the size and shape limits
+    objects["vamp2_size_only"] = int(len(np.unique(particles(vamp, pixel_um, (0.04, 0.40), (0.0, 1.0))))) - 1
     lab = particles(vamp, pixel_um, (0.04, 0.40))
     present = np.unique(lab[lab > 0])
     if len(present) == 0:
-        return {"vamp2_particles": 0, "th_vamp2": 0, "bassoon_th_vamp2": 0, "percent": np.nan}
+        return {**objects, "vamp2_particles": 0, "th_vamp2": 0, "bassoon_th_vamp2": 0, "percent": np.nan}
     mv = np.asarray(ndimage.mean(vamp, lab, present))
     mt = np.asarray(ndimage.mean(th, lab, present))
     mb = np.asarray(ndimage.mean(bsn, lab, present))
     v_pos = mv > 2 * vamp.mean()
     double = v_pos & (mt > 2 * th.mean())
     triple = double & (mb > 2 * bsn.mean())
-    return {"vamp2_particles": int(len(present)), "vamp2_pos": int(v_pos.sum()), "th_vamp2": int(double.sum()),
+    return {**objects, "vamp2_particles": int(len(present)), "vamp2_pos": int(v_pos.sum()), "th_vamp2": int(double.sum()),
             "bassoon_th_vamp2": int(triple.sum()),
             "percent": 100 * triple.sum() / double.sum() if double.sum() else np.nan}
 
@@ -476,11 +483,11 @@ def analyse_synaptosomes(files, workers=8):
 
     def one(item):
         path, size = item
-        img, md5, px = read_synaptosome_image(path, size)
+        img, md5, px, excitation = read_synaptosome_image(path, size)
         name = path.split("/")[-1]
         m = re.match(r"Export_(wt|ki)(\d+)_BSN(\d+)", name, re.I)
         row = {"path": path, "folder": path.split("/")[-2], "group": "WT" if m.group(1).lower() == "wt" else "GS",
-               "mouse": int(m.group(2)), "image": int(m.group(3)), "md5": md5, "pixel_um": px,
+               "mouse": int(m.group(2)), "image": int(m.group(3)), "md5": md5, "pixel_um": px, "excitation_nm": excitation,
                "shape": "x".join(map(str, img.shape))}
         if row["folder"] == "BSN":
             row.update(synaptosome_fraction(img, px))
