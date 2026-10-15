@@ -27,7 +27,7 @@ Where the parameters come from:
   is a run of z > -1 that contains z > 1 (MATLAB ``imreconstruct``), runs touching either end
   are dropped as the code does, and the integral is the trapezoid integral of the unscaled
   dF/F over the run. The paper's published values are not this integral but 0.005 times
-  the integral divided by the run's duration; that measure is returned as well.
+  the integral divided by the run's number of samples; that measure is returned as well.
 """
 
 import hashlib
@@ -199,8 +199,8 @@ def spontaneous_trace(s, exclusion="methods"):
 
 def spontaneous_transients(s, exclusion="methods"):
     """Integrals (% dF/F times seconds), peaks and means (% dF/F) of the spontaneous transients,
-    and the integral divided by the duration (% dF/F; the trapezoid integral in samples over the
-    number of samples), in time order. The published values of Figure 6F and Supplementary
+    and the integral divided by the number of samples (% dF/F; the trapezoid integral in samples over
+    the number of samples b - a + 1), in time order. The published values of Figure 6F and Supplementary
     Figure 8C are 0.005 times the last of these."""
     x = spontaneous_trace(s, exclusion)
     z = (x - x.mean()) / x.std(ddof=1)
