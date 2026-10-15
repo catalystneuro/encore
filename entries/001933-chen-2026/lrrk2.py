@@ -144,24 +144,20 @@ def load_all(workers=6):
 
 def evoked_integrals(s, window="methods", trace="dff"):
     """One integral per epoch (in table order), in % dF/F times seconds; NaN where the
-    window leaves the recording."""
+    window leaves the recording. Only the samples the window and its baseline use must be
+    recorded."""
+    if window not in ("methods", "code", "code_as_written", "fixed"):
+        raise ValueError(window)
     x = s[trace]
     out = np.full(len(s["onset"]), np.nan)
     for j, (on, off) in enumerate(zip(s["onset"], s["offset"])):
         start = on - 100 if window != "code_as_written" else on + 100
-        if start < 0 or start + 250 > len(x):
+        a, b = {"code": (start + 90, start + 200), "code_as_written": (start + 90, start + 200),
+                "methods": (on, off + 1), "fixed": (on, on + 51)}[window]
+        if start < 0 or b > len(x):
             continue
-        chunk = x[start:start + 250]
-        base = chunk[:90].mean()
-        if window in ("code", "code_as_written"):
-            seg = chunk[90:200] - base
-        elif window == "methods":
-            seg = x[on:off + 1] - base
-        elif window == "fixed":
-            seg = x[on:on + 51] - base
-        else:
-            raise ValueError(window)
-        out[j] = np.trapezoid(seg) / FS
+        base = x[start:start + 90].mean()
+        out[j] = np.trapezoid(x[a:b] - base) / FS
     return out
 
 
