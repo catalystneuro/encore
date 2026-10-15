@@ -36,6 +36,10 @@ Where the parameters come from:
   amplitude the largest displacement over 0 to 300 ms from the mean angle of the 50 ms before
   onset. An EMG response lasts while the session-average trace, less its baseline mean, exceeds
   2 SD of the baseline (`EMG_SD`), from its first crossing between 10 and 150 ms.
+- Chosen here for the checks and variants added after the first verification: the torque
+  command excursion threshold (`COMMAND_EXCURSION`, under half the smallest monkey V pulse), the
+  window for measuring active movements (`ACTIVE_WINDOW_MS`), and the causal velocity average for
+  the movement latency variant (`CAUSAL_MS`).
 """
 
 from __future__ import annotations
@@ -75,6 +79,9 @@ EMG_CHANNELS = ("EMGTricepsLongus1", "EMGTricepsLongus2", "EMGTricepsLateralis",
                 "EMGBrachioradialis", "EMGDeltoidPosterior", "EMGTrapezius")
 SIGN = {"flexion": 1.0, "extension": -1.0}   # flexion torque raises the stored angle (checked)
 HOLD_WINDOW_S = (1.0, 2.5)      # after the center target appears; holds the torque onsets
+ACTIVE_WINDOW_MS = (-200, 800)  # around derived_movement_onset_time, for the angle scale check
+COMMAND_EXCURSION = 20.0        # torque command units from rest; the smallest monkey V pulse is ~46
+CAUSAL_MS = 10                  # causal moving average of the unfiltered velocity (latency variant)
 
 
 def asset_urls() -> list[tuple[str, str]]:
@@ -126,6 +133,10 @@ def load_session(path: str, url: str) -> dict:
             "onset": tr["torque_perturbation_onset_time"][:],
             "movement": [_text(v) for v in tr["movement_type"][:]],
             "end_position": tr["derived_end_position"][:],
+            "target_amplitude": tr["target_amplitude_degrees"][:],
+            "derived_onset": tr["derived_movement_onset_time"][:],
+            "derived_amplitude": tr["derived_movement_amplitude"][:],
+            "derived_peak_velocity": tr["derived_peak_velocity"][:],
         })
         un = f["units"]
         data, index = un["spike_times"][:], un["spike_times_index"][:]
@@ -187,6 +198,13 @@ def load_session(path: str, url: str) -> dict:
     trials["active_angle_change"] = move
     step = max(1, int(round(s["analog_dt_ms"])))
     s["analog_step_ms"] = step
+    # active movements measured as the torque-induced ones are, around the file's own movement onset
+    act = [active_movement(_window(t_al, raw["angle"], t0, ACTIVE_WINDOW_MS, step), step)
+           if np.isfinite(t0) else (np.nan, np.nan) for t0 in trials.derived_onset.values]
+    trials["active_peak_velocity"] = [a for a, _ in act]
+    trials["active_amplitude"] = [b for _, b in act]
+    if not s["torque_all_nan"]:
+        s["command_excursions"] = command_excursions(t_al, raw["torque_cmd"], trials)
     w = {}
     for name in ["angle", "torque_cmd", *s["emg_channels"]]:
         w[name] = np.array([_window(t_al, raw[name], t0, ANALOG_WINDOW_MS, step) for t0 in pert.onset.values])
@@ -195,6 +213,29 @@ def load_session(path: str, url: str) -> dict:
                                        for t0 in pert.onset.values])
     s["windows"] = w
     return s
+
+
+def command_excursions(t: np.ndarray, cmd: np.ndarray, trials: pd.DataFrame) -> pd.DataFrame:
+    """Every excursion of the torque command more than COMMAND_EXCURSION units from the file's
+    median, on the realigned clock: its trial, start relative to the center and lateral targets'
+    appearance, duration, signed peak, and whether it starts in the hold window (HOLD_WINDOW_S
+    after the center target, before the lateral target)."""
+    rest = np.nanmedian(cmd)
+    out = np.abs(cmd - rest) > COMMAND_EXCURSION
+    edges = np.diff(np.r_[False, out, False].astype(int))
+    starts, stops = np.flatnonzero(edges == 1), np.flatnonzero(edges == -1)
+    k = np.searchsorted(trials.start.values, t[starts], side="right") - 1
+    ok = k >= 0
+    starts, stops, k = starts[ok], stops[ok], k[ok]
+    rel_center = t[starts] - trials.center_on.values[k]
+    rel_lateral = t[starts] - trials.lateral_on.values[k]
+    peak = [float((cmd[a:b] - rest)[np.nanargmax(np.abs(cmd[a:b] - rest))]) for a, b in zip(starts, stops)]
+    return pd.DataFrame({
+        "trial": k, "from_center_s": rel_center, "from_lateral_s": rel_lateral,
+        "duration_ms": (t[np.minimum(stops, len(t) - 1)] - t[starts]) * 1000, "peak": peak,
+        "in_hold": (rel_center >= HOLD_WINDOW_S[0]) & (rel_center < HOLD_WINDOW_S[1])
+                   & ~(rel_lateral >= 0),
+        "torque_label": trials.torque.values[k]})
 
 
 def _load(pu):
@@ -235,14 +276,16 @@ def _mask(lo, hi, shift=0):
     return (GRID >= lo + shift) & (GRID < hi + shift)
 
 
-def detect(trial_sdfs: np.ndarray, shift_ms: int = 0, method: str = "mean") -> dict:
+def detect(trial_sdfs: np.ndarray, shift_ms: int = 0, method: str = "mean", tcrit: float | None = None) -> dict:
     """Response of one cell to one torque direction.
 
     method "mean" (main): the trial-averaged SDF against mean +/- t_crit * SD of its own values
-    over the 500 ms baseline. method "trials" (variant): one-sample two-tailed t-test of the
-    single-trial SDFs against the baseline mean, at each ms. shift_ms moves the onset (for the
-    false-positive check). Returns the baseline, the signed largest change over 0 to 200 ms, and
-    for a response its sign, onset, offset, magnitudes and FWHM.
+    over the 500 ms baseline; tcrit replaces the critical value (for the calibrated variant).
+    method "trials" (variant): one-sample two-tailed t-test of the single-trial SDFs against the
+    baseline mean, at each ms. shift_ms moves the onset (for the false-positive check). Returns
+    the baseline, the baseline SD of the mean SDF, the signed largest change over 0 to 200 ms and
+    its size in baseline SDs, the first threshold crossing in 0 to 200 ms, and for a response its
+    sign, onset, offset, magnitudes and FWHM.
     """
     m = trial_sdfs.mean(0)
     b = m[_mask(*BASELINE_MS, shift_ms)]
@@ -250,7 +293,8 @@ def detect(trial_sdfs: np.ndarray, shift_ms: int = 0, method: str = "mean") -> d
     post = GRID >= shift_ms
     mp = m[post]
     if method == "mean":
-        tcrit = stats.t.ppf(1 - P_THRESHOLD / 2, len(b) - 1)
+        if tcrit is None:
+            tcrit = stats.t.ppf(1 - P_THRESHOLD / 2, len(b) - 1)
         thr = tcrit * b.std(ddof=1)
         up, down = mp > mu + thr, mp < mu - thr
         if thr == 0:          # no spikes in the baseline: any spike is not a test
@@ -261,9 +305,13 @@ def detect(trial_sdfs: np.ndarray, shift_ms: int = 0, method: str = "mean") -> d
         sig = np.where(np.isfinite(p), p, 1.0) < P_THRESHOLD
         up, down = sig & (mp > mu), sig & (mp < mu)
     d = mp[:DETECT_MS[1]] - mu
-    out = {"baseline": mu, "n_trials": len(trial_sdfs), "responds": False,
+    sd = float(b.std(ddof=1))
+    crossing = up[:DETECT_MS[1]] | down[:DETECT_MS[1]]
+    out = {"baseline": mu, "baseline_sd": sd, "n_trials": len(trial_sdfs), "responds": False,
            "max_change_signed": float(d[np.argmax(np.abs(d))]),
-           "any_crossing_0_200": bool((up[:DETECT_MS[1]] | down[:DETECT_MS[1]]).any())}
+           "max_abs_z": float(np.abs(d).max() / sd) if sd > 0 else np.nan,
+           "any_crossing_0_200": bool(crossing.any()),
+           "first_crossing": int(np.argmax(crossing)) if crossing.any() else np.nan}
     start = None
     for t in range(ONSET_RANGE_MS[0], ONSET_RANGE_MS[1] + 1):
         if up[t] and not up[t - 1]:
@@ -317,14 +365,23 @@ def dsi(flex: dict, ext: dict) -> tuple[float, str]:
 
 # ---------------------------------------------------------------- kinematics and EMG
 
-def kinematics(angle: np.ndarray, direction: str, step_ms: int) -> dict:
-    """Torque-evoked displacement of one trial from its angle window (ANALOG_WINDOW_MS)."""
-    if np.isnan(angle).any():
-        return {"valid": False}
+def _lowpass(angle: np.ndarray, step_ms: int) -> np.ndarray:
     fs = 1000 / step_ms
     taps = 101 if step_ms == 1 else 21
     fir = signal.firwin(taps, LOWPASS_HZ, fs=fs, window="hamming")
-    smooth = signal.filtfilt(fir, [1.0], angle)
+    return signal.filtfilt(fir, [1.0], angle)
+
+
+def kinematics(angle: np.ndarray, direction: str, step_ms: int) -> dict:
+    """Torque-evoked displacement of one trial from its angle window (ANALOG_WINDOW_MS).
+
+    latency_causal_ms is a variant onset: the unfiltered velocity averaged over the preceding
+    CAUSAL_MS (causal, so it cannot move the onset earlier; it delays it by up to CAUSAL_MS / 2).
+    """
+    if np.isnan(angle).any():
+        return {"valid": False}
+    fs = 1000 / step_ms
+    smooth = _lowpass(angle, step_ms)
     ax = np.arange(ANALOG_WINDOW_MS[0], ANALOG_WINDOW_MS[1] + 1, step_ms)
     s = SIGN[direction]
     vel = np.gradient(smooth) * fs * s
@@ -332,11 +389,29 @@ def kinematics(angle: np.ndarray, direction: str, step_ms: int) -> dict:
     after = ax >= 0
     v, a, t = vel[after], rel[after], ax[after]
     cross = np.flatnonzero((v > VEL_THRESHOLD) & (t <= 150))
+    n = max(1, CAUSAL_MS // step_ms)
+    raw_v = np.r_[0.0, np.diff(angle)] * fs * s
+    causal = np.convolve(raw_v, np.ones(n) / n)[:len(raw_v)]
+    cross_c = np.flatnonzero((causal[after] > VEL_THRESHOLD) & (t <= 150))
     return {"valid": True,
             "moving_before": bool(np.abs(vel[(ax >= -50) & (ax < 0)]).max() > VEL_THRESHOLD),
             "latency_ms": float(t[cross[0]]) if len(cross) else np.nan,
+            "latency_causal_ms": float(t[cross_c[0]]) if len(cross_c) else np.nan,
             "peak_velocity": float(v[t <= PEAK_VEL_MS].max()),
             "amplitude": float(a[t <= AMPLITUDE_MS].max())}
+
+
+def active_movement(angle: np.ndarray, step_ms: int) -> tuple[float, float]:
+    """Peak absolute velocity (deg/s) and largest displacement from the 100 ms before onset (deg)
+    of an active movement, from its angle window (ACTIVE_WINDOW_MS), filtered as in kinematics."""
+    if np.isnan(angle).any():
+        return np.nan, np.nan
+    smooth = _lowpass(angle, step_ms)
+    ax = np.arange(ACTIVE_WINDOW_MS[0], ACTIVE_WINDOW_MS[1] + 1, step_ms)
+    vel = np.gradient(smooth) * 1000 / step_ms
+    disp = smooth - smooth[(ax >= -100) & (ax < 0)].mean()
+    after = ax >= 0
+    return float(np.abs(vel[after]).max()), float(np.abs(disp[after]).max())
 
 
 def emg_response(traces: np.ndarray, step_ms: int, sd: float = EMG_SD) -> dict:
