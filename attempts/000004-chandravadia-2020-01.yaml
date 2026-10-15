@@ -20,6 +20,8 @@ inputs:
 - what: The per-site percentages of Figure 5f as written into plotFigure5.ipynb, used as expected
     values of fig5f-site-proportions; and the analysis choices of the paper's code (windows, trial
     selection, bootstrap, ROC measures, confidence split), followed where the Methods leave them open.
+    The code's session list (defineNOsessions_release.ini) and demo script (python/export/demo/export.py)
+    are fetched from the commit by the notebook, which prints the lines it uses.
   source: https://github.com/rutishauserlab/recogmem-release-NWB at commit
     1d95162d2672e71dd234a31e4b8d70017a289ee3
 - what: Table 1 of Faraut et al. 2018 (subject, session ids, variants, age, sex, diagnosis of the
@@ -60,12 +62,14 @@ outcomes:
   notes: Age and sex match for 56 of 59 subjects. C24 is 57 in the files and 47 in the table, H33 is
     30 and 29, and H48 is female aged 32 in the files and male aged 54 in the table. The files have
     26 female and 33 male subjects (table 25 and 34), within tolerance. Each subject has one age and
-    one sex across its files. The files code the diagnosis more coarsely for most subjects. It differs
-    in substance for C61 (Left Lateral Frontal in the files, Left Mesial Temporal in the table); for
-    C56 and H51 the files leave out part of the table's diagnosis (orbitofrontal, temporal), and for
-    T90 they add Bilateral. The files agree
-    with the session list of the paper's code, defineNOsessions_release.ini (read, not shown in the
-    notebook).
+    one sex across its files. The diagnosis text differs for 19 of 59 subjects. For 8 the files give
+    a broader category; for 6 (H10, H16, H17, H19, C58, T89) they give Lateral Frontal, which adds
+    Lateral to the table's Frontal except for H17 (Left Inferior Frontal in the table). Five differ
+    in substance, C61 (Left Lateral Frontal in the files, Left Mesial Temporal in the table), C34
+    (Bilateral Independent Temporal against Bilateral Mesial Temporal), C56 and H51, where the files
+    leave out part of the table's diagnosis (orbitofrontal, temporal), and T90, where they add
+    Bilateral. All 87 files have the age and sex of their section in the code's session list,
+    defineNOsessions_release.ini, as printed in the notebook.
 - claim: task-structure
   outcome: partially_reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -176,12 +180,18 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_chandravadia_2020.ipynb
   output: claim:fig5b-roc-asymmetric
-  notes: z-ROC slope mean 0.726, median 0.775, SD 0.379 over 87 sessions; below 1 in 70. One-sample
-    t-test against 1, t = -6.75, p = 1.631e-09; Wilcoxon W = 488, p = 1.586e-09. The pooled ROC
-    has slope 0.816. Per-session AUC and slopes are printed.
+  measured: 0.792
+  notes: Six sessions (59, 60, 93, 99, 119, 2008) have all five interior z(FA) or z(H) points equal,
+    so their fitted slope is not an estimate (negative in four, 0 in one); they are left out. Over
+    the other 81 sessions the z-ROC slope has mean 0.792, median 0.795, SD 0.289, and is below 1 in
+    64. One-sample t-test against 1, t = -6.49, p = 6.6e-09; Wilcoxon W = 487, p = 3.3e-08. With all
+    87 sessions, mean 0.726, below 1 in 70, t-test p = 1.631e-09, Wilcoxon p = 1.586e-09. The pooled
+    ROC has slope 0.816. Per-session AUC and slopes are printed.
   deviations:
   - The paper names no measure or test for asymmetry; the z-ROC slope of the paper's code and a
     t-test against 1 were fixed in the criterion.
+  - Sessions whose interior z-ROC points do not allow a fit are left out of the mean and the tests,
+    after the second verification round; all 87 sessions are a variant.
 - claim: fig5d-confidence-accuracy
   outcome: reproduced
   notebook: reproduce_chandravadia_2020.ipynb
@@ -219,7 +229,9 @@ outcomes:
     p = 0.18) and only just above 5% (p = 0.044). A second bootstrap seed gives 118 (6.3%), also
     outside tolerance; 22 units are selected under one seed only. Correct trials only in the
     Methods' window give 143 and 140 under the two seeds, and the code's choices (correct trials
-    only, 200 to 1700 ms) 147 and 149, all within tolerance (147 against 5%, p = 7.1e-08). All
+    only, 200 to 1700 ms) 147 and 149, all within tolerance (147 against 5%, p = 7.1e-08). With
+    labels shuffled among the correct trials in the code's window the null is 5.58% (95% CI 5.26%
+    to 5.92%), and 147 exceeds it (104.1 expected, one-sided binomial p = 2.5e-05). All
     trials in the code's window give 108 and 109. The paper's number therefore follows its code's
     restriction to correct trials, which the Methods do not mention, and the outcome comes from that
     disagreement, not from the data. It is judged on the Methods' procedure, as the protocol
@@ -274,7 +286,8 @@ outcomes:
   notebook: reproduce_chandravadia_2020.ipynb
   output: claim:fig4-example-vs-neuron
   notes: Session 132 has one unit on channel 177, at electrode row 4 in the right amygdala, which
-    matches the label 132-177-4-RA (the code's cell number is the electrode row). ANOVA across
+    matches the label 132-177-4-RA. It is the file's unit at 0-based index 4 of 8, so the label's
+    cell number equals both its electrode row and its 0-based unit index. ANOVA across
     categories p = 1.2e-22 (Methods' window) and 7.9e-19 (code's window); mean rate 6.75 Hz for
     animals against 0.25 to 0.85 Hz for the other four categories.
 - claim: previous-release-link
@@ -282,7 +295,8 @@ outcomes:
   notebook: reproduce_chandravadia_2020.ipynb
   output: claim:previous-release-link
   notes: 64 of the 65 sessions of Table 1 of Faraut et al. 2018 (98.5%) are in the dandiset by
-    session id, all under the same subject and task variant. Session 98 of subject H48 is not.
+    session id, all under the same subject and task variant. Session 98 of subject H48 is not; its
+    section in the code's session list is commented out.
     Age and sex agree for 39 of the 42 matched subjects; C24, H33 and H48 differ, the same three
     that differ from Online-only Table 1, whose values the 2018 table shares.
   deviations:
@@ -314,13 +328,15 @@ outcomes:
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: The neuron's session id, 144, is not among the dandiset's 87 sessions, nor in Online-only
-    Table 1 or in the session list of the paper's code. The paper's code (python/export/demo/export.py,
-    read, not run) sets NOID 144 under the comment session 'TWH103_111918', and its session list
-    gives subject T103 the one session 2009. In session 2009 two units are on channel 140 in the
-    right hippocampus (unit indices 1 and 2, both at electrode row 1, clusters 352 and 414); unit 2
-    is visually selective (ANOVA p = 1.3e-09) and fires most to phones. Its unit index and electrode
-    row do not match the label's cell number 3, and neither the paper nor the dandiset maps session
-    144 to 2009, so the neuron cannot be identified. The candidates are printed in the notebook.
+    Table 1 or in the session list of the paper's code. The paper's demo script
+    (python/export/demo/export.py, printed, not run) sets NOID 144 under the comment session
+    'TWH103_111918', and the code's session list gives subject T103 one section, session 2009. In
+    session 2009 two units are on channel 140 in the right hippocampus (unit indices 1 and 2, both at
+    electrode row 1, clusters 352 and 414); unit 2 is visually selective (ANOVA p = 1.3e-09) and
+    fires most to phones. The Figure 4 neuron's cell number 4 is its electrode row and its 0-based
+    unit index (its 1-based index is 5); under that convention the candidate is cell 2 or 1, not 3.
+    With neither the cell number nor a recorded mapping of 144 to 2009, the neuron cannot be
+    identified. The candidates and the cell-number test are printed in the notebook.
 findings:
 - kind: metadata_error
   statement: The new_old_labels_recog column is described in every file, and in the paper, as 0 for
@@ -375,7 +391,8 @@ findings:
     subject T103, whose one session in the dandiset is 2009, but nothing maps 144 to 2009.
 - kind: data_missing
   statement: Session 98 of subject H48, listed in the earlier release (Faraut et al. 2018, Table
-    1), is not in the dandiset or in Online-only Table 1.
+    1), is not in the dandiset or in Online-only Table 1; its section in the code's session list is
+    commented out.
 - kind: other
   statement: The 23 sessions that are new relative to the earlier release hold 325 units, where the
     paper says 288 neurons were added; 288 is the dandiset's 1864 units minus the earlier release's
@@ -582,3 +599,194 @@ verifications:
       selective and prefers phones, and the paper's code names NOID 144 as a T103 recording, but its
       index does not match cell number 3 and nothing maps 144 to 2009. The finding is now
       identifier_missing.
+- date: 2026-10-15
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the revised run, with the conclusions and the summary, the
+    helper module, the claims file and this record. The verifier downloaded the paper and Faraut et al.
+    2018, checked the helper's copy of Faraut 2018 Table 1 against the PDF (42 subjects, 65 session
+    ids, no differences), and ran zroc_slope on a synthetic session answering only 1 and 6. Report in
+    transcripts/000004/verifier-2-report.md. Its round-1 problem 4 (the shared clock shown for only
+    38 of 87 sessions) is tied to no claim; it records it as acknowledged and unchanged, and cell 10
+    states it.
+  results:
+  - claim: counts-neurons-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. The extra unit (1864 against 1863) cannot be identified
+      from the paper, and the notebook now says so.
+    response: No change.
+  - claim: counts-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: table1-demographics
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. Cell 19 and the notes say the diagnosis is coded more
+      coarsely in the files for most subjects, but cell 18 shows the text differs for 19 of 59
+      subjects, not most, and for H10, H16, H17, H19, C58 and T89 the files add "Lateral", which
+      makes them more specific than the table. The notes' statement that the files agree with the
+      session list of the paper's code (read, not shown in the notebook) cannot be checked, as no
+      output shows the session list.
+    response: Cell 18 now prints the number of differing diagnoses, and the conclusion and notes
+      describe the 19 by kind (8 broader, 6 Lateral Frontal, 5 in substance). The notebook fetches
+      defineNOsessions_release.ini from the pinned commit and prints that all 87 files have the
+      age and sex of their section, with the rows of C24, H33 and H48.
+  - claim: task-structure
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; round-1 problem 5 is resolved.
+    response: No change.
+  - claim: new-old-label-coding
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ttl-codes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. Cell 28 says "78 of 87 files meet every condition; nine
+      hold codes ..., seven files ... have no start code 55, and session 2001 has three end codes
+      66", which reads as if the files without a 55 fail; cell 27 shows that 6 of those 7 pass. The
+      attempt record states this correctly.
+    response: Cell 28 now says the nine failing files are those with unlisted codes, that the start
+      and end markers are not part of the condition, and that six of the seven files without a 55
+      meet every condition.
+  - claim: experiment-ids
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: session-dates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: units-table
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: electrodes-table
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; imp is shown to be float64 NaN throughout, which resolves
+      round-1 problem 8.
+    response: No change.
+  - claim: isi-criterion
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig5a-mtl-locations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig5c-auc-all
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; round-1 problem 9 is resolved.
+    response: No change.
+  - claim: fig5c-auc-sites
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig5b-roc-asymmetric
+    agrees: true
+    outcome: reproduced
+    reason: Agrees it is reproduced, but some slopes are not real values. Sessions 60, 99, 119 and
+      2008 have negative slopes and session 59 has -0.000; a properly fitted z-ROC slope cannot be
+      negative, and a negative slope only appears when all five z(FA) points are equal and polyfit
+      has no unique fit. The helper gives -0.2074 for a synthetic session answering only 1 and 6,
+      and session 99 prints -0.207. Recomputed from the printed table without 60, 99, 119 and 2008,
+      83 sessions, mean 0.778, 66 below 1, t-test p = 2.1e-9, Wilcoxon p = 1.3e-8. The outcome
+      holds, but the stated mean, count and p-values include these values. It asks to detect
+      sessions whose interior z(FA) or z(H) points are all equal and exclude or flag them before
+      reporting the mean, the count and the tests.
+    response: Added zroc_degenerate to the helper, which flags sessions whose five interior z(FA) or
+      z(H) points are all equal, and a synthetic check in cell 54 (slope -0.2074, flagged). Six
+      sessions are flagged (59, 60, 93, 99, 119, 2008; session 93 has slope 0.415 from an
+      undetermined fit). They are left out of the main result, now 81 sessions, mean 0.792, 64 below
+      1, t-test p = 6.6e-09, Wilcoxon p = 3.3e-08; all 87 sessions are a variant. Outcome unchanged.
+  - claim: fig5d-confidence-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: vs-cells-proportion
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the null with 10 shuffles per unit resolves its round-1
+      point.
+    response: No change.
+  - claim: ms-cells-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; round-1 problems 1, 2 and 3 are resolved. The README and
+      the summary say the code's choices give 147, the paper's number, but the paper gives 146, so
+      147 is within tolerance but not equal. The correct-trials variant, which matches the paper,
+      has no shuffled null of its own, though some sessions have as few as 9 correct old trials;
+      it is compared only with 5%. This does not change the outcome, which is judged on the
+      Methods' test, but leaves the variant's excess over chance unshown.
+    response: The README and summary now give 147 against the paper's 146. Added a null for the
+      code's choices, labels shuffled among the correct trials in the code's window with its own
+      random generator, so the other nulls do not move. It gives 5.58% (95% CI 5.26% to 5.92%), and
+      147 exceeds it (104.1 expected, binomial p = 2.5e-05).
+  - claim: dual-cells-proportion
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; round-1 problem 1 is resolved. The summary's "343 VS, 147
+      MS and 26 dual cells, the paper's numbers" does not hold for 147 against 146.
+    response: The summary now gives the paper's 343, 146 and 26 next to the code's choices.
+  - claim: fig5f-site-proportions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; round-1 problems 1 and 11 are resolved.
+    response: No change.
+  - claim: twh-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4-example-vs-neuron
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Cell 77 does not print the unit's index, on which the
+      notebook's reading of "cell number" as the electrode row rests.
+    response: Cell 77 now prints the unit index and the units of session 132. The unit is at 0-based
+      index 4 and electrode row 4.
+  - claim: previous-release-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: The claim was added by the author and comes from Faraut 2018, not from the paper under
+      test. Agrees with partially reproduced, as 64 of 65 sessions are found, above the criterion's
+      90%. The helper's copy of Faraut 2018 Table 1 matches the PDF.
+    response: The notebook now also prints that session 98's section in the code's session list is
+      commented out; the notes and findings say so.
+  - claim: previous-release-additions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. The paper says "we added 17 subjects and 288 neurons"
+      and "23 new sessions, including 9 sessions from TWH".
+    response: No change.
+  - claim: fig3-example-vs-neuron
+    agrees: true
+    outcome: blocked
+    reason: Agrees it stays blocked for now. Cell 0 gives it as blocked (data missing) where the
+      record, README and summary give metadata_insufficient. The notes' statements about the
+      session list and export.py are not shown in any output. The cell-number convention is not
+      tested; in session 2009 two units share electrode row 1, which argues against reading cell
+      number as the electrode row; the phone-selective candidate is 0-based unit index 2, cell 3 if
+      counted from 1. If the Figure 4 unit is 0-based index 3 in session 132, cell number is the
+      1-based unit index and the candidate would match channel, area, cell number and category, and
+      one printed value could move the claim from blocked to tested with outside input.
+    response: Cell 0 now says metadata insufficient. The notebook fetches export.py and the session
+      list from the pinned commit and prints the lines naming session 144 and the T103 section. The
+      printed value settles the convention the other way. The Figure 4 unit is at 0-based index 4,
+      1-based 5, and electrode row 4, so cell number is the 0-based unit index (or the row), and the
+      candidate is cell 2 (or 1), not 3. The outcome stays blocked and no change is proposed; a
+      conclusion cell for the claim is added.

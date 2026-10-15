@@ -38,8 +38,8 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 and the differences from the paper's method.
 
 The memory selective and dual counts follow the Methods (all trials, a 1 s window). The paper's code
-selects on correct trials in a 1.5 s window, and with its choices the counts are 147 and 26, the
-paper's numbers. The new/old label in the files is coded 1 = old, the reverse of the paper's text
+selects on correct trials in a 1.5 s window, and with its choices the counts are 147 and 26,
+against the paper's 146 and 26. The new/old label in the files is coded 1 = old, the reverse of the paper's text
 and the files' column description. Two pairs of sessions hold identical spike trains. Against the
 session list of the earlier release (Faraut et al. 2018, Table 1), the dandiset has the 23 new
 sessions and 17 new subjects the paper states, but 325 units in them, not 288. The attempt

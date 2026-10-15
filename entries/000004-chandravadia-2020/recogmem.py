@@ -27,6 +27,7 @@ Where the parameters come from:
 from __future__ import annotations
 
 import re
+import urllib.request
 from concurrent.futures import ThreadPoolExecutor
 
 import h5py
@@ -338,6 +339,16 @@ def zroc_slope(labels: np.ndarray, responses: np.ndarray) -> float:
     return float(np.polyfit(zf, zh, 1)[0])
 
 
+def zroc_degenerate(labels: np.ndarray, responses: np.ndarray) -> bool:
+    """True when the five interior z(false alarm) or z(hit) points are all equal.
+
+    Then the regression of zroc_slope has no unique fit (equal z(FA)) or a slope of 0 that only
+    reflects the absence of responses between the extremes (equal z(H)), not an estimate.
+    """
+    h, f = cumulative_rates(labels, responses)
+    return bool(np.ptp(f[:-1]) == 0 or np.ptp(h[:-1]) == 0)
+
+
 def confidence_accuracy(labels: np.ndarray, responses: np.ndarray, split: str = "fixed") -> tuple[float, float]:
     """Percent correct among high and among low confidence responses.
 
@@ -360,3 +371,37 @@ def confidence_accuracy(labels: np.ndarray, responses: np.ndarray, split: str = 
     low = ~high
     acc = lambda m: 100 * correct[m].mean() if m.any() else np.nan
     return acc(high), acc(low)
+
+
+# --- the paper's code ---------------------------------------------------------
+
+CODE_REPO = "rutishauserlab/recogmem-release-NWB"
+CODE_COMMIT = "1d95162d2672e71dd234a31e4b8d70017a289ee3"
+CODE_DIR = "RutishauserLabtoNWB/events/newolddelay/"
+
+
+def code_file(path: str) -> str:
+    """Text of a file of the paper's code at the pinned commit, path relative to CODE_DIR."""
+    url = f"https://raw.githubusercontent.com/{CODE_REPO}/{CODE_COMMIT}/{CODE_DIR}{path}"
+    with urllib.request.urlopen(url) as response:
+        return response.read().decode()
+
+
+def code_session_list() -> pd.DataFrame:
+    """defineNOsessions_release.ini, the code's session list, one row per section.
+
+    ``session`` is the section's session id, ``name`` its NOsessions.session string; ``active`` is
+    False for sections whose lines are all commented out.
+    """
+    rows, row = [], None
+    for line in code_file("defineNOsessions_release.ini").splitlines():
+        m = re.match(r"^(#?)\[(\d+)\]", line.strip())
+        if m:
+            row = {"session": int(m.group(2)), "active": m.group(1) == ""}
+            rows.append(row)
+            continue
+        m = re.match(r"^(#?)NOsessions\.(\w+)\s*=\s*'?([^'#]*?)'?\s*$", line.strip())
+        if row is not None and m and m.group(2) in ("ID", "age", "sex", "session", "filename") \
+                and (m.group(1) == "") == row["active"]:
+            row["name" if m.group(2) == "session" else m.group(2)] = m.group(3).strip()
+    return pd.DataFrame(rows)
