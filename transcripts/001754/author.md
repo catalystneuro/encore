@@ -1,18 +1,14 @@
-# 001754 · author · run 38593268430
+# 001754 · author · run 38734241190
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; echo ======; cat README.md; echo =====; cat docs/design.md; ls; ls entries claims attempts tools
+cat docs/protocol.md; ls; ls entries/001754-knierim-2000 claims/001754 attempts | head -50; ls paper 2>/dev/null | head
 ```
 
 ```
-<persisted-output>
-Output too large (36.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/aef169b6-ba3c-4cc6-acc1-fe424b660831/tool-results/bs4xjd8tq.txt
-
-Preview (first 2KB):
 # Protocol for an attempt
 
 Version: `pilot-6`. Record this version in the attempt's provenance.
@@ -29,1382 +25,82 @@ Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
 workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
 `verifier-2`, `author-revise-2`, and, when the last of these proposes changes
 of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-[... 25 more lines not kept]
-```
+kept in [`transcripts/<dandiset>/`](../transcripts).
 
-**Agent calls Read**
+## Author
 
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/aef169b6-ba3c-4cc6-acc1-fe424b660831/tool-results/bs4xjd8tq.txt"
-}
-```
-
-```
-1	# Protocol for an attempt
-2	
-3	Version: `pilot-6`. Record this version in the attempt's provenance.
-4	
-5	This is what an agent, or a person, does to attempt a target and deposit the
-6	result. It is written from the eight pilot attempts
-7	([pilot notes](pilot-notes.md)); the reasons for the rules are there.
-8	
-9	There are two roles. The **author** makes the attempt. The **verifier** checks
-10	it and must not be the author: for agents, a separate run with a separate
-11	context that has not seen the author's reasoning.
-12	
-13	Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-14	workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-15	`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-16	of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-17	kept in [`transcripts/<dandiset>/`](../transcripts).
-18	
-19	## Author
-20	
-[... 737 more lines not kept]
-```
-
-**Agent**
-
-Now the example entry formats.
-
-**Agent calls Bash**
-
-```bash
-ls -la entries/001453-fouke-2025/ claims/001453/; cat entries/001453-fouke-2025/entry.yaml entries/001453-fouke-2025/requirements.in; cat claims/001453/*.yaml | head -150
-```
-
-```
-claims/001453/:
-total 24
-drwxr-xr-x  2 runner runner  4096 Oct 14 16:05 .
-drwxr-xr-x 10 runner runner  4096 Oct 14 16:05 ..
--rw-r--r--  1 runner runner 12471 Oct 14 16:05 10.1016-j.cub.2025.04.027.yaml
-
-entries/001453-fouke-2025/:
-total 124
-drwxr-xr-x  2 runner runner  4096 Oct 14 16:05 .
-drwxr-xr-x 10 runner runner  4096 Oct 14 16:05 ..
--rw-r--r--  1 runner runner  2158 Oct 14 16:05 README.md
--rw-r--r--  1 runner runner   914 Oct 14 16:05 entry.yaml
--rw-r--r--  1 runner runner 16218 Oct 14 16:05 omr.py
--rw-r--r--  1 runner runner 79403 Oct 14 16:05 reproduce_fouke_2025.ipynb
--rw-r--r--  1 runner runner    61 Oct 14 16:05 requirements.in
--rw-r--r--  1 runner runner  5989 Oct 14 16:05 requirements.lock.txt
-schema_version: 1
-name: 001453-fouke-2025
-type: reproduction
-title: Optomotor swimming of zebrafish and Danionella cerebrum (Fouke et al. 2025)
-[... 175 more lines not kept]
+[... 370 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat attempts/001453-fouke-2025-01.yaml | head -200; ls schemas
-```
-
-```
-schema_version: 1
-id: 001453-fouke-2025-01
-dandiset: "001453"
-dandiset_version: 0.250518.1950
-paper: doi:10.1016/j.cub.2025.04.027
-date: 2026-10-14
-entry: 001453-fouke-2025
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code (GitHub Actions)
-    model: claude-opus-5-5
-    protocol: pilot-5
-inputs:
-- what: Names of the stimulus codes (the conversion of stimulus names to codes, its printed list of
-    codes, and its own labels for codes 9 to 13), the trial processing parameters, the spatial
-    scale of 10 pixels per mm, the per-stimulus medians it printed, used as reference values
-    for the link claim, and the DC pairs its printed Tukey test for Figure 1D finds significant,
-[... 183 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-sed -n 200,400p attempts/001453-fouke-2025-01.yaml; cat entries/001453-fouke-2025/README.md; python -c "
-import json;nb=json.load(open('entries/001453-fouke-2025/reproduce_fouke_2025.ipynb'))
-for c in nb['cells'][:6]: print(c['cell_type'], c.get('metadata'), ''.join(c['source'])[:1500]); print('-----')
-"
-```
-
-```
-notes: The two-photon imaging data are not in the dandiset, which holds only freely swimming
-    tracking. The GitLab repository the paper names for "all behavioral and imaging data" holds
-    notebooks only, and no other dandiset of this lab or paper was found on the archive.
-- claim: fig2g-dsi-similar
-  outcome: blocked
-  blocked_by: data_missing
-  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
-- claim: fig2h-fewer-motion-responsive
-  outcome: blocked
-  blocked_by: data_missing
-  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
-- claim: fig2k-more-monocular
-  outcome: blocked
-  blocked_by: data_missing
-  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
-- claim: fig2l-bi-ratio
-  outcome: blocked
-  blocked_by: data_missing
-  notes: Imaging data not in the dandiset, nor found elsewhere (see fig2d-shared-architecture).
-- claim: fig3e-longer-swims
-[... 316 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-curl -s https://api.dandiarchive.org/api/dandisets/001754/ | python -m json.tool; curl -s "https://api.dandiarchive.org/api/dandisets/001754/versions/" | python -m json.tool
-```
-
-Result: the fetched text is not kept.
-
-**Agent**
-
-Small (32 MB). Let me look at metadata and assets for each version.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; for v in 0.260227.0029 0.260227.0031 0.260728.1352; do echo "== $v"; curl -s "https://api.dandiarchive.org/api/dandisets/001754/versions/$v/assets/?page_size=100" | python -c "
-import json,sys; d=json.load(sys.stdin)
-for a in d['results']: print(a['path'], a['size'], a['blob'] if 'blob' in a else '', a['asset_id'])
-"; done; curl -s "https://api.dandiarchive.org/api/dandisets/001754/versions/0.260728.1352/" > meta.json; python -m json.tool meta.json
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; for v in 0.260227.0029 0.260227.0031; do curl -s "https://api.dandiarchive.org/api/dandisets/001754/versions/$v/" > m_$v.json; done; python - <<'E'
-import json
-a=json.load(open('m_0.260227.0029.json'));b=json.load(open('m_0.260227.0031.json'));c=json.load(open('meta.json'))
-def diff(x,y,p=''):
-    if isinstance(x,dict) and isinstance(y,dict):
-        for k in set(x)|set(y): diff(x.get(k),y.get(k),p+'/'+k)
-    elif x!=y: print(p, repr(x)[:300], '=>', repr(y)[:300])
-print('0029 vs 0031');diff(a,b);print('0031 vs 1352');diff(b,c)
-E
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-mkdir -p paper; cd paper; curl -sL -A "Mozilla/5.0" https://www.nature.com/articles/nn0300_209 -o nature.html; ls -la; python - <<'E'
-import re,html
-t=open('nature.html',encoding='utf8',errors='ignore').read()
-print(len(t))
-for k in ['citation_title','citation_doi','dc.rights','citation_pdf_url','Access through your institution','Open access','Abstract']:
-    print(k, k in t)
-m=re.findall(r'<meta name="(citation_[a-z_]+|dc\.[a-z]+)" content="([^"]*)"',t)
-for a,b in m[:40]: print(a,b[:200])
-E
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd paper; python - <<'E'
-import re,html
-t=open('nature.html',encoding='utf8',errors='ignore').read()
-i=t.find('Open access'); print(t[i-300:i+100])
-# body text
-body=re.sub(r'<script.*?</script>|<style.*?</style>','',t,flags=re.S)
-txt=html.unescape(re.sub(r'<[^>]+>',' ',body)); txt=re.sub(r'\s+',' ',txt)
-i=txt.find('Abstract'); print(txt[i:i+6000])
-E
-```
-
-```
-<div class="c-article-meta-recommendations" data-test="recommendation-info">
-                                        <span class="c-article-meta-recommendations__item-type">Article</span>
-                                         <span class="c-article-meta-recommendations__access-type">Open access</span>
-                                         <span class="c-article-meta-recommendati
-Abstract ‘Place’ cells of the hippocampus and ‘head-direction’ (HD) cells of the thalamus and limbic cortex derive their spatial and directional specificity from a combination of idiothetic (self-motion) cues and external landmarks, which normally reinforce each other to generate a robust neural code for location and direction 1 . In weightlessness, however, three-dimensional navigation can cause the idiothetic and landmark cues to conflict. Nonetheless, neural recordings on the space shuttle demonstrated that the hippocampus can create a robust spatial code for three orthogonal surfaces in the weightless environment of space flight. This is a preview of subscription content, access via your institution Access options Access through your institution Subscribe to this journal Receive 12 print issues and online access $259.00 per year only $21.58 per issue Learn more Buy this article Purchase on SpringerLink Instant access to the full article PDF. USD 39.95 Prices may be subject to local taxes which are calculated during checkout Additional access options: Log in Learn about institutional subscriptions Read our FAQs Contact customer support Figure 1: Escher staircase track. Figure 2: Representative place fields. Figure 3: Stability of place fields across sessions. Similar content being viewed by others Spatially resolved multiomics on the neuronal effects induced by spaceflight in mice Article Open access 11 June 2024 Local prediction-learning in high-dimensional spaces enables neural networks to plan Article Open access 15 March 2024 Hippocampal theta sweeps indicate goal direction duri
-[... 1 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd paper; curl -s "https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=DOI:10.1038/72910&format=json&resultType=core" | python -c "
-import json,sys;d=json.load(sys.stdin)
-for r in d['resultList']['result']: print(r.get('pmid'),r.get('pmcid'),r.get('isOpenAccess'),r.get('inEPMC'),r.get('hasPDF')); print(r.get('abstractText'))
-"; curl -s "https://api.unpaywall.org/v2/10.1038/72910?email=[removed: an e-mail address]" | python -m json.tool | head -40
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd paper; python - <<'E'
-import re,html
-t=open('nature.html',encoding='utf8',errors='ignore').read()
-body=re.sub(r'<script.*?</script>|<style.*?</style>','',t,flags=re.S)
-txt=html.unescape(re.sub(r'<[^>]+>',' ',body)); txt=re.sub(r'\s+',' ',txt)
-i=txt.find('Abstract'); j=txt.find('This is a preview')
-k=txt.find('Figure 1: Escher'); l=txt.find('Similar content')
-open('abstract.txt','w').write('Knierim, McNaughton & Poe (2000) Nat Neurosci 3:209-210, doi:10.1038/72910. Not open access; text from the publisher page preview.\n\n'+txt[i:j]+'\n\nFigure titles: '+txt[k:l]+'\n')
-E
-cat abstract.txt; rm nature.html
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent**
-
-Paper is paywalled (abstract only). Dandiset is 8 small files, three published versions with identical assets. Now reading the files and the conversion code.
-
-**Agent calls Bash**
-
-```bash
-cd  which python; python --version; python -c "import pynwb,h5py,remfile,dandi;print(pynwb.__version__)" ; sed -n 1,80p tools/entry.py
-```
-
-```
-/opt/hostedtoolcache/Python/3.13.16/x64/bin/python
-Python 3.13.16
-Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import pynwb,h5py,remfile,dandi;print(pynwb.__version__)
-    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-ModuleNotFoundError: No module named 'pynwb'
-"""Lock, check and run one entry. This is the whole local workflow for a deposit.
-
-    python tools/entry.py lock  entries/<name>   # pin the environment
-    python tools/entry.py check entries/<name>   # validate metadata and conventions
-    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
-    python tools/entry.py all   entries/<name>   # check, then run
-    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
-
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-[... 67 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  uv venv -q $TMPDIR/venv -p 3.13 && VIRTUAL_ENV=$TMPDIR/venv uv pip install -q pynwb h5py remfile dandi numpy pandas scipy matplotlib 2>&1 | tail -3; $TMPDIR/venv/bin/python -c "import pynwb;print(pynwb.__version__)"
-```
-
-```
-4.2.0
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > inspect1.py <<'E'
-import remfile,h5py,pynwb,requests,sys
-V='0.260728.1352'
-r=requests.get(f'https://api.dandiarchive.org/api/dandisets/001754/versions/{V}/assets/?page_size=100').json()['results']
-for a in sorted(r,key=lambda a:a['path']):
-    if sys.argv[1] not in a['path']: continue
-    url=f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
-    f=h5py.File(remfile.File(url),'r')
-    io=pynwb.NWBHDF5IO(file=f,load_namespaces=True); nwb=io.read()
-    print('=====',a['path']); print(nwb)
-    print('session_description:',nwb.session_description); print('experiment_description:',nwb.experiment_description)
-    print('subject:',nwb.subject)
-    print('epochs:', None if nwb.epochs is None else nwb.epochs.to_dataframe())
-    print('trials:', nwb.trials)
-    if nwb.electrodes is not None: print(nwb.electrodes.to_dataframe().to_string()); print({c.name:c.description for c in nwb.electrodes.columns})
-    for k,g in nwb.electrode_groups.items(): print(k,g.description,g.location,g.device)
-    if nwb.units is not None:
-        u=nwb.units.to_dataframe(); print(u.drop(columns=[c for c in u.columns if c in('spike_times','waveform_mean','electrodes')]).to_string()); print({c.name:c.description for c in nwb.units.columns}); print(u.columns.tolist())
-    for k,m in nwb.processing.items():
-        print('module',k,m.description)
-        for n,d in m.data_interfaces.items(): print('  ',n,d)
-    for k,d in nwb.acquisition.items(): print('acq',k,d)
-    for k,d in nwb.intervals.items(): print('intervals',k,d.to_dataframe())
-    print(nwb.lab, nwb.institution, nwb.related_publications, nwb.notes, nwb.stimulus)
-E
-$TMPDIR/venv/bin/python inspect1.py Rat1_ses-19980425 2>&1 | head -300
-```
-
-```
-===== sub-Rat1/sub-Rat1_ses-19980425T124500_behavior+ecephys.nwb
-root pynwb.file.NWBFile at 0x140542855033056
-Fields:
-  devices: {
-    tetrode_array <class 'pynwb.device.Device'>
-  }
-  electrode_groups: {
-    TT0 <class 'pynwb.ecephys.ElectrodeGroup'>,
-    TT1 <class 'pynwb.ecephys.ElectrodeGroup'>,
-    TT10 <class 'pynwb.ecephys.ElectrodeGroup'>,
-    TT11 <class 'pynwb.ecephys.ElectrodeGroup'>,
-    TT2 <class 'pynwb.ecephys.ElectrodeGroup'>,
-    TT6 <class 'pynwb.ecephys.ElectrodeGroup'>,
-    TT8 <class 'pynwb.ecephys.ElectrodeGroup'>,
-    TT9 <class 'pynwb.ecephys.ElectrodeGroup'>
-  }
-  electrodes: electrodes <class 'pynwb.ecephys.ElectrodesTable'>
-  epochs: epochs <class 'pynwb.epoch.TimeIntervals'>
-  experiment_description: Hippocampal place cell recordings from rats aboard the Space Shuttle during the Neurolab STS-90 mission (April–May 1998). Three rats with chronically implanted tetrode arrays in hippocampal area CA1 were trained to traverse a three-dimensional track ('Escher staircase') and a flat two-dimensional track ('Magic Carpet') for medial forebrain bundle stimulation reward. Recordings were made preflight on the ground and in-flight on Flight Day 4 and Flight Day 9. Baseline sessions on a rectangular track were interleaved with task sessions.
-  experimenter: ['Knierim, James J.' 'McNaughton, Bruce L.' 'Poe, Gina R.']
-[... 192 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > inspect2.py <<'E'
-import remfile,h5py,pynwb,requests,sys,numpy as np, pandas as pd
-pd.set_option('display.width',250); pd.set_option('display.max_colwidth',120); pd.set_option('display.max_columns',20)
-V='0.260728.1352'
-r=requests.get(f'https://api.dandiarchive.org/api/dandisets/001754/versions/{V}/assets/?page_size=100').json()['results']
-for a in sorted(r,key=lambda a:a['path']):
-    url=f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
-    f=h5py.File(remfile.File(url),'r')
-    print('#####',a['path'])
-    def vis(n,o):
-        if isinstance(o,h5py.Dataset) and not n.startswith('specifications'):
-            at={k:(v if not isinstance(v,bytes) else v.decode()) for k,v in o.attrs.items() if k in('unit','units','conversion','resolution','description','comments','rate','starting_time','reference_frame')}
-            print(' ',n,o.shape,o.dtype,at)
-    f.visititems(vis)
-    io=pynwb.NWBHDF5IO(file=f,load_namespaces=True); nwb=io.read()
-    print(nwb.session_description)
-    if nwb.epochs is not None: print(nwb.epochs.to_dataframe().to_string()); print({c.name:c.description for c in nwb.epochs.columns})
-    for m in nwb.processing.values():
-        for d in m.data_interfaces.values():
-            if isinstance(d,pynwb.behavior.Position):
-                for s in d.spatial_series.values():
-                    print('SS',s.name,s.description,s.unit,s.reference_frame,s.conversion,s.comments, s.data.shape, s.timestamps.shape if s.timestamps is not None else s.rate)
-                    x=s.data[:]; t=s.timestamps[:]
-                    print('   t',t[0],t[-1],np.median(np.diff(t)), 'data min',np.nanmin(x,0),'max',np.nanmax(x,0),'nan frac',np.isnan(x).mean(0))
-            if d.name=='rate_maps':
-                df=d.to_dataframe()
-                print(df[['tetrode','source_file','session_type','cell_number']].to_string()); print({c.name:c.description for c in d.columns})
-                print('rate_map shape', np.array(df.rate_map.iloc[0]).shape, 'occ shape', np.array(df.occupancy_map.iloc[0]).shape)
-    u=nwb.units
-    if u is not None:
-        st=[u.get_unit_spike_times(i) for i in range(len(u))]
-        print('units',len(u),'spikes', sum(map(len,st)),'tmin',min(s.min() for s in st if len(s)),'tmax',max(s.max() for s in st if len(s)), 'sorted',all(np.all(np.diff(s)>=0) for s in st))
-    for k,d in nwb.acquisition.items(): print('acq',k,d)
-E
-$TMPDIR/venv/bin/python inspect2.py 2>&1 > inspect2.out; wc -l inspect2.out; grep -v "rate_maps/\|^ *[0-9]* *TT" inspect2.out | head -400
+cat docs/agents/author-again.md; cat attempts/001754-knierim-2000-01.yaml; cat claims/001754/10.1038-72910.yaml
 ```
 
 ```
 <persisted-output>
-Output too large (30.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/aef169b6-ba3c-4cc6-acc1-fe424b660831/tool-results/bq3ikdx26.txt
+Output too large (36.2KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/269c3001-8e7f-4cbd-97d8-573742168bb8/tool-results/buzvjyory.txt
 
 Preview (first 2KB):
-1001 inspect2.out
-##### sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb
-  file_create_date (1,) object {}
-  general/experiment_description () object {}
-  general/experimenter (3,) object {}
-  general/extracellular_ephys/electrodes/group (32,) object {'description': 'Reference to the ElectrodeGroup.'}
-  general/extracellular_ephys/electrodes/group_name (32,) object {'description': 'Name of the ElectrodeGroup.'}
-  general/extracellular_ephys/electrodes/id (32,) int64 {}
-  general/extracellular_ephys/electrodes/location (32,) object {'description': 'Location of the electrode (channel).'}
-  general/institution () object {}
-  general/keywords (8,) object {}
-  general/lab () object {}
-  general/related_publications (1,) object {}
-  general/subject/age () object {}
-  general/subject/description () object {}
-  general/subject/sex () object {}
-[... 20 more lines not kept]
-```
+You are the author of a new attempt on dandiset {dandiset} in the reproduction registry, checked out in the current directory. Follow docs/protocol.md exactly; read it first. The dandiset already has an attempt, `{earlier}` (entry `entries/{entry}`, claims in `claims/{dandiset}/`), made on version {earlier_version}. Since then the dandiset has changed, and this attempt tests what it holds now.
 
-**Agent calls Bash**
+Paper: doi:{paper}, "{title}". Save any text of the paper you download under `paper/` and read it from there. Stream the NWB files from the DANDI API; do not download them to disk.
 
-```bash
-cd $TMPDIR; grep -v "^  general\|^  units/\|^  file_create\|^  identifier\|^  session_\|^  timestamps_ref\|^  intervals/\|^  processing/ecephys/rate_maps/\(id\|tetrode\|source\|session\|cell\)" inspect2.out | grep -v "^ *[0-9]* *TT[0-9]* "
-```
+{version_rule}
 
-```
-##### sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb
-  processing/ecephys/rate_maps/occupancy_map (62, 64, 64) int32 {'description': '64x64 spatial occupancy map (bin visit counts)'}
-  processing/ecephys/rate_maps/rate_map (62, 64, 64) float32 {'description': '64x64 spatial firing rate map (Hz)'}
-Preflight ground recording — Rat 1. Recorded 3 days before launch at Kennedy Space Center.
-    start_time  stop_time session_type                                                 session_type_description
-id                                                                                                             
-0        276.0      741.0           ES  Escher Staircase — three-dimensional track with 90° yaw and pitch turns
-1        936.0     1349.0           MC                                Magic Carpet — flat two-dimensional track
-{'start_time': 'Start time of epoch, in seconds', 'stop_time': 'Stop time of epoch, in seconds', 'session_type': 'Task type: BL (Baseline), ES (Escher Staircase), or MC (Magic Carpet)', 'session_type_description': 'Description of the task type'}
-   tetrode   source_file session_type  cell_number
-id                                                
-{'tetrode': 'Tetrode name (e.g. TT0)', 'source_file': 'Original .RMA filename', 'session_type': 'Task type (ES/MC/BL)', 'cell_number': 'Cell number from CELL~N filename; -1 if not a per-cell map', 'rate_map': '64x64 spatial firing rate map (Hz)', 'occupancy_map': '64x64 spatial occupancy map (bin visit counts)'}
-rate_map shape (64, 64) occ shape (64, 64)
-units 35 spikes 21995 tmin 275.906 tmax 1348.97 sorted True
-##### sub-Rat1/sub-Rat1_ses-19980420T095700_behavior+ecephys.nwb
-  processing/behavior/position/spatial_series/data (34537, 2) float64 {'conversion': np.float64(1.0), 'resolution': np.float64(-1.0), 'unit': 'pixels'}
-  processing/behavior/position/spatial_series/reference_frame () object {}
-  processing/behavior/position/spatial_series/timestamps (34537,) float64 {'unit': 'seconds'}
-  process
-[... 131 more lines not kept]
-```
+1. Keep the claims file as it is unless a claim is wrong about the paper; if you change one, say why in the file's opening comment.
+2. Update the entry in place to stream the new version: the helper's version constant, `entry.yaml`'s `dandi:` relation, the notebook header and README. The earlier attempt record stays as it is.
+3. Re-run every check of the data and every claim. For each finding of `{earlier}`, say in the notebook's data check and in the new record whether it is fixed, partly fixed or still present, with the output that shows it. Record new findings too.
+4. Lock, check and run the entry, make every conclusion match the new numbers, and write the new record `attempts/{next_attempt}.yaml`. Its outcomes are this attempt's own; where one differs from `{earlier}`, say why in its notes. Then run `python tools/entry.py handover entries/{entry}`. Do not verify your own work, and do not commit or push: the workflow commits your changes.
 
-**Agent calls Bash**
+Provenance: kind agent; accountable name "CatalystNeuro"; harness "Claude Code (GitHub Actions)"; model "{model}"; protocol: the version stated in docs/protocol.md. Date {date}.
 
-```bash
-cd $TMPDIR; grep -A70 "Rat1_ses-19980420" inspect2.out | grep -E "^ *[0-9]+ +TT" | head -70; git clone -q https://github.com/catalystneuro/mcnaughton2000-to-nwb.git conv && cd conv && git log -1 --format="%H %cd" && find . -type f -not -path "./.git/*" | head -50
-```
-
-```
-0      TT0  ESCELL~1.RMA           ES            1
-1      TT0  ESCELL~2.RMA           ES            2
-2      TT0  MCCELL~1.RMA           MC            1
-3      TT0  MCCELL~2.RMA           MC            2
-4      TT1  ES2BC0~1.RMA           ES           -1
-5      TT1  ES2BC4~1.RMA           ES           -1
-6      TT1  ES2BC6~1.RMA           ES           -1
-7      TT1  ES3BC8~1.RMA           ES           -1
-8      TT1  ES3BCA~1.RMA           ES           -1
-9      TT1  ES3BCC~1.RMA           ES           -1
-10     TT1  ESCELL~1.RMA           ES            1
-11     TT1  ESCELL~2.RMA           ES            2
-12     TT1  ESCELL~3.RMA           ES            3
-b538d9e07079394362a64e5118a226e91bdd7ab5 Fri Feb 27 08:12:39 2026 -0500
-./pyproject.toml
-./.gitignore
-./requirements.txt
-./src/mcnaughton2000_to_nwb/cel_file.py
-./src/mcnaughton2000_to_nwb/rma_file.py
-./src/mcnaughton2000_to_nwb/convert_session.py
-[... 6 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/conv; cat README.md conversion_notes.md; wc -l src/mcnaughton2000_to_nwb/*.py
-```
-
-````
-# mcnaughton2000-to-nwb
-
-Convert the McNaughton Neurolab (STS-90) hippocampal place cell dataset to [NWB](https://www.nwb.org/).
-
-## Dataset
-
-This converts data from the Neurolab Space Shuttle mission (April 1998), in which hippocampal CA1 place cells were recorded from three freely moving rats in microgravity. The rats navigated a 3D "Escher Staircase" track and a flat "Magic Carpet" track while spike data was collected via chronically implanted multi-tetrode arrays.
-
-**Publication:** Knierim, J. J., McNaughton, B. L. & Poe, G. R. Three-dimensional spatial selectivity of hippocampal neurons during space flight. *Nature Neuroscience* **3**, 209-210 (2000). [doi:10.1038/72910](https://doi.org/10.1038/72910)
-
-**Source data:** [NASA OSDR OSD-968](https://osdr.nasa.gov/bio/repo/data/studies/OSD-968)
-
-**NWB dataset:** [DANDI:001754](https://dandiarchive.org/dandiset/001754)
-
-## Installation
-
-```bash
-pip install -e .
-```
-
-[... 103 more lines not kept]
-````
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/conv/src/mcnaughton2000_to_nwb; cat convert_session.py cel_file.py rma_file.py
-```
-
-```
-"""Convert one subject-session of the McNaughton Neurolab dataset to NWB.
-
-Each subject folder (e.g. FD4RAT1) represents one continuous recording session
-with interleaved task epochs (BL=Baseline, ES=Escher Staircase, MC=Magic Carpet).
-The CEL files contain sorted spike data from Xclust with timestamps in seconds
-relative to recording start. Flight sessions also include position (pos_x, pos_y)
-at each spike time.
-"""
-
-from __future__ import annotations
-
-import uuid
-from collections import defaultdict
-from pathlib import Path
-
-import numpy as np
-from pynwb import NWBFile, NWBHDF5IO, ProcessingModule
-from pynwb.behavior import Position, SpatialSeries
-from pynwb.ecephys import ElectrodeGroup
-from pynwb.epoch import TimeIntervals
-[... 534 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; curl -sL "https://osdr.nasa.gov/osdr/data/osd/meta/968" -o osd.json; python -c "
-import json;d=json.load(open('osd.json'))
-s=json.dumps(d)[:200]; print(s)
-def walk(o,p=''):
-    if isinstance(o,dict):
-        for k,v in o.items(): walk(v,p+'/'+k)
-    elif isinstance(o,list):
-        for i,v in enumerate(o[:30]): walk(v,p+f'[{i}]')
-    elif isinstance(o,str) and len(o)>60: print(p,':',o[:1500])
-walk(d)
-" | head -60; curl -sL "https://osdr.nasa.gov/osdr/data/osd/files/968" | python -c "
-import json,sys;d=json.load(sys.stdin)
-for k,v in d.get('studies',{}).items():
-  for f in v.get('study_files',[]): print(f['file_name'],f['file_size'],f.get('category'))
-" | head -50
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > load.py <<'E'
-import remfile,h5py,pynwb,requests,numpy as np,pickle
-V='0.260728.1352'
-r=requests.get(f'https://api.dandiarchive.org/api/dandisets/001754/versions/{V}/assets/?page_size=100').json()['results']
-out={}
-for a in sorted(r,key=lambda a:a['path']):
-    url=f"https://api.dandiarchive.org/api/assets/{a['asset_id']}/download/"
-    f=h5py.File(remfile.File(url),'r')
-    nwb=pynwb.NWBHDF5IO(file=f,load_namespaces=True).read()
-    d={'path':a['path'],'desc':nwb.session_description,'subject':nwb.subject.subject_id,'start':str(nwb.session_start_time)}
-    d['epochs']=nwb.epochs.to_dataframe()
-    u=nwb.units; d['units']=[(u['tetrode'][i],int(u['cluster_id'][i]),u.get_unit_spike_times(i)) for i in range(len(u))]
-    if 'behavior' in nwb.processing:
-        s=nwb.processing['behavior']['position'].spatial_series['spatial_series']; d['pos']=s.data[:]; d['t']=s.timestamps[:]
-    rm=nwb.processing['ecephys']['rate_maps']
-    d['rm']=rm.to_dataframe(); d['rm']['rate_map']=list(rm['rate_map'].data[:]); d['rm']['occupancy_map']=list(rm['occupancy_map'].data[:])
-    out[a['path'].split('/')[1].replace('_behavior+ecephys.nwb','').replace('_ecephys.nwb','')]=d
-pickle.dump(out,open('cache.pkl','wb'))
-E
-time $TMPDIR/venv/bin/python load.py
-```
-
-```
-real	0m25.443s
-user	0m3.162s
-sys	0m0.193s
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex1.py <<'E'
-import pickle,numpy as np,pandas as pd, hashlib
-D=pickle.load(open('cache.pkl','rb'))
-for k,d in D.items():
-    print('==',k,d['subject'],d['start'],len(d['units']),'units; rm rows',len(d['rm']))
-    print(d['rm'].groupby(['session_type'])['cell_number'].agg(lambda c:(c>=0).sum()).to_dict(), 'non-cell', (d['rm'].cell_number<0).sum())
-    print(' source names sample', d['rm'].source_file.unique()[:25])
-    if 'pos' in d:
-        p=d['pos'];t=d['t']
-        print(' pos x==0 frac',(p[:,0]==0).mean(),'y==0',(p[:,1]==0).mean(),' x==255',(p[:,0]==255).mean(),'y==255',(p[:,1]==255).mean())
-        allsp=np.unique(np.concatenate([s for _,_,s in d['units']]))
-        print(' pos t subset of spike times:', np.isin(t,allsp).mean(), ' spikes with pos', np.isin(allsp,t).mean(), 'n spikes uniq',len(allsp),'n pos',len(t))
-        print(' x quantiles',np.percentile(p[:,0],[1,5,50,95,99]),' y',np.percentile(p[:,1],[1,5,50,95,99]))
-# duplicates across files: hash spike trains
-h={}
-for k,d in D.items():
-    for tt,c,s in d['units']:
-        hh=hashlib.md5(np.round(s,4).tobytes()).hexdigest(); h.setdefault(hh,[]).append((k,tt,c,len(s)))
-print('dup spike trains',[v for v in h.values() if len(v)>1][:20])
-h={}
-for k,d in D.items():
-    for i,row in d['rm'].iterrows():
-        if np.nansum(row.rate_map)==0: continue
-        hh=hashlib.md5(np.asarray(row.rate_map).tobytes()).hexdigest(); h.setdefault(hh,[]).append((k,row.tetrode,row.source_file))
-print('dup rate maps',sum(len(v)>1 for v in h.values())); print([v for v in h.values() if len(v)>1][:30])
-h={}
-for k,d in D.items():
-    for i,row in d['rm'].iterrows():
-        hh=hashlib.md5(np.asarray(row.occupancy_map).tobytes()).hexdigest(); h.setdefault(hh,set()).add((k,row.session_type))
-print('occupancy groups'); 
-for v in h.values(): print('  ',sorted(v))
-E
-$TMPDIR/venv/bin/python ex1.py
-```
-
-```
-== sub-Rat1_ses-19980414T125300 Rat1 1998-04-14 12:53:00+00:00 35 units; rm rows 62
-{'ES': 22, 'MC': 26} non-cell 14
- source names sample <StringArray>
-['ESCELL~1.RMA', 'ESCELL~2.RMA', 'ESCELL~3.RMA', 'MCCELL~1.RMA',
- 'MCCELL~2.RMA', 'MCCELL~3.RMA', 'MCCELL~4.RMA', 'ES2BC0~1.RMA',
- 'ESCELL~4.RMA', 'MC2DC4~1.RMA', 'ES2BC6~1.RMA', 'ES3BCC~1.RMA',
- 'MC2DC0~1.RMA', 'MC2DC2~1.RMA', 'MC2DC6~1.RMA']
-Length: 15, dtype: str
-== sub-Rat1_ses-19980420T095700 Rat1 1998-04-20 09:57:00+00:00 47 units; rm rows 67
-{'ES': 24, 'MC': 24} non-cell 19
- source names sample <StringArray>
-['ESCELL~1.RMA', 'ESCELL~2.RMA', 'MCCELL~1.RMA', 'MCCELL~2.RMA',
- 'ES2BC0~1.RMA', 'ES2BC4~1.RMA', 'ES2BC6~1.RMA', 'ES3BC8~1.RMA',
- 'ES3BCA~1.RMA', 'ES3BCC~1.RMA', 'ESCELL~3.RMA', 'ESCELL~4.RMA',
- 'MC2DC0~1.RMA', 'MC2DC2~1.RMA', 'MC2DC4~1.RMA', 'MC2DC6~1.RMA',
- 'MC2DCE~1.RMA', 'MC3DCC~1.RMA', 'MCCELL~3.RMA', 'MCCELL~4.RMA']
-Length: 20, dtype: str
- pos x==0 frac 0.11677331557460115 y==0 0.0  x==255 0.0004922257289283956 y==255 0.11654167993745838
- pos t subset of spike times: 1.0  spikes with pos 1.0 n spikes uniq 34537 n pos 34537
- x quantiles [  0.      0.    104.107 215.    245.   ]  y [ 70.      89.0048 183.61   255.     255.    ]
-[... 89 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex2.py <<'E'
-import pickle,numpy as np,pandas as pd
-D=pickle.load(open('cache.pkl','rb'))
-for k,d in D.items():
-    if 'pos' not in d: continue
-    ep=d['epochs']; t=d['t']; p=d['pos']; valid=~((p[:,0]==0)&(p[:,1]==255))
-    print('==',k); print(ep[['start_time','stop_time','session_type']].to_string())
-    rows=[]
-    for tt,c,s in d['units']:
-        n_out = 0
-        for st in ['ES','MC']:
-            e=ep[ep.session_type==st]
-            m=np.zeros(len(s),bool)
-            for a,b in zip(e.start_time,e.stop_time): m|=(s>=a)&(s<=b)
-            ss=s[m]; idx=np.searchsorted(t,ss); idx=np.clip(idx,0,len(t)-1); ok=(t[idx]==ss)&valid[idx]
-            # bins: pos/4
-            xb=(p[idx[ok],0]//4).astype(int); yb=(p[idx[ok],1]//4).astype(int)
-            cnt=np.zeros((64,64)); np.add.at(cnt,(yb,xb),1)
-            cand=d['rm'][(d['rm'].tetrode==tt)&(d['rm'].session_type==st)]
-            best=None
-            for _,r in cand.iterrows():
-                rm=np.asarray(r.rate_map); oc=np.asarray(r.occupancy_map)
-                pred=rm*oc
-                for name,c2 in [('yx',cnt),('xy',cnt.T)]:
-                    if pred.sum()>0 and c2.sum()>0:
-                        cc=np.corrcoef(pred.ravel(),c2.ravel())[0,1]
-                        if best is None or cc>best[0]: best=(cc,r.source_file,r.cell_number,name,c2.sum()/pred.sum())
-            rows.append((tt,c,st,ok.sum(),best))
-    for r in rows: print('  ',r)
-E
-$TMPDIR/venv/bin/python ex2.py 2>&1 | head -150
-```
-
-```
-== sub-Rat1_ses-19980420T095700
-    start_time  stop_time session_type
-id                                    
-0       2525.0     3390.0           BL
-1       2720.0     3390.0           BL
-2       3850.0     4800.0           BL
-3       5935.0     6420.0           ES
-4       7020.0     7550.0           MC
-5       7850.0     8473.0           BL
-   ('TT0', 1, 'ES', np.int64(7), (np.float64(0.265649180560114), 'ESCELL~1.RMA', 1, 'yx', np.float64(0.026055061522656752)))
-   ('TT0', 1, 'MC', np.int64(7), (np.float64(0.12398964142974492), 'MCCELL~1.RMA', 1, 'yx', np.float64(0.022008306570144312)))
-   ('TT0', 2, 'ES', np.int64(6), (np.float64(0.533356878098527), 'ESCELL~2.RMA', 2, 'yx', np.float64(0.01803558160589818)))
-   ('TT0', 2, 'MC', np.int64(207), (np.float64(0.20534057028346414), 'MCCELL~2.RMA', 2, 'yx', np.float64(0.03923818735057429)))
-   ('TT1', 1, 'ES', np.int64(1), (np.float64(0.0033456797961134883), 'ES2BC4~1.RMA', -1, 'yx', np.float64(0.004275100690571384)))
-   ('TT1', 1, 'MC', np.int64(4), (np.float64(0.19426041658840215), 'MCCELL~1.RMA', 1, 'yx', np.float64(0.017422673072689222)))
-   ('TT1', 2, 'ES', np.int64(28), (np.float64(0.12275522540979149), 'ES3BCC~1.RMA', -1, 'yx', np.float64(0.04921707997508675)))
-   ('TT1', 2, 'MC', np.int64(3), (np.float64(0.19703685721009648), 'MCCELL~4.RMA', 4, 'yx', np.float64(0.020609693205245735)))
-   ('TT1', 3, 'ES', np.int64(5), (np.float64(0.19705377843624597), 'ES2BC4~1.RMA', -1, 'yx', np.float64(0.021375503452856923)))
-   ('TT1', 3, 'MC', np.int64(0), None)
-   ('TT1', 4, 'ES', np.int64(0), None)
-[... 131 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex3.py <<'E'
-import pickle,numpy as np,pandas as pd
-D=pickle.load(open('cache.pkl','rb'))
-for k,d in D.items():
-    ep=d['epochs'].reset_index()
-    occ={}
-    for _,r in d['rm'].iterrows(): occ.setdefault(r.session_type,set()).add(int(np.asarray(r.occupancy_map).sum()))
-    print('==',k,'occupancy totals',occ, 'epoch durations',[(r.session_type,r.stop_time-r.start_time) for _,r in ep.iterrows()])
-    if 'pos' not in d: continue
-    t=d['t']; p=d['pos']; valid=~((p[:,0]==0)&(p[:,1]==255))
-    # per epoch: median best corr with ES maps and MC maps, over units with >=50 spikes in epoch
-    for _,e in ep.iterrows():
-        res={'ES':[], 'MC':[]}
-        for tt,c,s in d['units']:
-            ss=s[(s>=e.start_time)&(s<=e.stop_time)]
-            idx=np.clip(np.searchsorted(t,ss),0,len(t)-1); ok=(t[idx]==ss)&valid[idx]
-            if ok.sum()<50: continue
-            cnt=np.zeros((64,64)); np.add.at(cnt,((p[idx[ok],1]//4).astype(int),(p[idx[ok],0]//4).astype(int)),1)
-            for st in res:
-                cand=d['rm'][(d['rm'].tetrode==tt)&(d['rm'].session_type==st)]
-                cs=[np.corrcoef((np.asarray(r.rate_map)*np.asarray(r.occupancy_map)).ravel(),cnt.ravel())[0,1] for _,r in cand.iterrows() if np.nansum(r.rate_map)>0]
-                if cs: res[st].append(max(cs))
-        print('  epoch',e['id'],e.session_type,e.start_time,e.stop_time,{s:(len(v),round(float(np.median(v)),3) if v else None) for s,v in res.items()})
-    # position coverage per epoch
-    for _,e in ep.iterrows():
-        m=(t>=e.start_time)&(t<=e.stop_time)&valid
-        print('    pos in epoch', e['id'], m.sum(), 'x range',np.percentile(p[m,0],[2,98]) if m.sum() else None,'y range',np.percentile(p[m,1],[2,98]) if m.sum() else None)
-E
-$TMPDIR/venv/bin/python ex3.py 2>&1
-```
-
-```
-== sub-Rat1_ses-19980414T125300 occupancy totals {'ES': {27895}, 'MC': {24774}} epoch durations [('ES', 465.0), ('MC', 413.0)]
-== sub-Rat1_ses-19980420T095700 occupancy totals {'ES': {26967}, 'MC': {25739}} epoch durations [('BL', 865.0), ('BL', 670.0), ('BL', 950.0), ('ES', 485.0), ('MC', 530.0), ('BL', 623.0)]
-  epoch 0 BL 2525.0 3390.0 {'ES': (0, None), 'MC': (0, None)}
-  epoch 1 BL 2720.0 3390.0 {'ES': (0, None), 'MC': (0, None)}
-  epoch 2 BL 3850.0 4800.0 {'ES': (0, None), 'MC': (0, None)}
-  epoch 3 ES 5935.0 6420.0 {'ES': (0, None), 'MC': (0, None)}
-  epoch 4 MC 7020.0 7550.0 {'ES': (0, None), 'MC': (0, None)}
-  epoch 5 BL 7850.0 8473.0 {'ES': (0, None), 'MC': (0, None)}
-    pos in epoch 0 4529 x range [15.781668 38.924312] y range [168.68976 220.00584]
-    pos in epoch 1 4200 x range [15.761848 34.314318] y range [178.91196 220.04934]
-    pos in epoch 2 7206 x range [  0.4538255 228.9875   ] y range [ 84.     254.0328]
-    pos in epoch 3 5067 x range [ 66.003076 221.74792 ] y range [ 85.923228 240.      ]
-    pos in epoch 4 7884 x range [  2.415188 250.48532 ] y range [ 66.75    252.28558]
-    pos in epoch 5 5812 x range [ 24.567348 227.      ] y range [ 75.619628 249.      ]
-== sub-Rat1_ses-19980425T124500 occupancy totals {'ES': {84975}, 'MC': {59340}} epoch durations [('ES', 1611.0), ('BL', 2664.0), ('MC', 1312.0), ('BL', 931.0)]
-  epoch 0 ES 3178.0 4789.0 {'ES': (0, None), 'MC': (0, None)}
-  epoch 1 BL 4871.0 7535.0 {'ES': (0, None), 'MC': (0, None)}
-  epoch 2 MC 7888.0 9200.0 {'ES': (0, None), 'MC': (0, None)}
-  epoch 3 BL 9220.0 10151.0 {'ES': (0, None), 'MC': (0, None)}
-    pos in epoch 0 55256 x range [ 58.10477 225.     ] y range [ 75.67363 247.     ]
-[... 33 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex4.py <<'E'
-import pickle,numpy as np,pandas as pd
-D=pickle.load(open('cache.pkl','rb'))
-for a,b in [('sub-Rat1_ses-19980420T095700','sub-Rat2_ses-19980420T095700'),('sub-Rat1_ses-19980425T124500','sub-Rat2_ses-19980425T124500')]:
-    A,B=D[a],D[b]
-    # nearest timestamps within 5 ms
-    i=np.clip(np.searchsorted(B['t'],A['t']),1,len(B['t'])-1)
-    j=np.where(np.abs(B['t'][i]-A['t'])<np.abs(B['t'][i-1]-A['t']),i,i-1)
-    dt=np.abs(B['t'][j]-A['t']); m=dt<0.005
-    va=~((A['pos'][:,0]==0)&(A['pos'][:,1]==255)); vb=~((B['pos'][j,0]==0)&(B['pos'][j,1]==255))
-    mm=m&va&vb
-    dist=np.hypot(*(A['pos'][mm]-B['pos'][j[mm]]).T)
-    print(a,b,'pairs within 5ms',m.sum(),'both valid',mm.sum(),'exact same pos frac',(dist==0).mean(),'median dist',np.median(dist), 'within 2px',(dist<2).mean())
-    exact=np.isin(A['t'],B['t']); print(' identical timestamps', exact.sum(), 'of', len(A['t']), len(B['t']))
-# spike times shared between rat1 and rat2 units
-for a,b in [('sub-Rat1_ses-19980420T095700','sub-Rat2_ses-19980420T095700'),('sub-Rat1_ses-19980425T124500','sub-Rat2_ses-19980425T124500')]:
-    sa=np.concatenate([s for *_,s in D[a]['units']]); sb=np.concatenate([s for *_,s in D[b]['units']])
-    print('shared spike times',np.isin(sa,sb).mean(), np.isin(sb,sa).mean())
-# per-unit duplicate check within and across files (allowing any identical spike train >=90% overlap)
-E
-$TMPDIR/venv/bin/python ex4.py
-```
-
-```
-sub-Rat1_ses-19980420T095700 sub-Rat2_ses-19980420T095700 pairs within 5ms 2506 both valid 2238 exact same pos frac 0.15638963360142985 median dist 0.09499999999999886 within 2px 0.9879356568364611
- identical timestamps 2506 of 34537 25320
-sub-Rat1_ses-19980425T124500 sub-Rat2_ses-19980425T124500 pairs within 5ms 12819 both valid 11974 exact same pos frac 0.162602304994154 median dist 0.14799999999999613 within 2px 0.9863871722064473
- identical timestamps 12819 of 191065 42858
-shared spike times 0.07254857828794359 0.09745349239824987
-shared spike times 0.0691504432773368 0.3032295160517489
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex5.py <<'E'
-import pickle,numpy as np
-D=pickle.load(open('cache.pkl','rb'))
-for k,d in D.items():
-    s=np.concatenate([x for *_,x in d['units']])
-    frac=np.round((s*1e4)%10,6)
-    dec=[len(str(round(v,6)).split('.')[-1]) if '.' in str(round(v,6)) else 0 for v in s[:5000]]
-    print(k, 'decimals hist',np.bincount(dec), 'min isi within units', min(np.diff(x).min() for *_,x in d['units'] if len(x)>1), 'example', s[:8])
-    isis=np.concatenate([np.diff(x) for *_,x in d['units'] if len(x)>1]); print('   isi<2ms frac',(isis<0.002).mean(), 'isi==0 frac',(isis==0).mean(), 'smallest positive isi', isis[isis>0].min())
-E
-$TMPDIR/venv/bin/python ex5.py
-```
-
-```
-sub-Rat1_ses-19980414T125300 decimals hist [   0  143 1397 3460] min isi within units 0.0 example [276.579 276.612 280.97  294.027 294.046 294.431 294.506 294.963]
-   isi<2ms frac 0.05081967213114754 isi==0 frac 0.04722222222222222 smallest positive isi 0.0009999999999763531
-sub-Rat1_ses-19980420T095700 decimals hist [   0  548 4452] min isi within units 0.0 example [2761.98 2787.71 2847.03 2882.47 2882.52 2884.66 2898.33 2901.96]
-   isi<2ms frac 0.07523785678517776 isi==0 frac 0.07523785678517776 smallest positive isi 0.00999999999839929
-sub-Rat1_ses-19980425T124500 decimals hist [   0  495 4505] min isi within units 0.0 example [3209.09 3209.1  3209.26 3209.74 3209.74 3210.61 3210.61 3210.72]
-   isi<2ms frac 0.05990849651728217 isi==0 frac 0.05990849651728217 smallest positive isi 0.00999999999839929
-sub-Rat2_ses-19980413T163700 decimals hist [   0  495 4505] min isi within units 0.0 example [1013.06 1013.18 1013.3  1013.31 1014.19 1014.2  1016.93 1016.95]
-   isi<2ms frac 0.07872038432143247 isi==0 frac 0.07872038432143247 smallest positive isi 0.009999999999763531
-sub-Rat2_ses-19980420T095700 decimals hist [   0  489 4511] min isi within units 0.0 example [2535.39 2541.86 2541.86 2561.32 2561.37 2562.92 2565.89 2567.73]
-   isi<2ms frac 0.15036123292425152 isi==0 frac 0.15036123292425152 smallest positive isi 0.00999999999839929
-sub-Rat2_ses-19980425T124500 decimals hist [   0  534 4466] min isi within units 0.0 example [3182.6  3241.75 3241.76 3241.77 3254.4  3254.44 3262.43 3262.43]
-   isi<2ms frac 0.10128355173538497 isi==0 frac 0.10128355173538497 smallest positive isi 0.00999999999839929
-sub-Rat3_ses-19980414T134900 decimals hist [   0  260 2390 2350] min isi within units 0.0 example [157.133 157.137 157.143 157.146 157.535 157.538 157.547 157.604]
-   isi<2ms frac 0.021373313593427444 isi==0 frac 0.020309860917071543 smallest positive isi 0.0009999999999763531
-sub-Rat3_ses-19980420T152800 decimals hist [   0  393 3573  982   52] min isi within units 0.0 examp
-[... 2 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex6.py <<'E'
-import pickle,numpy as np
-D=pickle.load(open('cache.pkl','rb'))
-for k,d in D.items():
-    if 'pos' not in d: continue
-    t=d['t'];p=d['pos'];v=~((p[:,0]==0)&(p[:,1]==255))
-    occ={}
-    for _,r in d['rm'].iterrows(): occ[(r.session_type,int(np.asarray(r.occupancy_map).sum()))]=np.asarray(r.occupancy_map)
-    for _,e in d['epochs'].iterrows():
-        m=(t>=e.start_time)&(t<=e.stop_time)&v
-        h=np.zeros((64,64)); np.add.at(h,((p[m,1]//4).astype(int),(p[m,0]//4).astype(int)),1)
-        cs={f'{st}{n}':round(float(np.corrcoef((o>0).ravel(),(h>0).ravel())[0,1]),2) for (st,n),o in occ.items()}
-        print(k[:24],e.session_type,e.start_time,'n',m.sum(),'corr(binary occupancy vs pos hist)',cs)
-    for (st,n),o in occ.items():
-        ys,xs=np.nonzero(o); print('   occ',st,n,'x bins',xs.min(),xs.max(),'y bins',ys.min(),ys.max())
-E
-$TMPDIR/venv/bin/python ex6.py
-```
-
-```
-sub-Rat1_ses-19980420T09 BL 2525.0 n 4529 corr(binary occupancy vs pos hist) {'ES26967': -0.05, 'MC25739': 0.02}
-sub-Rat1_ses-19980420T09 BL 2720.0 n 4200 corr(binary occupancy vs pos hist) {'ES26967': -0.04, 'MC25739': 0.0}
-sub-Rat1_ses-19980420T09 BL 3850.0 n 7206 corr(binary occupancy vs pos hist) {'ES26967': 0.46, 'MC25739': 0.23}
-sub-Rat1_ses-19980420T09 ES 5935.0 n 5067 corr(binary occupancy vs pos hist) {'ES26967': 0.75, 'MC25739': 0.29}
-sub-Rat1_ses-19980420T09 MC 7020.0 n 7884 corr(binary occupancy vs pos hist) {'ES26967': 0.29, 'MC25739': 0.69}
-sub-Rat1_ses-19980420T09 BL 7850.0 n 5812 corr(binary occupancy vs pos hist) {'ES26967': 0.31, 'MC25739': 0.4}
-   occ ES 26967 x bins 0 60 y bins 16 63
-   occ MC 25739 x bins 0 63 y bins 15 63
-sub-Rat1_ses-19980425T12 ES 3178.0 n 55256 corr(binary occupancy vs pos hist) {'ES84975': 0.88, 'MC59340': 0.55}
-sub-Rat1_ses-19980425T12 BL 4871.0 n 49146 corr(binary occupancy vs pos hist) {'ES84975': 0.58, 'MC59340': 0.44}
-sub-Rat1_ses-19980425T12 MC 7888.0 n 54089 corr(binary occupancy vs pos hist) {'ES84975': 0.54, 'MC59340': 0.88}
-sub-Rat1_ses-19980425T12 BL 9220.0 n 17180 corr(binary occupancy vs pos hist) {'ES84975': 0.5, 'MC59340': 0.57}
-   occ ES 84975 x bins 0 63 y bins 15 63
-   occ MC 59340 x bins 0 63 y bins 15 63
-sub-Rat2_ses-19980420T09 BL 2525.0 n 5571 corr(binary occupancy vs pos hist) {'ES53333': -0.05, 'MC34325': 0.04}
-sub-Rat2_ses-19980420T09 ES 3850.0 n 8246 corr(binary occupancy vs pos hist) {'ES53333': 0.68, 'MC34325': 0.4}
-sub-Rat2_ses-19980420T09 BL 5935.0 n 3546 corr(binary occupancy vs pos hist) {'ES53333': 0.42, 'MC34325': 0.3}
-sub-Rat2_ses-19980420T09 BL 7020.0 n 2378 corr(binary occupancy vs pos hist) {'ES53333': 0.15, 'MC34325': 0.29}
-sub-Rat2_ses-19980420T09 MC 7850.0 n 3358 corr(binary occupancy vs pos hist) {'ES53333': 0.3, 'MC34325': 0.53}
-   occ ES 53333 x bins 0 63 y bins 16 63
-[... 14 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; cat > ex7.py <<'E'
-import pickle,numpy as np
-D=pickle.load(open('cache.pkl','rb'))
-for k,d in D.items():
-    for (st),g in d['rm'].groupby('session_type'):
-        o=np.asarray(g.occupancy_map.iloc[0]); 
-        r=np.stack(g.rate_map.values)
-        print(k[:24],st,'occ sentinel bin [63,0]',o[63,0],'of',o.sum(),' occ nonzero bins',(o>0).sum(),' rate>0 where occ==0:',int(((r>0)&(o==0)).sum()), ' nan in rate',int(np.isnan(r).sum()), 'neg', int((r<0).sum()), 'max rate',float(np.nanmax(r)), 'all-zero maps', int((np.nansum(r,axis=(1,2))==0).sum()), 'n',len(g))
-E
-$TMPDIR/venv/bin/python ex7.py
-```
-
-```
-sub-Rat1_ses-19980414T12 ES occ sentinel bin [63,0] 162 of 27895  occ nonzero bins 1041  rate>0 where occ==0: 0  nan in rate 0 neg 82485 max rate 16.0256404876709 all-zero maps 0 n 27
-sub-Rat1_ses-19980414T12 MC occ sentinel bin [63,0] 131 of 24774  occ nonzero bins 828  rate>0 where occ==0: 0  nan in rate 0 neg 114380 max rate 11.05882453918457 all-zero maps 0 n 35
-sub-Rat1_ses-19980420T09 ES occ sentinel bin [63,0] 2118 of 26967  occ nonzero bins 1338  rate>0 where occ==0: 0  nan in rate 0 neg 96530 max rate 10.549450874328613 all-zero maps 0 n 35
-sub-Rat1_ses-19980420T09 MC occ sentinel bin [63,0] 4601 of 25739  occ nonzero bins 1804  rate>0 where occ==0: 0  nan in rate 0 neg 73344 max rate 7.666666507720947 all-zero maps 0 n 32
-sub-Rat1_ses-19980425T12 ES occ sentinel bin [63,0] 3837 of 84975  occ nonzero bins 2137  rate>0 where occ==0: 0  nan in rate 0 neg 50934 max rate 277.80218505859375 all-zero maps 0 n 26
-sub-Rat1_ses-19980425T12 MC occ sentinel bin [63,0] 9975 of 59340  occ nonzero bins 2663  rate>0 where occ==0: 0  nan in rate 0 neg 54454 max rate 20.7639102935791 all-zero maps 0 n 38
-sub-Rat2_ses-19980413T16 ES occ sentinel bin [63,0] 238 of 33564  occ nonzero bins 1343  rate>0 where occ==0: 0  nan in rate 0 neg 71578 max rate 16.842105865478516 all-zero maps 0 n 26
-sub-Rat2_ses-19980413T16 MC occ sentinel bin [63,0] 299 of 34019  occ nonzero bins 994  rate>0 where occ==0: 0  nan in rate 0 neg 102366 max rate 14.794520378112793 all-zero maps 0 n 33
-sub-Rat2_ses-19980420T09 ES occ sentinel bin [63,0] 9356 of 53333  occ nonzero bins 1855  rate>0 where occ==0: 0  nan in rate 0 neg 87399 max rate 30.4761905670166 all-zero maps 0 n 39
-sub-Rat2_ses-19980420T09 MC occ sentinel bin [63,0] 3868 of 34325  occ nonzero bins 2185  rate>0 where occ==0: 0  nan in rate 0 neg 49686 max rate 4.166666507720947 all-zero maps 0 n 26
-sub-Rat2_ses-19980425T12 ES occ sentinel bin [63,0] 5336 of 123177  occ nonzero bins 1687  rate>0 where occ==0: 0  nan in rate 0 neg 98769 max 
-[... 6 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; $TMPDIR/venv/bin/python -c "
-import pickle,numpy as np
-D=pickle.load(open('cache.pkl','rb'))
-for k,d in D.items():
-    r=np.stack(d['rm'].rate_map.values); o=np.stack(d['rm'].occupancy_map.values)
-    print(k[:24], np.unique(r[r<0])[:5], 'neg where occ>0', int(((r<0)&(o>0)).sum()), 'zero rate where occ==0', int(((r==0)&(o==0)).sum()), 'rate at sentinel', np.round(r[:,63,0][:6],2), 'max/mean ratio of maps', np.round(np.median([x[x>=0].max()/x[(x>=0)&(oo>0)].mean() for x,oo in zip(r,o) if x.max()>0]),1))
-"
-```
-
-```
-sub-Rat1_ses-19980414T12 [-999.] neg where occ>0 0 zero rate where occ==0 0 rate at sentinel [0.25 0.12 0.06 0.   0.   0.  ] max/mean ratio of maps 13.1
-sub-Rat1_ses-19980420T09 [-999.] neg where occ>0 0 zero rate where occ==0 0 rate at sentinel [0.01 0.   0.01 0.2  0.41 0.  ] max/mean ratio of maps 11.1
-sub-Rat1_ses-19980425T12 [-999.] neg where occ>0 0 zero rate where occ==0 0 rate at sentinel [0.29 0.04 0.07 0.01 0.   0.2 ] max/mean ratio of maps 16.0
-sub-Rat2_ses-19980413T16 [-999.] neg where occ>0 0 zero rate where occ==0 0 rate at sentinel [0.   0.08 0.92 0.25 0.   0.  ] max/mean ratio of maps 13.9
-sub-Rat2_ses-19980420T09 [-999.] neg where occ>0 0 zero rate where occ==0 0 rate at sentinel [0.12 0.54 0.33 0.03 0.09 0.14] max/mean ratio of maps 15.2
-sub-Rat2_ses-19980425T12 [-999.] neg where occ>0 0 zero rate where occ==0 0 rate at sentinel [0.01 0.09 0.12 0.1  0.42 0.06] max/mean ratio of maps 17.4
-sub-Rat3_ses-19980414T13 [-999.] neg where occ>0 0 zero rate where occ==0 0 rate at sentinel [0.57 0.11 0.   0.34 0.   0.57] max/mean ratio of maps 15.9
-sub-Rat3_ses-19980420T15 [-999.] neg where occ>0 0 zero rate where occ==0 0 rate at sentinel [0.02 0.03 0.19 0.36 0.11 0.01] max/mean ratio of maps 19.6
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat schemas/claims.schema.json | head -120; python -c "
-import json;s=json.load(open('schemas/attempt.schema.json'));print(json.dumps(s,indent=1)[:6000])"
-```
-
-```
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Claims proposed for one target (a dandiset and one of its papers)",
-  "description": "Draft. To be revised after the pilot.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "schema_version",
-    "dandiset",
-    "paper",
-    "claims"
-  ],
-  "properties": {
-    "schema_version": {
-      "const": 1
-    },
-    "dandiset": {
-      "type": "string",
-      "pattern": "^[0-9]{6}$"
-    },
-[... 367 more lines not kept]
-```
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "claims/001754/10.1038-72910.yaml",
- "content": "# Claims for Knierim, McNaughton & Poe (2000) on dandiset 001754.\n# Source: the paper is not open access. Only its abstract (the first paragraph shown on the\n# publisher's page) and the titles of its three figures were available. Claims marked as from the\n# dandiset description are taken from the description the data owners gave the dandiset, which\n# summarises the paper's findings; they could not be checked against the paper's text.\n#\n# When these criteria were written, the author had seen the data check only: the file list and\n# metadata, the epochs, units, positions and rate maps of every file; that the Rat1 and Rat2 files\n# of the same flight day share one position trace; that each labelled ES or MC epoch's position\n# histogram matches its own occupancy map best; that rate maps use -999 for unvisited bins and that\n# the tracker's missing-position value (0, 255) falls in occupancy bin [63, 0]; and the correlation\n# between unit spike-count maps and rate maps used to test the rate-map identifiers. No spatial\n# information, shuffle or stability analysis had been run.\n#\n# Method choices fixed here, as no Methods were available. Position is the dandiset's video\n# pixel position (0 to 255), binned as the rate maps are (4 pixels per bin, 64 x 64), then merged\n# 2 x 2 into 32 x 32 bins. Samples at (0, 255) are missing tracking and are dropped, and the\n# occupancy bin [63, 0] is left out. Occupancy is the rate-map occupancy map of the epoch (the\n# dandiset holds position only at spike times); bins with fewer than 5 counts are left out.\n# Spatial information is Skaggs' bits per spike. A unit is a tetrode and cluster id within one\n# epoch, with at least 50 spikes at a known position.\nschema_version: 1\ndandiset: \"001754\"\npaper: doi:10.1038/72910\nclaims:\n- id: flight-spatial-code\n  statement: Hippocampal neurons recorded on the space shuttle form a robust spatial code on the\n    three-dimensional Escher staircase track in weightlessness.\n  source: Abstract; dandiset description (\"Place cells eventually demonstrated normal spatially\n    specific firing\")\n  criterion: For each in-flight Escher staircase (ES) epoch, each unit's spatial information is\n    compared with 500 shuffles in which the spike train is shifted circularly within the epoch by\n    20 s or more and each shifted spike takes the position of the nearest position sample within\n    0.25 s (spikes without one are dropped). A unit is significant when its spatial information\n    exceeds the 95th percentile of its shuffles. Judged on the two flight day 9 sessions (Rat1 and\n    Rat2), as the claim is that the code can form. Reproduced when in both the fraction of\n    significant units is at least 0.5; partially reproduced when it is above chance (one-sided\n    binomial test against 0.05, p < 0.01) in both but below 0.5 in one or both, or reproduced in\n    one only; not reproduced otherwise. The flight day 4 sessions (Rats 1 to 3) are reported, as\n    are other thresholds.\n- id: three-orthogonal-surfaces\n  statement: The spatial code covers each of the three orthogonal surfaces of the Escher\n    staircase.\n  source: Abstract\n  criterion: Would need each position assigned to one of the track's three surfaces, and the\n    place fields counted per surface.\n- id: si-comparable-to-preflight\n  statement: In flight, spatial information content of place cells is comparable to preflight\n    levels.\n  source: Dandiset description (not checked against the paper's text)\n  criterion: A claim of absence. The paper's test is not known; the test is fixed here as a\n    two-sided Mann-Whitney U test at alpha 0.05 of spatial information (bits per spike) computed\n    from the dandiset's rate maps (rate_map and occupancy_map, -999 bins and bin [63, 0] left\n    out), flight day 9 ES maps against preflight ES maps, Rats 1 and 2 pooled (Rat3 has no flight\n    day 9). All rate maps of the session type with a positive mean rate are used, each distinct\n    map once (identical maps in one file are counted once). Reproduced when the test finds no\n    difference, not reproduced when it does; the median difference is given either way. Shown\n    as variants, not deciding the outcome - per rat, maps whose name contains CEL only, maps with\n    a peak rate of 1 Hz or more, Magic Carpet (MC) maps, and all flight maps.\n- id: fd4-abnormal-selectivity\n  statement: On the first in-flight exposures (flight day 4) spatial selectivity was abnormal.\n  source: Dandiset description (not checked against the paper's text)\n  criterion: Abnormal is read as lower spatial information. Spatial information from the rate\n    maps as in si-comparable-to-preflight, flight day 4 ES maps (Rats 1 to 3, both Rat3 ES\n    epochs) against preflight ES maps (Rats 1 to 3). Reproduced when the flight day 4 median is\n    lower and a one-sided Mann-Whitney U test gives p < 0.05; not reproduced otherwise. Flight day\n    4 against flight day 9 (Rats 1 and 2) and the spike-based fraction of significant units of\n    flight-spatial-code by day are reported.\n- id: fig3-stability-across-sessions\n  statement: Place fields are stable across sessions.\n  source: Figure 3 (title only; which sessions the figure compares is not known)\n  criterion: Tested on the only pair of sessions on the same track and day with known position,\n    the two ES epochs of Rat3 on flight day 4. A unit is the same tetrode and cluster id in both\n    epochs, with at least 50 spikes at a known position in each. Rate maps on 32 x 32 bins, spike\n    counts and occupancy each smoothed with a Gaussian of 1 bin; Pearson correlation over bins with\n    at least 5 occupancy counts in both epochs. The median same-unit correlation is compared with\n    the medians of 1000 random re-pairings of units between the epochs. Reproduced when it exceeds\n    the 95th percentile of the re-paired medians and is above 0.5; partially reproduced when it\n    exceeds the 95th percentile but is 0.5 or below; not reproduced otherwise. The correlation of\n    the dandiset's rate maps for the two epochs is shown as a variant.\n- id: theta-normal\n  statement: Hippocampal EEG showed normal theta rhythm during locomotion in flight.\n  source: Dandiset description (not checked against the paper's text)\n  criterion: Would need the hippocampal EEG.\n- id: ripples-normal\n  statement: Hippocampal EEG showed normal sharp waves and ripples during quiet rest in flight.\n  source: Dandiset description (not checked against the paper's text)\n  criterion: Would need the hippocampal EEG.\n"
-}
-```
-
-```
-File created successfully at: claims/001754/10.1038-72910.yaml (file state is current in your context — no need to Read it back)
+Write prose plainly: n
+[... 3 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "entries/001453-fouke-2025/omr.py",
- "limit": 80
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/269c3001-8e7f-4cbd-97d8-573742168bb8/tool-results/buzvjyory.txt"
 }
 ```
 
 ```
-1	"""Loading and measures for the freely swimming optomotor data of dandiset 001453.
+1	You are the author of a new attempt on dandiset {dandiset} in the reproduction registry, checked out in the current directory. Follow docs/protocol.md exactly; read it first. The dandiset already has an attempt, `{earlier}` (entry `entries/{entry}`, claims in `claims/{dandiset}/`), made on version {earlier_version}. Since then the dandiset has changed, and this attempt tests what it holds now.
 2	
-3	Fouke, He, Loring & Naumann (2025), Current Biology, doi:10.1016/j.cub.2025.04.027.
+3	Paper: doi:{paper}, "{title}". Save any text of the paper you download under `paper/` and read it from there. Stream the NWB files from the DANDI API; do not download them to disk.
 4	
-5	Each NWB file holds one fish: x and y position (pixels), heading (`f0_theta`, radians), its
-6	change per frame (`f0_vtheta`; the file says radians/s, the data show radians per frame),
-7	velocity estimates, and per frame the stimulus code and trial number (`stim_index`). Files are
-8	streamed from the archive at the pinned version; nothing is written to disk.
-9	
-10	Where the parameters come from:
+5	{version_rule}
+6	
+7	1. Keep the claims file as it is unless a claim is wrong about the paper; if you change one, say why in the file's opening comment.
+8	2. Update the entry in place to stream the new version: the helper's version constant, `entry.yaml`'s `dandi:` relation, the notebook header and README. The earlier attempt record stays as it is.
+9	3. Re-run every check of the data and every claim. For each finding of `{earlier}`, say in the notebook's data check and in the new record whether it is fixed, partly fixed or still present, with the output that shows it. Record new findings too.
+10	4. Lock, check and run the entry, make every conclusion match the new numbers, and write the new record `attempts/{next_attempt}.yaml`. Its outcomes are this attempt's own; where one differs from `{earlier}`, say why in its notes. Then run `python tools/entry.py handover entries/{entry}`. Do not verify your own work, and do not commit or push: the workflow commits your changes.
 11	
-12	- Trial processing follows the paper's analysis notebook, Fig1-S1.ipynb, in
-13	  https://gitlab.oit.duke.edu/ean26/danionella_omr_neuralcircuits2025 at commit
-14	  33a5c297ff4ab6ff49f6bdd96139e9fdd867025c (the Methods give none of these): Savitzky-Golay
-15	  smoothing of positions (21 frames, order 2); rejection of trials whose absolute cumulative
-16	  heading change exceeds 1000 degrees in the first 10 s or 2000 degrees in the first 35 s, or
-17	  whose mean speed exceeds 100 mm/s; measures from 3 s to 35 s after the first tracked frame;
-18	  10 pixels per mm (the code divides pixels per second by 10 to give mm/s); per fish the median
-19	  over trials. The 3 s stationary phase and the 32 s of motion are in the Methods.
-20	- The names of the stimulus codes combine the protocol file sevenrep_twentyonestim.hdf of the
-[... 60 more lines not kept]
-```
-
-**Agent**
-
-Now the helper module.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/001754-knierim-2000/neurolab.py",
- "content": "\"\"\"Loading and spatial measures for the Neurolab (STS-90) place cell data of dandiset 001754.\n\nKnierim, McNaughton & Poe (2000), Nature Neuroscience 3:209-210, doi:10.1038/72910.\n\nEach NWB file holds one rat on one day (preflight, flight day 4 or flight day 9): sorted units\n(spike times in seconds, tetrode and Xclust cluster id), task epochs (BL baseline, ES Escher\nstaircase, MC Magic Carpet), and a table of 64 x 64 rate and occupancy maps from the original\nanalysis (.RMA files). The flight files also hold the video position in pixels (0 to 255), but\nonly at spike times: the conversion took it from the position column of the spike files. Files\nare streamed from the archive at the pinned version; nothing is written to disk.\n\nWhere the parameters come from. The paper's Methods were not available (it is not open access),\nso every parameter below is a common choice, fixed in the claims file before the analysis:\n\n- `PX_PER_RMA_BIN = 4`: the rate maps are 64 x 64 over the 256-pixel video range; spike-count\n  maps binned this way match them best (shown in the notebook's data check).\n- `MERGE = 2`: spatial information and stability use 32 x 32 bins (2 x 2 rate-map bins).\n- `MISSING_XY = (0, 255)`: the tracker's value for a lost position; it falls in rate-map bin\n  `SENTINEL_BIN = (63, 0)`, which is left out of every occupancy.\n- `UNVISITED = -999`: the rate maps' value for bins without occupancy.\n- `MIN_OCC = 5` occupancy counts per bin, `MIN_SPIKES = 50` spikes at a known position per unit.\n- Shuffles shift spikes circularly by at least `MIN_SHIFT_S = 20` s and take the position of the\n  nearest position sample within `MAX_LOOKUP_S = 0.25` s.\n\"\"\"\n\nfrom __future__ import annotations\n\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport pandas as pd\nimport remfile\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy.ndimage import gaussian_filter\n\nDANDISET_ID = \"001754\"\nDANDISET_VERSION = \"0.260728.1352\"\n\nPX_PER_RMA_BIN = 4\nMERGE = 2\nMISSING_XY = (0.0, 255.0)\nSENTINEL_BIN = (63, 0)\nUNVISITED = -999.0\nMIN_OCC = 5\nMIN_SPIKES = 50\nMIN_SHIFT_S = 20.0\nMAX_LOOKUP_S = 0.25\nN_SHUFFLES = 500\n\n\ndef asset_urls() -> list[tuple[str, str]]:\n    \"\"\"(path, streaming URL) of every NWB file at the pinned version.\"\"\"\n    with DandiAPIClient() as client:\n        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)\n        return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))\n                      for a in dandiset.get_assets() if a.path.endswith(\".nwb\"))\n\n\ndef _text(value) -> str:\n    return value.decode() if isinstance(value, bytes) else str(value)\n\n\ndef _column(group, name):\n    return [_text(v) for v in group[name][:]]\n\n\ndef h5_tree(path_url: tuple[str, str]) -> list[str]:\n    \"\"\"Every dataset in a file, with its shape, type and description or unit.\"\"\"\n    lines = []\n    with h5py.File(remfile.File(path_url[1]), \"r\") as f:\n        def visit(name, obj):\n            if isinstance(obj, h5py.Dataset) and not name.startswith(\"specifications\"):\n                note = obj.attrs.get(\"description\", obj.attrs.get(\"unit\", \"\"))\n                lines.append(f\"{name}  {obj.shape}  {obj.dtype}  {_text(note)[:70]}\")\n        f.visititems(visit)\n    return lines\n\n\ndef load_session(path_url: tuple[str, str]) -> dict:\n    \"\"\"Read one file: metadata, epochs, units, position and rate maps.\"\"\"\n    path, url = path_url\n    with h5py.File(remfile.File(url), \"r\") as f:\n        s = {\"path\": path,\n             \"subject\": _text(f[\"general/subject/subject_id\"][()]),\n             \"description\": _text(f[\"session_description\"][()]),\n             \"start\": _text(f[\"session_start_time\"][()])}\n        s[\"day\"] = (\"preflight\" if \"Preflight\" in s[\"description\"]\n                    else \"FD4\" if \"Flight Day 4\" in s[\"description\"] else \"FD9\")\n        ep = f[\"intervals/epochs\"]\n        s[\"epochs\"] = pd.DataFrame({\"start\": ep[\"start_time\"][:], \"stop\": ep[\"stop_time\"][:],\n                                    \"type\": _column(ep, \"session_type\")})\n        u = f[\"units\"]\n        index = u[\"spike_times_index\"][:]\n        times = u[\"spike_times\"][:]\n        starts = np.concatenate([[0], index[:-1]])\n        s[\"units\"] = pd.DataFrame({\"tetrode\": _column(u, \"tetrode\"),\n                                   \"cluster\": u[\"cluster_id\"][:],\n                                   \"spikes\": [times[a:b] for a, b in zip(starts, index)]})\n        if \"processing/behavior\" in f:\n            ss = f[\"processing/behavior/position/spatial_series\"]\n            s[\"t\"] = ss[\"timestamps\"][:]\n            s[\"xy\"] = ss[\"data\"][:]\n            s[\"xy_unit\"] = _text(ss[\"data\"].attrs[\"unit\"])\n            s[\"xy_description\"] = _text(ss.attrs.get(\"description\", \"\"))\n        rm = f[\"processing/ecephys/rate_maps\"]\n        s[\"maps\"] = pd.DataFrame({\"tetrode\": _column(rm, \"tetrode\"),\n                                  \"source_file\": _column(rm, \"source_file\"),\n                                  \"type\": _column(rm, \"session_type\"),\n                                  \"cell_number\": rm[\"cell_number\"][:]})\n        s[\"rate_maps\"] = rm[\"rate_map\"][:].astype(float)\n        s[\"occupancy_maps\"] = rm[\"occupancy_map\"][:].astype(float)\n    if \"xy\" in s:\n        s[\"valid\"] = ~((s[\"xy\"][:, 0] == MISSING_XY[0]) & (s[\"xy\"][:, 1] == MISSING_XY[1]))\n    return s\n\n\ndef load_all() -> list[dict]:\n    with ThreadPoolExecutor(8) as pool:\n        return list(pool.map(load_session, asset_urls()))\n\n\ndef label(s: dict) -> str:\n    return f\"{s['subject']} {s['day']}\"\n\n\n# ---------------------------------------------------------------- rate maps of the dandiset\n\ndef map_occupancy_groups(s: dict) -> list[tuple[str, np.ndarray, np.ndarray]]:\n    \"\"\"Distinct occupancy maps of a file: (session type, occupancy, row indices using it).\"\"\"\n    groups = {}\n    for i, (typ, occ) in enumerate(zip(s[\"maps\"][\"type\"], s[\"occupancy_maps\"])):\n        groups.setdefault((typ, occ.tobytes()), (typ, occ, []))[2].append(i)\n    return [(typ, occ, np.array(rows)) for typ, occ, rows in groups.values()]\n\n\ndef clean_occupancy(occ: np.ndarray) -> np.ndarray:\n    occ = occ.astype(float).copy()\n    occ[SENTINEL_BIN] = 0.0\n    return occ\n\n\ndef skaggs_info(rate: np.ndarray, occ: np.ndarray) -> float:\n    \"\"\"Skaggs et al. (1993) spatial information in bits per spike, over bins with occ > 0.\"\"\"\n    keep = occ > 0\n    p = occ[keep] / occ[keep].sum()\n    r = rate[keep]\n    mean = (p * r).sum()\n    if mean <= 0:\n        return np.nan\n    nz = r > 0\n    return float((p[nz] * (r[nz] / mean) * np.log2(r[nz] / mean)).sum())\n\n\ndef rma_info(rate_map: np.ndarray, occ_map: np.ndarray) -> tuple[float, float, float]:\n    \"\"\"(bits per spike, mean rate, peak rate) of one of the dandiset's rate maps.\"\"\"\n    occ = clean_occupancy(occ_map)\n    occ[rate_map == UNVISITED] = 0\n    rate = np.where(occ > 0, rate_map, 0.0)\n    keep = occ > 0\n    mean = float((rate[keep] * occ[keep]).sum() / occ[keep].sum())\n    return skaggs_info(rate, occ), mean, float(rate[keep].max())\n\n\ndef rma_table(sessions: list[dict]) -> pd.DataFrame:\n    \"\"\"Spatial information of every distinct rate map; identical maps in a file count once.\"\"\"\n    rows = []\n    for s in sessions:\n        seen = set()\n        for i, m in s[\"maps\"].iterrows():\n            key = s[\"rate_maps\"][i].tobytes()\n            duplicate = key in seen\n            seen.add(key)\n            info, mean, peak = rma_info(s[\"rate_maps\"][i], s[\"occupancy_maps\"][i])\n            rows.append({\"rat\": s[\"subject\"], \"day\": s[\"day\"], \"type\": m[\"type\"],\n                         \"tetrode\": m[\"tetrode\"], \"source_file\": m[\"source_file\"],\n                         \"cel_name\": \"CEL\" in m[\"source_file\"].upper(),\n                         \"duplicate\": duplicate, \"info\": info, \"mean_rate\": mean,\n                         \"peak_rate\": peak})\n    return pd.DataFrame(rows)\n\n\n# ---------------------------------------------------------------- spikes and positions\n\ndef bin_xy(xy: np.ndarray) -> tuple[np.ndarray, np.ndarray]:\n    \"\"\"(row, column) of each position on the 64 x 64 rate-map grid: row from y, column from x.\"\"\"\n    col = np.clip((xy[:, 0] // PX_PER_RMA_BIN).astype(int), 0, 63)\n    row = np.clip((xy[:, 1] // PX_PER_RMA_BIN).astype(int), 0, 63)\n    return row, col\n\n\ndef merge_bins(a: np.ndarray, k: int = MERGE) -> np.ndarray:\n    n = a.shape[0] // k\n    return a.reshape(n, k, n, k).sum(axis=(1, 3))\n\n\nclass PositionLookup:\n    \"\"\"Positions of the pooled trace (valid samples only) at arbitrary times.\"\"\"\n\n    def __init__(self, s: dict):\n        keep = s[\"valid\"]\n        self.t = s[\"t\"][keep]\n        self.row, self.col = bin_xy(s[\"xy\"][keep])\n\n    def __call__(self, times: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:\n        \"\"\"(found, row, column): found marks times with a sample within MAX_LOOKUP_S.\"\"\"\n        i = np.clip(np.searchsorted(self.t, times), 1, len(self.t) - 1)\n        left_closer = np.abs(self.t[i - 1] - times) <= np.abs(self.t[i] - times)\n        j = np.where(left_closer, i - 1, i)\n        found = np.abs(self.t[j] - times) <= MAX_LOOKUP_S\n        return found, self.row[j[found]], self.col[j[found]]\n\n\ndef count_map(rows: np.ndarray, cols: np.ndarray) -> np.ndarray:\n    counts = np.zeros((64, 64))\n    np.add.at(counts, (rows, cols), 1)\n    return counts\n\n\ndef epoch_occupancy(s: dict, start: float, stop: float, typ: str) -> tuple[np.ndarray, list]:\n    \"\"\"The rate-map occupancy map that belongs to an epoch, and the match scores of all\n    candidates of the same type: the correlation of each binary occupancy map with the binary\n    histogram of the epoch's position samples.\"\"\"\n    m = (s[\"t\"] >= start) & (s[\"t\"] <= stop) & s[\"valid\"]\n    hist = count_map(*bin_xy(s[\"xy\"][m])) > 0\n    scores = []\n    for t, occ, rows in map_occupancy_groups(s):\n        if t == typ:\n            r = np.corrcoef((clean_occupancy(occ) > 0).ravel(), hist.ravel())[0, 1]\n            scores.append((float(r), int(occ.sum()), occ))\n    scores.sort(key=lambda x: -x[0])\n    return scores[0][2], [(r, n) for r, n, _ in scores]\n\n\ndef spatial_info_spikes(rows: np.ndarray, cols: np.ndarray, occ32: np.ndarray) -> float:\n    counts = merge_bins(count_map(rows, cols))\n    keep = occ32 >= MIN_OCC\n    rate = np.where(keep, counts / np.where(keep, occ32, 1), 0.0)\n    return skaggs_info(rate, np.where(keep, occ32, 0))\n\n\ndef epoch_units(s: dict, start: float, stop: float, typ: str, rng: np.random.Generator,\n                n_shuffles: int = N_SHUFFLES) -> pd.DataFrame:\n    \"\"\"Spatial information of every unit in one epoch with its shuffle distribution.\"\"\"\n    occ, _ = epoch_occupancy(s, start, stop, typ)\n    occ32 = merge_bins(clean_occupancy(occ))\n    lookup = PositionLookup(s)\n    duration = stop - start\n    out = []\n    for _, u in s[\"units\"].iterrows():\n        sp = u[\"spikes\"][(u[\"spikes\"] >= start) & (u[\"spikes\"] <= stop)]\n        found, r, c = lookup(sp)\n        keep = occ32[r // MERGE, c // MERGE] >= MIN_OCC\n        n = int(keep.sum())\n        row = {\"rat\": s[\"subject\"], \"day\": s[\"day\"], \"epoch_start\": start, \"tetrode\": u[\"tetrode\"],\n               \"cluster\": int(u[\"cluster\"]), \"spikes_in_epoch\": len(sp), \"spikes_used\": n}\n        if n < MIN_SPIKES:\n            out.append(row | {\"info\": np.nan, \"p\": np.nan, \"null95\": np.nan})\n            continue\n        info = spatial_info_spikes(r[keep], c[keep], occ32)\n        null = np.empty(n_shuffles)\n        shifts = rng.uniform(MIN_SHIFT_S, duration - MIN_SHIFT_S, n_shuffles)\n        for k, shift in enumerate(shifts):\n            shifted = start + (sp - start + shift) % duration\n            f2, r2, c2 = lookup(shifted)\n            k2 = occ32[r2 // MERGE, c2 // MERGE] >= MIN_OCC\n            null[k] = spatial_info_spikes(r2[k2], c2[k2], occ32)\n        out.append(row | {\"info\": info, \"p\": float((null >= info).mean()),\n                          \"null95\": float(np.percentile(null, 95))})\n    return pd.DataFrame(out)\n\n\ndef smoothed_rate_map(rows, cols, occ64: np.ndarray, sigma: float = 1.0) -> tuple[np.ndarray, np.ndarray]:\n    \"\"\"32 x 32 rate map with spike counts and occupancy each smoothed by a Gaussian (in bins);\n    returns (rate, smoothed occupancy).\"\"\"\n    occ32 = merge_bins(clean_occupancy(occ64))\n    counts = merge_bins(count_map(rows, cols))\n    sc = gaussian_filter(counts, sigma)\n    so = gaussian_filter(occ32, sigma)\n    rate = np.where(occ32 >= MIN_OCC, sc / np.maximum(so, 1e-9), np.nan)\n    return rate, occ32\n"
-}
-```
-
-```
-File created successfully at: entries/001754-knierim-2000/neurolab.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Now the notebook. I'll generate it with nbformat from a script so cells and tags are explicit.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "/tmp/claude/build_nb.py",
- "content": "import nbformat as nbf\nimport sys\n\ncells = []\n\n\ndef md(text, tags=None):\n    c = nbf.v4.new_markdown_cell(text.strip(\"\\n\"))\n    if tags:\n        c.metadata[\"tags\"] = tags\n    cells.append(c)\n\n\ndef code(text, tags=None):\n    c = nbf.v4.new_code_cell(text.strip(\"\\n\"))\n    if tags:\n        c.metadata[\"tags\"] = tags\n    cells.append(c)\n\n\nmd(r\"\"\"\n# Reproducing Knierim, McNaughton & Poe (2000) from dandiset 001754\n\n**Paper.** Knierim JJ, McNaughton BL, Poe GR (2000). Three-dimensional spatial selectivity of\nhippocampal neurons during space flight. *Nature Neuroscience* 3:209-210.\n[doi:10.1038/72910](https://doi.org/10.1038/72910). The paper is not open access. This attempt\nused only its abstract and the titles of its three figures, from the publisher's page. Three\nclaims come from the dandiset's own description, which summarises the paper's findings; they\ncould not be checked against the paper's text.\n\n**Dandiset.** [DANDI:001754](https://dandiarchive.org/dandiset/001754/0.260728.1352), version\n0.260728.1352. The paper (2000) cites no DANDI version. Three versions are published\n(0.260227.0029, 0.260227.0031, 0.260728.1352); they hold the same eight files (same blobs, checked\nbelow) and differ only in metadata (the last adds the journal name to the paper's link). The most\nrecent is pinned.\n\n**What the dandiset holds.** Three rats on the Neurolab mission (STS-90, April 1998): a preflight\nrecording of each, flight day 4 (FD4) of each, and flight day 9 (FD9) of Rats 1 and 2. Each file\nhas sorted units, task epochs (BL baseline, ES Escher staircase, MC Magic Carpet), and the 64 x\n64 rate and occupancy maps of the original analysis for ES and MC. The flight files also hold the\nvideo position, but only at spike times. There is no EEG and no head direction.\n\n**Conversion code read.** [catalystneuro/mcnaughton2000-to-nwb](https://github.com/catalystneuro/mcnaughton2000-to-nwb)\nat commit b538d9e07079394362a64e5118a226e91bdd7ab5, linked from the dandiset. It merges the\nper-epoch spike files (.CEL) of each tetrode and cluster id into one unit, takes position from\nthe spike files' position columns, builds the epochs from the spike files' headers and names, and\nreads the .RMA rate maps. The paper's own analysis code is not linked and was not found.\n\n| Claim | Source | Tested |\n|---|---|---|\n| `flight-spatial-code`: a robust spatial code on the Escher staircase in flight | Abstract | Yes |\n| `three-orthogonal-surfaces`: the code covers each of the three surfaces | Abstract | Blocked: metadata insufficient |\n| `si-comparable-to-preflight`: flight spatial information comparable to preflight | Dandiset description | Yes |\n| `fd4-abnormal-selectivity`: abnormal selectivity on flight day 4 | Dandiset description | Yes |\n| `fig3-stability-across-sessions`: place fields stable across sessions | Figure 3 title | Yes |\n| `theta-normal`: normal theta in flight | Dandiset description | Blocked: data missing |\n| `ripples-normal`: normal sharp waves and ripples in flight | Dandiset description | Blocked: data missing |\n\"\"\")\n\ncode(r\"\"\"\nimport time\nimport warnings\n\nimport matplotlib.pyplot as plt\nimport numpy as np\nimport pandas as pd\nimport requests\nfrom scipy import stats\n\nimport neurolab as nl\n\npd.set_option(\"display.width\", 200)\npd.set_option(\"display.max_columns\", 30)\npd.set_option(\"display.max_rows\", 300)\nwarnings.filterwarnings(\"ignore\", category=RuntimeWarning)\n\nstarted = time.time()\nsessions = nl.load_all()\nby_label = {nl.label(s): s for s in sessions}\nprint(f\"loaded {len(sessions)} files from dandiset {nl.DANDISET_ID} version {nl.DANDISET_VERSION} \"\n      f\"in {time.time() - started:.0f} s\")\n\"\"\")\n\nmd(\"\"\"\n## Data check\n\nEach check of the metadata against the values is stated under its output.\n\"\"\")\n\ncode(r\"\"\"\napi = \"https://api.dandiarchive.org/api/dandisets/001754/versions\"\nversions = [v[\"version\"] for v in requests.get(f\"{api}/\", timeout=60).json()[\"results\"] if v[\"version\"] != \"draft\"]\nblobs = {}\nfor v in versions:\n    assets = requests.get(f\"{api}/{v}/assets/\", params={\"page_size\": 100}, timeout=60).json()[\"results\"]\n    blobs[v] = sorted((a[\"path\"], a[\"size\"], a.get(\"blob\")) for a in assets)\nprint(\"Published versions:\", versions)\nprint(\"All versions hold the same files with the same blobs:\", all(b == blobs[versions[0]] for b in blobs.values()))\nfor path, size, _ in blobs[nl.DANDISET_VERSION]:\n    print(f\"  {path}  {size / 1e6:.1f} MB\")\n\nprint(\"\\nEverything the largest flight file holds (datasets, shape, type, description):\")\nflight = [p for p in nl.asset_urls() if \"Rat1_ses-19980425\" in p[0]][0]\nfor line in nl.h5_tree(flight):\n    if \"/rate_maps/\" in line or line.startswith((\"units/\", \"intervals/\", \"processing/behavior\", \"general/subject\", \"general/extracellular_ephys/electrodes/\")) :\n        print(\" \", line)\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\nThe three published versions hold the same eight files. The listing shows every table and its\ncolumns: the units table has only `tetrode`, `cluster_id`, `spike_times` and `electrodes`; the\nepochs table `session_type` and its description; the rate-map table `tetrode`, `source_file`,\n`session_type`, `cell_number`, `rate_map` and `occupancy_map`; the position one series of x and y\nin pixels. The conversion code's README also lists `session_type` and `source_file` as unit\ncolumns; they are not in the files, so a unit cannot be traced to the spike file it came from.\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor s in sessions:\n    ep = s[\"epochs\"]\n    rows.append({\"file\": s[\"path\"].split(\"/\")[1][:31], \"rat\": s[\"subject\"], \"day\": s[\"day\"], \"start\": s[\"start\"][:16],\n                 \"units\": len(s[\"units\"]), \"spikes\": int(sum(len(x) for x in s[\"units\"][\"spikes\"])),\n                 \"tetrodes\": s[\"units\"][\"tetrode\"].nunique(),\n                 \"epochs\": \" \".join(f\"{t}[{a:.0f}-{b:.0f}]\" for a, b, t in ep[[\"start\", \"stop\", \"type\"]].itertuples(index=False)),\n                 \"rate_maps\": len(s[\"maps\"]), \"map_types\": \"/\".join(sorted(s[\"maps\"][\"type\"].unique())),\n                 \"position_samples\": len(s[\"t\"]) if \"t\" in s else 0})\ninfo = pd.DataFrame(rows)\nprint(info.to_string(index=False))\nprint(\"\\nFiles per rat and day:\"); print(pd.crosstab(info.rat, info.day).to_string())\nfor s in sessions:\n    print(f\"{nl.label(s):14s} {s['description']}\")\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\nThree rats, eight files: preflight and FD4 for each rat, FD9 for Rats 1 and 2, as the description\nsays. Rate maps exist only for ES and MC epochs, not for baseline. Position exists only in the five\nflight files. In the Rat1 FD4 file two baseline epochs overlap (2525 to 3390 s and 2720 to 3390 s);\nthese are two spike-file headers and are not used here.\n\"\"\")\n\ncode(r\"\"\"\nprint(\"Position, flight files. Stated unit:\", {s['xy_unit'] for s in sessions if 'xy' in s}, \"; description:\", {s['xy_description'] for s in sessions if 'xy' in s})\nrows = []\nfor s in sessions:\n    if \"xy\" not in s:\n        continue\n    xy, v, t = s[\"xy\"], s[\"valid\"], s[\"t\"]\n    all_spikes = np.unique(np.concatenate(list(s[\"units\"][\"spikes\"])))\n    rows.append({\"session\": nl.label(s), \"samples\": len(t), \"missing_(0,255)\": round(1 - v.mean(), 3),\n                 \"x_min\": xy[v, 0].min(), \"x_max\": xy[v, 0].max(), \"y_min\": xy[v, 1].min(), \"y_max\": xy[v, 1].max(),\n                 \"t_first\": t[0], \"t_last\": t[-1], \"median_dt_s\": round(float(np.median(np.diff(t))), 3),\n                 \"frac_samples_at_spike_times\": np.isin(t, all_spikes).mean(),\n                 \"frac_spike_times_with_sample\": round(float(np.isin(all_spikes, t).mean()), 4)})\nprint(pd.DataFrame(rows).round(2).to_string(index=False))\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\nPosition is in video pixels from 0 to 255 in x and y. A sample at exactly (0, 255) is the tracker's\nlost position (5 to 12% of samples); these are dropped. Every position sample is at a spike time,\nso the trace is sampled only when some unit fires, at irregular intervals; consistent with the\ndescription (\"sampled at spike occurrence times\"). No continuous position, and so no occupancy\ntime, can be built from it; the occupancy maps of the original analysis are used instead.\n\"\"\")\n\ncode(r\"\"\"\nprint(\"Do the Rat1 and Rat2 files of the same flight day hold the same position trace?\")\nfor day in [\"FD4\", \"FD9\"]:\n    a, b = by_label[f\"Rat1 {day}\"], by_label[f\"Rat2 {day}\"]\n    common, ia, ib = np.intersect1d(a[\"t\"], b[\"t\"], return_indices=True)\n    both = a[\"valid\"][ia] & b[\"valid\"][ib]\n    dist = np.hypot(*(a[\"xy\"][ia][both] - b[\"xy\"][ib][both]).T)\n    print(f\"  {day}: {len(common)} identical timestamps; at {both.sum()} with both valid, positions within 2 px: \"\n          f\"{(dist < 2).mean():.3f}, median distance {np.median(dist):.2f} px; the same epoch boundaries: \"\n          f\"{np.allclose(np.sort(a['epochs'].start.unique()), np.sort(b['epochs'].start.unique())) or sorted(set(a['epochs'].start) ^ set(b['epochs'].start))}\")\n    print(\"    Rat1 epochs:\", list(a[\"epochs\"].itertuples(index=False, name=None)))\n    print(\"    Rat2 epochs:\", list(b[\"epochs\"].itertuples(index=False, name=None)))\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\nThe Rat1 and Rat2 files of each flight day were recorded together and share one position trace:\nat timestamps they have in common, 99% of positions agree within 2 pixels. One video position\ncannot be the position of two rats on different apparatus, so in any window the trace belongs to\nat most one of them. The epochs show that the rats took turns: when one rat is labelled ES or MC,\nthe other is labelled BL. The next check asks whose position the trace is in each task epoch.\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor s in sessions:\n    if \"xy\" not in s:\n        continue\n    for a, b, typ in s[\"epochs\"][[\"start\", \"stop\", \"type\"]].itertuples(index=False):\n        if typ == \"BL\":\n            continue\n        occ, scores = nl.epoch_occupancy(s, a, b, typ)\n        other = [nl.epoch_occupancy(s, a, b, t)[1][0][0] for t in {\"ES\", \"MC\"} - {typ}]\n        rows.append({\"session\": nl.label(s), \"epoch\": f\"{typ} {a:.0f}-{b:.0f}\", \"duration_s\": b - a,\n                     \"match_own_type\": round(scores[0][0], 2), \"match_other_type\": round(other[0], 2),\n                     \"other_candidates_same_type\": [round(r, 2) for r, _ in scores[1:]],\n                     \"occupancy_counts\": scores[0][1], \"counts_per_s\": round(scores[0][1] / (b - a), 1)})\nprint(\"Correlation of the binary occupancy map with the binary histogram of the epoch's position samples:\")\nprint(pd.DataFrame(rows).to_string(index=False))\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\nFor each ES and MC epoch, the position samples in the epoch cover the bins of the occupancy map of\nthe same type better than those of the other type (0.46 to 0.88 against 0.29 to 0.57), and for\nRat3's two ES epochs each matches a different one of its two ES occupancy maps. The occupancy\ntotals are 45 to 60 counts per second of the epoch, consistent with video fields at about 60 Hz\nfor every epoch. The epoch labels, the epoch times and the shared position trace are therefore\nconsistent with the original analysis: in each labelled task epoch the trace is the position of\nthe rat on the task. This is a check of position against occupancy; whether spikes and position\nshare a clock is shown with spike-based maps below.\n\"\"\")\n\ncode(r\"\"\"\nprint(\"Rate-map values:\")\nr_all = np.concatenate([s[\"rate_maps\"].ravel() for s in sessions])\nprint(\"  negative values:\", np.unique(r_all[r_all < 0]), \"; fraction of bins:\", round(float((r_all < 0).mean()), 3))\nprint(\"  -999 only where occupancy is 0:\", all((s[\"rate_maps\"][s[\"occupancy_maps\"] > 0] >= 0).all() for s in sessions))\nprint(\"  max rate per file (Hz):\", {nl.label(s): round(float(s[\"rate_maps\"].max()), 1) for s in sessions})\nprint(\"\\nOccupancy in bin [63, 0], the bin of the lost position (0, 255), as a fraction of each occupancy map:\")\nfor s in sessions:\n    print(\"  \", nl.label(s), [f\"{typ} {occ[nl.SENTINEL_BIN] / occ.sum():.3f}\" for typ, occ, _ in nl.map_occupancy_groups(s)])\n\nmaps = nl.rma_table(sessions)\nprint(\"\\nRate maps per file and type: all, identical copies of another map in the same file, names with CEL:\")\nprint(maps.groupby([\"rat\", \"day\", \"type\"]).agg(maps=(\"info\", \"size\"), duplicates=(\"duplicate\", \"sum\"), cel_names=(\"cel_name\", \"sum\")).to_string())\nprint(\"\\nExamples of source_file names:\", sorted(set(maps.source_file))[:30])\ndups = []\nfor s in sessions:\n    keys = {}\n    for i, m in s[\"maps\"].iterrows():\n        keys.setdefault(s[\"rate_maps\"][i].tobytes(), []).append(f\"{m.tetrode}/{m.source_file}\")\n    dups += [(nl.label(s), v) for v in keys.values() if len(v) > 1]\nprint(\"\\nIdentical rate maps within a file:\")\nfor d in dups:\n    print(\"  \", d)\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\nThe rate maps use -999 for unvisited bins; the table describes the column only as a rate in Hz.\nThe lost-position value (0, 255) was counted in the original occupancy (bin [63, 0], up to 17% of\nan occupancy map); that bin is left out here. Six groups of maps are identical copies within one\nfile, some under different tetrodes (for example Rat1 FD4 TT1 and TT11 `ESCELL~1.RMA`); each is\ncounted once. The `source_file` names are Windows 8.3 short names: `ESCELL~1` to `ESCELL~4` are the\nfirst four files whose long names begin `EScell`, and names like `ES2BC0~1` are the hashed short\nnames Windows gives from the fifth on. So `cell_number`, read from the `~N` suffix, is the order\nof the short name and not a cell number. The next check tests whether it matches the cluster id\nnevertheless.\n\"\"\")\n\ncode(r\"\"\"\n# For each flight unit and task epoch, the dandiset rate map on the same tetrode and type whose\n# spike-count prediction (rate x occupancy) correlates best with the unit's spike-count map.\nrows = []\nfor s in sessions:\n    if \"xy\" not in s:\n        continue\n    lookup = nl.PositionLookup(s)\n    for a, b, typ in s[\"epochs\"][[\"start\", \"stop\", \"type\"]].itertuples(index=False):\n        if typ == \"BL\":\n            continue\n        for _, u in s[\"units\"].iterrows():\n            sp = u.spikes[(u.spikes >= a) & (u.spikes <= b)]\n            found, r, c = lookup(sp)\n            if found.sum() < nl.MIN_SPIKES:\n                continue\n            counts = nl.count_map(r, c)\n            cand = s[\"maps\"][(s[\"maps\"].tetrode == u.tetrode) & (s[\"maps\"].type == typ)]\n            best = max(((np.corrcoef((s[\"rate_maps\"][i].clip(0) * nl.clean_occupancy(s[\"occupancy_maps\"][i])).ravel(), counts.ravel())[0, 1],\n                         s[\"maps\"].loc[i, \"cell_number\"], s[\"maps\"].loc[i, \"source_file\"]) for i in cand.index), default=(np.nan, None, None))\n            transposed = max((np.corrcoef((s[\"rate_maps\"][i].clip(0) * nl.clean_occupancy(s[\"occupancy_maps\"][i])).ravel(), counts.T.ravel())[0, 1]\n                              for i in cand.index), default=np.nan)\n            rows.append({\"session\": nl.label(s), \"type\": typ, \"tetrode\": u.tetrode, \"cluster\": u.cluster, \"spikes\": int(found.sum()),\n                         \"best_r\": best[0], \"best_r_x_y_swapped\": transposed, \"best_cell_number\": best[1], \"best_file\": best[2]})\nlink = pd.DataFrame(rows)\nlink[\"cluster_matches_cell_number\"] = link.cluster == link.best_cell_number\nprint(f\"Unit-epochs with at least {nl.MIN_SPIKES} spikes at a known position: {len(link)}\")\nprint(link.groupby([\"session\", \"type\"]).agg(n=(\"best_r\", \"size\"), median_best_r=(\"best_r\", \"median\"),\n      median_r_swapped=(\"best_r_x_y_swapped\", \"median\"), cluster_eq_cell_number=(\"cluster_matches_cell_number\", \"mean\")).round(2).to_string())\nprint(\"\\nAll: median best r\", round(link.best_r.median(), 2), \"; best map has cell_number equal to the cluster id in\",\n      f\"{link.cluster_matches_cell_number.sum()} of {len(link)}; best r > 0.5 in {(link.best_r > 0.5).sum()}\")\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\nWith position binned as x to columns and y to rows at 4 pixels per bin, each unit's spike-count map\ncorrelates with a rate map of its tetrode (the median best r is printed per epoch; with x and y\nswapped it is lower), which supports the binning used here and shows that spike times and the\nposition at spikes agree with the original maps. The best-matching map has `cell_number` equal to\nthe cluster id for only part of the units (printed), so `cell_number` does not identify the unit\nof a rate map, contrary to the rate-map table's description. The rate maps are therefore used on\ntheir own, and the spike-based analysis uses the units.\n\"\"\")\n\ncode(r\"\"\"\nrows = []\nfor s in sessions:\n    ep = s[\"epochs\"]\n    for _, u in s[\"units\"].iterrows():\n        sp = u.spikes\n        inside = np.zeros(len(sp), bool)\n        for a, b in zip(ep.start, ep.stop):\n            inside |= (sp >= a) & (sp <= b)\n        isi = np.diff(sp)\n        n_types = sum(((sp >= a) & (sp <= b)).any() for a, b in zip(ep.start, ep.stop))\n        rows.append({\"session\": nl.label(s), \"spikes\": len(sp), \"outside_epochs\": int((~inside).sum()),\n                     \"zero_isi\": int((isi == 0).sum()), \"sorted\": bool((isi >= 0).all()), \"epochs_with_spikes\": n_types})\nsp_table = pd.DataFrame(rows)\nres = {nl.label(s): sorted({round(float(np.min(np.diff(np.unique(np.round(np.concatenate(list(s['units'].spikes)), 6))))), 4)}) for s in sessions}\nprint(\"Smallest step between distinct spike times, per file (s):\", res)\nprint(sp_table.groupby(\"session\").agg(units=(\"spikes\", \"size\"), spikes=(\"spikes\", \"sum\"), outside_epochs=(\"outside_epochs\", \"sum\"),\n      zero_isi=(\"zero_isi\", \"sum\"), all_sorted=(\"sorted\", \"all\"), median_epochs_with_spikes=(\"epochs_with_spikes\", \"median\")).to_string())\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\nSpike times are sorted. They are given to 10 ms in five files and to 1 ms in three; 2 to 15% of a\nunit's intervals are zero, which at this resolution can be two spikes in one step, or the same\nspike from two overlapping epoch files merged into one unit. A unit spans several epochs because\nthe conversion merged the per-epoch spike files with the same tetrode and cluster id. Whether a\ncluster id names the same neuron in different epochs is not stated; here it is an assumption,\nneeded only for the stability claim, and every other result is computed per epoch.\n\"\"\")\n\ncode(r\"\"\"\n# Clock and attribution contrast: spatial information of each rat's units in its own task epoch\n# against the other rat's task epoch on the same day, where the shared position is the other rat's.\nrng_check = np.random.default_rng(1754)\nrows = []\nfor day in [\"FD4\", \"FD9\"]:\n    for rat, other in [(\"Rat1\", \"Rat2\"), (\"Rat2\", \"Rat1\")]:\n        s, o = by_label[f\"{rat} {day}\"], by_label[f\"{other} {day}\"]\n        for owner, src in [(rat, s), (other, o)]:\n            for a, b, typ in src[\"epochs\"][[\"start\", \"stop\", \"type\"]].itertuples(index=False):\n                if typ != \"ES\":\n                    continue\n                # occupancy from the file whose rat was on the task in this window\n                occ, _ = nl.epoch_occupancy(src, a, b, typ)\n                s_tmp = dict(s, maps=src[\"maps\"], occupancy_maps=src[\"occupancy_maps\"], rate_maps=src[\"rate_maps\"])\n                df = nl.epoch_units(s_tmp, a, b, typ, rng_check, n_shuffles=200)\n                d = df.dropna(subset=[\"info\"])\n                rows.append({\"day\": day, \"units_of\": rat, \"ES_epoch_of\": owner, \"window\": f\"{a:.0f}-{b:.0f}\",\n                             \"units\": len(d), \"significant\": int((d.p < 0.05).sum()),\n                             \"fraction\": round(float((d.p < 0.05).mean()), 2) if len(d) else np.nan,\n                             \"median_info\": round(float(d[\"info\"].median()), 3) if len(d) else np.nan})\ncontrast = pd.DataFrame(rows)\nprint(contrast.to_string(index=False))\n\"\"\", tags=[\"sanity\"])\n\nmd(\"\"\"\nThis contrast tests whether spikes and position share a clock and whose position the trace is.\nEach rat's units are tested in its own ES epoch and in the other rat's ES epoch of the same day,\nwith the occupancy of the rat on the task. If the trace were shifted in time, or belonged to the\nother rat, the fraction of units with significant spatial information would be near 0.05 in the\nown epoch. The printed fractions are read in the claim's section; where a rat's units are also\nselective in the other rat's epoch, that is either a sign that the position is shared between the\nanimals' movements or that the resting rat's units fire at particular moments of the other's run.\n\"\"\")\n\nmd(\"\"\"\n## flight-spatial-code\n\n> Hippocampal neurons recorded on the space shuttle form a robust spatial code on the\n> three-dimensional Escher staircase track in weightlessness. (Abstract)\n\nCriterion (from the claims file): per in-flight ES epoch, a unit is significant when its spatial\ninformation exceeds the 95th percentile of 500 circular-shift shuffles. Judged on the two FD9\nsessions: reproduced when the fraction of significant units is at least 0.5 in both.\n\"\"\")\n\ncode(r\"\"\"\nrng_c1 = np.random.default_rng(20000301)\nresults = []\nfor s in sessions:\n    if \"xy\" not in s:\n        continue\n    for a, b, typ in s[\"epochs\"][[\"start\", \"stop\", \"type\"]].itertuples(index=False):\n        if typ in (\"ES\", \"MC\"):\n            df = nl.epoch_units(s, a, b, typ, rng_c1)\n            df[\"type\"] = typ\n            df[\"epoch\"] = f\"{typ} {a:.0f}-{b:.0f}\"\n            results.append(df)\nunits = pd.concat(results, ignore_index=True)\ntested = units.dropna(subset=[\"info\"]).copy()\ntested[\"sig\"] = tested.p < 0.05\n\ndef summary(d):\n    n, k = len(d), int(d.sig.sum())\n    return pd.Series({\"units_in_file\": np.nan, \"tested\": n, \"significant\": k, \"fraction\": round(k / n, 3) if n else np.nan,\n                      \"binom_p_vs_0.05\": stats.binomtest(k, n, 0.05, alternative=\"greater\").pvalue if n else np.nan,\n                      \"median_info\": round(d[\"info\"].median(), 3), \"median_null95\": round(d[\"null95\"].median(), 3)})\n\nper = tested.groupby([\"type\", \"rat\", \"day\", \"epoch\"]).apply(summary)\nper[\"units_in_file\"] = units.groupby([\"type\", \"rat\", \"day\", \"epoch\"]).size()\nper[\"dropped_<50_spikes\"] = per[\"units_in_file\"] - per[\"tested\"]\nprint(per.to_string())\n\"\"\", tags=[\"claim:flight-spatial-code\"])\n\ncode(r\"\"\"\nes = tested[tested.type == \"ES\"]\nprint(\"Judged sessions (FD9 ES):\")\nfor rat in [\"Rat1\", \"Rat2\"]:\n    d = es[(es.rat == rat) & (es.day == \"FD9\")]\n    print(f\"  {rat} FD9: {d.sig.sum()} of {len(d)} significant, fraction {d.sig.mean():.3f}, \"\n          f\"binomial p {stats.binomtest(int(d.sig.sum()), len(d), 0.05, alternative='greater').pvalue:.2e}\")\nprint(\"\\nThreshold variants, fraction of significant ES units by session:\")\nvar = []\nfor (rat, day, epoch), d in es.groupby([\"rat\", \"day\", \"epoch\"]):\n    row = {\"session\": f\"{rat} {day} {epoch}\", \"n\": len(d)}\n    for alpha in [0.05, 0.01]:\n        row[f\"p<{alpha}\"] = round(float((d.p < alpha).mean()), 3)\n    big = d[d.spikes_used >= 100]\n    row[\"n_>=100_spikes\"] = len(big)\n    row[\"p<0.05,>=100_spikes\"] = round(float((big.p < 0.05).mean()), 3) if len(big) else np.nan\n    row[\"info>0.5_bits\"] = round(float((d[\"info\"] > 0.5).mean()), 3)\n    var.append(row)\nprint(pd.DataFrame(var).to_string(index=False))\nprint(\"\\nSpatial information of tested ES units, range:\", round(es[\"info\"].min(), 3), \"to\", round(es[\"info\"].max(), 3), \"bits/spike\")\n\nfig, ax = plt.subplots(figsize=(8, 3.5))\nlabels = []\nfor i, ((rat, day, epoch), d) in enumerate(es.groupby([\"rat\", \"day\", \"epoch\"])):\n    ax.scatter(np.full(len(d), i) + np.random.default_rng(i).uniform(-0.15, 0.15, len(d)), d[\"info\"], s=10,\n               c=np.where(d.sig, \"tab:blue\", \"tab:gray\"))\n    ax.scatter(np.full(len(d), i) + 0.3, d[\"null95\"], s=6, marker=\"_\", c=\"k\")\n    labels.append(f\"{rat} {day}\\n{epoch.split()[1]}\")\nax.set_xticks(range(len(labels)), labels, fontsize=8)\nax.set_ylabel(\"spatial information (bits/spike)\")\nax.set_title(\"ES units: blue significant, grey not; dashes: 95th percentile of shuffles\")\nplt.tight_layout()\nplt.show()\n\"\"\", tags=[\"claim:flight-spatial-code\"])\n\ncode(r\"\"\"\nprint(\"Attribution contrast from the data check, ES epochs:\")\nprint(contrast.to_string(index=False))\n\"\"\", tags=[\"claim:flight-spatial-code\"])\n\nmd(\"\"\"\n**Result: see below.**\n\"\"\")\n\nmd(\"\"\"\n## three-orthogonal-surfaces\n\n> The spatial code covers each of the three orthogonal surfaces of the Escher staircase. (Abstract)\n\nBlocked. The dandiset holds one two-dimensional pixel position from one camera; the NASA record\nof the study mentions two synchronised cameras. Nothing in the files or the metadata describes\nthe camera's view or the track layout, so a pixel cannot be assigned to one of the three surfaces.\n\"\"\")\n\nmd(\"\"\"\n## si-comparable-to-preflight\n\n> In flight, spatial information content of place cells is comparable to preflight levels.\n> (Dandiset description)\n\nCriterion: two-sided Mann-Whitney U test at alpha 0.05 of the spatial information of the\ndandiset's rate maps, FD9 ES against preflight ES, Rats 1 and 2 pooled, every distinct map with a\npositive mean rate. Reproduced when the test finds no difference.\n\"\"\")\n\ncode(r\"\"\"\nm = maps[(~maps.duplicate) & (maps.mean_rate > 0)].copy()\nprint(\"Maps dropped: duplicates\", int(maps.duplicate.sum()), \"; zero mean rate\", int(((~maps.duplicate) & (maps.mean_rate <= 0)).sum()),\n      \"; kept\", len(m), \"of\", len(maps))\nprint(\"Spatial information of rate maps, range:\", round(m[\"info\"].min(), 3), \"to\", round(m[\"info\"].max(), 3), \"bits/spike\")\nprint(m.groupby([\"type\", \"rat\", \"day\"])[\"info\"].describe()[[\"count\", \"50%\", \"25%\", \"75%\", \"min\", \"max\"]].round(3).to_string())\n\ndef compare(a, b, alternative=\"two-sided\"):\n    if len(a) == 0 or len(b) == 0:\n        return {\"n_a\": len(a), \"n_b\": len(b)}\n    u = stats.mannwhitneyu(a, b, alternative=alternative)\n    return {\"n_a\": len(a), \"n_b\": len(b), \"median_a\": round(float(np.median(a)), 3), \"median_b\": round(float(np.median(b)), 3),\n            \"diff\": round(float(np.median(a) - np.median(b)), 3), \"ratio\": round(float(np.median(a) / np.median(b)), 2),\n            \"U\": float(u.statistic), \"p\": float(u.pvalue), \"rank_biserial\": round(1 - 2 * u.statistic / (len(a) * len(b)), 3)}\n\nsel = lambda d, typ, days, rats: d[(d.type == typ) & d.day.isin(days) & d.rat.isin(rats)][\"info\"].values\nmain = compare(sel(m, \"ES\", [\"FD9\"], [\"Rat1\", \"Rat2\"]), sel(m, \"ES\", [\"preflight\"], [\"Rat1\", \"Rat2\"]))\nprint(\"\\nMain test, ES FD9 (a) against ES preflight (b), Rats 1 and 2:\", main)\n\"\"\", tags=[\"claim:si-comparable-to-preflight\"])\n\ncode(r\"\"\"\nrows = []\nvariants = {\n    \"per rat Rat1\": (m, \"ES\", [\"FD9\"], [\"Rat1\"], [\"preflight\"], [\"Rat1\"]),\n    \"per rat Rat2\": (m, \"ES\", [\"FD9\"], [\"Rat2\"], [\"preflight\"], [\"Rat2\"]),\n    \"CEL names only\": (m[m.cel_name], \"ES\", [\"FD9\"], [\"Rat1\", \"Rat2\"], [\"preflight\"], [\"Rat1\", \"Rat2\"]),\n    \"peak >= 1 Hz\": (m[m.peak_rate >= 1], \"ES\", [\"FD9\"], [\"Rat1\", \"Rat2\"], [\"preflight\"], [\"Rat1\", \"Rat2\"]),\n    \"MC maps\": (m, \"MC\", [\"FD9\"], [\"Rat1\", \"Rat2\"], [\"preflight\"], [\"Rat1\", \"Rat2\"]),\n    \"all flight ES (FD4+FD9, 3 rats)\": (m, \"ES\", [\"FD4\", \"FD9\"], [\"Rat1\", \"Rat2\", \"Rat3\"], [\"preflight\"], [\"Rat1\", \"Rat2\", \"Rat3\"]),\n}\nfor name, (d, typ, da, ra, db, rb) in variants.items():\n    a = d[(d.type == typ) & d.day.isin(da) & d.rat.isin(ra)][\"info\"].values\n    b = d[(d.type == typ) & d.day.isin(db) & d.rat.isin(rb)][\"info\"].values\n    rows.append({\"variant\": name} | compare(a, b))\nprint(\"Variants (a = flight, b = preflight):\")\nprint(pd.DataFrame(rows).to_string(index=False))\n\nfig, ax = plt.subplots(figsize=(7, 3.5))\ngroups = [(f\"{rat}\\n{day}\", m[(m.type == \"ES\") & (m.rat == rat) & (m.day == day)][\"info\"].values)\n          for rat in [\"Rat1\", \"Rat2\", \"Rat3\"] for day in [\"preflight\", \"FD4\", \"FD9\"]]\ngroups = [(g, v) for g, v in groups if len(v)]\nax.boxplot([v for _, v in groups], showfliers=True)\nax.set_xticks(range(1, len(groups) + 1), [g for g, _ in groups], fontsize=8)\nax.set_ylabel(\"spatial information of ES rate maps (bits/spike)\")\nplt.tight_layout()\nplt.show()\n\"\"\", tags=[\"claim:si-comparable-to-preflight\"])\n\nmd(\"\"\"\n**Result: see below.**\n\"\"\")\n\nmd(\"\"\"\n## fd4-abnormal-selectivity\n\n> On the first in-flight exposures (flight day 4) spatial selectivity was abnormal. (Dandiset\n> description)\n\nCriterion: abnormal is read as lower spatial information. FD4 ES rate maps (Rats 1 to 3) against\npreflight ES rate maps (Rats 1 to 3); reproduced when the FD4 median is lower and a one-sided\nMann-Whitney U test gives p < 0.05.\n\"\"\")\n\ncode(r\"\"\"\nfd4 = sel(m, \"ES\", [\"FD4\"], [\"Rat1\", \"Rat2\", \"Rat3\"])\npre = sel(m, \"ES\", [\"preflight\"], [\"Rat1\", \"Rat2\", \"Rat3\"])\nmain4 = compare(fd4, pre, alternative=\"less\")\nprint(\"Main test, ES FD4 (a) below ES preflight (b), Rats 1 to 3, one-sided:\", main4)\nrows = []\nfor rat in [\"Rat1\", \"Rat2\", \"Rat3\"]:\n    rows.append({\"comparison\": f\"{rat} FD4 < preflight\"} | compare(sel(m, \"ES\", [\"FD4\"], [rat]), sel(m, \"ES\", [\"preflight\"], [rat]), \"less\"))\nfor rat in [\"Rat1\", \"Rat2\"]:\n    rows.append({\"comparison\": f\"{rat} FD4 < FD9\"} | compare(sel(m, \"ES\", [\"FD4\"], [rat]), sel(m, \"ES\", [\"FD9\"], [rat]), \"less\"))\nrows.append({\"comparison\": \"Rats 1-2 FD4 < FD9\"} | compare(sel(m, \"ES\", [\"FD4\"], [\"Rat1\", \"Rat2\"]), sel(m, \"ES\", [\"FD9\"], [\"Rat1\", \"Rat2\"]), \"less\"))\nrows.append({\"comparison\": \"CEL names, FD4 < preflight\"} | compare(sel(m[m.cel_name], \"ES\", [\"FD4\"], [\"Rat1\", \"Rat2\", \"Rat3\"]), sel(m[m.cel_name], \"ES\", [\"preflight\"], [\"Rat1\", \"Rat2\", \"Rat3\"]), \"less\"))\nrows.append({\"comparison\": \"peak >= 1 Hz, FD4 < preflight\"} | compare(sel(m[m.peak_rate >= 1], \"ES\", [\"FD4\"], [\"Rat1\", \"Rat2\", \"Rat3\"]), sel(m[m.peak_rate >= 1], \"ES\", [\"preflight\"], [\"Rat1\", \"Rat2\", \"Rat3\"]), \"less\"))\nrows.append({\"comparison\": \"MC maps, FD4 < preflight\"} | compare(sel(m, \"MC\", [\"FD4\"], [\"Rat1\", \"Rat2\", \"Rat3\"]), sel(m, \"MC\", [\"preflight\"], [\"Rat1\", \"Rat2\", \"Rat3\"]), \"less\"))\nprint(pd.DataFrame(rows).to_string(index=False))\n\nprint(\"\\nSpike-based fraction of significant ES units by day (from flight-spatial-code):\")\nprint(es.groupby([\"day\", \"rat\"]).agg(tested=(\"sig\", \"size\"), significant=(\"sig\", \"sum\"), fraction=(\"sig\", \"mean\"),\n      median_info=(\"info\", \"median\")).round(3).to_string())\nk4, n4 = int(es[es.day == \"FD4\"].sig.sum()), int((es.day == \"FD4\").sum())\nk9, n9 = int(es[es.day == \"FD9\"].sig.sum()), int((es.day == \"FD9\").sum())\nprint(f\"FD4 {k4}/{n4} against FD9 {k9}/{n9}; Fisher exact one-sided (FD4 lower) p = \"\n      f\"{stats.fisher_exact([[k4, n4 - k4], [k9, n9 - k9]], alternative='less')[1]:.3g}\")\n\"\"\", tags=[\"claim:fd4-abnormal-selectivity\"])\n\nmd(\"\"\"\n**Result: see below.**\n\"\"\")\n\nmd(\"\"\"\n## fig3-stability-across-sessions\n\n> Place fields are stable across sessions. (Figure 3 title; which sessions the figure compares is\n> not known)\n\nCriterion: Rat3 FD4, its two ES epochs. Same tetrode and cluster id in both, at least 50 spikes at\na known position in each. Smoothed 32 x 32 rate maps; median same-unit correlation against 1000\nrandom re-pairings. Reproduced when above the 95th percentile of the re-paired medians and above\n0.5. The cluster id is assumed to name the same neuron in both epochs (see the data check).\n\"\"\")\n\ncode(r\"\"\"\nrng_c4 = np.random.default_rng(72910)\ns3 = by_label[\"Rat3 FD4\"]\nes_epochs = s3[\"epochs\"][s3[\"epochs\"].type == \"ES\"].sort_values(\"start\")\nlookup3 = nl.PositionLookup(s3)\nmaps3, occs = {}, []\nfor k, (a, b) in enumerate(zip(es_epochs.start, es_epochs.stop)):\n    occ, scores = nl.epoch_occupancy(s3, a, b, \"ES\")\n    occs.append(nl.merge_bins(nl.clean_occupancy(occ)))\n    print(f\"ES epoch {k + 1}: {a:.0f}-{b:.0f} s, occupancy map match {scores}\")\n    for _, u in s3[\"units\"].iterrows():\n        sp = u.spikes[(u.spikes >= a) & (u.spikes <= b)]\n        found, r, c = lookup3(sp)\n        if found.sum() >= nl.MIN_SPIKES:\n            maps3[(u.tetrode, u.cluster, k)] = nl.smoothed_rate_map(r, c, occ)[0]\nboth = sorted({(t, c) for t, c, k in maps3 if (t, c, 0) in maps3 and (t, c, 1) in maps3})\nonly = sorted({(t, c) for t, c, k in maps3} - set(both))\nprint(f\"Units with >= {nl.MIN_SPIKES} spikes in both epochs: {len(both)}; in one only: {len(only)}; units in file: {len(s3['units'])}\")\nshared = (occs[0] >= nl.MIN_OCC) & (occs[1] >= nl.MIN_OCC)\nprint(\"Bins with occupancy >= 5 in both epochs:\", int(shared.sum()))\n\ndef corr(m1, m2):\n    ok = shared & np.isfinite(m1) & np.isfinite(m2)\n    return np.corrcoef(m1[ok], m2[ok])[0, 1]\n\nA = [maps3[(t, c, 0)] for t, c in both]\nB = [maps3[(t, c, 1)] for t, c in both]\nC = np.array([[corr(a, b) for b in B] for a in A])\nsame = np.diag(C)\nfor (t, c), r in zip(both, same):\n    print(f\"  {t} cluster {c}: r = {r:.3f}\")\nnull = np.array([np.median(C[np.arange(len(both)), rng_c4.permutation(len(both))]) for _ in range(1000)])\nprint(f\"\\nMedian same-unit r = {np.median(same):.3f} (range {same.min():.3f} to {same.max():.3f}); \"\n      f\"re-paired medians: mean {null.mean():.3f}, 95th percentile {np.percentile(null, 95):.3f}; \"\n      f\"p = {(np.sum(null >= np.median(same)) + 1) / 1001:.4f}\")\noff = C[~np.eye(len(both), dtype=bool)]\nprint(f\"Different-unit pairs: median r {np.median(off):.3f}, range {off.min():.3f} to {off.max():.3f}\")\nprint(\"Same-unit r above 0.5:\", int((same > 0.5).sum()), \"of\", len(same), \"; above 0.3:\", int((same > 0.3).sum()))\n\"\"\", tags=[\"claim:fig3-stability-across-sessions\"])\n\ncode(r\"\"\"\n# Per-session results, and the variant on the dandiset's own rate maps (ES1CEL~N against ES2CEL~N).\nper_epoch = tested[(tested.rat == \"Rat3\") & (tested.day == \"FD4\") & (tested.type == \"ES\")]\nprint(per_epoch.groupby(\"epoch\").agg(tested=(\"sig\", \"size\"), significant=(\"sig\", \"sum\"), median_info=(\"info\", \"median\")).round(3).to_string())\n\nmp = s3[\"maps\"]\nrows = []\nfor tt in sorted(mp.tetrode.unique()):\n    for i in mp.index[(mp.tetrode == tt) & mp.source_file.str.startswith(\"ES1CEL\")]:\n        j = mp.index[(mp.tetrode == tt) & (mp.source_file == mp.loc[i, \"source_file\"].replace(\"ES1\", \"ES2\"))]\n        if len(j):\n            r1, r2 = s3[\"rate_maps\"][i], s3[\"rate_maps\"][j[0]]\n            ok = (r1 >= 0) & (r2 >= 0) & (s3[\"occupancy_maps\"][i] > 0) & (s3[\"occupancy_maps\"][j[0]] > 0)\n            ok[nl.SENTINEL_BIN] = False\n            rows.append({\"tetrode\": tt, \"map\": mp.loc[i, \"source_file\"], \"r\": np.corrcoef(r1[ok], r2[ok])[0, 1]})\nrv = pd.DataFrame(rows)\nprint(\"\\nDandiset rate maps, ES1CEL~N against ES2CEL~N on the same tetrode (the ~N match is an assumption):\")\nprint(rv.round(3).to_string(index=False))\nif len(rv):\n    print(f\"median r {rv.r.median():.3f}, {len(rv)} pairs\")\n\"\"\", tags=[\"claim:fig3-stability-across-sessions\"])\n\nmd(\"\"\"\n**Result: see below.**\n\"\"\")\n\nmd(\"\"\"\n## theta-normal and ripples-normal\n\n> Hippocampal EEG showed normal theta rhythm during locomotion and normal sharp waves and ripples\n> during quiet rest in flight. (Dandiset description)\n\nBlocked. No file holds EEG or any continuous voltage (see the listing in the data check). The NASA\nrecord of the study (OSD-968) lists spike files, rate-map files and NWB copies, and no EEG.\n\"\"\")\n\nmd(\"\"\"\n## Summary\n\n**Result: see below.**\n\"\"\")\n\nnb = nbf.v4.new_notebook()\nnb.cells = cells\nnb.metadata[\"kernelspec\"] = {\"display_name\": \"Python 3\", \"language\": \"python\", \"name\": \"python3\"}\nnbf.write(nb, sys.argv[1])\n"
-}
-```
-
-```
-File created successfully at: /tmp/claude/build_nb.py (file state is current in your context — no need to Read it back)
+12	Provenance: kind agent; accountable name "CatalystNeuro"; harness "Claude Code (GitHub Actions)"; model "{model}"; protocol: the version stated in docs/protocol.md. Date {date}.
+13	
+14	Write prose plainly: no em dashes, never the word "rather", no bold except the "**Result: ...**" openers. YAML plain scalars must not contain ": ".
+15	
+16	Your final message is a report with: (1) the outcome per claim, with the earlier
+[... 488 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001754-knierim-2000 && python -c "import nbformat" && python /tmp/claude/build_nb.py reproduce_knierim_2000.ipynb && VIRTUAL_ENV=$TMPDIR/venv uv pip install -q nbconvert ipykernel 2>&1|tail -2; cd entries/001754-knierim-2000 && time $TMPDIR/venv/bin/jupyter nbconvert --to notebook --execute reproduce_knierim_2000.ipynb --output $TMPDIR/exec1.ipynb --ExecutePreprocessor.timeout=3000 2>&1 | tail -5
-```
-
-```
-[32m   2446[39m     [38;5;28;01mif[39;00m equal_nan:
-[32m   2447[39m         result |= isnan(x) & isnan(y)
-
-[31mValueError[39m: operands could not be broadcast together with shapes (6,) (5,) 
-
-
-real	0m26.668s
-user	0m8.910s
-sys	0m0.473s
-```
-
-**Agent calls Bash**
-
-```bash
-cd /tmp/claude && python - <<'E'
-p='build_nb.py'; s=open(p).read()
-s=s.replace("""{np.allclose(np.sort(a['epochs'].start.unique()), np.sort(b['epochs'].start.unique())) or sorted(set(a['epochs'].start) ^ set(b['epochs'].start))}""","""{set(a['epochs'].start) == set(b['epochs'].start)} (starts in one file only: {sorted(set(a['epochs'].start) ^ set(b['epochs'].start))})""")
-open(p,'w').write(s)
-E
-cd entries/001754-knierim-2000 && python /tmp/claude/build_nb.py reproduce_knierim_2000.ipynb && time $TMPDIR/venv/bin/jupyter nbconvert --to notebook --execute reproduce_knierim_2000.ipynb --output $TMPDIR/exec1.ipynb --ExecutePreprocessor.timeout=3000 2>&1 | tail -5
-```
-
-```
-[NbConvertApp] Converting notebook reproduce_knierim_2000.ipynb to notebook
-[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-[NbConvertApp] Writing 168644 bytes to /tmp/claude-1001/exec1.ipynb
-
-real	1m4.767s
-user	0m49.302s
-sys	0m0.437s
-```
-
-**Agent**
-
-Ran in about a minute. Reading the outputs.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR; python - <<'E'
-import json
-nb=json.load(open('exec1.ipynb'))
+cd entries/001754-knierim-2000; cat entry.yaml requirements.in README.md; wc -l neurolab.py; python -c "
+import json;nb=json.load(open('reproduce_knierim_2000.ipynb'))
+print(len(nb['cells']))
 for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    print(f'#### cell {i}', c['metadata'].get('tags'))
-    for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text'])[:6000])
-        elif o.get('output_type')=='error': print('ERROR',o['ename'],o['evalue'])
-        elif 'data' in o: print('[', list(o['data'].keys()), ']')
-E
+  print('=====',i,c['cell_type'],c['metadata'].get('tags'))
+  print(''.join(c['source']))
+" > $TMPDIR/nb.txt; wc -l $TMPDIR/nb.txt
 ```
 
 ```
-#### cell 1 None
-loaded 8 files from dandiset 001754 version 0.260728.1352 in 13 s
-
-#### cell 3 ['sanity']
-Published versions: ['0.260227.0029', '0.260227.0031', '0.260728.1352']
-All versions hold the same files with the same blobs: True
-  sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb  2.5 MB
-  sub-Rat1/sub-Rat1_ses-19980420T095700_behavior+ecephys.nwb  3.6 MB
-  sub-Rat1/sub-Rat1_ses-19980425T124500_behavior+ecephys.nwb  8.9 MB
-  sub-Rat2/sub-Rat2_ses-19980413T163700_ecephys.nwb  2.5 MB
-  sub-Rat2/sub-Rat2_ses-19980420T095700_behavior+ecephys.nwb  3.2 MB
-  sub-Rat2/sub-Rat2_ses-19980425T124500_behavior+ecephys.nwb  4.3 MB
-  sub-Rat3/sub-Rat3_ses-19980414T134900_ecephys.nwb  3.5 MB
-  sub-Rat3/sub-Rat3_ses-19980420T152800_behavior+ecephys.nwb  4.0 MB
-
-Everything the largest flight file holds (datasets, shape, type, description):
-
-  general/extracellular_ephys/electrodes/group  (32,)  object  Reference to the ElectrodeGroup.
-  general/extracellular_ephys/electrodes/group_name  (32,)  object  Name of the ElectrodeGroup.
-  general/extracellular_ephys/electrodes/id  (32,)  int64  
-[... 334 more lines not kept]
-```
-
-**Agent**
-
-Results are in. Before writing conclusions I'll add the threshold variants for the stability claim, add zero-ISI fractions, and correct the data-check prose to match the printed numbers.
-
-**Agent calls Bash**
-
-```bash
-cd /tmp/claude && python - <<'E'
-p='build_nb.py'; s=open(p).read()
-rep = [
-("""print("Same-unit r above 0.5:", int((same > 0.5).sum()), "of", len(same), "; above 0.3:", int((same > 0.3).sum()))
-""\")""",
-"""print("Same-unit r above 0.5:", int((same > 0.5).sum()), "of", len(same), "; above 0.3:", int((same > 0.3).sum()))
-
-print("\\nVariants of the smoothing and the spike threshold (same re-pairing test, 1000 re-pairings each):")
-rows = []
-for sigma in [0.5, 1.0, 2.0]:
-    for min_spikes in [50, 100]:
-        mm = {}
-        for k, (a, b) in enumerate(zip(es_epochs.start, es_epochs.stop)):
-            occ, _ = nl.epoch_occupancy(s3, a, b, "ES")
-            for _, u in s3["units"].iterrows():
-                sp = u.spikes[(u.spikes >= a) & (u.spikes <= b)]
-                found, r, c = lookup3(sp)
-                if found.sum() >= min_spikes:
-                    mm[(u.tetrode, u.cluster, k)] = nl.smoothed_rate_map(r, c, occ, sigma)[0]
-        bb = sorted({(t, c) for t, c, k in mm if (t, c, 0) in mm and (t, c, 1) in mm})
-        CC = np.array([[corr(mm[(t1, c1, 0)], mm[(t2, c2, 1)]) for t2, c2 in bb] for t1, c1 in bb])
-        nn = np.array([np.median(CC[np.arange(len(bb)), rng_c4.permutation(len(bb))]) for _ in range(1000)])
-        rows.append({"sigma_bins": sigma, "min_spikes": min_spikes, "units": len(bb), "median_r": round(float(np.median(np.diag(CC))), 3),
-                     "null_95th": round(float(np.percentile(nn, 95)), 3), "p": (np.sum(nn >= np.median(np.diag(CC))) + 1) / 1001})
-print(pd.DataFrame(rows).to_string(index=False))
-\"\"\""""),
-]
-# simpler: do textual edits with exact anchors
-anchor = 'print("Same-unit r above 0.5:", int((same > 0.5).sum()), "of", len(same), "; above 0.3:", int((same > 0.3).sum()))\n'
-assert anchor in s
-add = anchor + '''
-print("\\nVariants of the smoothing and the spike threshold (same re-pairing test, 1000 re-pairings each):")
-rows = []
-for sigma in [0.5, 1.0, 2.0]:
-    for min_spikes in [50, 100]:
-        mm = {}
-        for k, (a, b) in enumerate(zip(es_epochs.start, es_epochs.stop)):
-            occ, _ = nl.epoch_occupancy(s3, a, b, "ES")
-            for _, u in s3["units"].iterrows():
-                sp = u.spikes[(u.spikes >= a) & (u.spikes <= b)]
-                found, r, c = lookup3(sp)
-                if found.sum() >= min_spikes:
-                    mm[(u.tetrode, u.cluster, k)] = nl.smoothed_rate_map(r, c, occ, sigma)[0]
-        bb = sorted({(t, c) for t, c, k in mm if (t, c, 0) in mm and (t, c, 1) in mm})
-        CC = np.array([[corr(mm[(t1, c1, 0)], mm[(t2, c2, 1)]) for t2, c2 in bb] for t1, c1 in bb])
-        nn = np.array([np.median(CC[np.arange(len(bb)), rng_c4.permutation(len(bb))]) for _ in range(1000)])
-        rows.append({"sigma_bins": sigma, "min_spikes": min_spikes, "units": len(bb), "median_r": round(float(np.median(np.diag(CC))), 3),
-                     "null_95th": round(float(np.percentile(nn, 95)), 3), "p": round((np.sum(nn >= np.median(np.diag(CC))) + 1) / 1001, 4)})
-print(pd.DataFrame(rows).to_string(index=False))
-'''
-s = s.replace(anchor, add)
-s = s.replace('"zero_isi": int((isi == 0).sum()),', '"zero_isi": int((isi == 0).sum()), "intervals": len(isi),')
-s = s.replace('''      zero_isi=("zero_isi", "sum"), all_sorted=("sorted", "all"), median_epochs_with_spikes=("epochs_with_spikes", "median")).to_string())''',
-'''      zero_isi=("zero_isi", "sum"), intervals=("intervals", "sum"), all_sorted=("sorted", "all"),
-      median_epochs_with_spikes=("epochs_with_spikes", "median")).assign(zero_isi_fraction=lambda d: (d.zero_isi / d.intervals).round(3)).to_string())''')
-s = s.replace("""Spike times are sorted. They are given to 10 ms in five files and to 1 ms in three; 2 to 15% of a
-unit's intervals are zero,""", """Spike times are sorted. They are given to 10 ms in five files and to 1 ms or finer in three; 2 to
-15% of the intervals within a unit are zero (printed),""")
-s = s.replace("(0.46 to 0.88 against 0.29 to 0.57)", "(0.46 to 0.88 against 0.29 to 0.55)")
-s = s.replace("The occupancy\ntotals are 45 to 60 counts per second of the epoch, consistent with video fields at about 60 Hz\nfor every epoch.",
-              "The occupancy\ntotals are 38 to 57 counts per second of the epoch, the same order for every epoch (the video\nrate is not stated).")
-s = s.replace("(bin [63, 0], up to 17% of\nan occupancy map)", "(bin [63, 0], up to 19% of\nan occupancy map in flight, under 2% preflight)")
-open(p,'w').write(s)
-E
-grep -n "38 to 57\|0.29 to 0.55\|19% of\|zero_isi_fraction\|Variants of the smoothing" /tmp/claude/build_nb.py
-```
-
-```
-208:the same type better than those of the other type (0.46 to 0.88 against 0.29 to 0.55), and for
-210:totals are 38 to 57 counts per second of the epoch, the same order for every epoch (the video
-244:The lost-position value (0, 255) was counted in the original occupancy (bin [63, 0], up to 19% of
-315:      median_epochs_with_spikes=("epochs_with_spikes", "median")).assign(zero_isi_fraction=lambda d: (d.zero_isi / d.intervals).round(3)).to_string())
-609:print("\nVariants of the smoothing and the spike threshold (same re-pairing test, 1000 re-pairings each):")
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd /tmp/claude && python - <<'E'
-p='build_nb.py'; s=open(p).read()
-old_link = s[s.index('With position binned as x to columns'):s.index('""")', s.index('With position binned as x to columns'))]
-new_link = """With position binned as x to columns and y to rows at 4 pixels per bin, each unit's spike-count map
-correlates with a rate map of its tetrode: the median best r per epoch is 0.21 to 0.77, and 0.00 to
-0.15 with x and y swapped. This supports the binning used here and shows that the original maps were
-made from the same spikes and positions. The best-matching map has `cell_number` equal to the cluster
-id for 84 of 211 unit-epochs (0.88 in Rat1 FD9 ES; 0 in Rat3 FD4 ES, whose `ES1CEL~N` names give no
-`cell_number`), so `cell_number` does not identify the unit of a rate map, contrary to the rate-map
-table's description. The rate maps are therefore used on their own, and the spike-based analysis
-uses the units.
-"""
-s = s.replace(old_link, new_link)
-old_c = s[s.index('This contrast tests whether spikes and position share a clock'):s.index('""")', s.index('This contrast tests whether spikes and position share a clock'))]
-new_c = """This contrast tests whether spikes and position share a clock and whose position the trace is.
-Each rat's units are tested (200 shuffles) in its own ES epoch and in the other rat's ES epoch of the
-same day, with the occupancy of the rat labelled as on the task. Rat1's units are selective in their
-own ES epochs (10 of 20 on FD4, 12 of 25 on FD9, against 5% expected by chance), so for Rat1 spikes
-and position share a clock. Rat2's units are no more selective than chance in their own ES epochs (0
-of 16 on FD4, 3 of 28 on FD9) or in Rat1's (0 of 15, 0 of 41). Rat1's units are also selective in
-Rat2's FD4 ES epoch (7 of 15), when Rat1 is labelled as on baseline, but not in Rat2's FD9 ES epoch
-(1 of 36). So a shared clock could not be established for Rat2's spikes and the position, and in
-Rat2's FD4 ES epoch the trace is consistent with Rat1's position. The data cannot show whose position
-the trace is in Rat2's ES epochs. The original rate maps of Rat2 were made from the same trace (see
-the previous check).
-"""
-s = s.replace(old_c, new_c)
-open(p,'w').write(s)
-E
-cd entries/001754-knierim-2000 && python /tmp/claude/build_nb.py reproduce_knierim_2000.ipynb && $TMPDIR/venv/bin/jupyter nbconvert --to notebook --execute reproduce_knierim_2000.ipynb --output $TMPDIR/exec2.ipynb --ExecutePreprocessor.timeout=3000 2>&1 | tail -1; cd $TMPDIR; python - <<'E'
-import json
-nb=json.load(open('exec2.ipynb'))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    if i in (17,35,36) or 'fig3' in str(c['metadata'].get('tags')) or 'zero_isi' in ''.join(c['source']):
-        print('####',i)
-        for o in c.get('outputs',[]):
-            if 'text' in o: print(''.join(o['text'])[-2500:])
-            elif o.get('output_type')=='error': print('ERROR',o['ename'],o['evalue'])
-E
-```
-
-```
-[NbConvertApp] Writing 171744 bytes to /tmp/claude-1001/exec2.ipynb
-#### 17
-Smallest step between distinct spike times, per file (s): {'Rat1 preflight': [0.001], 'Rat1 FD4': [0.01], 'Rat1 FD9': [0.01], 'Rat2 preflight': [0.01], 'Rat2 FD4': [0.01], 'Rat2 FD9': [0.01], 'Rat3 preflight': [0.001], 'Rat3 FD4': [0.0004]}
-                units  spikes  outside_epochs  zero_isi  intervals  all_sorted  median_epochs_with_spikes  zero_isi_fraction
-session                                                                                                                     
-Rat1 FD4           47   39987              14      3005      39940        True                        5.0              0.075
-Rat1 FD9           39  243527               4     14587     243488        True                        4.0              0.060
-Rat1 preflight     35   21995               3      1037      21960        True                        2.0              0.047
-Rat2 FD4           72   31769               3      4766      31697        True                        1.0              0.150
-Rat2 FD9           54   52175               3      5279      52121        True                        4.0              0.101
-Rat2 preflight     33   36669               5      2884      36636        True                        2.0              0.079
-Rat3 FD4           47   58717               1      2980      58670        True                        1.0              0.051
-Rat3 preflight     48   48005               5       974      47957        True                        2.0              0.020
-
-#### 35
-ES epoch 1: 32-1345 s, occupancy map match [(0.8050601767055183, 74454), (0.6658463876929288, 65669)]
-
-ES epoch 2: 2397-3729 s, occupancy map match [(0.8346318447648601, 65669), (0.6331878244119306, 74454)]
-Units with >= 50 spikes in both epochs: 15; in one only: 5; units in file: 47
-Bins with occupancy >= 5 in both epochs: 267
-[... 57 more lines not kept]
-```
-
-**Agent**
-
-Stability holds at σ = 1 and 2 bins but not at 0.5 (median 0.31). Now writing the conclusions and summary into the notebook.
-
-**Agent calls Bash**
-
-```bash
-cd /tmp/claude && python - <<'E'
-p='build_nb.py'; s=open(p).read()
-s = s.replace('print(f"median r {rv.r.median():.3f}, {len(rv)} pairs")', 'print(f"median r {rv.r.median():.3f} over {rv.r.notna().sum()} pairs with a value, of {len(rv)}")')
-results = [
-"""**Result: partially reproduced.** On flight day 9, 13 of 25 Rat1 units (0.52) have significant
-spatial information on the Escher staircase (binomial p = 3.6e-11 against 0.05), but only 3 of 28
-Rat2 units (0.107, p = 0.16), which is not above chance; the claim holds for one of the two judged
-sessions. On flight day 4, 10 of 20 Rat1 units, 0 of 16 Rat2 units, and 9 of 16 and 2 of 19 Rat3
-units in its two ES epochs are significant. The Rat1 FD9 result holds at p < 0.01 (0.40) and with
-100 spikes or more (0.54). Rat2's units are not selective with the shared position trace in any
-window, and in Rat2's FD4 ES epoch the trace behaves as Rat1's position (7 of 15 Rat1 units
-significant), so Rat2's result may come from a position trace that is not Rat2's. In the MC epochs,
-which the claim does not cover, 0 to 2 units per session are significant; their 95th percentiles of
-the shuffles are higher (median 3.06 to 5.74 bits/spike against 2.16 to 3.36 for ES).""",
-"""**Result: reproduced.** Flight day 9 ES maps (64, Rats 1 and 2) have a median of 1.385 bits/spike
-against 1.448 for preflight ES maps (53); Mann-Whitney p = 0.45, a difference of -0.064 bits/spike
-(ratio 0.96, rank-biserial 0.081). Every variant gives p of 0.20 or more: per rat, maps named CEL
-only, maps with a peak of 1 Hz or more, MC maps, and all flight maps. These are the spatial
-information values of the original rate maps, with no correction for the number of spikes. Rat2's
-maps rest on a position trace that could not be attributed to Rat2: its FD9 ES maps have a median of
-1.343 bits/spike, close to Rat1's, while only 3 of its 28 units are significant against shuffles.""",
-"""**Result: not reproduced.** Flight day 4 ES maps (107, Rats 1 to 3) have a median of 1.214 bits/spike
-against 1.441 for preflight (98); the one-sided Mann-Whitney p is 0.055, above the criterion's 0.05
-(ratio 0.84, rank-biserial 0.129). The FD4 median is lower in each rat (ratios 0.65 to 0.88) but
-significantly so only for Rat1 (p = 0.032), and the test passes with maps of peak rate 1 Hz or more
-(p = 0.0095). FD4 is lower than FD9 for Rats 1 and 2 without significance (1.148 against 1.385, p =
-0.21). The spike-based fraction of significant units is not lower on FD4 (21 of 71 against 16 of 53
-on FD9, p = 0.55). The direction agrees with the claim; the criterion's test falls short. The claim's
-"abnormal" may refer to something other than lower spatial information, which the description does
-not say.""",
-"""**Result: reproduced.** In Rat3's two flight day 4 ES epochs, the 15 units with 50 or more spikes in
-each have a median rate-map correlation of 0.538 (range -0.108 to 0.849), above the 95th percentile of
-re-paired medians (0.091, p = 0.001) and above 0.5; 8 of 15 exceed 0.5. With other smoothing the
-median is 0.312 to 0.704, always above its re-paired 95th percentile (p = 0.001), but at 0.5 bins of
-smoothing it is below 0.5, which would make the claim partially reproduced. The dandiset's own maps
-paired by their `~N` names give a median of 0.157, as those names do not identify cells. In the
-second epoch fewer units are significant (2 of 19 against 9 of 16). The result assumes that a cluster
-id names the same neuron in both epochs; which sessions Figure 3 compares is not known.""",
-]
-summary = """| Claim | Outcome |
-|---|---|
-| `flight-spatial-code` | Partially reproduced: Rat1 FD9 0.52 of units significant, Rat2 FD9 0.107 |
-| `three-orthogonal-surfaces` | Blocked: metadata insufficient (no mapping of pixels to the track's surfaces) |
-| `si-comparable-to-preflight` | Reproduced: FD9 1.385 against preflight 1.448 bits/spike, p = 0.45 |
-| `fd4-abnormal-selectivity` | Not reproduced: FD4 1.214 against preflight 1.441 bits/spike, one-sided p = 0.055 |
-| `fig3-stability-across-sessions` | Reproduced: median r 0.538 between Rat3's two FD4 ES epochs (null 95th percentile 0.091) |
-| `theta-normal` | Blocked: data missing (no EEG) |
-| `ripples-normal` | Blocked: data missing (no EEG) |
-
-A failure to reproduce here may be a failure of this attempt, not of the paper: see the
-reasoning and the differences from the paper's method.
-
-**How the analysis differs from the paper's.** The paper's full text was not available, so its
-Methods, tests and thresholds are unknown; every method here is a common choice fixed before the
-analysis. Three claims come from the dandiset's description of the paper's findings, and one from a
-figure title alone. Spatial information is computed from the spikes for the spike-based claims, with
-the occupancy maps of the original analysis, as the dandiset holds position only at spike times;
-the comparisons with preflight use the original rate maps, as the preflight files have no position.
-Spatial information of the rate maps is not corrected for the number of spikes. The stability claim
-assumes that a cluster id names the same neuron in two epochs.
-
-**What was found about the dandiset.**
-- The Rat1 and Rat2 files of each flight day hold the same position trace (99% of common samples
-  within 2 pixels). Rat1's units are spatially selective with it; Rat2's are not, in any window, and
-  in Rat2's FD4 ES epoch the trace is consistent with Rat1's position. Whose position the trace is
-  in Rat2's task epochs is not stated and could not be established.
-- Position is given only at spike times, so occupancy cannot be computed from the files' position.
-- The rate-map `cell_number` comes from Windows 8.3 short file names (`ESCELL~1`, `ES2BC0~1`) and is
-  not a cell number; it equals the cluster id of the best-matching unit in 84 of 211 unit-epochs, so
-  the rate maps cannot be linked to units as the table's description says.
-- Rate maps use -999 for unvisited bins, which the description does not state; the tracker's lost
-  position (0, 255) is counted in the original occupancy (up to 19% in flight). Eight rate maps are
-  identical copies of another map in the same file, some under a different tetrode.
-- Units merge the per-epoch spike files with the same tetrode and cluster id; whether these are the
-  same neuron is not stated. The unit table lacks the `session_type` and `source_file` columns the
-  conversion's README lists.
-- Spike times are given to 10 ms in five files; 2 to 15% of within-unit intervals are zero.
-- There is no EEG, although the dandiset's description reports theta and ripples.
-"""
-for r in results:
-    s = s.replace('md("""\n**Result: see below.**\n""")', 'md("""\n' + r + '\n""")', 1)
-s = s.replace('## Summary\n\n**Result: see below.**', '## Summary\n\n' + summary)
-assert 'see below' not in s
-open(p,'w').write(s)
-E
-cd entries/001754-knierim-2000 && python /tmp/claude/build_nb.py reproduce_knierim_2000.ipynb && ls
-```
-
-```
-__pycache__
-neurolab.py
-reproduce_knierim_2000.ipynb
-```
-
-**Agent calls Bash**
-
-```bash
-rm -rf __pycache__ && printf "dandi\nh5py\nmatplotlib\nnumpy\npandas\nremfile\nrequests\nscipy\n" > requirements.in && cat > entry.yaml <<'E'
 schema_version: 1
 name: 001754-knierim-2000
 type: reproduction
@@ -1419,164 +115,2559 @@ license: Apache-2.0
 notebooks:
 - path: reproduce_knierim_2000.ipynb
   title: Reproducing Knierim et al. (2000) from dandiset 001754
-  runtime_minutes: 2
+  runtime_minutes: 5
 helpers:
 - neurolab.py
 related:
 - id: dandi:001754/0.260728.1352
   relation: uses_data
-- id: doi:10.1038/72910
-  relation: reproduces
-E
-cd  && python tools/entry.py lock entries/001754-knierim-2000 2>&1 | tail -5
+[... 45 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "entries/001754-knierim-2000/neurolab.py"
+}
 ```
 
 ```
-wrote entries/001754-knierim-2000/requirements.lock.txt
+1	"""Loading and spatial measures for the Neurolab (STS-90) place cell data of dandiset 001754.
+2	
+3	Knierim, McNaughton & Poe (2000), Nature Neuroscience 3:209-210, doi:10.1038/72910.
+4	
+5	Each NWB file holds one rat on one day (preflight, flight day 4 or flight day 9): sorted units
+6	(spike times in seconds, tetrode and Xclust cluster id), task epochs (BL baseline, ES Escher
+7	staircase, MC Magic Carpet), and a table of 64 x 64 rate and occupancy maps from the original
+8	analysis (.RMA files). The flight files also hold the video position in pixels (0 to 255), but
+9	only at spike times: the conversion took it from the position column of the spike files. Files
+10	are streamed from the archive at the pinned version; nothing is written to disk.
+11	
+12	Where the parameters come from. The paper's Methods were not available (it is not open access),
+13	so every parameter below is a common choice, fixed in the claims file before the analysis:
+14	
+15	- `PX_PER_RMA_BIN = 4`: the rate maps are 64 x 64 over the 256-pixel video range; spike-count
+16	  maps binned this way match them best (shown in the notebook's data check).
+17	- `MERGE = 2`: spatial information and stability use 32 x 32 bins (2 x 2 rate-map bins).
+18	- `MISSING_XY = (0, 255)`: the tracker's value for a lost position; it falls in rate-map bin
+19	  `SENTINEL_BIN = (63, 0)`, which is left out of every occupancy.
+20	- `UNVISITED = -999`: the rate maps' value for bins without occupancy.
+[... 287 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt"
+}
+```
+
+```
+1	52
+2	===== 0 markdown None
+3	# Reproducing Knierim, McNaughton & Poe (2000) from dandiset 001754
+4	
+5	Paper. Knierim JJ, McNaughton BL, Poe GR (2000). Three-dimensional spatial selectivity of
+6	hippocampal neurons during space flight. *Nature Neuroscience* 3:209-210.
+7	[doi:10.1038/72910](https://doi.org/10.1038/72910). The paper is not open access. This attempt
+8	used only its abstract and the titles of its three figures, from the publisher's page. Four
+9	claims come from the dandiset's own description, which summarises the paper's findings; they
+10	could not be checked against the paper's text.
+11	
+12	Dandiset. [DANDI:001754](https://dandiarchive.org/dandiset/001754/0.260728.1352), version
+13	0.260728.1352. The paper (2000) cites no DANDI version. Three versions are published
+14	(0.260227.0029, 0.260227.0031, 0.260728.1352); they hold the same eight files (same blobs, checked
+15	below) and differ only in metadata (the last adds the journal name to the paper's link). The most
+16	recent is pinned.
+17	
+18	What the dandiset holds. Three rats on the Neurolab mission (STS-90, April 1998): a preflight
+19	recording of each, flight day 4 (FD4) of each, and flight day 9 (FD9) of Rats 1 and 2. Each file
+20	has sorted units, task epochs (BL baseline, ES Escher staircase, MC Magic Carpet), and the 64 x
+[... 675 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 696
+}
+```
+
+```
+696	print(pd.DataFrame(rows).to_string(index=False))
+697	
+698	fig, ax = plt.subplots(figsize=(7, 3.5))
+699	groups = [(f"{rat}\n{day}", m[(m.type == "ES") & (m.rat == rat) & (m.day == day)]["info"].values)
+700	          for rat in ["Rat1", "Rat2", "Rat3"] for day in ["preflight", "FD4", "FD9"]]
+701	groups = [(g, v) for g, v in groups if len(v)]
+702	ax.boxplot([v for _, v in groups], showfliers=True)
+703	ax.set_xticks(range(1, len(groups) + 1), [g for g, _ in groups], fontsize=8)
+704	ax.set_ylabel("spatial information of ES rate maps (bits/spike)")
+705	plt.tight_layout()
+706	plt.show()
+707	===== 39 code ['claim:si-comparable-to-preflight']
+708	# Sampling bias of spatial information: epoch durations and spike counts per ES epoch (all files,
+709	# from the units), the rate maps' total occupancy and rate x occupancy (proportional to the spike
+710	# count where the frame rate is the same; see the data check), and two variants that limit the bias.
+711	rows = []
+712	for s in sessions:
+713	    for a, b, typ in s["epochs"][["start", "stop", "type"]].itertuples(index=False):
+714	        if typ != "ES":
+715	            continue
+[... 310 more lines not kept]
 ```
 
 **Agent**
 
-Now the README and the attempt record (check needs the attempt file to validate).
+Now let me see what the draft holds compared with 0.260728.1352.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; python - <<'EOF'
+import requests, json
+api="https://api.dandiarchive.org/api/dandisets/001754"
+d=requests.get(api+"/",timeout=60).json()
+print(json.dumps(d,indent=1)[:2500])
+for v in ["0.260728.1352","draft"]:
+    a=requests.get(f"{api}/versions/{v}/assets/",params={"page_size":100},timeout=60).json()["results"]
+    print(v)
+    for x in sorted(a,key=lambda x:x["path"]): print(" ",x["path"],x["size"],x.get("blob"),x["modified"], x["asset_id"])
+vs=requests.get(api+"/versions/",timeout=60).json()["results"]
+for v in vs: print(v["version"],v["modified"],v.get("status"))
+EOF
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+ModuleNotFoundError: No module named 'requests'
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls tools; sed -n 1,80p tools/entry.py | head -80; ls -a; cat README.md | head -60
+```
+
+```
+agent_run.py
+build_site.py
+build_targets.py
+entry.py
+progress.py
+site_assets
+transcript.py
+"""Lock, check and run one entry. This is the whole local workflow for a deposit.
+
+    python tools/entry.py lock  entries/<name>   # pin the environment
+    python tools/entry.py check entries/<name>   # validate metadata and conventions
+    python tools/entry.py run   entries/<name>   # execute every notebook from a clean environment
+    python tools/entry.py all   entries/<name>   # check, then run
+    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
+
+`lock` compiles the entry's requirements.in (direct dependencies only) into
+requirements.lock.txt with every version pinned.
+
+`check` validates entry.yaml, and the claims and attempt files that mention
+the entry, against the schemas, and applies the conventions that keep a result
+[... 173 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  which uv python; python --version; ls executed 2>/dev/null; git log --oneline -3 -- attempts/001754-knierim-2000-01.yaml; ls transcripts/001754 2>/dev/null
+```
+
+```
+/opt/hostedtoolcache/Python/3.13.16/x64/bin/uv
+/opt/hostedtoolcache/Python/3.13.16/x64/bin/python
+Python 3.13.16
+36fb8c3 Agent run on 001754: author-revise-3 (success)
+47955f9 Agent run on 001754: author-revise-2 (success)
+22740c0 Agent run on 001754: author-revise-1 (success)
+author-report.md
+author-revise-1-report.md
+author-revise-1.md
+author-revise-2-report.md
+author-revise-2.md
+author-revise-3-report.md
+author-revise-3.md
+author.md
+verifier-1-report.md
+verifier-1.md
+verifier-2-report.md
+verifier-2.md
+verifier-3-report.md
+verifier-3.md
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR && uv venv -q -p 3.13 env && uv pip install -q -p env/bin/python -r entries/001754-knierim-2000/requirements.lock.txt ipykernel 2>&1 | tail -3; env/bin/python -c "import dandi, requests; print('ok')"
+```
+
+```
+ok
+Shell cwd was reset to
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; env/bin/python - <<'EOF'
+import requests, json
+api="https://api.dandiarchive.org/api/dandisets/001754"
+vs=requests.get(api+"/versions/",timeout=60).json()["results"]
+for v in vs: print(v["version"],v["modified"],v.get("status"),v.get("size"),v.get("asset_count"))
+A={}
+for v in ["0.260728.1352","draft"]:
+    a=requests.get(f"{api}/versions/{v}/assets/",params={"page_size":100},timeout=60).json()["results"]
+    A[v]=a
+    print(v)
+    for x in sorted(a,key=lambda x:x["path"]): print(" ",x["path"],x["size"],x.get("blob"),x["modified"])
+m0=requests.get(f"{api}/versions/0.260728.1352/",timeout=60).json()
+m1=requests.get(f"{api}/versions/draft/",timeout=60).json()
+for k in sorted(set(m0)|set(m1)):
+    if m0.get(k)!=m1.get(k): print("DIFF",k,"\n OLD",json.dumps(m0.get(k))[:3000],"\n NEW",json.dumps(m1.get(k))[:3000])
+EOF
+```
+
+```
+draft 2026-10-14T21:55:09.450222Z Valid 32061840 8
+0.260227.0029 2026-02-27T00:29:28.150330Z Valid 32448840 8
+0.260227.0031 2026-02-27T00:31:34.105096Z Valid 32448840 8
+0.260728.1352 2026-07-28T13:52:39.253571Z Valid 32448840 8
+0.260728.1352
+  sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb 2451768 44eb6be8-2ae6-4621-afae-759b2e22951c 2026-02-27T00:29:26.779384Z
+  sub-Rat1/sub-Rat1_ses-19980420T095700_behavior+ecephys.nwb 3594616 9d9bc12a-abe3-4716-a090-ed7f0fbc96ae 2026-02-27T00:29:26.746069Z
+  sub-Rat1/sub-Rat1_ses-19980425T124500_behavior+ecephys.nwb 8880640 dec930b1-29b8-4877-ba17-6897f1ae0bdb 2026-02-27T00:29:26.763495Z
+  sub-Rat2/sub-Rat2_ses-19980413T163700_ecephys.nwb 2466416 c727df6f-6c6c-4b70-b0f3-a6c60dea5db9 2026-02-27T00:29:26.731775Z
+  sub-Rat2/sub-Rat2_ses-19980420T095700_behavior+ecephys.nwb 3241576 a342271d-0558-45a6-8b77-1e80d43005fd 2026-02-27T00:29:26.815278Z
+  sub-Rat2/sub-Rat2_ses-19980425T124500_behavior+ecephys.nwb 4318184 11155357-781b-4f14-bc00-a37a19175053 2026-02-27T00:29:26.824623Z
+  sub-Rat3/sub-Rat3_ses-19980414T134900_ecephys.nwb 3455960 dc59bde2-d323-480c-977e-517e70eb1ecd 2026-02-27T00:29:26.834411Z
+  sub-Rat3/sub-Rat3_ses-19980420T152800_behavior+ecephys.nwb 4039680 8d135663-6b8b-4bd6-8354-03c35f7d30c9 2026-02-27T00:29:26.853744Z
+draft
+  sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb 2536376 81db24d4-d45a-4a48-a4b3-39216b346959 2026-10-14T21:55:00.406565Z
+  sub-Rat1/sub-Rat1_ses-19980420T095700_behavior+ecephys.nwb 3282472 63aecb64-5885-4ad2-a7b9-2974854e9d41 2026-10-14T21:55:00.919275Z
+  sub-Rat1/sub-Rat1_ses-19980425T124500_behavior+ecephys.nwb 7518080 01810579-05c5-4131-a0b7-37943e2e490f 2026-10-14T21:55:00.993595Z
+  sub-Rat2/sub-Rat2_ses-19980413T163700_ecephys.nwb 2545800 a16e05e0-a5a2-4be5-8214-35bd25eff17a 2026-10-14T21:55:00.292112Z
+  sub-Rat2/sub-Rat2_ses-19980420T095700_behavior+ecephys.nwb 3098928 b3717175-1aee-4ad6-aa57-e6fd24ee84c8 2026-10-14T21:55:01.078736Z
+  sub-Rat2/sub-Rat2_ses-19980425T124500_behavior+ecephy
+[... 30 more lines not kept]
+```
+
+**Agent**
+
+All eight files were replaced on 2026-10-14; the description is unchanged. Next I compare the file contents.
+
+**Agent calls Bash**
+
+```bash
+cd entries/001754-knierim-2000; cat > $TMPDIR/cmp.py <<'EOF'
+import neurolab as nl, sys
+from concurrent.futures import ThreadPoolExecutor
+def urls(v):
+    nl.DANDISET_VERSION=v
+    return nl.asset_urls()
+old=urls("0.260728.1352"); new=urls("draft")
+with ThreadPoolExecutor(8) as p:
+    to=list(p.map(nl.h5_tree,old)); tn=list(p.map(nl.h5_tree,new))
+for (pa,_),a,b in zip(old,to,tn):
+    print("=====",pa)
+    sa,sb=set(a),set(b)
+    for l in sorted(sa-sb): print("  - ",l)
+    for l in sorted(sb-sa): print("  + ",l)
+EOF
+$TMPDIR/env/bin/python $TMPDIR/cmp.py
+```
+
+```
+Exit code 1
+Traceback (most recent call last):
+  File "/tmp/claude-1001/cmp.py", line 1, in <module>
+    import neurolab as nl, sys
+ModuleNotFoundError: No module named 'neurolab'
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001754-knierim-2000; PYTHONPATH=. $TMPDIR/env/bin/python $TMPDIR/cmp.py
+```
+
+```
+===== sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb
+  -  processing/ecephys/rate_maps/cell_number  (62,)  int64  Cell number from CELL~N filename; -1 if not a per-cell map
+  -  processing/ecephys/rate_maps/occupancy_map  (62, 64, 64)  int32  64x64 spatial occupancy map (bin visit counts)
+  -  processing/ecephys/rate_maps/rate_map  (62, 64, 64)  float32  64x64 spatial firing rate map (Hz)
+  -  processing/ecephys/rate_maps/session_type  (62,)  object  Task type (ES/MC/BL)
+  -  processing/ecephys/rate_maps/source_file  (62,)  object  Original .RMA filename
+  -  units/spike_times  (21995,)  float64  the spike times for each unit in seconds
+  +  intervals/epochs/epoch_name  (2,)  object  Epoch name from the original file names (e.g. BL2, ES, ES1)
+  +  processing/ecephys/rate_maps/archived_file_name  (62,)  object  Windows 8.3 short name under which the file is archived in NASA OSDR O
+  +  processing/ecephys/rate_maps/cluster_id  (62,)  int64  Cluster ID from Xclust sorting
+  +  processing/ecephys/rate_maps/epoch_name  (62,)  object  Epoch name from the original file name (e.g. ES, ES2, MC)
+  +  processing/ecephys/rate_maps/occupancy_map  (62, 64, 64)  int32  64x64 occupancy map: the number of 60 Hz video samples in each bin. Sa
+  +  processing/ecephys/rate_maps/rate_map  (62, 64, 64)  float32  64x64 spatial firing rate map from the original analysis. The original
+  +  processing/ecephys/rate_maps/source_file  (62,)  object  Original file name (e.g. ES.cell5.rmap)
+  +  processing/ecephys/rate_maps/unit  (62,)  int64  Unit in the units table (same tetrode and cluster)
+  +  units/obs_intervals  (62, 2)  float64  the observation intervals for each unit
+  +  units/obs_intervals_index  (35,)  uint8  Index for VectorData 'obs_intervals'
+  +  units/source_files  (62,)  object  Original spike files merged into this unit, as tetrode/long name (e.g.
+  +  units/source_files_index  (35,)  uint8  Index for VectorData 'source_files'
+  +  units/spike_times  (21992,)  float64  the sp
+[... 182 more lines not kept]
+```
+
+**Agent**
+
+The conversion was substantially redone: rate maps now link to units, epochs have names, units list their source files, position traces changed. Let me read every new description and the epochs.
+
+**Agent calls Bash**
+
+```bash
+cd entries/001754-knierim-2000; cat > $TMPDIR/look.py <<'EOF'
+import neurolab as nl, h5py, remfile, numpy as np
+nl.DANDISET_VERSION="draft"
+urls=nl.asset_urls()
+def t(v): return v.decode() if isinstance(v,bytes) else str(v)
+first=True
+for path,url in urls:
+    with h5py.File(remfile.File(url),"r") as f:
+        print("=====",path)
+        print(" session_description:",t(f["session_description"][()]))
+        for k in ["age","subject_id","description","species","sex","strain","genotype","weight"]:
+            if f"general/subject/{k}" in f: print(" subject",k,":",t(f[f"general/subject/{k}"][()]))
+        if first:
+            def visit(name,obj):
+                if name.startswith("specifications"): return
+                d={k:t(v)[:2000] for k,v in obj.attrs.items() if k in("description","unit","conversion","resolution","comments","reference_frame")}
+                if d: print("  ",name,d)
+            f.visititems(visit)
+            for k in ["experiment_description","notes","protocol","data_collection","related_publications","experimenter","institution","lab","keywords","surgery","virus","pharmacology","stimulus"]:
+                if f"general/{k}" in f: print(" general",k,":",t(f[f"general/{k}"][()] if f[f"general/{k}"].shape==() else list(f[f"general/{k}"][:]))[:3000])
+            first=False
+        ep=f["intervals/epochs"]
+        for i in range(len(ep["start_time"])):
+            print("  epoch",ep["start_time"][i],ep["stop_time"][i],t(ep["session_type"][i]),t(ep["epoch_name"][i]))
+        u=f["units"]
+        print("  units",len(u["id"]), "cols", list(u.keys()))
+        sf=[t(x) for x in u["source_files"][:]]; idx=u["source_files_index"][:]
+        oi=u["obs_intervals"][:]; oidx=u["obs_intervals_index"][:]
+        st=np.concatenate([[0],idx[:-1]]); so=np.concatenate([[0],oidx[:-1]])
+        for k in range(min(4,len(idx))):
+            print("   unit",k,t(u["tetrode"][k]),u["cluster_id"][k],sf[st[k]:idx[k]],oi[so[k]:oidx[k]].tolist())
+        rm=f["processing/ecephys/rate_maps"]
+        print("  ratemap cols", list(rm.keys()))
+        for k in range(min(6,len(rm["id"]))):
+            print("   map",k,t(rm["tetrode"][k]),t(rm["source_file"][k]),t(rm["archived_file_name"][k]),t(rm["session_type"][k]),t(rm["epoch_name"][k]),rm["cluster_id"][k],rm["unit"][k])
+        if "processing/behavior" in f:
+            ss=f["processing/behavior/position/spatial_series"]
+            print("  pos", ss["data"].shape, {k:t(v) for k,v in ss.attrs.items()}, {k:t(v) for k,v in ss["data"].attrs.items()})
+EOF
+PYTHONPATH=. $TMPDIR/env/bin/python $TMPDIR/look.py
+```
+
+```
+Exit code 1
+===== sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb
+ session_description: Preflight ground recording — Rat 1. Recorded 3 days before launch at Kennedy Space Center.
+ subject age : /
+ subject subject_id : Rat1
+ subject description : Adult male Fischer 344 rat (Rat1) from Taconic Biosciences, implanted 28 to 30 days before launch. The age is not recorded in the source files.
+ subject species : Rattus norvegicus
+ subject sex : M
+ subject strain : Fischer 344
+   general/devices/tetrode_array {'description': 'Multi-electrode tetrode recording array chronically implanted in hippocampal area CA1'}
+   general/extracellular_ephys/TT11 {'description': 'Tetrode TT11'}
+   general/extracellular_ephys/TT3 {'description': 'Tetrode TT3'}
+   general/extracellular_ephys/TT4 {'description': 'Tetrode TT4'}
+   general/extracellular_ephys/TT5 {'description': 'Tetrode TT5'}
+   general/extracellular_ephys/TT6 {'description': 'Tetrode TT6'}
+   general/extracellular_ephys/TT7 {'description': 'Tetrode TT7'}
+   general/extracellular_ephys/TT8 {'description': 'Tetrode TT8'}
+   general/extracellular_ephys/TT9 {'description': 'Tetrode TT9'}
+   general/extracellular_ephys/electrodes {'description': 'metadata about extracellular electrodes'}
+   general/extracellular_ephys/electrodes/group {'description': 'Reference to the ElectrodeGroup.'}
+[... 58 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001754-knierim-2000; sed -i 's/t(rm\["session_type"\]\[k\]),//; s/^first=True/first=False/' $TMPDIR/look.py; cat >> $TMPDIR/look.py <<'EOF'
+        if "processing/behavior" in f:
+            def visit(name,obj):
+                d={k:t(v)[:2000] for k,v in obj.attrs.items() if k in("description","unit","conversion","resolution","comments","reference_frame")}
+                if d: print("  ",name,d)
+            f["processing/behavior"].visititems(visit)
+EOF
+PYTHONPATH=. $TMPDIR/env/bin/python $TMPDIR/look.py 2>&1 | grep -v "^ subject\|^ session_desc"
+```
+
+```
+===== sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb
+  epoch 276.0 741.0 ES ES
+  epoch 936.0 1349.0 MC MC
+  units 35 cols ['cluster_id', 'electrodes', 'electrodes_index', 'id', 'obs_intervals', 'obs_intervals_index', 'source_files', 'source_files_index', 'spike_times', 'spike_times_index', 'tetrode']
+   unit 0 TT3 1 ['TT3/ES.cell1', 'TT3/MC.cell1'] [[276.0, 741.0], [936.0, 1349.0]]
+   unit 1 TT3 2 ['TT3/ES.cell2', 'TT3/MC.cell2'] [[276.0, 741.0], [936.0, 1349.0]]
+   unit 2 TT3 3 ['TT3/ES.cell3', 'TT3/MC.cell3'] [[276.0, 741.0], [936.0, 1349.0]]
+   unit 3 TT3 4 ['TT3/MC.cell4'] [[936.0, 1349.0]]
+  ratemap cols ['archived_file_name', 'cluster_id', 'epoch_name', 'id', 'occupancy_map', 'rate_map', 'source_file', 'tetrode', 'unit']
+   map 0 TT3 ES.cell1.rmap ESCELL~1.RMA ES 1 0
+   map 1 TT3 ES.cell2.rmap ESCELL~2.RMA ES 2 1
+   map 2 TT3 ES.cell3.rmap ESCELL~3.RMA ES 3 2
+   map 3 TT3 MC.cell1.rmap MCCELL~1.RMA MC 1 0
+   map 4 TT3 MC.cell2.rmap MCCELL~2.RMA MC 2 1
+   map 5 TT3 MC.cell3.rmap MCCELL~3.RMA MC 3 2
+===== sub-Rat1/sub-Rat1_ses-19980420T095700_behavior+ecephys.nwb
+  epoch 2525.0 3390.0 BL BL1
+  epoch 3850.0 4800.0 BL BL2
+  epoch 5935.0 6420.0 ES ES
+  epoch 7020.0 7550.0 MC MC
+[... 131 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; env/bin/python - <<'EOF'
+import requests
+r=requests.get("https://api.github.com/repos/catalystneuro/mcnaughton2000-to-nwb/commits",params={"per_page":15},timeout=60).json()
+for c in r: print(c["sha"],c["commit"]["committer"]["date"],c["commit"]["message"].splitlines()[0])
+d=requests.get("https://api.dandiarchive.org/api/dandisets/001754/versions/draft/",timeout=60).json()
+print(d.get("relatedResource"))
+print(d["description"])
+print(d.get("wasGeneratedBy"))
+EOF
+```
+
+```
+734688253c17a32e26d84c57f41fbe48ffbcd009 2026-10-14T21:48:37Z Merge pull request #2 from catalystneuro/fix/reproduction-issues
+bdd7f8dde994c87329b5762e66178a52219af588 2026-10-14T21:47:51Z Keep "/" as the subject age, meaning unknown
+0f341c1c1ac070d734c2ca315cec0a83eff6b4d2 2026-10-14T21:43:04Z Fix problems found by the reproduction attempt on DANDI:001754
+b538d9e07079394362a64e5118a226e91bdd7ab5 2026-02-27T13:12:39Z Add README with installation and usage instructions
+5f85d992920b6a3d1c4a764bc4fd00b89c5ba98a 2026-02-27T13:11:45Z Add pyproject.toml and minor fixes
+6f507daacd3b8b1a1710c305abceec01ea6dc862 2026-02-19T19:32:53Z Add McNaughton Neurolab NWB conversion
+[{'url': 'https://doi.org/10.1038/72910', 'name': 'Three-dimensional spatial selectivity of hippocampal neurons during space flight', 'relation': 'dcite:IsDescribedBy', 'schemaKey': 'Resource', 'identifier': 'doi:10.1038/72910', 'repository': 'Nature Neuroscience', 'resourceType': 'dcite:JournalArticle'}, {'url': 'https://doi.org/10.26030/22gd-1191', 'name': 'OSD-968: Three-dimensional spatial selectivity of hippocampal neurons during space flight', 'relation': 'dcite:IsDerivedFrom', 'schemaKey': 'Resource', 'identifier': 'doi:10.26030/22gd-1191', 'repository': 'NASA ALSDA', 'resourceType': 'dcite:Dataset'}, {'url': 'https://github.com/dandi/example-notebooks/tree/master/001754/CatalystNeuro', 'name': 'Example notebook', 'relation': 'dcite:IsSupplementedBy', 'schemaKey': 'Resource', 'repository': 'DANDI Example Notebooks', 'resourceType': 'dcite:Software'}, {'url': 'https://github.com/catalystneuro/mcnaughton2000-to-nwb', 'name': 'mcnaughton2000-to-nwb', 'relation': 'dcite:IsCompiledBy', 'schemaKey': 'Resource', 'repository': 'GitHub', 'resourceType': 'dcite:Software'}]
+This dataset contains extracellular recordings from hippocampal place cells in three freely moving rats during the Neurolab Space Shuttle mission (STS-90) in April 1998. The experiment investigated whether the hippocampus can maintain stable 
+[... 2 more lines not kept]
+```
+
+**Agent**
+
+The dandiset description is unchanged. Let me read the fix commit in the conversion code.
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR; rm -rf conv; git clone -q https://github.com/catalystneuro/mcnaughton2000-to-nwb conv && cd conv && git checkout -q 734688253c17a32e26d84c57f41fbe48ffbcd009 && git show --stat 0f341c1 bdd7f8d | head -40; git show 0f341c1 -- '*.md' | head -300
+```
+
+```
+commit 0f341c1c1ac070d734c2ca315cec0a83eff6b4d2
+Author: Ben Dichter <[removed: an e-mail address]>
+Date:   Wed Oct 14 17:43:04 2026 -0400
+
+    Fix problems found by the reproduction attempt on DANDI:001754
+    
+    Recover the original long file names (ES.cell1.rmap, BL2.cell5) from each
+    tetrode folder's WS_FTP.LOG by replaying the Windows 8.3 short-name
+    assignment, which reproduces the archived names in every folder. With them,
+    link each rate map to its unit, name epochs as the originals did, and record
+    each unit's source files and windows.
+    
+    Restrict position in each flight rat's file to that rat's ES and MC epochs,
+    merging the shared tracker's samples from both rats' spike files, and mark
+    the tracker's lost position (0, 255) as NaN. Store unvisited rate-map bins
+    as NaN, drop maps that are byte-identical copies of another map, and drop
+    the stray spike before the window in 48 spike files. Correct the baseline
+    description (rest in the sleeping pouch), remove the "/" age, and document
+    spike time resolution, map geometry, and smoothing.
+    
+[... 144 more lines not kept]
+```
+
+**Agent**
+
+Let me compare old and new epochs, unit spike counts and position samples directly.
+
+**Agent calls Bash**
+
+```bash
+cd entries/001754-knierim-2000; cat > $TMPDIR/cmp2.py <<'EOF'
+import neurolab as nl, numpy as np, h5py, remfile
+from concurrent.futures import ThreadPoolExecutor
+def t(v): return v.decode() if isinstance(v,bytes) else str(v)
+def ld(pu):
+    with h5py.File(remfile.File(pu[1]),"r") as f:
+        ep=f["intervals/epochs"]; u=f["units"]
+        idx=u["spike_times_index"][:]; st=u["spike_times"][:]
+        s0=np.concatenate([[0],idx[:-1]])
+        d={"ep":[(ep["start_time"][i],ep["stop_time"][i],t(ep["session_type"][i])) for i in range(len(ep["start_time"]))],
+           "units":{(t(u["tetrode"][i]),int(u["cluster_id"][i])):st[s0[i]:idx[i]] for i in range(len(idx))}}
+        if "processing/behavior" in f:
+            ss=f["processing/behavior/position/spatial_series"]; d["t"]=ss["timestamps"][:]; d["xy"]=ss["data"][:]
+        return d
+out={}
+for v in ["0.260728.1352","draft"]:
+    nl.DANDISET_VERSION=v
+    pus=nl.asset_urls()
+    with ThreadPoolExecutor(8) as p: out[v]=dict(zip([a for a,_ in pus],p.map(ld,pus)))
+for k in out["draft"]:
+    o,n=out["0.260728.1352"][k],out["draft"][k]
+    print("=====",k)
+    print(" old ep",[(a,b,c) for a,b,c in o["ep"]])
+    print(" new ep",[(a,b,c) for a,b,c in n["ep"]])
+    print(" units old/new",len(o["units"]),len(n["units"]), "same keys", set(o["units"])==set(n["units"]))
+    diff=[(key,len(o["units"][key]),len(n["units"].get(key,[]))) for key in o["units"] if len(o["units"][key])!=len(n["units"].get(key,[]))]
+    print(" units with changed spike count",len(diff),diff[:6])
+    # are new spikes subset of old
+    sub=all(np.isin(n["units"][key],o["units"][key]).all() for key in n["units"] if key in o["units"])
+    print(" new spikes subset of old:",sub)
+    if "t" in n:
+        nv=~np.isnan(n["xy"][:,0])
+        print(" pos old",len(o["t"]),"new",len(n["t"]),"new NaN",(~nv).sum(), "t range new",n["t"].min(),n["t"].max())
+        inold=np.isin(n["t"],o["t"]).mean()
+        print(" frac new ts in old file ts",inold)
+EOF
+PYTHONPATH=. $TMPDIR/env/bin/python $TMPDIR/cmp2.py
+```
+
+```
+===== sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb
+ old ep [(np.float64(276.0), np.float64(741.0), 'ES'), (np.float64(936.0), np.float64(1349.0), 'MC')]
+ new ep [(np.float64(276.0), np.float64(741.0), 'ES'), (np.float64(936.0), np.float64(1349.0), 'MC')]
+ units old/new 35 35 same keys True
+ units with changed spike count 3 [(('TT3', 1), 868, 867), (('TT3', 4), 87, 86), (('TT9', 1), 637, 636)]
+ new spikes subset of old: True
+===== sub-Rat1/sub-Rat1_ses-19980420T095700_behavior+ecephys.nwb
+ old ep [(np.float64(2525.0), np.float64(3390.0), 'BL'), (np.float64(2720.0), np.float64(3390.0), 'BL'), (np.float64(3850.0), np.float64(4800.0), 'BL'), (np.float64(5935.0), np.float64(6420.0), 'ES'), (np.float64(7020.0), np.float64(7550.0), 'MC'), (np.float64(7850.0), np.float64(8473.0), 'BL')]
+ new ep [(np.float64(2525.0), np.float64(3390.0), 'BL'), (np.float64(3850.0), np.float64(4800.0), 'BL'), (np.float64(5935.0), np.float64(6420.0), 'ES'), (np.float64(7020.0), np.float64(7550.0), 'MC'), (np.float64(7850.0), np.float64(8473.0), 'BL')]
+ units old/new 47 47 same keys True
+ units with changed spike count 14 [(('TT1', 4), 161, 160), (('TT1', 9), 396, 394), (('TT1', 11), 4920, 4919), (('TT10', 1), 1724, 1722), (('TT10', 3), 2735, 2734), (('TT10', 8), 1164, 1163)]
+ new spikes subset of old: True
+ pos old 34537 new 20444 new NaN 2391 t range new 5935.53 7549.6
+ frac new ts in old file ts 0.7261788299745646
+===== sub-Rat1/sub-Rat1_ses-19980425T124500_behavior+ecephys.nwb
+ old ep [(np.float64(3178.0), np.float64(4789.0), 'ES'), (np.float64(4871.0), np.float64(7535.0), 'BL'), (np.float64(7888.0), np.float64(9200.0), 'MC'), (np.float64(9220.0), np.float64(10151.0), 'BL')]
+ new ep [(np.float64(3178.0), np.float64(4789.0), 'ES'), (np.float64(4871.0), np.float64(7535.0), 'BL'), (np.float64(7888.0), np.float64(9200.0), 'MC'), (np.float64(9220.0), np.float64(10151.0), 'BL')]
+ units old/new 39 39 same keys True
+ units with changed spike count 6 [(('TT0', 1), 5160, 5159), (('TT10', 5), 4589
+[... 39 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001754-knierim-2000; cat > $TMPDIR/chk.py <<'EOF'
+import neurolab as nl, numpy as np, h5py, remfile, collections
+from concurrent.futures import ThreadPoolExecutor
+nl.DANDISET_VERSION="draft"
+def t(v): return v.decode() if isinstance(v,bytes) else str(v)
+def ld(pu):
+    with h5py.File(remfile.File(pu[1]),"r") as f:
+        ep=f["intervals/epochs"]; u=f["units"]; rm=f["processing/ecephys/rate_maps"]
+        idx=u["spike_times_index"][:]; st=u["spike_times"][:]; s0=np.concatenate([[0],idx[:-1]])
+        oi=u["obs_intervals"][:]; oidx=u["obs_intervals_index"][:]; o0=np.concatenate([[0],oidx[:-1]])
+        sf=[t(x) for x in u["source_files"][:]]; sidx=u["source_files_index"][:]; f0=np.concatenate([[0],sidx[:-1]])
+        d=dict(path=pu[0],ep=[(ep["start_time"][i],ep["stop_time"][i],t(ep["session_type"][i]),t(ep["epoch_name"][i])) for i in range(len(ep["start_time"]))],
+           spikes=[st[a:b] for a,b in zip(s0,idx)], obs=[oi[a:b] for a,b in zip(o0,oidx)], sf=[sf[a:b] for a,b in zip(f0,sidx)],
+           tet=[t(x) for x in u["tetrode"][:]], clu=u["cluster_id"][:],
+           mt=[t(x) for x in rm["tetrode"][:]], men=[t(x) for x in rm["epoch_name"][:]], mclu=rm["cluster_id"][:], munit=rm["unit"][:],
+           msf=[t(x) for x in rm["source_file"][:]], R=rm["rate_map"][:], O=rm["occupancy_map"][:])
+        if "processing/behavior" in f:
+            ss=f["processing/behavior/position/spatial_series"]; d["t"]=ss["timestamps"][:]; d["xy"]=ss["data"][:]
+    return d
+pus=nl.asset_urls()
+with ThreadPoolExecutor(8) as p: S=list(p.map(ld,pus))
+for d in S:
+    print("=====",d["path"])
+    eps={n:(a,b) for a,b,_,n in d["ep"]}
+    # obs intervals vs epochs
+    mism=collections.Counter()
+    for o,sf in zip(d["obs"],d["sf"]):
+        for (a,b),name in zip(o,sf):
+            en=name.split("/")[1].split(".")[0]
+            if eps[en]!=(a,b): mism[(en,a,b,eps[en])]+=1
+    print(" obs intervals differing from epoch window:",dict(mism))
+    out=sum(int((~np.any([(sp>=a)&(sp<=b) for a,b in o],axis=0)).sum()) if len(sp) else 0 for sp,o in zip(d["spikes"],d["obs"]))
+    print(" spikes outside own obs_intervals:",out)
+    # unit link consistency
+    ok=all(d["tet"][u]==tt and d["clu"][u]==c for u,tt,c in zip(d["munit"],d["mt"],d["mclu"]))
+    print(" map unit link matches tetrode&cluster:",ok, "; source_file cell == cluster:", all(int(s.split(".cell")[1].split(".")[0])==c for s,c in zip(d["msf"],d["mclu"])))
+    # each map's source file listed among unit source files?
+    print(" every map has a spike file of same epoch in its unit:", all(f"{tt}/{s.replace('.rmap','')}" in d["sf"][u] for u,tt,s in zip(d["munit"],d["mt"],d["msf"])))
+    # distinct occupancy per epoch name
+    occ=collections.defaultdict(set)
+    for en,O in zip(d["men"],d["O"]): occ[en].add(O.tobytes())
+    print(" distinct occupancy maps per epoch_name:",{k:len(v) for k,v in occ.items()})
+    # duplicates
+    keys=collections.Counter(R.tobytes() for R in d["R"]); print(" duplicate rate maps:",sum(v-1 for v in keys.values()))
+    R=d["R"]; O=d["O"]
+    print(" NaN bins where occ>0:",int((np.isnan(R)&(O>0)).sum())," non-NaN where occ==0:",int((~np.isnan(R)&(O==0)).sum()), "negatives:",int((R<0).sum()), " sentinel occ frac max:", round(float(max(o[63,0]/o.sum() for o in O)),3))
+    all_sp=np.concatenate(d["spikes"])
+    for lo,hi in [(0,1000),(1000,10000),(10000,1e9)]:
+        w=np.unique(all_sp[(all_sp>=lo)&(all_sp<hi)])
+        if len(w)>1: print(f"  times in [{lo},{hi}): n {len(w)} min step {np.diff(w).min():.4f}")
+    if "t" in d:
+        v=~np.isnan(d["xy"][:,0])
+        print(" pos samples",len(d["t"]), "NaN frac",round(1-v.mean(),3), "unique ts frac", round(len(np.unique(d["t"]))/len(d["t"]),3), "sorted",bool((np.diff(d["t"])>=0).all()))
+        inwin=np.zeros(len(d["t"]),bool)
+        for a,b,ty,n in d["ep"]:
+            if ty!="BL": inwin|=(d["t"]>=a)&(d["t"]<=b)
+        print(" pos in own ES/MC windows:",inwin.mean(), "frac at own spikes", round(np.isin(d["t"],all_sp).mean(),3))
+import pickle; pickle.dump(S,open(__import__("os").environ["TMPDIR"]+"/S.pkl","wb"))
+EOF
+PYTHONPATH=. $TMPDIR/env/bin/python $TMPDIR/chk.py
+```
+
+```
+===== sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb
+ obs intervals differing from epoch window: {}
+ spikes outside own obs_intervals: 0
+ map unit link matches tetrode&cluster: True ; source_file cell == cluster: True
+ every map has a spike file of same epoch in its unit: True
+ distinct occupancy maps per epoch_name: {'ES': 1, 'MC': 1}
+ duplicate rate maps: 0
+ NaN bins where occ>0: 0  non-NaN where occ==0: 0 negatives: 0  sentinel occ frac max: 0.006
+  times in [0,1000): n 13129 min step 0.0010
+  times in [1000,10000): n 6772 min step 0.0100
+===== sub-Rat1/sub-Rat1_ses-19980420T095700_behavior+ecephys.nwb
+ obs intervals differing from epoch window: {('BL1', np.float64(2720.0), np.float64(3390.0), (np.float64(2525.0), np.float64(3390.0))): 14}
+ spikes outside own obs_intervals: 0
+ map unit link matches tetrode&cluster: True ; source_file cell == cluster: True
+ every map has a spike file of same epoch in its unit: True
+ distinct occupancy maps per epoch_name: {'ES': 1, 'MC': 1}
+ duplicate rate maps: 0
+ NaN bins where occ>0: 0  non-NaN where occ==0: 0 negatives: 0  sentinel occ frac max: 0.179
+  times in [1000,10000): n 34522 min step 0.0100
+ pos samples 20444 NaN frac 0.117 unique ts frac 1.0 sorted True
+[... 67 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  mkdir -p paper; cat .gitignore | head; $TMPDIR/env/bin/python - <<'EOF'
+import requests,re,html
+r=requests.get("https://www.nature.com/articles/nn0300_209",timeout=60,headers={"User-Agent":"Mozilla/5.0"})
+print(r.status_code,len(r.text))
+open("paper/nn0300_209.html","w").write(r.text)
+t=re.sub(r"<script.*?</script>|<style.*?</style>","",r.text,flags=re.S)
+t=html.unescape(re.sub(r"<[^>]+>"," ",t)); t=re.sub(r"\s+"," ",t)
+open("paper/nn0300_209.txt","w").write(t)
+for k in ["Abstract","Figure 1","Figure 2","Figure 3","Fig. 1","Fig. 2","Fig. 3"]:
+    for m in re.finditer(re.escape(k),t): print(k,":",t[m.start():m.start()+600]); break
+EOF
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -o "Abstract ‘Place’.\{0,1500\}" paper/nn0300_209.txt | head -c 1600; echo; grep -o "Access options.\{0,300\}\|Subscribe.\{0,100\}" paper/nn0300_209.txt | head -3
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent**
+
+The paper page is unchanged (abstract and figure titles only), so the claims file stays as it is. A few more metadata details:
+
+**Agent calls Bash**
+
+```bash
+cd entries/001754-knierim-2000; cat > $TMPDIR/m.py <<'EOF'
+import neurolab as nl, h5py, remfile, numpy as np
+nl.DANDISET_VERSION="draft"
+def t(v): return v.decode() if isinstance(v,bytes) else str(v)
+for p,u in nl.asset_urls():
+    with h5py.File(remfile.File(u),"r") as f:
+        print(p, "|", t(f["session_description"][()]))
+        print("   types:", sorted({(t(a),t(b)) for a,b in zip(f["intervals/epochs/session_type"][:],f["intervals/epochs/session_type_description"][:])}))
+        print("   tetrodes:", sorted({t(x) for x in f["units/tetrode"][:]}, key=lambda s:int(s[2:])))
+EOF
+PYTHONPATH=. $TMPDIR/env/bin/python $TMPDIR/m.py; cd $TMPDIR/conv; grep -n "flat rectangular\|rectangular\|PREFLI\|Rat 1↔\|preflight" -r README.md conversion_notes.md src | head -30
+```
+
+```
+sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb | Preflight ground recording — Rat 1. Recorded 3 days before launch at Kennedy Space Center.
+   types: [('ES', 'Escher Staircase — three-dimensional track with 90° yaw and pitch turns'), ('MC', 'Magic Carpet — flat two-dimensional track')]
+   tetrodes: ['TT3', 'TT4', 'TT5', 'TT6', 'TT7', 'TT8', 'TT9', 'TT11']
+sub-Rat1/sub-Rat1_ses-19980420T095700_behavior+ecephys.nwb | Flight Day 4 recording — Rat 1. Recorded in the same acquisition session as Rat 2; the two rats took turns on the task apparatus.
+   types: [('BL', 'Baseline — the rat rested quietly in the Rodent Sleeping Pouch'), ('ES', 'Escher Staircase — three-dimensional track with 90° yaw and pitch turns'), ('MC', 'Magic Carpet — flat two-dimensional track')]
+   tetrodes: ['TT0', 'TT1', 'TT2', 'TT7', 'TT8', 'TT9', 'TT10', 'TT11']
+sub-Rat1/sub-Rat1_ses-19980425T124500_behavior+ecephys.nwb | Flight Day 9 recording — Rat 1. Recorded in the same acquisition session as Rat 2; the two rats took turns on the task apparatus.
+   types: [('BL', 'Baseline — the rat rested quietly in the Rodent Sleeping Pouch'), ('ES', 'Escher Staircase — three-dimensional track with 90° yaw and pitch turns'), ('MC', 'Magic Carpet — flat two-dimensional track')]
+   tetrodes: ['TT0', 'TT1', 'TT2', 'TT6', 'TT8', 'TT9', 'TT10', 'TT11']
+sub-Rat2/sub-Rat2_ses-19980413T163700_ecephys.nwb | Preflight ground recording — Rat 2. Recorded 4 days before launch at Kennedy Space Center.
+   types: [('ES', 'Escher Staircase — three-dimensional track with 90° yaw and pitch turns'), ('MC', 'Magic Carpet — flat two-dimensional track')]
+   tetrodes: ['TT0', 'TT1', 'TT2', 'TT7', 'TT8', 'TT10']
+sub-Rat2/sub-Rat2_ses-19980420T095700_behavior+ecephys.nwb | Flight Day 4 recording — Rat 2. Recorded in the same acquisition session as Rat 1; the two rats took turns on the task apparatus.
+   types: [('BL', 'Baseline — the rat rested quietly in the Rodent Sleeping Pouch'), ('ES', 'Escher Staircase — three-dimensional tra
+[... 30 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001754-knierim-2000 && $TMPDIR/env/bin/python - <<'EOF'
+import re
+p="neurolab.py"; s=open(p).read()
+rep=[
+('''(spike times in seconds, tetrode and Xclust cluster id), task epochs (BL baseline, ES Escher
+staircase, MC Magic Carpet), and a table of 64 x 64 rate and occupancy maps from the original
+analysis (.RMA files). The flight files also hold the video position in pixels (0 to 255), but
+only at spike times: the conversion took it from the position column of the spike files. Files
+are streamed from the archive at the pinned version; nothing is written to disk.''',
+'''(spike times in seconds, tetrode and Xclust cluster id, the original spike files merged into
+each unit and their windows), task epochs (BL baseline, ES Escher staircase, MC Magic Carpet, each
+with its original epoch name such as ES1), and a table of 64 x 64 rate and occupancy maps from the
+original analysis (.rmap files), each linked to its unit and epoch name. The flight files also hold
+the video position in pixels (0 to 255), but only at spike times and only within the rat's own ES
+and MC epochs: the conversion took it from the position columns of both rats' spike files. Files
+are streamed from the archive at the pinned version; nothing is written to disk.'''),
+('''- `MISSING_XY = (0, 255)`: the tracker's value for a lost position; it falls in rate-map bin
+  `SENTINEL_BIN = (63, 0)`, which is left out of every occupancy.
+- `UNVISITED = -999`: the rate maps' value for bins without occupancy.''',
+'''- The tracker's lost position, (0, 255) in the source, is NaN in the files; the original
+  occupancy counts it in rate-map bin `SENTINEL_BIN = (63, 0)`, which is left out of every
+  occupancy. Unvisited rate-map bins are NaN (-999 in the source).'''),
+('DANDISET_VERSION = "0.260728.1352"','DANDISET_VERSION = "draft"'),
+('''MISSING_XY = (0.0, 255.0)
+SENTINEL_BIN = (63, 0)
+UNVISITED = -999.0
+''','''SENTINEL_BIN = (63, 0)
+'''),
+('''def asset_urls() -> list[tuple[str, str]]:
+    """(path, streaming URL) of every NWB file at the pinned version."""
+    with DandiAPIClient() as client:
+        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)''',
+'''def asset_urls(version: str = DANDISET_VERSION) -> list[tuple[str, str]]:
+    """(path, streaming URL) of every NWB file at the pinned version."""
+    with DandiAPIClient() as client:
+        dandiset = client.get_dandiset(DANDISET_ID, version)'''),
+('''def _column(group, name):
+    return [_text(v) for v in group[name][:]]
+''','''def _column(group, name):
+    return [_text(v) for v in group[name][:]]
+
+
+def _ragged(group, name) -> list:
+    data, index = group[name][:], group[f"{name}_index"][:]
+    starts = np.concatenate([[0], index[:-1]])
+    return [data[a:b] for a, b in zip(starts, index)]
+
+
+def epoch_type(epoch_name: str) -> str:
+    """The task type of an original epoch name (ES1 -> ES)."""
+    return epoch_name.rstrip("0123456789")
+'''),
+('''        s["epochs"] = pd.DataFrame({"start": ep["start_time"][:], "stop": ep["stop_time"][:],
+                                    "type": _column(ep, "session_type")})
+        u = f["units"]
+        index = u["spike_times_index"][:]
+        times = u["spike_times"][:]
+        starts = np.concatenate([[0], index[:-1]])
+        s["units"] = pd.DataFrame({"tetrode": _column(u, "tetrode"),
+                                   "cluster": u["cluster_id"][:],
+                                   "spikes": [times[a:b] for a, b in zip(starts, index)]})''',
+'''        s["epochs"] = pd.DataFrame({"start": ep["start_time"][:], "stop": ep["stop_time"][:],
+                                    "type": _column(ep, "session_type"),
+                                    "name": _column(ep, "epoch_name")})
+        u = f["units"]
+        s["units"] = pd.DataFrame({"tetrode": _column(u, "tetrode"),
+                                   "cluster": u["cluster_id"][:],
+                                   "spikes": _ragged(u, "spike_times"),
+                                   "source_files": [[_text(v) for v in x] for x in _ragged(u, "source_files")],
+                                   "obs_intervals": _ragged(u, "obs_intervals")})'''),
+('''        s["maps"] = pd.DataFrame({"tetrode": _column(rm, "tetrode"),
+                                  "source_file": _column(rm, "source_file"),
+                                  "type": _column(rm, "session_type"),
+                                  "cell_number": rm["cell_number"][:]})''',
+'''        names = _column(rm, "epoch_name")
+        s["maps"] = pd.DataFrame({"tetrode": _column(rm, "tetrode"),
+                                  "source_file": _column(rm, "source_file"),
+                                  "archived_file_name": _column(rm, "archived_file_name"),
+                                  "epoch_name": names, "type": [epoch_type(n) for n in names],
+                                  "cluster": rm["cluster_id"][:], "unit": rm["unit"][:]})'''),
+('''    if "xy" in s:
+        s["valid"] = ~((s["xy"][:, 0] == MISSING_XY[0]) & (s["xy"][:, 1] == MISSING_XY[1]))''',
+'''    if "xy" in s:
+        s["valid"] = ~np.isnan(s["xy"]).any(axis=1)'''),
+('''def map_occupancy_groups(s: dict) -> list[tuple[str, np.ndarray, np.ndarray]]:
+    """Distinct occupancy maps of a file: (session type, occupancy, row indices using it)."""
+    groups = {}
+    for i, (typ, occ) in enumerate(zip(s["maps"]["type"], s["occupancy_maps"])):
+        groups.setdefault((typ, occ.tobytes()), (typ, occ, []))[2].append(i)
+    return [(typ, occ, np.array(rows)) for typ, occ, rows in groups.values()]''',
+'''def map_occupancy_groups(s: dict) -> list[tuple[str, np.ndarray, np.ndarray]]:
+    """Distinct occupancy maps of a file: (epoch name, occupancy, row indices using it)."""
+    groups = {}
+    for i, (name, occ) in enumerate(zip(s["maps"]["epoch_name"], s["occupancy_maps"])):
+        groups.setdefault((name, occ.tobytes()), (name, occ, []))[2].append(i)
+    return [(name, occ, np.array(rows)) for name, occ, rows in groups.values()]'''),
+('''    occ[(rate_map == UNVISITED) | (occ < min_occ)] = 0''','''    occ[np.isnan(rate_map) | (occ < min_occ)] = 0'''),
+('''            rows.append({"rat": s["subject"], "day": s["day"], "type": m["type"],
+                         "tetrode": m["tetrode"], "source_file": m["source_file"],
+                         "cel_name": "CEL" in m["source_file"].upper(),''',
+'''            rows.append({"rat": s["subject"], "day": s["day"], "type": m["type"],
+                         "epoch_name": m["epoch_name"], "tetrode": m["tetrode"],
+                         "cluster": m["cluster"], "unit": m["unit"], "source_file": m["source_file"],
+                         "cel_name": "CEL" in m["archived_file_name"].upper(),'''),
+('''"rate_x_occupancy": float((np.clip(s["rate_maps"][i], 0, None) * occ).sum())})''',
+'''"rate_x_occupancy": float((np.nan_to_num(s["rate_maps"][i]) * occ).sum())})'''),
+('''    """(row, column) of each position on the 64 x 64 rate-map grid: row from y, column from x."""
+    col = np.clip((xy[:, 0] // PX_PER_RMA_BIN).astype(int), 0, 63)
+    row = np.clip((xy[:, 1] // PX_PER_RMA_BIN).astype(int), 0, 63)''',
+'''    """(row, column) of each position on the 64 x 64 rate-map grid: row from y, column from x.
+    A lost position (NaN) is given bin (0, 0); callers drop it."""
+    xy = np.nan_to_num(xy)
+    col = np.clip((xy[:, 0] // PX_PER_RMA_BIN).astype(int), 0, 63)
+    row = np.clip((xy[:, 1] // PX_PER_RMA_BIN).astype(int), 0, 63)'''),
+]
+for a,b in rep:
+    assert s.count(a)==1,a[:60]
+    s=s.replace(a,b)
+# replace epoch_occupancy and epoch_units header
+a=s[s.index("def epoch_occupancy"):s.index("def spatial_info_spikes")]
+b='''def epoch_occupancy(s: dict, name: str) -> np.ndarray:
+    """The rate-map occupancy map of an epoch, from the maps with its epoch name (one distinct
+    map per epoch name, checked in the notebook's data check)."""
+    groups = [occ for n, occ, _ in map_occupancy_groups(s) if n == name]
+    assert len(groups) == 1, (s["path"], name, len(groups))
+    return groups[0]
+
+
+def occupancy_match(s: dict, start: float, stop: float) -> dict:
+    """For each distinct occupancy map of a file, the correlation of the binary map with the
+    binary histogram of the position samples in [start, stop]; keyed by the map's epoch name."""
+    m = (s["t"] >= start) & (s["t"] <= stop) & s["valid"]
+    hist = count_map(*bin_xy(s["xy"][m])) > 0
+    return {name: float(np.corrcoef((clean_occupancy(occ) > 0).ravel(), hist.ravel())[0, 1])
+            for name, occ, _ in map_occupancy_groups(s)}
+
+
+'''
+s=s.replace(a,b)
+a='''def epoch_units(s: dict, start: float, stop: float, typ: str, rng: np.random.Generator,
+                n_shuffles: int = N_SHUFFLES, match_counts: bool = False) -> pd.DataFrame:
+    """Spatial information of every unit in one epoch with its shuffle distribution.
+
+    Shifted spikes without a position are dropped, so a shuffle can hold fewer spikes than the
+    unit. With `match_counts`, each shuffle is compared with the unit's information on a random
+    subsample of its own spikes of the same size (a variant; the main test compares all spikes)."""
+    occ, _ = epoch_occupancy(s, start, stop, typ)
+    occ32 = merge_bins(clean_occupancy(occ))
+    lookup = PositionLookup(s)'''
+b='''def epoch_units(s: dict, start: float, stop: float, occ: np.ndarray, rng: np.random.Generator,
+                n_shuffles: int = N_SHUFFLES, match_counts: bool = False,
+                position: dict | None = None) -> pd.DataFrame:
+    """Spatial information of every unit of `s` in one epoch with its shuffle distribution, with
+    the epoch's 64 x 64 occupancy map `occ` and the position trace of `position` (default `s`).
+
+    Shifted spikes without a position are dropped, so a shuffle can hold fewer spikes than the
+    unit. With `match_counts`, each shuffle is compared with the unit's information on a random
+    subsample of its own spikes of the same size (a variant; the main test compares all spikes)."""
+    occ32 = merge_bins(clean_occupancy(occ))
+    lookup = PositionLookup(s if position is None else position)'''
+assert s.count(a)==1; s=s.replace(a,b)
+open(p,"w").write(s)
+EOF
+grep -n "UNVISITED\|MISSING_XY\|cell_number" neurolab.py
+```
+
+```
+Exit code 1
+```
+
+**Agent calls Bash**
+
+```bash
+cd  git diff --stat; sed -n 1,30p entries/001754-knierim-2000/neurolab.py
+```
+
+```
+entries/001754-knierim-2000/neurolab.py | 109 +++++++++++++++++++-------------
+ 1 file changed, 64 insertions(+), 45 deletions(-)
+"""Loading and spatial measures for the Neurolab (STS-90) place cell data of dandiset 001754.
+
+Knierim, McNaughton & Poe (2000), Nature Neuroscience 3:209-210, doi:10.1038/72910.
+
+Each NWB file holds one rat on one day (preflight, flight day 4 or flight day 9): sorted units
+(spike times in seconds, tetrode and Xclust cluster id, the original spike files merged into
+each unit and their windows), task epochs (BL baseline, ES Escher staircase, MC Magic Carpet, each
+with its original epoch name such as ES1), and a table of 64 x 64 rate and occupancy maps from the
+original analysis (.rmap files), each linked to its unit and epoch name. The flight files also hold
+the video position in pixels (0 to 255), but only at spike times and only within the rat's own ES
+and MC epochs: the conversion took it from the position columns of both rats' spike files. Files
+are streamed from the archive at the pinned version; nothing is written to disk.
+
+Where the parameters come from. The paper's Methods were not available (it is not open access),
+so every parameter below is a common choice, fixed in the claims file before the analysis:
+
+- `PX_PER_RMA_BIN = 4`: the rate maps are 64 x 64 over the 256-pixel video range; spike-count
+  maps binned this way match them best (shown in the notebook's data check).
+[... 11 more lines not kept]
+```
+
+**Agent**
+
+Helper ported. Now I'll rewrite the notebook's code cells for the new layout and add a cell that compares the draft with 0.260728.1352. I'll run the notebook before writing the conclusions.
+
+**Agent calls Bash**
+
+```bash
+mkdir -p $TMPDIR/build && cat > $TMPDIR/build/cells.py <<'PYEOF'
+CELLS = {}
+
+CELLS[1] = '''import json
+import re
+import time
+import warnings
+from collections import Counter
+from concurrent.futures import ThreadPoolExecutor
+
+import h5py
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+import remfile
+import requests
+from scipy import stats
+
+import neurolab as nl
+
+pd.set_option("display.width", 200)
+pd.set_option("display.max_columns", 30)
+pd.set_option("display.max_rows", 300)
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+
+OLD_VERSION = "0.260728.1352"  # the version of the earlier attempt, 001754-knierim-2000-01
+started = time.time()
+sessions = nl.load_all()
+by_label = {nl.label(s): s for s in sessions}
+print(f"loaded {len(sessions)} files from dandiset {nl.DANDISET_ID} version {nl.DANDISET_VERSION} "
+      f"in {time.time() - started:.0f} s")'''
+
+CELLS[3] = '''api = "https://api.dandiarchive.org/api/dandisets/001754/versions"
+listing = requests.get(f"{api}/", timeout=60).json()["results"]
+print("Versions and when each was last modified:")
+for v in listing:
+    print(f"  {v['version']:15s} {v['modified']}")
+print("The draft read here was last modified", next(v["modified"] for v in listing if v["version"] == "draft"),
+      "; when this attempt was made it was 2026-10-14T21:55:09Z, and a later time means the draft has changed since.")
+blobs = {}
+for v in [x["version"] for x in listing]:
+    assets = requests.get(f"{api}/{v}/assets/", params={"page_size": 100}, timeout=60).json()["results"]
+    blobs[v] = sorted((a["path"], a["size"], a.get("blob")) for a in assets)
+published = [v for v in blobs if v != "draft"]
+print("\\nThe published versions hold the same files with the same blobs:", all(blobs[v] == blobs[published[0]] for v in published))
+old_blobs = {p: (size, blob) for p, size, blob in blobs[OLD_VERSION]}
+print(f"Files of the draft, with their size in {OLD_VERSION} and whether the draft's file is a new blob:")
+for path, size, blob in blobs["draft"]:
+    print(f"  {path}  {size / 1e6:.2f} MB (was {old_blobs[path][0] / 1e6:.2f} MB)  new blob: {blob != old_blobs[path][1]}")
+meta = {v: requests.get(f"{api}/{v}/", timeout=60).json() for v in ["draft", OLD_VERSION]}
+print(f"The dandiset description is the same in the draft and {OLD_VERSION}:", meta["draft"]["description"] == meta[OLD_VERSION]["description"])
+
+print("\\nEvery group (with its neurodata type) and dataset (shape, type, description) of every file, unfiltered:")
+types = {}
+for path_url in nl.asset_urls():
+    tree = nl.h5_tree(path_url)
+    print(f"\\n{path_url[0]}: {len(tree)} groups and datasets")
+    for line in tree:
+        print(" ", line)
+        if "  group  " in line and line.split("  group  ")[1]:
+            types.setdefault(line.split("  group  ")[1], set()).add(path_url[0])
+print("\\nNeurodata types of groups, and the number of files holding each:", {t: len(v) for t, v in sorted(types.items())})'''
+
+CELLS["descriptions"] = '''# The full descriptions of the tables and series the analysis uses, from the Rat1 FD9 file (the
+# other files carry the same text, except the position description, which names each file's
+# partner rat), with the subject's age and description from every file.
+path_url = [p for p in nl.asset_urls() if p[0].startswith("sub-Rat1/sub-Rat1_ses-19980425")][0]
+with h5py.File(remfile.File(path_url[1]), "r") as f:
+    print("experiment_description:", nl._text(f["general/experiment_description"][()]), "\\n")
+    for name in ["units", "units/spike_times", "intervals/epochs", "processing/ecephys/rate_maps",
+                 "processing/ecephys/rate_maps/rate_map", "processing/ecephys/rate_maps/occupancy_map",
+                 "processing/behavior/position/spatial_series"]:
+        attrs = {k: nl._text(v) for k, v in f[name].attrs.items() if k in ("description", "resolution")}
+        print(f"{name}: {attrs}\\n")
+for p, url in nl.asset_urls():
+    with h5py.File(remfile.File(url), "r") as f:
+        print(f"{p.split('/')[0]} {p.split('_ses-')[1][:8]}: age {nl._text(f['general/subject/age'][()])!r}; "
+              f"{nl._text(f['general/subject/description'][()])}")'''
+
+CELLS["compare"] = '''# What changed from the version of the earlier attempt. Both versions are read: epochs, units,
+# spikes, position and rate maps of each file. In the old files unvisited rate-map bins are -999,
+# in the draft NaN; maps are compared with NaN read as -999.
+def read_old(path_url):
+    with h5py.File(remfile.File(path_url[1]), "r") as f:
+        ep, u, rm = f["intervals/epochs"], f["units"], f["processing/ecephys/rate_maps"]
+        out = {"epochs": list(zip(ep["start_time"][:], ep["stop_time"][:], nl._column(ep, "session_type"))),
+               "units": list(zip(nl._column(u, "tetrode"), u["cluster_id"][:])), "spikes": nl._ragged(u, "spike_times"),
+               "maps": rm["rate_map"][:], "map_tetrodes": nl._column(rm, "tetrode"), "map_files": nl._column(rm, "source_file")}
+        if "processing/behavior" in f:
+            ss = f["processing/behavior/position/spatial_series"]
+            out["t"], out["xy"] = ss["timestamps"][:], ss["data"][:]
+    return out
+
+with ThreadPoolExecutor(8) as pool:
+    old_urls = nl.asset_urls(OLD_VERSION)
+    old_files = dict(zip([p for p, _ in old_urls], pool.map(read_old, old_urls)))
+
+def overlapping(intervals):
+    iv = sorted(intervals)
+    return sum(1 for (a1, b1), (a2, b2) in zip(iv, iv[1:]) if a2 < b1)
+
+rows, lost_maps = [], []
+for s in sessions:
+    o = old_files[s["path"]]
+    new_units = list(zip(s["units"].tetrode, s["units"].cluster))
+    same_units = new_units == [(t, int(c)) for t, c in o["units"]]
+    removed = [len(a) - len(b) for a, b in zip(o["spikes"], s["units"].spikes)]
+    subset = all(np.isin(b, a).all() for a, b in zip(o["spikes"], s["units"].spikes))
+    new_maps = {np.where(np.isnan(m), -999, m).astype(np.float32).tobytes() for m in s["rate_maps"]}
+    old_keys = [m.tobytes() for m in o["maps"]]
+    groups = Counter(old_keys)
+    for k, n in groups.items():
+        if k not in new_maps:
+            lost_maps.append((nl.label(s), n, [f"{o['map_tetrodes'][i]}/{o['map_files'][i]}" for i, x in enumerate(old_keys) if x == k]))
+    row = {"session": nl.label(s), "epochs_old": len(o["epochs"]), "epochs_new": len(s["epochs"]),
+           "overlapping_old": overlapping([(a, b) for a, b, _ in o["epochs"]]), "overlapping_new": overlapping(list(zip(s["epochs"].start, s["epochs"].stop))),
+           "same_units": same_units, "spikes_removed": int(sum(removed)), "units_losing_spikes": int(sum(r > 0 for r in removed)),
+           "new_spikes_subset_of_old": subset, "maps_old": len(o["maps"]), "distinct_maps_old": len(groups), "maps_new": len(s["rate_maps"]),
+           "old_distinct_maps_in_new": int(sum(k in new_maps for k in groups))}
+    if "t" in s:
+        row["position_old"], row["position_new"] = len(o["t"]), len(s["t"])
+    rows.append(row)
+print(pd.DataFrame(rows).to_string(index=False))
+print("\\nOld distinct rate maps that are not in the draft (file, copies in the old file, tetrode/short name of each copy):")
+for x in lost_maps:
+    print("  ", x)
+
+print("\\nPosition. For each draft flight file, its samples whose timestamp is in the old file of the same rat or of the")
+print("other rat, and whether the positions agree there (within 2 px, both valid; the old files wrote (0, 255) for a lost position):")
+rows = []
+for s in sessions:
+    if "t" not in s:
+        continue
+    partner = {"Rat1": "Rat2", "Rat2": "Rat1"}.get(s["subject"])
+    row = {"session": nl.label(s), "samples_new": len(s["t"])}
+    for who, key in [("same_rat", s["path"]), ("other_rat", by_label[f"{partner} {s['day']}"]["path"] if partner else None)]:
+        if key is None:
+            continue
+        o = old_files[key]
+        common, i_new, i_old = np.intersect1d(s["t"], o["t"], return_indices=True)
+        old_valid = ~((o["xy"][i_old, 0] == 0) & (o["xy"][i_old, 1] == 255))
+        both = s["valid"][i_new] & old_valid
+        dist = np.hypot(*(s["xy"][i_new][both] - o["xy"][i_old][both]).T)
+        row[f"in_old_{who}_file"] = round(len(common) / len(s["t"]), 3)
+        row[f"{who}_within_2px"] = round(float((dist < 2).mean()), 3)
+        row[f"{who}_lost_agrees"] = round(float((~s["valid"][i_new] == ~old_valid).mean()), 3)
+    in_either = np.isin(s["t"], np.concatenate([old_files[s["path"]]["t"]] + ([old_files[by_label[f"{partner} {s['day']}"]["path"]]["t"]] if partner else [])))
+    row["in_neither_old_file"] = int((~in_either).sum())
+    rows.append(row)
+print(pd.DataFrame(rows).to_string(index=False))'''
+
+CELLS[5] = '''rows = []
+for s in sessions:
+    ep = s["epochs"]
+    rows.append({"file": s["path"].split("/")[1][:31], "rat": s["subject"], "day": s["day"], "start": s["start"][:16],
+                 "units": len(s["units"]), "spikes": int(sum(len(x) for x in s["units"]["spikes"])),
+                 "tetrodes": s["units"]["tetrode"].nunique(),
+                 "epochs": " ".join(f"{n}[{a:.0f}-{b:.0f}]" for a, b, n in ep[["start", "stop", "name"]].itertuples(index=False)),
+                 "rate_maps": len(s["maps"]), "map_epochs": "/".join(sorted(s["maps"]["epoch_name"].unique())),
+                 "position_samples": len(s["t"]) if "t" in s else 0})
+info = pd.DataFrame(rows)
+print(info.to_string(index=False))
+print("\\nFiles per rat and day:"); print(pd.crosstab(info.rat, info.day).to_string())
+for s in sessions:
+    print(f"{nl.label(s):14s} {s['description']}")
+print("\\nTetrodes with units, per file:")
+for s in sessions:
+    print(f"  {nl.label(s):14s}", sorted(s["units"].tetrode.unique(), key=lambda t: int(t[2:])))'''
+
+CELLS[7] = '''print("Position, flight files. Stated unit:", {s['xy_unit'] for s in sessions if 'xy' in s})
+rows = []
+for s in sessions:
+    if "xy" not in s:
+        continue
+    xy, v, t = s["xy"], s["valid"], s["t"]
+    own = np.unique(np.concatenate(list(s["units"]["spikes"])))
+    partner = {"Rat1": "Rat2", "Rat2": "Rat1"}.get(s["subject"])
+    other = np.unique(np.concatenate(list(by_label[f"{partner} {s['day']}"]["units"]["spikes"]))) if partner else np.array([])
+    task = np.zeros(len(t), bool)
+    own_task = np.zeros(len(own), bool)
+    for a, b, typ in s["epochs"][["start", "stop", "type"]].itertuples(index=False):
+        if typ != "BL":
+            task |= (t >= a) & (t <= b)
+            own_task |= (own >= a) & (own <= b)
+    rows.append({"session": nl.label(s), "samples": len(t), "lost_(NaN)": round(1 - v.mean(), 3),
+                 "x_min": xy[v, 0].min(), "x_max": xy[v, 0].max(), "y_min": xy[v, 1].min(), "y_max": xy[v, 1].max(),
+                 "t_first": t[0], "t_last": t[-1], "in_own_ES_MC_epochs": round(task.mean(), 3),
+                 "at_own_spike_times": round(float(np.isin(t, own).mean()), 3),
+                 "at_other_rat_spike_times": round(float(np.isin(t, other).mean()), 3) if partner else np.nan,
+                 "at_either": round(float(np.isin(t, np.union1d(own, other)).mean()), 3),
+                 "own_task_spike_times_with_sample": round(float(np.isin(own[own_task], t).mean()), 4)})
+print(pd.DataFrame(rows).round(2).to_string(index=False))'''
+
+CELLS[9] = '''# The position lookup on synthetic input: samples at 1.0 s, 1.1 s (the lost position, NaN) and 1.5 s.
+fake = {"t": np.array([1.0, 1.1, 1.5]), "xy": np.array([[40.0, 40.0], [np.nan, np.nan], [200.0, 200.0]])}
+fake["valid"] = ~np.isnan(fake["xy"]).any(axis=1)
+found, r, c = nl.PositionLookup(fake)(np.array([1.0, 1.1, 1.12, 1.4, 2.0]))
+print("times 1.0, 1.1, 1.12, 1.4, 2.0 s; found:", found.tolist(), "; rows:", r.tolist(), "; columns:", c.tolist())
+assert found.tolist() == [True, False, False, True, False] and r.tolist() == [10, 50] and c.tolist() == [10, 50]'''
+
+CELLS[11] = '''print("Do the Rat1 and Rat2 files of a flight day share position samples, and which epochs do their samples fall in?")
+for day in ["FD4", "FD9"]:
+    a, b = by_label[f"Rat1 {day}"], by_label[f"Rat2 {day}"]
+    print(f"  {day}: timestamps in both files: {len(np.intersect1d(a['t'], b['t']))}")
+    for s in (a, b):
+        n = {f"{name} ({typ})": int(((s["t"] >= x) & (s["t"] <= y)).sum()) for x, y, typ, name in s["epochs"][["start", "stop", "type", "name"]].itertuples(index=False)}
+        print(f"    {nl.label(s)} samples per own epoch: {n}")
+    print("    Rat1 epochs:", list(a["epochs"][["start", "stop", "name"]].itertuples(index=False, name=None)))
+    print("    Rat2 epochs:", list(b["epochs"][["start", "stop", "name"]].itertuples(index=False, name=None)))'''
+
+CELLS[13] = '''print("Distinct occupancy maps per epoch name, per file:", {nl.label(s): dict(Counter(n for n, _, _ in nl.map_occupancy_groups(s))) for s in sessions})
+rows = []
+for s in sessions:
+    if "xy" not in s:
+        continue
+    for a, b, typ, name in s["epochs"][["start", "stop", "type", "name"]].itertuples(index=False):
+        if typ == "BL":
+            continue
+        scores = nl.occupancy_match(s, a, b)
+        occ = nl.epoch_occupancy(s, name)
+        rows.append({"session": nl.label(s), "epoch": f"{name} {a:.0f}-{b:.0f}", "duration_s": b - a,
+                     "match_own_name": round(scores[name], 2), "best_match": max(scores, key=scores.get),
+                     "match_other_names": {k: round(v, 2) for k, v in scores.items() if k != name},
+                     "occupancy_counts": int(occ.sum()), "counts_per_s": round(occ.sum() / (b - a), 1)})
+print("Correlation of each binary occupancy map with the binary histogram of the epoch's position samples:")
+print(pd.DataFrame(rows).to_string(index=False))'''
+
+CELLS[15] = '''print("Rate-map values:")
+r_all = np.concatenate([s["rate_maps"].ravel() for s in sessions])
+o_all = np.concatenate([s["occupancy_maps"].ravel() for s in sessions])
+print("  NaN bins:", round(float(np.isnan(r_all).mean()), 3), "; NaN exactly where occupancy is 0:", bool((np.isnan(r_all) == (o_all == 0)).all()),
+      "; negative values:", int((r_all < 0).sum()))
+print("  max rate per file (Hz):", {nl.label(s): round(float(np.nanmax(s["rate_maps"])), 1) for s in sessions})
+print("\\nOccupancy in bin [63, 0], the bin of the lost position (0, 255), as a fraction of each occupancy map:")
+for s in sessions:
+    print("  ", nl.label(s), [f"{name} {occ[nl.SENTINEL_BIN] / occ.sum():.3f}" for name, occ, _ in nl.map_occupancy_groups(s)])
+
+maps = nl.rma_table(sessions)
+print("\\nRate maps per file and type: all, identical copies of another map in the same file, archived short names with CEL:")
+print(maps.groupby(["rat", "day", "type"]).agg(maps=("info", "size"), duplicates=("duplicate", "sum"), cel_names=("cel_name", "sum")).to_string())
+print("\\nExamples of source_file and archived_file_name:", [f"{a} = {b}" for a, b in zip(sessions[2]["maps"].source_file[:8], sessions[2]["maps"].archived_file_name[:8])])
+print("source_file names that do not read <epoch name>.cell<cluster id>.rmap:",
+      sum(f != f"{n}.cell{c}.rmap" for s in sessions for f, n, c in zip(s["maps"].source_file, s["maps"].epoch_name, s["maps"].cluster)))
+print("Rate maps whose unit has a different tetrode or cluster id:",
+      sum((s["units"].tetrode[u] != t) or (s["units"].cluster[u] != c) for s in sessions for u, t, c in zip(s["maps"].unit, s["maps"].tetrode, s["maps"].cluster)))
+print("Rate maps whose unit has no spike file of the map's epoch:",
+      sum(f"{t}/{n}.cell{c}" not in s["units"].source_files[u] for s in sessions for u, t, n, c in zip(s["maps"].unit, s["maps"].tetrode, s["maps"].epoch_name, s["maps"].cluster)))
+pk = []
+for s in sessions:
+    for i in range(len(s["maps"])):
+        occ = nl.clean_occupancy(s["occupancy_maps"][i])
+        rate = np.where((occ > 0) & np.isfinite(s["rate_maps"][i]), s["rate_maps"][i], -1.0)
+        j = np.unravel_index(rate.argmax(), rate.shape)
+        pk.append({"session": nl.label(s), "peak_rate": rate[j], "occupancy_at_peak": occ[j]})
+pk = pd.DataFrame(pk)
+print("\\nOccupancy counts in the bin of each map's peak rate:")
+print(pk.groupby("session").agg(maps=("peak_rate", "size"), max_peak_hz=("peak_rate", "max"), median_occupancy_at_peak=("occupancy_at_peak", "median"),
+      peaks_in_bins_below_5=("occupancy_at_peak", lambda o: int((o < nl.MIN_OCC).sum()))).round(1).to_string())
+print("Five highest peaks:"); print(pk.nlargest(5, "peak_rate").round(1).to_string(index=False))'''
+
+CELLS[17] = '''# What apparatus the preflight epochs labelled ES and MC were recorded on: the dandiset description,
+# and the extent of every distinct occupancy map (visited bins, rows and columns of the 64 x 64 grid).
+desc = meta["draft"]["description"]
+print("Dandiset description, sentences on the track:")
+for sentence in desc.split(". "):
+    if "track" in sentence:
+        print("  ", sentence.strip())
+print("\\nEpoch names per file:", {nl.label(s): sorted(set(s["epochs"].name)) for s in sessions})
+rows, footprint = [], {}
+for s in sessions:
+    for name, occ, idx in nl.map_occupancy_groups(s):
+        v = nl.clean_occupancy(occ) > 0
+        footprint.setdefault((s["subject"], s["day"], nl.epoch_type(name)), v)
+        rr, cc = np.where(v)
+        rows.append({"session": nl.label(s), "epoch": name, "maps": len(idx), "visited_bins": int(v.sum()),
+                     "rows": f"{rr.min()}-{rr.max()}", "columns": f"{cc.min()}-{cc.max()}", "occupancy_counts": int(occ.sum())})
+print(pd.DataFrame(rows).to_string(index=False))
+jaccard = lambda a, b: round(float((a & b).sum() / (a | b).sum()), 2)
+rows = []
+for rat in ["Rat1", "Rat2", "Rat3"]:
+    fp = lambda day, typ: footprint[(rat, day, typ)]
+    for day in ["FD4", "FD9"]:
+        if (rat, day, "ES") in footprint:
+            rows.append({"rat": rat, "flight_day": day, "preflight ES / flight ES": jaccard(fp("preflight", "ES"), fp(day, "ES")),
+                         "preflight MC / flight MC": jaccard(fp("preflight", "MC"), fp(day, "MC")),
+                         "preflight ES / preflight MC": jaccard(fp("preflight", "ES"), fp("preflight", "MC")),
+                         "flight ES / flight MC": jaccard(fp(day, "ES"), fp(day, "MC"))})
+print("\\nOverlap of visited bins (Jaccard index; for Rat3 FD4 the ES1 map):")
+print(pd.DataFrame(rows).to_string(index=False))'''
+
+CELLS[19] = '''# For each flight unit and task epoch, the correlation of the unit's spike-count map with the
+# spike-count prediction (rate x occupancy) of the rate map the dandiset links to it, and of every
+# other map of the same tetrode and epoch.
+rows = []
+for s in sessions:
+    if "xy" not in s:
+        continue
+    lookup = nl.PositionLookup(s)
+    for a, b, typ, name in s["epochs"][["start", "stop", "type", "name"]].itertuples(index=False):
+        if typ == "BL":
+            continue
+        for ui, u in s["units"].iterrows():
+            sp = u.spikes[(u.spikes >= a) & (u.spikes <= b)]
+            found, r, c = lookup(sp)
+            if found.sum() < nl.MIN_SPIKES:
+                continue
+            counts = nl.count_map(r, c)
+            cand = s["maps"][(s["maps"].tetrode == u.tetrode) & (s["maps"].epoch_name == name)]
+            pred = {i: np.nan_to_num(s["rate_maps"][i]) * nl.clean_occupancy(s["occupancy_maps"][i]) for i in cand.index}
+            rs = {i: np.corrcoef(p.ravel(), counts.ravel())[0, 1] for i, p in pred.items()}
+            linked = list(cand.index[cand.unit == ui])
+            row = {"session": nl.label(s), "type": typ, "epoch": name, "tetrode": u.tetrode, "cluster": u.cluster, "spikes": int(found.sum()),
+                   "maps_on_tetrode": len(cand), "has_linked_map": bool(linked)}
+            if linked:
+                i = linked[0]
+                rate_i, occ_i = s["rate_maps"][i], nl.clean_occupancy(s["occupancy_maps"][i])
+                positive = (np.nan_to_num(rate_i) > 0) & (occ_i > 0)
+                row |= {"r_linked": rs[i], "linked_is_best": max(rs, key=rs.get) == i,
+                        "r_linked_x_y_swapped": np.corrcoef(pred[i].ravel(), counts.T.ravel())[0, 1],
+                        "best_other_r": max([v for k, v in rs.items() if k != i], default=np.nan),
+                        "positive_bins_without_spikes": float((positive & (counts == 0)).sum() / positive.sum()),
+                        "rate_x_occupancy_per_spike": float(pred[i].sum() / found.sum())}
+            rows.append(row)
+link = pd.DataFrame(rows)
+print(f"Unit-epochs with at least {nl.MIN_SPIKES} spikes at a known position: {len(link)}; with a linked rate map: {int(link.has_linked_map.sum())}")
+lk = link[link.has_linked_map]
+print(lk.groupby(["session", "epoch"]).agg(n=("r_linked", "size"), median_r_linked=("r_linked", "median"), median_r_swapped=("r_linked_x_y_swapped", "median"),
+      median_best_other_r=("best_other_r", "median"), linked_is_best=("linked_is_best", "mean")).round(2).to_string())
+print(f"\\nAll: median r with the linked map {lk.r_linked.median():.2f}; the linked map is the best of its tetrode and epoch in "
+      f"{int(lk.linked_is_best.sum())} of {len(lk)}; r > 0.5 in {(lk.r_linked > 0.5).sum()}")
+print("Unit-epochs without a linked map:"); print(link[~link.has_linked_map][["session", "epoch", "tetrode", "cluster", "spikes", "maps_on_tetrode"]].to_string(index=False))
+good = lk[lk.r_linked > 0.5]
+print(f"\\nLinked maps with r > 0.5 ({len(good)}): fraction of bins with a positive rate where the unit has no spike, median "
+      f"{good.positive_bins_without_spikes.median():.2f}; rate x occupancy per spike, median "
+      f"{good.rate_x_occupancy_per_spike.median():.1f} (range {good.rate_x_occupancy_per_spike.min():.1f} to "
+      f"{good.rate_x_occupancy_per_spike.max():.1f})")
+print(good.groupby("session").rate_x_occupancy_per_spike.median().round(1).to_string())'''
+
+CELLS[21] = '''# Spike times: sorting, resolution and zero intervals by time range (the units' description says
+# times have six significant digits), spikes outside each unit's obs_intervals, and the unit
+# windows that differ from their epoch's.
+ranges = [(0, 1000), (1000, 10000), (10000, np.inf)]
+rows = []
+for s in sessions:
+    allsp = np.concatenate(list(s["units"].spikes))
+    for lo, hi in ranges:
+        z = n = 0
+        for sp in s["units"].spikes:
+            w = sp[(sp >= lo) & (sp < hi)]
+            n += max(len(w) - 1, 0)
+            z += int((np.diff(w) == 0).sum())
+        distinct = np.unique(allsp[(allsp >= lo) & (allsp < hi)])
+        if len(distinct) > 1:
+            rows.append({"session": nl.label(s), "time_range_s": f"{lo}-{hi}", "spikes": int(((allsp >= lo) & (allsp < hi)).sum()),
+                         "smallest_step_s": round(float(np.diff(distinct).min()), 4), "intervals": n, "zero_intervals": z,
+                         "zero_fraction": round(z / max(n, 1), 3)})
+print("Spike times are sorted in every unit:", all((np.diff(sp) >= 0).all() for s in sessions for sp in s["units"].spikes))
+print("Units' spike_times resolution attribute:", {nl.label(s): None for s in sessions[:0]} or "printed in the description cell above")
+print(pd.DataFrame(rows).to_string(index=False))
+
+rows = []
+for s in sessions:
+    ep = {n: (a, b) for a, b, n in s["epochs"][["start", "stop", "name"]].itertuples(index=False)}
+    outside = differ = 0
+    for _, u in s["units"].iterrows():
+        inside = np.zeros(len(u.spikes), bool)
+        for (a, b), f in zip(u.obs_intervals, u.source_files):
+            inside |= (u.spikes >= a) & (u.spikes <= b)
+            differ += ep[f.split("/")[1].split(".")[0]] != (a, b)
+        outside += int((~inside).sum())
+    iv = sorted(zip(s["epochs"].start, s["epochs"].stop))
+    rows.append({"session": nl.label(s), "units": len(s["units"]), "spike_files": int(s["units"].source_files.map(len).sum()),
+                 "spikes_outside_obs_intervals": outside, "unit_windows_differing_from_epoch": differ,
+                 "overlapping_epochs": sum(1 for (a1, b1), (a2, b2) in zip(iv, iv[1:]) if a2 < b1),
+                 "median_epochs_per_unit": float(s["units"].source_files.map(len).median())})
+print("\\nUnits, their spike files and windows:")
+print(pd.DataFrame(rows).to_string(index=False))
+s = by_label["Rat1 FD4"]
+print("Rat1 FD4 unit windows in BL1 that differ from the epoch (2525-3390):",
+      Counter(tuple(w) for _, u in s["units"].iterrows() for w, f in zip(u.obs_intervals, u.source_files) if "/BL1." in f and tuple(w) != (2525.0, 3390.0)))'''
+
+CELLS[23] = '''# Clock and attribution contrast: spatial information of each rat's units in its own ES epoch and
+# in the other rat's ES epoch of the same day. In each window the position comes from the file of
+# the rat labelled as on the task, whose samples merge both rats' spike times, with that file's
+# occupancy map for the epoch.
+rng_check = np.random.default_rng(1754)
+rows = []
+for day in ["FD4", "FD9"]:
+    files = {rat: by_label[f"{rat} {day}"] for rat in ["Rat1", "Rat2"]}
+    for rat, other in [("Rat1", "Rat2"), ("Rat2", "Rat1")]:
+        for owner in (rat, other):
+            src = files[owner]
+            for a, b, typ, name in src["epochs"][["start", "stop", "type", "name"]].itertuples(index=False):
+                if typ != "ES":
+                    continue
+                df = nl.epoch_units(files[rat], a, b, nl.epoch_occupancy(src, name), rng_check, n_shuffles=200, position=src)
+                d = df.dropna(subset=["info"])
+                rows.append({"day": day, "units_of": rat, "ES_epoch_of": owner, "window": f"{a:.0f}-{b:.0f}",
+                             "units": len(d), "significant": int((d.p < 0.05).sum()),
+                             "fraction": round(float((d.p < 0.05).mean()), 2) if len(d) else np.nan,
+                             "binom_p_vs_0.05": stats.binomtest(int((d.p < 0.05).sum()), len(d), 0.05, alternative="greater").pvalue if len(d) else np.nan,
+                             "median_info": round(float(d["info"].median()), 3) if len(d) else np.nan})
+contrast = pd.DataFrame(rows)
+print(contrast.to_string(index=False))'''
+
+CELLS[25] = '''# Whose position is the trace in each task window? For every ES and MC window, the samples of the
+# file of the rat on the task, the fraction of them at each rat's spike times, and each rat's
+# spikes per second in the window.
+rows = []
+for day in ["FD4", "FD9"]:
+    f1, f2 = by_label[f"Rat1 {day}"], by_label[f"Rat2 {day}"]
+    spikes = {"Rat1": np.unique(np.concatenate(list(f1["units"].spikes))), "Rat2": np.unique(np.concatenate(list(f2["units"].spikes)))}
+    for owner, src in [("Rat1", f1), ("Rat2", f2)]:
+        for a, b, typ, name in src["epochs"][["start", "stop", "type", "name"]].itertuples(index=False):
+            if typ == "BL":
+                continue
+            w = (src["t"] >= a) & (src["t"] <= b)
+            tt = src["t"][w]
+            other_file = f2 if owner == "Rat1" else f1
+            row = {"day": day, "window": f"{owner} {name} {a:.0f}-{b:.0f}", "samples_per_s": round(w.sum() / (b - a), 1),
+                   "other_file_samples": int(((other_file["t"] >= a) & (other_file["t"] <= b)).sum()),
+                   "lost_fraction": round(float(1 - src["valid"][w].mean()), 3)}
+            for rat in ["Rat1", "Rat2"]:
+                row[f"at_{rat}_spikes"] = round(float(np.isin(tt, spikes[rat]).mean()), 3)
+                row[f"{rat}_spikes_per_s"] = round(((spikes[rat] >= a) & (spikes[rat] <= b)).sum() / (b - a), 1)
+            rows.append(row)
+print(pd.DataFrame(rows).to_string(index=False))'''
+
+CELLS[28] = '''rng_c1 = np.random.default_rng(20000301)
+results = []
+for s in sessions:
+    if "xy" not in s:
+        continue
+    for a, b, typ, name in s["epochs"][["start", "stop", "type", "name"]].itertuples(index=False):
+        if typ in ("ES", "MC"):
+            df = nl.epoch_units(s, a, b, nl.epoch_occupancy(s, name), rng_c1)
+            df["type"] = typ
+            df["epoch"] = f"{typ} {a:.0f}-{b:.0f}"
+            results.append(df)
+units = pd.concat(results, ignore_index=True)
+tested = units.dropna(subset=["info"]).copy()
+tested["sig"] = tested.p < 0.05
+
+def summary(d):
+    n, k = len(d), int(d.sig.sum())
+    return pd.Series({"units_in_file": np.nan, "tested": n, "significant": k, "fraction": round(k / n, 3) if n else np.nan,
+                      "binom_p_vs_0.05": stats.binomtest(k, n, 0.05, alternative="greater").pvalue if n else np.nan,
+                      "median_info": round(d["info"].median(), 3), "median_null95": round(d["null95"].median(), 3)})
+
+per = tested.groupby(["type", "rat", "day", "epoch"]).apply(summary)
+per["units_in_file"] = units.groupby(["type", "rat", "day", "epoch"]).size()
+per["dropped_<50_spikes"] = per["units_in_file"] - per["tested"]
+print(per.to_string())'''
+
+PYEOF
+echo ok
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/build && sed -i '/Units. spike_times resolution attribute/d' cells.py && cat >> cells.py <<'PYEOF'
+
+CELLS[30] = None  # edited by replacement below
+CELLS[31] = None
+CELLS[35] = None
+CELLS[45] = None
+
+CELLS[46] = '''# Per-session results, and the variant on the dandiset's own rate maps: the ES1 and ES2 maps that
+# the rate-map table links to the same unit.
+per_epoch = tested[(tested.rat == "Rat3") & (tested.day == "FD4") & (tested.type == "ES")]
+print(per_epoch.groupby("epoch").agg(tested=("sig", "size"), significant=("sig", "sum"), median_info=("info", "median")).round(3).to_string())
+
+mp = s3["maps"]
+rows = []
+for unit, g in mp[mp.type == "ES"].groupby("unit"):
+    if {"ES1", "ES2"} <= set(g.epoch_name):
+        i, j = g.index[g.epoch_name == "ES1"][0], g.index[g.epoch_name == "ES2"][0]
+        r1, r2 = s3["rate_maps"][i], s3["rate_maps"][j]
+        ok = np.isfinite(r1) & np.isfinite(r2) & (s3["occupancy_maps"][i] > 0) & (s3["occupancy_maps"][j] > 0)
+        ok[nl.SENTINEL_BIN] = False
+        rows.append({"tetrode": mp.tetrode[i], "cluster": int(mp.cluster[i]), "in_main_test": (mp.tetrode[i], mp.cluster[i]) in both,
+                     "r": np.corrcoef(r1[ok], r2[ok])[0, 1]})
+rv = pd.DataFrame(rows)
+print("\\nDandiset rate maps, ES1 against ES2 map of the same unit (linked by the table's unit column):")
+print(rv.round(3).to_string(index=False))
+print(f"median r {rv.r.median():.3f} over {len(rv)} units with both maps; over the {int(rv.in_main_test.sum())} units of the main test "
+      f"{rv[rv.in_main_test].r.median():.3f}; units of the main test without both maps: {len(both) - int(rv.in_main_test.sum())}")'''
+
+REPLACE = {
+30: [('''        a, b = s["epochs"][s["epochs"].type == "ES"][["start", "stop"]].values[0]
+        d = nl.epoch_units(s, a, b, "ES", rng_rep, n_shuffles=2000).dropna(subset=["info"])''',
+      '''        a, b, name = s["epochs"][s["epochs"].type == "ES"][["start", "stop", "name"]].values[0]
+        d = nl.epoch_units(s, a, b, nl.epoch_occupancy(s, name), rng_rep, n_shuffles=2000).dropna(subset=["info"])''')],
+31: [('''    for a, b, typ in s["epochs"][["start", "stop", "type"]].itertuples(index=False):
+        if typ != "ES":
+            continue
+        d = nl.epoch_units(s, a, b, typ, rng_cm, match_counts=True).dropna(subset=["info"])''',
+      '''    for a, b, typ, name in s["epochs"][["start", "stop", "type", "name"]].itertuples(index=False):
+        if typ != "ES":
+            continue
+        d = nl.epoch_units(s, a, b, nl.epoch_occupancy(s, name), rng_cm, match_counts=True).dropna(subset=["info"])''')],
+35: [('''repo, commit = "catalystneuro/mcnaughton2000-to-nwb", "b538d9e07079394362a64e5118a226e91bdd7ab5"''',
+      '''repo, commit = "catalystneuro/mcnaughton2000-to-nwb", "734688253c17a32e26d84c57f41fbe48ffbcd009"''')],
+45: [('''for k, (a, b) in enumerate(zip(es_epochs.start, es_epochs.stop)):
+    occ, scores = nl.epoch_occupancy(s3, a, b, "ES")
+    occs.append(nl.merge_bins(nl.clean_occupancy(occ)))
+    print(f"ES epoch {k + 1}: {a:.0f}-{b:.0f} s, occupancy map match {scores}")''',
+      '''for k, (a, b, name) in enumerate(zip(es_epochs.start, es_epochs.stop, es_epochs.name)):
+    occ = nl.epoch_occupancy(s3, name)
+    occs.append(nl.merge_bins(nl.clean_occupancy(occ)))
+    print(f"ES epoch {k + 1}: {name} {a:.0f}-{b:.0f} s, occupancy map match {nl.occupancy_match(s3, a, b)}")'''),
+     ('''        for k, (a, b) in enumerate(zip(es_epochs.start, es_epochs.stop)):
+            occ, _ = nl.epoch_occupancy(s3, a, b, "ES")''',
+      '''        for k, (a, b, name) in enumerate(zip(es_epochs.start, es_epochs.stop, es_epochs.name)):
+            occ = nl.epoch_occupancy(s3, name)''')],
+}
+PYEOF
+cd entries/001754-knierim-2000 && $TMPDIR/env/bin/python - <<'EOF'
+import json, sys, os
+sys.path.insert(0, os.environ["TMPDIR"] + "/build")
+from cells import CELLS, REPLACE
+p = "reproduce_knierim_2000.ipynb"
+nb = json.load(open(p))
+cells = nb["cells"]
+def setsrc(c, text):
+    lines = text.split("\n")
+    c["source"] = [l + "\n" for l in lines[:-1]] + [lines[-1]]
+for k, text in CELLS.items():
+    if isinstance(k, int) and text is not None:
+        assert cells[k]["cell_type"] == "code", k
+        setsrc(cells[k], text)
+for k, reps in REPLACE.items():
+    src = "".join(cells[k]["source"])
+    for a, b in reps:
+        assert src.count(a) == 1, (k, a[:50])
+        src = src.replace(a, b)
+    setsrc(cells[k], src)
+def code(text, tags):
+    c = {"cell_type": "code", "execution_count": None, "metadata": {"tags": tags}, "outputs": [], "source": []}
+    setsrc(c, text); return c
+def md(text):
+    c = {"cell_type": "markdown", "metadata": {}, "source": []}; setsrc(c, text); return c
+# insert after cell 4 (markdown after tree): descriptions cell + md, compare cell + md
+new = cells[:5] + [code(CELLS["descriptions"], ["sanity"]), md("DESCRIPTIONS_MD"), code(CELLS["compare"], ["sanity"]), md("COMPARE_MD")] + cells[5:]
+nb["cells"] = new
+json.dump(nb, open(p, "w"), indent=1, ensure_ascii=False)
+open(p, "a").write("\n")
+print(len(new))
+EOF
+```
+
+```
+56
+```
+
+**Agent calls Bash**
+
+```bash
+git diff --stat . && git show HEAD:entries/001754-knierim-2000/reproduce_knierim_2000.ipynb | head -5 && head -5 reproduce_knierim_2000.ipynb && uv pip install -q -p $TMPDIR/env/bin/python nbconvert ipykernel && $TMPDIR/env/bin/python -m ipykernel install --user --name knierim-scratch >/dev/null 2>&1; echo done
+```
+
+```
+entries/001754-knierim-2000/neurolab.py            | 109 +++--
+ .../reproduce_knierim_2000.ipynb                   | 514 ++++++++++++++-------
+ 2 files changed, 399 insertions(+), 224 deletions(-)
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "054b84b4",
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "054b84b4",
+done
+```
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python - <<'EOF'
+import json, uuid
+p="reproduce_knierim_2000.ipynb"; nb=json.load(open(p))
+for c in nb["cells"]:
+    c.setdefault("id", uuid.uuid4().hex[:8])
+json.dump(nb, open(p,"w"), indent=1, ensure_ascii=False); open(p,"a").write("\n")
+EOF
+mkdir -p $TMPDIR/run && cd entries/001754-knierim-2000 && time $TMPDIR/env/bin/jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3000 --ExecutePreprocessor.kernel_name=knierim-scratch --output-dir $TMPDIR/run reproduce_knierim_2000.ipynb 2>&1 | tail -20
+```
+
+```
+[NbConvertApp] Converting notebook reproduce_knierim_2000.ipynb to notebook
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 315926 bytes to /tmp/claude-1001/run/reproduce_knierim_2000.ipynb
+
+real	5m14.988s
+user	4m53.229s
+sys	0m0.722s
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/show.py <<'EOF'
+import json,sys
+nb=json.load(open(sys.argv[1]))
+want=set(int(x) for x in sys.argv[2].split(",")) if len(sys.argv)>2 else None
+for i,c in enumerate(nb["cells"]):
+    if want is not None and i not in want: continue
+    if c["cell_type"]!="code": continue
+    print(f"===== cell {i} {c['metadata'].get('tags')}")
+    for o in c["outputs"]:
+        if "text" in o: print("".join(o["text"]))
+        elif "data" in o and "text/plain" in o["data"]: print("".join(o["data"]["text/plain"])[:3000])
+        elif o.get("output_type")=="error": print("ERROR",o["ename"],o["evalue"])
+EOF
+$TMPDIR/env/bin/python $TMPDIR/show.py $TMPDIR/run/reproduce_knierim_2000.ipynb 1,5,7 | grep -v "^  [a-z].*  (" | head -150
+```
+
+```
+===== cell 1 None
+loaded 8 files from dandiset 001754 version draft in 6 s
+
+===== cell 5 ['sanity']
+experiment_description: Hippocampal place cell recordings from rats aboard the Space Shuttle during the Neurolab STS-90 mission (April–May 1998). Three rats with chronically implanted tetrode arrays in hippocampal area CA1 were trained to traverse a three-dimensional track ('Escher staircase') and a flat two-dimensional track ('Magic Carpet') for medial forebrain bundle stimulation reward. Recordings were made preflight on the ground and in-flight on Flight Day 4 and Flight Day 9. In baseline (BL) epochs the rat rested quietly in the Rodent Sleeping Pouch. Rat 1 and Rat 2 were recorded in the same acquisition session on each flight day and took turns: while one rat ran the Escher staircase or Magic Carpet, the other was in a baseline epoch. The source files hold sorted spikes and the original rate maps; no EEG or other continuous voltage was archived. 
+
+units: {'description': "Sorted units. Each tetrode was cluster-cut once in Xclust over the whole recording (one TTn.pos.parms source file per tetrode), and the original spike files hold the spikes of one cluster within one epoch. A unit merges the files of one cluster on one tetrode, so it is the same sorted cluster across epochs. Spike times were written with six significant digits, so they are resolved to 1 ms below 1000 s, 10 ms from 1000 to 9999 s, and 0.1 s from 10000 s; spikes in one unit can share a time. In 48 original files the first row is a spike from before the file's epoch window; spikes outside a file's window are left out."}
+
+units/spike_times: {'description': 'the spike times for each unit in seconds', 'resolution': '0.1'}
+
+intervals/epochs: {'description': "Task epochs within the recording session, one per epoch name in the original file names. Where the original files cut an epoch with different windows on different tetrodes, the epoch spans all of them; each unit's obs_intervals give the windows used
+[... 53 more lines not kept]
+```
+
+**Agent**
+
+The comparison cell matched units by row order, which differs between versions; I'll match them by tetrode and cluster.
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python - <<'EOF'
+import json
+p="reproduce_knierim_2000.ipynb"; nb=json.load(open(p))
+c=nb["cells"][7]; src="".join(c["source"])
+a='''    new_units = list(zip(s["units"].tetrode, s["units"].cluster))
+    same_units = new_units == [(t, int(c)) for t, c in o["units"]]
+    removed = [len(a) - len(b) for a, b in zip(o["spikes"], s["units"].spikes)]
+    subset = all(np.isin(b, a).all() for a, b in zip(o["spikes"], s["units"].spikes))'''
+b='''    old_spikes = {(t, int(c)): sp for (t, c), sp in zip(o["units"], o["spikes"])}
+    new_spikes = {(t, int(c)): sp for t, c, sp in zip(s["units"].tetrode, s["units"].cluster, s["units"].spikes)}
+    same_units = set(old_spikes) == set(new_spikes)
+    removed = [len(old_spikes[k]) - len(new_spikes[k]) for k in new_spikes]
+    subset = all(np.isin(new_spikes[k], old_spikes[k]).all() for k in new_spikes)'''
+assert src.count(a)==1; src=src.replace(a,b)
+L=src.split("\n"); c["source"]=[l+"\n" for l in L[:-1]]+[L[-1]]
+json.dump(nb, open(p,"w"), indent=1, ensure_ascii=False); open(p,"a").write("\n")
+EOF
+$TMPDIR/env/bin/python $TMPDIR/show.py $TMPDIR/run/reproduce_knierim_2000.ipynb 9,13,15,17,19
+```
+
+```
+===== cell 9 ['sanity']
+                           file  rat       day            start  units  spikes  tetrodes                                                                   epochs  rate_maps map_epochs  position_samples
+sub-Rat1_ses-19980414T125300_ec Rat1 preflight 1998-04-14T12:53     35   21992         8                                                 ES[276-741] MC[936-1349]         62      ES/MC                 0
+sub-Rat1_ses-19980420T095700_be Rat1       FD4 1998-04-20T09:57     47   39971         8 BL1[2525-3390] BL2[3850-4800] ES[5935-6420] MC[7020-7550] BL3[7850-8473]         65      ES/MC             20444
+sub-Rat1_ses-19980425T124500_be Rat1       FD9 1998-04-25T12:45     39  243517         8               ES[3178-4789] BL1[4871-7535] MC[7888-9200] BL2[9220-10151]         64      ES/MC            131057
+sub-Rat2_ses-19980413T163700_ec Rat2 preflight 1998-04-13T16:37     33   36664         6                                              ES[1013-1573] MC[1667-2234]         59      ES/MC                 0
+sub-Rat2_ses-19980420T095700_be Rat2       FD4 1998-04-20T09:57     72   31766         6 BL1[2525-3390] ES[3850-4800] BL2[5935-6420] BL3[7020-7550] MC[7850-8473]         57      ES/MC             27120
+sub-Rat2_ses-19980425T124500_be Rat2       FD9 1998-04-25T12:45     54   52170         6               BL1[3178-4789] ES[4871-7535] BL2[7888-9200] MC[9220-10151]         76      ES/MC             90084
+sub-Rat3_ses-19980414T134900_ec Rat3 preflight 1998-04-14T13:49     48   48000        10                                                ES[148-762] MC[1095-1481]         86      ES/MC                 0
+sub-Rat3_ses-19980420T152800_be Rat3       FD4 1998-04-20T15:28     47   58716        15                                ES1[32-1345] ES2[2397-3729] MC[5713-6349]         65 ES1/ES2/MC             50168
+
+Files per rat and day:
+day   FD4  FD9  preflight
+rat                      
+Rat1    1    1          1
+Rat2    1    1          1
+Rat3    1    0          1
+Rat1
+[... 110 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python $TMPDIR/show.py $TMPDIR/run/reproduce_knierim_2000.ipynb 11,21,23,25,27,29
+```
+
+```
+===== cell 11 ['sanity']
+Position, flight files. Stated unit: {'pixels'}
+
+ session  samples  lost_(NaN)  x_min  x_max  y_min  y_max  t_first   t_last  in_own_ES_MC_epochs  at_own_spike_times  at_other_rat_spike_times  at_either  own_task_spike_times_with_sample
+Rat1 FD4    20444        0.12    0.0  255.0  64.00 255.00  5935.53  7549.60                  1.0                0.73                      0.32        1.0                               1.0
+Rat1 FD9   131057        0.09    0.0  255.0  64.00 255.00  3178.02  9199.50                  1.0                0.92                      0.14        1.0                               1.0
+Rat2 FD4    27120        0.13    0.0  251.8  65.00 255.00  3850.58  8472.99                  1.0                0.49                      0.56        1.0                               1.0
+Rat2 FD9    90084        0.06    0.0  255.0  64.00 254.90  4871.06 10151.00                  1.0                0.27                      0.79        1.0                               1.0
+Rat3 FD4    50168        0.11    0.0  255.0  54.33 254.94    32.17  6348.26                  1.0                1.00                       NaN        1.0                               1.0
+
+===== cell 21 ['sanity']
+Dandiset description, sentences on the track:
+   Rats were implanted with multi-electrode recording arrays and trained to traverse a three-dimensional track called the "Escher staircase," in which three 90-degree yaw turns were interleaved with three 90-degree pitch turns, creating a closed loop after only 270 degrees of total yaw rotation
+   The dataset includes both preflight recordings on a flat rectangular track and in-flight recordings on the Escher staircase track from flight days 4 and 9
+   Rats received medial forebrain bundle stimulation as a reward for traversing the track.
+
+Epoch names per file: {'Rat1 preflight': ['ES', 'MC'], 'Rat1 FD4': ['BL1', 'BL2', 'BL3', 'ES', 'MC'], 'Rat1 FD9': ['BL1', 'BL2', 'ES', 'MC'], 'Rat2 preflight': ['ES', 'MC'], 'Rat2 
+[... 107 more lines not kept]
+```
+
+**Agent**
+
+The attribution contrast still shows Rat1's units selective in Rat2's FD4 ES window (10 of 15) and Rat2's units at chance everywhere. Now the claim outputs:
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python $TMPDIR/show.py $TMPDIR/run/reproduce_knierim_2000.ipynb 32,33,34,35,36,39 | grep -v "^  [a-z_/.]*:[0-9]*: " | head -250
+```
+
+```
+===== cell 32 ['claim:flight-spatial-code']
+                             units_in_file  tested  significant  fraction  binom_p_vs_0.05  median_info  median_null95  dropped_<50_spikes
+type rat  day epoch                                                                                                                       
+ES   Rat1 FD4 ES 5935-6420              47    20.0         11.0     0.550     5.379601e-10        2.854          2.728                27.0
+          FD9 ES 3178-4789              39    25.0         10.0     0.400     1.591912e-07        2.555          2.603                14.0
+     Rat2 FD4 ES 3850-4800              72    16.0          1.0     0.062     5.598733e-01        1.954          2.420                56.0
+          FD9 ES 4871-7535              54    28.0          2.0     0.071     4.116914e-01        2.250          3.572                26.0
+     Rat3 FD4 ES 2397-3729              47    19.0          1.0     0.053     6.226464e-01        1.629          2.183                28.0
+              ES 32-1345                47    16.0         11.0     0.688     1.687114e-11        2.155          2.141                31.0
+MC   Rat1 FD4 MC 7020-7550              47    18.0          2.0     0.111     2.264774e-01        2.583          3.117                29.0
+          FD9 MC 7888-9200              39    23.0          0.0     0.000     1.000000e+00        2.478          4.058                16.0
+     Rat2 FD4 MC 7850-8473              72    14.0          1.0     0.071     5.123250e-01        2.597          3.228                58.0
+          FD9 MC 9220-10151             54    11.0          1.0     0.091     4.311999e-01        3.141          4.395                43.0
+     Rat3 FD4 MC 5713-6349              47    20.0          1.0     0.050     6.415141e-01        3.400          5.810                27.0
+
+===== cell 33 ['claim:flight-spatial-code']
+Judged sessions (FD9 ES):
+  Rat1 FD9: 10 of 25 significant, fraction 0.400, binomial p 1.59e-07
+  Rat2 F
+[... 173 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python $TMPDIR/show.py $TMPDIR/run/reproduce_knierim_2000.ipynb 41,42,43,46,49,50,51,54
+```
+
+```
+===== cell 41 ['claim:si-comparable-to-preflight']
+Maps dropped: duplicates 0 ; zero mean rate 6 ; kept 528 of 534
+Spatial information of rate maps, range: 0.019 to 7.583 bits/spike
+                     count    50%    25%    75%    min    max
+type rat  day                                                
+ES   Rat1 FD4         33.0  1.222  0.755  2.203  0.256  3.431
+          FD9         26.0  1.749  1.094  1.978  0.142  2.627
+          preflight   27.0  1.869  1.122  2.515  0.709  3.070
+     Rat2 FD4         31.0  0.872  0.614  1.975  0.200  7.583
+          FD9         38.0  1.343  1.059  1.841  0.487  2.821
+          preflight   26.0  1.321  0.954  1.556  0.111  3.583
+     Rat3 FD4         40.0  1.245  0.844  1.783  0.164  3.670
+          preflight   45.0  1.413  0.844  2.156  0.065  3.350
+MC   Rat1 FD4         31.0  0.704  0.496  1.236  0.140  3.930
+          FD9         38.0  1.216  0.916  1.393  0.019  2.589
+          preflight   35.0  0.918  0.692  1.682  0.387  4.051
+     Rat2 FD4         25.0  1.178  0.672  1.707  0.498  3.411
+          FD9         36.0  0.945  0.801  1.377  0.420  4.773
+          preflight   33.0  1.263  0.849  1.571  0.081  2.756
+     Rat3 FD4         23.0  1.558  0.656  1.809  0.024  6.497
+[... 182 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001754-knierim-2000; cat > $TMPDIR/r3.py <<'EOF'
+import neurolab as nl, numpy as np, h5py, remfile
+def rd(v):
+    pu=[p for p in nl.asset_urls(v) if "Rat3_ses-19980420" in p[0]][0]
+    with h5py.File(remfile.File(pu[1]),"r") as f:
+        ss=f["processing/behavior/position/spatial_series"]; return ss["timestamps"][:], ss["data"][:]
+to,xo=rd("0.260728.1352"); tn,xn=rd("draft")
+new=~np.isin(tn,to)
+print(new.sum(), tn[new][:20], np.histogram(tn[new],bins=[0,32,1345,2397,3729,5713,6349,7000])[0])
+print("old dup timestamps", len(to)-len(np.unique(to)))
+# are new ones close (within 1ms) to old ones? 
+i=np.searchsorted(to,tn[new]); d=np.minimum(np.abs(to[np.clip(i,0,len(to)-1)]-tn[new]),np.abs(to[np.clip(i-1,0,len(to)-1)]-tn[new]))
+print("dist to nearest old ts: median",np.median(d), "max",d.max(), "frac<0.001",(d<0.0011).mean())
+gone=~np.isin(to,tn); print("old not in new",gone.sum(), to[gone][:10])
+EOF
+PYTHONPATH=. $TMPDIR/env/bin/python $TMPDIR/r3.py
+```
+
+```
+1259 [6308.94 6308.95 6308.96 6308.97 6308.98 6309.08 6309.12 6309.21 6309.22
+ 6309.24 6309.25 6309.29 6309.3  6309.31 6309.32 6309.34 6309.36 6309.37
+ 6309.39 6309.47] [   0    0    0    0    0 1259    0]
+old dup timestamps 0
+dist to nearest old ts: median 21.980000000000473 max 39.98000000000047 frac<0.001 0.0
+old not in new 1 [2346.02]
+```
+
+**Agent**
+
+The new samples all fall in the last 40 s of Rat3's MC epoch, which no claim uses. Now I'll add the earlier-version rate-map test to the fd4 claim and a time-range column to the comparison.
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python - <<'EOF'
+import json, uuid
+p="reproduce_knierim_2000.ipynb"; nb=json.load(open(p))
+def setsrc(c,text):
+    L=text.split("\n"); c["source"]=[l+"\n" for l in L[:-1]]+[L[-1]]
+c=nb["cells"][7]; src="".join(c["source"])
+reps=[('''               "maps": rm["rate_map"][:], "map_tetrodes": nl._column(rm, "tetrode"), "map_files": nl._column(rm, "source_file")}''',
+'''               "maps": rm["rate_map"][:], "occ": rm["occupancy_map"][:], "map_types": nl._column(rm, "session_type"),
+               "map_tetrodes": nl._column(rm, "tetrode"), "map_files": nl._column(rm, "source_file")}'''),
+('''    row["in_neither_old_file"] = int((~in_either).sum())''',
+'''    row["in_neither_old_file"] = int((~in_either).sum())
+    row["their_time_range_s"] = f"{s['t'][~in_either].min():.0f}-{s['t'][~in_either].max():.0f}" if (~in_either).any() else ""
+    row["old_same_rat_samples_not_in_new"] = int((~np.isin(old_files[s["path"]]["t"], s["t"])).sum())''')]
+for a,b in reps:
+    assert src.count(a)==1,a; src=src.replace(a,b)
+setsrc(c,src)
+# fd4 claim cell: find index of the cell tagged fd4 with 'Main test, ES FD4'
+idx=[i for i,c in enumerate(nb["cells"]) if c["cell_type"]=="code" and "Main test, ES FD4" in "".join(c["source"])][0]
+new='''# The same test on the rate maps of the earlier version (0.260728.1352), each distinct map once, as
+# the earlier attempt counted them: the draft leaves out every copy in the six groups of identical maps.
+rows = []
+for s in sessions:
+    o = old_files[s["path"]]
+    in_draft = {np.where(np.isnan(r), -999, r).astype(np.float32).tobytes() for r in s["rate_maps"]}
+    seen = set()
+    for r_map, occ, typ, tt, f in zip(o["maps"], o["occ"], o["map_types"], o["map_tetrodes"], o["map_files"]):
+        if r_map.tobytes() in seen:
+            continue
+        seen.add(r_map.tobytes())
+        info, mean, _ = nl.rma_info(np.where(r_map == -999, np.nan, r_map), occ)
+        rows.append({"rat": s["subject"], "day": s["day"], "type": typ, "map": f"{tt}/{f}", "info": info, "mean_rate": mean,
+                     "in_draft": r_map.tobytes() in in_draft})
+old_maps = pd.DataFrame(rows)
+old_maps = old_maps[old_maps.mean_rate > 0]
+print(f"Distinct maps with a positive mean rate: {len(old_maps)} in {OLD_VERSION}, {len(m)} in the draft")
+print("Distinct maps of the earlier version not in the draft:")
+print(old_maps[~old_maps.in_draft].round(3).to_string(index=False))
+print("ES maps per rat and day, earlier version and draft:")
+print(pd.concat({OLD_VERSION: old_maps[old_maps.type == "ES"].groupby(["rat", "day"]).size(),
+                 "draft": m[m.type == "ES"].groupby(["rat", "day"]).size()}, axis=1).to_string())
+rats3 = ["Rat1", "Rat2", "Rat3"]
+rows = [{"maps": f"{OLD_VERSION}, all distinct"} | compare(sel(old_maps, "ES", ["FD4"], rats3), sel(old_maps, "ES", ["preflight"], rats3), "less"),
+        {"maps": f"{OLD_VERSION}, those in the draft"} | compare(sel(old_maps[old_maps.in_draft], "ES", ["FD4"], rats3), sel(old_maps[old_maps.in_draft], "ES", ["preflight"], rats3), "less"),
+        {"maps": "draft"} | main4]
+print("\\nMain test (FD4 ES below preflight ES, Rats 1 to 3, one-sided) on each set of maps:")
+print(pd.DataFrame(rows).to_string(index=False))'''
+cell={"cell_type":"code","execution_count":None,"id":uuid.uuid4().hex[:8],"metadata":{"tags":["claim:fd4-abnormal-selectivity"]},"outputs":[],"source":[]}
+setsrc(cell,new)
+nb["cells"].insert(idx+1,cell)
+json.dump(nb, open(p,"w"), indent=1, ensure_ascii=False); open(p,"a").write("\n")
+print(idx+1)
+EOF
+```
+
+```
+47
+```
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python - <<'EOF'
+import json
+p="reproduce_knierim_2000.ipynb"; nb=json.load(open(p))
+c=nb["cells"][5]; src="".join(c["source"])
+a='''        print(f"{name}: {attrs}\\n")
+'''
+b='''        print(f"{name}: {attrs}\\n")
+    print("position reference_frame:", nl._text(f["processing/behavior/position/spatial_series/reference_frame"][()]), "\\n")
+'''
+assert src.count(a)==1; src=src.replace(a,b)
+L=src.split("\n"); c["source"]=[l+"\n" for l in L[:-1]]+[L[-1]]
+json.dump(nb, open(p,"w"), indent=1, ensure_ascii=False); open(p,"a").write("\n")
+EOF
+cd entries/001754-knierim-2000 && $TMPDIR/env/bin/jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3000 --ExecutePreprocessor.kernel_name=knierim-scratch --output-dir $TMPDIR/run reproduce_knierim_2000.ipynb 2>&1 | tail -2 && $TMPDIR/env/bin/python $TMPDIR/show.py $TMPDIR/run/reproduce_knierim_2000.ipynb 5,7,47 | tail -80
+```
+
+```
+[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
+[NbConvertApp] Writing 321853 bytes to /tmp/claude-1001/run/reproduce_knierim_2000.ipynb
+
+processing/ecephys/rate_maps/rate_map: {'description': "64x64 spatial firing rate map from the original analysis. The original documentation describes it as spikes in each bin divided by the bin's occupancy; the maps are smoothed and the kernel is not recorded in the source files. Unvisited bins are NaN (-999 in the source)."}
+
+processing/ecephys/rate_maps/occupancy_map: {'description': '64x64 occupancy map: the number of 60 Hz video samples in each bin. Samples where the tracker lost the animal (pixel 0, 255) are counted in bin [63, 0].'}
+
+processing/behavior/position/spatial_series: {'description': "Position from the video tracker, available in the source only at spike times (the pos_x and pos_y columns of the original spike files), restricted to this rat's ES and MC epochs. Samples where the tracker lost the animal, written as (0, 255) in the source, are NaN. Occupancy cannot be computed from these samples; the rate_maps table holds the original analysis's occupancy, counted from the 60 Hz tracker. This recording was shared with another rat (folder FD9RAT2), and one tracker served both; the samples here merge both rats' spike files. In each window one rat ran the task while the other rested in the sleeping pouch, so the trace in Rat1's ES and MC epochs is taken to be Rat1's position, as in the original rate maps. The source files do not name the tracked animal."}
+
+position reference_frame: Pixel coordinates (0 to 255) of the video tracker image, as written in the original spike files. The camera view and the pixel size on the apparatus are not recorded in the source files. 
+
+
+sub-Rat1 19980414: ag
+[... 68 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python $TMPDIR/show.py $TMPDIR/run/reproduce_knierim_2000.ipynb 3 | grep -v "^  [a-z]" | head -40; $TMPDIR/env/bin/python $TMPDIR/show.py $TMPDIR/run/reproduce_knierim_2000.ipynb 3 | grep "^  [a-z]" | grep "sub-Rat1_ses-19980425" -A0 ; $TMPDIR/env/bin/python $TMPDIR/show.py $TMPDIR/run/reproduce_knierim_2000.ipynb 3 | awk '/sub-Rat1_ses-19980425/{f=1} f' | head -75 | tail -72
+```
+
+```
+===== cell 3 ['sanity']
+Versions and when each was last modified:
+  0.260227.0029   2026-02-27T00:29:28.150330Z
+  0.260227.0031   2026-02-27T00:31:34.105096Z
+  0.260728.1352   2026-07-28T13:52:39.253571Z
+The draft read here was last modified 2026-10-14T21:55:09.450222Z ; when this attempt was made it was 2026-10-14T21:55:09Z, and a later time means the draft has changed since.
+
+
+The published versions hold the same files with the same blobs: True
+Files of the draft, with their size in 0.260728.1352 and whether the draft's file is a new blob:
+The dandiset description is the same in the draft and 0.260728.1352: True
+
+Every group (with its neurodata type) and dataset (shape, type, description) of every file, unfiltered:
+
+
+sub-Rat1/sub-Rat1_ses-19980414T125300_ecephys.nwb: 72 groups and datasets
+
+
+sub-Rat1/sub-Rat1_ses-19980420T095700_behavior+ecephys.nwb: 78 groups and datasets
+
+[... 94 more lines not kept]
+```
+
+**Agent**
+
+All code runs. Now the markdown: header, data-check notes, the status of each earlier finding, the conclusions and the summary. Let me list the markdown cells.
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python -c "
+import json;nb=json.load(open('reproduce_knierim_2000.ipynb'))
+for i,c in enumerate(nb['cells']):
+  print(i,c['cell_type'],c['metadata'].get('tags'),''.join(c['source'])[:70].replace(chr(10),' '))
+"
+```
+
+```
+0 markdown None # Reproducing Knierim, McNaughton & Poe (2000) from dandiset 001754  P
+1 code None import json import re import time import warnings from collections imp
+2 markdown None ## Data check  Each check of the metadata against the values is stated
+3 code ['sanity'] api = "https://api.dandiarchive.org/api/dandisets/001754/versions" lis
+4 markdown None The three published versions hold the same eight files. The listing sh
+5 code ['sanity'] # The full descriptions of the tables and series the analysis uses, fr
+6 markdown None DESCRIPTIONS_MD
+7 code ['sanity'] # What changed from the version of the earlier attempt. Both versions 
+8 markdown None COMPARE_MD
+9 code ['sanity'] rows = [] for s in sessions:     ep = s["epochs"]     rows.append({"fi
+10 markdown None Three rats, eight files: preflight and FD4 for each rat, FD9 for Rats 
+11 code ['sanity'] print("Position, flight files. Stated unit:", {s['xy_unit'] for s in s
+12 markdown None Position is in video pixels from 0 to 255 in x and y. A sample at exac
+13 code ['sanity'] # The position lookup on synthetic input: samples at 1.0 s, 1.1 s (the
+14 markdown None The lookup gives a spike the position of the nearest sample within 0.2
+15 code ['sanity'] print("Do the Rat1 and Rat2 files of a flight day share position sampl
+16 markdown None The Rat1 and Rat2 files of each flight day were recorded together and 
+17 code ['sanity'] print("Distinct occupancy maps per epoch name, per file:", {nl.label(s
+18 markdown None For each ES and MC epoch, the position samples in the epoch cover the 
+19 code ['sanity'] print("Rate-map values:") r_all = np.concatenate([s["rate_maps"].ravel
+[... 37 more lines not kept]
+```
+
+**Agent**
+
+Before writing the record, let me check the attempt schema and how entry.py checks repeat attempts.
+
+**Agent calls Bash**
+
+```bash
+cd  ls schemas; $TMPDIR/env/bin/python -c "
+import json;s=json.load(open('schemas/attempt.schema.json'));print(json.dumps(s,indent=1)[:6000])"; grep -n "draft\|dandiset_version\|uses_data\|-0[0-9]\|attempt" tools/entry.py | head -60
+```
+
+```
+attempt.schema.json
+claims.schema.json
+entry.schema.json
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "One attempt at reproducing the claims of a target",
+ "description": "Draft. To be revised after the pilot. An attempt is recorded whether or not it produced a working notebook.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema_version",
+  "id",
+  "dandiset",
+  "paper",
+  "date",
+  "provenance",
+  "outcomes"
+ ],
+ "properties": {
+  "schema_version": {
+[... 274 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 150,260p tools/entry.py; $TMPDIR/env/bin/python -c "
+import json;s=json.load(open('schemas/attempt.schema.json'));p=s['properties'];print(json.dumps({k:p[k] for k in p if k in ('findings','inputs')},indent=1)[:3000]); print(json.dumps(p['verifications'],indent=1)[1500:4000])"; ls attempts | xargs -n1 basename; grep -l "repeat\|-02" docs/*.md
+```
+
+```
+for r in entry.get("related", []) if r["id"].startswith("dandi:")]
+    dandisets = [d for d, _, _ in used]
+    versions = {d: v for d, _, v in used}
+    if entry.get("type") in ("orientation", "reproduction"):
+        if not dandisets:
+            report.error(rel / "entry.yaml", "an orientation or reproduction entry must relate to a dandiset")
+        for d, v in versions.items():
+            if not v:
+                report.error(rel / "entry.yaml", f"pin the version of dandiset {d}, as dandi:{d}/<version>")
+    helper_code = "\n".join((entry_dir / h).read_text() for h in helpers if (entry_dir / h).is_file())
+
+    for name in [n for n in listed if n in present]:
+        path = entry_dir / name
+        nb = nbformat.read(path, as_version=4)
+        if any(c.cell_type == "code" and (c.get("outputs") or c.get("execution_count")) for c in nb.cells):
+            report.error(rel / name, "commit notebooks without outputs (clear them before committing)")
+        if not any("sanity" in c.metadata.get("tags", []) for c in nb.cells if c.cell_type == "code"):
+            report.error(rel / name, "no code cell tagged `sanity` (the data check; see docs/protocol.md)")
+        code = code_of(path)
+        for dandiset in dandisets:
+[... 162 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat > $TMPDIR/build/md.py <<'PYEOF'
+MD = {}
+MD[0] = '''# Reproducing Knierim, McNaughton & Poe (2000) from dandiset 001754
+
+Paper. Knierim JJ, McNaughton BL, Poe GR (2000). Three-dimensional spatial selectivity of
+hippocampal neurons during space flight. *Nature Neuroscience* 3:209-210.
+[doi:10.1038/72910](https://doi.org/10.1038/72910). The paper is not open access. This attempt
+used only its abstract and the titles of its three figures, from the publisher's page. Four
+claims come from the dandiset's own description, which summarises the paper's findings; they
+could not be checked against the paper's text.
+
+Dandiset. [DANDI:001754](https://dandiarchive.org/dandiset/001754/draft), version draft. This
+version was asked for. It is a repeat attempt: the first attempt, `001754-knierim-2000-01`, read
+version 0.260728.1352, and the data owners have since replaced all eight files in the draft with a
+new conversion that addresses its findings. The fixes are not yet published, so the draft is read.
+A draft can change: the draft read here was last modified on 2026-10-14 at 21:55:09 UTC (the data
+check prints the time it has when the notebook runs). The three published versions (0.260227.0029,
+0.260227.0031, 0.260728.1352) hold the same blobs; every file of the draft is a new blob, and the
+dandiset's description is unchanged. The data check compares the draft with 0.260728.1352 where the
+analysis uses the difference.
+
+What the dandiset holds. Three rats on the Neurolab mission (STS-90, April 1998): a preflight
+recording of each, flight day 4 (FD4) of each, and flight day 9 (FD9) of Rats 1 and 2. Each file
+has sorted units with the original spike files merged into each and their windows, task epochs
+(BL baseline, ES Escher staircase, MC Magic Carpet) with their original names, and the 64 x 64 rate
+and occupancy maps of the original analysis for ES and MC, each linked to its unit. The flight files
+also hold the video position, but only at spike times and only within the rat's own ES and MC
+epochs. There is no EEG and no head direction.
+
+Conversion code read. [catalystneuro/mcnaughton2000-to-nwb](https://github.com/catalystneuro/mcnaughton2000-to-nwb)
+at commit 734688253c17a32e26d84c57f41fbe48ffbcd009 (2026-10-14), which made the draft's files; the
+first attempt read b538d9e. The new commit recovers the original long file names (ES.cell1.rmap,
+BL2.cell5) from each tetrode folder's WS_FTP.LOG, links each rate map to its unit, names the epochs
+as the originals did, records each unit's spike files and windows, restricts each flight rat's
+position to its own ES and MC epochs (merging the shared tracker's samples from both rats' spike
+files), stores the lost position and unvisited bins as NaN, leaves out rate maps that are identical
+copies of another map, and drops a stray spike from before the window in 48 spike files. The paper's
+own analysis code is not linked and was not found.
+
+| Claim | Source | Tested |
+|---|---|---|
+| `flight-spatial-code`: a robust spatial code on the Escher staircase in flight | Abstract | Yes |
+| `three-orthogonal-surfaces`: the code covers each of the three surfaces | Abstract | Blocked: metadata insufficient |
+| `si-comparable-to-preflight`: flight spatial information comparable to preflight | Dandiset description | Yes |
+| `fd4-abnormal-selectivity`: abnormal selectivity on flight day 4 | Dandiset description | Yes |
+| `fig3-stability-across-sessions`: place fields stable across sessions | Figure 3 title | Yes |
+| `theta-normal`: normal theta in flight | Dandiset description | Blocked: data missing |
+| `ripples-normal`: normal sharp waves and ripples in flight | Dandiset description | Blocked: data missing |'''
+
+MD[2] = '''## Data check
+
+Each check of the metadata against the values is stated under its output. The status of each
+finding of the first attempt on this version is given at the end of the data check.'''
+
+MD[4] = '''The published versions hold the same files; every file of the draft is a new blob, and the
+dandiset description has not changed. The listing shows every group and dataset of every file. In
+each file `acquisition/`, `analysis/` and the `stimulus/` groups are empty, and the neurodata types
+are only those printed under the listing (devices, electrode groups and table, subject, epochs,
+units, position and the rate-map table): there is no ElectricalSeries or LFP, so no file holds EEG
+or any continuous voltage. The units table now has `tetrode`, `cluster_id`, `spike_times`,
+`obs_intervals`, `source_files` and `electrodes`; the epochs table `epoch_name`, `session_type` and
+its description; the rate-map table `tetrode`, `source_file`, `archived_file_name`, `epoch_name`,
+`cluster_id`, `unit`, `rate_map` and `occupancy_map`; the position one series of x and y in pixels.'''
+
+MD[6] = '''The draft's descriptions now state what the first attempt had to find from the values: that
+unvisited rate-map bins are NaN (-999 in the source), that the maps are smoothed with an unrecorded
+kernel, that the occupancy counts 60 Hz video samples and counts the lost position in bin [63, 0],
+how rate-map bins map to pixels, that each tetrode was cluster-cut once so a unit is the same sorted
+cluster in every epoch, how the spike times are rounded, that Rat1 and Rat2 shared one tracker on
+each flight day, and that the camera view and pixel size are not recorded. Each of these is checked
+against the values below. The position description says the trace in a rat's ES and MC epochs "is
+taken to be" that rat's position and that the source files do not name the tracked animal. The
+age is still "/", now with a subject description saying the age is not recorded. The experiment
+description says no EEG was archived; the dandiset's own description still reports EEG.'''
+
+MD[8] = '''The draft holds the same units as 0.260728.1352, and every spike of the draft is a spike of the
+earlier version: 1 to 16 spikes per file were removed, the stray first spikes the units' description
+mentions. Rat1 FD4 has five epochs in place of six, without the overlapping baseline. The rate maps
+of the draft are all among the earlier version's maps; what is missing are the six groups of
+identical maps, every copy of which is left out (14 maps), so these six maps are no longer in the
+dandiset. The draft's position samples are all at timestamps of the earlier files of the same rat or
+of the other rat, where they agree (99.6 to 100% within 2 pixels), except 44 in the last 7 s of Rat2
+FD9 and 1259 in the last 40 s of Rat3 FD4, both within MC epochs. Each file now holds the samples of
+both rats' spike files within its own rat's task epochs and none elsewhere.'''
+
+MD[10] = '''Three rats, eight files: preflight and FD4 for each rat, FD9 for Rats 1 and 2, as the description
+says. Rate maps exist only for ES and MC epochs, not for baseline; Rat3 FD4 has two ES epochs, ES1
+and ES2, each with its own maps. Position exists only in the five flight files. No epochs overlap
+now. Rat2's preflight units are on tetrodes TT0 to TT10 and its flight units on TT12 to TT22, with no
+tetrode in common, while Rat1's and Rat3's preflight and flight tetrodes overlap. The conversion
+notes list whether the preflight folders are assigned to the right rats as an open question;
+nothing in the files settles it, so the per-rat comparisons with preflight below assume the
+assignment.'''
+
+MD[12] = '''Position is in video pixels from 0 to 255 in x and y. Lost positions are NaN (6 to 13% of
+samples); these are dropped. Every sample lies in one of the file's own ES or MC epochs and at a
+spike time of one of the two rats sharing the tracker (in Rat3's file, of its own units); in Rat2's
+files most samples are at Rat1's spike times (0.56 on FD4, 0.79 on FD9). Every spike of the file's
+own units in its task epochs has a sample. The trace is sampled only when some unit fires, at
+irregular intervals, consistent with the description. No occupancy time can be built from it; the
+occupancy maps of the original analysis are used.'''
+
+MD[14] = '''The lookup gives a spike the position of the nearest sample within 0.25 s and drops the spike
+when that sample is the lost position (NaN in the draft). On the synthetic input, the spikes at 1.1 s
+(the lost sample itself) and at 1.12 s (nearest to it) are dropped, as is the spike at 2.0 s, 0.5 s
+from any sample.'''
+
+MD[16] = '''The Rat1 and Rat2 files of a flight day no longer share any timestamp: each holds samples only in
+its own rat's ES and MC epochs, and the epochs show that the rats took turns (when one rat is
+labelled ES or MC, the other is labelled BL). In 0.260728.1352 both files held the same trace over
+the whole session, presented as each rat's position; the draft assigns each window to one rat. The
+next checks ask whether the trace in each window is the position of the rat it is assigned to.'''
+
+MD[18] = '''Each epoch name has one occupancy map in its file. For each ES and MC epoch, the position samples
+in the epoch cover the bins of the occupancy map of the same name best (0.70 to 0.88, against 0.30
+to 0.67 for the other maps), including Rat3's ES1 and ES2. The occupancy totals are 38 to 57 counts
+per second of the epoch, consistent with the 60 Hz video rate the occupancy description now states
+less the lost samples. The epoch names, times and position are therefore consistent with the
+original analysis. This is a check of position against occupancy; whether spikes and position share
+a clock is shown with spike-based maps below.'''
+
+MD[20] = '''Unvisited rate-map bins are NaN, exactly where the occupancy is zero, as the description now
+says, and no value is negative. The lost position is still counted in the original occupancy (bin
+[63, 0], up to 19% of an occupancy map in flight, under 2% preflight), as the occupancy description
+now says; that bin is left out here. No file holds two identical rate maps. Every `source_file` reads
+`<epoch name>.cell<cluster id>.rmap`, every map's unit has the map's tetrode and cluster id, and
+every map's unit has a spike file of the map's epoch; the old 8.3 short names are kept in
+`archived_file_name`. The "CEL names only" variant below uses those short names, as the first
+attempt did.
+
+The highest peak rate, 277.8 Hz in a Rat1 FD9 map, lies in a bin with 55 occupancy counts, not a
+sparsely visited bin. Per file, 9 to 36 maps have their peak in a bin with fewer than 5 counts;
+spatial information over bins with at least 5 counts is shown as a variant of the rate-map claims.'''
+
+MD[22] = '''The dandiset's description says the preflight recordings were made on a flat rectangular track,
+but the preflight files label their epochs ES and MC and hold ES and MC rate maps, as the flight
+files do; the draft's files describe MC as a flat two-dimensional track and say nothing of a
+different apparatus preflight. The preflight occupancy maps cover 827 to 1446 bins within rows 20 to
+63 and columns 4 to 56; the flight maps reach row 15 or 16 and cover 1121 to 2662 bins. The visited
+bins of preflight ES and flight ES overlap with a Jaccard index of 0.27 to 0.49, below the overlap
+of flight ES with flight MC (0.42 to 0.67). The camera view on the ground and in the shuttle may
+differ, so the footprints cannot show which apparatus was used. What the preflight epochs labelled
+ES and MC were recorded on is not established; if the description is right, the comparisons with
+preflight below compare the Escher staircase in flight with another apparatus on the ground.'''
+
+MD[24] = '''With position binned as x to columns and y to rows at 4 pixels per bin, as the rate-map table now
+states, each of the 211 unit-epochs with 50 or more spikes at a known position has a linked rate
+map, and that map is the best match among the maps of its tetrode and epoch for 201 of them (median
+r 0.57 against a median of 0.13 to 0.41 for the best other map; 0.01 to 0.07 with x and y swapped).
+So the rate maps are now linked to their units, as the table says, and were made from the same
+spikes and positions. In 0.260728.1352 the `cell_number` column matched the cluster id for 84 of
+211 unit-epochs.
+
+For the 135 linked maps that correlate above 0.5, in the median map 91% of the bins with a positive
+rate hold no spike of the unit, so the maps are smoothed, as the description now says. Their summed
+rate x occupancy is about 22 per spike of the unit (median per file 21.1 to 23.8), so below it is
+used as a quantity proportional to a map's spike count. The preflight maps cannot be checked this
+way, as the preflight files have no position.'''
+
+MD[26] = '''Spike times are sorted. Their resolution follows the time, as the units' description says: 1 ms or
+finer below 1000 s, 10 ms from 1000 s and 0.1 s from 10000 s. Zero intervals within a unit follow
+the resolution: none or nearly none below 1000 s (0 to 3), 5 to 15% at 10 ms, and 35 to 53% at 0.1 s.
+This explains the zero intervals the first attempt could not account for (Rat1's preflight MC epoch
+crosses 1000 s). Within FD9 sessions, spikes after 10000 s (the last 151 s of each) are resolved
+to 0.1 s only; no claim uses that window. No spike lies outside its unit's `obs_intervals`. Units
+merge the per-epoch spike files of one cluster; 14 Rat1 FD4 units have their BL1 window at 2720 to
+3390 s, inside the BL1 epoch (2525 to 3390 s), as the epochs' description explains. Every result here
+except the stability claim is computed per epoch; the stability claim uses that a unit is the same
+sorted cluster in both epochs, which the units' description now states.'''
+
+MD[28] = '''This contrast tests whether spikes and position share a clock and whose position the trace is.
+Each rat's units are tested (200 shuffles) in its own ES epoch and in the other rat's ES epoch of
+the same day, with the trace and occupancy of the file of the rat labelled as on the task. Rat1's
+units are selective in their own ES epochs (11 of 20 on FD4, 10 of 25 on FD9, against 5% expected by
+chance), so for Rat1 spikes and position share a clock. Rat2's units are no more selective than
+chance in their own ES epochs (1 of 16 on FD4, 2 of 28 on FD9) or in Rat1's (0 of 15, 0 of 41).
+Rat1's units are selective in Rat2's FD4 ES epoch (10 of 15), when Rat1 is labelled as on baseline,
+but not in Rat2's FD9 ES epoch (1 of 36). So, as in 0.260728.1352, a shared clock could not be
+established for Rat2's spikes and the position, and in Rat2's FD4 ES epoch the trace is consistent
+with Rat1's position, not Rat2's.'''
+
+MD[30] = '''Within each task window only the file of the rat on the task has samples, and they fall at both
+rats' spike times. Rat1's units fire more in Rat1's FD9 task windows (35.7 and 47.9 spikes per
+second in ES and MC, against 19.0 and 21.8 in Rat2's), while Rat2's units fire at about the same
+rate in Rat2's windows as in Rat1's (on FD9, 7.7 and 3.8 against 8.0 and 4.5; on FD4, 10.0 and 6.0
+against 7.7 and 5.2). The files do not name the animal the tracker followed, and the draft says so;
+whose position the trace is in Rat2's task windows could not be established. The judged FD9
+session of Rat2 is kept, as the criterion requires, with this caveat.
+
+Findings of `001754-knierim-2000-01` on the draft, from the outputs above:
+
+- The Rat1 and Rat2 files held the same trace, presented as each rat's position. Partly fixed. Each
+  file now holds the trace only in its own rat's task epochs (no timestamp in common), and the
+  position description states the shared tracker, the assumption that the trace in a rat's task
+  epochs is that rat's, and that the files do not name the tracked animal. Rat2's units are still
+  not selective in any window, and Rat1's are selective in Rat2's FD4 ES window (10 of 15), so whose
+  position the trace is in Rat2's epochs is still not established.
+- Position only at spike times, none preflight. Still present; the description now states it.
+- The description places the preflight recordings on a flat rectangular track, while the files
+  label them ES and MC. Still present; the dandiset description is unchanged.
+- `cell_number` was not a cell number, so rate maps could not be linked to units. Fixed: every map
+  links to a unit with its tetrode and cluster, and the linked map is the best match for 201 of 211
+  unit-epochs.
+- The rate maps are smoothed with an unstated kernel. Partly fixed: the description states that
+  they are smoothed and that the kernel is not recorded.
+- -999 for unvisited bins and the lost position counted in bin [63, 0], both undocumented. Fixed:
+  unvisited bins are NaN, lost positions are NaN, and the occupancy description states the bin
+  [63, 0] count.
+- Identical copies of rate maps, some under another tetrode. Fixed: no file holds two identical
+  maps. The draft leaves out every copy in the six groups (14 maps), so those six maps, whose unit
+  is ambiguous, are no longer in the dandiset.
+- Units merge per-epoch spike files without saying a cluster id names one neuron across epochs, and
+  lack the spike-file columns. Fixed: the units' description says each tetrode was cut once, and
+  `source_files` and `obs_intervals` give each unit's files and windows.
+- No EEG, though the description reports theta and ripples. Partly fixed: the files' experiment
+  description says no EEG was archived; the dandiset description still reports EEG.
+- Spike times at 10 ms with unexplained zero intervals, and two overlapping baseline epochs in Rat1
+  FD4. Fixed: the resolution is documented and the zero intervals follow it, and the epochs no
+  longer overlap.
+- The age is "/" and the pixel scale and camera view are not described. Partly fixed: the subject
+  description and the position's reference frame now say the age, the camera view and the pixel
+  size are not recorded, and the map geometry is given in pixels; the values themselves are still
+  missing.'''
+
+MD[37] = '''**Result: not reproduced.** On flight day 9, 10 of 25 Rat1 units (0.40) have significant spatial
+information on the Escher staircase (binomial p = 1.6e-7 against 0.05), and 2 of 28 Rat2 units
+(0.071, p = 0.41). By the criterion, Rat1 is above chance but below 0.5 and Rat2 is not above
+chance, so neither the rule for reproduced nor the rule for partially reproduced is met. Repeats
+with 2000 shuffles and five other seeds give 10 or 11 of 25 for Rat1 (0.40 to 0.44) and 2 of 28 for
+Rat2; the run of 200 shuffles in the data check gives 10 of 25 and 2 of 28; 5 Rat1 units have p
+between 0.01 and 0.1, 3 within two Monte Carlo standard errors of 0.05. In 0.260728.1352 the first
+attempt had 12 of 25 (11 to 13 over seven runs). The real spikes are the same; the draft's trace
+holds both rats' spike times in each window, so a shifted spike finds a sample more often and the
+shuffles change. Shifted spikes are now dropped about as often in Rat2's FD9 ES epoch (median 0.058)
+as in Rat1's (0.060), against 0.307 and 0.074 in the earlier version, so the drops no longer differ
+between the rats; the count-matched variant gives 12 of 25 (0.48) for Rat1 and 2 of 28 for Rat2,
+still below 0.5. Rat2's units are not selective with the trace in any window, and Rat1's are
+selective in Rat2's FD4 ES epoch (10 of 15), so Rat2's result may come from a trace that is not
+Rat2's position; the files do not show whose position it is. On flight day 4, 11 of 20 Rat1 units,
+1 of 16 Rat2 units, and 11 of 16 and 1 of 19 Rat3 units in its ES1 and ES2 epochs are significant.
+In the MC epochs, which the claim does not cover, 0 to 2 units per session are significant.'''
+
+MD[44] = '''**Result: reproduced.** Flight day 9 ES maps (64, Rats 1 and 2) have a median of 1.385 bits/spike
+against 1.448 for preflight ES maps (53); Mann-Whitney p = 0.45, a difference of -0.064 bits/spike
+(ratio 0.96, rank-biserial 0.081). These maps and numbers are the same as in 0.260728.1352. Every
+variant gives p of 0.12 or more: per rat (0.25 and 0.88), maps with archived names containing CEL
+(0.43), maps with a peak of 1 Hz or more (0.89), MC maps (0.92), all flight maps (0.12), bins with 5
+or more occupancy counts (0.44), and spatial information adjusted for rate x occupancy (0.37), which
+is proportional to the spike count in the flight maps (about 22 per spike, data check) and is
+assumed to be so in the preflight maps, where it cannot be checked. Spatial information falls as the
+spike count rises, as sampling bias predicts (Spearman rho -0.226 over all ES maps; -0.118 to -0.792
+within seven files, 0.042 in Rat3's preflight). Rat1's compared sessions have similar spike counts
+and Rat2's do not: units in Rat1's and Rat2's preflight ES epochs have medians of 359 and 352 spikes
+in 465 and 560 s, and on FD9 437 and 205 in 1611 and 2664 s; the maps' median rate x occupancy is
+7862 and 7628 preflight against 9105 and 5226 on FD9. Rat2's FD9 maps thus rest on fewer spikes than
+its preflight maps, which by sampling bias raises their spatial information. The rate maps are
+smoothed with an unrecorded kernel, so no shuffle-corrected value can be computed for them. The
+dandiset's description says the preflight recordings were made on a flat rectangular track, so this
+may be a comparison between different apparatus, and Rat2's preflight file shares no tetrode with
+its flight files (see the data check). Rat2's FD9 maps (median 1.343 bits/spike) rest on a trace
+that could not be attributed to Rat2, while only 2 of its 28 units are significant against shuffles,
+so the rate maps' spatial information does not show that Rat2's cells were selective.'''
+
+MD[48] = '''**Result: reproduced.** Flight day 4 ES maps (104, Rats 1 to 3) have a median of 1.177 bits/spike
+against 1.441 for preflight (98); the one-sided Mann-Whitney p is 0.024, below the criterion's 0.05
+(ratio 0.82, rank-biserial 0.162). The outcome differs from the first attempt's (p = 0.055) because
+of three maps: the draft leaves out every copy in the groups of identical maps, and three Rat2 FD4 ES
+maps the first attempt counted once each (7.583 bits/spike each, mean rate near zero) are no longer
+in the dandiset. On the earlier version's maps the same test gives p = 0.055 with all 107 distinct
+maps and p = 0.024 with the 104 that are in the draft, so the result rests on whether those three
+maps are counted. The FD4 median is lower in each rat (ratios 0.65 to 0.88), significantly only for
+Rat1 (p = 0.032; Rat2 p = 0.12, Rat3 p = 0.18). The test also passes with maps of peak rate 1 Hz or
+more (p = 0.0095), over bins with 5 or more occupancy counts (p = 0.023) and with spatial information
+adjusted for rate x occupancy (p = 0.0011), and not with maps whose archived names contain CEL (p =
+0.073) or with MC maps (p = 0.060). Rat1's and Rat2's FD4 maps have less rate x occupancy, and so
+fewer spikes, than their preflight maps (medians 1891 and 1819 against 7862 and 7628), and their
+spatial information is lower even so: sampling bias works against the claim here. FD4 is lower than
+FD9 for Rats 1 and 2 without significance on the rate maps (1.081 against 1.385, p = 0.095), and on
+spike-based information minus the shuffle mean (0.025 against 0.211, p = 0.13; with Rat3, 0.232
+against 0.211, p = 0.31). The spike-based fraction of significant units is not lower on FD4 (24 of
+71 against 12 of 53 on FD9, p = 0.94). The claim's "abnormal" may refer to something other than lower
+spatial information, which the description does not say, and the preflight maps may come from
+another apparatus (see the data check).'''
+
+MD[53] = '''**Result: reproduced.** In Rat3's two flight day 4 ES epochs, the 15 units with 50 or more spikes in
+each have a median rate-map correlation of 0.537 (range -0.107 to 0.849), above the 95th percentile of
+re-paired medians (0.102, p = 0.001) and above 0.5; 8 of 15 exceed 0.5. These are the same as in
+0.260728.1352. With other smoothing the median is 0.315 to 0.707, always above its re-paired 95th
+percentile (p = 0.001), but at 0.5 bins of smoothing it is below 0.5 (0.315 and 0.341), which would
+make the claim partially reproduced. The dandiset's own ES1 and ES2 maps, now linked to the same
+unit, give a median of 0.340 over 18 units and over the 15 units of the main test. A unit is the same
+sorted cluster in both epochs, as the units' description now states (each tetrode was cut once);
+whether a cluster is one neuron throughout is not shown, and the files hold no waveforms. The units'
+mean rates are related across the two epochs (Spearman rho 0.598 over the 24 units with a spike in
+either, re-paired 95th percentile 0.339). Of the file's 47 units, 23 have no spike in either ES
+epoch, 18 have spikes in both, 1 only in the first and 5 only in the second. In the first epoch 11
+of 16 units are significant against shuffles and in the second 1 of 19. The second epoch has similar
+occupancy (62327 against 71496 counts), more spikes per tested unit (median 455 against 301) and
+similar shuffle drops (0.215 against 0.205), but its units' information is at the level of their
+shuffles (median 1.629 against a shuffle mean of 1.646; in the first epoch 2.155 against 1.667).
+Units with the most stable fields, such as TT4 cluster 1 (r = 0.820), are significant in the first
+epoch only. This difference is not explained here. Which sessions Figure 3 compares is not known.'''
+
+MD[54] = '''## theta-normal and ripples-normal
+
+> Hippocampal EEG showed normal theta rhythm during locomotion and normal sharp waves and ripples
+> during quiet rest in flight. (Dandiset description)
+
+Blocked. No file holds EEG or any continuous voltage: the unfiltered listing in the data check
+shows an empty `acquisition/` group and no ElectricalSeries or LFP in any file, and the draft's
+experiment description says no EEG or other continuous voltage was archived. The NASA record of the
+study (OSD-968) describes its files as spike files, rate-map files, legacy metadata files and NWB
+copies, and its metadata does not mention EEG, theta, ripples or LFP (printed under
+three-orthogonal-surfaces). Its archives were not opened, so an EEG file inside one cannot be ruled
+out.'''
+
+MD[56] = '''## Summary
+
+| Claim | Outcome |
+|---|---|
+| `flight-spatial-code` | Not reproduced: Rat1 FD9 0.40 of units significant (0.40 to 0.44 over the repeats), Rat2 FD9 0.071 |
+| `three-orthogonal-surfaces` | Blocked: metadata insufficient (no mapping of pixels to the track's surfaces) |
+| `si-comparable-to-preflight` | Reproduced: FD9 1.385 against preflight 1.448 bits/spike, p = 0.45 |
+| `fd4-abnormal-selectivity` | Reproduced: FD4 1.177 against preflight 1.441 bits/spike, one-sided p = 0.024 (0.055 with the three maps the draft leaves out) |
+| `fig3-stability-across-sessions` | Reproduced: median r 0.537 between Rat3's two FD4 ES epochs (null 95th percentile 0.102) |
+| `theta-normal` | Blocked: data missing (no EEG) |
+| `ripples-normal` | Blocked: data missing (no EEG) |
+
+A failure to reproduce here may be a failure of this attempt, not of the paper: see the
+reasoning and the differences from the paper's method.
+
+Against the first attempt on 0.260728.1352, `fd4-abnormal-selectivity` changes from not reproduced
+to reproduced, because the draft leaves out three maps that moved the test across 0.05; the other
+outcomes are the same.
+
+How the analysis differs from the paper's. The paper's full text was not available, so its
+Methods, tests and thresholds are unknown; every method here is a common choice fixed before the
+analysis. Four claims come from the dandiset's description of the paper's findings, and one from a
+figure title alone. Spatial information is computed from the spikes for the spike-based claims, with
+the occupancy maps of the original analysis, as the dandiset holds position only at spike times;
+the comparisons with preflight use the original rate maps, as the preflight files have no position.
+The rate maps are smoothed with an unrecorded kernel and their spatial information is not corrected
+for the number of spikes; a count-adjusted variant is shown. The stability claim takes a unit to be
+the same neuron in two epochs because it is the same sorted cluster.
+
+What was found about the dandiset (draft).
+- Each flight file now holds the shared tracker's trace only in its own rat's task epochs, and says
+  the trace there is taken to be that rat's. Rat2's units are not selective with it in any window,
+  and Rat1's are selective in Rat2's FD4 ES window, so whose position the trace is in Rat2's epochs
+  is still not established.
+- The dandiset description still says the preflight recordings were on a flat rectangular track,
+  while the preflight epochs and rate maps are labelled ES and MC, and still reports EEG, which no
+  file holds.
+- Rat2's preflight file shares no tetrode with its flight files, and the assignment of the preflight
+  recordings to rats is an open question in the conversion notes.
+- Position is given only at spike times, so occupancy cannot be computed from the files' position.
+- The maps are smoothed with a kernel that is not recorded, and the rats' age, the camera view and
+  the pixel size are not recorded.
+- Fixed since the first attempt: the rate maps are linked to their units; NaN replaces -999 and the
+  lost position, and the [63, 0] occupancy is documented; identical maps are left out (all copies,
+  so six maps are gone); units list their spike files and windows and are documented as one sorted
+  cluster across epochs; the spike-time resolution is documented and explains the zero intervals;
+  the epochs no longer overlap.'''
+PYEOF
+cd entries/001754-knierim-2000 && $TMPDIR/env/bin/python - <<'EOF'
+import json, sys, os
+sys.path.insert(0, os.environ["TMPDIR"] + "/build")
+from md import MD
+p="reproduce_knierim_2000.ipynb"; nb=json.load(open(p))
+for k,text in MD.items():
+    c=nb["cells"][k]; assert c["cell_type"]=="markdown",k
+    L=text.split("\n"); c["source"]=[l+"\n" for l in L[:-1]]+[L[-1]]
+json.dump(nb, open(p,"w"), indent=1, ensure_ascii=False); open(p,"a").write("\n")
+EOF
+grep -c "—\|rather" reproduce_knierim_2000.ipynb
+```
+
+```
+Exit code 1
+0
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001754-knierim-2000 && $TMPDIR/env/bin/python - <<'EOF'
+import json
+p="reproduce_knierim_2000.ipynb"; nb=json.load(open(p))
+reps={18:[('''per second of the epoch, consistent with the 60 Hz video rate the occupancy description now states
+less the lost samples. The epoch names''','''per second of the epoch, the same order in every epoch and below the 60 Hz video rate the occupancy
+description now states; why not every frame is counted is not stated. The epoch names''')],
+24:[("0.01 to 0.07 with x and y swapped","-0.01 to 0.07 with x and y swapped")],
+26:[('''to 0.1 s only; no claim uses that window.''','''to 0.1 s only; of the task epochs only Rat2's FD9 MC epoch reaches it, and no claim is judged on it.''')],
+37:[('''attempt had 12 of 25 (11 to 13 over seven runs). The real spikes are the same; the draft's trace
+holds both rats' spike times in each window, so a shifted spike finds a sample more often and the
+shuffles change.''','''attempt had 12 of 25 (11 to 13 over seven runs). Every real spike has a sample at its own time in
+both versions; the draft's trace adds samples at the other rat's spike times in each window, so a
+shifted spike finds a sample within 0.25 s more often and the shuffle distributions change.''')],
+44:[('''(ratio 0.96, rank-biserial 0.081). These maps and numbers are the same as in 0.260728.1352. Every''','''(ratio 0.96, rank-biserial 0.081). The main test's maps and numbers are the same as in
+0.260728.1352. Every''')],
+48:[("(7.583 bits/spike each, mean rate near zero)","(7.583 bits/spike each, mean rate below 0.001 Hz)")]}
+for k,rs in reps.items():
+    c=nb["cells"][k]; s="".join(c["source"])
+    for a,b in rs:
+        assert s.count(a)==1,(k,a[:40]); s=s.replace(a,b)
+    L=s.split("\n"); c["source"]=[l+"\n" for l in L[:-1]]+[L[-1]]
+json.dump(nb, open(p,"w"), indent=1, ensure_ascii=False); open(p,"a").write("\n")
+EOF
+echo ok
+```
+
+```
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python -c "
+import json;nb=json.load(open('reproduce_knierim_2000.ipynb'))
+for i in (31,38,40,45,49): print(i,''.join(nb['cells'][i]['source']),'\n')"
+```
+
+```
+31 ## flight-spatial-code
+
+> Hippocampal neurons recorded on the space shuttle form a robust spatial code on the
+> three-dimensional Escher staircase track in weightlessness. (Abstract)
+
+Criterion (from the claims file): per in-flight ES epoch, a unit is significant when its spatial
+information exceeds the 95th percentile of 500 circular-shift shuffles. Judged on the two FD9
+sessions: reproduced when the fraction of significant units is at least 0.5 in both. 
+
+38 ## three-orthogonal-surfaces
+
+> The spatial code covers each of the three orthogonal surfaces of the Escher staircase. (Abstract)
+
+Blocked. The dandiset holds one two-dimensional pixel position from one camera; the NASA record
+of the study (OSD-968) says position was recorded with two synchronised cameras (printed below).
+Nothing in the files or the dandiset metadata describes the camera's view or the track layout, and
+the conversion code describes the ES track only as a three-dimensional track with 90 degree yaw and
+pitch turns and the position only as video tracker pixel coordinates (lines printed below), so a
+pixel cannot be assigned to one of the three surfaces. 
+
+[... 28 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+$TMPDIR/env/bin/python - <<'EOF'
+import json
+p="reproduce_knierim_2000.ipynb"; nb=json.load(open(p))
+reps={38:[('''Nothing in the files or the dandiset metadata describes the camera's view or the track layout, and
+the conversion code describes the ES track only as a three-dimensional track with 90 degree yaw and
+pitch turns and the position only as video tracker pixel coordinates (lines printed below), so a
+pixel cannot be assigned to one of the three surfaces.''','''The draft's position reference frame says the camera view and the pixel size on the apparatus are
+not recorded in the source files (data check), nothing in the files or the dandiset metadata
+describes the track layout in the image, and the conversion code describes the ES track only as a
+three-dimensional track with 90 degree yaw and pitch turns and the position only as video tracker
+pixel coordinates (lines printed below), so a pixel cannot be assigned to one of the three
+surfaces.''')],
+49:[('''0.5. The cluster id is assumed to name the same neuron in both epochs (see the data check).''','''0.5. A unit is the same sorted cluster in both epochs, as the units' description states; that it is
+the same neuron is assumed (see the data check).''')]}
+for k,rs in reps.items():
+    c=nb["cells"][k]; s="".join(c["source"])
+    for a,b in rs:
+        assert s.count(a)==1,(k,a[:40]); s=s.replace(a,b)
+    L=s.split("\n"); c["source"]=[l+"\n" for l in L[:-1]]+[L[-1]]
+json.dump(nb, open(p,"w"), indent=1, ensure_ascii=False); open(p,"a").write("\n")
+EOF
+cd entries/001754-knierim-2000; sed -i 's#id: dandi:001754/0.260728.1352#id: dandi:001754/draft#' entry.yaml; grep -n dandi: entry.yaml
+```
+
+```
+19:- id: dandi:001754/draft
+```
+
+**Agent**
+
+Notebook and `entry.yaml` updated. Now the README, then lock and run.
 
 **Agent calls Write**
 
 ```json
 {
  "file_path": "entries/001754-knierim-2000/README.md",
- "content": "# Knierim, McNaughton & Poe (2000) from dandiset 001754\n\nTests the findings of [Knierim et al. (2000)](https://doi.org/10.1038/72910) that can be tested on\n[DANDI:001754](https://dandiarchive.org/dandiset/001754/0.260728.1352), which holds sorted units,\ntask epochs, the original rate maps and the position at spike times of three rats recorded before\nand during the Neurolab shuttle mission (STS-90). The paper is not open access: the claims come from\nits abstract, the titles of its figures, and the dandiset's description of its findings.\n\n| Claim | Outcome |\n|---|---|\n| A robust spatial code on the Escher staircase in flight | Partially reproduced |\n| The code covers each of the three orthogonal surfaces | Blocked: metadata insufficient |\n| Spatial information in flight comparable to preflight | Reproduced |\n| Abnormal spatial selectivity on flight day 4 | Not reproduced |\n| Place fields stable across sessions | Reproduced |\n| Normal theta in flight | Blocked: data missing |\n| Normal sharp waves and ripples in flight | Blocked: data missing |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\nThe Rat1 and Rat2 files of each flight day share one position trace, and Rat2's units are not\nspatially selective with it. The rate maps cannot be linked to units, and there is no EEG. The\nattempt record, with the reasons and the differences from the paper's method, is\n[`attempts/001754-knierim-2000-01.yaml`](../../attempts/001754-knierim-2000-01.yaml).\n\n- `reproduce_knierim_2000.ipynb`: the analysis. It takes about two minutes.\n- `neurolab.py`: loading the files, the original rate maps and their spatial information, and the\n  spike-based spatial information with its shuffle test. Other notebooks on this dandiset can import\n  it.\n"
+ "content": "# Knierim, McNaughton & Poe (2000) from dandiset 001754\n\nTests the findings of [Knierim et al. (2000)](https://doi.org/10.1038/72910) that can be tested on\n[DANDI:001754](https://dandiarchive.org/dandiset/001754/draft), which holds sorted units, task\nepochs, the original rate maps and the position at spike times of three rats recorded before and\nduring the Neurolab shuttle mission (STS-90). The paper is not open access: the claims come from\nits abstract, the titles of its figures, and the dandiset's description of its findings.\n\nThe entry streams the draft of the dandiset, as last modified on 2026-10-14 at 21:55 UTC. The draft\nwas asked for: it holds a new conversion that addresses the findings of the first attempt, which\nread version 0.260728.1352, and it is not yet published. A draft can change; the notebook prints\nthe time the draft was last modified when it runs.\n\n| Claim | Outcome |\n|---|---|\n| A robust spatial code on the Escher staircase in flight | Not reproduced |\n| The code covers each of the three orthogonal surfaces | Blocked: metadata insufficient |\n| Spatial information in flight comparable to preflight | Reproduced |\n| Abnormal spatial selectivity on flight day 4 | Reproduced |\n| Place fields stable across sessions | Reproduced |\n| Normal theta in flight | Blocked: data missing |\n| Normal sharp waves and ripples in flight | Blocked: data missing |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the\nreasoning and the differences from the paper's method.\n\nOn the draft, the rate maps are linked to their units, and the units, epochs, unvisited bins, lost\npositions and spike-time resolution are documented. The flight-day-4 result changed from the first\nattempt because the draft leaves out three rate maps that were identical copies of others; with\nthem the test gives p = 0.055, without them 0.024. Rat2's units are still not spatially selective\nwith the position trace in any window, and whose position the trace is in Rat2's task epochs is\nnot established. The description still places the preflight recordings on a flat rectangular\ntrack and reports EEG, which no file holds. The attempt records, with the reasons and the\ndifferences from the paper's method, are\n[`attempts/001754-knierim-2000-02.yaml`](../../attempts/001754-knierim-2000-02.yaml) (the draft) and\n[`attempts/001754-knierim-2000-01.yaml`](../../attempts/001754-knierim-2000-01.yaml) (version\n0.260728.1352).\n\n- `reproduce_knierim_2000.ipynb`: the analysis. It takes about five minutes; its last code cell\n  prints the run time.\n- `neurolab.py`: loading the files, the original rate maps and their spatial information, and the\n  spike-based spatial information with its shuffle test. Other notebooks on this dandiset can import\n  it.\n"
 }
 ```
 
 ```
-File created successfully at: entries/001754-knierim-2000/README.md (file state is current in your context — no need to Read it back)
+The file entries/001754-knierim-2000/README.md has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
+
+**Agent calls Bash**
+
+```bash
+cd  && python -c "import yaml,nbformat,jsonschema" 2>&1; python tools/entry.py lock entries/001754-knierim-2000 2>&1 | tail -5; git diff --stat
+```
+
+```
+wrote entries/001754-knierim-2000/requirements.lock.txt
+ entries/001754-knierim-2000/README.md              |   34 +-
+ entries/001754-knierim-2000/entry.yaml             |    2 +-
+ entries/001754-knierim-2000/neurolab.py            |  109 +-
+ .../reproduce_knierim_2000.ipynb                   | 1049 ++++++++++++--------
+ 4 files changed, 748 insertions(+), 446 deletions(-)
+```
+
+**Agent**
+
+Lock file unchanged. Now the attempt record, so that `check` validates it with the entry.
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "attempts/001754-knierim-2000-01.yaml",
- "content": "schema_version: 1\nid: 001754-knierim-2000-01\ndandiset: \"001754\"\ndandiset_version: 0.260728.1352\npaper: doi:10.1038/72910\ndate: 2026-10-14\nentry: 001754-knierim-2000\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code (GitHub Actions)\n    model: claude-opus-5-5\n    protocol: pilot-6\noutcomes:\n- claim: flight-spatial-code\n  outcome: partially_reproduced\n  notebook: reproduce_knierim_2000.ipynb\n  output: claim:flight-spatial-code\n  notes: On flight day 9, 13 of 25 Rat1 units (0.52) have spatial information above the 95th\n    percentile of 500 circular-shift shuffles on the Escher staircase (binomial p = 3.6e-11\n    against 0.05), but 3 of 28 Rat2 units (0.107, p = 0.16). By the criterion this is reproduced in\n    one of the two judged sessions. On flight day 4, 10 of 20 Rat1 units, 0 of 16 Rat2 units, and 9\n    of 16 and 2 of 19 Rat3 units in its two ES epochs are significant. Rat1 FD9 gives 0.40 at p <\n    0.01 and 0.54 with 100 spikes or more. Rat2's units are not selective with the shared position\n    trace in any window, and Rat1's units are selective in Rat2's FD4 ES epoch (7 of 15), so the\n    trace in Rat2's epochs may not be Rat2's position. In MC epochs 0 to 2 units per session are\n    significant. The \"three orthogonal surfaces\" part of the abstract is tested apart, and blocked.\n  deviations:\n  - The paper's Methods were not available; the selection (50 spikes at a known position), the\n    32 x 32 binning, the shuffle and the thresholds are common choices fixed in the claims file.\n  - Occupancy is the original analysis's occupancy map for the epoch, and shuffled spikes take the\n    nearest position sample within 0.25 s, as the dandiset gives position only at spike times.\n  - Robust is read as at least half of the units significant in each flight day 9 session.\n- claim: three-orthogonal-surfaces\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: The dandiset holds one two-dimensional pixel position per time from one camera. Nothing in\n    the files, the dandiset metadata or the conversion code describes the camera's view or the\n    track layout, so pixels cannot be assigned to the three surfaces. The NASA record of the study\n    (OSD-968) mentions two synchronised cameras; a second view is not in the dandiset.\n- claim: si-comparable-to-preflight\n  outcome: reproduced\n  notebook: reproduce_knierim_2000.ipynb\n  output: claim:si-comparable-to-preflight\n  notes: Flight day 9 ES rate maps (64, Rats 1 and 2) have a median spatial information of 1.385\n    bits/spike against 1.448 for preflight ES maps (53); two-sided Mann-Whitney p = 0.45, difference\n    -0.064 bits/spike, ratio 0.96. Per rat, CEL-named maps only, maps with a peak of 1 Hz or more,\n    MC maps and all flight maps all give p of 0.20 or more. Rat2's FD9 ES maps have a median of\n    1.343 bits/spike although only 3 of its 28 units are significant against shuffles, so the rate\n    maps' spatial information does not show that Rat2's cells were selective.\n  deviations:\n  - The source is the dandiset's description of the paper's findings, not the paper's text.\n  - The paper's test is unknown; a two-sided Mann-Whitney U test at 0.05 was fixed in advance.\n  - Spatial information comes from the original rate maps, without correction for the number of\n    spikes, as the preflight files hold no position.\n  - The -999 bins and the lost-position bin [63, 0] are left out of each map.\n- claim: fd4-abnormal-selectivity\n  outcome: not_reproduced\n  notebook: reproduce_knierim_2000.ipynb\n  output: claim:fd4-abnormal-selectivity\n  notes: Flight day 4 ES rate maps (107, Rats 1 to 3) have a median of 1.214 bits/spike against\n    1.441 preflight (98); one-sided Mann-Whitney p = 0.055, above the criterion's 0.05 (ratio\n    0.84). The FD4 median is lower in each rat (ratios 0.65 to 0.88), significantly only for Rat1\n    (p = 0.032); with maps of peak rate 1 Hz or more p = 0.0095. FD4 against FD9 for Rats 1 and 2\n    gives 1.148 against 1.385 (p = 0.21). The spike-based fraction of significant units is 21 of 71\n    on FD4 and 16 of 53 on FD9 (p = 0.55). The direction agrees with the claim and the test falls\n    just short.\n  deviations:\n  - The source is the dandiset's description of the paper's findings, not the paper's text.\n  - Abnormal selectivity is read as lower spatial information; the description does not say what\n    was abnormal.\n  - The paper's test is unknown; a one-sided Mann-Whitney U test at 0.05 was fixed in advance.\n- claim: fig3-stability-across-sessions\n  outcome: reproduced\n  notebook: reproduce_knierim_2000.ipynb\n  output: claim:fig3-stability-across-sessions\n  notes: In Rat3's two flight day 4 ES epochs, the 15 units with 50 or more spikes in each have a\n    median rate-map correlation of 0.538 (range -0.108 to 0.849), above the 95th percentile of 1000\n    re-paired medians (0.091, p = 0.001) and above 0.5; 8 of 15 exceed 0.5. With smoothing of 0.5\n    to 2 bins and 50 or 100 spikes the median is 0.312 to 0.704, always above its null (p = 0.001);\n    at 0.5 bins it is below 0.5. The dandiset's rate maps paired by their ~N names give a median of\n    0.157, as the names do not identify cells. In the second epoch 2 of 19 units are significant\n    against 9 of 16 in the first.\n  deviations:\n  - Only the title of Figure 3 was available; which sessions it compares is unknown. The test uses\n    the only pair of same-track sessions with position on one day.\n  - Assumes that a tetrode and cluster id names the same neuron in both epochs; the dandiset does\n    not say so and holds no waveforms to check it.\n- claim: theta-normal\n  outcome: blocked\n  blocked_by: data_missing\n  notes: No file holds EEG or any continuous voltage; the files hold units, epochs, position and\n    rate maps. The NASA record OSD-968 lists spike files, rate-map files, legacy metadata and NWB\n    copies, and no EEG; its 272 MB processed archive was not opened.\n- claim: ripples-normal\n  outcome: blocked\n  blocked_by: data_missing\n  notes: No EEG in the dandiset, nor listed in OSD-968 (see theta-normal).\nfindings:\n- kind: metadata_error\n  statement: The Rat1 and Rat2 files of each flight day hold the same position trace (98.6 to 98.8%\n    of samples at common timestamps within 2 pixels), presented as each rat's position. Rat1's\n    units are spatially selective with it, Rat2's are not in any window, and Rat1's units are also\n    selective in Rat2's flight day 4 ES epoch. Whose position the trace is during Rat2's task epochs\n    is not stated and could not be established.\n- kind: data_missing\n  statement: Position is given only at spike times (taken from the spike files), so occupancy\n    cannot be computed from the files' position, and the preflight files have no position at all.\n- kind: identifier_missing\n  statement: The rate-map `source_file` names are Windows 8.3 short names (ESCELL~1 to ~4, then\n    hashed names such as ES2BC0~1), so `cell_number`, read from the ~N suffix, is not a cell number.\n    It equals the cluster id of the best-matching unit in 84 of 211 unit-epochs, and the rate maps\n    cannot be linked to units as the table's description says. The long names are in the NASA\n    archive (OSD-968), whose description names files like BL2.cell5.\n- kind: metadata_insufficient\n  statement: Rate maps use -999 for unvisited bins, which the column description (rate in Hz) does\n    not state. The tracker's lost position (0, 255), 5 to 12% of position samples, is counted in the\n    original occupancy maps (bin [63, 0], up to 19% of an occupancy map in flight).\n- kind: other\n  statement: Eight rate maps are identical copies of another map in the same file, some stored under\n    a different tetrode (for example Rat1 FD4 TT1 and TT11 ESCELL~1, and four maps of Rat2 FD4 under\n    TT13, TT19 and TT22).\n- kind: metadata_insufficient\n  statement: Units merge per-epoch spike files that share a tetrode and cluster id; nothing states\n    that a cluster id names the same neuron in different epochs. The unit table lacks the\n    `session_type` and `source_file` columns the conversion's README lists, so a unit's spikes\n    cannot be traced to their spike file.\n- kind: data_missing\n  statement: The dandiset's description reports normal theta and sharp waves and ripples in the\n    hippocampal EEG, but no EEG is in the dandiset.\n- kind: other\n  statement: Spike times are given to 10 ms in five files and to 1 ms or finer in three; 2 to 15% of\n    within-unit intervals are zero. In the Rat1 flight day 4 file two baseline epochs overlap\n    (2525 to 3390 s and 2720 to 3390 s).\n- kind: metadata_insufficient\n  statement: The age is \"/\" for every subject, and the position's pixel scale and camera view are\n    not described.\n"
+ "file_path": "attempts/001754-knierim-2000-02.yaml",
+ "content": "# Repeat attempt on the draft of dandiset 001754, last modified 2026-10-14T21:55:09Z, which holds a\n# new conversion (catalystneuro/mcnaughton2000-to-nwb at 734688253c17a32e26d84c57f41fbe48ffbcd009)\n# made after 001754-knierim-2000-01, on version 0.260728.1352, reported its findings. The draft was\n# asked for. The claims file is unchanged.\n#\n# Status of the findings of 001754-knierim-2000-01 on the draft (outputs in the notebook's data check):\n# - Shared position trace presented as each rat's position (metadata_error): partly fixed; recorded below.\n# - Position only at spike times, none preflight (data_missing): still present; recorded below.\n# - Preflight said to be on a flat rectangular track (metadata_error): still present; recorded below.\n# - cell_number not a cell number, rate maps not linked to units (identifier_missing): fixed. Every\n#   map links to a unit with its tetrode and cluster, and the linked map is the best match for 201\n#   of 211 unit-epochs.\n# - Rate maps smoothed with an unstated kernel (metadata_insufficient): partly fixed; recorded below.\n# - -999 bins and the lost position counted in bin [63, 0] undocumented (metadata_insufficient):\n#   fixed. Unvisited bins and lost positions are NaN, and the occupancy description states the\n#   [63, 0] count.\n# - Identical copies of rate maps (other): fixed. No file holds two identical maps; every copy in\n#   the six groups (14 maps) is left out, so those six maps are no longer in the dandiset.\n# - Units merge spike files without saying a cluster names one neuron, and lack the spike-file\n#   columns (metadata_insufficient): fixed. The units' description says each tetrode was cut once,\n#   and source_files and obs_intervals give each unit's files and windows.\n# - No EEG though the description reports it (data_missing): partly fixed; recorded below.\n# - Spike times at 10 ms with unexplained zero intervals, overlapping baseline epochs (other):\n#   fixed. The resolution is documented and the zero intervals follow it (0 to 3 below 1000 s, 5 to\n#   15% at 10 ms, 35 to 53% at 0.1 s), and no epochs overlap.\n# - Age \"/\", pixel scale and camera view not described (metadata_insufficient): partly fixed;\n#   recorded below.\nschema_version: 1\nid: 001754-knierim-2000-02\ndandiset: \"001754\"\ndandiset_version: draft\npaper: doi:10.1038/72910\ndate: 2026-10-15\nentry: 001754-knierim-2000\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code (GitHub Actions)\n    model: claude-opus-5-5\n    protocol: pilot-6\noutcomes:\n- claim: flight-spatial-code\n  outcome: not_reproduced\n  notebook: reproduce_knierim_2000.ipynb\n  output: claim:flight-spatial-code\n  notes: On flight day 9, 10 of 25 Rat1 units (0.40) have spatial information above the 95th\n    percentile of 500 circular-shift shuffles on the Escher staircase (binomial p = 1.6e-7 against\n    0.05), and 2 of 28 Rat2 units (0.071, p = 0.41). By the criterion Rat1 is above chance but below\n    0.5 and Rat2 is not above chance, so neither the reproduced nor the partially reproduced rule is\n    met. Repeats with 2000 shuffles and five other seeds give 10 or 11 of 25 for Rat1 and 2 of 28 for\n    Rat2, and the run of 200 shuffles in the data check gives 10 and 2; 5 Rat1 units have p between\n    0.01 and 0.1. The outcome is the same as in 001754-knierim-2000-01, where Rat1 had 12 of 25 (11\n    to 13 over seven runs). Every real spike has a sample at its own time in both versions; the\n    draft's trace adds samples at the other rat's spike times in each window, so shifted spikes find\n    a sample more often and the shuffles change. Shifted spikes are now dropped about as often in\n    Rat2's FD9 ES epoch (median 0.058) as in Rat1's (0.060), against 0.307 and 0.074 before, and a\n    count-matched variant gives 12 of 25 (0.48) for Rat1 and 2 of 28 for Rat2. Rat2's units are not\n    selective with the trace in any window (1 of 16 and 2 of 28 in their own ES epochs, 0 of 15 and\n    0 of 41 in Rat1's), and Rat1's units are selective in Rat2's FD4 ES epoch (10 of 15), so the\n    trace in Rat2's epochs may not be Rat2's position; the files say it is taken to be, and that the\n    source does not name the animal tracked. On flight day 4, 11 of 20 Rat1 units, 1 of 16 Rat2\n    units, and 11 of 16 and 1 of 19 Rat3 units in its ES1 and ES2 epochs are significant. In MC\n    epochs 0 to 2 units per session are significant. The \"three orthogonal surfaces\" part of the\n    abstract is tested apart, and blocked.\n  deviations:\n  - The paper's Methods were not available; the selection (50 spikes at a known position), the\n    32 x 32 binning, the shuffle and the thresholds are common choices fixed in the claims file.\n  - Occupancy is the original analysis's occupancy map for the epoch, and shuffled spikes take the\n    nearest position sample within 0.25 s, as the dandiset gives position only at spike times. A\n    spike whose nearest sample is the lost position is dropped.\n  - Robust is read as at least half of the units significant in each flight day 9 session.\n  - Rat2's flight day 9 session is judged although whose position the trace holds in it could not\n    be established.\n- claim: three-orthogonal-surfaces\n  outcome: blocked\n  blocked_by: metadata_insufficient\n  notes: The dandiset holds one two-dimensional pixel position per time from one camera. The draft's\n    position reference frame says the camera view and the pixel size on the apparatus are not\n    recorded in the source files, nothing in the files or the dandiset metadata describes the track\n    layout in the image, and the conversion code at the new commit describes the ES track only as a\n    three-dimensional track with 90 degree yaw and pitch turns (its lines are printed in the\n    notebook), so pixels cannot be assigned to the three surfaces. The NASA record of the study\n    (OSD-968) says position was recorded with two synchronised cameras (printed in the notebook); a\n    second view is not in the dandiset. Same outcome as in 001754-knierim-2000-01.\n- claim: si-comparable-to-preflight\n  outcome: reproduced\n  notebook: reproduce_knierim_2000.ipynb\n  output: claim:si-comparable-to-preflight\n  notes: Flight day 9 ES rate maps (64, Rats 1 and 2) have a median spatial information of 1.385\n    bits/spike against 1.448 for preflight ES maps (53); two-sided Mann-Whitney p = 0.45, difference\n    -0.064 bits/spike, ratio 0.96. The main test's maps and numbers are the same as in\n    001754-knierim-2000-01, and so is the outcome. Per rat (p = 0.25 and 0.88), maps with archived\n    names containing CEL (0.43), maps with a peak of 1 Hz or more (0.89), MC maps (0.92), all flight\n    maps (0.12), bins with 5 or more occupancy counts (0.44) and information adjusted for rate x\n    occupancy (0.37) all give p of 0.12 or more. Rate x occupancy is proportional to the spike\n    count in the flight maps (about 22 per spike) and is assumed to be so in the preflight maps,\n    where it cannot be checked. Information falls with the spike count (Spearman rho -0.226 over all\n    ES maps). Rat1's compared sessions have similar counts and Rat2's do not (median unit spikes 359\n    and 352 preflight, 437 and 205 on FD9; median rate x occupancy 7862 and 7628 against 9105 and\n    5226), so Rat2's FD9 maps rest on fewer spikes, which by sampling bias raises their spatial\n    information. The rate maps are smoothed with an unrecorded kernel, so no shuffle-corrected value\n    could be computed. The dandiset description says preflight was recorded on a flat rectangular\n    track, so this may compare different apparatus, and Rat2's preflight file shares no tetrode with\n    its flight files. Rat2's FD9 ES maps have a median of 1.343 bits/spike although only 2 of its 28\n    units are significant against shuffles, so the rate maps' spatial information does not show\n    that Rat2's cells were selective.\n  deviations:\n  - The source is the dandiset's description of the paper's findings, not the paper's text.\n  - The paper's test is unknown; a two-sided Mann-Whitney U test at 0.05 was fixed in advance.\n  - Spatial information comes from the original rate maps, without correction for the number of\n    spikes, as the preflight files hold no position.\n  - The unvisited bins (NaN) and the lost-position bin [63, 0] are left out of each map.\n  - The preflight epochs labelled ES may have been recorded on a flat rectangular track, as the\n    dandiset description says.\n  - The assignment of the preflight files to rats is taken from the files, though the conversion\n    notes list it as an open question.\n- claim: fd4-abnormal-selectivity\n  outcome: reproduced\n  notebook: reproduce_knierim_2000.ipynb\n  output: claim:fd4-abnormal-selectivity\n  notes: Flight day 4 ES rate maps (104, Rats 1 to 3) have a median of 1.177 bits/spike against\n    1.441 preflight (98); one-sided Mann-Whitney p = 0.024, below the criterion's 0.05 (ratio 0.82).\n    This differs from 001754-knierim-2000-01 (not_reproduced, 107 maps, p = 0.055) because the draft\n    leaves out every copy in the groups of identical maps, and three Rat2 FD4 ES maps that the first\n    attempt counted once each (7.583 bits/spike each, mean rate below 0.001 Hz) are no longer in the\n    dandiset. On the earlier version's maps the test gives p = 0.055 with all 107 distinct maps and\n    p = 0.024 with the 104 that are in the draft, so the outcome rests on whether those three maps\n    are counted. The FD4 median is lower in each rat (ratios 0.65 to 0.88), significantly only for\n    Rat1 (p = 0.032). The test passes with maps of peak rate 1 Hz or more (p = 0.0095), over bins\n    with 5 or more occupancy counts (p = 0.023) and with information adjusted for rate x occupancy\n    (p = 0.0011), and not with maps whose archived names contain CEL (p = 0.073) or with MC maps\n    (p = 0.060). Rat1's and Rat2's FD4 maps have fewer spikes than preflight, so sampling bias works\n    against the claim. FD4 against FD9 for Rats 1 and 2 gives 1.081 against 1.385 (p = 0.095);\n    spike-based information minus the shuffle mean is 0.025 against 0.211 for Rats 1 and 2 (p =\n    0.13) and 0.232 against 0.211 with Rat3 (p = 0.31). The spike-based fraction of significant units\n    is 24 of 71 on FD4 and 12 of 53 on FD9 (p = 0.94), so the spike-based measures do not show lower\n    selectivity on flight day 4.\n  deviations:\n  - The source is the dandiset's description of the paper's findings, not the paper's text.\n  - Abnormal is read as lower spatial information; the description does not say what was abnormal.\n  - The paper's test is unknown; a one-sided Mann-Whitney U test at 0.05 was fixed in advance.\n  - The preflight epochs labelled ES may have been recorded on a flat rectangular track, as the\n    dandiset description says.\n  - The draft leaves out all copies of identical maps; three Rat2 FD4 ES maps counted in the first\n    attempt are not in the test.\n- claim: fig3-stability-across-sessions\n  outcome: reproduced\n  notebook: reproduce_knierim_2000.ipynb\n  output: claim:fig3-stability-across-sessions\n  notes: In Rat3's two flight day 4 ES epochs, the 15 units with 50 or more spikes in each have a\n    median rate-map correlation of 0.537 (range -0.107 to 0.849), above the 95th percentile of 1000\n    re-paired medians (0.102, p = 0.001) and above 0.5; 8 of 15 exceed 0.5. These numbers and the\n    outcome are the same as in 001754-knierim-2000-01. With smoothing of 0.5 to 2 bins and 50 or 100\n    spikes the median is 0.315 to 0.707, always above its null (p = 0.001); at 0.5 bins it is below\n    0.5. The dandiset's ES1 and ES2 rate maps, now linked to the same unit, give a median of 0.340\n    over 18 units (0.157 in the first attempt, when maps were paired by short names). A unit is the\n    same sorted cluster in both epochs, as the units' description now states; mean rates are related\n    across the epochs (Spearman rho 0.598, re-paired 95th percentile 0.339). In the first epoch 11 of\n    16 units are significant against shuffles and in the second 1 of 19, with similar occupancy and\n    shuffle drops and more spikes per tested unit in the second (median 455 against 301); this is not\n    explained.\n  deviations:\n  - Only the title of Figure 3 was available; which sessions it compares is unknown. The test uses\n    the only pair of same-track sessions with position on one day.\n  - Takes the same sorted cluster in both epochs to be the same neuron; the files hold no waveforms\n    to check it.\n- claim: theta-normal\n  outcome: blocked\n  blocked_by: data_missing\n  notes: No file holds EEG or any continuous voltage. The unfiltered listing of every file shows an\n    empty acquisition group and no ElectricalSeries or LFP, and the draft's experiment description\n    says no EEG or other continuous voltage was archived. The NASA record OSD-968 describes its\n    files as spike files, rate-map files, legacy metadata and NWB copies, and its metadata does not\n    mention EEG, theta, ripples or LFP (printed in the notebook). Its archives were not opened, so an\n    EEG file inside one cannot be ruled out. Same outcome as in 001754-knierim-2000-01.\n- claim: ripples-normal\n  outcome: blocked\n  blocked_by: data_missing\n  notes: No EEG in the dandiset, nor listed in OSD-968 (see theta-normal). Same outcome as in\n    001754-knierim-2000-01.\nfindings:\n- kind: metadata_error\n  statement: Partly fixed since 001754-knierim-2000-01. Each flight file now holds the shared\n    tracker's trace only within its own rat's ES and MC epochs and says the trace there is taken to\n    be that rat's position, and that the source does not name the animal tracked. Rat2's units are\n    not spatially selective with the trace in any window (1 of 16 and 2 of 28 in Rat2's ES epochs,\n    0 of 15 and 0 of 41 in Rat1's), and Rat1's units are selective in Rat2's flight day 4 ES epoch\n    (10 of 15), when Rat1 is labelled as on baseline. Whose position the trace is during Rat2's task\n    epochs is still not established.\n- kind: data_missing\n  statement: Still present. Position is given only at spike times (taken from the spike files), so\n    occupancy cannot be computed from the files' position, and the preflight files have no position\n    at all. The draft's position description now states this.\n- kind: metadata_error\n  statement: Still present. The dandiset description says the preflight recordings were made on a\n    flat rectangular track, but the preflight files label their epochs ES (Escher staircase) and MC\n    (Magic Carpet) and hold ES and MC rate maps, as the flight files do. Which apparatus the\n    preflight epochs were recorded on is not stated in the files.\n- kind: metadata_insufficient\n  statement: Partly fixed. The rate-map description now says the maps are smoothed, but the kernel\n    is not recorded (in the median well-matched map, 91% of the bins with a positive rate hold no\n    spike of the unit).\n- kind: data_missing\n  statement: Partly fixed. The files' experiment description now says no EEG was archived, but the\n    dandiset's description still reports normal theta and sharp waves and ripples in the hippocampal\n    EEG, and no EEG is in the dandiset.\n- kind: metadata_insufficient\n  statement: Partly fixed. The age is still \"/\" for every subject, now with a subject description\n    saying it is not recorded, and the position's reference frame now says the camera view and\n    pixel size are not recorded; the map geometry is given in pixels. The age, pixel scale and\n    camera view themselves are missing.\n- kind: metadata_insufficient\n  statement: New. Rat2's preflight units are on tetrodes TT0 to TT10 and its flight units on TT12 to\n    TT22, with no tetrode in common, while Rat1's and Rat3's preflight and flight tetrodes overlap.\n    The conversion notes list whether the preflight folders are assigned to the right rats as an\n    open question, and nothing in the files settles it, so per-rat comparisons with preflight rest\n    on an unconfirmed assignment.\n"
 }
 ```
 
 ```
-File created successfully at: attempts/001754-knierim-2000-01.yaml (file state is current in your context — no need to Read it back)
+File created successfully at: attempts/001754-knierim-2000-02.yaml (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-time python tools/entry.py all entries/001754-knierim-2000 2>&1 | tail -15
+python tools/entry.py check entries/001754-knierim-2000 2>&1 | tail -20
 ```
 
 ```
-Installed kernelspec registry-001754-knierim-2000 in executed/001754-knierim-2000/.venv/share/jupyter/kernels/registry-001754-knierim-2000
 0 error(s)
-pass  reproduce_knierim_2000.ipynb  (71 s)
-
-real	1m13.732s
-user	0m55.379s
-sys	0m2.105s
 ```
 
 **Agent**
 
-Passes check and runs in 71 s. Verifying the executed copy's numbers against the conclusions.
+Check passes. Let me scan the record for ": " inside plain scalars and for banned characters, then run the entry from a clean environment.
 
 **Agent calls Bash**
 
 ```bash
-ls executed/001754-knierim-2000/; python - <<'E'
-import json
-nb=json.load(open('executed/001754-knierim-2000/reproduce_knierim_2000.ipynb'))
-txt=''
-for c in nb['cells']:
-    for o in c.get('outputs',[]):
-        if 'text' in o: txt+=''.join(o['text'])
-        if o.get('output_type')=='error': print('ERR')
-for k in ['13 of 25','3 of 28','0.107','3.591139e-11','1.626649e-01','1.385','1.448','0.4548','1.214','1.441','0.0551','0.03163','0.009531','0.205568','p = 0.548','0.538','0.091','0.312','0.704','0.157','0.988','0.986','84 of 211','median_null95','12      0.48','7      0.47']:
-    print(k, k in txt)
-E
+grep -n "—\|rather" attempts/001754-knierim-2000-02.yaml entries/001754-knierim-2000/README.md entries/001754-knierim-2000/neurolab.py; grep -nE "^\s+[^#].*[a-z)]: " attempts/001754-knierim-2000-02.yaml | grep -vE "^\s*[0-9]+:\s*-? ?[a-z_]+: " | head; python -c "import yaml;yaml.safe_load(open('attempts/001754-knierim-2000-02.yaml'));print('yaml ok')"; python tools/entry.py all entries/001754-knierim-2000 2>&1 | tail -15
+```
+
+```
+yaml ok
+Installed kernelspec registry-001754-knierim-2000 in executed/001754-knierim-2000/.venv/share/jupyter/kernels/registry-001754-knierim-2000
+0 error(s)
+pass  reproduce_knierim_2000.ipynb  (318 s)
+```
+
+**Agent**
+
+Passed in 318 s. I'll confirm the executed copy gives the same numbers as the run I wrote the conclusions from.
+
+**Agent calls Bash**
+
+```bash
+ls executed/001754-knierim-2000/; $TMPDIR/env/bin/python $TMPDIR/show.py executed/001754-knierim-2000/reproduce_knierim_2000.ipynb > $TMPDIR/a.txt; $TMPDIR/env/bin/python $TMPDIR/show.py $TMPDIR/run/reproduce_knierim_2000.ipynb > $TMPDIR/b.txt; diff $TMPDIR/a.txt $TMPDIR/b.txt | head -20
 ```
 
 ```
 reproduce_knierim_2000.ipynb
 result.json
-13 of 25 True
-3 of 28 True
-0.107 True
-3.591139e-11 True
-1.626649e-01 True
-1.385 True
-1.448 True
-0.4548 True
-1.214 True
-1.441 True
-0.0551 True
-0.03163 True
-0.009531 True
-0.205568 True
-p = 0.548 True
-0.538 True
-0.091 True
-0.312 True
-[... 8 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-grep -nE "^\s{3,}[^-#][^:]*: " claims/001754/10.1038-72910.yaml attempts/001754-knierim-2000-01.yaml | grep -vE "^\S+:\s*[0-9]+:\s+-?\s*[a-z_]+: " | head; grep -c "—\|rather" claims/001754/10.1038-72910.yaml attempts/001754-knierim-2000-01.yaml entries/001754-knierim-2000/README.md entries/001754-knierim-2000/neurolab.py /tmp/claude/build_nb.py
-```
-
-```
-claims/001754/10.1038-72910.yaml:0
-attempts/001754-knierim-2000-01.yaml:0
-entries/001754-knierim-2000/README.md:0
-entries/001754-knierim-2000/neurolab.py:0
-/tmp/claude/build_nb.py:0
+821a822
+> 
+843d843
+<
 ```
 
 **Agent**
 
-Removing the bold labels in the notebook header and summary (only the Result openers may be bold), then re-running.
+Outputs are identical. Now the handover.
 
 **Agent calls Bash**
 
 ```bash
-cd /tmp/claude && python - <<'E'
-import re
-p='build_nb.py'; s=open(p).read()
-for lab in ["Paper.","Dandiset.","What the dandiset holds.","Conversion code read.","How the analysis differs from the paper's.","What was found about the dandiset."]:
-    s=s.replace(f"**{lab}**", lab)
-print(re.findall(r"\*\*[^*]+\*\*", s))
-open(p,'w').write(s)
-E
-cd  && python /tmp/claude/build_nb.py entries/001754-knierim-2000/reproduce_knierim_2000.ipynb && python tools/entry.py all entries/001754-knierim-2000 2>&1 | tail -2 && python tools/entry.py handover entries/001754-knierim-2000 2>&1 | tail -5; ls executed/001754-knierim-2000/handover
+python tools/entry.py handover entries/001754-knierim-2000 2>&1 | tail -5; ls executed/001754-knierim-2000/handover; git status --short
 ```
 
 ```
-['**Result: partially reproduced.**', '**Result: reproduced.**', '**Result: not reproduced.**', '**Result: reproduced.**']
-0 error(s)
-pass  reproduce_knierim_2000.ipynb  (70 s)
 wrote executed/001754-knierim-2000/handover
 10.1038-72910.yaml
 neurolab.py
 reproduce_knierim_2000.ipynb
-```
-
-**Agent calls Bash**
-
-```bash
-python -c "
-import json;nb=json.load(open('executed/001754-knierim-2000/handover/reproduce_knierim_2000.ipynb'))
-print(len(nb['cells']), any('Result:' in ''.join(c['source']) for c in nb['cells']), any('## Summary' in ''.join(c['source']) for c in nb['cells']))"; git status --short
-```
-
-```
-35 False False
+ M entries/001754-knierim-2000/README.md
+ M entries/001754-knierim-2000/entry.yaml
+ M entries/001754-knierim-2000/neurolab.py
+ M entries/001754-knierim-2000/reproduce_knierim_2000.ipynb
 ?? .bash_profile
 ?? .bashrc
 ?? .gitconfig
@@ -1587,71 +2678,51 @@ print(len(nb['cells']), any('Result:' in ''.join(c['source']) for c in nb['cells
 ?? .vscode
 ?? .zprofile
 ?? .zshrc
-?? attempts/001754-knierim-2000-01.yaml
-?? claims/001754/
-?? entries/001754-knierim-2000/
+?? attempts/001754-knierim-2000-02.yaml
 ?? scripts
-```
-
-**Agent calls Bash**
-
-```bash
-ls -la .bashrc .profile .gitconfig .mcp.json scripts .idea .vscode 2>&1 | head -20; git log --oneline -1 -- scripts
-```
-
-```
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 14 16:04 .bashrc
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 14 16:04 .gitconfig
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 14 16:04 .idea
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 14 16:04 .mcp.json
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 14 16:04 .profile
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 14 16:04 .vscode
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 14 16:04 scripts
 ```
 
 **Agent**
 
-I finished steps 1 to 6 for dandiset 001754. The entry passes `check` and runs from a clean environment in 70 s. Of seven claims, two are reproduced, one partially reproduced, one not reproduced and three blocked. The paper (doi:10.1038/72910) is not open access, so I used only its abstract and the titles of its three figures, saved in `paper/abstract.txt`. I pinned 0.260728.1352: the paper cites no DANDI version, and all three published versions hold identical files, differing only in metadata.
+The repeat attempt on the 001754 draft is done. `entry.py all` passes (0 errors, the notebook runs in 318 s), the handover is in `executed/001754-knierim-2000/handover/`, and nothing is committed. The draft was last modified 2026-10-14T21:55:09Z. All eight files were replaced by a new conversion (`mcnaughton2000-to-nwb` at commit `7346882`); the dandiset's description was not changed. I kept the claims file unchanged, since no claim was wrong about the paper.
 
-## 1. Outcomes
+**(1) Outcome per claim** (earlier outcome in brackets)
+- `flight-spatial-code`: not reproduced [not reproduced]. On flight day 9, 10 of 25 Rat1 units are significant (0.40; 10 or 11 in the repeats) and 2 of 28 Rat2 units. The real spikes are the same as before. The draft's position trace also has samples at the other rat's spike times, so the shuffles change and Rat1 drops from 12 to 10. The earlier gap in dropped shuffle spikes between the rats is gone (0.058 against 0.060).
+- `three-orthogonal-surfaces`: blocked, metadata insufficient [same]. The draft now states that the camera view and pixel size are not recorded.
+- `si-comparable-to-preflight`: reproduced [reproduced]. The main test's maps and numbers are unchanged (1.385 against 1.448 bits/spike, p = 0.45).
+- `fd4-abnormal-selectivity`: reproduced [not reproduced]. One-sided p is 0.024, against 0.055 before. This is the one change of outcome, and it rests on three rate maps:
+  - The draft leaves out every copy in each group of identical maps, which removes three Rat2 flight-day-4 maps (7.583 bits/spike each, near-zero rate) that the first attempt counted once each.
+  - A new notebook cell runs the same test on the earlier version's maps: p = 0.055 with them and 0.024 without them.
+- `fig3-stability-across-sessions`: reproduced [reproduced]. Median correlation 0.537, as before.
+- `theta-normal`, `ripples-normal`: blocked, data missing [same].
 
-| Claim | Source | Outcome |
-|---|---|---|
-| `flight-spatial-code` | Abstract | Partially reproduced. On flight day 9, 13 of 25 Rat1 units are significant against shuffles, but only 3 of 28 Rat2 units, which is chance level. |
-| `three-orthogonal-surfaces` | Abstract | Blocked: metadata insufficient. Nothing maps pixel positions to the track's three surfaces. |
-| `si-comparable-to-preflight` | Dandiset description | Reproduced. Spatial information 1.385 in flight against 1.448 bits/spike preflight, p = 0.45. |
-| `fd4-abnormal-selectivity` | Dandiset description | Not reproduced. Flight day 4 is lower (1.214 against 1.441 bits/spike) but p = 0.055, just above the 0.05 threshold. |
-| `fig3-stability-across-sessions` | Figure 3 title only | Reproduced. Median correlation 0.538 between Rat3's two Escher staircase sessions, against a null 95th percentile of 0.091. It drops below the 0.5 threshold with lighter smoothing. |
-| `theta-normal` | Dandiset description | Blocked: data missing (no EEG). |
-| `ripples-normal` | Dandiset description | Blocked: data missing (no EEG). |
+**(2) Earlier findings**
+- **Fixed:**
+  - Rate maps are now linked to their units; the linked map is the best match for 201 of 211 unit-epochs.
+  - The -999 bins and lost positions are now NaN and documented.
+  - Duplicate maps are gone, but every copy was removed, so six maps are no longer in the dandiset.
+  - Units now list their spike files and windows, and the description says a unit is one sorted cluster across epochs.
+  - The spike-time resolution is documented, and the zero intervals follow it.
+  - The overlapping baseline epochs are gone.
+- **Partly fixed:**
+  - Shared position trace: each file now holds the trace only in its own rat's task epochs, with a stated assumption that it is that rat's position. But Rat2's units are still not selective in any window, and Rat1's units are selective in Rat2's flight-day-4 window (10 of 15).
+  - Smoothing kernel: the description now says the maps are smoothed, but the kernel is not recorded.
+  - EEG: the files now say no EEG was archived, but the dandiset description still reports theta and ripples.
+  - Age, pixel scale and camera view: the files now say these are not recorded, but the values are still missing.
+- **Still present:**
+  - Position is given only at spike times.
+  - The dandiset description still says preflight was on a flat rectangular track, while the files label those epochs Escher staircase and Magic Carpet.
 
-## 2. What I found about the dandiset
+**(3) New finding**
+- Rat2's preflight file shares no tetrode with its flight files (TT0 to TT10 against TT12 to TT22). The conversion notes list the assignment of preflight recordings to rats as an open question.
 
-- **Shared position trace:** the Rat1 and Rat2 files from the same flight day contain the same position trace (99% of matching samples agree within 2 px).
-  - Rat1's units are spatially selective with it. Rat2's are not, in any window.
-  - In Rat2's flight day 4 staircase session the trace behaves like Rat1's position, so whose position it is during Rat2's sessions can't be established. This probably explains Rat2's poor result in the first claim.
-- **Position only at spike times:** position is stored only when a unit fires, so occupancy can't be rebuilt from it. The preflight files have no position at all.
-- **Rate maps can't be linked to units:** the rate-map file names are old Windows short names (`ESCELL~1`, `ES2BC0~1`). The `cell_number` column is read from the `~N` suffix and is not a cell number. It matches the best-fitting unit in only 84 of 211 cases.
-- **Undocumented values in the maps:** `-999` marks unvisited bins, which the column description doesn't say. The tracker's "position lost" value (0, 255) was counted in the original occupancy, up to 19% of a map.
-- **Duplicate maps:** 8 rate maps are identical copies of another map in the same file, some filed under a different tetrode.
-- **Units across epochs:** each unit merges per-epoch spike files with the same tetrode and cluster id. Nothing says these are the same neuron. The unit table also lacks the `session_type` and `source_file` columns that the conversion README lists.
-- **Spike times** are rounded to 10 ms in five files, and 2 to 15% of the intervals within a unit are zero.
-- **No EEG**, although the dandiset description reports theta and ripples.
-
-## 3. Where the protocol was unclear or didn't fit
-
-1. With only a three-sentence abstract, the protocol doesn't say whether other summaries of the paper can be claim sources. I used the dandiset description and one figure title, labelled as such in each claim.
-2. For "no difference" claims the protocol says to use the paper's own test, which can't be known without the text. I fixed a Mann-Whitney test in advance and recorded it as a deviation.
-3. The check that spikes and position share a clock assumes trial tables or continuous annotations; here there are neither. I used occupancy-map matching plus a test of each rat's units in the other rat's sessions. It doesn't say what to do with a session that fails the check; I tested Rat2 anyway and noted it.
-4. The protocol only covers linking outside data; a broken identifier inside the dandiset (rate maps to units) has no rule. I reported it in the data check and as a finding, not as a claim.
-5. The duplicate check is about recordings deposited twice; it doesn't cover one trace shared by two subjects, or copied maps. I reported each pair.
-6. "Read the code the paper links" didn't apply, since the paper links none. I read the dandiset's conversion code (catalystneuro/mcnaughton2000-to-nwb at b538d9e).
-7. I correlated unit spike maps with the rate maps (same binning) before writing the criteria. The claims file's opening comment says so.
-
-## 4. Runtime and failures
-
-The notebook runs in 70 s; loading the eight files takes about 13 s. My first execution failed on a comparison of epoch lists with different lengths, and I fixed it. I did not open NASA's 272 MB processed archive, so "no EEG there" rests on its file listing. Files are written but not committed, and the verifier package is built in `executed/001754-knierim-2000/handover/`. The untracked dotfiles in the repo root were created by the sandbox, not by me, and I left them alone.
+**(4) Where the protocol did not fit a repeat attempt**
+- The attempt schema has no field for the status of an earlier finding. I listed the fixed ones in the record's opening comment, and started each remaining finding's statement with "Still present", "Partly fixed" or "New". Fixed findings therefore appear only in that comment.
+- The protocol says to pin a version, while the repeat rule allows the draft. The notebook prints the draft's modification time but does not stop if the draft changes later.
+- A data-owner fix (dropping all copies of duplicate maps) changed an outcome without any change to the analysis. The protocol has no rule for that case.
+- Untracked dotfiles (`.bashrc`, `.mcp.json`, `.idea` and others) were in the working tree before I started, and the workflow may commit them with my changes.
+- The repository README's table of outcome counts for 001754 still shows the first attempt's numbers. I did not edit it.
 
 ## End of run
 
-51 turns, 19 minutes, result: success.
+53 turns, 31 minutes, result: success.

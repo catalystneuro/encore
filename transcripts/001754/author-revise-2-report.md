@@ -1,24 +1,22 @@
-No outcome changed. The verifier agreed with all seven recorded outcomes except flight-spatial-code, where it agrees with the change to not_reproduced that I proposed last round. That claim stays partially_reproduced, with not_reproduced still proposed for round 3. I re-ran the entry with `tools/entry.py all`; the check reports 0 errors, the notebook passes in about 5 minutes, and every number matches the previous run.
+No outcome changed and I proposed no changes. The verifier agreed with all seven outcomes, and the new analyses do not move any of them under the claims' criteria. The entry re-ran cleanly with `python tools/entry.py all` (0 check errors, 6.6 minutes), and every number that was there before came out the same.
 
-**Corrections to the text**
-- **flight-spatial-code:** the conclusion, summary, notes and proposed reason now include the 13 of 25 (0.52) from the 200-shuffle run in the data check. They now say that across the seven runs Rat1's count is 11 to 13 of 25, on both sides of 0.5, so the call is not robust.
-- **Claim sources:** four claims come from the dandiset description, not three. Fixed in cell 0 and the Summary.
-- **si-comparable-to-preflight:** Rat1's compared sessions have similar spike counts, but Rat2's do not (205 on FD9 against 352 preflight). Fewer spikes push Rat2's FD9 spatial information up. Rate x occupancy is now described as proportional to the spike count only for flight maps, and assumed for preflight maps. Fixed in the conclusion, the notes and the round-1 response.
-- **fig3-stability-across-sessions:** the second epoch has more spikes per unit (455 against 301), not similar counts. Fixed in the notes and the round-1 response.
-- **theta-normal and ripples-normal:** the notes now say OSD-968's metadata does not mention EEG, theta, ripples or LFP, and that its archives were not opened, so an EEG file inside one cannot be ruled out.
+**Outputs the verifier asked for (two new cells under flight-spatial-code)**
+- **Test on real spike trains cut off from position.** I reversed each unit's real spike train in time within its epoch, which keeps its bursts and rate changes but breaks its link to position. Only 2 of 122 flight ES units come out significant. I also ran Rat3's ES1 spikes against the ES2 position trace and the reverse: 0 of 16 and 0 of 19. So on real trains the test gives fewer false positives than the 0.05 it assumes.
+- **What sets the high threshold.** A unit's shuffle 95th percentile is nearly the same for its reversed train (rho 0.995), and 1.7 to 2.3 times that of a Poisson train with the same spike count. It is driven by how few 10 s periods hold the unit's spikes (rho −0.874) and by how few spikes it has (rho −0.601); together these explain 80% of its variance on a log scale.
+- **Rat2's FD9 units** are the most clumped in time and have the highest median threshold (3.572). The test has less power for such units, but I did not measure its power. The conclusion and record notes now say that a low fraction of significant units is weak evidence against a spatial code.
+- **Rat3's second ES epoch** is explained the same way: TT4/1 and TT5/1 fire fewer spikes in fewer periods there.
+- **Earlier-version figures** are now computed in the notebook instead of quoted from the first attempt. On the earlier version's files Rat1 gets 11 or 12 of 25 and Rat2 2 or 3 of 28 over five seeds, with shuffle drops of 0.074 to 0.075 and 0.306 to 0.307. The record now cites these.
 
-**Outputs added**
-- **New cell after three-orthogonal-surfaces:**
-  - It prints the OSD-968 passage on the two synchronised cameras, its description of the files, and its full file listing.
-  - It checks the metadata for any mention of EEG, theta, ripples or LFP and finds none.
-  - It prints every line of the conversion code at the pinned commit that mentions the track, camera, surfaces, coordinates or waveforms.
-- **Waveform pointer for fig3:** that output shows the original OSD-968 spike files hold per-spike waveform amplitudes. These could test whether a cluster id is the same neuron in both epochs. The fig3 conclusion and notes now point to them.
-- **Run time:** a cell before the Summary prints the run time (5.1 minutes), and the README cites it.
-- **Round 2 record:** added under `verifications` in the attempt record, with the verifier's reasons and my responses.
+**Text corrections**
+- **Summary and README:** the false-positive figures now name their null. Poisson trains moved to position sample times give 0.096 pooled and 0.214 at most in one session; plain Poisson trains give 0.074 and 0.160.
+- **si-comparable:** "about a quarter" is now "a drop of up to 29% (40% for Rat1 alone) is not excluded", and the text says the result shows only that no difference was detected.
+- **fd4:** the text now says that with Rat3's units added, the shuffle-corrected measure is higher on FD4 than on FD9 (0.232 against 0.211, p = 0.31).
+- **fig3:** "units with the most stable fields" is now "units whose fields correlate across the epochs", since TT8/5 has r = 0.436, below the median.
+- **Runtime:** `entry.yaml` and the README now say 7 minutes (was 5).
+- **Record:** round 2 is added under `verifications`, with the verifier's reasons in its own words and my responses.
 
 **Not done**
-- **Rat2's position trace and the preflight apparatus:** neither can be settled from the files, which do not name the animal the tracker followed or the preflight apparatus. Both stay as recorded caveats.
-- **fig3 open points:** the drop from 10 of 16 to 1 of 19 significant units is still unexplained. The identity check with OSD-968 waveforms needs an analysis not yet run, which the protocol leaves to a new attempt.
-- **Zero inter-spike intervals:** still disclosed and unresolved. The verifier marked them as not bearing on a conclusion.
+- I did not add the verifier's round-1 problem 7 (occupancy at 38 to 57 counts/s) to the record. It belongs to no claim, the verifier marked it as not affecting a conclusion, and the notebook already states it.
+- I did not measure the test's power, so the record calls it unmeasured.
 
-There are untracked dotfiles and a `scripts` directory at the repository root that I did not create. I left them alone, and I made no commits.
+Nothing is committed, as instructed.

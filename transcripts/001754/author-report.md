@@ -1,40 +1,38 @@
-I finished steps 1 to 6 for dandiset 001754. The entry passes `check` and runs from a clean environment in 70 s. Of seven claims, two are reproduced, one partially reproduced, one not reproduced and three blocked. The paper (doi:10.1038/72910) is not open access, so I used only its abstract and the titles of its three figures, saved in `paper/abstract.txt`. I pinned 0.260728.1352: the paper cites no DANDI version, and all three published versions hold identical files, differing only in metadata.
+The repeat attempt on the 001754 draft is done. `entry.py all` passes (0 errors, the notebook runs in 318 s), the handover is in `executed/001754-knierim-2000/handover/`, and nothing is committed. The draft was last modified 2026-10-14T21:55:09Z. All eight files were replaced by a new conversion (`mcnaughton2000-to-nwb` at commit `7346882`); the dandiset's description was not changed. I kept the claims file unchanged, since no claim was wrong about the paper.
 
-## 1. Outcomes
+**(1) Outcome per claim** (earlier outcome in brackets)
+- `flight-spatial-code`: not reproduced [not reproduced]. On flight day 9, 10 of 25 Rat1 units are significant (0.40; 10 or 11 in the repeats) and 2 of 28 Rat2 units. The real spikes are the same as before. The draft's position trace also has samples at the other rat's spike times, so the shuffles change and Rat1 drops from 12 to 10. The earlier gap in dropped shuffle spikes between the rats is gone (0.058 against 0.060).
+- `three-orthogonal-surfaces`: blocked, metadata insufficient [same]. The draft now states that the camera view and pixel size are not recorded.
+- `si-comparable-to-preflight`: reproduced [reproduced]. The main test's maps and numbers are unchanged (1.385 against 1.448 bits/spike, p = 0.45).
+- `fd4-abnormal-selectivity`: reproduced [not reproduced]. One-sided p is 0.024, against 0.055 before. This is the one change of outcome, and it rests on three rate maps:
+  - The draft leaves out every copy in each group of identical maps, which removes three Rat2 flight-day-4 maps (7.583 bits/spike each, near-zero rate) that the first attempt counted once each.
+  - A new notebook cell runs the same test on the earlier version's maps: p = 0.055 with them and 0.024 without them.
+- `fig3-stability-across-sessions`: reproduced [reproduced]. Median correlation 0.537, as before.
+- `theta-normal`, `ripples-normal`: blocked, data missing [same].
 
-| Claim | Source | Outcome |
-|---|---|---|
-| `flight-spatial-code` | Abstract | Partially reproduced. On flight day 9, 13 of 25 Rat1 units are significant against shuffles, but only 3 of 28 Rat2 units, which is chance level. |
-| `three-orthogonal-surfaces` | Abstract | Blocked: metadata insufficient. Nothing maps pixel positions to the track's three surfaces. |
-| `si-comparable-to-preflight` | Dandiset description | Reproduced. Spatial information 1.385 in flight against 1.448 bits/spike preflight, p = 0.45. |
-| `fd4-abnormal-selectivity` | Dandiset description | Not reproduced. Flight day 4 is lower (1.214 against 1.441 bits/spike) but p = 0.055, just above the 0.05 threshold. |
-| `fig3-stability-across-sessions` | Figure 3 title only | Reproduced. Median correlation 0.538 between Rat3's two Escher staircase sessions, against a null 95th percentile of 0.091. It drops below the 0.5 threshold with lighter smoothing. |
-| `theta-normal` | Dandiset description | Blocked: data missing (no EEG). |
-| `ripples-normal` | Dandiset description | Blocked: data missing (no EEG). |
+**(2) Earlier findings**
+- **Fixed:**
+  - Rate maps are now linked to their units; the linked map is the best match for 201 of 211 unit-epochs.
+  - The -999 bins and lost positions are now NaN and documented.
+  - Duplicate maps are gone, but every copy was removed, so six maps are no longer in the dandiset.
+  - Units now list their spike files and windows, and the description says a unit is one sorted cluster across epochs.
+  - The spike-time resolution is documented, and the zero intervals follow it.
+  - The overlapping baseline epochs are gone.
+- **Partly fixed:**
+  - Shared position trace: each file now holds the trace only in its own rat's task epochs, with a stated assumption that it is that rat's position. But Rat2's units are still not selective in any window, and Rat1's units are selective in Rat2's flight-day-4 window (10 of 15).
+  - Smoothing kernel: the description now says the maps are smoothed, but the kernel is not recorded.
+  - EEG: the files now say no EEG was archived, but the dandiset description still reports theta and ripples.
+  - Age, pixel scale and camera view: the files now say these are not recorded, but the values are still missing.
+- **Still present:**
+  - Position is given only at spike times.
+  - The dandiset description still says preflight was on a flat rectangular track, while the files label those epochs Escher staircase and Magic Carpet.
 
-## 2. What I found about the dandiset
+**(3) New finding**
+- Rat2's preflight file shares no tetrode with its flight files (TT0 to TT10 against TT12 to TT22). The conversion notes list the assignment of preflight recordings to rats as an open question.
 
-- **Shared position trace:** the Rat1 and Rat2 files from the same flight day contain the same position trace (99% of matching samples agree within 2 px).
-  - Rat1's units are spatially selective with it. Rat2's are not, in any window.
-  - In Rat2's flight day 4 staircase session the trace behaves like Rat1's position, so whose position it is during Rat2's sessions can't be established. This probably explains Rat2's poor result in the first claim.
-- **Position only at spike times:** position is stored only when a unit fires, so occupancy can't be rebuilt from it. The preflight files have no position at all.
-- **Rate maps can't be linked to units:** the rate-map file names are old Windows short names (`ESCELL~1`, `ES2BC0~1`). The `cell_number` column is read from the `~N` suffix and is not a cell number. It matches the best-fitting unit in only 84 of 211 cases.
-- **Undocumented values in the maps:** `-999` marks unvisited bins, which the column description doesn't say. The tracker's "position lost" value (0, 255) was counted in the original occupancy, up to 19% of a map.
-- **Duplicate maps:** 8 rate maps are identical copies of another map in the same file, some filed under a different tetrode.
-- **Units across epochs:** each unit merges per-epoch spike files with the same tetrode and cluster id. Nothing says these are the same neuron. The unit table also lacks the `session_type` and `source_file` columns that the conversion README lists.
-- **Spike times** are rounded to 10 ms in five files, and 2 to 15% of the intervals within a unit are zero.
-- **No EEG**, although the dandiset description reports theta and ripples.
-
-## 3. Where the protocol was unclear or didn't fit
-
-1. With only a three-sentence abstract, the protocol doesn't say whether other summaries of the paper can be claim sources. I used the dandiset description and one figure title, labelled as such in each claim.
-2. For "no difference" claims the protocol says to use the paper's own test, which can't be known without the text. I fixed a Mann-Whitney test in advance and recorded it as a deviation.
-3. The check that spikes and position share a clock assumes trial tables or continuous annotations; here there are neither. I used occupancy-map matching plus a test of each rat's units in the other rat's sessions. It doesn't say what to do with a session that fails the check; I tested Rat2 anyway and noted it.
-4. The protocol only covers linking outside data; a broken identifier inside the dandiset (rate maps to units) has no rule. I reported it in the data check and as a finding, not as a claim.
-5. The duplicate check is about recordings deposited twice; it doesn't cover one trace shared by two subjects, or copied maps. I reported each pair.
-6. "Read the code the paper links" didn't apply, since the paper links none. I read the dandiset's conversion code (catalystneuro/mcnaughton2000-to-nwb at b538d9e).
-7. I correlated unit spike maps with the rate maps (same binning) before writing the criteria. The claims file's opening comment says so.
-
-## 4. Runtime and failures
-
-The notebook runs in 70 s; loading the eight files takes about 13 s. My first execution failed on a comparison of epoch lists with different lengths, and I fixed it. I did not open NASA's 272 MB processed archive, so "no EEG there" rests on its file listing. Files are written but not committed, and the verifier package is built in `executed/001754-knierim-2000/handover/`. The untracked dotfiles in the repo root were created by the sandbox, not by me, and I left them alone.
+**(4) Where the protocol did not fit a repeat attempt**
+- The attempt schema has no field for the status of an earlier finding. I listed the fixed ones in the record's opening comment, and started each remaining finding's statement with "Still present", "Partly fixed" or "New". Fixed findings therefore appear only in that comment.
+- The protocol says to pin a version, while the repeat rule allows the draft. The notebook prints the draft's modification time but does not stop if the draft changes later.
+- A data-owner fix (dropping all copies of duplicate maps) changed an outcome without any change to the analysis. The protocol has no rule for that case.
+- Untracked dotfiles (`.bashrc`, `.mcp.json`, `.idea` and others) were in the working tree before I started, and the workflow may commit them with my changes.
+- The repository README's table of outcome counts for 001754 still shows the first attempt's numbers. I did not edit it.

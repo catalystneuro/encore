@@ -1,37 +1,34 @@
-I've answered every point in the round-1 report and re-run the entry. `python tools/entry.py all` passes with 0 errors and the notebook runs from a clean environment in 310 s. Nothing is committed.
+No outcome changed. The verifier agreed with all seven:
 
-## Outcomes
-The verifier agreed with all seven outcomes. The only proposed change is to flight-spatial-code; the other six stay as they were.
+| Claim | Outcome |
+|---|---|
+| flight-spatial-code | not_reproduced |
+| three-orthogonal-surfaces | blocked (metadata_insufficient) |
+| si-comparable-to-preflight | reproduced |
+| fd4-abnormal-selectivity | reproduced |
+| fig3-stability-across-sessions | reproduced |
+| theta-normal | blocked (data_missing) |
+| ripples-normal | blocked (data_missing) |
 
-- **flight-spatial-code:** stays `partially_reproduced`, with a change to `not_reproduced` recorded under `proposed`.
-  - **Why:** the verifier's problem 6 was right. The position lookup gave a spike at the lost position (0, 255) a neighbouring sample, though the claims file says such spikes are dropped. With that fixed, Rat1 flight day 9 has 12 of 25 significant units (0.48), down from 13. Five repeats with 2000 shuffles and other seeds give 11 or 12 of 25. Rat2 stays at 3 of 28, which is not above chance. That meets neither the reproduced nor the partial rule.
-  - **Why it is only proposed:** I first changed the outcome directly, but `entry.py check` rejects changing an outcome the verifier agreed with. The notebook's result line, the summary and the README say "partially reproduced (verified), not reproduced proposed".
-- **si-comparable-to-preflight** (`reproduced`), **fd4-abnormal-selectivity** (`not_reproduced`) and **fig3-stability-across-sessions** (`reproduced`) are unchanged, with notes updated to the new numbers. Fig3's median r is now 0.537 against a null 95th percentile of 0.102.
-- The three blocked claims are unchanged.
+The final run with `python tools/entry.py all entries/001754-knierim-2000` passed in 341 s with 0 check errors. The earlier numbers are unchanged, and the conclusions match the new outputs.
 
-## What I added or corrected
-- **Lookup fix:** a synthetic check in the data check fails with the old lookup.
-- **Robustness (problem 1):** a per-unit table for both judged sessions, with Monte Carlo standard errors, plus the seed and shuffle repeats.
-- **Shuffle drops (problem 7):** the fraction of real and shifted spikes dropped, per unit and per epoch. Shifted spikes are dropped much more in Rat2's epochs (median 0.307) than Rat1's (0.074). A count-matched variant gives the same counts for Rat2, so the drops don't explain Rat2's result.
-- **Rat2 attribution (problem 2):** a table of each file's samples and each rat's spikes in every task window. Each file samples one shared trace at its own rat's spike times, and nothing in the files says which animal was tracked. This is recorded as a caveat and a deviation.
-- **Sampling bias (problem 3):**
-  - Added epoch durations, unit spike counts and the rate maps' rate × occupancy (about 22 per spike on flight units, so it scales with the spike count).
-  - The compared preflight and flight day 9 sessions have similar spike counts.
-  - Added two variants: bins with at least 5 occupancy counts, and count-adjusted information. For si-comparable they give p = 0.44 and 0.45.
-  - For fd4 the count-adjusted test gives p = 0.0025, against 0.055 for the criterion's test. Flight day 4 maps have fewer spikes, so the bias works against the claim. The outcome still follows the criterion's fixed test.
-- **Preflight apparatus (problem 4):** a data check shows the description's "flat rectangular track" sentence and the occupancy footprints. This is now a new `metadata_error` finding and a deviation on both rate-map claims.
-- **fig3 (problem 5):**
-  - Added per-unit spike counts, information and p in each epoch, and a mean-rate correlation across epochs (rho 0.598) as a partial check that cluster ids name the same neurons.
-  - The gap between epochs, 10 of 16 against 1 of 19 significant units, is still unexplained. The two epochs have similar occupancy, spike counts and shuffle drops.
-- **No EEG (problem 8):** the data check now lists every group and dataset of all eight files, unfiltered. `acquisition/` is empty and no file holds an ElectricalSeries or LFP.
-- **Smaller points (problem 9):**
-  - Zero intervals occur in every epoch type and are not mainly in the overlapping epochs. Their cause is still not known.
-  - The 277.8 Hz peak sits in a bin with 55 occupancy counts, so it is not a low-occupancy artefact.
-  - The rate maps turn out to be smoothed, which is a new finding. That is why no shuffle-corrected value can be computed for them.
-- **Shuffle p-values:** for one Rat2 unit some shuffles had no spike with a position. P-values and null statistics now skip such shuffles and report how many there were.
-- **Record:** the round is under `verifications` with the verifier's reasons and my responses. The README and the runtime (now about 5 minutes) are updated.
+**Outputs added for each point:**
+- **Whose position the trace is in Rat2's windows (point 1):** a data-check cell gives the trace's movement in every task window. The median step is 0.50 to 1.18 px and the path length is 20.5 to 91.6 px/s, so Rat2's windows hold a continuous track. The same cell tests each rat's units in its own and the other rat's MC windows. Only 0 to 2 units are significant anywhere, so neither check settles whose position it is, and the text says so.
+- **Shuffle calibration at the real drop rates (point 4):** each unit's spikes were replaced by a Poisson train, and in a second version each spike was moved to its nearest position sample, which reproduces the real drop rates.
+  - Over all flight ES epochs, 0.074 and 0.096 of units come out significant. One session reaches 0.21, so the criterion's 0.05 is lower than the real false-positive rate in some sessions.
+  - Against each session's own rate, Rat1's 10 of 25 is still above chance (p 0.0035 and 0.0026) and Rat2's 2 of 28 is not, so flight-spatial-code stays not reproduced. This is now stated in the conclusion, summary, notes and README.
+- **Whether rate-map information can fail (point 3):**
+  - Rate-map spatial information split by the spike-based test: significant units have a median of 1.855 bits/spike against 1.076 for the rest (p 9e-7).
+  - A bootstrap 95% interval for the FD9 minus preflight median difference: -0.425 to 0.312 bits/spike, about -29% to +22%.
+  - The si-comparable conclusion now says the test has no equivalence margin, so a difference of about a quarter of the preflight level is not ruled out.
+- **fd4-abnormal without Rat2 (points 1 and 2):** Rats 1 and 3 give p = 0.035, the same on the draft and the earlier version, because the three dropped maps are all Rat2's.
+- **Rat3 ES1/ES2 difference (point 5):** I added each unit's shuffle 95th percentile in both epochs. For several stable units it rises more in ES2 than their information does. Poisson trains give 0 to 2 false positives in either epoch. The cause is still not explained, and the text says so.
 
-## Not done
-- No outcome was changed directly; the flight-spatial-code change waits for a third round.
-- A per-map spike count and a shuffle-corrected value for the rate maps could not be produced: the maps are smoothed and cannot be linked to units.
-- Cluster identity across epochs can't be checked further, because the files hold no waveforms.
+**Records:** I added the round-1 `verifications` block to `attempts/001754-knierim-2000-02.yaml`, with the verifier's reasons and my responses. I also updated the notes of four claims and the first finding.
+
+**Not done:**
+- Point 6 (smoothing dependence) was already stated, so I left it as it was.
+- Point 7 (occupancy at 38 to 57 counts/s against a stated 60 Hz) is already noted in the data check. It only matters if frames were dropped unevenly across space, and nothing in the files can test that.
+- The Methods, chance level and Figure 3 sessions are still unavailable because the paper is not open access.
+- I downloaded no paper text, so `paper/` is empty.
+- I did not commit or push.
