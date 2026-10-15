@@ -854,8 +854,8 @@ differ from the paper's.
 
 Two lessons for running the batch. A chain script edited while a chain was
 running broke that chain after its last step (bash reads a script as it
-runs), and the queue waiting on it stalled for eight hours; running chains
-now use a copy. And an attempt's branch keeps the tools it started with, so
+runs), and the queue waiting on it stalled for eight hours; the scripts are
+not to be edited while a queue is running them. And an attempt's branch keeps the tools it started with, so
 a fix to the tooling reaches a running attempt only if its branch is
 rebased.
 
