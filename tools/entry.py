@@ -218,9 +218,10 @@ def check(entry_dir: Path) -> Report:
             report.error(where, f"claim {claim!r} has no outcome; give every claim one, blocked included")
         for claim in sorted({c for c in recorded if recorded.count(c) > 1}):
             report.error(where, f"claim {claim!r} has more than one outcome")
-        # The latest round that reviewed a claim decides it; a third round may review only some.
+        # The latest round that reviewed a claim decides it; a third round may review only some. Round 1
+        # does not bind: the revision after it may change outcomes, and round 2 reviews them.
         agreed = {}
-        for rnd in attempt.get("verifications") or []:
+        for rnd in (attempt.get("verifications") or [])[1:]:
             for r in rnd["results"]:
                 agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
         for outcome in attempt.get("outcomes", []):
