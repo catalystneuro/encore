@@ -98,6 +98,14 @@ and tool call, without tool output. GitHub serves a step's log through the API
 and `gh` only after the step ends, so the page is the place to follow it. See
 [`transcripts/`](transcripts).
 
+To keep attempts going unattended, `tools/runner/run_queue.sh` runs a number
+of lanes, each taking the next dandiset (those converted by CatalystNeuro
+first) through all its roles with `tools/runner/chain.sh`. It waits out the
+usage limits, picks up where a stopped chain left off, and then, one attempt
+at a time, rebases the branch on main, runs the `recorder` role, which adds
+the README row and the pilot notes, and merges the pull request once its
+checks pass. The scripts say how to start and stop it.
+
 ## Working on an entry
 
 An entry is a directory under `entries/` with an `entry.yaml`, a
