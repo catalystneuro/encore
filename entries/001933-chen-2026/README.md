@@ -28,6 +28,6 @@ dF/F in the dandiset is not the one behind Supplementary Figure 8, so the Calb1 
 processing. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001933-chen-2026-01.yaml`](../../attempts/001933-chen-2026-01.yaml).
 
-- `reproduce_chen_2026.ipynb`: the analysis. It takes about three minutes, most of it streaming the files.
+- `reproduce_chen_2026.ipynb`: the analysis. It takes three to four minutes, most of it streaming the files.
 - `lrrk2.py`: loading the files, the evoked and spontaneous measures of the paper's Methods and code, the dF/F
   recomputed from the raw signal, and the paper's source data. Other notebooks on this dandiset can import it.

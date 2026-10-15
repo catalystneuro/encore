@@ -30,7 +30,7 @@ outcomes:
   output: claim:source-data-link
   notes: All 27 mice of the source data are in the dandiset with the same genotype and line. The Anxa1 half links.
     120 of 120 traces of Figure 6C and 479 of 480 of Supplementary Figure 7B equal the dandiset's dF/F from 1 s before
-    onset (largest difference 5.7e-13), the evoked integrals equal the code's measure times 0.0001 for all Anxa1
+    onset (largest difference among matched traces 5.7e-13 in each), the evoked integrals equal the code's measure times 0.0001 for all Anxa1
     records but one, and the transient counts match for 15 of 15 mice. The one miss in each is the last 4 mW
     stimulation of mouse 4398, whose processed series ends 0.8 s after onset. The Calb1 half does not link; 0 of 384
     traces, 0 of 384 integrals and the transient counts of 1 of 12 mice match. dF/F recomputed from the raw signal
@@ -170,7 +170,7 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: The immunostaining images are not in the dandiset, which holds only the photometry. They are in the BioImage
-    Archive (S-BIAD2070 to S-BIAD2074) and per-section values in the Zenodo source data.
+    Archive (S-BIAD2070, S-BIAD2071, S-BIAD2072 and S-BIAD2074) and per-section values in the Zenodo source data.
 - claim: fig2b-rab3-phosphorylation
   outcome: blocked
   blocked_by: data_missing
@@ -321,8 +321,8 @@ verifications:
     outcome: reproduced
     reason: Reproduced, marginal. One-tailed p = 0.0509 only just meets p >= 0.05, and G2019S is lower (d = 0.085)
       whereas the paper's values give d = -0.114. The result is not robust; the mean measure gives p = 2.3e-9 and the
-      code's exclusion window 1.8e-5, so under any of the alternative measures the outcome flips. The mouse-mean test
-      gives p = 0.40.
+      code's exclusion window 1.8e-5, so under these two alternative measures the outcome flips. The mouse-mean test
+      gives p = 0.40, which does not flip it.
     response: Kept reproduced, as the criterion judges absence on the paper's test alone. The notes already say the
       result sits at the threshold and give the variants that find the effect. The summary dict now prints p as 0.05088.
   - claim: supp8e-calb1-evoked-reduced
@@ -385,4 +385,130 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Same reason.
+    response: No change needed.
+- date: '2026-10-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full re-executed notebook of the first revision (commit 0c6b642) with its conclusions and summary, the
+    README, the attempt record, the helper module and the claims file. The verifier checked every Result paragraph and
+    the summary against the printed outputs and recomputed 131.9 and 302.9 from the per-mouse table. It did not read the
+    Supplementary Figure 7 and 8 legends.
+  results:
+  - claim: source-data-link
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 12 gives match fractions 1.0, 0.609, 0.609 and 0; the transient-mean variant gives 0.481, also below
+      50%. The summary's "the published traces equal the dandiset's dF/F to within 1e-12" is not supported; the only
+      printed value is 5.7e-13, for Figure 6C, and for Supplementary Figure 7B matched traces are shown only to be below
+      1e-6, as the printed 109.8 includes the one miss. The record's note has the same scope problem. The Calb1 dF/F
+      is not the paper's (problem 1), and the published spontaneous values are 0.005 times the mean dF/F of each
+      transient (problem 2), which is why part 4 scores 0.
+    response: Cell 12 now prints the largest difference among matched traces per table, 5.7e-13 for both Figure 6C and
+      Supplementary Figure 7B, and the summary, cell 16 and the note cite it for both. Outcome unchanged.
+  - claim: fig6e-anxa1-evoked-reduced
+    agrees: true
+    outcome: reproduced
+    reason: 64 against 56 stimulations, p = 1.16e-22 (cell 21).
+    response: No change needed.
+  - claim: fig6e-anxa1-evoked-per-mouse
+    agrees: true
+    outcome: reproduced
+    reason: 7 of 8 mice under all four readings; 3743 is the exception. Two of the seven significant results (3742 and
+      4885) come from 0.33 s trains whose power labels the data cannot confirm; this does not change the outcome.
+      In the data check, the sentence that 1.5, 2 and 3 mW given as 0.33 s trains fall below 0.5 and 1 mW given as 0.51
+      s trains holds for 4401, 3947, 4253, 4561, 4651, 4004 and 4007, and fails for 3743, 3948, 4398, 4558, 4652 and
+      4005 (4398 has 173.5 at 1.5 mW against 114.8 at 0.5 mW); it should say "in some files".
+    response: The data check now prints, for each Anxa1 file with those train types, the median at each of these
+      powers and whether every 0.33 s median is below both 0.51 s ones; it holds in 7 of 12 files. The text says so and
+      gives 4398 as a counterexample. 4652 is not in the table, as one of its trains has no period. Outcome unchanged.
+  - claim: supp7c-anxa1-evoked-all-powers
+    agrees: true
+    outcome: reproduced
+    reason: 4 of 4 powers; the Methods window has 56 WT stimulations at every power (cell 27). The claims file's "p from
+      2.39e-16 to 1.10e-20" leaves out the paper's 0.1 mW value, 1.29e-15, printed in cell 27. The outcome does not
+      change.
+    response: The statement in the claims file and the notebook's quote now read "p from 1.29e-15 to 1.10e-20", which
+      the Supplementary Figure 7C legend confirms (1.29e-15, 1.10e-20, 1.22e-17 and 2.39e-16). The criterion is
+      unchanged.
+  - claim: fig6f-anxa1-spontaneous-reduced
+    agrees: true
+    outcome: reproduced
+    reason: 1064 and 798 transients, 57 to 285 per mouse, p = 4.85e-72 (cell 32).
+    response: No change needed.
+  - claim: fig6f-anxa1-spontaneous-per-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 of 8 mice under every reading (cell 35). The published values are 0.005 times the mean dF/F of each
+      transient, not its integral, which is why the count is 5 where the paper's measure gives 6.
+    response: No change needed. The legends of Figure 6F and Supplementary Figure 8C, now read, call the measure a
+      "normalized integral", as they do for the evoked values, which are the plain integral times 0.0001; the Methods
+      say the integral, which the criterion fixed. The outcome stays as verified.
+  - claim: supp8c-calb1-spontaneous-not-reduced
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, marginal; p = 0.05088 (cell 38), counts 896 and 635 within tolerance. The outcome rests on p =
+      0.0509 against 0.05, so it is correct under the criterion but fragile. Its round-1 reason that "under any of the
+      alternative measures the outcome flips" was wrong for the mouse-mean test, p = 0.402, which does not flip it;
+      only the transient-mean measure (2.25e-09) and the code's exclusion window (1.81e-05) do.
+    response: The round-1 reason in this record now says that only those two measures flip it and the mouse-mean test
+      does not. The notes already give all three. The Supplementary Figure 8C legend confirms 970 and 682 transients and
+      p = 0.98. Outcome unchanged.
+  - claim: supp8e-calb1-evoked-reduced
+    agrees: true
+    outcome: reproduced
+    reason: 56 against 40 stimulations, 4 of 4 powers (cell 41). Every Calb1 result is a result on the dandiset's
+      processing, not the paper's.
+    response: No change needed. The Supplementary Figure 8E legend confirms 56 and 40 stimulations and p = 6.45e-05,
+      0.0002, 0.0001 and 0.001.
+  - claim: supp8e-calb1-few-mice-reduced
+    agrees: true
+    outcome: partially_reproduced
+    reason: 7, 6, 4 and 4 mice; the closest reading gives 4 (cell 44). The Calb1 dF/F is not the paper's (problem 1).
+    response: No change needed.
+  - claim: cohens-d-anxa1-larger
+    agrees: true
+    outcome: not_reproduced
+    reason: Calb1 d = 1.395 is outside tolerance, and the ratio is 1.58 (cell 47). The Calb1 dF/F is not the paper's
+      (problem 1).
+    response: No change needed.
+  - claim: fig1d-lrrk2-enriched-vulnerable
+    agrees: true
+    outcome: blocked
+    reason: No change since round 1. The note gives "S-BIAD2070 to S-BIAD2074", but cell 49 lists 2070, 2071, 2072 and
+      2074, without 2073.
+    response: The note now lists S-BIAD2070, S-BIAD2071, S-BIAD2072 and S-BIAD2074.
+  - claim: fig2b-rab3-phosphorylation
+    agrees: true
+    outcome: blocked
+    reason: No change since round 1.
+    response: No change needed.
+  - claim: fig2eg-prab3-increased
+    agrees: true
+    outcome: blocked
+    reason: No change since round 1.
+    response: No change needed.
+  - claim: fig3d-rim-binds-unphosphorylated
+    agrees: true
+    outcome: blocked
+    reason: No change since round 1.
+    response: No change needed.
+  - claim: fig4d-fewer-active-zones
+    agrees: true
+    outcome: blocked
+    reason: No change since round 1.
+    response: No change needed.
+  - claim: fig4i-rim1-reduced
+    agrees: true
+    outcome: blocked
+    reason: No change since round 1.
+    response: No change needed.
+  - claim: fig5-bassoon-vulnerable-axons
+    agrees: true
+    outcome: blocked
+    reason: No change since round 1.
+    response: No change needed.
+  - claim: fig5j-no-axon-loss
+    agrees: true
+    outcome: blocked
+    reason: No change since round 1.
     response: No change needed.
