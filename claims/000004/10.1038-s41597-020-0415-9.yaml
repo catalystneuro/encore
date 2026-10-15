@@ -1,0 +1,354 @@
+# Claims for Chandravadia, Liang, Schjetnan et al. (2020), Scientific Data 7, 78, on dandiset 000004.
+# Source: the full text of the open access article (CC BY 4.0) at nature.com, read from its Methods,
+# Data Records, Technical Validation, figure legends, Tables 1 and 2 and Online-only Table 1.
+#
+# When these criteria were written, the author had run the data check only, on every file of
+# version 0.220126.1852: the file list and the archive's metadata; per file the subject metadata,
+# session ids, session start dates, trial counts per phase, new/old label counts, stimulus categories,
+# experiment ids, unit counts (1864 in total), electrode locations, waveform sampling rate and table
+# columns; the comparison of subject age, sex and diagnosis with Online-only Table 1 (age or sex
+# differ for three subjects); the duplicated spike trains of sessions 43 and 44 and of 54 and 55; and
+# in one file (session 5) the cross-tabulation of new/old labels against confidence responses, which
+# showed label 1 receiving most "old" responses. No selection of VS or MS cells, no AUC, no z-ROC and
+# no accuracy by confidence had been computed. The author had read the paper's code
+# (github.com/rutishauserlab/recogmem-release-NWB at commit 1d95162), including plotFigure5.ipynb,
+# which writes the Figure 5f percentages into the plot as constants.
+#
+# After the first verification round the author added previous-release-link and rewrote the
+# criterion of previous-release-additions, which had been blocked for want of the earlier
+# release's session list. When writing them the author had read Table 1 of Faraut et al. 2018,
+# which lists that release's sessions, and its abstract (65 sessions, 42 patients, 1576 neurons),
+# and had seen that the table holds a session 98 that Online-only Table 1 of this paper does not;
+# no count of new sessions, subjects or units in the dandiset had been run.
+#
+# Method choices fixed here. Recognition trials are the trial rows with stim_phase "recog"; the
+# confidence response is the trial's response_value minus 30 (1 = new, confident; 6 = old,
+# confident), checked in the notebook against the event codes the paper's code reads; "old" is
+# label 1, as in the paper's code (the paper's text and the files' column description say 0; see
+# new-old-label-coding). Firing rates are spike counts in a window divided by its length. The
+# Methods' window, 200 ms to 1200 ms after stimulus onset, is the main one; the paper's code uses
+# 200 ms to 1700 ms, shown as a variant. Units are counted per file, as the paper counts neurons
+# per session; the counts with duplicated spike trains counted once are also shown. Behavioural
+# measures follow the paper's code: cumulative ROC over the six confidence levels from "old,
+# confident" down, hit and false alarm rates adjusted for 0 and 1 as in its adjustHF, AUC by the
+# trapezoid rule with (0,0) and (1,1) added, and "±" read as the standard deviation over sessions
+# (calcMeanSEOfSample). CS sessions are those of subjects labelled H or C, TWH those labelled T,
+# as the Figure 5 legend defines.
+schema_version: 1
+dandiset: "000004"
+paper: doi:10.1038/s41597-020-0415-9
+claims:
+- id: counts-neurons-subjects
+  statement: The dataset holds 1863 single neurons recorded from the medial temporal lobes of 59
+    subjects.
+  source: Abstract; Technical Validation, proportion of selective cells
+  expected:
+  - quantity: neurons
+    value: 1863
+    tolerance: 186.3
+  - quantity: subjects
+    value: 59
+    tolerance: 5.9
+  criterion: Neurons are the rows of the units tables over all files, subjects the distinct
+    subject_id values. The readings are (a) every unit row of every file, as the paper counts
+    neurons per session, and (b) units whose spike trains are deposited in two files counted
+    once. Reproduced when both values are within tolerance under one reading. The exact
+    differences are reported.
+- id: counts-sessions
+  statement: The patients performed 87 sessions, listed by subject and session id in Online-only
+    Table 1 (the Methods give 89).
+  source: Methods, Subjects; Online-only Table 1
+  expected:
+    quantity: sessions
+    value: 87
+    tolerance: 8.7
+  criterion: Each file's identifier gives a subject label and a session id. Reproduced when the
+    set of (subject, session id) pairs in the files equals the set in Online-only Table 1;
+    partially reproduced when the count is within tolerance but the sets differ; not reproduced
+    otherwise. The Methods' 89 is the other reading of the count and is reported.
+- id: table1-demographics
+  statement: Online-only Table 1 gives the age and sex of every subject; there are 25 female and 34
+    male subjects.
+  source: Online-only Table 1
+  expected:
+  - quantity: female subjects
+    value: 25
+    tolerance: 2.5
+  - quantity: male subjects
+    value: 34
+    tolerance: 3.4
+  criterion: The subject age and sex in the files are compared with the table, subject by
+    subject. Reproduced when every subject matches; partially reproduced when some do not;
+    not reproduced when fewer than half match. The diagnosis is reported side by side, as the
+    files use a coarser coding (the paper's session list defines it).
+- id: task-structure
+  statement: Each session has 100 encoding trials showing 100 novel images and 100 recognition
+    trials, of which 50 show new and 50 old images, and the images come from 5 visual categories.
+  source: Methods, Task; Data Records, stimuli group; Technical Validation, proportion of
+    selective cells
+  criterion: Per session, counted from the trials table and the stimulus images. Reproduced when
+    every session has 100 encoding trials with 100 distinct image files, 100 recognition trials
+    with 50 of each label, and 5 categories; partially reproduced when each part holds in more
+    than half of the sessions; not reproduced otherwise.
+- id: new-old-label-coding
+  statement: In the trials table, new_old_labels_recog is 0 for old stimuli (seen during encoding)
+    and 1 for new stimuli.
+  source: Data Records, interval group
+  criterion: Two tests per session. (1) Under the stated coding, old trials (label 0) should
+    show image files from the session's encoding block and new trials (label 1) should not.
+    (2) Old trials should receive "old" responses (4 to 6) more often than new trials. Reproduced
+    when both hold in every session; not reproduced when, in most sessions, both hold with the
+    labels reversed.
+- id: ttl-codes
+  statement: The events stream holds the TTL markers 55, 1, 2, 3, 20 or 21, 31 to 36, 6 and 66
+    with the meanings of Table 1, and the events and experiment_ids streams have one entry each,
+    in the same order.
+  source: Data Records, acquisition group; Table 1
+  criterion: Reproduced when, in every file, events and experiment_ids have the same length and
+    timestamps, the events hold only the listed codes, and every trial shows stimulus onset (1),
+    offset (2), question (3), a response of the phase's kind and end of trial (6) in this order;
+    partially reproduced when this holds in most files.
+- id: experiment-ids
+  statement: The learning block is labelled with one of 80, 83 or 88 and the recognition block with
+    one of 81, 84 or 89.
+  source: Data Records, acquisition group; Table 2
+  criterion: Reproduced when the two experiment ids of every file fall in these sets; partially
+    reproduced when they do in most files.
+- id: session-dates
+  statement: To protect patient information, session_start_time keeps only the year and month of
+    the experiment, with the day set to the first of the month for all sessions.
+  source: Data Records, structure of the NWB file
+  criterion: Reproduced when every file's session_start_time falls on the first of a month;
+    partially reproduced when some do not. Years outside the span of the recordings are reported.
+- id: units-table
+  statement: The units table holds spike_times, waveform_mean_encoding, waveform_mean_recognition
+    (sampled at 100 kHz), origClusterID, SNR, IsolDist and electrodes, with one electrode per
+    neuron.
+  source: Data Records, units group
+  expected:
+    quantity: waveform sampling rate
+    value: 100000
+    tolerance: 10000
+    unit: Hz
+  criterion: Reproduced when every file holds each column, each unit links to exactly one
+    electrode, the stated sampling rate of the waveforms is within tolerance, and the quality
+    metrics are finite for every unit; partially reproduced when the columns are there but some
+    values are missing or not finite.
+- id: electrodes-table
+  statement: The electrodes table gives each electrode's brain area, MNI coordinates, impedance,
+    the filter applied before spike sorting (300 to 3000 Hz) and the original hardware channel.
+  source: Data Records, general group; Methods, data acquisition
+  criterion: Reproduced when every file has these columns and every electrode has a value for
+    each; partially reproduced when the columns are there but some are empty for some
+    electrodes; not reproduced when a column is empty for every electrode.
+- id: isi-criterion
+  statement: Clusters were accepted as units only when fewer than 3% of their interspike intervals
+    were shorter than 3 ms.
+  source: Methods, data acquisition
+  criterion: For each unit, the fraction of interspike intervals below 3 ms, from its spike times
+    sorted in time. Reproduced when every unit is below 3%; partially reproduced when at least
+    95% of units are; not reproduced otherwise. The count with the spike times as stored is a
+    variant.
+- id: fig5a-mtl-locations
+  statement: All neurons were recorded from the medial temporal lobe, in the amygdala and the
+    hippocampus.
+  source: Abstract; Figure 5a
+  criterion: Reproduced when the electrode location of every unit names the amygdala or the
+    hippocampus.
+- id: fig5c-auc-all
+  statement: Subjects distinguished new from old images; the behavioural AUC averaged over all
+    sessions is 0.74 ± 0.10.
+  source: Technical Validation, behaviour; Figure 5b and 5c
+  expected:
+  - quantity: mean AUC over sessions
+    value: 0.74
+    tolerance: 0.10
+  - quantity: standard deviation of AUC over sessions
+    value: 0.10
+    tolerance: 0.01
+  criterion: The tolerance of the mean is the stated spread, as the protocol prescribes; the
+    spread itself is held to 10%. AUC per session as in the paper's code (see the opening
+    comment), over all 87 sessions. Reproduced when both values are within tolerance.
+- id: fig5c-auc-sites
+  statement: Performance was similar at the two study sites, with an average AUC of 0.74 ± 0.09 for
+    CS sessions and 0.69 ± 0.13 for TWH sessions.
+  source: Technical Validation, behaviour; Figure 5c
+  depends_on:
+  - fig5c-auc-all
+  expected:
+  - quantity: mean AUC, CS sessions
+    value: 0.74
+    tolerance: 0.09
+  - quantity: mean AUC, TWH sessions
+    value: 0.69
+    tolerance: 0.13
+  - quantity: standard deviation of AUC, CS sessions
+    value: 0.09
+    tolerance: 0.009
+  - quantity: standard deviation of AUC, TWH sessions
+    value: 0.13
+    tolerance: 0.013
+  criterion: Reproduced when all four values are within tolerance; partially reproduced when
+    both means are but a spread is not. The difference between sites (Welch's t-test) is
+    reported.
+- id: fig5b-roc-asymmetric
+  statement: The ROC curve is asymmetric (p < 0.05), as expected for declarative memory.
+  source: Technical Validation, behaviour; Figure 5b
+  criterion: The paper does not name the measure or the test. Asymmetry is measured, as in the
+    paper's code (calcZROCSlope), by the slope of the z-ROC, the regression of z(hit rate) on
+    z(false alarm rate) over the five interior points of each session. Reproduced when the mean
+    slope over sessions is below 1 with a two-sided one-sample t-test against 1 at p < 0.05. The
+    Wilcoxon signed-rank test and the slope of the pooled ROC are variants.
+- id: fig5d-confidence-accuracy
+  statement: Accuracy is significantly higher in high than in low confidence trials (P < 0.001,
+    paired t test) across all sessions.
+  source: Technical Validation, behaviour; Figure 5d
+  criterion: Per session, the percentage of correct responses among high and among low confidence
+    responses. The readings of the split are (a) the fixed split of the paper's MATLAB code
+    (high is 1 or 6, low is 2 to 5) and (b) the dynamic split of its Python code. Sessions
+    without responses in one group are left out and counted. Reproduced when, under one reading,
+    high exceeds low with a paired t-test p < 0.001. The unpaired test the code runs is a variant.
+- id: vs-cells-proportion
+  statement: 343 of the 1863 cells (18.4%) are visually selective, by a one-way ANOVA (P < 0.05) of
+    the firing rate in recognition trials, in a 1 s window starting 200 ms after stimulus onset,
+    across the 5 visual categories.
+  source: Technical Validation, proportion of selective cells; Figure 5f
+  expected:
+  - quantity: VS cells
+    value: 343
+    tolerance: 34.3
+  - quantity: VS cells, percent of all cells
+    value: 18.4
+    tolerance: 1.84
+    unit: '%'
+  criterion: Every unit, Methods' window. Reproduced when both values are within tolerance. The
+    code's window, units of duplicated spike trains counted once, and the proportion with the
+    category labels shuffled within each session (a null) are variants.
+- id: ms-cells-proportion
+  statement: 146 of the 1863 cells (7.8%) are memory selective, by a two-tailed bootstrap comparison
+    of mean firing rates (1,000 runs, P < 0.05) between the 50 novel and 50 familiar recognition
+    trials in a 1 s window starting 200 ms after stimulus onset.
+  source: Technical Validation, proportion of selective cells; Figure 5f
+  expected:
+  - quantity: MS cells
+    value: 146
+    tolerance: 14.6
+  - quantity: MS cells, percent of all cells
+    value: 7.8
+    tolerance: 0.78
+    unit: '%'
+  criterion: Every unit, Methods' window and all 50 and 50 trials, with the bootstrap of the
+    paper's code (bootstrapMeanEqualTest, Efron and Tibshirani algorithm 16.2), at a fixed seed.
+    Reproduced when both values are within tolerance. The code's choices (correct trials only,
+    its window), units of duplicated spike trains counted once, and a null with labels shuffled
+    within each session are variants.
+- id: dual-cells-proportion
+  statement: 26 cells (1.4%) are both visually and memory selective.
+  source: Technical Validation, proportion of selective cells; Figure 5f
+  depends_on:
+  - vs-cells-proportion
+  - ms-cells-proportion
+  expected:
+  - quantity: cells both VS and MS
+    value: 26
+    tolerance: 2.6
+  - quantity: cells both VS and MS, percent of all cells
+    value: 1.4
+    tolerance: 0.14
+    unit: '%'
+  criterion: Units selected by both main tests. Reproduced when both values are within tolerance.
+- id: fig5f-site-proportions
+  statement: The percentages of VS, MS and dual cells are comparable between CS sessions (18.4%,
+    7.7% and 1.4%) and the new TWH sessions (19.4%, 10.4% and 1.3%).
+  source: Technical Validation, proportion of selective cells; Figure 5f (the values as written
+    into plotFigure5.ipynb at commit 1d95162)
+  depends_on:
+  - vs-cells-proportion
+  - ms-cells-proportion
+  - dual-cells-proportion
+  expected:
+  - quantity: VS percent, CS
+    value: 18.4
+    tolerance: 1.84
+    unit: '%'
+  - quantity: MS percent, CS
+    value: 7.7
+    tolerance: 0.77
+    unit: '%'
+  - quantity: dual percent, CS
+    value: 1.4
+    tolerance: 0.14
+    unit: '%'
+  - quantity: VS percent, TWH
+    value: 19.4
+    tolerance: 1.94
+    unit: '%'
+  - quantity: MS percent, TWH
+    value: 10.4
+    tolerance: 1.04
+    unit: '%'
+  - quantity: dual percent, TWH
+    value: 1.3
+    tolerance: 0.13
+    unit: '%'
+  criterion: The paper names no test for "comparable". Two-sided Fisher's exact test between
+    sites for each of VS, MS and dual cells, at 0.05. Reproduced when no test finds a difference
+    and at least four of the six values are within tolerance; partially reproduced when only one
+    of these holds.
+- id: twh-sessions
+  statement: The dataset includes 9 sessions from a new institution, Toronto Western Hospital.
+  source: Technical Validation, proportion of selective cells; Online-only Table 1
+  expected:
+    quantity: TWH sessions
+    value: 9
+    tolerance: 0.9
+  criterion: Sessions whose subject label starts with T. Reproduced when the count is within
+    tolerance.
+- id: previous-release-link
+  statement: The sessions of the earlier release (Faraut et al. 2018) are found in this dandiset
+    under the same subject, session id and task variant.
+  source: Faraut et al. 2018, Scientific Data 5, 180010 (doi:10.1038/sdata.2018.10), Table 1
+  data: with_inputs
+  criterion: Sessions are matched by session id. A matched session agrees when its subject label
+    and task variant are those of the earlier table. Reproduced when every session of the
+    earlier table is found and agrees; partially reproduced when at least 90% are found and
+    agree, with the others listed; not reproduced otherwise. Age and sex of the matched subjects
+    are compared and reported. Added in revision after the first verification round (see the
+    opening comment).
+- id: previous-release-additions
+  statement: Relative to the earlier release of this task's data (Faraut et al. 2018), this
+    release adds 23 sessions, 17 subjects and 288 neurons.
+  source: Background and Summary; Technical Validation
+  data: with_inputs
+  depends_on:
+  - previous-release-link
+  expected:
+  - quantity: new sessions
+    value: 23
+    tolerance: 2.3
+  - quantity: new subjects
+    value: 17
+    tolerance: 1.7
+  - quantity: new neurons
+    value: 288
+    tolerance: 28.8
+  criterion: The earlier release's session list is Table 1 of Faraut et al. 2018, the paper
+    describing it (the Dryad archive, doi:10.5061/dryad.46st5, could not be fetched by a
+    script). New sessions are those of the dandiset not in that list, new subjects those with no
+    session in it, and new neurons the unit rows of the new sessions. Reproduced when all three
+    values are within tolerance; partially reproduced when one or two are; not reproduced
+    otherwise. The differences of the totals the two papers state (sessions, subjects, neurons)
+    are a variant.
+- id: fig4-example-vs-neuron
+  statement: Neuron 132-177-4-RA (session 132, channel 177, cell 4, right amygdala) is visually
+    selective, responding most to images of animals.
+  source: Figure 4
+  criterion: The unit on channel 177 of session 132 with electrode row 4, in the right amygdala.
+    Reproduced when the one-way ANOVA across the 5 categories of recognition trials, Methods'
+    window, has p < 0.05 and the animal category has the highest mean rate. The code's window is
+    a variant.
+- id: fig3-example-vs-neuron
+  statement: Neuron 144-140-3-RH (session 144, channel 140, cell 3, right hippocampus) is visually
+    selective for phones.
+  source: Figure 3
+  criterion: As for fig4-example-vs-neuron, with phones as the preferred category.
