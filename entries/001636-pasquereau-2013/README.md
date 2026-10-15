@@ -34,7 +34,7 @@ post comparison of the movements and EMG.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001636-pasquereau-2013-01.yaml`](../../attempts/001636-pasquereau-2013-01.yaml).
 
-- `reproduce_pasquereau_2013.ipynb`: the analysis. It takes a few minutes, most of it streaming the
+- `reproduce_pasquereau_2013.ipynb`: the analysis. It took 2.4 min in the latest run, most of it streaming the
   447 files.
 - `stretch.py`: loading the files (with the analog streams realigned to the trials), the spike
   density functions, response detection, directional selectivity, kinematics and EMG measures.

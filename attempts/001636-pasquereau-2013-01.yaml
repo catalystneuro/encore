@@ -89,7 +89,8 @@ outcomes:
     Methods do not settle (how the SDF values are compared with the baseline, and any minimum
     duration), and this claim and those that rest on the selection are blocked. Stationary
     Poisson spike trains at each cell-direction's baseline rate give 0.15 (main) and 0.49 (t-test),
-    so the excess comes from the detection procedure, and the rate does not fall with baseline
+    so most of the excess comes from the detection procedure, though about a third of the observed
+    0.22 is not explained by the Poisson trains, and the rate does not fall with baseline
     rate (0.17 to 0.27 by quartile) or number of trials (0.21 to 0.24). The pseudo-onset rate of
     responses is 0.12 of the true-onset rate. 14 cell-directions (10 CSN) have no baseline spike
     and cannot respond. A threshold calibrated to a pseudo-onset rate of 0.01 (t = 6.67 against
@@ -128,7 +129,8 @@ outcomes:
   output: claim:ptn-more-responsive
   measured: [68.9, 16.5]
   notes: Blocked as the selection is. PTNs 71 of 103 (68.9%) against CSNs 13 of 79 (16.5%),
-    chi-square 47.5, p = 5.6e-12; the CSN fraction is outside tolerance. The t-test variant gives
+    chi-square 47.5, p = 5.6e-12; both fractions are outside tolerance (PTNs above 62.1 +/- 6.2,
+    CSNs below 30.4 +/- 3.0). The t-test variant gives
     60.2% and 32.9% (p = 0.00046).
 - claim: one-direction-half
   outcome: blocked
@@ -230,9 +232,9 @@ outcomes:
     and larger after MPTP; session-mean peak velocity +28.8% and amplitude +15.2% (flexion +30.3%
     and +12.0%), MPTP F = 103 and 26, p < 0.0001. The torque command's pulse is about four times
     larger in most post-MPTP sessions; in the sessions with the same command size (43 pre, 12
-    post) the increases are +101.9% and +113.4%. Session-mean peak velocities (8.5 to 145.3
-    deg/s) are lower than the 130 to 200 deg/s of the paper's matched sessions, and mean
-    displacements (3.09 deg) smaller than its 10 deg. The angle's scale agrees with the files'
+    post) the increases are +101.9% and +113.4%. The mean of the session-mean peak velocities is
+    58.7 deg/s, and only one response comes from a session in the paper's 130 to 200 deg/s window
+    of matched sessions; mean displacements (3.09 deg) are smaller than its 10 deg. The angle's scale agrees with the files'
     own kinematic columns (active movements measured here within 2% of derived_peak_velocity and
     derived_movement_amplitude), so the small movements are in the data. The torque command
     differs between the states, so the change cannot be attributed to MPTP.
@@ -265,8 +267,9 @@ outcomes:
   notes: For flexion torques the m2 response is larger after MPTP in both triceps longus channels
     and the triceps lateralis (medians 3.0 against 164.2, 3.1 against 297.5 and 5.2 against 76.2
     A/D units; Kolmogorov-Smirnov p = 1.1e-58, 1.9e-50, 4.7e-15). The increase follows the torque
-    command; median m2 is 0.61 at the smallest command size (pre), 40.8 (pre) and 1.8 (post) at
-    the middle, and 194.6 (post) at the largest, and in the middle-size sessions m2 is not larger
+    command; median m2 is 0.61 at the smallest command size (pre only), 40.8 (pre) and 1.81 (post)
+    at the middle, and 17.09 (pre, n = 5) and 194.6 (post) at the largest, so within a state it
+    does not rise simply with command size, and in the middle-size sessions m2 is not larger
     after MPTP (triceps longus 1 median 46.7 against 1.3, p = 0.013, with 40 and 6 sessions). The
     outcome is the criterion's comparison; as the torque command is about four times larger in
     most post-MPTP sessions, the increase cannot be attributed to MPTP.
@@ -290,9 +293,8 @@ outcomes:
   notebook: reproduce_pasquereau_2013.ipynb
   output: claim:emg-onset-unchanged
   notes: EMG responses start earlier after MPTP (40.8 against 24.0 ms, Kolmogorov-Smirnov p =
-    5.5e-21), in the same direction at 1.5 and 3 SD. Pre-MPTP responses are small (median m2 3.0
-    to 5.2 A/D units), which delays their detected onset; at the middle command size the onsets do
-    not differ (p = 0.18).
+    5.5e-21), in the same direction at 1.5 and 3 SD. At the middle command size the onsets do not
+    differ (28.8 and 45.6 ms, p = 0.18), the post-MPTP onset being the later one there.
   deviations:
   - The paper does not name its test here; the Kolmogorov-Smirnov test it uses for the other EMG
     measures is used.
@@ -374,7 +376,7 @@ findings:
 - kind: methods_unavailable
   statement: No analysis code is published. The response detection as described gives a
     false-positive rate near 0.2 over the 200 ms epoch, against the 0.01 its threshold implies,
-    and stationary Poisson spike trains give the same,
+    and stationary Poisson spike trains give 0.15, most of it,
     so the paper's exact procedure cannot be recovered, and single-trial latencies are not
     defined.
 - kind: paper_inconsistency
@@ -435,7 +437,10 @@ verifications:
       give 0.13 to 0.20 (the verifier''s test), so the excess comes from the threshold procedure,
       whose threshold is t times the SD over time of the trial-averaged SDF and is not a test of
       trial-to-trial variance. A single run cannot tell whether the paper''s claim is wrong or its
-      procedure differs. It asked for example mean SDFs with their thresholds drawn, and the
+      procedure differs. The Methods'' literal reading, a 2-tailed t-test against the baseline, is
+      closer to the t-test variant, which also fails (0.46). The response rate at the pseudo onset
+      is 0.044 against 0.37 at the true onset, so about 12% of detected responses are expected to
+      be false. It asked for example mean SDFs with their thresholds drawn, and the
       pseudo-onset false-positive rate split by baseline rate and by number of trials.'
     response: Outcome kept as blocked (methods_underspecified), and the disagreement is recorded.
       The protocol says that when a computed false-positive rate is far from the one the paper
@@ -616,3 +621,203 @@ verifications:
       define one. Per-trial spikes, angle and EMG do exist for monkey V, so the claim could be tested
       under a stated definition.
     response: No change; a definition chosen here would be a method the paper does not give.
+- date: '2026-10-15'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with conclusions and summary, the attempt record, the
+    README, the helper module, the claims file, the round-1 report and the paper's full text from Europe
+    PMC. It checked the paper_inconsistency finding against the paper and found it supported. Other changes
+    in reply are the README run time (the verifier saw 1.5 min printed by cell 104; this run printed 2.4
+    min) and the round-1 false-positive-rate reason, which now carries two points from its round-1 problem
+    1 that it found left out. It did not inspect the plotted figures.
+  results:
+  - claim: cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: monkey-l-perturbations
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The table of torque-command excursions for every file shows 1 hold-window excursion
+      in 2048 trials (cell 7).
+    response: No change.
+  - claim: baseline-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: ptn-faster-than-csn
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: antidromic-latency
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: false-positive-rate
+    agrees: true
+    outcome: blocked
+    reason: In round 1 it said not reproduced and now accepts blocked (methods_underspecified). The claim
+      is about the paper's procedure, and this run can only measure a reconstruction of it. Stationary
+      Poisson spike trains give 0.15 with the reconstructed detection (cell 37), so the rate mostly measures
+      the reconstruction, and a threshold calibrated to 0.01 moves the torque-related fractions further
+      from the paper's (cell 38), so the stated rate alone does not explain the gap. Poisson gives 0.15
+      against 0.22 observed, so about a third of the observed rate is not explained; cell 39 ("the excess
+      comes from the detection procedure, not from activity in the hold period"), the Summary and the
+      methods_unavailable finding ("Poisson spike trains give the same") say more than that.
+    response: Cell 39, the Summary, the outcome notes and the methods_unavailable finding now say that
+      most of the excess comes from the detection procedure and that about a third of the observed 0.22
+      is not explained by the Poisson trains. Outcome unchanged.
+  - claim: torque-related-fractions
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: prevalence-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: ptn-more-responsive
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 48 and the notes say only the CSN fraction is outside tolerance, but the PTN
+      fraction is also outside, 68.9% against 62.1 +/- 6.2, whose upper bound is 68.3 (cell 47).
+    response: Cell 48 and the notes now say both fractions are outside tolerance.
+  - claim: one-direction-half
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: excitatory-majority
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: magnitude-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: venus-response-magnitudes
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: latency-shorter
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: latency-not-training
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: fwhm-shorter-ptn
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: dsi-reduced
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: venus-dsi
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: dsi-not-baseline
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: kinematics-slower
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees on the criterion. The torque command differs between the two states, so the result
+      cannot be attributed to MPTP, as the record states. Cell 80 and the notes say the session means
+      of 8.5 to 145.3 deg/s are lower than the paper's 130 to 200 deg/s, but the upper end overlaps the
+      paper's range; the supported statement is that the mean is 58.7 deg/s and only one response comes
+      from a session in the window (cells 79 and 97).
+    response: Cell 80 and the notes now give the mean of 58.7 deg/s and the single response from a session
+      in the window.
+  - claim: kinematic-latency-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees on the criterion. The torque command differs between the two states, so the result
+      cannot be attributed to MPTP, as the record states.
+    response: No change.
+  - claim: emg-m2-larger
+    agrees: true
+    outcome: reproduced
+    reason: Agrees on the criterion, but it is the weakest of the kinematic and EMG outcomes. Its only
+      same-command comparison runs the other way on triceps longus 1 (46.7 against 1.3, p = 0.013, with
+      40 and 6 channel-sessions; cell 87). Cell 88's medians of 0.61, 40.8 and 194.6 by command size mix
+      states, and the values left out (post-MPTP 1.81 at the middle size, pre-MPTP 17.09 at the largest,
+      n = 5) work against a simple increase with command size. The notes give the first of these but not
+      the second.
+    response: Cell 88 and the notes now give the median m2 by command size and state, including 17.09
+      (pre, n = 5) at the largest size, and say it does not rise simply with command size within a state.
+      Outcome unchanged.
+  - claim: emg-duration-longer
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees on the criterion. The torque command differs between the two states, so the result
+      cannot be attributed to MPTP, as the record states.
+    response: No change.
+  - claim: emg-onset-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees on the criterion. Cell 92 and the notes say small pre-MPTP responses delay their detected
+      onset, but nothing tests this, the threshold is relative (2 SD of the baseline), and at the middle
+      command size the post-MPTP onset is the later one (28.8 against 45.6 ms, cell 90).
+    response: Removed the untested explanation from cell 92 and the notes, which now give the middle-size
+      onsets (28.8 and 45.6 ms, p = 0.18).
+  - claim: emg-m1-weak
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: velocity-matched-magnitude
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 98 says 24 to 33 per group in the paper, but the paper's counts are 24, 33, 22
+      and 31, so the range is 22 to 33. Its own round-1 sentence ("no pre-MPTP session reaches 130 deg/s
+      (maximum 145)") contradicts itself; cell 97 shows that no pre-MPTP response comes from a session
+      in the window.
+    response: Cell 98 now says 22 to 33. The round-1 reason is left as the verifier gave it.
+  - claim: session-correlations
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
+  - claim: trial-correlations
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Its Result sentence and the record's notes match the printed
+      numbers.
+    response: No change.
