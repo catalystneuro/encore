@@ -108,15 +108,75 @@ T107|2007|1|64|F|Left Mesial Temporal
 """
 
 
-def online_table_1() -> pd.DataFrame:
-    """Online-only Table 1 as one row per session."""
+# Table 1 of Faraut et al. 2018, Scientific Data 5, 180010 (doi:10.1038/sdata.2018.10, CC BY 4.0),
+# the paper describing the earlier release of this task's data: subject, session ids, task
+# variants, age, sex, diagnosis. Copied from the article as text; used only to mark which sessions
+# of the dandiset were in the earlier release. Its abstract gives 1576 neurons in 65 sessions of
+# 42 patients.
+FARAUT_2018_TABLE_1 = """\
+H09|5, 6|1, 2|55|M|Right Mesial Temporal
+H10|7|1|37|M|Left Frontal
+H11|9|1|16|M|Right Lateral Frontal
+H14|17, 18|2, 1|31|M|Bilateral Indep. Temporal
+H15|20, 21|1, 2|45|M|Right Mesial Temporal
+H16|23, 24|2, 1|34|F|Right Frontal
+H17|32|1|19|M|Left Inferior Frontal
+H18|26|1|40|M|Right Mesial Temporal
+H19|27, 28|2, 1|34|M|Left Frontal
+H21|38, 39, 41|2, 1, 3|20|M|Not Localized
+H23|43, 44, 47|3, 2, 1|40|M|Left Mesial Temporal
+H27|58|2|40|M|Bilateral Indep. Temporal
+H28|48|3|22|M|Right Mesial Temporal
+H29|49|3|17|F|Left Deep Insula
+H31|50|2|30|M|Right Mesial Temporal
+H33|52|1|29|M|Left Mesial Temporal
+H42|54, 55|1, 1|29|M|Not Localized
+H43|56|1|27|F|Left Mesial Temporal
+H44|68|1|57|F|Right Mesial Temporal
+H47|92, 97|1, 3|20|M|Right Mesial Temporal
+H48|98, 99|2, 1|54|M|Left Mesial Temporal
+H51|104, 105|3, 1|24|M|Bilateral Frontal and Temporal
+C24|59, 60|1, 2|47|F|Not localized
+C25|61, 63|1, 2|36|F|Bilateral Indep. Mesial Temporal
+C26|64, 66|1, 2|56|F|Left Mesial Temporal
+C27|67|1|44|M|Left Mesial Temporal
+C29|69, 70|1, 2|19|M|Left Neocortical Temporal
+C31|73|3|32|M|Left Neocortical Temporal
+C32|74|2|19|M|Not Localized (Generalized)
+C33|76, 77, 78|3, 2, 1|44|F|Right Mesial Temporal
+C34|85|3|70|M|Bilateral Mesial Temporal
+C37|96|3|33|F|Right Mesial Temporal
+C38|102|3|63|F|Right Mesial Temporal
+C39|93, 100|1, 3|26|M|Right Insula
+C40|101|3|25|M|Right Motor Cortex
+C42|111, 112|1, 2|25|F|Not Localized
+C43|113|3|42|F|Left Mesial Temporal
+C44|114|3|53|F|Right Mesial Temporal
+C47|115|3|32|M|Right Mesial Temporal
+C48|116|3|32|F|Left Mesial Temporal
+C49|117, 118|3, 1|24|F|Left Mesial Temporal
+C51|119, 120|3, 1|17|M|Not Localized (No Seizures)
+"""
+
+
+def _parse_table(text: str) -> pd.DataFrame:
     rows = []
-    for line in ONLINE_TABLE_1.strip().splitlines():
+    for line in text.strip().splitlines():
         sid, sessions, variants, age, sex, diagnosis = line.split("|")
         for s, v in zip(re.findall(r"\d+", sessions), re.findall(r"\d+", variants)):
             rows.append({"table_subject": sid, "session": int(s), "variant": int(v), "age": int(age),
                          "sex": sex, "diagnosis": diagnosis})
     return pd.DataFrame(rows)
+
+
+def online_table_1() -> pd.DataFrame:
+    """Online-only Table 1 as one row per session."""
+    return _parse_table(ONLINE_TABLE_1)
+
+
+def faraut_2018_table_1() -> pd.DataFrame:
+    """Table 1 of Faraut et al. 2018 (the earlier release) as one row per session."""
+    return _parse_table(FARAUT_2018_TABLE_1)
 
 
 # --- loading ------------------------------------------------------------------

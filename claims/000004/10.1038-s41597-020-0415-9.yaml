@@ -14,6 +14,13 @@
 # (github.com/rutishauserlab/recogmem-release-NWB at commit 1d95162), including plotFigure5.ipynb,
 # which writes the Figure 5f percentages into the plot as constants.
 #
+# After the first verification round the author added previous-release-link and rewrote the
+# criterion of previous-release-additions, which had been blocked for want of the earlier
+# release's session list. When writing them the author had read Table 1 of Faraut et al. 2018,
+# which lists that release's sessions, and its abstract (65 sessions, 42 patients, 1576 neurons),
+# and had seen that the table holds a session 98 that Online-only Table 1 of this paper does not;
+# no count of new sessions, subjects or units in the dandiset had been run.
+#
 # Method choices fixed here. Recognition trials are the trial rows with stim_phase "recog"; the
 # confidence response is the trial's response_value minus 30 (1 = new, confident; 6 = old,
 # confident), checked in the notebook against the event codes the paper's code reads; "old" is
@@ -297,13 +304,41 @@ claims:
     tolerance: 0.9
   criterion: Sessions whose subject label starts with T. Reproduced when the count is within
     tolerance.
+- id: previous-release-link
+  statement: The sessions of the earlier release (Faraut et al. 2018) are found in this dandiset
+    under the same subject, session id and task variant.
+  source: Faraut et al. 2018, Scientific Data 5, 180010 (doi:10.1038/sdata.2018.10), Table 1
+  data: with_inputs
+  criterion: Sessions are matched by session id. A matched session agrees when its subject label
+    and task variant are those of the earlier table. Reproduced when every session of the
+    earlier table is found and agrees; partially reproduced when at least 90% are found and
+    agree, with the others listed; not reproduced otherwise. Age and sex of the matched subjects
+    are compared and reported. Added in revision after the first verification round (see the
+    opening comment).
 - id: previous-release-additions
   statement: Relative to the earlier release of this task's data (Faraut et al. 2018), this
     release adds 23 sessions, 17 subjects and 288 neurons.
   source: Background and Summary; Technical Validation
   data: with_inputs
-  criterion: Needs the list of sessions of the earlier release (Dryad, doi:10.5061/dryad.46st5)
-    to mark which sessions here are new; then the new sessions, subjects and units are counted.
+  depends_on:
+  - previous-release-link
+  expected:
+  - quantity: new sessions
+    value: 23
+    tolerance: 2.3
+  - quantity: new subjects
+    value: 17
+    tolerance: 1.7
+  - quantity: new neurons
+    value: 288
+    tolerance: 28.8
+  criterion: The earlier release's session list is Table 1 of Faraut et al. 2018, the paper
+    describing it (the Dryad archive, doi:10.5061/dryad.46st5, could not be fetched by a
+    script). New sessions are those of the dandiset not in that list, new subjects those with no
+    session in it, and new neurons the unit rows of the new sessions. Reproduced when all three
+    values are within tolerance; partially reproduced when one or two are; not reproduced
+    otherwise. The differences of the totals the two papers state (sessions, subjects, neurons)
+    are a variant.
 - id: fig4-example-vs-neuron
   statement: Neuron 132-177-4-RA (session 132, channel 177, cell 4, right amygdala) is visually
     selective, responding most to images of animals.

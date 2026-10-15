@@ -30,8 +30,9 @@ of the data; the others repeat the behavioural and single-unit results of Figure
 | Comparable proportions at the two sites (Figure 5f) | Partially reproduced |
 | 9 sessions from Toronto Western Hospital | Reproduced |
 | Example neuron 132-177-4-RA of Figure 4 | Reproduced |
-| 23 sessions, 17 subjects and 288 neurons added to the earlier release | Blocked: other |
-| Example neuron 144-140-3-RH of Figure 3 | Blocked: data missing |
+| The earlier release's sessions are in the dandiset (with outside input) | Partially reproduced |
+| 23 sessions, 17 subjects and 288 neurons added to the earlier release (with outside input) | Partially reproduced |
+| Example neuron 144-140-3-RH of Figure 3 | Blocked: metadata insufficient |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
 and the differences from the paper's method.
@@ -39,11 +40,13 @@ and the differences from the paper's method.
 The memory selective and dual counts follow the Methods (all trials, a 1 s window). The paper's code
 selects on correct trials in a 1.5 s window, and with its choices the counts are 147 and 26, the
 paper's numbers. The new/old label in the files is coded 1 = old, the reverse of the paper's text
-and the files' column description. Two pairs of sessions hold identical spike trains. The attempt
+and the files' column description. Two pairs of sessions hold identical spike trains. Against the
+session list of the earlier release (Faraut et al. 2018, Table 1), the dandiset has the 23 new
+sessions and 17 new subjects the paper states, but 325 units in them, not 288. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/000004-chandravadia-2020-01.yaml`](../../attempts/000004-chandravadia-2020-01.yaml).
 
-- `reproduce_chandravadia_2020.ipynb`: the analysis. It takes two to three minutes, most of it
-  streaming the files.
-- `recogmem.py`: loading the files, Online-only Table 1, and the selectivity and behavioural
-  measures of the paper's code. Other notebooks on this dandiset can import it.
+- `reproduce_chandravadia_2020.ipynb`: the analysis. It takes about three minutes, most of it
+  streaming the files and the bootstrap tests.
+- `recogmem.py`: loading the files, Online-only Table 1, Table 1 of Faraut et al. 2018, and the
+  selectivity and behavioural measures of the paper's code. Other notebooks on this dandiset can import it.
