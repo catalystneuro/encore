@@ -51,3 +51,25 @@ def test_a_first_author_without_a_version_picks_a_published_one(monkeypatch):
     monkeypatch.setattr(tool, "attempt_of", lambda dandiset: None)
     text = tool.fill("author", "001933", "m")
     assert "pinned published version" in text and "Use version" not in text
+
+
+def test_a_repeat_attempt_on_the_same_version_says_the_protocol_changed(monkeypatch):
+    record, entry_dir = tool.attempt_of("001933")
+    monkeypatch.setattr(tool, "protocol_version", lambda: "pilot-99")
+    text = tool.fill("author", "001933", "m", version=record["dandiset_version"])
+    assert "applies pilot-99" in text and "has changed, and this attempt tests" not in text
+    text = tool.fill("author", "001933", "m", version="draft")
+    assert "the dandiset has changed" in text
+
+
+def test_a_repeat_attempt_keeps_the_earlier_transcripts(tmp_path):
+    import subprocess
+    (tmp_path / "attempts").mkdir()
+    (tmp_path / "attempts" / "000001-demo-01.yaml").write_text("id: 000001-demo-01\n")
+    (tmp_path / "transcripts" / "000001").mkdir(parents=True)
+    (tmp_path / "transcripts" / "000001" / "author.md").write_text("# author\n")
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "add", "."], cwd=tmp_path, check=True)
+    subprocess.run([REPO / "tools" / "archive_transcripts.sh", "000001"], cwd=tmp_path, check=True)
+    assert (tmp_path / "transcripts" / "000001" / "attempt-01" / "author.md").is_file()
+    assert not (tmp_path / "transcripts" / "000001" / "author.md").exists()
