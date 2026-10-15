@@ -73,3 +73,9 @@ def test_a_repeat_attempt_keeps_the_earlier_transcripts(tmp_path):
     subprocess.run([REPO / "tools" / "archive_transcripts.sh", "000001"], cwd=tmp_path, check=True)
     assert (tmp_path / "transcripts" / "000001" / "attempt-01" / "author.md").is_file()
     assert not (tmp_path / "transcripts" / "000001" / "author.md").exists()
+
+
+def test_the_recorder_prompt_names_the_attempt():
+    latest = tool.attempt_of("001933")[0]["id"]
+    text = tool.fill("recorder", "001933", "m")
+    assert latest in text and "readme_row.py 001933 --write" in text and "{" not in text

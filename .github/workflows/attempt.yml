@@ -29,7 +29,7 @@ on:
         description: "Which run"
         required: true
         type: choice
-        options: [author, verifier-1, author-revise-1, verifier-2, author-revise-2, verifier-3, author-revise-3]
+        options: [author, verifier-1, author-revise-1, verifier-2, author-revise-2, verifier-3, author-revise-3, recorder]
       model:
         description: "Model"
         default: claude-opus-5-5
@@ -201,6 +201,9 @@ jobs:
             # protects (.bashrc, .gitconfig, ...) in the working directory.
             git add -A -- attempts claims entries README.md && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
+          elif [ "$ROLE" = recorder ]; then
+            git add -A -- README.md docs/pilot-notes.md && git diff --cached --binary > "$out/changes.patch"
+            git diff --cached --stat
           fi
           python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" \
             --report "$out/transcripts/$DANDISET/$ROLE-report.md" --title "$name"
@@ -255,8 +258,9 @@ jobs:
           # A repeat attempt's first run moves the earlier attempt's transcripts aside before this one's land.
           if [ "$ROLE" = author ]; then "$RUNNER_TEMP/archive_transcripts.sh" "$DANDISET"; fi
           if [ -s out/changes.patch ]; then
-            stray=$(git apply --numstat out/changes.patch | cut -f3 \
-              | grep -vE "^((attempts|claims|entries)/.*$DANDISET|README\.md$)" || true)
+            allowed="^((attempts|claims|entries)/.*$DANDISET|README\.md$)"
+            [ "$ROLE" != recorder ] || allowed="^(README\.md|docs/pilot-notes\.md)$"
+            stray=$(git apply --numstat out/changes.patch | cut -f3 | grep -vE "$allowed" || true)
             [ -z "$stray" ] || { echo "::error::Changes outside dandiset $DANDISET: $stray"; exit 1; }
             git apply --index out/changes.patch
           fi

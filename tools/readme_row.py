@@ -1,0 +1,82 @@
+"""The README's table row for a dandiset, from its latest attempt.
+
+    python tools/readme_row.py DANDISET            # print the row
+    python tools/readme_row.py DANDISET --write    # add it to README.md, or replace the dandiset's row
+
+Counts are of claims on the dandiset, including those that name its codes from elsewhere
+(`with_labels`); claims that also use outside data (`with_inputs`) are shown in brackets; claims on
+data in other archives (`elsewhere`) are left out, as the README says.
+"""
+
+from __future__ import annotations
+
+import argparse
+import sys
+from pathlib import Path
+
+import yaml
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
+
+from agent_run import attempt_of  # noqa: E402
+
+COLUMNS = ("reproduced", "partially_reproduced", "not_reproduced", "blocked")
+
+
+def claim_kinds(dandiset: str, paper: str) -> dict[str, str]:
+    for path in sorted((ROOT / "claims" / dandiset).glob("*.yaml")):
+        data = yaml.safe_load(path.read_text())
+        if data.get("paper") == paper:
+            return {c["id"]: c.get("data", "dandiset") for c in data["claims"]}
+    raise SystemExit(f"error: no claims file for {dandiset} and {paper}")
+
+
+def row(dandiset: str) -> str:
+    found = attempt_of(dandiset)
+    if found is None:
+        raise SystemExit(f"error: no attempt on dandiset {dandiset}")
+    record, entry_dir = found
+    kinds = claim_kinds(dandiset, record["paper"])
+    cells = []
+    for outcome in COLUMNS:
+        mine = [o for o in record["outcomes"] if o["outcome"] == outcome]
+        n = sum(1 for o in mine if kinds.get(o["claim"], "dandiset") in ("dandiset", "with_labels"))
+        m = sum(1 for o in mine if kinds.get(o["claim"]) == "with_inputs")
+        cells.append(f"{n} (+{m})" if m else str(n))
+    _, surname, year = entry_dir.name.split("-", 2)
+    doi = record["paper"].removeprefix("doi:")
+    return (f"| [{dandiset}](https://dandiarchive.org/dandiset/{dandiset}) "
+            f"| [{surname.capitalize()} et al. {year}](https://doi.org/{doi}) | " + " | ".join(cells)
+            + f" | [`{entry_dir.name}`](entries/{entry_dir.name}) |")
+
+
+def write(dandiset: str, readme: Path = ROOT / "README.md") -> None:
+    lines = readme.read_text().splitlines(keepends=True)
+    new = row(dandiset) + "\n"
+    mine = f"| [{dandiset}](https://dandiarchive.org/dandiset/{dandiset}) "
+    rows = [i for i, line in enumerate(lines) if line.startswith("| [") and "dandiarchive.org/dandiset/" in line]
+    if not rows:
+        raise SystemExit("error: no outcome table in README.md")
+    existing = [i for i in rows if lines[i].startswith(mine)]
+    if existing:
+        lines[existing[0]] = new
+    else:
+        lines.insert(rows[-1] + 1, new)
+    readme.write_text("".join(lines))
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
+    parser.add_argument("dandiset")
+    parser.add_argument("--write", action="store_true", help="add the row to README.md")
+    args = parser.parse_args()
+    if args.write:
+        write(args.dandiset)
+    else:
+        print(row(args.dandiset))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
