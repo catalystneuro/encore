@@ -1,0 +1,233 @@
+# Claims for Amjad, Mahajan, Choi, Shrivastav, Murray, Somich, Coyne and Schwerdt (2025),
+# "Microinvasive Probes for Monitoring Electrical and Chemical Neural Activity in Nonhuman
+# Primates", ACS Chem Neurosci 16:2237-2247, on dandiset 002013.
+# Source: the full text, open access under CC-BY 4.0 (PMC12183687), read from its Results,
+# figure legends and Methods.
+#
+# The paper is mostly about fabrication. Its numbers are the insertion yields, the days
+# post-implant of the example sites and the recording parameters; its neural results
+# (Figures 3 to 5) are example traces and trial averages shown without statistics. The claims
+# below turn each figure panel into a test that can be run on the dandiset.
+#
+# When these criteria were written the author had seen the data check only: the file
+# contents; the event codes, which repeat about five times each in the events tables and were
+# deduplicated; the trial conditions decoded from the event codes, and that the 09/26/2024
+# selections match the paper's trial lists on Zenodo (zenodo-link); the applied FSCV waveform;
+# the sampling rates and filter settings; that the raw 09/26/2024 ephys is offset from the
+# trial clock, that the raw FSCV current could not be matched to the trial-aligned FSCV traces
+# and shows no reward contrast at its stored times, and that Monkey P's spike times are offset
+# from its raw signal. For zenodo-link the author had also already seen that beta power computed
+# here correlates with the paper's example trace at r = 0.94, so that criterion was written after
+# its result was known. No other claim's analysis had been run: no reward or side contrast
+# of dopamine or beta power, no burst analysis, and no spike-train or waveform measure.
+#
+# Method choices fixed here where the Methods are silent:
+# - Trials. A trial runs from one "intended trial start" code (128) to the next. Its value cue is
+#   the first "value object start" code (23) in it. Success is a delivered reward. In the
+#   direction task (09/26/2024) a trial is large or small by the big reward (101) or small
+#   reward (100) code, and left or right by the left (117) or right (118) condition code. In the
+#   shape task (09/13/2024) forced trials carry code 119 and only they carry the feedback code
+#   (21); a forced trial with feedback is a success, and it is large when it carries code 101
+#   and small when it does not (code 100 does not occur in this session).
+# - Dopamine. The trial-aligned `da` series (10 Hz, 60 s, trial start at sample 300) is
+#   re-referenced to its value at the value cue (nearest sample), as the Methods reference the
+#   background subtraction there. NaN samples (nulled by the PCA residual test) are left out
+#   of means.
+# - Beta power. The bipolar LFP (1 kHz) is band-passed 13 to 28 Hz with a 4th-order Butterworth
+#   filter run forwards and backwards, the squared Hilbert envelope is taken, and it is smoothed
+#   with a 0.25 s Hanning window (250 samples), over the continuous series.
+# - Statistics. The paper gives none for Figures 3 to 5; contrasts between conditions are
+#   tested here with a two-sided Mann-Whitney U test on per-trial values, at p < 0.05.
+schema_version: 1
+dandiset: "002013"
+paper: doi:10.1021/acschemneuro.5c00071
+claims:
+- id: insertion-yield
+  statement: Insertion yields were low, 21.4% (3 of 14 sensors) in monkey T and 33% (3 of 9) in
+    monkey P, counted as recording sites that stayed functional after insertion until the end
+    of the study.
+  source: Results and Discussion, second paragraph
+  expected:
+  - quantity: Insertion yield, monkey T
+    value: 21.4
+    tolerance: 2.14
+    unit: percent
+  - quantity: Insertion yield, monkey P
+    value: 33.3
+    tolerance: 3.33
+    unit: percent
+  criterion: Needs the list of implanted sensors per monkey and whether each kept recording.
+    Reproduced when both yields are within tolerance.
+- id: chronic-duration
+  statement: The s-µIPs kept recording for more than a year after implantation; the example
+    sites were recorded 483 days (c8dg), 496 days (c3bs-c3a) and 390 days (monkey P) after
+    implantation.
+  source: Figure 3 to 5 legends; Results and Discussion
+  expected:
+  - quantity: Days post-implant, site c8dg, session 09/13/2024
+    value: 483
+    tolerance: 1
+    unit: days
+  - quantity: Days post-implant, site c3bs-c3a, session 09/26/2024
+    value: 496
+    tolerance: 1
+    unit: days
+  - quantity: Days post-implant, monkey P, session 08/13/2018
+    value: 390
+    tolerance: 1
+    unit: days
+  criterion: Needs the implantation date of each site. The tolerance is one day, since a count
+    of days can only be off by the convention for the first day. Reproduced when all three are
+    within tolerance.
+- id: fscv-waveform
+  statement: FSCV applied a triangular waveform from -0.4 to 1.3 V at 400 V/s, every 100 ms (10
+    Hz).
+  source: Methods, FSCV and EPhys Recordings
+  expected:
+  - quantity: Lowest applied potential
+    value: -0.4
+    tolerance: 0.04
+    unit: V
+  - quantity: Highest applied potential
+    value: 1.3
+    tolerance: 0.13
+    unit: V
+  - quantity: Sweep rate
+    value: 400
+    tolerance: 40
+    unit: V/s
+  - quantity: Scan frequency
+    value: 10
+    tolerance: 1
+    unit: Hz
+  criterion: Measured from the applied voltage series of session 09/13/2024. The sweep rate is
+    the median absolute step between samples of the rising ramp times the sampling rate, and the
+    scan frequency is one over the median interval between scan starts. Reproduced when all four
+    values are within tolerance, partially reproduced when three are.
+- id: ephys-acquisition
+  statement: EPhys was sampled at 30 kHz in monkey P and 32 kHz in monkey T, and band-pass
+    filtered from 0.1 to 7500 Hz.
+  source: Methods, FSCV and EPhys Recordings
+  expected:
+  - quantity: Sampling rate, monkey P
+    value: 30000
+    tolerance: 3000
+    unit: Hz
+  - quantity: Sampling rate, monkey T
+    value: 32000
+    tolerance: 3200
+    unit: Hz
+  - quantity: Low cut of the acquisition filter, monkey T
+    value: 0.1
+    tolerance: 0.01
+    unit: Hz
+  - quantity: High cut of the acquisition filter, monkey T
+    value: 7500
+    tolerance: 750
+    unit: Hz
+  criterion: Sampling rates from the timestamps or rate of the raw series; the filter from the
+    Neuralynx settings stored in the electrodes table (monkey P's file has none). Reproduced
+    when all four values are within tolerance.
+- id: shape-task-structure
+  statement: In the shape task, forced trials made up 25% of all trials, and the cue-reward
+    association was reversed after blocks of 50 to 300 trials.
+  source: Methods, Behavioral Tasks
+  expected:
+  - quantity: Forced trials as a share of all trials, session 09/13/2024
+    value: 25
+    tolerance: 2.5
+    unit: percent
+  criterion: Forced trials are those with code 119, of all trials in the trials table. A block is
+    a run of trials in which the same cue image (code 81 or 88) signals the large reward in the
+    successful forced trials; a reversal is placed at the first trial after the last forced
+    trial of the earlier association. Block lengths count all trials, and the first and last
+    blocks, cut by the start and end of the file, are reported but not judged. Reproduced when
+    the forced share is within tolerance and every complete block is 45 to 330 trials long (the
+    reported range widened by 10% of each bound); partially reproduced when only one of the two
+    holds.
+- id: zenodo-link
+  statement: The dandiset reproduces the processed data the paper deposited on Zenodo; the trial
+    selections and the beta power of the paper's example trial computed from the dandiset agree
+    with the paper's own files.
+  source: Data Availability Statement (doi:10.5281/zenodo.14826579)
+  data: with_inputs
+  criterion: Trials are matched by their number (1 to 1501 in the trials table of session
+    09/26/2024). The four Zenodo lists of successful trials (large reward, small reward, left,
+    right) are compared with the selections decoded here from the event codes, and the beta power
+    computed here for the 35th trial of the large-reward list is compared with the Zenodo
+    example trace (-3 to 12 s from the value cue). Reproduced when each list agrees for at least
+    99% of the trials in either and the beta traces correlate at r >= 0.9 at a lag of at most 10
+    ms; partially reproduced when only one of the two holds.
+- id: fig3a-dual-channel
+  statement: Dopamine was measured from two neighbouring channels of one dual-channel s-µIP
+    (sites c8dg and c8ds, 0.1 to 0.2 mm apart), and both showed dopamine increases after the
+    value cue in a single forced large-reward trial.
+  source: Figure 3A; Results and Discussion
+  criterion: Needs the trial-aligned dopamine of both c8dg and c8ds. Reproduced when, in forced
+    large-reward trials, the mean change in dopamine from the value cue over 0 to 3 s after it is
+    above zero at both sites in more than half of the trials.
+- id: fig3a-redox-peaks
+  statement: The single-trial FSCV colour plot shows dopamine redox current, with changes near 0.6
+    V (oxidation) and -0.2 V (reduction) after the value cue.
+  source: Figure 3A
+  criterion: Needs the raw FSCV current on the trial clock. The background-subtracted
+    voltammogram (mean of 0.5 to 2 s after the value cue minus the scan at the value cue),
+    averaged over forced large-reward trials, should have its largest positive value on the
+    rising sweep within 0.45 to 0.75 V and its most negative value on the falling sweep within
+    -0.35 to -0.05 V. Reproduced when both hold.
+- id: fig3b-beta-bursts
+  statement: Single-trial bipolar LFP from site c3bs-c3a shows beta bursts (one to a few cycles of
+    high beta power) whose frequency changes around the cue and other task events.
+  source: Figure 3B; Results and Discussion
+  criterion: Successful large-reward trials of session 09/26/2024. A burst is a run of beta power
+    above the 75th percentile of the beta power over all trial windows of the session that lasts
+    at least 50 ms (one cycle at 20 Hz). For each trial the burst rate (burst onsets per second)
+    is counted in -1 to 0 s and 0 to 1 s from the value cue. Reproduced when the burst rates in
+    the two windows differ by a two-sided Wilcoxon signed-rank test at p < 0.05. Thresholds at
+    the 50th and 90th percentiles are shown as variants. The paper does not define a burst; the
+    threshold and minimum length here are common choices.
+- id: fig4a-dopamine-reward
+  statement: Trial-averaged dopamine at site c8dg is higher after large-reward than after
+    small-reward value cues, in successful forced trials of the shape task.
+  source: Figure 4A
+  criterion: Successful forced trials of session 09/13/2024 that have a row in the trial-aligned
+    FSCV table. Per trial, the mean of the re-referenced dopamine over 0 to 3 s after the value
+    cue (inside the value cue fixation, which ends at feedback). Reproduced when the large-reward
+    median exceeds the small-reward median and the Mann-Whitney test gives p < 0.05. Variants
+    (not deciding) are the stored `da` without re-referencing, the oxidation current `iox`
+    re-referenced the same way, and windows of 0 to 1.5 s and 1.5 to 3 s.
+- id: fig4b-beta-reward
+  statement: Beta-band LFP power at c3bs-c3a in the direction task is more suppressed (stronger
+    event-related desynchronization) after large-reward than after small-reward value cues, in a
+    brief window after the cue.
+  source: Figure 4B
+  criterion: Successful trials of session 09/26/2024, large against small reward. Per trial, the
+    mean beta power over 0 to 0.5 s after the value cue. Reproduced when the large-reward median
+    is below the small-reward median and the Mann-Whitney test gives p < 0.05. Variants (not
+    deciding) are windows of 0 to 1 s and 0.25 to 0.75 s, and power divided by each trial's mean
+    over -0.5 to 0 s.
+- id: fig4c-beta-side
+  statement: With the reward fixed at large, beta-band LFP power is more suppressed when the cue
+    is on the left (contralateral) than on the right (ipsilateral).
+  source: Figure 4C
+  criterion: Successful large-reward trials of session 09/26/2024, left against right condition.
+    Per trial, the mean beta power over 0 to 0.5 s after the value cue. Reproduced when the left
+    median is below the right median and the Mann-Whitney test gives p < 0.05. Variants as for
+    fig4b-beta-reward.
+- id: fig5a-spike-reward
+  statement: Spikes recorded from an s-µIP in the caudate of monkey P (site c33, 390 days post
+    implant) fire at a different rate for large and small reward during the value cue fixation of
+    the direction task.
+  source: Figure 5A; Results and Discussion
+  criterion: Needs the value cue time and reward size of each trial of monkey P's session.
+    Reproduced when the firing rate of the sorted unit over 0 to 1 s after the value cue differs
+    between large and small reward trials by a Mann-Whitney test at p < 0.05.
+- id: fig5bc-unit-isolation
+  statement: The s-µIP recorded a spike-sorted unit in monkey P, shown by its average waveform and
+    its interspike interval histogram.
+  source: Figure 5B and 5C
+  criterion: The sorted unit is Plexon unit 1, as in the paper's spikes_PCA.m (Plexon unit 0 is the
+    unsorted cluster). Reproduced when fewer than 1% of its interspike intervals are under 1 ms
+    and the trough of its mean stored waveform is deeper than 3 times the noise level of the
+    raw signal, taken as the median absolute deviation divided by 0.6745 of 300 to 6000 Hz
+    band-passed signal over 600 s. Partially reproduced when only one holds.
