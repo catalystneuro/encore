@@ -1,0 +1,154 @@
+# Claims for Choi, Amjad, Murray, ... & Schwerdt (2025), J Neurosci Methods 110467, on dandiset
+# 002014. Source: the author manuscript in PubMed Central (PMC13250822), full text (CC BY), read
+# from its Methods, Results and figure legends.
+#
+# When these criteria were written, the author had seen the data check only: the file's
+# contents, the event table and the trial classes built from it (which match the paper's Zenodo
+# trial lists), the spectrum of the stored LFP, the offset between the raw ephys clock and the
+# trial clock (11812.1 s, from cross-correlating the raw and stored LFP), the range of the spike
+# times, the failed search for the trial-aligned FSCV in the raw FSCV, and the NaN pattern of the
+# trial-aligned dopamine array. While checking the array layout the author printed the stored
+# dopamine values of three trials, including trial 133 (1-based), from 1 s before to 2 s after
+# the trial start, which ends near the value cue. No PSTH, no large against small comparison and
+# no beta power had been computed.
+#
+# The dandiset holds one session (09/27/2024) of monkey T, the session of Figures 8 and 9. The
+# surgical, culture, drainage and yield results, and all of monkey J, are not in it.
+#
+# Choices fixed here for all tested claims. Trials are classed from the dandiset's events: a
+# trial is the span from its trial-start event (code 128, the trials table's midpoint_time) to
+# the next; it is large (small) and successful when it holds a big (small) reward event and no
+# error event. Trial ids in the paper are 1-based, as in its Zenodo trial lists. Times are taken
+# relative to the trial's value cue display, V (event "value object start", code 23), and RW is
+# the trial's reward event (code 101 or 100). Spike times are placed on the trial clock with the
+# offset measured in the data check; the stored times are shown as a variant.
+schema_version: 1
+dandiset: "002014"
+paper: doi:10.1016/j.jneumeth.2025.110467
+claims:
+- id: fig8a-single-trial-dopamine
+  statement: In a single trial (trial 133 of the session), dopamine concentration changes at
+    site c8ds fluctuate, especially after the value cue display.
+  source: Figure 8A and its legend
+  criterion: The trial's dopamine trace (the `da` column) is referenced to its value at V. The
+    standard deviation over 0 to 5 s after V is compared with that over 5 s to 0 s before V.
+    Reproduced when the ratio after to before exceeds 1. The trial can be read as trial id 133
+    (1-based, as in the paper's Zenodo lists; index 132) or as index 133; reproduced when either
+    reading gives a ratio above 1. The ratio over all successful trials is reported as a
+    reference.
+- id: fig8b-dopamine-large-vs-small
+  statement: Trial-averaged dopamine at site c8ds, aligned to the value cue, increases more for
+    large than for small reward trials, especially between the value cue display and reward.
+  source: Figure 8B and its legend
+  criterion: For each successful trial, the `da` trace is referenced to its value at V (the
+    paper subtracts the background at V; the PCA estimate is linear in the current, so this is
+    the same up to the model) and averaged from V to the trial's RW. Reproduced when the large
+    trials' values exceed the small trials' (difference of means above 0) with a two-sided
+    Mann-Whitney test p < 0.05. Not reproduced otherwise. Trials whose window holds only NaN are
+    dropped and counted. Other windows (0 to 2 s, RW to RW + 3 s) and the two halves of the
+    session are shown as variants.
+- id: fig9a-spikes-task-aligned
+  statement: Spikes recorded at site c5d on a chamber-implanted CFE can be shown as a raster and
+    a peristimulus time histogram aligned to the value cue display, for large and small reward
+    trials.
+  source: Figure 9A and its legend; Results, section 3.5
+  criterion: The thresholded spikes of the paper's file (the `thresholded_units` table, the unit
+    with nearly all spikes) are used; the Plexon unit is a variant. Reproduced when (i) at least
+    90% of successful trials have a spike within 1 s before to 3 s after V, and (ii) the
+    trial-averaged firing rate is modulated around V, by the variance across 100 ms bins from
+    -1 to 3 s of the PSTH exceeding the 95th percentile of the same statistic over 200 random
+    alignments (V replaced by a uniform time within the same trial's span). The large and small
+    PSTHs are shown and their difference reported without deciding the outcome, as the paper
+    states none.
+- id: fig9bc-unit-waveform-isi
+  statement: The spikes at site c5d have a consistent waveform (mean and standard deviation) and
+    an interspike interval distribution (1 ms bins) consistent with a single unit.
+  source: Figure 9B and 9C and their legends
+  depends_on:
+  - fig9a-spikes-task-aligned
+  criterion: Same unit as fig9a-spikes-task-aligned. Reproduced when fewer than 1% of
+    interspike intervals are shorter than 1 ms (a common refractory criterion; the paper gives
+    none) and the largest absolute value of the mean waveform is more than twice the standard
+    deviation across spikes at that sample. Partially reproduced when only one holds.
+- id: fig9d-beta-suppression-large
+  statement: Trial-averaged beta-band LFP power at c7b referenced to c5c is suppressed more in
+    the brief window after the value cue for large than for small reward cues.
+  source: Figure 9D and its legend
+  criterion: The stored bipolar LFP is band-passed to 13 to 30 Hz (a common beta band; the paper
+    gives none) with a 4th order zero-phase Butterworth filter over V - 3 s to V + 3 s, and power
+    is the squared Hilbert envelope. Per successful trial, the measure is log10 of mean power
+    over 0 to 0.5 s after V divided by mean power over 0.5 s before V. Reproduced when large
+    trials are lower than small (difference of medians below 0) with a two-sided Mann-Whitney
+    test p < 0.05. Partially reproduced when both conditions have a median below 0 and large is
+    lower but p >= 0.05. Not reproduced otherwise. Trials with NaN in the window are dropped and
+    counted. Windows of 0 to 0.3 s and 0 to 1 s, a 1 s baseline, and bands of 15 to 30 and 12 to
+    25 Hz are variants.
+- id: recordings-two-monkeys
+  statement: The chamber system provided recordings of dopamine and electrical neural activity in
+    two monkeys (T and J).
+  source: Abstract; Results, section 3.5
+- id: scfe-functional-yield
+  statement: 53% (21/40) and 25% (13/51) of implanted sCFEs retained functionality (background
+    current above 500 nA and noise below 0.05 nA) in monkeys T and J.
+  source: Results, section 3.5
+  expected:
+  - quantity: Functional sCFE fraction, monkey T
+    value: 0.53
+    tolerance: 0.053
+  - quantity: Functional sCFE fraction, monkey J
+    value: 0.25
+    tolerance: 0.025
+- id: scfe-background-yield
+  statement: 73% (29/40) and 39% (20/51) of implanted sCFEs retained background current above
+    500 nA in monkeys T and J, of which 28% and 35% had noise above 0.05 nA.
+  source: Results, section 3.5
+  expected:
+  - quantity: sCFE fraction with background above 500 nA, monkey T
+    value: 0.73
+    tolerance: 0.073
+  - quantity: sCFE fraction with background above 500 nA, monkey J
+    value: 0.39
+    tolerance: 0.039
+- id: mcfe-functional-yield
+  statement: 21.4% (3/14) and 14.2% (2/14) of mCFEs retained functionality in monkeys T and J.
+  source: Results, section 3.5
+  expected:
+  - quantity: Functional mCFE fraction, monkey T
+    value: 0.214
+    tolerance: 0.0214
+  - quantity: Functional mCFE fraction, monkey J
+    value: 0.142
+    tolerance: 0.0142
+- id: dopamine-signal-yield
+  statement: Of the functional CFEs, 63% (15/24) and 53% (8/15) in monkeys T and J displayed
+    visible dopamine signals and were used during task performance.
+  source: Results, section 3.5
+  expected:
+  - quantity: Fraction of functional CFEs with dopamine signals, monkey T
+    value: 0.63
+    tolerance: 0.063
+  - quantity: Fraction of functional CFEs with dopamine signals, monkey J
+    value: 0.53
+    tolerance: 0.053
+- id: asepsis-cultures
+  statement: Monkey T kept negative bacterial cultures for all samples; in monkey J,
+    staphylococcus cultured at 29 days post-implant was cleared by 39 to 44 days and the chamber
+    stayed aseptic for 286 days after treatment.
+  source: Results, section 3.2; Abstract
+- id: fig6-drainage-volume
+  statement: Fluid aspirated from the chamber per session ranged from 0.3 to 4.8 mL in monkey T
+    and 0.2 to 9.8 mL in monkey J, and was sanguinous for the first 18 (T) and 217 (J) days.
+  source: Results, section 3.2; Figure 6
+  expected:
+  - quantity: Maximum volume per session, monkey T
+    value: 4.8
+    tolerance: 0.48
+    unit: mL
+  - quantity: Maximum volume per session, monkey J
+    value: 9.8
+    tolerance: 0.98
+    unit: mL
+- id: fig7-bone-growth-margins
+  statement: Bone growth was observed within and around the chamber in both monkeys, and the
+    chamber margins stayed relatively healthy.
+  source: Results, sections 3.3 and 3.4; Figure 7
