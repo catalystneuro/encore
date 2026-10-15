@@ -27,7 +27,10 @@ reasoning and the differences from the paper's method.
 On the draft, the rate maps are linked to their units, and the units, epochs, unvisited bins, lost
 positions and spike-time resolution are documented. The flight-day-4 result changed from the first
 attempt because the draft leaves out three rate maps that were identical copies of others; with
-them the test gives p = 0.055, without them 0.024. Rat2's units are still not spatially selective
+them the test gives p = 0.055, without them 0.024; without Rat2 it gives 0.035 on either version.
+The shuffle test, calibrated with Poisson spike trains, gives 0.074 false positives over all flight
+ES epochs and up to 0.21 in one session, and the flight-day-9 outcome is the same against those
+rates. Rat2's units are still not spatially selective
 with the position trace in any window, and whose position the trace is in Rat2's task epochs is
 not established. The description still places the preflight recordings on a flat rectangular
 track and reports EEG, which no file holds. The attempt records, with the reasons and the
