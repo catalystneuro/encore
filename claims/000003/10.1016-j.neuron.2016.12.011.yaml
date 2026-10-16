@@ -1,0 +1,369 @@
+# Claims for Senzai & Buzsaki (2017) on dandiset 000003.
+# Source: the accepted author manuscript in PubMed Central (PMC5293146), full text, read from its
+# Results, figure legends and STAR Methods. The version of record is not open access. The
+# supplementary figures (S1 to S7) were not available; claims citing them rest on the main text.
+#
+# What the author had seen when these criteria were written: the file list, the contents of every
+# file, the data check, and exploratory runs of the helper module on all files, made while
+# writing and debugging it. Those runs printed, for each type of unit, the counts, the median
+# rates by state, burst indices and trough-to-peak latencies; the open-field remapping index and
+# the fraction of remapping place cells; the T-maze place field counts; the optogenetic
+# suppression counts with the 20 ms pre-pulse baseline; the DS2 peak ratios and times; the theta
+# and gamma modulation and the rate correlations; and the number of GC-MC pairs the automatic
+# CCG test detects. Nothing was tuned on these results: every threshold below is the paper's,
+# or a choice stated in the helper module's docstring, fixed when the function was written. The
+# one change made after a run was to the T-maze run segment, whose first version took the
+# waiting area at the ends of the side arms for the reward port. Results not seen before the
+# criteria: burst facilitation, state-dependent transmission, synchrony, splitter cells,
+# population-vector remapping, the central-arm activity, the T-maze peak rate and information,
+# and the inheritance of place fields. The criteria of mc-deeper and gc-mc-classification were
+# written after the rest, once the shank of each unit was found in 17 files, and before their
+# analysis was run; testing the loader on one of these files had printed its GC and MC median DS2
+# amplitudes (-83 and +150 uV).
+#
+# The dandiset gives each unit a cell type label (granule cell, mossy cell, CA3 pyramidal cell,
+# narrow or wide waveform interneuron), taken from the authors' unit summary. Claims use these
+# labels. Only 17 files say which shank each unit was recorded on, so the paper's classification
+# features can be computed for those files alone.
+# Units are counted once per recording day: the probe was moved 70 um after each day and every
+# unit has its own global_id, so units on different days are treated as different cells.
+#
+# Method choices fixed here, where the Methods leave them open (also in the helper's docstring):
+# "wake" is read two ways, the `awake` periods alone, or `awake` and `quiet` together; the light
+# baseline is read two ways (the 20 ms before each pulse, or 50 to 200 ms after onset, the rest of
+# the 5 Hz cycle); bursts are spikes at most 6 ms apart; the DS2 peak ratio is the largest rate
+# within +-20 ms over the mean rate at 50 to 100 ms on both sides; place fields use the map's
+# peak as the "local maximum" in the open field; the T-maze run is the trial's outbound run from
+# the start of the central arm to within 10 cm of the reward port, stimulation trials left out;
+# open-field and T-maze speed from positions smoothed with a 0.25 s Gaussian.
+schema_version: 1
+dandiset: "000003"
+paper: doi:10.1016/j.neuron.2016.12.011
+claims:
+- id: unit-counts
+  statement: The second-stage classification divided dentate excitatory neurons into 586 putative
+    granule cells (GC) and 500 putative mossy cells (MC).
+  source: Results, Identification of granule cells and mossy cells; Figure 1F
+  expected:
+  - quantity: GC units
+    value: 586
+    tolerance: 58.6
+  - quantity: MC units
+    value: 500
+    tolerance: 50
+  criterion: Counted from the units' cell_type labels over all files, once per recording day.
+    Reproduced when both counts are within tolerance; partially reproduced when one is.
+- id: first-stage-labels
+  statement: Narrow-waveform interneurons have a trough-to-peak latency below 0.425 ms, and among
+    wide-waveform units the excitatory cells have a burst index above the threshold separating
+    them from wide-waveform interneurons.
+  source: Figure 1A; STAR Methods, Unit classification
+  criterion: Trough-to-peak latency from the mean of each unit's first 200 stored waveforms, on the
+    channel of largest amplitude, upsampled to 100 kHz; burst index from the spike times as the
+    Methods define it. The threshold reads 1.2 in the Methods and 1.8 in the Figure 1A legend;
+    both readings are tested. Reproduced when, under one reading, at least 90% of labelled
+    narrow-waveform units are below 0.425 ms, at least 90% of GC and MC are at or above
+    0.425 ms with a burst index above the threshold, and at least 90% of wide-waveform
+    interneurons are at or above 0.425 ms with a burst index at or below it. Partially
+    reproduced when two of the three groups meet it.
+- id: interneuron-rates
+  statement: Narrow-waveform interneurons fire faster than wide-waveform interneurons (medians
+    7.97 and 2.11 Hz; Kruskal-Wallis P < 0.00001).
+  source: Results, Identification of granule cells and mossy cells
+  expected:
+  - quantity: median rate of narrow-waveform interneurons
+    value: 7.97
+    tolerance: 0.797
+    unit: Hz
+  - quantity: median rate of wide-waveform interneurons
+    value: 2.11
+    tolerance: 0.211
+    unit: Hz
+  criterion: The rate is not defined in the paper; readings are (a) spikes over the span of the
+    recording and (b) the rate in `awake` periods. The dandiset's interneuron labels include CA3
+    interneurons, which the paper counts apart. Reproduced when, under one reading, both medians
+    are within tolerance and the Kruskal-Wallis test gives P < 0.00001; partially reproduced when
+    only the test holds.
+- id: gc-narrower-waveform
+  statement: The waveform of granule cells is narrower than that of mossy cells.
+  source: Results, end of Identification of granule cells and mossy cells; Figure 1E
+  criterion: Trough-to-peak latency as in first-stage-labels. Reproduced when the GC median is
+    below the MC median with a two-sided Mann-Whitney P < 0.05. The share of units whose peak
+    falls at the end of the stored 1.6 ms is reported, as their latency is a lower bound.
+- id: optotag-drd2
+  statement: In DRD2-Cre::Ai35 mice, 29 of 107 putative mossy cells were suppressed by green light,
+    against none of 202 putative granule cells, 8 of 68 wide-waveform and none of 69
+    narrow-waveform interneurons.
+  source: Results, Optogenetic validation; Figure 1H; STAR Methods, Optogenetic tagging
+  expected:
+    quantity: fraction of MC suppressed
+    value: 0.271
+    tolerance: 0.0271
+  criterion: Units of DRD2-Cre::Ai35 sessions that hold the 20 ms light pulses; suppressed when
+    the rate in +2 to +15 ms after pulse onset is at least 20% below the baseline (Methods). The
+    baseline is read two ways (the 20 ms before the pulse; 50 to 200 ms after onset). Reproduced
+    when, under one reading, the MC fraction is within tolerance and the GC fraction is below
+    0.05; partially reproduced when, under one reading, the MC fraction exceeds four times the GC
+    fraction but the values are outside these bounds.
+- id: mc-more-active
+  statement: Mossy cells are more active than granule cells during both waking and NREM sleep
+    (Kruskal-Wallis P < 0.0001 for each).
+  source: Results, Physiological properties; Figure 2A
+  criterion: Per-unit rates in each state from the `states` table. Reproduced when, under one
+    reading of wake, the MC median exceeds the GC median in wake and in NREM with Kruskal-Wallis
+    P < 0.0001 for each; partially reproduced when it holds in one state.
+- id: gc-nrem-highest
+  statement: Granule cells fire most during NREM sleep and at similar rates during wake and REM.
+  source: Results, Physiological properties; Figure 2A
+  criterion: The paper's test, a Kruskal-Wallis test across the three states followed by pairwise
+    Mann-Whitney tests with Bonferroni correction (three comparisons). Reproduced when, under one
+    reading of wake, NREM exceeds wake and REM (adjusted P < 0.05 for both) and wake against REM
+    is not significant (adjusted P >= 0.05). Partially reproduced when the NREM part holds and
+    wake and REM differ.
+- id: ca3-wake-highest
+  statement: CA3 pyramidal neurons are most active during wake and least active during REM.
+  source: Results, Physiological properties; Figure 2A
+  criterion: As in gc-nrem-highest. Reproduced when, under one reading of wake, the wake median is
+    the highest and the REM median the lowest, with each pairwise test at adjusted P < 0.05;
+    partially reproduced when the ordering holds but not every test is significant.
+- id: nrem-wake-ratio
+  statement: Granule cells increase their firing in NREM sleep compared with waking, while mossy
+    cells fire at equivalent rates in the two states.
+  source: Figure 1D; Discussion, first paragraph
+  criterion: Per-unit ratio of the NREM rate to the wake rate (units with a wake rate above 0).
+    Reproduced when, under one reading of wake, the GC median ratio is above 1 and above the MC
+    median ratio (two-sided Mann-Whitney P < 0.05). The MC median ratio and a Wilcoxon test of MC
+    NREM against wake are reported.
+- id: theta-modulation
+  statement: Granule cells are more strongly phase-modulated by theta oscillations than mossy
+    cells and fire at later theta phases (Kruskal-Wallis P < 0.0001 for both).
+  source: Results, Physiological properties; Figure 2C
+  criterion: Theta (4 to 10 Hz) phase from the file's theta-reference LFP channel during `awake`
+    periods (up to an hour per file) where the amplitude exceeds median + 0.5 SD; units with
+    Rayleigh P < 0.05 and kappa > 0.1. MRL compared by Kruskal-Wallis. Phases are compared on
+    (a) (-pi, pi] with 0 at the peak of the filtered LFP, (b) [0, 2 pi). Reproduced when the GC
+    MRL median is higher with P < 0.0001 and, under one phase reading, the GC circular mean phase
+    is later than the MC one with Kruskal-Wallis P < 0.0001; partially reproduced when one part
+    holds.
+- id: gamma-modulation
+  statement: Granule cells are more strongly phase-modulated by gamma oscillations than mossy cells
+    and fire at earlier gamma phases (Kruskal-Wallis P < 0.0001 for both).
+  source: Results, Physiological properties; Figure 2B
+  criterion: As theta-modulation, for gamma (30 to 80 Hz, amplitude above median + 1 SD), with
+    earlier in place of later.
+- id: gamma-rate-correlation
+  statement: Slow-firing neurons are more strongly coupled to gamma than fast-firing ones (GC r =
+    -0.176, MC r = -0.184, P < 0.0001 for each).
+  source: Results, Physiological properties
+  expected:
+  - quantity: Pearson r, GC rate against gamma MRL
+    value: -0.176
+    tolerance: 0.0176
+  - quantity: Pearson r, MC rate against gamma MRL
+    value: -0.184
+    tolerance: 0.0184
+  criterion: Rate is spikes over the recording span. Readings are (a) all GC or MC with a gamma MRL,
+    (b) only the units passing Rayleigh P < 0.05 and kappa > 0.1. Reproduced when, under one
+    reading, both r are within tolerance with P < 0.0001; partially reproduced when both r are
+    negative with P < 0.0001.
+- id: ds2-recruitment
+  statement: Granule cells are more effectively recruited by type 2 dentate spikes than mossy
+    cells and fire earlier (Kruskal-Wallis P < 0.0001 for both).
+  source: Results, Physiological properties; Figure 2D and 2E
+  criterion: Histograms of spikes around the DS2 peaks stored in the file (2 ms bins, +-100 ms).
+    Reproduced when the GC median peak ratio exceeds the MC median and the GC median peak time is
+    earlier, each with Kruskal-Wallis P < 0.0001; partially reproduced when one holds.
+- id: monosyn-gc-to-mc
+  statement: 5.5% of granule cells monosynaptically excite mossy cells (32 pairs), whereas no mossy
+    cell significantly excites a granule cell.
+  source: Results, Granule cell-mossy cell spike transmission; Figure 3B and 3C
+  expected:
+    quantity: fraction of GC exciting MC
+    value: 0.055
+    tolerance: 0.0055
+  criterion: The automatic test of the Methods on all GC-MC pairs recorded together; the paper's
+    manual inspection is not repeated. The fraction is read three ways (a) significant GC to MC
+    pairs over all GC, (b) GC with at least one MC target over all GC, (c) significant pairs over
+    tested pairs. Reproduced when, under one reading, the fraction is within tolerance and no MC
+    to GC pair is found; partially reproduced when GC to MC pairs outnumber MC to GC pairs at
+    least four to one; not reproduced otherwise.
+- id: burst-facilitation
+  statement: Spike transmission probability from granule cells to mossy cells increases from the
+    first to the second spike of a granule cell burst (P < 0.001).
+  source: Results, Granule cell-mossy cell spike transmission; Figure 3E to 3G
+  depends_on:
+  - monosyn-gc-to-mc
+  criterion: For the detected GC to MC pairs, transmission probability (excess MC spikes at +1.5 to
+    +5 ms over the CCG baseline, per GC spike) for first and second spikes of bursts (spikes at
+    most 6 ms apart). Reproduced when the second spike's probability exceeds the first's by a
+    paired Wilcoxon test at P < 0.001; partially reproduced at P < 0.05.
+- id: state-transmission
+  statement: GC to MC spike transmission is lower during NREM sleep than during waking (n = 31, P <
+    0.005).
+  source: Results, State-dependent changes; Figure 4B
+  depends_on:
+  - monosyn-gc-to-mc
+  criterion: Transmission probability as in burst-facilitation, from GC spikes in `awake` periods
+    against GC spikes in `nrem` periods, per detected pair. Reproduced when NREM is lower by a
+    paired Wilcoxon test at P < 0.005; partially reproduced at P < 0.05.
+- id: zero-lag-synchrony
+  statement: Synchronous co-activation within 1 ms is found in 23% of mossy cells and 9% of CA3
+    pyramidal cells, but in fewer than 0.2% of granule cell pairs.
+  source: Results, Granule cell-mossy cell spike transmission
+  expected:
+  - quantity: MC fraction with synchrony
+    value: 0.23
+    tolerance: 0.023
+  - quantity: CA3 fraction with synchrony
+    value: 0.09
+    tolerance: 0.009
+  - quantity: GC pair fraction with synchrony
+    value: 0.002
+    tolerance: 0.0002
+  criterion: The Methods' test at -1 to +1 ms on all same-type pairs recorded together. The MC and
+    CA3 fractions are read as (a) fractions of pairs and (b) fractions of cells with at least one
+    synchronous partner; the GC value as a fraction of pairs, where the claim holds for any value
+    up to 0.0022. Reproduced when, under one reading, all three are within tolerance; partially
+    reproduced when the MC and CA3 fractions exceed the GC pair fraction by at least ten times.
+    Units on one shank cannot be told apart from units on different shanks, as the files do not
+    say which shank a unit is on.
+- id: tmaze-central-active
+  statement: On the circular T-maze, the fraction of active neurons (above 1 Hz) is higher in the
+    central arm than in the side arms, for granule cells, mossy cells and CA3 pyramidal cells
+    (Kruskal-Wallis P < 0.00001 for each).
+  source: Results, Spatial and memory properties; Figure 5B
+  criterion: Fraction of each type's units above 1 Hz in each spatial bin of the linearised maze;
+    central-arm bins against side-arm bins. Reproduced when the central median exceeds the
+    side-arm median with Kruskal-Wallis P < 0.00001 for all three types; partially reproduced when
+    it holds at P < 0.05 for all three or at P < 0.00001 for one or two.
+- id: tmaze-multiple-fields
+  statement: Few granule cells have two or more place fields on the T-maze (6.6%), against 57.8% of
+    mossy cells and 36.1% of CA3 pyramidal cells (Kolmogorov-Smirnov P < 0.0001).
+  source: Results, Spatial and memory properties; Figure 5C and 5D
+  expected:
+  - quantity: GC with two or more fields
+    value: 0.066
+    tolerance: 0.0066
+  - quantity: MC with two or more fields
+    value: 0.578
+    tolerance: 0.0578
+  - quantity: CA3 with two or more fields
+    value: 0.361
+    tolerance: 0.0361
+  criterion: Fields from linearised rate maps of every GC, MC and CA3 unit in sessions with T-maze
+    runs. The fractions are read as (a) of all units, (b) of units with at least one field.
+    Reproduced when, under one reading, all three fractions are within tolerance and the GC
+    against MC Kolmogorov-Smirnov test on field counts gives P < 0.0001; partially reproduced
+    when the GC fraction is the lowest and the test holds.
+- id: tmaze-peak-info
+  statement: Granule cells have the lowest within-field peak firing rates (GC against MC,
+    Kolmogorov-Smirnov P < 0.003) and the lowest spatial information of the three types (P <
+    0.0005).
+  source: Results, Spatial and memory properties; Figure 5E and 5F
+  criterion: Within-field peak rate of units with a field; spatial information (bits/s) of all
+    units. Reproduced when the GC median peak rate is below the MC median with KS P < 0.003, and
+    the GC median information is below the MC and CA3 medians with KS P < 0.0005 for both;
+    partially reproduced when the medians are ordered so but a test fails.
+- id: tmaze-splitters
+  statement: The fraction of splitter cells, whose central-arm firing predicts the coming turn, is
+    comparable in granule cells, mossy cells and CA3 pyramidal cells.
+  source: Results, Spatial and memory properties
+  criterion: A claim of absence. A splitter is a unit with a central-arm field whose per-run rates
+    in the field's bins differ between left and right runs by a two-way ANOVA (position x choice,
+    choice P < 0.001, Methods). The paper names no test for the comparison across types; a
+    chi-square test of splitter counts across the three types is fixed here. Reproduced when P >=
+    0.05, not reproduced when P < 0.05; the fractions are reported either way.
+- id: remap-positive
+  statement: For neurons with stable place fields, the remapping index between open fields A and B
+    is above zero in each group (Wilcoxon signed-rank; GC P < 0.05, MC and CA3 P < 0.00001).
+  source: Results, Spatial and memory properties; Figure 6C and 6D
+  criterion: Remapping index r(AA') - mean(r(AB), r(BA')) from smoothed rate maps; place cells are
+    units with, in at least one of A, B, A', first-half against second-half map correlation of at
+    least 0.5 and a place field of at least 100 pixels with a peak of at least 1 Hz. Reproduced
+    when the three Wilcoxon tests reach the paper's levels; partially reproduced when all three
+    are positive at P < 0.05.
+- id: remap-gc-lt-mc
+  statement: Granule cells with stable place fields remap less than mossy cells (Kruskal-Wallis P =
+    0.034; post hoc GC against MC P = 0.028).
+  source: Results, Spatial and memory properties; Figure 6D
+  criterion: Place cells as in remap-positive. Reproduced when the GC median is below the MC median
+    with Kruskal-Wallis P < 0.05 across the three types and a Bonferroni-corrected Mann-Whitney GC
+    against MC P < 0.05; partially reproduced when the GC median is lower and only one test holds.
+- id: remap-fractions
+  statement: Only 36.7% of granule cells with place fields (11 of 30) remap, against 61.3% of mossy
+    cells (68 of 111) and 55.6% of CA3 pyramidal cells (80 of 144).
+  source: Results, Spatial and memory properties; Figure 6C
+  expected:
+  - quantity: GC fraction remapping
+    value: 0.367
+    tolerance: 0.0367
+  - quantity: MC fraction remapping
+    value: 0.613
+    tolerance: 0.0613
+  - quantity: CA3 fraction remapping
+    value: 0.556
+    tolerance: 0.0556
+  criterion: Remapping when the index is at least 0.2, among place cells as in remap-positive.
+    Reproduced when all three fractions are within tolerance; partially reproduced when the GC
+    fraction is the lowest. The place-cell counts (30, 111, 144) and the units per type (247,
+    181, 317 in 5 mice) are reported.
+- id: pv-remap
+  statement: Population-vector remapping is smaller for granule cells than for mossy cells and CA3
+    pyramidal cells, for populations of 5, 10, 15 and 20 place cells.
+  source: Results, Spatial and memory properties; Figure 6E to 6G
+  criterion: Place cells pooled across sessions per type; for each population size, 1000 random
+    draws (fixed seed); population-vector correlation as the mean over pixels visited in both
+    maps of the Pearson correlation of the stacked rates; index PV(AA') - mean(PV(AB), PV(BA')).
+    Reproduced when, for every size, the GC median index is below the MC and CA3 medians with
+    Kruskal-Wallis P < 0.00001; partially reproduced when it holds for some sizes.
+- id: inheritance-tmaze
+  statement: Mossy cells rarely inherit place fields from single presynaptic granule cells; of 10
+    place fields of connected granule cells, only 2 overlapped a field of the postsynaptic mossy
+    cell.
+  source: Results, Transmission of place information; Figure 7A and 7B
+  depends_on:
+  - monosyn-gc-to-mc
+  - tmaze-multiple-fields
+  criterion: Detected GC to MC pairs in sessions with T-maze runs; a GC field overlaps when it
+    shares a bin with a field of the partner MC on the same arm. "Rarely" is taken as at most a
+    third of the GC fields (the paper's 2 of 10 is inside it). Reproduced when at most a third of
+    GC fields overlap; not reproduced otherwise. Fewer than 5 GC fields leaves it blocked.
+- id: inheritance-openfield
+  statement: In the open fields, the rate maps of connected granule cells and mossy cells are not
+    correlated within the granule cell's place field (median near 0, n = 19, Wilcoxon P = 0.60).
+  source: Results, Transmission of place information; Figure 7J
+  depends_on:
+  - monosyn-gc-to-mc
+  criterion: A claim of absence, judged on the paper's test, a Wilcoxon signed-rank test of the
+    correlations against 0. For detected GC to MC pairs, in each open-field session (A, B, A' and
+    the curtain sessions) where the GC has a place field, the correlation of the GC and MC maps
+    over the field's pixels. Reproduced when P >= 0.05; not reproduced when P < 0.05. Fewer than
+    5 comparisons leaves it blocked.
+- id: mc-deeper
+  statement: Mossy cells are located deeper than granule cells relative to the reversal of the type
+    2 dentate spike (DS2) (Mann-Whitney P < 0.001).
+  source: Figure 1G; Results, Identification of granule cells and mossy cells
+  criterion: The files give no coordinates for the recording sites, so depth is read from the DS2
+    amplitude at each unit's site, the feature the paper uses to place units (positive below the
+    reversal, in the hilus, and negative above it). Only the 17 files whose units carry their
+    shank (`electrode_group`) and waveforms can be used; the site is the shank channel with the
+    largest mean waveform. Reproduced when the MC median DS2 amplitude exceeds the GC median with a
+    two-sided Mann-Whitney P < 0.001; partially reproduced at P < 0.05.
+- id: gc-mc-classification
+  statement: K-means clustering on the DS2 amplitude at the unit's site, the NREM to wake rate ratio
+    and two principal components of the waveform's second derivative separates excitatory dentate
+    units into granule cells and mossy cells.
+  source: Results; Figure 1D to 1F; STAR Methods, Unit classification
+  criterion: On the GC and MC of the 17 files where the site is known (see mc-deeper). Features as
+    in the Methods, the waveform taken on the unit's site (normalised to its trough, upsampled to
+    100 kHz, second derivative from the trough to 0.8 ms after it), wake read as `awake`; the four
+    features standardised, then k-means with two clusters (fixed seed, 50 starts). Reproduced when
+    the clusters agree with the labels for at least 90% of units (under the better of the two
+    ways of naming the clusters); partially reproduced at 75% to 90%.
+- id: gc-mc-distance
+  statement: Granule cells reside 59 +- 35 um above the mossy cells they drive.
+  source: Results, Granule cell-mossy cell spike transmission; Figure 3D
+- id: gc-backpropagation
+  statement: Granule cell spikes show a delay from the soma to the proximal dendrites, absent in
+    mossy cells.
+  source: Results; Figure S3D to S3F
