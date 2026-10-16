@@ -859,29 +859,39 @@ def coincidence_gain(pres: list[np.ndarray], post: np.ndarray, duration: float, 
     return g.reset_index()
 
 
-def _local_excess(post: np.ndarray, start: np.ndarray, stop: np.ndarray, flank=(0.01, 0.03)) -> np.ndarray:
-    """Post spikes in [start, stop] minus the count expected from the local post rate, measured
-    in the flanks from 30 to 10 ms before `start` - 1 ms and from 10 to 30 ms after `stop`, for
-    each window."""
+def _flank_rate(post: np.ndarray, start: np.ndarray, stop: np.ndarray, flank=(0.01, 0.03)) -> np.ndarray:
+    """Post rate (Hz) in the flanks from 30 to 10 ms before `start` - 1 ms and from 10 to 30 ms
+    after `stop`, for each window."""
     def count(a, b):
         return np.searchsorted(post, b, side="right") - np.searchsorted(post, a, side="left")
-    obs = count(start, stop)
     pre0 = start - 0.001
     fl = count(pre0 - flank[1], pre0 - flank[0]) + count(stop + flank[0], stop + flank[1])
-    rate = fl / (2 * (flank[1] - flank[0]))
+    return fl / (2 * (flank[1] - flank[0]))
+
+
+def _local_excess(post: np.ndarray, start: np.ndarray, stop: np.ndarray, rate=None) -> np.ndarray:
+    """Post spikes in [start, stop] minus the count expected from the post rate: the local rate
+    in the flanks of each window (`_flank_rate`), or a given rate."""
+    obs = np.searchsorted(post, stop, side="right") - np.searchsorted(post, start, side="left")
+    if rate is None:
+        rate = _flank_rate(post, start, stop)
     return obs - rate * (stop - start)
 
 
-def linear_gain(pres: list[np.ndarray], post: np.ndarray, window: float = 0.005) -> dict:
+def linear_gain(pres: list[np.ndarray], post: np.ndarray, window: float = 0.005,
+                duration: float | None = None) -> dict:
     """Variant of the Figure 7 test against a linear prediction (not the criterion's measure).
 
     Events are formed as in `coincidence_gain`. Only events of one spike (one partner) and of
     exactly two spikes from two different partners are used. The response of an event is the
     number of post spikes from 1 ms after its first spike to 4 ms after its last, minus the count
-    expected from the post unit's rate in flanking windows 10 to 30 ms away (`_local_excess`). The linear prediction of a two-spike event
+    expected from the post unit's rate in flanking windows 10 to 30 ms away (`_local_excess`), or,
+    when `duration` is given, from its mean rate over the session (a global baseline, chosen here
+    as a check of the local one). The linear prediction of a two-spike event
     is the sum of the mean responses of each partner's one-spike events, so that under linear
     summation of spike counts the difference is zero whatever the separation of the two spikes.
-    Returns the mean response of two-spike events, the mean linear prediction and the counts."""
+    Returns the mean response of two-spike events, the mean linear prediction, the mean flank
+    rate of one-spike and two-spike events and the counts."""
     t = np.concatenate(pres)
     who = np.concatenate([np.full(len(p), k) for k, p in enumerate(pres)])
     o = np.argsort(t, kind="stable")
@@ -893,7 +903,8 @@ def linear_gain(pres: list[np.ndarray], post: np.ndarray, window: float = 0.005)
         first.append(t[k]); last.append(t[e - 1]); members.append(who[k:e])
         k = e
     first, last = np.array(first), np.array(last)
-    resp = _local_excess(post, first + 0.001, last + 0.004)
+    flank = _flank_rate(post, first + 0.001, last + 0.004)
+    resp = _local_excess(post, first + 0.001, last + 0.004, None if duration is None else len(post) / duration)
     single = np.array([len(m) == 1 for m in members])
     pair = np.array([len(m) == 2 and m[0] != m[1] for m in members])
     head = np.array([m[0] for m in members])
@@ -906,4 +917,5 @@ def linear_gain(pres: list[np.ndarray], post: np.ndarray, window: float = 0.005)
     sep = last[idx] - first[idx]
     return {"events_1": int(single.sum()), "events_2": len(idx), "excess_2": float(resp[idx].mean()),
             "linear_2": float(pred.mean()), "excess_1_mean": float(np.mean(list(one.values()))),
-            "sep_ms_median": float(np.median(sep) * 1000)}
+            "sep_ms_median": float(np.median(sep) * 1000), "flank_hz_1": float(flank[single].mean()),
+            "flank_hz_2": float(flank[idx].mean())}

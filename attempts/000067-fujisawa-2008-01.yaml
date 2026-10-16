@@ -42,9 +42,10 @@ outcomes:
     rat GG channels 97 and 98 are not sensors (agreement 0.35 to 0.42); the sensors are on 65 and
     66 and the CA1 probe on 70 to 101, and with that correction both checks hold in every session
     (agreement 1.00). The sensor on 66 is active on trials labelled Right, so in GG the order of
-    the sensors, or the side labels, is reversed relative to EE and FF. Channels 1 to 64 carry no
-    hippocampal theta in any rat, so the prefrontal probe is placed as the description says in
-    all three rats; every claim that uses PFC units depends on that part, which holds.
+    the sensors, or the side labels, is reversed relative to EE and FF. Channels 1 to 64 have a
+    lower theta ratio than the CA1 channels in every session (0.16 to 0.27 against 0.37 to 0.54),
+    so the prefrontal probe is placed as the description says in all three rats; every claim that
+    uses PFC units depends on that part, which holds.
   deviations:
   - The map is used with the per-rat correction found in the data, not as published.
   - The sensor check of EE.088 uses its LFP only; it has no wideband signal for the theta check.
@@ -76,8 +77,9 @@ outcomes:
     recovered from the path. Error trials are not in the dandiset, and the CRCNS data need an
     account. Every listed run holds one lap found from x1, and the nine sessions hold 100 laps and
     147 nose-poke bouts outside the 335 listed trials; if every lap outside a listed run were an
-    error trial, performance would be 77.0%. The files do not say which were errors, so this is a
-    bound, not a test.
+    error trial, performance would be 77.0%, and if every unlisted nose-poke bout were one, 69.5%.
+    The files do not say which were errors, nor whether every error trial produced a lap or a
+    bout, so these are not bounds in one direction and not a test.
 - claim: fig2c-active-fraction
   outcome: not_reproduced
   notebook: reproduce_fujisawa_2008.ipynb
@@ -137,8 +139,19 @@ outcomes:
     divergence point is 0.49 (8 of 9 sessions have one; 0.46 to 0.58 in seven, 0.06 in GG.149),
     above 0.33, so partially reproduced. In EE.049, FF.130 and the three GG sessions x1 also
     differs in 11 to 14 of the 15 central-arm bins, by at most 5 to 17 px, so by x1 alone the
-    paths are not identical in the central arm there either. The sides differ mainly along the y
-    coordinate, which is not in the dandiset.
+    paths are not identical in the central arm there either. In the final revision the divergence
+    point was compared with the position where x1 reaches its minimum (0.47 to 0.53); in the
+    seven sessions with a divergence point other than GG.149 it lies within 0.08 of it (median
+    -0.01 over eight), and at position 0.3 the sides differ by a median 2.8 px while x1 falls by
+    a median 244 px from 0 to 0.3. x1 thus begins to differ where the path turns back in x; a
+    lateral separation would lie along the y coordinate, which is not in the dandiset.
+  proposed:
+    outcome: blocked
+    blocked_by: data_missing
+    reason: x1 cannot locate where the paths separate laterally. The x1 difference begins within
+      0.08 of the x1 minimum, where the path turns back in x (median -0.01, notebook cell 35), and at 0.3 the sides differ by a median 2.8 px. The criterion's partial
+      rating follows from any x1 divergence above 0.33, so it says nothing about the claim. The y
+      coordinate the test needs is not in the dandiset, as the verifier of round 2 also found.
   deviations:
   - Only the x coordinate is available; the paper used the two-dimensional position.
   - The test (Welch t-test per bin of 0.02, p < 0.01, divergence from the first bin of a run up
@@ -277,7 +290,15 @@ outcomes:
     each partner's one-spike events, with the response window from the first spike to the last,
     is unbiased there (0.0016, s.d. 0.0046) and detects supralinear input (0.198); on the data 4
     of 40 satellites (10%) are above the linear prediction (median 0.0015 against 0.0239, p = 1),
-    and 12 of 40 (30%) with 20 ms events. Neither measure finds supralinear summation. The paper
+    and 12 of 40 (30%) with 20 ms events. That variant's local baseline is biased on the data, as the
+    post rate in the flanks is higher around two-partner events than one-partner events (median
+    9.44 against 7.26 Hz, 28 of 40 satellites, Wilcoxon p = 0.00022). With the post unit's mean
+    rate as baseline (unbiased on synthetic satellites, -0.0021, s.d. 0.0068), the two-partner
+    response is 0.0135 against a prediction of 0.0337, above it in 9 of 40 (22%), below it by
+    Wilcoxon p = 0.00058; that baseline leaves in more background for two-partner events (median
+    0.0125 against 0.0074), which favours a supralinear result. No measure finds supralinear
+    summation, and with both baselines the two-partner response is below the one-partner
+    response (0.0135 against 0.0180 with the global one), which these measures do not explain. The paper
     had 14 satellites converging on interneurons; here any target with two excitatory partners is
     used, and its definitions of satellite and transmission probability are in the supplementary
     information, which was not available.
@@ -387,8 +408,8 @@ verifications:
       would bound the error rate.
     response: Kept blocked. Added, per session, the nose-poke bouts and the laps found from x1
       inside and outside the listed trials; 100 laps and 147 bouts lie outside the 335 listed
-      trials, which bounds performance at 77.0% or more if every unlisted lap were an error, but
-      the files do not say which were errors.
+      trials, which would give a performance of 77.0% if every unlisted lap were an error, but the
+      files do not say which were errors.
   - claim: fig2c-active-fraction
     agrees: true
     outcome: not_reproduced
@@ -505,4 +526,130 @@ verifications:
     outcome: blocked
     reason: The asset list for 0.250624.0419 (28 assets) has no EE.188, EE.152 or EE.165 file. No
       part can be tested.
+    response: No change.
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the second run, the helper module, the claims file and the
+    attempt record. The verifier could not fetch the full text (Europe PMC, BioC and PMC refused)
+    and read the abstract only, so it could not check points that rest on the Methods or the
+    supplement. Report in transcripts/000067/verifier-2-report.md. Points not tied to one claim
+    were also answered; in the Summary the rank band sentence now gives 102 of 285 pairs, the
+    sessions are called sessions of the dandiset, and the repeated "Only correct trials are
+    listed" was removed.
+  results:
+  - claim: channel-region-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 16. The record's sentence "Channels 1 to 64 carry no hippocampal theta in any rat"
+      is not supported; cell 9 shows a lower theta ratio (0.16 to 0.27 against 0.37 to 0.54), not
+      an absence of theta.
+    response: No change of outcome. The notes now say channels 1 to 64 have a lower theta ratio,
+      with the numbers.
+  - claim: rats-and-units
+    agrees: true
+    outcome: not_reproduced
+    reason: Yes, under the criterion. The block-order rule matches the waveform placement in both
+      other EE sessions, and including EE.088 by it gives 631 units, within tolerance, so the unit
+      count failure is a result of the fixed session set and the rat count fails only because data
+      are absent. The README row should not be read as the dandiset contradicting 633.
+    response: No change of outcome. The README and the notebook's summary now say that the unit
+      count is 631 with EE.088 placed by block order, within tolerance, and that the rat count
+      fails because the fourth rat is not in the dandiset.
+  - claim: task-performance
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The response "bounds performance at 77.0% or more" is not supported; 77.0% holds
+      only if every error trial produced a lap that x1 detects, and counting the 147 unlisted
+      nose-poke bouts as errors gives 335/482 = 69.5%.
+    response: Added the 69.5% figure to the notebook's output and to the notes, and corrected the
+      round-1 response and the notebook text; neither figure is called a bound in one direction.
+  - claim: fig2c-active-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (cell 25).
+    response: No change.
+  - claim: fig2-field-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (cell 28).
+    response: No change.
+  - claim: fig2b-trajectory-selective
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (cell 31).
+    response: No change.
+  - claim: traj-diverge
+    agrees: false
+    outcome: blocked
+    reason: It should stay blocked (data_missing). The x1 divergence point of 0.49 does not measure
+      the paper's 0.3; cell 34 shows x1 falling roughly linearly to its minimum near 0.5 on both
+      sides, so the x1 difference appears where the path turns back in x, not where it separates
+      laterally. The first half of the claim fails by x1 in 5 of 9 sessions, and the criterion's
+      rule rates any x1 result above 0.33 as partial support, whatever the paths do in y.
+    response: The outcome is kept, as round 2 requires, and a change to blocked (data_missing) is
+      proposed. Added a cell (35) comparing the divergence point with the x1 minimum; it lies within
+      0.08 of it in every session with a divergence point but GG.149 (median -0.01), and at 0.3
+      the sides differ by a median 2.8 px. The conclusion, notes, Summary and README say so.
+  - claim: odor-nosepoke
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (cell 37).
+    response: No change.
+  - claim: fig3-connection-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, as the criterion is written. The inhibitory match it rests on is the artefact the
+      notebook itself demonstrates (cell 41); without the mirrored troughs none of the three rates
+      is within tolerance.
+    response: No change. The notes and the conclusion already say the match is fragile and give the
+      rates without the mirrored troughs; the criterion counts them as written.
+  - claim: fig3-cell-classes
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig3f-distance
+    agrees: true
+    outcome: not_reproduced
+    reason: Yes, under the fixed 8-point Spearman test.
+    response: No change.
+  - claim: fig4-position-dependence
+    agrees: true
+    outcome: blocked
+    reason: Cell 51 shows the criterion's test flags 30% and 75% of constant-efficacy pairs, so "not
+      reproduced" would be unfounded. Whether the paper's null and thinning step are only in the
+      supplement it cannot check. In the Summary, "the rank band rarely reaches 0.01" is not
+      supported; it reaches 0.01 in 102 of 285 pairs (cell 50).
+    response: No change of outcome. The Summary now gives 102 of 285 pairs.
+  - claim: fig6-facilitation-depression
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig7-supralinear
+    agrees: true
+    outcome: not_reproduced
+    reason: Yes under the criterion, but it remains uninformative. "Neither measure finds
+      supralinear summation" is not supported; on real data the variant gives a median two-spike
+      response of 0.0015, about a tenth of one input's effect, which is implausible, likely because
+      linear_gain subtracts post spikes in flanks 10 to 30 ms from the event and those flank rates
+      rise around synchronous events. It asked for the mean flank rate around two-partner against
+      one-partner events, and the two-partner response with a global baseline.
+    response: No change of outcome. Added both outputs (cell 60). The flank rate is higher around
+      two-partner events (median 9.44 against 7.26 Hz, Wilcoxon p = 0.00022), as the verifier
+      expected. With a global baseline, unbiased on the synthetic satellites, the two-partner
+      response is 0.0135 against a prediction of 0.0337 (9 of 40 above), and that baseline leaves in
+      more background for two-partner events (0.0125 against 0.0074), which favours a supralinear
+      result. The conclusion and notes were rewritten with these numbers and say that the
+      two-partner response below the one-partner response is not explained here.
+  - claim: fig3-trajectory-by-class
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: ee188-example-session
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
     response: No change.
