@@ -1,0 +1,266 @@
+# Claims for Grosmark & Buzsaki (2016), Science 351:1440, on dandiset 000044.
+# Source: the NIH author manuscript in PubMed Central (PMC4919122), full main text and the
+# legends of Figures 1 to 4. The supplementary Materials and Methods (figs. S1 to S22) could
+# not be retrieved: PMC and Science serve the supplement only behind a browser check, and
+# Europe PMC does not hold it. Every definition the main text does not give (place cells,
+# candidate events, the shuffles, the PCC test, bursting) is a common choice fixed here, and
+# each is a deviation. Neither the paper nor the dandiset links analysis code.
+#
+# When these criteria were written, the author had seen the data check only: the file list
+# and the full HDF5 listing of one file, and for every file the counts of units by cell type
+# and hemisphere, the epochs, the totals of the sleep-state intervals, the ranges of the
+# positions, the shape of the LFP and the difference between versions. No claim's analysis
+# had been run.
+#
+# Method choices fixed here, for all claims:
+# - Pyramidal cells are units with cell_type "excitatory".
+# - Running is MAZE time with a linearized position and a speed above 5 cm/s (speed from the
+#   linearized position smoothed with a 0.25 s Gaussian). On the linear tracks runs are split
+#   by the sign of the velocity into two directions, each with its own template; on the
+#   circular track there is one template.
+# - Rate maps use 2 cm bins smoothed with a Gaussian of 4 cm (2 bins). A place cell is a
+#   pyramidal cell whose smoothed rate map peaks at 1 Hz or more in at least one direction;
+#   it belongs to the template of each direction in which it reaches 1 Hz.
+# - Candidate events are population bursts of all units (1 ms bins, Gaussian of 10 ms,
+#   z-scored over the session): a peak at z 3 or more, bounded where z falls to 0, lasting 50
+#   to 500 ms, during which the ripple envelope (150 to 250 Hz, on the LFP channel with the
+#   most ripple-band power) reaches 3 SD above its non-REM mean. In PRE and POST they are
+#   outside REM; in MAZE the head speed (2D position) is below 5 cm/s. An event needs at least
+#   5 active cells of the template it is decoded with.
+# - Decoding: Poisson Bayesian decoder with a flat prior, 20 ms bins, bins without spikes left
+#   out. The sequence score is the weighted correlation r between position and time, and rZ is
+#   (|r| minus the mean |r| of 200 column-cycle shuffles) over their SD. On the linear tracks an
+#   event takes the template with the larger rZ.
+# - PCC: for each event of PRE or POST and each active cell of its template, the contribution
+#   is |r| minus the mean |r| over 20 decodings with that cell's rate map circularly shifted by
+#   a random amount. A cell's PCC in an epoch is the mean of its contributions there; a cell is
+#   strongly contributing in an epoch when a one-sided Wilcoxon signed-rank test of its
+#   contributions against 0 gives p < 0.05 with at least 5 events. dPCC is PCC in POST minus
+#   PCC in PRE. Rigid cells are strongly contributing cells below the median dPCC of the
+#   session's strongly contributing cells, plastic cells above it.
+# - Statistics across epochs: Kruskal-Wallis on the event rZ of all sessions pooled, then
+#   Tukey's HSD on the ranks (MATLAB's multcompare after kruskalwallis), alpha 0.05.
+#
+# Changed after the first verification round: fig2d-shuffle-high-dpcc listed
+# fig2b-strong-contributors under depends_on, but its criterion ranks all place cells by dPCC and
+# does not use the selection of strongly contributing cells, so it now depends on
+# place-cell-count. No criterion was changed.
+schema_version: 1
+dandiset: "000044"
+paper: doi:10.1126/science.aad1935
+claims:
+- id: sessions-and-tracks
+  statement: Recordings were made in four rats, in eight novel exploration sessions, each a
+    PRE sleep, a MAZE epoch on one of two linear tracks or a circular track, and a POST sleep.
+  source: Results, paragraph 2; Figure S1 (as cited in the text)
+  criterion: Reproduced when the dandiset holds 4 subjects and 8 sessions, each with PRE, MAZE
+    and POST epochs in this order, and the MAZE positions come from two linear tracks and one
+    circular track.
+- id: place-cell-count
+  statement: The Bayesian decoder was built from 491 place cells over the eight sessions.
+  source: Results, paragraph 2
+  expected:
+    quantity: place cells over 8 sessions
+    value: 491
+    tolerance: 49
+  criterion: Place cells as defined in the opening comment. The 1 Hz threshold is a choice;
+    0.5 and 2 Hz are shown as variants and do not change the outcome.
+- id: fig1c-post-gt-pre
+  statement: Sequence scores (rZ) of candidate events are higher in POST sleep than in PRE
+    sleep (replay).
+  source: Figure 1C
+  depends_on:
+  - place-cell-count
+  criterion: Reproduced when the mean rZ of POST events exceeds that of PRE events and the
+    Tukey comparison on ranks after Kruskal-Wallis gives p < 0.05. Results per session are
+    shown; partially reproduced when the pooled test holds but fewer than 5 of 8 sessions
+    have a higher POST mean.
+- id: fig1c-maze-gt-pre
+  statement: Sequence content is higher in MAZE immobility events than in PRE sleep events.
+  source: Figure 1C; Figure 2C legend
+  depends_on:
+  - place-cell-count
+  criterion: As for fig1c-post-gt-pre, with MAZE events in place of POST events.
+- id: fig2b-strong-contributors
+  statement: 216 neurons showed significant PCC scores in PRE or POST and were considered to
+    contribute strongly to sequences.
+  source: Results, paragraph 3; Figure 2B
+  depends_on:
+  - place-cell-count
+  expected:
+    quantity: strongly contributing neurons
+    value: 216
+    tolerance: 21.6
+  criterion: Strongly contributing as defined in the opening comment. A false-positive rate
+    for the PCC test is computed by repeating it with every rate map shifted, and shown.
+- id: fig2-pre-post-overlap
+  statement: Most neurons strongly contributing to PRE sequences (73%) also contributed to POST
+    sequences.
+  source: Results, paragraph 3; Figure 2C as cited
+  depends_on:
+  - fig2b-strong-contributors
+  expected:
+    quantity: fraction of PRE strongly contributing neurons also strongly contributing in POST
+    value: 73
+    tolerance: 7.3
+    unit: percent
+  criterion: The fraction is pooled over sessions. Its chance level, the fraction of all
+    place cells that are strongly contributing in POST, is shown.
+- id: fig2d-shuffle-high-dpcc
+  statement: The PRE to POST increase in sequence score is eliminated when the place fields
+    of the 10 to 20% of cells with the highest dPCC are shuffled, and remains after shuffling
+    the bottom 75%.
+  source: Results, paragraph 3; Figure 2D
+  depends_on:
+  - place-cell-count
+  criterion: Within each session the place cells are ranked by dPCC; the rate maps of the top
+    or bottom X% (X = 10, 20, 50, 75) are circularly shifted by random amounts and PRE and POST
+    events are decoded again. Replay is present when the mean POST rZ exceeds the mean PRE rZ
+    with a one-sided rank-sum p < 0.05 (pooled over sessions). Reproduced when replay is absent
+    after shuffling the top 10% or the top 20%, and present after shuffling the bottom 75%.
+    Partially reproduced when only one of the two holds.
+- id: fig2e-remove-plastic
+  statement: The PRE to POST increase in sequence content is attributable to a small number of
+    plastic cells; removing them, unlike removing rigid cells, removes the increase.
+  source: Figure 2E
+  depends_on:
+  - fig2b-strong-contributors
+  criterion: Events are decoded again with plastic cells removed from the templates, and with
+    rigid cells removed. Replay as in fig2d-shuffle-high-dpcc. Reproduced when replay is absent
+    without plastic cells and present without rigid cells; partially reproduced when replay
+    remains in both cases but the POST minus PRE difference without plastic cells is less than
+    half of that without rigid cells.
+- id: figs2-track-distribution
+  statement: Rigid and plastic neurons were similarly distributed along the track.
+  source: Results, paragraph 3; fig. S2 as cited
+  depends_on:
+  - fig2b-strong-contributors
+  criterion: The position of each cell's rate-map peak (in its direction of higher peak),
+    as a fraction of the track length, is compared between rigid and plastic cells with a
+    two-sample Kolmogorov-Smirnov test. Reproduced when p >= 0.05 (the claim is of absence;
+    the paper's test is not known, so this test is fixed here).
+- id: fig3a-plastic-specificity
+  statement: Plastic neurons had higher place-specific indices and fewer place fields than
+    rigid cells.
+  source: Results, paragraph 4; Figure 3A
+  depends_on:
+  - fig2b-strong-contributors
+  criterion: Spatial information (Skaggs, bits per spike) and the number of place fields
+    (contiguous runs of at least 3 bins at 1 Hz or more and at 20% of the peak or more), both
+    from the rate map of the direction with the higher peak, compared with rank-sum tests.
+    Reproduced when plastic cells have higher spatial information and fewer fields, each with
+    p < 0.05; partially reproduced when one of the two holds.
+- id: fig3b-plastic-improve
+  statement: Plastic but not rigid neurons increased their spatial specificity (in-field
+    versus out-of-field firing ratio) steadily during the MAZE session.
+  source: Results, paragraph 4; Figure 3B
+  depends_on:
+  - fig2b-strong-contributors
+  criterion: In-field bins are those of the cell's largest field on the whole-session map. For
+    each cell the in-field over out-of-field rate is computed in the first and the last third
+    of its running time; the change (last minus first, of the log ratio) is tested against 0
+    with a one-sided Wilcoxon signed-rank test per group. Reproduced when plastic cells
+    increase with p < 0.05 and rigid cells do not; partially reproduced when both increase;
+    not reproduced when plastic cells do not.
+- id: fig4a-rigid-faster
+  statement: Session-wide firing rates of rigid neurons were higher than those of plastic
+    neurons.
+  source: Results, paragraph 5; Figure 4A
+  depends_on:
+  - fig2b-strong-contributors
+  criterion: Spike count over the whole recording duration, rank-sum test, p < 0.05 with the
+    rigid median higher.
+- id: fig4a-plastic-ripple-burst-coactivation
+  statement: Ripple-related spiking, bursting and pairwise coactivation were higher in plastic
+    than in rigid neurons.
+  source: Results, paragraph 5; Figure 4A
+  depends_on:
+  - fig2b-strong-contributors
+  criterion: Ripple-related spiking is the rate within PRE and POST candidate events over the
+    session rate; bursting is the fraction of spikes with an inter-spike interval of 6 ms or
+    less to a neighbour; coactivation is a cell's mean Pearson correlation of 100 ms spike
+    counts with the session's other place cells over the whole session. Rank-sum tests.
+    Reproduced when all three are higher in plastic cells with p < 0.05, partially reproduced
+    for one or two, not reproduced for none.
+- id: fig4c-pre-fast-coactivation
+  statement: In PRE sleep, coactivation was dominated by fast-firing neurons.
+  source: Results, paragraph 5; Figure 4C
+  depends_on:
+  - place-cell-count
+  criterion: Place cells of each session are sorted by session firing rate and grouped into
+    windows of 20% of the cells, stepped by 1% (as the legend states). For each window the
+    mean pairwise Pearson correlation of 100 ms counts in PRE is computed; curves are averaged
+    over sessions by window position. Reproduced when the Spearman correlation between window
+    position and PRE coactivation on the averaged curve is above 0.5 and at least 5 of 8
+    sessions have a positive correlation.
+- id: fig4c-slow-coactivation-increase
+  statement: Slow-firing neurons showed the strongest increases in coactivation from PRE to
+    POST sleep.
+  source: Results, paragraph 5; Figure 4C
+  depends_on:
+  - place-cell-count
+  criterion: As in fig4c-pre-fast-coactivation, on POST minus PRE coactivation. Reproduced when
+    the Spearman correlation on the averaged curve is below -0.5 and at least 5 of 8 sessions
+    have a negative correlation.
+- id: fig4c-slow-replay
+  statement: Slow-firing cells showed the greatest replay, the partial correlation between RUN
+    and POST coactivation accounting for PRE.
+  source: Figure 4C legend
+  depends_on:
+  - place-cell-count
+  criterion: For each window, the partial correlation across its cell pairs between MAZE
+    running and POST coactivation given PRE coactivation. Reproduced when the Spearman
+    correlation on the averaged curve is below -0.5 and at least 5 of 8 sessions have a
+    negative correlation.
+- id: rate-split-medians
+  statement: Place cells divided into equal groups by sleep firing rate have medians of 0.39
+    Hz (low-rate) and 1.12 Hz (high-rate).
+  source: Results, paragraph 6
+  depends_on:
+  - place-cell-count
+  expected:
+  - quantity: median sleep firing rate of low-rate place cells
+    value: 0.39
+    tolerance: 0.039
+    unit: Hz
+  - quantity: median sleep firing rate of high-rate place cells
+    value: 1.12
+    tolerance: 0.112
+    unit: Hz
+  criterion: Sleep firing rate is the rate over PRE and POST outside REM and awake periods,
+    that is in non-REM sleep. The paper does not say whether the split is per session or
+    pooled; the readings are (a) a median split within each session, (b) a median split of all
+    place cells pooled. Reproduced when both medians are within tolerance under one reading.
+    The rate over the whole of PRE and POST is shown as a variant.
+- id: figs16-low-rate-info-gain
+  statement: Low-rate neurons carried more spatial information per spike on the maze, and
+    increased their within-ripple firing-rate gain from PRE to POST more than high-rate cells.
+  source: Results, paragraph 6; fig. S16 as cited
+  depends_on:
+  - rate-split-medians
+  criterion: Under the reading of rate-split-medians that matches (reading (a) if neither or
+    both do), rank-sum tests of spatial information and of the change in gain (rate within
+    candidate events over the epoch rate, POST minus PRE). Reproduced when low-rate cells are
+    higher on both with p < 0.05, partially reproduced for one.
+- id: fig4d-slow-sequences
+  statement: Slow-firing, but not fast-firing, neurons increased their contribution to
+    sequences from PRE to POST sleep, in a decoding restricted to each group.
+  source: Results, paragraph 6; Figure 4D
+  depends_on:
+  - rate-split-medians
+  criterion: Templates are restricted to the low-rate or the high-rate half (split as in
+    figs16-low-rate-info-gain) and PRE and POST events decoded again. Replay as in
+    fig2d-shuffle-high-dpcc. Reproduced when replay is present for low-rate cells and absent
+    for high-rate cells; partially reproduced when present for both with a larger POST minus
+    PRE difference for low-rate cells.
+- id: fig4e-gain-sequences
+  statement: PRE to POST increases in sequence content were limited to cells with high
+    ripple-specific recruitment (gain).
+  source: Results, paragraph 6; Figure 4E
+  depends_on:
+  - place-cell-count
+  criterion: Gain is the rate within PRE and POST candidate events over the PRE and POST rate;
+    place cells are split at the session median. Decoding and replay as in
+    fig4d-slow-sequences. Reproduced when replay is present for high-gain cells and absent for
+    low-gain cells; partially reproduced when present for both with a larger difference for
+    high-gain cells.
