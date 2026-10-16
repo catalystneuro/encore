@@ -31,7 +31,7 @@ done_roles(){ git log --reverse --format=%s origin/main..origin/attempt/"$d" 2>/
   | sed -nE "s/^Agent run on $d: ([a-z0-9-]+) \(success\)$/\1/p"; }
 is_done(){ done_roles | grep -qx "$1"; }
 run_of(){ gh run list --workflow attempt.yml --limit 100 --json databaseId,displayTitle,status \
-  --jq "[.[] | select(.displayTitle == \"Agent run: $d $1\")][0] | \"\(.databaseId) \(.status)\" // empty"; }
+  | python "$here/describe.py" run "$d" "$1"; }
 wait_run(){ local st; while true; do
   st=$(gh run view "$1" --json status,conclusion --jq '"\(.status) \(.conclusion)"' 2>/dev/null) || { sleep 60; continue; }
   case "$st" in completed*) echo "${st#completed }"; return;; esac; sleep 60; done; }

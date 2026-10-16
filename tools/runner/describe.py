@@ -3,6 +3,8 @@
     python tools/runner/describe.py title DANDISET     # the pull request's title
     python tools/runner/describe.py body DANDISET      # the pull request's description
     python tools/runner/describe.py next [SKIP ...]    # the next dandiset in the queue
+    gh run list ... --json databaseId,displayTitle,status | python tools/runner/describe.py run DANDISET ROLE
+                                                       # "<id> <status>" of the newest run of a role, if any
 
 `title` and `body` read the latest attempt in the working tree. `next` reads main (origin/main), so
 it can run from any checkout: the first target with no attempt on main, no branch of its own and not
@@ -55,12 +57,20 @@ def next_target(skip: set[str]) -> str | None:
     return (ours or open_ or [None])[0]
 
 
+def newest_run(runs: list[dict], dandiset: str, role: str) -> str:
+    """The id and status of the newest run of a role on a dandiset, or "" when there is none."""
+    mine = [r for r in runs if r["displayTitle"] == f"Agent run: {dandiset} {role}"]
+    return f'{mine[0]["databaseId"]} {mine[0]["status"]}' if mine else ""
+
+
 def main() -> int:
     command, *rest = sys.argv[1:]
     if command == "title":
         print(title(rest[0]))
     elif command == "body":
         print(body(rest[0]))
+    elif command == "run":
+        print(newest_run(json.load(sys.stdin), *rest))
     elif command == "next":
         found = next_target(set(rest))
         if found is None:
