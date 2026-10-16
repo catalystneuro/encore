@@ -3,6 +3,29 @@
 # Source: the open access full text (CC BY) and its Supplementary Information, read from the
 # Results, figure legends and Methods.
 #
+# Changed for attempt 001933-chen-2026-02 (protocol pilot-7). The ten photometry claims are
+# unchanged. The eight claims of Figures 1 to 5 were written under pilot-6 without criteria, as
+# they were blocked with data_missing. Under pilot-7 a claim whose data the paper deposited in
+# another public archive is `data: elsewhere`, names the archive under `where`, and is tested;
+# data_missing now means public nowhere. These eight claims now carry `data`, `where` and a
+# criterion. Their data are the paper's tabular deposit on Zenodo (per-section, per-area and
+# per-blot values; uncropped blots), the search outputs in PRIDE, and the images in the BioImage
+# Archive. When these criteria were written, the author had seen: the article text; the file
+# lists of the Zenodo record, of PRIDE PXD065003, PXD065006 and PXD065125 and of BioImage Archive
+# S-BIAD2070, 2071, 2072 and 2074, with their sizes; the column headers of the PRIDE tables and
+# of Supplementary data 1 to 5; the OME metadata of one synaptosome image; and the printed values
+# of the source data sheets of Figures 1D, 2E and 2G, 4D to 4L, 5D, 5E, 5G, 5H and 5J. No
+# statistic had been computed on any of them. In those values the author had noticed that two WT
+# sections of Figure 5D and 5E carry identical values, and that one G2019S value of Figure 4D
+# (0.0766) is of the size of the Figure 4E areas. From the legend's numbers alone (F and p), the
+# Sidak-adjusted p-values of Figure 2E and 2G correspond to three pairwise comparisons.
+#
+# Images are re-analysed only for Figure 4D and 4E: the Methods give the full FIJI procedure and
+# the 1.1 GB study can be streamed. The other image analyses ran in Imaris 10.1, a commercial
+# program, with automatic thresholds the Methods do not give, and S-BIAD2071 (Figure 5) holds
+# 542 GB; for those claims the test starts from the paper's per-section values. No densitometry
+# procedure is given for the western blots, so they are tested on the deposited band values.
+#
 # When these criteria were written, the author had seen the data check only: the file list,
 # subject metadata, the optogenetic epochs table of every file (powers, train lengths, the
 # pseudorandom order), the frame times of the processed series, a check that the raw 470 nm
@@ -206,31 +229,146 @@ claims:
   statement: LRRK2 immunolabeling intensity is higher in Aldh1a1+ (vulnerable) than in
     Aldh1a1- SNc dopamine neurons (p = 0.0008).
   source: Figure 1B and 1D
+  data: elsewhere
+  where: BioImage Archive S-BIAD2070 (images); Zenodo doi:10.5281/zenodo.19930567 (per-section
+    values)
+  expected:
+  - quantity: sections
+    value: 16
+    tolerance: 0
+  criterion: The per-section mean LRRK2 intensities of Aldh1a1+ and Aldh1a1- neurons in the
+    source data, compared by the legend's two-tailed unpaired Student t-test over sections.
+    Reproduced when the Aldh1a1+ mean is higher with p < 0.05; not reproduced otherwise. The p
+    value is reported next to the paper's 0.0008. A paired test over sections and a test on
+    mouse means are variants. The image files are matched to the source data by mouse and
+    counted; the Imaris segmentation is not re-run.
 - id: fig2b-rab3-phosphorylation
   statement: LRRK2 kinase inhibition with MLi-2 changes 289 phosphopeptides in striatal
     synaptosomes of G2019S mice, including RAB3 T86.
   source: Figure 2A to 2C
+  data: elsewhere
+  where: PRIDE PXD065006
+  expected:
+  - quantity: phosphopeptides with p <= 0.05 and |log2 FC| > 0.58
+    value: 289
+    tolerance: 28.9
+  criterion: The peptide groups table deposited in PXD065006 (Proteome Discoverer abundances,
+    three vehicle and three MLi-2 samples). Per phosphopeptide, log2 abundances, two-tailed
+    unpaired Student t-test, difference = mean vehicle minus mean MLi-2; altered when p <= 0.05
+    and |difference| > 0.58, as the legend states. The legend does not say which peptides were
+    tested; the readings are (a) peptides with all three values in each group, (b) peptides
+    with at least two values in each group. Reproduced when, under one reading, the count is
+    within tolerance and the RAB3 peptide covering T86 (YRTITTAYYR, phosphorylated at its
+    threonine 3) is altered with a positive difference (higher with vehicle); partially
+    reproduced when one of the two holds; not reproduced when neither does. The count in the
+    paper's own volcano table (Supplementary data 1) at the same thresholds is reported.
 - id: fig2eg-prab3-increased
   statement: Phosphorylation of RAB3A and RAB3C is increased in the SNc of G2019S mice and
     returns to WT levels with MLi-2.
   source: Figure 2D to 2G
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.19930567
+  expected:
+  - quantity: mice per group, RAB3A
+    value: 10
+    tolerance: 0
+  - quantity: mice per group, RAB3C
+    value: 7
+    tolerance: 0
+  criterion: The p-RAB3A and p-RAB3C ratios of the source data (WT, GS and GS with MLi-2). The
+    three groups are compared with a one-way model (the legend's genotype and treatment
+    factors on three groups are the same model) and pairwise contrasts on the pooled variance,
+    Sidak-adjusted over the three pairs, which the legend's numbers imply; two pairs is a
+    variant. Four comparisons decide the outcome, GS above WT and GS above GS with MLi-2 for
+    each protein, each at adjusted p < 0.05. Reproduced when all four hold; partially
+    reproduced when two or three hold; not reproduced otherwise. Whether GS with MLi-2 differs
+    from WT is reported. The uncropped blots are not re-quantified.
 - id: fig3d-rim-binds-unphosphorylated
   statement: RIM1 and RIM2 bind unphosphorylated RAB3A in preference to RAB3A phosphorylated at
     T86, while RILPL1 and RILPL2 prefer the phosphorylated form.
   source: Figure 3D to 3F
+  data: elsewhere
+  where: PRIDE PXD065125
+  criterion: The DIA-NN protein intensities of the six RAB3A and six p-RAB3A pulldowns
+    deposited in PXD065125 (FilteredDataset.pg_matrix.Brain_Rab3A.csv), log2, compared per
+    protein by the paired two-sided Student t-test of Figure 3E and 3F, replicates paired in
+    the order of the runs, over the pairs with both values. For each gene the protein group
+    whose genes field is that gene alone is used; where there are several, the one with the
+    most values, the others reported. Four comparisons decide the outcome, RIM1 and RIM2 higher
+    with RAB3A, RILPL1 and RILPL2 higher with p-RAB3A, each at p < 0.05. Reproduced when all
+    four hold; partially reproduced when two or three hold; not reproduced otherwise. The p
+    values are reported next to the paper's (RIM2 0.011, RILPL1 0.002). The Methods'
+    imputation with an unpaired test, and the deposited limma table, are variants.
 - id: fig4d-fewer-active-zones
   statement: Fewer TH+/VAMP2+ striatal synaptosomes from G2019S mice contain bassoon, and the
     remaining bassoon clusters are larger.
   source: Figure 4D and 4E
+  data: elsewhere
+  where: BioImage Archive S-BIAD2074 (images); Zenodo doi:10.5281/zenodo.19930567 (per-area
+    values)
+  criterion: Two parts. (A) The per-area values of the source data, two-tailed unpaired Student
+    t-tests over areas as in the legend; the percentage of TH+/VAMP2+ synaptosomes with bassoon
+    lower in GS with p < 0.05, and the bassoon area higher in GS with p < 0.05. (B) The Methods'
+    FIJI procedure re-run on the images (folder BSN for the percentage, BSN-area for the area;
+    genotype and mouse from the file name, wt or ki; channels as the archive annotates them,
+    488 bassoon, 568 TH, 647 VAMP2). Rolling-ball background subtraction, radius 33 pixels;
+    ImageJ's Default threshold; particles 0.04 to 0.40 um2 (TH 0.06 to 0.60) with circularity
+    0.30 to 1.00; a particle is positive for a protein when its mean intensity is more than
+    twice the image mean. Per image, the percentage of TH+ VAMP2+ particles of the VAMP2
+    segmentation that are bassoon+, and the mean area of the bassoon and TH overlaps that are
+    VAMP2+, read as (i) the area of the overlap or (ii) the area of the bassoon particle; then
+    the same t-tests over images. Reproduced when (A) gives both effects and (B) gives both,
+    in the same direction at p < 0.05, under one reading; partially reproduced when (A) gives
+    both and (B) does not, or (A) gives one; not reproduced when (A) gives neither. Counts of
+    areas and images are reported against the legend's.
 - id: fig4i-rim1-reduced
   statement: RIM1 is reduced in striatal synaptosomes of G2019S mice (p = 0.0245) but not in
     other striatal fractions or the SNc.
   source: Figure 4H to 4L
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.19930567
+  expected:
+  - quantity: mice per genotype
+    value: 6
+    tolerance: 0
+  criterion: The RIM1 values of the source data for synaptosomes (Figure 4I), the S1 fraction
+    (4J) and the SNc (4L), each compared by a two-tailed unpaired Student t-test. Reproduced
+    when GS is lower in synaptosomes with p < 0.05 and neither the S1 nor the SNc comparison
+    has p < 0.05; partially reproduced when the synaptosome result holds and one of the others
+    has p < 0.05; not reproduced when the synaptosome result does not hold. The p value is
+    reported next to the paper's 0.0245. The uncropped blots are not re-quantified.
 - id: fig5-bassoon-vulnerable-axons
   statement: Bassoon cluster density is reduced and cluster volume increased in Aldh1a1+ but not
     Aldh1a1- dopamine axons of G2019S mice, and the same holds in Anxa1+ axons.
   source: Figure 5D, 5E, 5G and 5H
+  data: elsewhere
+  where: BioImage Archive S-BIAD2071 (images); Zenodo doi:10.5281/zenodo.19930567 (per-section
+    values)
+  criterion: The per-section values of the source data. A section entered twice (identical
+    values in both cell types and both measures) is counted once; the values as deposited are
+    a variant. Aldh1a1 mice, for density (5D) and volume (5E) each, a two-way ANOVA of cell type
+    and genotype with interaction over sections, as the legend's degrees of freedom imply, and
+    Sidak-adjusted comparisons of GS with WT within each cell type on the pooled variance.
+    Anxa1 mice (5G, 5H), two-tailed unpaired Student t-tests. Six parts. (1) Aldh1a1+ density
+    lower in GS, p < 0.05. (2) Aldh1a1- density, p >= 0.05. (3) Aldh1a1+ volume higher in GS,
+    p < 0.05. (4) Aldh1a1- volume, p >= 0.05. (5) Anxa1 density lower in GS, p < 0.05.
+    (6) Anxa1 volume higher in GS, p < 0.05. Reproduced when all six hold; partially reproduced
+    when three to five hold; not reproduced otherwise. Section counts are reported against the
+    legend's. The 542 GB of SIM images are matched to the source data by file name only; the
+    Imaris analysis is not re-run.
 - id: fig5j-no-axon-loss
   statement: The volume occupied by TH+ fibres in the dorsal striatum does not differ between
     G2019S and WT mice.
   source: Figure 5I and 5J
+  data: elsewhere
+  where: BioImage Archive S-BIAD2072 (images); Zenodo doi:10.5281/zenodo.19930567 (per-section
+    values)
+  expected:
+  - quantity: sections per genotype
+    value: 12
+    tolerance: 0
+  criterion: A claim of absence, judged on the legend's two-tailed unpaired Student t-test over
+    the per-section TH volumes of the source data at p < 0.05. Reproduced when the test does
+    not find a difference and not reproduced when it does; the difference of means and Cohen's
+    d are reported either way. The images are matched to the source data by file name and
+    counted; the Imaris analysis is not re-run.

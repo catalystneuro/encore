@@ -1,23 +1,23 @@
-The verifier gave the same outcome as I did for all 18 claims, so no outcome changed. I fixed one bug, added every output the report asked for, re-ran the entry (it passes in 183 s), and updated the conclusions and the attempt record. Nothing is committed, as instructed.
+I changed one outcome. I answered every point in the report and added each output the verifier asked for except the Calb1 processing parameters, which I couldn't supply. The entry was re-run from a clean environment (pass, 578 s). Round 1 is recorded under `verifications` in `attempts/001933-chen-2026-02.yaml`. Nothing is committed.
 
-**Outcomes**
-- No changes. The verifier called `supp8c-calb1-spontaneous-not-reduced` "reproduced (marginal)" (p = 0.0509). I kept "reproduced", because for a claim of absence the protocol judges only the paper's own test. The notes already say the result sits at the threshold and flips under the other measures.
+**Outcome changed**
+- `fig3d-rim-binds-unphosphorylated` goes from reproduced to partially reproduced, as the verifier said. RILPL2 is found only in the p-RAB3A pulldowns, so the paired test the criterion names has no pairs and cannot score it: 3 of 4 comparisons hold. The criterion lists the imputation as a variant, so it can't decide the outcome. The notebook now decides on the paired test and shows the imputation (4 of 4) as a variant.
+- The verifier agreed with the other 17 outcomes and they stay as they were.
 
-**Bug fixed (problem 5)**
-- `evoked_integrals` in `lrrk2.py` dropped any train with less than 1.5 s of recording after onset, whatever window was used. It now checks only the samples each window needs.
-- I added a synthetic check to the notebook that fails without the fix.
-- Effect: the 4 mW Methods window now has 56 WT trains (was 55), and the p-value changed from 9.9e-18 to 4.08e-18. The code's window runs to 1.0 s after onset, so it still keeps only 55. I updated the text and narrowed the deviation to that variant.
-
-**Outputs added**
-- **Calb1 mismatch (problem 1):** per-mouse r, slope and offset for the published Supp. Fig. 8D traces, plus a search over all 64 epochs and all 8 powers for each trace. No epoch comes within 1e-6 of any of the 384 traces; the closest are 15.7 to 150.8 % dF/F apart. So the mismatch is not an epoch or power labelling problem. I added this to the notes and to the finding.
-- **Part 4 of `source-data-link` (problem 6):** the per-mouse match columns are now printed, and both measures are scored at 1% and at the 1e-4 tolerance of part 3. With integrals, no mouse matches at either tolerance. With the transient mean, 4398 and 4007 are the two Anxa1 mice that miss the 1% match, by one value each.
-- **Mice 3742 and 4885 (problem 4):** a per-epoch table of response against train type and labelled power, with 4004 and 4651 for reference. In both mice the response does not follow the labelled power; for 3742 the 0.5 mW trains give the smallest response. I added this to the data-check text, the per-mouse notes and the finding.
-- **Calb1 evoked, one value per mouse (problem 7):** Welch p is 0.042, 0.041, 0.073 and 0.092 at 0.1, 0.5, 1 and 4 mW. This is now in the notebook and the notes.
-- **p-values (problem 8):** the summary lines now print p to three significant figures instead of rounding it to 0.0.
-
-**Attempt record**
-- The round is recorded under `verifications`, with the verifier's reasons, its outcomes, and my response for each of the 18 claims.
+**Added or corrected**
+- **Spontaneous transient values:** The new fit (part 4b) shows the published 6F/S8C values are exactly 0.005 × the trapezoid integral ÷ the number of samples in the transient. They are not the transient mean, as the record said before. This holds to 2.2e-15 in all 15 Anxa1 mice and matches none of the 12 Calb1 mice.
+  - With this measure, Anxa1 gives p = 2.747e-177, the paper's value. The per-mouse panel gives the paper's 6 of 8 (3743 and 4651 not significant) with the legend's p-values.
+  - Outcomes stay as they were because the criteria fixed integrals. With this measure, `source-data-link` would score 0.556 on part 4, which would make it partially reproduced; the notes say so.
+  - I corrected the `code_mismatch` finding to describe this measure.
+- **Calb1 spontaneous (supp8c):** I printed p with each end of the exclusion window moved by up to 10 samples. p runs from 0.040 to 0.079 and is below 0.05 in 59 of 121 windows. The outcome stays reproduced, and the notes, summary and README now say it is fragile.
+- **Fig 2B volcano table:** On the 4340 peptides with all six values, the table's Difference equals MLi-2 minus vehicle, as the samples are labelled, plus a constant (to 1.6e-06). Its p-values are close to a t-test's but not equal. The data still can't tell whether the labels or the figure's direction are swapped.
+- **Fig 4D synaptosome images:**
+  - I now read each image's channel order from its own metadata: 165 of 168 confirm the order. Three images give 488 nm for all channels, recorded as a new `metadata_error` finding.
+  - The threshold alone gives a median of 1186 VAMP2 objects per image, near the paper's "about 1000". The size limit cuts this to 193, and 183 particles are kept after the shape limit.
+  - I added a per-image table and an overlay of one image. Part B's null result is now described as weak evidence.
+- I updated the notebook conclusions and summary, the README and the record notes to the new numbers. I also set the runtime to 10 minutes.
 
 **Not done**
-- The verifier could not check the Supplementary Fig. 7 and 8 legends because it had only the main text. Nothing in the entry depends on that.
-- Untracked files such as `.bashrc` and `.idea` sit in the repo root. They come from the environment, not from me, and I left them alone.
+- The dandiset holds no further Calb1 processing parameters, and no recomputation from the raw signal matched a published Calb1 trace. The cause of the Calb1 difference stays open.
+- `tools/entry.py all` stops at the check step on 8 errors, all in the earlier record `001933-chen-2026-01.yaml`. That record must stay as it was, so I ran the notebook with `tools/entry.py run`. The check reports no errors for the `-02` attempt.
+- I did not rebuild a handover, because round 2 reviews the full executed notebook in `executed/001933-chen-2026/`.

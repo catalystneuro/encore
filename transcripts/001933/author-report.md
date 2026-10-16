@@ -1,66 +1,57 @@
-I've done steps 1 to 5 for dandiset 001933 and built the verifier's handover; the clean run passes in 162 s with 0 check errors. The Anxa1 half of the dandiset links exactly to the paper's published values, but the Calb1 dF/F is not the trace behind Supplementary Figure 8. Nothing is committed.
+I've finished attempt `001933-chen-2026-02`. The entry runs from a clean environment in about 8 minutes, and the handover is built in `executed/001933-chen-2026/handover/`. Nothing is committed. `tools/entry.py check` still reports 8 errors, all in the earlier record `001933-chen-2026-01.yaml`, which I left as it is (point 4 below).
 
-I used the paper's full text, which is open access (CC BY), plus its Supplementary Information, saved under `paper/`. The pinned version is 0.260825.1457: the paper cites no DANDI version (or the dandiset at all), and this is the only published version, with the same 27 assets as the draft.
+**What pilot-7 changed.** It adds a claim kind, `data: elsewhere`, for data the paper put in another public archive, and `data_missing` now means public nowhere. The eight Figure 1 to 5 claims were blocked as `data_missing` in -01. They now carry `data: elsewhere`, a `where:` and criteria, and are tested on Zenodo, PRIDE and BioImage Archive data, counted apart from the dandiset's claims. The ten photometry claims are unchanged. Version 0.260825.1457 is still the draft's content, so the helper constant, `entry.yaml`'s `dandi:` relation and the notebook header keep that version.
 
-### 1. Outcomes
+**1. Outcomes (this attempt, with -01's in brackets)**
 
-| Claim | Outcome |
+| Claim | Outcome (-01) |
 |---|---|
-| `source-data-link` (with_inputs) | not reproduced: Anxa1 links exactly, Calb1 does not |
-| `fig6e-anxa1-evoked-reduced` | reproduced (p = 1.2e-22; with the code's window 1.1e-20, the paper's exact value) |
-| `fig6e-anxa1-evoked-per-mouse` | reproduced (7 of 8 mice, 3743 the exception, under all four test readings) |
-| `supp7c-anxa1-evoked-all-powers` | reproduced (4 of 4 powers) |
-| `fig6f-anxa1-spontaneous-reduced` | reproduced (1064 and 798 transients, exactly the paper's counts) |
-| `fig6f-anxa1-spontaneous-per-mouse` | partially reproduced (5 of 8; 6 of 8 with the paper's actual measure) |
-| `supp8c-calb1-spontaneous-not-reduced` | reproduced, but only just: p = 0.0509 against a 0.05 threshold |
-| `supp8e-calb1-evoked-reduced` | reproduced |
-| `supp8e-calb1-few-mice-reduced` | partially reproduced (4 mice where the paper has 2) |
-| `cohens-d-anxa1-larger` | not reproduced (Anxa1 d = 2.21 is within tolerance; Calb1 d = 1.40 against the paper's 0.76) |
-| 8 claims from Figures 1 to 5 | blocked, `data_missing` (the data are in BioImage Archive, PRIDE and Zenodo) |
+| source-data-link | not reproduced (not reproduced) |
+| fig6e-anxa1-evoked-reduced | reproduced (reproduced) |
+| fig6e-anxa1-evoked-per-mouse | reproduced (reproduced) |
+| supp7c-anxa1-evoked-all-powers | reproduced (reproduced) |
+| fig6f-anxa1-spontaneous-reduced | reproduced (reproduced) |
+| fig6f-anxa1-spontaneous-per-mouse | partially reproduced (partially reproduced) |
+| supp8c-calb1-spontaneous-not-reduced | reproduced (reproduced) |
+| supp8e-calb1-evoked-reduced | reproduced (reproduced) |
+| supp8e-calb1-few-mice-reduced | partially reproduced (partially reproduced) |
+| cohens-d-anxa1-larger | not reproduced (not reproduced) |
+| fig1d-lrrk2-enriched-vulnerable | reproduced (blocked, data_missing) |
+| fig2b-rab3-phosphorylation | not reproduced (blocked, data_missing) |
+| fig2eg-prab3-increased | reproduced (blocked, data_missing) |
+| fig3d-rim-binds-unphosphorylated | reproduced (blocked, data_missing) |
+| fig4d-fewer-active-zones | partially reproduced (blocked, data_missing) |
+| fig4i-rim1-reduced | reproduced (blocked, data_missing) |
+| fig5-bassoon-vulnerable-axons | partially reproduced (blocked, data_missing) |
+| fig5j-no-axon-loss | reproduced (blocked, data_missing) |
 
-### 2. What the dandiset holds
-- **Contents:** only the photometry of Fig. 6 and Supp. Figs 7 and 8, one session per mouse. There are 15 Anxa1 and 12 Calb1 mice, matching the paper's counts after its exclusions. No recording appears twice, and the clock checks pass.
-- **Anxa1 links exactly:** the paper's source data on Zenodo match the dandiset's dF/F to 1e-12. The only miss is one stimulation of mouse 4398, whose processed series ends 0.8 s after onset.
-- **Calb1 does not link:** none of the 384 published Calb1 traces or 384 evoked integrals match. Recomputing dF/F from the deposited raw signal with the published code reproduces the dandiset's series, not the paper's, at any background fraction. The processing the paper used for Calb1 is neither deposited nor described.
-- **Metadata errors:**
-  - The epochs table describes one train type, four powers and gaps of at least 20 s. The files hold two train types, eight powers, and 51% of gaps under 20 s.
-  - Two Anxa1 G2019S mice got the paper's powers as 0.33 s trains of 9 ms pulses; every other mouse got 0.51 s trains of 8 ms pulses.
-  - The dF/F unit is `a.u.` for a series in percent.
-  - Two trains have a pulse length of 0.
-  - The archive summary lists only a behavioral approach.
-  - The four excluded mice are left out without a note.
-- **Code mismatches:**
-  - `chunking_index.m` as written starts its window 1 s after onset; the source data show the figures used the window starting 1 s before.
-  - `plot_results.m` selects power code 'h' (4 mW) for Fig. 6E, while the figure and its source data are at 0.5 mW.
-  - The published spontaneous "integrals" are 0.005 times the mean dF/F over each transient, not the integral the Methods describe.
-  - Methods, legend and code each name a different per-mouse test; the paper's Fig. 6F count follows the legend's one-tailed Student test.
+Three of the new outcomes rest on something you should know:
+- **fig2b:** on the abundances as deposited, 1694 peptides pass the thresholds (the paper says 289). The RAB3 T86 peptide is altered, but in the wrong direction.
+- **fig3d:** RILPL2 is found only in the p-RAB3A pulldowns, so the criterion's paired test cannot run for it. I decided it with the Methods' imputation and recorded that as a deviation; without it the count is 3 of 4, which would be partially reproduced.
+- **fig4d:** the per-area values on Zenodo show both effects. My Python version of the Methods' FIJI image analysis shows neither, but it finds far fewer synaptosomes per image than the paper (median 183 against about 1000), so that part may be my implementation failing.
 
-### 3. Where the protocol was unclear or did not fit
-1. **Source data with no dependent claims.** The protocol frames outside data as supplying labels or measurements that other claims need. Here the source data were used only to check the dandiset. I made one standalone `with_inputs` link claim that no other claim depends on.
-2. **The source data showed the paper's spontaneous measure differs from the Methods text.** Following the rule to judge on the choice fixed beforehand, the plain integral stays the main measure and the mean is a variant. This keeps the link claim not reproduced and the Fig. 6F per-mouse claim partial; I recorded it as a deviation.
-3. **Methods first, even when the source data prove the paper used the code's window.** I kept the Methods' light-on window as the main result, as the protocol requires, and showed the code's window as a variant.
-4. **The protocol does not cover code that has a bug and was evidently not what was run.** I showed the literal window only as a variant and recorded it as a finding.
-5. **`measured` when no reading matches the expected value.** The protocol only says what to record when readings match. For the Calb1 per-mouse claim I recorded the closest reading (4).
-6. **The 10% tolerance rule does not work for p-values like 1e-20.** I used counts as expected values, p < 0.05 in the criteria, and quoted the paper's p-values in the notes.
-7. **No category for "data present but not the version the paper analysed".** I tested the Calb1 claims on the dandiset's data, gave each a deviation, and recorded a `data_missing` finding instead of blocking them.
-8. **The required clock contrast exposes genotype differences before the criteria are written.** I said so in the claims file's opening comment.
-9. **No randomness** in this analysis, so there are no seeds to fix; the notebook says so.
-10. **Figs 1 to 5 summary values are public in the source data**, but I blocked those claims as `data_missing` because the registry judges the dandiset.
+**2. Earlier findings.** None is fixed; the dandiset, the code and the paper are unchanged.
+- Still present: the Calb1 dF/F is not the paper's (0 of 384 traces match), the 4398 series ends early, the epochs table description is wrong, mice 3742 and 4885 got 0.33 s trains, the dF/F unit is "a.u.", the archive summary lists only a behavioral approach, the excluded mice are left out without a note, the three code mismatches (repository still at d34558f), the Welch/Student/tail inconsistency, and the paper still does not cite the dandiset.
+- One changed kind: "Figures 1 to 5 not in the dandiset" was `data_missing`. Under pilot-7 those data are public elsewhere, so I recorded it again as `other`: the dandiset does not link to those deposits.
 
-### 4. Runtime and failures
-- The notebook ran in 162 s in the clean environment. The whole session took about 40 minutes.
-- Nothing failed in the final run. Early draft bugs (a short trace at the end of a recording, a NaN in a scale factor, a quoting error) were fixed.
-- Untracked files at the repo root (`.bashrc`, `scripts` and other dotfiles) are sandbox device files I did not create. I left them alone, and the workflow should not commit them.
+**3. New findings, about the other archives**
+- **Figure 2B direction:** in PRIDE PXD065006 (the same table as Supplementary data 1), the RAB3 T86 phosphopeptide is higher in the samples labelled MLi-2. The paper's own volcano table is MLi-2 minus vehicle, while the legend reads positive as higher with vehicle. Either the sample labels or the figure's direction is swapped. At the legend's thresholds that table gives 254 peptides, not 289.
+- **Figure 3 counts:** the text gives 69 and 16 proteins at p < 0.05. The deposited limma table gives 121 and 32 at that p, and 69 and 16 at adjusted p < 0.05. The Figure 3E/3F p-values come from tests on intensities without the log, which the legend does not say.
+- **Figure 1D:** the legend's unpaired test over 16 sections gives p = 4.65e-06. The paper's 0.0008 matches a paired test, or a test on the three mouse means.
+- **Figure 5D/5E:** one WT section appears twice in the source data. Counted once, as the claims file fixes, one comparison moves from p = 0.0344 to 0.058. That is why fig5 is partially reproduced.
+- **Counts:** Figure 4E has 51 G2019S areas against the legend's 57, and the 5E legend repeats the 5D genotype F value.
+- **Identifiers:**
+  - The source data name no G2019S animals for Figures 5G, 5H and 5J.
+  - The image study for Figure 5 names a WT mouse 1923 where the source data say 1723.
+  - The synaptosome images name mice only as 1 to 5.
+- **Image studies hold images the figures do not use, without saying which were used:** extra images in the Figure 1 study, an extra WT mouse in the Anxa1 study, and 64 volume images per genotype where the legend gives 96.
+- **No method for some values:** the Imaris image analyses and the western blot quantification cannot be recomputed from what is deposited.
 
-Files are in `entries/001933-chen-2026/`:
-- reproduce_chen_2026.ipynb
-- lrrk2.py
-- entry.yaml
-- requirements.in
-- requirements.lock.txt
-- README.md
+**4. Where the protocol did not fit a repeat attempt**
+- **The check fails on the earlier record.** It applies the current claims file to every attempt of the entry, so -01's eight `data_missing` blocks fail the new `elsewhere` rule. You told me to leave -01 unchanged, and the pilot notes say pilot-6 attempts keep their claims. There is no exemption by protocol version, so `entry.py all` stops at the check; I ran `check` and `run` separately. The workflow's check will fail on this until the tool is changed.
+- **One claims file serves both attempts.** Updating it for pilot-7 also changes the claims that -01 points to.
+- **Repeat attempts assume a changed dandiset.** Here only the protocol changed, so "fixed or not" is trivially "still present". There is no rule for an earlier finding whose kind becomes invalid under a new protocol.
+- **Findings are defined as being about the dandiset.** The `elsewhere` claims produce findings about other archives, and the schema has no field for which archive. I named it in each statement.
+- **Criteria for the eight new claims came after seeing the data.** I wrote them after seeing the deposited values, though before computing any statistic; the claims file's opening comment says so. For fig2b, the criterion did not fix a normalisation step, and that decided the outcome; the normalised result is shown as a variant.
 
-Elsewhere in the repo:
-- `claims/001933/10.1038-s41467-026-75194-3.yaml`
-- `attempts/001933-chen-2026-01.yaml`
-- the verifier's package in `executed/001933-chen-2026/handover/`
+New files: `attempts/001933-chen-2026-02.yaml` and `entries/001933-chen-2026/archives.py` (a helper for the archive data and the image analysis). Changed: the notebook, `README.md`, `entry.yaml`, `requirements.in` (adds scikit-image and tifffile), the lock file and the claims file.

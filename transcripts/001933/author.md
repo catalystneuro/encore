@@ -1,17 +1,17 @@
-# 001933 · author · run 38742520684
+# 001933 · author · run 38786108193
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; ls; ls entries claims attempts tools
+cat docs/protocol.md; ls; ls entries/001933-chen-2026 claims/001933 attempts | head -50
 ```
 
 ```
 # Protocol for an attempt
 
-Version: `pilot-6`. Record this version in the attempt's provenance.
+Version: `pilot-7`. Record this version in the attempt's provenance.
 
 This is what an agent, or a person, does to attempt a target and deposit the
 result. It is written from the eight pilot attempts
@@ -29,118 +29,254 @@ kept in [`transcripts/<dandiset>/`](../transcripts).
 
 ## Author
 
-[... 397 more lines not kept]
+[... 387 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat README.md docs/design.md | head -300; ls entries/001453-fouke-2025 claims/001453; cat attempts/001453-fouke-2025-01.yaml
+cat docs/agents/author-again.md 2>/dev/null | head -100; grep -n "^#" docs/pilot-notes.md
 ```
 
 ```
-<persisted-output>
-Output too large (50KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/5c960d5c-7ccc-45e6-878b-3e99cd1dc6a3/tool-results/btn5spkpi.txt
+You are the author of a new attempt on dandiset {dandiset} in the reproduction registry, checked out in the current directory. Follow docs/protocol.md exactly; read it first. The dandiset already has an attempt, `{earlier}` (entry `entries/{entry}`, claims in `claims/{dandiset}/`), made on version {earlier_version} under protocol {earlier_protocol}. {why}
 
-Preview (first 2KB):
-# Reproduction registry (working name)
+Paper: doi:{paper}, "{title}". Save any text of the paper you download under `paper/` and read it from there. Stream the NWB files from the DANDI API; do not download them to disk.
 
-Agents, and people, try to reproduce the key findings of papers from the open
-data on the [DANDI Archive](https://dandiarchive.org), and register the result
-here: the notebooks when it works, and the reason when it does not.
+{version_rule}
 
-- **For the archive:** evidence of whether each dandiset is complete and
-  accurate enough to support the findings of its paper.
-- **For analysts:** working notebooks to build new analyses on.
+1. Keep the claims file as it is unless a claim is wrong about the paper or does not follow the current protocol; if you change one, say why in the file's opening comment.
+2. Update the entry in place: if the version changed, the helper's version constant, `entry.yaml`'s `dandi:` relation, the notebook header and README. The earlier attempt record stays as it is.
+3. Re-run every check of the data and every claim. For each finding of `{earlier}`, say in the notebook's data check and in the new record whether it is fixed, partly fixed or still present, with the output that shows it. Record new findings too.
+4. Lock, check and run the entry, make every conclusion match the new numbers, and write the new record `attempts/{next_attempt}.yaml`. Its outcomes are this attempt's own; where one differs from `{earlier}`, say why in its notes. Then run `python tools/entry.py handover entries/{entry}`. Do not verify your own work, and do not commit or push: the workflow commits your changes.
 
-Status: pilot. All eight pilot targets have been attempted and checked by an
-independent agent.
+Provenance: kind agent; accountable name "CatalystNeuro"; harness "Claude Code (GitHub Actions)"; model "{model}"; protocol: the version stated in docs/protocol.md. Date {date}.
 
-**Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
+Write prose plainly: no em dashes, never the word "rather", no bold except the "**Result: ...**" openers. YAML plain scalars must not contain ": ".
 
-## Reading the outcomes
-[... 24 more lines not kept]
+Your final message is a report with: (1) the outcome per claim, with the earlier outcome next to it; (2) for each earlie
+[... 58 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/5c960d5c-7ccc-45e6-878b-3e99cd1dc6a3/tool-results/btn5spkpi.txt"
+ "file_path": "docs/pilot-notes.md",
+ "offset": 973,
+ "limit": 18
 }
 ```
 
 ```
-1	# Reproduction registry (working name)
-2	
-3	Agents, and people, try to reproduce the key findings of papers from the open
-4	data on the [DANDI Archive](https://dandiarchive.org), and register the result
-5	here: the notebooks when it works, and the reason when it does not.
-6	
-7	- **For the archive:** evidence of whether each dandiset is complete and
-8	  accurate enough to support the findings of its paper.
-9	- **For analysts:** working notebooks to build new analyses on.
-10	
-11	Status: pilot. All eight pilot targets have been attempted and checked by an
-12	independent agent.
-13	
-14	**Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
-15	
-16	## Reading the outcomes
-17	
-18	An outcome says what one attempt could recover from the data in a dandiset,
-19	with the methods available to it. **A "not reproduced" or "partially
-20	reproduced" outcome is not a finding that the paper is wrong.** It can come
-[... 905 more lines not kept]
+973	## Protocol pilot-7 (2026-10-15): data in other archives
+974	
+975	001933 showed that a blocked claim can mean two different things. Eight of
+976	its claims rest on imaging, proteomics and blots that the paper deposited
+977	in the BioImage Archive, PRIDE and Zenodo; they were blocked with
+978	`data_missing`, the same reason as data that are public nowhere. pilot-7
+979	adds a fourth data kind, `elsewhere`, for a claim whose data the dandiset
+980	does not hold because the paper put them in another public archive. The
+981	claim names the archive and a pinned identifier under `where`, is tested on
+982	those data like any other claim, and is counted on its own, apart from the
+983	dandiset's claims and from `with_inputs` claims. It is never blocked with
+984	`data_missing`; if it cannot be tested here, the reason is the one that
+985	applies, such as `too_large` or `not_runnable`. `data_missing` now means
+986	public nowhere. The README table leaves these claims out, and each
+987	dandiset's page shows them in a line of their own.
+988	
+989	Attempts recorded under pilot-6 keep their claims as they are.
+990
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001453-fouke-2025; cat entry.yaml requirements.in README.md; head -60 ../../claims/001453/*.yaml; python -c "
-import json;nb=json.load(open('reproduce_fouke_2025.ipynb'))
-for c in nb['cells'][:8]: print(c['cell_type'],c.get('metadata'),''.join(c['source'])[:1500]); print('----')
-"
+cat claims/001933/*.yaml; cat attempts/001933-chen-2026-01.yaml
 ```
 
 ```
+<persisted-output>
+Output too large (44.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/62c0266b-fb38-4a1e-ba98-e9a51f4b99f5/tool-results/bdqpdrdoy.txt
+
+Preview (first 2KB):
+# Claims for Chen, He et al. (2026), "Leucine-rich repeat kinase 2 impairs the release sites of
+# Parkinson's disease vulnerable dopamine axons", Nature Communications, on dandiset 001933.
+# Source: the open access full text (CC BY) and its Supplementary Information, read from the
+# Results, figure legends and Methods.
+#
+# When these criteria were written, the author had seen the data check only: the file list,
+# subject metadata, the optogenetic epochs table of every file (powers, train lengths, the
+# pseudorandom order), the frame times of the processed series, a check that the raw 470 nm
+# signal and the processed signal share a clock, and, per mouse and labelled power, the median
+# of a 0 to 0.5 s baseline-subtracted integral of the dF/F (used to check the clock and the power
+# labels; it shows, mouse by mouse, smaller responses in some Anxa1 G2019S mice). No group
+# statistics, per-mouse tests, spontaneous transients or effect sizes had been computed. The
+# author had also read the layout of the paper's source data file (Zenodo 10.5281/zenodo.19930567)
+# and found that, for mouse 4885, its eight 0.5 mW triggered traces of Figure 6C equal the
+# dandiset's dF/F from 1 s before each epoch labelled 0.5 mW.
+#
+[... 11 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "claims/001933/10.1038-s41467-026-75194-3.yaml"
+}
+```
+
+```
+1	# Claims for Chen, He et al. (2026), "Leucine-rich repeat kinase 2 impairs the release sites of
+2	# Parkinson's disease vulnerable dopamine axons", Nature Communications, on dandiset 001933.
+3	# Source: the open access full text (CC BY) and its Supplementary Information, read from the
+4	# Results, figure legends and Methods.
+5	#
+6	# When these criteria were written, the author had seen the data check only: the file list,
+7	# subject metadata, the optogenetic epochs table of every file (powers, train lengths, the
+8	# pseudorandom order), the frame times of the processed series, a check that the raw 470 nm
+9	# signal and the processed signal share a clock, and, per mouse and labelled power, the median
+10	# of a 0 to 0.5 s baseline-subtracted integral of the dF/F (used to check the clock and the power
+11	# labels; it shows, mouse by mouse, smaller responses in some Anxa1 G2019S mice). No group
+12	# statistics, per-mouse tests, spontaneous transients or effect sizes had been computed. The
+13	# author had also read the layout of the paper's source data file (Zenodo 10.5281/zenodo.19930567)
+14	# and found that, for mouse 4885, its eight 0.5 mW triggered traces of Figure 6C equal the
+15	# dandiset's dF/F from 1 s before each epoch labelled 0.5 mW.
+16	#
+17	# The dandiset holds only the fiber photometry and optogenetics of Figure 6 and Supplementary
+18	# Figures 7 and 8 (15 Anxa1-iCre and 12 Calb1-Cre mice). The immunostaining, proteomics,
+19	# western blots and super-resolution imaging of Figures 1 to 5 are not in it.
+20	#
+[... 217 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cat attempts/001933-chen-2026-01.yaml
+```
+
+```
+<persisted-output>
+Output too large (30.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/62c0266b-fb38-4a1e-ba98-e9a51f4b99f5/tool-results/bquidjnnb.txt
+
+Preview (first 2KB):
 schema_version: 1
-name: 001453-fouke-2025
+id: 001933-chen-2026-01
+dandiset: "001933"
+dandiset_version: 0.260825.1457
+paper: doi:10.1038/s41467-026-75194-3
+date: 2026-10-15
+entry: 001933-chen-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-6
+inputs:
+[... 21 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/62c0266b-fb38-4a1e-ba98-e9a51f4b99f5/tool-results/bquidjnnb.txt"
+}
+```
+
+```
+1	schema_version: 1
+2	id: 001933-chen-2026-01
+3	dandiset: "001933"
+4	dandiset_version: 0.260825.1457
+5	paper: doi:10.1038/s41467-026-75194-3
+6	date: 2026-10-15
+7	entry: 001933-chen-2026
+8	provenance:
+9	  kind: agent
+10	  accountable:
+11	    name: CatalystNeuro
+12	  agent:
+13	    harness: Claude Code (GitHub Actions)
+14	    model: claude-opus-5-5
+15	    protocol: pilot-6
+16	inputs:
+17	- what: The paper's source data file (Source data.xlsx, md5 c26fe3de8f340a3db5fa29a40e5a8c10), with the triggered
+18	    traces, evoked integrals and spontaneous transient values of Figure 6 and Supplementary Figures 7 and 8, used only
+19	    in source-data-link as reference values. It is identical, for these sheets, to the Source Data file on the
+20	    article page.
+[... 495 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+grep -rn "elsewhere\|where" schemas/*.json | head -30; grep -rln "elsewhere" claims attempts entries | head; cat entries/001933-chen-2026/entry.yaml entries/001933-chen-2026/requirements.in entries/001933-chen-2026/README.md
+```
+
+```
+schemas/claims.schema.json:79:            "description": "What the claim's test uses: the dandiset alone (the default); the dandiset with names for its own codes taken from elsewhere (`with_labels`), which counts as the dandiset; the dandiset with other data from elsewhere (`with_inputs`), which is counted apart; or data the paper deposited in another public archive, which the dandiset does not hold (`elsewhere`), counted apart from both. Outside sources that a test uses are listed under `inputs` in the attempt.",
+schemas/claims.schema.json:84:              "elsewhere"
+schemas/claims.schema.json:87:          "where": {
+schemas/claims.schema.json:88:            "description": "For a claim with data `elsewhere`: the archive and the pinned identifier of the data, e.g. 'PRIDE PXD012345' or 'Zenodo doi:10.5281/zenodo.123'.",
+schemas/claims.schema.json:98:                  "const": "elsewhere"
+schemas/claims.schema.json:107:                "where"
+claims/000035/10.1038-s41586-020-2907-3.yaml
+attempts/002014-choi-2025-01.yaml
+attempts/001933-chen-2026-01.yaml
+attempts/001453-fouke-2025-01.yaml
+entries/001097-liu-2024/reproduce_liu_2024.ipynb
+entries/002014-choi-2025/reproduce_choi_2025.ipynb
+entries/000207-zheng-2022/reproduce_zheng_2022.ipynb
+entries/001933-chen-2026/reproduce_chen_2026.ipynb
+entries/001754-knierim-2000/reproduce_knierim_2000.ipynb
+entries/000006-economo-2018/reproduce_economo_2018.ipynb
+schema_version: 1
+name: 001933-chen-2026
 type: reproduction
-title: Optomotor swimming of zebrafish and Danionella cerebrum (Fouke et al. 2025)
-description: Tests the freely swimming findings of Fouke, He, Loring and Naumann (2025) on dandiset
-  001453, which holds the tracking data of 25 zebrafish and 12 Danionella cerebrum larvae during the
-  optomotor protocol. It compares swimming speed, turning and angular acceleration between species
-  and stimuli, the response to monocular stimuli, and how steady the swimming is. The imaging and
-  head-fixed tail tracking of the paper's Figures 2 to 4 are not in the dandiset.
-license: Apache-2.0
-notebooks:
-- path: reproduce_fouke_2025.ipynb
-  title: Reproducing Fouke et al. (2025) from dandiset 001453
-  runtime_minutes: 6
-helpers:
-- omr.py
-related:
-- id: dandi:001453/0.250518.1950
-  relation: uses_data
-- id: doi:10.1016/j.cub.2025.04.027
-[... 241 more lines not kept]
+title: LRRK2-G2019S and dopamine release from Anxa1+ and Calb1+ neurons (Chen, He et al. 2026)
+[... 59 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  curl -s https://api.dandiarchive.org/api/dandisets/001933/ | python -m json.tool | head -50; curl -s "https://api.dandiarchive.org/api/dandisets/001933/versions/" | python -m json.tool
+sed -n 60,115p schemas/claims.schema.json; grep -n -B3 -A12 "elsewhere" attempts/002014-choi-2025-01.yaml | head -80; ls claims/002014; grep -n -B2 -A8 "elsewhere" claims/002014/*.yaml | head -60
 ```
 
-Result: the fetched text is not kept.
+```
+"items": {
+                  "$ref": "#/$defs/expected"
+                }
+              }
+            ]
+          },
+          "criterion": {
+            "description": "For a claim without a number, how it will be judged. Written before the analysis is run.",
+            "type": "string"
+          },
+          "depends_on": {
+            "description": "Ids of claims in this file whose result this one uses.",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
+            }
+          },
+          "data": {
+            "description": "What the claim's test uses: the dandiset alone (the default); the dandiset with names for its own codes taken from elsewhere (`with_labels`), which counts as the dandiset; the dandiset with other data from elsewhere (`with_inputs`), which is counted apart; or data the paper deposited in another public archive, which the dandiset does not hold (`elsewhere`), counted apart from both. Outside sources that a test uses are listed under `inputs` in the attempt.",
+[... 53 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
-curl -s https://api.dandiarchive.org/api/dandisets/001933/versions/0.260825.1457/ | python -m json.tool > $TMPDIR/meta.json; cat $TMPDIR/meta.json | head -250; curl -s "https://api.dandiarchive.org/api/dandisets/001933/versions/0.260825.1457/assets/?page_size=100" | python -c "
-import json,sys; d=json.load(sys.stdin)
-for a in d['results']: print(a['asset_id'], a['path'], a['size'])"
+ls paper 2>/dev/null; cat .gitignore; mkdir -p paper; cd paper && curl -sL -o article.html "https://www.nature.com/articles/s41467-026-75194-3" -w "%{http_code} %{size_download}\n"
 ```
 
 Result: the fetched text is not kept.
@@ -149,87 +285,38 @@ Result: the fetched text is not kept.
 
 ```bash
 python -c "
-import json; d=json.load(open('$TMPDIR/meta.json'))
-for k in ['description','relatedResource','assetsSummary','ethicsApproval','wasGeneratedBy','protocol','studyTarget']: print(k, json.dumps(d.get(k),indent=1)[:4000])
-"
-```
-
-```
-description "Parkinson\u2019s disease (PD) is defined pathologically by loss of dopamine-producing neurons in the substantia nigra pars compacta (SNc). Yet synaptic dysfunction emerges much earlier, making it essential to define the mechanisms that drive early nigrostriatal deregulation. In the SNc, molecularly distinct dopamine neuron subtypes show differential susceptibility to PD. In vivo fiber photometry of striatal dopamine release in awake, head-fixed mice expressing the dopamine sensor GRAB-DA3m. Two intersectional mouse lines targeting distinct dopamine neuron subtypes were studied: Anxa1-iCre mice (Anxa1+, vulnerable subtype) with fiber photometry in the dorsal lateral striatum (DLS), and Calb1-Cre mice (Calb1+, resilient subtype) with fiber photometry in the dorsal medial striatum (DMS). In each session, optogenetic activation of subtype-specific dopamine neuron cell bodies in the substantia nigra pars compacta (SNc) was achieved via Cre-dependent ChRmine expression and red-light (635 nm) stimulation. The experiment compares dopamine release between wild-type (LRRK2-WT) and LRRK2-G2019S knockin mice to investigate how pathogenic LRRK2 kinase activity affects dopamine synaptic function in a subtype-specific manner."
-relatedResource [
- {
-  "url": "https://doi.org/10.1038/s41467-026-75194-3",
-  "name": "Leucine-rich repeat kinase 2 impairs the release sites of Parkinson\u2019s disease vulnerable dopamine axons",
-  "relation": "dcite:IsDescribedBy",
-  "schemaKey": "Resource",
-  "repository": "Nature Communications",
-  "resourceType": "dcite:JournalArticle"
- },
- {
-  "url": "https://github.com/catalystneuro/dombeck-lab-to-nwb/tree/main/src/dombeck_lab_to_nwb/chen2026",
-  "name": "Conversion code: dombeck-lab-to-nwb",
-  "relation": "dcite:IsCompiledBy",
-  "schemaKey": "Resource",
-  "repository": "GitHub",
-  "resourceType": "dcite:Software"
- },
- {
-  "url": "https://github.com/dandi/example-notebooks/blob/master/001933/DombeckLab/001933_demo.ipynb",
-[... 56 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-mkdir -p paper; curl -sL -A "Mozilla/5.0" https://www.nature.com/articles/s41467-026-75194-3 -o paper/article.html; ls -la paper; grep -o '<title>[^<]*' paper/article.html
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd paper; python -c "
 import re,html
-s=open('article.html').read()
-from html.parser import HTMLParser
-class P(HTMLParser):
-    def __init__(s):
-        super().__init__(); s.out=[]; s.skip=0
-    def handle_starttag(s,t,a):
-        if t in('script','style'): s.skip+=1
-        if t in('p','h2','h3','h4','li','figcaption','div'): s.out.append('\n')
-    def handle_endtag(s,t):
-        if t in('script','style'): s.skip-=1
-    def handle_data(s,d):
-        if not s.skip: s.out.append(d)
-p=P(); p.feed(s); t=''.join(p.out); t=re.sub(r'\n\s*\n+','\n\n',t)
-open('article.txt','w').write(t); print(len(t))
-"; grep -n -i "open access\|Creative Commons" article.txt | head; grep -n "^Abstract\|^Results\|^Methods\|^Discussion\|Data availability\|Code availability\|^References" article.txt
+t=open('article.html').read()
+t=re.sub(r'<script.*?</script>|<style.*?</style>','',t,flags=re.S)
+t=re.sub(r'<(p|h[1-6]|li|figcaption|div class=\"c-article-section__figure-description\")[^>]*>','\n\n',t)
+t=re.sub(r'<[^>]+>','',t)
+t=html.unescape(t)
+t=re.sub(r'\n\s*\n+','\n\n',t)
+open('article.txt','w').write(t)
+print(len(t))
+"; grep -n "Results\|Methods\|Data availability\|Code availability\|Fig. 1\b" article.txt | head -30
 ```
 
 ```
-160810
-51:            Open access
-115:                                         Open access
-121:                                         Open access
-127:                                         Open access
-894:This research was funded in whole or in part by Aligning Science Across Parkinson’s [D.A.D., R.A., L.P ASAP- 020600] and [D.R.A ASAP-000463] through the Michael J. Fox Foundation for Parkinson’s Research (MJFF) and the UK Medical Research Council [MC_UU_00018/1] (D.R.A). A.R.K. was funded by Research Ireland through a Research Frontiers grant, 20/FFP-A/8446, and R.A. by R01NS119690. For the purpose of open access, the author has applied a CC BY public copyright license to all Author Accepted Manuscripts arising from this submission. Imaging work was performed at the Northwestern University Center for Advanced Microscopy (RRID: SRC_020996), generously supported by NCICCSGP30 CA060553, which was awarded to the Robert H. Lurie Comprehensive Cancer Center. Structured illumination microscopy was performed on a Nikon N-SIM system, purchased with NIH 1S10OD016342-01 support. Super-resolution spinning disk microscopy was performed on a Nikon SoRa system, purchased with NIH 1S10OD032270-01 support.
-1082:Open Access  This article is licensed under a Creative Commons Attribution 4.0 International License, which permits use, sharing, adaptation, distribution and reproduction in any medium or format, as long as you give appropriate credit to the original author(s) and the source, provide a link to the Creative Commons licence, and indicate if changes were made. The images or other third party material in this article are included in the article's Creative Commons licence, unless indicated otherwise in a credit line to the material. If material is not included in the article's Creative Commons licence and your intended use is not permitted by statutory regulation or exceeds the permitted use, you will need to obtain permission directly from the copyright holder. To view a co
-[... 10 more lines not kept]
+160991
+172:Results
+178:Fig. 1: LRRK2 is expressed in SNc dopamine neurons and enriched in vulnerable subpopulations.
+282:Methods
+556:Data availability
+560:Code availability
+814:Lam, S. S. et al. Directed evolution of APEX2 for electron microscopy and proximity labeling. Nat. Methods 12, 51–54 (2014).
+935:Zhuo, Y. et al. Improved green and red GRAB sensors for monitoring dopaminergic activity in vivo. Nat. Methods 21, 680–691 (2024).
+964:Bubis, J. A. et al. Challenging the Astral mass analyzer to quantify up to 5,300 proteins per single cell at unseen accuracy to uncover cellular heterogeneity. Nat. Methods 22, 510–519 (2025).
+1101:Schindelin, J. et al. Fiji: an open-source platform for biological-image analysis. Nat. Methods 9, 2019 (2012).
 ```
-
-**Agent**
-
-Full text is open access (CC BY). Reading it.
 
 **Agent calls Read**
 
 ```json
 {
  "file_path": "paper/article.txt",
- "offset": 100,
- "limit": 280
+ "offset": 160,
+ "limit": 410
 }
 ```
 
@@ -240,7 +327,7 @@ Result: not kept, because it reads the paper's text.
 ```json
 {
  "file_path": "paper/article.txt",
- "offset": 100,
+ "offset": 160,
  "limit": 125
 }
 ```
@@ -250,39 +337,63 @@ Result: not kept, because it reads the paper's text.
 **Agent calls Bash**
 
 ```bash
-cd paper; sed -n 224,375p article.txt | grep -n -i -B2 -A30 "photometry\|Data availability\|Code availability" | head -300
+cd paper; sed -n 550,575p article.txt; grep -n "Statistic\|Imaris\|quantif\|ImageJ\|Fiji\|PRIDE\|BioImage\|Zenodo\|MaxQuant\|Spectronaut\|DIA-NN\|Perseus\|limma" article.txt | head -60
 ```
 
 ```
-113-In vivo evoked dopamine release
-114-Surgery
-115:For Anxa1+ experiments, Anxa1-iCre; LRRK2WT and Anxa1-iCre; LRRK2G2019S mice were used for virus injection and fiber implantation at 6 months of age. Mice were anesthetized with isoflurane (5% at induction and 1–2% for maintenance). Two craniotomies, 0.5–1 mm in diameter, were made over the right substantia nigra ( − 3.20 mm caudal, +1.6 mm lateral from bregma) and the right rostral striatum ( + 0.5 mm caudal, +1.8 mm lateral from bregma). A small volume (0.4 μl total) of virus (pAAV-Ef1a-DIO-ChRmine-mScarlet-WPRE, Addgene, 130998-AAV5, titer 2.20E + 13 vg/mL), diluted 1:1 in PBS, was pressure injected through a pulled glass micropipette into the SNc at four depths ( − 3.8, −4.1, −4.4, and −4.7 mm ventral from dura surface, 0.1 μl per depth). Similarly, 0.1 μl of virus (pAAV-hSyn-GRAB-gDA3m, Addgene, 208698-AAV1, titer ≥ 7×10¹² vg/mL), diluted 1:2 in PBS, was injected into the striatum at −1.9 mm ventral from the dura surface. Following injections, a 4 mm long, 400 um diameter optic fiber (MFC_400/430-0.66_4.0mm_TS3.0_C60, Doric Lenses) for opto-stimulation was implanted through the same craniotomy just above the SNc, and a 2 mm long, 200-diameter optic fiber (MFC_200/250-0.66_2.0mm_ZF1.25(G)_FLT, Doric Lenses) for fiber photometry was implanted in the dorsal striatum. The fibers and a custom-made metal headplate were secured on the skull with metabond (Parkell).
-116-For Calb1+ experiments, Calb1-Cre; LRRK2WT and Calb1-Cre; LRRK2G2019S mice were used for virus injection and fiber implantation at 6 months of age. Surgery procedures were similar to the Anxa1+ group with the following changes: striatum craniotomies were made at +0.5 mm caudal, +1.4 mm lateral from bregma; virus injections in the SNc were limited to 1 depth at −4.3 mm ventral from the dura surface to prevent spillover to the nearby VTA and thalamic regions; the striatum optic fibers were 3 mm long(MFC_00/250-0.66_3.0mm_ZF1.25(G)_FLT, Doric Lenses).
-117
-[... 35 more lines not kept]
+Group statistical analyses were performed using GraphPad Prism 10.1 software (GraphPad, La Jolla, CA). Sample size (n value) is defined by the number of observations (i.e., neurons, sections, or mice) and is indicated in the legends. All data are expressed as mean ± SEM or individual plots. Unless stated otherwise, statistical significance was determined by two-tailed Student’s t-tests for two-group comparisons. For multiple group comparisons, one-way or two-way analysis of variance (ANOVA) tests were used for normally distributed data, followed by post-hoc analyses. All statistical tests are specified in the figure legends.
+
+Reporting summary
+
+Further information on research design is available in the Nature Portfolio Reporting Summary linked to this article.
+
+Data availability
+
+The mass spectrometry proteomics data generated in this study have been deposited in the ProteomeXchange Consortium via the PRIDE partner repository, with dataset identifiers PXD065003, PXD065006, and PXD0651255 (https://www.ebi.ac.uk/pride/archive/projects/PXD065125). The processed proteomics data generated in this study are provided in the Supplementary data 1-3, and Gene Ontology analysis results are provided in the Supplementary data 4-5. Imaging data with metadata files generated in this study have been deposited in the BioStudies/BioImage Archive, with data indentifiers S-BIAD2070, S-BIAD2071, S-BIAD2072, and S-BIAD2074. Raw tubular Data generated in this study from all experiments, and uncropped western blot images with metadata files in this study are available in source data file via the open-access option on the Zenodo repository (https://doi.org/10.5281/zenodo.19930567). The protocols used in this study were uploaded to protocols.io; their DOIs are listed in the Supplementary Table 1. Source data are provided with this paper.
+
+Code availability
+
+The codes generated in this study have been deposited on Zenodo, https://doi.org/10.5281/zenodo.19930567; https://doi.org/10.5281/zenodo
+[... 39 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python -c "import pynwb, h5py, remfile, dandi; print(pynwb.__version__)" ; which uv; python --version; grep -o 'https://static-content.springer.com/esm/[^"]*' paper/article.html | sort -u
+cd  wc -l entries/001933-chen-2026/lrrk2.py; grep -n "^def \|^[A-Z_]* = \|zenodo\|VERSION" entries/001933-chen-2026/lrrk2.py | head -60
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+301 entries/001933-chen-2026/lrrk2.py
+43:DANDISET_ID = "001933"
+44:DANDISET_VERSION = "0.260825.1457"
+45:FS = 100.0  # Hz, the processed series
+46:SOURCE_DATA_URL = "https://zenodo.org/api/records/19930567/files/Source%20data.xlsx/content"
+48:PAPER_POWERS = (0.1, 0.5, 1.0, 4.0)  # mW, the powers of Figure 6 and Supplementary 7 and 8
+50:_OPHYS = "processing/ophys/FiberPhotometryResponseSeries"
+53:def list_assets():
+55:    dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
+59:def _text(dataset):
+64:def _raw_lag(f, t, corrected, start_s=300.0, n_raw=60000, max_lag=20):
+84:def load_session(asset):
+120:def _text_v(v):
+124:def _movmean(x, k=20):
+133:def _dff_from_corrected(corrected):
+139:def load_all(workers=6):
+145:def evoked_integrals(s, window="methods", trace="dff"):
+164:def code_chunk(s, j):
+173:def double_threshold(z, low=-1.0, high=1.0):
+186:def spontaneous_trace(s, exclusion="methods"):
+[... 9 more lines not kept]
+```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -o 'href="[^"]*\(esm\|MOESM\)[^"]*"' paper/article.html | sort -u | head; uv venv $TMPDIR/venv -q && source $TMPDIR/venv/bin/activate && uv pip install -q pynwb h5py remfile dandi numpy scipy pandas matplotlib && python -c "import pynwb; print(pynwb.__version__)"
-```
-
-Result: not kept, because it reads the paper's text.
-
-**Agent calls Bash**
-
-```bash
-cd paper; grep -o 'href="https://media.springernature.com[^"]*"' article.html | sort -u; curl -sL -o supp.pdf "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-026-75194-3/MediaObjects/41467_2026_75194_MOESM1_ESM.pdf"; ls -la; source $TMPDIR/venv/bin/activate; uv pip install -q pypdf; python -c "
-import pypdf; r=pypdf.PdfReader('supp.pdf'); open('supp.txt','w').write('\n'.join(p.extract_text() for p in r.pages)); print(len(r.pages))"; grep -n -i "Supplementary Fig.* [78]\|photometry\|Table 1" supp.txt | head -40
+cd paper; curl -s https://zenodo.org/api/records/19930567 | python -c "
+import json,sys; d=json.load(sys.stdin); print(d['metadata']['title'], d['metadata'].get('version'), d.get('created'), d.get('modified'))
+for f in d['files']: print(f['key'], f['size'], f['checksum'])
+"
 ```
 
 Result: the fetched text is not kept.
@@ -290,556 +401,11 @@ Result: the fetched text is not kept.
 **Agent calls Bash**
 
 ```bash
-cd paper; sed -n 360,530p supp.txt; sed -n 1060,1125p supp.txt
-```
-
-```
-Supplementary Figure 7. Histology and power dependence for in vivo evoked dopamine measurements in the Anxa1+ 
-subtype projection region of striatum (linked to Figure 6).  
-A. Histological verification of viral expression and fiber placement in each animal. Left two columns, coronal sections of 
-the dorsal striatum region (dStr) and the Substantia Nigra pars compacta (SNc) of each LRRK2 WT mouse used in the 
-analysis. Red fluorescence indicates the expression of ChRmine in the somas (SNc) and the axons (dStr) of Anxa1+ 
-dopaminergic neurons. Green fluorescence indicates the expression of GRAB-DA3m in the dorsal striatum. White 
-
- 
- 
-12 
- 
-rectangles indicate where the photometry (dStr) and optogenetics (SNc) fibers were placed. Right four columns, same as 
-left, but in LRRK2G2019S mice. Scale bar = 0.5 mm.  
-B. Same as Figure 6C but with 0.1mW, 0.5mW, 1mW, and 4mW optogenetic light powers from top row to bottom row 
-(blue trace, LRRK2G2019S mice = 8, n = 64 stimulations; grey trace, LRRK2WT mice = 7, n = 56 stimulations). Shaded regions 
-denote mean ± SEM across stimulations.   
-C. Same as Figure 6D but with 0.1mW, 0.5mW, 1mW, and 4mW optogenetic light powers from top row to bottom row. 
-White dots denote group means and black bars denote 25th to 75th percentile. Left, group comparisons at each power 
-(LRRK2G2019S n = 64 stimulations per power, LRRK2WT n = 56 stimulations per power; p-value (0.1 mW) = 1.29E-15, p-
-value (0.5 mW) = 1.10E-20, p-value (1 mW) = 1.22E-17, p-value (4 mW) = 2.39E-16, one-tailed, two-sampled t-test). 
-[... 207 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  source $TMPDIR/venv/bin/activate; cat > $TMPDIR/inspect.py <<'EOF'
-import h5py, remfile, sys
-from dandi.dandiapi import DandiAPIClient
-from pynwb import NWBHDF5IO
-c=DandiAPIClient(); ds=c.get_dandiset("001933","0.260825.1457")
-a=ds.get_asset_by_path(sys.argv[1])
-url=a.get_content_url(follow_redirects=1, strip_query=True)
-f=h5py.File(remfile.File(url),'r')
-def walk(name,obj):
-    if isinstance(obj,h5py.Dataset):
-        print(name, obj.shape, obj.dtype, dict((k,(v.decode() if isinstance(v,bytes) else str(v))[:200]) for k,v in obj.attrs.items() if k not in ('namespace','object_id')))
-    else:
-        at={k:str(v)[:300] for k,v in obj.attrs.items() if k not in ('namespace','object_id')}
-        print(name+'/', at)
-f.visititems(walk)
-io=NWBHDF5IO(file=f,load_namespaces=True); nwb=io.read(); print(nwb)
-print(nwb.subject)
-for k in ['session_description','experiment_description','protocol','notes','surgery','virus','pharmacology','stimulus_notes','related_publications','institution','lab','experimenter']:
-    print(k,':',getattr(nwb,k,None))
-EOF
-python $TMPDIR/inspect.py sub-3742-anxa-gs/sub-3742-anxa-gs_ses-2025-01-24-0006_behavior.nwb 2>&1 | head -200
-```
-
-```
-Traceback (most recent call last):
-  File "/tmp/claude-1001/inspect.py", line 1, in <module>
-    import h5py, remfile, sys
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/h5py/__init__.py", line 33, in <module>
-    from . import version
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/h5py/version.py", line 17, in <module>
-    import numpy
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/__init__.py", line 109, in <module>
-    from numpy.__config__ import show_config
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/__config__.py", line 4, in <module>
-    from numpy._core._multiarray_umath import (
-    ...<3 lines>...
-    )
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/_core/__init__.py", line 24, in <module>
-    from . import multiarray
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/_core/multiarray.py", line 11, in <module>
-    from . import _multiarray_umath, overrides
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/_core/overrides.py", line 4, in <module>
-    import inspect
-  File "/tmp/claude-1001/inspect.py", line 1, in <module>
-[... 15 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  source $TMPDIR/venv/bin/activate; mv $TMPDIR/inspect.py $TMPDIR/look.py; python $TMPDIR/look.py sub-3742-anxa-gs/sub-3742-anxa-gs_ses-2025-01-24-0006_behavior.nwb 2>&1 | grep -v Warning | head -200
-```
-
-```
-<persisted-output>
-Output too large (29.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/5c960d5c-7ccc-45e6-878b-3e99cd1dc6a3/tool-results/b1r6hak4n.txt
-
-Preview (first 2KB):
-acquisition/ {}
-acquisition/CommandedVoltageSeries/ {'comments': 'no comments', 'description': 'LED switching square wave from the function generator at 2000 Hz. High voltage (>1 V) marks 470 nm excitation periods; low voltage (<1 V) marks 405 nm isosbestic periods.\n', 'neurodata_type': 'CommandedVoltageSeries'}
-acquisition/CommandedVoltageSeries/data (2988032,) float32 {'conversion': '1.0', 'offset': '0.0', 'resolution': '-1.0', 'unit': 'V'}
-acquisition/CommandedVoltageSeries/frequency () float64 {'unit': 'hertz'}
-acquisition/CommandedVoltageSeries/starting_time () float64 {'rate': '2000.0', 'unit': 'seconds'}
-acquisition/FiberPhotometryResponseSeriesIsosbesticControl/ {'comments': 'no comments', 'description': 'Raw demultiplexed GRAB-DA3m isosbestic fluorescence from ABF recording (Anxa-LRRK2 group, DLS), 405 nm excitation (isosbestic control for motion artifact correction). Recorded at 2 kHz; timestamps are irregular (transition samples between LED cycles discarded). LED alternation at 100 Hz via waveform', 'neurodata_type': 'FiberPhotometryResponseSeries'}
-acquisition/FiberPhotometryResponseSeriesIsosbesticControl/data (1194867,) float32 {'conversion': '1.0', 'offset': '0.0', 'resolution': '-1.0', 'unit': 'a.u.'}
-acquisition/FiberPhotometryResponseSeriesIsosbesticControl/fiber_photometry_table_region (1,) int64 {'description': 'DLS 405 nm isosbestic control channel.', 'neurodata_type': 'DynamicTableRegion', 'table': '<HDF5 object reference>'}
-acquisition/FiberPhotometryResponseSeriesIsosbesticControl/timestamps (1194867,) float64 {'interval': '1', 'unit': 'seconds'}
-...
-</persisted-output>
-```
-
-**Agent calls Bash**
-
-```bash
-cut -c1-600 /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/5c960d5c-7ccc-45e6-878b-3e99cd1dc6a3/tool-results/b1r6hak4n.txt
-```
-
-```
-acquisition/ {}
-acquisition/CommandedVoltageSeries/ {'comments': 'no comments', 'description': 'LED switching square wave from the function generator at 2000 Hz. High voltage (>1 V) marks 470 nm excitation periods; low voltage (<1 V) marks 405 nm isosbestic periods.\n', 'neurodata_type': 'CommandedVoltageSeries'}
-acquisition/CommandedVoltageSeries/data (2988032,) float32 {'conversion': '1.0', 'offset': '0.0', 'resolution': '-1.0', 'unit': 'V'}
-acquisition/CommandedVoltageSeries/frequency () float64 {'unit': 'hertz'}
-acquisition/CommandedVoltageSeries/starting_time () float64 {'rate': '2000.0', 'unit': 'seconds'}
-acquisition/FiberPhotometryResponseSeriesIsosbesticControl/ {'comments': 'no comments', 'description': 'Raw demultiplexed GRAB-DA3m isosbestic fluorescence from ABF recording (Anxa-LRRK2 group, DLS), 405 nm excitation (isosbestic control for motion artifact correction). Recorded at 2 kHz; timestamps are irregular (transition samples between LED cycles discarded). LED alternation at 100 Hz via waveform', 'neurodata_type': 'FiberPhotometryResponseSeries'}
-acquisition/FiberPhotometryResponseSeriesIsosbesticControl/data (1194867,) float32 {'conversion': '1.0', 'offset': '0.0', 'resolution': '-1.0', 'unit': 'a.u.'}
-acquisition/FiberPhotometryResponseSeriesIsosbesticControl/fiber_photometry_table_region (1,) int64 {'description': 'DLS 405 nm isosbestic control channel.', 'neurodata_type': 'DynamicTableRegion', 'table': '<HDF5 object reference>'}
-acquisition/FiberPhotometryResponseSeriesIsosbesticControl/timestamps (1194867,) float64 {'interval': '1', 'unit': 'seconds'}
-acquisition/FiberPhotometryResponseSeriesRawSignal/ {'comments': 'no comments', 'description': 'Raw demultiplexed GRAB-DA3m fluorescence from ABF recording (Anxa-LRRK2 group, DLS), 470 nm excitation (functional dopamine signal). Recorded at 2 kHz; timestamps are irregular (transition samples between LED cycles discarded). LED alternation at 100 Hz via waveform generator.\n', 'neurodata_type': 'Fiber
-[... 190 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  source $TMPDIR/venv/bin/activate; cat > $TMPDIR/look2.py <<'EOF'
-import h5py, remfile, sys, numpy as np, pandas as pd
-from dandi.dandiapi import DandiAPIClient
-from pynwb import NWBHDF5IO
-pd.set_option('display.width',250); pd.set_option('display.max_columns',30)
-c=DandiAPIClient(); ds=c.get_dandiset("001933","0.260825.1457")
-a=ds.get_asset_by_path(sys.argv[1])
-f=h5py.File(remfile.File(a.get_content_url(follow_redirects=1, strip_query=True)),'r')
-nwb=NWBHDF5IO(file=f,load_namespaces=True).read()
-for k in ['identifier','session_id','session_description','experiment_description','session_start_time','timestamps_reference_time','related_publications','institution','lab','experimenter','keywords']:
-    v=getattr(nwb,k,None); print(k,':',v if not hasattr(v,'__len__') or isinstance(v,str) else list(v))
-s=nwb.subject; print({k:getattr(s,k) for k in ['subject_id','species','sex','genotype','strain','date_of_birth','age','description']})
-print(nwb.get_fiber_photometry().fiber_photometry_table.to_dataframe()[['location','excitation_wavelength_in_nm','emission_wavelength_in_nm']] if hasattr(nwb,'get_fiber_photometry') else '')
-fp=nwb.lab_meta_data['fiber_photometry']; print(fp.fiber_photometry_table.to_dataframe()[['location','excitation_wavelength_in_nm','emission_wavelength_in_nm']])
-ot=nwb.intervals['OptogeneticEpochsTable']; print(ot.description); df=ot.to_dataframe().drop(columns=['optogenetic_sites']); print(df.to_string())
-EOF
-python $TMPDIR/look2.py sub-3742-anxa-gs/sub-3742-anxa-gs_ses-2025-01-24-0006_behavior.nwb 2>&1 | grep -v Warn
-```
-
-```
-identifier : 639597e8-0c37-4b48-aaf8-01e43dd0889d
-session_id : 2025-01-24-0006
-session_description : Fiber photometry recording of GRAB-DA3m dopamine fluorescence in the dorsal lateral striatum (DLS) during optogenetic activation of Anxa1+ dopamine neuron cell bodies in SNc (ChRmine, 635 nm) in an awake head-fixed LRRK2-G2019S mouse on a treadmill. Data sources: fiber photometry (raw multiplexed fluorescence at 2 kHz), optogenetic stimulation TTL, and treadmill velocity.
-
-experiment_description : In vivo fiber photometry of striatal dopamine release in awake, head-fixed mice expressing the dopamine sensor GRAB-DA3m. Two intersectional mouse lines targeting distinct dopamine neuron subtypes were studied: Anxa1-iCre mice (Anxa1+, vulnerable subtype) with fiber photometry in the dorsal lateral striatum (DLS), and Calb1-Cre mice (Calb1+, resilient subtype) with fiber photometry in the dorsal medial striatum (DMS). Optogenetic activation of subtype-specific dopamine neuron cell bodies in SNc was achieved via Cre-dependent ChRmine expression and red-light (635 nm) stimulation. LRRK2-WT and LRRK2-G2019S knockin mice were compared to investigate how pathogenic LRRK2 kinase activity affects dopamine synaptic function in a subtype-specific manner.
-
-session_start_time : 2025-01-24 13:57:40.762000-06:00
-timestamps_reference_time : 2025-01-24 13:57:40.762000-06:00
-related_publications : ['https://doi.org/10.1038/s41467-026-75194-3']
-institution : Northwestern University
-lab : Dombeck Lab
-experimenter : ['He, Elena', 'Quinn, Kaitlyn']
-keywords : ['fiber photometry', 'dopamine', 'GRAB-DA', 'optogenetics', 'ChRmine', "Parkinson's disease", 'substantia nigra', 'striatum', 'dopamine neuron subtypes', 'mouse', 'treadmill locomotion', 'head-fixed']
-{'subject_id': '3742-anxa-gs', 'species': 'Mus musculus', 'sex': 'M', 'genotype': 'LRRK2-G2019S', 'strain': 'C57BL/6J', 'date_of_birth': datetime.datetime(2024, 6, 22, 0, 0, tzinfo=tzlocal()), 'age': None, 'description': "Anxa1-iCre mouse on
-[... 74 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR && git clone -q https://github.com/DombeckLab/lrrk2_photometry_analysis.git && git clone -q https://github.com/catalystneuro/dombeck-lab-to-nwb.git; cd lrrk2_photometry_analysis && git log -3 --format='%H %ad %s' && find . -type f -not -path './.git/*' | head -50; cd ../dombeck-lab-to-nwb && git log -1 --format='%H %ad' && ls src/dombeck_lab_to_nwb/chen2026
-```
-
-```
-d34558fdde4b6665bd631c8fe47b8a1ef18f6a73 Thu Jul 30 16:36:46 2026 -0500 Add MIT License to the project
-1b551d108fa2e6ad7a667fc4cd1a78bd91c979a7 Mon Aug 18 12:23:47 2025 -0500 Add files via upload
-80c968e8fed63cf8f7e705fd027902b0984fb99f Mon Aug 18 12:23:09 2025 -0500 Add files via upload
-./group_tables.m
-./triggered_analysis.m
-./LICENSE
-./stimulation_random_sequence.mat
-./plot_results.m
-./preprocess_and_binning.m
-./snippets/StimIdx.m
-./snippets/chunking_index.m
-./snippets/transient_by_threshold.m
-./README.md
-5794df1e13b1a44ab2f21ad7e5b38ef8b85940f7 Tue Aug 4 16:19:32 2026 +0200
-README.md
-__init__.py
-conversion_notes.md
-convert_all_sessions.py
-convert_session.py
-environment.yaml
-[... 6 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/lrrk2_photometry_analysis; cat README.md preprocess_and_binning.m snippets/*.m
-```
-
-```
-# lrrk2_photometry_analysis
-
-Project Overview
-
-This repository includes all custom code used to analyze data in our manuscript. We analyzed fiber photometry recordings from head-fixed LRRK2 mice running on a treadmill while receiving optogenetic stimulation in the striatonigral dopamine neurons. Custom code necessary fiber photometry data pre-processing (bleaching correction, DF/F calculation, finding evoked signals...) and for data analysis/figure generation in the paper are provided.
-
-Main Scripts
-
--	preprocess_and_binning.m: loads raw data files for each animal, bins them to the camera frame rate (from 2kHz in raw data to 100Hz), calculates baseline-corrected fluorescence, and saves binned data.
--	triggered_analysis.m: extracts optogenetic stimulation triggers, calculates triggered averages, identifies spontaneous transients, and saves updated data tables.
--	group_tables.m: combines individual recordings into grouped tables for LRRK2 and control mice, computes baseline, evoked response, and area under the curve (AUC).
--	plot_results.m: generates figures for publication, including averaged triggered traces and violin plots of AUC per animal and per genotype. Performs statistical comparisons.
-
-Snippets: helper functions used in the main scripts
-
--	StimIdx.m: identifies optogenetic stimulation onset indices in TTL signals.
--	chunking_index.m: computes indices for triggered segments relative to stimulation onset.
--	transient_by_threshold.m: extracts spontaneous transients using a double-threshold method and calculates area under the curve and peak amplitude.
-
-Data
-[... 360 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/lrrk2_photometry_analysis; cat triggered_analysis.m group_tables.m plot_results.m
-```
-
-```
-%% set pseudorandom sequences of stimulation powers
-load("stimulation_random_sequence.mat");
-
-%% set animal IDs
-load("animal_ids.mat");
-animal_list = [LRRK2; control];
-
-%% get triggered data and update dataset
-% iterate through each individual animal dataset (preprocessed and binned) and get triggered data
-for i = 1:length(animal_list)
-    %l oad data
-    id_animal = animal_list(i);
-    load(strcat(id_animal,'_data.mat'));
-
-    % for each recording in the dataset
-    for n=1:height(data)
-
-        % get onset of opto-TTL trigger, save as new variable opto_idx
-        ttl = data.TTL{n,1};
-        opto_idx = StimIdx(ttl,100,6);
-[... 270 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/lrrk2_photometry_analysis; source $TMPDIR/venv/bin/activate; python -c "
-import scipy.io as s; d=s.loadmat('stimulation_random_sequence.mat'); 
-for k,v in d.items():
-  if not k.startswith('__'): print(k, v.shape, v.ravel()[:40])
-"; cd ../dombeck-lab-to-nwb/src/dombeck_lab_to_nwb/chen2026; cat conversion_notes.md; ls interfaces metadata tutorials
-```
-
-```
-Traceback (most recent call last):
-  File "<string>", line 2, in <module>
-    import scipy.io as s; d=s.loadmat('stimulation_random_sequence.mat');
-                            ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/scipy/io/matlab/_mio.py", line 241, in loadmat
-    MR, _ = mat_reader_factory(f, **kwargs)
-            ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/scipy/io/matlab/_mio.py", line 76, in mat_reader_factory
-    raise NotImplementedError('Please use HDF reader for matlab v7.3 '
-                              'files, e.g. h5py')
-NotImplementedError: Please use HDF reader for matlab v7.3 files, e.g. h5py
-# Conversion Notes — Dombeck Lab NWB Conversions
-
-## LRRK2 Dataset (2026-07)
-
-**Manuscript:** "Leucine-rich repeat kinase 2 impairs the release sites of Parkinson's disease vulnerable dopamine axons", Chen, He et al. (in preparation)
-**Analysis code:** https://github.com/DombeckLab/lrrk2_photometry_analysis (Zenodo: 10.5281/zenodo.20244434)
-**Status:** All interfaces implemented; 27/27 sessions converted successfully.
-**Detailed notes:** see `lrrk2_investigation.md`
-
-[... 350 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/dombeck-lab-to-nwb/src/dombeck_lab_to_nwb/chen2026; git log -1 --format=%H; cat interfaces/optogenetics_interface.py | head -250; grep -n -i "power\|stim_seq\|order\|sequence" convert_session.py convert_all_sessions.py metadata/optogenetics.yaml | head -60
-```
-
-```
-5794df1e13b1a44ab2f21ad7e5b38ef8b85940f7
-"""Optogenetics interface for Chen et al. 2026 (LRRK2 dataset).
-
-Reads the binary TTL column from the per-animal *_data.mat file (100 Hz,
-camera-trigger-aligned binning) and writes:
-
-  - ``OptogeneticExperimentMetadata`` (lab_meta_data): LED, fiber, virus, injection, effector
-  - ``OptogeneticEpochsTable`` (intervals): one row per contiguous TTL-on epoch
-
-Stim parameters measured from raw ABF (2000 Hz, channel 2 = opto_TTL):
-  Epochs 1–32 (high amplitude, ~1.2 V): 32 pulses, 9 ms ON / 1 ms OFF, 10 ms period, ~320 ms train
-  Epochs 33–64 (low amplitude, ~0.05 V): 32 pulses, 8 ms ON / 8 ms OFF, 16 ms period, ~505 ms train
-  Trains spaced ≥ 20 s apart; 8 reps per power level (64 trains total).
-  Powers (pseudo-random order per stim_sequence): 0.1, 0.25, 0.5, 1.0, 1.5, 2.0, 3.0, 4.0 mW
-  Per-epoch power comes from stimulation sequence LRRK2.xlsx; ExcitationSource.power_in_W
-  stores the peak power and the description notes the full power range.
-"""
-
-import math
-from pathlib import Path
-[... 268 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/dombeck-lab-to-nwb/src/dombeck_lab_to_nwb/chen2026; sed -n 25,75p convert_all_sessions.py; sed -n 285,300p convert_session.py; source $TMPDIR/venv/bin/activate; python - <<'EOF'
-import h5py,numpy as np
-f=h5py.File('/tmp/claude-1001/lrrk2_photometry_analysis/stimulation_random_sequence.mat','r')
-for k in f.keys():
-    if k.startswith('#'): continue
-    d=f[k][()]
-    print(k,d.shape,d.dtype, ''.join(chr(c) for c in d.ravel()) if d.dtype.kind in 'ui' else d.ravel()[:10])
-EOF
-```
-
-```
-# ---------------------------------------------------------------------------
-DATA_DIR = Path("[removed: a home directory path]/lrrk2_data")
-NWB_OUTPUT_DIR = Path("[removed: a home directory path]/lrrk2_data/nwb-output")
-SUBJECT_METADATA_XLSX = Path("[removed: a home directory path]/lrrk2_data/metadata-LRRK2-chen2026.xlsx")
-STIM_SEQUENCE_XLSX = Path("[removed: a home directory path]/lrrk2_data/stimulation sequence LRRK2.xlsx")
-STUB_TEST = False
-MAX_WORKERS = 4  # number of parallel conversion processes
-# ---------------------------------------------------------------------------
-
-# Code → power (mW) mapping from stimulation sequence LRRK2.xlsx
-_CODE_TO_POWER: dict[str, float] = {
-    "a": 0.1,
-    "b": 0.25,
-    "c": 0.5,
-    "d": 1.0,
-    "e": 1.5,
-    "f": 2.0,
-    "g": 3.0,
-    "h": 4.0,
-}
-[... 68 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-source $TMPDIR/venv/bin/activate; python - <<'EOF'
-import h5py,numpy as np
-f=h5py.File('/tmp/claude-1001/lrrk2_photometry_analysis/stimulation_random_sequence.mat','r')
-for k in ['order1','order2','order3','order4']:
-    refs=f[k][()].ravel()
-    print(k,''.join(''.join(chr(c) for c in f[r][()].ravel()) for r in refs))
-EOF
-```
-
-```
-order1 ddaacchhddaacchhddaacchhddaacchhffggbbeeffggbbeeffggbbeeffggbbee
-order2 ffggbbeeffggbbeeffggbbeeffggbbeeddaacchhddaacchhddaacchhddaacchh
-order3 dachdachdachdachfbgefbgefbgefbge
-order4 fbgefbgefbgefbgedachdachdachdach
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n -i "dandi\|zenodo.20244434\|Received\|Published:" paper/article.txt | head; grep -i -c dandi paper/supp.txt; curl -s "https://api.dandiarchive.org/api/dandisets/001933/versions/draft/" | python -c "import json,sys; d=json.load(sys.stdin); print(d.get('dateModified'), [r['url'] for r in d.get('relatedResource',[])])"; curl -s "https://api.dandiarchive.org/api/dandisets/001933/versions/draft/assets/?page_size=100" | python -c "
-import json,sys; d=json.load(sys.stdin); print(len(d['results']))" ; curl -s "https://zenodo.org/api/records/20244434" | python -c "import json,sys; d=json.load(sys.stdin); print(d['metadata']['title'], d['metadata'].get('version'), [x['identifier'] for x in d['metadata'].get('related_identifiers',[])]); print([f['key'] for f in d['files']])"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/lrrk2_photometry_analysis; git fetch -q --tags; git tag; git rev-list -n1 LRRK2-photometry 2>/dev/null; git diff LRRK2-photometry HEAD --stat 2>/dev/null; cd ../dombeck-lab-to-nwb/src/dombeck_lab_to_nwb/chen2026; ls; grep -n -i "chunking\|window\|baseline\|1.5\|auc\|trapz\|evoked" tutorials/figure6c_evoked_da.ipynb | head -40
-```
-
-```
-<persisted-output>
-Output too large (273.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/5c960d5c-7ccc-45e6-878b-3e99cd1dc6a3/tool-results/bsz9wmve2.txt
-
-Preview (first 2KB):
-LRRK2-photometry
-1b551d108fa2e6ad7a667fc4cd1a78bd91c979a7
- LICENSE | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
-README.md
-__init__.py
-conversion_notes.md
-convert_all_sessions.py
-convert_session.py
-environment.yaml
-interfaces
-metadata
-nwbconverter.py
-project_track.md
-tutorials
-7:   "source": "# Figure 6C — Evoked dopamine release triggered on optogenetic stimulation\n\nReplication of Figure 6C from Chen et al. 2026.  \n**Average GRAB-DA3m corrected signal** triggered on optogenetic stimulation light onset at **0.5 mW**.\n\n- Blue trace: LRRK2-G2019S mice (Anxa-GS, n = 8 mice, 64 stimulations)\n- Grey trace: WT mice (Anxa-WT, n = 7 mice, 56 stimulations)\n- Red shade: light stimulation window\n- Dashed lines: isosbestic control (corrected 405 nm channel)\n- Shaded regions: mean ± SEM across stimulations\n\nData source: NWB files in `nwb-output/sub-*-anxa-{gs,wt}/`.  \nSeries used: `processing/ophys/FiberPhotometryResponseSeriesCorrectedSignal` (470 nm) and  \n`processing/ophys/FiberPhotometryResponseSeriesCorrectedIsosbesticControl` (405 nm).  \nEpochs: `intervals/OptogeneticEpochsTable`, filtered to `power_in_mW == 0.5`."
-[... 3 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  source $TMPDIR/venv/bin/activate; cat > $TMPDIR/explore.py <<'EOF'
-import h5py, remfile, numpy as np, pandas as pd, time, hashlib
-from dandi.dandiapi import DandiAPIClient
-pd.set_option('display.width',250); pd.set_option('display.max_columns',40); pd.set_option('display.max_rows',100)
-c=DandiAPIClient(); ds=c.get_dandiset("001933","0.260825.1457")
-rows=[]; t0=time.time()
-for a in sorted(ds.get_assets(), key=lambda a:a.path):
-    f=h5py.File(remfile.File(a.get_content_url(follow_redirects=1, strip_query=True)),'r')
-    s=f['general/subject']; g=lambda k: s[k][()].decode() if k in s else None
-    dff=f['processing/ophys/FiberPhotometryResponseSeriesDfOverF']
-    t=dff['timestamps'][:]; x=dff['data'][:]
-    ot=f['intervals/OptogeneticEpochsTable']
-    st=ot['start_time'][:]; sp=ot['stop_time'][:]; pw=ot['power_in_mW'][:]; pl=ot['pulse_length_in_ms'][:]
-    raw=f['acquisition/FiberPhotometryResponseSeriesRawSignal']
-    rows.append(dict(path=a.path.split('/')[0], sid=g('subject_id'), sex=g('sex'), geno=g('genotype'), dob=g('date_of_birth')[:10], start=f['session_start_time'][()].decode()[:19],
-        n=len(t), t0=t[0], t1=t[-1], dt_med=np.median(np.diff(t))*1000, dt_max=np.diff(t).max()*1000, dmin=x.min(), dmax=x.max(), p8=np.percentile(x,8),
-        nstim=len(st), first=st[0], dur1=np.median((sp-st)[:32]), dur2=np.median((sp-st)[32:]), pl1=pl[0], pl2=pl[-1],
-        pw1=''.join({0.1:'a',0.25:'b',0.5:'c',1.0:'d',1.5:'e',2.0:'f',3.0:'g',4.0:'h'}[p] for p in pw[:8]),
-        raw_n=raw['data'].shape[0], hash=hashlib.md5(x[:20000].tobytes()).hexdigest()[:8], unit=dff['data'].attrs['unit']))
-print(pd.DataFrame(rows).to_string()); print(time.time()-t0)
-EOF
-python $TMPDIR/explore.py 2>&1 | grep -v Warn
-```
-
-```
-path           sid sex          geno         dob                start       n       t0         t1  dt_med  dt_max       dmin         dmax        p8  nstim     first  dur1  dur2  pl1  pl2       pw1    raw_n      hash  unit
-0   sub-1803-calb-wt  1803-calb-wt   F      LRRK2-WT  2025-04-11  2025-11-10T12:15:28  149832   2.7325  1500.6980    10.0    10.0 -56.007303  1281.885154  1.346016     64   28.6365  0.51  0.51  8.0  8.0  ddaacchh  1202722  448b2309  a.u.
-1    sub-302-calb-gs   302-calb-gs   M  LRRK2-G2019S  2025-04-03  2025-11-10T13:29:32  129360  24.8680  1318.1605    10.0    10.0 -42.211295   767.836291  1.171781     64   55.3310  0.51  0.51  8.0  8.0  ffggbbee  1056748  920c6568  a.u.
-2    sub-306-calb-gs   306-calb-gs   M  LRRK2-G2019S  2025-04-03  2025-11-10T15:06:39  123782  19.5240  1257.0490    10.0    10.0 -53.683842   502.279658  0.375365     64   44.4585  0.51  0.51  8.0  8.0  ffggbbee  1007258  7121aaf3  a.u.
-3   sub-3742-anxa-gs  3742-anxa-gs   M  LRRK2-G2019S  2024-06-22  2025-01-24T13:57:40  148937   1.9255  1490.9420    10.0    10.0 -31.685864   149.125986  1.358441     64  164.5780  0.33  0.51  9.0  8.0  ddaacchh  1195556  5d1e3860  a.u.
-4   sub-3743-anxa-gs  3743-anxa-gs   F  LRRK2-G2019S  2024-06-22  2025-01-24T12:58:18  148293   2.4665  1485.0445    10.0    10.0 -57.859368   553.485968  1.239369     64  155.9810  0.33  0.51  9.0  8.0  ffggbbee  1188366  2c4c2592  a.u.
-5   sub-3947-anxa-wt  3947-anxa-wt   M      LRRK2-WT  2024-07-06  2025-01-27T12:37:54  145600   2.2400  1457.8940    10.0    10.0 -46.213940   567.891748  0.435534     64  155.6245  0.33  0.51  9.0  8.0  ffggbbee  1168496  8d95019e  a.u.
-6   sub-3948-anxa-wt  3948-anxa-wt   M      LRRK2-WT  2024-07-06  2025-01-27T13:32:06  152720   1.9370  1528.7750    10.0    10.0 -56.601984   693.070133  1.238576     64  159.8110  0.33  0.51  9.0  8.0  ffggbbee  1225133  008464a3  a.u.
-7   sub-4004-anxa-gs  4004-anxa-gs   F  LRRK2-G2019S  2025-01-13  2025-08-13T14:33:49  131835  24.7355  1342.772
-[... 20 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  source $TMPDIR/venv/bin/activate; cat > $TMPDIR/explore2.py <<'EOF'
-import h5py, remfile, numpy as np, pandas as pd, time
-from scipy import stats
-from dandi.dandiapi import DandiAPIClient
-pd.set_option('display.width',250); pd.set_option('display.max_columns',40)
-c=DandiAPIClient(); ds=c.get_dandiset("001933","0.260825.1457")
-rows=[]
-for a in sorted(ds.get_assets(), key=lambda a:a.path):
-    f=h5py.File(remfile.File(a.get_content_url(follow_redirects=1, strip_query=True)),'r')
-    dff=f['processing/ophys/FiberPhotometryResponseSeriesDfOverF']; t=dff['timestamps'][:]; x=dff['data'][:]
-    cor=f['processing/ophys/FiberPhotometryResponseSeriesCorrectedSignal']['data'][:]
-    ot=f['intervals/OptogeneticEpochsTable']; st=ot['start_time'][:]; sp=ot['stop_time'][:]; pw=ot['power_in_mW'][:]
-    on=np.searchsorted(t,st)
-    def integ(off):
-        v=[]
-        for i in on+off:
-            base=x[i-100:i-10].mean(); v.append(np.trapezoid(x[i:i+50]-base)*0.01)
-        return np.array(v)
-    true=integ(0); sh=integ(1000)
-    # peak latency of mean trace
-    tr=np.mean([x[i-100:i+300] for i in on],0); lat=(np.argmax(tr)-100)*10
-    rho=stats.spearmanr(pw,true)[0]
-    # raw vs corrected alignment over 60 s chunk around 300 s
-    raw=f['acquisition/FiberPhotometryResponseSeriesRawSignal']
-    i0=int(t[0]*2000*0.4+300*2000*0.4); ts=raw['timestamps'][i0:i0+60000]; rd=raw['data'][i0:i0+60000]
-    k0=np.searchsorted(t,ts[0])+5; k1=np.searchsorted(t,ts[-1])-5
-    edges=t[k0:k1+1]; idx=np.searchsorted(edges,ts)
-    m=(idx>0)&(idx<len(edges)); b=pd.Series(rd[m]).groupby(idx[m]).mean()
-    rb=np.full(len(edges)+1,np.nan); rb[b.index]=b.values; rb=rb[1:-1]; cc=cor[k0:k1-1][:len(rb)]
-    rb=rb[:len(cc)]
-    lags=range(-20,21); r=[np.corrcoef(np.roll(rb,l)[30:-30],cc[30:-30])[0,1] for l in lags]
-    rows.append(dict(f=a.path.split('/')[0], true_med=np.median(true), shift_med=np.median(sh), lat_ms=lat, rho_power=rho, best_lag=list(lags)[int(np.argmax(r))], r0=r[20],
-                    **{f'p{p}':np.median(true[pw==p]) for p in sorted(set(pw))}))
-print(pd.DataFrame(rows).round(2).to_string())
-EOF
-python $TMPDIR/explore2.py 2>&1 | grep -v Warn
-```
-
-```
-base=x[i-100:i-10].mean(); v.append(np.trapezoid(x[i:i+50]-base)*0.01)
-  ret = ret.dtype.type(ret / rcount)
-Traceback (most recent call last):
-  File "/tmp/claude-1001/explore2.py", line 20, in <module>
-    tr=np.mean([x[i-100:i+300] for i in on],0); lat=(np.argmax(tr)-100)*10
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/_core/fromnumeric.py", line 3862, in mean
-    return _methods._mean(a, axis=axis, dtype=dtype,
-           ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
-                          out=out, **kwargs)
-                          ^^^^^^^^^^^^^^^^^^
-  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/_core/_methods.py", line 116, in _mean
-    arr = asanyarray(a)
-ValueError: setting an array element with a sequence. The requested array has an inhomogeneous shape after 1 dimensions. The detected shape was (64,) + inhomogeneous part.
-```
-
-**Agent calls Bash**
-
-```bash
-cd  source $TMPDIR/venv/bin/activate; sed -i 's/for i in on+off:/for i in on+off:\n            if i+60>len(x): continue/; s/tr=np.mean(\[x\[i-100:i+300\] for i in on\],0)/tr=np.mean([x[i-100:i+300] for i in on if i+300<=len(x)],0)/' $TMPDIR/explore2.py; python $TMPDIR/explore2.py 2>&1 | grep -v Warn
-```
-
-```
-f  true_med  shift_med  lat_ms  rho_power  best_lag    r0    p0.1   p0.25    p0.5    p1.0    p1.5    p2.0    p3.0    p4.0
-0   sub-1803-calb-wt    254.58       2.00     300       0.94         0  0.98   84.08  136.81  181.17  273.27  248.63  302.51  317.64  432.80
-1    sub-302-calb-gs    117.14       1.92     270       0.81         0  0.97    6.59   56.46   67.68  114.55  160.46  190.52  191.12  152.75
-2    sub-306-calb-gs     99.03      -0.63     370       0.82         0  0.90   30.42   70.95   55.68   96.29  118.65  127.14  144.36  118.91
-3   sub-3742-anxa-gs     18.02      -1.83     270      -0.12         0  0.89   32.98    9.07    5.45   31.02   36.67   16.09    2.96   23.78
-4   sub-3743-anxa-gs    126.23      -1.06     210       0.73         0  0.97   49.77   93.68  121.08  157.89  129.57  125.96  130.60  179.22
-5   sub-3947-anxa-wt     84.27       3.09     240       0.01         0  0.90   75.77   88.70  125.36  112.41   66.38   54.70   65.29  144.43
-6   sub-3948-anxa-wt    145.83       4.00     220       0.93         0  0.98   47.59   96.28  105.17  143.60  162.63  158.63  173.31  221.76
-7   sub-4004-anxa-gs     21.28       0.41     160       0.12         0  0.93   18.96   21.62   24.92   25.08   18.09   20.46   18.54   32.93
-8   sub-4005-anxa-gs     12.93       0.05     160       0.01         0  0.87    8.45   19.74   14.01   10.13   14.90   12.76   13.13   12.50
-9   sub-4007-anxa-gs     25.60      -0.26     160      -0.18         0  0.95   23.23   28.21   32.41   32.32   21.11   21.63   22.44   29.47
-10  sub-4253-anxa-wt    104.02       1.78     170      -0.06         0  0.94   90.96  107.71  130.98  131.23   83.68   93.31   86.87  114.91
-11  sub-4398-anxa-wt    158.05       1.42     240       0.93         0  1.00   52.40   98.91  111.84  151.64  170.67  166.84  170.20  209.43
-12  sub-4401-anxa-wt    140.59       2.90     180       0.06         0  0.93  125.26  141.84  176.73  175.33  123.34  131.55  126.01  187.81
-13  sub-4558-anxa-wt    126.37       0.32    
-[... 13 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-curl -s "https://zenodo.org/api/records/19930567" | python -c "
-import json,sys; d=json.load(sys.stdin); print(d['metadata']['title'], d['metadata'].get('version'), d['metadata']['publication_date']); 
-for f in d['files']: print(f['key'], f['size'], f['links']['self'])"; curl -s "https://zenodo.org/api/records/20244434" | python -c "
-import json,sys; d=json.load(sys.stdin); print(d['metadata']['publication_date']); [print(f['key'], f['size']) for f in d['files']]"
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd paper; curl -sL -o source_data_nature.xlsx "https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fs41467-026-75194-3/MediaObjects/41467_2026_75194_MOESM10_ESM.xlsx"; ls -la source_data_nature.xlsx; source $TMPDIR/venv/bin/activate; uv pip install -q openpyxl; python -c "
-import openpyxl; wb=openpyxl.load_workbook('source_data_nature.xlsx', read_only=True)
+cd paper; for f in "Source%20data.xlsx" "Supplementary%20files.zip" "images.zip" "analysis%20code.zip"; do curl -sL -o "$(echo $f|sed 's/%20/_/g')" "https://zenodo.org/api/records/19930567/files/$f/content"; done; ls -la; python -c "
+import openpyxl
+wb=openpyxl.load_workbook('Source_data.xlsx',read_only=True)
 for ws in wb.worksheets: print(ws.title, ws.max_row, ws.max_column)
-"
+"; unzip -l Supplementary_files.zip; unzip -l images.zip | head -40; unzip -l analysis_code.zip
 ```
 
 Result: the fetched text is not kept.
@@ -847,321 +413,22 @@ Result: the fetched text is not kept.
 **Agent calls Bash**
 
 ```bash
-cd paper; source $TMPDIR/venv/bin/activate; python -c "
-import openpyxl; wb=openpyxl.load_workbook('source_data_nature.xlsx', read_only=True)
-for name in ['Fig. 6e-f','Fig. 6c-d','Suppl. Fig. 7b-c','Suppl. Fig. 8b-e']:
-    ws=wb[name]; print('=====',name)
-    for i,row in enumerate(ws.iter_rows(values_only=True)):
-        if i<8: print([v for v in row[:14]])
-"
+cd  ls docs; grep -n -i "venv\|uv \|pip\|python" README.md | head -20; sed -n 1,60p tools/entry.py
 ```
 
 ```
-===== Fig. 6e-f
-['Fig.6 E', 'Left', None, None, 'Right', None, None, None, 'Fig.6 F', None, None]
-[None, 'WT', 'GS', None, 'id_animal', 'Group', 'Integral', None, 'id_animal', 'Group', 'scaled_spontaneous_transient_integral']
-[None, 2.01883515160162, 0.656867561349967, None, 4558, 'WT', 2.01883515160162, None, 4558, 'WT', 0.264365921709868]
-[None, 2.05987217534068, 0.562054843078255, None, 4558, 'WT', 2.05987217534068, None, 4558, 'WT', 0.17850495013529602]
-[None, 1.99250743985641, 0.607714318591753, None, 4558, 'WT', 1.99250743985641, None, 4558, 'WT', 0.372360674639179]
-[None, 2.29206907104666, 0.420377492255288, None, 4558, 'WT', 2.29206907104666, None, 4558, 'WT', 0.258050581955052]
-[None, 1.73057376812444, 0.675349309226513, None, 4558, 'WT', 1.73057376812444, None, 4558, 'WT', 0.309310416750254]
-[None, 1.93985049053266, 0.568489380429645, None, 4558, 'WT', 1.93985049053266, None, 4558, 'WT', 0.169990252167379]
-===== Fig. 6c-d
-['Fig. 6C', None, None, None, None, None, None, None, None, None, None, None, None, None]
-['id_animal', 'Group', 'stim_power(mW)', 'trig_transient', None, None, None, None, None, None, None, None, None, None]
-[4885, 'GS', 0.5, -0.792473128123717, -1.13242173977318, -1.55161274512253, -1.86398964324198, -2.11239733485244, -2.33768222994174, -2.57642736696706, -2.69524668824104, -2.67980683683691, -2.74261257735961, -2.69565508254794]
-[4885, 'GS', 0.5, 10.6294120185693, 10.6820296023601, 10.6775134013152, 10.6854918912643, 10.7068485090608, 10.6451408075248, 10.7736961060901, 10.6269745103861, 10.5689978471399, 10.4503999043738, 10.3505188416026]
-[4885, 'GS', 0.5, 14.5477307288347, 14.9264377343559, 15.3237088087753, 15.5817493664588, 15.7525388003214, 15.873205248159, 15.9753076270986, 16.1201073645037, 15.9437487099718, 15.8936257239469, 15.7116978487455]
-[4885, 'GS', 0.5, 32.2720809901036, 32.2972183773697, 32.1309248923788, 31.9259585039018, 31.5256939528192, 30.9978088202321, 30.2417535570761, 29.3387412606725, 28.5440130940303, 27.815
-[... 20 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd paper; source $TMPDIR/venv/bin/activate; python - <<'EOF' 2>&1 | grep -v Warn
-import openpyxl, numpy as np, pandas as pd, h5py, remfile
-from dandi.dandiapi import DandiAPIClient
-wb=openpyxl.load_workbook('source_data_nature.xlsx', read_only=True)
-rows=list(wb['Fig. 6c-d'].iter_rows(values_only=True))
-print(rows[1][:6]); 
-data=[r for r in rows[2:] if isinstance(r[0],(int,float))]
-print(len(data)); lens=[sum(v is not None for v in r[3:]) for r in data]; print(set(lens))
-ids=pd.Series([r[0] for r in data]).value_counts(); print(ids.to_dict())
-# other columns at the end?
-print(rows[0][250:270], rows[1][250:270])
-for r in rows[:3]: print([ (i,v) for i,v in enumerate(r) if v is not None and i>250][:10])
-tr=np.array([[np.nan if v is None else v for v in r[3:253]] for r in data if r[0]==4885])
-c=DandiAPIClient(); ds=c.get_dandiset("001933","0.260825.1457")
-a=ds.get_asset_by_path('sub-4885-anxa-gs/sub-4885-anxa-gs_ses-2025-01-24-0002_behavior.nwb')
-f=h5py.File(remfile.File(a.get_content_url(follow_redirects=1, strip_query=True)),'r')
-x=f['processing/ophys/FiberPhotometryResponseSeriesDfOverF/data'][:]; t=f['processing/ophys/FiberPhotometryResponseSeriesDfOverF/timestamps'][:]
-st=f['intervals/OptogeneticEpochsTable/start_time'][:]; pw=f['intervals/OptogeneticEpochsTable/power_in_mW'][:]
-on=np.searchsorted(t,st[pw==0.5]); print(on)
-for k in range(3):
-    s=tr[k][:50]
-    # find exact match
-    from numpy.lib.stride_tricks import sliding_window_view
-    w=sliding_window_view(x,50); d=np.abs(w-s).max(1); j=np.argmin(d); print(k, j, d[j], j-on)
-EOF
-```
-
-```
-('id_animal', 'Group', 'stim_power(mW)', 'trig_transient', None, None)
-120
-{504}
-{4885: 8, 4651: 8, 4652: 8, 3742: 8, 3743: 8, 4004: 8, 4005: 8, 4007: 8, 4558: 8, 4561: 8, 4398: 8, 4401: 8, 3947: 8, 3948: 8, 4253: 8}
-(None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None) (None, None, None, 'trig_isosbestic', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None)
-[(504, 'Fig. 6D')]
-[(253, 'trig_isosbestic'), (504, 'timepoints (100Hz)'), (505, 'dF/F'), (506, 'isosbestic'), (507, 'stimulation on')]
-[(251, 1.19779629486525), (252, 1.55711473797767), (253, 2.61267588728674), (254, 2.55622950215034), (255, 2.51616328609083), (256, 2.45009938206751), (257, 2.47050221914272), (258, 2.41810053445659), (259, 2.31252276385452), (260, 2.23925244443522)]
-[22663 24195 37666 39198 52669 54201 67672 69204]
-0 22563 4.618527782440651e-14 [  -100  -1632 -15103 -16635 -30106 -31638 -45109 -46641]
-1 24095 4.973799150320701e-14 [  1432   -100 -13571 -15103 -28574 -30106 -43577 -45109]
-2 37566 4.973799150320701e-14 [ 14903  13371   -100  -1632 -15103 -16635 -30106 -31638]
-```
-
-**Agent calls Bash**
-
-```bash
-cd paper; curl -sL -o source_data_zenodo.xlsx "https://zenodo.org/api/records/19930567/files/Source%20data.xlsx/content"; source $TMPDIR/venv/bin/activate; python - <<'EOF'
-import openpyxl, time
-t=time.time()
-z=openpyxl.load_workbook('source_data_zenodo.xlsx', read_only=True); n=openpyxl.load_workbook('source_data_nature.xlsx', read_only=True)
-print([ws.title for ws in z.worksheets])
-for name in ['Fig. 6e-f','Fig. 6c-d','Suppl. Fig. 7b-c','Suppl. Fig. 8b-e']:
-    if name not in z.sheetnames: print('missing',name); continue
-    a=list(z[name].iter_rows(values_only=True)); b=list(n[name].iter_rows(values_only=True))
-    print(name, len(a), len(b), a==b)
-print(time.time()-t)
-EOF
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Bash**
-
-```bash
-cd paper; source $TMPDIR/venv/bin/activate; python - <<'EOF'
-import openpyxl, collections
-z=openpyxl.load_workbook('source_data_zenodo.xlsx', read_only=True)
-for name in ['Fig. 6e-f','Suppl. Fig. 7b-c','Suppl. Fig. 8b-e','Fig. 6c-d']:
-    rows=list(z[name].iter_rows(values_only=True))
-    print('=====',name,len(rows))
-    for r in rows[:2]: print([(i,v) for i,v in enumerate(r) if v is not None and not isinstance(v,float)])
-    # count non-None per column header groups
-    ncol=max(len(r) for r in rows)
-    cnt=[sum(1 for r in rows if i<len(r) and r[i] is not None) for i in range(ncol)]
-    # print columns with counts change
-    prev=None
-    for i,cn in enumerate(cnt):
-        if cn!=prev: print(' col',i,'count',cn); prev=cn
-EOF
-```
-
-```
-===== Fig. 6e-f 1864
-[(0, 'Fig.6 E'), (1, 'Left'), (4, 'Right'), (8, 'Fig.6 F')]
-[(1, 'WT'), (2, 'GS'), (4, 'id_animal'), (5, 'Group'), (6, 'Integral'), (8, 'id_animal'), (9, 'Group'), (10, 'scaled_spontaneous_transient_integral')]
- col 0 count 1
- col 1 count 58
- col 2 count 65
- col 3 count 0
- col 4 count 122
- col 5 count 121
- col 7 count 0
- col 8 count 1864
- col 9 count 1863
-===== Suppl. Fig. 7b-c 481
-[(0, 'Suppl. Fig. 7B'), (1, 'id_animal'), (2, 'Group'), (3, 'stim_power(mW)'), (4, 'trig_transient'), (254, 'trig_isosbestic'), (505, 'Suppl. Fig. 7C'), (506, 'id_animal'), (507, 'group'), (508, 'stim_power(mW)'), (509, 'scaled_transient_integral')]
-[(1, 4885), (2, 'GS'), (506, 4885), (507, 'GS')]
- col 0 count 1
- col 1 count 481
- col 5 count 480
- col 254 count 481
- col 255 count 480
-[... 31 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  ls schemas; sed -n 60,140p claims/001453/*.yaml; grep -n "blocked_by\|tolerance" -m5 claims/001453/*.yaml; tail -30 claims/001453/*.yaml
-```
-
-```
-attempt.schema.json
-claims.schema.json
-entry.schema.json
-    value: 9.8
-    tolerance: 0.98
-    unit: mm/s
-  - quantity: ZF median velocity over whole-field stimuli
-    value: 6.4
-    tolerance: 0.64
-    unit: mm/s
-  criterion: Over the nine whole-field stimuli (static, and the eight directions), the paper
-    does not say how the overall median is taken. The readings are (a) the median of the nine
-    per-stimulus species medians; (b) the median over all fish and stimulus values pooled;
-    (c) the median over fish of each fish's median across stimuli; (d) the median over all
-    passing trials pooled. Reproduced when, under one reading, both values are within
-    tolerance and the species effect of a two-way ANOVA (type II) on fish-by-stimulus values
-    has p < 0.05 with DC higher. Partially reproduced when the ANOVA holds but no reading
-    puts both values within tolerance.
-- id: fig1d-zf-forward-faster-than-static
-  statement: ZF modulate their velocity with the direction of motion; forward motion
-[... 99 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat schemas/claims.schema.json | head -120; python -c "import json;d=json.load(open('schemas/attempt.schema.json'));print(json.dumps(d,indent=1)[:6000])"
-```
-
-```
-{
-  "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Claims proposed for one target (a dandiset and one of its papers)",
-  "description": "Draft. To be revised after the pilot.",
-  "type": "object",
-  "additionalProperties": false,
-  "required": [
-    "schema_version",
-    "dandiset",
-    "paper",
-    "claims"
-  ],
-  "properties": {
-    "schema_version": {
-      "const": 1
-    },
-    "dandiset": {
-      "type": "string",
-      "pattern": "^[0-9]{6}$"
-    },
-[... 367 more lines not kept]
-```
-
-**Agent**
-
-Writing the claims file now. I've seen the data check and the source data layout, but no genotype statistics yet.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "claims/001933/10.1038-s41467-026-75194-3.yaml",
- "content": "# Claims for Chen, He et al. (2026), \"Leucine-rich repeat kinase 2 impairs the release sites of\n# Parkinson's disease vulnerable dopamine axons\", Nature Communications, on dandiset 001933.\n# Source: the open access full text (CC BY) and its Supplementary Information, read from the\n# Results, figure legends and Methods.\n#\n# When these criteria were written, the author had seen the data check only: the file list,\n# subject metadata, the optogenetic epochs table of every file (powers, train lengths, the\n# pseudorandom order), the frame times of the processed series, a check that the raw 470 nm\n# signal and the processed signal share a clock, and, per mouse and labelled power, the median\n# of a 0 to 0.5 s baseline-subtracted integral of the dF/F (used to check the clock and the power\n# labels; it shows, mouse by mouse, smaller responses in some Anxa1 G2019S mice). No group\n# statistics, per-mouse tests, spontaneous transients or effect sizes had been computed. The\n# author had also read the layout of the paper's source data file (Zenodo 10.5281/zenodo.19930567)\n# and found that, for mouse 4885, its eight 0.5 mW triggered traces of Figure 6C equal the\n# dandiset's dF/F from 1 s before each epoch labelled 0.5 mW.\n#\n# The dandiset holds only the fiber photometry and optogenetics of Figure 6 and Supplementary\n# Figures 7 and 8 (15 Anxa1-iCre and 12 Calb1-Cre mice). The immunostaining, proteomics,\n# western blots and super-resolution imaging of Figures 1 to 5 are not in it.\n#\n# Method choices fixed here. The signal is the dandiset's processed dF/F\n# (FiberPhotometryResponseSeriesDfOverF, 100 Hz, smoothed with a 20-sample moving mean), which is\n# the trace the paper's code analyses. A stimulation's onset is the first 100 Hz sample at or\n# after the epoch's start_time; its power is the epoch's power_in_mW. The evoked integral\n# follows the Methods (\"integral of dF/F during the optogenetic-stimulation light-on period\"):\n# the dF/F minus its mean from 1.0 s to 0.1 s before onset (the code's baseline, samples 1 to\n# 90 of its window, as the Methods give no baseline), integrated with the trapezoid rule over\n# the epoch's light-on period (start_time to stop_time), in % dF/F times seconds. The code's\n# window (0.1 s before to 1.0 s after onset, samples 91 to 200 of its intended -1 to +1.5 s\n# chunk) and the window its chunking_index.m computes as written (starting 1 s after onset)\n# are variants. Spontaneous transients follow the Methods: samples from 1 s before to 1.5 s\n# after every onset are removed, the rest is concatenated and z-scored, a transient is a run\n# above z = -1 that reaches z = 1 (runs touching either end are dropped, as the code does),\n# and its integral is the trapezoid integral of the unscaled dF/F over the run, in % dF/F\n# times seconds. Group tests are two-sample Student t-tests, one-tailed (G2019S lower), over\n# stimulations or transients pooled across mice, as the legends state. Cohen's d is the\n# difference of the WT and G2019S means over the pooled standard deviation.\nschema_version: 1\ndandiset: \"001933\"\npaper: doi:10.1038/s41467-026-75194-3\nclaims:\n- id: source-data-link\n  statement: The dandiset's recordings are those behind the paper's Figure 6 and Supplementary\n    Figures 7 and 8, and the paper's published per-stimulation traces, evoked integrals and\n    spontaneous transient integrals can be recomputed from them.\n  source: Figure 6C to 6F, Supplementary Figures 7B, 7C, 8C to 8E; Source Data (Zenodo\n    10.5281/zenodo.19930567)\n  data: with_inputs\n  criterion: Records are matched by mouse ID (the number in the dandiset's subject_id against\n    id_animal), group (WT or GS), labelled power and the rank of the stimulation within its\n    power. Four parts are scored. (1) Every mouse in the source data is in the dandiset with\n    the same genotype and Cre line. (2) Each triggered trace (Figure 6C, Supplementary 7B and\n    8D) equals the dandiset's dF/F from 1 s before the matched onset to 1.5 s after it (largest\n    absolute difference below 1e-6). (3) Each published evoked integral (Figure 6E,\n    Supplementary 7C and 8E) equals the code's measure (samples 91 to 200 of that trace minus\n    the mean of samples 1 to 90, trapezoid rule in samples) up to one scale factor common to\n    all, reported, within a relative difference of 1e-4. (4) Per mouse, the number of\n    spontaneous transients and their sorted integrals (Figure 6F, Supplementary 8C) equal those\n    computed here, up to the same kind of common factor, under either the Methods' exclusion\n    window or the window the code computes as written; which one matches is reported.\n    Reproduced when each of the four parts matches for at least 95% of its records; partially\n    reproduced when every part matches for at least 50%; not reproduced otherwise. Whether the\n    figures use the power their legends state is reported.\n- id: fig6e-anxa1-evoked-reduced\n  statement: Optogenetically evoked dopamine release in the dorsolateral striatum (Anxa1+\n    projection region) at 0.5 mW is lower in LRRK2-G2019S than in LRRK2-WT mice (64 against 56\n    stimulations, p = 1.10e-20, one-tailed two-sample t-test).\n  source: Figure 6E (left), Results, last section\n  expected:\n  - quantity: G2019S stimulations at 0.5 mW\n    value: 64\n    tolerance: 0\n  - quantity: WT stimulations at 0.5 mW\n    value: 56\n    tolerance: 0\n  criterion: Evoked integrals at 0.5 mW, as fixed in the opening comment, pooled over Anxa1\n    mice. Reproduced when the counts match, the G2019S mean is lower and the one-tailed\n    Student t-test gives p < 0.05. The p-value is reported next to the paper's. The power the\n    paper's plotting code selects for this panel ('h', 4 mW in the dandiset's labels) and the\n    code's integration window are shown as variants.\n- id: fig6e-anxa1-evoked-per-mouse\n  statement: Seven of eight individual G2019S mice show significantly reduced evoked dopamine\n    release at 0.5 mW compared with the WT group; mouse 3743 does not.\n  source: Figure 6E (right) and legend; Results, last section\n  depends_on:\n  - fig6e-anxa1-evoked-reduced\n  expected:\n  - quantity: G2019S mice significantly below the WT group\n    value: 7\n    tolerance: 0\n  criterion: Each G2019S mouse's eight 0.5 mW integrals against all WT integrals, significant\n    when the mouse's mean is lower and p < 0.05/8. The test is stated as Welch's in the Methods\n    and the legend's asterisks, the legend's p-values are labelled one-tailed two-sample\n    t-tests, and the code runs MATLAB's ttest2 (Student, two-tailed). The readings are (a)\n    Welch one-tailed, (b) Welch two-tailed, (c) Student two-tailed, (d) Student one-tailed.\n    Reproduced when, under one reading, 7 of 8 are significant; partially reproduced when the\n    best reading gives 5, 6 or 8; not reproduced when it gives 4 or fewer. Whether 3743 is the\n    exception is reported.\n- id: supp7c-anxa1-evoked-all-powers\n  statement: The reduction of evoked dopamine release in Anxa1 G2019S mice holds at each of the\n    four stimulation powers, 0.1, 0.5, 1 and 4 mW (p from 2.39e-16 to 1.10e-20).\n  source: Supplementary Figure 7C; Results, last section\n  criterion: Evoked integrals per power, pooled over Anxa1 mice (64 G2019S against 56 WT\n    stimulations per power). Reproduced when for all four powers the G2019S mean is lower with\n    one-tailed Student p < 0.05; partially reproduced for one to three powers; not reproduced\n    for none.\n- id: fig6f-anxa1-spontaneous-reduced\n  statement: Spontaneous dopamine transients in the dorsolateral striatum are smaller in\n    G2019S than in WT mice (1064 against 798 transients, p = 2.75e-177, one-tailed two-sample\n    t-test), with 57 to 285 transients per mouse.\n  source: Figure 6F (left) and legend\n  expected:\n  - quantity: G2019S spontaneous transients\n    value: 1064\n    tolerance: 106.4\n  - quantity: WT spontaneous transients\n    value: 798\n    tolerance: 79.8\n  criterion: Spontaneous transient integrals, as fixed in the opening comment, pooled over\n    Anxa1 mice. Reproduced when both counts are within tolerance, every mouse has between 51.3\n    and 313.5 transients (the reported range widened by 10% of each bound), and the G2019S\n    mean is lower with one-tailed Student p < 0.05. Partially reproduced when the test holds\n    but a count is outside tolerance. The code's exclusion window as written is a variant.\n- id: fig6f-anxa1-spontaneous-per-mouse\n  statement: Six of eight individual G2019S mice show significantly smaller spontaneous\n    dopamine transients than the WT group; mice 4651 and 3743 do not.\n  source: Figure 6F (right) and legend; Results, last section\n  depends_on:\n  - fig6f-anxa1-spontaneous-reduced\n  expected:\n  - quantity: G2019S mice significantly below the WT group\n    value: 6\n    tolerance: 0\n  criterion: Each G2019S mouse's transient integrals against all WT transient integrals, with\n    the four readings and the threshold of fig6e-anxa1-evoked-per-mouse. Reproduced when, under\n    one reading, 6 of 8 are significant; partially reproduced when the best reading gives 4, 5,\n    7 or 8; not reproduced when it gives 3 or fewer. Whether 4651 and 3743 are the exceptions\n    is reported.\n- id: supp8c-calb1-spontaneous-not-reduced\n  statement: In the dorsomedial striatum (Calb1+ projection region), spontaneous dopamine\n    transients are not reduced in G2019S mice (970 against 682 transients, p = 0.98).\n  source: Supplementary Figure 8C; Results, last section\n  expected:\n  - quantity: G2019S spontaneous transients\n    value: 970\n    tolerance: 97\n  - quantity: WT spontaneous transients\n    value: 682\n    tolerance: 68.2\n  criterion: A claim of absence, judged on the paper's test, a one-tailed two-sample Student\n    t-test (G2019S lower) at p < 0.05 on transient integrals pooled over Calb1 mice.\n    Reproduced when the test does not find the effect (p >= 0.05) and not reproduced when it\n    does. The difference of means and Cohen's d are reported either way, and the counts are\n    compared with the expected values.\n- id: supp8e-calb1-evoked-reduced\n  statement: Evoked dopamine release in the dorsomedial striatum from Calb1+ neuron\n    stimulation is reduced in G2019S mice at each of four powers (56 against 40 stimulations\n    per power, p from 6.45e-05 to 0.001).\n  source: Supplementary Figure 8E (left); Results, last section\n  expected:\n  - quantity: G2019S stimulations per power\n    value: 56\n    tolerance: 0\n  - quantity: WT stimulations per power\n    value: 40\n    tolerance: 0\n  criterion: Evoked integrals per power (0.1, 0.5, 1 and 4 mW), pooled over Calb1 mice.\n    Reproduced when the counts match and for all four powers the G2019S mean is lower with\n    one-tailed Student p < 0.05; partially reproduced for one to three powers; not reproduced\n    for none.\n- id: supp8e-calb1-few-mice-reduced\n  statement: Only 2 of 7 G2019S mice show reduced Calb1+ evoked dopamine release relative to\n    the WT group.\n  source: Supplementary Figure 8E (right); Results, last section\n  depends_on:\n  - supp8e-calb1-evoked-reduced\n  expected:\n  - quantity: G2019S mice significantly below the WT group\n    value: 2\n    tolerance: 0\n  criterion: The legend does not say which power the per-mouse panel shows; the claim is\n    tested at 0.5 mW, the power of the Cohen's d comparison in the Results, and the other three\n    powers are shown as variants. Each G2019S mouse's eight integrals against all WT integrals,\n    significant when the mouse's mean is lower and p < 0.05/7, under readings (a) to (d) of\n    fig6e-anxa1-evoked-per-mouse. Reproduced when, under one reading, 2 of 7 are significant;\n    partially reproduced when the best reading gives 1, 3 or 4; not reproduced otherwise.\n- id: cohens-d-anxa1-larger\n  statement: The G2019S reduction of evoked release at 0.5 mW is much larger for Anxa1+ (Cohen's\n    d = 2.05) than for Calb1+ stimulation (d = 0.76).\n  source: Results, last section\n  depends_on:\n  - fig6e-anxa1-evoked-reduced\n  - supp8e-calb1-evoked-reduced\n  expected:\n  - quantity: Cohen's d, Anxa1, 0.5 mW\n    value: 2.05\n    tolerance: 0.205\n  - quantity: Cohen's d, Calb1, 0.5 mW\n    value: 0.76\n    tolerance: 0.076\n  criterion: Cohen's d as fixed in the opening comment, on 0.5 mW evoked integrals pooled over\n    mice. Reproduced when both values are within tolerance; partially reproduced when the\n    Anxa1 d is at least twice the Calb1 d but a value is outside tolerance; not reproduced\n    otherwise.\n- id: fig1d-lrrk2-enriched-vulnerable\n  statement: LRRK2 immunolabeling intensity is higher in Aldh1a1+ (vulnerable) than in\n    Aldh1a1- SNc dopamine neurons (p = 0.0008).\n  source: Figure 1B and 1D\n- id: fig2b-rab3-phosphorylation\n  statement: LRRK2 kinase inhibition with MLi-2 changes 289 phosphopeptides in striatal\n    synaptosomes of G2019S mice, including RAB3 T86.\n  source: Figure 2A to 2C\n- id: fig2eg-prab3-increased\n  statement: Phosphorylation of RAB3A and RAB3C is increased in the SNc of G2019S mice and\n    returns to WT levels with MLi-2.\n  source: Figure 2D to 2G\n- id: fig3d-rim-binds-unphosphorylated\n  statement: RIM1 and RIM2 bind unphosphorylated RAB3A in preference to RAB3A phosphorylated at\n    T86, while RILPL1 and RILPL2 prefer the phosphorylated form.\n  source: Figure 3D to 3F\n- id: fig4d-fewer-active-zones\n  statement: Fewer TH+/VAMP2+ striatal synaptosomes from G2019S mice contain bassoon, and the\n    remaining bassoon clusters are larger.\n  source: Figure 4D and 4E\n- id: fig4i-rim1-reduced\n  statement: RIM1 is reduced in striatal synaptosomes of G2019S mice (p = 0.0245) but not in\n    other striatal fractions or the SNc.\n  source: Figure 4H to 4L\n- id: fig5-bassoon-vulnerable-axons\n  statement: Bassoon cluster density is reduced and cluster volume increased in Aldh1a1+ but not\n    Aldh1a1- dopamine axons of G2019S mice, and the same holds in Anxa1+ axons.\n  source: Figure 5D, 5E, 5G and 5H\n- id: fig5j-no-axon-loss\n  statement: The volume occupied by TH+ fibres in the dorsal striatum does not differ between\n    G2019S and WT mice.\n  source: Figure 5I and 5J\n"
-}
-```
-
-```
-File created successfully at: claims/001933/10.1038-s41467-026-75194-3.yaml (file state is current in your context — no need to Read it back)
-```
-
-**Agent**
-
-Now the helper module.
-
-**Agent calls Bash**
-
-```bash
-curl -s "https://zenodo.org/api/records/19930567" | python -c "
-import json,sys; d=json.load(sys.stdin)
-for f in d['files']: print(f['key'], f['checksum'])"; md5sum paper/source_data_zenodo.xlsx
-```
-
-Result: the fetched text is not kept.
-
-**Agent calls Write**
-
-```json
-{
- "file_path": "entries/001933-chen-2026/lrrk2.py",
- "content": "\"\"\"Loading and measures for dandiset 001933 (Chen, He et al. 2026, LRRK2 fiber photometry).\n\nThe dandiset holds one session per mouse: GRAB-DA3m fiber photometry in the dorsal striatum\nduring optogenetic stimulation of Anxa1+ (dorsolateral striatum) or Calb1+ (dorsomedial\nstriatum) SNc dopamine neurons, in LRRK2-WT and LRRK2-G2019S mice. Files are streamed from the\narchive at a pinned version and reduced as they load to the 100 Hz series and the epochs table.\n\nWhere the parameters come from:\n\n- The signal is the processed dF/F series (``FiberPhotometryResponseSeriesDfOverF``), the\n  ``dff470`` trace that the paper's code (DombeckLab/lrrk2_photometry_analysis) analyses.\n- Onsets: the first 100 Hz sample at or after an epoch's ``start_time``. The code takes the\n  first binned TTL sample, which is what the epochs table was built from.\n- Evoked integral, ``window=\"methods\"``: the Methods' \"integral of dF/F during the\n  optogenetic-stimulation light-on period\", from onset to the first sample at or after the\n  epoch's ``stop_time``. The baseline (mean from 1.0 s to 0.1 s before onset) is the code's,\n  as the Methods give none. ``window=\"code\"``: the code's samples 91 to 200 of a chunk that\n  starts 1 s before onset (0.1 s before to 1.0 s after). ``window=\"code_as_written\"``: the\n  same samples of the chunk that ``chunking_index.m`` computes as written, which starts 1 s\n  after onset (``trigger - fs*ti`` with ``ti = -1``). ``window=\"fixed\"``: 0 to 0.5 s.\n  Integrals are in % dF/F times seconds (trapezoid rule, 10 ms steps); the code integrates\n  in samples, 100 times larger.\n- Spontaneous transients: the Methods and ``transient_by_threshold.m``. Samples from 1 s\n  before to 1.5 s after every onset are removed (``exclusion=\"methods\"``; the code as written\n  removes 1 s to 3.5 s after onset, ``exclusion=\"code_as_written\"``), the rest is\n  concatenated and z-scored (sample standard deviation, as MATLAB's ``zscore``); a transient\n  is a run of z > -1 that contains z > 1 (MATLAB ``imreconstruct``), runs touching either end\n  are dropped as the code does, and the integral is the trapezoid integral of the unscaled\n  dF/F over the run.\n\"\"\"\n\nimport hashlib\nimport io\nfrom concurrent.futures import ThreadPoolExecutor\n\nimport h5py\nimport numpy as np\nimport remfile\nimport requests\nfrom dandi.dandiapi import DandiAPIClient\nfrom scipy import stats\n\nDANDISET_ID = \"001933\"\nDANDISET_VERSION = \"0.260825.1457\"\nFS = 100.0  # Hz, the processed series\nSOURCE_DATA_URL = \"https://zenodo.org/api/records/19930567/files/Source%20data.xlsx/content\"\nSOURCE_DATA_MD5 = \"c26fe3de8f340a3db5fa29a40e5a8c10\"\nPAPER_POWERS = (0.1, 0.5, 1.0, 4.0)  # mW, the powers of Figure 6 and Supplementary 7 and 8\n\n_OPHYS = \"processing/ophys/FiberPhotometryResponseSeries\"\n\n\ndef list_assets():\n    client = DandiAPIClient()\n    dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)\n    return sorted(dandiset.get_assets(), key=lambda a: a.path)\n\n\ndef _text(dataset):\n    value = dataset[()]\n    return value.decode() if isinstance(value, bytes) else str(value)\n\n\ndef _raw_lag(f, t, corrected, start_s=300.0, n_raw=60000, max_lag=20):\n    \"\"\"Lag (in 100 Hz samples) that best aligns the raw 470 nm signal, averaged into the\n    processed series' bins, with the processed corrected signal, over about 37 s.\"\"\"\n    raw = f[\"acquisition/FiberPhotometryResponseSeriesRawSignal\"]\n    i0 = int(start_s * 2000 * 0.4)  # about 0.4 of the 2 kHz samples are kept for 470 nm\n    ts = raw[\"timestamps\"][i0:i0 + n_raw]\n    rd = raw[\"data\"][i0:i0 + n_raw]\n    k0, k1 = np.searchsorted(t, ts[0]) + 5, np.searchsorted(t, ts[-1]) - 5\n    edges = t[k0:k1 + 1]\n    bins = np.searchsorted(edges, ts, side=\"right\") - 1  # bin k holds [t_k, t_k+1)\n    keep = (bins >= 0) & (bins < len(edges) - 1)\n    sums = np.bincount(bins[keep], weights=rd[keep], minlength=len(edges) - 1)\n    counts = np.bincount(bins[keep], minlength=len(edges) - 1)\n    binned = sums / np.maximum(counts, 1)\n    proc = corrected[k0:k1]\n    m = max_lag + 5\n    r = [np.corrcoef(np.roll(binned, lag)[m:-m], proc[m:-m])[0, 1] for lag in range(-max_lag, max_lag + 1)]\n    return int(np.argmax(r)) - max_lag, float(r[max_lag]), float(ts[1:].__sub__(ts[:-1]).min())\n\n\ndef load_session(asset):\n    \"\"\"Stream one file and return what the analysis uses, as a dict.\"\"\"\n    url = asset.get_content_url(follow_redirects=1, strip_query=True)\n    with h5py.File(remfile.File(url), \"r\") as f:\n        subject = f[\"general/subject\"]\n        s = {k: _text(subject[k]) for k in (\"subject_id\", \"sex\", \"genotype\", \"date_of_birth\", \"species\", \"strain\")}\n        s[\"path\"] = asset.path\n        s[\"session_start\"] = _text(f[\"session_start_time\"])\n        s[\"session_description\"] = _text(f[\"session_description\"])\n        s[\"mouse\"] = int(s[\"subject_id\"].split(\"-\")[0])\n        s[\"line\"] = \"Anxa1\" if \"-anxa-\" in s[\"subject_id\"] else \"Calb1\"\n        s[\"group\"] = \"GS\" if s[\"genotype\"].endswith(\"G2019S\") else \"WT\"\n        dff = f[_OPHYS + \"DfOverF\"]\n        s[\"t\"] = dff[\"timestamps\"][:]\n        s[\"dff\"] = dff[\"data\"][:]\n        s[\"dff_unit\"] = dff[\"data\"].attrs[\"unit\"]\n        s[\"dff_description\"] = dff.attrs[\"description\"]\n        s[\"dff405\"] = f[_OPHYS + \"DfOverFIsosbesticControl\"][\"data\"][:]\n        corrected = f[_OPHYS + \"CorrectedSignal\"][\"data\"][:]\n        s[\"dff_recomputed\"] = _dff_from_corrected(corrected)\n        s[\"location\"] = [_text_v(v) for v in f[\"general/fiber_photometry/fiber_photometry_table/location\"][:]]\n        s[\"dff_region\"] = int(dff[\"fiber_photometry_table_region\"][0])\n        ot = f[\"intervals/OptogeneticEpochsTable\"]\n        s[\"opto_description\"] = ot.attrs[\"description\"]\n        for col in (\"start_time\", \"stop_time\", \"power_in_mW\", \"pulse_length_in_ms\", \"period_in_ms\",\n                    \"number_pulses_per_pulse_train\", \"wavelength_in_nm\"):\n            s[col] = ot[col][:]\n        s[\"onset\"] = np.searchsorted(s[\"t\"], s[\"start_time\"])\n        s[\"offset\"] = np.searchsorted(s[\"t\"], s[\"stop_time\"])\n        s[\"raw_lag\"], s[\"raw_r\"], s[\"raw_min_dt\"] = _raw_lag(f, s[\"t\"], corrected)\n        s[\"raw_n\"] = f[\"acquisition/FiberPhotometryResponseSeriesRawSignal/data\"].shape[0]\n        s[\"md5\"] = hashlib.md5(s[\"dff\"].tobytes()).hexdigest()\n    return s\n\n\ndef _text_v(v):\n    return v.decode() if isinstance(v, bytes) else str(v)\n\n\ndef _movmean(x, k=20):\n    \"\"\"MATLAB smoothdata(x, 'movmean', k) for even k: window [i - k/2, i + k/2 - 1], shrunk at edges.\"\"\"\n    c = np.concatenate([[0.0], np.cumsum(x)])\n    i = np.arange(len(x))\n    lo = np.clip(i - k // 2, 0, len(x))\n    hi = np.clip(i + k // 2, 0, len(x))\n    return (c[hi] - c[lo]) / (hi - lo)\n\n\ndef _dff_from_corrected(corrected):\n    \"\"\"The code's df_f (F0 = 8th percentile of the corrected trace, in %) and 20-sample movmean.\"\"\"\n    base = np.percentile(corrected, 8)\n    return _movmean((corrected - base) / base * 100.0)\n\n\ndef load_all(workers=6):\n    assets = list_assets()\n    with ThreadPoolExecutor(workers) as pool:\n        return list(pool.map(load_session, assets))\n\n\ndef evoked_integrals(s, window=\"methods\", trace=\"dff\"):\n    \"\"\"One integral per epoch (in table order), in % dF/F times seconds; NaN where the\n    window leaves the recording.\"\"\"\n    x = s[trace]\n    out = np.full(len(s[\"onset\"]), np.nan)\n    for j, (on, off) in enumerate(zip(s[\"onset\"], s[\"offset\"])):\n        start = on - 100 if window != \"code_as_written\" else on + 100\n        if start < 0 or start + 250 > len(x):\n            continue\n        chunk = x[start:start + 250]\n        base = chunk[:90].mean()\n        if window in (\"code\", \"code_as_written\"):\n            seg = chunk[90:200] - base\n        elif window == \"methods\":\n            seg = x[on:off + 1] - base\n        elif window == \"fixed\":\n            seg = x[on:on + 51] - base\n        else:\n            raise ValueError(window)\n        out[j] = np.trapezoid(seg) / FS\n    return out\n\n\ndef code_chunk(s, j):\n    \"\"\"The 250-sample trace the code's intended chunk holds for epoch j (1 s before onset to 1.5 s after).\"\"\"\n    on = s[\"onset\"][j]\n    return s[\"dff\"][on - 100:on + 150]\n\n\ndef double_threshold(z, low=-1.0, high=1.0):\n    \"\"\"Runs of z > low that contain z > high, as (start, stop) inclusive index pairs.\n    Runs that touch either end of the trace are dropped, as transient_by_threshold.m does.\"\"\"\n    above = z > low\n    edges = np.diff(above.astype(int))\n    starts = np.where(edges == 1)[0] + 1\n    stops = np.where(edges == -1)[0]\n    stops = stops[stops >= (starts[0] if len(starts) else len(z))]\n    starts = starts[starts <= (stops[-1] if len(stops) else -1)]\n    runs = [(a, b) for a, b in zip(starts, stops) if (z[a:b + 1] > high).any()]\n    return runs\n\n\ndef spontaneous_trace(s, exclusion=\"methods\"):\n    x = s[\"dff\"]\n    drop = np.zeros(len(x), bool)\n    for on in s[\"onset\"]:\n        a, b = (on - 100, on + 150) if exclusion == \"methods\" else (on + 100, on + 350)\n        drop[max(a, 0):min(b, len(x))] = True\n    kept = x[~drop]\n    return kept[~np.isnan(kept)]\n\n\ndef spontaneous_transients(s, exclusion=\"methods\"):\n    \"\"\"Integrals (% dF/F times seconds) and peaks (% dF/F) of the spontaneous transients.\"\"\"\n    x = spontaneous_trace(s, exclusion)\n    z = (x - x.mean()) / x.std(ddof=1)\n    runs = double_threshold(z)\n    auc = np.array([np.trapezoid(x[a:b + 1]) / FS for a, b in runs])\n    peaks = np.array([x[a:b + 1].max() for a, b in runs])\n    return auc, peaks\n\n\ndef one_tailed_less(a, b, equal_var=True):\n    \"\"\"t-test of a < b; returns t and the one-tailed p.\"\"\"\n    r = stats.ttest_ind(a, b, equal_var=equal_var, alternative=\"less\")\n    return float(r.statistic), float(r.pvalue)\n\n\ndef two_tailed(a, b, equal_var=True):\n    r = stats.ttest_ind(a, b, equal_var=equal_var)\n    return float(r.statistic), float(r.pvalue)\n\n\ndef cohens_d(wt, gs):\n    \"\"\"(mean WT - mean GS) / pooled standard deviation.\"\"\"\n    n1, n2 = len(wt), len(gs)\n    sp = np.sqrt(((n1 - 1) * np.var(wt, ddof=1) + (n2 - 1) * np.var(gs, ddof=1)) / (n1 + n2 - 2))\n    return float((np.mean(wt) - np.mean(gs)) / sp)\n\n\ndef load_source_data():\n    \"\"\"The paper's source data file (Zenodo 10.5281/zenodo.19930567), read in memory.\n\n    Returns the md5 of the file and a dict of tables: triggered traces (6C, S7B, S8D), evoked\n    integrals (6E, S7C, S8E) and spontaneous transient integrals (6F, S8C).\"\"\"\n    import openpyxl\n\n    content = requests.get(SOURCE_DATA_URL, timeout=300).content\n    md5 = hashlib.md5(content).hexdigest()\n    wb = openpyxl.load_workbook(io.BytesIO(content), read_only=True)\n\n    def rows(name):\n        return list(wb[name].iter_rows(values_only=True))\n\n    def traces(rs, c0, first):\n        out = []\n        for r in rs[first:]:\n            if len(r) > c0 and isinstance(r[c0], (int, float)):\n                out.append(dict(mouse=int(r[c0]), group=r[c0 + 1], power=float(r[c0 + 2]),\n                                trace=np.array(r[c0 + 3:c0 + 253], float)))\n        return out\n\n    def values(rs, c0, first, with_power):\n        out = []\n        for r in rs[first:]:\n            if len(r) > c0 and isinstance(r[c0], (int, float)):\n                d = dict(mouse=int(r[c0]), group=r[c0 + 1])\n                if with_power:\n                    d[\"power\"] = float(r[c0 + 2])\n                d[\"value\"] = float(r[c0 + 3] if with_power else r[c0 + 2])\n                out.append(d)\n        return out\n\n    f6cd, f6ef = rows(\"Fig. 6c-d\"), rows(\"Fig. 6e-f\")\n    s7, s8 = rows(\"Suppl. Fig. 7b-c\"), rows(\"Suppl. Fig. 8b-e\")\n    tables = {\n        \"6C\": traces(f6cd, 0, 2),\n        \"6E\": [dict(d, power=0.5) for d in values(f6ef, 4, 2, False)],\n        \"6F\": values(f6ef, 8, 2, False),\n        \"S7B\": traces(s7, 1, 1),\n        \"S7C\": values(s7, 506, 1, True),\n        \"S8C\": values(s8, 7, 1, False),\n        \"S8D\": traces(s8, 12, 1),\n        \"S8E\": values(s8, 517, 1, True),\n    }\n    return md5, tables\n"
-}
-```
-
-```
-File created successfully at: entries/001933-chen-2026/lrrk2.py (file state is current in your context — no need to Read it back)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; sed -i 's/float(ts\[1:\].__sub__(ts\[:-1\]).min())/float(np.diff(ts).min())/' lrrk2.py; source $TMPDIR/venv/bin/activate; uv pip install -q requests openpyxl; python - <<'EOF' 2>&1 | grep -v Warn
-import time, numpy as np, lrrk2
-t=time.time(); S=lrrk2.load_all(); print('load',time.time()-t)
-for s in S:
-    d=np.abs(s['dff']-s['dff_recomputed']); print(s['subject_id'], s['raw_lag'], round(s['raw_r'],3), d.max().round(6), s['location'][s['dff_region']], s['dff_unit'])
-s=S[0]; print(lrrk2.evoked_integrals(s)[:8], lrrk2.evoked_integrals(s,'code')[:8])
-a,p=lrrk2.spontaneous_transients(s); print(len(a), a[:5])
-t=time.time(); md5,T=lrrk2.load_source_data(); print(md5, {k:len(v) for k,v in T.items()}, time.time()-t)
-EOF
-```
-
-```
-load 30.731016397476196
-1803-calb-wt 0 0.986 0.002726 dorsal medial striatum a.u.
-302-calb-gs 0 0.981 0.0 dorsal medial striatum a.u.
-306-calb-gs 0 0.912 0.0 dorsal medial striatum a.u.
-3742-anxa-gs 0 0.891 4.1e-05 dorsal lateral striatum a.u.
-3743-anxa-gs 0 0.966 0.005924 dorsal lateral striatum a.u.
-3947-anxa-wt 0 0.901 0.000601 dorsal lateral striatum a.u.
-3948-anxa-wt 0 0.983 0.003484 dorsal lateral striatum a.u.
-4004-anxa-gs 0 0.917 0.001057 dorsal lateral striatum a.u.
-4005-anxa-gs 0 0.77 4.4e-05 dorsal lateral striatum a.u.
-4007-anxa-gs 0 0.941 2.5e-05 dorsal lateral striatum a.u.
-4253-anxa-wt 0 0.94 0.00881 dorsal lateral striatum a.u.
-4398-anxa-wt 0 0.993 0.001862 dorsal lateral striatum a.u.
-4401-anxa-wt 0 0.91 0.000326 dorsal lateral striatum a.u.
-4558-anxa-wt 0 0.98 0.000566 dorsal lateral striatum a.u.
-4561-anxa-wt 0 0.979 0.001019 dorsal lateral striatum a.u.
-4651-anxa-gs 0 0.888 0.0021 dorsal lateral striatum a.u.
-4652-anxa-gs 0 0.985 0.001086 dorsal lateral striatum a.u.
-4885-anxa-gs 0 0.95 0.001983 dorsal lateral striatum a.u.
-671-calb-wt 0 0.993 0.025775 dorsal medial striatum a.u.
-[... 13 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  grep -n "def \|install\|tag\|sanity\|claim:\|header\|Result" tools/entry.py | head -80
-```
-
-```
-20:- each notebook has a cell tagged `sanity` that prints what was loaded;
-25:notebook through a Jupyter kernel installed in that environment, in the entry
-32:markdown cell that begins "**Result:" and everything from the "## Summary"
-68:    def __init__(self):
-71:    def error(self, where, message: str) -> None:
-75:def schema(name: str) -> Draft202012Validator:
-79:def load(report: Report, path: Path):
-88:def validate(report: Report, path: Path, schema_name: str) -> dict | None:
-98:def _plain(value):
-109:def code_of(notebook_path: Path) -> str:
-116:def check(entry_dir: Path) -> Report:
-166:        if not any("sanity" in c.metadata.get("tags", []) for c in nb.cells if c.cell_type == "code"):
-167:            report.error(rel / name, "no code cell tagged `sanity` (the data check; see docs/protocol.md)")
-238:            tag = outcome.get("output")
-239:            if notebook in present and tag:
-241:                if not any(tag in c.metadata.get("tags", []) for c in nb.cells):
-242:                    report.error(path.relative_to(ROOT), f"no cell tagged {tag!r} in {notebook}")
-246:def _derivation_checks(report: Report, where, code: str) -> None:
-260:def lock(entry_dir: Path) -> int:
-268:def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
-[... 7 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 1,40p tools/entry.py; sed -n 116,330p tools/entry.py
-```
-
-```
+agents
+design.md
+pilot-notes.md
+protocol.md
+89:gh workflow run pipeline.yml -f dandisets="000628 000939 001075" -f max_parallel=3
+116:pip install uv pyyaml jsonschema nbformat
+118:python tools/entry.py lock  entries/<name>   # pin the environment
+119:python tools/entry.py check entries/<name>   # metadata and conventions
+120:python tools/entry.py run   entries/<name>   # execute from a clean environment
+121:python tools/entry.py handover entries/<name>  # the verifier's package, without the conclusions
+125:`python tools/build_site.py` and republished on every push to `main`: an
+127:with its claims and its findings about the data. Every filtered view is a link. `python tools/build_site.py
 """Lock, check and run one entry. This is the whole local workflow for a deposit.
 
     python tools/entry.py lock  entries/<name>   # pin the environment
@@ -1170,33 +437,449 @@ cd  sed -n 1,40p tools/entry.py; sed -n 116,330p tools/entry.py
     python tools/entry.py all   entries/<name>   # check, then run
     python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
 
-`lock` compiles the entry's requirements.in (direct dependencies only) into
-requirements.lock.txt with every version pinned.
-
-`check` validates entry.yaml, and the claims and attempt files that mention
-the entry, against the schemas, and applies the conventions that keep a result
-tied to the data:
-
-- every notebook in the directory is listed in entry.yaml, and exists;
-- notebooks are committed without outputs;
-- the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dandiset the entry uses;
-- each notebook has a cell tagged `sanity` that prints what was loaded;
-[... 235 more lines not kept]
+[... 52 more lines not kept]
 ```
 
 **Agent**
 
-Writing the notebook builder.
+Let me set up a working environment from the entry's lock file so I can explore.
 
 **Agent calls Bash**
 
 ```bash
-mkdir -p $TMPDIR/build; cat > $TMPDIR/build/cells_code.py <<'PYEOF'
-# Code cells for the notebook, keyed by name. Markdown cells are in build.py.
-CODE = {}
+cd  which uv; uv venv -q -p 3.13 $TMPDIR/venv && VIRTUAL_ENV=$TMPDIR/venv uv pip install -q -r entries/001933-chen-2026/requirements.lock.txt ipykernel nbconvert 2>&1 | tail -3; $TMPDIR/venv/bin/python -c "import openpyxl, h5py; print('ok')"
+```
 
-CODE["setup"] = r'''import time
+```
+/opt/hostedtoolcache/Python/3.13.16/x64/bin/uv
+ok
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; P=$TMPDIR/venv/bin/python; $P -c "
+import openpyxl
+wb=openpyxl.load_workbook('Source_data.xlsx',read_only=True)
+for ws in wb.worksheets: print(repr(ws.title), ws.max_row, ws.max_column)
+"
+```
+
+```
+'Fig. 1c-d' 19 14
+'Fig. 2b-c' 6158 28
+'Fig. 2d-f' 36 13
+'Fig. 3c-f' 3482 27
+'Fig. 4d-e' 58 10
+'Fig. 4f-J' 30 15
+'Fig. 4k-l ' 25 3
+'Fig. 5d-e' 14 49
+'Fig. 5g-h' 20 9
+'Fig. 5j' 13 4
+'Fig. 6c-d' 16782 508
+'Fig. 6e-f' 1864 11
+'Suppl. Fig. 1a, f-i' 8 28
+'Suppl. Fig. 1e' 5526 3
+'Suppl. Fig. 2a-d' 2817 32
+'Suppl. Fig. 2e,h' 6 6
+'Suppl. Fig. 2i-j' 1 19
+'Suppl. Fig. 4b, d-e' 49 17
+'Suppl. Fig. 4f-l' 9 33
+'Suppl. FIg. 5b, e-f' 20 18
+[... 4 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; P=$TMPDIR/venv/bin/python; $P -c "
+import openpyxl
+wb=openpyxl.load_workbook('Source_data.xlsx',read_only=True)
+for name in ['Fig. 1c-d','Fig. 2d-f','Fig. 4d-e','Fig. 4f-J','Fig. 4k-l ','Fig. 5d-e','Fig. 5g-h','Fig. 5j']:
+  ws=wb[name]; print('=====',name)
+  for r in ws.iter_rows(values_only=True):
+    r=list(r)
+    while r and r[-1] is None: r.pop()
+    if any(v is not None for v in r): print(r)
+"
+```
+
+```
+===== Fig. 1c-d
+['Fig.1C', None, None, None, None, None, None, None, None, None, 'Fig.1D']
+['Westerb blot']
+[None, None, None, None, None, None, None, None, None, None, 'animal#', 'section#', 'Aldh1a1-', 'Aldh1a1+']
+[None, None, None, None, None, None, None, None, None, None, 2722, 1, 0.9486665, 1.06523775]
+[None, None, None, None, None, None, None, None, None, None, None, 2, 0.976110667, 1.06379113]
+[None, None, None, None, None, None, None, None, None, None, None, 3, 0.935006352, 1.13990726]
+[None, None, None, None, None, None, None, None, None, None, None, 4, 1.037273255, 0.93313537]
+[None, None, None, None, None, None, None, None, None, None, None, 5, 0.957470689, 1.12094441]
+[None, None, None, None, None, None, None, None, None, None, 2275, 1, 0.944312429, 1.07692943]
+[None, None, None, None, None, None, None, None, None, None, None, 2, 0.986868237, 1.01207231]
+[None, None, None, None, None, None, None, None, None, None, None, 3, 0.991447421, 1.0188269]
+[None, None, None, None, None, None, None, None, None, None, None, 4, 0.971569906, 1.05177641]
+[None, None, None, None, None, None, None, None, None, None, None, 5, 0.99570715, 1.0110039]
+[None, None, None, None, None, None, None, None, None, None, None, 6, 0.971321937, 1.04731634]
+[None, None, None, None, None, None, None, None, None, None, 2650, 1, 0.956418581, 1.05424397]
+[None, None, None, None, None, None, None, None, None, None, None, 2, 0.963386409, 1.06925685]
+[None, None, None, None, None, None, None, None, None, None, None, 3, 0.961031935, 1.05244387]
+[None, None, None, None, None, None, None, None, None, None, None, 4, 0.975564291, 1.06062489]
+[None, None, None, None, None, None, None, None, None, None, None, 5, 0.998209982, 1.00158172]
+[... 136 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; for s in S-BIAD2070 S-BIAD2071 S-BIAD2072 S-BIAD2073 S-BIAD2074; do echo "== $s"; curl -s "https://www.ebi.ac.uk/biostudies/api/v1/studies/$s" -o $s.json -w "%{http_code} "; curl -s "https://www.ebi.ac.uk/biostudies/api/v1/studies/$s/info" | head -c 600; echo; done
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd paper; P=$TMPDIR/venv/bin/python; $P - <<'EOF'
+import json
+def walk(sec, depth=0, out=None):
+    out = out if out is not None else []
+    if isinstance(sec, dict):
+        t = sec.get('type'); attrs = {a.get('name'):a.get('value') for a in sec.get('attributes',[]) if isinstance(a,dict)}
+        if t: out.append((depth,t,{k:(str(v)[:150]) for k,v in attrs.items()}))
+        for k in ('subsections','section','files','links'):
+            v=sec.get(k)
+            if isinstance(v,list):
+                for x in v:
+                    if isinstance(x,list):
+                        for y in x: walk(y,depth+1,out)
+                    else: walk(x,depth+1,out)
+            elif isinstance(v,dict): walk(v,depth+1,out)
+    return out
+for s in ['S-BIAD2070','S-BIAD2071','S-BIAD2072','S-BIAD2074']:
+    d=json.load(open(s+'.json'))
+    print('=======',s, {a['name']:a.get('value') for a in d.get('attributes',[])})
+    for depth,t,a in walk(d['section']):
+        print('  '*depth, t, a)
+EOF
+```
+
+```
+======= S-BIAD2070 {'Template': 'BioImages.v4', 'Title': 'LRRK2 is expressed in dopamine neurons and is enriched in the vulnerable subpopulation.', 'DOI': '10.6019/S-BIAD2070', 'ReleaseDate': '2025-08-29', 'AttachTo': 'BioImages'}
+ Study {'Title': 'LRRK2 is expressed in dopamine neurons and is enriched in the vulnerable subpopulation.', 'ReleaseDate': '2025-08-29', 'Description': 'Single cell profiling studies and research on both postmortem Parkinson’s disease (PD) tissues and preclinical mouse models demonstrated that the Sox6', 'Keywords': 'dopamine neurons', 'License': 'CC BY 4.0', 'Funding statement': "Aligning Science Across Parkinson's [ASAP-020600] through the Michael J. Fox Foundation for Parkinson's Research (MJFF) "}
+   author {'Name': 'Chuyu Chen', 'E-mail': '[removed: an e-mail address]', 'Role': 'first author', 'ORCID': '0000-0001-5666-5173', 'affiliation': 'o2'}
+   author {'Name': 'Loukia Parisiadou', 'E-mail': '[removed: an e-mail address]', 'Role': 'corresponding author', 'ORCID': '0000-0002-2569-4200', 'affiliation': 'o2'}
+   organisation {'Name': 'Northwestern University'}
+   organisation {'Name': "Aligning Science Across Parkinson's"}
+   Funding {'Agency': "Aligning Science Across Parkinson's through the Michael J. Fox Foundation for Parkinson's Research (MJFF) ", 'grant_id': 'ASAP-020600'}
+   Biosample {'Title': 'LRRK2 expression ', 'Organism': 'Mus musculus (mouse)', 'Description': 'immunolabeling on mouse midbrain sections', 'Biological entity': 'LRRK2 signal in SNc dopamine neurons '}
+   Specimen {'Title': 'Ear tag#', 'Sample preparation protocol': 'Mice were perfused with 50 ml of PBS, followed by 50 ml of 4% paraformaldehyde in PBS. The brains were dehydrated using 30% sucrose in PBS for 48 hour'}
+   Image acquisition {'Title': 'LRRK2 expression', 'Imaging instrument': 'Nikon A1R microscope', 'Image acquisition parameters': 'Fluorescence images were captured with a 20x objective for Lrrk2 expression', 'Imaging method': 'confocal micros
+[... 43 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; for s in S-BIAD2070 S-BIAD2071 S-BIAD2072 S-BIAD2074; do echo "== $s"; curl -s "https://www.ebi.ac.uk/biostudies/api/v1/studies/$s/info" | python3 -c "import json,sys; d=json.load(sys.stdin); print({k:v for k,v in d.items() if k!='columns'})"; done
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd paper; for s in 070:"LRRK2 expression" 071:"Terminal analysis" 072:"TH-VMAT2" 074:"synaptosome"; do n=${s%%:*}; f=${s#*:}; curl -s "https://ftp.ebi.ac.uk/biostudies/fire/S-BIAD/$n/S-BIAD2$n/Files/$(echo $f|sed 's/ /%20/g').json" -o "bia_$n.json" -w "$n %{http_code}\n"; done; python3 - <<'EOF'
+import json
+for n in ['070','071','072','074']:
+    try: d=json.load(open(f'bia_{n}.json'))
+    except Exception as e: print(n,'fail',e); continue
+    tot=sum(f.get('size',0) for f in d)
+    print('====',n,len(d),'files',round(tot/1e9,2),'GB')
+    for f in d[:6]: print('  ',f.get('path'),f.get('size'),{a['name']:a['value'] for a in f.get('attributes',[])})
+EOF
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd paper; P=$TMPDIR/venv/bin/python; $P -c "
+import openpyxl
+wb=openpyxl.load_workbook('Source_data.xlsx',read_only=True)
+for name in ['Fig. 2b-c','Fig. 3c-f','Suppl. Fig. 4f-l']:
+  ws=wb[name]; print('=====',name)
+  for i,r in enumerate(ws.iter_rows(values_only=True)):
+    if i>=6: break
+    r=list(r)
+    while r and r[-1] is None: r.pop()
+    print(r)
+"; unzip -o -q Supplementary_files.zip -d supp; $P -c "
+import openpyxl,glob
+for f in sorted(glob.glob('supp/*.xlsx')):
+  if 'file 3' in f: continue
+  wb=openpyxl.load_workbook(f,read_only=True)
+  for ws in wb.worksheets:
+    print('=====',f,ws.title,ws.max_row,ws.max_column)
+    for i,r in enumerate(ws.iter_rows(values_only=True)):
+      if i>=4: break
+      r=list(r)
+      while r and r[-1] is None: r.pop()
+      print([str(v)[:40] for v in r][:30])
+"
+```
+
+```
+===== Fig. 2b-c
+['Fig. 2B', 'Gene_name', 'Annotated Sequence', 'Master Protein Accessions', 'Positions in Master Proteins', 'Modifications in Master Proteins (all Sites)', 'Modifications in Master Proteins', 'Modifications', None, None, 'Difference', '-log10(P\xa0value)', None, None, 'Fig. 2C', 'ID', 'Description', 'GeneRatio', 'BgRatio', 'RichFactor', 'FoldEnrichment', 'zScore', 'pvalue', 'p.adjust', 'qvalue', 'geneID', 'Count', 'logP']
+[None, 'Aqp4', '[K].GSYMEVEDNRSQVETEDLILKPGVVHVIDIDRGEEK.[K]', 'A0A5F8MQ17;A0A0R4J0Z3', 'A0A5F8MQ17 [253-288];A0A0R4J0Z3 [275-310]', 'A0A5F8MQ17 1xPhospho [S254(0);Y255(0);S263(100);T267(0)];A0A0R4J0Z3 1xPhospho [S276(0);Y277(0);S285(100);T289(0)]', 'A0A5F8MQ17 1xPhospho [S263(100)];A0A0R4J0Z3 1xPhospho [S285(100)]', '1xOxidation [M4];1xPhospho [S11(100)]', None, None, 0.352119445800781, 0.7296870242567739, None, None, None, 'GO:0099173', 'postsynapse organization', '26/214', '314/28928', 0.0828025477707006, 11.1930472051908, 15.6780234450616, 9.49721080028991e-20, 2.67061567704152e-16, 1.83846006965612e-16, 'Map1b/Myh10/Arhgap39/Gphn/Grin2b/Srcin1/Dclk1/Prickle2/Tanc2/Septin7/Ctnnd2/Grin2a/Sorbs1/Nefh/Syngap1/Caskin1/Lrfn4/Sorbs2/Marcks/Ephb1/Asic1/Nefl/Rtn4/Sipa1l1/Dock10/Plppr4', 26, 19.0224039222797]
+[None, 'Rtn4', '[-].MEDIDQSSLVSSSADSPPRPPPAFK.[Y]', 'Q99P72', 'Q99P72 [1-25]', 'Q99P72 1xAcetyl [N-Term];1xPhospho [S7(0);S8(0);S11(0);S12(0);S13(0);S16(100)]', 'Q99P72 1xAcetyl [N-Term];1xPhospho [S16(100)]', '1xAcetyl [N-Term];1xPhospho [S16(100)]', None, None, -0.812024434407552, 0.7673140518378437, None, None, None, 'GO:0050803', 'regulation of synapse structure or activity', '24/214', '398/28928', 0.0603015075376884, 8.15141126191706, 12.4020689280435, 3.50950910816668e-15, 4.93436980608235e-12, 3.39683539469396e-12, 'Map1b/Myh10/Grin2b/Srcin1/Dclk1/Prickle2/Tanc2/Robo1/Gpr158/Syngap1/Caskin1/Nrg2/Lrfn4/Iqsec2/Adgrl1/Marcks/Ephb1/Asic1/Nefl/Rtn4/Sipa1l1/Prkca/Dock10/Plppr4', 24, 14.4547536261335]
+[None, 'Caskin1', '[K].PASSPPSQ
+[... 76 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; unzip -o -q analysis_code.zip -d code; cat code/code/*.Rmd
+```
+
+````
+---
+title: "Phosphopeptides (GSMLI-2vsGSveh) GO Analysis"
+author: "Hannah Serio"
+date: "2025-06-09"
+output: html_document
+---
+
+```{r libraries, include=FALSE}
+
+library(clusterProfiler)
+library(org.Mm.eg.db)
+library(ggplot2)
+library(DOSE)
+library(readxl)
+library(openxlsx)
+library(dplyr)
+
+```
+
+# GO Analysis - Synaptosome Phos Quant Phosphopeptides
+[... 235 more lines not kept]
+````
+
+**Agent calls Bash**
+
+```bash
+cd paper; for p in PXD065003 PXD065006 PXD065125; do echo "== $p"; curl -s "https://www.ebi.ac.uk/pride/ws/archive/v2/projects/$p" | python3 -c "import json,sys; d=json.load(sys.stdin); print(d.get('title')); print(d.get('publicationDate'), d.get('submissionDate')); print(str(d.get('projectDescription'))[:300]); print([r.get('doi') or r.get('pubmedID') for r in d.get('references',[])])"; curl -s "https://www.ebi.ac.uk/pride/ws/archive/v2/projects/$p/files/all" | python3 -c "
+import json,sys,collections; d=json.load(sys.stdin); c=collections.Counter(); s=collections.Counter()
+for f in d: c[f['fileCategory']['value']]+=1; s[f['fileCategory']['value']]+=f['fileSizeBytes']
+print(len(d), {k:(c[k], round(s[k]/1e9,2)) for k in c})
+for f in d:
+  if f['fileCategory']['value']!='RAW': print('   ',f['fileName'], f['fileSizeBytes'])
+" ; done
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd paper; P=$TMPDIR/venv/bin/python; B=https://ftp.pride.ebi.ac.uk/pride/data/archive/2026/05; for p in PXD065006 PXD065125; do curl -s "https://www.ebi.ac.uk/pride/ws/archive/v2/projects/$p/files/all" | python3 -c "
+import json,sys
+for f in json.load(sys.stdin):
+  if f['fileCategory']['value']!='RAW': print([l['value'] for l in f['publicFileLocations'] if l['name'].startswith('FTP')][0], f.get('checksum'))
+"; done
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd paper; mkdir -p pride; cd pride; for f in PXD065006/020623-Loukia-mouse-synaptosome-phos-quant_phosphopeptides.xlsx PXD065125/FilteredDataset.pg_matrix.Brain_Rab3A.csv PXD065125/report.pg_matrix.tsv PXD065125/PXD065125_community_annotated.sdrf.tsv PXD065125/Brain_Rab3A.DifferentialAbundance_volcano.csv; do curl -s -O -w "%{http_code} %{size_download} $f\n" "https://ftp.pride.ebi.ac.uk/pride/data/archive/2026/05/$f"; done; md5sum *; head -c 1500 FilteredDataset.pg_matrix.Brain_Rab3A.csv; echo; head -1 report.pg_matrix.tsv | tr '\t' '\n' | head -40; cut -f1-12 PXD065125_community_annotated.sdrf.tsv | head -20
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd paper/pride; P=$TMPDIR/venv/bin/python; $P -c "
+import openpyxl
+wb=openpyxl.load_workbook('020623-Loukia-mouse-synaptosome-phos-quant_phosphopeptides.xlsx',read_only=True)
+for ws in wb.worksheets:
+  print('==',ws.title,ws.max_row,ws.max_column)
+  for i,r in enumerate(ws.iter_rows(values_only=True)):
+    if i>=3: break
+    print([str(v)[:50] for v in r])
+"; grep -i "rab3a\b\|Rims1\|Rims2\|Rilpl" FilteredDataset.pg_matrix.Brain_Rab3A.csv | cut -c1-60
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd paper; grep -n "Synaptosome imaging\|synaptosome imaging\|FIJI\|Western blot\|densitometr\|Image Studio\|LI-COR\|Odyssey" article.txt | cut -c1-200; sed -n 418,424p article.txt
+```
+
+```
+176:Single-cell profiling studies and research on both postmortem PD tissues and preclinical mouse models demonstrated that Sox6/Aldh1a1 markers molecularly define the vulnerable ventral tier dopamine
+330:Western blot analysis
+364:Synaptosome imaging analysis was performed using FIJI software93. To define synaptosomes that are positive for a specific protein, background was subtracted from all channels using the “rolling 
+366:To assess the bassoon area, automatic segmentation was used to define the ROIs set both for bassoon and TH (threshold: default; analyze particles: size 0.04–0.40 for bassoon and size 0.06–0.60
+Proteins that were not enriched (enriched: q-value < 0.05, |log2FC | > 0) in Anxa1Cre; LRRK2G2019S vehicle vs. Anxa negative controls were removed from the dataset of samples from SNc and striatum, respectively. The filtered dataset was used for further analysis. For testing of differential protein abundance, protein intensities for each protein were analyzed using a two-sample Student’s t-test. The following thresholds were applied for candidate identification: p-value < 0.05; absolute average log2 ratio > 0.58 (fold-change > 1.5). Distance in heat maps was calculated using the “manhattan” method, and clustering was performed using “ward.D” for both axes. Principal component analysis was conducted in R using prcomp and a modified ggbiplot function for plotting.
+
+SIM imaging and analysis
+
+Aldh1a1Cre-DATflop or Anxa1Cre mice crossed with LRRK2G2019S mice or control littermates were labeled with viruses as described in sterotactic injections and viruses sections and processed as in Immunofluorescence and confocal imaging in brain sections. They were probed with the primary antibodies anti-EGFP (1:1000, Invitrogen), anti-mCherry (1:1000, Invitrogen), and anti-bassoon (1:300, Enzo). Detailed catalog and identification numbers are shown in the Supplementary Table 1.
+
+Multichannel SIM images were obtained with a Nikon N-SIM Structured Illumination super-resolut
+[... 1 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; sed -n 330,368p article.txt
+```
+
+```
+Western blot analysis
+
+Brain extracts
+
+Tissues were extracted and homogenized in 1x cell lysis buffer (Cell Signaling Technologies) supplemented with the Halt protease and phosphatase inhibitor cocktail (Thermo Fisher Scientific) using pellet pestles for 30 s. The protein concentration was determined using BCA Protein Assays (Thermo Scientific). Equal amounts of protein (30 μg of total tissue lysate) were separated by 4–12% NuPAGE Bis-Tris PAGE (Invitrogen) and transferred to membranes using the iBlot2 nitrocellulose membrane blotting system (Invitrogen) according to the manufacturer’s protocol.
+
+Synaptosomes. subcellular fractionation of mouse striatum was performed as previously described64. Specifically, mouse striata were dissected and rapidly homogenized in 1 ml iced-cold homogenizing buffer (4 mM HEPES, 320 mM Sucrose, and Halt protease supplemented with phosphatase inhibitor cocktail (Thermo Fisher Scientific)) using a Teflon homogenizer (15 strokes). The homogenized brain extract was centrifuged at 1000×g for 10 min at 4°C. The supernatant (S1) was collected and centrifuged at 12,500× g for 15 min at 4 °C. The supernatant (S2) was removed, and the pellet (P2) was re-homogenized in 1 ml homogenizing buffer with ten strokes in a Teflon homogenizer. After the addition of 1 ml homogenizing buffer, the P2 homogenate was added to the top of a sucrose gradient made of 5 ml 1.2 M sucrose and 5 ml 0.8 M sucrose, and was centrifuged at 69,150×g (SW41) for 70 min at 4 °C. The synaptic plasma membrane fraction (SPM) in the interphase between two sucrose fractions was collected using a syringe and transferred to clean ultracentrifuge tubes, and the samples were centrifuged in a swinging bucket rotor (SW55) at 200,000×g for 30 min. The pellet was resuspended in SDS lysis buffer (1% SDS, 10 mM EDTA, 50 mM Tris) supplemented with the Halt protease and phosphatase inhibitor cocktail (Thermo Fisher Scientific) or in 1x Phosphate-buffered saline (Sigma-Aldrich) for imaging. Th
+[... 32 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; python3 - <<'EOF'
+import json,collections
+for n in ['070','071','072','074']:
+    d=json.load(open(f'bia_{n}.json'))
+    print('=====',n)
+    c=collections.Counter()
+    for f in d:
+        p=f['path']; parts=p.split('/')
+        c['/'.join(parts[:-1])]+=1
+    for k,v in c.items(): print('  ',k,v)
+    if n in('070','074'):
+        for f in d: print('     ',f['path'],f['size'],{a['name']:a['value'] for a in f.get('attributes',[])} if n=='074' and f is d[0] else '')
+EOF
+```
+
+```
+===== 070
+   LRRK2 expression 21
+      LRRK2 expression/C57-2275-1.tif 86013854 
+      LRRK2 expression/C57-2275-2.tif 125435502 
+      LRRK2 expression/C57-2275-3.tif 125480910 
+      LRRK2 expression/C57-2275-4.tif 167489729 
+      LRRK2 expression/C57-2275-5.tif 76826161 
+      LRRK2 expression/C57-2275-6.tif 125865180 
+      LRRK2 expression/C57-2275-7.tif 125597816 
+      LRRK2 expression/C57-2650-1.tif 165722752 
+      LRRK2 expression/C57-2650-2.tif 103370944 
+      LRRK2 expression/C57-2650-3.tif 125566232 
+      LRRK2 expression/C57-2650-4.tif 137065217 
+      LRRK2 expression/C57-2650-5.tif 81764100 
+      LRRK2 expression/C57-2650-6.tif 182020927 
+      LRRK2 expression/C57-2650-7.tif 183933358 
+      LRRK2 expression/C57-2722-1.tif 46592440 
+      LRRK2 expression/C57-2722-2.tif 86104568 
+      LRRK2 expression/C57-2722-3.tif 86331934 
+      LRRK2 expression/C57-2722-4.tif 85832302 
+[... 182 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; VIRTUAL_ENV=$TMPDIR/venv uv pip install -q tifffile scikit-image 2>&1|tail -1; $TMPDIR/venv/bin/python - <<'EOF'
+import requests, io, tifffile, time
+t=time.time()
+u="https://ftp.ebi.ac.uk/biostudies/fire/S-BIAD/074/S-BIAD2074/Files/synaptosome/BSN/Export_wt1_BSN1.ome.tif"
+b=requests.get(u).content; print(len(b), time.time()-t)
+with tifffile.TiffFile(io.BytesIO(b)) as tf:
+    print(tf.series[0].shape, tf.series[0].dtype, tf.series[0].axes)
+    print(tf.ome_metadata[:3000])
+    a=tf.asarray(); print(a.shape, [ (a[i].min(), a[i].max(), a[i].mean()) for i in range(a.shape[0])] if a.ndim==3 else '')
+EOF
+```
+
+```
+6428960 6.64761757850647
+(3, 1024, 1024) uint16 CYX
+<?xml version="1.0" encoding="UTF-8"?>
+<OME xmlns="http://www.openmicroscopy.org/Schemas/OME/2015-01" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.openmicroscopy.org/Schemas/OME/2015-01 http://www.openmicroscopy.org/Schemas/OME/2015-01/ome.xsd">
+   <Experimenter ID="Experimenter:0" Institution="" LastName=""/>
+   <Instrument ID="Instrument:0">
+      <!--this instrument tag is add because of backward compatibility with NIS elements 4.30-->
+      <LightSource ID="LightSource:0">
+         <Laser Wavelength="488"/>
+      </LightSource>
+      <LightSource ID="LightSource:1">
+         <Laser Wavelength="561"/>
+      </LightSource>
+      <LightSource ID="LightSource:2">
+         <Laser Wavelength="640"/>
+      </LightSource>
+      <Objective CalibratedMagnification="8.000000" ID="Objective:0" LensNA="1.490000" NominalMagnification="8"/>
+   </Instrument>
+   <Instrument ID="Instrument:1">
+      <Microscope Model="Ti Microscope"/>
+[... 58 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd paper; $TMPDIR/venv/bin/python - <<'EOF'
+import requests, io, tifffile,re
+u="https://ftp.ebi.ac.uk/biostudies/fire/S-BIAD/074/S-BIAD2074/Files/synaptosome/BSN/Export_wt1_BSN1.ome.tif"
+b=requests.get(u).content
+with tifffile.TiffFile(io.BytesIO(b)) as tf:
+    m=tf.ome_metadata
+print(re.findall(r'<Pixels[^>]*>',m)); print(re.findall(r'<Channel [^>]*>',m))
+EOF
+```
+
+```
+['<Pixels DimensionOrder="XYCZT" ID="Pixels:0" PhysicalSizeX="0.031074" PhysicalSizeY="0.031074" SizeC="3" SizeT="1" SizeX="1024" SizeY="1024" SizeZ="1" Type="uint16">']
+['<Channel AcquisitionMode="WideField" Color="65280" EmissionWavelength="525" ExcitationWavelength="488" ID="Channel:0" Name="Alexa 488 " PinholeSize="53.639847">', '<Channel AcquisitionMode="WideField" Color="16711680" EmissionWavelength="595" ExcitationWavelength="561" ID="Channel:1" Name="Alexa 568" PinholeSize="53.639847">', '<Channel AcquisitionMode="WideField" Color="16777215" EmissionWavelength="700" ExcitationWavelength="640" ID="Channel:2" Name="Alexa 647" PinholeSize="53.639847">']
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; python3 -c "
+import json
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+for i,c in enumerate(nb['cells']):
+  s=''.join(c['source'])
+  print('----',i,c['cell_type'],c.get('metadata',{}).get('tags'),len(s))
+  print(s[:400])
+"
+```
+
+```
+---- 0 markdown None 3299
+# Reproducing Chen, He et al. (2026) from dandiset 001933
+
+Paper: Chen C, He Q, Tombesi G, et al. (2026). Leucine-rich repeat kinase 2 impairs the release sites of
+Parkinson's disease vulnerable dopamine axons. Nature Communications.
+[doi:10.1038/s41467-026-75194-3](https://doi.org/10.1038/s41467-026-75194-3). This attempt used the open access
+full text (CC BY) and its Supplementary Information.
+
+
+---- 1 code [] 634
+import time
 import warnings
 
 import matplotlib.pyplot as plt
@@ -1206,535 +889,42 @@ from scipy import stats
 
 import lrrk2
 
-pd.set_option("display.width", 220)
-pd.set_option("display.max_columns", 40)
-pd.set_option("display.max_rows", 200)
-warnings.filterwarnings("ignore", category=RuntimeWarning)
-
-started = time.time()
-sessions = lrrk2.load_all()
-by_mouse = {s["mouse"]: s for s in sessions}
-print(f"loaded {len(sessions)} files from dandiset {lrrk2.DANDISET_ID} version {lrrk2.DANDISET_VERSION} "
-      f"in {time.time() - started:.0f} s")
-# No step of this analysis draws random numbers, so no generator is needed.'''
-
-CODE["sanity-subjects"] = r'''info = pd.DataFrame([{
-    "mouse": s["mouse"], "subject_id": s["subject_id"], "line": s["line"], "group": s["group"],
-    "genotype": s["genotype"], "sex": s["sex"], "date_of_birth": s["date_of_birth"][:10],
-    "session_start": s["session_start"][:19],
-    "age_months": round((pd.Timestamp(s["session_start"][:10]) - pd.Timestamp(s["date_of_birth"][:10])).days / 30.44, 1),
-    "recorded_in": s["location"][s["dff_region"]], "species": s["species"], "strain": s["strain"],
-    "dff_md5": s["md5"][:12]} for s in sessions]).sort_values(["line", "group", "mouse"])
-print("Files (one session each) by Cre line and genotype:")
-print(pd.crosstab(info.line, info.group, margins=True).to_string())
-print("\nPaper: Anxa1 8 G2019S and 7 WT mice (Figure 6C); Calb1 7 G2019S and 5 WT mice (Supplementary Figure 8D),"
-      "\nafter excluding one Anxa1 G2019S, one Calb1 G2019S and two Calb1 WT mice (Methods).")
-paper_anxa1_gs = [4885, 4651, 4652, 3742, 3743, 4004, 4005, 4007]  # mouse IDs in the Figure 6E legend
-ours = sorted(info[(info.line == "Anxa1") & (info.group == "GS")].mouse)
-print("Anxa1 G2019S mouse IDs in the Figure 6E legend found in the dandiset:", sorted(paper_anxa1_gs) == ours, ours)
-print("\nSex by line and genotype:")
-print(pd.crosstab([info.line, info.group], info.sex).to_string())
-print("\nAge at the session (months), by line: ", info.groupby("line").age_months.agg(["min", "max"]).to_dict("index"))
-print("Recording site by line:", info.groupby("line").recorded_in.unique().to_dict())
-print("Species and strain:", info.species.unique().tolist(), info.strain.unique().tolist())
-print("\nDistinct dF/F traces (md5 of the full series):", info.dff_md5.nunique(), "of", len(info),
-      "; distinct session start times:", info.session_start.nunique())
-print("\n", info.to_string(index=False))'''
-
-CODE["sanity-series"] = r'''rows = []
-for s in sessions:
-    t, x = s["t"], s["dff"]
-    dt = np.diff(t) * 1000
-    rows.append({"mouse": s["mouse"], "line": s["line"], "group": s["group"], "samples": len(t),
-                 "first_s": round(t[0], 2), "minutes": round((t[-1] - t[0]) / 60, 1),
-                 "dt_med_ms": round(np.median(dt), 2), "dt_min_ms": round(dt.min(), 2), "dt_max_ms": round(dt.max(), 2),
-                 "dff_min": round(x.min(), 1), "dff_p8": round(np.percentile(x, 8), 2), "dff_max": round(x.max(), 1),
-                 "dff405_min": round(s["dff405"].min(), 1), "dff405_max": round(s["dff405"].max(), 1),
-                 "max_diff_recomputed": round(np.abs(x - s["dff_recomputed"]).max(), 4),
-                 "raw_lag_samples": s["raw_lag"], "raw_r_at_lag0": round(s["raw_r"], 3),
-                 "raw_470_samples_per_bin": round(s["raw_n"] / len(t), 2)})
-series = pd.DataFrame(rows).sort_values(["line", "group", "mouse"])
-print("dF/F series: stated unit", repr(sessions[0]["dff_unit"]), "; description:", sessions[0]["dff_description"].strip())
-print(series.to_string(index=False))
-print("\nSampling interval over all files (ms): median", series.dt_med_ms.median(), "min", series.dt_min_ms.min(),
-      "max", series.dt_max_ms.max())
-print("Recording length (min):", series.minutes.min(), "to", series.minutes.max(), "(Methods: 20 min)")
-print("Largest difference between the stored dF/F and the code's df_f plus 20-sample moving mean recomputed from the",
-      "stored corrected signal (% dF/F):", series.max_diff_recomputed.max())
-print("Lag that best aligns the raw 470 nm signal, averaged into each 100 Hz bin, with the corrected signal:",
-      sorted(series.raw_lag_samples.unique()), "; correlation at lag 0 from", series.raw_r_at_lag0.min(), "to",
-      series.raw_r_at_lag0.max())'''
-
-CODE["sanity-opto"] = r'''code_letter = {0.1: "a", 0.25: "b", 0.5: "c", 1.0: "d", 1.5: "e", 2.0: "f", 3.0: "g", 4.0: "h"}
-rows = []
-for s in sessions:
-    p = s["power_in_mW"]
-    dur = s["stop_time"] - s["start_time"]
-    paper = np.isin(p, lrrk2.PAPER_POWERS)
-    gaps = np.diff(s["start_time"])
-    rows.append({"mouse": s["mouse"], "line": s["line"], "group": s["group"], "epochs": len(p),
-                 "per_power": "/".join(str((p == q).sum()) for q in sorted(set(p))),
-                 "powers": len(set(p)), "first_8_codes": "".join(code_letter[q] for q in p[:8]),
-                 "paper_powers_in_half": 1 if paper[:32].all() else (2 if paper[32:].all() else 0),
-                 "train_s_paper": round(np.median(dur[paper]), 3), "pulse_ms_paper": s["pulse_length_in_ms"][paper][0],
-                 "period_ms_paper": s["period_in_ms"][paper][0],
-                 "train_s_other": round(np.median(dur[~paper]), 3), "pulse_ms_other": s["pulse_length_in_ms"][~paper][0],
-                 "period_ms_other": s["period_in_ms"][~paper][0],
-                 "min_gap_s": round(gaps.min(), 1), "median_gap_s": round(np.median(gaps), 1),
-                 "wavelength": s["wavelength_in_nm"][0], "first_onset_s": round(s["start_time"][0], 1),
-                 "onset_minus_series_start_s": round(s["start_time"][0] - s["t"][0], 1)})
-opto = pd.DataFrame(rows).sort_values(["line", "group", "mouse"])
-print("Epochs table description (first file):", sessions[0]["opto_description"])
-print("\nPowers in the files (mW):", sorted(set(np.concatenate([s["power_in_mW"] for s in sessions]))))
-print(opto.to_string(index=False))
-print("\nTrain types carrying the paper's four powers, by line and genotype:")
-print(opto.groupby(["line", "group", "train_s_paper", "pulse_ms_paper", "period_ms_paper"]).size().to_string())
-print("\nShortest gap between onsets in any file (s):", opto.min_gap_s.min(), "(Methods: at least 20 s)")
-gap_all = np.concatenate([np.diff(s["start_time"]) for s in sessions])
-print("Gaps between onsets over all files (s): 5th, 50th, 95th percentiles", np.percentile(gap_all, [5, 50, 95]).round(1),
-      "; fraction under 20 s:", round(float((gap_all < 20).mean()), 3))'''
-
-CODE["sanity-clock"] = r'''rows = []
-for s in sessions:
-    shifted = dict(s, onset=s["onset"] + 1000, offset=s["offset"] + 1000)  # 10 s later, between trains
-    true = lrrk2.evoked_integrals(s, "fixed")
-    moved = lrrk2.evoked_integrals(shifted, "fixed")
-    iso = lrrk2.evoked_integrals(s, "fixed", trace="dff405")
-    traces = np.array([s["dff"][i - 100:i + 300] for i in s["onset"] if i + 300 <= len(s["dff"])])
-    mean_trace = traces.mean(0)
-    ok = ~np.isnan(true)
-    rows.append({"mouse": s["mouse"], "line": s["line"], "group": s["group"],
-                 "median_at_onsets": np.nanmedian(true), "median_10s_later": np.nanmedian(moved),
-                 "median_405_at_onsets": np.nanmedian(iso),
-                 "peak_latency_ms": (np.argmax(mean_trace) - 100) * 10,
-                 "rise_before_onset": mean_trace[90:100].mean() - mean_trace[:90].mean(),
-                 "spearman_power": stats.spearmanr(s["power_in_mW"][ok], true[ok])[0],
-                 **{f"{q}mW": np.nanmedian(true[s["power_in_mW"] == q]) for q in sorted(set(s["power_in_mW"]))}})
-clock = pd.DataFrame(rows).sort_values(["line", "group", "mouse"])
-print("Integral from 0 to 0.5 s after onset minus the mean of -1.0 to -0.1 s (% dF/F x s), median over each file's 64",
-      "trains, at the table's onsets, 10 s later, and for the 405 nm control; latency of the peak of the mean trace;",
-      "Spearman correlation of the integral with the labelled power; median integral per labelled power.")
-print(clock.round(2).to_string(index=False))
-print("\nFiles where the median at onsets exceeds the median 10 s later:", int((clock.median_at_onsets > clock.median_10s_later).sum()),
-      "of", len(clock), "; Wilcoxon p =", f"{stats.wilcoxon(clock.median_at_onsets, clock.median_10s_later).pvalue:.2g}")
-print("Peak latency (ms) from", clock.peak_latency_ms.min(), "to", clock.peak_latency_ms.max(),
-      "; mean rise in the 0.1 s before onset from", clock.rise_before_onset.min().round(2), "to", clock.rise_before_onset.max().round(2))
-print("Spearman correlation with power, median by line:", clock.groupby("line").spearman_power.median().round(2).to_dict())'''
-
-CODE["link"] = r'''md5, src = lrrk2.load_source_data()
-print("Source data file md5:", md5, "; matches the Zenodo record:", md5 == lrrk2.SOURCE_DATA_MD5)
-print("Records per table:", {k: len(v) for k, v in src.items()})
-line_of = {"6C": "Anxa1", "6E": "Anxa1", "6F": "Anxa1", "S7B": "Anxa1", "S7C": "Anxa1",
-           "S8C": "Calb1", "S8D": "Calb1", "S8E": "Calb1"}
-
-# (1) Mice
-mice = {(k, d["mouse"], d["group"]) for k, v in src.items() for d in v}
-part1 = pd.DataFrame([{"table": k, "mouse": m, "group": g, "in_dandiset": m in by_mouse,
-                       "same_group": m in by_mouse and by_mouse[m]["group"] == g,
-                       "same_line": m in by_mouse and by_mouse[m]["line"] == line_of[k]} for k, m, g in mice])
-part1["match"] = part1.in_dandiset & part1.same_group & part1.same_line
-mouse_level = part1.groupby("mouse").match.all()
-print(f"\n(1) Mice: {int(mouse_level.sum())} of {len(mouse_level)} source-data mice are in the dandiset with the same genotype and line;",
-      "dandiset mice not in the source data:", sorted(set(by_mouse) - set(mouse_level.index)))
-
-
-def rank_match(records, power_key=True):
-    """Pair each source record with the dandiset epoch of the same mouse and power and the same rank."""
-    seen, out = {}, []
-    for d in records:
-        key = (d["mouse"], d["power"])
-        r = seen.get(key, 0)
-        seen[key] = r + 1
-        s = by_mouse[d["mouse"]]
-        idx = np.where(np.isclose(s["power_in_mW"], d["power"]))[0]
-        out.append((d, s, idx[r] if r < len(idx) else None, idx))
-    return out
-
-
-# (2) Triggered traces
-rows = []
-for key in ("6C", "S7B", "S8D"):
-    for d, s, j, idx in rank_match(src[key]):
-        diff = np.nanmax(np.abs(lrrk2.code_chunk(s, j) - d["trace"]))
-        best = min(np.nanmax(np.abs(lrrk2.code_chunk(s, i) - d["trace"])) for i in idx)
-        rows.append({"table": key, "mouse": d["mouse"], "power": d["power"], "diff_rank": diff, "diff_best_same_power": best})
-part2 = pd.DataFrame(rows)
-part2["match"] = part2.diff_rank < 1e-6
-print("\n(2) Triggered traces equal to the dandiset's dF/F from 1 s before the onset of the epoch with the same power and rank:")
-print(part2.groupby("table").agg(records=("match", "size"), matched=("match", "sum"),
-                                 largest_diff=("diff_rank", "max")).to_string())
-
-# (3) Evoked integrals
-code_auc = {s["mouse"]: lrrk2.evoked_integrals(s, "code") * lrrk2.FS for s in sessions}  # samples, as the code
-rows = []
-for key in ("6E", "S7C", "S8E"):
-    for d, s, j, idx in rank_match(src[key]):
-        rows.append({"table": key, "mouse": d["mouse"], "power": d["power"], "published": d["value"],
-                     "ours_code_window": code_auc[d["mouse"]][j],
-                     "ours_same_rank_4mW": code_auc[d["mouse"]][np.where(np.isclose(s["power_in_mW"], 4.0))[0][idx.tolist().index(j)]]})
-part3 = pd.DataFrame(rows)
-factor = float(np.median(part3.published / part3.ours_code_window))
-part3["match"] = np.abs(part3.published - factor * part3.ours_code_window) <= 1e-4 * np.abs(part3.published)
-part3["match_if_4mW"] = np.abs(part3.published - factor * part3.ours_same_rank_4mW) <= 1e-4 * np.abs(part3.published)
-print(f"\n(3) Evoked integrals: common factor published / ours (code's window, in samples) = {factor:.6g}")
-print(part3.groupby(["table", "power"]).agg(records=("match", "size"), matched=("match", "sum"),
-                                            matched_if_4mW=("match_if_4mW", "sum")).to_string())
-fig6e_ratio = (part3[part3.table == "6E"].published / part3[part3.table == "6E"].ours_code_window)
-print("Figure 6E (legend: 0.5 mW): ratio published / ours at 0.5 mW from", round(fig6e_ratio.min(), 6), "to", round(fig6e_ratio.max(), 6))
-
-# (4) Spontaneous transients
-rows = []
-spont_auc = {ex: {s["mouse"]: lrrk2.spontaneous_transients(s, ex)[0] for s in sessions} for ex in ("methods", "code_as_written")}
-for key in ("6F", "S8C"):
-    pub = pd.DataFrame(src[key])
-    for m, g in pub.groupby("mouse", sort=False):
-        row = {"table": key, "mouse": m, "published": len(g)}
-        for ex in ("methods", "code_as_written"):
-            ours = spont_auc[ex][m]
-            row[f"n_{ex}"] = len(ours)
-            row[f"ratio_{ex}"] = np.median(np.sort(g.value.values) / np.sort(ours)) if len(ours) == len(g) else np.nan
-        rows.append(row)
-part4 = pd.DataFrame(rows)
-for ex in ("methods", "code_as_written"):
-    f4 = np.nanmedian(part4[f"ratio_{ex}"]) if part4[f"ratio_{ex}"].notna().any() else np.nan
-    ok = []
-    for _, r in part4.iterrows():
-        pub = np.sort(pd.DataFrame(src[r.table]).query("mouse == @r.mouse").value.values)
-        ours = np.sort(spont_auc[ex][r.mouse])
-        ok.append(len(pub) == len(ours) and np.allclose(pub, f4 * ours, rtol=1e-4, atol=0))
-    part4[f"match_{ex}"] = ok
-    print(f"\n(4) Spontaneous transients, exclusion '{ex}': common factor {f4:.6g}; mice whose count and sorted integrals match:",
-          int(np.sum(ok)), "of", len(ok))
-print(part4.to_string(index=False))
-print("Transients: published", part4.published.sum(), "; here, Methods exclusion", part4.n_methods.sum(),
-      "; code's exclusion as written", part4.n_code_as_written.sum())
-
-score = {"mice": float(mouse_level.mean()), "traces": float(part2.match.mean()), "evoked integrals": float(part3.match.mean()),
-         "spontaneous (best window)": float(max(part4.match_methods.mean(), part4.match_code_as_written.mean()))}
-print("\nFraction of records that match, per part:", {k: round(v, 3) for k, v in score.items()})'''
-
-CODE["evoked-tables"] = r'''def evoked_table(window):
-    rows = []
-    for s in sessions:
-        values = lrrk2.evoked_integrals(s, window)
-        for j, v in enumerate(values):
-            rows.append({"mouse": s["mouse"], "line": s["line"], "group": s["group"], "power": s["power_in_mW"][j],
-                         "train_s": round(s["stop_time"][j] - s["start_time"][j], 2), "value": v})
-    return pd.DataFrame(rows)
-
-
-windows = ["methods", "code", "code_as_written", "fixed"]
-evoked = {w: evoked_table(w) for w in windows}
-print("Evoked integrals (% dF/F x s) that could not be computed (window outside the recording):",
-      {w: int(evoked[w].value.isna().sum()) for w in windows})
-
-
-def group_test(df):
-    gs, wt = df[df.group == "GS"].value.dropna(), df[df.group == "WT"].value.dropna()
-    t, p = lrrk2.one_tailed_less(gs, wt)
-    return {"n_GS": len(gs), "n_WT": len(wt), "mean_GS": gs.mean(), "mean_WT": wt.mean(),
-            "t": t, "p_one_tailed": p, "cohens_d": lrrk2.cohens_d(wt, gs)}
-
-
-def per_mouse_tests(df, alpha):
-    wt = df[df.group == "WT"].value.dropna()
-    rows = []
-    for m, g in df[df.group == "GS"].groupby("mouse"):
-        v = g.value.dropna()
-        row = {"mouse": m, "n": len(v), "mean": v.mean(), "WT_mean": wt.mean()}
-        for name, equal_var, tails in (("a_welch_1t", False, 1), ("b_welch_2t", False, 2),
-                                       ("c_student_2t", True, 2), ("d_student_1t", True, 1)):
-            p = (lrrk2.one_tailed_less(v, wt, equal_var)[1] if tails == 1 else lrrk2.two_tailed(v, wt, equal_var)[1])
-            row[f"p_{name}"] = p
-            row[f"sig_{name}"] = bool(p < alpha and v.mean() < wt.mean())
-        rows.append(row)
-    return pd.DataFrame(rows)'''
-
-CODE["fig6e"] = r'''anxa = evoked["methods"].query("line == 'Anxa1' and power == 0.5")
-main = group_test(anxa)
-print("Anxa1, 0.5 mW, Methods window (light-on period):")
-print({k: (round(v, 3) if isinstance(v, float) else v) for k, v in main.items()})
-print(f"one-tailed p = {main['p_one_tailed']:.3g} (paper 1.10e-20)")
-print("\nPer mouse (mean and range of the eight integrals, train length):")
-print(anxa.groupby(["group", "mouse"]).agg(n=("value", "size"), mean=("value", "mean"), min=("value", "min"),
-                                           max=("value", "max"), train_s=("train_s", "first")).round(2).to_string())
-print("\nVariants (window, power): counts, means, one-tailed p, Cohen's d")
-rows = []
-for w in windows:
-    for q in (0.5, 4.0):
-        r = group_test(evoked[w].query("line == 'Anxa1' and power == @q"))
-        rows.append({"window": w, "power": q, **r})
-print(pd.DataFrame(rows).to_string(index=False, float_format=lambda v: f"{v:.3g}"))
-print("\nVariant without the two G2019S mice whose 0.5 mW trains are 0.33 s long (3742, 4885), Methods window:")
-r = group_test(anxa[~anxa.mouse.isin([3742, 4885])])
-print({k: (f"{v:.3g}" if isinstance(v, float) else v) for k, v in r.items()})
-print("Variant with one value per mouse (mouse means), Methods window: Welch one-tailed p =",
-      f"{lrrk2.one_tailed_less(anxa[anxa.group == 'GS'].groupby('mouse').value.mean(), anxa[anxa.group == 'WT'].groupby('mouse').value.mean(), False)[1]:.3g}")
-
-fig, axes = plt.subplots(1, 2, figsize=(11, 3.8))
-tt = np.arange(-100, 150) / lrrk2.FS
-for ax, line in zip(axes, ("Anxa1", "Calb1")):
-    for group, colour in (("GS", "tab:blue"), ("WT", "tab:gray")):
-        tr, iso = [], []
-        for s in sessions:
-            if s["line"] != line or s["group"] != group:
-                continue
-            for j in np.where(s["power_in_mW"] == 0.5)[0]:
-                tr.append(lrrk2.code_chunk(s, j))
-                on = s["onset"][j]
-                iso.append(s["dff405"][on - 100:on + 150])
-        tr, iso = np.array(tr), np.array(iso)
-        m, se = tr.mean(0), tr.std(0, ddof=1) / np.sqrt(len(tr))
-        ax.plot(tt, m, color=colour, label=f"{group} (n = {len(tr)})")
-        ax.fill_between(tt, m - se, m + se, color=colour, alpha=0.3)
-        ax.plot(tt, iso.mean(0), color=colour, ls="--", lw=1)
-        print(f"{line} {group}: mean trace from {m.min():.1f} to {m.max():.1f} % dF/F; 405 nm mean from {iso.mean(0).min():.1f} to {iso.mean(0).max():.1f}")
-    ax.axvspan(0, 0.5, color="red", alpha=0.1)
-    ax.set_title(f"{line}, 0.5 mW (dashed: 405 nm)")
-    ax.set_xlabel("time from onset (s)")
-    ax.set_ylabel("dF/F (%)")
-    ax.legend(frameon=False)
-plt.tight_layout()
-plt.show()'''
-
-CODE["fig6e-per-mouse"] = r'''pm = per_mouse_tests(anxa, 0.05 / 8)
-print("Each Anxa1 G2019S mouse against all WT integrals, 0.5 mW, Methods window; significant when p < 0.05/8 and the mean is lower.")
-print(pm.to_string(index=False, float_format=lambda v: f"{v:.3g}"))
-print("\nSignificant mice per reading:", {c[4:]: int(pm[c].sum()) for c in pm.columns if c.startswith("sig_")})
-print("Not significant under each reading:", {c[4:]: pm.loc[~pm[c], "mouse"].tolist() for c in pm.columns if c.startswith("sig_")})
-print("Paper's p-values (legend): 4885 2.57e-10, 4651 0.0004, 4652 7.36e-05, 3742 4.14e-15, 3743 0.478, 4004 2.81e-13, 4005 1.72e-14, 4007 2.36e-12")
-print("\nVariants (other windows, and 4 mW): significant mice per reading")
-for w in windows:
-    for q in (0.5, 4.0):
-        v = per_mouse_tests(evoked[w].query("line == 'Anxa1' and power == @q"), 0.05 / 8)
-        print(f"  {w:16s} {q} mW:", {c[4:]: int(v[c].sum()) for c in v.columns if c.startswith("sig_")},
-              "not significant (a):", v.loc[~v.sig_a_welch_1t, "mouse"].tolist())'''
-
-CODE["supp7c"] = r'''rows = []
-for w in windows:
-    for q in lrrk2.PAPER_POWERS:
-        rows.append({"window": w, "power": q, **group_test(evoked[w].query("line == 'Anxa1' and power == @q"))})
-s7 = pd.DataFrame(rows)
-print("Anxa1, evoked integrals per power; paper p: 0.1 mW 1.29e-15, 0.5 mW 1.10e-20, 1 mW 1.22e-17, 4 mW 2.39e-16")
-print(s7.to_string(index=False, float_format=lambda v: f"{v:.3g}"))
-main7 = s7[s7.window == "methods"]
-print("\nMethods window: powers with G2019S lower at one-tailed p < 0.05:",
-      int(((main7.p_one_tailed < 0.05) & (main7.mean_GS < main7.mean_WT)).sum()), "of 4")'''
-
-CODE["spont-tables"] = r'''def spont_table(exclusion):
-    rows = []
-    for s in sessions:
-        auc, peaks = lrrk2.spontaneous_transients(s, exclusion)
-        rows += [{"mouse": s["mouse"], "line": s["line"], "group": s["group"], "value": a, "peak": p} for a, p in zip(auc, peaks)]
-    return pd.DataFrame(rows)
-
-
-spont = {ex: spont_table(ex) for ex in ("methods", "code_as_written")}
-for ex, df in spont.items():
-    print(f"{ex}: {len(df)} transients over {df.mouse.nunique()} mice; integral (% dF/F x s) from {df.value.min():.2f} to {df.value.max():.1f}")'''
-
-CODE["fig6f"] = r'''sa = spont["methods"].query("line == 'Anxa1'")
-main_s = group_test(sa)
-print("Anxa1 spontaneous transients, Methods exclusion:")
-print({k: (round(v, 3) if isinstance(v, float) else v) for k, v in main_s.items()})
-print(f"one-tailed p = {main_s['p_one_tailed']:.3g} (paper 2.75e-177; counts 1064 G2019S, 798 WT)")
-per = sa.groupby(["group", "mouse"]).agg(n=("value", "size"), mean=("value", "mean"), median=("value", "median"),
-                                          max=("value", "max"), mean_peak=("peak", "mean"))
-print("\nPer mouse:")
-print(per.round(2).to_string())
-print("Transients per mouse from", per.n.min(), "to", per.n.max(), "(paper 57 to 285; criterion 51.3 to 313.5)")
-v = spont["code_as_written"].query("line == 'Anxa1'")
-r = group_test(v)
-print("\nVariant, the code's exclusion window as written:", {k: (f"{x:.3g}" if isinstance(x, float) else x) for k, x in r.items()})
-print("Variant, one value per mouse (mouse means), Welch one-tailed p =",
-      f"{lrrk2.one_tailed_less(per.loc['GS', 'mean'], per.loc['WT', 'mean'], False)[1]:.3g}")
-print("Variant, transient peaks in place of integrals: one-tailed p =",
-      f"{lrrk2.one_tailed_less(sa[sa.group == 'GS'].peak, sa[sa.group == 'WT'].peak)[1]:.3g}")'''
-
-CODE["fig6f-per-mouse"] = r'''pms = per_mouse_tests(sa, 0.05 / 8)
-print("Each Anxa1 G2019S mouse's transient integrals against all WT transients, Methods exclusion; threshold 0.05/8.")
-print(pms.to_string(index=False, float_format=lambda v: f"{v:.3g}"))
-print("\nSignificant mice per reading:", {c[4:]: int(pms[c].sum()) for c in pms.columns if c.startswith("sig_")})
-print("Not significant under each reading:", {c[4:]: pms.loc[~pms[c], "mouse"].tolist() for c in pms.columns if c.startswith("sig_")})
-print("Paper's p-values (legend): 4885 1.44e-49, 4651 0.008, 4652 6.21e-13, 3742 5.28e-88, 3743 0.97, 4004 1.24e-95, 4005 4.13e-109, 4007 5.00e-107")
-v = per_mouse_tests(spont["code_as_written"].query("line == 'Anxa1'"), 0.05 / 8)
-print("\nVariant, code's exclusion as written:", {c[4:]: int(v[c].sum()) for c in v.columns if c.startswith("sig_")},
-      "not significant (a):", v.loc[~v.sig_a_welch_1t, "mouse"].tolist())'''
-
-CODE["supp8c"] = r'''sc = spont["methods"].query("line == 'Calb1'")
-r = group_test(sc)
-print("Calb1 spontaneous transients, Methods exclusion (paper: 970 G2019S, 682 WT, one-tailed p = 0.98):")
-print({k: (round(v, 4) if isinstance(v, float) else v) for k, v in r.items()})
-print(f"one-tailed p (G2019S lower) = {r['p_one_tailed']:.3g}; difference of means (WT - G2019S) = {r['mean_WT'] - r['mean_GS']:.3f} % dF/F x s")
-print("Two-tailed p =", f"{lrrk2.two_tailed(sc[sc.group == 'GS'].value, sc[sc.group == 'WT'].value)[1]:.3g}")
-per = sc.groupby(["group", "mouse"]).agg(n=("value", "size"), mean=("value", "mean"), median=("value", "median"))
-print("\nPer mouse:")
-print(per.round(3).to_string())
-v = spont["code_as_written"].query("line == 'Calb1'")
-r2 = group_test(v)
-print("\nVariant, the code's exclusion window as written:", {k: (f"{x:.3g}" if isinstance(x, float) else x) for k, x in r2.items()})
-print("Variant, mouse means, Welch one-tailed p =",
-      f"{lrrk2.one_tailed_less(per.loc['GS', 'mean'], per.loc['WT', 'mean'], False)[1]:.3g}")'''
-
-CODE["supp8e"] = r'''rows = []
-for w in windows:
-    for q in lrrk2.PAPER_POWERS:
-        rows.append({"window": w, "power": q, **group_test(evoked[w].query("line == 'Calb1' and power == @q"))})
-s8 = pd.DataFrame(rows)
-print("Calb1, evoked integrals per power; paper p: 0.1 mW 6.45e-05, 0.5 mW 0.0002, 1 mW 0.0001, 4 mW 0.001 (56 against 40)")
-print(s8.to_string(index=False, float_format=lambda v: f"{v:.3g}"))
-main8 = s8[s8.window == "methods"]
-print("\nMethods window: powers with G2019S lower at one-tailed p < 0.05:",
-      int(((main8.p_one_tailed < 0.05) & (main8.mean_GS < main8.mean_WT)).sum()), "of 4")
-cal = evoked["methods"].query("line == 'Calb1' and power == 0.5")
-print("\nPer mouse, 0.5 mW, Methods window:")
-print(cal.groupby(["group", "mouse"]).value.agg(["size", "mean", "min", "max"]).round(2).to_string())'''
-
-CODE["supp8e-mice"] = r'''pmc = per_mouse_tests(cal, 0.05 / 7)
-print("Each Calb1 G2019S mouse against all WT integrals, 0.5 mW, Methods window; threshold 0.05/7.")
-print(pmc.to_string(index=False, float_format=lambda v: f"{v:.3g}"))
-print("\nSignificant mice per reading:", {c[4:]: int(pmc[c].sum()) for c in pmc.columns if c.startswith("sig_")})
-print("Significant under each reading:", {c[4:]: pmc.loc[pmc[c], "mouse"].tolist() for c in pmc.columns if c.startswith("sig_")})
-print("\nVariants (other powers and windows): significant mice per reading")
-for w in windows:
-    for q in lrrk2.PAPER_POWERS:
-        v = per_mouse_tests(evoked[w].query("line == 'Calb1' and power == @q"), 0.05 / 7)
-        print(f"  {w:16s} {q} mW:", {c[4:]: int(v[c].sum()) for c in v.columns if c.startswith("sig_")})'''
-
-CODE["cohen"] = r'''rows = []
-for w in windows:
-    for q in lrrk2.PAPER_POWERS:
-        da = lrrk2.cohens_d(*[evoked[w].query("line == 'Anxa1' and power == @q and group == @g").value.dropna() for g in ("WT", "GS")])
-        dc = lrrk2.cohens_d(*[evoked[w].query("line == 'Calb1' and power == @q and group == @g").value.dropna() for g in ("WT", "GS")])
-        rows.append({"window": w, "power": q, "d_Anxa1": da, "d_Calb1": dc, "ratio": da / dc})
-cd = pd.DataFrame(rows)
-print("Cohen's d (WT minus G2019S over the pooled SD); paper at 0.5 mW: Anxa1 2.05, Calb1 0.76")
-print(cd.to_string(index=False, float_format=lambda v: f"{v:.3g}"))
-m = cd.query("window == 'methods' and power == 0.5").iloc[0]
-print(f"\nMethods window, 0.5 mW: Anxa1 d = {m.d_Anxa1:.3f} (tolerance 1.845 to 2.255), Calb1 d = {m.d_Calb1:.3f} (0.684 to 0.836), ratio {m.ratio:.2f}")'''
-PYEOF
-echo ok
-```
-
-```
-ok
+[... 328 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/build/build.py <<'PYEOF'
-import sys, nbformat
-sys.path.insert(0, sys.argv[1] if len(sys.argv) > 1 else ".")
-from cells_code import CODE
-from cells_md import MD, RESULT
-
-cells = []
-def md(text): cells.append(nbformat.v4.new_markdown_cell(text.strip("\n")))
-def code(name, tags=()):
-    c = nbformat.v4.new_code_cell(CODE[name].strip("\n")); c.metadata["tags"] = list(tags); cells.append(c)
-
-md(MD["header"]); code("setup")
-md(MD["check-intro"])
-code("sanity-subjects", ["sanity"]); md(MD["check-subjects"])
-code("sanity-series", ["sanity"]); md(MD["check-series"])
-code("sanity-opto", ["sanity"]); md(MD["check-opto"])
-code("sanity-clock", ["sanity"]); md(MD["check-clock"])
-md(MD["link"]); code("link", ["claim:source-data-link"]); md(RESULT["source-data-link"])
-md(MD["evoked-intro"]); code("evoked-tables")
-md(MD["fig6e"]); code("fig6e", ["claim:fig6e-anxa1-evoked-reduced"]); md(RESULT["fig6e-anxa1-evoked-reduced"])
-md(MD["fig6e-per-mouse"]); code("fig6e-per-mouse", ["claim:fig6e-anxa1-evoked-per-mouse"]); md(RESULT["fig6e-anxa1-evoked-per-mouse"])
-md(MD["supp7c"]); code("supp7c", ["claim:supp7c-anxa1-evoked-all-powers"]); md(RESULT["supp7c-anxa1-evoked-all-powers"])
-md(MD["spont-intro"]); code("spont-tables")
-md(MD["fig6f"]); code("fig6f", ["claim:fig6f-anxa1-spontaneous-reduced"]); md(RESULT["fig6f-anxa1-spontaneous-reduced"])
-md(MD["fig6f-per-mouse"]); code("fig6f-per-mouse", ["claim:fig6f-anxa1-spontaneous-per-mouse"]); md(RESULT["fig6f-anxa1-spontaneous-per-mouse"])
-md(MD["supp8c"]); code("supp8c", ["claim:supp8c-calb1-spontaneous-not-reduced"]); md(RESULT["supp8c-calb1-spontaneous-not-reduced"])
-md(MD["supp8e"]); code("supp8e", ["claim:supp8e-calb1-evoked-reduced"]); md(RESULT["supp8e-calb1-evoked-reduced"])
-md(MD["supp8e-mice"]); code("supp8e-mice", ["claim:supp8e-calb1-few-mice-reduced"]); md(RESULT["supp8e-calb1-few-mice-reduced"])
-md(MD["cohen"]); code("cohen", ["claim:cohens-d-anxa1-larger"]); md(RESULT["cohens-d-anxa1-larger"])
-md(MD["blocked"])
-md(MD["summary"])
-c = nbformat.v4.new_code_cell('print(f"total run time {time.time() - started:.0f} s")'); c.metadata["tags"] = []; cells.append(c)
-
-nb = nbformat.v4.new_notebook(); nb.cells = cells
-nb.metadata["kernelspec"] = {"name": "python3", "display_name": "Python 3", "language": "python"}
-nb.metadata["language_info"] = {"name": "python"}
-nbformat.write(nb, sys.argv[2])
-print("wrote", sys.argv[2], len(cells), "cells")
-PYEOF
-echo ok
+cd entries/001933-chen-2026; python3 -c "
+import json
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+for i in [0,1,3,4,49,50]:
+  print('----',i); print(''.join(nb['cells'][i]['source']))
+"; sed -n 1,60p lrrk2.py; sed -n 236,301p lrrk2.py
 ```
 
 ```
-ok
-```
+---- 0
+# Reproducing Chen, He et al. (2026) from dandiset 001933
 
-**Agent calls Bash**
+Paper: Chen C, He Q, Tombesi G, et al. (2026). Leucine-rich repeat kinase 2 impairs the release sites of
+Parkinson's disease vulnerable dopamine axons. Nature Communications.
+[doi:10.1038/s41467-026-75194-3](https://doi.org/10.1038/s41467-026-75194-3). This attempt used the open access
+full text (CC BY) and its Supplementary Information.
 
-```bash
-cat > $TMPDIR/build/cells_md.py <<'PYEOF'
-MD, RESULT = {}, {}
-for k in ["header","check-intro","check-subjects","check-series","check-opto","check-clock","link","evoked-intro","fig6e","fig6e-per-mouse","supp7c","spont-intro","fig6f","fig6f-per-mouse","supp8c","supp8e","supp8e-mice","cohen","blocked","summary"]:
-    MD[k] = "## " + k if k == "summary" else "### " + k
-for k in ["source-data-link","fig6e-anxa1-evoked-reduced","fig6e-anxa1-evoked-per-mouse","supp7c-anxa1-evoked-all-powers","fig6f-anxa1-spontaneous-reduced","fig6f-anxa1-spontaneous-per-mouse","supp8c-calb1-spontaneous-not-reduced","supp8e-calb1-evoked-reduced","supp8e-calb1-few-mice-reduced","cohens-d-anxa1-larger"]:
-    RESULT[k] = "**Result: TBD**"
-MD["header"] = "# header\n001933 0.260825.1457"
-PYEOF
-mkdir -p entries/001933-chen-2026; cd $TMPDIR/build && source $TMPDIR/venv/bin/activate && python build.py $TMPDIR/build entries/001933-chen-2026/reproduce_chen_2026.ipynb && uv pip install -q nbclient ipykernel nbformat && cd entries/001933-chen-2026 && time python -c "
-import nbformat, nbclient
-nb=nbformat.read('reproduce_chen_2026.ipynb',4)
-c=nbclient.NotebookClient(nb, timeout=1800, kernel_name='python3', resources={'metadata':{'path':'.'}})
-try:
-    c.execute()
-finally:
-    nbformat.write(nb, '$TMPDIR/build/out.ipynb')
-" 2>&1 | tail -20
-```
+Dandiset: [DANDI:001933](https://dandiarchive.org/dandiset/001933/0.260825.1457), version 0.260825.1457. The paper
+does not name the dandiset or a version (its data statement points to Zenodo, PRIDE and the BioImage Archive). This is
+the only published version, and it holds the same 27 files as the draft (checked in the data check), so it is pinned.
 
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/build/build.py", line 1, in <module>
-    import sys, nbformat
-ModuleNotFoundError: No module named 'nbformat'
-```
+What the dandiset holds: one session per mouse of GRAB-DA3m fiber photometry in the dorsal striatum during optogenetic
+stimulation of SNc dopamine neurons, 15 Anxa1-iCre mice (dorsolateral striatum) and 12 Calb1-Cre mice (dorsomedial
+striatum), LRRK2-WT and LRRK2-G2019S (GS). This is the data of Figure 6 and Supplementary Figures 7 and 8. The
+immunostaining, proteomics, western blots and super-resolution imaging of Figures 1 to 5 are not in it.
 
-**Agent calls Bash**
-
-```bash
-source $TMPDIR/venv/bin/activate && uv pip install -q nbclient ipykernel nbformat && cd $TMPDIR/build && python build.py $TMPDIR/build entries/001933-chen-2026/reproduce_chen_2026.ipynb && cd entries/001933-chen-2026 && time python -c "
-import nbformat, nbclient
-nb=nbformat.read('reproduce_chen_2026.ipynb',4)
-c=nbclient.NotebookClient(nb, timeout=1800, kernel_name='python3', resources={'metadata':{'path':'.'}})
-try:
-    c.execute()
-finally:
-    nbformat.write(nb, '$TMPDIR/build/out.ipynb')
-" 2>&1 | tail -20
-```
-
-```
-wrote entries/001933-chen-2026/reproduce_chen_2026.ipynb 48 cells
-(1) Mice: 27 of 27 source-data mice are in the dandiset with the same genotype and line; dandiset mice not in the source data: []
-------------------
-
-[31m---------------------------------------------------------------------------[39m
-[31mValueError[39m                                Traceback (most recent call last)
-[36mCell[39m[36m [39m[32mIn[6][39m[32m, line 36[39m
-[32m     32[39m rows = []
-[32m     33[39m [38;5;28;01mfor[39;00m key [38;5;28;01min[39;00m ([33m"6C"[39m, [33m"S7B"[39m, [33m"S8D"[39m):
-[32m     34[39m     [38;5;28;01mfor[39;00m d, s, j, idx [38;5;28;01min[39;00m rank_match(src[key]):
-[32m     35[39m         diff = np.nanmax(np.abs(lrrk2.code_chunk(s, j) - d[[33m"trace"[39m]))
-[32m---> [39m[32m36[39m         best = min(np.nanmax(np.abs(lrrk2.code_chunk(s, i) - d[[33m"trace"[39m])) [38;5;28;01mfor[39;00m i [38;5;28;01min[39;00m idx)
-[32m     37[39m         rows.append({[33m"table"[39m: key, [33m"mouse"[39m: d[[33m"mouse"[39m], [33m"power"[39m: d[[33m"power"[39m], [33m"diff_rank"[39m: diff, [33m"diff_best_same_power"[39m: best})
-[32m     38[39m part2 = pd.DataFrame(rows)
-[32m     39[39m part2[[33m"match"[39m] = part2.diff_rank < [32m1e-6[39m
-
-[36mCell[39m[36m [39m[32mIn[6][39m[32m, line 36[39m, in [36m<genexpr>[39m[34m(.0)[39m
-[32m---> [39m[32m36[39m         best = min(np.nanmax(np.abs(lrrk2.code_chunk(s, i) - d[[33m"trace"[39m])) [38;5;28;01mfor[39;00m i [38;5;28;01min[39;00m idx)
-
-[31mValueError[39m: operands could not be broadcast together with shapes (182,) (250,) 
-[... 5 more lines not kept]
+Outside input: the paper's source data file (Zenodo [10.5281/zenodo.19930567](https://doi.org/10.5281/zenodo.19930567),
+`Source data.xlsx`, md5 checked below), used only in the claim `source-data-link` to test whether the dandiset's
+recordings are those behind the published values. Every other claim runs on the dandiset alone. The paper's analysis
+[... 270 more lines not kept]
 ```
 
 **Agent calls Edit**
@@ -1742,487 +932,14 @@ wrote entries/001933-chen-2026/reproduce_chen_2026.ipynb 48 cells
 ```json
 {
  "replace_all": false,
- "file_path": "entries/001933-chen-2026/lrrk2.py",
- "old_string": "    on = s[\"onset\"][j]\n    return s[\"dff\"][on - 100:on + 150]",
- "new_string": "    on = s[\"onset\"][j]\n    out = np.full(250, np.nan)\n    seg = s[\"dff\"][max(on - 100, 0):on + 150]\n    out[max(100 - on, 0):max(100 - on, 0) + len(seg)] = seg\n    return out"
+ "file_path": "claims/001933/10.1038-s41467-026-75194-3.yaml",
+ "old_string": "# Claims for Chen, He et al. (2026), \"Leucine-rich repeat kinase 2 impairs the release sites of\n# Parkinson's disease vulnerable dopamine axons\", Nature Communications, on dandiset 001933.\n# Source: the open access full text (CC BY) and its Supplementary Information, read from the\n# Results, figure legends and Methods.\n#",
+ "new_string": "# Claims for Chen, He et al. (2026), \"Leucine-rich repeat kinase 2 impairs the release sites of\n# Parkinson's disease vulnerable dopamine axons\", Nature Communications, on dandiset 001933.\n# Source: the open access full text (CC BY) and its Supplementary Information, read from the\n# Results, figure legends and Methods.\n#\n# Changed for attempt 001933-chen-2026-02 (protocol pilot-7). The ten photometry claims are\n# unchanged. The eight claims of Figures 1 to 5 were written under pilot-6 without criteria, as\n# they were blocked with data_missing. Under pilot-7 a claim whose data the paper deposited in\n# another public archive is `data: elsewhere`, names the archive under `where`, and is tested;\n# data_missing now means public nowhere. These eight claims now carry `data`, `where` and a\n# criterion. Their data are the paper's tabular deposit on Zenodo (per-section, per-area and\n# per-blot values; uncropped blots), the search outputs in PRIDE, and the images in the BioImage\n# Archive. When these criteria were written, the author had seen: the article text; the file\n# lists of the Zenodo record, of PRIDE PXD065003, PXD065006 and PXD065125 and of BioImage Archive\n# S-BIAD2070, 2071, 2072 and 2074, with their sizes; the column headers of the PRIDE tables and\n# of Supplementary data 1 to 5; the OME metadata of one synaptosome image; and the printed values\n# of the source data sheets of Figures 1D, 2E and 2G, 4D to 4L, 5D, 5E, 5G, 5H and 5J. No\n# statistic had been computed on any of them. In those values the author had noticed that two WT\n# sections of Figure 5D and 5E carry identical values, and that one G2019S value of Figure 4D\n# (0.0766) is of the size of the Figure 4E areas. From the legend's numbers alone (F and p), the\n# Sidak-adjusted p-values of Figure 2E and 2G correspond to three pairwise comparisons.\n#\n# Images are re-analysed only for Figure 4D and 4E: the Methods give the full FIJI procedure and\n# the 1.1 GB study can be streamed. The other image analyses ran in Imaris 10.1, a commercial\n# program, with automatic thresholds the Methods do not give, and S-BIAD2071 (Figure 5) holds\n# 542 GB; for those claims the test starts from the paper's per-section values. No densitometry\n# procedure is given for the western blots, so they are tested on the deposited band values.\n#"
 }
 ```
 
 ```
-The file entries/001933-chen-2026/lrrk2.py has been updated successfully.
-```
-
-**Agent calls Bash**
-
-```bash
-source $TMPDIR/venv/bin/activate && time python -c "
-import nbformat, nbclient
-nb=nbformat.read('reproduce_chen_2026.ipynb',4)
-c=nbclient.NotebookClient(nb, timeout=1800, kernel_name='python3', resources={'metadata':{'path':'.'}})
-try:
-    c.execute()
-finally:
-    nbformat.write(nb, '$TMPDIR/build/out.ipynb')
-" 2>&1 | tail -20; python - <<'EOF'
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/build/out.ipynb',4)
-for c in nb.cells:
-    if c.cell_type=='code':
-        print('=== CELL', c.metadata.get('tags'))
-        for o in c.get('outputs',[]):
-            if o.output_type=='stream': print(o.text[:12000])
-            elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
-EOF
-```
-
-```
-<persisted-output>
-Output too large (50.4KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/5c960d5c-7ccc-45e6-878b-3e99cd1dc6a3/tool-results/bdrl1kokg.txt
-
-Preview (first 2KB):
-[IPKernelApp] WARNING | Kernel is running over TCP without encryption. All communication (including code and outputs) is sent in plain text and is susceptible to eavesdropping. Use IPC transport or launch with kernel manager-provisioned CurveZMQ keys to enable transport encryption.
-
-real	1m3.837s
-user	0m15.128s
-sys	0m0.955s
-=== CELL []
-loaded 27 files from dandiset 001933 version 0.260825.1457 in 30 s
-
-=== CELL ['sanity']
-Files (one session each) by Cre line and genotype:
-group  GS  WT  All
-line              
-Anxa1   8   7   15
-Calb1   7   5   12
-All    15  12   27
-
-[... 28 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/5c960d5c-7ccc-45e6-878b-3e99cd1dc6a3/tool-results/bdrl1kokg.txt",
- "offset": 60,
- "limit": 420
-}
-```
-
-```
-60	   852  852-calb-gs Calb1    GS LRRK2-G2019S   F    2025-05-19 2025-12-17T12:04:48         7.0  dorsal medial striatum Mus musculus C57BL/6J 4df069801545
-61	   935  935-calb-gs Calb1    GS LRRK2-G2019S   M    2025-10-07 2026-04-23T12:35:42         6.5  dorsal medial striatum Mus musculus C57BL/6J 97d06653b3c4
-62	   671  671-calb-wt Calb1    WT     LRRK2-WT   F    2025-08-31 2026-03-19T10:41:31         6.6  dorsal medial striatum Mus musculus C57BL/6J 8db992bcd20c
-63	   673  673-calb-wt Calb1    WT     LRRK2-WT   F    2025-08-31 2026-03-19T11:49:31         6.6  dorsal medial striatum Mus musculus C57BL/6J c59715218cc0
-64	   688  688-calb-wt Calb1    WT     LRRK2-WT   M    2025-05-08 2025-12-17T13:38:53         7.3  dorsal medial striatum Mus musculus C57BL/6J ad3bb702e244
-65	   966  966-calb-wt Calb1    WT     LRRK2-WT   M    2025-10-09 2026-04-23T12:11:19         6.4  dorsal medial striatum Mus musculus C57BL/6J 982088216b0d
-66	  1803 1803-calb-wt Calb1    WT     LRRK2-WT   F    2025-04-11 2025-11-10T12:15:28         7.0  dorsal medial striatum Mus musculus C57BL/6J af5a0b79fc48
-67	
-68	=== CELL ['sanity']
-69	dF/F series: stated unit 'a.u.' ; description: % ΔF/F of baseline-corrected GRAB-DA3m 470 nm fluorescence (Calb-LRRK2 group, DMS) at 100 Hz. F0 = 8th percentile of the corrected trace. Smoothed with a 20-sample moving mean (~0.2 s).
-70	 mouse  line group  samples  first_s  minutes  dt_med_ms  dt_min_ms  dt_max_ms  dff_min  dff_p8  dff_max  dff405_min  dff405_max  max_diff_recomputed  raw_lag_samples  raw_r_at_lag0  raw_470_samples_per_bin
-71	  3742 Anxa1    GS   148937     1.93     24.8       10.0        9.5       10.0    -31.7    1.36    149.1        -2.3        50.0               0.0000                0          0.891                     8.03
-72	  3743 Anxa1    GS   148293     2.47     24.7       10.0        9.5       10.0    -57.9    1.24    553.5        -4.6        15.0               0.0059                0          0.966                     8.01
-73	  400
-[... 406 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; source $TMPDIR/venv/bin/activate; cat > $TMPDIR/inv.py <<'EOF'
-import numpy as np, pandas as pd, pickle, lrrk2, os
-p='/tmp/claude-1001/cache.pkl'
-if os.path.exists(p): S,src=pickle.load(open(p,'rb'))
-else:
-    S=lrrk2.load_all(); md5,src=lrrk2.load_source_data(); pickle.dump((S,src),open(p,'wb'))
-by={s['mouse']:s for s in S}
-from numpy.lib.stride_tricks import sliding_window_view
-for m in [848, 671]:
-    s=by[m]; recs=[d for d in src['S8D'] if d['mouse']==m and d['power']==0.5]
-    on=s['onset'][s['power_in_mW']==0.5]
-    w=sliding_window_view(s['dff'],250)
-    for k,d in enumerate(recs[:3]):
-        tr=d['trace']; ours=lrrk2.code_chunk(s,np.where(s['power_in_mW']==0.5)[0][k])
-        r=np.corrcoef(tr,ours)[0,1]; sl,ic=np.polyfit(ours,tr,1)
-        # best location by correlation
-        wz=(w-w.mean(1,keepdims=True))/w.std(1,keepdims=True); tz=(tr-tr.mean())/tr.std()
-        c=wz@tz/250; j=np.argmax(c)
-        print(m,k,'r',round(r,4),'slope',round(sl,3),'icpt',round(ic,2),'best loc',j,'onset-100',on[k]-100,'best r',round(c[j],4), 'tr range',tr.min().round(1),tr.max().round(1),'ours',ours.min().round(1),ours.max().round(1))
-EOF
-python $TMPDIR/inv.py 2>&1 | grep -v Warn
-```
-
-```
-Traceback (most recent call last):
-  File "/tmp/claude-1001/inv.py", line 1, in <module>
-    import numpy as np, pandas as pd, pickle, lrrk2, os
-ModuleNotFoundError: No module named 'lrrk2'
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; source $TMPDIR/venv/bin/activate; PYTHONPATH=. python $TMPDIR/inv.py 2>&1 | grep -v Warn
-```
-
-```
-848 0 r 0.8956 slope 0.548 icpt 10.25 best loc 43056 onset-100 71356 best r 0.9803 tr range 11.5 127.8 ours 0.3 193.6
-848 1 r 0.9763 slope 0.868 icpt -34.31 best loc 121521 onset-100 72908 best r 0.9952 tr range -15.9 146.9 ours 15.6 210.7
-848 2 r 0.9016 slope 0.937 icpt -51.12 best loc 101365 onset-100 86359 best r 0.9979 tr range 0.6 137.0 ours 69.6 210.8
-671 0 r 0.9726 slope 0.347 icpt 18.25 best loc 57010 onset-100 10448 best r 0.9932 tr range 1.3 160.5 ours -12.0 417.4
-671 1 r 0.9839 slope 0.329 icpt 13.74 best loc 10454 onset-100 12000 best r 0.995 tr range 23.8 164.4 ours 7.9 443.6
-671 2 r 0.9696 slope 0.243 icpt -12.88 best loc 27002 onset-100 25452 best r 0.9932 tr range -0.6 105.8 ours 37.0 527.6
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; source $TMPDIR/venv/bin/activate; cat > $TMPDIR/inv2.py <<'EOF'
-import numpy as np, pandas as pd, pickle, h5py, remfile, sys
-import lrrk2
-S,src=pickle.load(open('/tmp/claude-1001/cache.pkl','rb')); by={s['mouse']:s for s in S}
-assets={a.path.split('/')[0]:a for a in lrrk2.list_assets()}
-def rawbin(s):
-    a=assets['sub-'+s['subject_id']]
-    f=h5py.File(remfile.File(a.get_content_url(follow_redirects=1, strip_query=True)),'r')
-    r=f['acquisition/FiberPhotometryResponseSeriesRawSignal']; ts=r['timestamps'][:]; d=r['data'][:].astype(float)
-    T=s['t']; lo=T-0.25/2000; hi=T+19.5/2000
-    i0=np.searchsorted(ts,lo); i1=np.searchsorted(ts,hi)
-    c=np.concatenate([[0],np.cumsum(d)]); n=i1-i0
-    return (c[i1]-c[i0])/np.maximum(n,1)
-def pct(v,q=8): return np.percentile(v,q,method='hazen')
-def roll(v,q=8,win=2001):
-    qq=(q/100*win-0.5)/(win-1)
-    return pd.Series(v).rolling(win,center=True,min_periods=1).quantile(qq).values
-def process(sig,sub):
-    b=roll(sig); x=sig-sub*b; b2=roll(x); cor=x/b2
-    base=pct(cor); return lrrk2._movmean((cor-base)/base*100), cor
-for m in map(int,sys.argv[1:]):
-    s=by[m]; sig=rawbin(s)
-    for sub in [0.85]:
-        dff,cor=process(sig,sub)
-        mid=slice(3000,-3000)
-        print(m,'sub',sub,'max|dff-stored| mid',np.abs(dff-s['dff'])[mid].max().round(3),'corr',np.corrcoef(dff[mid],s['dff'][mid])[0,1].round(5))
-    key='S8D' if s['line']=='Calb1' else 'S7B'
-    recs=[d for d in src[key] if d['mouse']==m]
-    for sub in [0.0,0.5,0.7,0.8,0.85,0.9,0.95,0.97]:
-        dff,_=process(sig,sub); errs=[];sl=[]
-        cnt={}
-        for d in recs:
-            r=cnt.get(d['power'],0); cnt[d['power']]=r+1
-            j=np.where(np.isclose(s['power_in_mW'],d['power']))[0][r]; on=s['onset'][j]
-            ours=dff[on-100:on+150]
-            if len(ours)<250: continue
-            errs.append(np.abs(ours-d['trace']).max()); sl.append(np.polyfit(ours,d['trace'],1)[0])
-        print('  sub',sub,'median max-abs diff to source traces',np.median(errs).round(3),'median slope',np.median(sl).round(3))
-EOF
-PYTHONPATH=. python $TMPDIR/inv2.py 4558 671 2>&1 | grep -v Warn
-```
-
-```
-4558 sub 0.85 max|dff-stored| mid 0.308 corr 1.0
-  sub 0.0 median max-abs diff to source traces 351.618 median slope 6.735
-  sub 0.5 median max-abs diff to source traces 291.436 median slope 3.36
-  sub 0.7 median max-abs diff to source traces 209.955 median slope 2.011
-  sub 0.8 median max-abs diff to source traces 105.827 median slope 1.337
-  sub 0.85 median max-abs diff to source traces 0.09 median slope 1.0
-  sub 0.9 median max-abs diff to source traces 209.591 median slope 0.663
-  sub 0.95 median max-abs diff to source traces 821.411 median slope 0.325
-  sub 0.97 median max-abs diff to source traces 1697.61 median slope 0.19
-671 sub 0.85 max|dff-stored| mid 1.433 corr 1.0
-  sub 0.0 median max-abs diff to source traces 90.83 median slope 2.084
-  sub 0.5 median max-abs diff to source traces 36.337 median slope 1.029
-  sub 0.7 median max-abs diff to source traces 110.797 median slope 0.613
-  sub 0.8 median max-abs diff to source traces 245.697 median slope 0.407
-  sub 0.85 median max-abs diff to source traces 371.125 median slope 0.304
-  sub 0.9 median max-abs diff to source traces 633.363 median slope 0.201
-  sub 0.95 median max-abs diff to source traces 1410.563 median slope 0.1
-  sub 0.97 median max-abs diff to source traces 2401.404 median slope 0.057
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; source $TMPDIR/venv/bin/activate; cat > $TMPDIR/inv3.py <<'EOF'
-import numpy as np, sys
-exec(open('/tmp/claude-1001/inv2.py').read().split('for m in map')[0])
-from scipy.optimize import minimize_scalar
-for m in [int(a) for a in sys.argv[1:]]:
-    s=by[m]; sig=rawbin(s); recs=[d for d in src['S8D'] if d['mouse']==m]
-    def err(sub):
-        dff,_=process(sig,sub); e=[];cnt={}
-        for d in recs:
-            r=cnt.get(d['power'],0); cnt[d['power']]=r+1
-            j=np.where(np.isclose(s['power_in_mW'],d['power']))[0][r]; on=s['onset'][j]
-            o=dff[on-100:on+150]
-            if len(o)==250: e.append(np.abs(o-d['trace']).max())
-        return np.median(e)
-    grid=np.arange(0.0,0.951,0.05); E=[err(g) for g in grid]; g0=grid[int(np.argmin(E))]
-    res=minimize_scalar(err,bounds=(max(g0-0.05,0),g0+0.05),method='bounded',options={'xatol':1e-4})
-    print(m, s['group'], 'best sub', round(res.x,4), 'median max-abs diff', round(res.fun,3), 'at 0.85:', round(err(0.85),1))
-EOF
-PYTHONPATH=. python $TMPDIR/inv3.py 671 673 688 966 1803 302 306 740 741 848 852 935 2>&1 | grep -v Warn
-```
-
-```
-671 WT best sub 0.5351 median max-abs diff 32.963 at 0.85: 371.1
-673 WT best sub 0.7919 median max-abs diff 40.169 at 0.85: 66.2
-688 WT best sub 0.6805 median max-abs diff 54.613 at 0.85: 248.8
-966 WT best sub 0.7719 median max-abs diff 49.836 at 0.85: 103.4
-1803 WT best sub 0.2555 median max-abs diff 22.278 at 0.85: 518.8
-302 GS best sub 0.658 median max-abs diff 39.353 at 0.85: 164.7
-306 GS best sub 0.8035 median max-abs diff 88.146 at 0.85: 113.1
-740 GS best sub 0.8354 median max-abs diff 63.481 at 0.85: 66.3
-741 GS best sub 0.4744 median max-abs diff 38.566 at 0.85: 261.2
-848 GS best sub 0.7679 median max-abs diff 42.056 at 0.85: 78.9
-852 GS best sub 0.6757 median max-abs diff 32.362 at 0.85: 196.7
-935 GS best sub 0.7002 median max-abs diff 41.515 at 0.85: 149.5
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; source $TMPDIR/venv/bin/activate; cat > $TMPDIR/inv4.py <<'EOF'
-import numpy as np, pandas as pd, pickle, lrrk2
-S,src=pickle.load(open('/tmp/claude-1001/cache.pkl','rb')); by={s['mouse']:s for s in S}
-pub=pd.DataFrame(src['6F'])
-for m,g in pub.groupby('mouse',sort=False):
-    s=by[m]; x=lrrk2.spontaneous_trace(s); z=(x-x.mean())/x.std(ddof=1)
-    runs=lrrk2.double_threshold(z)
-    auc=np.array([np.trapezoid(x[a:b+1]) for a,b in runs])  # samples
-    zauc=np.array([np.trapezoid(z[a:b+1]) for a,b in runs])
-    P=g.value.values  # in time order presumably
-    r1=P/auc; r2=P/zauc
-    print(m, 'ratio x: cv %.3f med %.3g'%(r1.std()/r1.mean(), np.median(r1)), ' ratio z: cv %.3f med %.3g'%(r2.std()/abs(r2.mean()), np.median(r2)),
-          ' 1/(max x)=%.3g 1/sd=%.3g'%(1/x.max(), 1/x.std()), 'max evoked05 code', np.nanmax(lrrk2.evoked_integrals(s,'code')[s['power_in_mW']==0.5]*100).round(0))
-EOF
-PYTHONPATH=. python $TMPDIR/inv4.py 2>&1 | grep -v Warn
-```
-
-```
-4558 ratio x: cv 0.979 med 9.01e-06  ratio z: cv 3.766 med 0.000795  1/(max x)=0.00735 1/sd=0.042 max evoked05 code 23657.0
-4561 ratio x: cv 0.719 med 1.38e-05  ratio z: cv 3.649 med 0.000621  1/(max x)=0.0141 1/sd=0.0734 max evoked05 code 16622.0
-4398 ratio x: cv 0.755 med 1.33e-05  ratio z: cv 62.796 med 0.00132  1/(max x)=0.00686 1/sd=0.0396 max evoked05 code 21176.0
-4401 ratio x: cv 0.649 med 6.31e-06  ratio z: cv 5.011 med 0.000812  1/(max x)=0.00373 1/sd=0.0234 max evoked05 code 37236.0
-3947 ratio x: cv 0.714 med 6.17e-06  ratio z: cv 6.724 med 0.000674  1/(max x)=0.00443 1/sd=0.0289 max evoked05 code 23660.0
-3948 ratio x: cv 0.888 med 1.09e-05  ratio z: cv 5.662 med 0.00121  1/(max x)=0.00607 1/sd=0.0338 max evoked05 code 21464.0
-4253 ratio x: cv 0.978 med 8.14e-06  ratio z: cv 13.590 med 0.00094  1/(max x)=0.00605 1/sd=0.0343 max evoked05 code 22761.0
-4885 ratio x: cv 1.070 med 6.4e-06  ratio z: cv 4.616 med 0.000293  1/(max x)=0.0105 1/sd=0.0895 max evoked05 code 7733.0
-4651 ratio x: cv 0.210 med 5.35e-06  ratio z: cv 3.642 med 0.00035  1/(max x)=0.00791 1/sd=0.0431 max evoked05 code 14481.0
-4652 ratio x: cv 0.816 med 6.23e-06  ratio z: cv 6.289 med 0.000415  1/(max x)=0.00733 1/sd=0.0491 max evoked05 code 14305.0
-3742 ratio x: cv 0.733 med 2.39e-05  ratio z: cv 31.457 med 0.00155  1/(max x)=0.0104 1/sd=0.0681 max evoked05 code 2714.0
-3743 ratio x: cv 0.888 med 8.87e-06  ratio z: cv 9.690 med 0.000872  1/(max x)=0.00455 1/sd=0.0345 max evoked05 code 23470.0
-4004 ratio x: cv 1.039 med 1.22e-05  ratio z: cv 3.317 med 0.000382  1/(max x)=0.0316 1/sd=0.147 max evoked05 code 3630.0
-4005 ratio x: cv 0.910 med 1.3e-05  ratio z: cv 1.956 med 0.000223  1/(max x)=0.044 1/sd=0.272 max evoked05 code 2081.0
-4007 ratio x: cv 0.999 med 1.36e-05  ratio z: cv 26.468 med 0.000417  1/(max x)=0.0158 1/sd=0.154 max evoked05 code 4807.0
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; source $TMPDIR/venv/bin/activate; cat > $TMPDIR/inv5.py <<'EOF'
-import numpy as np, pandas as pd, pickle, lrrk2
-S,src=pickle.load(open('/tmp/claude-1001/cache.pkl','rb')); by={s['mouse']:s for s in S}
-pub=pd.DataFrame(src['6F'])
-for m,g in list(pub.groupby('mouse',sort=False))[:5]:
-    s=by[m]; x=lrrk2.spontaneous_trace(s); mu,sd=x.mean(),x.std(ddof=1); z=(x-mu)/sd
-    runs=lrrk2.double_threshold(z); P=g.value.values
-    cands={'x':[np.trapezoid(x[a:b+1]) for a,b in runs],'z':[np.trapezoid(z[a:b+1]) for a,b in runs],
-           'z+1':[np.trapezoid(z[a:b+1]+1) for a,b in runs],'x-mu':[np.trapezoid(x[a:b+1]-mu) for a,b in runs],
-           'len':[b-a+1 for a,b in runs],'sum x':[x[a:b+1].sum() for a,b in runs], 'peak':[x[a:b+1].max() for a,b in runs]}
-    out=[]
-    for k,v in cands.items():
-        v=np.array(v,float); 
-        r_time=np.corrcoef(v,P)[0,1]; rs=np.corrcoef(np.sort(v),np.sort(P))[0,1]; ratio=np.sort(P)/np.sort(v)
-        out.append(f"{k}: r_time {r_time:.4f} r_sorted {rs:.5f} ratio_cv {np.std(ratio)/abs(np.mean(ratio)):.3f} ratio {np.median(ratio):.3g}")
-    print(m, len(P)); print('  '+'\n  '.join(out))
-EOF
-PYTHONPATH=. python $TMPDIR/inv5.py 2>&1 | grep -v Warn
-```
-
-```
-4558 93
-  x: r_time 0.5187 r_sorted 0.99004 ratio_cv 0.845 ratio 9.39e-06
-  z: r_time 0.7834 r_sorted 0.98111 ratio_cv 3.824 ratio 0.000724
-  z+1: r_time 0.5633 r_sorted 0.98786 ratio_cv 0.888 ratio 0.000283
-  x-mu: r_time 0.7834 r_sorted 0.98111 ratio_cv 3.824 ratio 3.04e-05
-  len: r_time 0.2615 r_sorted 0.99634 ratio_cv 0.692 ratio 0.000397
-  sum x: r_time 0.5188 r_sorted 0.99004 ratio_cv 0.843 ratio 9.39e-06
-  peak: r_time 0.7952 r_sorted 0.98945 ratio_cv 0.037 ratio 0.00296
-4561 131
-  x: r_time 0.6659 r_sorted 0.97672 ratio_cv 0.602 ratio 1.36e-05
-  z: r_time 0.8560 r_sorted 0.97066 ratio_cv 3.739 ratio 0.00061
-  z+1: r_time 0.7030 r_sorted 0.97731 ratio_cv 0.629 ratio 0.000238
-  x-mu: r_time 0.8560 r_sorted 0.97066 ratio_cv 3.739 ratio 4.48e-05
-  len: r_time 0.4417 r_sorted 0.97778 ratio_cv 0.524 ratio 0.000331
-  sum x: r_time 0.6660 r_sorted 0.97672 ratio_cv 0.601 ratio 1.36e-05
-  peak: r_time 0.8390 r_sorted 0.99060 ratio_cv 0.032 ratio 0.00289
-4398 162
-  x: r_time 0.5703 r_sorted 0.97478 ratio_cv 0.592 ratio 1.34e-05
-  z: r_time 0.7968 r_sorted 0.94020 ratio_cv 79.511 ratio 0.00132
-  z+1: r_time 0.6049 r_sorted 0.97001 ratio_cv 0.624 ratio 0.000417
-[... 20 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; source $TMPDIR/venv/bin/activate; cat > $TMPDIR/inv6.py <<'EOF'
-import numpy as np, pandas as pd, pickle, lrrk2
-S,src=pickle.load(open('/tmp/claude-1001/cache.pkl','rb')); by={s['mouse']:s for s in S}
-pub=pd.DataFrame(src['6F'])
-for m,g in list(pub.groupby('mouse',sort=False)):
-    s=by[m]; x=lrrk2.spontaneous_trace(s); mu,sd=x.mean(),x.std(ddof=1); z=(x-mu)/sd
-    runs=lrrk2.double_threshold(z); P=g.value.values
-    hi=[np.where(z[a:b+1]>1)[0] for a,b in runs]
-    cands={'peak':[x[a:b+1].max() for a,b in runs],'mean':[x[a:b+1].mean() for a,b in runs],
-           'int above high':[np.trapezoid(x[a:b+1][z[a:b+1]>1]) for a,b in runs],
-           'peak-low':[x[a:b+1].max()-(mu-sd) for a,b in runs],'peak-mu':[x[a:b+1].max()-mu for a,b in runs]}
-    out=[]
-    for k,v in cands.items():
-        v=np.array(v,float); ratio_t=P/v; ratio=np.sort(P)/np.sort(v)
-        out.append(f"{k}: time-order ratio cv {np.std(ratio_t)/abs(np.mean(ratio_t)):.4f} sorted cv {np.std(ratio)/abs(np.mean(ratio)):.4f} med {np.median(ratio):.4g}")
-    print(m, len(P), ' | '.join(out))
-EOF
-PYTHONPATH=. python $TMPDIR/inv6.py 2>&1 | grep -v Warn
-```
-
-```
-v=np.array(v,float); ratio_t=P/v; ratio=np.sort(P)/np.sort(v)
-  x = um.subtract(arr, arrmean, out=...)
-4558 93 peak: time-order ratio cv 0.1257 sorted cv 0.0374 med 0.002961 | mean: time-order ratio cv 0.0008 sorted cv 0.0008 med 0.004998 | int above high: time-order ratio cv 1.9811 sorted cv 1.8184 med 3.068e-05 | peak-low: time-order ratio cv 0.1296 sorted cv 0.0336 med 0.003342 | peak-mu: time-order ratio cv 0.1963 sorted cv 0.1291 med 0.005359
-4561 131 peak: time-order ratio cv 0.1184 sorted cv 0.0318 med 0.002889 | mean: time-order ratio cv 0.0007 sorted cv 0.0006 med 0.004995 | int above high: time-order ratio cv nan sorted cv nan med 4.524e-05 | peak-low: time-order ratio cv 0.1273 sorted cv 0.0353 med 0.003282 | peak-mu: time-order ratio cv 0.2169 sorted cv 0.1446 med 0.005176
-4398 162 peak: time-order ratio cv 0.1528 sorted cv 0.0401 med 0.002589 | mean: time-order ratio cv 0.0010 sorted cv 0.0010 med 0.004997 | int above high: time-order ratio cv 1.6414 sorted cv 1.5064 med 4.892e-05 | peak-low: time-order ratio cv 0.1643 sorted cv 0.0531 med 0.002854 | peak-mu: time-order ratio cv 0.2593 sorted cv 0.1629 med 0.004362
-4401 76 peak: time-order ratio cv 0.1306 sorted cv 0.0379 med 0.00274 | mean: time-order ratio cv 0.0003 sorted cv 0.0003 med 0.004999 | int above high: time-order ratio cv 1.8321 sorted cv 1.8199 med 1.665e-05 | peak-low: time-order ratio cv 0.1334 sorted cv 0.0315 med 0.002958 | peak-mu: time-order ratio cv 0.2020 sorted cv 0.1222 med 0.004516
-3947 81 peak: time-order ratio cv 0.1364 sorted cv 0.0333 med 0.002627 | mean: time-order ratio cv 0.0007 sorted cv 0.0007 med 0.004999 | int above high: time-order ratio cv 3.8946 sorted cv 3.2811 med 1.479e-05 | peak-low: time-order ratio cv 0.1428 sorted cv 0.0402 med 0.002837 | peak-mu: time-order ratio cv 0.2326 sorted cv 0.1559 med 0.004341
-3948 151 peak: time-order ratio cv 0.1267 sorted cv 0.0317 med 0.002781 | mean: time-order ratio cv 0.0008 sorted cv 0.0007 med 0.004997 | int above high: ti
-[... 9 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; source $TMPDIR/venv/bin/activate; cat > $TMPDIR/inv7.py <<'EOF'
-import numpy as np, pandas as pd, pickle, lrrk2
-S,src=pickle.load(open('/tmp/claude-1001/cache.pkl','rb')); by={s['mouse']:s for s in S}
-for s in S:
-    ev=lrrk2.evoked_integrals(s,'code')
-    if np.isnan(ev).any(): j=np.where(np.isnan(ev))[0]; print('NaN epoch', s['mouse'], j, s['power_in_mW'][j], s['onset'][j], len(s['t']), s['start_time'][j], s['t'][-1])
-cnt={}
-for d in src['S7B']:
-    k=(d['mouse'],d['power']); r=cnt.get(k,0); cnt[k]=r+1
-    s=by[d['mouse']]; j=np.where(np.isclose(s['power_in_mW'],d['power']))[0][r]
-    o=lrrk2.code_chunk(s,j); diff=np.nanmax(np.abs(o-d['trace']))
-    if diff>1e-6: print('S7B mismatch', d['mouse'], d['power'], r, j, diff, 'nan in ours', np.isnan(o).sum(), 'nan in pub', np.isnan(d['trace']).sum(), d['trace'][-5:], o[-75:-70])
-EOF
-PYTHONPATH=. python $TMPDIR/inv7.py 2>&1 | grep -v Warn
-```
-
-```
-NaN epoch 4398 [63] [4.] [122222] 122304 [1250.2365] 1251.0465
-S7B mismatch 4398 4.0 7 63 109.83304728019579 nan in ours 68 nan in pub 0 [86.57359186 84.58697533 82.52175789 80.49109031 78.43191909] [333.69542485 330.17532584 326.7151636  323.44494891 319.96688562]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; python - <<'EOF'
-p='lrrk2.py'; s=open(p).read()
-s=s.replace('''    s["path"] = asset.path
-''','''    s["path"] = asset.path
-    s["url"] = url
-''')
-s=s.replace('''def spontaneous_transients(s, exclusion="methods"):
-    """Integrals (% dF/F times seconds) and peaks (% dF/F) of the spontaneous transients."""
-    x = spontaneous_trace(s, exclusion)
-    z = (x - x.mean()) / x.std(ddof=1)
-    runs = double_threshold(z)
-    auc = np.array([np.trapezoid(x[a:b + 1]) / FS for a, b in runs])
-    peaks = np.array([x[a:b + 1].max() for a, b in runs])
-    return auc, peaks''','''def spontaneous_transients(s, exclusion="methods"):
-    """Integrals (% dF/F times seconds), peaks and means (% dF/F) of the spontaneous transients,
-    in time order."""
-    x = spontaneous_trace(s, exclusion)
-    z = (x - x.mean()) / x.std(ddof=1)
-    runs = double_threshold(z)
-    auc = np.array([np.trapezoid(x[a:b + 1]) / FS for a, b in runs])
-    peaks = np.array([x[a:b + 1].max() for a, b in runs])
-    means = np.array([x[a:b + 1].mean() for a, b in runs])
-    return auc, peaks, means
-
-
-def raw_binned(s):
-    """The raw 470 nm samples averaged into the processed series' 100 Hz bins, as the code's
-    calib_binning_to_cam does: the 20 samples of 2 kHz from each camera trigger, here the
-    processed timestamps, keeping the samples the demultiplexing retained."""
-    with h5py.File(remfile.File(s["url"]), "r") as f:
-        raw = f["acquisition/FiberPhotometryResponseSeriesRawSignal"]
-        ts, d = raw["timestamps"][:], raw["data"][:].astype(float)
-    lo, hi = np.searchsorted(ts, s["t"] - 0.25 / 2000), np.searchsorted(ts, s["t"] + 19.5 / 2000)
-    c = np.concatenate([[0.0], np.cumsum(d)])
-    return (c[hi] - c[lo]) / np.maximum(hi - lo, 1)
-
-
-def _rolling_prctile(v, p=8, win=2001):
-    """MATLAB prctile (midpoint positions) over a centred window; edges are not exact."""
-    import pandas as pd
-
-    q = (p / 100 * win - 0.5) / (win - 1)
-    return pd.Series(v).rolling(win, center=True, min_periods=1).quantile(q).values
-
-
-def dff_from_raw(binned, background=0.85):
-    """The code's baselineCorrect (subtract ``background`` times the sliding 8th percentile,
-    divide by a new sliding 8th percentile), df_f and 20-sample moving mean. The code uses
-    0.85 of the baseline as background."""
-    x = binned - background * _rolling_prctile(binned)
-    corrected = x / _rolling_prctile(x)
-    base = np.percentile(corrected, 8, method="hazen")
-    return _movmean((corrected - base) / base * 100.0)''')
-open(p,'w').write(s)
-EOF
-source $TMPDIR/venv/bin/activate; PYTHONPATH=. python -c "
-import time,pickle,numpy as np,lrrk2
-S,src=pickle.load(open('/tmp/claude-1001/cache.pkl','rb'))
-a=[x for x in lrrk2.list_assets() if '4558' in x.path][0]
-t=time.time(); s=lrrk2.load_session(a); print(time.time()-t); t=time.time(); b=lrrk2.raw_binned(s); print('raw',time.time()-t); t=time.time(); d=lrrk2.dff_from_raw(b); print('proc',time.time()-t, np.abs(d-s['dff'])[3000:-3000].max())
-"
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "<string>", line 2, in <module>
-    import time,pickle,numpy as np,lrrk2
-  File "entries/001933-chen-2026/lrrk2.py", line 92
-    s["session_start"] = _text(f["session_start_time"])
-IndentationError: unexpected indent
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "entries/001933-chen-2026/lrrk2.py",
- "offset": 84,
- "limit": 12
-}
-```
-
-```
-84	def load_session(asset):
-85	    """Stream one file and return what the analysis uses, as a dict."""
-86	    url = asset.get_content_url(follow_redirects=1, strip_query=True)
-87	    with h5py.File(remfile.File(url), "r") as f:
-88	        subject = f["general/subject"]
-89	        s = {k: _text(subject[k]) for k in ("subject_id", "sex", "genotype", "date_of_birth", "species", "strain")}
-90	        s["path"] = asset.path
-91	    s["url"] = url
-92	        s["session_start"] = _text(f["session_start_time"])
-93	        s["session_description"] = _text(f["session_description"])
-94	        s["mouse"] = int(s["subject_id"].split("-")[0])
-95	        s["line"] = "Anxa1" if "-anxa-" in s["subject_id"] else "Calb1"
+The file claims/001933/10.1038-s41467-026-75194-3.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Edit**
@@ -2230,606 +947,1249 @@ IndentationError: unexpected indent
 ```json
 {
  "replace_all": false,
- "file_path": "entries/001933-chen-2026/lrrk2.py",
- "old_string": "        s[\"path\"] = asset.path\n    s[\"url\"] = url",
- "new_string": "        s[\"path\"] = asset.path\n        s[\"url\"] = url"
+ "file_path": "claims/001933/10.1038-s41467-026-75194-3.yaml",
+ "old_string": "- id: fig1d-lrrk2-enriched-vulnerable\n  statement: LRRK2 immunolabeling intensity is higher in Aldh1a1+ (vulnerable) than in\n    Aldh1a1- SNc dopamine neurons (p = 0.0008).\n  source: Figure 1B and 1D\n- id: fig2b-rab3-phosphorylation\n  statement: LRRK2 kinase inhibition with MLi-2 changes 289 phosphopeptides in striatal\n    synaptosomes of G2019S mice, including RAB3 T86.\n  source: Figure 2A to 2C\n- id: fig2eg-prab3-increased\n  statement: Phosphorylation of RAB3A and RAB3C is increased in the SNc of G2019S mice and\n    returns to WT levels with MLi-2.\n  source: Figure 2D to 2G\n- id: fig3d-rim-binds-unphosphorylated\n  statement: RIM1 and RIM2 bind unphosphorylated RAB3A in preference to RAB3A phosphorylated at\n    T86, while RILPL1 and RILPL2 prefer the phosphorylated form.\n  source: Figure 3D to 3F\n- id: fig4d-fewer-active-zones\n  statement: Fewer TH+/VAMP2+ striatal synaptosomes from G2019S mice contain bassoon, and the\n    remaining bassoon clusters are larger.\n  source: Figure 4D and 4E\n- id: fig4i-rim1-reduced\n  statement: RIM1 is reduced in striatal synaptosomes of G2019S mice (p = 0.0245) but not in\n    other striatal fractions or the SNc.\n  source: Figure 4H to 4L\n- id: fig5-bassoon-vulnerable-axons\n  statement: Bassoon cluster density is reduced and cluster volume increased in Aldh1a1+ but not\n    Aldh1a1- dopamine axons of G2019S mice, and the same holds in Anxa1+ axons.\n  source: Figure 5D, 5E, 5G and 5H\n- id: fig5j-no-axon-loss\n  statement: The volume occupied by TH+ fibres in the dorsal striatum does not differ between\n    G2019S and WT mice.\n  source: Figure 5I and 5J",
+ "new_string": "- id: fig1d-lrrk2-enriched-vulnerable\n  statement: LRRK2 immunolabeling intensity is higher in Aldh1a1+ (vulnerable) than in\n    Aldh1a1- SNc dopamine neurons (p = 0.0008).\n  source: Figure 1B and 1D\n  data: elsewhere\n  where: BioImage Archive S-BIAD2070 (images); Zenodo doi:10.5281/zenodo.19930567 (per-section\n    values)\n  expected:\n  - quantity: sections\n    value: 16\n    tolerance: 0\n  criterion: The per-section mean LRRK2 intensities of Aldh1a1+ and Aldh1a1- neurons in the\n    source data, compared by the legend's two-tailed unpaired Student t-test over sections.\n    Reproduced when the Aldh1a1+ mean is higher with p < 0.05; not reproduced otherwise. The p\n    value is reported next to the paper's 0.0008. A paired test over sections and a test on\n    mouse means are variants. The image files are matched to the source data by mouse and\n    counted; the Imaris segmentation is not re-run.\n- id: fig2b-rab3-phosphorylation\n  statement: LRRK2 kinase inhibition with MLi-2 changes 289 phosphopeptides in striatal\n    synaptosomes of G2019S mice, including RAB3 T86.\n  source: Figure 2A to 2C\n  data: elsewhere\n  where: PRIDE PXD065006\n  expected:\n  - quantity: phosphopeptides with p <= 0.05 and |log2 FC| > 0.58\n    value: 289\n    tolerance: 28.9\n  criterion: The peptide groups table deposited in PXD065006 (Proteome Discoverer abundances,\n    three vehicle and three MLi-2 samples). Per phosphopeptide, log2 abundances, two-tailed\n    unpaired Student t-test, difference = mean vehicle minus mean MLi-2; altered when p <= 0.05\n    and |difference| > 0.58, as the legend states. The legend does not say which peptides were\n    tested; the readings are (a) peptides with all three values in each group, (b) peptides\n    with at least two values in each group. Reproduced when, under one reading, the count is\n    within tolerance and the RAB3 peptide covering T86 (YRTITTAYYR, phosphorylated at its\n    threonine 3) is altered with a positive difference (higher with vehicle); partially\n    reproduced when one of the two holds; not reproduced when neither does. The count in the\n    paper's own volcano table (Supplementary data 1) at the same thresholds is reported.\n- id: fig2eg-prab3-increased\n  statement: Phosphorylation of RAB3A and RAB3C is increased in the SNc of G2019S mice and\n    returns to WT levels with MLi-2.\n  source: Figure 2D to 2G\n  data: elsewhere\n  where: Zenodo doi:10.5281/zenodo.19930567\n  expected:\n  - quantity: mice per group, RAB3A\n    value: 10\n    tolerance: 0\n  - quantity: mice per group, RAB3C\n    value: 7\n    tolerance: 0\n  criterion: The p-RAB3A and p-RAB3C ratios of the source data (WT, GS and GS with MLi-2). The\n    three groups are compared with a one-way model (the legend's genotype and treatment\n    factors on three groups are the same model) and pairwise contrasts on the pooled variance,\n    Sidak-adjusted over the three pairs, which the legend's numbers imply; two pairs is a\n    variant. Four comparisons decide the outcome, GS above WT and GS above GS with MLi-2 for\n    each protein, each at adjusted p < 0.05. Reproduced when all four hold; partially\n    reproduced when two or three hold; not reproduced otherwise. Whether GS with MLi-2 differs\n    from WT is reported. The uncropped blots are not re-quantified.\n- id: fig3d-rim-binds-unphosphorylated\n  statement: RIM1 and RIM2 bind unphosphorylated RAB3A in preference to RAB3A phosphorylated at\n    T86, while RILPL1 and RILPL2 prefer the phosphorylated form.\n  source: Figure 3D to 3F\n  data: elsewhere\n  where: PRIDE PXD065125\n  criterion: The DIA-NN protein intensities of the six RAB3A and six p-RAB3A pulldowns\n    deposited in PXD065125 (FilteredDataset.pg_matrix.Brain_Rab3A.csv), log2, compared per\n    protein by the paired two-sided Student t-test of Figure 3E and 3F, replicates paired in\n    the order of the runs, over the pairs with both values. For each gene the protein group\n    whose genes field is that gene alone is used; where there are several, the one with the\n    most values, the others reported. Four comparisons decide the outcome, RIM1 and RIM2 higher\n    with RAB3A, RILPL1 and RILPL2 higher with p-RAB3A, each at p < 0.05. Reproduced when all\n    four hold; partially reproduced when two or three hold; not reproduced otherwise. The p\n    values are reported next to the paper's (RIM2 0.011, RILPL1 0.002). The Methods'\n    imputation with an unpaired test, and the deposited limma table, are variants.\n- id: fig4d-fewer-active-zones\n  statement: Fewer TH+/VAMP2+ striatal synaptosomes from G2019S mice contain bassoon, and the\n    remaining bassoon clusters are larger.\n  source: Figure 4D and 4E\n  data: elsewhere\n  where: BioImage Archive S-BIAD2074 (images); Zenodo doi:10.5281/zenodo.19930567 (per-area\n    values)\n  criterion: Two parts. (A) The per-area values of the source data, two-tailed unpaired Student\n    t-tests over areas as in the legend; the percentage of TH+/VAMP2+ synaptosomes with bassoon\n    lower in GS with p < 0.05, and the bassoon area higher in GS with p < 0.05. (B) The Methods'\n    FIJI procedure re-run on the images (folder BSN for the percentage, BSN-area for the area;\n    genotype and mouse from the file name, wt or ki; channels as the archive annotates them,\n    488 bassoon, 568 TH, 647 VAMP2). Rolling-ball background subtraction, radius 33 pixels;\n    ImageJ's Default threshold; particles 0.04 to 0.40 um2 (TH 0.06 to 0.60) with circularity\n    0.30 to 1.00; a particle is positive for a protein when its mean intensity is more than\n    twice the image mean. Per image, the percentage of TH+ VAMP2+ particles of the VAMP2\n    segmentation that are bassoon+, and the mean area of the bassoon and TH overlaps that are\n    VAMP2+, read as (i) the area of the overlap or (ii) the area of the bassoon particle; then\n    the same t-tests over images. Reproduced when (A) gives both effects and (B) gives both,\n    in the same direction at p < 0.05, under one reading; partially reproduced when (A) gives\n    both and (B) does not, or (A) gives one; not reproduced when (A) gives neither. Counts of\n    areas and images are reported against the legend's.\n- id: fig4i-rim1-reduced\n  statement: RIM1 is reduced in striatal synaptosomes of G2019S mice (p = 0.0245) but not in\n    other striatal fractions or the SNc.\n  source: Figure 4H to 4L\n  data: elsewhere\n  where: Zenodo doi:10.5281/zenodo.19930567\n  expected:\n  - quantity: mice per genotype\n    value: 6\n    tolerance: 0\n  criterion: The RIM1 values of the source data for synaptosomes (Figure 4I), the S1 fraction\n    (4J) and the SNc (4L), each compared by a two-tailed unpaired Student t-test. Reproduced\n    when GS is lower in synaptosomes with p < 0.05 and neither the S1 nor the SNc comparison\n    has p < 0.05; partially reproduced when the synaptosome result holds and one of the others\n    has p < 0.05; not reproduced when the synaptosome result does not hold. The p value is\n    reported next to the paper's 0.0245. The uncropped blots are not re-quantified.\n- id: fig5-bassoon-vulnerable-axons\n  statement: Bassoon cluster density is reduced and cluster volume increased in Aldh1a1+ but not\n    Aldh1a1- dopamine axons of G2019S mice, and the same holds in Anxa1+ axons.\n  source: Figure 5D, 5E, 5G and 5H\n  data: elsewhere\n  where: BioImage Archive S-BIAD2071 (images); Zenodo doi:10.5281/zenodo.19930567 (per-section\n    values)\n  criterion: The per-section values of the source data. A section entered twice (identical\n    values in both cell types and both measures) is counted once; the values as deposited are\n    a variant. Aldh1a1 mice, for density (5D) and volume (5E) each, a two-way ANOVA of cell type\n    and genotype with interaction over sections, as the legend's degrees of freedom imply, and\n    Sidak-adjusted comparisons of GS with WT within each cell type on the pooled variance.\n    Anxa1 mice (5G, 5H), two-tailed unpaired Student t-tests. Six parts. (1) Aldh1a1+ density\n    lower in GS, p < 0.05. (2) Aldh1a1- density, p >= 0.05. (3) Aldh1a1+ volume higher in GS,\n    p < 0.05. (4) Aldh1a1- volume, p >= 0.05. (5) Anxa1 density lower in GS, p < 0.05.\n    (6) Anxa1 volume higher in GS, p < 0.05. Reproduced when all six hold; partially reproduced\n    when three to five hold; not reproduced otherwise. Section counts are reported against the\n    legend's. The 542 GB of SIM images are matched to the source data by file name only; the\n    Imaris analysis is not re-run.\n- id: fig5j-no-axon-loss\n  statement: The volume occupied by TH+ fibres in the dorsal striatum does not differ between\n    G2019S and WT mice.\n  source: Figure 5I and 5J\n  data: elsewhere\n  where: BioImage Archive S-BIAD2072 (images); Zenodo doi:10.5281/zenodo.19930567 (per-section\n    values)\n  expected:\n  - quantity: sections per genotype\n    value: 12\n    tolerance: 0\n  criterion: A claim of absence, judged on the legend's two-tailed unpaired Student t-test over\n    the per-section TH volumes of the source data at p < 0.05. Reproduced when the test does\n    not find a difference and not reproduced when it does; the difference of means and Cohen's\n    d are reported either way. The images are matched to the source data by file name and\n    counted; the Imaris analysis is not re-run."
 }
 ```
 
 ```
-The file entries/001933-chen-2026/lrrk2.py has been updated successfully.
+The file claims/001933/10.1038-s41467-026-75194-3.yaml has been updated successfully. (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/001933-chen-2026; source $TMPDIR/venv/bin/activate; PYTHONPATH=. python -c "
-import time,numpy as np,lrrk2
-a=[x for x in lrrk2.list_assets() if '4558' in x.path][0]
-t=time.time(); s=lrrk2.load_session(a); print(time.time()-t); t=time.time(); b=lrrk2.raw_binned(s); print('raw',time.time()-t); t=time.time(); d=lrrk2.dff_from_raw(b); print('proc',time.time()-t, np.abs(d-s['dff'])[3000:-3000].max())
-" 2>&1 | grep -v Warn
-```
-
-```
-1.2989568710327148
-raw 0.7472012042999268
-proc 0.28934597969055176 0.30835093276945713
-```
-
-**Agent**
-
-Recompute from raw takes about 1 s per file and matches the stored Anxa1 dF/F to within 0.31 % away from the edges. Rewriting the link cell with these parts.
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/build; python - <<'EOF'
-p='cells_code.py'; s=open(p).read()
-start=s.index('CODE["link"]'); end=s.index('CODE["evoked-tables"]')
-new = r'''CODE["link"] = r\'\'\'md5, src = lrrk2.load_source_data()
-print("Source data file md5:", md5, "; matches the Zenodo record:", md5 == lrrk2.SOURCE_DATA_MD5)
-print("Records per table:", {k: len(v) for k, v in src.items()})
-line_of = {"6C": "Anxa1", "6E": "Anxa1", "6F": "Anxa1", "S7B": "Anxa1", "S7C": "Anxa1",
-           "S8C": "Calb1", "S8D": "Calb1", "S8E": "Calb1"}
-
-# (1) Mice
-mice = {(k, d["mouse"], d["group"]) for k, v in src.items() for d in v}
-part1 = pd.DataFrame([{"table": k, "mouse": m, "group": g, "in_dandiset": m in by_mouse,
-                       "same_group": m in by_mouse and by_mouse[m]["group"] == g,
-                       "same_line": m in by_mouse and by_mouse[m]["line"] == line_of[k]} for k, m, g in mice])
-part1["match"] = part1.in_dandiset & part1.same_group & part1.same_line
-mouse_level = part1.groupby("mouse").match.all()
-print(f"\n(1) Mice: {int(mouse_level.sum())} of {len(mouse_level)} source-data mice are in the dandiset with the same genotype and line;",
-      "dandiset mice not in the source data:", sorted(set(by_mouse) - set(mouse_level.index)))
-
-
-def rank_match(records):
-    """Pair each source record with the dandiset epoch of the same mouse and power and the same rank."""
-    seen, out = {}, []
-    for d in records:
-        key = (d["mouse"], d["power"])
-        r = seen.get(key, 0)
-        seen[key] = r + 1
-        s = by_mouse[d["mouse"]]
-        idx = np.where(np.isclose(s["power_in_mW"], d["power"]))[0]
-        out.append((d, s, idx[r], idx))
-    return out
-
-
-# (2) Triggered traces
-rows = []
-for key in ("6C", "S7B", "S8D"):
-    for d, s, j, idx in rank_match(src[key]):
-        ours = lrrk2.code_chunk(s, j)
-        rows.append({"table": key, "line": s["line"], "mouse": d["mouse"], "power": d["power"],
-                     "diff": np.nanmax(np.abs(ours - d["trace"])), "nan_here": int(np.isnan(ours).sum()),
-                     "r": np.corrcoef(ours[~np.isnan(ours)], d["trace"][~np.isnan(ours)])[0, 1],
-                     "slope": np.polyfit(ours[~np.isnan(ours)], d["trace"][~np.isnan(ours)], 1)[0]})
-part2 = pd.DataFrame(rows)
-part2["match"] = part2.diff < 1e-6
-print("\n(2) Triggered traces equal to the dandiset's dF/F from 1 s before the onset of the epoch with the same power and rank:")
-print(part2.groupby("table").agg(records=("match", "size"), matched=("match", "sum"), largest_diff=("diff", "max"),
-                                 median_r=("r", "median"), slope_min=("slope", "min"), slope_max=("slope", "max")).to_string())
-print("Unmatched Anxa1 traces:")
-print(part2[(part2.line == "Anxa1") & ~part2.match].to_string(index=False))
-m4398 = by_mouse[4398]
-print(f"Mouse 4398: last onset at {m4398['start_time'][-1]:.2f} s, processed series ends at {m4398['t'][-1]:.2f} s")
-
-# (3) Evoked integrals
-code_auc = {s["mouse"]: lrrk2.evoked_integrals(s, "code") * lrrk2.FS for s in sessions}  # in samples, as the code
-rows = []
-for key in ("6E", "S7C", "S8E"):
-    for d, s, j, idx in rank_match(src[key]):
-        four = np.where(np.isclose(s["power_in_mW"], 4.0))[0][list(idx).index(j)]
-        rows.append({"table": key, "line": s["line"], "mouse": d["mouse"], "power": d["power"], "published": d["value"],
-                     "ours": code_auc[d["mouse"]][j], "ours_4mW_same_rank": code_auc[d["mouse"]][four]})
-part3 = pd.DataFrame(rows)
-factor = float(np.nanmedian(part3.published / part3.ours))
-part3["match"] = np.abs(part3.published - factor * part3.ours) <= 1e-4 * np.abs(part3.published)
-part3["match_if_4mW"] = np.abs(part3.published - factor * part3.ours_4mW_same_rank) <= 1e-4 * np.abs(part3.published)
-print(f"\n(3) Evoked integrals: common factor published / ours (code's window, in samples) = {factor:.6g}")
-print(part3.groupby(["table", "power"]).agg(records=("match", "size"), matched=("match", "sum"),
-                                            matched_if_4mW=("match_if_4mW", "sum")).to_string())
-print("Calb1 records: ratio published / ours from", part3[part3.line == "Calb1"].eval("published / ours").min().round(6),
-      "to", part3[part3.line == "Calb1"].eval("published / ours").max().round(6))
-print("Unmatched Anxa1 records:", part3[(part3.line == "Anxa1") & ~part3.match][["table", "mouse", "power", "published", "ours"]].to_dict("records"))
-
-# (4) Spontaneous transients
-measures = {ex: {s["mouse"]: lrrk2.spontaneous_transients(s, ex) for s in sessions} for ex in ("methods", "code_as_written")}
-rows = []
-for key in ("6F", "S8C"):
-    pub = pd.DataFrame(src[key])
-    for m, g in pub.groupby("mouse", sort=False):
-        row = {"table": key, "line": line_of[key], "mouse": m, "published": len(g)}
-        for ex in ("methods", "code_as_written"):
-            auc, peaks, means = measures[ex][m]
-            row[f"n_{ex}"] = len(auc)
-            for name, v in (("integral", auc), ("mean", means)):
-                ratio = g.value.values / v if len(v) == len(g) else np.array([np.nan])
-                row[f"{name}_ratio_{ex}"] = np.median(ratio)
-                row[f"{name}_ratio_cv_{ex}"] = np.std(ratio) / np.mean(ratio)
-        rows.append(row)
-part4 = pd.DataFrame(rows)
-for ex in ("methods", "code_as_written"):
-    for name in ("integral", "mean"):
-        f4 = np.nanmedian(part4[f"{name}_ratio_{ex}"])
-        ok = []
-        for _, r in part4.iterrows():
-            pub = pd.DataFrame(src[r.table]).query("mouse == @r.mouse").value.values
-            v = measures[ex][r.mouse][0 if name == "integral" else 2]
-            ok.append(len(pub) == len(v) and bool(np.allclose(np.sort(pub), f4 * np.sort(v), rtol=1e-2, atol=0)))
-        part4[f"match_{name}_{ex}"] = ok
-        print(f"(4) exclusion '{ex}', {name} of each transient: common factor {f4:.6g}; mice whose count and sorted values match",
-              "within 1%:", int(np.sum(ok)), "of", len(ok), "(Anxa1", int(np.sum(np.array(ok)[part4.line == 'Anxa1'])), "of 15)")
-cols = ["table", "mouse", "published", "n_methods", "n_code_as_written", "integral_ratio_cv_methods", "mean_ratio_methods",
-        "mean_ratio_cv_methods"]
-print(part4[cols].to_string(index=False, float_format=lambda v: f"{v:.4g}"))
-print("Transients: published", part4.published.sum(), "; here, Methods exclusion", part4.n_methods.sum(),
-      "; code's exclusion as written", part4.n_code_as_written.sum())
-print("Count equal to the published count, Methods exclusion:", part4.groupby("line").apply(lambda g: f"{int((g.published == g.n_methods).sum())} of {len(g)}").to_dict())
-
-score = {"mice": float(mouse_level.mean()), "traces": float(part2.match.mean()), "evoked integrals": float(part3.match.mean()),
-         "spontaneous integrals (best window)": float(max(part4.match_integral_methods.mean(), part4.match_integral_code_as_written.mean()))}
-print("\nFraction of records that match, per part, as the criterion scores them:", {k: round(v, 3) for k, v in score.items()})
-print("Variant, part (4) with the mean dF/F of each transient:",
-      round(float(max(part4.match_mean_methods.mean(), part4.match_mean_code_as_written.mean())), 3))\'\'\'
-
-CODE["link-raw"] = r\'\'\'# (5) Why the Calb1 records differ: dF/F recomputed from the raw 470 nm signal in the dandiset with the code's
-# processing, and with other background fractions, against the published triggered traces.
-rows = []
-for s in sessions:
-    binned = lrrk2.raw_binned(s)
-    key = "6C" if s["line"] == "Anxa1" else "S8D"
-    pairs = [(d, j) for d, ss, j, idx in rank_match([d for d in src[key] if d["mouse"] == s["mouse"]])]
-    stored_diff = np.abs(lrrk2.dff_from_raw(binned) - s["dff"])[3000:-3000].max()
-    best = None
-    for frac in np.round(np.arange(0.0, 0.951, 0.05), 2):
-        dff = lrrk2.dff_from_raw(binned, frac)
-        err = np.median([np.abs(dff[s["onset"][j] - 100:s["onset"][j] + 150] - d["trace"]).max() for d, j in pairs])
-        if frac == 0.85:
-            at_085 = err
-        if best is None or err < best[1]:
-            best = (frac, err)
-    rows.append({"mouse": s["mouse"], "line": s["line"], "group": s["group"], "stored_vs_recomputed_max_diff": stored_diff,
-                 "median_diff_at_0.85": at_085, "best_fraction": best[0], "median_diff_at_best": best[1]})
-raw_check = pd.DataFrame(rows).sort_values(["line", "group", "mouse"])
-print("Largest difference between the stored dF/F and dF/F recomputed from raw with the code's 0.85 (away from the edges),",
-      "and the median over a mouse's published traces of the largest difference to dF/F recomputed with background fraction",
-      "0.85 and with the best fraction of 0 to 0.95 (% dF/F):")
-print(raw_check.round(3).to_string(index=False))\'\'\'
-
-'''
-s=s[:start]+new+s[end:]
-# spont tables: add mean
-s=s.replace('''        auc, peaks = lrrk2.spontaneous_transients(s, exclusion)
-        rows += [{"mouse": s["mouse"], "line": s["line"], "group": s["group"], "value": a, "peak": p} for a, p in zip(auc, peaks)]''',
-'''        auc, peaks, means = lrrk2.spontaneous_transients(s, exclusion)
-        rows += [{"mouse": s["mouse"], "line": s["line"], "group": s["group"], "value": a, "peak": p, "mean": m}
-                 for a, p, m in zip(auc, peaks, means)]''')
-s=s.replace('''print("Variant, transient peaks in place of integrals: one-tailed p =",
-      f"{lrrk2.one_tailed_less(sa[sa.group == 'GS'].peak, sa[sa.group == 'WT'].peak)[1]:.3g}")''',
-'''print("Variant, transient peaks in place of integrals: one-tailed p =",
-      f"{lrrk2.one_tailed_less(sa[sa.group == 'GS'].peak, sa[sa.group == 'WT'].peak)[1]:.3g}")
-r = group_test(sa.assign(value=sa["mean"]))
-print("Variant, the mean dF/F over each transient (the measure the source data hold, see source-data-link):",
-      {k: (f"{x:.3g}" if isinstance(x, float) else x) for k, x in r.items()})''')
-s=s.replace('''v = per_mouse_tests(spont["code_as_written"].query("line == 'Anxa1'"), 0.05 / 8)
-print("\\nVariant, code's exclusion as written:"''','''v = per_mouse_tests(sa.assign(value=sa["mean"]), 0.05 / 8)
-print("\\nVariant, the mean dF/F over each transient:", {c[4:]: int(v[c].sum()) for c in v.columns if c.startswith("sig_")},
-      "not significant (a):", v.loc[~v.sig_a_welch_1t, "mouse"].tolist())
-print(v[["mouse", "mean", "WT_mean", "p_a_welch_1t", "p_d_student_1t"]].to_string(index=False, float_format=lambda x: f"{x:.3g}"))
-v = per_mouse_tests(spont["code_as_written"].query("line == 'Anxa1'"), 0.05 / 8)
-print("\\nVariant, code's exclusion as written:"''')
-s=s.replace('''print("Variant, mouse means, Welch one-tailed p =",
-      f"{lrrk2.one_tailed_less(per.loc['GS', 'mean'], per.loc['WT', 'mean'], False)[1]:.3g}")\'\'\'
-
-CODE["supp8e"]''','''print("Variant, mouse means, Welch one-tailed p =",
-      f"{lrrk2.one_tailed_less(per.loc['GS', 'mean'], per.loc['WT', 'mean'], False)[1]:.3g}")
-r3 = group_test(sc.assign(value=sc["mean"]))
-print("Variant, the mean dF/F over each transient:", {k: (f"{x:.3g}" if isinstance(x, float) else x) for k, x in r3.items()})\'\'\'
-
-CODE["supp8e"]''')
-open(p,'w').write(s)
+cd paper; python3 - <<'EOF'
+import json,collections,re
+for n in ['071','072']:
+    d=json.load(open(f'bia_{n}.json'))
+    c=collections.Counter()
+    for f in d:
+        p=f['path']; parts=p.split('/'); name=parts[-1]
+        key=re.sub(r'\d+(\.\d+)?\.tif$','#',name)
+        key=re.sub(r'\(\d+\)','(#)',key)
+        c[(parts[-2],key)]+=1
+    print('====',n)
+    for k,v in sorted(c.items()): print('  ',k,v)
+    print({a['name']:a['value'] for a in d[0].get('attributes',[])})
+    print({a['name']:a['value'] for a in d[-1].get('attributes',[])})
 EOF
-grep -n "Variant, the mean" cells_code.py | head; sed -i 's/md(MD\["link"\]); code("link", \["claim:source-data-link"\]);/md(MD["link"]); code("link", ["claim:source-data-link"]); md(MD["link-raw"]); code("link-raw", ["claim:source-data-link"]);/' build.py; sed -i 's/"link","evoked-intro"/"link","link-raw","evoked-intro"/' cells_md.py; grep -n link-raw build.py cells_md.py
 ```
 
 ```
-400:print("Variant, the mean dF/F over each transient (the measure the source data hold, see source-data-link):",
-410:print("\nVariant, the mean dF/F over each transient:", {c[4:]: int(v[c].sum()) for c in v.columns if c.startswith("sig_")},
-432:print("Variant, the mean dF/F over each transient:", {k: (f"{x:.3g}" if isinstance(x, float) else x) for k, x in r3.items()})'''
-build.py:17:md(MD["link"]); code("link", ["claim:source-data-link"]); md(MD["link-raw"]); code("link-raw", ["claim:source-data-link"]); md(RESULT["source-data-link"])
-cells_md.py:2:for k in ["header","check-intro","check-subjects","check-series","check-opto","check-clock","link","link-raw","evoked-intro","fig6e","fig6e-per-mouse","supp7c","spont-intro","fig6f","fig6f-per-mouse","supp8c","supp8e","supp8e-mice","cohen","blocked","summary"]:
-Shell cwd was reset to
+==== 071
+   ('Anxa', 'AnxaGS-1019-TOP-#') 6
+   ('Anxa', 'AnxaGS-1020-TOP-#') 12
+   ('Anxa', 'AnxaGS-1022-TOP-#') 14
+   ('Anxa', 'AnxaGS-1052-TOP-#') 17
+   ('Anxa', 'AnxaWT-1018-TOP-#') 6
+   ('Anxa', 'AnxaWT-1021-TOP-#') 13
+   ('Anxa', 'AnxaWT-1024-TOP-#') 12
+   ('Anxa', 'AnxaWT-1028-TOP-#') 27
+   ('Rotated images', 'AnxaGS-R-1022-TOP-#') 6
+   ('Rotated images', 'AnxaGS-R-1052-TOP-#') 4
+   ('Rotated images', 'AnxaWT-R-1021-TOP-#') 6
+   ('Rotated images', 'AnxaWT-R-1028-TOP-#') 7
+   ('aldh1a1', 'AldhGS-1272-BOTTOM-#') 15
+   ('aldh1a1', 'AldhGS-1272-MIDDLE-#') 15
+   ('aldh1a1', 'AldhGS-1272-TOP-#') 13
+   ('aldh1a1', 'AldhGS-1522-BOTTOM-#') 14
+   ('aldh1a1', 'AldhGS-1522-MIDDLE-#') 15
+   ('aldh1a1', 'AldhGS-1522-TOP-#') 9
+   ('aldh1a1', 'AldhGS-517-BOTTOM-#') 8
+[... 122 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd $TMPDIR/build; sed -n 424,436p cells_code.py; python -c "import cells_code; print(len(cells_code.CODE))"; source $TMPDIR/venv/bin/activate; python build.py $TMPDIR/build entries/001933-chen-2026/reproduce_chen_2026.ipynb && cd entries/001933-chen-2026 && python -c "
-import nbformat, nbclient
-nb=nbformat.read('reproduce_chen_2026.ipynb',4)
-c=nbclient.NotebookClient(nb, timeout=1800, kernel_name='python3', resources={'metadata':{'path':'.'}})
-try:
-    c.execute()
-finally:
-    nbformat.write(nb, '$TMPDIR/build/out.ipynb')
-" 2>&1 | grep -v "TCP\|^$" | tail -5; python - <<'EOF' > $TMPDIR/build/out.txt
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/build/out.ipynb',4)
-for c in nb.cells:
-    if c.cell_type=='code':
-        print('=== CELL', c.metadata.get('tags'))
-        for o in c.get('outputs',[]):
-            if o.output_type=='stream': print(o.text)
-            elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
+cd paper; $TMPDIR/venv/bin/python - <<'EOF'
+import pandas as pd, numpy as np
+pp=pd.read_excel('pride/020623-Loukia-mouse-synaptosome-phos-quant_phosphopeptides.xlsx')
+print(pp.shape); 
+r=pp[pp['Annotated Sequence'].str.contains('YRTITTAYYR',na=False)]
+print(r[['Gene Name','Annotated Sequence','Modifications','Master Protein Accessions','Positions in Master Proteins','Modifications in Master Proteins']].to_string())
+ab=[c for c in pp.columns if c.startswith('Abundance')]
+print(pp[ab].dtypes.unique(), pp[ab].notna().sum().to_dict())
+print(pp['Modifications'].str.contains('Phospho').sum())
+s1=pd.read_excel('supp/Supplementary file 1.xlsx',sheet_name='PeptideGroups')
+print(s1.shape, (s1[ab].fillna(-1).values==pp[ab].fillna(-1).values).all() if s1.shape==pp.shape else 'shape differs')
+fd=pd.read_csv('pride/FilteredDataset.pg_matrix.Brain_Rab3A.csv')
+print(fd.columns.tolist())
+rep=pd.read_csv('pride/report.pg_matrix.tsv',sep='\t')
+cols=[c for c in rep.columns if any(f'_C{i}.raw' in c for i in range(13,25))]
+print([c.split('\\')[-1] for c in cols])
+m=rep.set_index('Protein.Group')[cols]; f=fd.set_index('Protein.Group')
+common=f.index.intersection(m.index); print(len(fd), len(common))
+for j,c in enumerate(cols):
+    best=[(k, np.nanmax(np.abs(m.loc[common,c].values - f.loc[common,k].values))) for k in fd.columns[3:15]]
+    print(c.split('\\')[-1], [ (k,round(v,3)) for k,v in best if v<1e-3])
 EOF
-grep -n "=== CELL\|ERROR" $TMPDIR/build/out.txt
 ```
 
 ```
-print("\nPer mouse:")
-print(per.round(3).to_string())
-v = spont["code_as_written"].query("line == 'Calb1'")
-r2 = group_test(v)
-print("\nVariant, the code's exclusion window as written:", {k: (f"{x:.3g}" if isinstance(x, float) else x) for k, x in r2.items()})
-print("Variant, mouse means, Welch one-tailed p =",
-      f"{lrrk2.one_tailed_less(per.loc['GS', 'mean'], per.loc['WT', 'mean'], False)[1]:.3g}")
-r3 = group_test(sc.assign(value=sc["mean"]))
-print("Variant, the mean dF/F over each transient:", {k: (f"{x:.3g}" if isinstance(x, float) else x) for k, x in r3.items()})'''
-
-CODE["supp8e"] = r'''rows = []
-for w in windows:
-    for q in lrrk2.PAPER_POWERS:
-Traceback (most recent call last):
-  File "<string>", line 1, in <module>
-    import cells_code; print(len(cells_code.CODE))
-    ^^^^^^^^^^^^^^^^^
-  File "/tmp/claude-1001/build/cells_code.py", line 129
-    CODE["link"] = r\'\'\'md5, src = lrrk2.load_source_data()
-                     ^
-[... 27 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/build; sed -i "s/r\\\\'\\\\'\\\\'/r'''/g; s/\\\\'\\\\'\\\\'/'''/g" cells_code.py; grep -n "\\\\'" cells_code.py | head; source $TMPDIR/venv/bin/activate; python -c "import cells_code; print(len(cells_code.CODE))" && python build.py $TMPDIR/build entries/001933-chen-2026/reproduce_chen_2026.ipynb && cd entries/001933-chen-2026 && python -c "
-import nbformat, nbclient
-nb=nbformat.read('reproduce_chen_2026.ipynb',4)
-c=nbclient.NotebookClient(nb, timeout=1800, kernel_name='python3', resources={'metadata':{'path':'.'}})
-try:
-    c.execute()
-finally:
-    nbformat.write(nb, '$TMPDIR/build/out.ipynb')
-" 2>&1 | grep -v "TCP\|^$" | tail -5; python - <<'EOF' > $TMPDIR/build/out.txt
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/build/out.ipynb',4)
-for c in nb.cells:
-    if c.cell_type=='code':
-        print('=== CELL', c.metadata.get('tags'))
-        for o in c.get('outputs',[]):
-            if o.output_type=='stream': print(o.text)
-            elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
-EOF
-grep -n "=== CELL\|ERROR" $TMPDIR/build/out.txt
-```
-
-```
-18
-wrote entries/001933-chen-2026/reproduce_chen_2026.ipynb 50 cells
-[32m---> [39m[32m41[39m part2[[33m"match"[39m] = part2.diff < [32m1e-6[39m
-[32m     42[39m print([33m"\n(2) Triggered traces equal to the dandiset's dF/F from 1 s before the onset of the epoch with the same power and rank:"[39m)
-[32m     43[39m print(part2.groupby("table").agg(records=("match", "size"), matched=("match", "sum"), largest_diff=("diff", "max"),
-[32m     44[39m                                  median_r=([33m"r"[39m, [33m"median"[39m), slope_min=([33m"slope"[39m, [33m"min"[39m), slope_max=([33m"slope"[39m, [33m"max"[39m)).to_string())
-[31mTypeError[39m: '<' not supported between instances of 'method' and 'float'
-1:=== CELL []
-4:=== CELL ['sanity']
-63:=== CELL ['sanity']
-99:=== CELL ['sanity']
-143:=== CELL ['sanity']
-178:=== CELL ['claim:source-data-link']
-184:ERROR TypeError '<' not supported between instances of 'method' and 'float'
-185:=== CELL ['claim:source-data-link']
-186:=== CELL []
-187:=== CELL ['claim:fig6e-anxa1-evoked-reduced']
-188:=== CELL ['claim:fig6e-anxa1-evoked-per-mouse']
-189:=== CELL ['claim:supp7c-anxa1-evoked-all-powers']
-190:=== CELL []
-[... 7 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/build; python - <<'EOF'
-p='cells_code.py'; s=open(p).read()
-s=s.replace('"diff": np.nanmax(np.abs(ours - d["trace"]))','"max_diff": np.nanmax(np.abs(ours - d["trace"]))')
-s=s.replace('part2["match"] = part2.diff < 1e-6','part2["match"] = part2.max_diff < 1e-6')
-s=s.replace('largest_diff=("diff", "max")','largest_diff=("max_diff", "max")')
-open(p,'w').write(s)
-EOF
-cat > $TMPDIR/build/run.sh <<'EOF'
-source $TMPDIR/venv/bin/activate
-cd $TMPDIR/build && python build.py $TMPDIR/build entries/001933-chen-2026/reproduce_chen_2026.ipynb || exit 1
-cd entries/001933-chen-2026 && python -c "
-import nbformat, nbclient, time
-t=time.time()
-nb=nbformat.read('reproduce_chen_2026.ipynb',4)
-c=nbclient.NotebookClient(nb, timeout=1800, kernel_name='python3', resources={'metadata':{'path':'.'}})
-try:
-    c.execute()
-finally:
-    nbformat.write(nb, '$TMPDIR/build/out.ipynb'); print('seconds', time.time()-t)
-" 2>&1 | grep -v "TCP\|^$" | tail -3
-python - <<'PY' > $TMPDIR/build/out.txt
-import nbformat
-nb=nbformat.read('/tmp/claude-1001/build/out.ipynb',4)
-for c in nb.cells:
-    if c.cell_type=='code':
-        print('=== CELL', c.metadata.get('tags'))
-        for o in c.get('outputs',[]):
-            if o.output_type=='stream': print(o.text)
-            elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
-PY
-grep -n "=== CELL\|ERROR" $TMPDIR/build/out.txt
-EOF
-bash $TMPDIR/build/run.sh
-```
-
-```
-wrote entries/001933-chen-2026/reproduce_chen_2026.ipynb 50 cells
-seconds 154.60306930541992
-1:=== CELL []
-4:=== CELL ['sanity']
-63:=== CELL ['sanity']
-99:=== CELL ['sanity']
-143:=== CELL ['sanity']
-178:=== CELL ['claim:source-data-link']
-249:=== CELL ['claim:source-data-link']
-280:=== CELL []
-283:=== CELL ['claim:fig6e-anxa1-evoked-reduced']
-327:=== CELL ['claim:fig6e-anxa1-evoked-per-mouse']
-354:=== CELL ['claim:supp7c-anxa1-evoked-all-powers']
-376:=== CELL []
-380:=== CELL ['claim:fig6f-anxa1-spontaneous-reduced']
-410:=== CELL ['claim:fig6f-anxa1-spontaneous-per-mouse']
-439:=== CELL ['claim:supp8c-calb1-spontaneous-not-reduced']
-465:=== CELL ['claim:supp8e-calb1-evoked-reduced']
-503:=== CELL ['claim:supp8e-calb1-few-mice-reduced']
-541:=== CELL ['claim:cohens-d-anxa1-larger']
+(8008, 18)
+     Gene Name  Annotated Sequence        Modifications   Master Protein Accessions                        Positions in Master Proteins                                                           Modifications in Master Proteins
+5351       NaN  [R].YRTITTAYYR.[G]  1xPhospho [T3(100)]  P63011; A2A7Z6; A0A286YDR2  P63011 [84-93]; A2A7Z6 [84-93]; A0A286YDR2 [90-99]  P63011 1xPhospho [T86(100)]; A2A7Z6 1xPhospho [T86(100)]; A0A286YDR2 1xPhospho [T92(100)]
+[dtype('float64')] {'Abundance: F1: Sample, Vehicle, 1': 6216, 'Abundance: F2: Sample, Vehicle, 2': 6147, 'Abundance: F3: Sample, Vehicle, 3': 6211, 'Abundance: F4: Sample, MLi2, 1': 6200, 'Abundance: F5: Sample, MLi2, 2': 6279, 'Abundance: F6: Sample, MLi2, 3': 6171}
+8008
+(8008, 18) True
+['Unnamed: 0', 'Genes', 'Protein.Group', 'phosRab3Brain', 'phosRab3Brain.1', 'phosRab3Brain.2', 'phosRab3Brain.3', 'phosRab3Brain.4', 'phosRab3Brain.5', 'Rab3Brain', 'Rab3Brain.1', 'Rab3Brain.2', 'Rab3Brain.3', 'Rab3Brain.4', 'Rab3Brain.5', 'WCLBrain', 'WCLBrain.1', 'WCLBrain.2', 'WCLBrain.3', 'WCLBrain.4', 'WCLBrain.5']
+['20240406_MJ_Eve_C13.raw', '20240406_MJ_Eve_C14.raw', '20240406_MJ_Eve_C15.raw', '20240406_MJ_Eve_C16.raw', '20240406_MJ_Eve_C17.raw', '20240406_MJ_Eve_C18.raw', '20240406_MJ_Eve_C19.raw', '20240406_MJ_Eve_C20.raw', '20240406_MJ_Eve_C21.raw', '20240406_MJ_Eve_C22.raw', '20240406_MJ_Eve_C23.raw', '20240406_MJ_Eve_C24.raw']
+3480 3480
+20240406_MJ_Eve_C13.raw [('phosRab3Brain', np.float64(0.0))]
+20240406_MJ_Eve_C14.raw [('phosRab3Brain.1', np.float64(0.0))]
+20240406_MJ_Eve_C15.raw [('phosRab3Brain.2', np.float64(0.0))]
+20240406_MJ_Eve_C16.raw [('phosRab3Brain.3', np.float64(0.0))]
+20240406_MJ_Eve_C17.raw [('phosRab3Brain.4', np.float64(0.0))]
+20240406_MJ_Eve_C18.raw [('phosRab3Brain.5', np.float64(0.0))]
+20240406_MJ_Eve_C19.raw [('Rab3Brain', np.float64(0.0))]
+20240406_MJ_Eve_C20.raw [('Rab3Brain.1', np.float64(0.0))]
+20240406_MJ_Eve_C21.raw [('Rab3Brain.2', np.float64(0.0))]
+20240406_MJ_Eve_C22.raw [('Rab3Brain
 [... 2 more lines not kept]
 ```
 
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/build/out.txt",
- "offset": 178,
- "limit": 390
-}
-```
-
-```
-178	=== CELL ['claim:source-data-link']
-179	Source data file md5: c26fe3de8f340a3db5fa29a40e5a8c10 ; matches the Zenodo record: True
-180	Records per table: {'6C': 120, '6E': 120, '6F': 1862, 'S7B': 480, 'S7C': 480, 'S8C': 1652, 'S8D': 384, 'S8E': 384}
-181	
-182	(1) Mice: 27 of 27 source-data mice are in the dandiset with the same genotype and line; dandiset mice not in the source data: []
-183	
-184	(2) Triggered traces equal to the dandiset's dF/F from 1 s before the onset of the epoch with the same power and rank:
-185	       records  matched  largest_diff  median_r  slope_min  slope_max
-186	table                                                                
-187	6C         120      120  5.684342e-13  1.000000   1.000000   1.000000
-188	S7B        480      479  1.098330e+02  1.000000   1.000000   1.043088
-189	S8D        384        0  1.049231e+03  0.943889  -0.882173   1.552810
-190	Unmatched Anxa1 traces:
-191	table  line  mouse  power   max_diff  nan_here        r    slope  match
-192	  S7B Anxa1   4398    4.0 109.833047        68 0.992197 1.043088  False
-193	Mouse 4398: last onset at 1250.24 s, processed series ends at 1251.05 s
-194	
-195	
-196	(3) Evoked integrals: common factor published / ours (code's window, in samples) = 0.0001
-197	             records  matched  matched_if_4mW
-[... 369 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/build; python - <<'EOF'
-p='cells_code.py'; s=open(p).read()
-old='''print("Variant, part (4) with the mean dF/F of each transient:",
-      round(float(max(part4.match_mean_methods.mean(), part4.match_mean_code_as_written.mean())), 3))'''
-new=old+'''
-
-# (6) The paper's statistics recomputed from its own published values, to check the source data against the text.
-pubdf = {k: pd.DataFrame(src[k]) for k in ("6E", "6F", "S7C", "S8C", "S8E")}
-rows = []
-for key, power, paper_p in (("6E", 0.5, "1.10e-20"), ("S7C", 4.0, "2.39e-16"), ("S8E", 0.5, "0.0002"), ("S8E", 4.0, "0.001")):
-    g = pubdf[key][pubdf[key].power == power]
-    gs, wt = g[g.group == "GS"].value, g[g.group == "WT"].value
-    rows.append({"panel": key, "power": power, "n_GS": len(gs), "n_WT": len(wt), "p_one_tailed": lrrk2.one_tailed_less(gs, wt)[1],
-                 "paper_p": paper_p, "cohens_d": lrrk2.cohens_d(wt, gs)})
-for key, paper_p in (("6F", "2.75e-177"), ("S8C", "0.98")):
-    g = pubdf[key]
-    gs, wt = g[g.group == "GS"].value, g[g.group == "WT"].value
-    rows.append({"panel": key, "power": np.nan, "n_GS": len(gs), "n_WT": len(wt), "p_one_tailed": lrrk2.one_tailed_less(gs, wt)[1],
-                 "paper_p": paper_p, "cohens_d": lrrk2.cohens_d(wt, gs)})
-print("\\n(6) Statistics from the published values themselves (paper's Cohen's d at 0.5 mW: Anxa1 2.05, Calb1 0.76):")
-print(pd.DataFrame(rows).to_string(index=False, float_format=lambda v: f"{v:.3g}"))'''
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-echo done
-```
-
-```
-done
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-bash $TMPDIR/build/run.sh >/dev/null; grep -n -A12 "(6) Statistics" $TMPDIR/build/out.txt
-```
-
-```
-249:(6) Statistics from the published values themselves (paper's Cohen's d at 0.5 mW: Anxa1 2.05, Calb1 0.76):
-250-panel  power  n_GS  n_WT  p_one_tailed   paper_p  cohens_d
-251-   6E    0.5    64    56       1.1e-20  1.10e-20      2.06
-252-  S7C      4    64    56      2.39e-16  2.39e-16      1.72
-253-  S8E    0.5    56    40      0.000185    0.0002     0.765
-254-  S8E      4    56    40       0.00147     0.001     0.632
-255-   6F    NaN  1064   798     2.75e-177 2.75e-177      1.49
-256-  S8C    NaN   970   682         0.989      0.98    -0.114
-257-
-258-=== CELL ['claim:source-data-link']
-259-Largest difference between the stored dF/F and dF/F recomputed from raw with the code's 0.85 (away from the edges), and the median over a mouse's published traces of the largest difference to dF/F recomputed with background fraction 0.85 and with the best fraction of 0 to 0.95 (% dF/F):
-260- mouse  line group  stored_vs_recomputed_max_diff  median_diff_at_0.85  best_fraction  median_diff_at_best
-261-  3742 Anxa1    GS                          0.192                0.118           0.85                0.118
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/build; python - <<'EOF'
-p='cells_code.py'; s=open(p).read()
-old='''print("\\n", info.to_string(index=False))\'\'\''''
-new='''print("\\n", info.to_string(index=False))
-
-# The pinned version against the draft: same files and content?
-from dandi.dandiapi import DandiAPIClient
-client = DandiAPIClient()
-def digests(version):
-    return {a.path: (a.size, a.get_raw_metadata()["digest"].get("dandi:dandi-etag")) for a in client.get_dandiset(lrrk2.DANDISET_ID, version).get_assets()}
-pinned, draft = digests(lrrk2.DANDISET_VERSION), digests("draft")
-print(f"\\nAssets: pinned version {len(pinned)}, draft {len(draft)}; identical paths, sizes and etags: {pinned == draft}")\'\'\''''
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-echo ok
-```
-
-```
-ok
-Shell cwd was reset to
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/001933-chen-2026; source $TMPDIR/venv/bin/activate; PYTHONPATH=. python -c "
-import pickle,numpy as np
-S,src=pickle.load(open('/tmp/claude-1001/cache.pkl','rb'))
-for s in S:
-    z=(s['pulse_length_in_ms']==0)|np.isnan(s['period_in_ms'])
-    if z.any(): print(s['mouse'], np.where(z)[0], s['power_in_mW'][z], (s['stop_time']-s['start_time'])[z], s['number_pulses_per_pulse_train'][z])
-"
-```
-
-```
-4652 [32] [1.] [0.5095] [1]
-740 [32] [1.] [0.51] [1]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/build; python - <<'EOF'
-p='cells_code.py'; s=open(p).read()
-old='''print("\\nShortest gap between onsets in any file (s):"'''
-new='''odd = [(s["mouse"], j) for s in sessions for j in np.where((s["pulse_length_in_ms"] == 0) | np.isnan(s["period_in_ms"]))[0]]
-print("\\nEpochs with a pulse length of 0 or no period (mouse, epoch, power, length in s, pulses):",
-      [(m, int(j), by_mouse[m]["power_in_mW"][j], round(by_mouse[m]["stop_time"][j] - by_mouse[m]["start_time"][j], 2),
-        int(by_mouse[m]["number_pulses_per_pulse_train"][j])) for m, j in odd])
-print("Shortest gap between onsets in any file (s):"'''
-assert old in s; s=s.replace(old,new); open(p,'w').write(s)
-EOF
-echo ok
-```
-
-```
-ok
-Shell cwd was reset to
-```
-
 **Agent**
 
-Now the markdown text.
+Now the helper module for the archived data.
 
 **Agent calls Write**
 
 ```json
 {
- "file_path": "/tmp/claude-1001/build/cells_md.py",
- "content": "MD, RESULT = {}, {}\n\nMD[\"header\"] = \"\"\"\n# Reproducing Chen, He et al. (2026) from dandiset 001933\n\nPaper: Chen C, He Q, Tombesi G, et al. (2026). Leucine-rich repeat kinase 2 impairs the release sites of\nParkinson's disease vulnerable dopamine axons. Nature Communications.\n[doi:10.1038/s41467-026-75194-3](https://doi.org/10.1038/s41467-026-75194-3). This attempt used the open access\nfull text (CC BY) and its Supplementary Information.\n\nDandiset: [DANDI:001933](https://dandiarchive.org/dandiset/001933/0.260825.1457), version 0.260825.1457. The paper\ndoes not name the dandiset or a version (its data statement points to Zenodo, PRIDE and the BioImage Archive). This is\nthe only published version, and it holds the same 27 files as the draft (checked in the data check), so it is pinned.\n\nWhat the dandiset holds: one session per mouse of GRAB-DA3m fiber photometry in the dorsal striatum during optogenetic\nstimulation of SNc dopamine neurons, 15 Anxa1-iCre mice (dorsolateral striatum) and 12 Calb1-Cre mice (dorsomedial\nstriatum), LRRK2-WT and LRRK2-G2019S (GS). This is the data of Figure 6 and Supplementary Figures 7 and 8. The\nimmunostaining, proteomics, western blots and super-resolution imaging of Figures 1 to 5 are not in it.\n\nOutside input: the paper's source data file (Zenodo [10.5281/zenodo.19930567](https://doi.org/10.5281/zenodo.19930567),\n`Source data.xlsx`, md5 checked below), used only in the claim `source-data-link` to test whether the dandiset's\nrecordings are those behind the published values. Every other claim runs on the dandiset alone. The paper's analysis\ncode was read at [DombeckLab/lrrk2_photometry_analysis](https://github.com/DombeckLab/lrrk2_photometry_analysis),\ncommit d34558f (the Zenodo release 10.5281/zenodo.20244434 is commit 1b551d1, which differs only by a licence file).\n\n| Claim | Paper | Tested |\n|---|---|---|\n| `source-data-link` | Source data of Fig. 6, Supp. Figs 7 and 8 can be recomputed from the dandiset | tested (with the source data) |\n| `fig6e-anxa1-evoked-reduced` | Anxa1 evoked release lower in GS at 0.5 mW (p = 1.10e-20) | tested |\n| `fig6e-anxa1-evoked-per-mouse` | 7 of 8 Anxa1 GS mice reduced; 3743 not | tested |\n| `supp7c-anxa1-evoked-all-powers` | Reduction at 0.1, 0.5, 1 and 4 mW | tested |\n| `fig6f-anxa1-spontaneous-reduced` | Anxa1 spontaneous transients smaller in GS (1064 against 798) | tested |\n| `fig6f-anxa1-spontaneous-per-mouse` | 6 of 8 Anxa1 GS mice reduced; 4651 and 3743 not | tested |\n| `supp8c-calb1-spontaneous-not-reduced` | Calb1 spontaneous transients not reduced (p = 0.98) | tested |\n| `supp8e-calb1-evoked-reduced` | Calb1 evoked release reduced at four powers | tested |\n| `supp8e-calb1-few-mice-reduced` | Only 2 of 7 Calb1 GS mice reduced | tested |\n| `cohens-d-anxa1-larger` | Cohen's d at 0.5 mW, Anxa1 2.05 against Calb1 0.76 | tested |\n| `fig1d-lrrk2-enriched-vulnerable` and seven other claims of Figs 1 to 5 | Imaging, proteomics, western blots | blocked: not in the dandiset |\n\nMethod choices are fixed in the claims file, `claims/001933/10.1038-s41467-026-75194-3.yaml`. In short: the signal is\nthe dandiset's processed dF/F, the trace the paper's code analyses; the evoked integral follows the Methods (the\nlight-on period), with the code's baseline; spontaneous transients follow the Methods and `transient_by_threshold.m`.\n\"\"\"\n\nMD[\"check-intro\"] = \"\"\"\n## Data check\n\nEach check of the description against the values is stated under its output.\n\"\"\"\n\nMD[\"check-subjects\"] = \"\"\"\nThe files hold one session each of 15 Anxa1 mice (8 GS, 7 WT) and 12 Calb1 mice (7 GS, 5 WT), the paper's counts after\nits exclusions, and the Anxa1 GS mouse IDs are those of the Figure 6E legend. The four excluded mice are not in the\ndandiset, which does not say that they were left out. Ages at the session are 6.3 to 7.6 months, consistent with\nsurgery at 6 months and recording four weeks later. Anxa1 mice are recorded in the dorsolateral and Calb1 mice in the\ndorsomedial striatum, as the paper states. No two files share a dF/F trace or a start time, so no recording is\ndeposited twice. The pinned version and the draft hold the same files.\n\"\"\"\n\nMD[\"check-series\"] = \"\"\"\nThe processed series are regular at 10 ms (the shortest interval, 9.5 ms, comes from the 2 kHz grid) and last 20.4 to\n25.4 min, a little longer than the Methods' 20 min. The dF/F series is stated in `a.u.`, but its description and its\nvalues are % dF/F: the code's `df_f` and 20-sample moving mean applied to the stored corrected signal give the stored\nseries to within 0.026 % dF/F. The raw 470 nm signal, averaged into the 100 Hz bins, aligns with the corrected signal\nat lag 0 in every file (correlation 0.77 to 0.99), so raw and processed series share a clock. About 8 of the 20 raw\nsamples per bin are kept for 470 nm, as the demultiplexing describes.\n\"\"\"\n\nMD[\"check-opto\"] = \"\"\"\nEvery file holds 64 trains, 8 at each of 8 powers from 0.1 to 4 mW; the paper uses four of them (0.1, 0.5, 1 and 4 mW).\nThe table's own description gives 8 ms on and 8 ms off for 500 ms and only those four powers, but the table holds two\nkinds of train. In Anxa1 files one half of the session has 9 ms pulses every 10 ms for 0.33 s, the other 8 ms pulses\nevery 16 ms for 0.51 s; Calb1 files hold only the second kind. The paper's four powers fall on 0.51 s trains in 25\nfiles and on 0.33 s trains in two Anxa1 GS mice (3742 and 4885), so these two mice were stimulated differently from\nevery WT mouse; a variant of `fig6e-anxa1-evoked-reduced` leaves them out. One train each in mice 4652 and 740 has a\npulse length of 0, no period and one pulse, though it lasts 0.51 s like its neighbours, so its pulse columns are\nwrong. Trains of the same power come in pairs 15.3 to 15.5 s apart, and 51% of the gaps are under 20 s, where the\nMethods and the table description say at least 20 s.\n\"\"\"\n\nMD[\"check-clock\"] = \"\"\"\nAt the table's onsets the 0 to 0.5 s integral has a median of 13 to 260 % dF/F x s per file; 10 s later, between\ntrains, it is near zero in every file (lower in 27 of 27, Wilcoxon p = 1.5e-08), and the 405 nm control shows no\nresponse (medians -0.74 to 1.15). The mean response peaks 160 to 370 ms after onset. The mean trace rises by up to\n25 % dF/F in the 0.1 s before onset: the 20-sample moving mean of the stored dF/F spreads the response about 0.1 s\nearlier, which is why the code's baseline ends 0.1 s before onset. The epochs table and the photometry share a clock.\n\nThe response grows with the labelled power in every Calb1 file (Spearman 0.76 to 0.94) but not in many Anxa1 files\n(median 0.06). In Anxa1 files where 1.5, 2 and 3 mW are given as 0.33 s trains, those responses fall below the 0.5\nand 1 mW ones given as 0.51 s trains (for example mouse 4401). The power labels are consistent with the data in Calb1\nfiles; in Anxa1 files the data alone cannot confirm them. The labels of the four powers the paper uses are confirmed\nagainst its source data under `source-data-link`.\n\"\"\"\n\nMD[\"link\"] = \"\"\"\n## Claims\n\n### source-data-link\n\n> The dandiset's recordings are those behind the paper's Figure 6 and Supplementary Figures 7 and 8, and the paper's\n> published per-stimulation traces, evoked integrals and spontaneous transient integrals can be recomputed from them.\n\nRecords are matched by mouse ID, group, labelled power and the rank of the stimulation within its power. The source\ndata file is read in memory from Zenodo.\n\"\"\"\n\nMD[\"link-raw\"] = \"\"\"\nTo see why the Calb1 records differ, the dF/F is recomputed from the raw 470 nm signal in the dandiset with the\ncode's binning and baseline correction, at the code's background fraction (0.85 of the sliding 8th percentile) and at\nother fractions, and compared with the published triggered traces. The edges of the sliding percentile are not\nreproduced exactly, so the comparison with the stored series leaves out the first and last 30 s.\n\"\"\"\n\nMD[\"evoked-intro\"] = \"\"\"\n### Evoked integrals\n\nIntegrals for every train under the four windows: the Methods' light-on period (main), the code's -0.1 to 1.0 s\n(`code`), the window `chunking_index.m` computes as written, starting 1 s after onset (`code_as_written`), and a fixed\n0 to 0.5 s (`fixed`). All use the mean from 1.0 to 0.1 s before onset as baseline (shifted with the window for\n`code_as_written`).\n\"\"\"\n\nMD[\"fig6e\"] = \"\"\"\n### fig6e-anxa1-evoked-reduced\n\n> Optogenetically evoked dopamine release in the dorsolateral striatum (Anxa1+ projection region) at 0.5 mW is lower in\n> LRRK2-G2019S than in LRRK2-WT mice (64 against 56 stimulations, p = 1.10e-20, one-tailed two-sample t-test).\n\nThe plot shows the mean dF/F (shading: SEM over stimulations) at 0.5 mW, with the 405 nm control dashed, and the\nlight-on period shaded. All points are within the axes; the ranges are printed.\n\"\"\"\n\nMD[\"fig6e-per-mouse\"] = \"\"\"\n### fig6e-anxa1-evoked-per-mouse\n\n> Seven of eight individual G2019S mice show significantly reduced evoked dopamine release at 0.5 mW compared with the\n> WT group; mouse 3743 does not.\n\"\"\"\n\nMD[\"supp7c\"] = \"\"\"\n### supp7c-anxa1-evoked-all-powers\n\n> The reduction of evoked dopamine release in Anxa1 G2019S mice holds at each of the four stimulation powers, 0.1, 0.5,\n> 1 and 4 mW (p from 2.39e-16 to 1.10e-20).\n\"\"\"\n\nMD[\"spont-intro\"] = \"\"\"\n### Spontaneous transients\n\nTransients for every mouse, with the Methods' exclusion of 1 s before to 1.5 s after each onset (main) and with the\nwindow the code removes as written (1 s to 3.5 s after onset). Each transient's integral, peak and mean dF/F are kept.\n\"\"\"\n\nMD[\"fig6f\"] = \"\"\"\n### fig6f-anxa1-spontaneous-reduced\n\n> Spontaneous dopamine transients in the dorsolateral striatum are smaller in G2019S than in WT mice (1064 against 798\n> transients, p = 2.75e-177, one-tailed two-sample t-test), with 57 to 285 transients per mouse.\n\"\"\"\n\nMD[\"fig6f-per-mouse\"] = \"\"\"\n### fig6f-anxa1-spontaneous-per-mouse\n\n> Six of eight individual G2019S mice show significantly smaller spontaneous dopamine transients than the WT group;\n> mice 4651 and 3743 do not.\n\"\"\"\n\nMD[\"supp8c\"] = \"\"\"\n### supp8c-calb1-spontaneous-not-reduced\n\n> In the dorsomedial striatum (Calb1+ projection region), spontaneous dopamine transients are not reduced in G2019S\n> mice (970 against 682 transients, p = 0.98).\n\"\"\"\n\nMD[\"supp8e\"] = \"\"\"\n### supp8e-calb1-evoked-reduced\n\n> Evoked dopamine release in the dorsomedial striatum from Calb1+ neuron stimulation is reduced in G2019S mice at each\n> of four powers (56 against 40 stimulations per power, p from 6.45e-05 to 0.001).\n\"\"\"\n\nMD[\"supp8e-mice\"] = \"\"\"\n### supp8e-calb1-few-mice-reduced\n\n> Only 2 of 7 G2019S mice show reduced Calb1+ evoked dopamine release relative to the WT group.\n\"\"\"\n\nMD[\"cohen\"] = \"\"\"\n### cohens-d-anxa1-larger\n\n> The G2019S reduction of evoked release at 0.5 mW is much larger for Anxa1+ (Cohen's d = 2.05) than for Calb1+\n> stimulation (d = 0.76).\n\"\"\"\n\nMD[\"blocked\"] = \"\"\"\n### Blocked claims\n\nThese claims rest on data that are not in the dandiset, which holds only the photometry of Figure 6 and Supplementary\nFigures 7 and 8. The data exist elsewhere: images in the BioImage Archive (S-BIAD2070, S-BIAD2071, S-BIAD2072,\nS-BIAD2074), mass spectrometry in PRIDE (PXD065003, PXD065006, PXD065125), and per-section and per-blot values in the\nsource data file on Zenodo. The registry judges the dandiset, so they are recorded as blocked (`data_missing`).\n\n| Claim | Paper | Data |\n|---|---|---|\n| `fig1d-lrrk2-enriched-vulnerable` | LRRK2 higher in Aldh1a1+ SNc neurons | immunostaining images |\n| `fig2b-rab3-phosphorylation` | 289 phosphopeptides change with MLi-2 | phosphoproteomics |\n| `fig2eg-prab3-increased` | pRAB3A and pRAB3C up in G2019S | PhosTag western blots |\n| `fig3d-rim-binds-unphosphorylated` | RIM1 and RIM2 prefer unphosphorylated RAB3A | affinity purification MS |\n| `fig4d-fewer-active-zones` | Fewer bassoon+ TH+ synaptosomes | confocal images |\n| `fig4i-rim1-reduced` | RIM1 reduced in synaptosomes | western blots |\n| `fig5-bassoon-vulnerable-axons` | Bassoon clusters change in vulnerable axons | SIM images |\n| `fig5j-no-axon-loss` | No loss of TH+ fibres | confocal images |\n\"\"\"\n\nMD[\"summary\"] = \"\"\"\n## Summary\n\n| Claim | Outcome |\n|---|---|\n| `source-data-link` | not reproduced (Anxa1 links; Calb1 does not) |\n| `fig6e-anxa1-evoked-reduced` | reproduced |\n| `fig6e-anxa1-evoked-per-mouse` | reproduced |\n| `supp7c-anxa1-evoked-all-powers` | reproduced |\n| `fig6f-anxa1-spontaneous-reduced` | reproduced |\n| `fig6f-anxa1-spontaneous-per-mouse` | partially reproduced |\n| `supp8c-calb1-spontaneous-not-reduced` | reproduced (p = 0.0509, at the threshold) |\n| `supp8e-calb1-evoked-reduced` | reproduced |\n| `supp8e-calb1-few-mice-reduced` | partially reproduced |\n| `cohens-d-anxa1-larger` | not reproduced |\n| Eight claims of Figures 1 to 5 | blocked, data missing |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences\nfrom the paper's method.\n\nHow the analysis differs from the paper's:\n\n- The evoked integral is taken over the light-on period, as the Methods state; the paper's numbers come from the code's\n  window, 0.1 s before to 1.0 s after onset (its published integrals equal that measure times 0.0001). Both are shown.\n- Spontaneous transients are measured by their integral, as the Methods state; the paper's published values are 0.005\n  times the mean dF/F over each transient. Both are shown.\n- Per-mouse tests are shown under four readings, as the Methods (Welch), the legends (one-tailed) and the code\n  (Student, two-tailed) disagree.\n- The window `chunking_index.m` computes as written starts 1 s after onset; the source data show the paper used the\n  intended window starting 1 s before onset. The literal window is shown as a variant only.\n\nWhat was found about the dandiset:\n\n- The Anxa1 recordings are those behind Figure 6 and Supplementary Figure 7: the published traces equal the dandiset's\n  dF/F to 1e-12, and the evoked integrals and transient counts match, except one stimulation of mouse 4398 that the\n  processed series cuts off 0.8 s after onset.\n- The Calb1 dF/F in the dandiset is not the trace behind Supplementary Figure 8. None of the 384 published traces or\n  integrals match it, and recomputing from the raw signal with any single background fraction does not close the gap.\n  The raw signal is there, but the processing the paper used for Calb1 is not, so the Calb1 results here are of the\n  dandiset's processing, not the paper's.\n- The epochs table describes one kind of train and four powers; the files hold two kinds of train and eight powers, and\n  two Anxa1 GS mice received the paper's powers as 0.33 s trains of 9 ms pulses.\n- The dF/F unit is given as `a.u.` for a series in percent; two trains have a pulse length of 0; the four excluded mice\n  are left out without a note; and the paper does not cite the dandiset.\n\"\"\"\n\nRESULT[\"source-data-link\"] = \"\"\"\n**Result: not reproduced.** All 27 mice in the source data are in the dandiset with the same genotype and line. For\nAnxa1 the link holds: 120 of 120 triggered traces of Figure 6C and 479 of 480 of Supplementary Figure 7B equal the\ndandiset's dF/F from 1 s before onset (largest difference 5.7e-13 in Figure 6C), the published evoked integrals equal\nthe code's measure times 0.0001 for all Anxa1 records except one (119 of 120 at 4 mW), and the transient counts match\nfor 15 of 15 mice. The two Anxa1 misses are the last 4 mW stimulation of mouse 4398, whose processed series ends 0.8 s\nafter onset. For Calb1 none of the 384 traces and none of the 384 integrals match, and the transient counts match for\n1 of 12 mice. dF/F recomputed from the raw signal with the code's processing reproduces the stored Calb1 series (largest\ndifference 1.47 % dF/F) but not the published traces (median differences 66 to 519 % dF/F at the code's background\nfraction, and 22 to 88 at the best fraction for each mouse). The published spontaneous values are 0.005 times the mean\ndF/F over each transient (ratio 0.004994 to 0.004999 in the 15 Anxa1 mice), not its integral, so part (4) as the\ncriterion fixed it matches for no mouse. Scored as the criterion sets out, the four parts match for 1.0, 0.609, 0.609\nand 0 of their records; with the transient mean in part (4), 0.481. The Figure 6E integrals match the 0.5 mW\nepochs (120 of 120) and none of the 4 mW ones, so the figure uses the power its legend states. The published values\nreproduce the paper's statistics (Figure 6E p = 1.1e-20, Supplementary Figure 8C p = 0.989, Cohen's d 2.06 and 0.765).\n\"\"\"\n\nRESULT[\"fig6e-anxa1-evoked-reduced\"] = \"\"\"\n**Result: reproduced.** At 0.5 mW there are 64 GS and 56 WT stimulations, as in the paper. The mean integral over the\nlight-on period is 48.8 against 128.0 % dF/F x s, one-tailed p = 1.16e-22 (paper 1.10e-20), Cohen's d 2.21. With the\ncode's window p = 1.1e-20, the paper's value. The reduction holds at 4 mW (p = 9.9e-18), without the two GS mice given\n0.33 s trains (p = 4.16e-17), and with one value per mouse (Welch p = 0.000434). The window `chunking_index.m` computes\nas written reverses the sign (one-tailed p = 1, means -11.8 and -33), as it starts 1 s after onset. Every GS mouse\nexcept 3743 has a lower mean than every WT mouse (GS 3.28 to 82.33 without 3743, WT 90.86 to 190.21).\n\"\"\"\n\nRESULT[\"fig6e-anxa1-evoked-per-mouse\"] = \"\"\"\n**Result: reproduced.** Under all four readings 7 of 8 GS mice are below the WT group at p < 0.05/8, and 3743 is the\nexception (mean 125 against 128, Welch one-tailed p = 0.362), as in the paper. The Student one-tailed p-values are of\nthe same order as the legend's, for example 1.01e-04 against 4.0e-04 for 4651 and 3.73e-16 against 4.14e-15 for 3742.\nWith the code's window the count is 7 under every reading, and at 4 mW it is 7 under the Welch readings.\n\"\"\"\n\nRESULT[\"supp7c-anxa1-evoked-all-powers\"] = \"\"\"\n**Result: reproduced.** GS integrals are lower at all four powers, one-tailed p from 3.13e-15 (0.1 mW) to 1.16e-22\n(0.5 mW) with the Methods' window. With the code's window the p-values at 0.1, 0.5 and 1 mW are 1.29e-15, 1.1e-20 and\n1.22e-17, the paper's values; at 4 mW it is 5.62e-16 against 2.39e-16, as the dandiset has 55 WT stimulations there in\nplace of 56.\n\"\"\"\n\nRESULT[\"fig6f-anxa1-spontaneous-reduced\"] = \"\"\"\n**Result: reproduced.** The Methods' detection gives 1064 GS and 798 WT transients, the paper's counts, with 57 to 285\nper mouse, the paper's range. Mean integrals are 131.9 against 302.9 % dF/F x s, one-tailed p = 4.85e-72 (paper\n2.75e-177). The published values are the mean dF/F over each transient (see `source-data-link`); with that measure\np = 2.23e-177. With one value per mouse the difference gives Welch p = 0.0318, and the code's exclusion window as\nwritten gives p = 1.3e-68 on 648 and 363 transients.\n\"\"\"\n\nRESULT[\"fig6f-anxa1-spontaneous-per-mouse\"] = \"\"\"\n**Result: partially reproduced.** By the integral, 5 of 8 GS mice are below the WT group under every reading. The\nexceptions are 3743 (Welch one-tailed p = 0.431), 4651, whose mean (417) is above the WT mean (303), and 4652\n(p = 0.0128). With the mean dF/F over each transient, the measure of the published values, reading (d) gives 6 of 8\nwith 3743 and 4651 as the exceptions, and p-values close to the legend's (4651 0.00819 against 0.008, 3743 0.965\nagainst 0.97, 3742 5.38e-88 against 5.28e-88). The Welch readings give 7 there, as 4651 reaches p = 1.5e-05, so the\npaper's count follows the one-tailed Student test of its legend, not the Welch test of its Methods.\n\"\"\"\n\nRESULT[\"supp8c-calb1-spontaneous-not-reduced\"] = \"\"\"\n**Result: reproduced.** By the paper's test, GS transients are not significantly smaller: one-tailed p = 0.0509 on 896\nGS and 635 WT transients (both within tolerance of 970 and 682), difference of means 21.1 % dF/F x s, Cohen's d 0.085.\nThe result sits at the threshold. With the mean dF/F over each transient, the measure of the published values, GS are\nlower at p = 2.25e-09 (d = 0.306), and with the code's exclusion window as written at p = 1.81e-05; with one value per\nmouse, Welch p = 0.402. The dandiset's Calb1 dF/F is not the trace the paper analysed (see `source-data-link`), and\nthe published values give p = 0.989.\n\"\"\"\n\nRESULT[\"supp8e-calb1-evoked-reduced\"] = \"\"\"\n**Result: reproduced.** There are 56 GS and 40 WT stimulations per power, as in the paper. GS are lower at all four\npowers, one-tailed p from 4.38e-07 (4 mW) to 6.29e-10 (0.5 mW), smaller p-values than the paper's 6.45e-05 to 0.001;\nthe published integrals do not come from the dandiset's Calb1 dF/F (see `source-data-link`).\n\"\"\"\n\nRESULT[\"supp8e-calb1-few-mice-reduced\"] = \"\"\"\n**Result: partially reproduced.** At 0.5 mW, the number of GS mice below the WT group at p < 0.05/7 is 7 (Welch\none-tailed), 6 (Welch two-tailed) and 4 (Student, either tail), against the paper's 2; the closest reading gives 4.\nStudent tests give 2 at 0.1 and 1 mW and 1 or 3 at 4 mW, so the count depends on power and test. Mouse 740 (mean 17.3\nagainst 131) is below the WT group under every reading.\n\"\"\"\n\nRESULT[\"cohens-d-anxa1-larger\"] = \"\"\"\n**Result: not reproduced.** At 0.5 mW, Cohen's d is 2.21 for Anxa1, within tolerance of 2.05, and 1.40 for Calb1,\nagainst 0.76 (tolerance 0.684 to 0.836); their ratio is 1.58, below the factor of 2 the criterion asks. With the code's\nwindow d is 2.06 and 1.25. The published integrals give 2.06 and 0.765 (see `source-data-link`), so the paper's values\nfollow from its own data, and the Calb1 difference is consistent with the Calb1 dF/F in the dandiset not being the one\nthe paper analysed. The Anxa1 effect is larger than the Calb1 effect at every power under the Methods, code and fixed\nwindows (ratio 1.29 to 1.74).\n\"\"\"\n"
+ "file_path": "entries/001933-chen-2026/archives.py",
+ "content": "\"\"\"Loading and measures for the data of Chen, He et al. (2026) that are not in dandiset 001933.\n\nThe paper deposited the data of Figures 1 to 5 in other public archives: the tabular values\nbehind every figure and the uncropped blots on Zenodo (doi:10.5281/zenodo.19930567), the mass\nspectrometry in PRIDE (PXD065003, PXD065006, PXD065125) and the images in the BioImage Archive\n(S-BIAD2070, S-BIAD2071, S-BIAD2072, S-BIAD2074). Everything here is read in memory from those\narchives; nothing is written to disk.\n\nWhere the parameters come from:\n\n- Statistics follow the figure legends: two-tailed unpaired Student t-tests for two groups,\n  a two-way ANOVA with Sidak-adjusted comparisons (Figures 2E, 2G, 5D and 5E), and paired\n  two-sided t-tests for the pulldowns of Figure 3E and 3F. Sidak comparisons use the pooled\n  residual variance of the ANOVA, as GraphPad Prism does.\n- Phosphopeptides (Figure 2B): log2 abundances, two-tailed unpaired t-test, p <= 0.05 and\n  |difference of log2 means| > 0.58, the legend's thresholds. Which peptides enter the test is\n  not stated; ``min_values`` sets how many values each group needs.\n- Pulldowns (Figure 3): log2 DIA-NN intensities. The imputation variant follows the Methods\n  (draws from a Gaussian centred at the 1% quantile of each sample); its width, 0.3 times the\n  sample's standard deviation, is a common choice (Perseus), as the Methods give none.\n- Synaptosome images (Figure 4D and 4E): the Methods' FIJI procedure. Rolling-ball background\n  of radius 33 pixels, done as ImageJ does it (3x3 mean, shrink by 4 with the minimum, ball of\n  radius 33/4, bilinear enlargement); ImageJ's Default threshold (the IJ IsoData variant with\n  the mode bin limited) on a 256-bin histogram, objects bright; particles 8-connected, area\n  0.04 to 0.40 um2 (TH 0.06 to 0.60) and circularity 0.30 to 1.00; positive for a protein when\n  the mean intensity in the particle is more than twice the image mean. The perimeter behind\n  the circularity is scikit-image's, not ImageJ's traced polygon.\n\"\"\"\n\nimport hashlib\nimport io\nimport json\nimport re\nfrom concurrent.futures import ThreadPoolExecutor\nfrom functools import lru_cache\n\nimport numpy as np\nimport pandas as pd\nimport requests\nfrom scipy import ndimage, stats\n\nZENODO_RECORD = \"https://zenodo.org/api/records/19930567\"\nSOURCE_DATA_URL = ZENODO_RECORD + \"/files/Source%20data.xlsx/content\"\nSOURCE_DATA_MD5 = \"c26fe3de8f340a3db5fa29a40e5a8c10\"\nSUPPLEMENTARY_URL = ZENODO_RECORD + \"/files/Supplementary%20files.zip/content\"\nPRIDE = \"https://ftp.pride.ebi.ac.uk/pride/data/archive/2026/05/\"\nPHOSPHOPEPTIDES_URL = PRIDE + \"PXD065006/020623-Loukia-mouse-synaptosome-phos-quant_phosphopeptides.xlsx\"\nPULLDOWN_URL = PRIDE + \"PXD065125/FilteredDataset.pg_matrix.Brain_Rab3A.csv\"\nPULLDOWN_REPORT_URL = PRIDE + \"PXD065125/report.pg_matrix.tsv\"\nPULLDOWN_LIMMA_URL = PRIDE + \"PXD065125/Brain_Rab3A.DifferentialAbundance_volcano.csv\"\nPULLDOWN_SDRF_URL = PRIDE + \"PXD065125/PXD065125_community_annotated.sdrf.tsv\"\nBIA = \"https://ftp.ebi.ac.uk/biostudies/fire/S-BIAD/{n}/S-BIAD2{n}/Files/\"\nBIA_FILE_LISTS = {\"S-BIAD2070\": \"LRRK2 expression.json\", \"S-BIAD2071\": \"Terminal analysis.json\",\n                  \"S-BIAD2072\": \"TH-VMAT2.json\", \"S-BIAD2074\": \"synaptosome.json\"}\nPIXEL_UM = 0.031074  # synaptosome images, from their OME metadata (checked in the notebook)\n\n\ndef fetch(url):\n    \"\"\"Bytes of a file and their md5.\"\"\"\n    content = requests.get(url, timeout=600).content\n    return content, hashlib.md5(content).hexdigest()\n\n\n@lru_cache(maxsize=None)\ndef source_workbook():\n    import openpyxl\n\n    content, md5 = fetch(SOURCE_DATA_URL)\n    return md5, openpyxl.load_workbook(io.BytesIO(content), read_only=True, data_only=True)\n\n\ndef sheet(name):\n    \"\"\"Rows of a source data sheet, trailing empty cells removed.\"\"\"\n    rows = []\n    for r in source_workbook()[1][name].iter_rows(values_only=True):\n        r = list(r)\n        while r and r[-1] is None:\n            r.pop()\n        rows.append(r)\n    return rows\n\n\ndef _num(v):\n    return isinstance(v, (int, float)) and not isinstance(v, bool)\n\n\ndef _col(rows, first, c):\n    return [r[c] for r in rows[first:] if len(r) > c and _num(r[c])]\n\n\ndef fig1d():\n    \"\"\"Per-section mean LRRK2 intensity in Aldh1a1- and Aldh1a1+ neurons, with mouse.\"\"\"\n    out, mouse = [], None\n    for r in sheet(\"Fig. 1c-d\")[3:]:\n        if len(r) > 13 and _num(r[11]):\n            mouse = int(r[10]) if _num(r[10]) else mouse\n            out.append({\"mouse\": mouse, \"section\": int(r[11]), \"neg\": float(r[12]), \"pos\": float(r[13])})\n    return pd.DataFrame(out)\n\n\ndef fig2eg():\n    \"\"\"p-RAB3A (2E) and p-RAB3C (2G) ratios for WT, GS and GS with MLi-2.\"\"\"\n    rows = sheet(\"Fig. 2d-f\")\n    out = {}\n    for name, c0 in ((\"RAB3A\", 0), (\"RAB3C\", 9)):\n        out[name] = {g: np.array(_col(rows, 3, c0 + k), float) for k, g in ((1, \"WT\"), (2, \"GS\"), (3, \"GS+MLi2\"))}\n    return out\n\n\ndef fig4de():\n    \"\"\"Per-area values: percentage of TH+/VAMP2+ synaptosomes with bassoon (4D), bassoon area (4E).\"\"\"\n    rows = sheet(\"Fig. 4d-e\")\n    out = []\n    for panel, c0 in ((\"4D\", 0), (\"4E\", 6)):\n        rep = None\n        for r in rows[2:]:\n            if len(r) > c0 + 1 and _num(r[c0 + 1]):\n                rep = int(r[c0]) if _num(r[c0]) else rep\n                for k, g in ((2, \"WT\"), (3, \"GS\")):\n                    if len(r) > c0 + k and _num(r[c0 + k]):\n                        out.append({\"panel\": panel, \"replicate\": rep, \"area\": int(r[c0 + 1]), \"group\": g,\n                                    \"value\": float(r[c0 + k])})\n    return pd.DataFrame(out)\n\n\ndef fig4():\n    \"\"\"Western blot values of Figure 4G to 4L, by panel: WT and GS arrays.\"\"\"\n    rows = sheet(\"Fig. 4f-J\")\n    out = {}\n    for panel, c0 in ((\"4G\", 0), (\"4H\", 4), (\"4I\", 8), (\"4J\", 12)):\n        out[panel] = {\"WT\": np.array(_col(rows, 3, c0 + 1), float), \"GS\": np.array(_col(rows, 3, c0 + 2), float)}\n    rows = sheet(\"Fig. 4k-l \")\n    out[\"4L\"] = {\"WT\": np.array(_col(rows, 3, 1), float), \"GS\": np.array(_col(rows, 3, 2), float)}\n    return out\n\n\ndef fig5de():\n    \"\"\"Per-section bassoon cluster density (5D) and volume (5E) in Aldh1a1+ and Aldh1a1- axons.\"\"\"\n    rows = sheet(\"Fig. 5d-e\")\n    out = []\n    for panel, start in ((\"5D\", 1), (\"5E\", 7)):\n        head, animals, sections, pos, neg = rows[start:start + 5]\n        gs_from = head.index(\"GS\")\n        mouse = None\n        for c in range(1, len(sections)):\n            if not _num(sections[c]):\n                continue\n            mouse = int(animals[c]) if c < len(animals) and _num(animals[c]) else mouse\n            group = \"GS\" if c >= gs_from else \"WT\"\n            for cell, vals in ((\"Aldh1a1+\", pos), (\"Aldh1a1-\", neg)):\n                v = vals[c] if c < len(vals) else None\n                out.append({\"panel\": panel, \"group\": group, \"mouse\": mouse, \"column\": c,\n                            \"section\": int(sections[c]), \"cell\": cell, \"value\": float(v) if _num(v) else np.nan})\n    return pd.DataFrame(out)\n\n\ndef fig5gh():\n    \"\"\"Per-section bassoon density (5G) and volume (5H) in Anxa1+ axons; the animal column as given.\"\"\"\n    rows = sheet(\"Fig. 5g-h\")\n    out = []\n    for panel, c0 in ((\"5G\", 0), (\"5H\", 5)):\n        animal = None\n        for r in rows[2:]:\n            if len(r) > c0 + 1 and _num(r[c0 + 1]):\n                animal = int(r[c0]) if _num(r[c0]) else animal\n                for k, g in ((2, \"WT\"), (3, \"GS\")):\n                    if len(r) > c0 + k and _num(r[c0 + k]):\n                        out.append({\"panel\": panel, \"animal_column\": animal, \"section\": int(r[c0 + 1]),\n                                    \"group\": g, \"value\": float(r[c0 + k])})\n    return pd.DataFrame(out)\n\n\ndef fig5j():\n    rows = sheet(\"Fig. 5j\")\n    out, animal = [], None\n    for r in rows[1:]:\n        if len(r) > 1 and _num(r[1]):\n            animal = int(r[0]) if _num(r[0]) else animal\n            for k, g in ((2, \"WT\"), (3, \"GS\")):\n                if len(r) > k and _num(r[k]):\n                    out.append({\"animal_column\": animal, \"section\": int(r[1]), \"group\": g, \"value\": float(r[k])})\n    return pd.DataFrame(out)\n\n\n# Statistics -------------------------------------------------------------------------------\n\ndef ttest(a, b, equal_var=True):\n    \"\"\"Two-tailed unpaired t-test of a against b: t, p.\"\"\"\n    r = stats.ttest_ind(a, b, equal_var=equal_var)\n    return float(r.statistic), float(r.pvalue)\n\n\ndef cohens_d(a, b):\n    \"\"\"(mean a - mean b) / pooled standard deviation.\"\"\"\n    n1, n2 = len(a), len(b)\n    sp = np.sqrt(((n1 - 1) * np.var(a, ddof=1) + (n2 - 1) * np.var(b, ddof=1)) / (n1 + n2 - 2))\n    return float((np.mean(a) - np.mean(b)) / sp)\n\n\ndef sidak(p, m):\n    return 1 - (1 - p) ** m\n\n\ndef pooled_contrasts(groups, pairs, m=None):\n    \"\"\"Pairwise contrasts of group means on the pooled within-group variance (one-way model).\n\n    ``groups``: name -> values. Returns one row per pair with the difference (first minus\n    second), t, df, the raw two-tailed p and the Sidak-adjusted p over ``m`` comparisons\n    (default: the number of pairs).\"\"\"\n    m = m or len(pairs)\n    vals = list(groups.values())\n    n = sum(len(v) for v in vals)\n    df = n - len(vals)\n    mse = sum(((v - v.mean()) ** 2).sum() for v in vals) / df\n    out = []\n    for a, b in pairs:\n        x, y = groups[a], groups[b]\n        t = (x.mean() - y.mean()) / np.sqrt(mse * (1 / len(x) + 1 / len(y)))\n        p = 2 * stats.t.sf(abs(t), df)\n        out.append({\"pair\": f\"{a} vs {b}\", \"diff\": x.mean() - y.mean(), \"t\": t, \"df\": df, \"F\": t ** 2,\n                    \"p\": p, \"p_sidak\": sidak(p, m)})\n    return pd.DataFrame(out)\n\n\ndef twoway_anova(df, value=\"value\", a=\"cell\", b=\"group\"):\n    \"\"\"Two-way ANOVA with interaction, type III sums of squares (effect coding), as Prism uses for\n    unequal group sizes. Returns a table of F, df and p, and the residual mean square and df.\"\"\"\n    d = df.dropna(subset=[value])\n    la, lb = sorted(d[a].unique()), sorted(d[b].unique())\n    xa = np.where(d[a] == la[0], 1.0, -1.0)\n    xb = np.where(d[b] == lb[0], 1.0, -1.0)\n    y = d[value].to_numpy(float)\n    full = np.column_stack([np.ones_like(y), xa, xb, xa * xb])\n\n    def rss(x):\n        beta, *_ = np.linalg.lstsq(x, y, rcond=None)\n        return float(((y - x @ beta) ** 2).sum())\n\n    rss_full = rss(full)\n    df_res = len(y) - 4\n    mse = rss_full / df_res\n    rows = []\n    for name, k in ((a, 1), (b, 2), (\"interaction\", 3)):\n        f = (rss(np.delete(full, k, axis=1)) - rss_full) / mse\n        rows.append({\"factor\": name, \"F\": f, \"df\": f\"1, {df_res}\", \"p\": float(stats.f.sf(f, 1, df_res))})\n    return pd.DataFrame(rows), mse, df_res\n\n\ndef sidak_within(df, mse, df_res, value=\"value\", a=\"cell\", b=\"group\", first=\"GS\", second=\"WT\"):\n    \"\"\"GS against WT within each level of ``a`` on the pooled variance, Sidak over the levels.\"\"\"\n    d = df.dropna(subset=[value])\n    levels = sorted(d[a].unique())\n    out = []\n    for lev in levels:\n        x = d[(d[a] == lev) & (d[b] == first)][value].to_numpy(float)\n        y = d[(d[a] == lev) & (d[b] == second)][value].to_numpy(float)\n        t = (x.mean() - y.mean()) / np.sqrt(mse * (1 / len(x) + 1 / len(y)))\n        p = 2 * stats.t.sf(abs(t), df_res)\n        out.append({a: lev, f\"n_{first}\": len(x), f\"n_{second}\": len(y), f\"mean_{first}\": x.mean(),\n                    f\"mean_{second}\": y.mean(), \"t\": t, \"p\": p, \"p_sidak\": sidak(p, len(levels))})\n    return pd.DataFrame(out)\n\n\n# Proteomics -------------------------------------------------------------------------------\n\ndef phosphopeptides():\n    \"\"\"The peptide groups table of PXD065006 and its md5.\"\"\"\n    content, md5 = fetch(PHOSPHOPEPTIDES_URL)\n    return pd.read_excel(io.BytesIO(content)), md5\n\n\ndef volcano_test(pp, min_values):\n    \"\"\"Per phosphopeptide: log2 abundances, two-tailed Student t-test vehicle against MLi-2.\n\n    Peptides with fewer than ``min_values`` values in either group are left out.\"\"\"\n    veh = [c for c in pp.columns if c.startswith(\"Abundance\") and \"Vehicle\" in c]\n    mli = [c for c in pp.columns if c.startswith(\"Abundance\") and \"MLi2\" in c]\n    a, b = np.log2(pp[veh].to_numpy(float)), np.log2(pp[mli].to_numpy(float))\n    keep = (np.isfinite(a).sum(1) >= min_values) & (np.isfinite(b).sum(1) >= min_values)\n    a, b = a[keep], b[keep]\n    diff = np.nanmean(a, 1) - np.nanmean(b, 1)\n    p = stats.ttest_ind(a, b, axis=1, nan_policy=\"omit\").pvalue\n    out = pp.loc[keep, [\"Gene Name\", \"Annotated Sequence\", \"Modifications\", \"Modifications in Master Proteins\"]].copy()\n    out[\"diff\"], out[\"p\"] = diff, np.asarray(p, float)\n    out[\"altered\"] = (out.p <= 0.05) & (out[\"diff\"].abs() > 0.58)\n    return out\n\n\ndef supplementary_data():\n    \"\"\"The Supplementary data files (Zenodo, Supplementary files.zip): name -> bytes.\"\"\"\n    import zipfile\n\n    content, md5 = fetch(SUPPLEMENTARY_URL)\n    z = zipfile.ZipFile(io.BytesIO(content))\n    return {n: z.read(n) for n in z.namelist() if n.endswith(\".xlsx\")}, md5\n\n\ndef pulldown():\n    \"\"\"DIA-NN protein intensities of the six p-RAB3A and six RAB3A pulldowns (PXD065125).\n\n    Returns the table (log2, columns phos_1..6 and unphos_1..6 in run order) and the md5.\"\"\"\n    content, md5 = fetch(PULLDOWN_URL)\n    d = pd.read_csv(io.BytesIO(content))\n    phos = [c for c in d.columns if c.startswith(\"phosRab3Brain\")]\n    unphos = [c for c in d.columns if c.startswith(\"Rab3Brain\")]\n    out = d[[\"Genes\", \"Protein.Group\"]].copy()\n    for k, c in enumerate(phos, 1):\n        out[f\"phos_{k}\"] = np.log2(d[c].astype(float))\n    for k, c in enumerate(unphos, 1):\n        out[f\"unphos_{k}\"] = np.log2(d[c].astype(float))\n    return out, md5, list(d.columns)\n\n\ndef paired_test(row):\n    \"\"\"Paired two-sided t-test, RAB3A against p-RAB3A, over replicates with both values.\"\"\"\n    a = np.array([row[f\"unphos_{k}\"] for k in range(1, 7)], float)\n    b = np.array([row[f\"phos_{k}\"] for k in range(1, 7)], float)\n    ok = np.isfinite(a) & np.isfinite(b)\n    if ok.sum() < 2:\n        return {\"pairs\": int(ok.sum()), \"log2FC_unphos_minus_phos\": np.nan, \"p\": np.nan}\n    r = stats.ttest_rel(a[ok], b[ok])\n    return {\"pairs\": int(ok.sum()), \"log2FC_unphos_minus_phos\": float(np.mean(a[ok] - b[ok])), \"p\": float(r.pvalue)}\n\n\ndef impute(d, cols, rng, width=0.3):\n    \"\"\"The Methods' imputation: missing log2 values drawn per sample from a Gaussian centred at\n    the sample's 1% quantile, with ``width`` times its standard deviation.\"\"\"\n    out = d.copy()\n    for c in cols:\n        v = out[c].to_numpy(float)\n        ok = np.isfinite(v)\n        fill = rng.normal(np.quantile(v[ok], 0.01), width * v[ok].std(), size=(~ok).sum())\n        v[~ok] = fill\n        out[c] = v\n    return out\n\n\n# Images -----------------------------------------------------------------------------------\n\ndef bia_files(accession):\n    \"\"\"The file list of a BioImage Archive study: path, size and attributes.\"\"\"\n    n = accession[-3:]\n    url = BIA.format(n=n) + requests.utils.quote(BIA_FILE_LISTS[accession])\n    files = json.loads(requests.get(url, timeout=120).content)\n    return pd.DataFrame([{\"path\": f[\"path\"], \"size\": f[\"size\"],\n                          **{a[\"name\"]: a[\"value\"] for a in f.get(\"attributes\", [])}} for f in files])\n\n\ndef read_synaptosome_image(path):\n    \"\"\"One synaptosome image of S-BIAD2074 (three channels), its md5 and pixel size in um.\"\"\"\n    import tifffile\n\n    content, md5 = fetch(BIA.format(n=\"074\") + requests.utils.quote(path))\n    with tifffile.TiffFile(io.BytesIO(content)) as tf:\n        img = tf.asarray().astype(float)\n        m = re.search(r'PhysicalSizeX=\"([0-9.]+)\"', tf.ome_metadata or \"\")\n    return img, md5, float(m.group(1)) if m else np.nan\n\n\ndef rolling_ball(channel, radius=33):\n    \"\"\"ImageJ's rolling-ball background (bright objects), returned subtracted and clipped at 0.\"\"\"\n    from skimage.restoration import rolling_ball as skball\n    from skimage.transform import resize\n\n    shrink = 1 if radius <= 10 else 2 if radius <= 30 else 4 if radius <= 100 else 8\n    smooth = ndimage.uniform_filter(channel, 3, mode=\"nearest\")\n    h, w = smooth.shape\n    small = smooth[:h - h % shrink, :w - w % shrink].reshape(h // shrink, shrink, w // shrink, shrink).min(axis=(1, 3))\n    bg_small = skball(small, radius=radius / shrink)\n    bg = resize(bg_small, (h, w), order=1, mode=\"edge\", anti_aliasing=False)\n    return np.clip(channel - np.minimum(bg, channel), 0, None)\n\n\ndef ij_default_threshold(channel):\n    \"\"\"ImageJ's Default auto-threshold (IJ IsoData with the mode limited), on a 256-bin histogram\n    from the channel's minimum to its maximum. Returns the intensity above which pixels are\n    foreground.\"\"\"\n    lo, hi = float(channel.min()), float(channel.max())\n    hist, _ = np.histogram(channel, bins=256, range=(lo, hi))\n    data = hist.astype(float)\n    mode = int(np.argmax(data))\n    second = np.max(np.delete(data, mode))\n    if data[mode] > 2 * second and second != 0:\n        data[mode] = int(second * 1.5)\n    data[0] = 0\n    data[255] = 0\n    nz = np.nonzero(data)[0]\n    if len(nz) < 2:\n        return lo + (hi - lo) / 2\n    mn, mx = nz[0], nz[-1]\n    i = np.arange(256)\n    moving = mn\n    while True:\n        s1, s2 = (i[mn:moving + 1] * data[mn:moving + 1]).sum(), data[mn:moving + 1].sum()\n        s3, s4 = (i[moving + 1:mx + 1] * data[moving + 1:mx + 1]).sum(), data[moving + 1:mx + 1].sum()\n        result = (s1 / s2 + s3 / s4) / 2\n        moving += 1\n        if not ((moving + 1) <= result and moving < mx - 1):\n            break\n    level = int(round(result))\n    return lo + (level + 1) * (hi - lo) / 256\n\n\ndef particles(channel, pixel_um, area_um2, circularity=(0.30, 1.00)):\n    \"\"\"Analyze Particles: label image of the particles that pass the size and circularity limits.\"\"\"\n    from skimage.measure import label, regionprops\n\n    lab = label(channel >= ij_default_threshold(channel), connectivity=2)\n    keep = np.zeros(lab.max() + 1, bool)\n    px2 = pixel_um ** 2\n    for r in regionprops(lab):\n        a = r.area * px2\n        per = r.perimeter * pixel_um\n        circ = min(1.0, 4 * np.pi * a / per ** 2) if per > 0 else 1.0\n        keep[r.label] = area_um2[0] <= a <= area_um2[1] and circularity[0] <= circ <= circularity[1]\n    lab[~keep[lab]] = 0\n    return lab\n\n\ndef _means(values, lab):\n    idx = np.arange(1, lab.max() + 1)\n    return np.asarray(ndimage.mean(values, lab, idx)), idx\n\n\ndef synaptosome_fraction(img, pixel_um, channels=(0, 1, 2)):\n    \"\"\"Figure 4D on one image: of the VAMP2 particles that are VAMP2+ and TH+, the percentage that\n    are bassoon+. ``channels`` = (bassoon, TH, VAMP2).\"\"\"\n    bsn, th, vamp = (rolling_ball(img[c]) for c in channels)\n    lab = particles(vamp, pixel_um, (0.04, 0.40))\n    present = np.unique(lab[lab > 0])\n    if len(present) == 0:\n        return {\"vamp2_particles\": 0, \"th_vamp2\": 0, \"bassoon_th_vamp2\": 0, \"percent\": np.nan}\n    mv = np.asarray(ndimage.mean(vamp, lab, present))\n    mt = np.asarray(ndimage.mean(th, lab, present))\n    mb = np.asarray(ndimage.mean(bsn, lab, present))\n    v_pos = mv > 2 * vamp.mean()\n    double = v_pos & (mt > 2 * th.mean())\n    triple = double & (mb > 2 * bsn.mean())\n    return {\"vamp2_particles\": int(len(present)), \"vamp2_pos\": int(v_pos.sum()), \"th_vamp2\": int(double.sum()),\n            \"bassoon_th_vamp2\": int(triple.sum()),\n            \"percent\": 100 * triple.sum() / double.sum() if double.sum() else np.nan}\n\n\ndef synaptosome_area(img, pixel_um, channels=(0, 1, 2)):\n    \"\"\"Figure 4E on one image: the overlaps of bassoon and TH particles that are VAMP2+, and their\n    mean area, read as (i) the overlap's area and (ii) the area of the bassoon particle.\"\"\"\n    from skimage.measure import label\n\n    bsn, th, vamp = (rolling_ball(img[c]) for c in channels)\n    lb = particles(bsn, pixel_um, (0.04, 0.40))\n    lt = particles(th, pixel_um, (0.06, 0.60))\n    lo = label((lb > 0) & (lt > 0), connectivity=2)\n    present = np.unique(lo[lo > 0])\n    if len(present) == 0:\n        return {\"overlaps\": 0, \"vamp2_pos\": 0, \"area_overlap\": np.nan, \"area_bassoon\": np.nan}\n    px2 = pixel_um ** 2\n    mv = np.asarray(ndimage.mean(vamp, lo, present))\n    pos = present[mv > 2 * vamp.mean()]\n    if len(pos) == 0:\n        return {\"overlaps\": int(len(present)), \"vamp2_pos\": 0, \"area_overlap\": np.nan, \"area_bassoon\": np.nan}\n    ov_area = np.asarray(ndimage.sum(np.ones_like(vamp), lo, pos)) * px2\n    b_sizes = np.bincount(lb.ravel()) * px2\n    b_ids = sorted({int(np.bincount(lb[lo == k]).argmax()) for k in pos})\n    return {\"overlaps\": int(len(present)), \"vamp2_pos\": int(len(pos)), \"area_overlap\": float(ov_area.mean()),\n            \"area_bassoon\": float(b_sizes[b_ids].mean())}\n\n\ndef analyse_synaptosomes(files, workers=8):\n    \"\"\"Stream every image in ``files`` (paths in S-BIAD2074) and run both measures on it.\"\"\"\n\n    def one(path):\n        img, md5, px = read_synaptosome_image(path)\n        name = path.split(\"/\")[-1]\n        m = re.match(r\"Export_(wt|ki)(\\d+)_BSN(\\d+)\", name, re.I)\n        row = {\"path\": path, \"folder\": path.split(\"/\")[-2], \"group\": \"WT\" if m.group(1).lower() == \"wt\" else \"GS\",\n               \"mouse\": int(m.group(2)), \"image\": int(m.group(3)), \"md5\": md5, \"pixel_um\": px,\n               \"shape\": \"x\".join(map(str, img.shape))}\n        if row[\"folder\"] == \"BSN\":\n            row.update(synaptosome_fraction(img, px))\n        else:\n            row.update(synaptosome_area(img, px))\n        return row\n\n    with ThreadPoolExecutor(workers) as ex:\n        return pd.DataFrame(list(ex.map(one, files)))\n"
 }
 ```
 
 ```
-<tool_use_error>File has not been read yet. Read it first before writing to it.</tool_use_error>
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/build/cells_md.py"
-}
-```
-
-```
-1	MD, RESULT = {}, {}
-2	for k in ["header","check-intro","check-subjects","check-series","check-opto","check-clock","link","link-raw","evoked-intro","fig6e","fig6e-per-mouse","supp7c","spont-intro","fig6f","fig6f-per-mouse","supp8c","supp8e","supp8e-mice","cohen","blocked","summary"]:
-3	    MD[k] = "## " + k if k == "summary" else "### " + k
-4	for k in ["source-data-link","fig6e-anxa1-evoked-reduced","fig6e-anxa1-evoked-per-mouse","supp7c-anxa1-evoked-all-powers","fig6f-anxa1-spontaneous-reduced","fig6f-anxa1-spontaneous-per-mouse","supp8c-calb1-spontaneous-not-reduced","supp8e-calb1-evoked-reduced","supp8e-calb1-few-mice-reduced","cohens-d-anxa1-larger"]:
-5	    RESULT[k] = "**Result: TBD**"
-6	MD["header"] = "# header\n001933 0.260825.1457"
-7
+File created successfully at: entries/001933-chen-2026/archives.py (file state is current in your context — no need to Read it back)
 ```
 
 **Agent calls Bash**
 
 ```bash
-echo "placeholder" > /dev/null
+cd entries/001933-chen-2026; time $TMPDIR/venv/bin/python - <<'EOF'
+import archives as A, time
+t=time.time()
+img,md5,px=A.read_synaptosome_image("synaptosome/BSN/Export_wt1_BSN1.ome.tif"); print('read',time.time()-t, px)
+t=time.time()
+for c in range(3):
+    b=A.rolling_ball(img[c]); th=A.ij_default_threshold(b); lab=A.particles(b,px,(0.04,0.4))
+    print(c, round(img[c].mean(),1), round(b.mean(),1), round(th,1), (b>=th).mean().round(4), lab.max(), len(set(lab[lab>0].ravel())))
+print('t',time.time()-t)
+print(A.synaptosome_fraction(img,px)); print(A.synaptosome_area(img,px)); print(time.time()-t)
+EOF
+```
+
+```
+read 11.728961944580078 0.031074
+0 148.2 147.5 1045.7 0.0283 1484 229
+1 112.6 112.6 1054.2 0.0272 907 120
+2 175.3 164.8 4476.3 0.0026 27 10
+t 0.41127943992614746
+{'vamp2_particles': 10, 'vamp2_pos': 10, 'th_vamp2': 5, 'bassoon_th_vamp2': 2, 'percent': np.float64(40.0)}
+{'overlaps': 30, 'vamp2_pos': 11, 'area_overlap': 0.06601148126836363, 'area_bassoon': 0.16597478970800003}
+0.8550798892974854
+
+real	0m14.159s
+user	0m2.759s
+sys	0m0.156s
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+import archives as A, numpy as np
+img,md5,px=A.read_synaptosome_image("synaptosome/BSN/Export_wt1_BSN1.ome.tif")
+for c in range(3):
+    b=A.rolling_ball(img[c])
+    print(c, np.percentile(img[c],[50,90,99,99.9]).round(), np.percentile(b,[50,90,99,99.9]).round(), (img[c]==0).mean().round(3), (b==0).mean().round(3))
+    h,_=np.histogram(b,256,(b.min(),b.max())); print('  hist first bins',h[:8], 'max bin', h.argmax())
+EOF
+```
+
+```
+0 [  29.  369. 1888. 4262.] [  29.  368. 1886. 4260.] 0.305 0.306
+  hist first bins [630783 134514  69190  42013  28855  21318  16478  13138] max bin 0
+1 [   0.  320. 1794. 4008.] [   0.  320. 1794. 4007.] 0.711 0.219
+  hist first bins [814996  39054  25847  18949  15350  12875  10988   9501] max bin 0
+2 [   53.   387.  1639. 10090.] [   42.   375.  1625. 10058.] 0.014 0.1
+  hist first bins [629084 142085  72394  46699  32690  23699  17683  14032] max bin 0
+```
+
+**Agent calls Bash**
+
+```bash
+curl -s https://api.github.com/repos/DombeckLab/lrrk2_photometry_analysis/commits?per_page=3 | python3 -c "import json,sys; [print(c['sha'], c['commit']['committer']['date'], c['commit']['message'][:60]) for c in json.load(sys.stdin)]"; curl -s "https://api.dandiarchive.org/api/dandisets/001933/versions/" | python3 -c "import json,sys; d=json.load(sys.stdin); [print(v['version'], v['modified'], v['status']) for v in d['results']]"; curl -s "https://api.dandiarchive.org/api/dandisets/001933/versions/0.260825.1457/info/" | python3 -c "import json,sys; d=json.load(sys.stdin); print(json.dumps(d['metadata'].get('assetsSummary'),indent=0)[:800])"
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; sed -n 84,145p lrrk2.py; python3 -c "
+import json
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+for i in [5,7,9,12]:
+  print('----',i); print(''.join(nb['cells'][i]['source']))
+"
+```
+
+```
+def load_session(asset):
+    """Stream one file and return what the analysis uses, as a dict."""
+    url = asset.get_content_url(follow_redirects=1, strip_query=True)
+    with h5py.File(remfile.File(url), "r") as f:
+        subject = f["general/subject"]
+        s = {k: _text(subject[k]) for k in ("subject_id", "sex", "genotype", "date_of_birth", "species", "strain")}
+        s["path"] = asset.path
+        s["url"] = url
+        s["session_start"] = _text(f["session_start_time"])
+        s["session_description"] = _text(f["session_description"])
+        s["mouse"] = int(s["subject_id"].split("-")[0])
+        s["line"] = "Anxa1" if "-anxa-" in s["subject_id"] else "Calb1"
+        s["group"] = "GS" if s["genotype"].endswith("G2019S") else "WT"
+        dff = f[_OPHYS + "DfOverF"]
+        s["t"] = dff["timestamps"][:]
+        s["dff"] = dff["data"][:]
+        s["dff_unit"] = dff["data"].attrs["unit"]
+        s["dff_description"] = dff.attrs["description"]
+        s["dff405"] = f[_OPHYS + "DfOverFIsosbesticControl"]["data"][:]
+        corrected = f[_OPHYS + "CorrectedSignal"]["data"][:]
+[... 302 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; sed -n 145,236p lrrk2.py
+```
+
+```
+def evoked_integrals(s, window="methods", trace="dff"):
+    """One integral per epoch (in table order), in % dF/F times seconds; NaN where the
+    window leaves the recording. Only the samples the window and its baseline use must be
+    recorded."""
+    if window not in ("methods", "code", "code_as_written", "fixed"):
+        raise ValueError(window)
+    x = s[trace]
+    out = np.full(len(s["onset"]), np.nan)
+    for j, (on, off) in enumerate(zip(s["onset"], s["offset"])):
+        start = on - 100 if window != "code_as_written" else on + 100
+        a, b = {"code": (start + 90, start + 200), "code_as_written": (start + 90, start + 200),
+                "methods": (on, off + 1), "fixed": (on, on + 51)}[window]
+        if start < 0 or b > len(x):
+            continue
+        base = x[start:start + 90].mean()
+        out[j] = np.trapezoid(x[a:b] - base) / FS
+    return out
+
+
+def code_chunk(s, j):
+[... 71 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+curl -s "https://api.crossref.org/works/10.1038/s41467-026-75194-3" | python3 -c "
+import json,sys; m=json.load(sys.stdin)['message']; print(m.keys()); print(m.get('relation'), m.get('updated-by'), m.get('update-to')); refs=m.get('reference',[]); print(len(refs)); print([r for r in refs if 'dandi' in json.dumps(r).lower()][:3]); print(m.get('title'), m.get('published'))"; curl -s "https://api.dandiarchive.org/api/dandisets/001933/versions/0.260825.1457/info/" | python3 -c "import json,sys; m=json.load(sys.stdin)['metadata']; print(m['description'][:1500]); print(m.get('relatedResource'))"
+```
+
+Result: the fetched text is not kept.
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+import archives as A
+print(A.fig1d().groupby('mouse').size().to_dict())
+print({p:{g:len(v) for g,v in d.items()} for p,d in A.fig2eg().items()})
+d=A.fig4de(); print(d.pivot_table(index=['panel','replicate'],columns='group',values='value',aggfunc='size'))
+print({k:(len(v['WT']),len(v['GS'])) for k,v in A.fig4().items()})
+f=A.fig5de(); print(f.dropna().groupby(['panel','cell','group']).size()); print(f.groupby(['panel','group']).mouse.unique())
+g=A.fig5gh(); print(g.groupby(['panel','group']).size(), g.groupby(['panel','group']).animal_column.unique())
+j=A.fig5j(); print(j.groupby('group').size())
+for i,r in enumerate(A.sheet('Fig. 5d-e')[:14]): print(i, r[:4])
+EOF
+```
+
+```
+Exit code 1
+{2275: 6, 2650: 5, 2722: 5}
+{'RAB3A': {'WT': 10, 'GS': 10, 'GS+MLi2': 10}, 'RAB3C': {'WT': 7, 'GS': 7, 'GS+MLi2': 7}}
+group            GS  WT
+panel replicate        
+4D    1          14  14
+      2          11  11
+      3          10  14
+4E    1          14  14
+      2          12  12
+      3          15   9
+      4          10   8
+{'4G': (6, 6), '4H': (6, 6), '4I': (6, 6), '4J': (6, 6), '4L': (6, 6)}
+Traceback (most recent call last):
+  File "<stdin>", line 6, in <module>
+  File "entries/001933-chen-2026/archives.py", line 143, in fig5de
+    gs_from = head.index("GS")
+ValueError: 'GS' is not in list
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+import archives as A
+for i,r in enumerate(A.sheet('Fig. 5d-e')[:16]): print(i, r[:3], len(r))
+EOF
+```
+
+```
+0 ['Fig. 5D'] 1
+1 [None, 'WT', None] 21
+2 ['animal #', 1723, None] 35
+3 ['section #', 1, 2] 41
+4 ['Aldh1a1+', 0.171662, 0.274781] 41
+5 ['Aldh1a1-', 0.221042, 0] 39
+6 [] 0
+7 [] 0
+8 ['Fig. 5E'] 1
+9 [None, 'WT', None] 21
+10 ['animal #', 1723, None] 35
+11 ['section #', 1, 2] 41
+12 ['Aldh1a1+', 0.011557, 0.009686] 41
+13 ['Aldh1a1-', 0.014106, None] 39
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python -c "
+import archives as A; print(repr(A.sheet('Fig. 5d-e')[1][-1]), repr(A.sheet('Fig. 5d-e')[9][-1]))"; $TMPDIR/venv/bin/python - <<'EOF'
+import re
+p='archives.py'; s=open(p).read()
+s=s.replace('''    for panel, start in (("5D", 1), ("5E", 7)):
+        head, animals, sections, pos, neg = rows[start:start + 5]
+        gs_from = head.index("GS")''','''    for panel, start in (("5D", 1), ("5E", 9)):
+        head, animals, sections, pos, neg = rows[start:start + 5]
+        gs_from = [str(v).strip() for v in head].index("GS")''')
+open(p,'w').write(s)
+EOF
+$TMPDIR/venv/bin/python - <<'EOF'
+import archives as A
+f=A.fig5de(); print(f.dropna().groupby(['panel','cell','group']).size()); print(f.groupby(['panel','group']).mouse.unique())
+g=A.fig5gh(); print(g.groupby(['panel','group']).size(), g.groupby(['panel','group']).animal_column.unique())
+j=A.fig5j(); print(j.groupby('group').size(), j.groupby('group').animal_column.unique())
+EOF
+```
+
+```
+'GS' 'GS'
+panel  cell      group
+5D     Aldh1a1+  GS       21
+                 WT       19
+       Aldh1a1-  GS       17
+                 WT       18
+5E     Aldh1a1+  GS       21
+                 WT       19
+       Aldh1a1-  GS       17
+                 WT       16
+dtype: int64
+panel  group
+5D     GS       [1272, 1522, 517, 796]
+       WT       [1723, 1929, 516, 797]
+5E     GS       [1272, 1522, 517, 796]
+       WT       [1723, 1929, 516, 797]
+Name: mouse, dtype: object
+panel  group
+5G     GS       18
+       WT       16
+[... 15 more lines not kept]
+```
+
+**Agent**
+
+Parsers work. Now I'll add the new notebook cells (data check of earlier findings and archives, plus one section per elsewhere claim) with a build script.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude/build_nb.py",
+ "content": "\"\"\"Insert the pilot-7 cells into the 001933 notebook (run once).\"\"\"\nimport sys\n\nimport nbformat\n\npath = sys.argv[1]\nnb = nbformat.read(path, as_version=4)\ncells = nb.cells\n\n\ndef md(text):\n    return nbformat.v4.new_markdown_cell(text.strip(\"\\n\"))\n\n\ndef code(text, tags=None):\n    c = nbformat.v4.new_code_cell(text.strip(\"\\n\"))\n    c.metadata[\"tags\"] = tags or []\n    return c\n\n\n# Imports: add the archives helper.\nsrc = cells[1].source\nsrc = src.replace(\"import lrrk2\\n\", \"import archives\\nimport lrrk2\\n\")\nsrc = src.replace(\"# No step of this analysis draws random numbers, so no generator is needed.\",\n                  \"# Only the imputation variant of fig3d-rim-binds-unphosphorylated draws random numbers; it has its own\\n\"\n                  \"# generator, seeded in that section.\")\ncells[1].source = src\n\nearlier = [\n    md(\"\"\"\n### Findings of attempt 001933-chen-2026-01\n\nThe same version is analysed again, so each finding of the earlier attempt is checked against the files, the archive's\nmetadata, the paper's code repository and the paper's Crossref record.\n\"\"\"),\n    code(r'''\n# Each finding of attempt 001933-chen-2026-01, checked again on version 0.260825.1457.\nimport json\nimport subprocess\n\nimport requests\n\nmeta = client.get_dandiset(lrrk2.DANDISET_ID, lrrk2.DANDISET_VERSION).get_raw_metadata()\nmd5_src, src = lrrk2.load_source_data()\n\n\ndef nearest_epoch(record):\n    s = by_mouse[record[\"mouse\"]]\n    return min(np.nanmax(np.abs(lrrk2.code_chunk(s, j) - record[\"trace\"])) for j in range(len(s[\"onset\"])))\n\n\nnear = {k: np.array([nearest_epoch(d) for d in src[k]]) for k in (\"6C\", \"S8D\")}\nprint(\"F1 (Calb1 dF/F is not the paper's). Published triggered traces within 1e-6 of some epoch of the same mouse, any power:\",\n      {k: f\"{int((v < 1e-6).sum())} of {len(v)}\" for k, v in near.items()}, f\"; closest S8D trace {near['S8D'].min():.3g} % dF/F\")\nsummary = meta[\"assetsSummary\"]\nrelated = meta.get(\"relatedResource\", [])\ntext = ((meta.get(\"description\") or \"\") + \" \" + \" \".join(r.get(\"url\", \"\") for r in related)).lower()\nprint(\"F2 (only the photometry is in the dandiset):\", summary[\"numberOfFiles\"], \"NWB files; the description or related resources\",\n      \"name Zenodo, PRIDE or the BioImage Archive:\", any(w in text for w in (\"zenodo\", \"pride\", \"biostudies\", \"bioimage\", \"s-biad\", \"pxd\")))\nprint(\"   related resources:\", [(r.get(\"relation\"), r.get(\"url\")) for r in related])\nm = by_mouse[4398]\nprint(f\"F3 (series of 4398 cut short): last onset {m['start_time'][-1]:.2f} s, series ends {m['t'][-1]:.2f} s,\",\n      f\"{m['t'][-1] - m['start_time'][-1]:.2f} s after it\")\nprint(\"F4 (epochs table description):\", \" \".join(sessions[0][\"opto_description\"].split())[:260])\nprint(\"   powers in the tables:\", sorted(set(np.concatenate([s[\"power_in_mW\"] for s in sessions]))),\n      \"; train lengths (s):\", sorted({round(float(d), 2) for s in sessions for d in s[\"stop_time\"] - s[\"start_time\"]}),\n      \"; trains with a pulse length of 0:\", sum(int((s[\"pulse_length_in_ms\"] == 0).sum()) for s in sessions))\npaper_train = {s[\"mouse\"]: float(np.median((s[\"stop_time\"] - s[\"start_time\"])[np.isin(s[\"power_in_mW\"], lrrk2.PAPER_POWERS)]))\n               for s in sessions}\nprint(\"F5 (mice given the paper's powers as 0.33 s trains):\", {k: round(v, 2) for k, v in paper_train.items() if v < 0.4})\nprint(\"F6 (dF/F unit):\", sorted({s[\"dff_unit\"] for s in sessions}))\nprint(\"F7 (archive summary): approach\", [a[\"name\"] for a in summary.get(\"approach\", [])], \"; techniques\",\n      [a[\"name\"] for a in summary.get(\"measurementTechnique\", [])], \"; variables\", summary.get(\"variableMeasured\"))\nprint(\"F8 (exclusions undocumented): the description mentions an exclusion:\", \"exclu\" in (meta.get(\"description\") or \"\").lower())\nhead = subprocess.run([\"git\", \"ls-remote\", \"https://github.com/DombeckLab/lrrk2_photometry_analysis\", \"HEAD\"],\n                      capture_output=True, text=True, timeout=120, check=True).stdout.split()[0]\nprint(\"F9 to F11 (published code): HEAD of DombeckLab/lrrk2_photometry_analysis is\", head[:7], \"; attempt -01 read d34558f\")\ncr = requests.get(\"https://api.crossref.org/works/10.1038/s41467-026-75194-3\", timeout=60)\ncr.raise_for_status()\ncm = cr.json()[\"message\"]\nprint(\"F12 and F13 (paper): Crossref lists a correction or update:\", bool(cm.get(\"updated-by\") or cm.get(\"update-to\")),\n      \"; references naming DANDI:\", sum(\"dandi\" in json.dumps(r).lower() for r in cm.get(\"reference\", [])), \"of\",\n      len(cm.get(\"reference\", [])))\n''', [\"sanity\"]),\n    md(\"\"\"\nFINDINGS_STATUS_PLACEHOLDER\n\"\"\"),\n]\n\narchive_check = [\n    md(\"\"\"\n### The data in other archives\n\nThe claims of Figures 1 to 5 are tested on the data the paper deposited elsewhere (protocol pilot-7, `data:\nelsewhere`): the tabular values behind each figure on Zenodo, the search outputs in PRIDE and the images in the\nBioImage Archive. Each is read in memory. This check lists what each archive holds, counts it against the legends,\nand looks for values or files deposited twice.\n\"\"\"),\n    code(r'''\nrec = requests.get(archives.ZENODO_RECORD, timeout=60).json()\nprint(f\"Zenodo record {rec['id']}, created {rec['created'][:10]}, modified {rec['modified'][:10]}:\")\nfor f in rec[\"files\"]:\n    print(f\"   {f['key']}: {f['size']} bytes, {f['checksum']}\")\nmd5_wb, _ = archives.source_workbook()\nprint(\"Source data.xlsx read here, md5\", md5_wb, \"; equal to the record's:\", md5_wb == archives.SOURCE_DATA_MD5)\n\nf1 = archives.fig1d()\nf2 = archives.fig2eg()\nf4de = archives.fig4de()\nf4 = archives.fig4()\nf5 = archives.fig5de()\nf5gh = archives.fig5gh()\nf5j = archives.fig5j()\nprint(\"\\nFigure 1D: sections per mouse\", f1.groupby(\"mouse\").size().to_dict(), \"; total\", len(f1), \"(legend: 16 sections, 3 mice)\")\nprint(\"   LRRK2 intensity, Aldh1a1- from\", f1.neg.min().round(3), \"to\", f1.neg.max().round(3), \"; Aldh1a1+ from\", f1.pos.min().round(3),\n      \"to\", f1.pos.max().round(3), \"(normalised; no unit given)\")\nprint(\"Figure 2E and 2G: values per group\", {p: {g: len(v) for g, v in d.items()} for p, d in f2.items()}, \"(legend: 10 and 7 mice)\")\nprint(\"   ranges:\", {p: {g: (round(v.min(), 3), round(v.max(), 3)) for g, v in d.items()} for p, d in f2.items()})\nprint(\"Figure 4D and 4E: areas per replicate (mouse) and group (legend: 4D 39 WT and 35 GS areas, 3 mice each;\",\n      \"4E 43 WT and 57 GS areas, 4 mice each):\")\nprint(f4de.pivot_table(index=[\"panel\", \"replicate\"], columns=\"group\", values=\"value\", aggfunc=\"size\", margins=True).to_string())\nprint(\"   ranges:\", f4de.groupby([\"panel\", \"group\"]).value.agg([\"min\", \"max\"]).round(4).to_dict(\"index\"))\nprint(\"   4D values under 1 %:\", f4de[(f4de.panel == \"4D\") & (f4de.value < 1)][[\"replicate\", \"area\", \"group\", \"value\"]].to_dict(\"records\"))\nprint(\"Figure 4G to 4L: values per genotype\", {k: (len(v[\"WT\"]), len(v[\"GS\"])) for k, v in f4.items()}, \"(legend: 6 mice per genotype)\")\nprint(\"Figure 5D and 5E: sections with a value, by cell type and group (legend 5D: WT+ 19, GS+ 21, WT- 18, GS- 17;\",\n      \"5E: 19, 20, 16, 17):\")\nprint(f5.dropna().groupby([\"panel\", \"cell\", \"group\"]).size().unstack().to_string())\nprint(\"   mice per group:\", f5.groupby(\"group\").mouse.unique().apply(list).to_dict())\nprint(\"   ranges:\", f5.groupby([\"panel\", \"cell\"]).value.agg([\"min\", \"max\"]).round(4).to_dict(\"index\"))\nprint(\"Figure 5G and 5H: sections per group\", f5gh.groupby([\"panel\", \"group\"]).size().to_dict(), \"(legend: 16 WT, 3 mice; 18 GS, 4 mice);\",\n      \"the animal column lists\", sorted(f5gh.animal_column.unique()), \"for both groups\")\nprint(\"Figure 5J: sections per group\", f5j.groupby(\"group\").size().to_dict(), \"(legend: 12 sections, 4 mice each); the animal column\",\n      \"lists\", sorted(f5j.animal_column.unique()), \"for both groups\")\n\n# Values deposited twice: whole sections of Figure 5D/5E with the same four values, and repeated values within any panel.\nwide = f5.pivot_table(index=[\"group\", \"column\", \"mouse\", \"section\"], columns=[\"panel\", \"cell\"], values=\"value\", dropna=False)\ndups = wide[wide.round(9).duplicated(keep=False)]\nprint(\"\\nFigure 5D/5E sections whose four values (density and volume, Aldh1a1+ and -) equal another section's:\")\nprint(dups.to_string())\n\n\ndef repeats(v):\n    v = pd.Series(v).dropna()\n    return sorted(v[v.duplicated(keep=False)].round(9).unique().tolist())\n\n\nrep = {\"1D\": repeats(np.r_[f1.pos, f1.neg]), **{f\"2/{p}\": repeats(np.concatenate(list(d.values()))) for p, d in f2.items()},\n       **{f\"{p}\": repeats(g.value) for p, g in f4de.groupby(\"panel\")}, **{k: repeats(np.r_[v[\"WT\"], v[\"GS\"]]) for k, v in f4.items()},\n       **{f\"{p}\": repeats(g.value) for p, g in f5gh.groupby(\"panel\")}, \"5J\": repeats(f5j.value),\n       **{f\"{p} {c}\": repeats(g.value) for (p, c), g in f5.groupby([\"panel\", \"cell\"])}}\nprint(\"Repeated values within each panel:\", {k: v for k, v in rep.items() if v})\n''', [\"sanity\"]),\n    md(\"\"\"\nSOURCE_CHECK_PLACEHOLDER\n\"\"\"),\n    code(r'''\nsupp, md5_supp = archives.supplementary_data()\nprint(\"Supplementary files.zip md5\", md5_supp, \"; files:\", sorted(supp))\npp, md5_pp = archives.phosphopeptides()\nprint(\"\\nPRIDE PXD065006 peptide groups table: md5\", md5_pp, \";\", len(pp), \"peptides,\", int(pp.Modifications.str.contains(\"Phospho\").sum()),\n      \"with a phosphorylation\")\nab = [c for c in pp.columns if c.startswith(\"Abundance\")]\nprint(\"   abundance columns:\", ab)\nprint(\"   values per sample:\", pp[ab].notna().sum().to_dict())\nprint(\"   peptides with all six values\", int(pp[ab].notna().all(1).sum()), \"; with at least two per group\",\n      int(((pp[ab[:3]].notna().sum(1) >= 2) & (pp[ab[3:]].notna().sum(1) >= 2)).sum()))\ns1 = pd.read_excel(io.BytesIO(supp[\"Supplementary file 1.xlsx\"]), sheet_name=None)\nsame = s1[\"PeptideGroups\"][ab].fillna(-1).to_numpy().tolist() == pp[ab].fillna(-1).to_numpy().tolist()\nprint(\"   equal to the PeptideGroups sheet of Supplementary data 1:\", same, \"; that file's sheets:\",\n      {k: v.shape for k, v in s1.items()})\nrab3 = pp[pp[\"Annotated Sequence\"].str.contains(\"YRTITTAYYR\", na=False)]\nprint(\"   RAB3 peptide covering T86:\", rab3[[\"Annotated Sequence\", \"Modifications\", \"Modifications in Master Proteins\"]].to_dict(\"records\"))\n\npull, md5_pull, pull_cols = archives.pulldown()\nprint(\"\\nPRIDE PXD065125 FilteredDataset.pg_matrix.Brain_Rab3A.csv: md5\", md5_pull, \";\", len(pull), \"protein groups; columns\",\n      pull_cols[3:])\nreport = pd.read_csv(io.BytesIO(archives.fetch(archives.PULLDOWN_REPORT_URL)[0]), sep=\"\\t\")\nruns = [c for c in report.columns if c.endswith(\".raw\")]\nraw = pd.read_csv(io.BytesIO(archives.fetch(archives.PULLDOWN_URL)[0]))\norder = {}\nfor c in [c for c in raw.columns if c.startswith((\"phosRab3Brain\", \"Rab3Brain\"))]:\n    v = raw.set_index(\"Protein.Group\")[c]\n    for r in runs:\n        w = report.set_index(\"Protein.Group\").reindex(v.index)[r]\n        if np.allclose(v.fillna(-1), w.fillna(-1)):\n            order[c] = r.split(\"\\\\\")[-1]\nprint(\"   each pulldown column equals the run of report.pg_matrix.tsv:\", order)\nsdrf = pd.read_csv(io.BytesIO(archives.fetch(archives.PULLDOWN_SDRF_URL)[0]), sep=\"\\t\")\nprint(\"   SDRF bait per run:\", sorted((n.split(\"_\")[3], n.split(\"_\")[4]) for n in sdrf[\"source name\"] if n.startswith(\"20240406\")))\nprint(\"   the six RAB3A and six p-RAB3A runs are paired here in run order, C13 with C19 and so on\")\n''', [\"sanity\"]),\n    md(\"\"\"\nPRIDE_CHECK_PLACEHOLDER\n\"\"\"),\n    code(r'''\nbia = {acc: archives.bia_files(acc) for acc in archives.BIA_FILE_LISTS}\nfor acc, d in bia.items():\n    print(f\"{acc}: {len(d)} files, {d['size'].sum() / 1e9:.2f} GB; folders\", d.path.str.split(\"/\").str[-2].value_counts().to_dict())\n    print(\"   channel annotations:\", d.filter(like=\"Channel\").drop_duplicates().to_dict(\"records\"))\n\nimport re\n\n\ndef ids(paths, pattern):\n    out = []\n    for p in paths:\n        m = re.search(pattern, p.split(\"/\")[-1])\n        out.append(m.groups() if m else (None, None))\n    return out\n\n\nd = bia[\"S-BIAD2070\"]\nmice = pd.Series([int(m) for _, m in ids(d.path, r\"(C57)-(\\d+)-\")])\nprint(\"\\nS-BIAD2070 (Figure 1): images per mouse\", mice.value_counts().sort_index().to_dict(),\n      \"; source data sections per mouse\", f1.groupby(\"mouse\").size().to_dict())\nd = bia[\"S-BIAD2071\"]\nfolder = d.path.str.split(\"/\").str[-2]\ng = pd.DataFrame(ids(d.path, r\"(?:Aldh|Anxa)(GS|WT)-(?:R-)?(?:Middle-)?(\\d+)?\"), columns=[\"group\", \"mouse\"]).assign(folder=folder.values)\nprint(\"S-BIAD2071 (Figure 5): images per folder, group and mouse:\")\nprint(g.fillna(\"none\").groupby([\"folder\", \"group\", \"mouse\"]).size().to_string())\nprint(\"   source data mice, 5D/5E:\", f5.groupby(\"group\").mouse.unique().apply(list).to_dict(), \"; 5G/5H animal column:\",\n      sorted(f5gh.animal_column.unique()))\nd = bia[\"S-BIAD2072\"]\nd = d[d.path.str.contains(\"TH-6M-volume\")]\ng = pd.DataFrame(ids(d.path, r\"(C57|GSHom)-(\\d+)-\"), columns=[\"group\", \"mouse\"])\nprint(\"S-BIAD2072 (Figure 5J, folder TH-6M-volume): images per group and mouse\", g.groupby([\"group\", \"mouse\"]).size().to_dict(),\n      \"; source data animal column\", sorted(f5j.animal_column.unique()), \"; legend: 8 images per section, 12 sections, 4 mice per group\")\nd = bia[\"S-BIAD2074\"]\ng = pd.DataFrame(ids(d.path, r\"Export_(wt|ki)(\\d+)_\"), columns=[\"group\", \"mouse\"]).assign(folder=d.path.str.split(\"/\").str[-2].values)\ng[\"group\"] = g.group.str.lower()\nprint(\"S-BIAD2074 (Figure 4D, 4E): images per folder, group and mouse:\")\nprint(g.groupby([\"folder\", \"group\", \"mouse\"]).size().unstack(fill_value=0).to_string())\n''', [\"sanity\"]),\n    md(\"\"\"\nBIA_CHECK_PLACEHOLDER\n\"\"\"),\n    code(r'''\n# Every synaptosome image of S-BIAD2074, streamed and measured with the Methods' FIJI procedure (archives.py).\nt0 = time.time()\nsyn = archives.analyse_synaptosomes(bia[\"S-BIAD2074\"].path.tolist(), workers=12)\nprint(f\"{len(syn)} images streamed and measured in {time.time() - t0:.0f} s; shapes {syn['shape'].value_counts().to_dict()};\",\n      f\"pixel sizes (um) {sorted(syn.pixel_um.unique())}\")\ndupe = syn[syn.md5.duplicated(keep=False)].sort_values(\"md5\")\nwithin = dupe.groupby([\"md5\"]).folder.agg(lambda f: f.duplicated().any())\nprint(\"Images with the same content as another:\", len(dupe), \"; pairs within one folder:\", int(within.sum()))\nprint(dupe.groupby(\"md5\").path.apply(lambda p: \" = \".join(x.split(\"/\", 1)[1] for x in p)).to_string(index=False))\nfrac = syn[syn.folder == \"BSN\"]\narea = syn[syn.folder == \"BSN-area\"]\nprint(\"\\nBSN folder: VAMP2 particles per image\", int(frac.vamp2_particles.min()), \"to\", int(frac.vamp2_particles.max()),\n      \"(median\", int(frac.vamp2_particles.median()), \"); TH+ VAMP2+ per image\", int(frac.th_vamp2.min()), \"to\", int(frac.th_vamp2.max()),\n      \"; images with none:\", int((frac.th_vamp2 == 0).sum()), \"(the legend: about 1000 synaptosomes per area)\")\nprint(\"BSN-area folder: bassoon and TH overlaps per image\", int(area.overlaps.min()), \"to\", int(area.overlaps.max()),\n      \"; VAMP2+ overlaps\", int(area.vamp2_pos.min()), \"to\", int(area.vamp2_pos.max()), \"; images with none:\", int((area.vamp2_pos == 0).sum()))\n''', [\"sanity\"]),\n    md(\"\"\"\nIMAGE_CHECK_PLACEHOLDER\n\"\"\"),\n]\n\n# Insert after cell 10 (the last data check markdown).\ncells[11:11] = earlier + archive_check\n\n# Find and replace the blocked-claims cell.\nidx = next(i for i, c in enumerate(cells) if c.cell_type == \"markdown\" and c.source.startswith(\"### Blocked claims\"))\n\nel = []\nel.append(md(\"\"\"\n### Claims on data in other archives\n\nThese eight claims rest on data that the dandiset does not hold and that the paper deposited elsewhere. They are\n`data: elsewhere` claims and are counted apart from the dandiset's. Each section names the archive.\n\"\"\"))\n\nel += [md(\"\"\"\n### fig1d-lrrk2-enriched-vulnerable\n\n> LRRK2 immunolabeling intensity is higher in Aldh1a1+ (vulnerable) than in Aldh1a1- SNc dopamine neurons (p = 0.0008).\n\nData: the per-section values on Zenodo (doi:10.5281/zenodo.19930567); the images are in BioImage Archive S-BIAD2070\n(matched in the data check). The Imaris segmentation that produced the values is not re-run.\n\"\"\"), code(r'''\nt, p = archives.ttest(f1.pos, f1.neg)\nprint(f\"Sections: {len(f1)} from {f1.mouse.nunique()} mice. Mean LRRK2 intensity, Aldh1a1+ {f1.pos.mean():.4f} (SEM {f1.pos.sem():.4f}),\",\n      f\"Aldh1a1- {f1.neg.mean():.4f} (SEM {f1.neg.sem():.4f}); range of both {min(f1.pos.min(), f1.neg.min()):.3f} to {max(f1.pos.max(), f1.neg.max()):.3f}\")\nprint(f\"Two-tailed unpaired Student t-test: t = {t:.3f}, p = {p:.3g} (paper 0.0008); Cohen's d = {archives.cohens_d(f1.pos, f1.neg):.2f}\")\nprint(f\"Variants: Welch p = {archives.ttest(f1.pos, f1.neg, equal_var=False)[1]:.3g}; paired over sections p = {stats.ttest_rel(f1.pos, f1.neg).pvalue:.3g};\",\n      f\"sections with Aldh1a1+ above Aldh1a1-: {int((f1.pos > f1.neg).sum())} of {len(f1)}\")\nmm = f1.groupby(\"mouse\")[[\"neg\", \"pos\"]].mean()\nprint(\"Per mouse (mean of sections):\")\nprint(f1.groupby(\"mouse\").agg(sections=(\"pos\", \"size\"), pos=(\"pos\", \"mean\"), neg=(\"neg\", \"mean\"),\n                              pos_above_neg=(\"pos\", lambda s: int((s > f1.loc[s.index, \"neg\"]).sum()))).round(4).to_string())\nprint(f\"Mouse means (n = 3 per type): unpaired p = {archives.ttest(mm.pos, mm.neg)[1]:.3g}, paired p = {stats.ttest_rel(mm.pos, mm.neg).pvalue:.3g}\")\n''', [\"claim:fig1d-lrrk2-enriched-vulnerable\"]), md(\"**Result: FIG1D_PLACEHOLDER**\")]\n\nel += [md(\"\"\"\n### fig2b-rab3-phosphorylation\n\n> LRRK2 kinase inhibition with MLi-2 changes 289 phosphopeptides in striatal synaptosomes of G2019S mice, including RAB3 T86.\n\nData: the peptide groups table in PRIDE PXD065006 (Proteome Discoverer abundances). The raw files (7.9 GB) need\nProteome Discoverer with Byonic, which are commercial, so the search is not re-run.\n\"\"\"), code(r'''\nrows, tests = [], {}\nfor reading, k in ((\"a\", 3), (\"b\", 2)):\n    for welch in (False, True):\n        r = archives.volcano_test(pp, k) if not welch else None\n        if welch:\n            veh = [c for c in ab if \"Vehicle\" in c]\n            mli = [c for c in ab if \"MLi2\" in c]\n            a_, b_ = np.log2(pp[veh].to_numpy(float)), np.log2(pp[mli].to_numpy(float))\n            keep = (np.isfinite(a_).sum(1) >= k) & (np.isfinite(b_).sum(1) >= k)\n            r = pp.loc[keep, [\"Annotated Sequence\", \"Modifications\"]].copy()\n            r[\"diff\"] = np.nanmean(a_[keep], 1) - np.nanmean(b_[keep], 1)\n            r[\"p\"] = np.asarray(stats.ttest_ind(a_[keep], b_[keep], axis=1, equal_var=False, nan_policy=\"omit\").pvalue, float)\n            r[\"altered\"] = (r.p <= 0.05) & (r[\"diff\"].abs() > 0.58)\n        else:\n            tests[reading] = r\n        rb = r[r[\"Annotated Sequence\"].str.contains(\"YRTITTAYYR\", na=False) & r.Modifications.str.contains(r\"Phospho \\[T3\", na=False)]\n        rows.append({\"reading\": reading, \"test\": \"Welch\" if welch else \"Student\", \"peptides_tested\": len(r),\n                     \"altered\": int(r.altered.sum()), \"higher_with_vehicle\": int((r.altered & (r[\"diff\"] > 0)).sum()),\n                     \"lower_with_vehicle\": int((r.altered & (r[\"diff\"] < 0)).sum()),\n                     \"rab3_T86_diff\": float(rb[\"diff\"].iloc[0]) if len(rb) else np.nan,\n                     \"rab3_T86_p\": float(rb.p.iloc[0]) if len(rb) else np.nan,\n                     \"rab3_T86_altered\": bool(rb.altered.iloc[0]) if len(rb) else False})\nres2b = pd.DataFrame(rows)\nprint(\"Phosphopeptides altered at p <= 0.05 and |difference| > 0.58 (paper: 289, tolerance 260.1 to 317.9):\")\nprint(res2b.to_string(index=False, float_format=lambda v: f\"{v:.3g}\"))\nfor reading in (\"a\", \"b\"):\n    r = tests[reading]\n    print(f\"Reading ({reading}): altered at p <= 0.05 alone {int((r.p <= 0.05).sum())}; with |difference| > 0.58 alone {int((r['diff'].abs() > 0.58).sum())}\")\n\nvol = s1[\"Volcano plot-phospho peptides\"]\nvol = vol.rename(columns={vol.columns[-2]: \"Difference\", vol.columns[-1]: \"mlog10p\"})\npub_alt = (vol.mlog10p >= -np.log10(0.05)) & (vol.Difference.abs() > 0.58)\nprint(f\"\\nThe paper's volcano table (Supplementary data 1): {len(vol)} peptides, {int(pub_alt.sum())} at the same thresholds\",\n      f\"({int((pub_alt & (vol.Difference > 0)).sum())} higher with vehicle)\")\npv = vol[vol[\"Annotated Sequence\"].astype(str).str.contains(\"YRTITTAYYR\")]\nprint(\"   its RAB3 T86 row:\", pv[[\"Annotated Sequence\", \"Modifications\", \"Difference\", \"mlog10p\"]].to_dict(\"records\"))\nmg = vol.merge(tests[\"b\"], on=[\"Annotated Sequence\", \"Modifications\"], how=\"inner\")\nprint(f\"   matched to reading (b) by sequence and modifications: {len(mg)} of {len(vol)}; difference, ours against the table's:\",\n      f\"r = {np.corrcoef(mg['diff'], mg.Difference)[0, 1]:.4f}, largest absolute gap {np.abs(mg['diff'] - mg.Difference).max():.3g};\",\n      f\"-log10 p: r = {np.corrcoef(-np.log10(mg.p), mg.mlog10p)[0, 1]:.4f}, largest gap {np.abs(-np.log10(mg.p) - mg.mlog10p).max():.3g}\")\n''', [\"claim:fig2b-rab3-phosphorylation\"]), md(\"**Result: FIG2B_PLACEHOLDER**\")]\n\nel += [md(\"\"\"\n### fig2eg-prab3-increased\n\n> Phosphorylation of RAB3A and RAB3C is increased in the SNc of G2019S mice and returns to WT levels with MLi-2.\n\nData: the p-RAB3A/total ratios on Zenodo (doi:10.5281/zenodo.19930567). The uncropped blots are in the record's\n`Westerbn blot.pdf`; the Methods do not say how bands were quantified, so they are not re-quantified.\n\"\"\"), code(r'''\npaper2 = {\"RAB3A\": {\"GS vs WT\": (\"0.0202\", \"8.593\"), \"GS vs GS+MLi2\": (\"0.0069\", \"11.33\")},\n          \"RAB3C\": {\"GS vs WT\": (\"0.0036\", \"14.76\"), \"GS vs GS+MLi2\": (\"0.0415\", \"7.398\")}}\nrows = []\nfor prot, d in f2.items():\n    print(prot, {g: f\"n {len(v)}, mean {v.mean():.3f} (SEM {v.std(ddof=1) / np.sqrt(len(v)):.3f})\" for g, v in d.items()})\n    print(f\"   one-way ANOVA over the three groups: F = {stats.f_oneway(*d.values()).statistic:.3f}, p = {stats.f_oneway(*d.values()).pvalue:.3g}\")\n    for m in (3, 2):\n        pairs = [(\"GS\", \"WT\"), (\"GS\", \"GS+MLi2\"), (\"GS+MLi2\", \"WT\")][:m]\n        c = archives.pooled_contrasts(d, pairs, m)\n        for _, r in c.iterrows():\n            rows.append({\"protein\": prot, \"sidak_over\": m, \"pair\": r.pair, \"diff\": r[\"diff\"], \"F(1,df)\": r.F, \"df\": r.df,\n                         \"p\": r.p, \"p_sidak\": r.p_sidak, \"paper_p_sidak\": paper2[prot].get(r.pair, (\"\", \"\"))[0],\n                         \"paper_F\": paper2[prot].get(r.pair, (\"\", \"\"))[1],\n                         \"student_p\": archives.ttest(d[r.pair.split(\" vs \")[0]], d[r.pair.split(\" vs \")[1]])[1]})\nres2 = pd.DataFrame(rows)\nprint(res2.to_string(index=False, float_format=lambda v: f\"{v:.4g}\"))\nmain2 = res2[(res2.sidak_over == 3) & res2.pair.isin([\"GS vs WT\", \"GS vs GS+MLi2\"])]\nprint(\"\\nComparisons that hold (GS higher, Sidak over three pairs, p < 0.05):\", int(((main2[\"diff\"] > 0) & (main2.p_sidak < 0.05)).sum()), \"of 4\")\n''', [\"claim:fig2eg-prab3-increased\"]), md(\"**Result: FIG2EG_PLACEHOLDER**\")]\n\nel += [md(\"\"\"\n### fig3d-rim-binds-unphosphorylated\n\n> RIM1 and RIM2 bind unphosphorylated RAB3A in preference to RAB3A phosphorylated at T86, while RILPL1 and RILPL2 prefer the\n> phosphorylated form.\n\nData: the DIA-NN protein intensities of PRIDE PXD065125, six pulldowns with each bait, paired in run order (data check).\n\"\"\"), code(r'''\nphos_cols = [f\"phos_{k}\" for k in range(1, 7)]\nunphos_cols = [f\"unphos_{k}\" for k in range(1, 7)]\nrows = []\nfor gene in (\"Rims1\", \"Rims2\", \"Rilpl1\", \"Rilpl2\"):\n    for _, r in pull[pull.Genes == gene].iterrows():\n        rows.append({\"gene\": gene, \"protein_group\": r[\"Protein.Group\"], \"n_unphos\": int(r[unphos_cols].notna().sum()),\n                     \"n_phos\": int(r[phos_cols].notna().sum()), **archives.paired_test(r)})\nres3 = pd.DataFrame(rows)\nres3[\"values\"] = res3.n_unphos + res3.n_phos\nres3[\"used\"] = False\nfor gene, g in res3.groupby(\"gene\", sort=False):\n    res3.loc[g[\"values\"].idxmax(), \"used\"] = True\nprint(\"Paired two-sided t-test of log2 intensity, RAB3A against p-RAB3A pulldowns (paper: RIM2 p = 0.011, RILPL1 p = 0.002):\")\nprint(res3.to_string(index=False, float_format=lambda v: f\"{v:.3g}\"))\nprint(\"Groups shared between genes:\", pull[pull.Genes.str.contains(\"Rims1|Rims2|Rilpl\", na=False) & pull.Genes.str.contains(\";\")][[\"Genes\", \"Protein.Group\"]].to_dict(\"records\"))\nused = res3[res3.used].set_index(\"gene\")\nholds = {g: bool((used.loc[g, \"log2FC_unphos_minus_phos\"] > 0) == g.startswith(\"Rims\") and used.loc[g, \"p\"] < 0.05) for g in used.index}\nprint(\"Holds (RIMs higher with RAB3A, RILPLs higher with p-RAB3A, p < 0.05):\", holds, \"->\", sum(holds.values()), \"of 4\")\n\n# Variant: the Methods' imputation, then an unpaired Student t-test, on every protein group.\nrng3 = np.random.default_rng(1933)\nimp = archives.impute(pull, phos_cols + unphos_cols, rng3)\nt3 = stats.ttest_ind(imp[unphos_cols], imp[phos_cols], axis=1)\nimp[\"log2FC\"] = imp[unphos_cols].mean(1) - imp[phos_cols].mean(1)\nimp[\"p\"] = t3.pvalue\nprint(\"\\nVariant, imputation and unpaired t-test:\", imp[imp.Genes.isin([\"Rims1\", \"Rims2\", \"Rilpl1\", \"Rilpl2\"])][[\"Genes\", \"Protein.Group\", \"log2FC\", \"p\"]]\n      .round(4).to_dict(\"records\"))\nlim = pd.read_csv(io.BytesIO(archives.fetch(archives.PULLDOWN_LIMMA_URL)[0]))\nprint(f\"\\nThe deposited limma table ({len(lim)} protein groups, comparison {lim.Comparison.unique().tolist()}):\")\nprint(lim[lim.Genes.isin([\"Rims1\", \"Rims2\", \"Rilpl1\", \"Rilpl2\"])][[\"Genes\", \"Protein.Group\", \"logFC\", \"P.Value\", \"adj.P.Val\"]].to_string(index=False))\nprint(\"   groups at P.Value < 0.05 with logFC >= 1 (more with RAB3A):\", int(((lim[\"P.Value\"] < 0.05) & (lim.logFC >= 1)).sum()),\n      \"; with logFC <= -1 (more with p-RAB3A):\", int(((lim[\"P.Value\"] < 0.05) & (lim.logFC <= -1)).sum()), \"(paper: 3480 proteins, 69 and 16)\")\n''', [\"claim:fig3d-rim-binds-unphosphorylated\"]), md(\"**Result: FIG3D_PLACEHOLDER**\")]\n\nel += [md(\"\"\"\n### fig4d-fewer-active-zones\n\n> Fewer TH+/VAMP2+ striatal synaptosomes from G2019S mice contain bassoon, and the remaining bassoon clusters are larger.\n\nData: (A) the per-area values on Zenodo; (B) the images of BioImage Archive S-BIAD2074, measured in the data check with\nthe Methods' FIJI procedure as re-implemented in `archives.py`.\n\"\"\"), code(r'''\nrows = []\nfor panel, label in ((\"4D\", \"percent of TH+/VAMP2+ with bassoon\"), (\"4E\", \"bassoon area (um2)\")):\n    d = f4de[f4de.panel == panel]\n    gs, wt = d[d.group == \"GS\"].value, d[d.group == \"WT\"].value\n    reps = d.groupby([\"group\", \"replicate\"]).value.mean()\n    rows.append({\"part\": \"A\", \"panel\": panel, \"measure\": label, \"n_WT\": len(wt), \"n_GS\": len(gs), \"mean_WT\": wt.mean(),\n                 \"mean_GS\": gs.mean(), \"p\": archives.ttest(gs, wt)[1], \"d_GS_minus_WT\": archives.cohens_d(gs, wt),\n                 \"p_welch\": archives.ttest(gs, wt, equal_var=False)[1], \"p_mouse_means\": archives.ttest(reps[\"GS\"], reps[\"WT\"])[1]})\nd = f4de[(f4de.panel == \"4D\") & ~((f4de.group == \"GS\") & (f4de.value < 1))]\nprint(\"(A) Source data, two-tailed unpaired Student t-tests over areas (paper: 4D p < 0.0001, 4E p = 0.0301):\")\nprint(pd.DataFrame(rows).to_string(index=False, float_format=lambda v: f\"{v:.4g}\"))\nprint(f\"   4D without the GS value under 1 %: p = {archives.ttest(d[d.group == 'GS'].value, d[d.group == 'WT'].value)[1]:.3g}\")\nprint(\"   4D per replicate (mean):\", f4de[f4de.panel == \"4D\"].groupby([\"replicate\", \"group\"]).value.mean().round(2).unstack().to_dict(\"index\"))\nprint(\"   4E per replicate (mean):\", f4de[f4de.panel == \"4E\"].groupby([\"replicate\", \"group\"]).value.mean().round(4).unstack().to_dict(\"index\"))\n\nrows = []\nfor folder, col, label in ((\"BSN\", \"percent\", \"percent with bassoon\"), (\"BSN-area\", \"area_overlap\", \"area, reading (i) overlap\"),\n                           (\"BSN-area\", \"area_bassoon\", \"area, reading (ii) bassoon particle\")):\n    d = syn[(syn.folder == folder)].dropna(subset=[col])\n    gs, wt = d[d.group == \"GS\"][col], d[d.group == \"WT\"][col]\n    mice = d.groupby([\"group\", \"mouse\"])[col].mean()\n    rows.append({\"part\": \"B\", \"folder\": folder, \"measure\": label, \"images_WT\": len(wt), \"images_GS\": len(gs),\n                 \"dropped\": int((syn.folder == folder).sum() - len(d)), \"mean_WT\": wt.mean(), \"mean_GS\": gs.mean(),\n                 \"min\": d[col].min(), \"max\": d[col].max(), \"p\": archives.ttest(gs, wt)[1], \"d_GS_minus_WT\": archives.cohens_d(gs, wt),\n                 \"p_mouse_means\": archives.ttest(mice[\"GS\"], mice[\"WT\"])[1]})\nprint(\"\\n(B) Images, the same tests over images (dropped: images with no particle to measure):\")\nprint(pd.DataFrame(rows).to_string(index=False, float_format=lambda v: f\"{v:.4g}\"))\nprint(\"   per mouse (mean over images):\")\nprint(syn.groupby([\"folder\", \"group\", \"mouse\"])[[\"percent\", \"area_overlap\", \"area_bassoon\", \"th_vamp2\", \"vamp2_pos\"]].mean().round(3).to_string())\n''', [\"claim:fig4d-fewer-active-zones\"]), md(\"**Result: FIG4D_PLACEHOLDER**\")]\n\nel += [md(\"\"\"\n### fig4i-rim1-reduced\n\n> RIM1 is reduced in striatal synaptosomes of G2019S mice (p = 0.0245) but not in other striatal fractions or the SNc.\n\nData: the band values on Zenodo (doi:10.5281/zenodo.19930567); the blots are not re-quantified.\n\"\"\"), code(r'''\nnames = {\"4G\": \"synaptophysin/actin, synaptosomes\", \"4H\": \"Figure 4H protein, synaptosomes\", \"4I\": \"RIM1, synaptosomes\",\n         \"4J\": \"RIM1, S1 fraction\", \"4L\": \"RIM1, SNc\"}\nrows = []\nfor k, v in f4.items():\n    t, p = archives.ttest(v[\"GS\"], v[\"WT\"])\n    rows.append({\"panel\": k, \"what\": names[k], \"n_WT\": len(v[\"WT\"]), \"n_GS\": len(v[\"GS\"]), \"mean_WT\": v[\"WT\"].mean(),\n                 \"mean_GS\": v[\"GS\"].mean(), \"t\": t, \"p\": p, \"p_welch\": archives.ttest(v[\"GS\"], v[\"WT\"], equal_var=False)[1],\n                 \"d_GS_minus_WT\": archives.cohens_d(v[\"GS\"], v[\"WT\"]),\n                 \"range\": f\"{min(v['WT'].min(), v['GS'].min()):.3f} to {max(v['WT'].max(), v['GS'].max()):.3f}\"})\nprint(\"Two-tailed unpaired Student t-tests, GS against WT (paper: 4I p = 0.0245; 4G, 4J and 4L not significant):\")\nprint(pd.DataFrame(rows).to_string(index=False, float_format=lambda v: f\"{v:.4g}\"))\n''', [\"claim:fig4i-rim1-reduced\"]), md(\"**Result: FIG4I_PLACEHOLDER**\")]\n\nel += [md(\"\"\"\n### fig5-bassoon-vulnerable-axons\n\n> Bassoon cluster density is reduced and cluster volume increased in Aldh1a1+ but not Aldh1a1- dopamine axons of G2019S mice,\n> and the same holds in Anxa1+ axons.\n\nData: the per-section values on Zenodo; the 542 GB of SIM images of S-BIAD2071 are matched by file name in the data check.\n\"\"\"), code(r'''\ndup_cols = set(wide[wide.round(9).duplicated(keep=\"first\")].index.get_level_values(\"column\"))\nprint(\"Sections counted once (columns of the source sheet dropped as repeats):\", sorted(dup_cols))\npaper5 = {\"5D\": {\"cell\": (\"12.75\", \"0.0006\"), \"group\": (\"1.277\", \"0.2622\"), \"interaction\": (\"4.838\", \"0.0311\"), \"sidak+\": \"0.0344\"},\n          \"5E\": {\"cell\": (\"4.607\", \"0.0354\"), \"group\": (\"1.277\", \"0.0252\"), \"interaction\": (\"0.8688\", \"0.3545\"), \"sidak+\": \"0.0385\"}}\nparts = {}\nfor variant, data in ((\"main\", f5[~f5.column.isin(dup_cols)]), (\"as deposited\", f5)):\n    for panel in (\"5D\", \"5E\"):\n        d = data[data.panel == panel].dropna(subset=[\"value\"])\n        anova, mse, dfr = archives.twoway_anova(d)\n        sid = archives.sidak_within(d, mse, dfr)\n        print(f\"\\n{panel}, {variant}: two-way ANOVA (paper: cell type F {paper5[panel]['cell'][0]}, p {paper5[panel]['cell'][1]};\",\n              f\"genotype F {paper5[panel]['group'][0]}, p {paper5[panel]['group'][1]}; interaction F {paper5[panel]['interaction'][0]},\",\n              f\"p {paper5[panel]['interaction'][1]}; Sidak Aldh1a1+ p {paper5[panel]['sidak+']})\")\n        print(anova.to_string(index=False, float_format=lambda v: f\"{v:.4g}\"))\n        print(sid.to_string(index=False, float_format=lambda v: f\"{v:.4g}\"))\n        if variant == \"main\":\n            s = sid.set_index(\"cell\")\n            sign = -1 if panel == \"5D\" else 1\n            parts[f\"{panel} Aldh1a1+\"] = bool(sign * (s.loc[\"Aldh1a1+\", \"mean_GS\"] - s.loc[\"Aldh1a1+\", \"mean_WT\"]) > 0 and s.loc[\"Aldh1a1+\", \"p_sidak\"] < 0.05)\n            parts[f\"{panel} Aldh1a1- not different\"] = bool(s.loc[\"Aldh1a1-\", \"p_sidak\"] >= 0.05)\nz = f5[(f5.panel == \"5D\") & (f5.value == 0)]\nprint(\"\\nZero values in 5D:\", z[[\"group\", \"mouse\", \"section\", \"cell\"]].to_dict(\"records\"))\nprint(\"\\nAnxa1 (5G density, 5H volume), two-tailed unpaired Student t-tests (paper: 5G p = 0.0374, 5H p = 0.0148):\")\nfor panel, sign in ((\"5G\", -1), (\"5H\", 1)):\n    d = f5gh[f5gh.panel == panel]\n    gs, wt = d[d.group == \"GS\"].value, d[d.group == \"WT\"].value\n    t, p = archives.ttest(gs, wt)\n    print(f\"   {panel}: n WT {len(wt)}, GS {len(gs)}; mean WT {wt.mean():.5g}, GS {gs.mean():.5g}; t = {t:.3f}, p = {p:.3g};\",\n          f\"Welch p = {archives.ttest(gs, wt, equal_var=False)[1]:.3g}; d (GS - WT) = {archives.cohens_d(gs, wt):.2f}\")\n    parts[f\"{panel} Anxa1\"] = bool(sign * (gs.mean() - wt.mean()) > 0 and p < 0.05)\nprint(\"\\nParts that hold:\", parts, \"->\", sum(parts.values()), \"of 6\")\n''', [\"claim:fig5-bassoon-vulnerable-axons\"]), md(\"**Result: FIG5_PLACEHOLDER**\")]\n\nel += [md(\"\"\"\n### fig5j-no-axon-loss\n\n> The volume occupied by TH+ fibres in the dorsal striatum does not differ between G2019S and WT mice.\n\nData: the per-section values on Zenodo; the images of S-BIAD2072 are matched by file name in the data check.\n\"\"\"), code(r'''\ngs, wt = f5j[f5j.group == \"GS\"].value, f5j[f5j.group == \"WT\"].value\nt, p = archives.ttest(gs, wt)\nprint(f\"Sections: WT {len(wt)}, GS {len(gs)}; mean TH volume (normalised) WT {wt.mean():.4f} (SEM {wt.sem():.4f}), GS {gs.mean():.4f} (SEM {gs.sem():.4f});\",\n      f\"range {f5j.value.min():.3f} to {f5j.value.max():.3f}\")\nprint(f\"Two-tailed unpaired Student t-test: t = {t:.3f}, p = {p:.3g}; difference of means (GS - WT) {gs.mean() - wt.mean():.4f};\",\n      f\"Cohen's d (GS - WT) {archives.cohens_d(gs, wt):.2f}; Welch p = {archives.ttest(gs, wt, equal_var=False)[1]:.3g}\")\nprint(\"Per animal-column group (the sheet gives one animal column for both genotypes):\")\nprint(f5j.groupby([\"animal_column\", \"group\"]).value.agg([\"size\", \"mean\"]).round(4).unstack().to_string())\n''', [\"claim:fig5j-no-axon-loss\"]), md(\"**Result: FIG5J_PLACEHOLDER**\")]\n\ncells[idx:idx + 1] = el\nnb.cells = cells\nnbformat.write(nb, path)\nprint(\"cells:\", len(nb.cells))\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude/build_nb.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; sed -i 's/^import time$/import io\nimport time/' /dev/null; python3 - <<'EOF'
+p='/tmp/claude/build_nb.py'; s=open(p).read()
+s=s.replace('src = src.replace("import lrrk2\\n", "import archives\\nimport lrrk2\\n")','src = src.replace("import lrrk2\\n", "import archives\\nimport lrrk2\\n").replace("import time\\n", "import io\\nimport time\\n")')
+open(p,'w').write(s)
+EOF
+grep -n 'import io' /tmp/claude/build_nb.py; printf 'dandi\nh5py\nmatplotlib\nnumpy\nopenpyxl\npandas\nremfile\nrequests\nscikit-image\nscipy\ntifffile\n' > requirements.in; cp reproduce_chen_2026.ipynb $TMPDIR/nb_backup.ipynb; $TMPDIR/venv/bin/python -c "import nbformat" 2>/dev/null || VIRTUAL_ENV=$TMPDIR/venv uv pip install -q nbformat; $TMPDIR/venv/bin/python /tmp/claude/build_nb.py reproduce_chen_2026.ipynb
+```
+
+```
+sed: couldn't edit /dev/null: not a regular file
+23:src = src.replace("import lrrk2\n", "import archives\nimport lrrk2\n").replace("import time\n", "import io\nimport time\n")
+/tmp/claude-1001/venv/lib/python3.13/site-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  _validate(nbdict, ref, version, version_minor, relax_add_props)
+cells: 88
+```
+
+**Agent**
+
+Notebook cells are in place. Running the full notebook now (streams the 27 NWB files, the archive tables and 168 synaptosome images).
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; time $TMPDIR/venv/bin/python -m nbconvert --to notebook --execute --ExecutePreprocessor.timeout=3000 --output $TMPDIR/run1.ipynb reproduce_chen_2026.ipynb 2>&1 | tail -30
+```
+
+```
+[36mFile [39m[32m/tmp/claude-1001/venv/lib/python3.13/site-packages/pandas/core/indexes/multi.py:3885[39m, in [36mMultiIndex._get_level_indexer[39m[34m(self, key, level, indexer)[39m
+[32m   3882[39m         [38;5;28;01mreturn[39;00m [38;5;28mslice[39m(i, j, step)
+[32m   3884[39m [38;5;28;01melse[39;00m:
+[32m-> [39m[32m3885[39m     idx = [30;43mself[39;49m[30;43m.[39;49m[30;43m_get_loc_single_level_index[39;49m[30;43m([39;49m[30;43mlevel_index[39;49m[30;43m,[39;49m[30;43m [39;49m[30;43mkey[39;49m[30;43m)[39;49m
+[32m   3887[39m     [38;5;28;01mif[39;00m level > [32m0[39m [38;5;129;01mor[39;00m [38;5;28mself[39m._lexsort_depth == [32m0[39m:
+[32m   3888[39m         [38;5;66;03m# Desired level is not sorted[39;00m
+[32m   3889[39m         [38;5;28;01mif[39;00m [38;5;28misinstance[39m(idx, [38;5;28mslice[39m):
+[32m   3890[39m             [38;5;66;03m# test_get_loc_partial_timestamp_multiindex[39;00m
+
+[36mFile [39m[32m/tmp/claude-1001/venv/lib/python3.13/site-packages/pandas/core/indexes/multi.py:3458[39m, in [36mMultiIndex._get_loc_single_level_index[39m[34m(self, level_index, key)[39m
+[32m   3456[39m     [38;5;28;01mreturn[39;00m -[32m1[39m
+[32m   3457[39m [38;5;28;01melse[39;00m:
+[32m-> [39m[32m3458[39m     [38;5;28;01mreturn[39;00m [30;43mlevel_index[39;49m[30;43m.[39;49m[30;43mget_loc[39;49m[30;43m([39;49m[30;43mkey[39;49m[30;43m)[39;49m
+
+[36mFile [39m[32m/tmp/claude-1001/venv/lib/python3.13/site-packages/pandas/core/indexes/base.py:3648[39m, in [36mIndex.get_loc[39m[34m(self, key)[39m
+[32m   3643[39m     [38;5;28;01mif[39;00m [38;5;28misinstance[39m(casted_key, [38;5;28mslice[39m) [38;5;129;01mor[39;00m (
+[32m   3644[39m         [38;5;28misinstance[39m(casted_key, abc.Iterable)
+[32m   3645[39m         [38;5;129;01mand[39;00m [38;5;28many[39m([38;5;28misinstance[39m(x, [38;5;28mslice[39m) [38;5;28;01mfor[39;00m x [38;5;129;01min[39
+[... 15 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python -m nbconvert --to notebook --execute --allow-errors --ExecutePreprocessor.timeout=3000 --output $TMPDIR/run1.ipynb reproduce_chen_2026.ipynb >/dev/null 2>&1; $TMPDIR/venv/bin/python - <<'EOF'
+import json,os
+nb=json.load(open(os.environ['TMPDIR']+'/run1.ipynb'))
+for i,c in enumerate(nb['cells']):
+    for o in c.get('outputs',[]):
+        if o.get('output_type')=='error':
+            print('CELL',i, c['source'][:3], o['ename'], o['evalue'][:300])
+EOF
+```
+
+```
+CELL 15 ['rec = requests.get(archives.ZENODO_RECORD, timeout=60).json()\n', 'print(f"Zenodo record {rec[\'id\']}, created {rec[\'created\'][:10]}, modified {rec[\'modified\'][:10]}:")\n', 'for f in rec["files"]:\n'] KeyError 'GS'
+CELL 21 ["# Every synaptosome image of S-BIAD2074, streamed and measured with the Methods' FIJI procedure (archives.py).\n", 't0 = time.time()\n', 'syn = archives.analyse_synaptosomes(bia["S-BIAD2074"].path.tolist(), workers=12)\n'] ValueError invalid literal for int() with base 10: ''
+CELL 72 ['phos_cols = [f"phos_{k}" for k in range(1, 7)]\n', 'unphos_cols = [f"unphos_{k}" for k in range(1, 7)]\n', 'rows = []\n'] ValueError assignment destination is read-only
+CELL 78 ['names = {"4G": "synaptophysin/actin, synaptosomes", "4H": "Figure 4H protein, synaptosomes", "4I": "RIM1, synaptosomes",\n', '         "4J": "RIM1, S1 fraction", "4L": "RIM1, SNc"}\n', 'rows = []\n'] AttributeError 'numpy.float64' object has no attribute 'items'
+CELL 81 ['dup_cols = set(wide[wide.round(9).duplicated(keep="first")].index.get_level_values("column"))\n', 'print("Sections counted once (columns of the source sheet dropped as repeats):", sorted(dup_cols))\n', 'paper5 = {"5D": {"cell": ("12.75", "0.0006"), "group": ("1.277", "0.2622"), "interaction": ("4.838", "0.0311"), "sidak+": "0.0344"},\n'] NameError name 'wide' is not defined
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; python3 - <<'EOF'
+import json,re
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+names=['f1','f2','f4','f5','f5gh','f5j','f4de','pp','ab','s1','pull','syn','bia','wide','frac','area','supp','rep','dups','report','raw','order','sdrf','lim','imp','res2','res3','parts','tests','near','meta','head','cr','cm','text','related','summary','paper_train','mm']
+for i,c in enumerate(nb['cells'][:60]):
+    if c['cell_type']!='code': continue
+    s=''.join(c['source'])
+    for n in names:
+        if re.search(r'(^|\n|\s|,)'+re.escape(n)+r'\s*(,[^=]*)?=[^=]',s): print(i,n)
+EOF
+```
+
+```
+12 near
+12 meta
+12 head
+12 cr
+12 cm
+12 text
+12 related
+12 summary
+12 paper_train
+15 f1
+15 f2
+15 f4
+15 f5
+15 f5gh
+15 f5j
+15 f4de
+15 wide
+15 rep
+15 dups
+17 pp
+[... 14 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; python3 - <<'EOF'
+import json
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']=='code':
+        s=''.join(c['source'])
+        s=s.replace('f4 = archives.fig4()','blots = archives.fig4()').replace('for k, v in f4.items()','for k, v in blots.items()')
+        c['source']=s
+json.dump(nb,open('reproduce_chen_2026.ipynb','w'),indent=1)
+EOF
+grep -c "blots" reproduce_chen_2026.ipynb; sed -i 's/        v = out\[c\].to_numpy(float)/        v = np.array(out[c], dtype=float)/' archives.py; grep -n "np.array(out\[c\]" archives.py
+$TMPDIR/venv/bin/python - <<'EOF'
+import archives as A, pandas as pd, numpy as np, traceback
+f5=A.fig5de()
+try:
+    print(f5.groupby("group").mouse.unique().apply(list).to_dict())
+except Exception: traceback.print_exc()
+f4de=A.fig4de()
+try: print(f4de.pivot_table(index=["panel", "replicate"], columns="group", values="value", aggfunc="size", margins=True))
+except Exception: traceback.print_exc()
+bia=A.bia_files("S-BIAD2074")
+import re
+for p in bia.path:
+    m = re.match(r"Export_(wt|ki)(\d+)_BSN(\d+)", p.split('/')[-1], re.I)
+    if not m or not m.group(2) or not m.group(3): print('bad',p)
+EOF
+```
+
+```
+6
+330:        v = np.array(out[c], dtype=float)
+Traceback (most recent call last):
+  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/pandas/core/indexes/base.py", line 3641, in get_loc
+    return self._engine.get_loc(casted_key)
+           ~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^
+  File "pandas/_libs/index.pyx", line 168, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/index.pyx", line 197, in pandas._libs.index.IndexEngine.get_loc
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7668, in pandas._libs.hashtable.PyObjectHashTable.get_item
+  File "pandas/_libs/hashtable_class_helper.pxi", line 7676, in pandas._libs.hashtable.PyObjectHashTable.get_item
+KeyError: 'GS'
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "<stdin>", line 7, in <module>
+  File "/tmp/claude-1001/venv/lib/python3.13/site-packages/pandas/core/frame.py", line 11161, in pivot_table
+    return pivot_table(
+        self,
+    ...<10 lines>...
+[... 39 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; python3 - <<'EOF'
+import json
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+for c in nb['cells']:
+    if c['cell_type']=='code':
+        s=''.join(c['source'])
+        s=s.replace('print(f4de.pivot_table(index=["panel", "replicate"], columns="group", values="value", aggfunc="size", margins=True).to_string())',
+                    'print(pd.crosstab([f4de.panel, f4de.replicate], f4de.group, margins=True).to_string())')
+        c['source']=s
+json.dump(nb,open('reproduce_chen_2026.ipynb','w'),indent=1)
+EOF
+$TMPDIR/venv/bin/python - <<'EOF'
+import archives as A, traceback
+from concurrent.futures import ThreadPoolExecutor
+bia=A.bia_files("S-BIAD2074")
+def one(p):
+    try:
+        A.analyse_synaptosomes([p], workers=1); return None
+    except Exception as e:
+        return p+' '+traceback.format_exc()[-600:]
+with ThreadPoolExecutor(12) as ex:
+    for r in ex.map(one, bia.path.tolist()):
+        if r: print(r)
+EOF
 ```
 
 ```
 (Bash completed with no output)
 ```
 
-**Agent calls Write**
+**Agent calls Bash**
 
-```json
-{
- "file_path": "/tmp/claude-1001/build/cells_md.py",
- "content": "MD, RESULT = {}, {}\n\nMD[\"header\"] = \"\"\"\n# Reproducing Chen, He et al. (2026) from dandiset 001933\n\nPaper: Chen C, He Q, Tombesi G, et al. (2026). Leucine-rich repeat kinase 2 impairs the release sites of\nParkinson's disease vulnerable dopamine axons. Nature Communications.\n[doi:10.1038/s41467-026-75194-3](https://doi.org/10.1038/s41467-026-75194-3). This attempt used the open access\nfull text (CC BY) and its Supplementary Information.\n\nDandiset: [DANDI:001933](https://dandiarchive.org/dandiset/001933/0.260825.1457), version 0.260825.1457. The paper\ndoes not name the dandiset or a version (its data statement points to Zenodo, PRIDE and the BioImage Archive). This is\nthe only published version, and it holds the same 27 files as the draft (checked in the data check), so it is pinned.\n\nWhat the dandiset holds: one session per mouse of GRAB-DA3m fiber photometry in the dorsal striatum during optogenetic\nstimulation of SNc dopamine neurons, 15 Anxa1-iCre mice (dorsolateral striatum) and 12 Calb1-Cre mice (dorsomedial\nstriatum), LRRK2-WT and LRRK2-G2019S (GS). This is the data of Figure 6 and Supplementary Figures 7 and 8. The\nimmunostaining, proteomics, western blots and super-resolution imaging of Figures 1 to 5 are not in it.\n\nOutside input: the paper's source data file (Zenodo [10.5281/zenodo.19930567](https://doi.org/10.5281/zenodo.19930567),\n`Source data.xlsx`, md5 checked below), used only in the claim `source-data-link` to test whether the dandiset's\nrecordings are those behind the published values. Every other claim runs on the dandiset alone. The paper's analysis\ncode was read at [DombeckLab/lrrk2_photometry_analysis](https://github.com/DombeckLab/lrrk2_photometry_analysis),\ncommit d34558f (the Zenodo release 10.5281/zenodo.20244434 is commit 1b551d1, which differs only by a licence file).\n\n| Claim | Paper | Tested |\n|---|---|---|\n| `source-data-link` | Source data of Fig. 6, Supp. Figs 7 and 8 can be recomputed from the dandiset | tested (with the source data) |\n| `fig6e-anxa1-evoked-reduced` | Anxa1 evoked release lower in GS at 0.5 mW (p = 1.10e-20) | tested |\n| `fig6e-anxa1-evoked-per-mouse` | 7 of 8 Anxa1 GS mice reduced; 3743 not | tested |\n| `supp7c-anxa1-evoked-all-powers` | Reduction at 0.1, 0.5, 1 and 4 mW | tested |\n| `fig6f-anxa1-spontaneous-reduced` | Anxa1 spontaneous transients smaller in GS (1064 against 798) | tested |\n| `fig6f-anxa1-spontaneous-per-mouse` | 6 of 8 Anxa1 GS mice reduced; 4651 and 3743 not | tested |\n| `supp8c-calb1-spontaneous-not-reduced` | Calb1 spontaneous transients not reduced (p = 0.98) | tested |\n| `supp8e-calb1-evoked-reduced` | Calb1 evoked release reduced at four powers | tested |\n| `supp8e-calb1-few-mice-reduced` | Only 2 of 7 Calb1 GS mice reduced | tested |\n| `cohens-d-anxa1-larger` | Cohen's d at 0.5 mW, Anxa1 2.05 against Calb1 0.76 | tested |\n| `fig1d-lrrk2-enriched-vulnerable` and seven other claims of Figs 1 to 5 | Imaging, proteomics, western blots | blocked: not in the dandiset |\n\nMethod choices are fixed in the claims file, `claims/001933/10.1038-s41467-026-75194-3.yaml`. In short: the signal is\nthe dandiset's processed dF/F, the trace the paper's code analyses; the evoked integral follows the Methods (the\nlight-on period), with the code's baseline; spontaneous transients follow the Methods and `transient_by_threshold.m`.\n\"\"\"\n\nMD[\"check-intro\"] = \"\"\"\n## Data check\n\nEach check of the description against the values is stated under its output.\n\"\"\"\n\nMD[\"check-subjects\"] = \"\"\"\nThe files hold one session each of 15 Anxa1 mice (8 GS, 7 WT) and 12 Calb1 mice (7 GS, 5 WT), the paper's counts after\nits exclusions, and the Anxa1 GS mouse IDs are those of the Figure 6E legend. The four excluded mice are not in the\ndandiset, which does not say that they were left out. Ages at the session are 6.3 to 7.6 months, consistent with\nsurgery at 6 months and recording four weeks later. Anxa1 mice are recorded in the dorsolateral and Calb1 mice in the\ndorsomedial striatum, as the paper states. No two files share a dF/F trace or a start time, so no recording is\ndeposited twice. The pinned version and the draft hold the same files.\n\"\"\"\n\nMD[\"check-series\"] = \"\"\"\nThe processed series are regular at 10 ms (the shortest interval, 9.5 ms, comes from the 2 kHz grid) and last 20.4 to\n25.4 min, a little longer than the Methods' 20 min. The dF/F series is stated in `a.u.`, but its description and its\nvalues are % dF/F: the code's `df_f` and 20-sample moving mean applied to the stored corrected signal give the stored\nseries to within 0.026 % dF/F. The raw 470 nm signal, averaged into the 100 Hz bins, aligns with the corrected signal\nat lag 0 in every file (correlation 0.77 to 0.99), so raw and processed series share a clock. About 8 of the 20 raw\nsamples per bin are kept for 470 nm, as the demultiplexing describes.\n\"\"\"\n\nMD[\"check-opto\"] = \"\"\"\nEvery file holds 64 trains, 8 at each of 8 powers from 0.1 to 4 mW; the paper uses four of them (0.1, 0.5, 1 and 4 mW).\nThe table's own description gives 8 ms on and 8 ms off for 500 ms and only those four powers, but the table holds two\nkinds of train. In Anxa1 files one half of the session has 9 ms pulses every 10 ms for 0.33 s, the other 8 ms pulses\nevery 16 ms for 0.51 s; Calb1 files hold only the second kind. The paper's four powers fall on 0.51 s trains in 25\nfiles and on 0.33 s trains in two Anxa1 GS mice (3742 and 4885), so these two mice were stimulated differently from\nevery WT mouse; a variant of `fig6e-anxa1-evoked-reduced` leaves them out. One train each in mice 4652 and 740 has a\npulse length of 0, no period and one pulse, though it lasts 0.51 s like its neighbours, so its pulse columns are\nwrong. Trains of the same power come in pairs 15.3 to 15.5 s apart, and 51% of the gaps are under 20 s, where the\nMethods and the table description say at least 20 s.\n\"\"\"\n\nMD[\"check-clock\"] = \"\"\"\nAt the table's onsets the 0 to 0.5 s integral has a median of 13 to 260 % dF/F x s per file; 10 s later, between\ntrains, it is near zero in every file (lower in 27 of 27, Wilcoxon p = 1.5e-08), and the 405 nm control shows no\nresponse (medians -0.74 to 1.15). The mean response peaks 160 to 370 ms after onset. The mean trace rises by up to\n25 % dF/F in the 0.1 s before onset: the 20-sample moving mean of the stored dF/F spreads the response about 0.1 s\nearlier, which is why the code's baseline ends 0.1 s before onset. The epochs table and the photometry share a clock.\n\nThe response grows with the labelled power in every Calb1 file (Spearman 0.76 to 0.94) but not in many Anxa1 files\n(median 0.06). In Anxa1 files where 1.5, 2 and 3 mW are given as 0.33 s trains, those responses fall below the 0.5\nand 1 mW ones given as 0.51 s trains (for example mouse 4401). The power labels are consistent with the data in Calb1\nfiles; in Anxa1 files the data alone cannot confirm them. The labels of the four powers the paper uses are confirmed\nagainst its source data under `source-data-link`.\n\"\"\"\n\nMD[\"link\"] = \"\"\"\n## Claims\n\n### source-data-link\n\n> The dandiset's recordings are those behind the paper's Figure 6 and Supplementary Figures 7 and 8, and the paper's\n> published per-stimulation traces, evoked integrals and spontaneous transient integrals can be recomputed from them.\n\nRecords are matched by mouse ID, group, labelled power and the rank of the stimulation within its power. The source\ndata file is read in memory from Zenodo.\n\"\"\"\n\nMD[\"link-raw\"] = \"\"\"\nTo see why the Calb1 records differ, the dF/F is recomputed from the raw 470 nm signal in the dandiset with the\ncode's binning and baseline correction, at the code's background fraction (0.85 of the sliding 8th percentile) and at\nother fractions, and compared with the published triggered traces. The edges of the sliding percentile are not\nreproduced exactly, so the comparison with the stored series leaves out the first and last 30 s.\n\"\"\"\n\nMD[\"evoked-intro\"] = \"\"\"\n### Evoked integrals\n\nIntegrals for every train under the four windows: the Methods' light-on period (main), the code's -0.1 to 1.0 s\n(`code`), the window `chunking_index.m` computes as written, starting 1 s after onset (`code_as_written`), and a fixed\n0 to 0.5 s (`fixed`). All use the mean from 1.0 to 0.1 s before onset as baseline (shifted with the window for\n`code_as_written`).\n\"\"\"\n\nMD[\"fig6e\"] = \"\"\"\n### fig6e-anxa1-evoked-reduced\n\n> Optogenetically evoked dopamine release in the dorsolateral striatum (Anxa1+ projection region) at 0.5 mW is lower in\n> LRRK2-G2019S than in LRRK2-WT mice (64 against 56 stimulations, p = 1.10e-20, one-tailed two-sample t-test).\n\nThe plot shows the mean dF/F (shading: SEM over stimulations) at 0.5 mW, with the 405 nm control dashed, and the\nlight-on period shaded. All points are within the axes; the ranges are printed.\n\"\"\"\n\nMD[\"fig6e-per-mouse\"] = \"\"\"\n### fig6e-anxa1-evoked-per-mouse\n\n> Seven of eight individual G2019S mice show significantly reduced evoked dopamine release at 0.5 mW compared with the\n> WT group; mouse 3743 does not.\n\"\"\"\n\nMD[\"supp7c\"] = \"\"\"\n### supp7c-anxa1-evoked-all-powers\n\n> The reduction of evoked dopamine release in Anxa1 G2019S mice holds at each of the four stimulation powers, 0.1, 0.5,\n> 1 and 4 mW (p from 2.39e-16 to 1.10e-20).\n\"\"\"\n\nMD[\"spont-intro\"] = \"\"\"\n### Spontaneous transients\n\nTransients for every mouse, with the Methods' exclusion of 1 s before to 1.5 s after each onset (main) and with the\nwindow the code removes as written (1 s to 3.5 s after onset). Each transient's integral, peak and mean dF/F are kept.\n\"\"\"\n\nMD[\"fig6f\"] = \"\"\"\n### fig6f-anxa1-spontaneous-reduced\n\n> Spontaneous dopamine transients in the dorsolateral striatum are smaller in G2019S than in WT mice (1064 against 798\n> transients, p = 2.75e-177, one-tailed two-sample t-test), with 57 to 285 transients per mouse.\n\"\"\"\n\nMD[\"fig6f-per-mouse\"] = \"\"\"\n### fig6f-anxa1-spontaneous-per-mouse\n\n> Six of eight individual G2019S mice show significantly smaller spontaneous dopamine transients than the WT group;\n> mice 4651 and 3743 do not.\n\"\"\"\n\nMD[\"supp8c\"] = \"\"\"\n### supp8c-calb1-spontaneous-not-reduced\n\n> In the dorsomedial striatum (Calb1+ projection region), spontaneous dopamine transients are not reduced in G2019S\n> mice (970 against 682 transients, p = 0.98).\n\"\"\"\n\nMD[\"supp8e\"] = \"\"\"\n### supp8e-calb1-evoked-reduced\n\n> Evoked dopamine release in the dorsomedial striatum from Calb1+ neuron stimulation is reduced in G2019S mice at each\n> of four powers (56 against 40 stimulations per power, p from 6.45e-05 to 0.001).\n\"\"\"\n\nMD[\"supp8e-mice\"] = \"\"\"\n### supp8e-calb1-few-mice-reduced\n\n> Only 2 of 7 G2019S mice show reduced Calb1+ evoked dopamine release relative to the WT group.\n\"\"\"\n\nMD[\"cohen\"] = \"\"\"\n### cohens-d-anxa1-larger\n\n> The G2019S reduction of evoked release at 0.5 mW is much larger for Anxa1+ (Cohen's d = 2.05) than for Calb1+\n> stimulation (d = 0.76).\n\"\"\"\n\nMD[\"blocked\"] = \"\"\"\n### Blocked claims\n\nThese claims rest on data that are not in the dandiset, which holds only the photometry of Figure 6 and Supplementary\nFigures 7 and 8. The data exist elsewhere: images in the BioImage Archive (S-BIAD2070, S-BIAD2071, S-BIAD2072,\nS-BIAD2074), mass spectrometry in PRIDE (PXD065003, PXD065006, PXD065125), and per-section and per-blot values in the\nsource data file on Zenodo. The registry judges the dandiset, so they are recorded as blocked (`data_missing`).\n\n| Claim | Paper | Data |\n|---|---|---|\n| `fig1d-lrrk2-enriched-vulnerable` | LRRK2 higher in Aldh1a1+ SNc neurons | immunostaining images |\n| `fig2b-rab3-phosphorylation` | 289 phosphopeptides change with MLi-2 | phosphoproteomics |\n| `fig2eg-prab3-increased` | pRAB3A and pRAB3C up in G2019S | PhosTag western blots |\n| `fig3d-rim-binds-unphosphorylated` | RIM1 and RIM2 prefer unphosphorylated RAB3A | affinity purification MS |\n| `fig4d-fewer-active-zones` | Fewer bassoon+ TH+ synaptosomes | confocal images |\n| `fig4i-rim1-reduced` | RIM1 reduced in synaptosomes | western blots |\n| `fig5-bassoon-vulnerable-axons` | Bassoon clusters change in vulnerable axons | SIM images |\n| `fig5j-no-axon-loss` | No loss of TH+ fibres | confocal images |\n\"\"\"\n\nMD[\"summary\"] = \"\"\"\n## Summary\n\n| Claim | Outcome |\n|---|---|\n| `source-data-link` | not reproduced (Anxa1 links; Calb1 does not) |\n| `fig6e-anxa1-evoked-reduced` | reproduced |\n| `fig6e-anxa1-evoked-per-mouse` | reproduced |\n| `supp7c-anxa1-evoked-all-powers` | reproduced |\n| `fig6f-anxa1-spontaneous-reduced` | reproduced |\n| `fig6f-anxa1-spontaneous-per-mouse` | partially reproduced |\n| `supp8c-calb1-spontaneous-not-reduced` | reproduced (p = 0.0509, at the threshold) |\n| `supp8e-calb1-evoked-reduced` | reproduced |\n| `supp8e-calb1-few-mice-reduced` | partially reproduced |\n| `cohens-d-anxa1-larger` | not reproduced |\n| Eight claims of Figures 1 to 5 | blocked, data missing |\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences\nfrom the paper's method.\n\nHow the analysis differs from the paper's:\n\n- The evoked integral is taken over the light-on period, as the Methods state; the paper's numbers come from the code's\n  window, 0.1 s before to 1.0 s after onset (its published integrals equal that measure times 0.0001). Both are shown.\n- Spontaneous transients are measured by their integral, as the Methods state; the paper's published values are 0.005\n  times the mean dF/F over each transient. Both are shown.\n- Per-mouse tests are shown under four readings, as the Methods (Welch), the legends (one-tailed) and the code\n  (Student, two-tailed) disagree.\n- The window `chunking_index.m` computes as written starts 1 s after onset; the source data show the paper used the\n  intended window starting 1 s before onset. The literal window is shown as a variant only.\n\nWhat was found about the dandiset:\n\n- The Anxa1 recordings are those behind Figure 6 and Supplementary Figure 7: the published traces equal the dandiset's\n  dF/F to within 1e-12, and the evoked integrals and transient counts match, except one stimulation of mouse 4398 that\n  the processed series cuts off 0.8 s after onset.\n- The Calb1 dF/F in the dandiset is not the trace behind Supplementary Figure 8. None of the 384 published traces or\n  integrals match it, and recomputing from the raw signal with any single background fraction does not close the gap.\n  The raw signal is there, but the processing the paper used for Calb1 is not, so the Calb1 results here are of the\n  dandiset's processing, not the paper's.\n- The epochs table describes one kind of train and four powers; the files hold two kinds of train and eight powers, and\n  two Anxa1 GS mice received the paper's powers as 0.33 s trains of 9 ms pulses.\n- The dF/F unit is given as `a.u.` for a series in percent; two trains have a pulse length of 0; the four excluded mice\n  are left out without a note; and the paper does not cite the dandiset.\n\"\"\"\n\nRESULT[\"source-data-link\"] = \"\"\"\n**Result: not reproduced.** All 27 mice in the source data are in the dandiset with the same genotype and line. For\nAnxa1 the link holds: 120 of 120 triggered traces of Figure 6C and 479 of 480 of Supplementary Figure 7B equal the\ndandiset's dF/F from 1 s before onset (largest difference 5.7e-13 in Figure 6C), the published evoked integrals equal\nthe code's measure times 0.0001 for all Anxa1 records except one (119 of 120 at 4 mW), and the transient counts match\nfor 15 of 15 mice. The two Anxa1 misses are the last 4 mW stimulation of mouse 4398, whose processed series ends 0.8 s\nafter onset. For Calb1 none of the 384 traces and none of the 384 integrals match, and the transient counts match for\n1 of 12 mice. dF/F recomputed from the raw signal with the code's processing reproduces the stored Calb1 series (largest\ndifference 1.47 % dF/F) but not the published traces (median differences 66 to 519 % dF/F at the code's background\nfraction, and 22 to 88 at the best fraction for each mouse). The published spontaneous values are 0.005 times the mean\ndF/F over each transient (ratio 0.004994 to 0.004999 in the 15 Anxa1 mice), not its integral, so part (4) as the\ncriterion fixed it matches for no mouse. Scored as the criterion sets out, the four parts match for 1.0, 0.609, 0.609\nand 0 of their records; with the transient mean in part (4), 0.481. The Figure 6E integrals match the 0.5 mW\nepochs (120 of 120) and none of the 4 mW ones, so the figure uses the power its legend states. The published values\nreproduce the paper's statistics (Figure 6E p = 1.1e-20, Supplementary Figure 8C p = 0.989, Cohen's d 2.06 and 0.765).\n\"\"\"\n\nRESULT[\"fig6e-anxa1-evoked-reduced\"] = \"\"\"\n**Result: reproduced.** At 0.5 mW there are 64 GS and 56 WT stimulations, as in the paper. The mean integral over the\nlight-on period is 48.8 against 128.0 % dF/F x s, one-tailed p = 1.16e-22 (paper 1.10e-20), Cohen's d 2.21. With the\ncode's window p = 1.1e-20, the paper's value. The reduction holds at 4 mW (p = 9.9e-18), without the two GS mice given\n0.33 s trains (p = 4.16e-17), and with one value per mouse (Welch p = 0.000434). The window `chunking_index.m` computes\nas written reverses the sign (one-tailed p = 1, means -11.8 and -33), as it starts 1 s after onset. Every GS mouse\nexcept 3743 has a lower mean than every WT mouse (GS 3.28 to 82.33 without 3743, WT 90.86 to 190.21).\n\"\"\"\n\nRESULT[\"fig6e-anxa1-evoked-per-mouse\"] = \"\"\"\n**Result: reproduced.** Under all four readings 7 of 8 GS mice are below the WT group at p < 0.05/8, and 3743 is the\nexception (mean 125 against 128, Welch one-tailed p = 0.362), as in the paper. The Student one-tailed p-values are of\nthe same order as the legend's, for example 1.01e-04 against 4.0e-04 for 4651 and 3.73e-16 against 4.14e-15 for 3742.\nWith the code's window the count is 7 under every reading, and at 4 mW it is 7 under the Welch readings.\n\"\"\"\n\nRESULT[\"supp7c-anxa1-evoked-all-powers\"] = \"\"\"\n**Result: reproduced.** GS integrals are lower at all four powers, one-tailed p from 3.13e-15 (0.1 mW) to 1.16e-22\n(0.5 mW) with the Methods' window. With the code's window the p-values at 0.1, 0.5 and 1 mW are 1.29e-15, 1.1e-20 and\n1.22e-17, the paper's values; at 4 mW it is 5.62e-16 against 2.39e-16, as the dandiset has 55 WT stimulations there in\nplace of 56.\n\"\"\"\n\nRESULT[\"fig6f-anxa1-spontaneous-reduced\"] = \"\"\"\n**Result: reproduced.** The Methods' detection gives 1064 GS and 798 WT transients, the paper's counts, with 57 to 285\nper mouse, the paper's range. Mean integrals are 131.9 against 302.9 % dF/F x s, one-tailed p = 4.85e-72 (paper\n2.75e-177). The published values are the mean dF/F over each transient (see `source-data-link`); with that measure\np = 2.23e-177. With one value per mouse the difference gives Welch p = 0.0318, and the code's exclusion window as\nwritten gives p = 1.3e-68 on 648 and 363 transients.\n\"\"\"\n\nRESULT[\"fig6f-anxa1-spontaneous-per-mouse\"] = \"\"\"\n**Result: partially reproduced.** By the integral, 5 of 8 GS mice are below the WT group under every reading. The\nexceptions are 3743 (Welch one-tailed p = 0.431), 4651, whose mean (417) is above the WT mean (303), and 4652\n(p = 0.0128). With the mean dF/F over each transient, the measure of the published values, reading (d) gives 6 of 8\nwith 3743 and 4651 as the exceptions, and p-values close to the legend's (4651 0.00819 against 0.008, 3743 0.965\nagainst 0.97, 3742 5.38e-88 against 5.28e-88). The Welch readings give 7 there, as 4651 reaches p = 1.5e-05, so the\npaper's count follows the one-tailed Student test of its legend, not the Welch test of its Methods.\n\"\"\"\n\nRESULT[\"supp8c-calb1-spontaneous-not-reduced\"] = \"\"\"\n**Result: reproduced.** By the paper's test, GS transients are not significantly smaller: one-tailed p = 0.0509 on 896\nGS and 635 WT transients (both within tolerance of 970 and 682), difference of means 21.1 % dF/F x s, Cohen's d 0.085.\nThe result sits at the threshold. With the mean dF/F over each transient, the measure of the published values, GS are\nlower at p = 2.25e-09 (d = 0.306), and with the code's exclusion window as written at p = 1.81e-05; with one value per\nmouse, Welch p = 0.402. The dandiset's Calb1 dF/F is not the trace the paper analysed (see `source-data-link`), and\nthe published values give p = 0.989.\n\"\"\"\n\nRESULT[\"supp8e-calb1-evoked-reduced\"] = \"\"\"\n**Result: reproduced.** There are 56 GS and 40 WT stimulations per power, as in the paper. GS are lower at all four\npowers, one-tailed p from 4.38e-07 (4 mW) to 6.29e-10 (0.5 mW), smaller p-values than the paper's 6.45e-05 to 0.001;\nthe published integrals do not come from the dandiset's Calb1 dF/F (see `source-data-link`).\n\"\"\"\n\nRESULT[\"supp8e-calb1-few-mice-reduced\"] = \"\"\"\n**Result: partially reproduced.** At 0.5 mW, the number of GS mice below the WT group at p < 0.05/7 is 7 (Welch\none-tailed), 6 (Welch two-tailed) and 4 (Student, either tail), against the paper's 2; the closest reading gives 4.\nStudent tests give 2 at 0.1 and 1 mW and 1 or 3 at 4 mW, so the count depends on power and test. Mouse 740 (mean 17.3\nagainst 131) is below the WT group under every reading.\n\"\"\"\n\nRESULT[\"cohens-d-anxa1-larger\"] = \"\"\"\n**Result: not reproduced.** At 0.5 mW, Cohen's d is 2.21 for Anxa1, within tolerance of 2.05, and 1.40 for Calb1,\nagainst 0.76 (tolerance 0.684 to 0.836); their ratio is 1.58, below the factor of 2 the criterion asks. With the code's\nwindow d is 2.06 and 1.25. The published integrals give 2.06 and 0.765 (see `source-data-link`), so the paper's values\nfollow from its own data, and the Calb1 difference is consistent with the Calb1 dF/F in the dandiset not being the one\nthe paper analysed. The Anxa1 effect is larger than the Calb1 effect at every power under the Methods, code and fixed\nwindows (ratio 1.29 to 1.74).\n\"\"\"\n"
-}
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+p='archives.py'; s=open(p).read()
+s=s.replace('''def fetch(url):
+    """Bytes of a file and their md5."""
+    content = requests.get(url, timeout=600).content
+    return content, hashlib.md5(content).hexdigest()''','''def fetch(url, size=None, attempts=3):
+    """Bytes of a file and their md5. A failed request is retried up to ``attempts`` times and
+    then raised; with ``size``, a file of another length is an error."""
+    for k in range(attempts):
+        try:
+            r = requests.get(url, timeout=600)
+            r.raise_for_status()
+            if size is not None and len(r.content) != size:
+                raise IOError(f"{url}: {len(r.content)} bytes, the archive lists {size}")
+            break
+        except (requests.RequestException, IOError):
+            if k == attempts - 1:
+                raise
+    return r.content, hashlib.md5(r.content).hexdigest()''')
+s=s.replace('''def read_synaptosome_image(path):
+    """One synaptosome image of S-BIAD2074 (three channels), its md5 and pixel size in um."""
+    import tifffile
+
+    content, md5 = fetch(BIA.format(n="074") + requests.utils.quote(path))''','''def read_synaptosome_image(path, size=None):
+    """One synaptosome image of S-BIAD2074 (three channels), its md5 and pixel size in um."""
+    import tifffile
+
+    content, md5 = fetch(BIA.format(n="074") + requests.utils.quote(path), size)''')
+s=s.replace('''def analyse_synaptosomes(files, workers=8):
+    """Stream every image in ``files`` (paths in S-BIAD2074) and run both measures on it."""
+
+    def one(path):
+        img, md5, px = read_synaptosome_image(path)''','''def analyse_synaptosomes(files, workers=8):
+    """Stream every image in ``files`` (a table of paths and sizes in S-BIAD2074) and run both
+    measures on it."""
+
+    def one(item):
+        path, size = item
+        img, md5, px = read_synaptosome_image(path, size)''')
+s=s.replace('''        return pd.DataFrame(list(ex.map(one, files)))''','''        return pd.DataFrame(list(ex.map(one, zip(files["path"], files["size"]))))''')
+open(p,'w').write(s)
+import json
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+for c in nb['cells']:
+    if c['cell_type']=='code':
+        c['source']=''.join(c['source']).replace('archives.analyse_synaptosomes(bia["S-BIAD2074"].path.tolist(), workers=12)','archives.analyse_synaptosomes(bia["S-BIAD2074"], workers=12)')
+json.dump(nb,open('reproduce_chen_2026.ipynb','w'),indent=1)
+EOF
+grep -n "analyse_synaptosomes" reproduce_chen_2026.ipynb archives.py
 ```
 
 ```
-The file /tmp/claude-1001/build/cells_md.py has been updated successfully. (file state is current in your context — no need to Read it back)
+reproduce_chen_2026.ipynb:300:   "source": "# Every synaptosome image of S-BIAD2074, streamed and measured with the Methods' FIJI procedure (archives.py).\nt0 = time.time()\nsyn = archives.analyse_synaptosomes(bia[\"S-BIAD2074\"], workers=12)\nprint(f\"{len(syn)} images streamed and measured in {time.time() - t0:.0f} s; shapes {syn['shape'].value_counts().to_dict()};\",\n      f\"pixel sizes (um) {sorted(syn.pixel_um.unique())}\")\ndupe = syn[syn.md5.duplicated(keep=False)].sort_values(\"md5\")\nwithin = dupe.groupby([\"md5\"]).folder.agg(lambda f: f.duplicated().any())\nprint(\"Images with the same content as another:\", len(dupe), \"; pairs within one folder:\", int(within.sum()))\nprint(dupe.groupby(\"md5\").path.apply(lambda p: \" = \".join(x.split(\"/\", 1)[1] for x in p)).to_string(index=False))\nfrac = syn[syn.folder == \"BSN\"]\narea = syn[syn.folder == \"BSN-area\"]\nprint(\"\\nBSN folder: VAMP2 particles per image\", int(frac.vamp2_particles.min()), \"to\", int(frac.vamp2_particles.max()),\n      \"(median\", int(frac.vamp2_particles.median()), \"); TH+ VAMP2+ per image\", int(frac.th_vamp2.min()), \"to\", int(frac.th_vamp2.max()),\n      \"; images with none:\", int((frac.th_vamp2 == 0).sum()), \"(the legend: about 1000 synaptosomes per area)\")\nprint(\"BSN-area folder: bassoon and TH overlaps per image\", int(area.overlaps.min()), \"to\", int(area.overlaps.max()),\n      \"; VAMP2+ overlaps\", int(area.vamp2_pos.min()), \"to\", int(area.vamp2_pos.max()), \"; images with none:\", int((area.vamp2_pos == 0).sum()))"
+archives.py:478:def analyse_synaptosomes(files, workers=8):
 ```
 
 **Agent calls Bash**
 
 ```bash
-bash $TMPDIR/build/run.sh | tail -3; grep -n "Assets: pinned\|Epochs with a pulse" $TMPDIR/build/out.txt; grep -c "" $TMPDIR/build/out.txt
+cd entries/001933-chen-2026; wc -l archives.py; grep -n "^def \|^@" archives.py
 ```
 
 ```
-517:=== CELL ['claim:supp8e-calb1-few-mice-reduced']
-550:=== CELL ['claim:cohens-d-anxa1-larger']
-572:=== CELL []
-64:Assets: pinned version 27, draft 27; identical paths, sizes and etags: True
-143:Epochs with a pulse length of 0 or no period (mouse, epoch, power, length in s, pulses): [(4652, 32, np.float64(1.0), np.float64(0.51), 1), (740, 32, np.float64(1.0), np.float64(0.51), 1)]
-574
+497 archives.py
+58:def fetch(url, size=None, attempts=3):
+74:@lru_cache(maxsize=None)
+75:def source_workbook():
+82:def sheet(name):
+93:def _num(v):
+97:def _col(rows, first, c):
+101:def fig1d():
+111:def fig2eg():
+120:def fig4de():
+136:def fig4():
+147:def fig5de():
+167:def fig5gh():
+183:def fig5j():
+197:def ttest(a, b, equal_var=True):
+203:def cohens_d(a, b):
+210:def sidak(p, m):
+214:def pooled_contrasts(groups, pairs, m=None):
+235:def twoway_anova(df, value="value", a="cell", b="group"):
+259:def sidak_within(df, mse, df_res, value="value", a="cell", b="group", first="GS", second="WT"):
+[... 15 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+p='archives.py'; s=open(p).read()
+s=s.replace('''def _means(values, lab):
+    idx = np.arange(1, lab.max() + 1)
+    return np.asarray(ndimage.mean(values, lab, idx)), idx
+
+
+''','')
+open(p,'w').write(s)
+EOF
+time $TMPDIR/venv/bin/python -m nbconvert --to notebook --execute --allow-errors --ExecutePreprocessor.timeout=3000 --output $TMPDIR/run1.ipynb reproduce_chen_2026.ipynb >/dev/null 2>&1; $TMPDIR/venv/bin/python - <<'EOF'
+import json,os
+nb=json.load(open(os.environ['TMPDIR']+'/run1.ipynb'))
+for i,c in enumerate(nb['cells']):
+    for o in c.get('outputs',[]):
+        if o.get('output_type')=='error':
+            print('CELL',i, c['source'][:2], o['ename'], o['evalue'][:300])
+EOF
+```
+
+```
+real	7m24.448s
+user	1m59.042s
+sys	0m5.201s
+CELL 21 ["# Every synaptosome image of S-BIAD2074, streamed and measured with the Methods' FIJI procedure (archives.py).\n", 't0 = time.time()\n'] ValueError invalid literal for int() with base 10: ''
+CELL 81 ['dup_cols = set(wide[wide.round(9).duplicated(keep="first")].index.get_level_values("column"))\n', 'print("Sections counted once (columns of the source sheet dropped as repeats):", sorted(dup_cols))\n'] IndexError list index out of range
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+import json,os,re
+nb=json.load(open(os.environ['TMPDIR']+'/run1.ipynb'))
+for i in (21,81):
+    for o in nb['cells'][i]['outputs']:
+        if o.get('output_type')=='error':
+            print('\n'.join(re.sub(r'\x1b\[[0-9;]*m','',l) for l in o['traceback'])[-2500:])
+EOF
+```
+
+```
+---------------------------------------------------------------------------
+ValueError                                Traceback (most recent call last)
+Cell In[10], line 8
+      4 print(f"{len(syn)} images streamed and measured in {time.time() - t0:.0f} s; shapes {syn['shape'].value_counts().to_dict()};",
+      5       f"pixel sizes (um) {sorted(syn.pixel_um.unique())}")
+      6 dupe = syn[syn.md5.duplicated(keep=False)].sort_values("md5")
+      7 within = dupe.groupby(["md5"]).folder.agg(lambda f: f.duplicated().any())
+----> 8 print("Images with the same content as another:", len(dupe), "; pairs within one folder:", int(within.sum()))
+      9 print(dupe.groupby("md5").path.apply(lambda p: " = ".join(x.split("/", 1)[1] for x in p)).to_string(index=False))
+     10 frac = syn[syn.folder == "BSN"]
+     11 area = syn[syn.folder == "BSN-area"]
+
+ValueError: invalid literal for int() with base 10: ''
+---------------------------------------------------------------------------
+IndexError                                Traceback (most recent call last)
+Cell In[32], line 9
+      5 parts = {}
+      6 for variant, data in (("main", f5[~f5.column.isin(dup_cols)]), ("as deposited", f5)):
+      7     for panel in ("5D", "5E"):
+      8         d = data[data.panel == panel].dropna(subset=["value"])
+[... 13 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+import archives, pandas as pd
+f5=archives.fig5de()
+wide = f5.pivot_table(index=["group", "column", "mouse", "section"], columns=["panel", "cell"], values="value", dropna=False)
+print(wide.shape); print(wide.head())
+dup_cols = set(wide[wide.round(9).duplicated(keep="first")].index.get_level_values("column")); print(dup_cols)
+print(f5.panel.unique(), f5[~f5.column.isin(dup_cols)].shape)
+EOF
+```
+
+```
+(13440, 4)
+panel                            5D                5E         
+cell                       Aldh1a1+ Aldh1a1- Aldh1a1+ Aldh1a1-
+group column mouse section                                    
+GS    1      516   1            NaN      NaN      NaN      NaN
+                   2            NaN      NaN      NaN      NaN
+                   3            NaN      NaN      NaN      NaN
+                   4            NaN      NaN      NaN      NaN
+                   5            NaN      NaN      NaN      NaN
+{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40}
+<StringArray>
+['5D', '5E']
+Length: 2, dtype: str (0, 7)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; python3 - <<'EOF'
+import json
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+n=0
+for c in nb['cells']:
+    if c['cell_type']=='code':
+        s=''.join(c['source']); o=s
+        s=s.replace('wide = f5.pivot_table(index=["group", "column", "mouse", "section"], columns=["panel", "cell"], values="value", dropna=False)',
+                    'wide = f5.set_index(["group", "column", "mouse", "section", "panel", "cell"]).value.unstack(["panel", "cell"])')
+        s=s.replace('int(within.sum())','int(within.astype(bool).sum())')
+        n+= s!=o; c['source']=s
+json.dump(nb,open('reproduce_chen_2026.ipynb','w'),indent=1)
+print(n)
+EOF
+time $TMPDIR/venv/bin/python -m nbconvert --to notebook --execute --allow-errors --ExecutePreprocessor.timeout=3000 --output $TMPDIR/run1.ipynb reproduce_chen_2026.ipynb >/dev/null 2>&1; $TMPDIR/venv/bin/python - <<'EOF'
+import json,os
+nb=json.load(open(os.environ['TMPDIR']+'/run1.ipynb'))
+for i,c in enumerate(nb['cells']):
+    for o in c.get('outputs',[]):
+        if o.get('output_type')=='error':
+            print('CELL',i, c['source'][:2], o['ename'], o['evalue'][:300])
+EOF
+```
+
+```
+2
+
+real	7m22.215s
+user	1m58.808s
+sys	0m4.855s
 ```
 
 **Agent**
 
-Notebook runs end to end in about 2.5 minutes locally. Writing the entry files.
+The notebook now runs end to end in about 7.5 minutes with no errors. Reading the outputs next: the data check first, then each claim.
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF' > $TMPDIR/out1.txt
+import json,os
+nb=json.load(open(os.environ['TMPDIR']+'/run1.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    print('=================== CELL',i, c['metadata'].get('tags'))
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text']))
+        elif 'data' in o and 'text/plain' in o['data']: print(''.join(o['data']['text/plain'])[:2000])
+EOF
+wc -l $TMPDIR/out1.txt; grep -n "=== CELL" $TMPDIR/out1.txt
+```
+
+```
+1115 /tmp/claude-1001/out1.txt
+1:=================== CELL 1 []
+4:=================== CELL 3 ['sanity']
+66:=================== CELL 5 ['sanity']
+102:=================== CELL 7 ['sanity']
+147:=================== CELL 9 ['sanity']
+352:=================== CELL 12 ['sanity']
+368:=================== CELL 15 ['sanity']
+416:=================== CELL 17 ['sanity']
+443:=================== CELL 19 ['sanity']
+488:=================== CELL 21 ['sanity']
+496:=================== CELL 24 ['claim:source-data-link']
+583:=================== CELL 26 ['claim:source-data-link']
+614:=================== CELL 27 ['claim:source-data-link']
+651:=================== CELL 30 []
+654:=================== CELL 31 []
+657:=================== CELL 33 ['claim:fig6e-anxa1-evoked-reduced']
+701:=================== CELL 36 ['claim:fig6e-anxa1-evoked-per-mouse']
+727:=================== CELL 39 ['claim:supp7c-anxa1-evoked-all-powers']
+749:=================== CELL 42 []
+[... 15 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/out1.txt",
+ "offset": 352,
+ "limit": 150
+}
+```
+
+```
+352	=================== CELL 12 ['sanity']
+353	F1 (Calb1 dF/F is not the paper's). Published triggered traces within 1e-6 of some epoch of the same mouse, any power: {'6C': '120 of 120', 'S8D': '0 of 384'} ; closest S8D trace 15.7 % dF/F
+354	F2 (only the photometry is in the dandiset): 27 NWB files; the description or related resources name Zenodo, PRIDE or the BioImage Archive: False
+355	   related resources: [('dcite:IsDescribedBy', 'https://doi.org/10.1038/s41467-026-75194-3'), ('dcite:IsCompiledBy', 'https://github.com/catalystneuro/dombeck-lab-to-nwb/tree/main/src/dombeck_lab_to_nwb/chen2026'), ('dcite:IsSupplementedBy', 'https://github.com/dandi/example-notebooks/blob/master/001933/DombeckLab/001933_demo.ipynb')]
+356	F3 (series of 4398 cut short): last onset 1250.24 s, series ends 1251.05 s, 0.81 s after it
+357	F4 (epochs table description): Epochs of optogenetic activation of ChRmine-expressing Cre+ SNc dopamine neurons (635 nm LED, right hemisphere). Each row is one contiguous stimulation epoch (TTL=1 block) extracted from the 100 Hz binned TTL column in *_data.mat. Pulse parameters: 8 ms on / 8
+358	   powers in the tables: [np.float64(0.1), np.float64(0.25), np.float64(0.5), np.float64(1.0), np.float64(1.5), np.float64(2.0), np.float64(3.0), np.float64(4.0)] ; train lengths (s): [0.32, 0.33, 0.49, 0.5, 0.51, 0.52] ; trains with a pulse length of 0: 2
+359	F5 (mice given the paper's powers as 0.33 s trains): {3742: 0.33, 4885: 0.33}
+360	F6 (dF/F unit): ['a.u.']
+361	F7 (archive summary): approach ['behavioral approach'] ; techniques ['behavioral technique', 'analytical technique'] ; variables ['ProcessingModule', 'BehavioralTimeSeries']
+362	F8 (exclusions undocumented): the description mentions an exclusion: False
+363	
+364	F9 to F11 (published code): HEAD of DombeckLab/lrrk2_photometry_analysis is d34558f ; attempt -01 read d34558f
+365	
+366	F12 and F13 (paper): Crossref lists a correction or update: False ; references naming DANDI: 0 of 99
+367	
+368	===========
+[... 133 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/out1.txt",
+ "offset": 496,
+ "limit": 440
+}
+```
+
+```
+496	=================== CELL 24 ['claim:source-data-link']
+497	Source data file md5: c26fe3de8f340a3db5fa29a40e5a8c10 ; matches the Zenodo record: True
+498	Records per table: {'6C': 120, '6E': 120, '6F': 1862, 'S7B': 480, 'S7C': 480, 'S8C': 1652, 'S8D': 384, 'S8E': 384}
+499	
+500	(1) Mice: 27 of 27 source-data mice are in the dandiset with the same genotype and line; dandiset mice not in the source data: []
+501	
+502	(2) Triggered traces equal to the dandiset's dF/F from 1 s before the onset of the epoch with the same power and rank:
+503	       records  matched  largest_diff  median_r  slope_min  slope_max
+504	table                                                                
+505	6C         120      120  5.684342e-13  1.000000   1.000000   1.000000
+506	S7B        480      479  1.098330e+02  1.000000   1.000000   1.043088
+507	S8D        384        0  1.049231e+03  0.943889  -0.882173   1.552810
+508	Largest difference among matched traces, per table: {'6C': '5.7e-13', 'S7B': '5.7e-13'}
+509	Unmatched Anxa1 traces:
+510	table  line  mouse  power   max_diff  nan_here        r    slope    offset  match
+511	  S7B Anxa1   4398    4.0 109.833047        68 0.992197 1.043088 34.343536  False
+512	Mouse 4398: last onset at 1250.24 s, processed series ends at 1251.05 s
+513	
+514	(3) Evoked integrals: common factor published / ours (code's window, in samples) = 0.0001
+515	             records  matched  matched_if_4mW
+[... 420 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/out1.txt",
+ "offset": 936,
+ "limit": 180
+}
+```
+
+```
+936	Methods window, 0.5 mW: Anxa1 d = 2.210 (tolerance 1.845 to 2.255), Calb1 d = 1.395 (0.684 to 0.836), ratio 1.58
+937	
+938	=================== CELL 63 ['claim:fig1d-lrrk2-enriched-vulnerable']
+939	Sections: 16 from 3 mice. Mean LRRK2 intensity, Aldh1a1+ 1.0487 (SEM 0.0120), Aldh1a1- 0.9731 (SEM 0.0063); range of both 0.933 to 1.140
+940	Two-tailed unpaired Student t-test: t = 5.571, p = 4.65e-06 (paper 0.0008); Cohen's d = 1.97
+941	Variants: Welch p = 1.22e-05; paired over sections p = 0.000759; sections with Aldh1a1+ above Aldh1a1-: 15 of 16
+942	Per mouse (mean of sections):
+943	       sections     pos     neg  pos_above_neg
+944	mouse                                         
+945	2275          6  1.0363  0.9769              6
+946	2650          5  1.0476  0.9709              5
+947	2722          5  1.0646  0.9709              4
+948	Mouse means (n = 3 per type): unpaired p = 0.000822, paired p = 0.0162
+949	
+950	=================== CELL 66 ['claim:fig2b-rab3-phosphorylation']
+951	Phosphopeptides altered at p <= 0.05 and |difference| > 0.58 (paper: 289, tolerance 260.1 to 317.9):
+952	reading    test  peptides_tested  altered  higher_with_vehicle  lower_with_vehicle  rab3_T86_diff  rab3_T86_p  rab3_T86_altered
+953	      a Student             5366     1694                   21                1673          -1.31     0.00892              True
+954	      a   Welch             5366     1343                   12                1331          -1.31       0.011              True
+955	      b Student             6070     1810                   25                1785          -1.31     0.00892              True
+[... 160 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+import pandas as pd, numpy as np
+from scipy import stats
+pp=pd.read_excel('../../paper/pride/020623-Loukia-mouse-synaptosome-phos-quant_phosphopeptides.xlsx')
+ab=[c for c in pp.columns if c.startswith('Abundance')]
+L=np.log2(pp[ab].to_numpy(float))
+print('sample medians log2', np.nanmedian(L,0).round(2), 'sums', np.nansum(pp[ab].to_numpy(float),0).round(-6))
+N=L-np.nanmedian(L,0)
+keep=np.isfinite(N).all(1)
+d=np.nanmean(N[:,:3],1)-np.nanmean(N[:,3:],1)
+p=stats.ttest_ind(N[:,:3],N[:,3:],axis=1).pvalue
+alt=keep&(p<=0.05)&(np.abs(d)>0.58)
+print('normalized reading a: altered',alt.sum(),'veh higher',(alt&(d>0)).sum())
+keep2=(np.isfinite(N[:,:3]).sum(1)>=2)&(np.isfinite(N[:,3:]).sum(1)>=2)
+p2=stats.ttest_ind(N[:,:3],N[:,3:],axis=1,nan_policy='omit').pvalue
+alt2=keep2&(np.asarray(p2)<=0.05)&(np.abs(d)>0.58)
+print('normalized reading b:',alt2.sum(),(alt2&(d>0)).sum())
+mm=pp['Modifications in Master Proteins'].astype(str)
+for pat in ['YRTITTAYYR','Lrrk2']:
+    pass
+genes=pp['Gene Name'].astype(str)
+desc=pp['Master Protein Descriptions'].astype(str)
+sel=desc.str.contains('Leucine-rich repeat serine/threonine-protein kinase 2|Ras-related protein Rab-10|Ras-related protein Rab-12|Ras-related protein Rab-8A|Ras-related protein Rab-3|Ras-related protein Rab-35',regex=True)
+out=pd.DataFrame({'desc':desc[sel].str[:40],'site':mm[sel].str[:60],'d_veh_minus_mli_norm':d[sel].round(2),'p':np.asarray(p2)[sel].round(4),'n':np.isfinite(N[sel]).sum(1)})
+print(out.to_string())
+EOF
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+import pandas as pd, numpy as np
+from scipy import stats
+lim=pd.read_csv('../../paper/pride/Brain_Rab3A.DifferentialAbundance_volcano.csv')
+for thr in [0.05]:
+  for col in ['P.Value','adj.P.Val']:
+    print(col, ((lim[col]<thr)&(lim.logFC>=1)).sum(), ((lim[col]<thr)&(lim.logFC<=-1)).sum(), ((lim[col]<thr)&(lim.logFC>1)).sum())
+print(((lim['P.Value']<0.01)&(lim.logFC>=1)).sum(), ((lim['P.Value']<0.01)&(lim.logFC<=-1)).sum())
+fd=pd.read_csv('../../paper/pride/FilteredDataset.pg_matrix.Brain_Rab3A.csv')
+for g in ['Rims2','Rilpl1']:
+    r=fd[fd.Genes==g].iloc[0]
+    a=r[[c for c in fd.columns if c.startswith('Rab3Brain')]].astype(float).values; b=r[[c for c in fd.columns if c.startswith('phosRab3Brain')]].astype(float).values
+    print(g, stats.ttest_rel(a,b).pvalue, stats.ttest_ind(a,b).pvalue, stats.ttest_rel(np.log2(a),np.log2(b)).pvalue, stats.ttest_ind(np.log2(a),np.log2(b)).pvalue)
+EOF
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+import json
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+def edit(old,new,count=1):
+    n=0
+    for c in nb['cells']:
+        s=''.join(c['source'])
+        if old in s:
+            c['source']=s.replace(old,new); n+=1
+    assert n==count,(old[:60],n)
+# fig2b normalized variant
+edit('''mg = vol.merge(tests["b"], on=["Annotated Sequence", "Modifications"], how="inner")''','''# Variant: log2 abundances centred on each sample's median (the samples labelled MLi-2 have higher abundances overall).
+L = np.log2(pp[ab].to_numpy(float))
+print("\\nMedian log2 abundance per sample:", dict(zip([c.split(": ")[-1] for c in ab], np.nanmedian(L, axis=0).round(2))))
+norm = pp.copy()
+norm[ab] = 2 ** (L - np.nanmedian(L, axis=0))
+for reading, k in (("a", 3), ("b", 2)):
+    r = archives.volcano_test(norm, k)
+    rb = r[r["Annotated Sequence"].str.contains("YRTITTAYYR", na=False)]
+    print(f"Variant, median-centred, reading ({reading}): {int(r.altered.sum())} altered ({int((r.altered & (r['diff'] > 0)).sum())} higher with",
+          f"vehicle); RAB3 T86 difference (vehicle - MLi-2) {rb['diff'].iloc[0]:.3f}, p = {rb.p.iloc[0]:.3g}, altered {bool(rb.altered.iloc[0])}")
+    if reading == "b":
+        tests["b_norm"] = r
+known = pp["Master Protein Descriptions"].astype(str).str.contains("Rab-10 |Rab-12 |Rab-8A |Rab-35 |Leucine-rich repeat serine", regex=True)
+kn = archives.volcano_test(norm[known], 3)
+print("Other LRRK2 targets in the table (median-centred, reading a):",
+      [(m[:28], round(d_, 2), round(p_, 3)) for m, d_, p_ in zip(kn["Modifications in Master Proteins"], kn["diff"], kn.p)])
+
+mg = vol.merge(tests["b"], on=["Annotated Sequence", "Modifications"], how="inner")''')
+edit('''      f"-log10 p: r = {np.corrcoef(-np.log10(mg.p), mg.mlog10p)[0, 1]:.4f}, largest gap {np.abs(-np.log10(mg.p) - mg.mlog10p).max():.3g}")''','''      f"-log10 p: r = {np.corrcoef(-np.log10(mg.p), mg.mlog10p)[0, 1]:.4f}, largest gap {np.abs(-np.log10(mg.p) - mg.mlog10p).max():.3g}")
+mn = vol.merge(tests["b_norm"], on=["Annotated Sequence", "Modifications"], how="inner")
+slope, icpt = np.polyfit(mn["diff"], mn.Difference, 1)
+print(f"   against the median-centred reading (b): {len(mn)} matched; table difference = {slope:.3f} x (vehicle - MLi-2) + {icpt:.3f},",
+      f"r = {np.corrcoef(mn['diff'], mn.Difference)[0, 1]:.4f}; -log10 p r = {np.corrcoef(-np.log10(mn.p), mn.mlog10p)[0, 1]:.4f};",
+      f"peptides whose table difference has the sign of (vehicle - MLi-2): {int((np.sign(mn['diff']) == np.sign(mn.Difference)).sum())} of {len(mn)}")''')
+# fig3d: linear variant, RILPL2 decision, adj p counts
+edit('''# Variant: the Methods' imputation, then an unpaired Student t-test, on every protein group.''','''# Variant: the same paired test on intensities without the log.
+lin = {g: stats.ttest_rel(2 ** pull[pull.Genes == g][unphos_cols].iloc[0].to_numpy(float),
+                          2 ** pull[pull.Genes == g][phos_cols].iloc[0].to_numpy(float)).pvalue for g in ("Rims2", "Rilpl1")}
+print("Variant, paired t-test on linear intensities (the first group of each gene):", {k: round(float(v), 4) for k, v in lin.items()})
+r2 = pull[pull.Genes == "Rilpl2"].iloc[0]
+print("RILPL2 values with RAB3A:", int(r2[unphos_cols].notna().sum()), "of 6; with p-RAB3A:", int(r2[phos_cols].notna().sum()), "of 6,",
+      "log2 from", round(float(r2[phos_cols].min()), 2), "to", round(float(r2[phos_cols].max()), 2),
+      "; the paired test has no pair, so RILPL2 is decided by the Methods' imputation below")
+
+# Variant: the Methods' imputation, then an unpaired Student t-test, on every protein group.''')
+edit('''      "; with logFC <= -1 (more with p-RAB3A):", int(((lim["P.Value"] < 0.05) & (lim.logFC <= -1)).sum()), "(paper: 3480 proteins, 69 and 16)")''','''      "; with logFC <= -1 (more with p-RAB3A):", int(((lim["P.Value"] < 0.05) & (lim.logFC <= -1)).sum()), "(paper: 3480 proteins, 69 and 16)")
+print("   the same with adj.P.Val < 0.05:", int(((lim["adj.P.Val"] < 0.05) & (lim.logFC >= 1)).sum()), "and",
+      int(((lim["adj.P.Val"] < 0.05) & (lim.logFC <= -1)).sum()))
+rilpl2 = imp[imp.Genes == "Rilpl2"].iloc[0]
+holds["Rilpl2"] = bool(rilpl2.log2FC < 0 and rilpl2.p < 0.05)
+print("Decision with RILPL2 from the imputation:", holds, "->", sum(holds.values()), "of 4")''')
+edit('''g = pd.DataFrame(ids(d.path, r"(?:Aldh|Anxa)(GS|WT)-(?:R-)?(?:Middle-)?(\\d+)?"), columns=["group", "mouse"]).assign(folder=folder.values)''',
+     '''g = pd.DataFrame(ids(d.path, r"(?:Aldh|Anxa)(GS|WT)-(?:R-)?(?:Middle-)?(\\d{3,})?"), columns=["group", "mouse"]).assign(folder=folder.values)''')
+json.dump(nb,open('reproduce_chen_2026.ipynb','w'),indent=1)
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python -m nbconvert --to notebook --execute --allow-errors --ExecutePreprocessor.timeout=3000 --output $TMPDIR/run2.ipynb reproduce_chen_2026.ipynb >/dev/null 2>&1; $TMPDIR/venv/bin/python - <<'EOF'
+import json,os
+nb=json.load(open(os.environ['TMPDIR']+'/run2.ipynb'))
+for i,c in enumerate(nb['cells']):
+    for o in c.get('outputs',[]):
+        if o.get('output_type')=='error': print('ERR CELL',i,o['ename'],o['evalue'][:300])
+for i in (19,66,72):
+    print('=====',i)
+    for o in nb['cells'][i]['outputs']:
+        if 'text' in o and o.get('name')=='stdout': print(''.join(o['text']))
+EOF
+```
+
+```
+===== 19
+S-BIAD2070: 21 files, 2.38 GB; folders {'LRRK2 expression': 21}
+   channel annotations: [{'Channel 405': 'DAPI', 'Channel 488': 'LRRK2', 'Channel 568': 'aldh1a1', 'Channel 647': 'TH'}]
+S-BIAD2071: 463 files, 542.19 GB; folders {'aldh1a1': 333, 'Anxa': 107, 'Rotated images': 23}
+   channel annotations: [{'Channel 488': '-', 'Channel 568': 'mcherry', 'Channel 647': 'bassoon'}, {'Channel 488': 'GFP', 'Channel 568': 'mcherry', 'Channel 647': 'bassoon'}]
+S-BIAD2072: 336 files, 182.52 GB; folders {'100x': 191, 'TH-6M-volume': 128, '20x': 17}
+   channel annotations: [{'Channel 488': 'VMAT2', 'Channel 568': 'TH', 'Channel 647': 'aldh1a1'}, {'Channel 488': '-', 'Channel 568': 'TH', 'Channel 647': 'aldh1a1'}, {'Channel 488': 'anxa1', 'Channel 568': 'TH', 'Channel 647': '-'}, {'Channel 488': 'aldh1a1', 'Channel 568': 'TH', 'Channel 647': '-'}]
+S-BIAD2074: 168 files, 1.07 GB; folders {'BSN-area': 93, 'BSN': 75}
+   channel annotations: [{'Channel 488': 'Bassoon', 'Channel 568': 'TH', 'Channel 647': 'VMAP2'}]
+
+S-BIAD2070 (Figure 1): images per mouse {2275: 7, 2650: 7, 2722: 7} ; source data sections per mouse {2275: 6, 2650: 5, 2722: 5}
+S-BIAD2071 (Figure 5): images per folder, group and mouse:
+folder          group  mouse
+Anxa            GS     1019      6
+                       1020     12
+                       1022     14
+                       1052     17
+                WT     1018      6
+                       1021     13
+                       1024     12
+[... 73 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json; s=json.load(open('schemas/attempt.schema.json')); print(json.dumps(s,indent=1)[:6000])" ; ls schemas
+```
+
+```
+{
+ "$schema": "https://json-schema.org/draft/2020-12/schema",
+ "title": "One attempt at reproducing the claims of a target",
+ "description": "Draft. To be revised after the pilot. An attempt is recorded whether or not it produced a working notebook.",
+ "type": "object",
+ "additionalProperties": false,
+ "required": [
+  "schema_version",
+  "id",
+  "dandiset",
+  "paper",
+  "date",
+  "provenance",
+  "outcomes"
+ ],
+ "properties": {
+  "schema_version": {
+   "const": 1
+  },
+  "id": {
+[... 256 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json; s=json.load(open('schemas/attempt.schema.json')); p=s['properties']; print(json.dumps({k:p[k] for k in p if k in ('inputs','findings')},indent=1))"
+```
+
+```
+{
+ "findings": {
+  "description": "What the attempt found about the dandiset itself, whatever the outcomes. These roll up into the per-dandiset report.",
+  "type": "array",
+  "items": {
+   "type": "object",
+   "additionalProperties": false,
+   "required": [
+    "kind",
+    "statement"
+   ],
+   "properties": {
+    "kind": {
+     "enum": [
+      "metadata_error",
+      "data_missing",
+      "identifier_missing",
+      "metadata_insufficient",
+      "selection_undocumented",
+      "methods_unavailable",
+[... 37 more lines not kept]
+```
+
+**Agent**
+
+Now writing the notebook's prose: header, data-check statements, conclusions and summary.
+
+**Agent calls Write**
+
+```json
+{
+ "file_path": "/tmp/claude/fill_md.py",
+ "content": "import json\nimport sys\n\npath = sys.argv[1]\nnb = json.load(open(path))\n\nHEADER = \"\"\"# Reproducing Chen, He et al. (2026) from dandiset 001933\n\nPaper: Chen C, He Q, Tombesi G, et al. (2026). Leucine-rich repeat kinase 2 impairs the release sites of\nParkinson's disease vulnerable dopamine axons. Nature Communications.\n[doi:10.1038/s41467-026-75194-3](https://doi.org/10.1038/s41467-026-75194-3). This attempt used the open access\nfull text (CC BY) and its Supplementary Information.\n\nDandiset: [DANDI:001933](https://dandiarchive.org/dandiset/001933/0.260825.1457), version 0.260825.1457. This version\nwas asked for: it is the version of the earlier attempt, `001933-chen-2026-01`, and the dandiset has not changed since\n(the data check shows the version and the draft hold the same files). It is also the only published version, and the\npaper names neither the dandiset nor a version (its data statement points to Zenodo, PRIDE and the BioImage Archive).\n\nThis is attempt `001933-chen-2026-02`, under protocol pilot-7. The data are the same as in attempt -01; the protocol\nchanged. Pilot-7 adds a kind of claim, `data: elsewhere`, for a claim whose data the paper deposited in another public\narchive. The eight claims of Figures 1 to 5, blocked in attempt -01 as `data_missing`, are such claims: they now name\ntheir archive and are tested here on those data, counted apart from the dandiset's claims. The ten photometry claims\nand their criteria are unchanged and are re-run. The data check also says, for each finding of attempt -01, whether\nit still holds.\n\nWhat the dandiset holds: one session per mouse of GRAB-DA3m fiber photometry in the dorsal striatum during optogenetic\nstimulation of SNc dopamine neurons, 15 Anxa1-iCre mice (dorsolateral striatum) and 12 Calb1-Cre mice (dorsomedial\nstriatum), LRRK2-WT and LRRK2-G2019S (GS). This is the data of Figure 6 and Supplementary Figures 7 and 8.\n\nOutside data: the paper's Zenodo record ([10.5281/zenodo.19930567](https://doi.org/10.5281/zenodo.19930567)): the\nsource data file, used in `source-data-link` and as the per-section, per-area and per-blot values of Figures 1, 2, 4\nand 5, and the Supplementary data files; PRIDE PXD065006 (phosphopeptide abundances) and PXD065125 (pulldown\nintensities and the DIA-NN report); and the BioImage Archive, where the synaptosome images of S-BIAD2074 are streamed\nand measured and the file lists of S-BIAD2070, 2071 and 2072 are matched to the source data. The paper's photometry\ncode was read at [DombeckLab/lrrk2_photometry_analysis](https://github.com/DombeckLab/lrrk2_photometry_analysis),\ncommit d34558f, and its proteomics R code in the Zenodo record (`analysis code.zip`). The Imaris analyses of\nFigures 1 and 5 and the Proteome Discoverer search of Figure 2 use commercial software and are not re-run.\n\n| Claim | Paper | Data | Tested |\n|---|---|---|---|\n| `source-data-link` | Source data of Fig. 6, Supp. Figs 7 and 8 can be recomputed from the dandiset | dandiset with inputs | tested |\n| `fig6e-anxa1-evoked-reduced` | Anxa1 evoked release lower in GS at 0.5 mW (p = 1.10e-20) | dandiset | tested |\n| `fig6e-anxa1-evoked-per-mouse` | 7 of 8 Anxa1 GS mice reduced; 3743 not | dandiset | tested |\n| `supp7c-anxa1-evoked-all-powers` | Reduction at 0.1, 0.5, 1 and 4 mW | dandiset | tested |\n| `fig6f-anxa1-spontaneous-reduced` | Anxa1 spontaneous transients smaller in GS (1064 against 798) | dandiset | tested |\n| `fig6f-anxa1-spontaneous-per-mouse` | 6 of 8 Anxa1 GS mice reduced; 4651 and 3743 not | dandiset | tested |\n| `supp8c-calb1-spontaneous-not-reduced` | Calb1 spontaneous transients not reduced (p = 0.98) | dandiset | tested |\n| `supp8e-calb1-evoked-reduced` | Calb1 evoked release reduced at four powers | dandiset | tested |\n| `supp8e-calb1-few-mice-reduced` | Only 2 of 7 Calb1 GS mice reduced | dandiset | tested |\n| `cohens-d-anxa1-larger` | Cohen's d at 0.5 mW, Anxa1 2.05 against Calb1 0.76 | dandiset | tested |\n| `fig1d-lrrk2-enriched-vulnerable` | LRRK2 higher in Aldh1a1+ SNc neurons (p = 0.0008) | elsewhere: S-BIAD2070, Zenodo | tested |\n| `fig2b-rab3-phosphorylation` | 289 phosphopeptides change with MLi-2, including RAB3 T86 | elsewhere: PRIDE PXD065006 | tested |\n| `fig2eg-prab3-increased` | p-RAB3A and p-RAB3C up in GS, back to WT with MLi-2 | elsewhere: Zenodo | tested |\n| `fig3d-rim-binds-unphosphorylated` | RIM1 and RIM2 prefer RAB3A; RILPL1 and RILPL2 prefer p-RAB3A | elsewhere: PRIDE PXD065125 | tested |\n| `fig4d-fewer-active-zones` | Fewer bassoon+ TH+/VAMP2+ synaptosomes; larger bassoon | elsewhere: S-BIAD2074, Zenodo | tested |\n| `fig4i-rim1-reduced` | RIM1 lower in synaptosomes only | elsewhere: Zenodo | tested |\n| `fig5-bassoon-vulnerable-axons` | Bassoon clusters change in Aldh1a1+ and Anxa1+ axons only | elsewhere: S-BIAD2071, Zenodo | tested |\n| `fig5j-no-axon-loss` | No loss of TH+ fibres | elsewhere: S-BIAD2072, Zenodo | tested |\n\nMethod choices are fixed in the claims file, `claims/001933/10.1038-s41467-026-75194-3.yaml`. In short: the signal is\nthe dandiset's processed dF/F, the trace the paper's code analyses; the evoked integral follows the Methods (the\nlight-on period), with the code's baseline; spontaneous transients follow the Methods and `transient_by_threshold.m`.\nThe claims of Figures 1 to 5 use the legends' tests on the deposited values, and for Figure 4D and 4E also the\nMethods' FIJI procedure, re-implemented in `archives.py`, on the images.\"\"\"\n\nFINDINGS = \"\"\"None of the findings of attempt -01 is fixed; the version is the same, and so are the code and the paper.\n\n| Finding of attempt -01 | Kind | Now | Shown by |\n|---|---|---|---|\n| The Calb1 dF/F is not the trace behind Supplementary Figure 8 | data_missing | still present | F1: 0 of 384 Supplementary 8D traces within 1e-6 of any epoch of the mouse (closest 15.7 % dF/F), against 120 of 120 for Figure 6C |\n| Only the photometry is in the dandiset; Figures 1 to 5 are elsewhere | data_missing | still present, kind changed | F2: 27 files, and neither the description nor the related resources name Zenodo, PRIDE or the BioImage Archive. Under pilot-7 these data count as public elsewhere, so the finding is recorded again as `other` |\n| The series of 4398 ends 0.8 s after its last onset | other | still present | F3: 0.81 s |\n| The epochs table description gives one train and four powers | metadata_error | still present | F4: eight powers, trains of 0.32 to 0.52 s, two trains with a pulse length of 0 |\n| Two Anxa1 GS mice received 0.33 s trains | other | still present | F5: 3742 and 4885 |\n| The dF/F unit is `a.u.` | metadata_error | still present | F6 |\n| The archive summary lists a behavioral approach only | metadata_error | still present | F7 |\n| The four excluded mice are left out without a note | selection_undocumented | still present | F8 |\n| Three disagreements of the published code with the paper | code_mismatch | still present | F9 to F11: the repository is at the commit read in attempt -01 |\n| Welch, one-tailed and two-tailed tests named for the per-mouse comparisons | paper_inconsistency | still present | F12: no correction is registered |\n| The paper does not cite the dandiset | other | still present | F13: 0 of 99 references name DANDI |\"\"\"\n\nSOURCE = \"\"\"The source data file read here is the one in the Zenodo record (equal md5). Its counts agree with the legends for\nFigures 1D (16 sections, 3 mice), 2E and 2G (10 and 7 per group), 4D (39 WT and 35 GS areas), 4G to 4L (6 mice per\ngenotype), 5D, 5G, 5H and 5J. They disagree in two places: Figure 4E has 51 GS areas where the legend gives 57, and\nFigure 5E has 21 GS Aldh1a1+ sections where the legend gives 20. One GS value of Figure 4D, 0.0766 %, is of the size\nof the Figure 4E areas (0.04 to 0.15) and may have been pasted from there; it is kept, and leaving it out is shown.\nSections 4 and 5 of WT mouse 1723 in Figure 5D and 5E carry the same four values to six digits, so one section\nappears to have been entered twice; as the claims file fixes, it is counted once, and the values as deposited are a\nvariant. Figure 5D holds a density of 0 for one WT Aldh1a1- section, kept as deposited. The other repeated values\n(one in 4D, one in 5E) are single values, not whole sections. The sheets of Figure 5G/5H and 5J give one animal\ncolumn for both genotypes, holding WT IDs (1021, 1024, 1028; 3244, 3757, 3874, 4434), so the GS animals of these\npanels are not identified in the source data. The values carry no units; Figure 1D and 5J are normalised to about 1.\"\"\"\n\nPRIDE = \"\"\"The peptide groups table of PXD065006 equals the PeptideGroups sheet of Supplementary data 1: 8008\nphosphopeptides with three vehicle and three MLi-2 samples, of which 5366 have all six values and 6070 at least two\nper group. It holds the RAB3 peptide YRTITTAYYR phosphorylated at T86 of RAB3A and RAB3B (T92 of RAB3C). The\npaper's volcano table, also in Supplementary data 1, holds 6157 peptides. The pulldown matrix of PXD065125 holds\n3480 protein groups, the paper's count. Its twelve pulldown columns equal runs C13 to C24 of the DIA-NN report, and\nthe SDRF gives p-RAB3A for C13 to C18 and RAB3A for C19 to C24, so the column labels agree with the runs. The\npairing of replicates behind the paired test of Figure 3E and 3F is not stated; run order is used, as the claims file\nfixes.\"\"\"\n\nBIA = \"\"\"The images match the source data by mouse only in part, and none of the studies records which images the figures used.\nS-BIAD2070 holds 7 images for each of the three Figure 1D mice, where the source data give 5 or 6 sections each.\nS-BIAD2071 holds Aldh1a1 images of the four GS mice of Figure 5D (1272, 1522, 517, 796) and of WT mice 1923, 1929, 516\nand 797, where the source data name 1723 for the first; two WT files carry no mouse ID. Its Anxa1 folder holds four\nWT mice (1018, 1021, 1024, 1028), where the legend and the source data have three (1018 is not in the source data),\nand four GS mice (1019, 1020, 1022, 1052) that the source data do not name. In S-BIAD2072, the volume folder holds 16\nimages for each of the four WT mice of Figure 5J and of four GS mice (3243, 3246, 4120, 4369), 64 per genotype, where\nthe legend gives 8 images per section for 12 sections (96). S-BIAD2074 names its images by genotype and a mouse\nnumber from 1 to 5. Its counts do not follow the source data image by image: in the BSN folder the GS mice have 14,\n10 and 12 images against 14, 11 and 10 areas in Figure 4D (WT 14, 10, 15 against 14, 11, 14); in the BSN-area folder\nGS has 49 images against 51 areas (and the legend's 57) and WT 43 against 43. Part B of `fig4d-fewer-active-zones`\ntherefore compares genotypes over the deposited images and cannot match them to the published areas.\"\"\"\n\nIMAGE = \"\"\"All 168 synaptosome images were streamed and measured, and no two share content, although the BSN and BSN-area\nfolders share file names for mice 1 and 3. One image (ki4 BSN1) is 512 x 512 at 0.0615 um per pixel, the others\n1024 x 1024 at 0.0308 or 0.0311 um; particle sizes use each image's own pixel size. With the Methods' procedure as\nre-implemented here, an image holds 1 to 417 VAMP2 particles (median 183), well under the legend's \"about 1000\nsynaptosomes per area\", and one image in each folder has nothing to measure. The re-implementation does not\nreproduce the paper's segmentation closely (it is not FIJI, and the threshold and perimeter are approximations), and\npart B of the claim is read with that in mind.\"\"\"\n\nRESULTS = {\n    \"FIG1D\": \"\"\"reproduced.** Over the 16 sections of the source data, LRRK2 intensity is higher in Aldh1a1+ than in\nAldh1a1- neurons (1.049 against 0.973), two-tailed unpaired Student p = 4.65e-06, Cohen's d 1.97; it is higher in 15\nof 16 sections and in each of the three mice. The paper's p = 0.0008 is not that of the unpaired test over sections its\nlegend names; it matches a paired test over sections (p = 0.000759) or an unpaired test of the three mouse means\n(p = 0.000822). The test starts from the paper's per-section values; the images were not segmented again.\"\"\",\n    \"FIG2B\": \"\"\"not reproduced.** On the log2 abundances as deposited, 1694 (reading a) or 1810 (reading b)\nphosphopeptides pass p <= 0.05 and |difference| > 0.58, against the paper's 289, and nearly all are lower with\nvehicle (1673 and 1785), as the samples labelled MLi-2 have higher abundances overall (median log2 17.84 to 18.12,\nagainst 17.25 to 17.47). The RAB3 T86 peptide passes (p = 0.00892) but is lower with vehicle (difference -1.31), so\nneither part of the criterion holds. Centring each sample on its median, a step the criterion did not fix, gives 243\n(a) and 282 (b) peptides, within tolerance for reading b, and RAB3 T86 is still higher with MLi-2 (difference -0.693,\np = 0.0238). The paper's own volcano table equals the median-centred MLi-2 minus vehicle difference (slope -1.002;\n178 of 4770 peptides share the sign of vehicle minus MLi-2), holds 254 peptides at the legend's thresholds, and gives\nRAB3 T86 +0.688, which the legend reads as higher with vehicle. As the samples are labelled in PRIDE and in\nSupplementary data 1, the RAB3 T86 phosphopeptide is higher after MLi-2, the opposite of the claim, so either the\nlabels or the direction of the figure is swapped. The canonical LRRK2 site RAB10 T73 does not change (0.15,\np = 0.775), so the data cannot tell which.\"\"\",\n    \"FIG2EG\": \"\"\"reproduced.** In the source data, p-RAB3A and p-RAB3C are higher in GS than in WT and than in GS with\nMLi-2. With contrasts on the pooled variance, Sidak-adjusted over three pairs, the four comparisons give p = 0.0202\nand 0.00688 (RAB3A) and 0.00358 and 0.0415 (RAB3C), with F = 8.593, 11.33, 14.76 and 7.398: the legend's values. GS with\nMLi-2 does not differ from WT (adjusted p = 0.963 and 0.622), consistent with a return to WT levels. Adjusting over\ntwo pairs gives smaller p-values (0.0135, 0.00459, 0.00239, 0.0279), so the legend's numbers follow three pairs. The\nblots were not quantified again.\"\"\",\n    \"FIG3D\": \"\"\"reproduced.** In the PRIDE pulldown matrix, RIM1 (Q99NE5-7) and RIM2 are higher with RAB3A (log2\ndifferences 2.42 and 2.17, paired p = 0.00361 and 0.0124) and RILPL1 is higher with p-RAB3A (-6.02, p = 9.8e-05).\nRILPL2 is detected in all six p-RAB3A pulldowns and in none of the RAB3A ones, so the paired test has no pair; with the\nMethods' imputation it is higher with p-RAB3A (IMPUTED_RILPL2), which makes four of four. Without that step the count\nis three of four. The other two RIM1 groups agree (paired p = 0.0196 and 0.00984). The paper's p-values for RIM2 and\nRILPL1 (0.011 and 0.002) are those of the paired test on intensities without the log (0.0109 and 0.0022). The\ndeposited limma table agrees in direction for every group (RILPL2 logFC -7.58). At the text's p-value < 0.05 and\n|log2FC| >= 1 it gives 121 and 32 proteins; the paper's 69 and 16 are the counts at adjusted p < 0.05.\"\"\",\n    \"FIG4D\": \"\"\"partially reproduced.** (A) In the source data, fewer TH+/VAMP2+ synaptosomes contain bassoon in GS\n(12.0 against 21.4 %, p = 6.38e-05; 0.000118 without the value under 1 %) and the bassoon area is larger (0.0862\nagainst 0.0750 um2, p = 0.0301, the paper's value), so part A holds. Both tests treat imaging areas as independent;\nwith one value per mouse (3 or 4 per group) p = 0.263 and 0.474. (B) The Methods' FIJI procedure as re-implemented here\nfinds neither effect in the images: 48.8 against 52.4 % with bassoon (GS against WT, p = 0.459), and a bassoon area\nof 0.0682 against 0.0696 um2 (overlap, p = 0.805) or 0.132 against 0.141 um2 (bassoon particle, p = 0.206). The\nre-implementation finds far fewer synaptosomes than the paper (median 183 VAMP2 particles per image against about\n1000) and percentages more than twice the paper's, so part B may fail because of this attempt's segmentation.\"\"\",\n    \"FIG4I\": \"\"\"reproduced.** RIM1 in synaptosomes is lower in GS (0.206 against 0.319, two-tailed p = 0.0245, the paper's\nvalue; Cohen's d -1.53), and RIM1 in the S1 fraction (p = 0.896) and in the SNc (p = 0.936) does not differ.\nSynaptophysin (4G, p = 0.445) and the protein of 4H (p = 0.634) do not differ either. The test starts from the\ndeposited band values.\"\"\",\n    \"FIG5\": \"\"\"partially reproduced.** Five of the six parts hold. With section 5 of WT mouse 1723 counted once (its\nfour values equal those of section 4), Aldh1a1+ density is lower in GS (0.164 against 0.217) but the Sidak-adjusted p\nis 0.058, so part 1 fails; Aldh1a1- density does not differ (p = 0.713). Bassoon volume is larger in GS Aldh1a1+ axons\n(Sidak p = 0.0425) and not in Aldh1a1- axons (p = 0.699). In Anxa1+ axons density is lower (p = 0.0374) and volume\nlarger (p = 0.0148), the paper's values. With the section counted twice, as deposited, all six parts hold and the\nANOVA gives the legend's numbers (5D: F 12.75, 1.277, 4.838, Sidak p 0.0344; 5E: Sidak p 0.0385). The legend's\ngenotype F for 5E (1.277) repeats that of 5D; the deposited values give F = 5.234 with the legend's p = 0.0252. The\nanalysis starts from the per-section values; the SIM images were not analysed again.\"\"\",\n    \"FIG5J\": \"\"\"reproduced.** The paper's test does not find a difference in TH volume: two-tailed p = 0.117 over 12\nsections per genotype. GS is 7.1 % lower (0.929 against 1.000; Cohen's d -0.67).\"\"\",\n}\n\nSUMMARY = \"\"\"## Summary\n\n| Claim | Data | Outcome | Attempt -01 |\n|---|---|---|---|\n| `source-data-link` | dandiset with inputs | not reproduced (Anxa1 links; Calb1 does not) | not reproduced |\n| `fig6e-anxa1-evoked-reduced` | dandiset | reproduced | reproduced |\n| `fig6e-anxa1-evoked-per-mouse` | dandiset | reproduced | reproduced |\n| `supp7c-anxa1-evoked-all-powers` | dandiset | reproduced | reproduced |\n| `fig6f-anxa1-spontaneous-reduced` | dandiset | reproduced | reproduced |\n| `fig6f-anxa1-spontaneous-per-mouse` | dandiset | partially reproduced | partially reproduced |\n| `supp8c-calb1-spontaneous-not-reduced` | dandiset | reproduced (p = 0.0509, at the threshold) | reproduced |\n| `supp8e-calb1-evoked-reduced` | dandiset | reproduced | reproduced |\n| `supp8e-calb1-few-mice-reduced` | dandiset | partially reproduced | partially reproduced |\n| `cohens-d-anxa1-larger` | dandiset | not reproduced | not reproduced |\n| `fig1d-lrrk2-enriched-vulnerable` | elsewhere | reproduced | blocked, data missing |\n| `fig2b-rab3-phosphorylation` | elsewhere | not reproduced | blocked, data missing |\n| `fig2eg-prab3-increased` | elsewhere | reproduced | blocked, data missing |\n| `fig3d-rim-binds-unphosphorylated` | elsewhere | reproduced | blocked, data missing |\n| `fig4d-fewer-active-zones` | elsewhere | partially reproduced | blocked, data missing |\n| `fig4i-rim1-reduced` | elsewhere | reproduced | blocked, data missing |\n| `fig5-bassoon-vulnerable-axons` | elsewhere | partially reproduced | blocked, data missing |\n| `fig5j-no-axon-loss` | elsewhere | reproduced | blocked, data missing |\n\nThe photometry outcomes are those of attempt -01: the data, the code and the numbers are the same. The eight claims\nof Figures 1 to 5 were blocked in attempt -01 under pilot-6; under pilot-7 they are tested on the data the paper\ndeposited elsewhere and are counted apart from the dandiset's claims.\n\nA failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences\nfrom the paper's method.\n\nHow the analysis differs from the paper's:\n\n- The evoked integral is taken over the light-on period, as the Methods state; the paper's numbers come from the code's\n  window, 0.1 s before to 1.0 s after onset (its published integrals equal that measure times 0.0001). Both are shown.\n- Spontaneous transients are measured by their integral, as the Methods state; the paper's published values are 0.005\n  times the mean dF/F over each transient. Both are shown.\n- Per-mouse tests are shown under four readings, as the Methods (Welch), the legends (one-tailed) and the code\n  (Student, two-tailed) disagree.\n- The window `chunking_index.m` computes as written starts 1 s after onset; the source data show the paper used the\n  intended window starting 1 s before onset. The literal window is shown as a variant only.\n- The claims of Figures 1, 2E to 2G, 4I and 5 start from the paper's deposited per-section, per-area and per-blot\n  values, as the Imaris analyses and the blot quantification cannot be repeated here. Figure 2B starts from the\n  deposited peptide abundances without normalisation, which the criterion did not fix; a median-centred variant is\n  shown. Figure 3 uses log2 intensities, where the paper's p-values are on intensities without the log, and decides\n  RILPL2, which has no pair for the paired test, with the Methods' imputation. Figure 4D and 4E add a re-implementation\n  of the Methods' FIJI procedure in Python. One Figure 5 section entered twice is counted once.\n\nWhat was found about the dandiset:\n\n- The Anxa1 recordings are those behind Figure 6 and Supplementary Figure 7: the matched published traces equal the\n  dandiset's dF/F to within 5.7e-13, and the evoked integrals and transient counts match, except one stimulation of\n  mouse 4398 that the processed series cuts off 0.8 s after onset.\n- The Calb1 dF/F in the dandiset is not the trace behind Supplementary Figure 8. None of the 384 published traces or\n  integrals match it, no epoch of any power matches a published trace, and recomputing from the raw signal with any\n  single background fraction does not close the gap. The raw signal is there, but the processing the paper used for\n  Calb1 is not, so the Calb1 results here are of the dandiset's processing, not the paper's.\n- The epochs table describes one kind of train and four powers; the files hold two kinds of train and eight powers, and\n  two Anxa1 GS mice received the paper's powers as 0.33 s trains of 9 ms pulses; in these two mice the response does\n  not follow the labelled power.\n- The dF/F unit is given as `a.u.` for a series in percent; two trains have a pulse length of 0; the four excluded mice\n  are left out without a note; the archive summary lists a behavioral approach; and the paper does not cite the\n  dandiset. The dandiset does not link to the Zenodo, PRIDE and BioImage Archive deposits that hold the rest of the\n  paper's data. None of these findings of attempt -01 is fixed.\n\nWhat was found about the data in other archives:\n\n- In PRIDE PXD065006 and Supplementary data 1, the RAB3 T86 phosphopeptide is higher in the samples labelled MLi-2,\n  and the paper's volcano table is MLi-2 minus vehicle, while the legend reads a positive difference as higher with\n  vehicle. The table gives 254 peptides at the legend's thresholds, not 289.\n- The paper's counts of 69 and 16 RAB3A-preferring and p-RAB3A-preferring proteins are at adjusted p < 0.05, where the\n  text says p-value < 0.05; its Figure 1D p-value is not that of the test the legend names.\n- One Figure 5D/5E section appears twice in the source data; counting it once moves one comparison to p = 0.058.\n  Figure 4E has 51 GS areas against the legend's 57, and the 5E legend repeats the 5D genotype F.\n- The source data do not identify the GS animals of Figures 5G, 5H and 5J, and the image studies hold images and mice\n  that the source data do not (an extra WT mouse in the Anxa1 study, mouse 1923 against 1723, more images than\n  sections), without saying which images the figures used.\"\"\"\n\nfor c in nb[\"cells\"]:\n    s = \"\".join(c[\"source\"])\n    if c[\"cell_type\"] == \"markdown\":\n        if s.startswith(\"# Reproducing Chen\"):\n            s = HEADER\n        elif s.strip() == \"FINDINGS_STATUS_PLACEHOLDER\":\n            s = FINDINGS\n        elif s.strip() == \"SOURCE_CHECK_PLACEHOLDER\":\n            s = SOURCE\n        elif s.strip() == \"PRIDE_CHECK_PLACEHOLDER\":\n            s = PRIDE\n        elif s.strip() == \"BIA_CHECK_PLACEHOLDER\":\n            s = BIA\n        elif s.strip() == \"IMAGE_CHECK_PLACEHOLDER\":\n            s = IMAGE\n        elif s.startswith(\"**Result: \") and s.strip().endswith(\"_PLACEHOLDER**\"):\n            key = s.strip()[len(\"**Result: \"):-len(\"_PLACEHOLDER**\")]\n            s = \"**Result: \" + RESULTS[key]\n        elif s.startswith(\"## Summary\"):\n            s = SUMMARY\n        elif s.startswith(\"## Data check\"):\n            s = (\"## Data check\\n\\nEach check of the description against the values is stated under its output. The check \"\n                 \"covers the dandiset, the findings of attempt -01, and the data of Figures 1 to 5 in other archives.\")\n    c[\"source\"] = s\njson.dump(nb, open(path, \"w\"), indent=1)\nleft = [c[\"source\"][:60] for c in nb[\"cells\"] if \"PLACEHOLDER\" in \"\".join(c[\"source\"])]\nprint(\"placeholders left:\", left)\n"
+}
+```
+
+```
+File created successfully at: /tmp/claude/fill_md.py (file state is current in your context — no need to Read it back)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; $TMPDIR/venv/bin/python - <<'EOF'
+import json
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+old='''print("\\nVariant, imputation and unpaired t-test:", imp[imp.Genes.isin(["Rims1", "Rims2", "Rilpl1", "Rilpl2"])][["Genes", "Protein.Group", "log2FC", "p"]]
+      .round(4).to_dict("records"))'''
+new='''print("\\nVariant, imputation (seeded) and unpaired t-test:")
+print(imp[imp.Genes.isin(["Rims1", "Rims2", "Rilpl1", "Rilpl2"])][["Genes", "Protein.Group", "log2FC", "p"]]
+      .to_string(index=False, float_format=lambda v: f"{v:.3g}"))'''
+n=0
+for c in nb['cells']:
+    s=''.join(c['source'])
+    if old in s: c['source']=s.replace(old,new); n+=1
+    s=''.join(c['source'])
+    s=s.replace('imp["log2FC"] = imp[unphos_cols].mean(1) - imp[phos_cols].mean(1)','imp["log2FC"] = imp[unphos_cols].mean(axis=1) - imp[phos_cols].mean(axis=1)')
+    s=s.replace('int(pp[ab].notna().all(1).sum())','int(pp[ab].notna().all(axis=1).sum())').replace('(pp[ab[:3]].notna().sum(1) >= 2) & (pp[ab[3:]].notna().sum(1) >= 2)','(pp[ab[:3]].notna().sum(axis=1) >= 2) & (pp[ab[3:]].notna().sum(axis=1) >= 2)')
+    c['source']=s
+print(n)
+json.dump(nb,open('reproduce_chen_2026.ipynb','w'),indent=1)
+EOF
+$TMPDIR/venv/bin/python /tmp/claude/fill_md.py reproduce_chen_2026.ipynb
+```
+
+```
+1
+placeholders left: []
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json; s=json.load(open('schemas/entry.schema.json')); print(json.dumps(s['properties']['related'],indent=1)[:1500])"
+```
+
+```
+{
+ "type": "array",
+ "minItems": 1,
+ "items": {
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+   "id",
+   "relation"
+  ],
+  "properties": {
+   "id": {
+    "description": "dandi:<id>[/<version>], doi:<doi>, or entry:<name>.",
+    "type": "string",
+    "pattern": "^(dandi:[0-9]{6}(/.+)?|doi:10\\.[0-9]{4,9}/.+|entry:[a-z0-9]+(-[a-z0-9]+)*)$"
+   },
+   "relation": {
+    "enum": [
+     "uses_data",
+     "reproduces",
+[... 7 more lines not kept]
+```
 
 **Agent calls Bash**
 
@@ -2839,43 +2199,42 @@ schema_version: 1
 name: 001933-chen-2026
 type: reproduction
 title: LRRK2-G2019S and dopamine release from Anxa1+ and Calb1+ neurons (Chen, He et al. 2026)
-description: Tests the in vivo findings of Chen, He et al. (2026) on dandiset 001933, which holds GRAB-DA3m fiber
-  photometry in the dorsal striatum during optogenetic stimulation of Anxa1+ (15 mice) or Calb1+ (12 mice) SNc
-  dopamine neurons in LRRK2-WT and LRRK2-G2019S mice. It compares evoked and spontaneous dopamine release between
-  genotypes, per power and per mouse, and links the dandiset to the paper's published source data. The imaging,
-  proteomics and western blots of Figures 1 to 5 are not in the dandiset.
+description: Tests the findings of Chen, He et al. (2026). On dandiset 001933, which holds GRAB-DA3m fiber photometry in
+  the dorsal striatum during optogenetic stimulation of Anxa1+ (15 mice) or Calb1+ (12 mice) SNc dopamine neurons in
+  LRRK2-WT and LRRK2-G2019S mice, it compares evoked and spontaneous dopamine release between genotypes, per power and
+  per mouse, and links the dandiset to the paper's published source data. The imaging, proteomics and western blots of
+  Figures 1 to 5 are not in the dandiset; their claims are tested on the data the paper deposited on Zenodo, in PRIDE
+  and in the BioImage Archive, and counted apart.
 license: Apache-2.0
 notebooks:
 - path: reproduce_chen_2026.ipynb
   title: Reproducing Chen, He et al. (2026) from dandiset 001933
-  runtime_minutes: 3
+  runtime_minutes: 8
 helpers:
 - lrrk2.py
+- archives.py
 related:
 - id: dandi:001933/0.260825.1457
   relation: uses_data
 - id: doi:10.1038/s41467-026-75194-3
   relation: reproduces
-EOF
-cat > requirements.in <<'EOF'
-dandi
-h5py
-matplotlib
-numpy
-openpyxl
-pandas
-remfile
-requests
-scipy
+- id: doi:10.5281/zenodo.19930567
+  relation: uses_data
 EOF
 cat > README.md <<'EOF'
 # Chen, He et al. (2026) from dandiset 001933
 
-Tests the findings of [Chen, He et al. (2026)](https://doi.org/10.1038/s41467-026-75194-3) that can be tested on
-[DANDI:001933](https://dandiarchive.org/dandiset/001933/0.260825.1457), which holds the fiber photometry of Figure 6
-and Supplementary Figures 7 and 8: GRAB-DA3m in the dorsal striatum during optogenetic stimulation of Anxa1+ (15 mice)
-or Calb1+ (12 mice) SNc dopamine neurons, in LRRK2-WT and LRRK2-G2019S mice. The imaging, proteomics and western blots
-of Figures 1 to 5 are not in it.
+Tests the findings of [Chen, He et al. (2026)](https://doi.org/10.1038/s41467-026-75194-3) on
+[DANDI:001933](https://dandiarchive.org/dandiset/001933/0.260825.1457), version 0.260825.1457, which holds the fiber
+photometry of Figure 6 and Supplementary Figures 7 and 8: GRAB-DA3m in the dorsal striatum during optogenetic
+stimulation of Anxa1+ (15 mice) or Calb1+ (12 mice) SNc dopamine neurons, in LRRK2-WT and LRRK2-G2019S mice. The
+imaging, proteomics and western blots of Figures 1 to 5 are not in the dandiset. The paper deposited them on Zenodo,
+in PRIDE and in the BioImage Archive, and their claims are tested on those data and counted apart.
+
+The current attempt, [`attempts/001933-chen-2026-02.yaml`](../../attempts/001933-chen-2026-02.yaml), applies protocol
+pilot-7 to the same version as the first attempt,
+[`attempts/001933-chen-2026-01.yaml`](../../attempts/001933-chen-2026-01.yaml). The photometry results are unchanged;
+the claims of Figures 1 to 5, blocked in the first attempt, are now tested.
 
 | Claim | Outcome |
 |---|---|
@@ -2889,273 +2248,664 @@ of Figures 1 to 5 are not in it.
 | Calb1 evoked release reduced at four powers | Reproduced |
 | Only 2 of 7 Calb1 G2019S mice reduced | Partially reproduced |
 | Cohen's d larger for Anxa1 (2.05) than Calb1 (0.76) | Not reproduced |
-| Figures 1 to 5 (eight claims) | Blocked: data missing |
+
+On the data in other archives, counted apart: LRRK2 higher in Aldh1a1+ neurons, p-RAB3A and p-RAB3C raised in G2019S,
+RIM1/2 and RILPL1/2 binding, RIM1 lower in synaptosomes and no TH fibre loss are reproduced; fewer bassoon+
+synaptosomes and the bassoon changes in vulnerable axons are partially reproduced; and the phosphoproteomics claim
+(289 peptides, including RAB3 T86) is not reproduced, as in the deposited data the RAB3 T86 phosphopeptide is higher in
+the samples labelled MLi-2.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning and the differences
 from the paper's method.
 
 The Anxa1 recordings are those behind the paper's figures: its published traces equal the dandiset's dF/F. The Calb1
 dF/F in the dandiset is not the one behind Supplementary Figure 8, so the Calb1 results here are of the dandiset's
-processing. The attempt record, with the reasons and the differences from the paper's method, is
-[`attempts/001933-chen-2026-01.yaml`](../../attempts/001933-chen-2026-01.yaml).
+processing. The attempt record gives the reasons and the differences from the paper's method.
 
-- `reproduce_chen_2026.ipynb`: the analysis. It takes about three minutes, most of it streaming the files.
+- `reproduce_chen_2026.ipynb`: the analysis. It takes seven to eight minutes, most of it streaming the NWB files and
+  the 168 synaptosome images.
 - `lrrk2.py`: loading the files, the evoked and spontaneous measures of the paper's Methods and code, the dF/F
   recomputed from the raw signal, and the paper's source data. Other notebooks on this dandiset can import it.
+- `archives.py`: reading the paper's Zenodo, PRIDE and BioImage Archive deposits, the statistics of the Figure 1 to 5
+  legends, and a re-implementation of the Methods' FIJI analysis of synaptosome images.
 EOF
-cd ../..; python -c "import yaml,jsonschema,nbformat" 2>&1; python tools/entry.py lock entries/001933-chen-2026
+cd ../..; python tools/entry.py lock entries/001933-chen-2026 2>&1 | tail -3; python tools/entry.py check entries/001933-chen-2026 2>&1 | tail -20
 ```
 
 ```
 wrote entries/001933-chen-2026/requirements.lock.txt
+error: attempts/001933-chen-2026-01.yaml: claim 'fig1d-lrrk2-enriched-vulnerable' has its data in another archive (`elsewhere`); test it there, or block it for the reason it cannot be tested, not `data_missing`
+error: attempts/001933-chen-2026-01.yaml: claim 'fig2b-rab3-phosphorylation' has its data in another archive (`elsewhere`); test it there, or block it for the reason it cannot be tested, not `data_missing`
+error: attempts/001933-chen-2026-01.yaml: claim 'fig2eg-prab3-increased' has its data in another archive (`elsewhere`); test it there, or block it for the reason it cannot be tested, not `data_missing`
+error: attempts/001933-chen-2026-01.yaml: claim 'fig3d-rim-binds-unphosphorylated' has its data in another archive (`elsewhere`); test it there, or block it for the reason it cannot be tested, not `data_missing`
+error: attempts/001933-chen-2026-01.yaml: claim 'fig4d-fewer-active-zones' has its data in another archive (`elsewhere`); test it there, or block it for the reason it cannot be tested, not `data_missing`
+error: attempts/001933-chen-2026-01.yaml: claim 'fig4i-rim1-reduced' has its data in another archive (`elsewhere`); test it there, or block it for the reason it cannot be tested, not `data_missing`
+error: attempts/001933-chen-2026-01.yaml: claim 'fig5-bassoon-vulnerable-axons' has its data in another archive (`elsewhere`); test it there, or block it for the reason it cannot be tested, not `data_missing`
+error: attempts/001933-chen-2026-01.yaml: claim 'fig5j-no-axon-loss' has its data in another archive (`elsewhere`); test it there, or block it for the reason it cannot be tested, not `data_missing`
+8 error(s)
 ```
 
-**Agent**
+**Agent calls Bash**
 
-Writing the attempt record.
+```bash
+cd  grep -n "elsewhere" tools/entry.py | head; grep -n "protocol" tools/entry.py | head -30
+```
 
-**Agent calls Write**
+```
+212:                report.error(where, "claims take names for the dandiset's codes from elsewhere (`with_labels`), so "
+233:            if kinds.get(outcome.get("claim")) == "elsewhere":
+236:                                        "(`elsewhere`); test it there, or block it for the reason it cannot be "
+31:(docs/protocol.md): the executed notebooks with the conclusions removed (every
+167:            report.error(rel / name, "no code cell tagged `sanity` (the data check; see docs/protocol.md)")
+```
+
+**Agent calls Read**
 
 ```json
 {
- "file_path": "attempts/001933-chen-2026-01.yaml",
- "content": "schema_version: 1\nid: 001933-chen-2026-01\ndandiset: \"001933\"\ndandiset_version: 0.260825.1457\npaper: doi:10.1038/s41467-026-75194-3\ndate: 2026-10-15\nentry: 001933-chen-2026\nprovenance:\n  kind: agent\n  accountable:\n    name: CatalystNeuro\n  agent:\n    harness: Claude Code (GitHub Actions)\n    model: claude-opus-5-5\n    protocol: pilot-6\ninputs:\n- what: The paper's source data file (Source data.xlsx, md5 c26fe3de8f340a3db5fa29a40e5a8c10), with the triggered\n    traces, evoked integrals and spontaneous transient values of Figure 6 and Supplementary Figures 7 and 8, used only\n    in source-data-link as reference values. It is identical, for these sheets, to the Source Data file on the\n    article page.\n  source: Zenodo, doi:10.5281/zenodo.19930567\n- what: The paper's analysis code (preprocess_and_binning.m, triggered_analysis.m, group_tables.m, plot_results.m and\n    the snippets), read to fix the measures and the windows; not run. The Zenodo release 10.5281/zenodo.20244434 is\n    commit 1b551d1, which differs from the commit read only by a licence file.\n  source: https://github.com/DombeckLab/lrrk2_photometry_analysis at commit d34558fdde4b6665bd631c8fe47b8a1ef18f6a73\noutcomes:\n- claim: source-data-link\n  outcome: not_reproduced\n  notebook: reproduce_chen_2026.ipynb\n  output: claim:source-data-link\n  notes: All 27 mice of the source data are in the dandiset with the same genotype and line. The Anxa1 half links.\n    120 of 120 traces of Figure 6C and 479 of 480 of Supplementary Figure 7B equal the dandiset's dF/F from 1 s before\n    onset (largest difference 5.7e-13), the evoked integrals equal the code's measure times 0.0001 for all Anxa1\n    records but one, and the transient counts match for 15 of 15 mice. The one miss in each is the last 4 mW\n    stimulation of mouse 4398, whose processed series ends 0.8 s after onset. The Calb1 half does not link; 0 of 384\n    traces, 0 of 384 integrals and the transient counts of 1 of 12 mice match. dF/F recomputed from the raw signal\n    with the code's processing reproduces the stored Calb1 series (largest difference 1.47 % dF/F) but not the\n    published traces (median differences 66 to 519 % dF/F; 22 to 88 at the best background fraction per mouse). The\n    published spontaneous values are 0.005 times the mean dF/F over each transient (ratio 0.004994 to 0.004999), so\n    part (4) as fixed, with integrals, matches for no mouse; with the transient mean it matches for 13 of 27 mice\n    within 1%. The four parts match for 1.0, 0.609, 0.609 and 0 of their records (0.481 with the transient mean), so\n    the outcome is not reproduced under either measure. The Figure 6E integrals match the 0.5 mW epochs (120 of 120)\n    and none of the 4 mW ones. The published values reproduce the paper's statistics (Figure 6E p = 1.1e-20, Cohen's d\n    2.06 and 0.765), so the Calb1 differences come from the data, not from the paper's computation on them.\n  deviations:\n  - The criterion fixed the integral of each spontaneous transient; the published values turned out to be the mean\n    dF/F over the transient. The mean is shown as a variant and does not change the outcome.\n- claim: fig6e-anxa1-evoked-reduced\n  outcome: reproduced\n  notebook: reproduce_chen_2026.ipynb\n  output: claim:fig6e-anxa1-evoked-reduced\n  measured:\n  - 64\n  - 56\n  notes: Light-on integrals at 0.5 mW, GS 48.8 against WT 128.0 % dF/F x s, one-tailed p = 1.16e-22 (paper 1.10e-20),\n    Cohen's d 2.21. The code's window gives p = 1.1e-20, the paper's value. It holds at 4 mW (p = 9.9e-18), without the\n    two GS mice given 0.33 s trains (p = 4.16e-17), and with mouse means (Welch p = 0.000434). The window\n    chunking_index.m computes as written reverses the sign (p = 1).\n  deviations:\n  - The integral is over each train's light-on period, as the Methods state; the paper's values come from the code's\n    window, -0.1 to 1.0 s, shown as a variant. The baseline, which the Methods do not give, is the code's.\n  - The paper's plotting code selects power code 'h' for this panel; the panel is tested at the 0.5 mW of the legend,\n    which the source data confirm, and 4 mW is shown as a variant.\n- claim: fig6e-anxa1-evoked-per-mouse\n  outcome: reproduced\n  notebook: reproduce_chen_2026.ipynb\n  output: claim:fig6e-anxa1-evoked-per-mouse\n  measured: 7\n  notes: Under all four readings (Welch or Student, one- or two-tailed) 7 of 8 GS mice are below the WT group at\n    p < 0.05/8 and 3743 is the exception (mean 125 against 128, Welch one-tailed p = 0.362). The count is the same with\n    the code's window.\n  deviations:\n  - The Methods name Welch's test, the legend's p-values are one-tailed and the code runs a two-tailed Student test;\n    all four readings are shown and all give 7.\n- claim: supp7c-anxa1-evoked-all-powers\n  outcome: reproduced\n  notebook: reproduce_chen_2026.ipynb\n  output: claim:supp7c-anxa1-evoked-all-powers\n  notes: GS lower at all four powers, one-tailed p from 3.13e-15 to 1.16e-22 with the light-on window. With the code's\n    window the p-values at 0.1, 0.5 and 1 mW equal the paper's (1.29e-15, 1.1e-20, 1.22e-17); at 4 mW it is 5.62e-16\n    against 2.39e-16, as the dandiset has 55 WT stimulations there (the processed series of mouse 4398 ends 0.8 s\n    after its last onset).\n  deviations:\n  - 55 WT stimulations at 4 mW in place of 56, as one falls at the end of a truncated series.\n- claim: fig6f-anxa1-spontaneous-reduced\n  outcome: reproduced\n  notebook: reproduce_chen_2026.ipynb\n  output: claim:fig6f-anxa1-spontaneous-reduced\n  measured:\n  - 1064\n  - 798\n  notes: The Methods' detection gives the paper's counts exactly (1064 and 798, 57 to 285 per mouse). Integrals GS 131.9\n    against WT 302.9 % dF/F x s, one-tailed p = 4.85e-72 (paper 2.75e-177). With the mean dF/F over each transient, the\n    measure of the published values, p = 2.23e-177. With mouse means, Welch p = 0.0318.\n  deviations:\n  - The integral of each transient is used, as the Methods state; the paper's values are 0.005 times the mean dF/F over\n    the transient, shown as a variant.\n- claim: fig6f-anxa1-spontaneous-per-mouse\n  outcome: partially_reproduced\n  notebook: reproduce_chen_2026.ipynb\n  output: claim:fig6f-anxa1-spontaneous-per-mouse\n  measured: 5\n  notes: By the integral 5 of 8 GS mice are below the WT group under every reading; the exceptions are 3743\n    (p = 0.431), 4651 (mean 417, above the WT mean of 303) and 4652 (p = 0.0128). With the transient mean, the paper's\n    measure, the one-tailed Student test gives 6 of 8 with 3743 and 4651 as the exceptions and p-values close to the\n    legend's (4651 0.00819 against 0.008, 3742 5.38e-88 against 5.28e-88); the Welch tests give 7 there. The difference\n    from the paper comes from the measure; the paper's count follows the Student test of its legend.\n  deviations:\n  - The integral of each transient is used, as the Methods state; the paper's measure is shown as a variant.\n- claim: supp8c-calb1-spontaneous-not-reduced\n  outcome: reproduced\n  notebook: reproduce_chen_2026.ipynb\n  output: claim:supp8c-calb1-spontaneous-not-reduced\n  measured:\n  - 896\n  - 635\n  notes: The paper's test does not find the effect, one-tailed p = 0.0509, difference of means 21.1 % dF/F x s, Cohen's\n    d 0.085; the result sits at the threshold. With the transient mean GS are lower at p = 2.25e-09 (d 0.306), with the\n    code's exclusion window as written at p = 1.81e-05, and with mouse means Welch p = 0.402. The counts are within\n    tolerance but differ from the paper's 970 and 682, and the Calb1 dF/F in the dandiset is not the one the paper\n    analysed (source-data-link); the published values give p = 0.989.\n  deviations:\n  - Run on the dandiset's Calb1 dF/F, which differs from the trace behind Supplementary Figure 8.\n- claim: supp8e-calb1-evoked-reduced\n  outcome: reproduced\n  notebook: reproduce_chen_2026.ipynb\n  output: claim:supp8e-calb1-evoked-reduced\n  measured:\n  - 56\n  - 40\n  notes: GS lower at all four powers, one-tailed p from 4.38e-07 to 6.29e-10, smaller than the paper's 6.45e-05 to\n    0.001. The p-values differ because the dandiset's Calb1 dF/F is not the paper's (source-data-link).\n  deviations:\n  - Run on the dandiset's Calb1 dF/F, which differs from the trace behind Supplementary Figure 8.\n- claim: supp8e-calb1-few-mice-reduced\n  outcome: partially_reproduced\n  notebook: reproduce_chen_2026.ipynb\n  output: claim:supp8e-calb1-few-mice-reduced\n  measured: 4\n  notes: At 0.5 mW, 7 (Welch one-tailed), 6 (Welch two-tailed) and 4 (Student, either tail) of 7 GS mice are below the\n    WT group at p < 0.05/7, against the paper's 2; the closest reading gives 4, recorded as measured. Student tests give\n    2 at 0.1 and 1 mW. The panel's power is not stated, and the dandiset's Calb1 dF/F is not the paper's.\n  deviations:\n  - The legend does not state the power of the per-mouse panel; 0.5 mW was fixed before the analysis and the other\n    powers are shown.\n  - Run on the dandiset's Calb1 dF/F, which differs from the trace behind Supplementary Figure 8.\n- claim: cohens-d-anxa1-larger\n  outcome: not_reproduced\n  notebook: reproduce_chen_2026.ipynb\n  output: claim:cohens-d-anxa1-larger\n  measured:\n  - 2.21\n  - 1.40\n  notes: Anxa1 d = 2.21 is within tolerance; Calb1 d = 1.40 is not (0.684 to 0.836), and the ratio 1.58 is under the\n    factor of 2 the criterion asks. With the code's window, 2.06 and 1.25. The paper's published integrals give 2.06 and\n    0.765, so the miss is consistent with the Calb1 dF/F in the dandiset not being the paper's. The Anxa1 effect is\n    larger than the Calb1 effect at every power and window that starts by onset (ratio 1.29 to 1.74), so the direction\n    of the paper's comparison holds, with a smaller gap.\n  deviations:\n  - Run on the dandiset's Calb1 dF/F, which differs from the trace behind Supplementary Figure 8.\n- claim: fig1d-lrrk2-enriched-vulnerable\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The immunostaining images are not in the dandiset, which holds only the photometry. They are in the BioImage\n    Archive (S-BIAD2070 to S-BIAD2074) and per-section values in the Zenodo source data.\n- claim: fig2b-rab3-phosphorylation\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The phosphoproteomics are not in the dandiset; they are in PRIDE (PXD065003, PXD065006, PXD065125).\n- claim: fig2eg-prab3-increased\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The western blots are not in the dandiset; blot images and values are in the Zenodo source data.\n- claim: fig3d-rim-binds-unphosphorylated\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The affinity purification mass spectrometry is not in the dandiset; it is in PRIDE.\n- claim: fig4d-fewer-active-zones\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The synaptosome images are not in the dandiset; they are in the BioImage Archive.\n- claim: fig4i-rim1-reduced\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The western blots are not in the dandiset; they are in the Zenodo source data.\n- claim: fig5-bassoon-vulnerable-axons\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The SIM images are not in the dandiset; they are in the BioImage Archive.\n- claim: fig5j-no-axon-loss\n  outcome: blocked\n  blocked_by: data_missing\n  notes: The confocal images are not in the dandiset; they are in the BioImage Archive.\nfindings:\n- kind: data_missing\n  statement: The Calb1 dF/F in the dandiset is not the trace behind Supplementary Figure 8. None of the 384 published\n    Calb1 triggered traces or evoked integrals match it, the transient counts match for 1 of 12 mice, and dF/F\n    recomputed from the deposited raw signal with the published code reproduces the dandiset's series, not the\n    paper's, at any single background fraction. The processing the paper used for Calb1 is neither deposited nor\n    described, so the Calb1 results of the paper cannot be recomputed from the dandiset.\n- kind: data_missing\n  statement: The dandiset holds only the fiber photometry of Figure 6 and Supplementary Figures 7 and 8. The imaging,\n    proteomics and western blots of Figures 1 to 5 are elsewhere (BioImage Archive, PRIDE, Zenodo), so eight of the\n    paper's main findings cannot be tested on it.\n- kind: other\n  statement: The processed series of mouse 4398 ends 0.8 s after its last onset, a 4 mW stimulation, while the paper's\n    trace for that stimulation is complete and differs from the dandiset's in the samples both hold.\n- kind: metadata_error\n  statement: The OptogeneticEpochsTable description gives 8 ms on and 8 ms off for 500 ms, four powers and trains at\n    least 20 s apart. The tables hold eight powers, two kinds of train in Anxa1 files (9 ms pulses every 10 ms for\n    0.33 s, and 8 ms every 16 ms for 0.51 s), and pairs of trains 15.3 s apart (51% of gaps under 20 s). One train each\n    in mice 4652 and 740 has a pulse length of 0, no period and one pulse.\n- kind: other\n  statement: Two Anxa1 G2019S mice (3742 and 4885) received the paper's four powers as 0.33 s trains of 9 ms pulses,\n    while every other mouse received them as 0.51 s trains of 8 ms pulses. Neither the paper nor the dandiset says so;\n    leaving the two mice out does not change the Anxa1 result.\n- kind: metadata_error\n  statement: The dF/F series (FiberPhotometryResponseSeriesDfOverF) is stated in a.u.; its description and its values\n    are percent dF/F.\n- kind: metadata_error\n  statement: The archive's summary of the dandiset lists only a behavioral approach and BehavioralTimeSeries; the files\n    hold fiber photometry and optogenetics.\n- kind: selection_undocumented\n  statement: The dandiset holds the 27 mice the paper kept after excluding four on histology (one Anxa1 G2019S, one\n    Calb1 G2019S, two Calb1 WT). It does not say that mice were left out or why.\n- kind: code_mismatch\n  statement: chunking_index.m computes the start of each window as trigger - fs*ti, so with ti = -1 the window used for\n    the evoked integral and for the spontaneous exclusion starts 1 s after onset. The source data show that the\n    figures used the intended window starting 1 s before onset; the code as published gives the reverse sign.\n- kind: code_mismatch\n  statement: plot_results.m selects power code 'h' for Figure 6E, which the lab's stimulation key, as used by the\n    conversion, maps to 4 mW; the figure, its legend and the source data are at 0.5 mW.\n- kind: code_mismatch\n  statement: The Methods and transient_by_threshold.m give the integral of dF/F over each spontaneous transient; the\n    published values of Figure 6F and Supplementary Figure 8C are 0.005 times the mean dF/F over each transient, a\n    duration-normalized integral. The code that computes them is not in the repository.\n- kind: paper_inconsistency\n  statement: For the per-mouse comparisons the Methods and the asterisks name Welch's test, the legends give one-tailed\n    two-sample t-test p-values, and the code runs a two-tailed Student test. The Figure 6F count of 6 of 8 follows the\n    one-tailed Student test; Welch's test gives 7.\n- kind: other\n  statement: The paper does not cite the dandiset; its data statement names Zenodo, PRIDE and the BioImage Archive.\n"
+ "file_path": "tools/entry.py",
+ "offset": 180,
+ "limit": 90
 }
 ```
 
 ```
-File created successfully at: attempts/001933-chen-2026-01.yaml (file state is current in your context — no need to Read it back)
+180	
+181	    # Claims and attempts that go with this entry.
+182	    claims_by_target, labels_used, kinds_by_target = {}, {}, {}
+183	    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+184	        data = validate(report, path, "claims") or {}
+185	        ids = {c["id"] for c in data.get("claims", [])}
+186	        claims_by_target[(data.get("dandiset"), data.get("paper"))] = ids
+187	        kinds_by_target[(data.get("dandiset"), data.get("paper"))] = {
+188	            c["id"]: c.get("data", "dandiset") for c in data.get("claims", [])}
+189	        labels_used[(data.get("dandiset"), data.get("paper"))] = any(
+190	            c.get("data") == "with_labels" for c in data.get("claims", []))
+191	        for c in data.get("claims", []):
+192	            for other in c.get("depends_on", []):
+193	                if other not in ids:
+194	                    report.error(path.relative_to(ROOT), f"claim {c['id']!r} depends on {other!r}, which is not in the file")
+195	    mine = [p for p in sorted((ROOT / "attempts").glob("*.yaml"))
+196	            if isinstance(load(Report(), p), dict) and load(Report(), p).get("entry") == entry["name"]]
+197	    for path in sorted((ROOT / "attempts").glob("*.yaml")):
+198	        attempt = load(report, path)
+199	        if not isinstance(attempt, dict) or attempt.get("entry") != entry["name"]:
+[... 70 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python - <<'EOF'
-import yaml,re
-for p in ['attempts/001933-chen-2026-01.yaml','claims/001933/10.1038-s41467-026-75194-3.yaml','entries/001933-chen-2026/entry.yaml']:
-    yaml.safe_load(open(p))
-    # check plain scalars for ': ' on continuation or value lines
-    for i,l in enumerate(open(p),1):
-        s=l.strip()
-        if s.startswith('#'): continue
-        m=re.match(r'^(-\s+)?[A-Za-z_]+:\s(.*)$',s)
-        rest = m.group(2) if m else s
-        if ': ' in rest: print(p,i,l.rstrip())
-    print('ok',p)
-EOF
-grep -n "—\|rather" attempts/001933-chen-2026-01.yaml claims/001933/*.yaml entries/001933-chen-2026/*.md entries/001933-chen-2026/*.py $TMPDIR/build/cells_md.py | head
+cd  python tools/entry.py check entries/001933-chen-2026 2>&1 | grep -v "attempts/001933-chen-2026-01.yaml" ; time python tools/entry.py run entries/001933-chen-2026 2>&1 | tail -15
 ```
 
 ```
-ok attempts/001933-chen-2026-01.yaml
-ok claims/001933/10.1038-s41467-026-75194-3.yaml
-ok entries/001933-chen-2026/entry.yaml
+8 error(s)
+Installed kernelspec registry-001933-chen-2026 in executed/001933-chen-2026/.venv/share/jupyter/kernels/registry-001933-chen-2026
+pass  reproduce_chen_2026.ipynb  (536 s)
+
+real	9m0.798s
+user	2m3.065s
+sys	0m7.132s
+```
+
+**Agent calls Bash**
+
+```bash
+cd  ls executed/001933-chen-2026/; python3 - <<'EOF' > $TMPDIR/out3.txt
+import json
+nb=json.load(open('executed/001933-chen-2026/reproduce_chen_2026.ipynb'))
+for i,c in enumerate(nb['cells']):
+    if c['cell_type']!='code': continue
+    print('=================== CELL',i, c['metadata'].get('tags'))
+    for o in c.get('outputs',[]):
+        if o.get('output_type')=='error': print('ERROR', o['ename'])
+        if 'text' in o and o.get('name')=='stdout': print(''.join(o['text']))
+EOF
+diff <(sed 's/[0-9]* s;/X s;/; s/in [0-9]* s/in X s/' $TMPDIR/out1.txt | grep -v "Pandas4Warning\|keyword-only\|print(\|int((" ) <(sed 's/[0-9]* s;/X s;/; s/in [0-9]* s/in X s/' $TMPDIR/out3.txt) | head -80
+```
+
+```
+reproduce_chen_2026.ipynb
+result.json
+425d424
+< 
+466,467c465
+<                 WT     1         1
+<                        1923     30
+---
+>                 WT     1923     30
+470d467
+<                        6         1
+471a469
+>                        none      2
+694d691
+< <Figure size 1100x380 with 2 Axes>
+712a710
+> 
+771a770
+> 
+894a894
+[... 42 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/001933-chen-2026; python3 - <<'EOF'
+import json
+nb=json.load(open('reproduce_chen_2026.ipynb'))
+n=0
+for c in nb['cells']:
+    s=''.join(c['source'])
+    if 'IMPUTED_RILPL2' in s:
+        c['source']=s.replace('IMPUTED_RILPL2','log2 difference -7.92, p = 1.21e-08'); n+=1
+json.dump(nb,open('reproduce_chen_2026.ipynb','w'),indent=1)
+print(n)
+EOF
+sed -i 's/runtime_minutes: 8/runtime_minutes: 9/' entry.yaml; sed -i 's/It takes seven to eight minutes/It takes about nine minutes/' README.md; grep -n "nine\|runtime" README.md entry.yaml
+```
+
+```
+1
+README.md:41:- `reproduce_chen_2026.ipynb`: the analysis. It takes about nine minutes, most of it streaming the NWB files and
+entry.yaml:15:  runtime_minutes: 9
 ```
 
 **Agent**
 
-YAML parses, with no colon-space in plain scalars, no em dashes and no "rather". Running check and the clean run.
+Writing the new attempt record.
 
 **Agent calls Bash**
 
 ```bash
-cd  time python tools/entry.py all entries/001933-chen-2026 2>&1 | tail -30
+cd  sed -n 26,170p attempts/001933-chen-2026-01.yaml > $TMPDIR/phot_outcomes.yaml; head -5 $TMPDIR/phot_outcomes.yaml; tail -3 $TMPDIR/phot_outcomes.yaml
+```
+
+```
+outcomes:
+- claim: source-data-link
+  outcome: not_reproduced
+  notebook: reproduce_chen_2026.ipynb
+  output: claim:source-data-link
+  - Run on the dandiset's Calb1 dF/F, which differs from the trace behind Supplementary Figure 8.
+- claim: fig1d-lrrk2-enriched-vulnerable
+  outcome: blocked
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 27,168p attempts/001933-chen-2026-01.yaml > $TMPDIR/phot.yaml; cat > $TMPDIR/head.yaml <<'EOF'
+schema_version: 1
+id: 001933-chen-2026-02
+dandiset: "001933"
+dandiset_version: 0.260825.1457
+paper: doi:10.1038/s41467-026-75194-3
+date: 2026-10-15
+entry: 001933-chen-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The paper's source data file (Source data.xlsx, md5 c26fe3de8f340a3db5fa29a40e5a8c10). In source-data-link, the
+    triggered traces, evoked integrals and spontaneous transient values of Figure 6 and Supplementary Figures 7 and 8,
+    as reference values. For the claims of Figures 1, 2, 4 and 5, the per-section, per-area and per-blot values the
+    tests run on.
+  source: Zenodo, doi:10.5281/zenodo.19930567
+- what: The paper's Supplementary data (Supplementary files.zip, md5 98f11f6ea1fdd13e56807ff1f639c9a4), for the volcano
+    table of Figure 2B and to check that the PRIDE peptide table equals Supplementary data 1; and the proteomics R code
+    (analysis code.zip), read, not run.
+  source: Zenodo, doi:10.5281/zenodo.19930567
+- what: The peptide groups table of the synaptosome phosphoproteomics
+    (020623-Loukia-mouse-synaptosome-phos-quant_phosphopeptides.xlsx, md5 1ceefa5fc576c1991f07f7d637f83fae).
+  source: PRIDE PXD065006
+- what: The RAB3A and p-RAB3A pulldown intensities (FilteredDataset.pg_matrix.Brain_Rab3A.csv, md5
+    cd060787ee1d324f77d151ef0c1e54f1), the DIA-NN report (report.pg_matrix.tsv, md5 454a9e2c72ed558533d74caae09b4579),
+    the SDRF (md5 ef4a075a02271a9417f0539348639750) and the deposited limma table
+    (Brain_Rab3A.DifferentialAbundance_volcano.csv, md5 ee6cd6c85e025bbc28d0c0d22beb7f45).
+  source: PRIDE PXD065125
+- what: The 168 synaptosome images of Figure 4D and 4E (1.07 GB, streamed and measured), and the file lists of the
+    image studies of Figures 1 and 5 (S-BIAD2070, S-BIAD2071, S-BIAD2072), matched to the source data by file name.
+  source: BioImage Archive S-BIAD2074, doi:10.6019/S-BIAD2074; S-BIAD2070, S-BIAD2071 and S-BIAD2072
+    (doi:10.6019/S-BIAD2070 to doi:10.6019/S-BIAD2072)
+- what: The paper's analysis code (preprocess_and_binning.m, triggered_analysis.m, group_tables.m, plot_results.m and
+    the snippets), read to fix the measures and the windows; not run. The Zenodo release 10.5281/zenodo.20244434 is
+    commit 1b551d1, which differs from the commit read only by a licence file.
+  source: https://github.com/DombeckLab/lrrk2_photometry_analysis at commit d34558fdde4b6665bd631c8fe47b8a1ef18f6a73
+outcomes:
+EOF
+cat > $TMPDIR/tail.yaml <<'EOF'
+- claim: fig1d-lrrk2-enriched-vulnerable
+  outcome: reproduced
+  notebook: reproduce_chen_2026.ipynb
+  output: claim:fig1d-lrrk2-enriched-vulnerable
+  measured: 16
+  notes: Over the 16 sections of the source data (5, 6 and 5 from three mice), LRRK2 intensity is higher in Aldh1a1+
+    than in Aldh1a1- neurons, 1.049 against 0.973, two-tailed unpaired Student p = 4.65e-06, Cohen's d 1.97; higher in
+    15 of 16 sections and in each mouse. The paper's p = 0.0008 matches a paired test over sections (0.000759) or an
+    unpaired test of the three mouse means (0.000822), not the unpaired test over sections its legend names. Attempt
+    -01 blocked this claim with data_missing under pilot-6, as the data are not in the dandiset; under pilot-7 it is a
+    claim on data elsewhere and is tested.
+  deviations:
+  - The test starts from the paper's per-section values. The images (S-BIAD2070) are matched by mouse but not
+    segmented again, as the Methods' analysis runs in Imaris 10.1, a commercial program, with automatic thresholds.
+- claim: fig2b-rab3-phosphorylation
+  outcome: not_reproduced
+  notebook: reproduce_chen_2026.ipynb
+  output: claim:fig2b-rab3-phosphorylation
+  measured: 1694
+  notes: On the log2 abundances as deposited, 1694 (reading a, all six values) or 1810 (reading b, two per group)
+    phosphopeptides pass p <= 0.05 and |difference| > 0.58, against 289, and nearly all are lower with vehicle (1673
+    and 1785), as the samples labelled MLi-2 have higher abundances overall (median log2 17.84 to 18.12 against 17.25
+    to 17.47). The RAB3 T86 peptide passes (p = 0.00892) but is lower with vehicle (difference -1.31), so neither part
+    of the criterion holds. Centring each sample on its median, a step the criterion did not fix, gives 243 and 282
+    peptides (282 within tolerance) and RAB3 T86 still higher with MLi-2 (difference -0.693, p = 0.0238). The paper's
+    volcano table equals the median-centred MLi-2 minus vehicle difference (slope -1.002; 178 of 4770 peptides share
+    the sign of vehicle minus MLi-2), gives 254 peptides at the legend's thresholds, and gives RAB3 T86 +0.688, which
+    the legend reads as higher with vehicle. As the samples are labelled, the RAB3 T86 phosphopeptide rises after
+    MLi-2. RAB10 T73 does not change (0.15, p = 0.775), so the data cannot tell whether the labels or the figure's
+    direction are swapped. Attempt -01 blocked this claim with data_missing under pilot-6; under pilot-7 it is tested
+    on the PRIDE data.
+  deviations:
+  - The criterion fixed log2 abundances without normalisation; the paper's volcano table follows median-centred
+    values. The median-centred result is shown as a variant and does not change the outcome.
+  - The legend does not say which peptides were tested; two readings (all six values, two per group) are shown.
+  - The search (Proteome Discoverer with Byonic and Sequest, commercial) is not re-run; the test starts from the
+    deposited abundances.
+- claim: fig2eg-prab3-increased
+  outcome: reproduced
+  notebook: reproduce_chen_2026.ipynb
+  output: claim:fig2eg-prab3-increased
+  measured:
+  - 10
+  - 7
+  notes: With contrasts on the pooled variance, Sidak-adjusted over the three pairs, GS is above WT and above GS with
+    MLi-2 for RAB3A (p = 0.0202 and 0.00688) and RAB3C (0.00358 and 0.0415), with F = 8.593, 11.33, 14.76 and 7.398,
+    the legend's values. GS with MLi-2 does not differ from WT (adjusted p = 0.963 and 0.622). Over two pairs the
+    p-values are 0.0135, 0.00459, 0.00239 and 0.0279. Attempt -01 blocked this claim with data_missing under pilot-6;
+    under pilot-7 it is tested on the Zenodo data.
+  deviations:
+  - The test starts from the deposited ratios; the uncropped blots are not quantified again, as the Methods do not
+    say how bands were measured.
+  - The legend's two-way ANOVA has genotype and treatment factors on three groups; it is run as the equivalent one-way
+    model with contrasts, which gives the legend's F values.
+- claim: fig3d-rim-binds-unphosphorylated
+  outcome: reproduced
+  notebook: reproduce_chen_2026.ipynb
+  output: claim:fig3d-rim-binds-unphosphorylated
+  notes: RIM1 (Q99NE5-7) and RIM2 are higher with RAB3A (log2 differences 2.42 and 2.17, paired p = 0.00361 and 0.0124)
+    and RILPL1 higher with p-RAB3A (-6.02, p = 9.8e-05). RILPL2 is detected in all six p-RAB3A and in none of the RAB3A
+    pulldowns, so the paired test has no pair; with the Methods' imputation (seeded) it is higher with p-RAB3A (-7.92,
+    p = 1.21e-08), four of four. Without that step the count is three of four, which would be partially reproduced.
+    The paper's p-values for RIM2 and RILPL1 (0.011, 0.002) are those of the paired test on intensities without the
+    log (0.0109, 0.0022). The deposited limma table agrees in direction for every group. Its counts at the text's
+    p-value < 0.05 and |log2FC| >= 1 are 121 and 32; the paper's 69 and 16 are the counts at adjusted p < 0.05.
+    Attempt -01 blocked this claim with data_missing under pilot-6; under pilot-7 it is tested on the PRIDE data.
+  deviations:
+  - The criterion cannot decide RILPL2, for which the paired test has no pair; it is decided by the Methods'
+    imputation followed by an unpaired t-test, and the result without it (three of four) is shown.
+  - The tests use log2 intensities; the paper's p-values follow intensities without the log. Both are shown.
+  - Replicates are paired in run order, as the paper does not give the pairing.
+- claim: fig4d-fewer-active-zones
+  outcome: partially_reproduced
+  notebook: reproduce_chen_2026.ipynb
+  output: claim:fig4d-fewer-active-zones
+  notes: Part A holds. In the source data fewer TH+/VAMP2+ synaptosomes contain bassoon in GS (12.0 against 21.4 %,
+    p = 6.38e-05; 0.000118 without the GS value under 1 %) and the bassoon area is larger (0.0862 against 0.0750 um2,
+    p = 0.0301, the paper's value); with one value per mouse p = 0.263 and 0.474. Part B does not. The Methods' FIJI
+    procedure as re-implemented here gives, GS against WT, 48.8 against 52.4 % with bassoon (p = 0.459) and a bassoon
+    area of 0.0682 against 0.0696 um2 (overlap, p = 0.805) or 0.132 against 0.141 um2 (bassoon particle, p = 0.206).
+    The re-implementation finds a median of 183 VAMP2 particles per image against the legend's about 1000, and
+    percentages more than twice the paper's, so part B may fail because of this attempt's segmentation. Attempt -01
+    blocked this claim with data_missing under pilot-6; under pilot-7 it is tested on the Zenodo values and the
+    BioImage Archive images.
+  deviations:
+  - The FIJI procedure is re-implemented in Python (rolling ball as ImageJ shrinks it, ImageJ's Default threshold,
+    scikit-image perimeters); it is not FIJI, and its particle counts are far below the paper's.
+  - The images cannot be matched to the published areas one by one; part B compares genotypes over the deposited
+    images (35 GS and 39 WT for the percentage, 49 and 43 for the area, one image in each folder with nothing to
+    measure).
+- claim: fig4i-rim1-reduced
+  outcome: reproduced
+  notebook: reproduce_chen_2026.ipynb
+  output: claim:fig4i-rim1-reduced
+  measured: 6
+  notes: RIM1 in synaptosomes is lower in GS, 0.206 against 0.319, two-tailed p = 0.0245 (the paper's value), Cohen's d
+    -1.53. RIM1 in the S1 fraction (p = 0.896) and in the SNc (p = 0.936) does not differ, nor do synaptophysin (4G,
+    p = 0.445) and the protein of 4H (p = 0.634). Attempt -01 blocked this claim with data_missing under pilot-6; under
+    pilot-7 it is tested on the Zenodo data.
+  deviations:
+  - The test starts from the deposited band values; the uncropped blots are not quantified again, as the Methods do
+    not say how bands were measured.
+- claim: fig5-bassoon-vulnerable-axons
+  outcome: partially_reproduced
+  notebook: reproduce_chen_2026.ipynb
+  output: claim:fig5-bassoon-vulnerable-axons
+  notes: Five of six parts hold. With section 5 of WT mouse 1723 counted once (its four values equal those of section
+    4), Aldh1a1+ density is lower in GS (0.164 against 0.217) at Sidak p = 0.058, so part 1 fails; Aldh1a1- density does
+    not differ (p = 0.713); bassoon volume is larger in GS Aldh1a1+ axons (p = 0.0425) and not in Aldh1a1- axons
+    (p = 0.699); in Anxa1+ axons density is lower (p = 0.0374) and volume larger (p = 0.0148). As deposited, with the
+    section twice, all six hold and the ANOVA gives the legend's numbers (5D Sidak p 0.0344, 5E 0.0385). Attempt -01
+    blocked this claim with data_missing under pilot-6; under pilot-7 it is tested on the Zenodo values.
+  deviations:
+  - The analysis starts from the per-section values; the 542 GB of SIM images (S-BIAD2071) are matched by file name
+    and not analysed again, as the Methods' analysis runs in Imaris 10.1.
+  - One section that appears twice in the source data is counted once, as the claims file fixes; the paper counts it
+    twice.
+- claim: fig5j-no-axon-loss
+  outcome: reproduced
+  notebook: reproduce_chen_2026.ipynb
+  output: claim:fig5j-no-axon-loss
+  measured: 12
+  notes: The paper's test does not find a difference in TH volume, two-tailed p = 0.117 over 12 sections per genotype;
+    GS is 7.1 % lower (0.929 against 1.000), Cohen's d -0.67. Attempt -01 blocked this claim with data_missing under
+    pilot-6; under pilot-7 it is tested on the Zenodo values.
+  deviations:
+  - The test starts from the per-section values; the images (S-BIAD2072) are matched by file name and not analysed
+    again, as the Methods' analysis runs in Imaris 10.1.
+findings:
+- kind: data_missing
+  statement: Still present from attempt -01. The Calb1 dF/F in the dandiset is not the trace behind Supplementary
+    Figure 8. None of the 384 published Calb1 triggered traces is within 1e-6 of any epoch of its mouse (closest 15.7 %
+    dF/F), none of the evoked integrals match, the transient counts match for 1 of 12 mice, and dF/F recomputed from
+    the deposited raw signal with the published code reproduces the dandiset's series, not the paper's. The processing
+    the paper used for Calb1 is neither deposited nor described.
+- kind: other
+  statement: Still present from attempt -01, where it was recorded as data_missing. The dandiset holds only the fiber
+    photometry of Figure 6 and Supplementary Figures 7 and 8. The imaging, proteomics and western blots of Figures 1
+    to 5 are public on Zenodo, in PRIDE and in the BioImage Archive, but neither the dandiset's description nor its
+    related resources name those deposits.
+- kind: other
+  statement: Still present from attempt -01. The processed series of mouse 4398 ends 0.81 s after its last onset, a 4
+    mW stimulation, while the paper's trace for that stimulation is complete.
+- kind: metadata_error
+  statement: Still present from attempt -01. The OptogeneticEpochsTable description gives 8 ms on and 8 ms off for
+    500 ms, four powers and trains at least 20 s apart. The tables hold eight powers, two kinds of train in Anxa1 files
+    (0.33 s and 0.51 s), and pairs of trains 15.3 s apart. Two trains have a pulse length of 0.
+- kind: other
+  statement: Still present from attempt -01. Two Anxa1 G2019S mice (3742 and 4885) received the paper's four powers as
+    0.33 s trains of 9 ms pulses, while every other mouse received them as 0.51 s trains of 8 ms pulses. Neither the
+    paper nor the dandiset says so, and in these two mice the response does not follow the labelled power.
+- kind: metadata_error
+  statement: Still present from attempt -01. The dF/F series (FiberPhotometryResponseSeriesDfOverF) is stated in
+    a.u.; its description and its values are percent dF/F.
+- kind: metadata_error
+  statement: Still present from attempt -01. The archive's summary of the dandiset lists only a behavioral approach
+    and BehavioralTimeSeries; the files hold fiber photometry and optogenetics.
+- kind: selection_undocumented
+  statement: Still present from attempt -01. The dandiset holds the 27 mice the paper kept after excluding four on
+    histology, and does not say that mice were left out or why.
+- kind: code_mismatch
+  statement: Still present from attempt -01 (the repository is at the same commit). chunking_index.m computes the
+    start of each window as trigger - fs*ti, so with ti = -1 the window starts 1 s after onset; the figures used the
+    intended window starting 1 s before onset.
+- kind: code_mismatch
+  statement: Still present from attempt -01. plot_results.m selects power code 'h' (4 mW) for Figure 6E; the figure,
+    its legend and the source data are at 0.5 mW.
+- kind: code_mismatch
+  statement: Still present from attempt -01. The Methods and transient_by_threshold.m give the integral of dF/F over
+    each spontaneous transient; the published values of Figure 6F and Supplementary Figure 8C are 0.005 times the mean
+    dF/F over each transient, and the code that computes them is not in the repository.
+- kind: paper_inconsistency
+  statement: Still present from attempt -01. For the per-mouse comparisons of Figure 6 the Methods and the asterisks
+    name Welch's test, the legends give one-tailed two-sample t-test p-values, and the code runs a two-tailed Student
+    test.
+- kind: other
+  statement: Still present from attempt -01. The paper does not cite the dandiset (none of its 99 references names
+    DANDI); its data statement names Zenodo, PRIDE and the BioImage Archive.
+- kind: paper_inconsistency
+  statement: New. In the synaptosome phosphoproteomics (PRIDE PXD065006, equal to Supplementary data 1) the RAB3 T86
+    phosphopeptide is higher in the samples labelled MLi-2 than in those labelled vehicle (median-centred log2
+    difference vehicle minus MLi-2 of -0.693, p = 0.0238), and the paper's volcano table holds MLi-2 minus vehicle
+    (slope -1.002 against vehicle minus MLi-2), while the Figure 2B legend reads a positive difference as higher with
+    vehicle and the text reports less RAB3 phosphorylation with MLi-2. Either the sample labels of the deposit or the
+    direction of Figure 2B is swapped.
+- kind: paper_inconsistency
+  statement: New. The paper's volcano table (Supplementary data 1) gives 254 phosphopeptides at the legend's
+    thresholds (p <= 0.05, |difference| > 0.58), where the text gives 289.
+- kind: paper_inconsistency
+  statement: New. The text gives 69 and 16 proteins preferring RAB3A and p-RAB3A at p-value < 0.05 and |log2FC| = 1;
+    the deposited limma table (PRIDE PXD065125) gives 121 and 32 at that p-value, and 69 and 16 at adjusted p < 0.05.
+    The Figure 3E and 3F p-values are of paired tests on intensities without the log, which the legend does not say.
+- kind: paper_inconsistency
+  statement: New. The Figure 1D legend gives a two-tailed unpaired t-test over 16 sections with p = 0.0008; on the
+    source data that test gives p = 4.65e-06, and 0.0008 matches a paired test over sections or an unpaired test of
+    the three mouse means.
+- kind: other
+  statement: New. In the source data of Figure 5D and 5E, sections 4 and 5 of WT mouse 1723 carry the same four values
+    to six digits, so one section appears to have been entered twice. Counted once, the Aldh1a1+ density comparison
+    has Sidak p = 0.058 in place of 0.0344.
+- kind: paper_inconsistency
+  statement: New. The source data and the legends differ in counts. Figure 4E has 51 G2019S areas against the legend's
+    57 (the source data give the legend's p = 0.0301); Figure 5E has 21 G2019S Aldh1a1+ sections against 20; and the
+    5E legend gives a genotype F of 1.277, the 5D value, where the data give 5.234 with the legend's p = 0.0252. One
+    Figure 4D value (0.0766 %) is of the size of the Figure 4E areas and may have been pasted from there.
+- kind: identifier_missing
+  statement: New. The source data of Figure 5G, 5H and 5J give one animal column holding WT IDs for both genotypes, so
+    the G2019S animals are not identified. The BioImage Archive names them (S-BIAD2071 1019, 1020, 1022, 1052;
+    S-BIAD2072 3243, 3246, 4120, 4369). S-BIAD2071 names a WT mouse 1923 where the source data name 1723, and two of
+    its files carry no mouse ID. S-BIAD2074 names mice only by a number from 1 to 5 per genotype.
+- kind: selection_undocumented
+  statement: New. The image studies hold images the figures do not use, without saying which were used. S-BIAD2070
+    has 7 images per mouse for Figure 1D, which has 5 or 6 sections per mouse; S-BIAD2071 has a fourth Anxa1 WT mouse
+    (1018) not in Figure 5G and 5H; S-BIAD2072 has 64 volume images per genotype where the legend gives 96; and the
+    synaptosome images of S-BIAD2074 differ in number per mouse from the published areas (G2019S 14, 10 and 12 images
+    against 14, 11 and 10 areas in Figure 4D; 49 images against 51 areas in Figure 4E).
+- kind: methods_unavailable
+  statement: New. The image analyses of Figures 1 and 5 ran in Imaris 10.1 with automatic or manually adjusted
+    thresholds that are not deposited, and the Methods do not say how western blot bands were quantified, so these
+    values cannot be recomputed from the images and blots that are deposited.
+EOF
+cat $TMPDIR/head.yaml $TMPDIR/phot.yaml $TMPDIR/tail.yaml > attempts/001933-chen-2026-02.yaml
+python3 - <<'EOF'
+import yaml,re
+d=yaml.safe_load(open('attempts/001933-chen-2026-02.yaml'))
+print(len(d['outcomes']), [o['claim'] for o in d['outcomes']][:3], len(d['findings']))
+txt=open('attempts/001933-chen-2026-02.yaml').read()
+# plain scalars with ': '
+for i,l in enumerate(txt.splitlines(),1):
+    s=l.strip()
+    body = s.split(': ',1)[1] if re.match(r'^-? ?[a-z_]+: ',s) else s
+    if ': ' in body: print(i,l)
+for f in ['claims/001933/10.1038-s41467-026-75194-3.yaml']:
+    for i,l in enumerate(open(f).read().splitlines(),1):
+        if l.startswith('#'): continue
+        s=l.strip(); body = s.split(': ',1)[1] if re.match(r'^-? ?[a-z_]+: ',s) else s
+        if ': ' in body: print(f,i,l)
+print('—' in txt, ' rather' in txt)
+EOF
+```
+
+```
+18 ['source-data-link', 'fig6e-anxa1-evoked-reduced', 'fig6e-anxa1-evoked-per-mouse'] 22
+False False
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "—\|–\|rather\|\*\*[A-Z]" entries/001933-chen-2026/README.md claims/001933/*.yaml attempts/001933-chen-2026-02.yaml entries/001933-chen-2026/archives.py | grep -v "Result:" | head; python3 -c "
+import json
+nb=json.load(open('entries/001933-chen-2026/reproduce_chen_2026.ipynb'))
+for i,c in enumerate(nb['cells']):
+    s=''.join(c['source'])
+    for w in ['—','–',' rather','Rather']:
+        if w in s: print(i,repr(w))
+"; python tools/entry.py check entries/001933-chen-2026 2>&1 | grep -v "chen-2026-01.yaml"
+```
+
+```
+8 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py run entries/001933-chen-2026 2>&1 | tail -2 && python tools/entry.py handover entries/001933-chen-2026 2>&1 | tail -5; ls executed/001933-chen-2026/handover
 ```
 
 ```
 Installed kernelspec registry-001933-chen-2026 in executed/001933-chen-2026/.venv/share/jupyter/kernels/registry-001933-chen-2026
-0 error(s)
-pass  reproduce_chen_2026.ipynb  (162 s)
-
-real	2m46.902s
-user	1m42.105s
-sys	0m4.138s
-```
-
-**Agent**
-
-Clean run passes in 162 s. Comparing the executed copy with my local run to confirm the conclusions still match the numbers.
-
-**Agent calls Bash**
-
-```bash
-cd  source $TMPDIR/venv/bin/activate; python - <<'EOF' > $TMPDIR/build/exec.txt
-import nbformat
-nb=nbformat.read('executed/001933-chen-2026/reproduce_chen_2026.ipynb',4)
-for c in nb.cells:
-    if c.cell_type=='code':
-        print('=== CELL', c.metadata.get('tags'))
-        for o in c.get('outputs',[]):
-            if o.output_type=='stream': print(o.text)
-            elif o.output_type=='error': print('ERROR', o.ename, o.evalue)
-EOF
-diff <(grep -v "loaded 27\|total run time" $TMPDIR/build/out.txt) <(grep -v "loaded 27\|total run time" $TMPDIR/build/exec.txt) | head -40; grep "loaded 27\|total run" $TMPDIR/build/exec.txt
-```
-
-```
-147c147,148
-< Integral from 0 to 0.5 s after onset minus the mean of -1.0 to -0.1 s (% dF/F x s), median over each file's 64 trains, at the table's onsets, 10 s later, and for the 405 nm control; latency of the peak of the mean trace; Spearman correlation of the integral with the labelled power; median integral per labelled power.
----
-> Integral from 0 to 0.5 s after onset minus the mean of -1.0 to -0.1 s (% dF/F x s), median over each file's 64
->  trains, at the table's onsets, 10 s later, and for the 405 nm control; latency of the peak of the mean trace; Spearman correlation of the integral with the labelled power; median integral per labelled power.
-530a532
-> 
-532a535
-> 
-534a538
-> 
-536a541
-> 
-537a543
-> 
-539a546
-> 
-544a552
-> 
-545a554
-[... 3 more lines not kept]
-```
-
-**Agent**
-
-Outputs are identical to the local run, and I checked the numbers in the conclusions against them. Now the handover (step 6).
-
-**Agent calls Bash**
-
-```bash
-cd  python tools/entry.py handover entries/001933-chen-2026 && ls -R executed/001933-chen-2026/handover | head; python tools/entry.py check entries/001933-chen-2026 | tail -2; git status --short
-```
-
-```
+pass  reproduce_chen_2026.ipynb  (480 s)
 wrote executed/001933-chen-2026/handover
-executed/001933-chen-2026/handover:
 10.1038-s41467-026-75194-3.yaml
+archives.py
 lrrk2.py
 reproduce_chen_2026.ipynb
-0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 - <<'EOF'
+import json
+nb=json.load(open('executed/001933-chen-2026/reproduce_chen_2026.ipynb'))
+errs=[i for i,c in enumerate(nb['cells']) for o in c.get('outputs',[]) if o.get('output_type')=='error']
+print('errors',errs)
+for c in nb['cells']:
+    if c['cell_type']=='code':
+        for o in c.get('outputs',[]):
+            t=''.join(o.get('text',''))
+            for key in ['Decision with RILPL2','Parts that hold','Comparisons that hold','Two-tailed unpaired Student t-test: t =','total run time','(B) Images']:
+                if key in t:
+                    for l in t.splitlines():
+                        if key in l: print(l[:200])
+h=json.load(open('executed/001933-chen-2026/handover/reproduce_chen_2026.ipynb'))
+print('handover result cells:', sum(''.join(c['source']).startswith('**Result') for c in h['cells']), 'summary:', any(''.join(c['source']).startswith('## Summary') for c in h['cells']))
+EOF
+git status --short
+```
+
+```
+errors []
+Two-tailed unpaired Student t-test: t = 5.571, p = 4.65e-06 (paper 0.0008); Cohen's d = 1.97
+Comparisons that hold (GS higher, Sidak over three pairs, p < 0.05): 4 of 4
+Decision with RILPL2 from the imputation: {'Rims1': True, 'Rims2': True, 'Rilpl1': True, 'Rilpl2': True} -> 4 of 4
+(B) Images, the same tests over images (dropped: images with no particle to measure):
+Parts that hold: {'5D Aldh1a1+': False, '5D Aldh1a1- not different': True, '5E Aldh1a1+': True, '5E Aldh1a1- not different': True, '5G Anxa1': True, '5H Anxa1': True} -> 5 of 6
+Two-tailed unpaired Student t-test: t = -1.631, p = 0.117; difference of means (GS - WT) -0.0714; Cohen's d (GS - WT) -0.67; Welch p = 0.118
+total run time 475 s
+handover result cells: 0 summary: False
+ M claims/001933/10.1038-s41467-026-75194-3.yaml
+ M entries/001933-chen-2026/README.md
+ M entries/001933-chen-2026/entry.yaml
+ M entries/001933-chen-2026/reproduce_chen_2026.ipynb
+ M entries/001933-chen-2026/requirements.in
+ M entries/001933-chen-2026/requirements.lock.txt
 ?? .bash_profile
 ?? .bashrc
 ?? .gitconfig
 ?? .idea
 ?? .mcp.json
-?? .profile
-?? .ripgreprc
-?? .vscode
-?? .zprofile
-?? .zshrc
-?? attempts/001933-chen-2026-01.yaml
-?? claims/001933/
-?? entries/001933-chen-2026/
-?? scripts
+[... 8 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la entries/001933-chen-2026; ls -la scripts .bashrc 2>&1 | head; cat .gitignore 2>/dev/null | head
+cd  ls -la --time-style=full-iso scripts .idea .bashrc | head; git diff --stat
 ```
 
 ```
-total 120
-drwxr-xr-x  4 runner runner  4096 Oct 15 14:06 .
-drwxr-xr-x 15 runner runner  4096 Oct 15 13:40 ..
-drwxr-xr-x  3 runner runner  4096 Oct 15 13:41 .claude
--rw-r--r--  1 runner runner  2235 Oct 15 14:06 README.md
-drwxr-xr-x  2 runner runner  4096 Oct 15 13:51 __pycache__
--rw-r--r--  1 runner runner   975 Oct 15 14:06 entry.yaml
--rw-r--r--  1 runner runner 13431 Oct 15 13:51 lrrk2.py
--rw-r--r--  1 runner runner 67363 Oct 15 14:03 reproduce_chen_2026.ipynb
--rw-r--r--  1 runner runner    67 Oct 15 14:06 requirements.in
--rw-r--r--  1 runner runner  5675 Oct 15 14:06 requirements.lock.txt
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 15 13:28 .bashrc
-crw-rw-rw- 1 nobody nogroup 1, 3 Oct 15 13:28 scripts
-__pycache__/
-*.pyc
-.ipynb_checkpoints/
-.venv/
-.DS_Store
-executed/
-site/
-[... 1 more lines not kept]
+crw-rw-rw- 1 nobody nogroup 1, 3 2026-10-15 18:28:39.222420943 +0000 .bashrc
+crw-rw-rw- 1 nobody nogroup 1, 3 2026-10-15 18:28:39.222420943 +0000 .idea
+crw-rw-rw- 1 nobody nogroup 1, 3 2026-10-15 18:28:39.222420943 +0000 scripts
+ claims/001933/10.1038-s41467-026-75194-3.yaml      |  138 +++
+ entries/001933-chen-2026/README.md                 |   31 +-
+ entries/001933-chen-2026/entry.yaml                |   16 +-
+ entries/001933-chen-2026/reproduce_chen_2026.ipynb | 1305 ++++++--------------
+ entries/001933-chen-2026/requirements.in           |    2 +
+ entries/001933-chen-2026/requirements.lock.txt     |   26 +-
+ 6 files changed, 546 insertions(+), 972 deletions(-)
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  find entries/001933-chen-2026/.claude paper/.claude -maxdepth 3 | head; ls -la entries/001933-chen-2026/.claude/*
+cd  $TMPDIR/venv/bin/python -c "
+import nbformat
+p='entries/001933-chen-2026/reproduce_chen_2026.ipynb'
+nb=nbformat.read(p,as_version=4)
+nbformat.validator.normalize(nb) if hasattr(nbformat.validator,'normalize') else None
+nbformat.write(nb,p)
+" 2>&1 | grep -v Warning | head -3; git diff --stat entries/001933-chen-2026/reproduce_chen_2026.ipynb; python tools/entry.py check entries/001933-chen-2026 2>&1 | grep -v "chen-2026-01.yaml"; diff <(python3 -c "
+import json; nb=json.load(open('entries/001933-chen-2026/reproduce_chen_2026.ipynb')); print('\n'.join(''.join(c['source']) for c in nb['cells']))") <(python3 -c "
+import json; nb=json.load(open('executed/001933-chen-2026/reproduce_chen_2026.ipynb')); print('\n'.join(''.join(c['source']) for c in nb['cells']))") && echo same-source
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+entries/001933-chen-2026/reproduce_chen_2026.ipynb | 1059 ++++++++++++++++++--
+ 1 file changed, 998 insertions(+), 61 deletions(-)
+8 error(s)
+same-source
+```
 
 **Agent**
 
-I've done steps 1 to 5 for dandiset 001933 and built the verifier's handover; the clean run passes in 162 s with 0 check errors. The Anxa1 half of the dandiset links exactly to the paper's published values, but the Calb1 dF/F is not the trace behind Supplementary Figure 8. Nothing is committed.
+I've finished attempt `001933-chen-2026-02`. The entry runs from a clean environment in about 8 minutes, and the handover is built in `executed/001933-chen-2026/handover/`. Nothing is committed. `tools/entry.py check` still reports 8 errors, all in the earlier record `001933-chen-2026-01.yaml`, which I left as it is (point 4 below).
 
-I used the paper's full text, which is open access (CC BY), plus its Supplementary Information, saved under `paper/`. The pinned version is 0.260825.1457: the paper cites no DANDI version (or the dandiset at all), and this is the only published version, with the same 27 assets as the draft.
+**What pilot-7 changed.** It adds a claim kind, `data: elsewhere`, for data the paper put in another public archive, and `data_missing` now means public nowhere. The eight Figure 1 to 5 claims were blocked as `data_missing` in -01. They now carry `data: elsewhere`, a `where:` and criteria, and are tested on Zenodo, PRIDE and BioImage Archive data, counted apart from the dandiset's claims. The ten photometry claims are unchanged. Version 0.260825.1457 is still the draft's content, so the helper constant, `entry.yaml`'s `dandi:` relation and the notebook header keep that version.
 
-### 1. Outcomes
+**1. Outcomes (this attempt, with -01's in brackets)**
 
-| Claim | Outcome |
+| Claim | Outcome (-01) |
 |---|---|
-| `source-data-link` (with_inputs) | not reproduced: Anxa1 links exactly, Calb1 does not |
-| `fig6e-anxa1-evoked-reduced` | reproduced (p = 1.2e-22; with the code's window 1.1e-20, the paper's exact value) |
-| `fig6e-anxa1-evoked-per-mouse` | reproduced (7 of 8 mice, 3743 the exception, under all four test readings) |
-| `supp7c-anxa1-evoked-all-powers` | reproduced (4 of 4 powers) |
-| `fig6f-anxa1-spontaneous-reduced` | reproduced (1064 and 798 transients, exactly the paper's counts) |
-| `fig6f-anxa1-spontaneous-per-mouse` | partially reproduced (5 of 8; 6 of 8 with the paper's actual measure) |
-| `supp8c-calb1-spontaneous-not-reduced` | reproduced, but only just: p = 0.0509 against a 0.05 threshold |
-| `supp8e-calb1-evoked-reduced` | reproduced |
-| `supp8e-calb1-few-mice-reduced` | partially reproduced (4 mice where the paper has 2) |
-| `cohens-d-anxa1-larger` | not reproduced (Anxa1 d = 2.21 is within tolerance; Calb1 d = 1.40 against the paper's 0.76) |
-| 8 claims from Figures 1 to 5 | blocked, `data_missing` (the data are in BioImage Archive, PRIDE and Zenodo) |
+| source-data-link | not reproduced (not reproduced) |
+| fig6e-anxa1-evoked-reduced | reproduced (reproduced) |
+| fig6e-anxa1-evoked-per-mouse | reproduced (reproduced) |
+| supp7c-anxa1-evoked-all-powers | reproduced (reproduced) |
+| fig6f-anxa1-spontaneous-reduced | reproduced (reproduced) |
+| fig6f-anxa1-spontaneous-per-mouse | partially reproduced (partially reproduced) |
+| supp8c-calb1-spontaneous-not-reduced | reproduced (reproduced) |
+| supp8e-calb1-evoked-reduced | reproduced (reproduced) |
+| supp8e-calb1-few-mice-reduced | partially reproduced (partially reproduced) |
+| cohens-d-anxa1-larger | not reproduced (not reproduced) |
+| fig1d-lrrk2-enriched-vulnerable | reproduced (blocked, data_missing) |
+| fig2b-rab3-phosphorylation | not reproduced (blocked, data_missing) |
+| fig2eg-prab3-increased | reproduced (blocked, data_missing) |
+| fig3d-rim-binds-unphosphorylated | reproduced (blocked, data_missing) |
+| fig4d-fewer-active-zones | partially reproduced (blocked, data_missing) |
+| fig4i-rim1-reduced | reproduced (blocked, data_missing) |
+| fig5-bassoon-vulnerable-axons | partially reproduced (blocked, data_missing) |
+| fig5j-no-axon-loss | reproduced (blocked, data_missing) |
 
-### 2. What the dandiset holds
-- **Contents:** only the photometry of Fig. 6 and Supp. Figs 7 and 8, one session per mouse. There are 15 Anxa1 and 12 Calb1 mice, matching the paper's counts after its exclusions. No recording appears twice, and the clock checks pass.
-- **Anxa1 links exactly:** the paper's source data on Zenodo match the dandiset's dF/F to 1e-12. The only miss is one stimulation of mouse 4398, whose processed series ends 0.8 s after onset.
-- **Calb1 does not link:** none of the 384 published Calb1 traces or 384 evoked integrals match. Recomputing dF/F from the deposited raw signal with the published code reproduces the dandiset's series, not the paper's, at any background fraction. The processing the paper used for Calb1 is neither deposited nor described.
-- **Metadata errors:**
-  - The epochs table describes one train type, four powers and gaps of at least 20 s. The files hold two train types, eight powers, and 51% of gaps under 20 s.
-  - Two Anxa1 G2019S mice got the paper's powers as 0.33 s trains of 9 ms pulses; every other mouse got 0.51 s trains of 8 ms pulses.
-  - The dF/F unit is `a.u.` for a series in percent.
-  - Two trains have a pulse length of 0.
-  - The archive summary lists only a behavioral approach.
-  - The four excluded mice are left out without a note.
-- **Code mismatches:**
-  - `chunking_index.m` as written starts its window 1 s after onset; the source data show the figures used the window starting 1 s before.
-  - `plot_results.m` selects power code 'h' (4 mW) for Fig. 6E, while the figure and its source data are at 0.5 mW.
-  - The published spontaneous "integrals" are 0.005 times the mean dF/F over each transient, not the integral the Methods describe.
-  - Methods, legend and code each name a different per-mouse test; the paper's Fig. 6F count follows the legend's one-tailed Student test.
+Three of the new outcomes rest on something you should know:
+- **fig2b:** on the abundances as deposited, 1694 peptides pass the thresholds (the paper says 289). The RAB3 T86 peptide is altered, but in the wrong direction.
+- **fig3d:** RILPL2 is found only in the p-RAB3A pulldowns, so the criterion's paired test cannot run for it. I decided it with the Methods' imputation and recorded that as a deviation; without it the count is 3 of 4, which would be partially reproduced.
+- **fig4d:** the per-area values on Zenodo show both effects. My Python version of the Methods' FIJI image analysis shows neither, but it finds far fewer synaptosomes per image than the paper (median 183 against about 1000), so that part may be my implementation failing.
 
-### 3. Where the protocol was unclear or did not fit
-1. **Source data with no dependent claims.** The protocol frames outside data as supplying labels or measurements that other claims need. Here the source data were used only to check the dandiset. I made one standalone `with_inputs` link claim that no other claim depends on.
-2. **The source data showed the paper's spontaneous measure differs from the Methods text.** Following the rule to judge on the choice fixed beforehand, the plain integral stays the main measure and the mean is a variant. This keeps the link claim not reproduced and the Fig. 6F per-mouse claim partial; I recorded it as a deviation.
-3. **Methods first, even when the source data prove the paper used the code's window.** I kept the Methods' light-on window as the main result, as the protocol requires, and showed the code's window as a variant.
-4. **The protocol does not cover code that has a bug and was evidently not what was run.** I showed the literal window only as a variant and recorded it as a finding.
-5. **`measured` when no reading matches the expected value.** The protocol only says what to record when readings match. For the Calb1 per-mouse claim I recorded the closest reading (4).
-6. **The 10% tolerance rule does not work for p-values like 1e-20.** I used counts as expected values, p < 0.05 in the criteria, and quoted the paper's p-values in the notes.
-7. **No category for "data present but not the version the paper analysed".** I tested the Calb1 claims on the dandiset's data, gave each a deviation, and recorded a `data_missing` finding instead of blocking them.
-8. **The required clock contrast exposes genotype differences before the criteria are written.** I said so in the claims file's opening comment.
-9. **No randomness** in this analysis, so there are no seeds to fix; the notebook says so.
-10. **Figs 1 to 5 summary values are public in the source data**, but I blocked those claims as `data_missing` because the registry judges the dandiset.
+**2. Earlier findings.** None is fixed; the dandiset, the code and the paper are unchanged.
+- Still present: the Calb1 dF/F is not the paper's (0 of 384 traces match), the 4398 series ends early, the epochs table description is wrong, mice 3742 and 4885 got 0.33 s trains, the dF/F unit is "a.u.", the archive summary lists only a behavioral approach, the excluded mice are left out without a note, the three code mismatches (repository still at d34558f), the Welch/Student/tail inconsistency, and the paper still does not cite the dandiset.
+- One changed kind: "Figures 1 to 5 not in the dandiset" was `data_missing`. Under pilot-7 those data are public elsewhere, so I recorded it again as `other`: the dandiset does not link to those deposits.
 
-### 4. Runtime and failures
-- The notebook ran in 162 s in the clean environment. The whole session took about 40 minutes.
-- Nothing failed in the final run. Early draft bugs (a short trace at the end of a recording, a NaN in a scale factor, a quoting error) were fixed.
-- Untracked files at the repo root (`.bashrc`, `scripts` and other dotfiles) are sandbox device files I did not create. I left them alone, and the workflow should not commit them.
+**3. New findings, about the other archives**
+- **Figure 2B direction:** in PRIDE PXD065006 (the same table as Supplementary data 1), the RAB3 T86 phosphopeptide is higher in the samples labelled MLi-2. The paper's own volcano table is MLi-2 minus vehicle, while the legend reads positive as higher with vehicle. Either the sample labels or the figure's direction is swapped. At the legend's thresholds that table gives 254 peptides, not 289.
+- **Figure 3 counts:** the text gives 69 and 16 proteins at p < 0.05. The deposited limma table gives 121 and 32 at that p, and 69 and 16 at adjusted p < 0.05. The Figure 3E/3F p-values come from tests on intensities without the log, which the legend does not say.
+- **Figure 1D:** the legend's unpaired test over 16 sections gives p = 4.65e-06. The paper's 0.0008 matches a paired test, or a test on the three mouse means.
+- **Figure 5D/5E:** one WT section appears twice in the source data. Counted once, as the claims file fixes, one comparison moves from p = 0.0344 to 0.058. That is why fig5 is partially reproduced.
+- **Counts:** Figure 4E has 51 G2019S areas against the legend's 57, and the 5E legend repeats the 5D genotype F value.
+- **Identifiers:**
+  - The source data name no G2019S animals for Figures 5G, 5H and 5J.
+  - The image study for Figure 5 names a WT mouse 1923 where the source data say 1723.
+  - The synaptosome images name mice only as 1 to 5.
+- **Image studies hold images the figures do not use, without saying which were used:** extra images in the Figure 1 study, an extra WT mouse in the Anxa1 study, and 64 volume images per genotype where the legend gives 96.
+- **No method for some values:** the Imaris image analyses and the western blot quantification cannot be recomputed from what is deposited.
 
-Files are in `entries/001933-chen-2026/`:
-- reproduce_chen_2026.ipynb
-- lrrk2.py
-- entry.yaml
-- requirements.in
-- requirements.lock.txt
-- README.md
+**4. Where the protocol did not fit a repeat attempt**
+- **The check fails on the earlier record.** It applies the current claims file to every attempt of the entry, so -01's eight `data_missing` blocks fail the new `elsewhere` rule. You told me to leave -01 unchanged, and the pilot notes say pilot-6 attempts keep their claims. There is no exemption by protocol version, so `entry.py all` stops at the check; I ran `check` and `run` separately. The workflow's check will fail on this until the tool is changed.
+- **One claims file serves both attempts.** Updating it for pilot-7 also changes the claims that -01 points to.
+- **Repeat attempts assume a changed dandiset.** Here only the protocol changed, so "fixed or not" is trivially "still present". There is no rule for an earlier finding whose kind becomes invalid under a new protocol.
+- **Findings are defined as being about the dandiset.** The `elsewhere` claims produce findings about other archives, and the schema has no field for which archive. I named it in each statement.
+- **Criteria for the eight new claims came after seeing the data.** I wrote them after seeing the deposited values, though before computing any statistic; the claims file's opening comment says so. For fig2b, the criterion did not fix a normalisation step, and that decided the outcome; the normalised result is shown as a variant.
 
-Elsewhere in the repo:
-- `claims/001933/10.1038-s41467-026-75194-3.yaml`
-- `attempts/001933-chen-2026-01.yaml`
-- the verifier's package in `executed/001933-chen-2026/handover/`
+New files: `attempts/001933-chen-2026-02.yaml` and `entries/001933-chen-2026/archives.py` (a helper for the archive data and the image analysis). Changed: the notebook, `README.md`, `entry.yaml`, `requirements.in` (adds scikit-image and tifffile), the lock file and the claims file.
 
 ## End of run
 
-89 turns, 41 minutes, result: success.
+92 turns, 78 minutes, result: success.

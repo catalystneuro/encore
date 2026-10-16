@@ -1,147 +1,167 @@
-# 001933 · verifier-2 · run 38754885569
+# 001933 · verifier-2 · run 38805963320
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  ls -la; ls paper 2>/dev/null; ls docs 2>/dev/null
+cd  ls -la; ls paper docs 2>/dev/null; cat round-1-report.md
 ```
 
 ```
-Exit code 2
-total 376
-drwxr-xr-x 5 runner runner    4096 Oct 15 14:58 .
-drwxr-xr-x 7 runner runner    4096 Oct 15 14:58 ..
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:52 .bash_profile
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:52 .bashrc
-drwxr-xr-x 5 runner runner    4096 Oct 15 14:58 .claude
--rw-r--r-- 1 runner runner       0 Oct 15 14:57 .env
--rw-r--r-- 1 runner runner       0 Oct 15 14:57 .env.development
--rw-r--r-- 1 runner runner       0 Oct 15 14:57 .env.development.local
--rw-r--r-- 1 runner runner       0 Oct 15 14:57 .env.local
--rw-r--r-- 1 runner runner       0 Oct 15 14:57 .env.production
--rw-r--r-- 1 runner runner       0 Oct 15 14:57 .env.production.local
--rw-r--r-- 1 runner runner       0 Oct 15 14:57 .env.test
--rw-r--r-- 1 runner runner       0 Oct 15 14:57 .env.test.local
-drwx------ 2 runner runner    4096 Oct 15 14:58 .git
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:52 .gitconfig
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:52 .github
--rw-r--r-- 1 runner runner       0 Oct 15 14:57 .gitmodules
-crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 14:52 .idea
-[... 22 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat round-1-report.md; echo ======; cat README.md; echo =====; cat 10.1038-s41467-026-75194-3.yaml
-```
-
-```
-**A. Outcomes** (18 claims in the claims file: 10 tested, 8 blocked. No attempt record was in my materials, so these counts come from the claims file and the notebook.)
-
-| Claim | Outcome | Reason |
-|---|---|---|
-| source-data-link | not_reproduced | Cell 12 match fractions: mice 1.0, traces 0.609, evoked integrals 0.609, spontaneous integrals 0.0. Part 4 is below 50%, so the criterion gives not reproduced. The Anxa1 records match almost fully (6C 120/120, 6E 120/120, S7B 479/480, S7C 599/600). Every Calb1 record fails (S8D 0/384, S8E 0/384, transient counts 1/12). The published 6E values match the epochs labelled 0.5 mW, the power the legend states, and not the 4 mW epochs (0/120). |
-| fig6e-anxa1-evoked-reduced | reproduced | Cell 18: 64 against 56 stimulations, G2019S mean 48.8 against WT 128, one-tailed Student p = 1.16e-22 (paper 1.10e-20). The code-window variant gives 1.1e-20 and d = 2.06. Without mice 3742 and 4885, p = 4.2e-17. |
-| fig6e-anxa1-evoked-per-mouse | reproduced | Cell 20: 7 of 8 mice are significant under all four readings, and 3743 is the only exception. |
-| supp7c-anxa1-evoked-all-powers | reproduced | Cell 22, Methods window: G2019S is lower at all 4 powers, p from 3.1e-15 to 1.2e-22. At 4 mW the WT count is 55, not 56 (problem 5). |
-| fig6f-anxa1-spontaneous-reduced | reproduced | Cell 26: 1064 against 798 transients (exact), 57 to 285 per mouse (exact), p = 4.9e-72 (paper 2.75e-177). The paper's p is reproduced only by the mean-dF/F-per-transient variant (2.23e-177). |
-| fig6f-anxa1-spontaneous-per-mouse | partially_reproduced | Cell 28: on integrals, 5 of 8 mice are significant under every reading. The exceptions are 3743, 4651 and 4652, and 4651's mean is above the WT mean. The mean-per-transient variant gives 6 under Student one-tailed, with exactly 4651 and 3743 as exceptions, but that is not the criterion's measure. |
-| supp8c-calb1-spontaneous-not-reduced | reproduced (marginal) | Cell 30: one-tailed p = 0.0509, which only just meets 
-[... 297 more lines not kept]
+total 1092
+drwxr-xr-x 5 runner runner    4096 Oct 15 21:05 .
+drwxr-xr-x 7 runner runner    4096 Oct 15 21:05 ..
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 20:54 .bash_profile
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 20:54 .bashrc
+drwxr-xr-x 5 runner runner    4096 Oct 15 21:05 .claude
+-rw-r--r-- 1 runner runner       0 Oct 15 21:05 .env
+-rw-r--r-- 1 runner runner       0 Oct 15 21:05 .env.development
+-rw-r--r-- 1 runner runner       0 Oct 15 21:05 .env.development.local
+-rw-r--r-- 1 runner runner       0 Oct 15 21:05 .env.local
+-rw-r--r-- 1 runner runner       0 Oct 15 21:05 .env.production
+-rw-r--r-- 1 runner runner       0 Oct 15 21:05 .env.production.local
+-rw-r--r-- 1 runner runner       0 Oct 15 21:05 .env.test
+-rw-r--r-- 1 runner runner       0 Oct 15 21:05 .env.test.local
+drwx------ 2 runner runner    4096 Oct 15 21:05 .git
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 20:54 .gitconfig
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 20:54 .github
+-rw-r--r-- 1 runner runner       0 Oct 15 21:05 .gitmodules
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 20:54 .idea
+crw-rw-rw- 1 nobody nogroup   1, 3 Oct 15 20:54 .mcp.json
+[... 69 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat 001933-chen-2026-01.yaml
+cd  cat README.md; cat 001933-chen-2026-02.yaml
 ```
 
 ```
-schema_version: 1
-id: 001933-chen-2026-01
-dandiset: "001933"
-dandiset_version: 0.260825.1457
-paper: doi:10.1038/s41467-026-75194-3
-date: 2026-10-15
-entry: 001933-chen-2026
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code (GitHub Actions)
-    model: claude-opus-5-5
-    protocol: pilot-6
-inputs:
-- what: The paper's source data file (Source data.xlsx, md5 c26fe3de8f340a3db5fa29a40e5a8c10), with the triggered
-    traces, evoked integrals and spontaneous transient values of Figure 6 and Supplementary Figures 7 and 8, used only
-    in source-data-link as reference values. It is identical, for these sheets, to the Source Data file on the
-    article page.
-[... 368 more lines not kept]
+<persisted-output>
+Output too large (44.8KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work--temp-work/2f90ac3b-5e37-4987-af6e-c3484ddae4b5/tool-results/b60whff0q.txt
+
+Preview (first 2KB):
+# Chen, He et al. (2026) from dandiset 001933
+
+Tests the findings of [Chen, He et al. (2026)](https://doi.org/10.1038/s41467-026-75194-3) on
+[DANDI:001933](https://dandiarchive.org/dandiset/001933/0.260825.1457), version 0.260825.1457, which holds the fiber
+photometry of Figure 6 and Supplementary Figures 7 and 8: GRAB-DA3m in the dorsal striatum during optogenetic
+stimulation of Anxa1+ (15 mice) or Calb1+ (12 mice) SNc dopamine neurons, in LRRK2-WT and LRRK2-G2019S mice. The
+imaging, proteomics and western blots of Figures 1 to 5 are not in the dandiset. The paper deposited them on Zenodo,
+in PRIDE and in the BioImage Archive, and their claims are tested on those data and counted apart.
+
+The current attempt, [`attempts/001933-chen-2026-02.yaml`](../../attempts/001933-chen-2026-02.yaml), applies protocol
+pilot-7 to the same version as the first attempt,
+[`attempts/001933-chen-2026-01.yaml`](../../attempts/001933-chen-2026-01.yaml). The photometry results are unchanged;
+the claims of Figures 1 to 5, blocked in the first attempt, are now tested.
+
+| Claim | Outcome |
+|---|---|
+[... 14 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/home/runner/.claude/projects/-home-runner-work--temp-work/2f90ac3b-5e37-4987-af6e-c3484ddae4b5/tool-results/b60whff0q.txt"
+}
+```
+
+```
+1	# Chen, He et al. (2026) from dandiset 001933
+2	
+3	Tests the findings of [Chen, He et al. (2026)](https://doi.org/10.1038/s41467-026-75194-3) on
+4	[DANDI:001933](https://dandiarchive.org/dandiset/001933/0.260825.1457), version 0.260825.1457, which holds the fiber
+5	photometry of Figure 6 and Supplementary Figures 7 and 8: GRAB-DA3m in the dorsal striatum during optogenetic
+6	stimulation of Anxa1+ (15 mice) or Calb1+ (12 mice) SNc dopamine neurons, in LRRK2-WT and LRRK2-G2019S mice. The
+7	imaging, proteomics and western blots of Figures 1 to 5 are not in the dandiset. The paper deposited them on Zenodo,
+8	in PRIDE and in the BioImage Archive, and their claims are tested on those data and counted apart.
+9	
+10	The current attempt, [`attempts/001933-chen-2026-02.yaml`](../../attempts/001933-chen-2026-02.yaml), applies protocol
+11	pilot-7 to the same version as the first attempt,
+12	[`attempts/001933-chen-2026-01.yaml`](../../attempts/001933-chen-2026-01.yaml). The photometry results are unchanged;
+13	the claims of Figures 1 to 5, blocked in the first attempt, are now tested.
+14	
+15	| Claim | Outcome |
+16	|---|---|
+17	| The paper's source data can be recomputed from the dandiset | Not reproduced (Anxa1 links; Calb1 does not) |
+18	| Anxa1 evoked release lower in G2019S at 0.5 mW | Reproduced |
+19	| 7 of 8 Anxa1 G2019S mice reduced, 3743 not | Reproduced |
+20	| Anxa1 reduction at all four powers | Reproduced |
+[... 612 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  python3 - <<'EOF' > $TMPDIR/nb.txt
-import json
-nb=json.load(open('reproduce_chen_2026.ipynb'))
+cd  grep -n "^- id:\|^  id:\|^ *- id:" 10.1038-s41467-026-75194-3.yaml | head -40; grep -c "outcome:" 001933-chen-2026-02.yaml; python3 -c "
+import json;nb=json.load(open('reproduce_chen_2026.ipynb'));print(len(nb['cells']))
 for i,c in enumerate(nb['cells']):
-    print(f"\n######## CELL {i} [{c['cell_type']}] ########")
-    print(''.join(c['source']))
+    s=''.join(c['source']); print(i,c['cell_type'],repr(s[:90]))
+"
+```
+
+```
+65:- id: source-data-link
+87:- id: fig6e-anxa1-evoked-reduced
+104:- id: fig6e-anxa1-evoked-per-mouse
+122:- id: supp7c-anxa1-evoked-all-powers
+130:- id: fig6f-anxa1-spontaneous-reduced
+147:- id: fig6f-anxa1-spontaneous-per-mouse
+162:- id: supp8c-calb1-spontaneous-not-reduced
+178:- id: supp8e-calb1-evoked-reduced
+194:- id: supp8e-calb1-few-mice-reduced
+210:- id: cohens-d-anxa1-larger
+228:- id: fig1d-lrrk2-enriched-vulnerable
+245:- id: fig2b-rab3-phosphorylation
+265:- id: fig2eg-prab3-increased
+286:- id: fig3d-rim-binds-unphosphorylated
+302:- id: fig4d-fewer-active-zones
+324:- id: fig4i-rim1-reduced
+340:- id: fig5-bassoon-vulnerable-axons
+359:- id: fig5j-no-axon-loss
+37
+88
+[... 88 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json;nb=json.load(open('reproduce_chen_2026.ipynb'))
+out=open('$TMPDIR/nb.txt','w')
+for i,c in enumerate(nb['cells']):
+    out.write(f'\n======== CELL {i} [{c[\"cell_type\"]}]\n')
+    out.write(''.join(c['source'])+'\n')
     for o in c.get('outputs',[]):
-        if 'text' in o: print('--OUT--'); print(''.join(o['text']))
+        if 'text' in o: out.write('--- OUT stream\n'+''.join(o['text']))
         elif 'data' in o:
             d=o['data']
-            if 'text/plain' in d: print('--OUT--'); print(''.join(d['text/plain']))
-            if 'image/png' in d: print('[image]')
-        if o.get('output_type')=='error': print('ERROR', o['ename'], o['evalue'])
-EOF
-wc -l $TMPDIR/nb.txt; grep -n "######## CELL" $TMPDIR/nb.txt | head -80
+            if 'text/plain' in d: out.write('--- OUT data\n'+''.join(d['text/plain'])+'\n')
+            if 'image/png' in d: out.write('[image]\n')
+        elif o.get('output_type')=='error': out.write('--- ERROR '+o['ename']+o['evalue']+'\n')
+"; wc -l $TMPDIR/nb.txt
 ```
 
 ```
-1739 /tmp/claude-1001/nb.txt
-2:######## CELL 0 [markdown] ########
-43:######## CELL 1 [code] ########
-69:######## CELL 2 [markdown] ########
-74:######## CELL 3 [code] ########
-169:######## CELL 4 [markdown] ########
-177:######## CELL 5 [code] ########
-238:######## CELL 6 [markdown] ########
-246:######## CELL 7 [code] ########
-325:######## CELL 8 [markdown] ########
-336:######## CELL 9 [code] ########
-575:######## CELL 10 [markdown] ########
-596:######## CELL 11 [markdown] ########
-607:######## CELL 12 [code] ########
-837:######## CELL 13 [markdown] ########
-843:######## CELL 14 [code] ########
-899:######## CELL 15 [code] ########
-969:######## CELL 16 [markdown] ########
-997:######## CELL 17 [markdown] ########
-1005:######## CELL 18 [code] ########
-[... 33 more lines not kept]
+2934 /tmp/claude-1001/nb.txt
 ```
-
-**Agent**
-
-Cell indices shifted from round 1. Let me read the whole thing.
 
 **Agent calls Read**
 
 ```json
 {
  "file_path": "/tmp/claude-1001/nb.txt",
- "limit": 600
+ "limit": 700
 }
 ```
 
 ```
-File content (25089 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
+File content (28884 tokens) exceeds maximum allowed tokens (25000). Use offset and limit parameters to read specific portions of the file, or search for specific content instead of reading the whole file.
 ```
 
 **Agent calls Read**
@@ -149,23 +169,13 @@ File content (25089 tokens) exceeds maximum allowed tokens (25000). Use offset a
 ```json
 {
  "file_path": "/tmp/claude-1001/nb.txt",
- "limit": 400
-}
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 400,
- "limit": 600
+ "limit": 500
 }
 ```
 
 ```
 1	
-2	######## CELL 0 [markdown] ########
+2	======== CELL 0 [markdown]
 3	# Reproducing Chen, He et al. (2026) from dandiset 001933
 4	
 5	Paper: Chen C, He Q, Tombesi G, et al. (2026). Leucine-rich repeat kinase 2 impairs the release sites of
@@ -173,215 +183,388 @@ File content (25089 tokens) exceeds maximum allowed tokens (25000). Use offset a
 7	[doi:10.1038/s41467-026-75194-3](https://doi.org/10.1038/s41467-026-75194-3). This attempt used the open access
 8	full text (CC BY) and its Supplementary Information.
 9	
-10	Dandiset: [DANDI:001933](https://dandiarchive.org/dandiset/001933/0.260825.1457), version 0.260825.1457. The paper
-11	does not name the dandiset or a version (its data statement points to Zenodo, PRIDE and the BioImage Archive). This is
-12	the only published version, and it holds the same 27 files as the draft (checked in the data check), so it is pinned.
-13	
-14	What the dandiset holds: one session per mouse of GRAB-DA3m fiber photometry in the dorsal striatum during optogenetic
-15	stimulation of SNc dopamine neurons, 15 Anxa1-iCre mice (dorsolateral striatum) and 12 Calb1-Cre mice (dorsomedial
-16	striatum), LRRK2-WT and LRRK2-G2019S (GS). This is the data of Figure 6 and Supplementary Figures 7 and 8. The
-17	immunostaining, proteomics, western blots and super-resolution imaging of Figures 1 to 5 are not in it.
-18	
-19	Outside input: the paper's source data file (Zenodo [10.5281/zenodo.19930567](https://doi.org/10.5281/zenodo.19930567),
-20	`Source data.xlsx`, md5 checked below), used only in the claim `source-data-link` to test whether the dandiset's
-[... 380 more lines not kept]
-```
-
-```
-400	  4561 Anxa1    WT             63.13             -0.10                 -0.21              190               6.38            0.06  48.78   68.68  88.22  85.72  53.81  50.36  56.03  80.23
-401	   302 Calb1    GS            120.12              1.99                 -0.30              270               9.26            0.81   6.88   58.00  69.64 117.53 163.89 194.27 194.75 155.76
-402	   306 Calb1    GS            101.63             -0.64                  0.14              370              11.54            0.82  31.31   72.94  57.33  98.80 121.57 130.13 147.55 121.59
-403	   740 Calb1    GS             43.15              0.13                 -0.03              300              -1.76            0.76   1.15   15.19  18.21  51.89  54.91  55.81  56.14  51.26
-404	   741 Calb1    GS            125.63              1.12                  0.32              260              14.59            0.92  30.77   59.04  88.62 106.25 138.77 146.06 149.00 195.22
-405	   848 Calb1    GS             94.21             -0.32                  0.26              270               9.87            0.83  27.28   65.90  55.67  80.39 122.03 132.86 142.60 121.47
-406	   852 Calb1    GS            152.43              5.41                  0.44              270              10.40            0.94  40.52   64.97  99.54 134.82 170.12 200.81 205.92 205.64
-407	   935 Calb1    GS            129.49              3.74                  0.16              220              11.38            0.86  29.22   62.85  89.60 107.65 144.98 154.00 161.58 148.11
-408	   671 Calb1    WT            198.16              0.47                  0.45              250              11.64            0.89  52.97   84.89 147.90 190.68 205.06 236.03 226.55 274.11
-409	   673 Calb1    WT             62.52              0.72                  0.01              190               7.88            0.84  17.00   29.76  49.80  63.01  71.44  75.42  71.74  81.01
-410	   688 Calb1    WT            216.36              1.35                  0.42              270   
-[... 589 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 997,
- "limit": 450
-}
-```
-
-```
-997	######## CELL 17 [markdown] ########
-998	### Evoked integrals
-999	
-1000	Integrals for every train under the four windows: the Methods' light-on period (main), the code's -0.1 to 1.0 s
-1001	(`code`), the window `chunking_index.m` computes as written, starting 1 s after onset (`code_as_written`), and a fixed
-1002	0 to 0.5 s (`fixed`). All use the mean from 1.0 to 0.1 s before onset as baseline (shifted with the window for
-1003	`code_as_written`).
-1004	
-1005	######## CELL 18 [code] ########
-1006	def evoked_table(window):
-1007	    rows = []
-1008	    for s in sessions:
-1009	        values = lrrk2.evoked_integrals(s, window)
-1010	        for j, v in enumerate(values):
-1011	            rows.append({"mouse": s["mouse"], "line": s["line"], "group": s["group"], "power": s["power_in_mW"][j],
-1012	                         "train_s": round(s["stop_time"][j] - s["start_time"][j], 2), "value": v})
-1013	    return pd.DataFrame(rows)
-1014	
-1015	
-1016	windows = ["methods", "code", "code_as_written", "fixed"]
-[... 430 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/tmp/claude-1001/nb.txt",
- "offset": 1446,
- "limit": 300
-}
-```
-
-```
-1446	{'n_GS': 896, 'n_WT': 635, 'mean_GS': 322.9, 'mean_WT': 343.9, 't': -1.637, 'p_one_tailed': 0.05088, 'cohens_d': 0.08494}
-1447	one-tailed p (G2019S lower) = 0.0509; difference of means (WT - G2019S) = 21.086 % dF/F x s
-1448	Two-tailed p = 0.102
-1449	
-1450	Per mouse:
-1451	               n     mean   median
-1452	group mouse                       
-1453	GS    302     93  490.660  408.085
-1454	      306     75  510.731  489.758
-1455	      740    140  252.220  225.825
-1456	      741    158  416.694  347.068
-1457	      848    120  343.685  317.679
-1458	      852    165  188.790  159.445
-1459	      935    145  219.291  174.492
-1460	WT    671    159  311.234  249.236
-1461	      673    159  206.032  150.697
-1462	      688    106  375.352  327.453
-1463	      966     79  488.571  454.854
-1464	      1803   132  437.652  367.420
-1465	
-[... 275 more lines not kept]
+10	Dandiset: [DANDI:001933](https://dandiarchive.org/dandiset/001933/0.260825.1457), version 0.260825.1457. This version
+11	was asked for: it is the version of the earlier attempt, `001933-chen-2026-01`, and the dandiset has not changed since
+12	(the data check shows the version and the draft hold the same files). It is also the only published version, and the
+13	paper names neither the dandiset nor a version (its data statement points to Zenodo, PRIDE and the BioImage Archive).
+14	
+15	This is attempt `001933-chen-2026-02`, under protocol pilot-7. The data are the same as in attempt -01; the protocol
+16	changed. Pilot-7 adds a kind of claim, `data: elsewhere`, for a claim whose data the paper deposited in another public
+17	archive. The eight claims of Figures 1 to 5, blocked in attempt -01 as `data_missing`, are such claims: they now name
+18	their archive and are tested here on those data, counted apart from the dandiset's claims. The ten photometry claims
+19	and their criteria are unchanged and are re-run. The data check also says, for each finding of attempt -01, whether
+20	it still holds.
+[... 480 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-python3 -c "
-gs=[(285,73.66),(132,299.56),(143,62.75),(122,36.19),(153,54.63),(57,416.91),(79,259.57),(93,148.76)]
-wt=[(81,514.26),(151,282.04),(104,346.03),(162,186.41),(76,622.04),(93,289.88),(131,129.87)]
-f=lambda l: sum(n*m for n,m in l)/sum(n for n,_ in l)
-print(f(gs),f(wt))"; ls paper 2>&1 | head
+grep -n "======== CELL" $TMPDIR/nb.txt | sed -n '10,90p'
 ```
 
 ```
-131.94212406015035 302.8514912280702
-ls: cannot access 'paper': No such file or directory
+353:======== CELL 9 [code]
+625:======== CELL 10 [markdown]
+647:======== CELL 11 [markdown]
+653:======== CELL 12 [code]
+717:======== CELL 13 [markdown]
+734:======== CELL 14 [markdown]
+742:======== CELL 15 [code]
+843:======== CELL 16 [markdown]
+856:======== CELL 17 [code]
+911:======== CELL 18 [markdown]
+921:======== CELL 19 [code]
+1003:======== CELL 20 [markdown]
+1017:======== CELL 21 [code]
+1098:======== CELL 22 [markdown]
+1115:======== CELL 23 [markdown]
+1126:======== CELL 24 [code]
+1383:======== CELL 25 [markdown]
+1389:======== CELL 26 [code]
+1444:======== CELL 27 [code]
+1512:======== CELL 28 [markdown]
+[... 59 more lines not kept]
 ```
 
-**Agent calls Grep**
+**Agent calls Read**
 
 ```json
 {
- "pattern": "def evoked_integrals",
- "path": "lrrk2.py",
- "output_mode": "content",
- "-A": 35
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1115,
+ "limit": 430
 }
 ```
 
 ```
-145:def evoked_integrals(s, window="methods", trace="dff"):
-146-    """One integral per epoch (in table order), in % dF/F times seconds; NaN where the
-147-    window leaves the recording. Only the samples the window and its baseline use must be
-148-    recorded."""
-149-    if window not in ("methods", "code", "code_as_written", "fixed"):
-150-        raise ValueError(window)
-151-    x = s[trace]
-152-    out = np.full(len(s["onset"]), np.nan)
-153-    for j, (on, off) in enumerate(zip(s["onset"], s["offset"])):
-154-        start = on - 100 if window != "code_as_written" else on + 100
-155-        a, b = {"code": (start + 90, start + 200), "code_as_written": (start + 90, start + 200),
-156-                "methods": (on, off + 1), "fixed": (on, on + 51)}[window]
-157-        if start < 0 or b > len(x):
-158-            continue
-159-        base = x[start:start + 90].mean()
-160-        out[j] = np.trapezoid(x[a:b] - base) / FS
-161-    return out
-162-
-163-
-164-def code_chunk(s, j):
-[... 16 more lines not kept]
+1115	======== CELL 23 [markdown]
+1116	## Claims
+1117	
+1118	### source-data-link
+1119	
+1120	> The dandiset's recordings are those behind the paper's Figure 6 and Supplementary Figures 7 and 8, and the paper's
+1121	> published per-stimulation traces, evoked integrals and spontaneous transient integrals can be recomputed from them.
+1122	
+1123	Records are matched by mouse ID, group, labelled power and the rank of the stimulation within its power. The source
+1124	data file is read in memory from Zenodo.
+1125	
+1126	======== CELL 24 [code]
+1127	md5, src = lrrk2.load_source_data()
+1128	print("Source data file md5:", md5, "; matches the Zenodo record:", md5 == lrrk2.SOURCE_DATA_MD5)
+1129	print("Records per table:", {k: len(v) for k, v in src.items()})
+1130	line_of = {"6C": "Anxa1", "6E": "Anxa1", "6F": "Anxa1", "S7B": "Anxa1", "S7C": "Anxa1",
+1131	           "S8C": "Calb1", "S8D": "Calb1", "S8E": "Calb1"}
+1132	
+1133	# (1) Mice
+1134	mice = {(k, d["mouse"], d["group"]) for k, v in src.items() for d in v}
+[... 410 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 1,400p 10.1038-s41467-026-75194-3.yaml
+```
+
+```
+# Claims for Chen, He et al. (2026), "Leucine-rich repeat kinase 2 impairs the release sites of
+# Parkinson's disease vulnerable dopamine axons", Nature Communications, on dandiset 001933.
+# Source: the open access full text (CC BY) and its Supplementary Information, read from the
+# Results, figure legends and Methods.
+#
+# Changed for attempt 001933-chen-2026-02 (protocol pilot-7). The ten photometry claims are
+# unchanged. The eight claims of Figures 1 to 5 were written under pilot-6 without criteria, as
+# they were blocked with data_missing. Under pilot-7 a claim whose data the paper deposited in
+# another public archive is `data: elsewhere`, names the archive under `where`, and is tested;
+# data_missing now means public nowhere. These eight claims now carry `data`, `where` and a
+# criterion. Their data are the paper's tabular deposit on Zenodo (per-section, per-area and
+# per-blot values; uncropped blots), the search outputs in PRIDE, and the images in the BioImage
+# Archive. When these criteria were written, the author had seen: the article text; the file
+# lists of the Zenodo record, of PRIDE PXD065003, PXD065006 and PXD065125 and of BioImage Archive
+# S-BIAD2070, 2071, 2072 and 2074, with their sizes; the column headers of the PRIDE tables and
+# of Supplementary data 1 to 5; the OME metadata of one synaptosome image; and the printed values
+# of the source data sheets of Figures 1D, 2E and 2G, 4D to 4L, 5D, 5E, 5G, 5H and 5J. No
+# statistic had been computed on any of them. In those values the author had noticed that two WT
+# sections of Figure 5D and 5E carry identical values, and that one G2019S value of Figure 4D
+# (0.0766) is of the size of the Figure 4E areas. From the legend's numbers alone (F and p), the
+[... 354 more lines not kept]
 ```
 
 **Agent**
 
-**Round 2 verification: 001933-chen-2026-01**
+Source-data-link checks out against cell 24 so far. Reading the photometry claim cells next.
 
-I counted 18 claims in the claims file and 18 outcomes in the attempt record: 6 reproduced, 2 partially reproduced, 2 not reproduced and 8 blocked (data missing). Cell numbers below are the indices of the re-executed notebook. They have moved since round 1.
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 1543,
+ "limit": 530
+}
+```
+
+```
+1543	======== CELL 29 [markdown]
+1544	### Evoked integrals
+1545	
+1546	Integrals for every train under the four windows: the Methods' light-on period (main), the code's -0.1 to 1.0 s
+1547	(`code`), the window `chunking_index.m` computes as written, starting 1 s after onset (`code_as_written`), and a fixed
+1548	0 to 0.5 s (`fixed`). All use the mean from 1.0 to 0.1 s before onset as baseline (shifted with the window for
+1549	`code_as_written`).
+1550	
+1551	======== CELL 30 [code]
+1552	def evoked_table(window):
+1553	    rows = []
+1554	    for s in sessions:
+1555	        values = lrrk2.evoked_integrals(s, window)
+1556	        for j, v in enumerate(values):
+1557	            rows.append({"mouse": s["mouse"], "line": s["line"], "group": s["group"], "power": s["power_in_mW"][j],
+1558	                         "train_s": round(s["stop_time"][j] - s["start_time"][j], 2), "value": v})
+1559	    return pd.DataFrame(rows)
+1560	
+1561	
+1562	windows = ["methods", "code", "code_as_written", "fixed"]
+[... 510 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 2068,
+ "limit": 240
+}
+```
+
+```
+2068	======== CELL 51 [markdown]
+2069	**Result: reproduced.** By the paper's test, GS transients are not significantly smaller: one-tailed p = 0.0509 on 896
+2070	GS and 635 WT transients (both within tolerance of 970 and 682), difference of means 21.1 % dF/F x s, Cohen's d 0.085.
+2071	The result sits at the threshold and is fragile: moving either end of the exclusion window by up to 10 samples gives
+2072	p from 0.0403 to 0.0792, below 0.05 in 59 of 121 windows. With the published measure (0.005 times the integral divided
+2073	by the duration) GS are lower at p = 2.45e-09 (d = 0.305), with the mean dF/F over each transient at p = 2.25e-09, and
+2074	with the code's exclusion window as written at p = 1.81e-05; with one value per mouse, Welch p = 0.402. The dandiset's
+2075	Calb1 dF/F is not the trace the paper analysed (see `source-data-link`), and the published values give p = 0.989.
+2076	
+2077	======== CELL 52 [markdown]
+2078	### supp8e-calb1-evoked-reduced
+2079	
+2080	> Evoked dopamine release in the dorsomedial striatum from Calb1+ neuron stimulation is reduced in G2019S mice at each
+2081	> of four powers (56 against 40 stimulations per power, p from 6.45e-05 to 0.001).
+2082	
+2083	======== CELL 53 [code]
+2084	rows = []
+2085	for w in windows:
+2086	    for q in lrrk2.PAPER_POWERS:
+2087	        rows.append({"window": w, "power": q, **group_test(evoked[w].query("line == 'Calb1' and power == @q"))})
+[... 220 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 2307,
+ "limit": 300
+}
+```
+
+```
+2307	> LRRK2 kinase inhibition with MLi-2 changes 289 phosphopeptides in striatal synaptosomes of G2019S mice, including RAB3 T86.
+2308	
+2309	Data: the peptide groups table in PRIDE PXD065006 (Proteome Discoverer abundances). The raw files (7.9 GB) need
+2310	Proteome Discoverer with Byonic, which are commercial, so the search is not re-run.
+2311	
+2312	======== CELL 66 [code]
+2313	rows, tests = [], {}
+2314	for reading, k in (("a", 3), ("b", 2)):
+2315	    for welch in (False, True):
+2316	        r = archives.volcano_test(pp, k) if not welch else None
+2317	        if welch:
+2318	            veh = [c for c in ab if "Vehicle" in c]
+2319	            mli = [c for c in ab if "MLi2" in c]
+2320	            a_, b_ = np.log2(pp[veh].to_numpy(float)), np.log2(pp[mli].to_numpy(float))
+2321	            keep = (np.isfinite(a_).sum(1) >= k) & (np.isfinite(b_).sum(1) >= k)
+2322	            r = pp.loc[keep, ["Annotated Sequence", "Modifications"]].copy()
+2323	            r["diff"] = np.nanmean(a_[keep], 1) - np.nanmean(b_[keep], 1)
+2324	            r["p"] = np.asarray(stats.ttest_ind(a_[keep], b_[keep], axis=1, equal_var=False, nan_policy="omit").pvalue, float)
+2325	            r["altered"] = (r.p <= 0.05) & (r["diff"].abs() > 0.58)
+2326	        else:
+[... 280 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 2604,
+ "limit": 340
+}
+```
+
+```
+2604	======== CELL 74 [markdown]
+2605	### fig4d-fewer-active-zones
+2606	
+2607	> Fewer TH+/VAMP2+ striatal synaptosomes from G2019S mice contain bassoon, and the remaining bassoon clusters are larger.
+2608	
+2609	Data: (A) the per-area values on Zenodo; (B) the images of BioImage Archive S-BIAD2074, measured in the data check with
+2610	the Methods' FIJI procedure as re-implemented in `archives.py`.
+2611	
+2612	======== CELL 75 [code]
+2613	rows = []
+2614	for panel, label in (("4D", "percent of TH+/VAMP2+ with bassoon"), ("4E", "bassoon area (um2)")):
+2615	    d = f4de[f4de.panel == panel]
+2616	    gs, wt = d[d.group == "GS"].value, d[d.group == "WT"].value
+2617	    reps = d.groupby(["group", "replicate"]).value.mean()
+2618	    rows.append({"part": "A", "panel": panel, "measure": label, "n_WT": len(wt), "n_GS": len(gs), "mean_WT": wt.mean(),
+2619	                 "mean_GS": gs.mean(), "p": archives.ttest(gs, wt)[1], "d_GS_minus_WT": archives.cohens_d(gs, wt),
+2620	                 "p_welch": archives.ttest(gs, wt, equal_var=False)[1], "p_mouse_means": archives.ttest(reps["GS"], reps["WT"])[1]})
+2621	d = f4de[(f4de.panel == "4D") & ~((f4de.group == "GS") & (f4de.value < 1))]
+2622	print("(A) Source data, two-tailed unpaired Student t-tests over areas (paper: 4D p < 0.0001, 4E p = 0.0301):")
+2623	print(pd.DataFrame(rows).to_string(index=False, float_format=lambda v: f"{v:.4g}"))
+[... 312 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb.txt",
+ "offset": 625,
+ "limit": 490
+}
+```
+
+```
+625	======== CELL 10 [markdown]
+626	At the table's onsets the 0 to 0.5 s integral has a median of 13 to 260 % dF/F x s per file; 10 s later, between
+627	trains, it is near zero in every file (lower in 27 of 27, Wilcoxon p = 1.5e-08), and the 405 nm control shows no
+628	response (medians -0.74 to 1.15). The mean response peaks 160 to 370 ms after onset. The mean trace rises by up to
+629	25 % dF/F in the 0.1 s before onset: the 20-sample moving mean of the stored dF/F spreads the response about 0.1 s
+630	earlier, which is why the code's baseline ends 0.1 s before onset. The epochs table and the photometry share a clock.
+631	
+632	The response grows with the labelled power in every Calb1 file (Spearman 0.76 to 0.94) but not in many Anxa1 files
+633	(median 0.06). Of the 12 Anxa1 files where 1.5, 2 and 3 mW are given as 0.33 s trains and 0.5 and 1 mW as 0.51 s
+634	trains, the 0.33 s responses fall below both 0.51 s ones in 7 (for example mouse 4401) and not in the other 5 (in 4398,
+635	173.5 at 1.5 mW against 114.8 at 0.5 mW). The power labels are consistent with the data in Calb1
+636	files; in Anxa1 files the data alone cannot confirm them. The labels of the four powers the paper uses are confirmed
+637	against its source data under `source-data-link`.
+638	
+639	The epoch-by-epoch tables show mice 3742 and 4885, whose paper powers are all 0.33 s trains of 9 ms pulses every
+640	10 ms, and two GS mice given 0.51 s trains. In 3742 the response does not follow the labelled power: within the 0.33 s
+641	trains the median 0 to 0.5 s integral is lowest at 0.5 mW (5.7 % dF/F x s) and higher at 0.1 mW (33.5), and the
+642	correlation with power is negative within each train type. In 4885 the 0.33 s trains give medians of 35.0 to
+643	53.5 at the four labelled powers, below every 0.51 s power (56.1 to 78.1), and the correlation with power is negative
+644	within both train types (-0.28 and -0.74). In 4004 and 4651 the response rises with power within the 0.51 s trains
+[... 470 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n "per_duration\|def spontaneous_transients" -A3 lrrk2.py | head -60
+```
+
+```
+200:def spontaneous_transients(s, exclusion="methods"):
+201-    """Integrals (% dF/F times seconds), peaks and means (% dF/F) of the spontaneous transients,
+202-    and the integral divided by the duration (% dF/F; the trapezoid integral in samples over the
+203-    number of samples), in time order. The published values of Figure 6F and Supplementary
+--
+211:    per_duration = np.array([np.trapezoid(x[a:b + 1]) / (b - a + 1) for a, b in runs])
+212:    return auc, peaks, means, per_duration
+213-
+214-
+215-def raw_binned(s):
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python3 -c "
+import json,base64;nb=json.load(open('reproduce_chen_2026.ipynb'))
+for o in nb['cells'][21]['outputs']:
+    if 'data' in o and 'image/png' in o['data']:
+        open('$TMPDIR/c21.png','wb').write(base64.b64decode(o['data']['image/png']))
+"; ls -la $TMPDIR/c21.png
+```
+
+```
+-rw-r--r-- 1 runner runner 418304 Oct 15 21:06 /tmp/claude-1001/c21.png
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/c21.png"
+}
+```
+
+Result: no output.
+
+**Agent**
+
+**Verifier report, round 2: attempt 001933-chen-2026-02**
 
 **1. Outcomes**
 
-I agree with every stated outcome.
+The claims file lists 18 claims and the attempt record has 18 outcomes. I agree with all 18.
 
-| Claim | Outcome | Basis (cell) |
-|---|---|---|
-| source-data-link | not_reproduced | Cell 12: match fractions 1.0, 0.609, 0.609 and 0. The transient-mean variant gives 0.481, also below 50%. |
-| fig6e-anxa1-evoked-reduced | reproduced | Cell 21: 64 against 56 stimulations, p = 1.16e-22. |
-| fig6e-anxa1-evoked-per-mouse | reproduced | Cell 24: 7 of 8 mice under all four readings; 3743 is the exception. |
-| supp7c-anxa1-evoked-all-powers | reproduced | Cell 27: 4 of 4 powers; Methods window has 56 WT stimulations at every power. |
-| fig6f-anxa1-spontaneous-reduced | reproduced | Cell 32: 1064 and 798 transients, 57 to 285 per mouse, p = 4.85e-72. |
-| fig6f-anxa1-spontaneous-per-mouse | partially_reproduced | Cell 35: 5 of 8 mice under every reading. |
-| supp8c-calb1-spontaneous-not-reduced | reproduced, marginal | Cell 38: p = 0.05088. Counts 896 and 635, both within tolerance. |
-| supp8e-calb1-evoked-reduced | reproduced | Cell 41: 56 against 40 stimulations, 4 of 4 powers. |
-| supp8e-calb1-few-mice-reduced | partially_reproduced | Cell 44: 7, 6, 4 and 4 mice; the closest reading gives 4. |
-| cohens-d-anxa1-larger | not_reproduced | Cell 47: Calb1 d = 1.395 is outside tolerance, and the ratio is 1.58. |
-| 8 claims from Figures 1 to 5 | blocked, data_missing | No change since round 1. |
+| Claim | Record | Agree | Basis (cell) |
+|---|---|---|---|
+| source-data-link | not_reproduced | yes | 24: the parts score 1.0, 0.609, 0.609 and 0. Part 4 uses integrals, as the criterion fixes. |
+| fig6e-anxa1-evoked-reduced | reproduced | yes | 33: 64 vs 56, p = 1.16e-22 |
+| fig6e-anxa1-evoked-per-mouse | reproduced | yes | 36: 7 of 8 under all four readings; 3743 is the exception |
+| supp7c-anxa1-evoked-all-powers | reproduced | yes | 39: 4 of 4 powers |
+| fig6f-anxa1-spontaneous-reduced | reproduced | yes | 44: 1064 and 798 transients, 57 to 285 per mouse, p = 4.85e-72 |
+| fig6f-anxa1-spontaneous-per-mouse | partially_reproduced | yes | 47: best reading gives 5 |
+| supp8c-calb1-spontaneous-not-reduced | reproduced | yes, fragile | 50: p = 0.0509; counts are within tolerance |
+| supp8e-calb1-evoked-reduced | reproduced | yes | 53: 56 vs 40, 4 of 4 powers |
+| supp8e-calb1-few-mice-reduced | partially_reproduced | yes | 56: best reading gives 4 |
+| cohens-d-anxa1-larger | not_reproduced | yes | 59: Calb1 d = 1.395 is outside tolerance; ratio 1.58 is below 2 |
+| fig1d-lrrk2-enriched-vulnerable | reproduced | yes | 63: p = 4.65e-06 |
+| fig2b-rab3-phosphorylation | not_reproduced | yes | 66: counts 1694 and 1810; T86 difference is −1.31 |
+| fig2eg-prab3-increased | reproduced | yes | 69: 4 of 4 |
+| fig3d-rim-binds-unphosphorylated | partially_reproduced | yes | 72: 3 of 4 under the paired test |
+| fig4d-fewer-active-zones | partially_reproduced | yes | 75: part A holds, part B does not |
+| fig4i-rim1-reduced | reproduced | yes | 78: p = 0.0245; S1 and SNc not significant |
+| fig5-bassoon-vulnerable-axons | partially_reproduced | yes | 81: 5 of 6 parts |
+| fig5j-no-axon-loss | reproduced | yes | 84: p = 0.117 |
 
-**2. Text against printed outputs**
+Totals are 10 reproduced, 5 partially reproduced, 3 not reproduced and 0 blocked. On the dandiset's 10 claims that is 6, 2 and 2; on the 8 claims tested on data elsewhere it is 4, 3 and 1.
 
-I checked every Result paragraph (cells 16, 22, 25, 28, 33, 36, 39, 42, 45, 48), the Summary (cell 50), the README and the attempt record's notes. Almost all of it matches the printed numbers. I recomputed the two values not printed directly, 131.9 and 302.9, from the per-mouse table in cell 32 and they agree. These sentences are not supported:
+**2. Sentences checked against the printed outputs**
 
-- **Cell 50 (Summary):** "the published traces equal the dandiset's dF/F to within 1e-12".
-  - The only printed value is 5.7e-13, for Figure 6C (cell 12).
-  - For Supplementary Figure 7B, matched traces are shown only to be below the 1e-6 threshold. The printed largest difference, 109.8, includes the one miss.
-  - The record's source-data-link note has the same scope problem: "(largest difference 5.7e-13)" follows a clause that names both 6C and 7B. Cell 16 scopes it correctly.
-- **README:** "It takes about three minutes". Cell 51 prints a total run time of 241 s, which is about four minutes.
-- **Cell 10 (data check, outside the required scope, but it supports the power-label argument):** "In Anxa1 files where 1.5, 2 and 3 mW are given as 0.33 s trains, those responses fall below the 0.5 and 1 mW ones given as 0.51 s trains (for example mouse 4401)."
-  - In cell 9 this holds for 4401, 3947, 4253, 4561, 4651, 4004 and 4007.
-  - It fails for 3743, 3948, 4398, 4558, 4652 and 4005. For example, 4398 has 173.5 at 1.5 mW against 114.8 at 0.5 mW.
-  - The sentence should say "in some files".
-- **Minor, not checkable from outputs:** the fig1d note in the record gives "S-BIAD2070 to S-BIAD2074", but cell 49 lists 2070, 2071, 2072 and 2074, without 2073.
-- **Minor, claims file:** the supp7c statement reads "p from 2.39e-16 to 1.10e-20". The paper's value at 0.1 mW, printed in cell 27, is 1.29e-15, which is outside that range. The outcome does not change.
+I checked every "Result:" cell (28, 34, 37, 40, 45, 48, 51, 54, 57, 60, 64, 67, 70, 73, 76, 79, 82, 85), the Summary (86), the README and the record's notes and findings. All the numbers trace to printed outputs. Two values are not printed at that precision (131.9 and 302.9 in cell 45 and the notes), but both can be derived from the per-mouse table in cell 44. Two minor issues remain, and neither bears on a conclusion:
 
-**My round-1 reasons as the record states them:** they are accurate paraphrases. One error is mine, and the record copies it faithfully. My supp8c reason said that "under any of the alternative measures the outcome flips". That is wrong for the mouse-mean test, p = 0.402 (cell 38), which does not flip. Only the transient-mean measure (2.25e-09) and the code's exclusion window (1.81e-05) flip it. The record's reason should be corrected to say that.
+- Cell 20 and the `selection_undocumented` finding say "in the BSN-area folder GS has 49 images against 51 areas". Cell 19 says the folder holds 93 files, but its crosstab accounts for only 92 (ki 49, wt 43). Cell 75 uses 49 GS and 43 WT images with 1 dropped, which also makes 93. So one file was not parsed in cell 19, and the GS count may be 50.
+- Several notes say "0.005 times the integral divided by the duration". `lrrk2.py:211` divides by the number of samples (b − a + 1), and the `code_mismatch` finding states that correctly. "Duration" is loose wording.
+
+I viewed the overlay figure in cell 21. It supports cell 22's sentence: the kept particles are the bright puncta, and dimmer puncta go unsegmented.
+
+The verification block states my round-1 reasons faithfully, including `agrees: false` for fig3d with partially_reproduced as my outcome. Each reason merges in the problems that relate to that claim, and the attributions are correct. The fig4d reason leaves out that I had confirmed the channel order on one image, but the `reviewed` field records that check.
 
 **3. Round-1 points**
 
 Resolved:
+- **Point 2 (spontaneous measure):** resolved. Cell 24 (4b) shows the published values are 0.005 × the trapezoid integral divided by the number of samples, exact to 2.2e-15 in all 15 Anxa1 mice. With that measure, the 6F p-value and the 6-of-8 count come out exactly (cells 44 and 47). The outcomes correctly stay with the criterion's integrals.
+- **Point 4 (fig3d):** resolved. The decision now rests on the paired test: 3 of 4, partially reproduced.
+- **Point 6 (supp8c sensitivity):** the output I asked for is in cell 50. Over the window grid, p runs from 0.040 to 0.079 and is below 0.05 in 59 of 121 windows. This is stated everywhere.
+- **Points 7 to 12:** these did not affect a conclusion and are recorded. Point 9 (the 6E power is assigned by the loader) is still confirmed only indirectly, because the sheet gives no power.
 
-- **Problem 5 (dropped 4398 train):** `evoked_integrals` now checks only the samples each window uses. The synthetic test in cell 19 would fail under the old condition. Methods-window 4 mW now has 56 WT stimulations, p = 4.08e-18.
-- **Problem 7 (no Calb1 evoked mouse-level test):** cell 41 adds it: p = 0.0424, 0.0413, 0.0726 and 0.0916 across the four powers.
-- **Problem 8 (p printed as 0.0):** the summary dicts now print 3 to 4 significant figures.
-- **Problem 6 and C2 (part-4 tolerance; which Anxa1 mice fail):** part 4 is now scored at both 1% and 1e-4 (cell 12). 4398 and 4007 fail by one sorted value each.
-- **C1 (is the Calb1 mismatch a labelling error?):** cell 15 searches all 64 epochs and 8 powers of each mouse. No epoch is within 1e-6 of any of the 384 traces; the closest is 15.7 to 150.8 % dF/F away. This rules out epoch or power labels as the cause.
-- **C3 (power labels for 3742 and 4885):** cell 9 adds the per-epoch tables. The response does not follow labelled power in either mouse, and the notes and findings now say so.
-
-Still open, and bearing on a conclusion:
-
-- **Problem 1 (Calb1 dF/F is not the paper's):** the attempt has characterised this as far as it can. It still decides cohens-d (not reproduced) and supp8e-few-mice (partial), and every Calb1 result is a result on the dandiset's processing, not the paper's.
-- **Problem 3 (supp8c at the threshold):** the outcome rests on p = 0.0509 against 0.05. Two of the three variants flip it. Reproduced is correct under the criterion, but the result is fragile.
-- **Problem 2 (spontaneous measure):** the published values are 0.005 times the mean dF/F of each transient, not its integral. This is why fig6f-per-mouse gets 5 mice where the paper's measure gives 6, and why source-data-link part 4 scores 0.
-- **Problem 4 (two mice on different trains):** this does not change any outcome. Two of the seven significant Anxa1 per-mouse results (3742 and 4885) come from 0.33 s trains whose power labels the data cannot confirm.
-
-Not done: C4, reading the Supplementary Figure 7 and 8 legends. My round-1 report says I saved the main text under `paper/`, but no `paper/` folder exists in this round's directory, and I did not download the paper again. The supplementary p-values and counts therefore still come from the claims file.
+Partly resolved or open, bearing on a conclusion:
+- **Point 1 (Calb1 dF/F is not the paper's):** still open, and it cannot be closed from the deposited data. In cell 27, no epoch at any power comes within 1e-6 of a published trace (closest 15.7 % dF/F), and the slopes and offsets point to processing that is not deposited. supp8c, both supp8e claims and cohens-d are therefore results on the dandiset's processing, not the paper's. The cohens-d failure and the few-mice partial most likely come from this.
+- **Point 3 (fig2b direction):** narrowed but not settled. Cell 66 shows the paper's volcano table equals MLi-2 minus vehicle as labelled, plus a constant, within 1.6e-06. Its p-values are close to a t-test on median-centred values but not exact (median gap in −log10 p of 0.0088 for Welch, 0.0161 for Student). Whether the deposit's labels or the figure's direction is swapped still cannot be told; RAB10 T73 is flat. If the labels are swapped, the median-centred variant would give 282 peptides and a positive T86 difference, which would reproduce the claim. The not_reproduced outcome therefore hinges on a labelling question the data cannot answer.
+- **Point 5 (fig4d segmentation):** improved but not settled. 165 of 168 images confirm the channel order; three give 488 nm on all channels and are read in the standard order. The per-step counts (1186 objects → 193 after the size limit → 183 after circularity) show the size limit is where the counts fall below the legend's "about 1000". Part B's null result is still weak evidence, so partially_reproduced rests on a segmentation that does not match the paper's.
+- **Point 6 (supp8c):** the output is in place, but the outcome itself is unstable. It would reverse in about half of the nearby windows and under every variant measure. It is reproduced only in the narrow sense the criterion defines.
 
 ## End of run
 
-12 turns, 2 minutes, result: success.
+19 turns, 3 minutes, result: success.

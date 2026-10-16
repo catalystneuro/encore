@@ -1,16 +1,13 @@
-No outcome changed in this round. The verifier agreed with all 18 outcomes and I found no reason to propose a change, so nothing is under `proposed`. I re-ran the entry with `python tools/entry.py all entries/001933-chen-2026` and it passed in 198 s. All the numbers the conclusions rest on are the same as before, and `check` reports 0 errors.
+No outcomes changed. The verifier agreed with all 18 outcomes in round 2 (10 reproduced, 5 partially reproduced, 3 not reproduced), and I found no reason to propose a change, so nothing is under `proposed`.
 
-**Corrections and added outputs**
-- **"Within 1e-12" in the Summary:** cell 12 now prints the largest difference among matched traces for each table. It is 5.7e-13 for both Figure 6C and Supplementary Figure 7B. The Summary, cell 16 and the source-data-link note now give 5.7e-13 for both.
-- **Cell 10, the 0.33 s against 0.51 s trains:** the data check now prints a table for each Anxa1 file where the trains are split this way. The pattern holds in 7 of the 12 files. The text now says that and gives mouse 4398 as a counterexample. Mouse 4652 is not in the table because one of its trains has no period.
-- **README run time:** it now says three to four minutes, and `runtime_minutes` in `entry.yaml` is 4. This run took 186 s and the verifier's took 241 s.
-- **fig1d note:** it now lists S-BIAD2070, 2071, 2072 and 2074.
-- **supp7c statement:** in the claims file and the notebook quote it now reads "p from 1.29e-15 to 1.10e-20". The Supplementary Figure 7C legend confirms all four p-values. The criterion is unchanged.
-- **Round-1 supp8c reason:** corrected as the verifier asked. Only the transient-mean measure and the code's exclusion window flip the outcome; the mouse-mean test (p = 0.40) does not.
-- **Round-2 record:** added under `verifications`, with the verifier's reasons and my responses for all 18 claims.
+**What I corrected**
+- **Unread image file:** the check that compares image files to the source data in cell 19 missed `Export_KI3_BSN8.ome.tif` because its "KI" is upper case. It now ignores case, as `archives.py` already did, and counts 50 G2019S images in the BSN-area folder, not 49. I corrected cell 20 and the `selection_undocumented` finding to "50 images against 51 areas". The fig4d analysis in cell 75 already used all 50 files and dropped one with no particle, so its numbers don't change.
+- **"Duration" wording:** I replaced "integral divided by the duration" with "divided by the number of samples" throughout the notebook, the `lrrk2.py` docstrings and the attempt record. That includes my own responses in the round-1 record; the verifier's quoted reasons are untouched.
+- **fig2b labels:** the fig2b conclusion and notes now say that if the sample labels are swapped, the median-centred reading would give 282 peptides and a positive RAB3 T86 difference (+0.693), which would reproduce the claim. So the outcome rests on a labelling question the data can't answer.
 
-**Point C4 (supplementary legends), which neither earlier round did:** I downloaded the article and its Supplementary Information into `paper/`, which git ignores, and read the Supplementary Figure 7 and 8 legends.
-- They confirm the counts and p-values in the claims file for 7C, 8C and 8E.
-- They call the spontaneous measure a "normalized integral". The legends use the same words for the evoked values, which are the plain integral times 0.0001, and the Methods say "integral", which is what the criterion fixed. So I kept the fig6f-per-mouse outcome as verified and noted this in the record.
+**Re-run and record**
+- I re-ran the notebook with `python tools/entry.py run`, which passed in 546 s. The numbers the verifier cited are unchanged (for example p = 1.16e-22, 4.85e-72, 0.0509, d = 1.395). I made the fig4d and fig2b text edits after the run and applied them to both the source and the executed copy. Those edits touched only conclusion text, not code that produces numbers.
+- I added round 2 under `verifications`, with the verifier's reasons in its own words and my response for each claim. The points the verifier left open (the Calb1 dF/F not being the paper's, and the 6E power assigned by the loader) can't be closed from the deposited data, and the record says so.
 
-**Not done:** the remaining open problems (the Calb1 dF/F is not the paper's, supp8c sits at the threshold, the spontaneous measure, and the two mice stimulated with different trains) are already characterised as far as the dandiset allows. Nothing new could be done on them in this round. Nothing was committed, as instructed.
+**Not done**
+- `python tools/entry.py all` stops at its `check` step with 8 errors, all in the earlier record `attempts/001933-chen-2026-01.yaml`. A later tool change (commit d4b6dbb) added a rule against blocking claims whose data is in other archives as `data_missing`, and that record does so. The protocol says an earlier record stays as it was, so I didn't edit it and ran `run` on its own instead. `-02` has no check errors. Someone needs to decide whether to exempt old records from this rule or amend `-01`.
