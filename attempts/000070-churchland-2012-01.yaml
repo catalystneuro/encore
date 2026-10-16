@@ -1,0 +1,294 @@
+schema_version: 1
+id: 000070-churchland-2012-01
+dandiset: "000070"
+dandiset_version: 0.260528.0919
+paper: doi:10.1038/nature11129
+date: 2026-10-16
+entry: 000070-churchland-2012
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The jPCA parameters the Methods do not give (soft normalisation by range plus 5 spikes/s,
+    PCA on the analysed times only, the -50 to +150 ms window of the codepack example, the
+    orientation of the jPC plane), from the Python port of the lab's MATLAB jPCA codepack. Code
+    read for method choices only; no data.
+  source: https://github.com/bantin/jPCA at commit 3f8be9fa32a43a7b3090695c9e671f52f02878ac
+- what: The dandiset's conversion code, read for how units, trials, positions and session dates
+    were written (one unit per entry of the lab's unitLookup, spikes and positions stored trial by
+    trial, one clock offset applied, the year 2009 set in every session date of the first
+    conversion). Code read only; no data.
+  source: https://github.com/catalystneuro/shenoy-lab-to-nwb at commit
+    319acb472372c9e4359ebacf13c8df3652a822b1
+outcomes:
+- claim: array-dataset-composition
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:array-dataset-composition
+  measured:
+  - 108
+  - 108
+  - 192
+  - 192
+  notes: Both sessions are in the dandiset (sub-Jenkins ses-20090918 and sub-Nitschke
+    ses-20100923) with 108 conditions each among the selected trials. Each holds 192 units, one per
+    electrode of the two arrays, with rates over trial time of 13.5 to 178 spikes/s, against the
+    paper's 146 and 218 isolations. The sorted isolations are not in the dandiset.
+- claim: fig3ef-same-direction
+  outcome: reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig3ef-same-direction
+  notes: 102 of 108 conditions (0.944) rotate counter-clockwise in J-array and 108 of 108 in
+    N-array; median net rotation 70.2 and 114.6 degrees over the 200 ms. Under the variants (24 ms
+    smoothing, two other windows, 10 PCs, all successful trials) the fraction is 0.944 to 0.981 and
+    0.972 to 1.000.
+  deviations:
+  - Tested on the 192 per-electrode units, not the paper's sorted isolations.
+  - No PC smoothing of single-unit rates; the supplement reports it has essentially no effect.
+  - The analysis window is -50 to +150 ms from movement onset for both datasets, from the
+    codepack's example; the paper chose a start per dataset, just before the rapid change in
+    activity.
+- claim: fig3-independent-of-curvature
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig3-independent-of-curvature
+  notes: In N-array all conditions rotate counter-clockwise in each class (44 clockwise, 53
+    counter-clockwise, 11 straight reaches). In J-array 0.984 of 63 counter-clockwise and 7 of 7
+    straight reaches do, but 0.868 (33 of 38) of clockwise reaches, under the 0.9 of the criterion
+    and above 0.75. Spearman correlation of heading change with net neural rotation is 0.227
+    (p 0.018) in J-array and -0.214 (p 0.026) in N-array; the J-array logistic slope is 0.0101 per
+    degree.
+  deviations:
+  - The paper shows this by eye in Figure 3; the classes of curvature and the thresholds were
+    fixed here before the analysis.
+- claim: fig3-phase-from-prep-state
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig3-phase-from-prep-state
+  notes: Leave-one-condition-out R2 of the +150 ms state from the -50 ms state is 0.632 in J-array
+    and 0.748 in N-array, both above 0.5. Shuffle 3 gives a median of 0.671 (J-array) and 0.656
+    (N-array), so the data exceed the control in N-array only. Shuffle 1 gives medians of 0.891 and
+    0.867, so the measure also rewards states that move little and is a weak test of the claim.
+  deviations:
+  - The paper gives no measure of predictability; the complex-gain prediction and its thresholds
+    were fixed here before the analysis.
+- claim: var-captured-jpc-plane
+  outcome: reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:var-captured-jpc-plane
+  measured: 21.6
+  notes: The first jPCA plane captures 20.0% (J-array) and 23.1% (N-array), both within 18 to
+    38.5% (reading b, which matches). The mean, 21.6%, is outside 28 +- 2.8% (reading a). The
+    sub-Nitschke ses-20090910 session gives 18.8%.
+  deviations:
+  - The paper's 28% averages nine datasets, of which the dandiset holds two; the reading of the
+    typical range was used, as listed in the criterion.
+  - Tested on per-electrode units, not sorted isolations.
+- claim: pc23-variance
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:pc23-variance
+  measured: 24.3
+  notes: PC2 and PC3 capture 21.6% (J-array) and 27.0% (N-array), mean 24.3%, outside 29 +- 2.9%
+    under reading (a) and under reading (b) for J-array. The jPCA plane captures 0.93 and 0.86 times
+    the variance of PC2 and PC3, so the comparison the claim makes holds.
+  deviations:
+  - Two datasets in place of the paper's nine.
+- claim: suppfig4-j-array-planes
+  outcome: not_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:suppfig4-j-array-planes
+  measured:
+  - 12.3
+  - 14.8
+  - 12.8
+  - 40.0
+  - 60.5
+  notes: In J-array the three jPCA planes from the top 10 PCs capture 12.3%, 14.8% and 12.8% (40.0%
+    together) against 22%, 19% and 12% (54%); only plane 3 is within tolerance. The top six PCs
+    capture 60.5%, within 64 +- 6.4%. The planes rotate consistently (0.926 to 0.991 of conditions
+    counter-clockwise). The lower variance may come from the per-electrode units, which carry more
+    noise than sorted isolations, and from the missing PC smoothing; this was not tested.
+  deviations:
+  - Per-electrode units in place of the paper's 146 isolations; no PC smoothing.
+- claim: suppfig4-planes-range
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:suppfig4-planes-range
+  notes: The three planes capture 50.1% in N-array (within 45 to 77%) and 40.0% in J-array (below
+    it). The first two planes have 0.954 or more of conditions rotating in their direction in both
+    datasets. ses-20090910 gives 40.9%.
+  deviations:
+  - Two datasets in place of the paper's nine; per-electrode units.
+- claim: fig6a-angle-peak
+  outcome: reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig6a-angle-peak
+  notes: The angle between the state and its derivative peaks at 0.528 pi (J-array) and 0.639 pi
+    (N-array), medians 0.511 and 0.603 pi. Under the variants the peak lies between 0.528 and 0.639
+    pi, and with 24 or 48 bins between 0.542 and 0.646 pi.
+  deviations:
+  - The thresholds come from reading Figure 6a; the paper gives no number.
+- claim: fig6b-skew-fit
+  outcome: reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig6b-skew-fit
+  notes: R2(M_skew)/R2(M) is 0.905 and 0.845 in 6-D and 0.957 and 0.881 in the first plane (J-array,
+    N-array). Under the variants the 6-D ratio is 0.819 or more and the plane ratio 0.879 or more.
+    Absolute R2 of M_skew is 0.343 and 0.517.
+  deviations:
+  - The thresholds come from reading Figure 6b; the paper gives no number.
+  - M_skew is solved in closed form as in the Supplementary Derivation, where the codepack uses a
+    gradient method for the same unique optimum.
+- claim: rotation-frequency
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:rotation-frequency
+  measured: 1.38
+  notes: The first plane rotates at 1.38 Hz (8.65 radians/s) in N-array, within 1.26 to 2.75 Hz,
+    and 1.03 Hz (6.49 radians/s) in J-array, below it; the larger value is given as measured. No
+    variant exceeds 1.68 Hz, so the upper bound holds. J-array reaches the range with the -100 to
+    +100 ms window (1.45 Hz) or 10 PCs (1.68 Hz), variants that do not decide the outcome.
+  deviations:
+  - The lower bound of the range comes from the eigenvalues the paper reports for monkeys A and B,
+    whose data are not in the dandiset.
+- claim: suppfig3-shuffle-controls
+  outcome: not_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:suppfig3-shuffle-controls
+  notes: Shuffle 1 removes the rotations (median R2(M_skew) 1.0% and 0.8% of the original;
+    fraction counter-clockwise 0.565 and 0.602). Shuffle 2 leaves 71% (J-array) and 94% (N-array)
+    of the original R2(M_skew), shuffle 3 leaves 81% and 94%, and one shuffle 3 run in N-array
+    exceeds the original; after both the median fraction rotating counter-clockwise is 0.963 to
+    0.991. Only shuffle 1 meets the criterion in N-array, and shuffles 1 and 2 in J-array. The
+    paper expected shuffles 2 and 3 to leave part of the rotational structure and to disrupt its
+    relation to the preparatory state, which R2(M_skew) does not measure; the criterion's choice
+    of measure, fixed before the analysis, may not capture what the paper judged by eye.
+  deviations:
+  - The dividing point is one time per dataset (median go cue plus 50 ms, -301 and -320 ms from
+    movement onset) on movement-aligned rates; the paper split each condition 50 ms after its go
+    cue on rates aligned separately to target, go cue and movement.
+  - The paper judged the shuffles from projections (Supplementary Figure 3); R2(M_skew) and its
+    thresholds were fixed here.
+- claim: suppfig5-areas-variance
+  outcome: partially_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:suppfig5-areas-variance
+  measured:
+  - 23.7
+  - 22.8
+  - 18.1
+  - 25.0
+  notes: PMd and M1 capture 23.7% and 22.8% (J-array) and 18.1% and 25.0% (N-array) against 29,
+    29, 32 and 28%; none within 10% (N-array M1 misses 25.2% by 0.2 points). All lie within 18 to
+    38.5%, with 0.917 to 0.991 of conditions rotating counter-clockwise. ses-20090910 gives 15.4%
+    (PMd) and 21.6% (M1) against 26% and 24% for N-9-10-2010.
+  deviations:
+  - 96 per-electrode units per array in place of the paper's isolations.
+- claim: suppfig5-m1-faster
+  outcome: reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:suppfig5-m1-faster
+  notes: M1 rotates faster than PMd in J-array (1.82 against 0.83 Hz) and N-array (1.54 against
+    1.02 Hz), and in ses-20090910 (1.70 against 0.89 Hz), under every variant shown. The paper
+    calls the difference slight; here M1 is 1.5 to 2.4 times faster across the sessions and
+    variants.
+- claim: fig6-velocity-model
+  outcome: not_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig6-velocity-model
+  notes: The velocity model's 6-D R2 ratio is 0.361 (J-array) and 0.255 (N-array), against 0.905
+    and 0.845 for the data, and 0.630 and 0.778 of its conditions rotate counter-clockwise. Its
+    angle distribution peaks at 0.806 pi and 0.361 pi, not below pi/4, so the criterion fails in
+    both datasets. With no lead the peaks are 0.194 pi and 0.417 pi and the ratios 0.362 and 0.337.
+    The part of the claim about the poor fit of M_skew holds; the angle peak depends on the
+    model's open choices.
+  deviations:
+  - The model is simulated here from the dandiset's condition-mean hand kinematics; its lead of
+    100 ms, the time course of preparatory tuning and the modulation depths are choices made here,
+    as the Methods do not give them.
+- claim: fig6-complex-kinematic-model
+  outcome: not_reproduced
+  notebook: reproduce_churchland_2012.ipynb
+  output: claim:fig6-complex-kinematic-model
+  notes: The complex kinematic model's 6-D R2 ratio is 0.082 (J-array) and 0.132 (N-array), 0.289
+    and 0.207 with no lead, and 0.565 and 0.528 of its conditions rotate counter-clockwise. Its
+    angle peaks are 0.861 pi and 0.750 pi (0.806 and 0.917 pi with no lead), not below pi/4, so
+    the criterion fails in both datasets. The poor fit of M_skew holds as the paper reports.
+  deviations:
+  - Simulated here with the Methods' sensitivities; the lead, the preparatory time course and
+    hand positions read as mm are choices made here.
+- claim: fig1-leech-and-walking
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The leech imaging and the walking-monkey recording are not in the dandiset, whose ten
+    files are all maze-task array sessions, and the paper names no other archive for them.
+- claim: fig2-single-neuron-responses
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 469 single-electrode isolations of monkeys A, B, J and N are not in the dandiset, and
+    the paper names no other archive for them.
+- claim: fig3abcd-single-electrode-datasets
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The seven single-electrode datasets (A, B, J1 to J4, N) are not in the dandiset.
+- claim: fig4-emg-no-rotation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: EMG was not recorded for the array datasets (Methods), and the EMG of the single-electrode
+    datasets is not in the dandiset.
+- claim: fig5-generator-model
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The generator model is fitted to deltoid EMG of the single-electrode datasets (J2, J3),
+    which is not in the dandiset.
+- claim: fig6cd-speed-independent-frequency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The speed task of monkeys A and B is not in the dandiset, which holds sessions of
+    monkeys J and N only.
+findings:
+- kind: data_missing
+  statement: The dandiset holds the paper's two array datasets but not the sorted isolations the
+    paper analysed (146 for J-array, 218 for N-array). Its Units table has 192 units per file, one
+    per electrode. The seven single-electrode datasets, the EMG, the leech and the walking-monkey
+    data are not in it either, so six of the paper's main findings cannot be tested.
+- kind: format_error
+  statement: In nine of the ten files (all written by the first conversion) the first entry of
+    units/spike_times_index is the true end of unit 0 modulo 65536. Unit 0 is cut short (in J-array
+    61030 of its 257638 spikes) and its remaining spikes open unit 1,
+    whose times then jump from the end of the session back to its start.
+- kind: format_error
+  statement: In five Nitschke files (ses-20090812, 20090819, 20090910, 20090920 and 20100923) the
+    clock restarts at recording segments after the first, as the conversion offsets only one
+    segment. Trials overlap in time (2094 overlapping pairs in N-array), and every unit's spike
+    times go backwards at each restart, so spikes cannot be placed in trials by time; they can be
+    placed by their storage order, which the notebook shows decodes reach direction in every
+    segment.
+- kind: metadata_error
+  statement: Hand position is stated in metres (with conversion NaN); its values span about -220 to
+    +165 on the scale of the target positions (up to 145) and the median speed peaks at 600 to 730
+    per second during a reach, so they are in mm.
+- kind: metadata_insufficient
+  statement: The hand position ends a median 35 mm (Jenkins) and 52 to 53 mm (Nitschke) below the
+    reached target in y, while the cursor lands on the target; the offset between hand and screen
+    coordinates is not described in the files.
+- kind: metadata_insufficient
+  statement: The Units table carries only the default description ("Autogenerated by NWBFile") and
+    does not say whether its units are sorted neurons, multi-unit activity or threshold crossings.
+    Their number (one per electrode) and rates (8.8 to 300 spikes/s over trial time in the three
+    sessions analysed) are consistent with channel-level activity.
+- kind: metadata_insufficient
+  statement: The dandiset does not say which of its ten sessions are the paper's datasets. Two match
+    the J-array and N-array dates; the other eight (27-condition and two-condition maze sessions,
+    and one 108-condition session) are not described.
+- kind: other
+  statement: The first conversion's code sets the year of every session date to 2009. The file
+    sub-Nitschke ses-20090910 has 108 conditions with the same reached target as N-array (2010) for
+    all of them, and is consistent with the N-9-10-2010 dataset of Supplementary Figure 5; if so,
+    its date is a year early. The other 2009 Nitschke dates may be affected in the same way.
