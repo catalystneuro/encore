@@ -29,14 +29,16 @@ outcomes:
     recorded cells in 42 sessions. By mouse the fraction is 0.108 to 0.386; in the mice that appear
     to be thalamus only it is 0.133 (133 of 1000) against the paper's thalamic 0.336, and in the
     mice that appear dual-site 0.335 (245 of 731). With a concentration threshold of 0.8 or 1.2 the
-    count is 424 or 357. No HD cell is among the units whose spike times were unsorted. The count
+    count is 424 or 357. None of the 34 units with unsorted spike times in these sessions is an HD
+    cell. The count
     passes only with Mouse12-120808 as deposited, where position and spikes do not share a clock and
     no unit passes the criteria. With position realigned by the best shift of each quarter of the
     epoch, that session has 13 HD cells (12 with one constant shift of -2.6 s), and the count is 391
     (390), above the upper bound of 388.3, so the match of the count is fragile. The unit rows
     cannot be brought down to the paper's 1077 cells from the files (1826 rows fire at 0.05 Hz or
     more and 1526 at 0.5 Hz or more; unit ids are 0 to N-1 and carry no shank or cluster number).
-    The split into 242 thalamic and 111 PoS HD cells cannot be tested.
+    The agreement of the count may therefore also be coincidental. The split into 242 thalamic and
+    111 PoS HD cells cannot be tested.
   deviations:
   - Regions pooled, as the units carry no region.
   - The von Mises fit (maximum likelihood fit to the tuning curve as a distribution of angles) and
@@ -98,9 +100,10 @@ outcomes:
     with it at r = 0.20 across 33 sessions. On Poisson surrogates driven by the measured head
     direction and the waking tuning curves, the estimator returns 0.37 of the true mean speed
     (median 37.0 deg/s, as on the data, against a true 99.9), and for the same trajectory played
-    ten times faster it gives a median ratio of 4.99 (quartiles 2.76 to 7.02), not 10. The estimator
-    as implemented here therefore compresses ratios, and the shortfall of 8.33 from tenfold can come
-    from it; how far its bias in SWS matches that of the surrogates is not known.
+    ten times faster it gives a median ratio of 4.99 (quartiles 2.76 to 7.02), not 10. Scaled by
+    that compression the data's 8.33 becomes 16.69, so the data are consistent with a speed-up
+    below, at or above tenfold. The estimator shows that SWS is faster but does not determine the
+    fold; how far its bias in SWS matches that of the surrogates is not known.
   deviations:
   - The paper does not say how the expected and observed cross-correlograms are put on one scale;
     a free scale and offset are fitted here.
@@ -114,9 +117,10 @@ outcomes:
   output: claim:fig2f-rem-similar-to-wake
   measured: 0.87
   notes: The median REM to waking ratio is 0.87 over 1509 pairs (quartiles 0.60 to 1.26), inside
-    0.67 to 1.5, and 0.85 over 2129 pairs under reading (b); by mouse 0.69 to 1.07; the decoder variant gives 1.05. By a Wilcoxon test of the
-    log ratio REM is slower than waking (p = 6.3e-18, median log10 ratio -0.060, about 13%), a
-    test the paper does not make.
+    0.67 to 1.5, and 0.85 over 2129 pairs under reading (b); by mouse 0.69 to 1.07; the decoder
+    variant gives 1.05. By a Wilcoxon test of the log ratio the median REM speed is below the waking
+    one (p = 6.3e-18, median log10 ratio -0.060, about 13%), a test the paper does not make, but REM
+    is faster in 581 of 1509 pairs.
   deviations:
   - The paper names no test for "similar"; the range 0.67 to 1.5 is chosen here.
 - claim: fig4b-noise-correlations
@@ -237,9 +241,11 @@ findings:
     also covers waking in the home cage, and some sessions hold a second exploration or a larger
     second environment. The epoch had to be found from position.
 - kind: format_error
-  statement: In 36 of 40 files one unit's spike times are not sorted. Each such unit holds two
-    sorted runs, each spanning the session, joined at an index of the form k x 65536 - 1; the second
-    run rarely repeats a time of the first. This suggests an error in the conversion.
+  statement: In 36 of 40 files one unit's spike times are not sorted. Each such unit holds exactly
+    two sorted runs, and in all 36 the first run ends at an index of the form k x 65536 - 1. The
+    second run starts within 36 s of the start of the recording and the first between 24 and 13704
+    s, and the two end within 15 s of each other. In 26 units no time of the second run appears in
+    the first; in 10, 821 to 22281 times do. This suggests an error in the conversion.
 - kind: other
   statement: In Mouse12-120808 the position and the spikes do not share a clock. Head-direction
     tuning is best with position shifted by -1.5 s at the start of the exploration and -3.4 s at
@@ -337,8 +343,8 @@ verifications:
     reason: Pairs at 0 ± 15 degrees have median +7.84 Hz2 (110 of 118 positive, p = 5e-19); pairs at 60 ±
       15 degrees median -4.08 Hz2 (35 of 256 positive, p = 4.6e-32). The revised criterion matches the
       Methods formula. In the verifier's simulation of independent cells the measure is biased by about
-      +3.6 Hz2 at 0 degrees and about 0 at 60, the same way as the claimed excess but about a tenth of the
-      observed relative value; bins with a missing LED are dropped before lagging, so some lags join
+      +0.08 (relative) or +3.6 Hz2 at 0 degrees and about 0 at 60, the same way as the claimed excess; on
+      the relative scale this is about a tenth of the observed value (+0.81); bins with a missing LED are dropped before lagging, so some lags join
       non-adjacent times (B5). Reading (b) was not shown (B4).
     response: The lagged products now use only times where the head direction is known at both bins. Added
       reading (b) (4.22 and -1.63 Hz2) and the same measure on Poisson surrogates from the real data with
@@ -467,3 +473,156 @@ verifications:
     response: Not run, as without shanks the same-shank pairs, whose 1 to 5 ms synchrony spike sorting
       distorts, cannot be removed, and the mouse assignment is not shown by the files; the notes now say so.
       Outcome kept.
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with its conclusions and
+    summary, the helper module, the claims file, the attempt record and the README, with the paper.
+    The verifier agreed with all 21 outcomes. Besides the points below, it found that cell 18 gave the
+    shift of the largest contrast as 10 s in 10 sessions where cell 17 shows -10 s in 9 and +10 s in
+    one, and that the README's run time (nine minutes, five streaming) did not match cells 53 and 1;
+    both are corrected, the README from a new run (10.1 min, 322 s loading). It also noted that the
+    record's finding on the unsorted units had no printed output; the new data check prints it, and
+    the finding now gives what it shows (two runs in all 36 units, all broken at k x 65536 - 1, with
+    repeated times in 10).
+  results:
+  - claim: hd-cell-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, because the criterion counts the sessions as deposited. As deposited the count
+      is 378; with Mouse12-120808 realigned it becomes 391, or 390 with a constant shift, both above
+      388.3, so the outcome would drop to not_reproduced. The count passes only because of the session
+      with the clock fault, and the denominators (1731 against 1077) cannot be reconciled, so the
+      count match may be coincidental. Cell 10 and the notes say no HD cell is among the unsorted
+      units, but cell 22 checks units with more than 2^20 spikes, which are not the unsorted units,
+      and the rates of these units were not shown.
+    response: The helper now flags each unit whose spike times were unsorted. A new output in the
+      data check lists the 36 unsorted units with their rates (2.8 to 167.0 Hz, median 58.7), and the
+      HD cell check now uses the flag (0 HD cells among the 34 in sessions with an open-field epoch).
+      Cell 10 and the notes are corrected to match. The conclusion and notes now also say the count
+      match may be coincidental. Outcome kept.
+  - claim: fig2a-rates-preserved
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig2b-pair-correlations-preserved
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig3a-packet-60-degrees
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig2f-sws-tenfold-faster
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees under the criterion. The calibration shows the estimator cannot measure the fold;
+      for a known tenfold it returns 4.99, and scaled by that the data's 8.33 becomes 16.69, so the
+      data are consistent with a ratio at, above or below 10 and the magnitude does not inform. The
+      conclusion, the notes and the README say the shortfall can come from the estimator but do not
+      report 16.69; they should, and should say the fold is not determined.
+    response: The conclusion, the notes, the summary and the README now report the scaled ratio of
+      16.69 and say that the data are consistent with a speed-up below, at or above tenfold and that
+      the fold is not determined. Outcome kept.
+  - claim: fig2f-rem-similar-to-wake
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The word "consistently" in cell 45 overstates the result; the numbers show a
+      median shift, with REM faster in 581 of 1509 pairs, Mouse20 at 1.07 and the decoder variant at
+      1.05.
+    response: Removed "consistently" from the conclusion; it and the notes now give the 581 of 1509
+      pairs where REM is faster, and the conclusion the Mouse20 and decoder values. Outcome kept.
+  - claim: fig4b-noise-correlations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The round-1 reason in the record attached "a tenth" to the wrong number; the
+      point was +0.08 against +0.81 on the relative scale, while +3.6 Hz2 is about half of the
+      observed 7.84 Hz2.
+    response: Corrected the round-1 reason to give +0.08 (relative) and say that the tenth refers to
+      the relative scale. Outcome kept.
+  - claim: decoding-tracks-hd
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: adn-pos-peak-rate
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: adn-pos-hd-information
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: ensemble-sizes
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: fig3a-adn-stronger-than-pos
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: fig3b-packet-coherence
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: fig4c-noise-adn-vs-pos
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: fig4e-ole-covariance
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: fig5b-adn-decoded-tuning
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: fig5e-adn-predicts-pos
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: fig6b-adn-synchrony
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: fig7-adn-pos-connections
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: fig7d-same-preferred-direction
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.
+  - claim: fig7c-adn-triggered-pos-lfp
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 5 confirms that unit ids are 0 to N-1 and that the electrode groups carry
+      only "shankN electrodes" with location "unknown".
+    response: No change needed.

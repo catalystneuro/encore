@@ -12,7 +12,7 @@ pooled, and the claims that compare them are blocked.
 | HD cell rates are correlated between waking and sleep | Reproduced |
 | Pairwise correlations are similar across brain states | Reproduced |
 | Zero-lag correlation crosses zero at about 60 degrees | Reproduced |
-| The internal HD signal is about tenfold faster in slow-wave sleep | Partially reproduced (8.3-fold, with an estimator that gives 5-fold for a known tenfold) |
+| The internal HD signal is about tenfold faster in slow-wave sleep | Partially reproduced (8.3-fold, with an estimator that gives 5-fold for a known tenfold; scaled by that, 16.7-fold, so the fold is not determined) |
 | It is similar in REM sleep and waking | Reproduced |
 | Noise correlations, excess at 0 degrees and dip at 60 degrees | Reproduced |
 | Decoded HD tracks the head in waking | Reproduced |
@@ -24,8 +24,8 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000056-peyrache-2015-01.yaml`](../../attempts/000056-peyrache-2015-01.yaml).
 
-- `reproduce_peyrache_2015.ipynb`: the analysis. It takes about nine minutes, five of them streaming the
-  files.
+- `reproduce_peyrache_2015.ipynb`: the analysis. It took 10.1 minutes in the last run, 322 s of them
+  streaming the files.
 - `hd.py`: loading the files, the open-field epoch, HD cell classification, binned activity, the
   cross-correlogram estimate of angular velocity and a Bayesian decoder. Other notebooks on this
   dandiset can import it.

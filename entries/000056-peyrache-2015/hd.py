@@ -248,13 +248,22 @@ def load_session(path: str, url: str, hd_shift=None) -> dict:
     s["n_spikes"] = np.diff(np.r_[0, index])
     all_spikes = f["units/spike_times"][:]
     s["spikes_sorted"] = True
+    s["unsorted_units"] = []
     units = []
     for k in range(len(index)):
         sp_t = all_spikes[(index[k - 1] if k else 0):index[k]]
-        if len(sp_t) > 1 and np.any(np.diff(sp_t) < 0):
+        unsorted = len(sp_t) > 1 and np.any(np.diff(sp_t) < 0)
+        if unsorted:
+            # Where the times step back, and the span of each sorted run between those points.
+            breaks = np.flatnonzero(np.diff(sp_t) < 0)
+            runs = np.split(sp_t, breaks + 1)
+            s["unsorted_units"].append({
+                "unit": int(s["unit_ids"][k]), "n": len(sp_t), "breaks": breaks.tolist(),
+                "runs": [(len(r), float(r[0]), float(r[-1])) for r in runs],
+                "repeated": int(np.isin(np.concatenate(runs[1:]), runs[0]).sum())})
             s["spikes_sorted"] = False
             sp_t = np.sort(sp_t)
-        u = {"unit": int(s["unit_ids"][k]), "n": len(sp_t),
+        u = {"unit": int(s["unit_ids"][k]), "n": len(sp_t), "unsorted": bool(unsorted),
              "first": float(sp_t[0]) if len(sp_t) else np.nan, "last": float(sp_t[-1]) if len(sp_t) else np.nan}
         for key in STATES:
             if key in s["states"]:
