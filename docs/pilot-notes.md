@@ -1262,3 +1262,75 @@ give, and fixed p-value thresholds that become stricter with fewer cells;
 `measured` when no reading matches; no way to act on a check that shows a
 criterion is not diagnostic; and a corrupt stream found after the criteria
 were written and some results seen.
+
+### 000003, Senzai et al. 2017
+
+Fifteen claims reproduced, eleven partially, three not reproduced and two
+blocked, all on the dandiset. Round 1 gave its own outcome for each claim
+without seeing the record and agreed with all 31; round 2 agreed again and
+nothing was proposed, so there was no third round. The paper reports the
+physiological properties and behavioral correlates of granule cells and
+mossy cells in the mouse dentate gyrus. The unit counts and classification,
+firing rates across wake, NREM and REM, theta and gamma modulation,
+recruitment by dentate spikes, monosynaptic granule to mossy cell pairs,
+place fields and remapping in the T-maze and open field, and depth (on the
+17 files that give each unit's shank) were tested. `gc-mc-distance` and
+`gc-backpropagation` are blocked as `metadata_insufficient`, because no file
+gives site coordinates; the second revision found the stored channel order
+consistent with depth, which makes them testable on the 17 files, but left
+that to a new attempt. Some outcomes rest on weak ground: the phase part of
+`theta-modulation` holds on one cut of the cycle only, and the spike-count
+corrected comparison gives P = 0.00056 against the paper's P < 0.0001; the
+permutation test for `pv-remap` gives P = 0.32; the overlap of 0.31 in
+`inheritance-tmaze` is at chance (median 0.38); `gc-narrower-waveform` on all
+files is mostly driven by truncated waveforms, and on the wide-band signal of
+the 17 files gives P = 0.017 unfiltered and P = 0.4 after a 300 Hz
+high-pass; and the pair-based claims rest on automatic detections, 65 pairs
+against the paper's 32.
+
+The dandiset was converted by CatalystNeuro (Cody Baker of CatalystNeuro is
+a contributor). In 24 files the end index of the first unit is short by a
+multiple of 65,536 spikes (k = 1 to 7), and the missing spikes open the
+second unit's train, which looks like an integer overflow at conversion; the
+loader moves them back and reports each repair. In the 17 files with the
+wide-band signal, the electrodes table's map of columns to shanks and sites
+disagrees with the data: a unit's largest spike lies on the shank the units
+table gives for 45% of units and on the table's own site for 9%, and the DS2
+amplitude along the table's site numbers crosses zero more than once on 43
+of 64 shanks; the units' `electrode_group` and stored waveform channels fit
+one fixed map in all 4 mice, so the error is in the table. The authors'
+curated monosynaptic connections (`MonoSynConvClick.mat`) were not
+converted, so Figures 3, 4 and 7 cannot be checked on their pairs. Other
+findings: the genotypes in the files (6 SST-Cre, 5 Drd2-Cre::Ai35, 4
+POMC-Cre::Arch, 1 POMC-Cre::Ai35) do not match the paper's (7 SST-Cre, 5
+DRD2-Cre::Ai35, 3 POMC-Cre::Ai35 and 1 wild type); 83 of 101 files do not say
+which shank each unit was on and no file gives site coordinates, and the
+units table has two layouts; the stored waveforms are about 5 times larger
+than the same spikes in the wide-band signal, consistent with ADC counts read
+as microvolts, and their 1.6 ms window cuts off the peak of 43% of GC, 67%
+of MC and 78% of CA3 waveforms; the dandiset holds 568 mossy cells and 609
+granule cells against the paper's 500 and 586, and 237 units labelled
+`missing`; the T-maze position series and the states `quiet` and `transit`
+are not described; the interneuron labels do not say whether a unit is in
+the dentate gyrus or CA3; one light-pulse series holds 24,286 duplicate
+times among 89,086; seven dates hold two files of one mouse that are
+separate recordings, without saying what they are; and the paper gives a
+burst index threshold of 1.2 in the Methods and 1.8 in the Figure 1A legend.
+
+The electrodes-table finding came in the first revision, after the verifier
+asked whether waveform channels map to the shank's electrodes; the criteria
+of `mc-deeper` and `gc-mc-classification` were then changed to take each
+unit's site from the wide-band signal, with what had been seen recorded in
+the claims file, and both stayed reproduced. Untracked dotfiles and a
+`scripts/` directory that the author did not create appeared in the
+repository during the run and were left alone. The author's points on the
+protocol: preliminary results printed while building the helper before the
+criteria were written; no rule on deposited labels against re-running the
+paper's classification; where to record conversion code read when no
+analysis code is linked; whether to repair a detectable format error; the
+10% rule giving zero tolerance for a reported zero; dependents of partially
+reproduced claims, which the `depends_on` rule does not cover; metadata
+found after the criteria were written; multiple readings that make ambiguous
+claims pass easily; clock checks for continuous sessions without trial
+tables; counting the same unit across days; and claims citing supplementary
+figures that were not available.
