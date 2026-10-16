@@ -1,0 +1,302 @@
+schema_version: 1
+id: 000067-fujisawa-2008-01
+dandiset: "000067"
+dandiset_version: 0.250624.0419
+paper: doi:10.1038/nn.2134
+date: 2026-10-16
+entry: 000067-fujisawa-2008
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: Channel map of the recordings (channels 1-64 prefrontal probe, 65-96 CA1 probe, 97 and 98
+    the right and left nose-poke sensors), the meaning of the SessionNP trial columns, the note
+    that only correct trials are listed, the session table (task of each session, EE.188 as the
+    session of Figures 2a and 3d), and the "Cells" rule of a peak rate above 1 Hz. From the CRCNS
+    pfc-2 data description, version 0.7 (2021-07-14), a public document of the same recordings.
+    The data themselves on CRCNS need an account and were not used.
+  source: doi:10.6080/K01V5BWK (https://crcns.org/files/data/pfc-2/crcns_pfc-2_data_description.pdf)
+- what: The conversion code of the dandiset, read to interpret the files (which columns of the
+    position file became the two position series, which SessionNP columns became the trial
+    columns, and that every shank's clusters were read with multi-unit clusters kept). Not
+    linked by the paper or the dandiset; no code of the paper's analysis is published.
+  source: https://github.com/catalystneuro/buzsaki-lab-to-nwb at commit
+    5f6a3750fffd999c4757d8a198cba6007f85fb12 (buzsaki_lab_to_nwb/fujisawa)
+- what: The reader the conversion used (NeuroscopeSortingExtractor), read for the order of units
+    and the handling of cluster 1 (multi-unit activity, kept and put first in each shank).
+  source: https://github.com/SpikeInterface/spikeextractors at commit
+    d24335cc2fa6e407469b790dc8fea2fdadb2b2a3
+outcomes:
+- claim: channel-region-link
+  outcome: partially_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:channel-region-link
+  notes: Records are matched by channel number. In rats EE and FF the CRCNS map holds in every
+    session; the CA1 channels have a theta ratio 1.9 to 2.7 times that of channels 1 to 64, and
+    the more active sensor during the nose poke is the trial's side in 0.97 to 1.00 of trials. In
+    rat GG channels 97 and 98 are not sensors (agreement 0.35 to 0.42); the sensors are on 65 and
+    66 and the CA1 probe on 70 to 101, and with that correction both checks hold in every session
+    (agreement 1.00). The sensor on 66 is active on trials labelled Right, so in GG the order of
+    the sensors, or the side labels, is reversed relative to EE and FF. Channels 1 to 64 carry no
+    hippocampal theta in any rat, so the prefrontal probe is placed as the description says in
+    all three rats; every claim that uses PFC units depends on that part, which holds.
+  deviations:
+  - The map is used with the per-rat correction found in the data, not as published.
+  - The sensor check of EE.088 uses its LFP only; it has no wideband signal for the theta check.
+- claim: rats-and-units
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:rats-and-units
+  measured:
+  - 3
+  - 417
+  notes: The dandiset holds three rats (EE, FF, GG), against four. The eight analysed sessions hold
+    417 PFC single units under reading (a), 346 under (b) and 491 under (c), all outside 633 plus
+    or minus 63. The 350 units of EE.088 cannot be placed on a probe, and EE.152, EE.165 and
+    EE.188, working memory sessions in the CRCNS table, are not in the dandiset; the paper does not
+    say which sessions its 633 units come from, nor whether units recorded on several days were
+    counted once.
+  deviations:
+  - Units are counted per session; the paper's way of counting is not stated.
+  - Well-isolated units are selected by a refractory rule chosen here.
+- claim: task-performance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The trial table lists correct trials only (the CRCNS description of SessionNP, from which
+    the conversion built the table), so the fraction of correct trials cannot be computed. The position has no y coordinate, so the choice on other trials cannot be
+    recovered from the path. Error trials are not in the dandiset, and the CRCNS data need an
+    account.
+- claim: fig2c-active-fraction
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig2c-active-fraction
+  notes: Per-rat medians of the session means are 10.2% (EE), 19.7% (FF) and 6.2% (GG); EE fits the
+    layer 2/3 value and FF the layer 5 value, GG fits neither. The ratio of the largest to the
+    smallest position-bin mean is 1.16 to 1.88 in seven sessions and 2.57 in GG.149. Neither part
+    of the criterion holds for every rat; both hold for EE and FF. GG's sessions have 18 or 19 PFC
+    single units each.
+  deviations:
+  - The layer of each rat is not known; values are matched rat by rat under the layer readings.
+  - The threshold for "relatively constant" (a factor of 2) is chosen here.
+- claim: fig2-field-size
+  outcome: partially_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig2-field-size
+  measured:
+  - 0.27
+  - 0.196
+  notes: Reading (a), 346 units, mean 0.270 and s.d. 0.196; (b) 0.281 and 0.206; (c) 0.331 and
+    0.220. The mean is within tolerance under every reading and the s.d. under none (0.17 plus or
+    minus 0.017). With peak thresholds from 0 to 5 Hz the mean of (a) is 0.254 to 0.330 and the
+    s.d. 0.189 to 0.243. Per rat the means are 0.221 (EE), 0.322 (FF) and 0.272 (GG).
+  deviations:
+  - The mean's tolerance is the paper's stated s.d. of the neurons, as the protocol asks, which
+    accepts a wide range of means; the s.d. carries the test.
+  - The 1 Hz peak rule is the CRCNS "Cells" rule, not the paper's.
+  - The paper does not say how the 50% boundaries are taken or which trajectory is used; three
+    readings are shown.
+- claim: fig2b-trajectory-selective
+  outcome: partially_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig2b-trajectory-selective
+  notes: Central arm, 22.9% (EE), 24.5% (FF) and 26.2% (GG) of units with a peak of at least 1 Hz
+    (24.0% of 346 pooled), against 0.9% with relabelled trials (Fisher p = 7.3e-24); every rat is
+    above the 14.4 to 19.8% range. Side arms, 51.6%, 59.9% and 52.4%, above both layer values.
+    Per session the central-arm fraction is 1.9% to 69.2%. With the s.d. band, 24.3% and 59.8%
+    pooled. The procedure's chance rate (0.9% for each segment) is below the global 5%, as
+    expected for a segment of the track. The selective fractions are higher than the paper's in
+    every rat, so units selective by this test are more common here.
+  deviations:
+  - The number of permutations (1000) and the 101-point grid are chosen here.
+  - Layers are matched rat by rat, as the layer of each rat is not known.
+  - In rat GG the side labels may be swapped (see channel-region-link); this does not change a
+    left-right test.
+- claim: traj-diverge
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The two position series are the x coordinates of the two head LEDs (the conversion took
+    columns 1 and 3 of the position file), and the second is zero in every file. The y coordinate,
+    along which the side arms differ, is not in the dandiset; only the linearized position is,
+    which by construction does not separate the arms.
+- claim: odor-nosepoke
+  outcome: partially_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:odor-nosepoke
+  measured: 37.8
+  notes: 37.8% of 397 units (Mann-Whitney P < 0.05) against 4.0% with relabelled trials (Fisher
+    p = 5.5e-35); outside 20 to 30%. A t-test gives 28.5%, which would be within, but the test was
+    fixed beforehand. Per rat 34.9% (EE), 50.3% (FF), 11.1% (GG). Odor and side are the same
+    variable here, as only correct trials are listed, so the difference can come from the odor or
+    from the coming choice; the paper's Supplementary Figure 6 analysis of that point was not
+    available.
+  deviations:
+  - The paper names no test; a Mann-Whitney test of per-trial rates was chosen.
+  - The nose-poke period is from the start of the first nose poke to the end of the last (median
+    4.66 s), as the trial table gives; the paper's window is not stated in the main text.
+- claim: fig3-connection-rates
+  outcome: partially_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig3-connection-rates
+  measured:
+  - 1.131
+  - 0.898
+  - 0.233
+  notes: 31754 ordered pairs; connections 1.131%, excitatory 0.898%, inhibitory 0.233%. Only the
+    inhibitory rate is within tolerance. Excitatory connections are 4.01% of same-shank pairs and
+    0.35% of pairs across shanks; per rat the excitatory rate is 0.84% (EE), 1.05% (FF), 0.94% (GG).
+    The Poisson screen passed 857 unordered pairs to the Monte Carlo test, and none of the 800
+    unscreened pairs tested anyway was significant. 40 unordered pairs (0.252%) are connected both
+    ways (paper 0.17%). Counting peaks of any width gives 0.938% excitatory. The excess of
+    same-shank peaks may include pairs of clusters split from one neuron, which the paper's
+    curated units may not contain.
+  deviations:
+  - Bins of 1 ms (not stated in the main text) and a Poisson screen before the Monte Carlo test.
+  - A trough beside a peak in the same direction is not counted as inhibition (chosen here).
+  - The set of well-isolated units is selected here, not by the paper.
+- claim: fig3-cell-classes
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig3-cell-classes
+  measured:
+  - 37.9
+  - 3.1
+  - 11.92
+  - 7.3
+  notes: Of 417 units, 37.9% putative pyramidal and 3.1% putative interneurons, and 21 units have
+    outgoing connections of both kinds. The ratio is 11.92 plus or minus 7.46 over the five
+    sessions with an interneuron (pooled 12.15, mean of rats 12.96), against 2.82 plus or minus
+    0.51. Of 124 targets of excitatory connections 7.3% are putative interneurons (20.2% have any
+    inhibitory connection), against 50.7%. 54 of the 74 inhibitory connections come from units
+    that also excite others. No value is within tolerance under any reading; the shortfall of
+    interneurons drives the ratio and the targets.
+  deviations:
+  - Units with both kinds of connection are counted in neither class (chosen here).
+- claim: fig3f-distance
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig3f-distance
+  notes: Same shank 4.60% against 0.52% across shanks (Fisher p = 1.1e-89), 61.0% of connections
+    on the same shank, and 8 connections at 1000 micrometres or more (largest 1400). The Spearman
+    correlation over 0 to 1400 micrometres is -0.619, p = 0.102, so the second condition fails and
+    the criterion gives not reproduced. The probability falls from 4.60% at 0 to 0.24% at 600
+    micrometres and is 0.17 to 0.19% from 800 to 1200; the 1400 bin (2 of 310 pairs, 0.645%)
+    breaks the rank order. Over 0 to 1200 micrometres rho = -0.964, p = 0.00045. The fall with
+    distance is present; the outcome comes from the test fixed beforehand on eight points.
+  deviations:
+  - Distance is the shank separation only; positions within a shank were not estimated.
+- claim: fig4-position-dependence
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig4-position-dependence
+  measured: 3.5
+  notes: Reading (a) 10 of 285 excitatory pairs (3.5%); reading (b) 6 (2.1%); rank band 1.4% and
+    1.8%. The median pair has 7 coincidences during runs (range 0 to 442); of the 28 pairs with at
+    least 50, 21.4% are significant, of the 13 with at least 100, 7.7%. The paper's pairs may have
+    had more spikes, or its runs may have been defined over more of the trial; the low fraction
+    here is consistent with low power.
+  deviations:
+  - The band is mean plus c times s.d. of the surrogates, not the Methods' rank band, because the
+    rank band cannot reach a one-sided 0.01 with 1000 surrogates on 101 points (it is empty when
+    more than 1% of data sets reach the extreme rank somewhere). This was found after a first run
+    of the rank version gave 1.0% and a synthetic test showed that it could not detect a strong
+    position-limited coupling; the rank result is shown as a variant.
+  - Event positions are kept at the original presynaptic spike in the surrogates.
+- claim: fig6-facilitation-depression
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig6-facilitation-depression
+  measured:
+  - 4.9
+  - 15.5
+  notes: Of 284 excitatory pairs with enough spikes, 14 (4.9%) depressing and 44 (15.5%)
+    facilitating. Facilitation is above chance (binomial p = 3.5e-11), depression is not (p =
+    0.56). Overall later spikes transmit more than first spikes (median 0.0099 against 0.0068,
+    Wilcoxon p = 6.1e-08). With at least 50 or 200 spikes of each kind, 5.0 to 5.3% depressing and
+    15.4 to 15.9% facilitating. The paper's measure (rate-normalized peak height) was not
+    available, and a measure that normalizes by the postsynaptic rate in each condition could
+    give a different balance.
+  deviations:
+  - Transmission measured as excess spikes from 1 to 4 ms over the jitter expectation, chosen
+    here in place of the paper's rate-normalized peak height.
+  - Later spikes are any spike within 40 ms of the previous one (the Figure 6 legend), not only
+    spikes inside trains that began after 200 ms of silence.
+- claim: fig7-supralinear
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig7-supralinear
+  notes: 41 satellites, 40 with at least 20 two-partner events; 15 (38%) supralinear; median excess
+    0.0145 for one partner and 0.0197 for two; Wilcoxon p = 0.993. Two coincident partners
+    transmit more than one, but less than twice as much. With 20 ms events, 29% supralinear (p =
+    0.998). The paper had 14 satellites; its definition of a satellite and of transmission
+    probability is in the supplementary information, which was not available.
+  deviations:
+  - Satellites, events and the excess measure are defined here.
+- claim: fig3-trajectory-by-class
+  outcome: not_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:fig3-trajectory-by-class
+  notes: EE, 58.5% of 94 putative pyramidal cells and 60.0% of 5 interneurons are trajectory
+    specific; FF, 66.7% of 57 and 62.5% of 8; GG, 14.3% of 7 and no interneuron. Chance is 0.0 to
+    2.5%. FF matches the layer 2/3 values within 10%, EE matches neither layer, and GG cannot meet
+    the criterion without interneurons. Large fractions of both classes are trajectory specific in
+    EE and FF, which is the qualitative part of the claim; the interneuron counts are small, as
+    fig3-cell-classes found few interneurons.
+  deviations:
+  - Layers are matched rat by rat; trajectory specificity is the test of
+    fig2b-trajectory-selective over the whole track.
+- claim: ee188-example-session
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The CRCNS description names EE.188 (day EE0708) as the session of Figures 2a and 3d, and
+    Figure 5 uses the same session; the dandiset has no file of that day, nor of EE.152 and EE.165.
+    The CRCNS copy needs an account. The example cell numbers cannot be matched to the dandiset's
+    units in any case, as its units carry no original cluster numbers.
+findings:
+- kind: data_missing
+  statement: The dandiset holds three rats (EE, FF, GG); the paper recorded four. Of the 13 working
+    memory sessions in the CRCNS session table, EE.152, EE.165 and EE.188 are not in the
+    dandiset, and EE.210 has no trial table or position. EE.188 is the paper's example session
+    (Figures 2a, 3b to 3d, 4 and 5).
+- kind: metadata_insufficient
+  statement: The units table holds spike times only. It has no channel, shank, brain region, cell
+    type or quality label, and mixes prefrontal units, CA1 units, multi-unit clusters (cluster 1 of
+    each shank, kept by the conversion) and clusters of the sensor signals. Units can be placed
+    only from their waveforms in the wideband signal, which EE.042 and the ten sessions of
+    2008-06-27 (EE.080 to EE.089, among them the working memory session EE.088) do not have.
+- kind: metadata_insufficient
+  statement: Electrode locations are "unknown", coordinates are missing and impedances are -1. The
+    electrode groups "shank1" to "shank13" are cuts of eight consecutive channels, whatever the
+    probe, so they do not identify the prefrontal shanks, the CA1 shanks or the sensor channels.
+    The layer recorded in each rat is not stated.
+- kind: metadata_error
+  statement: In rat GG the channel order differs from the CRCNS description. The nose-poke sensors
+    are on channels 65 and 66 (1-based) and the CA1 probe on 70 to 101, where the description gives
+    97 and 98 and 65 to 96. The sensor on 66 is active on trials labelled Right, the reverse of the
+    order in rats EE and FF, so either the sensors or the trial side labels of rat GG are swapped.
+- kind: metadata_error
+  statement: The trial table's stop_time is the end of the last nose poke, the paper's trial start,
+    and reward_time is the paper's trial end; the column left_or_right carries the description of
+    reward_time ("Time when subject began consuming reward."). Only correct trials are listed,
+    which the files do not say.
+- kind: metadata_error
+  statement: The two "(x,y) coordinates" series SpatialSeries1 and SpatialSeries2 are the x
+    coordinates of the two head LEDs, in pixels although stated in metres, and the second is zero
+    in every file; the y coordinates are not in the dandiset. The linearized position is stated in
+    metres but runs from 1 (trial start) to 2 (reward), with 0 outside trials.
+- kind: format_error
+  statement: In six files (EE.049, EE.088, EE.196, FF.103, FF.130, GG.069) the spike times of unit 1
+    are not in ascending order. In EE.049 and FF.103, examined in detail, they are two sorted runs
+    one after the other; in the five analysed files the unit is a multi-unit cluster.
+- kind: other
+  statement: GG.063, a spontaneous alternation session in the CRCNS table, has a trial table with
+    left and right trials like the working memory sessions; the files do not say which task a
+    session is.
+- kind: metadata_insufficient
+  statement: The session description of every file is the paper's abstract, and session start
+    times are dates at midnight; the files do not say which sessions are sleep, test, spontaneous
+    alternation or working memory sessions.

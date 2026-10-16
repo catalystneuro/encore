@@ -1,0 +1,321 @@
+# Claims for Fujisawa, Amarasingham, Harrison & Buzsaki (2008) on dandiset 000067.
+# Source: the author manuscript in PubMed Central (PMC2562676), full text of the Results,
+# figure legends and Methods. The supplementary information (which defines some measures, for
+# example the rate-normalized peak height of Figure 6 and the satellites of Figure 7) could not
+# be retrieved: PubMed Central and the publisher answered with a reCAPTCHA page.
+#
+# What had been seen when these criteria were written: the file list and metadata of every
+# file; the contents of the units, trials, position and electrode tables; spikes per unit and
+# firing rates; the shank and region of each unit from its mean wideband waveform; the
+# refractory violations used to flag multi-unit clusters; the nose-poke sensor channels; the
+# theta ratio of every channel. In addition, a timing run of the jitter test for monosynaptic
+# connections printed, per session, the number of PFC single units, of ordered pairs, and of
+# excitatory and inhibitory connections (293 and 73 of 31754 ordered pairs in total). That run
+# came before the criteria of fig3-connection-rates, fig3-cell-classes and fig3f-distance were
+# written; no method choice of those claims was changed after it. No other claim's analysis had
+# been run.
+#
+# Fixed for every claim that uses units. Sessions: the eight working memory sessions that have
+# a trial table and the wideband signal (EE.049, EE.196, FF.103, FF.130, FF.167, GG.069,
+# GG.097, GG.149). EE.088 has no wideband signal, so its units cannot be placed on a probe, and
+# is used only for checks of the trial table. PFC single units: units whose mean wideband
+# waveform (800 to 5000 Hz) is largest on one of the 64 channels of the prefrontal probe, with
+# at most 2% of inter-spike intervals shorter than 2 ms. Units are not matched across sessions;
+# each session's units are counted as distinct, and results are also given per session. The
+# trial runs from the end of the last nose poke (the file's stop_time) to the start of reward
+# consumption (reward_time), positions 0 to 1 (the file's linearized position minus 1).
+#
+# Layers: the paper recorded layer 2/3 in three rats and layer 5 in one. Neither the dandiset
+# nor the CRCNS description says which rat is which, so claims with values by layer allow
+# each of the three rats here to be either layer, with at most one rat in layer 5, and are
+# judged rat by rat.
+schema_version: 1
+dandiset: "000067"
+paper: doi:10.1038/nn.2134
+claims:
+- id: channel-region-link
+  statement: The dandiset's recording channels can be assigned to the prefrontal probe, the CA1
+    probe and the nose-poke sensors by the channel map of the CRCNS pfc-2 description of the
+    same recordings (channels 1 to 64 prefrontal, 65 to 96 CA1, 97 right and 98 left nose-poke
+    sensors), and the data agree with that map.
+  source: Methods (8-shank, 64-site probe in mPFC); CRCNS pfc-2 data description, version 0.7
+  data: with_labels
+  criterion: Two checks in each of the eight sessions with the wideband signal, and the sensor
+    check also in EE.088. (i) The median theta ratio (6 to 10 Hz over 1 to 40 Hz power, during
+    trials) of the CA1 channels is above that of channels 1 to 64. (ii) In at least 90% of
+    trials the sensor channel with more activity during the nose poke is the one of the trial's
+    side. Reproduced when both hold in every session with the CRCNS channel numbers; partially
+    reproduced when both hold in every session only with a per-rat correction of the channel
+    numbers found in the data; not reproduced otherwise.
+- id: rats-and-units
+  statement: 633 well-isolated units were recorded from the mPFC of four rats.
+  source: Results, first paragraph
+  data: with_labels
+  depends_on:
+  - channel-region-link
+  expected:
+  - quantity: rats
+    value: 4
+    tolerance: 0
+  - quantity: well-isolated mPFC units
+    value: 633
+    tolerance: 63.3
+  criterion: Readings of the unit count, all over the eight sessions; (a) PFC single units; (b)
+    PFC single units with a peak rate of at least 1 Hz during runs; (c) all units placed on the
+    prefrontal probe, multi-unit clusters included. Reproduced when the dandiset holds four
+    rats and one reading is within tolerance; partially reproduced when only one of the two
+    holds; not reproduced when neither does.
+- id: task-performance
+  statement: Rats performed the odor-place matching task at 92% correct (91.9% in the recording
+    sessions).
+  source: Results, second section; Methods, Behavioral task
+  expected:
+    quantity: correct trials
+    value: 91.9
+    tolerance: 9.19
+    unit: percent
+- id: fig2c-active-fraction
+  statement: About 10% (layer 2/3) and 20% (layer 5) of the recorded neurons fire at least one
+    spike in any 100 ms window, a fraction that is relatively constant along the maze.
+  source: Results, first section; Figure 2c; Discussion
+  data: with_labels
+  depends_on:
+  - channel-region-link
+  criterion: Per session, the mean over the 100 ms windows tiling each run of the fraction of
+    PFC single units with at least one spike, and the same mean in ten position bins of 0.1.
+    Per rat, the median over its sessions. Reproduced when each rat's value is within 10% of
+    10% (9 to 11%) or of 20% (18 to 22%), at most one rat at 20%, and in every session the
+    largest of the ten position-bin means is at most twice the smallest (the threshold for
+    "relatively constant" is chosen here). Partially reproduced when one of the two parts holds.
+- id: fig2-field-size
+  statement: Neurons are active over similar standardized distances of the maze, 0.27 (62 cm)
+    plus or minus 0.17 (39 cm) (mean and s.d.), from the 50% boundaries of the peak firing rate.
+  source: Results, first section; Figure 2a
+  data: with_labels
+  depends_on:
+  - channel-region-link
+  expected:
+  - quantity: mean field size
+    value: 0.27
+    tolerance: 0.17
+    unit: normalized length
+  - quantity: s.d. of field size
+    value: 0.17
+    tolerance: 0.017
+    unit: normalized length
+  criterion: Occupancy-normalized rate maps on 100 bins of the normalized track, by side,
+    smoothed with the paper's Gaussian kernel (sigma 0.05). Units are PFC single units with a
+    peak rate of at least 1 Hz on either side (the "Cells" rule of the CRCNS description; the
+    paper states none). The tolerance of the mean is the paper's stated spread, as the protocol
+    asks; the s.d. takes 10%. Readings; (a) the contiguous run of bins at or above half the peak
+    around the peak, on the side with the higher peak; (b) the same on each side, each side a
+    separate value; (c) all bins at or above half the peak on the side with the higher peak.
+    Reproduced when, under one reading, both values are within tolerance; partially reproduced
+    when only the mean is.
+- id: fig2b-trajectory-selective
+  statement: The fraction of neurons with significantly different firing on left and right
+    trials is 16% (layer 2/3) and 18% (layer 5) in the central arm (positions 0 to 0.3), where
+    the trajectories overlap, and 22% (layer 2/3) and 40% (layer 5) in the side arms (0.5 to
+    1).
+  source: Results, first section; Figure 2b; Methods, permutation tests and global bands
+  data: with_labels
+  depends_on:
+  - channel-region-link
+  criterion: The Methods' test; per-trial kernel densities of spike positions (sigma 0.05) on
+    101 points of the track, difference of left and right means, 1000 permutations of the trial
+    labels, global band at alpha 0.05. A unit is selective in a segment when the difference
+    breaks the global band anywhere in it. Units as in fig2-field-size. The chance rate is the
+    same procedure on one random relabelling of each unit's trials. Per rat, reproduced when the
+    central-arm fraction is within 14.4 to 19.8% (the range 16 to 18% widened by 10% of each
+    bound) and the side-arm fraction is within 10% of the value of one layer (19.8 to 24.2% for
+    layer 2/3, 36 to 44% for layer 5), with at most one rat in layer 5. The claim is reproduced
+    when every rat is; partially reproduced when the pooled central-arm fraction is above the
+    chance fraction (one-sided Fisher exact test, p < 0.05) but not every rat matches; not
+    reproduced otherwise.
+- id: traj-diverge
+  statement: Left and right trajectories overlap in the central arm and begin to differ
+    significantly at position 0.3.
+  source: Results, first section; Supplementary Figure 3
+- id: odor-nosepoke
+  statement: About one quarter of the neurons fire at significantly different rates (P < 0.05
+    per cell) during nose poking for the two odors.
+  source: Results, first section; Supplementary Figure 6
+  data: with_labels
+  depends_on:
+  - channel-region-link
+  expected:
+    quantity: fraction of neurons with odor-dependent rates
+    value: 25
+    tolerance: 5
+    unit: percent
+  criterion: The trial table holds correct trials only, so the odor is given by the side
+    (chocolate for one side, cheese for the other). Per PFC single unit with at least 10 spikes
+    in nose-poke periods, its rate in each trial from the start of the first nose poke to the
+    end of the last; left against right trials by a two-sided Mann-Whitney test at P < 0.05 (the
+    paper names no test). The tolerance is wider than 10% because the paper says
+    "approximately". Reproduced when the pooled fraction is within tolerance; partially
+    reproduced when it is outside but above the chance fraction from one random relabelling of
+    each unit's trials (one-sided Fisher exact test, p < 0.05); not reproduced otherwise.
+- id: fig3-connection-rates
+  statement: Of all ordered pairs of simultaneously recorded neurons, 0.79% had short-latency,
+    narrow peaks or troughs in their cross-correlograms (0.55% excitatory, 0.24% inhibitory),
+    found with a jitter test.
+  source: Results, second section; Figure 3a and 3e; Methods, identifying monosynaptic
+    interactions
+  data: with_labels
+  depends_on:
+  - channel-region-link
+  expected:
+  - quantity: ordered pairs with a connection
+    value: 0.79
+    tolerance: 0.079
+    unit: percent
+  - quantity: excitatory
+    value: 0.55
+    tolerance: 0.055
+    unit: percent
+  - quantity: inhibitory
+    value: 0.24
+    tolerance: 0.024
+    unit: percent
+  criterion: Every ordered pair of PFC single units in a session, whole session. Cross-
+    correlogram in 1 ms bins from -5 to 5 ms (the bin width is chosen here); 1000 surrogates
+    with every spike jittered uniformly by +-5 ms; global bands at 99% from the maximum and
+    minimum of each surrogate over the window. Excitatory when a bin from 1 to 4 ms is above the
+    upper band and the run of bins above it is at most 2 ms wide; inhibitory when a bin from 1
+    to 4 ms is below the lower band and the pair is not excitatory in that direction. To save
+    time, pairs whose correlogram is within the pointwise 1% Poisson quantiles of the exact
+    jitter mean in every test bin are not given the Monte Carlo test; a random sample of them
+    is, to show the screen misses nothing. Reproduced when all three rates are within
+    tolerance; partially reproduced when one or two are; not reproduced otherwise.
+- id: fig3-cell-classes
+  statement: By their connections, 32.5% of units are putative pyramidal cells and 12.5%
+    putative interneurons, a ratio of 2.82 plus or minus 0.51 (s.d.), and 50.7% of the
+    postsynaptic targets of putative excitatory cells themselves inhibit other neurons.
+  source: Results, second section
+  data: with_labels
+  depends_on:
+  - fig3-connection-rates
+  expected:
+  - quantity: putative pyramidal cells
+    value: 32.5
+    tolerance: 3.25
+    unit: percent
+  - quantity: putative interneurons
+    value: 12.5
+    tolerance: 1.25
+    unit: percent
+  - quantity: pyramidal to interneuron ratio
+    value: 2.82
+    tolerance: 0.51
+  - quantity: targets of excitatory cells that are interneurons
+    value: 50.7
+    tolerance: 5.07
+    unit: percent
+  criterion: A unit is a putative pyramidal cell when it has at least one excitatory outgoing
+    connection, a putative interneuron when it has at least one inhibitory one; a unit with both
+    is counted in neither. Fractions over all PFC single units. The ratio's tolerance is the
+    paper's s.d. Readings of the ratio; (a) the mean of per-session ratios (sessions with at
+    least one interneuron); (b) the pooled ratio; (c) the mean of per-rat pooled ratios. Targets;
+    distinct postsynaptic units of excitatory connections that are putative interneurons.
+    Reproduced when all four values are within tolerance under one reading; partially
+    reproduced when two or three are; not reproduced otherwise.
+- id: fig3f-distance
+  statement: Most connected pairs were recorded on the same shank, and the probability of a
+    connection falls with the distance between the neurons, though connections were found up to
+    1200 micrometres apart.
+  source: Results, second section; Figure 3f
+  data: with_labels
+  depends_on:
+  - fig3-connection-rates
+  criterion: Distance between two units taken as 200 micrometres times the number of shanks
+    between them (the probe's shank spacing; positions within a shank are not used). Reproduced
+    when the connection probability (excitatory or inhibitory, ordered pairs) is higher on the
+    same shank than across shanks (two-sided Fisher exact test, p < 0.05), the Spearman
+    correlation of probability with shank distance over distances 0 to 1400 micrometres is
+    negative with p < 0.05, and some connection is at least 1000 micrometres apart; partially
+    reproduced when the first two hold.
+- id: fig4-position-dependence
+  statement: Out of 343 excitatory monosynaptic pairs, 67 showed position dependence of their
+    short-latency coincidences in the maze (P < 0.01), beyond what the firing rates explain.
+  source: Results, third section; Figure 4; Methods, identifying position dependence
+  data: with_labels
+  depends_on:
+  - fig3-connection-rates
+  expected:
+    quantity: excitatory pairs with position-dependent coincidences
+    value: 19.5
+    tolerance: 1.95
+    unit: percent
+  criterion: For each excitatory pair, coincident events (postsynaptic spike 1 to 4 ms after a
+    presynaptic spike) during runs, located at the presynaptic spike; kernel density (sigma
+    0.05) on 101 points; 1000 surrogates with both trains jittered by +-5 ms; one-sided global
+    band at 0.01. Readings; (a) left and right trials together, significant excess anywhere on
+    the track; (b) left and right trials tested separately, significant in either. Reproduced
+    when the fraction is within tolerance under one reading; not reproduced otherwise. The
+    fraction of the track that is significant is reported for every pair.
+- id: fig6-facilitation-depression
+  statement: About equal fractions of connected pairs show firing pattern-dependent depression
+    (12.7%) and facilitation (10.7%), comparing the transmission of the first spike of a train
+    with that of later spikes.
+  source: Results, fourth section; Figure 6c
+  data: with_labels
+  depends_on:
+  - fig3-connection-rates
+  expected:
+  - quantity: depressing pairs
+    value: 12.7
+    tolerance: 1.27
+    unit: percent
+  - quantity: facilitating pairs
+    value: 10.7
+    tolerance: 1.07
+    unit: percent
+  criterion: Excitatory pairs with at least 20 first spikes (after at least 200 ms of
+    presynaptic silence) and 20 later spikes (less than 40 ms after the previous presynaptic
+    spike). Transmission of a set of presynaptic spikes is the mean number of postsynaptic
+    spikes 1 to 4 ms after each, minus its expectation under +-5 ms jitter of the postsynaptic
+    spikes (chosen here, as the supplementary definition was not available). 1000 permutations
+    of the first and later labels, two-sided P < 0.10; depressing when first spikes transmit
+    more, facilitating when later spikes do. Reproduced when both fractions are within
+    tolerance; partially reproduced when both are above the 5% that the test gives each side
+    under its null (one-sided binomial test, p < 0.05) but not both within tolerance; not
+    reproduced otherwise.
+- id: fig7-supralinear
+  statement: Coincident firing of two or more presynaptic neurons within 5 ms on a common target
+    is more effective than the sum of their separate effects (supralinear), while spikes spread
+    over windows longer than 10 ms add linearly.
+  source: Results, fourth section; Figure 7
+  data: with_labels
+  depends_on:
+  - fig3-connection-rates
+  criterion: Satellites are PFC single units with at least two excitatory presynaptic partners.
+    Partner spikes are merged into events (a spike and every partner spike within 5 ms after
+    it); for each event, whether the target fires 1 to 4 ms after its last spike, minus the
+    chance of a target spike in any 3 ms window. Supralinear in a satellite when the excess for
+    events with two partners exceeds twice that for events with one. Satellites with at least
+    20 two-partner events are tested. Reproduced when more than half of them are supralinear and
+    a one-sided Wilcoxon signed-rank test of the difference gives p < 0.05; partially
+    reproduced when more than half are but p is 0.05 or more; not reproduced otherwise. The same
+    with 20 ms events is shown as a variant for the linear part.
+- id: fig3-trajectory-by-class
+  statement: Large fractions of putative pyramidal cells (72.2% in layer 2/3, 84.7% in layer 5)
+    and of interneurons (58.3% and 83%) are trajectory specific.
+  source: Results, second section
+  data: with_labels
+  depends_on:
+  - fig3-cell-classes
+  - fig2b-trajectory-selective
+  criterion: A unit is trajectory specific when the test of fig2b-trajectory-selective finds a
+    significant left-right difference anywhere on the track (units of any peak rate). Per rat,
+    the fractions of its putative pyramidal cells and interneurons. Reproduced when every rat
+    matches one layer's two values within 10% of each, at most one rat in layer 5; partially
+    reproduced when in every rat both fractions are above the chance fraction of
+    fig2b-trajectory-selective; not reproduced otherwise.
+- id: ee188-example-session
+  statement: In the example layer 2/3 session, 117 neurons gave 1172 pairs with 48 excitatory
+    and 30 inhibitory connections, 39 of the 117 cells formed one connected hub, 15 of 36
+    excitatory connections were active in particular maze segments, and the example pairs
+    (156-136, 197-201, 49-52, 186-201, 197 and 186 onto one interneuron, a satellite on cell
+    135) show position-dependent, depressing, facilitating and supralinear transmission.
+  source: Figures 2a, 3b to 3d, 4, 5, 6b and 7a
