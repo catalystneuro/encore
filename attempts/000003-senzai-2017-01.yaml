@@ -22,7 +22,7 @@ outcomes:
   - 609
   - 568
   notes: The files hold 609 GC (paper 586, within tolerance) and 568 MC (paper 500, outside the tolerance
-    of 450 to 550), from all 16 mice, counted once per recording day.
+    of 450 to 550), from all 16 mice, counting each of the 101 files once.
   deviations:
   - Counts come from the dandiset's labels; the paper's classification was not re-run on all files.
 - claim: first-stage-labels
@@ -185,7 +185,7 @@ outcomes:
     both counts (56 and 6 at the 99.99999th percentile). For 22 GC to MC pairs the largest bin is the
     first of the window (1.5 to 2 ms); without them 43 pairs remain (0.0706 of GC). Of the 8 MC to GC
     pairs, 6 are in YutaMouse33, 4 involve one GC (unit 3 of YutaMouse33-150224) that is also synchronous
-    with each of those MC, and 4 are also detected as GC to MC pairs, which fits common input. In the
+    with each of those MC, and 5 are also detected as GC to MC pairs, which fits common input. In the
     17 files that give the shank, 17 of 39 GC to MC pairs are on one shank.
   deviations:
   - The paper inspected and refined each detection by hand; the automatic test alone is used here.
@@ -283,7 +283,8 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_senzai_2017.ipynb
   output: claim:remap-positive
-  notes: Place cells GC 27, MC 116, CA3 143 (paper 30, 111, 144); median remapping index 0.128 (P = 0.0013),
+  notes: Place cells GC 27, MC 116, CA3 145 (paper 30, 111, 144), of which 27, 116 and 143 have a remapping
+    index; median remapping index 0.128 (P = 0.0013),
     0.293 (P = 1.5e-13) and 0.207 (P = 8.6e-14). Units per type 246, 182 and 317 in 5 mice (paper 247,
     181, 317 in 5 mice).
   deviations:
@@ -385,17 +386,23 @@ outcomes:
   notes: Needs the positions of the recording sites in um. The electrodes tables give x, y and z as NaN
     in every file, the order of sites along a shank is not stated, and 83 of 101 files do not say which
     shank a unit was on. The paper's own monosynaptic pairs were not converted either. The Methods give
-    8 sites per shank staggered 20 um apart, but the table's site numbers do not follow depth (the DS2
-    profile along them crosses zero more than once on 43 of 64 shanks with a crossing), and a unit's largest
-    wide-band column lies on the shank the table gives for only 45% of units.
+    8 sites per shank on the 8-shank probes and 10 on the 6-shank probes, staggered with 20 um vertical
+    separation, but the table's site numbers do not follow depth (the DS2 profile along them crosses zero
+    more than once on 43 of 64 shanks with a crossing), and a unit's largest wide-band column lies on the
+    shank the table gives for only 45% of units. In the 17 files that give the shank, the order of each
+    shank's stored waveform channels can be recovered from the units' spikes in the wide-band signal,
+    and along it the DS2 profile crosses zero once on 43 of the 51 shanks that cross, so it is consistent
+    with depth. This attempt wrote no criterion for the claim and ran no test on that order; a new attempt
+    could test it on these 17 files (39 detected GC to MC pairs).
 - claim: gc-backpropagation
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: Needs each unit's waveform along the shank with the sites' vertical positions; the files give
     no site coordinates (x, y, z are NaN) and the stored waveforms span 1.6 ms at the channels of the
     shank without their positions. In 83 files the shank itself is not given. The wide-band signal gives
-    each unit's spike on every column, but without the depth order of the sites (see gc-mc-distance) a
-    delay along depth cannot be measured.
+    each unit's spike on every column, and in those 17 files the order of each shank's stored channels,
+    recovered from the units' spikes, is consistent with depth (see gc-mc-distance). This attempt wrote
+    no criterion for the claim and ran no test of a delay along that order; a new attempt could.
 findings:
 - kind: format_error
   statement: In 24 files the end index of the first unit in the units table is short by a multiple of
@@ -448,13 +455,18 @@ findings:
     in the wide-band signal lies on the shank the units table gives for 45% of units (11% to 79% by file)
     and is the table's own site for 9%, and the DS2 amplitude along the table's site numbers crosses zero
     more than once on 43 of 64 shanks where it crosses at all. The wide-band and LFP columns match each
-    other, so the mismatch lies between the continuous signals and the units' shanks or stored waveform
-    channels.
+    other. The units' shanks (`electrode_group`) and stored waveform channels fit the wide-band signal
+    under one fixed map of columns, the same in all 4 mice (a map from three mice gives the column of
+    a unit's largest spike for 78% to 89% of units in the fourth, against 5% to 13% for the table), so
+    the error is in the table, whose blocks of 8 rows do not match the probe's columns.
 - kind: metadata_insufficient
   statement: The stored spike waveforms are about 5 times larger than the same spikes in the wide-band
     signal (median peak-to-peak 421 against 81 uV, 300 Hz high-pass), and their filtering and scaling
-    are not described. Each holds 1.6 ms with the trough at 0.8 ms, which cuts off the peak of most GC,
-    MC and CA3 waveforms.
+    are not described. They match the wide-band spike best after a 300 Hz high-pass (median correlation
+    0.987, against 0.981 unfiltered and 0.867 at 800 Hz), with a gain of 5.08, close to 5.13, the inverse
+    of the wide-band conversion of 0.195 uV per count, which is consistent with waveforms stored in ADC
+    counts and read as microvolts. Each holds 1.6 ms with the trough at 0.8 ms, which cuts off the peak
+    of 43% of GC, 67% of MC and 78% of CA3 waveforms.
 verifications:
 - date: '2026-10-16'
   kind: agent
@@ -505,7 +517,8 @@ verifications:
     outcome: partially_reproduced
     reason: MC suppressed 0.642 (pre-pulse baseline) vs the paper's 0.271; GC 0.030. MC exceeds four times
       GC. There is no significance test, though the paper says "suppressed significantly"; the Poisson
-      variant still gives 68 MC. The Figure 1H legend says 37 units, against 29 in the text (B13).
+      variant still gives 68 MC. The Figure 1H legend says 37 units, against 29 in the text (B13). The
+      pooled CA3 interneurons also affect the opto nI/wI fractions (B2).
     response: The conclusion now states the Poisson variant (68 MC, 5 GC). The 37 units of the legend
       equal the 29 MC and 8 wide-waveform interneurons of the text, so no inconsistency is recorded. Outcome
       kept.
@@ -573,7 +586,7 @@ verifications:
       in the first bin (1.75 ms), which may be spillover from zero-lag or common input. The 8 MC to GC
       pairs are not inspected (6 are in YutaMouse33) (B3).
     response: Added CCG plots of the 8 MC to GC pairs and the 22 first-bin pairs, a listing of the MC
-      to GC pairs (4 involve one GC that is synchronous with each MC, 4 are also GC to MC), the count
+      to GC pairs (4 involve one GC that is synchronous with each MC, 5 are also GC to MC), the count
       without first-bin pairs (43, 0.0706), and the counts within the 17 files (39 GC to MC, 17 on one
       shank; 6 MC to GC). Outcome kept.
   - claim: burst-facilitation
@@ -694,7 +707,7 @@ verifications:
     response: The main run now uses the Methods' ratio, the DS2 amplitude at the wide-band site and the
       unfiltered wide-band waveform, which needs no padding (1 unit padded); agreement 0.953. The log
       ratio (0.956), home-cage awake time (0.948) and the stored waveforms with the table's site (0.928;
-      padding median 5 of 80 samples) are variants. Outcome kept.
+      padding past the waveform's end for all 391 units, median 5 of 80 samples) are variants. Outcome kept.
   - claim: gc-mc-distance
     agrees: true
     outcome: blocked
@@ -710,3 +723,253 @@ verifications:
     reason: Same reason. Per-spike waveforms on every channel of the shank exist in those 17 files, so
       a delay along channel order could be measured if channel order equals depth order (unverified).
     response: Channel order does not equal depth order (see gc-mc-distance). Kept blocked.
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, the helper module, the claims file
+    and the attempt record, with the paper. The verifier agreed with all 31 outcomes. It also flagged
+    that cell 0 ('The raw wide-band signal is in 17 files and is not used') and cell 5 ('(not used)')
+    are stale, as cells 21, 24, 29, 35, 107 and 110 use the wide-band signal; both were corrected.
+  results:
+  - claim: unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      README line 5 says '16 mice over 101 recording days', and cell 0 says 'One NWB file per recording
+      day (101 files...)'. Cell 18 shows that seven dates hold two files each, so the 101 files cover
+      94 days.
+    response: README, entry description and notebook header now say 101 files from 94 recording days;
+      the data check prints the 94 days. The notes now say each of the 101 files is counted once. Outcome
+      kept.
+  - claim: first-stage-labels
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B2 partly resolved: the claim falls short only on the pooled interneuron labels. The 17-file subset
+      on shanks with no CA3 unit passes (94.4% below 0.425 ms), so the partial outcome may reflect the
+      labels, not the paper.'
+    response: 'Added a data-check cell on the electrodes-table mismatch: each pair of a unit''s shank
+      (`electrode_group`) and stored waveform channel points to one wide-band column, the same in all
+      4 mice; a map from three mice gives the column of a unit''s largest spike for 78% to 89% of units
+      in the fourth, against 0% to 9% with shanks and channels shuffled and 5% to 13% for the electrodes
+      table. So `electrode_group` fits the signal and the table''s map does not (finding updated). The
+      shank split of the variant rests on `electrode_group`. Outcome kept, as verified.'
+  - claim: interneuron-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B2 partly resolved: the claim falls short only on the pooled interneuron labels. The 17-file subset
+      on shanks with no CA3 unit passes (8.56 and 2.29 Hz), so the partial outcome may reflect the labels,
+      not the paper.'
+    response: The shank split of the variant rests on `electrode_group`, which the new channel-map check
+      supports (see zero-lag-synchrony). Outcome kept, as verified.
+  - claim: gc-narrower-waveform
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, but reproduced is weaker than the label suggests: on all files the result is mostly
+      driven by waveform truncation. On the unfiltered wide-band signal of the 17 files GC are still narrower
+      (P = 0.017), and P = 0.4 after a 300 Hz high-pass (B1 partly resolved). The record''s finding says
+      the stored window ''cuts off the peak of most GC, MC and CA3 waveforms'', but cell 29 prints GC
+      0.43, MC 0.67 and CA3 0.78, a minority of GC. The filtering and the 5x scaling of the stored waveforms
+      are still undescribed.'
+    response: 'Corrected the finding to 43% of GC, 67% of MC and 78% of CA3. Added a check of the stored
+      waveforms against the wide-band spike: they match best after a 300 Hz high-pass (median correlation
+      0.987, against 0.981 unfiltered and 0.867 at 800 Hz), and their gain (5.08) is close to the inverse
+      of the wide-band conversion (5.13), consistent with ADC counts read as microvolts; recorded in the
+      finding. Outcome kept.'
+  - claim: optotag-drd2
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      The record omits my round-1 B2 point that pooling CA3 interneurons also affects the optogenetics
+      nI/wI fractions; it is not carried into the optotag-drd2 reason.
+    response: Added that point to the round-1 reason. Outcome kept.
+  - claim: mc-more-active
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B10 resolved: home-cage awake time has been added as a variant, and no outcome changes.'
+    response: No change needed. Outcome kept.
+  - claim: gc-nrem-highest
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B10 resolved: home-cage awake time has been added as a variant, and no outcome changes.'
+    response: No change needed. Outcome kept.
+  - claim: ca3-wake-highest
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B10 resolved: home-cage awake time has been added as a variant, and no outcome changes.'
+    response: No change needed. Outcome kept.
+  - claim: nrem-wake-ratio
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B10 resolved: home-cage awake time has been added as a variant, and no outcome changes.'
+    response: No change needed. Outcome kept.
+  - claim: theta-modulation
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, but reproduced is weaker than the label suggests: the phase part holds on one cut
+      of the cycle only (P = 1e-17 vs 0.82), and the spike-count-corrected MRL gives P = 0.00056, which
+      misses the paper''s P < 0.0001. B8 partly resolved: the theta-reference channel was checked in 17
+      files only.'
+    response: No change; the notes and conclusion already say this. The reference channel's depth can
+      be read only in the 17 files with each unit's shank. Outcome kept.
+  - claim: gamma-modulation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+    response: No change needed. Outcome kept.
+  - claim: gamma-rate-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+    response: No change needed. Outcome kept.
+  - claim: ds2-recruitment
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+    response: No change needed. Outcome kept.
+  - claim: monosyn-gc-to-mc
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      Cell 66 and the notes say ''4 are also detected as GC to MC pairs''. The MC to GC listing in cell
+      65 shows GC to MC True for 5 of the 8 pairs (33-150223 45/55; 33-150224 3/16, 3/19, 3/29; 51b160516
+      17/8). B3 remains: the pairs are still the automatic detections, 65 against the paper''s 32, with
+      8 MC to GC pairs. This cannot be settled without the authors'' unconverted pairs.'
+    response: Corrected to 5 in the conclusion, the notes and the round-1 response. B3 cannot be addressed
+      with the dandiset; the finding on the unconverted pairs stands. Outcome kept.
+  - claim: burst-facilitation
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B4 resolved: the 3.5 to 6 ms variant gives 58 of 65, P = 7.6e-10. Why first spikes transmit less
+      than single spikes remains unexplained, but this does not affect the outcome.'
+    response: No change needed. Outcome kept.
+  - claim: state-transmission
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      These uncurated pairs underlie the not-reproduced state-transmission (P = 0.39, or 0.27 without
+      the first-bin pairs). B3 remains: the pairs are still the automatic detections, 65 against the paper''s
+      32, with 8 MC to GC pairs. This cannot be settled without the authors'' unconverted pairs.'
+    response: Cannot be addressed with the dandiset; the notes say the pairs are the automatic detections.
+      Outcome kept.
+  - claim: zero-lag-synchrony
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B5 resolved: no synchronous pair is on one shank, and spike coincidence is at most 5.8%. Still open:
+      the notebook does not show whether the units'' electrode_group or the table''s column map is wrong.
+      Zero same-shank synchronous pairs points to electrode_group being correct, which the B2 variants
+      and the synchrony split depend on; neither side is shown directly.'
+    response: 'Added a data-check cell on the electrodes-table mismatch: each pair of a unit''s shank
+      (`electrode_group`) and stored waveform channel points to one wide-band column, the same in all
+      4 mice; a map from three mice gives the column of a unit''s largest spike for 78% to 89% of units
+      in the fourth, against 0% to 9% with shanks and channels shuffled and 5% to 13% for the electrodes
+      table. So `electrode_group` fits the signal and the table''s map does not (finding updated). Outcome
+      kept.'
+  - claim: tmaze-central-active
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B12 resolved: a unit-by-unit variant has been added.'
+    response: No change needed. Outcome kept.
+  - claim: tmaze-multiple-fields
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+    response: No change needed. Outcome kept.
+  - claim: tmaze-peak-info
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+    response: No change needed. Outcome kept.
+  - claim: tmaze-splitters
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B6 resolved: Fisher''s exact tests have been added.'
+    response: No change needed. Outcome kept.
+  - claim: remap-positive
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      The notes say 'Place cells ... CA3 143'. Cell 89 prints 145 CA3 place cells, of which 143 have a
+      remapping index.
+    response: 'Corrected the notes and the conclusion: 145 CA3 place cells, 143 with an index. Outcome
+      kept.'
+  - claim: remap-gc-lt-mc
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+    response: No change needed. Outcome kept.
+  - claim: remap-fractions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+    response: No change needed. Outcome kept.
+  - claim: pv-remap
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, but reproduced is weaker than the label suggests: the only valid test, a label permutation
+      on all place cells, gives P = 0.32.'
+    response: No change; the notes and conclusion already say this. Outcome kept.
+  - claim: inheritance-tmaze
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees, but reproduced is weaker than the label suggests: the overlap of 0.31 is at chance
+      (shuffled partners give 0.38, range 0.19 to 0.62). The chance level has been added. B3 remains:
+      the pairs are still the automatic detections, 65 against the paper''s 32, with 8 MC to GC pairs.
+      This cannot be settled without the authors'' unconverted pairs.'
+    response: No change; the notes and conclusion already say this. Outcome kept.
+  - claim: inheritance-openfield
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B3 remains: the pairs are still the automatic detections, 65 against the paper''s 32, with 8 MC
+      to GC pairs. This cannot be settled without the authors'' unconverted pairs.'
+    response: Cannot be addressed with the dandiset. Outcome kept.
+  - claim: mc-deeper
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B11 resolved: the channel-map check found the electrodes table disagrees with the wide-band signal,
+      which became a new finding, and mc-deeper now uses the wide-band site (P = 2e-40, holds in each
+      of the 4 mice).'
+    response: Added the channel-map check (see zero-lag-synchrony), which supports reading the site from
+      the wide-band signal. Outcome kept.
+  - claim: gc-mc-classification
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; the outcome follows from the printed numbers under the criterion in the claims file.
+      B9 resolved: the classification now uses the Methods'' ratio, with agreement 0.953. The record''s
+      response ''padding median 5 of 80 samples'' omits that cell 110 prints padding for all 391 units
+      in the stored-waveform variant. The stored waveforms'' filtering and 5x scaling are still undescribed.'
+    response: Corrected the round-1 response to say padding applies to all 391 units of that variant.
+      Added the filtering and scale check of the stored waveforms (see gc-narrower-waveform). Outcome
+      kept.
+  - claim: gc-mc-distance
+    agrees: true
+    outcome: blocked
+    reason: Agrees that it stays blocked; that is reasonable, but no one tried recovering depth order
+      from the wide-band columns. The notes and cell 112 say 'The Methods give 8 sites per shank'; the
+      Methods say 8 sites per shank on the 8-shank probes and 10 on the 6-shank probes.
+    response: 'Corrected the site count in the notes and cell 112. Recovered the order of each shank''s
+      stored channels from the units'' spikes in the wide-band signal (new data-check cell); the DS2 profile
+      along it crosses zero once on 43 of the 51 shanks that cross (median |rho| 0.88, against 0.35 along
+      the table''s numbers), so the order is consistent with depth. Kept blocked and no change proposed:
+      the claim has no criterion, this attempt ran no test on that order, and the protocol leaves a change
+      that needs an analysis not yet run to a new attempt. The notes say a new attempt could test it on
+      the 17 files.'
+  - claim: gc-backpropagation
+    agrees: true
+    outcome: blocked
+    reason: Agrees that it stays blocked; that is reasonable, but no one tried recovering depth order
+      from the wide-band columns.
+    response: Recovered the stored-channel order as for gc-mc-distance, which is consistent with depth.
+      Kept blocked and no change proposed, for the same reason; the notes say a new attempt could measure
+      the delay along that order.

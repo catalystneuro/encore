@@ -242,7 +242,8 @@ def raw_unit_waveforms(f, s: dict, n_chunks=RAW_CHUNKS) -> dict:
             sums[u][0] += x[win].sum(axis=0).T
             sums[u][1] += xf[win].sum(axis=0).T
             n[u] += len(sp)
-    out = {"blocks": len(blocks), "seconds": len(blocks) * chunk / rate, "columns": int(d.shape[1]), "lfp_match": match, "units": {}}
+    out = {"blocks": len(blocks), "seconds": len(blocks) * chunk / rate, "columns": int(d.shape[1]), "lfp_match": match,
+           "conversion": conv, "units": {}}
     for u in idx:
         if n[u] == 0:
             continue

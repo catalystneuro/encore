@@ -2,7 +2,7 @@
 
 Tests the findings of [Senzai and Buzsaki (2017)](https://doi.org/10.1016/j.neuron.2016.12.011) on
 [DANDI:000003](https://dandiarchive.org/dandiset/000003/0.260218.2052), which holds silicon probe
-recordings of the dentate gyrus and CA3 in 16 mice over 101 recording days, with each unit labelled
+recordings of the dentate gyrus and CA3 in 16 mice, in 101 files from 94 recording days, with each unit labelled
 as a granule cell, mossy cell, CA3 pyramidal cell or interneuron.
 
 | Claim | Outcome |
