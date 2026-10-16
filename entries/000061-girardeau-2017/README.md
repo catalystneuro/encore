@@ -13,12 +13,14 @@ choices fixed before the analysis.
 | A subgroup of BLA cells is positively modulated during ripples | Reproduced |
 | The reactivations involve those BLA cells | Reproduced |
 | Reactivation is stronger for the air-puff direction than the safe one | Not reproduced |
-| Rats learned the location of the air puff | Blocked: data missing |
+| Rats learned the location of the air puff | Blocked: too large |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The dandiset has no position tracking, so run direction comes from the reward times. The attempt
+The dandiset has no position tracking, so run direction comes from the reward times. Position
+could only come from tracking the raw video frames stored in the files, which would take more
+than 200 hours to stream. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/000061-girardeau-2017-01.yaml`](../../attempts/000061-girardeau-2017-01.yaml).
 

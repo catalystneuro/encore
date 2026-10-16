@@ -129,6 +129,9 @@ def load_session(path: str, url: str) -> dict:
         s["videos"] = {k: (f[f"acquisition/{k}/data"].shape[0], *f[f"acquisition/{k}/timestamps"][[0, -1]],
                            f[f"acquisition/{k}/timestamps"].attrs.get("unit"))
                        for k in f["acquisition"] if k.startswith("Video")}
+        s["video_storage"] = {k: (f[f"acquisition/{k}/data"].shape, str(f[f"acquisition/{k}/data"].dtype),
+                                  f[f"acquisition/{k}/data"].compression)
+                              for k in f["acquisition"] if k.startswith("Video")}
         s["electrode_locations"] = sorted(set(_strings(f["general/extracellular_ephys/electrodes/location"])))
         s["units"] = None
         if "units" in f:
@@ -393,13 +396,15 @@ def ripple_bins(session: dict, bin_s: float) -> np.ndarray:
 
 def reactivation(session: dict, rng: np.random.Generator, bin_s: float = BIN_S,
                  bla_labels=BLA_LABELS, templates=("run",), equal_bins: bool = False,
-                 lags: int = 20, keep_traces: bool = True) -> dict:
+                 lap_tail_s: float | None = None, lags: int = 20, keep_traces: bool = True) -> dict:
     """Joint patterns of the run and their reactivation in pre- and post-sleep Non-REM.
 
     `templates` names the run bins a template is built from: "run" (the whole run epoch),
     "puff" or "safe" (bins inside laps of the air-puff or the safe direction). With
-    `equal_bins` the two directional templates use the same number of bins (the first bins of
-    the longer one are kept). Returns one row per pattern, and for significant patterns the
+    `equal_bins` the two directional templates use the same number of bins (a random subset of
+    the longer one, drawn with `rng`, is kept). With `lap_tail_s` only the last `lap_tail_s`
+    seconds of each lap, before the reward that ends it, enter the directional templates; this
+    leaves out the time spent waiting at the end where the lap starts. Returns one row per pattern, and for significant patterns the
     ripple-peak-triggered mean strength in post-sleep (lags of `lags` bins either side) and the
     mean strength in ripple and non-ripple bins of pre- and post-sleep. The same triggered mean
     in pre-sleep is kept as a reference.
@@ -419,14 +424,16 @@ def reactivation(session: dict, rng: np.random.Generator, bin_s: float = BIN_S,
     direction, _ = puff_direction(session)
     template_rows = {"run": np.flatnonzero(in_run)}
     if direction is not None:
-        lap_iv = {d: np.array([(a, b) for a, b, dd in run_laps(session) if dd == d]).reshape(-1, 2)
+        lap_iv = {d: np.array([(a if lap_tail_s is None else max(a, b - lap_tail_s), b)
+                               for a, b, dd in run_laps(session) if dd == d]).reshape(-1, 2)
                   for d in ("LR", "RL")}
         safe = "RL" if direction == "LR" else "LR"
         template_rows["puff"] = np.flatnonzero(in_run & in_intervals(centers, lap_iv[direction]))
         template_rows["safe"] = np.flatnonzero(in_run & in_intervals(centers, lap_iv[safe]))
         if equal_bins:
             m = min(len(template_rows["puff"]), len(template_rows["safe"]))
-            template_rows["puff"], template_rows["safe"] = template_rows["puff"][:m], template_rows["safe"][:m]
+            for key in ("puff", "safe"):
+                template_rows[key] = np.sort(rng.choice(template_rows[key], m, replace=False))
 
     def z(rows):
         c = binned(session, units, bin_s, rows)
@@ -471,3 +478,16 @@ def reactivation(session: dict, rng: np.random.Generator, bin_s: float = BIN_S,
     return {"rows": rows, "traces": traces, "direction": direction,
             "n_pre_bins": len(pre_rows), "n_post_bins": len(post_rows),
             "template_bins": {k: len(v) for k, v in template_rows.items()}}
+
+
+def time_frame_reads(url: str, video: str, n_frames: int = 20) -> tuple[float, int]:
+    """Seconds taken to stream `n_frames` frames spread over a video, and the bytes per frame."""
+    import time
+    f = h5py.File(remfile.File(url), "r")
+    with f:
+        data = f[f"acquisition/{video}/data"]
+        frames = np.linspace(0, data.shape[0] - 1, n_frames).astype(int)
+        started = time.time()
+        for k in frames:
+            data[k]
+        return time.time() - started, int(np.prod(data.shape[1:]) * data.dtype.itemsize)
