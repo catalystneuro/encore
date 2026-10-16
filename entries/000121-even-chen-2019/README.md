@@ -12,9 +12,9 @@ of monkey J.
 | J's 16 sessions | Blocked: data missing |
 | Delays, reaction and reach times | Partially reproduced |
 | 74 (J) and 80 (R) channels tuned to target position | Reproduced |
-| Variance of the top PCs of condition averages | Partially reproduced |
+| Variance of the top PCs of condition averages | Not reproduced |
 | Variance in the spatial plane per task | Not reproduced |
-| Time course of the state in the spatial plane | Reproduced |
+| Time course of the state in the spatial plane | Partially reproduced |
 | Single-trial neural deviations predict the hand at maximum speed | Reproduced |
 | The speed axis varies with speed within a distance | Partially reproduced |
 | Distance information remains after removing speed | Reproduced |

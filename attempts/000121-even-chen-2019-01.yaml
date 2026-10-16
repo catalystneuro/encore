@@ -40,7 +40,9 @@ outcomes:
     trials per configuration. Grouped by the file geometry, three of four are within 10% (horizontal
     3842 against 3699, vertical 4156 against 4040), which fits the exchange of dates found in
     session-configurations. The 3-rings session holds 47% more successful delayed trials than the
-    paper used, and no reading explains the difference.
+    paper used, and no reading explains the difference. Reading (b) leaves out failed trials without
+    a go cue; counting them gives ring 4568, horizontal 5250, vertical 5033 and 3-rings 1671, none
+    within 10%.
   deviations:
   - Which trials the paper counted is not stated; three readings were tested.
 - claim: j-sessions-complete
@@ -61,15 +63,18 @@ outcomes:
   - 587
   - 486
   notes: Reaction times (J 332, R 305 ms) and reach times read as acquisition minus go cue (J 587, R
-    486 ms) are within tolerance; read as acquisition minus movement onset they are 255 and 181 ms. J's
+    486 ms) are within tolerance; read as acquisition minus movement onset they are 255 and 181 ms. R's
+    mean reaction time includes the 5.9% of its trials whose onset precedes the go cue; its median (361
+    ms) and its mean over 100 to 800 ms (362 ms) are outside tolerance, and with onset searched only
+    after the go cue the means are 342 ms (J) and 340 ms (R), just inside. J's
     delays span 300 to 700 ms as stated; R's span 400 to 1000 ms, beyond the widened bound of 990 ms.
     No-delay trials are 19.8% of J's and 0.2% of R's successful center-out trials (26, all on
     2017-01-19), not 10%. Reaction time falls with delay in R (r = -0.264, p = 1.8e-205) but not in J
-    (r = -0.013, p = 0.21; with onset at 5% of peak speed r = -0.034, p = 1.5e-03). J is 5 of its 16
-    sessions.
+    (r = -0.013, p = 0.21; with onset at 5% of peak speed r = -0.034, p = 1.5e-03; with onset after the
+    go cue r = -0.029, p = 7.9e-03). J is 5 of its 16 sessions.
   deviations:
   - Movement onset (10% of peak speed) and maximum speed are defined here; the paper does not define
-    them. Onsets at 5% and 20% are shown.
+    them. Onsets at 5% and 20%, and onset searched only after the go cue, are shown.
   - Reach time is undefined in the paper; two readings were tested and (b) matches.
 - claim: channels-task-correlated
   outcome: reproduced
@@ -85,7 +90,7 @@ outcomes:
   - PMd is taken as units 96 to 191, from the data check, against the units' electrode_group labels.
   - J is 5 of its 16 sessions.
 - claim: pca-variance
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_even_chen_2019.ipynb
   output: claim:pca-variance
   measured:
@@ -103,12 +108,13 @@ outcomes:
   - 90.9
   - 93.0
   notes: R has the paper's 132 conditions. Twelve of thirteen values are within tolerance; R's PC1 is
-    72.8% against 81 +- 8.1%, outside by 0.14 points. With the day's mean taken over the analysed delay
-    windows R's PC1 is 80.5%, and without day-mean subtraction 80.6%. J's values are within tolerance
-    on 96 of its 120 conditions.
+    72.8% against 81 +- 8.1%, outside by 0.14 points. The criterion's partial case needs all R values
+    within tolerance, so by its letter the result is not reproduced. With the day's mean taken over
+    the analysed delay windows R's PC1 is 80.5%, and without day-mean subtraction 80.6%. Spikes exist
+    only within trials (99.93 to 99.95% of PMd spikes inside a trial in every session), so the main
+    day mean is the rate over trial time. J's values are within tolerance on 96 of its 120
+    conditions.
   deviations:
-  - The criterion named an outcome only for R within and J outside tolerance; for one R value just
-    outside and all J values inside it was judged partially reproduced, as most values hold.
   - The day's average rate is the session's rate over its recorded time; the paper does not say how it
     was computed. The other choice is shown.
   - J is 5 of its 16 sessions and 96 of its 120 conditions.
@@ -130,12 +136,13 @@ outcomes:
     lower (40.2 to 54.4% against 47.7 to 68.2%) on 5 of 16 sessions without the horizontal task. The
     shares exceed those of planes fit to targets shuffled across conditions with p = 0.005 to 0.16
     (shuffle medians 11.5 to 24.8%), so the stated p < 1e-4 does not hold against this null; the
-    paper's null is not stated.
+    paper's null is not stated. 1000 shuffles cannot give p below 1.0e-03, but the observed p values
+    lie well above that.
   deviations:
   - J's plane is fit on 96 of its 120 conditions and its horizontal task is absent.
   - Two definitions of the share and two namings of R's horizontal and vertical tasks were tested.
 - claim: plane-timecourse
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_even_chen_2019.ipynb
   output: claim:plane-timecourse
   measured:
@@ -145,8 +152,13 @@ outcomes:
   - 350
   notes: Divergence (D below 0.9) at 70 ms (J) and 90 ms (R) after target onset; convergence (D below
     0.1) at 270 ms (J) and 350 ms (R). Other thresholds move divergence between 10 and 150 ms and
-    convergence between 230 and 390 ms. The pre-target state sits at x -2.1, y -30.4 mm (J) and 17.6,
-    -13.1 mm (R) in the plane's target coordinates, so "starts at the center" holds only roughly.
+    convergence between 230 and 390 ms. J's times are robust (pre-onset D SD 0.03; with the converged
+    state taken from trials whose delay window starts after the bin, 70 and 250 ms). R's divergence
+    is not, as its D lies below 0.9 in 6 of the 10 bins before target onset (SD 0.09), and with the
+    non-overlapping converged state it diverges at 10 ms, outside tolerance. Only J's times hold
+    clearly, so the result is partially reproduced. The pre-target state sits at x -2.1, y -30.4 mm
+    (J) and 17.6, -13.1 mm (R) in the plane's target coordinates, so "starts at the center" is not
+    borne out.
   deviations:
   - The thresholds, bins and smoothing are chosen here; the paper reads the times from a figure.
 - claim: onoff-predicts-kinematics
@@ -156,8 +168,10 @@ outcomes:
   notes: Over all tasks (reading a), on-axis J r = 0.091 (p = 1.7e-17), R r = 0.022 (p = 1.3e-02);
     off-axis J r = 0.102 (p = 1.3e-21), R r = 0.072 (p = 2.2e-16). In the 3-rings task alone R's
     on-axis correlation is not significant (p = 6.5e-02). R's on-axis correlation is positive with p <
-    0.05 in one of seven sessions and negative in one (2017-01-16, r = -0.044, p = 4.9e-02), so it rests
-    on pooling.
+    0.05 in one of seven sessions and negative in one (2017-01-16, r = -0.044, p = 4.9e-02). With
+    deviations from session by condition means the correlations are nearly unchanged (R on-axis r =
+    0.020, p = 2.3e-02; off-axis 0.083, p = 3.0e-21; J on 0.092, off 0.101), so offsets between
+    sessions do not produce them.
   deviations:
   - The position of maximum speed comes from hand positions smoothed here (Gaussian, SD 20 ms).
 - claim: speed-axis-within-distance
@@ -169,7 +183,9 @@ outcomes:
   - 11
   notes: R 11 of 12 distances under both readings and with cross-validated projections; the exception
     is the nearest distance. J 6 of 12 under both readings (4 and 5 cross-validated), on 3211 trials of
-    its two vertical sessions; its horizontal sessions are not in the dandiset.
+    its two vertical sessions; its horizontal sessions are not in the dandiset. Each distance rank
+    pools both line tasks and both sessions of each. Split by task and session, R has 1, 4, 10 and 7
+    of 12 and J 1 and 3, so the counts rest on pooling sessions.
   deviations:
   - J has only vertical sessions here, against horizontal and vertical in the paper.
   - R's horizontal targets lie at 5.2 + 10.4 k mm, so distances are matched by rank (1 to 12) within
@@ -180,6 +196,7 @@ outcomes:
   output: claim:distance-after-speed
   notes: Cross-validated predictions of target distance from speed-residualised activity correlate with
     distance, J r = 0.123 (p = 1.2e-30), R r = 0.233 (p = 7.1e-158); in-sample r = 0.182 and 0.257.
+    Within 3-rings the cross-validated r is 0.154 (J) and 0.265 (R).
   deviations:
   - The paper does not say how the correlation was tested; a 10-fold cross-validated linear regression
     was chosen.
@@ -232,7 +249,8 @@ outcomes:
   output: claim:relative-deviation-decreases
   notes: Spearman rho of relative deviation with distance, on axis J -0.389 and R -0.404, off axis J
     -0.378 and R -0.402, all p below 1e-290. Absolute deviations grow slightly with distance (rho 0.073
-    to 0.103), so the decrease comes mainly from dividing by distance.
+    to 0.103), so the decrease comes mainly from dividing by distance, and the test discriminates
+    little.
 - claim: svm-ring-and-distance
   outcome: not_reproduced
   notebook: reproduce_even_chen_2019.ipynb
@@ -287,14 +305,15 @@ outcomes:
   - 2.801
   - 2.503
   - 3.026
-  notes: Under reading (a) all four values are within tolerance and projection raises the error (J p =
-    2.7e-07, R p = 4.3e-41). R's full value is inside its bound (2.502 cm) by 0.001 cm, so the match is
+  notes: Under reading (a) all four values are within tolerance and projection raises the error (Welch
+    J p = 2.7e-07, R p = 4.3e-41; paired over trials J p = 4.9e-12, R p = 1.2e-62). R's full value is inside its bound (2.502 cm) by 0.001 cm, so the match is
     fragile. The full-activity distance error is lower than the arc error of every ring in both monkeys
     (p at most 3.1e-05). After projection it equals the arc error only for J's 4 cm ring (p = 0.46).
   deviations:
   - The paper prints R's values in an order that contradicts its text; two readings were listed and (a)
     matches.
   - J's distance classification uses the vertical task only.
+  - The plane is fit on all trials, including the test folds of the plane-projected classifier.
 findings:
 - kind: metadata_error
   statement: In every file the units' electrode_group labels are swapped. Units 0 to 95 are labelled
@@ -352,3 +371,173 @@ findings:
 - kind: methods_unavailable
   statement: The paper names no analysis code, does not report its SVM hyperparameters or the nulls of
     its p-values, and its data link returns HTTP 403.
+verifications:
+- date: 2026-10-16
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first run (commit d455c0d) with the conclusion cells and the
+    summary removed, the helper module and the claims file.
+  results:
+  - claim: session-configurations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 17, 8 of 12 sessions match the Methods. All 4 mismatches are R horizontal and vertical
+      exchanged; 01-15/16 lie on the x axis, 01-17/18 on the y axis. The 5 J sessions match.
+    response: No change. Whether the swap is in the paper or the conversion cannot be settled, as the
+      raw files are not available.
+  - claim: r-trial-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Grouped by Methods dates, ring 3584 and vertical 3842 are within tolerance; horizontal 4156
+      (paper 3699) and 3-rings 1340 (paper 912) are not, under every reading. Grouped by geometry, 3 of
+      4 match, so the Methods' date labels look swapped. Reading (b) silently drops failed trials with
+      no go cue (delay NaN); including them would not produce a match (R vertical by Methods dates
+      would be 5033 against 4040).
+    response: Added the reading that also counts failed trials without a go cue (0 of 4 within 10%) and
+      said in the conclusion what reading (b) leaves out. Outcome unchanged.
+  - claim: j-sessions-complete
+    agrees: true
+    outcome: blocked
+    reason: Version 0.220124.2156 (and 0.210815.0703) lists 12 assets, 5 of them J. No per-session counts
+      are in the paper, so only a lower-bound consistency check is possible, not a test.
+    response: No change.
+  - claim: delays-and-times
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reaction times (J 332, R 305 ms) and reach times under reading (b) are within tolerance, and
+      R's RT-delay correlation holds. It fails on J's RT-delay correlation (p=0.21), R delays running to
+      1000 ms, and no-delay fractions of 19.8% (J) and 0.2% (R). The onset search runs over the whole
+      trial before the peak, so 7-11% of trials in R's line sessions have onset before the go cue; R's
+      mean reaction time (305 ms) matches only because these are kept, and the median (361 ms) and the
+      100-800 ms trimmed mean (362 ms) are both outside 311+-31. Also, per.round(3) runs before the p
+      formatter, so R's per-session p values print as 0.0e+00.
+    response: Added onset searched only after the go cue as a variant (J 342 ms, R 340 ms, just inside),
+      printed the share of onsets before the go cue, and stated in the conclusion that R's mean matches
+      only with those trials kept while its median and trimmed mean do not. Fixed the per-session
+      formatting. Outcome unchanged, as the claim fails on other parts.
+  - claim: channels-task-correlated
+    agrees: true
+    outcome: reproduced
+    reason: Cell 23, J 72 (expected 74+-7.4), R 80 (expected 80).
+    response: No change.
+  - claim: pca-variance
+    agrees: false
+    outcome: not_reproduced
+    reason: All 6 J values and R PCs 2-6 are within tolerance, but R PC1 is 72.8 against a lower bound of
+      72.9. The criterion's partial case requires all R values within, so by its letter this is not
+      reproduced. It is a 0.14-point miss, and the result depends on the day-mean choice (the
+      trial-window variant gives 80.5). The day mean is n_spikes / recorded_s, and recorded_s is the
+      total in-trial hand time, while unit spans run to about 8300 s against 6520 s recorded; whether
+      spikes exist between trials is never checked.
+    response: Changed to not_reproduced, following the criterion. Added the check the verifier asked
+      for to the data check; 99.93 to 99.95% of PMd spikes fall inside trials in every session, so the
+      day mean over recorded time is the rate over trial time and the main choice stands.
+  - claim: spatial-plane-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: At best 3 of 7 values are within tolerance under any pairing of readings (4 needed for
+      partial). J is 40-54% against 48-68%. Shuffle p is 0.005-0.16 against the paper's <1e-4. 1000
+      shuffles cannot reach p < 1e-4 (minimum p about 1e-3), but the observed p values are far above
+      that anyway.
+    response: Printed the smallest attainable p and said so in the conclusion. The day-mean check above
+      bears on this claim and leaves it unchanged. Outcome unchanged.
+  - claim: plane-timecourse
+    agrees: true
+    outcome: reproduced
+    reason: Divergence J 70 / R 90 ms, convergence J 270 / R 350 ms, all within +-50 ms. The divergence
+      times are fragile. The divergence threshold sits inside baseline noise; R's D is 0.87 at -90 ms,
+      already below the 0.9 threshold, and J diverges on D = 0.89. The converged state (200 ms before
+      go) overlaps the time-course bins of short-delay trials, which biases convergence earlier. "Starts
+      at the center" is not borne out.
+    response: Added the pre-onset spread of D and a converged state taken only from trials whose delay
+      window starts after the bin. J's D is stable before onset (SD 0.03) and its times hold under the
+      variant (70 and 250 ms); R's D lies below 0.9 in 6 of 10 pre-onset bins and its divergence moves
+      to 10 ms under the variant. Changed the outcome to partially_reproduced, as only J's times hold
+      clearly; this change after round 1 is for round 2 to review. The conclusion now says the
+      starting point is not at the center.
+  - claim: onoff-predicts-kinematics
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), all four correlations are positive with p <= 0.013. R on-axis (r=0.022,
+      p=0.013) is weak and not supported per session or in 3-rings alone (p=0.065). Deviations are
+      taken from condition means pooled over two sessions, so session-level shifts in hand position and
+      neural offset can correlate; deviations from session x condition means are needed.
+    response: Added deviations from session by condition means. The correlations are nearly unchanged
+      (R on-axis r = 0.020, p = 0.023; off-axis p = 3.0e-21), so session offsets do not produce them.
+      Outcome unchanged; the notes keep R's on-axis weakness.
+  - claim: speed-axis-within-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: R 11/12 under both readings; J 6/12 (J has only its 2 vertical sessions). distance_rank pools
+      R horizontal (5.2 + 10.4k mm) and vertical (10k mm) targets from different sessions; rank 12 (both
+      at 120 mm) is still significant. Session confounds were not checked; the within-rank correlations
+      split per task and session would settle it.
+    response: Added the counts per task and session (R 1, 4, 10, 7 of 12; J 1 and 3) and stated that the
+      pooled counts rest on pooling sessions. Outcome unchanged.
+  - claim: distance-after-speed
+    agrees: true
+    outcome: reproduced
+    reason: Cross-validated r = 0.123 (J, p=1e-30) and 0.233 (R, p=7e-158). It also holds within the
+      single-session R 3-rings task (p=5e-23). The per-task r for "ring" is computed on distances that
+      are constant up to rounding, so it is meaningless.
+    response: The ring task is no longer tested per task; the conclusion gives the tasks with several
+      distances. Outcome unchanged.
+  - claim: speed-distance-projection
+    agrees: true
+    outcome: not_reproduced
+    reason: Ratios 1.01 (J) and 1.68 (R) against 0.5+-0.1. The variant with the plane removed (0.73,
+      1.14) also fails.
+    response: No change.
+  - claim: single-trial-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: Speed axis J 1.25% (out of tolerance), R 0.86% (in); plane J 15.7% and R 8.0% (both out). No
+      partial condition is met.
+    response: No change. The day-mean check bears on this claim and leaves it unchanged.
+  - claim: ellipse-orientation
+    agrees: true
+    outcome: reproduced
+    reason: 72% (J) and 75% (R) of conditions below 45 degrees, one-sided Wilcoxon p = 4e-8 and 8e-10.
+    response: No change.
+  - claim: on-greater-than-off
+    agrees: true
+    outcome: partially_reproduced
+    reason: 5 of 6 pairs under (a) and (c), 4 of 6 under (b). J ring fails (p = 0.31-0.69). The paper's
+      stated default test is two-sided Welch, i.e. (b) or (c); either way partial.
+    response: No change.
+  - claim: relative-deviation-decreases
+    agrees: true
+    outcome: reproduced
+    reason: All four Spearman rho are about -0.38 to -0.40 with tiny p. Dividing a nearly
+      distance-independent deviation (absolute rho about 0.07) by distance guarantees a negative
+      correlation, so the test barely discriminates.
+    response: Said in the conclusion and the notes that the test discriminates little. Outcome unchanged.
+  - claim: svm-ring-and-distance
+    agrees: true
+    outcome: not_reproduced
+    reason: J ring 24.7 (expected 32.2), R ring 12.9 (16.0), J distance 16.3 (18.9), R distance 17.1
+      (21.4); 0 of 4 within tolerance, and the tuned variant is also 0 of 4. J ring uses 1 of 4 sessions,
+      which handicaps J's accuracy; R, with complete data, also fails. The tuned variant picks
+      hyperparameters on the same 3-rings trials it reports.
+    response: No change; the notebook already states both limits.
+  - claim: svm-3rings-by-ring
+    agrees: true
+    outcome: partially_reproduced
+    reason: J 23.4/34.2/42.3% all within tolerance. R 18.4/21.9/22.0% all outside. Accuracy increases from
+      4 to 12 cm in both monkeys (for R by only 3.6 points, with SEMs of about 2).
+    response: No change.
+  - claim: arc-error-distance-independent
+    agrees: true
+    outcome: not_reproduced
+    reason: The arc-error ANOVA differs between rings (J p=2.7e-10, R p=1.5e-22). The 4 cm-range variant,
+      which matches the Fig 4d legend, still fails for R (p=1.3e-3).
+    response: No change.
+  - claim: distance-error-and-plane-projection
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), J 2.505/2.801 cm and R 2.503/3.026 cm, all within tolerance; Welch p = 2.7e-7 and
+      4e-41. R full error is 0.001 cm inside the bound. The plane used for plane-projected SVM is fit on
+      all trials, including the test folds, which leaks labels, and the comparison uses an unpaired
+      Welch test on paired errors. Both bias against the claim, which still passes.
+    response: Added a paired test over trials (J p = 4.9e-12, R p = 1.2e-62) and recorded the leak as a
+      deviation and in the conclusion. Outcome unchanged.

@@ -18,11 +18,14 @@ Where the parameters come from:
   of x, and to maximum speed on the full activity, fit after x and y are projected out; the
   on-axis and off-axis split of deviations; RBF SVMs, one-vs-one, 10-fold cross-validation.
 - Common choices here, as the Methods leave them open: the PMd array is units 96 to 191 (see
-  `PMD_UNITS`); the day's average rate is the session's spike count over its recorded time; a
+  `PMD_UNITS`); the day's average rate is the session's spike count over its recorded time (the
+  time of the hand samples, about the summed trial time; spikes, like hand samples, exist only
+  within trials, see `units.in_trials`); a
   delayed trial has a delay of at least `MIN_DELAY_S`; hand positions are smoothed with a
   Gaussian of SD `HAND_SMOOTH_MS` before the speed is taken; maximum speed is searched from the
   go cue to `SPEED_WINDOW_S` after it; movement onset is the last time before the peak that speed
-  is below `ONSET_FRACTION` of the peak; the SVM uses sklearn's default C and gamma on z-scored
+  is below `ONSET_FRACTION` of the peak (`onset_after_go`, the same searched only from the go
+  cue, is a variant); the SVM uses sklearn's default C and gamma on z-scored
   features (the paper tuned them on held-out trials and does not report them).
 """
 
@@ -129,7 +132,8 @@ def _kinematics(ht: np.ndarray, hxy: np.ndarray, go: np.ndarray, start: np.ndarr
         i0, i1 = np.searchsorted(ht, a), np.searchsorted(ht, b, side="right")
         t, xy = ht[i0:i1], hxy[i0:i1]
         row = {"max_speed": np.nan, "x_at_max": np.nan, "y_at_max": np.nan, "onset": np.nan,
-               "onset_05": np.nan, "onset_20": np.nan, "glitch": bool(np.any(np.abs(xy) > HAND_LIMIT_MM))}
+               "onset_05": np.nan, "onset_20": np.nan, "onset_after_go": np.nan,
+               "glitch": bool(np.any(np.abs(xy) > HAND_LIMIT_MM))}
         rows.append(row)
         if row["glitch"] or len(t) < 100 or not np.any(t >= g):
             continue
@@ -141,6 +145,9 @@ def _kinematics(ht: np.ndarray, hxy: np.ndarray, go: np.ndarray, start: np.ndarr
         for key, fraction in (("onset", ONSET_FRACTION), ("onset_05", 0.05), ("onset_20", 0.2)):
             below = np.flatnonzero(speed[:peak] < fraction * speed[peak])
             row[key] = t[below[-1]] if len(below) else np.nan
+        # variant: onset searched only from the go cue to the peak
+        below = np.flatnonzero(speed[window[0]:peak] < ONSET_FRACTION * speed[peak])
+        row["onset_after_go"] = t[window[0] + below[-1]] if len(below) else np.nan
     return pd.DataFrame(rows)
 
 
@@ -207,6 +214,11 @@ def load_session(path: str, url: str) -> dict:
     })
     unit_info["electrode_group"] = [meta["electrode_rows_group"][e] for e in unit_info.electrode]
     unit_info["rate"] = unit_info.n_spikes / recorded_s
+    # spikes inside trial intervals: spikes, like hand samples, should exist only within trials
+    order = np.argsort(trials.start_time.values)
+    t0, t1 = trials.start_time.values[order], trials.stop_time.values[order]
+    unit_info["in_trials"] = [int(np.sum(np.searchsorted(u, t1) - np.searchsorted(u, t0))) for u in units]
+    trial_s = float(np.sum(t1 - t0))
 
     trials["delay"] = trials.go_cue_time - trials.target_shown_time
     trials["center_out"] = (np.round(trials.tx, 1) != 0) | (np.round(trials.ty, 1) != 0)
@@ -238,6 +250,7 @@ def load_session(path: str, url: str) -> dict:
     return {
         "path": path, "monkey": monkey, "date": date, "config": config,
         "methods_config": METHODS_CONFIG[monkey].get(date), "recorded_s": recorded_s,
+        "trial_s": trial_s, "span_s": float(max(t1.max(), np.nanmax(unit_info["last"]))),
         "n_hand_samples": len(dt) + 1, "hand_dt_median": float(np.median(dt)),
         "trials": trials, "units": unit_info, "meta": meta,
         "delay_counts": delay_counts, "move_counts": move_counts, "tc_counts": tc,
