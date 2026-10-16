@@ -35,7 +35,7 @@ segments, so trials overlap in time and spikes are placed in trials by their sto
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000070-churchland-2012-01.yaml`](../../attempts/000070-churchland-2012-01.yaml).
 
-- `reproduce_churchland_2012.ipynb`: the analysis. It takes about 13 minutes: streaming spike times
+- `reproduce_churchland_2012.ipynb`: the analysis. It takes 10 to 15 minutes: streaming spike times
   and hand positions, the shuffle controls refitted per held-out condition, and the simulated
   populations.
 - `reach.py`: loading the files with both corrections, condition-averaged rates, jPCA, the shuffle

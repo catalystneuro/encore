@@ -81,12 +81,15 @@ outcomes:
     and 0.611 to 0.689 (median 0.656) in N-array, so the data exceed the control in N-array only.
     Shuffle 1, which has no rotation, scores 0.82 to 0.91 in every run, so this R2 rewards any
     consistent map from the first state to the last and is a weak test of the claim. With jPCA
-    refitted leaving each condition out, the R2 is 0.615 and 0.727, reached by 8 of 10 shuffle 3
-    runs in J-array and none in N-array. A phase score (the last phase predicted as the first plus
+    refitted leaving each condition out, the R2 is 0.615 and 0.727 against shuffle 3 medians of
+    0.628 and 0.649, reached by 8 of 10 shuffle 3 runs in J-array and none in N-array; several runs
+    lie within 0.02 of the J-array value, and the round-2 verifier's copy printed 0.614 and 6 of 10,
+    so this count moves with small numerical differences between runs. A phase score (the last phase predicted as the first plus
     the other conditions' mean advance) is 0.763 and 0.894 for the data, against 0.236 and -0.356
     for no advance; shuffle 1 scores the same with and without an advance, and shuffle 3 keeps an
     advance of 65 and 99 degrees and scores a median 0.811 and 0.797, so this score also separates
-    the data from shuffle 3 in N-array only.
+    the data from shuffle 3 in N-array only (9 of 10 shuffle 3 runs reach the data's phase score in
+    J-array, none in N-array).
   deviations:
   - The paper gives no measure of predictability; the complex-gain prediction and its thresholds
     were fixed here before the analysis.
@@ -346,7 +349,8 @@ verifications:
       holds at 0.94 or more under every variant. The metric does not separate the controls well,
       though, since jPCA orients each plane so that net rotation is counter-clockwise; shuffles 2 and
       3 also give 0.96 to 0.99 and the velocity model at lead 0 gives 0.93 to 0.97 (reported as a
-      reference only, does not affect a conclusion).
+      reference only, does not affect a conclusion). Separately, jpca omits the Methods' PC
+      smoothing, which the SI says has little effect (does not affect a conclusion).
     response: No change of outcome. The conclusion and notes now say that the fraction is high for
       shuffles 2 and 3 and the velocity model with no lead because of the orientation, and that it
       shows the conditions turn the same way, not on its own that the rotation is specific to the
@@ -373,15 +377,16 @@ verifications:
     reason: The leave-one-out R2 is 0.632 in J, below the shuffle-3 median of 0.671 and below every
       shuffle-3 run, and 0.748 in N, above 0.656. The metric itself is weak; prep_prediction_r2 scores
       any consistent linear map from the -50 ms state to the +150 ms state, rotation or not, and
-      shuffle 1, which has no rotation, scores 0.87 to 0.89. There is also mild leakage, as the plane,
+      shuffle 1, which has no rotation, scores 0.87 to 0.89; shuffle 2 also scores high. There is also mild leakage, as the plane,
       its orientation and the normalisation are fitted on all conditions and only the gain is left
       out. It asked for shuffle 3 against shuffle 1 per run and a rotation-specific score such as the
       mean phase advance predicted from the initial state.
     response: No change of outcome. Added the in-sample R2 of shuffles 1 and 3 per run, and
       prep_prediction_cv, which refits jPCA (normalisation, mean, PCs and plane) leaving each condition
       out, with a phase score (the last phase predicted as the first plus the other conditions' mean
-      advance) and the same score for no advance. Cross-validated R2 is 0.615 (J-array) and 0.727
-      (N-array), reached by 8 of 10 shuffle 3 runs in J-array and none in N-array. The phase score
+      advance) and the same score for no advance. Cross-validated R2 is about 0.61 (J-array) and 0.73
+      (N-array), reached by most shuffle 3 runs in J-array (6 to 8 of 10 between runs) and none in
+      N-array. The phase score
       separates the data from shuffle 1 (0.763 and 0.894 against 0.236 and -0.356 for no advance;
       shuffle 1 scores the same with and without an advance), but shuffle 3 keeps an advance and
       scores 0.811 and 0.797, so the data exceed it in N-array only, as with the criterion's measure.
@@ -488,9 +493,10 @@ verifications:
       ms, and with four more seeds, with the angle histograms and the synthetic decay (0.972 pi). With
       the 100 ms lead the velocity model's peak lies at 0.36 to 0.86 pi under every envelope; with no
       lead and preparatory tuning it lies at 0.19 to 0.42 pi; with no lead and no preparatory tuning it
-      is 0.028 pi in both datasets, near zero as the paper reports. The failure of the angle part thus
-      comes from choices made here; the outcome follows the model fixed in the criterion, and the
-      notes say this.
+      is 0.028 pi in both datasets, near zero as the paper reports. The angle peak thus depends on the
+      model's open choices; no configuration that keeps the preparatory tuning the claim specifies
+      peaks within pi/4 of zero in both datasets. The outcome follows the model fixed in the
+      criterion, and the notes say this.
   - claim: fig6-complex-kinematic-model
     agrees: true
     outcome: not_reproduced
@@ -534,4 +540,185 @@ verifications:
     agrees: true
     outcome: blocked
     reason: The speed-task data of monkeys A and B are absent; no file has an instructed-speed condition.
+    response: No change.
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the first revision, with its conclusions and summary,
+    the README, the helper module, the claims file and the attempt record. The verifier did not download
+    the paper this round and relied on its round-1 reading for what the paper says. All 22 outcomes agree
+    with the record. It also noted that the README gave a run time of about 13 minutes against 14.4
+    minutes printed; the README now says 10 to 15 minutes (this re-run took 9.6).
+  results:
+  - claim: array-dataset-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs. The per-electrode units cannot be resolved from the files, which is
+      disclosed.
+    response: No change.
+  - claim: fig3ef-same-direction
+    agrees: true
+    outcome: reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs. The missing PC smoothing (B8) remains a stated deviation that does
+      not affect a conclusion.
+    response: No change.
+  - claim: fig3-independent-of-curvature
+    agrees: true
+    outcome: partially_reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs. The J-array clockwise class stays between 0.868 and 0.878 under every
+      heading definition and threshold (cell 29); the hand-path plot and the alternative
+      classifications resolve B6, and the classes match the paths.
+    response: No change.
+  - claim: fig3-phase-from-prep-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: It agrees. With jPCA fully refitted per held-out condition, J-array is 0.614 against a
+      shuffle 3 median of 0.630 and N-array 0.726 against 0.648, the same pattern as under the
+      criterion's measure, and the leakage it raised does not change the outcome. Cell 34 and the
+      record said 0.615 and 0.727 and 8 of 10 shuffle 3 runs reaching the J-array value, while cell 33
+      printed 0.614, 0.726 and 6 of 10; these look like numbers from an earlier run. The round-1
+      reason in the record left out its remark that shuffle 2 also scores high.
+    response: No change of outcome. The re-run prints 0.615 and 0.727, shuffle 3 medians 0.628 and
+      0.649, and 8 of 10 in J-array; the code and seeds are unchanged, so the difference from the
+      verifier's copy comes from small numerical differences between runs, to which the J-array count
+      is sensitive as several shuffle 3 runs lie within 0.02 of the data. Cell 34 and the notes now
+      give the medians and this run's counts, say that the J-array count can move between runs, and
+      give the phase-score counts (9 of 10 in J-array, none in N-array). The round-1 reason now
+      includes the remark on shuffle 2, and the round-1 response no longer gives the count as fixed.
+  - claim: var-captured-jpc-plane
+    agrees: true
+    outcome: reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs. The per-electrode units cannot be resolved from the files, which is
+      disclosed; lower variance fractions are expected from noisier channel-level units, but this was
+      not tested.
+    response: No change.
+  - claim: pc23-variance
+    agrees: true
+    outcome: partially_reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs. The per-electrode units cannot be resolved from the files, which is
+      disclosed; lower variance fractions are expected from noisier channel-level units, but this was
+      not tested.
+    response: No change.
+  - claim: suppfig4-j-array-planes
+    agrees: true
+    outcome: not_reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs. The per-electrode units cannot be resolved from the files, which is
+      disclosed; lower variance fractions are expected from noisier channel-level units, but this was
+      not tested.
+    response: No change.
+  - claim: suppfig4-planes-range
+    agrees: true
+    outcome: partially_reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs. The per-electrode units cannot be resolved from the files, which is
+      disclosed; lower variance fractions are expected from noisier channel-level units, but this was
+      not tested.
+    response: No change.
+  - claim: fig6a-angle-peak
+    agrees: true
+    outcome: reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs.
+    response: No change.
+  - claim: fig6b-skew-fit
+    agrees: true
+    outcome: reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs. It checked the 6-D ratio ranges against the outputs.
+    response: No change.
+  - claim: rotation-frequency
+    agrees: true
+    outcome: partially_reproduced
+    reason: It agrees. The outcome rests on the fixed -50 to +150 ms window; the paper chose a
+      window per dataset, and J-array is in range with windows starting at -100 or -150 ms, which is
+      disclosed. The low J-array value is not the static-onset effect (windows from 0 or +50 ms give
+      1.04 and 1.13 Hz). Cell 54 says J-array reaches the range only with the -100 to +100 ms window
+      or 10 PCs, but cell 53 prints 1.305 Hz for the -150 to +50 ms window, also in range; the word only
+      holds for the cell 52 variants alone.
+    response: No change of outcome. Cell 54 now says that among the cell 52 variants J-array reaches
+      the range only with the -100 to +100 ms window or 10 PCs, and that the -150 to +50 ms window
+      also does (1.31 Hz).
+  - claim: suppfig3-shuffle-controls
+    agrees: true
+    outcome: not_reproduced
+    reason: It agrees. not_reproduced follows the criterion's R2(M_skew), which the SI does not
+      predict shuffles 2 and 3 to reduce. On the phase score shuffle 3 matches the data in J-array (9
+      of 10 runs at or above it) and falls below it in N-array. The outcome is disclosed as tied to
+      the criterion's measure and should not be read as the paper's controls failing. The single
+      dividing time (B7) remains a stated deviation.
+    response: No change. The conclusion and notes already say that the outcome follows the
+      criterion's measure and that R2(M_skew) does not measure what the SI expects of shuffles 2 and
+      3.
+  - claim: suppfig5-areas-variance
+    agrees: true
+    outcome: partially_reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs. The per-electrode units cannot be resolved from the files, which is
+      disclosed; lower variance fractions are expected from noisier channel-level units, but this was
+      not tested.
+    response: No change.
+  - claim: suppfig5-m1-faster
+    agrees: true
+    outcome: reproduced
+    reason: It agrees with the stated outcome, unchanged from round 1; the conclusions and summary
+      match the printed outputs. It checked the M1/PMd ratios of 1.5 to 2.4.
+    response: No change.
+  - claim: fig6-velocity-model
+    agrees: true
+    outcome: not_reproduced
+    reason: It agrees; the main models fail the angle bound under every seed with the 100 ms lead
+      (cell 64). The response for this claim in the record says the failure of the angle part comes
+      from choices made here, but cell 64 shows the peak near zero in both datasets only when the
+      preparatory tuning is removed and there is no lead; the claim's model includes preparatory
+      tuning, and with it and no lead N-array still peaks at 0.36 to 0.42 pi. The data show that the
+      peak depends on the model's open choices, as the notes and cell 65 put it, not that the failure
+      comes only from those choices. No configuration that keeps the endpoint-tuned preparatory
+      activity peaks within pi/4 of zero in both datasets.
+    response: No change of outcome. The round-1 response now says that the angle peak depends on the
+      model's open choices and that no configuration keeping the preparatory tuning peaks within pi/4
+      of zero in both datasets.
+  - claim: fig6-complex-kinematic-model
+    agrees: true
+    outcome: not_reproduced
+    reason: It agrees; the main models fail the angle bound under every seed with the 100 ms lead
+      (cell 64). As for the velocity model, no configuration that keeps the endpoint-tuned preparatory
+      activity peaks within pi/4 of zero in both datasets, and the record should state the cause no
+      more strongly than that.
+    response: No change. The notes for this claim already state the cause as the dependence on the
+      model's choices.
+  - claim: fig1-leech-and-walking
+    agrees: true
+    outcome: blocked
+    reason: It agrees with the stated outcome, unchanged from round 1.
+    response: No change.
+  - claim: fig2-single-neuron-responses
+    agrees: true
+    outcome: blocked
+    reason: It agrees with the stated outcome, unchanged from round 1.
+    response: No change.
+  - claim: fig3abcd-single-electrode-datasets
+    agrees: true
+    outcome: blocked
+    reason: It agrees with the stated outcome, unchanged from round 1.
+    response: No change.
+  - claim: fig4-emg-no-rotation
+    agrees: true
+    outcome: blocked
+    reason: It agrees with the stated outcome, unchanged from round 1.
+    response: No change.
+  - claim: fig5-generator-model
+    agrees: true
+    outcome: blocked
+    reason: It agrees with the stated outcome, unchanged from round 1.
+    response: No change.
+  - claim: fig6cd-speed-independent-frequency
+    agrees: true
+    outcome: blocked
+    reason: It agrees with the stated outcome, unchanged from round 1.
     response: No change.
