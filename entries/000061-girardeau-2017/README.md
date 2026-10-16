@@ -19,12 +19,12 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The dandiset has no position tracking, so run direction comes from the reward times. Position
-could only come from tracking the raw video frames stored in the files, which would take more
-than 200 hours to stream. The attempt
+could only come from tracking the raw video frames stored in the files, which would take about
+190 hours to stream at the rate measured in the last run. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/000061-girardeau-2017-01.yaml`](../../attempts/000061-girardeau-2017-01.yaml).
 
-- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about eleven minutes, six of them
-  streaming the files.
+- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 14 minutes (13.9 in the last
+  run, as printed at its end), six of them streaming the files.
 - `hpcbla.py`: loading the files, sleep epochs, laps, joint patterns and their reactivation, and
   ripple modulation. Other notebooks on this dandiset can import it.

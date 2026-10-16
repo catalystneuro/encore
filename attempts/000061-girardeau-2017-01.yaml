@@ -108,7 +108,9 @@ outcomes:
   deviations:
   - Laps, and so run direction, come from the reward times, as the dandiset holds no position; the
     paper presumably used the position on the track.
-  - The air-puff direction is the lap direction holding most puffs (927 of 957 puffs fall in it).
+  - The air-puff direction is the lap direction of the run holding most puffs; in the 15 sessions
+    tested, 295 of their 304 puffs fall in laps of that direction (927 of 957 over the 31 files
+    with units and at least 5 puffs).
     No minimum number of puffs was set; two sessions with 2 and 3 puffs enter the test.
   - Laps include the time spent at the starting end, not only running; templates from the travel
     part of laps are a variant.
@@ -120,8 +122,8 @@ outcomes:
   notes: Learning the location of the puff is behaviour along the track, which needs the rat's
     position. The dandiset holds no position tracking. The files hold the raw video frames (360 by
     640 pixels, gzip), so position could in principle be tracked, but the 40 run videos have
-    1920573 frames (1328 GB uncompressed) and streaming 20 frames took 8.1 s, about 217 hours for
-    the run frames alone; the video timestamps are also not on the session clock. No public copy of
+    1920573 frames (1328 GB uncompressed) and streaming 20 frames took 7.2 s in the final run, about
+    190 hours for the run frames alone (the rate varies between runs); the video timestamps are also not on the session clock. No public copy of
     the tracking linked to the paper or the dandiset was found. As a description only, laps toward
     the air-puff end take longer than the other way in the run (median ratio 1.18 over 38
     sessions, p = 0.0063) and about as long in the pre-run (0.95) and the post-run (1.00); lap
@@ -253,7 +255,81 @@ verifications:
       epochs.
     response: Changed blocked_by from data_missing to too_large. Added a data check of the video
       storage (raw frames, 360 by 640, gzip; the 40 run videos hold 1920573 frames, 1328 GB
-      uncompressed; streaming 20 frames took 8.1 s, about 217 hours for the run frames) and a section
+      uncompressed; streaming 20 frames took 7.2 s in the final run, about 190 hours for the run frames) and a section
       with the lap counts and median durations by direction in the pre-run, run and post-run epochs of
       every file. Kept blocked, as no criterion was written for the claim and lap times give no
       location on the track; the lap table is shown as a description only.
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with its conclusions and
+    summary, the helper module, the claims file, the attempt record and the README. The verifier
+    agreed with all six outcomes and recomputed the three session-level Wilcoxon tests of cell 35. It
+    found five passages the printed outputs did not support. The video streaming time in the record
+    did not match cell 11; this is corrected from the final run (7.2 s, about 192 hours). The pre-run and
+    post-run were said to have no puffs without a count; cell 51 now prints the puffs by epoch (1195
+    of 1197 in the run, 2 in the pre-sleep, none in the pre-run or post-run). The 927 of 957 puffs
+    covered only the 31 files of cell 19; cell 20 and the deviation now say so, and cell 48 prints the
+    count for the 15 tested sessions (295 of 304). Cell 40 gave the negatively modulated units as the
+    reason the up units are a subgroup; it now rests that on the fraction being below 1. The README
+    run time was not printed; the notebook now prints its run time (13.9 min in the final run) and the README gives it.
+    All round-1 points were resolved. No outcome changed, and none is proposed to change.
+  results:
+  - claim: hpc-bla-reactivation-post-sleep
+    agrees: true
+    outcome: reproduced
+    reason: Cell 28 gives 36 patterns, median 0.0119, 28 of 36 positive, p = 3.6e-05; the median is
+      above zero in all three rats, and at session level 14 of 15, p = 0.00012. Rat10 passes the
+      "median above zero" test by a small margin (5 of 8, p = 0.74), and one of its three sessions has
+      a negative median.
+    response: No change. The notes already give the Rat10 numbers (5 of 8, p = 0.74).
+  - claim: reactivation-peaks-at-ripples
+    agrees: true
+    outcome: reproduced
+    reason: Both readings hold for patterns (cells 33, 34) and for sessions (cell 35); the recomputed
+      session-level tests give 13 of 15 with p = 0.00031, and 10 of 15 with p = 0.030 twice.
+    response: No change.
+  - claim: bla-ripple-up-subgroup
+    agrees: true
+    outcome: reproduced
+    reason: Cell 38 gives 103 of 822 units against a chance level of 0.007, p = 9.8e-90, and each rat
+      passes against both the pooled chance level and its own. In cell 40, the sentence "It is a
+      subgroup, as many units (104, 12.7%) fire less in ripples" has correct numbers, but what makes the
+      12.5% a subgroup is that the fraction is below 1; the count of negatively modulated units does not
+      bear on that.
+    response: Cell 40 now says it is a subgroup since the fraction is well below 1, and gives the 104
+      negatively modulated units as a separate fact.
+  - claim: reactivation-involves-ripple-up-cells
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced under the pooled per-pattern criterion (cell 42, 24 of 31, p = 0.0013). The
+      support is weaker than this suggests, since the patterns are not independent, up units fire
+      faster (1.66 against 0.41 Hz), and once rate is controlled the session-level effect is not
+      significant (9 of 13, p = 0.22, cell 43). The conclusion says this; the claim is reproduced only
+      under the criterion as written.
+    response: No change. The conclusion and notes already state the rate-matched session-level result
+      and that the outcome rests on the pooled per-pattern criterion.
+  - claim: aversive-direction-stronger
+    agrees: true
+    outcome: not_reproduced
+    reason: Cells 46 to 48 give p = 0.107, and no variant changes it. The deviation and cell 20 say 927
+      of 957 puffs fall in the air-puff direction, but cell 19 counts only the 31 files with units and
+      at least 5 puffs, while cell 3 lists 1197 puffs; for the 13 analysed sessions in cell 19 the count
+      is 290 of 299, and the two sessions with 2 and 3 puffs are not covered. The scope should be
+      stated.
+    response: Cell 20 and the deviation now give the scope of the 927 of 957 (the 31 files of cell 19),
+      and cell 48 prints the count for all 15 tested sessions, 295 of 304.
+  - claim: rats-learn-puff-location
+    agrees: true
+    outcome: blocked
+    reason: Cell 11 gives 1,920,573 run frames, about 212 hours to stream. The record's "streaming 20
+      frames took 8.1 s, about 217 hours" does not match cell 11 (8.0 s, about 212 hours) and looks left
+      over from an earlier run. Cell 52's "in the pre-run and the post-run, when no puffs are given" has
+      no output showing how many puffs fall in each epoch. Cell 51 assigns laps to epochs by their
+      midpoint, so its run for Rat08-20130708 includes the second run and its lap counts differ from
+      run_laps in cell 48; it is descriptive only.
+    response: The record now gives the streaming time of the final run (7.2 s, about 192 hours), and says
+      that the rate varies between runs. The README no longer says more than 200 hours. Cell 51 now prints the puffs by epoch over the 38 files with
+      puffs (1195 in the run, 2 in the pre-sleep, none in the pre-run or post-run), and cell 52 cites
+      it. The midpoint assignment of cell 51 was left as it is, as the table is descriptive only and
+      decides nothing.
