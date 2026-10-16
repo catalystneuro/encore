@@ -66,8 +66,8 @@ outcomes:
     486 ms) are within tolerance; read as acquisition minus movement onset they are 255 and 181 ms. R's
     mean reaction time includes the 5.9% of its trials whose onset precedes the go cue; its median (361
     ms) and its mean over 100 to 800 ms (362 ms) are outside tolerance, and with onset searched only
-    after the go cue the means are 342 ms (J) and 340 ms (R), just inside. J's
-    delays span 300 to 700 ms as stated; R's span 400 to 1000 ms, beyond the widened bound of 990 ms.
+    after the go cue the means are 342 ms (J, within tolerance) and 340 ms (R, just inside its bound of
+    342 ms). J's delays span 300 to 700 ms as stated; R's span 400 to 1000 ms, beyond the widened bound of 990 ms.
     No-delay trials are 19.8% of J's and 0.2% of R's successful center-out trials (26, all on
     2017-01-19), not 10%. Reaction time falls with delay in R (r = -0.264, p = 1.8e-205) but not in J
     (r = -0.013, p = 0.21; with onset at 5% of peak speed r = -0.034, p = 1.5e-03; with onset after the
@@ -151,12 +151,15 @@ outcomes:
   - 270
   - 350
   notes: Divergence (D below 0.9) at 70 ms (J) and 90 ms (R) after target onset; convergence (D below
-    0.1) at 270 ms (J) and 350 ms (R). Other thresholds move divergence between 10 and 150 ms and
-    convergence between 230 and 390 ms. J's times are robust (pre-onset D SD 0.03; with the converged
-    state taken from trials whose delay window starts after the bin, 70 and 250 ms). R's divergence
-    is not, as its D lies below 0.9 in 6 of the 10 bins before target onset (SD 0.09), and with the
-    non-overlapping converged state it diverges at 10 ms, outside tolerance. Only J's times hold
-    clearly, so the result is partially reproduced. The pre-target state sits at x -2.1, y -30.4 mm
+    0.1) at 270 ms (J) and 350 ms (R). All four are within tolerance, so by the letter of the criterion
+    the result is reproduced; partially_reproduced is a judgment beyond the criterion, made because R's
+    divergence cannot be told from baseline noise. Other thresholds move divergence between 10 and 150
+    ms and convergence between 230 and 390 ms, so both monkeys' times depend on the threshold; J
+    diverges at 150 ms with threshold 0.8 and converges at 390 ms with threshold 0.05, outside
+    tolerance. J's times hold under the two added checks (pre-onset D SD 0.03; with the converged state
+    taken from trials whose delay window starts after the bin, 70 and 250 ms). R's D lies below 0.9 in
+    6 of the 10 bins before target onset (SD 0.09), and with the non-overlapping converged state it
+    diverges at 10 ms and converges at 310 ms, both outside tolerance. The pre-target state sits at x -2.1, y -30.4 mm
     (J) and 17.6, -13.1 mm (R) in the plane's target coordinates, so "starts at the center" is not
     borne out.
   deviations:
@@ -308,7 +311,12 @@ outcomes:
   notes: Under reading (a) all four values are within tolerance and projection raises the error (Welch
     J p = 2.7e-07, R p = 4.3e-41; paired over trials J p = 4.9e-12, R p = 1.2e-62). R's full value is inside its bound (2.502 cm) by 0.001 cm, so the match is
     fragile. The full-activity distance error is lower than the arc error of every ring in both monkeys
-    (p at most 3.1e-05). After projection it equals the arc error only for J's 4 cm ring (p = 0.46).
+    (p at most 3.1e-05). After projection it equals the arc error only for J's 4 cm ring (p = 0.46), so
+    the claim that projection brings it to the level of the direction errors holds for 1 of 6 rings.
+    With arc errors restricted to the 4 cm ring's range, as in the Figure 4d inset, the full error is
+    still lower than every ring's (p at most 3.1e-05), and the projected error equals the arc error for
+    J's 4 and 8 cm rings (p = 0.46 and 0.11) but not J's 12 cm ring (p = 5.3e-03) or any of R's (p at
+    most 1.0e-04), 2 of 6 rings.
   deviations:
   - The paper prints R's values in an order that contradicts its text; two readings were listed and (a)
     matches.
@@ -320,7 +328,9 @@ findings:
     PMd but their electrodes column points to electrode rows of group 1 (M1), and units 96 to 191 are
     labelled M1 but point to rows of group 2 (PMd), the rows the PMd LFP uses. The data agree with the
     electrodes column; in R the array labelled PMd has 29 silent channels and carries almost no target
-    information, as expected of the M1 array the paper calls unusable. The conversion code assigns
+    information (at most 6 significant channels per session in the delay window and decoding at most
+    0.03 above chance), though 40 of its 96 channels regress on target position when R's sessions are
+    pooled; this is as expected of the M1 array the paper calls unusable. The conversion code assigns
     electrode_group by the order of a dictionary of groups.
 - kind: format_error
   statement: In every J file the boundary between units 0 and 1 in units/spike_times_index is
@@ -541,3 +551,146 @@ verifications:
       Welch test on paired errors. Both bias against the claim, which still passes.
     response: Added a paired test over trials (J p = 4.9e-12, R p = 1.2e-62) and recorded the leak as a
       deviation and in the conclusion. Outcome unchanged.
+- date: 2026-10-16
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the revised run (commit 57c6966) with its conclusions and
+    summary, the helper module, the claims file and this attempt record.
+  results:
+  - claim: session-configurations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. Whether the horizontal/vertical swap comes from the paper or
+      the conversion cannot be settled.
+    response: No change.
+  - claim: r-trial-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the trial-count percentages match the printed numbers. The
+      reading that counts failed trials without a go cue is added (B9). The paper's trial subsets (912
+      trials) cannot be settled.
+    response: No change.
+  - claim: j-sessions-complete
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome (blocked, data_missing).
+    response: No change.
+  - claim: delays-and-times
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; B1 is resolved. The record's notes say "the means are 342 ms
+      (J) and 340 ms (R), just inside". Only R's value is just inside (bound 342); J's 342 ms is well
+      inside its range of 311 to 381 ms. Cell 24 states this correctly.
+    response: Corrected the notes to say J's mean is within tolerance and R's just inside its bound of
+      342 ms.
+  - claim: channels-task-correlated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. The Summary says the array labelled PMd "has 29 silent
+      channels and no target signal", but cell 26 prints 40 of 96 of those channels as significant for
+      R when sessions are pooled, and cell 9 shows up to 6 significant delay channels and 16 movement
+      channels per session. Cell 10's "almost no target information" fits the decoding results; "no
+      target signal" does not. The electrode_group finding should also mention the 40 of 96.
+    response: The Summary now says the labelled array carries almost no target information in the
+      decoding, with at most 6 significant delay channels per session, though 40 of its 96 channels
+      regress on target position when sessions are pooled. The electrode_group finding says the same.
+  - claim: pca-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. It stays fragile, as the outcome depends on how the day's
+      mean is taken (72.8% against 80.5% for R's PC1); the choice is now justified and disclosed, so
+      nothing more is needed beyond the statement already made.
+    response: No change.
+  - claim: spatial-plane-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; at most three of the seven plane values are within tolerance
+      under any pairing, as stated.
+    response: No change.
+  - claim: plane-timecourse
+    agrees: true
+    outcome: partially_reproduced
+    reason: By the letter of the criterion this is reproduced, as all four times are within tolerance
+      (R's 350 ms sits exactly on its bound). The downgrade is accepted, because R's divergence cannot be
+      told from baseline noise (6 of 10 pre-onset bins below 0.9), but the record should say plainly
+      that this is a judgment beyond the criterion, since pca-variance follows the letter in the other
+      direction. Cell 36's "J's times are robust" is true only for the two added checks; under the
+      other thresholds in cell 35 J diverges at 150 ms (threshold 0.8) and converges at 390 ms
+      (threshold 0.05), outside tolerance, and R's variant convergence of 310 ms is also outside 400 +-
+      50 ms without this being said. The notes repeat "J's times are robust".
+    response: Cell 36 and the notes now say the outcome is a judgment beyond the criterion, that both
+      monkeys' times depend on the threshold, with J's times outside tolerance at thresholds 0.8 and
+      0.05, and that R's variant convergence of 310 ms is outside tolerance. "Robust" is removed. Outcome
+      unchanged.
+  - claim: onoff-predicts-kinematics
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; B2 is resolved. Cell 39 says "off axis J 0.101, R 0.083, p at
+      most 3.0e-21", but J's p is 3.1e-21 (cell 38).
+    response: Corrected cell 39 to "p at most 3.1e-21".
+  - claim: speed-axis-within-distance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; B5 is resolved. Cell 42 says "Split by task and session, 110
+      to 180 trials per distance", but no per-task, per-session trial counts are printed in cell 41.
+    response: Cell 41 now prints the trials per distance in each task and session (R 152 to 182, J 106
+      to 164), and cell 42 gives these ranges.
+  - claim: distance-after-speed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; B7 is resolved.
+    response: No change.
+  - claim: speed-distance-projection
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: single-trial-variance
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ellipse-orientation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: on-greater-than-off
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: relative-deviation-decreases
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the point that the test discriminates little is now stated.
+    response: No change.
+  - claim: svm-ring-and-distance
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. The paper's trial subsets (2237 held-out) cannot be settled.
+    response: No change.
+  - claim: svm-3rings-by-ring
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: arc-error-distance-independent
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the Fig 4d inset restriction was confirmed against the
+      paper's legend.
+    response: No change.
+  - claim: distance-error-and-plane-projection
+    agrees: true
+    outcome: reproduced
+    reason: Correct by the criterion. The claim also says projection raises the error "to the level of
+      the direction errors", and the paper gives p > .05 for every ring in J and R; in cell 73 this holds
+      for only 1 of 6 rings (J 4 cm, p = 0.46). The test also compares against unrestricted arc errors,
+      while the paper's Fig 4d inset uses errors within the 4 cm ring's range; the restricted comparison
+      was not run.
+    response: Added the comparison against arc errors within the 4 cm ring's range to cell 73. The full
+      error is still lower than every ring's (p at most 3.1e-05); the projected error equals the arc
+      error for J's 4 and 8 cm rings (p = 0.46 and 0.11) and differs for J's 12 cm ring and all of R's,
+      2 of 6 rings. Cell 74 and the notes say that this part of the claim holds for 1 of 6 rings, or 2
+      of 6 with the restriction. Outcome unchanged, as the criterion is met.
