@@ -128,30 +128,25 @@ outcomes:
   - In rat GG the side labels may be swapped (see channel-region-link); this does not change a
     left-right test.
 - claim: traj-diverge
-  outcome: partially_reproduced
+  outcome: blocked
+  blocked_by: data_missing
   notebook: reproduce_fujisawa_2008.ipynb
   output: claim:traj-diverge
-  measured: 0.49
-  notes: Tested in the first revision on x1, the x coordinate of the first head LED, under a
-    criterion written before x1 was compared between sides. x1 runs along the maze (about 570 px
-    at the start, 190 px near position 0.5, back up towards the reward) on both sides. It differs
-    between sides somewhere in 0.5 to 1 in all 9 sessions, by at most 7 to 57 px. The median
-    divergence point is 0.49 (8 of 9 sessions have one; 0.46 to 0.58 in seven, 0.06 in GG.149),
-    above 0.33, so partially reproduced. In EE.049, FF.130 and the three GG sessions x1 also
-    differs in 11 to 14 of the 15 central-arm bins, by at most 5 to 17 px, so by x1 alone the
-    paths are not identical in the central arm there either. In the final revision the divergence
-    point was compared with the position where x1 reaches its minimum (0.47 to 0.53); in the
-    seven sessions with a divergence point other than GG.149 it lies within 0.08 of it (median
-    -0.01 over eight), and at position 0.3 the sides differ by a median 2.8 px while x1 falls by
-    a median 244 px from 0 to 0.3. x1 thus begins to differ where the path turns back in x; a
-    lateral separation would lie along the y coordinate, which is not in the dandiset.
-  proposed:
-    outcome: blocked
-    blocked_by: data_missing
-    reason: x1 cannot locate where the paths separate laterally. The x1 difference begins within
-      0.08 of the x1 minimum, where the path turns back in x (median -0.01, notebook cell 35), and at 0.3 the sides differ by a median 2.8 px. The criterion's partial
-      rating follows from any x1 divergence above 0.33, so it says nothing about the claim. The y
-      coordinate the test needs is not in the dandiset, as the verifier of round 2 also found.
+  notes: The claim is about where left and right trajectories separate laterally, which would show
+    along the y coordinate; the second LED series is zero throughout (cell 33), so the dandiset has
+    no y coordinate. x1, the x coordinate of the first head LED, runs along the maze (about 570 px
+    at the start, 190 px near position 0.5, back up towards the reward) on both sides. Under the
+    criterion written in the first revision it differs between sides somewhere in 0.5 to 1 in all
+    9 sessions, by at most 7 to 57 px, with a median divergence point of 0.49 (8 of 9 sessions have
+    one), which the written criterion would rate as partially reproduced. The divergence point lies
+    within 0.08 of the position where x1 reaches its minimum (0.47 to 0.53) in the seven sessions
+    other than GG.149 (median -0.01 over eight, cell 35), and at position 0.3 the sides differ by a
+    median 2.8 px while x1 falls by a median 244 px from 0 to 0.3. x1 thus begins to differ where
+    the path turns back in x and does not locate a lateral separation, and the criterion's partial
+    rating would follow from any x1 divergence past the turn. Changed to blocked in round 3, with
+    the verifier's agreement. The overlap of the paths in the central arm cannot be judged either;
+    the 5 to 17 px x1 differences there in five sessions do not stand in for a two-dimensional
+    comparison.
   deviations:
   - Only the x coordinate is available; the paper used the two-dimensional position.
   - The test (Welch t-test per bin of 0.02, p < 0.01, divergence from the first bin of a run up
@@ -653,3 +648,27 @@ verifications:
     outcome: blocked
     reason: Agrees.
     response: No change.
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The proposed change of outcome for traj-diverge only, with the full executed notebook of
+    the final revision (cells 33 to 36), the claims file and the attempt record. No paper text was
+    downloaded this round. Report in transcripts/000067/verifier-3-report.md.
+  results:
+  - claim: traj-diverge
+    agrees: true
+    outcome: blocked
+    reason: The numbers come from the data (cell 35); it recomputed the divergence point minus the
+      x1 minimum (median -0.01, every session except GG.149 within 0.08), the x1 minimum (0.47 to
+      0.53), the 2.808 px median gap at 0.3 and the 243.8 px median fall from 0 to 0.3. Comparing
+      the divergence point with the x1 minimum is a direct check of what x1 measures and gives up
+      the more favourable rating. A difference that starts at that turn marks where the path
+      reverses in x, not where the paths separate sideways. The written criterion gives partially
+      reproduced, but its premise, that a side difference in x1 means x1 carries the lateral
+      separation, is false, and it would rate any x1 result past the turn as partial support. The
+      separation would show along the y coordinate, which the dandiset lacks (cell 33), so blocked
+      (data_missing) is correct. The overlap in the central arm cannot be judged either; the 5 to
+      17 px x1 differences there could come from small offsets in path or camera position.
+    response: Changed to blocked (data_missing) and removed the proposal. The notes, the notebook's
+      conclusion and summary, the README and the header table now give blocked, and the notes add
+      that the central-arm overlap cannot be judged from x1.

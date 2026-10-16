@@ -13,7 +13,7 @@ matching task. The paper's fourth rat and its example session (EE.188) are not i
 | About 10% (layer 2/3) and 20% (layer 5) of neurons active per 100 ms, constant along the maze | Not reproduced |
 | Field sizes of 0.27 plus or minus 0.17 of the track | Partially reproduced |
 | Trajectory-selective neurons in the central and side arms | Partially reproduced |
-| Trajectories diverge at position 0.3 | Partially reproduced (proposed: blocked, data missing) |
+| Trajectories diverge at position 0.3 | Blocked: data missing |
 | About a quarter of neurons respond differently to the two odors | Partially reproduced |
 | 0.79% of pairs connected (0.55% excitatory, 0.24% inhibitory) | Partially reproduced |
 | 32.5% pyramidal cells and 12.5% interneurons by their connections | Not reproduced |
@@ -26,9 +26,9 @@ matching task. The paper's fourth rat and its example session (EE.188) are not i
 
 The unit count fails with the eight sessions whose units can be placed by waveform; with EE.088
 placed by the conversion's block order it is 631, within tolerance, and the count of rats fails
-because the fourth rat is not in the dandiset. For the divergence of trajectories, the dandiset
-holds only the x coordinate, which marks where the path turns back in x; a change of outcome to
-blocked is proposed for a further round of verification.
+because the fourth rat is not in the dandiset. The divergence of trajectories is blocked: the dandiset
+holds only the x coordinate, which marks where the path turns back in x and not where the left and
+right paths separate.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
