@@ -69,6 +69,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000003](https://dandiarchive.org/dandiset/000003) | [Senzai et al. 2017](https://doi.org/10.1016/j.neuron.2016.12.011) | 15 | 11 | 3 | 2 | [`000003-senzai-2017`](entries/000003-senzai-2017) |
 | [000044](https://dandiarchive.org/dandiset/000044) | [Grosmark et al. 2016](https://doi.org/10.1126/science.aad1935) | 3 | 3 | 6 | 8 | [`000044-grosmark-2016`](entries/000044-grosmark-2016) |
 | [000056](https://dandiarchive.org/dandiset/000056) | [Peyrache et al. 2015](https://doi.org/10.1038/nn.3968) | 6 | 2 | 0 | 13 | [`000056-peyrache-2015`](entries/000056-peyrache-2015) |
+| [000059](https://dandiarchive.org/dandiset/000059) | [Petersen et al. 2020](https://doi.org/10.1016/j.neuron.2020.05.023) | 12 | 15 | 10 | 1 | [`000059-petersen-2020`](entries/000059-petersen-2020) |
 
 Counts are of claims that rest on the dandiset, including those that take
 names for its own codes from elsewhere. Claims that also use data from
