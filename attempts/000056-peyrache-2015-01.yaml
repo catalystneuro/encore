@@ -29,8 +29,14 @@ outcomes:
     recorded cells in 42 sessions. By mouse the fraction is 0.108 to 0.386; in the mice that appear
     to be thalamus only it is 0.133 (133 of 1000) against the paper's thalamic 0.336, and in the
     mice that appear dual-site 0.335 (245 of 731). With a concentration threshold of 0.8 or 1.2 the
-    count is 424 or 357. No HD cell is among the units whose spike times were unsorted. The split
-    into 242 thalamic and 111 PoS HD cells cannot be tested.
+    count is 424 or 357. No HD cell is among the units whose spike times were unsorted. The count
+    passes only with Mouse12-120808 as deposited, where position and spikes do not share a clock and
+    no unit passes the criteria. With position realigned by the best shift of each quarter of the
+    epoch, that session has 13 HD cells (12 with one constant shift of -2.6 s), and the count is 391
+    (390), above the upper bound of 388.3, so the match of the count is fragile. The unit rows
+    cannot be brought down to the paper's 1077 cells from the files (1826 rows fire at 0.05 Hz or
+    more and 1526 at 0.5 Hz or more; unit ids are 0 to N-1 and carry no shank or cluster number).
+    The split into 242 thalamic and 111 PoS HD cells cannot be tested.
   deviations:
   - Regions pooled, as the units carry no region.
   - The von Mises fit (maximum likelihood fit to the tuning curve as a distribution of angles) and
@@ -38,6 +44,8 @@ outcomes:
     choices made here; the Methods do not specify them.
   - The open-field epoch is found from position, as the files do not mark it.
   - Mouse17-130201 and Mouse32-140820 have no processed position and are left out.
+  - Mouse12-120808 is counted as deposited, with position and spikes on different clocks; the
+    realigned session is a variant.
 - claim: fig2a-rates-preserved
   outcome: reproduced
   notebook: reproduce_peyrache_2015.ipynb
@@ -69,8 +77,9 @@ outcomes:
     crosses zero at 54.2 degrees in waking, 56.9 in REM and 55.9 in SWS (measured gives the
     waking value, the lowest), all within 54 to 66. The Pearson correlation of pair correlation
     with offset is -0.751, -0.741 and -0.671 (p below 1e-200). With 15 degree bins the crossings
-    are 55.4, 57.9 and 57.7 degrees; under reading (b) 54.1, 57.1 and 56.5. The waking crossing is
-    0.2 degrees inside the tolerance.
+    are 55.4, 57.9 and 57.7 degrees; under reading (b) 54.1, 57.1 and 56.5, the waking value just
+    outside the tolerance. The waking crossing of reading (a) is 0.2 degrees inside the tolerance,
+    so the pass is close to the boundary.
   deviations:
   - ADn-ADn, ADn-PoS and PoS-PoS pairs are pooled.
 - claim: fig2f-sws-tenfold-faster
@@ -82,10 +91,16 @@ outcomes:
     ratio of SWS to waking angular velocity is 8.33 (quartiles 5.91 to 11.31), below 9 to 11; SWS
     is faster in 1420 pairs (sign test p = 4.1e-309). Median speeds are 36.9 deg/s in waking,
     33.5 in REM and 324.4 in SWS. By mouse the ratio is 7.89 to 13.52. The Bayesian decoder
-    variant gives a median of 11.53 over 28 sessions. The waking estimates are 0.60 times the
-    measured mean angular speed of the head (median over sessions) and correlate with it at
-    r = 0.20 across 33 sessions, so the estimator as implemented here is not well calibrated, and
-    the shortfall from tenfold may come from the implementation.
+    variant gives a median of 11.53 over 28 sessions. Under reading (b) the median is 8.02 over
+    2129 pairs; with pairs whose fits reach R2 of 0.25 or 0.5 in every state, 8.46 (1063 pairs) and
+    8.56 (748 pairs). Median R2 is 0.84 in waking, 0.55 in REM and 0.78 in SWS. The waking estimates
+    are 0.60 times the measured mean angular speed of the head (median over sessions) and correlate
+    with it at r = 0.20 across 33 sessions. On Poisson surrogates driven by the measured head
+    direction and the waking tuning curves, the estimator returns 0.37 of the true mean speed
+    (median 37.0 deg/s, as on the data, against a true 99.9), and for the same trajectory played
+    ten times faster it gives a median ratio of 4.99 (quartiles 2.76 to 7.02), not 10. The estimator
+    as implemented here therefore compresses ratios, and the shortfall of 8.33 from tenfold can come
+    from it; how far its bias in SWS matches that of the surrogates is not known.
   deviations:
   - The paper does not say how the expected and observed cross-correlograms are put on one scale;
     a free scale and offset are fitted here.
@@ -99,7 +114,7 @@ outcomes:
   output: claim:fig2f-rem-similar-to-wake
   measured: 0.87
   notes: The median REM to waking ratio is 0.87 over 1509 pairs (quartiles 0.60 to 1.26), inside
-    0.67 to 1.5; by mouse 0.69 to 1.07; the decoder variant gives 1.05. By a Wilcoxon test of the
+    0.67 to 1.5, and 0.85 over 2129 pairs under reading (b); by mouse 0.69 to 1.07; the decoder variant gives 1.05. By a Wilcoxon test of the
     log ratio REM is slower than waking (p = 6.3e-18, median log10 ratio -0.060, about 13%), a
     test the paper does not make.
   deviations:
@@ -108,10 +123,16 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_peyrache_2015.ipynb
   output: claim:fig4b-noise-correlations
-  notes: With the Methods' formula (mean cross-products), the noise correlation of pairs at 0 plus
-    or minus 15 degrees is positive in 110 of 118 pairs (median 7.84 Hz2, 0.81 of the chance
-    product, Wilcoxon p = 5e-19) and of pairs at 60 plus or minus 15 degrees positive in only 35 of
-    256 (median -4.08 Hz2, p = 4.6e-32). It holds in the mice that appear thalamus only. Under the
+  notes: With the Methods' formula (mean cross-products over bins where the head direction is known
+    at both times), the noise correlation of pairs at 0 plus or minus 15 degrees is positive in 110
+    of 118 pairs (median 7.84 Hz2, 0.81 of the chance product, Wilcoxon p = 5.3e-19) and of pairs
+    at 60 plus or minus 15 degrees positive in only 35 of 256 (median -4.08 Hz2, p = 4.2e-32).
+    Under reading (b) the medians are 4.22 and -1.63 Hz2 (p = 2e-24 and 6.8e-42). On independent
+    Poisson surrogates with tuning curves estimated from their own spikes, the measure is biased in
+    the same direction, median +0.64 Hz2 at 0 degrees and -0.37 Hz2 at 60, about a tenth of the
+    observed values; the data exceed their surrogates in 110 of 118 pairs at 0 degrees (p = 5e-19)
+    and fall below them in 223 of 256 at 60 degrees (p = 1.6e-31). It holds in the mice that appear
+    thalamus only. Under the
     first criterion, with both cross-correlations on a Pearson scale, the 0 degree pairs are
     negative (median -0.78), which reflects the scale and not the data.
   deviations:
@@ -125,7 +146,8 @@ outcomes:
   output: claim:decoding-tracks-hd
   notes: In 28 sessions with at least 6 HD cells, two-fold cross-validated decoding has a pooled
     median absolute error of 11.7 degrees (chance 90); session medians 8.1 to 27.2, all at or
-    below 30.
+    below 30. With HD cells selected on the training half alone, the same 28 sessions give a pooled
+    median of 11.7 degrees (session medians 8.1 to 24.7).
   deviations:
   - HD cells of both structures are decoded together; the paper decodes one structure at a time.
   - The threshold of 30 degrees for "faithfully" and the 6 degree angle bins are chosen here.
@@ -141,7 +163,12 @@ outcomes:
 - claim: ensemble-sizes
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: No region per unit. Pooled, the sessions hold 0 to 26 HD cells (median 10).
+  notes: No region per unit. Pooled, the sessions hold 0 to 26 HD cells (median 10). In the mice
+    that appear thalamus only there are 7.4 plus or minus 6.2 (s.d.) HD cells per session over 18
+    sessions (7.8 plus or minus 6.1 without Mouse12-120808), against the ADn's 8.4 plus or minus
+    5.1; in the mice that appear dual-site 12.2 plus or minus 5.9 over 20 sessions, both structures
+    together. The assignment of mice is consistent with the files but not shown by them, so these
+    numbers do not decide the claim.
 - claim: fig3a-adn-stronger-than-pos
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -151,7 +178,10 @@ outcomes:
   blocked_by: metadata_insufficient
   notes: The coherence is shown per structure, and units have no region. The measure is also
     described only by reference to earlier work (the bootstrap of population vectors is not
-    fully specified), which would block it as methods_underspecified as well.
+    fully specified), which would block it as methods_underspecified as well. A version pooled over
+    regions could be run, but the Methods do not say how the actual and expected packets are
+    compared or how the probability is formed from the 5,000 random waking population vectors, so
+    it is not run here.
 - claim: fig4c-noise-adn-vs-pos
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -172,6 +202,9 @@ outcomes:
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: The claim is about ADn pairs on different shanks; units have neither region nor shank.
+    The mice that appear thalamus only could stand in for the ADn, but that assignment is not shown
+    by the files, and without shanks the pairs on the same shank, whose fast synchrony at 1 to 5 ms
+    is distorted by spike sorting, cannot be removed.
 - claim: fig7-adn-pos-connections
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -189,13 +222,16 @@ findings:
 - kind: metadata_insufficient
   statement: The units tables hold only spike times. No unit has an electrode, shank, brain region,
     waveform or quality measure, and every electrode's location is "unknown". Units cannot be
-    assigned to the antero-dorsal thalamus or the post-subiculum, which blocks 12 of the paper's 20
+    assigned to the antero-dorsal thalamus or the post-subiculum, which blocks 13 of the paper's 21
     claims. The electrode groups and ripple annotations are consistent with Mouse24, Mouse25 and
     Mouse28 being the three dual-site mice, but the files do not say so.
 - kind: selection_undocumented
   statement: The files hold 1959 unit rows (103 with no spikes) in 40 sessions, against the paper's
-    1077 recorded cells in 42 sessions. Mouse12-120809 alone has 292 units. Nothing marks which units
-    or sessions the paper analysed (its Methods discard some sessions).
+    1077 recorded cells in 42 sessions. Mouse12-120809 alone has 292 units, 167 of them firing below
+    0.5 Hz. Unit ids run from 0 to N-1 and carry no shank or cluster number, the units table has no
+    quality measure, and 1526 rows fire at 0.5 Hz or more, so the paper's 1077 cells cannot be
+    recovered. Nothing marks which units or sessions the paper analysed (its Methods discard some
+    sessions).
 - kind: metadata_insufficient
   statement: The open-field exploration (the paper's waking epoch) is not marked. The "Awake" state
     also covers waking in the home cage, and some sessions hold a second exploration or a larger
@@ -207,8 +243,8 @@ findings:
 - kind: other
   statement: In Mouse12-120808 the position and the spikes do not share a clock. Head-direction
     tuning is best with position shifted by -1.5 s at the start of the exploration and -3.4 s at
-    its end, and no unit passes the HD criteria as deposited. In all other sessions the best shift
-    is -0.2 to 0 s.
+    its end, and no unit passes the HD criteria as deposited; with position realigned by the best
+    shift of each quarter, 13 units do. In all other sessions the best shift is -0.2 to 0 s.
 - kind: metadata_error
   statement: The raw LED positions in `acquisition` are stated in meters with a conversion of NaN
     but hold camera pixels (values in the hundreds).
@@ -227,3 +263,207 @@ findings:
   statement: Neither the paper nor the dandiset links analysis code, so the von Mises fit, the
     Rayleigh test, the scaling in the cross-correlogram estimate of angular velocity and the
     coherence measure had to be chosen or could not be repeated.
+verifications:
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier checked the archive metadata for the
+    blocked claims and tested helper functions and two measures on synthetic inputs. Its report had no
+    attempt record and gave its own outcome for each claim; all 21 agree with the record.
+  results:
+  - claim: hd-cell-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: In cell 22, 378 HD cells, inside 353 ± 35.3, but the fraction is 0.218 under reading (a) and
+      0.205 under (b), both outside 0.328 ± 0.033. The deposited units table has 1959 rows against the
+      paper's 1077 cells, so the denominators differ. In Mouse12-120808 position and spikes do not share
+      a clock and the session contributes 0 HD cells; aligning it would likely add about 10 to 20 cells
+      and push the count above 388.3, so the count passing depends on a corrupt session (B1). The extra
+      unit rows suggest clusters the paper did not count, which makes the fraction test uninformative and
+      the count match possibly coincidental; unit ids and cluster information were never inspected (B2).
+    response: Added the count with Mouse12-120808 realigned by the best shift of each quarter (13 HD cells
+      in that session, 391 in all) and with one constant shift of -2.6 s (12, 390), both above 388.3. Added
+      a data check of the unit rows (ids are 0 to N-1 with no shank or cluster number, the electrode groups
+      say only "shankN electrodes" with location "unknown", and 1826 and 1526 rows fire at 0.05 and 0.5 Hz
+      or more). Outcome kept, as the criterion counts the sessions as deposited; the conclusion and notes
+      now say the count match is fragile, and the findings record the unit ids.
+  - claim: fig2a-rates-preserved
+    agrees: true
+    outcome: reproduced
+    reason: Waking against SWS r = 0.838 (p = 3.7e-101), waking against REM r = 0.891 (p = 4.5e-131), both
+      at least 0.7. It uses 378 cells against the expected 277; the criterion says the count does not
+      decide the outcome.
+    response: No change needed.
+  - claim: fig2b-pair-correlations-preserved
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), 1573 pairs, r = 0.938 for SWS and 0.963 for REM; reading (b) 0.925 and 0.952. The
+      paper's Methods ("at least 0.5 Hz in any of the three brain states") correspond to reading (b),
+      which also passes.
+    response: No change needed.
+  - claim: fig2f-sws-tenfold-faster
+    agrees: true
+    outcome: partially_reproduced
+    reason: Median SWS/waking ratio 8.33 over 1509 pairs, outside 10 ± 1, but above 2 with SWS faster in
+      1420 of 1509 pairs. In the verifier's simulation of independent Poisson cells with a known trajectory
+      the fit underestimated the speed by about 20%, varying with offset; on the data the waking estimate
+      correlates at only 0.20 with the head speed, with a ratio of 0.60. The bias of the method is not
+      validated and need not be the same in SWS as in waking, and the ratio varies by offset bin, so the
+      8.33 result is method-dependent (B3). Reading (b) and fit quality per pair were not shown (B4, C).
+    response: Added reading (b) (8.02 over 2129 pairs), the R2 of each fit by state (medians 0.84, 0.55 and
+      0.78 in waking, REM and SWS) with the ratio for pairs whose fits reach R2 of 0.25 or 0.5 (8.46 and
+      8.56), and a calibration on Poisson surrogates driven by the measured head direction, which recovers
+      0.37 of the true waking speed and a median ratio of 4.99 for a trajectory played ten times faster.
+      Outcome kept, as the criterion decides on the data's median ratio; the conclusion and notes now say
+      the estimator compresses ratios and the shortfall from tenfold can come from it.
+  - claim: fig2f-rem-similar-to-wake
+    agrees: true
+    outcome: reproduced
+    reason: Median REM/waking ratio 0.87, inside 0.67 to 1.5. The Wilcoxon test gives p = 6e-18 (REM about
+      13% slower), so the two are similar by the stated criterion but not identical.
+    response: Added reading (b) (0.85). Outcome kept.
+  - claim: fig3a-packet-60-degrees
+    agrees: true
+    outcome: reproduced
+    reason: Zero crossings at 54.2 (waking), 56.9 (REM) and 55.9 degrees (SWS), all inside 54 to 66, with
+      Pearson r of -0.75, -0.74 and -0.67 (p at most 1.7e-206). The waking crossing clears the lower bound
+      by only 0.2 degrees, and the thalamus-only variant (53.6) falls outside it (B7).
+    response: The conclusion and notes now also say that the waking crossing under reading (b), 54.1
+      degrees, is just outside the tolerance. Outcome kept, as the criterion uses reading (a).
+  - claim: fig4b-noise-correlations
+    agrees: true
+    outcome: reproduced
+    reason: Pairs at 0 ± 15 degrees have median +7.84 Hz2 (110 of 118 positive, p = 5e-19); pairs at 60 ±
+      15 degrees median -4.08 Hz2 (35 of 256 positive, p = 4.6e-32). The revised criterion matches the
+      Methods formula. In the verifier's simulation of independent cells the measure is biased by about
+      +3.6 Hz2 at 0 degrees and about 0 at 60, the same way as the claimed excess but about a tenth of the
+      observed relative value; bins with a missing LED are dropped before lagging, so some lags join
+      non-adjacent times (B5). Reading (b) was not shown (B4).
+    response: The lagged products now use only times where the head direction is known at both bins. Added
+      reading (b) (4.22 and -1.63 Hz2) and the same measure on Poisson surrogates from the real data with
+      tuning curves estimated from the surrogate spikes, per session and pooled (bias +0.64 Hz2 at 0
+      degrees and -0.37 at 60; data beyond surrogates in 110 of 118 and 223 of 256 pairs). Outcome kept.
+  - claim: decoding-tracks-hd
+    agrees: true
+    outcome: reproduced
+    reason: Pooled median error 11.7 degrees with cross-validated halves, and 28 of 28 sessions at or below
+      30 degrees; the worst session is 27.2 and chance is 90. HD cells are selected on the whole waking
+      epoch, so the test half influences the selection (B6).
+    response: Added a variant with HD cells selected on the training half alone, which keeps the same 28
+      sessions and gives a pooled median of 11.7 degrees (sessions 8.1 to 24.7). Outcome kept.
+  - claim: adn-pos-peak-rate
+    agrees: true
+    outcome: blocked
+    reason: None of the 40 assets' metadata has an anatomy field, the session description only says
+      electrodes were "likely located" in AD and PoS, every electrode location is "unknown" and units hold
+      spike times only. Without a region per unit no ADn/PoS comparison or ADn-to-PoS direction can be
+      tested.
+    response: Confirmed that the electrode groups carry only "shankN electrodes" and location "unknown" and
+      that unit ids encode nothing further (new data check). Outcome kept.
+  - claim: adn-pos-hd-information
+    agrees: true
+    outcome: blocked
+    reason: None of the 40 assets' metadata has an anatomy field, the session description only says
+      electrodes were "likely located" in AD and PoS, every electrode location is "unknown" and units hold
+      spike times only. Without a region per unit no ADn/PoS comparison or ADn-to-PoS direction can be
+      tested.
+    response: Confirmed that the electrode groups carry only "shankN electrodes" and location "unknown" and
+      that unit ids encode nothing further (new data check). Outcome kept.
+  - claim: fig3a-adn-stronger-than-pos
+    agrees: true
+    outcome: blocked
+    reason: None of the 40 assets' metadata has an anatomy field, the session description only says
+      electrodes were "likely located" in AD and PoS, every electrode location is "unknown" and units hold
+      spike times only. Without a region per unit no ADn/PoS comparison or ADn-to-PoS direction can be
+      tested.
+    response: Confirmed that the electrode groups carry only "shankN electrodes" and location "unknown" and
+      that unit ids encode nothing further (new data check). Outcome kept.
+  - claim: fig4c-noise-adn-vs-pos
+    agrees: true
+    outcome: blocked
+    reason: None of the 40 assets' metadata has an anatomy field, the session description only says
+      electrodes were "likely located" in AD and PoS, every electrode location is "unknown" and units hold
+      spike times only. Without a region per unit no ADn/PoS comparison or ADn-to-PoS direction can be
+      tested.
+    response: Confirmed that the electrode groups carry only "shankN electrodes" and location "unknown" and
+      that unit ids encode nothing further (new data check). Outcome kept.
+  - claim: fig4e-ole-covariance
+    agrees: true
+    outcome: blocked
+    reason: None of the 40 assets' metadata has an anatomy field, the session description only says
+      electrodes were "likely located" in AD and PoS, every electrode location is "unknown" and units hold
+      spike times only. Without a region per unit no ADn/PoS comparison or ADn-to-PoS direction can be
+      tested.
+    response: Confirmed that the electrode groups carry only "shankN electrodes" and location "unknown" and
+      that unit ids encode nothing further (new data check). Outcome kept.
+  - claim: fig5b-adn-decoded-tuning
+    agrees: true
+    outcome: blocked
+    reason: None of the 40 assets' metadata has an anatomy field, the session description only says
+      electrodes were "likely located" in AD and PoS, every electrode location is "unknown" and units hold
+      spike times only. Without a region per unit no ADn/PoS comparison or ADn-to-PoS direction can be
+      tested.
+    response: Confirmed that the electrode groups carry only "shankN electrodes" and location "unknown" and
+      that unit ids encode nothing further (new data check). Outcome kept.
+  - claim: fig5e-adn-predicts-pos
+    agrees: true
+    outcome: blocked
+    reason: None of the 40 assets' metadata has an anatomy field, the session description only says
+      electrodes were "likely located" in AD and PoS, every electrode location is "unknown" and units hold
+      spike times only. Without a region per unit no ADn/PoS comparison or ADn-to-PoS direction can be
+      tested.
+    response: Confirmed that the electrode groups carry only "shankN electrodes" and location "unknown" and
+      that unit ids encode nothing further (new data check). Outcome kept.
+  - claim: fig7-adn-pos-connections
+    agrees: true
+    outcome: blocked
+    reason: None of the 40 assets' metadata has an anatomy field, the session description only says
+      electrodes were "likely located" in AD and PoS, every electrode location is "unknown" and units hold
+      spike times only. Without a region per unit no ADn/PoS comparison or ADn-to-PoS direction can be
+      tested.
+    response: Confirmed that the electrode groups carry only "shankN electrodes" and location "unknown" and
+      that unit ids encode nothing further (new data check). Outcome kept.
+  - claim: fig7d-same-preferred-direction
+    agrees: true
+    outcome: blocked
+    reason: None of the 40 assets' metadata has an anatomy field, the session description only says
+      electrodes were "likely located" in AD and PoS, every electrode location is "unknown" and units hold
+      spike times only. Without a region per unit no ADn/PoS comparison or ADn-to-PoS direction can be
+      tested.
+    response: Confirmed that the electrode groups carry only "shankN electrodes" and location "unknown" and
+      that unit ids encode nothing further (new data check). Outcome kept.
+  - claim: fig7c-adn-triggered-pos-lfp
+    agrees: true
+    outcome: blocked
+    reason: None of the 40 assets' metadata has an anatomy field, the session description only says
+      electrodes were "likely located" in AD and PoS, every electrode location is "unknown" and units hold
+      spike times only. Without a region per unit no ADn/PoS comparison or ADn-to-PoS direction can be
+      tested.
+    response: Confirmed that the electrode groups carry only "shankN electrodes" and location "unknown" and
+      that unit ids encode nothing further (new data check). Outcome kept.
+  - claim: ensemble-sizes
+    agrees: true
+    outcome: blocked
+    reason: Blocked for metadata_insufficient, but partly testable under the notebook's unverified mouse
+      assignment. The thalamus-only mice have 133 HD cells in 18 sessions, about 7.4 per session, against
+      ADn 8.4 ± 5.1; the notebook never prints a per-session mean and s.d.
+    response: Added the per-session mean and s.d. (7.4 ± 6.2 over 18 sessions in the mice that appear
+      thalamus only, 12.2 ± 5.9 over 20 in the others). Outcome kept, as the assignment of mice is not
+      shown by the files.
+  - claim: fig3b-packet-coherence
+    agrees: true
+    outcome: blocked
+    reason: Blocked, partly testable. Packet coherence against the Bayesian-decoded HD does not need a
+      region split and could be run on the pooled HD cells of each session, as decoding-tracks-hd is.
+    response: Not run. The Methods do not say how the actual and expected packets are compared or how the
+      probability is formed from the 5,000 random waking population vectors, so a pooled version would rest
+      on choices made here; the notes now say so. Outcome kept.
+  - claim: fig6b-adn-synchrony
+    agrees: true
+    outcome: blocked
+    reason: Blocked, partly testable. It could be run in the four mice that appear to be thalamus only, an
+      assignment consistent with the data but not shown by them.
+    response: Not run, as without shanks the same-shank pairs, whose 1 to 5 ms synchrony spike sorting
+      distorts, cannot be removed, and the mouse assignment is not shown by the files; the notes now say so.
+      Outcome kept.

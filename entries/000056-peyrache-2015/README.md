@@ -8,15 +8,15 @@ pooled, and the claims that compare them are blocked.
 
 | Claim | Outcome |
 |---|---|
-| 353 of 1077 recorded cells are HD cells | Partially reproduced (378 HD cells, but a fraction of 0.22) |
+| 353 of 1077 recorded cells are HD cells | Partially reproduced (378 HD cells, but a fraction of 0.22; 391 cells with one misaligned session realigned) |
 | HD cell rates are correlated between waking and sleep | Reproduced |
 | Pairwise correlations are similar across brain states | Reproduced |
 | Zero-lag correlation crosses zero at about 60 degrees | Reproduced |
-| The internal HD signal is about tenfold faster in slow-wave sleep | Partially reproduced (8.3-fold) |
+| The internal HD signal is about tenfold faster in slow-wave sleep | Partially reproduced (8.3-fold, with an estimator that gives 5-fold for a known tenfold) |
 | It is similar in REM sleep and waking | Reproduced |
 | Noise correlations, excess at 0 degrees and dip at 60 degrees | Reproduced |
 | Decoded HD tracks the head in waking | Reproduced |
-| Comparisons of the ADn and the PoS (12 claims) | Blocked: metadata insufficient |
+| Comparisons of the ADn and the PoS (13 claims) | Blocked: metadata insufficient |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -24,7 +24,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000056-peyrache-2015-01.yaml`](../../attempts/000056-peyrache-2015-01.yaml).
 
-- `reproduce_peyrache_2015.ipynb`: the analysis. It takes about six minutes, three of them streaming the
+- `reproduce_peyrache_2015.ipynb`: the analysis. It takes about nine minutes, five of them streaming the
   files.
 - `hd.py`: loading the files, the open-field epoch, HD cell classification, binned activity, the
   cross-correlogram estimate of angular velocity and a Bayesian decoder. Other notebooks on this

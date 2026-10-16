@@ -167,19 +167,26 @@ def count_in_epochs(spikes: np.ndarray, epochs) -> int:
     return int(sum(np.searchsorted(spikes, b) - np.searchsorted(spikes, a) for a, b in epochs))
 
 
-def load_session(path: str, url: str) -> dict:
+def load_session(path: str, url: str, hd_shift=None) -> dict:
     """Read one file and reduce it to what the analysis uses.
 
     All units get rates per state and a waking tuning curve; spike times are kept only for HD
     cells and other tuned units (concentration above `CANDIDATE_KAPPA`). Position is kept as head direction in the waking epoch and as 1 s head speed.
+    `hd_shift`, (times s, shifts s), shifts the head direction against the spikes by an amount
+    interpolated linearly in time; it is used only for the variant that realigns Mouse12-120808.
     """
     f = h5py.File(remfile.File(url), "r")
     s = {"path": path, "session": _text(f["general/session_id"][()]),
          "mouse": _text(f["general/subject/subject_id"][()])}
+    if hd_shift is not None:
+        s["hd_shift"] = hd_shift
     s["species"] = _text(f["general/subject/species"][()])
     groups = [_text(g) for g in f["general/extracellular_ephys/electrodes/group_name"][()]]
     s["electrode_groups"] = {g: groups.count(g) for g in dict.fromkeys(groups)}
     s["locations"] = sorted(set(_text(x) for x in f["general/extracellular_ephys/electrodes/location"][()]))
+    eg = f["general/extracellular_ephys"]
+    s["group_attrs"] = {g: {k: _text(eg[g].attrs[k]) for k in ("description", "location") if k in eg[g].attrs}
+                        for g in eg if g != "electrodes"}
     s["annotations"] = sorted(f["stimulus/presentation"].keys())
     s["has_raw"] = "ElectricalSeries" in f["acquisition"]
     lfp = f["processing/ecephys/LFP/LFP"]
@@ -270,6 +277,8 @@ def _occupancy(s) -> np.ndarray:
 def spike_angles(spikes: np.ndarray, s: dict, shift_s: float = 0.0) -> np.ndarray:
     """Head direction (deg) at each spike in the waking epoch, from the nearest position frame."""
     t0, rate = s["hd_t"][0], s["pos_rate"]
+    if "hd_shift" in s:
+        shift_s = shift_s + np.interp(spikes, *s["hd_shift"])
     i = np.round((spikes + shift_s - t0) * rate).astype(int)
     i = i[(i >= 0) & (i < len(s["hd"]))]
     a = s["hd"][i]
@@ -377,7 +386,8 @@ def expected_profile(rho: np.ndarray, u_max: float, du: float = 1.0):
 def fit_speed(ccg: np.ndarray, lags_s: np.ndarray, u_grid: np.ndarray, g: np.ndarray):
     """Mean angular speed (deg/s) whose expected CCG, scaled and offset, best fits `ccg`.
 
-    Returns (speed, at_edge, sse). The coarse grid gives the start of a Nelder-Mead search.
+    Returns (speed, at_edge, r2), r2 being 1 - (residual sum of squares) / (sum of squares of
+    the CCG about its mean). The coarse grid gives the start of a Nelder-Mead search.
     """
     tau = np.abs(lags_s)
 
@@ -396,7 +406,7 @@ def fit_speed(ccg: np.ndarray, lags_s: np.ndarray, u_grid: np.ndarray, g: np.nda
                    options={"xatol": 1e-3, "fatol": 1e-12})
     v = float(np.exp(res.x[0]))
     at_edge = at_edge or not (SPEED_GRID[0] <= v <= SPEED_GRID[-1])
-    return v, at_edge, float(res.fun)
+    return v, at_edge, float(1 - res.fun / ((ccg - ccg.mean()) ** 2).sum())
 
 
 # --- decoding ----------------------------------------------------------------------------
