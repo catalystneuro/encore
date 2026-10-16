@@ -1,0 +1,24 @@
+"""Tests for tools/runner/describe.py: the choices the queue runner makes."""
+
+from __future__ import annotations
+
+import sys
+from pathlib import Path
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO / "tools" / "runner"))
+
+import describe  # noqa: E402
+
+
+def test_a_role_that_never_ran_has_no_run():
+    runs = [{"databaseId": 1, "displayTitle": "Agent run: 001636 author", "status": "completed"}]
+    assert describe.newest_run(runs, "001636", "recorder") == ""
+    assert describe.newest_run([], "001636", "author") == ""
+
+
+def test_the_newest_run_of_a_role_is_found():
+    runs = [{"databaseId": 3, "displayTitle": "Agent run: 001636 recorder", "status": "in_progress"},
+            {"databaseId": 2, "displayTitle": "Agent run: 001933 recorder", "status": "completed"},
+            {"databaseId": 1, "displayTitle": "Agent run: 001636 recorder", "status": "completed"}]
+    assert describe.newest_run(runs, "001636", "recorder") == "3 in_progress"
