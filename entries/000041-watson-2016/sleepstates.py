@@ -258,7 +258,8 @@ def autocorrelogram(spk, starts, stops, max_lag=0.3, bin_ms=1.0) -> tuple[np.nda
     h = np.zeros(len(edges) - 1)
     lag = 1
     while lag < len(t):
-        d = t[lag:] - t[:-lag]
+        # rounded to 1 ns, so that float error does not move a lag that falls on a bin edge
+        d = np.round(t[lag:] - t[:-lag], 9)
         ok = (k[lag:] == k[:-lag]) & (d < max_lag)
         if not ok.any() and np.min(d) >= max_lag:
             break

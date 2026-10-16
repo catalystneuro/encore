@@ -42,7 +42,9 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The state table in the files has no microarousal label, so microarousals are derived from short Awake
-epochs between Non-REM epochs; the claims on state triplets depend on this. The supplement, which
+epochs between Non-REM epochs; the claims on state triplets depend on this. The notebook also shows
+tests with one value per cycle, triplet or session, and every claim's main numbers without the
+sessions whose state labels or LFP could not be checked against the spikes. The supplement, which
 describes UP/DOWN state and spindle detection, could not be retrieved. The attempt record, with the
 reasons and the differences from the paper's method, is
 [`attempts/000041-watson-2016-01.yaml`](../../attempts/000041-watson-2016-01.yaml).
