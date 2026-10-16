@@ -20,7 +20,8 @@ analysis.
 | Low-rate cells more informative, with a larger ripple-gain increase | Partially reproduced |
 | Slow but not fast cells increase sequence content | Not reproduced |
 | Increase in sequence content limited to high ripple-gain cells | Not reproduced |
-| Nine claims on strongly contributing, rigid and plastic cells (PCC) | Blocked: methods underspecified |
+| Shuffling the 10 to 20% of cells with the highest dPCC removes replay | Partially reproduced |
+| Eight claims on strongly contributing, rigid and plastic cells (PCC) | Blocked: methods underspecified |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -28,7 +29,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000044-grosmark-2016-01.yaml`](../../attempts/000044-grosmark-2016-01.yaml).
 
-- `reproduce_grosmark_2016.ipynb`: the analysis. It takes about nine minutes on four cores, two of
+- `reproduce_grosmark_2016.ipynb`: the analysis. It takes about eleven minutes on four cores, about three of
   them streaming one LFP channel per session.
 - `grosmark.py`: loading the files, ripple detection on one channel, candidate events, rate maps,
   the Bayesian decoder with its weighted-correlation score, the per-cell contributions and the

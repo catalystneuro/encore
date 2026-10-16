@@ -40,6 +40,11 @@
 #   session's strongly contributing cells, plastic cells above it.
 # - Statistics across epochs: Kruskal-Wallis on the event rZ of all sessions pooled, then
 #   Tukey's HSD on the ranks (MATLAB's multcompare after kruskalwallis), alpha 0.05.
+#
+# Changed after the first verification round: fig2d-shuffle-high-dpcc listed
+# fig2b-strong-contributors under depends_on, but its criterion ranks all place cells by dPCC and
+# does not use the selection of strongly contributing cells, so it now depends on
+# place-cell-count. No criterion was changed.
 schema_version: 1
 dandiset: "000044"
 paper: doi:10.1126/science.aad1935
@@ -107,7 +112,7 @@ claims:
     the bottom 75%.
   source: Results, paragraph 3; Figure 2D
   depends_on:
-  - fig2b-strong-contributors
+  - place-cell-count
   criterion: Within each session the place cells are ranked by dPCC; the rate maps of the top
     or bottom X% (X = 10, 20, 50, 75) are circularly shifted by random amounts and PRE and POST
     events are decoded again. Replay is present when the mean POST rZ exceeds the mean PRE rZ

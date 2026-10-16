@@ -23,7 +23,7 @@ literature unless marked otherwise:
   bounded at z = 0, 50 to 500 ms: common choices.
 - Burst ISI 6 ms: a common choice for CA1 pyramidal cells.
 - 200 column-cycle shuffles for rZ (50 when templates are re-decoded for variants), 20
-  circular shifts per cell for PCC: choices made here.
+  circular shifts per cell and event for PCC, drawn afresh for every event: choices made here.
 """
 
 from __future__ import annotations
@@ -506,35 +506,63 @@ def decode_events(s: dict, tpl: dict, cache: list, cells: dict, rng: np.random.G
     return {k: np.array(v) for k, v in out.items()}
 
 
-def cell_contributions(s: dict, tpl: dict, cache: list, cells: dict, decoded: dict,
-                       rng: np.random.Generator, maps: dict | None = None) -> list[tuple]:
-    """Per event and active cell: (event index, epoch, cell index into pyr, |r|, |r| of each
-    shift).
+def _shifted_r(cnt: np.ndarray, f: np.ndarray, lp: np.ndarray, a: int, shifts: np.ndarray) -> np.ndarray:
+    """|r| of an event with row a of the rate maps f circularly shifted by each of `shifts`."""
+    X = f.shape[1]
+    fs = f[a][(np.arange(X)[None, :] - shifts[:, None]) % X]           # np.roll by each shift
+    delta = (cnt[a][None, :, None] * (np.log(fs)[:, None, :] - np.log(f[a])[None, None, :])
+             - DECODE_BIN * (fs - f[a][None, :])[:, None, :])          # (K, T, X)
+    return np.abs(weighted_r(normalise(lp[None] + delta)))
 
-    Each cell's rate map is circularly shifted by N_PCC_SHIFT random amounts, drawn once per cell
-    and template and used in all its events; the event is decoded again with each, on the
-    template it was scored with. The contribution is |r| minus the mean of the shifted |r|."""
+
+def _event_parts(cnt: np.ndarray, m: np.ndarray):
+    keep = cnt.sum(0) > 0
+    cnt = cnt[:, keep]
+    f = m + 1e-3
+    lp = cnt.T @ np.log(f) - DECODE_BIN * f.sum(0)[None, :]
+    return cnt, f, lp
+
+
+def cell_contributions(s: dict, tpl: dict, cache: list, cells: dict, decoded: dict,
+                       rng: np.random.Generator, maps: dict | None = None,
+                       mode: str = "template") -> list[tuple]:
+    """Per event and active cell: (event index, epoch, cell index into pyr, |r|, |r| of each
+    shift). The contribution is |r| minus the mean of the shifted |r|.
+
+    Each cell's rate map is circularly shifted by N_PCC_SHIFT random amounts, drawn afresh for
+    every event, and the event is decoded again with each.
+
+    mode "template" (the criterion): |r| on the template the event was scored with (the one
+    with the larger rZ on the linear tracks), active cells of that template.
+    mode "best": |r| is the larger |r| over every template the event qualifies for, both with
+    the original maps and with the cell's map shifted (in every template that holds the cell),
+    so the choice of template is made the same way on both sides of the difference."""
     maps = maps if maps is not None else tpl["maps"]
-    shifts = {d: rng.integers(1, maps[d].shape[1], size=(maps[d].shape[0], N_PCC_SHIFT)) for d in maps}
     rows = []
-    for i, ep, d in zip(decoded["index"], decoded["epoch"], decoded["direction"]):
+    for i, ep, d0 in zip(decoded["index"], decoded["epoch"], decoded["direction"]):
         if ep not in ("PRE", "POST"):
             continue
-        c = cells[d]
-        m = maps[d][c]
-        cnt = cache[i][c]
-        keep = cnt.sum(0) > 0
-        cnt = cnt[:, keep]
-        f = m + 1e-3
-        lp = cnt.T @ np.log(f) - DECODE_BIN * f.sum(0)[None, :]
-        r0 = abs(float(weighted_r(normalise(lp))))
-        for a in np.flatnonzero(cnt.sum(1) > 0):
-            X = f.shape[1]
-            fs = f[a][(np.arange(X)[None, :] - shifts[d][c[a]][:, None]) % X]  # np.roll by each shift
-            delta = (cnt[a][None, :, None] * (np.log(fs)[:, None, :] - np.log(f[a])[None, None, :])
-                     - DECODE_BIN * (fs - f[a][None, :])[:, None, :])    # (K, T, X)
-            rs = np.abs(weighted_r(normalise(lp[None] + delta)))
-            rows.append((i, ep, c[a], r0, rs))
+        if mode == "template":
+            use = [d0]
+        else:
+            use = [d for d, c in cells.items() if len(c) >= MIN_ACTIVE
+                   and int((cache[i][c].sum(1) > 0).sum()) >= MIN_ACTIVE]
+        parts = {d: _event_parts(cache[i][cells[d]], maps[d][cells[d]]) for d in use}
+        base = {d: abs(float(weighted_r(normalise(parts[d][2])))) for d in use}
+        r0 = max(base.values())
+        active = sorted({int(cells[d][a]) for d in use for a in np.flatnonzero(parts[d][0].sum(1) > 0)})
+        for u in active:
+            sh = rng.integers(1, maps[use[0]].shape[1], size=N_PCC_SHIFT)
+            best = np.full(N_PCC_SHIFT, -np.inf)
+            for d in use:
+                pos = np.flatnonzero(cells[d] == u)
+                if len(pos):
+                    cnt, f, lp = parts[d]
+                    r = _shifted_r(cnt, f, lp, int(pos[0]), sh)
+                else:
+                    r = np.full(N_PCC_SHIFT, base[d])
+                best = np.maximum(best, r)
+            rows.append((i, ep, u, r0, best))
     return rows
 
 
@@ -642,19 +670,24 @@ def position_error(s: dict, lags=(-30.0, -5.0, -1.0, 0.0, 1.0, 5.0, 30.0)) -> di
 
 def first_pass(s: dict, seed_decode: int, seed_pcc: int, seed_null: int) -> dict:
     """Templates, the event score of every candidate event, the per-cell contributions, and the
-    contributions under a fully shifted template (the PCC test's false-positive rate)."""
+    contributions under a fully shifted template (the PCC test's false-positive rate), each for
+    the criterion's contribution (mode "template") and for the variant (mode "best")."""
     tpl = build_templates(s)
     cells = template_cells(tpl)
     cache = count_cache(s, tpl)
     dec = decode_events(s, tpl, cache, cells, np.random.default_rng(seed_decode))
     rows = cell_contributions(s, tpl, cache, cells, dec, np.random.default_rng(seed_pcc))
+    rows_best = cell_contributions(s, tpl, cache, cells, dec, np.random.default_rng(seed_pcc + 1),
+                                   mode="best")
     rng = np.random.default_rng(seed_null)
     null_maps = shifted_maps(tpl, np.arange(len(tpl["pyr"])), rng)
     dec_null = decode_events(s, tpl, cache, cells, rng, epochs=("PRE", "POST"), maps=null_maps,
                              n_shuffle=20)
     sub = {k: v[::4] for k, v in dec_null.items()}          # every fourth event is enough here
     rows_null = cell_contributions(s, tpl, cache, cells, sub, rng, maps=null_maps)
-    return {"tpl": tpl, "cells": cells, "decoded": dec, "contrib": rows, "contrib_null": rows_null}
+    rows_null_best = cell_contributions(s, tpl, cache, cells, sub, rng, maps=null_maps, mode="best")
+    return {"tpl": tpl, "cells": cells, "decoded": dec, "contrib": rows, "contrib_null": rows_null,
+            "contrib_best": rows_best, "contrib_null_best": rows_null_best}
 
 
 def variant_pass(s: dict, tpl: dict, variants: dict, n_shuffle: int = 50) -> dict:

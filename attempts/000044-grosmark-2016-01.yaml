@@ -29,7 +29,9 @@ outcomes:
   measured: 417
   notes: 417 of the 562 pyramidal units have a smoothed rate-map peak of 1 Hz or more on running,
     below 491 by more than the tolerance of 49. At 0.5 Hz the count is 480 (within tolerance), at
-    2 Hz 352. By subject, Achilles 181, Buddy 30, Cicero 127, Gatsby 79.
+    2 Hz 352, so the count depends strongly on the threshold; the criterion fixes 1 Hz and the
+    other thresholds are variants that do not decide the outcome. By subject, Achilles 181, Buddy
+    30, Cicero 127, Gatsby 79.
   deviations:
   - The place-cell definition is a common choice (peak of 1 Hz or more on running above 5 cm/s, 2
     cm bins, 4 cm smoothing); the paper's definition is in the supplementary Methods, which were
@@ -44,9 +46,11 @@ outcomes:
     with each session's PRE mean subtracted POST is higher by 0.106 (p = 2.3e-14). The pooled test
     is dominated by the three circular-track sessions, which score lower in every epoch (PRE 0.161
     and POST 0.260 against 1.112 and 1.207 on the linear tracks, where the event takes the better
-    of two templates) and supply 11161 of 23801 POST events but 5912 of 16448 PRE events. By
-    subject, POST minus PRE is +0.089 (Achilles), +0.185 (Buddy), +0.021 (Cicero) and -0.173
-    (Gatsby) when pooled within subject.
+    of two templates) and supply 11161 of 23801 POST events but 5912 of 16448 PRE events. The same
+    test run on each kind of track finds POST above PRE on the five linear-track sessions (Tukey on
+    ranks p = 5.1e-07) and on the three circular-track sessions (p = 1.1e-05). By subject, POST
+    minus PRE is +0.089 (Achilles), +0.185 (Buddy), +0.021 (Cicero) and -0.173 (Gatsby) when pooled
+    within subject.
   deviations:
   - Candidate events are population bursts of all units holding a ripple (150 to 250 Hz envelope
     above 3 SD on one LFP channel per session), outside REM in PRE and POST and below 5 cm/s in
@@ -55,13 +59,16 @@ outcomes:
     the main text.
   - On the linear tracks each event takes the better of the two direction templates, which raises
     their scores over those of the single-template circular track.
+  - The Tukey comparison is scipy's Tukey HSD on the pooled ranks, not MATLAB's Tukey-Kramer
+    after kruskalwallis.
 - claim: fig1c-maze-gt-pre
   outcome: reproduced
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig1c-maze-gt-pre
   notes: MAZE events score higher than PRE events (mean rZ 1.270 against 0.770, n = 2460 and 16448;
     Tukey on ranks p printed as 0), and MAZE is higher in all 8 sessions (one-sided rank-sum p from
-    below 0.0001 to 0.0405).
+    below 0.0001 to 0.0405). It holds on the linear-track sessions (p printed as 0) and on the
+    circular-track sessions (p = 0.0007) separately. MAZE has 76 to 953 scored events per session.
   deviations:
   - Events and scores as for fig1c-post-gt-pre.
 - claim: fig2b-strong-contributors
@@ -70,89 +77,98 @@ outcomes:
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig2b-strong-contributors
   notes: The test fixed in the criterion (one-sided signed-rank test of a cell's contributions over
-    its events, p < 0.05) finds 307 strongly contributing cells (73.6% of 417 place cells), against
-    216. With every rate map shifted it calls 57.6% of cells significant (0.853 and 0.905 on the
-    linear tracks, 0.164 on the circular track), so about 240 would be expected by chance. The
-    paper calls these PCC scores significant, which implies a 5% false-positive rate; this test is
-    far from it, so it is not the paper's procedure. A cell-level shift test (the cell's mean
-    contribution against each of its 20 shifted maps) finds 223 cells, within the tolerance, but
-    its false-positive rate is 0.297. The PCC definition and its test are in the unavailable
-    Methods.
+    its events, p < 0.05) finds 303 strongly contributing cells (72.7% of 417 place cells), against
+    216. With every rate map shifted it calls 56.1% of cells significant (0.843 on the 1.6 m
+    tracks, 0.905 on the 2 m track, 0.140 on the circular track), so about 234 would be expected
+    by chance. The paper calls these PCC scores significant, which implies a 5% false-positive
+    rate; this test is far from it, so it is not the paper's procedure. The excess is on the
+    linear tracks, where the contribution is taken on the template the event was selected for. A
+    best-template variant of the contribution has a false-positive rate of 0.206 (0.132 in PRE,
+    0.118 in POST) and finds 188 cells, outside the tolerance; at alpha 0.001 its false-positive
+    rate is 0.031 and it finds 95. The PCC definition and its test are in the unavailable Methods.
   deviations:
   - The PCC and its significance test are choices made here, as the Methods were not available.
+  - The 20 shifts of a cell's map are drawn afresh for every event.
 - claim: fig2-pre-post-overlap
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig2-pre-post-overlap
-  notes: Blocked as it depends on fig2b-strong-contributors. Of 245 PRE strongly contributing
-    cells, 229 (93.5%) also contribute in POST, against a chance level of 69.8%. With the shift-test
-    variant 141 of 173 (81.5%) against 45.8%.
+  notes: Blocked as it depends on fig2b-strong-contributors. Of 248 PRE strongly contributing
+    cells, 235 (94.8%) also contribute in POST, against a chance level of 69.5%. With the
+    best-template variant 72 of 102 (70.6%), within 73 +/- 7.3, against a chance level of 37.9%.
 - claim: fig2d-shuffle-high-dpcc
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: partially_reproduced
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig2d-shuffle-high-dpcc
-  notes: Blocked as dPCC comes from the procedure of fig2b-strong-contributors. On the pooled test
-    of the criterion there is no replay before shuffling (POST minus PRE -0.008, p = 0.916), and
-    none after shuffling the bottom 75% (+0.010, p = 0.351) or the top 10% (-0.089). In the
-    within-session variant replay is present before shuffling (+0.107, p < 0.0001), falls to +0.021
-    (p = 0.20) after shuffling the top 10% and -0.006 (p = 0.83) after the top 20%, and remains after
-    the bottom 75% (+0.095, p < 0.0001), the paper's pattern.
+  notes: On the pooled test of the criterion replay is absent after shuffling the top 10% (POST
+    minus PRE -0.100, p = 1.0) and the top 20% (-0.127, p = 1.0), but also after shuffling the
+    bottom 75% (+0.022, p = 0.21), so one of the two conditions holds. The pooled test finds no
+    replay before shuffling either (-0.008, p = 0.916), so on all sessions it cannot show a
+    removal. On the five linear-track sessions replay is present before shuffling (+0.101, p <
+    0.0001), absent after shuffling the top 10% (+0.015, p = 0.23) or 20% (-0.039, p = 0.995) and
+    present after the bottom 75% (+0.098, p < 0.0001); shuffling a random 10% or 20% leaves it
+    (+0.099, +0.088). dPCC is measured on the events that are decoded again. Ranking cells on the
+    even-numbered events and measuring replay on the odd-numbered ones, on the linear tracks replay
+    falls from +0.116 to +0.046 (p = 0.024) after the top 10% and +0.042 (p = 0.038) after the top
+    20%, so out of sample it is reduced but not removed.
   deviations:
   - Variant decodes use 50 column-cycle shuffles per event in place of 200.
+  - dPCC is the difference of the criterion's PCC, whose significance test is not the paper's
+    (fig2b-strong-contributors); the ranking does not use that test.
 - claim: fig2e-remove-plastic
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig2e-remove-plastic
   notes: Blocked as it depends on fig2b-strong-contributors. On the pooled test, removing plastic
-    cells gives POST minus PRE -0.157 (p = 1.0) and removing rigid cells +0.036 (p = 0.020). In the
-    within-session variant, -0.032 (p = 0.998) and +0.151 (p < 0.0001); with the shift-test classes
-    -0.005 and +0.134. Plastic cells are those with the higher dPCC, so the result follows partly
-    from how they are chosen.
+    cells gives POST minus PRE -0.168 (p = 1.0) and removing rigid cells +0.038 (p = 0.019);
+    removing as many random strongly contributing cells gives -0.023 (p = 0.99). On the linear-track
+    sessions -0.060, +0.136 and +0.094. With classes from the even-numbered events and replay on
+    the odd-numbered ones, the linear tracks give -0.009 (p = 0.54) and +0.090 (p = 0.0027). With
+    the best-template classes, pooled, -0.125 and +0.020 (p = 0.24).
 - claim: figs2-track-distribution
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:figs2-track-distribution
   notes: Blocked as it depends on fig2b-strong-contributors. Rate-map peaks of rigid and plastic
-    cells differ by the KS test (medians 0.419 and 0.501 of the track, D = 0.160, p = 0.034); with
-    the split over all place cells p = 0.051, with the shift-test classes p = 0.12.
+    cells do not differ by the KS test (medians 0.419 and 0.486 of the track, D = 0.145, p =
+    0.072); with the split over all place cells p = 0.079, with the best-template classes p = 0.12.
 - claim: fig3a-plastic-specificity
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig3a-plastic-specificity
   notes: Blocked as it depends on fig2b-strong-contributors. Plastic cells carry more spatial
-    information (median 0.887 against 0.592 bits per spike, p = 0.00028; shift-test classes p =
-    0.0019), but the number of fields does not differ (means 1.578 and 1.651, p = 0.52).
+    information (median 0.904 against 0.594 bits per spike, p = 1.9e-05; best-template classes p =
+    0.0035), but the number of fields does not differ (means 1.484 and 1.685, p = 0.073).
 - claim: fig3b-plastic-improve
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig3b-plastic-improve
   notes: Blocked as it depends on fig2b-strong-contributors. Both groups raise their in-field
-    ratio over the session (change of log10 ratio, plastic median 0.146, p = 0.015; rigid 0.125, p =
-    0.032; between groups p = 0.61). With the shift-test classes plastic p = 0.17 and rigid p =
-    0.021.
+    ratio over the session (change of log10 ratio, plastic median 0.155, p = 0.0079; rigid 0.129,
+    p = 0.030; between groups p = 0.41). With the best-template classes plastic p = 0.020 and
+    rigid p = 0.28.
 - claim: fig4a-rigid-faster
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig4a-rigid-faster
   notes: Blocked as it depends on fig2b-strong-contributors. Rigid cells fire somewhat faster
-    (median 0.710 against 0.597 Hz) without significance (p = 0.059; split over all place cells p =
-    0.15; shift-test classes p = 0.39).
+    (median 0.700 against 0.591 Hz) without significance (p = 0.062; split over all place cells p =
+    0.053; best-template classes p = 0.74).
 - claim: fig4a-plastic-ripple-burst-coactivation
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_grosmark_2016.ipynb
   output: claim:fig4a-plastic-ripple-burst-coactivation
-  notes: Blocked as it depends on fig2b-strong-contributors. Ripple gain is higher in plastic
-    cells (4.412 against 3.927, p = 0.037); bursting (0.177 against 0.149, p = 0.20) and
-    coactivation (0.028 against 0.027, p = 0.79) are not. With the shift-test classes none reaches
-    p < 0.05 (gain p = 0.068).
+  notes: Blocked as it depends on fig2b-strong-contributors. Ripple gain (4.489 against 3.939, p =
+    0.015) and bursting (0.180 against 0.147, p = 0.028) are higher in plastic cells; coactivation
+    is not (0.028 against 0.027, p = 0.90). With the best-template classes none reaches p < 0.05
+    (gain p = 0.15, bursting p = 0.11).
 - claim: fig4c-pre-fast-coactivation
   outcome: reproduced
   notebook: reproduce_grosmark_2016.ipynb
@@ -217,7 +233,9 @@ outcomes:
   notes: On the pooled test neither half shows replay (low-rate POST minus PRE -0.024, p = 0.964;
     high-rate -0.049, p = 0.9999), as for all cells (-0.008, p = 0.916). In the within-session
     variant both halves show replay, larger for low-rate cells (+0.116 against +0.058, p below
-    0.0001 for each), which would be the criterion's partial pattern.
+    0.0001 for each), which would be the criterion's partial pattern. On the linear-track sessions
+    alone the pooled test also finds both, larger for low-rate cells (+0.077, p = 0.0046, against
+    +0.044, p = 0.018).
   deviations:
   - Variant decodes use 50 column-cycle shuffles per event in place of 200.
 - claim: fig4e-gain-sequences
@@ -226,7 +244,9 @@ outcomes:
   output: claim:fig4e-gain-sequences
   notes: On the pooled test neither half shows replay (high-gain -0.001, p = 0.71; low-gain -0.111,
     p = 1.0). In the within-session variant high-gain cells show replay (+0.111, p < 0.0001) and
-    low-gain cells do not (+0.016, p = 0.14), the paper's pattern.
+    low-gain cells do not (+0.016, p = 0.14), the paper's pattern. On the linear-track sessions
+    alone the pooled test finds replay in neither half (+0.023, p = 0.25; +0.010, p = 0.21) and the
+    within-session variant finds it in both (+0.045, p = 0.029; +0.050, p = 0.0028).
   deviations:
   - Gain is the rate within PRE and POST candidate events over the PRE and POST rate, split at the
     session median.
@@ -259,3 +279,184 @@ findings:
   statement: On the circular track the animals ran toward decreasing linearized position (47 to 63%
     of samples against 7 to 16% the other way). The series description says the position increases
     clockwise but not which way the animals ran.
+verifications:
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed,
+    the helper module and the claims file, with the main text of the paper (the supplement could not
+    be retrieved). The verifier checked the blocked claims against the archive's file list and
+    metadata and tested the helper functions on synthetic inputs. Report in
+    transcripts/000044/verifier-1-report.md.
+  results:
+  - claim: sessions-and-tracks
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 13: 4 subjects and 8 sessions, all with PRE, MAZE and POST in order. Tracks are 1.6
+      m linear (4 sessions), 2 m linear (1) and circular (3), which matches "two linear and one
+      circular".'
+    response: No change.
+  - claim: place-cell-count
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 15: 417 place cells at 1 Hz, against 491 +/- 49. The 0.5 Hz variant gives 480,
+      which is inside tolerance, so the claims file''s statement that the variants "do not change
+      the outcome" is false (problem 5).'
+    response: No change of outcome. The criterion's sentence states the protocol's rule that
+      variants do not decide the outcome; it was not a prediction. The notes and the conclusion now
+      say that the count depends strongly on the threshold and that 480 at 0.5 Hz is within
+      tolerance.
+  - claim: fig1c-post-gt-pre
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Under the fixed pooled criterion POST mean rZ (0.763) is below PRE (0.770), Tukey-on-ranks
+      p = 0.41. Within sessions all 8 have POST > PRE, 6 of 8 have p < 0.05, and the pooled test
+      after subtracting each session''s PRE mean gives p = 2e-14. The failure comes from pooling
+      across sessions (problem 2, Simpson''s paradox). It asked for per-track versions of cell 17.'
+    response: No change of outcome. Added the criterion's test on each kind of track (linear p =
+      5.1e-07, circular p = 1.1e-05, both POST above PRE), the scored events per session and epoch,
+      and the MAZE rZ distribution of each session. Recorded the use of scipy's Tukey HSD on ranks
+      (problem 7) as a deviation.
+  - claim: fig1c-maze-gt-pre
+    agrees: true
+    outcome: reproduced
+    reason: MAZE mean 1.270 against PRE 0.770, Tukey p near 0, and 8 of 8 sessions have MAZE > PRE
+      (cell 17).
+    response: No change. Added the per-track test (both tracks hold) and the per-session MAZE rZ.
+  - claim: fig2b-strong-contributors
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the block. 307 cells pass against 216, but the fixed test flags 58% of cells
+      when every rate map is shifted. The miscalibration comes mainly from the pipeline (problem 1):
+      each event on a linear track is scored with whichever of its two templates gives the larger
+      rZ and the contribution compares against that winning |r|, and each cell''s 20 shifts are
+      reused across thousands of events. On synthetic noise the false-positive rate is 100% with two
+      templates and 40% with one. The shift-test variant called better calibrated still has 0.30. It
+      asked for false-positive rates with the template fixed in advance and a fresh shift per event.'
+    response: Outcome kept. The shifts are now drawn afresh for every event, as the criterion's
+      wording allows; the criterion's test then finds 303 cells with a false-positive rate of 0.561
+      (0.843 and 0.905 on the linear tracks, 0.140 on the circular one), so the template selection,
+      not the shared shifts, drives most of it. A best-template variant takes the larger |r| over the
+      event's templates both with and without the shift, which removes the selection; its
+      false-positive rate is 0.206 (0.132 PRE, 0.118 POST), it finds 188 cells, and at alpha 0.001
+      it has 0.031 and finds 95. The cell-level shift test, which needs shared shifts, was replaced
+      by this variant, and the text no longer calls any of these calibrated.
+  - claim: fig2-pre-post-overlap
+    agrees: true
+    outcome: blocked
+    reason: Follows from fig2b. The fixed test gives 93.5% against 73%, with a chance level of 69.8%.
+      The paper states no chance level. The shift-test variant gives 81.5% against a chance level of
+      45.8%.
+    response: Outcome kept. With the new contributions 94.8% against a chance level of 69.5%; the
+      best-template variant gives 70.6% against 37.9%.
+  - claim: fig2d-shuffle-high-dpcc
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'This claim ranks all place cells by dPCC and does not use the strong-contributor
+      selection, so the block reason does not apply (problem 4). By the criterion replay is absent
+      after shuffling the top 10% or 20% but also after shuffling the bottom 75% (p = 0.35); the
+      unmanipulated baseline has no pooled replay either (p = 0.92), so "eliminated" cannot be
+      judged (uninformative). The within-session variant shows the paper''s pattern. dPCC is
+      computed from the same PRE and POST events that are decoded again, so the result is circular
+      and there is no control that shuffles a random X% of cells (problem 3).'
+    response: Outcome changed from blocked to partially_reproduced, as the verifier gives it, and the
+      claim's depends_on corrected to place-cell-count (noted in the claims file; no criterion
+      changed). With the new contributions the bottom-75% shuffle gives p = 0.21. Added random 10,
+      20 and 75% shuffles, a best-template ranking, a cross-validated control (cells ranked on
+      even-numbered events, replay on odd-numbered ones) and the table for the linear-track
+      sessions. On the linear tracks the paper's pattern holds and random shuffles leave replay,
+      but out of sample shuffling the top 10 or 20% reduces replay (+0.116 to +0.046 and +0.042)
+      without removing it; the notes say so.
+  - claim: fig2e-remove-plastic
+    agrees: false
+    outcome: reproduced
+    reason: 'Replay is absent without plastic cells (p = 1.0) and present without rigid cells (p =
+      0.020). The result is circular (problem 3), and with the shift-test classes removing rigid
+      cells leaves no replay (p = 0.11).'
+    response: Kept blocked and the disagreement recorded. The rigid and plastic classes are drawn from
+      the strongly contributing cells, a selection shown not to be the paper's (false-positive rate
+      0.56; in each linear-track session all but 1 to 3 place cells pass), and the protocol blocks a
+      claim that depends on a blocked one. Added a random-removal control, the linear-track table
+      and a cross-validated control, which keeps the pattern on the linear tracks (-0.009 without
+      plastic, +0.090 without rigid cells).
+  - claim: figs2-track-distribution
+    agrees: false
+    outcome: not_reproduced
+    reason: KS p = 0.034 (cell 37). This is fragile, p = 0.051 under reading (b) and 0.12 under the
+      shift-test variant.
+    response: Kept blocked and the disagreement recorded, for the reason given under
+      fig2e-remove-plastic. With the shifts drawn afresh for every event the KS test gives p =
+      0.072 in place of 0.034, which shows how far the result depends on the contribution measure.
+  - claim: fig3a-plastic-specificity
+    agrees: false
+    outcome: partially_reproduced
+    reason: Spatial information is higher in plastic cells (p = 3e-4). The number of fields does not
+      differ (p = 0.52) (cell 39).
+    response: Kept blocked and the disagreement recorded, for the reason given under
+      fig2e-remove-plastic. New numbers p = 1.9e-05 and p = 0.073.
+  - claim: fig3b-plastic-improve
+    agrees: false
+    outcome: partially_reproduced
+    reason: 'Both groups increase: plastic p = 0.015, rigid p = 0.032 (cell 41).'
+    response: Kept blocked and the disagreement recorded, for the reason given under
+      fig2e-remove-plastic. New numbers plastic p = 0.0079, rigid p = 0.030.
+  - claim: fig4a-rigid-faster
+    agrees: false
+    outcome: not_reproduced
+    reason: Rigid cells have the higher median, but p = 0.059 (cell 43).
+    response: Kept blocked and the disagreement recorded, for the reason given under
+      fig2e-remove-plastic. New p = 0.062.
+  - claim: fig4a-plastic-ripple-burst-coactivation
+    agrees: false
+    outcome: partially_reproduced
+    reason: Gain is higher in plastic cells (p = 0.037). Bursting (p = 0.20) and coactivation (p =
+      0.79) are not (cell 45).
+    response: Kept blocked and the disagreement recorded, for the reason given under
+      fig2e-remove-plastic. With the new contributions gain (p = 0.015) and bursting (p = 0.028) are
+      higher and coactivation is not (p = 0.90); with the best-template classes none is.
+  - claim: fig4c-pre-fast-coactivation
+    agrees: true
+    outcome: reproduced
+    reason: Spearman rho is 0.861 on the averaged curve and 6 of 8 sessions are positive (cell 47).
+    response: No change.
+  - claim: fig4c-slow-coactivation-increase
+    agrees: true
+    outcome: not_reproduced
+    reason: rho is -0.068, against a threshold below -0.5. 5 of 8 sessions are negative (cell 47).
+    response: No change.
+  - claim: fig4c-slow-replay
+    agrees: true
+    outcome: not_reproduced
+    reason: rho is 0.095 and 4 of 8 sessions are negative (cell 47).
+    response: No change.
+  - claim: rate-split-medians
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both readings give a low-rate median of 0.435 Hz, outside 0.351 to 0.429, and a high-rate
+      median of about 1.09 Hz, inside 1.008 to 1.232. The strict "both medians" criterion fails. The
+      variant using the rate over all of PRE and POST (0.395 and 1.041 Hz) fits both.
+    response: No change.
+  - claim: figs16-low-rate-info-gain
+    agrees: true
+    outcome: partially_reproduced
+    reason: Spatial information is higher in low-rate cells (p = 4e-8). The gain change is not (p =
+      0.95) (cell 53).
+    response: No change.
+  - claim: fig4d-slow-sequences
+    agrees: true
+    outcome: not_reproduced
+    reason: Under the pooled criterion replay is absent for both low-rate (p = 0.96) and high-rate (p
+      = 1.0) templates. The within-session variant finds replay in both, larger for low-rate cells
+      (0.116 against 0.058), which would be partial. It asked for linear-only versions of the replay
+      table.
+    response: No change of outcome. Added the linear-track table, where the pooled test finds replay
+      in both halves, larger for low-rate cells (+0.077 against +0.044), the criterion's partial
+      pattern; the notes say so.
+  - claim: fig4e-gain-sequences
+    agrees: true
+    outcome: not_reproduced
+    reason: Under the pooled criterion replay is absent for both groups. The within-session variant
+      finds high-gain p near 0 and low-gain p = 0.14, which would meet the criterion.
+    response: No change of outcome. Added the linear-track table; there the pooled test finds replay
+      in neither half and the within-session variant in both, so the within-session pattern over all
+      sessions comes from the circular-track sessions.
