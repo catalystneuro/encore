@@ -73,7 +73,9 @@ outcomes:
     reading (c), the mean over files, 4.17 and 4.71.
   deviations:
   - The `good` flag is taken as the paper's bad-electrode selection; the files do not say how it was
-    set, and it differs between a subject's files.
+    set, and it differs between a subject's files. It also marks electrodes without coordinates as
+    bad (all 16 depth electrodes of subject 03), so it is not only the paper's SD and kurtosis
+    rejection.
 - claim: event-counts
   outcome: partially_reproduced
   notebook: reproduce_peterson_2021.ipynb
@@ -115,7 +117,8 @@ outcomes:
   output: claim:duration-magnitude-small
   notes: 91.7% of events last less than 2 s and 91.5% cover less than 200 pixels; both fractions are
     above half in all 12 subjects, the lowest being 0.590 for magnitude in subject 08 (median 172
-    pixels). 328 events last less than the 0.5 s the Methods keep.
+    pixels). 328 events last less than the 0.5 s the Methods keep; without them (7760 events) the
+    fractions are 91.4% and 91.7%.
 - claim: angle-bimodal
   outcome: not_reproduced
   notebook: reproduce_peterson_2021.ipynb
@@ -126,7 +129,10 @@ outcomes:
     of 12 subjects steep reaches (|angle| above 60) outnumber flat ones (below 30), and in every
     subject upward steep reaches outnumber downward ones. The distribution has a strong upward peak
     and a weak downward one. The stored angle is in image coordinates with y down (checked against
-    the pose, median difference 1.5 degrees), and the code's negation makes upward positive.
+    the pose, median difference 1.5 degrees), and the code's negation makes upward positive. Before
+    folding, the stored angles show the same skew in every subject (22.6% to 46.7% of events within
+    30 degrees of straight up, 7.0% to 20.9% within 30 degrees of straight down), so the skew is in
+    the dandiset's values and not made by the folding.
   deviations:
   - Includes the events the paper removed as false positives.
 - claim: feature-correlations
@@ -142,7 +148,9 @@ outcomes:
   - 0.598
   notes: Five of six Pearson correlations are within 10% of the paper's; magnitude and duration is
     0.231 against 0.26 +/- 0.026. All six are positive. The events left after segment rejection give
-    values within 0.004 of these.
+    values within 0.004 of these. On the 7760 events that last 0.5 to 4 s, the range the Methods
+    keep, all six are within tolerance (magnitude and duration 0.255); the criterion fixes the
+    outcome on all events, so this variant does not change it.
   deviations:
   - Includes the events the paper removed as false positives.
 - claim: bimanual-skew
@@ -174,8 +182,11 @@ outcomes:
     0.487 dB in the precentral, -0.793 and 0.596 dB in the postcentral and -0.879 and 0.280 dB in
     the inferior parietal region; the summed absolute change in these (1.036 to 1.389 dB) exceeds
     every temporal region (at most 0.337 dB). LFB is below 0 in 12, 10 and 12 of the 12 subjects in
-    these regions. The paper's statistical masking was not applied. The projection matrices match
-    the electrodes (projection-link), so the regional values rest on the dandiset's ECoG.
+    these regions. Resampling the events within each subject (1000 times), both parts of the
+    criterion hold in 99.5% of resamples; the 95% intervals of the summed change are 0.605 to 1.722
+    dB in the three sensorimotor regions and reach at most 0.573 dB in the temporal ones. The
+    paper's statistical masking was not applied. The projection matrices match the electrodes
+    (projection-link), so the regional values rest on the dandiset's ECoG.
   deviations:
   - Five events per file (seeded subsample, 15 to 25 per subject after rejection) in place of all
     events, for runtime.
@@ -216,8 +227,8 @@ outcomes:
   notes: Under the first reading, the subject mean over events, 22 of 24 values fall inside the
     paper's 95% intervals; under the second, the median, 20 of 24. The means outside are subject 06
     HFB (1.99 against 2.02 to 2.37 dB) and subject 10 LFB (-0.30 against -0.87 to -0.35 dB). Spearman
-    r between these values and the interval centres is 0.846 to 0.974. Without segment rejection 21
-    medians are inside; without the three late-starting files, 19. The paper's intervals are of
+    r between these values and the interval centres is 0.846 to 0.974. Without segment rejection 22
+    means and 21 medians are inside; without the three late-starting files, 20 means and 19 medians. The paper's intervals are of
     events after false-positive removal, which cannot be repeated here.
   deviations:
   - Table 1 does not say whether its intervals are of the mean or the median; both readings are
@@ -250,7 +261,10 @@ outcomes:
   output: claim:baseline-reduces-day-variability
   notes: The SD across days of the day means is lower with baseline subtraction in 9 of 12 subjects
     for LFB (not in 03, 06 and 11) and 12 of 12 for HFB, with median ratios 0.216 and 0.291, and it
-    stays above 0 in all (smallest 0.066 and 0.032 dB).
+    stays above 0 in all (smallest 0.066 and 0.032 dB). The LFB count is at the threshold;
+    resampling the events within each subject and day (1000 times), it ranges from 8 to 11 (95% of
+    resamples) and is at least 9 in 90.0% of them, and the 95% interval of the difference lies below
+    0 in 8 subjects. For HFB the count ranges from 10 to 12 and is at least 9 in every resample.
   deviations:
   - The legend of Extended Data Figure 5-1 does not name the region or the statistic; the precentral
     region and the SD of day means were chosen.
@@ -262,14 +276,22 @@ outcomes:
   notes: The largest mean test R2 over 40 splits on the 92 tested electrodes is 0.141 (subject 03,
     LFB); 0.137 with the code's 80/20 split. The R2 values stored in the dandiset reach 0.149 (LFB)
     and 0.255 (HFB, subject 04) over all electrodes; on the tested electrodes they correlate with
-    the recomputed ones (r = 0.865 for LFB and 0.776 for HFB). All 101200 Huber fits converged.
+    the recomputed ones (r = 0.865 for LFB and 0.776 for HFB). With forward selection inside each
+    training split (10 splits), the largest mean test R2 is 0.140 and a model's test R2 is lower by
+    0.033 (LFB) and 0.035 (HFB) on average. All 121440 Huber fits, variants included, converged.
   deviations:
   - Up to eight electrodes per subject (the good electrodes with the largest precentral weight, 92
-    in all), not every electrode, for runtime.
+    in all), not every electrode, for runtime. The criterion names eight per subject, but the
+    electrodes are drawn from set P, which holds only 5 good electrodes in subject 02 and 7 in
+    subject 06.
   - 40 random day-balanced splits with 90% training (the Methods) in place of 200; the code's 80%
     split with 10 splits is shown as a variant.
-  - Forward selection on all events, as in the code; the Methods do not say whether it used the
-    training events only.
+  - Forward selection on all events, as in the code, so the selection sees the test events; the
+    Methods split the events before pruning. Selection inside each training split is shown as a
+    variant. The continuous features are standardised over all events, as in the code; this uses
+    no response values.
+  - Time of day is one-hot in 8 h bins with both ends included, as in the code; no event falls at
+    exactly 8 or 16 h, so no event has two columns set.
 - claim: regression-r2-sensorimotor
   outcome: reproduced
   notebook: reproduce_peterson_2021.ipynb
@@ -278,7 +300,9 @@ outcomes:
     is the precentral for LFB and the postcentral for HFB, and the frontoparietal mean exceeds the
     temporal mean in both bands (LFB -0.0061 against -0.0182; HFB -0.0084 against -0.0171). The
     projected values are all near or below 0, as only 24 (LFB) and 25 (HFB) electrodes have a stored
-    R2 above 0.05.
+    R2 above 0.05. Of the 20 good electrodes with the largest stored R2, 19 (LFB) and 16 (HFB) have
+    their largest projection weight in a frontoparietal region, closer to the paper's statement
+    than the regional means; the LFB ones come from five subjects, 9 from subject 01.
   deviations:
   - Judged on the R2 values stored in the dandiset, whose computation the files do not describe, not
     on a recomputation; the recomputation covers precentral electrodes only and agrees with the
@@ -291,7 +315,9 @@ outcomes:
   notes: 12 of 92 tested electrodes have mean LFB test R2 above 0.05 (6 in subject 01, 4 in 03, 2 in
     11). On them, reach angle (0.0645) and day (0.0280) have the largest mean Delta R2 for LFB, and
     also for HFB (0.0108 and 0.0051). The same two lead with the code's split and scoring and over
-    all tested electrodes. The well-fit electrodes come from three subjects.
+    all tested electrodes. The well-fit electrodes come from three subjects. With forward selection
+    inside each training split, 8 electrodes pass (6 of them in the main selection), and angle
+    (0.0648) and day (0.0376) again lead in LFB.
   deviations:
   - As for regression-r2-max.
   - Delta R2 is scored on unshuffled test events, as the Methods say; the code scores the shuffled
@@ -302,7 +328,8 @@ outcomes:
   output: claim:regression-angle-coefficient
   notes: On the 12 well-fit electrodes the mean reach angle coefficient is -1.065 for LFB (negative
     on all 12, Wilcoxon p = 0.00049) and 0.2145 for HFB (positive on 11 of 12, p = 0.012). Over all
-    92 tested electrodes the means are -0.277 and 0.160.
+    92 tested electrodes the means are -0.277 and 0.160. With forward selection inside each training
+    split, the means are -1.091 (LFB, negative on 8 of 8) and 0.277 (HFB, positive on 7 of 8).
   deviations:
   - As for regression-r2-max.
 - claim: regression-angle-retained
@@ -312,7 +339,9 @@ outcomes:
   notes: Forward selection retains reach angle in 64.1% of the 184 models on the tested electrodes,
     ahead of onset speed (38.6%) and duration (34.8%); it leads in both bands (67.4% LFB, 60.9% HFB).
     The paper's order after angle (duration, magnitude, bimanual ratio, overlap) is not reproduced
-    on these electrodes, which the criterion does not test.
+    on these electrodes, which the criterion does not test. With forward selection inside each
+    training split, angle is retained in 61.8% of splits and models, ahead of bimanual ratio
+    (34.6%).
   deviations:
   - As for regression-r2-max; the paper's figure averages over regions, here over precentral
     electrodes.
@@ -361,10 +390,191 @@ findings:
   statement: In sub-08 ses-4 one reach has a start_time of 86440.3 s, past the end of its 24 h file,
     where its ReachEvents timestamp is 40.3 s. 328 reaches last less than the 0.5 s the Methods keep.
 - kind: other
-  statement: The ECoG is stored in chunks of one channel, 84375 samples long (54412 in sub-01 ses-7),
+  statement: The ECoG is stored in chunks of one channel, 84375 samples long (54412, 55031 and 55820
+    in the three files that start later in the day),
     and its chunk B-tree is spread through each file. Streamed with h5py, looking up the chunks of one
     window costs about 0.4 s per chunk row over the network; the entry reads the chunk index directly.
 - kind: code_mismatch
   statement: The paper's regression code splits 80/20 where the Methods say 90/10, scores Delta R2 on
     shuffled test events where the Methods say unshuffled, and runs forward selection on all events,
     including the test events. Here the choices make no difference to the outcomes.
+verifications:
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed,
+    the helper module and the claims file, with the full text of the paper (PMC8225404). The verifier
+    checked the blocked claim against the archive's asset and version metadata and tested the helper functions
+    on synthetic inputs. Report in transcripts/000055/verifier-1-report.md. Problems 1 (the reader was
+    never checked against h5py, nor its dtype and filter), 5 (the clock check has little power at 15 to
+    25 events) and 9 (time-of-day bins include both ends) bear on no single claim; in reply the notebook
+    now compares fetch_windows with h5py on 12 windows (all identical) and prints every file's dtype and
+    filters (little-endian float32, deflate only), the clock check's text states its low power, and the
+    regression cell shows that no event falls on a bin edge. The check also showed that the chunk length
+    differs in all three late-starting files, not only in subject 01 day 7; the text and the finding were
+    corrected.
+  results:
+  - claim: subjects-days-hemispheres
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 23: 12 subjects with 3 to 5 days each, all within days 3 to 7. 5 right and 7 left hemisphere,
+      and the event wrist is contralateral in every subject.'
+    response: No change.
+  - claim: demographics
+    agrees: true
+    outcome: blocked
+    reason: 'The NWB subject group holds only species and subject_id (cell 3). Checked in the archive:
+      each subject''s asset wasAttributedTo has only identifier and species, and the version metadata
+      never mentions sex or age. No part can be tested.'
+    response: No change.
+  - claim: electrode-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 26: surface 84.8 (paper 87.0 +/- 8.7) and depth mean 23.7 (paper 23.2 +/- 2.32) are
+      within tolerance under both readings. The number of subjects with depth electrodes is 7 under (a)
+      and 6 under (b), against 5 in the paper.'
+    response: No change.
+  - claim: bad-electrodes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 28, reading (a): surface 4.83 is within 4.9 +/- 0.49, but depth is 4.29 against 1.0
+      +/- 0.1. Readings (b) and (c) fail on both values. Problem 7: the good flag also marks unlocalised
+      electrodes as bad (all 16 depth electrodes of subject 03, and 8 in subject 12), so it does not measure
+      only the paper''s SD and kurtosis rejection; without subject 03, depth is 2.33, still outside tolerance.'
+    response: No change of outcome. Problem 7 is now recorded as a deviation.
+  - claim: event-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 30, reading (a): min 211, max 996, median 770.5; only the max is within tolerance (852
+      to 1042). Reading (b) is similar (208, 986, 748).'
+    response: No change.
+  - claim: features-differ-subjects
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 32: Kruskal-Wallis p < 0.001 for all 10 features. Problem 8: time of day is assumed
+      to start at each file''s local midnight, contrary to the stated session_start_time, resting only
+      on the sleep-label histogram; 328 durations are below 0.5 s, so the events are not exactly the paper''s
+      selection.'
+    response: No change. Both points were already deviations or notes; the 0.5 to 4 s selection is now
+      shown as a variant for duration-magnitude-small and feature-correlations.
+  - claim: days-one-dominant
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 34: reading (a) fails, because subject 04''s largest day is only 0.381 of its events.
+      Reading (b) holds: 04, 05 and 09 are the three largest one-day shares.'
+    response: No change.
+  - claim: duration-magnitude-small
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 36: 91.7% of events last under 2 s and 91.5% cover under 200 px; both hold in 12 of
+      12 subjects.'
+    response: No change. Added the variant on events lasting 0.5 to 4 s (91.4% and 91.7%).
+  - claim: angle-bimodal
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 38: the two most populated bins are 10 and 11, both at the upward end. Bin 0 (downward)
+      has 514 events, fewer than bins 8 to 10, so the pooled part fails. The per-subject part holds (11
+      of 12), but the criterion gives no partial credit for that case. The distribution is skewed upward,
+      not bimodal. It asked for a per-subject histogram of the stored, unfolded angle, to show whether
+      the skew comes from the events or from the folding.'
+    response: 'No change of outcome. Added the per-subject histogram of the stored angle: upward stored
+      angles outnumber downward ones in 12 of 12 subjects (22.6% to 46.7% against 7.0% to 20.9%), so the
+      skew is in the dandiset''s values.'
+  - claim: feature-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 40: 5 of 6 correlations are within tolerance and all are positive. Magnitude against
+      duration is r = 0.231, just below the lower bound of 0.234.'
+    response: No change of outcome. Added the variant on events lasting 0.5 to 4 s, where all six are
+      within tolerance (0.255); the criterion fixes the outcome on all events.
+  - claim: bimanual-skew
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 42: median ratio 0.137 (below 0.5), median overlap 0.467 s (below half the median duration,
+      0.55 s), 72.6% of events bimanual. The four highest median ratios are 04, 07, 05 and 02, which include
+      02, 04 and 05.'
+    response: No change.
+  - claim: projection-link
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 44: the density threshold gives the paper''s 8 regions. In 12 of 12 subjects the extra
+      matrix rows are all zero, and the closeness score (0.917 to 0.967) is far above the shuffled maximum
+      (at most 0.143).'
+    response: No change.
+  - claim: group-pattern-rois
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 46: LFB is below 0 and HFB above 0 in precentral, postcentral and inferior parietal.
+      Their absolute sums (1.04 to 1.39) are all larger than the largest temporal one (0.34). This rests
+      on 15 to 25 events per subject. Problem 6: the notebook gives no uncertainty for it; the margin
+      is large.'
+    response: 'No change of outcome. Added a bootstrap over events within subjects: both parts of the
+      criterion hold in 99.5% of 1000 resamples.'
+  - claim: precentral-subject-ci
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 49: 22 of 24 means and 20 of 24 medians fall inside Table 1''s intervals; the threshold
+      is 20. Problem 4: without the three late-starting files only 19 of 24 medians fall inside, which
+      would be partial under the median reading; the mean reading was not shown for this variant.'
+    response: 'No change of outcome. Added the mean reading to the variants: without the three late-starting
+      files 20 means fall inside (19 medians).'
+  - claim: precentral-subjects-differ
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 52: Kruskal-Wallis H = 802 (LFB) and 1244 (HFB), p underflows to 0.'
+    response: No change.
+  - claim: precentral-day-effects
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 54: 23 of 24 calls agree with the paper. The one disagreement is S05 LFB, p = 0.054
+      here against 0.013 in the paper.'
+    response: No change.
+  - claim: baseline-reduces-day-variability
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 56: the day-to-day SD is lower with baseline subtraction in 9 of 12 subjects for LFB
+      (exactly the threshold; 03, 06 and 11 go the other way) and 12 of 12 for HFB. It stays above 0 everywhere.
+      It asked for per-subject bootstrap intervals on the two day-to-day SDs to show how firm the 9 of
+      12 count is.'
+    response: 'No change of outcome, which the criterion fixes on the point values. Added the bootstrap:
+      the LFB count is 8 to 11 over 95% of resamples and at least 9 in 90.0% of them; the HFB count is
+      at least 9 in every resample. The notes say the LFB count is at the threshold.'
+  - claim: regression-r2-max
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 60: the largest mean test R2 is 0.141, under the 0.275 limit; the stored maximum is
+      0.255. No recomputed model comes near the paper''s 0.25, so the bound passes easily but is not closely
+      matched. Problem 2: forward selection and standardisation run once on all events, test events included,
+      which leaks test data; it follows the code, but the Methods describe a 90/10 split before pruning.
+      Problem 3: subject 02 has 5 and subject 06 has 7 electrodes, not the eight the criterion asks for.'
+    response: No change of outcome. Added the variant with forward selection inside each training split
+      (largest R2 0.140; test R2 lower by 0.033 and 0.035 on average). Standardisation uses features only,
+      not the response. Problem 3 is recorded as a deviation.
+  - claim: regression-r2-sensorimotor
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 62: the top region is precentral for LFB and postcentral for HFB. The frontoparietal
+      mean is above the temporal mean in both bands (-0.006 against -0.018, and -0.008 against -0.017),
+      though all values are near or below 0. It asked for a list of the top-N stored R2 electrodes per
+      band with their dominant region, since the paper''s statement is about where the largest-R2 models
+      are.'
+    response: 'No change. Added the 20 electrodes with the largest stored R2 per band: 19 (LFB) and 16
+      (HFB) have their largest weight in a frontoparietal region.'
+  - claim: regression-angle-day-top
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 64: 12 electrodes pass R2 > 0.05, all from subjects 01, 03 and 11. Angle (0.0645) and
+      day (0.028) have the largest Delta R2 in LFB, and the same holds in every variant.'
+    response: 'No change. Added the variant with selection inside each training split: 8 electrodes pass
+      and angle (0.0648) and day (0.0376) lead.'
+  - claim: regression-angle-coefficient
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 66: the mean angle coefficient is -1.07 for LFB (12 of 12 negative) and +0.21 for HFB.
+      Cell 9 confirms that after negation, positive angles are upward reaches.'
+    response: No change. Added the in-split selection variant (-1.091 and 0.277).
+  - claim: regression-angle-retained
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 68: angle is retained in 0.641 of models, the highest; the next is onset speed at 0.386.'
+    response: No change. Added the in-split selection variant (angle 0.618, next bimanual ratio 0.346).

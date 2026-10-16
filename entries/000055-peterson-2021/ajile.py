@@ -104,6 +104,12 @@ def _strings(values) -> list[str]:
     return [v.decode() if isinstance(v, bytes) else str(v) for v in values]
 
 
+def _filters(dataset) -> tuple[str, ...]:
+    """Names of the filters in a dataset's pipeline, in order."""
+    plist = dataset.id.get_create_plist()
+    return tuple(_text(plist.get_filter(i)[3]) for i in range(plist.get_nfilters()))
+
+
 def load_session(path_url: tuple[str, str]) -> dict:
     """Everything but the ECoG and pose samples of one file."""
     path, url = path_url
@@ -132,6 +138,8 @@ def load_session(path_url: tuple[str, str]) -> dict:
             "session_start": _text(f["session_start_time"]),
             "ecog_shape": ecog["data"].shape,
             "ecog_chunks": ecog["data"].chunks,
+            "ecog_dtype": ecog["data"].dtype.str,
+            "ecog_filters": _filters(ecog["data"]),
             "ecog_rate": float(ecog["starting_time"].attrs["rate"]),
             "ecog_start": float(ecog["starting_time"][()]),
             "ecog_unit": _text(ecog["data"].attrs["unit"]),
@@ -331,7 +339,9 @@ def chunk_index(url: str, session=None, threads: int = 24) -> dict:
     message (type 8, version 3, chunked) and the B-tree root; each node is "TREE", type, level,
     entries used, two sibling addresses, then keys (chunk size, filter mask, one 8-byte offset
     per dimension plus one) alternating with child addresses (HDF5 file format specification,
-    sections III.A.1 and IV.A.2.i). The notebook checks it against h5py on sample chunks."""
+    sections III.A.1 and IV.A.2.i). `fetch_windows` assumes little-endian float32 samples and gzip
+    as the only filter; the notebook checks both in every file and compares `fetch_windows` with
+    h5py on sample windows."""
     session = session or requests.Session()
     with h5py.File(remfile.File(url), "r") as f:
         # h5g.get_objinfo gives the object header address at once; h5o.get_info takes minutes
@@ -549,10 +559,13 @@ def regression_model(task: dict) -> dict:
     splits (`task`: x, y, groups, days, per_train, n_splits, seed).
 
     As in the code, forward selection runs once on all events and the columns it leaves out are
-    set to 0. For each feature, Delta R2 is the full model's test R2 minus that of a model fit with
-    the feature's columns shuffled across events; `delta_methods` scores the shuffled model on the
-    unshuffled test events (the Methods), `delta_code` on the shuffled ones (the code). A feature
-    with no column selected has Delta R2 0."""
+    set to 0. With `task['select_in_train']` true, it runs on the training events of each split
+    instead, and `retained` is the mean over splits (a variant: the Methods split the events
+    before selection). For each feature, Delta R2 is the full model's test R2 minus that of a
+    model fit with the feature's columns shuffled across events; `delta_methods` scores the
+    shuffled model on the unshuffled test events (the Methods), `delta_code` on the shuffled ones
+    (the code). A feature with no column selected has Delta R2 0. Standardisation uses all
+    events' features (as the code does); it does not use the response."""
     import warnings
     from sklearn.exceptions import ConvergenceWarning
     from sklearn.linear_model import HuberRegressor
@@ -560,16 +573,31 @@ def regression_model(task: dict) -> dict:
 
     x, y, groups = task["x"], task["y"], task["groups"]
     rng = np.random.default_rng(task["seed"])
-    selected = forward_select(x, y)
-    xs = np.zeros_like(x)
-    xs[:, selected] = x[:, selected]
-    retained = {f: (len(set(c) & set(selected)) / len(c) if f in ("day", "time_of_day")
+    in_train = bool(task.get("select_in_train", False))
+
+    def masked(selected):
+        xs = np.zeros_like(x)
+        xs[:, selected] = x[:, selected]
+        return xs
+
+    def kept(selected):
+        return {f: (len(set(c) & set(selected)) / len(c) if f in ("day", "time_of_day")
                     else float(c[0] in selected)) for f, c in groups.items()}
+
+    if not in_train:
+        selected = forward_select(x, y)
+        xs = masked(selected)
+        retained = kept(selected)
+    retained_splits = []
     r2_test, r2_train, coef_angle, unconverged = [], [], [], 0
     delta_methods = {f: [] for f in groups}
     delta_code = {f: [] for f in groups}
     for _ in range(task["n_splits"]):
         train, test = day_balanced_split(task["days"], task["per_train"], rng)
+        if in_train:
+            selected = forward_select(x[train], y[train])
+            xs = masked(selected)
+            retained_splits.append(kept(selected))
         with warnings.catch_warnings(record=True) as caught:
             warnings.simplefilter("always", ConvergenceWarning)
             model = HuberRegressor().fit(xs[train], y[train])
@@ -588,6 +616,8 @@ def regression_model(task: dict) -> dict:
                 delta_methods[f].append(full - r2_score(y[test], m.predict(xs[test])))
                 delta_code[f].append(full - r2_score(y[test], m.predict(shuffled[test])))
         unconverged += sum(issubclass(w.category, ConvergenceWarning) for w in caught)
+    if in_train:
+        retained = {f: float(np.mean([r[f] for r in retained_splits])) for f in groups}
     return {"r2_test": float(np.mean(r2_test)), "r2_train": float(np.mean(r2_train)),
             "coef_angle": float(np.mean(coef_angle)), "retained": retained,
             "delta_methods": {f: float(np.mean(v)) for f, v in delta_methods.items()},
