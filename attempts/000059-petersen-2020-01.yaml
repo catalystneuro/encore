@@ -30,7 +30,8 @@ outcomes:
   measured: 143.8
   notes: Over 45 BEH sessions the mean is 143.8 trials (80 to 204); medians of 39 pre-cooling, 47
     cooling and 44 post-cooling trials. 12 sessions have two cooling blocks, which the paper does
-    not mention, and 'Cooling off' trials (median 14 per session) are counted in no state.
+    not mention; in each the second block follows post-cooling trials, and the onset-aligned series
+    stops before it. 'Cooling off' trials (median 14 per session) are counted in no state.
   deviations:
   - 45 of the paper's 53 sessions.
 - claim: cooling-time-course
@@ -42,7 +43,11 @@ outcomes:
     onset (IQR 89 to 138 s; 119 to 122 s for onset thresholds of 0.5 to 2 C), against 60 s. The
     duration holds under reading (b), 12.16 minutes until the temperature is within 1 C of
     baseline; under reading (a) the temperature is below 32 C for 8.77 minutes. The median
-    minimum is 21.2 C.
+    minimum is 21.2 C. The drop is fast and the temperature then stays near its minimum, so the
+    time to the minimum overstates the time to the peak effect. 90% of each session's drop is
+    reached a median 53 s after onset (IQR 44 to 63 s), and the onset-aligned mean trace is within
+    0.5 C of its minimum from 70 to 152 s. Without the five sessions whose baseline has artefacts
+    above 38 C or whose onset is detected early, the values are 121.5 s and 12.22 minutes.
   deviations:
   - The onset is taken from the temperature trace (1 C below the pre-cooling median), as the
     files have no time of dry-ice placement; the Methods do not define the onset.
@@ -72,7 +77,10 @@ outcomes:
     power R ranges from -0.346 to 0.376.
   deviations:
   - The theta electrode is the one flagged theta_reference in the files, which may differ from the
-    paper's; power depends on the electrode more than frequency does.
+    paper's; power depends on the electrode more than frequency does. The LFP column read is that
+    row in every session (checked through the LFP electrodes region).
+  - Power is taken from the spectrogram of the 4 to 10 Hz band-passed LFP, as in the paper's code
+    (calcInstantaneousTheta.m); the band-pass weights frequencies within the band unequally.
 - claim: fig2j-frequency-consistent-across-animals
   outcome: reproduced
   notebook: reproduce_petersen_2020.ipynb
@@ -131,7 +139,9 @@ outcomes:
   output: claim:fig6c-worst-trials-4-to-8
   notes: The mean smoothed error series over 45 sessions peaks at trial 7 after onset (0.193,
     against 0.066 over the 40 trials before), the trial of the minimum mean temperature and theta
-    frequency. Within single rats the mean peaks later, at trials 14 to 26.
+    frequency. The peak is narrow and the result fragile. A second rise reaches 0.186 at trial 20,
+    and within single rats the mean peaks later, at trials 14 to 26. All 45 sessions contribute at
+    every trial from 1 to 40.
 - claim: fig6f-errors-temperature
   outcome: partially_reproduced
   notebook: reproduce_petersen_2020.ipynb
@@ -171,7 +181,7 @@ outcomes:
   notes: Speed falls with trial number in 44 of 45 sessions (median rho -0.452, P = 4e-13), in
     every rat; the aligned mean falls from 86.0 to 73.7 cm/s.
 - claim: fig5-speed-control-cooling
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_petersen_2020.ipynb
   output: claim:fig5-speed-control-cooling
   measured:
@@ -179,7 +189,8 @@ outcomes:
   - 74.9
   notes: Over 15 sessions, reading (a) gives control 78.9 and cooling 74.9 cm/s, both outside;
     reading (b) gives control 79.6, within 87.3 +- 8.0, and cooling 76.0, 0.3 cm/s below
-    86.2 +- 9.9. Speed is lower during cooling than in control (P = 0.035 to 0.041).
+    86.2 +- 9.9. The criterion needs both values within tolerance under one reading, and neither
+    reading gives both. Speed is lower during cooling than in control (P = 0.035 to 0.041).
   deviations:
   - 15 of the code's 18 Figure 5 sessions; the paper does not define its speed measure.
 - claim: suppl2-place-cell-rates-decrease
@@ -221,8 +232,10 @@ outcomes:
   notes: Over 646 units, trough-to-peak differs (P = 4.9e-10, median change 0 as most units do not
     move by a whole 0.05 ms sample) and amplitude rises by a median 0.8% (P = 0.00057). The windows
     are 8 to 32 minutes apart, so drift cannot be separated from cooling; for interneurons alone
-    neither differs (P = 0.066 and 0.2). The effect is small, and the outcome follows the paper's
-    test as written.
+    neither differs (P = 0.066 and 0.2). Fewer spikes are averaged in the cooling window (median
+    200 against 247.5), but in the 208 units whose two means both use the 300-spike cap the changes
+    remain (amplitude 0.7%, P = 0.032; trough-to-peak P = 2.2e-05), so the spike count does not
+    explain them. The effect is small, and the outcome follows the paper's test as written.
   deviations:
   - Waveforms from 120 s windows of the wide-band data at 20 kHz, high-passed at 300 Hz, on the
     channel of largest amplitude; the paper's measure is in its supplement, which could not be
@@ -240,7 +253,7 @@ outcomes:
   - 10.39
   notes: Over 361 fields (paper 365) all six means are within the paper's spreads; fp falls in 311
     (P = 3.5e-44) and fLFP in 352 (P = 1.2e-60), by 9.2% and 9.0%, and both recover. Each rat shows
-    the same pattern, and 30 or 100 spikes per state give the same means.
+    the same pattern, and fields with at least 100 or 200 spikes per state give the same means.
   deviations:
   - Fields by the automatic criteria of the Methods, from 11 sessions in 4 rats.
 - claim: fig4c-fp-flfp-correlation
@@ -267,12 +280,13 @@ outcomes:
   notebook: reproduce_petersen_2020.ipynb
   output: claim:fig4a-frequency-temperature-slopes
   measured:
-  - 0.677
-  - 0.0714
+  - 0.678
+  - 0.0716
   - 0.338
   - 0.0859
-  notes: Over 52035 windows from 562 fields, fLFP R = 0.677 and slope 0.0714 Hz per C, fp slope
-    0.0859, within tolerance; fp R = 0.338, just below 0.342.
+  notes: Over 52474 windows from 563 fields, fLFP R = 0.678 and slope 0.0716 Hz per C, fp slope
+    0.0859, within tolerance; fp R = 0.338, just below 0.342. The windows overlap (stepped by one
+    trial), so the P values over windows overstate the evidence; the paper's code does the same.
   deviations:
   - Windows of 20 trials stepped by one trial, as calc_trial_averages.m; the paper's figure does
     not say which windows it plots.
@@ -312,7 +326,10 @@ outcomes:
   output: claim:fig3f-information-unchanged
   notes: Over 374 place cells information is lower during cooling than before (median change
     -0.029 against a median of 1.253 bits/spike, P = 0.014) and lower after than before
-    (P = 0.0064); cooling and post do not differ (P = 0.31). The changes are small.
+    (P = 0.0064); cooling and post do not differ (P = 0.31). The changes are small. Bits per spike
+    rise when fewer spikes are used, and the pre state has the fewest trials, but with each state's
+    spikes subsampled to the same count (360 cells) pre against cooling gives P = 0.0073 and pre
+    against post P = 0.0092, so the decrease does not come from the spike counts.
   deviations:
   - The paper names its comparisons but not its test; its default paired test was used.
 - claim: fig3hi-population-vector-unchanged
@@ -349,13 +366,21 @@ outcomes:
   measured: 109.2
   notes: Over 9 sessions the period lengthens from 109.2 to 114.0 ms (8 of 9, P = 0.0195) and the
     phase period does not change (1.740 and 1.760 pi rad, P = 0.59); the control period is not
-    85 +- 8.5 ms. It is shorter than the LFP theta period (115.7 ms).
+    85 +- 8.5 ms. The criterion's estimator takes the largest neighbouring peak 60 to 200 ms from
+    the main peak, and in 47.7% of pre pairs that peak is more than 1.25 times as far as the
+    nearest one, so it often picks the second neighbour and the 109.2 ms is biased upward. With
+    the nearest neighbouring peak (a variant) the control period is 91.0 ms, within tolerance, and
+    it lengthens to 95.5 ms (7 of 9, P = 0.031); pairs with |Ltr| below 10 cm give 91.0 ms. Under
+    that variant all three parts of the criterion hold; the outcome follows the criterion's
+    estimator. Both control periods are shorter than the LFP theta period (115.7 ms).
   deviations:
   - The period is measured per pair and summarised per session; the paper reads it from the sum
     over pairs. The criterion was changed to this before the analysis across sessions, after a
     pilot session showed that the summed correlogram's spectrum follows its envelope; the summed
     correlogram is shown as a variant (99 to 200 ms).
   - 9 sessions in 4 rats, against 18 in 5.
+  - The criterion's period estimator often takes the second neighbouring peak; the nearest-peak
+    estimator is shown as a variant.
 - claim: fig5cg-compression
   outcome: not_reproduced
   notebook: reproduce_petersen_2020.ipynb
@@ -364,7 +389,10 @@ outcomes:
   notes: Pooled pre compression 0.273 cm/ms against 0.54. Per session it is lower during cooling
     in 8 of 9 sessions without significance (0.298 against 0.191, P = 0.0547); phase compression
     does not change (P = 0.426). Lag and distance correlate weakly (R = 0.195), so the slope depends
-    on the fit (inverse regression 9.085 cm/ms). The direction of the change agrees with the paper.
+    on the fit (inverse regression over pooled pre pairs 7.175 cm/ms). The 70 ms window can hold
+    more than one candidate peak; in 10.5% of pre pairs the lag changes when the window is narrowed
+    to half the theta period, which gives 0.156 cm/ms. The compression magnitude cannot be judged
+    from this method. The direction of the change agrees with the paper.
   deviations:
   - Lags from each pair's correlogram peak and compression from a regression, where the paper fits
     a surface to the density of all pairs; pairs without a peak within 70 ms are dropped.
@@ -374,7 +402,7 @@ outcomes:
   output: claim:fig5h-time-lags-increase
   notes: Under reading (a), cooling against pre over 3136 pairs (30.5 against 28.5 ms, P = 1.14e-06)
     and against post (P = 1.3e-10); pre and post do not differ (P = 0.0967). Reading (b) agrees
-    (P = 0.023, 0.016 and 0.81).
+    (P = 0.023, 0.016 and 0.81), and so does the half-period window (P = 3.8e-22 and 2.0e-29).
   deviations:
   - The legend's n = 10 sessions cannot give P = 8e-5 with a signed-rank test over sessions, so
     the test over pairs was taken as the main reading.
@@ -391,7 +419,10 @@ outcomes:
   output: claim:fig5j-fraction-active-unchanged
   notes: The fraction active is higher during cooling (0.2405 against 0.226, rank-sum P = 1.5e-22
     over 9037 and 10152 cycles). Per session the cooling mean is lower than pre in 5 of 9 sessions
-    (P = 0.734).
+    (P = 0.734); cooling against post gives P = 0.074 and pre against post P = 0.004. Session means
+    range from 0.159 to 0.315 and sessions contribute different numbers of cycles in each state, so
+    the pooled test reflects the make-up of the pool as much as an effect. Cycles are longer during
+    cooling (131.1 ms against 117.8 and 117.2 ms).
   deviations:
   - The paper does not name its test; the default rank-sum test over cycles was fixed before the
     analysis.
@@ -401,7 +432,8 @@ outcomes:
   output: claim:fig5k-spikes-per-cycle-unchanged
   notes: Pre and cooling do not differ (45.68 and 44.98 spikes, P = 0.0758), but post (51.68)
     differs from both (P below 1e-50). Per session, cooling differs from neither pre (P = 0.57) nor
-    post (P = 0.129).
+    post (P = 0.129), and post differs from pre (P = 0.02). Session means range from 17.66 to 91.37
+    spikes, so the pooled tests depend on how many cycles each session contributes.
   deviations:
   - Spikes of all good and good2 units; the paper's 'all neurons' may include other units.
 - claim: suppl1-hippocampal-temperature
@@ -409,7 +441,8 @@ outcomes:
   blocked_by: data_missing
   notes: The control experiment that measured temperature in the MS and both hippocampi is not in
     the dandiset, whose files hold only the MS temperature of the 50 behavioural sessions. The
-    paper's data statement points to the lab website and CRCNS; no other DANDI deposit of these
+    data check lists every series in all 100 files, and the only temperature series is
+    processing/behavior/Temperature. The paper's data statement points to the lab website and CRCNS; no other DANDI deposit of these
     recordings was found.
 findings:
 - kind: metadata_error
@@ -462,3 +495,297 @@ findings:
   statement: The Discussion gives a 12% decrease of LFP theta frequency during cooling, while the
     Results give within-field LFP theta of 8.4 Hz before and 7.7 Hz during cooling, a decrease of
     about 8%, which this attempt reproduces (9% over trials).
+verifications:
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed,
+    the helper module and the claims file, with the PMC author manuscript of the paper. The verifier
+    checked the blocked claim against the archive's file list and metadata and tested the helper
+    functions on synthetic inputs. Report in transcripts/000059/verifier-1-report.md.
+  results:
+  - claim: session-structure
+    agrees: true
+    outcome: reproduced
+    reason: Cell 28 gives a mean of 143.8 trials, range 80 to 204, and medians of 39 pre, 47 cooling
+      and 44 post. All are inside the criterion's bounds.
+    response: No change of outcome. Added the state sequences of the 12 sessions with two cooling
+      blocks and the trials the onset-aligned series keeps (problem 13). In every one the second
+      block follows post-cooling trials, so the series already stopped before it; the helper now
+      stops at the first return to cooling from any state, and no number changed.
+  - claim: cooling-time-course
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 30 gives a median time to minimum of 121 s against 60 +- 6 s. The duration until
+      back within 1 C of baseline is 12.16 min, inside 9 to 13.2. The paper's Results say about 45
+      s, its Methods about 60 s. Some baselines come from artefact-contaminated traces (problem 6),
+      and the argmin over 5 minutes is pushed late by a slowly drifting plateau (problem 7); neither
+      affects the conclusion.
+    response: No change of outcome. Added the onset-aligned mean MS temperature trace in seconds
+      (minimum at 121 s, within 0.5 C of it from 70 to 152 s), the time to 90% of each session's
+      drop (median 53 s, IQR 44 to 63 s), and a variant without the five sessions with an artefact
+      baseline or an early onset (121.5 s and 12.22 minutes). The criterion fixes the time to the
+      minimum; the notes now give the 90% time.
+  - claim: fig2g-theta-freq-temperature
+    agrees: true
+    outcome: reproduced
+    reason: Cell 32 gives R = 0.789, P = 2.8e-43 (TEMP sessions).
+    response: No change. The LFP column is now looked up through the LFP electrodes region, and the
+      data check shows it is the theta_reference row in all 49 sessions read (problem 12); no number
+      changed.
+  - claim: fig2h-theta-power-temperature
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 34 gives R = -0.056 (P = 0.44) on TEMP and 0.123 (P = 0.085) on BEH. Neither is
+      positive at P < 0.05. The spectrogram is computed on the 4 to 10 Hz filtered signal, which
+      partly masks a cooling power drop, but the paper's calcInstantaneousTheta.m does the same, so
+      this is faithful to the paper (problem 11).
+    response: No change. The use of the band-passed signal is now recorded as a deviation note.
+  - claim: fig2j-frequency-consistent-across-animals
+    agrees: true
+    outcome: reproduced
+    reason: Cell 36 shows frequency R positive with P < 1e-22 in all four animals. Its range is 0.27
+      against 0.72 for power. MS10 has no recorded temperature, so it is absent.
+    response: No change.
+  - claim: fig2i-theta-pre-cooling-post
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 38 shows frequency lower during cooling than pre (P = 1.4e-12) and than post
+      (P = 5.7e-14). Power is lower than pre only marginally (P = 0.048, 26 of 45 sessions) and not
+      lower than post (P = 0.94). An unused direction flag in the cell is inverted (problem 9).
+    response: No change of outcome. Fixed the direction flag; it was not used and no number changed.
+  - claim: disc-theta-frequency-12-percent
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 40 gives decreases of 8.9%, 9.2% and 9.2%. All are decreases, none within 12 +- 1.2.
+    response: No change.
+  - claim: fig6d-errors-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 42 gives ratios 2.28, 2.31 and 2.53, all outside 3.0 +- 0.3. Over sessions P = 3e-7.
+      MS22 (12 sessions) has P = 0.064.
+    response: No change.
+  - claim: fig6e-errors-recover
+    agrees: true
+    outcome: reproduced
+    reason: Cell 44 gives post against pre P = 0.84, median difference -0.13 points.
+    response: No change.
+  - claim: fig6c-worst-trials-4-to-8
+    agrees: true
+    outcome: reproduced
+    reason: In cell 46 the error peak is at trial 7, and the temperature minimum is also at trial 7.
+      This is fragile, as each animal's own peak falls at trials 14 to 26.
+    response: No change of outcome. Added the mean smoothed error rate for trials 21 to 40 after
+      onset and the number of sessions contributing at each trial (all 45 from trial 1 to 40). The
+      conclusion and notes now say the peak is narrow and that a second rise reaches 0.186 at trial
+      20.
+  - claim: fig6f-errors-temperature
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 48 gives R = -0.84, -0.79 and -0.87, all with P < 1e-40. Negative, but far from
+      -0.35.
+    response: No change.
+  - claim: fig6g-errors-theta-frequency
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 50 gives R = -0.87 and -0.73. Negative, but outside tolerance.
+    response: No change.
+  - claim: fig6h-errors-theta-power
+    agrees: true
+    outcome: partially_reproduced
+    reason: In cell 52 only MS10 meets R < -0.3 with P < 0.01. One animal counts, against 2 expected.
+    response: No change.
+  - claim: fig6i-errors-not-speed
+    agrees: true
+    outcome: not_reproduced
+    reason: In cell 54 MS13, MS21 and MS22 have P < 0.05 (R = -0.49, 0.22, 0.25).
+    response: No change.
+  - claim: fig4e-speed-decreases-within-session
+    agrees: true
+    outcome: reproduced
+    reason: In cell 56 speed falls with trial number in 44 of 45 sessions, median rho -0.45,
+      P = 4e-13.
+    response: No change.
+  - claim: fig5-speed-control-cooling
+    agrees: false
+    outcome: not_reproduced
+    reason: In cell 58 reading (a) gives 78.9 and 74.9 cm/s, both outside. Reading (b) gives control
+      79.6 (inside) and cooling 76.0 (just below 76.3).
+    response: Outcome changed from partially_reproduced to not_reproduced. The criterion reproduces
+      the claim when both values are within tolerance under one reading and states no partial case,
+      and neither reading gives both. The conclusion, summary, README and notes now say so.
+  - claim: suppl2-place-cell-rates-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 62 gives decreases of 3.7 to 7.7% (within-field) and 5.3 to 6.7% (peak), P = 0.0024
+      and 0.0013. Both are significant, neither within tolerance, and neither reaches P < 0.001.
+    response: No change.
+  - claim: disc-interneuron-rates-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 64 gives a decrease of 6.5% (median) or 9.1% (ratio of means), P = 0.0017. The 14%
+      is not reached.
+    response: No change.
+  - claim: fig4b-fp-flfp-decrease
+    agrees: true
+    outcome: reproduced
+    reason: In cell 70 all six means are within the stated spreads (n = 361 fields against the
+      paper's 365). Both fp and fLFP decrease during cooling, P < 1e-43. The 30-spike variant is the
+      same as the main result, because oscillation_frequency returns NaN below 50 spikes, so it
+      tests nothing (problem 8).
+    response: No change of outcome. Replaced the 30-spike variant with 100 and 200 spikes per state,
+      which give the same means, and corrected the notes, which said 30 spikes.
+  - claim: fig4c-fp-flfp-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 72 gives R = 0.23, 0.44 and 0.16, all positive with P < 0.003, all outside tolerance.
+    response: No change.
+  - claim: fig4ac-fp-flfp-difference-preserved
+    agrees: true
+    outcome: not_reproduced
+    reason: In cell 74 fp - fLFP is lower during cooling, P = 1.3e-4, median change -0.13 Hz. The
+      mean change is mostly from MS12 (-1.03 Hz); the other animals are near 0.
+    response: No change.
+  - claim: fig4a-frequency-temperature-slopes
+    agrees: true
+    outcome: partially_reproduced
+    reason: In cell 76 fLFP R = 0.677 and slope 0.0714 are within tolerance, as is the fp slope
+      (0.086). The fp R of 0.338 is just below 0.342. The window loop drops the last 20-trial window,
+      and the P value pools about 52,000 overlapping windows, which is pseudo-replication; the
+      paper's code does the same (problem 10).
+    response: No change of outcome. The last window of each field is now included, which gives
+      52474 windows, fLFP R = 0.678 and slope 0.0716, fp R = 0.338 and slope 0.0859. The conclusion
+      and notes now say that the windows overlap, so the P values overstate the evidence.
+  - claim: fig3c-field-size-correlated
+    agrees: true
+    outcome: reproduced
+    reason: Cell 78 gives R = 0.8197 against a lower bound of 0.819, so it passes by 0.0007. The
+      at-least-100-spike variant (0.814) falls outside.
+    response: No change.
+  - claim: fig3d-size-fp-negative
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 80 gives R = -0.31, -0.31 and -0.32, all with P < 3e-9. Negative, but outside
+      tolerance.
+    response: No change.
+  - claim: fig3e-model-field-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 82 gives pre R = 0.25 and cooling R = 0.34, both positive with P < 1e-5. Post is
+      0.33 against 0.11 expected.
+    response: No change.
+  - claim: fig3f-information-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 84 gives pre against cooling P = 0.014 and pre against post P = 0.0064. Skaggs bits
+      per spike are biased upward when there are fewer spikes, the pre state has fewer trials than
+      cooling or post, and information falls in the order pre, cooling, post, which matches that
+      bias. No subsampling to equal spikes or occupancy was done (problem 3).
+    response: No change of outcome. Added bits per spike with each state's spikes subsampled to the
+      smallest count of the three (20 draws averaged, 360 cells). Pre against cooling gives
+      P = 0.0073 and pre against post P = 0.0092, so the spike counts do not explain the decrease;
+      the conclusion and notes say so.
+  - claim: fig3hi-population-vector-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Cell 86 gives P = 0.97 over n = 11 sessions, which gives the test low power.
+    response: No change.
+  - claim: fig4d-precession-slope-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: In cell 88, on slope magnitude, cooling is flatter than post (P = 0.022) but not than pre
+      (P = 0.83). The signed reading is not significant.
+    response: No change.
+  - claim: fig4gh-fp-speed
+    agrees: true
+    outcome: reproduced
+    reason: In cell 90 the fp slope (0.0136) is larger than the fLFP slope (0.0061), bootstrap
+      interval 0.004 to 0.011. fp is lower during cooling in all 3 testable bins, which cover only 60
+      to 120 cm/s.
+    response: No change.
+  - claim: fig5d-ccg-period
+    agrees: true
+    outcome: partially_reproduced
+    reason: In cell 92 the period lengthens during cooling (8 of 9 sessions, P = 0.0195) and the phase
+      period does not change (P = 0.59). The control period is 109 ms against 85 +- 8.5, and that
+      value is biased by the estimator (problem 1). pair_period takes the largest local maximum 60
+      to 200 ms from the main peak, which often is the second neighbouring peak, so the 109 ms is
+      not a valid test of 85 ms. Speed was lower during cooling, which spreads the envelope, so part
+      of the lengthening may also come from this bias.
+    response: No change of outcome; the criterion fixes the estimator. Added per-pair period
+      histograms, the |Ltr| quartiles, the fraction of pre pairs whose largest neighbour is more
+      than 1.25 times as far as the nearest (47.7%), and the nearest-neighbour estimator as a
+      variant. That variant gives a control period of 91.0 ms, within tolerance, lengthening to 95.5
+      ms (7 of 9 sessions, P = 0.031), and pairs with |Ltr| below 10 cm give 91.0 ms. Under the
+      variant all three parts of the criterion hold. The conclusion, notes and a deviation say so.
+  - claim: fig5cg-compression
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 94 gives a per-session decrease P = 0.0547 and pooled pre compression 0.273 cm/ms
+      against 0.54; phase compression is unchanged (P = 0.43). The 70 ms window of peak_lag often
+      holds two candidate peaks, and that ambiguity plus noise in tau flattens the slope (problem 2).
+      The criterion fixes this method, but the compression magnitude cannot be judged from it.
+    response: No change of outcome. Added the fraction of pre pairs whose lag changes when the window
+      is narrowed to half the theta period (10.5%, giving 0.156 cm/ms). The conclusion and notes now
+      say the magnitude cannot be judged from this method, and correct the inverse-regression value
+      from 9.085 cm/ms (the per-session control median) to the pooled 7.175 cm/ms.
+  - claim: fig5h-time-lags-increase
+    agrees: true
+    outcome: reproduced
+    reason: In cell 96 time lags are longer during cooling under both readings. Over pairs, against
+      pre P = 1.1e-6 and against post P = 1.3e-10; over sessions P = 0.023 and 0.016.
+    response: No change. The notes now add that the half-period window gives the same direction
+      (P = 3.8e-22 and 2.0e-29), which bears on problem 2.
+  - claim: fig5i-phase-lags-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 98 gives cooling against pre P = 0.0015 and against post P = 0.0043.
+    response: No change.
+  - claim: fig5j-fraction-active-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 100 gives a pooled rank-sum pre against cooling P = 1.5e-22; over session means
+      P = 0.73. Rank-sum tests over theta cycles pooled across sessions are confounded by session
+      make-up. The outcome stays not_reproduced under the criterion, but it reflects the test, not a
+      clear effect (problem 4).
+    response: No change of outcome. Added session-level tests for all three comparisons (pre against
+      cooling P = 0.734, cooling against post 0.074, pre against post 0.004), the mean cycle
+      duration by state (131.1 ms during cooling, 117.8 and 117.2 ms before and after) and the cycles
+      per session and state. The conclusion and notes say the pooled test reflects the make-up of
+      the pool.
+  - claim: fig5k-spikes-per-cycle-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: In cell 102 cooling against post and pre against post both have P about 1e-52. Session
+      means show no difference (problem 4).
+    response: No change of outcome. Added the session-level test of pre against post, which gives
+      P = 0.02; cooling differs from neither pre (P = 0.57) nor post (P = 0.129). The conclusion and
+      notes say the pooled tests depend on how many cycles each session contributes.
+  - claim: suppl1g-waveforms-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 68 gives trough-to-peak P = 4.9e-10 and amplitude P = 5.7e-4 (median +0.8%,
+      n = 646). The peak-to-peak amplitude of a mean waveform rises with noise when fewer spikes are
+      averaged, the counts per window are never shown, and the windows are 7 to 30 minutes apart, so
+      probe drift is mixed with the cooling effect; the amplitude result may be artefactual
+      (problem 5).
+    response: No change of outcome. Added the spikes averaged per window (median 247.5 pre, 200
+      cooling) and the result for the 208 units whose two means both use the 300-spike cap
+      (amplitude +0.7%, P = 0.032; trough-to-peak P = 2.2e-05), so the spike count does not explain
+      the changes. Drift still cannot be separated from cooling, as the notes say.
+  - claim: suppl2d-interneuron-oscillation-slows
+    agrees: true
+    outcome: reproduced
+    reason: Cell 66 gives 9.55 to 8.66 Hz, lower in 105 of 114 units, P = 8.7e-16. The 9.4% decrease
+      is close to the LFP's 8.8%.
+    response: No change.
+  - claim: suppl1-hippocampal-temperature
+    agrees: true
+    outcome: blocked
+    reason: The assets endpoint lists 100 files, all for the five behaving rats, with no subject or
+      file for the MS-plus-hippocampus control experiment, and the dandiset metadata lists no
+      temperature variable. The notebook never printed the full list of series in
+      processing/behavior, so no second temperature channel inside the files was stated but not
+      shown.
+    response: No change of outcome. The data check now lists every series in all 100 files; the only
+      temperature series is processing/behavior/Temperature.

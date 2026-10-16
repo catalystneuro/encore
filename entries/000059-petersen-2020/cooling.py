@@ -136,6 +136,20 @@ def open_h5(url: str) -> h5py.File:
     return h5py.File(remfile.File(url), "r")
 
 
+def series_listing(f: h5py.File) -> list[tuple[str, str]]:
+    """Every object of a file with an NWB type ending in 'Series' (or LFP), with its path."""
+    out = []
+
+    def visit(name, obj):
+        nt = obj.attrs.get("neurodata_type")
+        if nt is not None:
+            nt = nt.decode() if isinstance(nt, bytes) else str(nt)
+            if nt.endswith("Series") or nt == "LFP":
+                out.append((name, nt))
+    f.visititems(visit)
+    return out
+
+
 def _text(values) -> list[str]:
     return [v.decode() if isinstance(v, bytes) else str(v) for v in values]
 
@@ -150,6 +164,7 @@ def load_session(key: str) -> dict:
     out = {"key": key, "subject": key.split("-")[0]}
     out["subject_meta"] = {k: f["general/subject"][k][()].decode() for k in f["general/subject"].keys()}
     out["session_id"] = f["general/session_id"][()].decode()
+    out["series"] = series_listing(f)
     beh = f["processing/behavior"]
     out["t"] = beh["SubjectPosition/SpatialSeries/timestamps"][:]
     pos = beh["SubjectPosition/SpatialSeries/data"][:]
@@ -253,9 +268,20 @@ def theta_from_lfp(lfp: np.ndarray, t0: float, rate: float = LFP_RATE) -> dict:
             "amplitude_uv": np.abs(analytic)}
 
 
-def stream_lfp(key: str, channel: int, t0: float, t1: float) -> tuple[np.ndarray, float]:
-    """One LFP channel from t0 to t1 (s), in microvolts, with the time of its first sample."""
+def stream_lfp(key: str, channel: int, t0: float, t1: float) -> tuple[np.ndarray, float, dict]:
+    """One LFP channel from t0 to t1 (s), in microvolts, with the time of its first sample.
+
+    `channel` is a row of the electrodes table; the LFP column is the one whose entry in the
+    LFP's `electrodes` region is that row. Also returns what the raw file holds: its series,
+    and the row its own electrodes table flags as theta reference."""
     f = open_h5(sessions().loc[key, "raw_url"])
+    region = f["processing/ecephys/LFP/LFP/electrodes"][:]
+    cols = np.flatnonzero(region == channel)
+    assert len(cols) == 1, (key, channel)
+    info = {"lfp_column": int(cols[0]), "region_is_identity": bool(np.array_equal(region, np.arange(len(region)))),
+            "raw_theta_rows": np.flatnonzero(f["general/extracellular_ephys/electrodes/theta_reference"][:]).tolist(),
+            "raw_series": series_listing(f)}
+    channel = int(cols[0])
     ds = f["processing/ecephys/LFP/LFP/data"]
     conv = float(ds.attrs["conversion"])
     start = float(f["processing/ecephys/LFP/LFP/starting_time"][()])
@@ -265,16 +291,17 @@ def stream_lfp(key: str, channel: int, t0: float, t1: float) -> tuple[np.ndarray
     hi = min(ds.shape[0], int((t1 - start) * rate))
     x = ds[lo:hi, channel].astype(float) * conv * 1e6
     f.close()
-    return x, start + lo / rate
+    return x, start + lo / rate, info
 
 
 def theta_for_session(s: dict, pad: float = 10.0) -> dict:
     """Theta over the behavioural period (first trial start to last trial stop, with padding)."""
     tr = s["trials"]
     t0, t1 = float(tr.start.min()) - pad, float(tr.stop.max()) + pad
-    lfp, start = stream_lfp(s["key"], s["theta_channel"], t0, t1)
+    lfp, start, info = stream_lfp(s["key"], s["theta_channel"], t0, t1)
     th = theta_from_lfp(lfp, start)
     th["lfp_rms_uv"] = float(np.std(lfp))
+    th["raw_info"] = info
     return th
 
 
@@ -332,12 +359,13 @@ def error_rates(tr: pd.DataFrame, off_as: str | None = None) -> dict:
 
 def aligned_series(tr: pd.DataFrame, columns=("error", "temperature", "speed", "theta_freq", "theta_power")) -> dict:
     """The code's onset-aligned trial series (BatchProcessing.m): trial ALIGN_ONSET is the
-    first cooling trial; the series stops at the last post-cooling trial before a second
-    cooling block; errors are smoothed with an 11-point Gaussian window."""
+    first cooling trial; the series stops at the last trial before a second cooling block
+    (the first 'Cooling on' trial after the first block, whatever state precedes it); errors
+    are smoothed with an 11-point Gaussian window."""
     code = tr.code.values
     first = int(np.flatnonzero(code == 2)[0])            # 0-based
     offset = ALIGN_ONSET - 1 - first
-    ends = [i for i in range(len(code) - 1) if code[i] == 3 and code[i + 1] == 2]
+    ends = [i for i in range(first, len(code) - 1) if code[i] != 2 and code[i + 1] == 2]
     end = ends[0] + 1 if ends else len(code)             # number of trials kept (MATLAB 1:trial_end)
     out = {}
     for col in columns:
@@ -351,6 +379,7 @@ def aligned_series(tr: pd.DataFrame, columns=("error", "temperature", "speed", "
         ok = (pos >= 0) & (pos < ALIGN_LENGTH)
         row[pos[ok]] = vals[ok]
         out[col] = row
+    out["n_kept"] = end
     out["error_smooth"] = nanconv(out["error"], gausswin(11) / gausswin(11).sum())
     if "theta_power" in out:
         out["theta_power"] = out["theta_power"] - np.nanmean(out["theta_power"])
@@ -640,13 +669,17 @@ def behaviour_session(key: str) -> dict:
            "x_range": (float(np.nanmin(s["x"])), float(np.nanmax(s["x"]))),
            "y_range": (float(np.nanmin(s["y"])), float(np.nanmax(s["y"]))),
            "speed_pct": np.nanpercentile(s["speed"], [1, 50, 99]).tolist(),
-           "subject_meta": s["subject_meta"]}
+           "subject_meta": s["subject_meta"], "series": s["series"]}
     out.update(temperature_shape(s))
     if len(s["trials"]) == 0:
+        f = open_h5(sessions().loc[key, "raw_url"])
+        out["raw_info"] = {"raw_series": series_listing(f)}
+        f.close()
         return out
     th = theta_for_session(s)
     tr = trial_measures(s, th)
     out["trials"] = tr
+    out["raw_info"] = th["raw_info"]
     out["lfp_rms_uv"] = th["lfp_rms_uv"]
     out["theta_peak_freq_median"] = float(np.median(th["peak_freq"]))
     # clock check: cooling minus pre theta frequency with the theta series shifted in time
@@ -741,9 +774,10 @@ def peak_lag(c: np.ndarray, lags: np.ndarray, half_width: float) -> float:
     return float(lags[w][pk[np.argmax(seg[pk])]])
 
 
-def pair_period(c: np.ndarray, lags: np.ndarray, main: float, lo: float, hi: float) -> float:
+def pair_period(c: np.ndarray, lags: np.ndarray, main: float, lo: float, hi: float, nearest: bool = False) -> float:
     """Mean spacing from the main peak (at lag `main`) to the largest local maxima between lo
-    and hi away from it, on either side; NaN when neither side has one."""
+    and hi away from it, on either side; NaN when neither side has one. With `nearest`, the
+    nearest local maximum on each side is taken instead of the largest."""
     if not np.isfinite(main):
         return np.nan
     pk, _ = signal.find_peaks(c)
@@ -752,7 +786,7 @@ def pair_period(c: np.ndarray, lags: np.ndarray, main: float, lo: float, hi: flo
         d = sign * (lags[pk] - main)
         sel = (d >= lo) & (d <= hi)
         if sel.any():
-            k = pk[sel][np.argmax(c[pk[sel]])]
+            k = pk[sel][np.argmin(d[sel])] if nearest else pk[sel][np.argmax(c[pk[sel]])]
             out.append(abs(lags[k] - main))
     return float(np.mean(out)) if out else np.nan
 
@@ -832,6 +866,8 @@ def unit_session(key: str, waveform_seconds: float = 120.0, with_waveforms: bool
             units["amp_" + name] = [f_["amplitude_uv"] for f_ in feats]
             units["chan_" + name] = [f_["channel"] for f_ in feats]
             units["nwf_" + name] = counts[:, w]
+        for name, (a_, b_) in [("pre", w_pre), ("cooling", w_cool)]:
+            units["nsp_" + name] = [int(np.sum((sp > a_) & (sp < b_))) for sp in spikes]
         units["ttp"] = np.where(units.nwf_pre >= 30, units.ttp_pre, np.where(units.nwf_cooling >= 30, units.ttp_cooling, np.nan))
         units["cell_type"] = np.where(units.ttp.isna(), "unclassified",
                                       np.where((units.ttp <= NARROW_TTP_MS) | (units.rate_trials > WIDE_INT_RATE),
@@ -856,6 +892,30 @@ def unit_session(key: str, waveform_seconds: float = 120.0, with_waveforms: bool
     for st in STATES:
         units["info_" + SHORT[st]] = [skaggs_information(rate[st][u], occ[st]) for u in range(n_units)]
     units["coherence"] = [spatial_coherence(rate["all"][u]) for u in range(n_units)]
+    # information with the same number of spikes in each state: each state's spikes are
+    # subsampled to the smallest count of the three, 20 draws averaged (a variant for fig3f)
+    rng = np.random.default_rng([31] + [int(x) for x in re.findall(r"\d+", key)])
+    smask = {st: base & (fstate == st) & np.isfinite(l) & (speed > MAP_SPEED) for st in STATES}
+    eq = {st: [] for st in STATES}
+    n_eq = []
+    for u in range(n_units):
+        fr_idx = sp_idx[u][in_beh[u]]
+        per = {st: fr_idx[smask[st][fr_idx]] for st in STATES}
+        n_min = min(len(v) for v in per.values())
+        n_eq.append(n_min)
+        for st in STATES:
+            if n_min < 20:
+                eq[st].append(np.nan)
+                continue
+            vals = []
+            for _ in range(20):
+                pick = rng.choice(per[st], n_min, replace=False)
+                c_ = np.histogram(l[pick], edges)[0][None, :]
+                vals.append(skaggs_information(smooth_map(c_, occ[st], 1.0, segb)[0], occ[st]))
+            eq[st].append(float(np.nanmean(vals)))
+    for st in STATES:
+        units["info_eq_" + SHORT[st]] = eq[st]
+    units["n_eq"] = n_eq
 
     # place fields of putative pyramidal cells
     frows = []
@@ -899,9 +959,10 @@ def unit_session(key: str, waveform_seconds: float = 120.0, with_waveforms: bool
                     row[f"fp_{key_}_v{lo_v}"] = oscillation_frequency(spikes[u][sel])
                     row[f"flfp_{key_}_v{lo_v}"] = float(np.nanmean(inst_f[sp_idx[u][sel]])) if sel.sum() >= 50 else np.nan
             frows.append(row)
-            # 20-trial windows (calc_trial_averages.m)
     fields = pd.DataFrame(frows)
     out["units"], out["fields"] = units, fields
+
+    # 20-trial windows stepped by one trial (calc_trial_averages.m)
 
     wrows = []
     n_tr = len(tr)
@@ -910,7 +971,7 @@ def unit_session(key: str, waveform_seconds: float = 120.0, with_waveforms: bool
         in_field_frame = base & (l >= fr.start_cm) & (l < fr.stop_cm)
         ss = in_beh[u] & in_field_frame[sp_idx[u]]
         sp_trial = ftrial[sp_idx[u]]
-        for k in range(0, n_tr - 20):
+        for k in range(0, n_tr - 19):
             sel = ss & (sp_trial >= k) & (sp_trial < k + 20)
             if sel.sum() <= 50:
                 continue
@@ -966,7 +1027,7 @@ def unit_session(key: str, waveform_seconds: float = 120.0, with_waveforms: bool
                 row["na_" + c], row["nb_" + c] = len(ta), len(tb)
                 if len(ta) < 50 or len(tb) < 50:
                     row["tau_" + c] = row["tau_half_" + c] = row["phase_" + c] = np.nan
-                    row["period_" + c] = row["phase_period_" + c] = np.nan
+                    row["period_" + c] = row["phase_period_" + c] = row["period_near_" + c] = np.nan
                     continue
                 pa, pb = sp_phase2[int(fa.u)][sa], sp_phase2[int(fb.u)][sb]
                 pa, pb = np.sort(pa[np.isfinite(pa)]), np.sort(pb[np.isfinite(pb)])
@@ -976,6 +1037,7 @@ def unit_session(key: str, waveform_seconds: float = 120.0, with_waveforms: bool
                 row["tau_half_" + c] = peak_lag(cc, TIME_LAGS, half)
                 row["phase_" + c] = peak_lag(pc, PHASE_LAGS, np.pi)
                 row["period_" + c] = pair_period(cc, TIME_LAGS, row["tau_" + c], 60.0, 200.0)
+                row["period_near_" + c] = pair_period(cc, TIME_LAGS, row["tau_" + c], 60.0, 200.0, nearest=True)
                 row["phase_period_" + c] = pair_period(pc, PHASE_LAGS, row["phase_" + c], np.pi, 3 * np.pi)
                 if cc.sum() > 0:
                     ccg_sum[c]["time"] += cc / cc.sum()
@@ -1002,7 +1064,7 @@ def unit_session(key: str, waveform_seconds: float = 120.0, with_waveforms: bool
             active += n_in > 0
     out["cycles"] = pd.DataFrame({"state": [SHORT[x] for x in cst],
                                   "frac_active": active / len(place_units) if place_units else np.nan,
-                                  "spikes": total})
+                                  "spikes": total, "duration_ms": 1000 * (stops - starts)})
     out["n_place_cells"] = len(place_units)
     out["trials"] = tr
     return out

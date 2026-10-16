@@ -22,7 +22,7 @@ position, LFP, wide-band data, and sorted units in 24 sessions.
 | Errors correlate with theta power in 2 of 5 rats | Partially reproduced |
 | Errors do not correlate with running speed | Not reproduced |
 | Running speed falls within a session | Reproduced |
-| Running speed in control and cooling trials | Partially reproduced |
+| Running speed in control and cooling trials | Not reproduced |
 | Place cell and interneuron rates fall by 11 to 14% | Partially reproduced (two claims) |
 | Interneuron oscillation frequency slows | Reproduced |
 | Spike waveforms unchanged | Not reproduced |
@@ -50,7 +50,7 @@ Methods) are made here. The temperature of the MS10 sessions and of two control 
 recording. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000059-petersen-2020-01.yaml`](../../attempts/000059-petersen-2020-01.yaml).
 
-- `reproduce_petersen_2020.ipynb`: the analysis. It takes about 6 minutes, most of it streaming
+- `reproduce_petersen_2020.ipynb`: the analysis. It takes about 12 minutes, most of it streaming
   LFP and wide-band data, with sessions processed in parallel.
 - `cooling.py`: loading, the theta measures of the paper's code, trial measures and the
   onset-aligned series, linearization of the maze, place fields, oscillation frequency, pair
