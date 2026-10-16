@@ -13,12 +13,12 @@ matching task. The paper's fourth rat and its example session (EE.188) are not i
 | About 10% (layer 2/3) and 20% (layer 5) of neurons active per 100 ms, constant along the maze | Not reproduced |
 | Field sizes of 0.27 plus or minus 0.17 of the track | Partially reproduced |
 | Trajectory-selective neurons in the central and side arms | Partially reproduced |
-| Trajectories diverge at position 0.3 | Blocked: data missing |
+| Trajectories diverge at position 0.3 | Partially reproduced |
 | About a quarter of neurons respond differently to the two odors | Partially reproduced |
 | 0.79% of pairs connected (0.55% excitatory, 0.24% inhibitory) | Partially reproduced |
 | 32.5% pyramidal cells and 12.5% interneurons by their connections | Not reproduced |
 | Connection probability falls with distance | Not reproduced |
-| 67 of 343 excitatory pairs depend on position | Not reproduced |
+| 67 of 343 excitatory pairs depend on position | Blocked: methods underspecified |
 | 12.7% depressing and 10.7% facilitating pairs | Not reproduced |
 | Supralinear effect of coincident presynaptic spikes | Not reproduced |
 | Most pyramidal cells and interneurons are trajectory specific | Not reproduced |

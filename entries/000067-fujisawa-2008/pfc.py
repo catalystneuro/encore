@@ -185,6 +185,7 @@ def load_session(path: str, url: str, n_windows: int = 12) -> dict:
         lin = beh["LinearizedPosition/LinearizedTimeSeries"]
         s["lin"] = lin["data"][:]
         s["lin_rate"] = float(lin["starting_time"].attrs["rate"])
+        s["lin_t0"] = float(lin["starting_time"][()])
         s["lin_unit"] = lin["data"].attrs["unit"]
         s["x1"] = beh["Position/SpatialSeries1/data"][:, 0]
         s["x2"] = beh["Position/SpatialSeries2/data"][:, 0]
@@ -300,7 +301,7 @@ def assign_units(s: dict, min_spikes: int = 5) -> pd.DataFrame:
 # Behaviour
 
 def frame_times(s: dict) -> np.ndarray:
-    return np.arange(len(s["lin"])) / s["lin_rate"]
+    return s["lin_t0"] + np.arange(len(s["lin"])) / s["lin_rate"]
 
 
 def positions_at(s: dict, times: np.ndarray):
@@ -310,7 +311,7 @@ def positions_at(s: dict, times: np.ndarray):
     times = np.asarray(times, float)
     idx = np.searchsorted(tr.run_start.values, times, side="right") - 1
     ok = (idx >= 0) & (times <= tr.run_end.values[np.clip(idx, 0, None)])
-    frame = np.clip(np.round(times * s["lin_rate"]).astype(int), 0, len(s["lin"]) - 1)
+    frame = np.clip(np.round((times - s["lin_t0"]) * s["lin_rate"]).astype(int), 0, len(s["lin"]) - 1)
     d = s["lin"][frame]
     ok &= d > 0
     return np.where(ok, d - 1, np.nan), np.where(ok, idx, -1)
@@ -360,6 +361,73 @@ def sensor_edges(s: dict, window: float = 1.0) -> pd.DataFrame:
                 seg = dev[k - n:k + n + 1, col]
                 store.append(seg / max(seg.max(), 1e-9))
     return pd.DataFrame({"lag_s": lags, "at_poke_start": np.mean(on, 0), "at_poke_end": np.mean(off, 0)})
+
+
+def x_by_position(s: dict, n_bins: int = 50) -> np.ndarray:
+    """(trials, n_bins) mean x1 (pixels) of each trial in bins of the normalized position; frames
+    with x1 at 0 (no tracking) or without a linearized position are left out."""
+    t = frame_times(s)
+    pos, trial = positions_at(s, t)
+    ok = (trial >= 0) & (s["x1"] > 0)
+    k = np.clip((pos[ok] * n_bins).astype(int), 0, n_bins - 1)
+    num = np.zeros((len(s["trials"]), n_bins))
+    den = np.zeros_like(num)
+    np.add.at(num, (trial[ok], k), s["x1"][ok])
+    np.add.at(den, (trial[ok], k), 1)
+    return np.where(den > 0, num / np.maximum(den, 1), np.nan)
+
+
+def laps(s: dict, smooth_s: float = 1.0) -> pd.DataFrame:
+    """Visits to the far end of the central arm, found from x1 alone (tracked frames,
+    interpolated, smoothed over `smooth_s`): each period where x1 is below a quarter of the way
+    from its value at the far end (median at mid-run) to its value at run start. Whether each
+    falls inside a listed run (run_start to run_end)."""
+    t = frame_times(s)
+    x = s["x1"].astype(float)
+    ok = x > 0
+    xi = np.interp(t, t[ok], x[ok])
+    k = max(1, int(smooth_s * s["lin_rate"]))
+    xs = np.convolve(xi, np.ones(k) / k, "same")
+    tr = s["trials"]
+    at = lambda times: xs[np.clip(np.round((np.asarray(times) - s["lin_t0"]) * s["lin_rate"]).astype(int), 0, len(xs) - 1)]
+    hi = np.median(at(tr.run_start.values))
+    lo = np.median(at((tr.run_start.values + tr.run_end.values) / 2))
+    below = xs < lo + 0.25 * (hi - lo)
+    d = np.diff(np.r_[0, below.astype(int), 0])
+    st, en = np.flatnonzero(d == 1), np.flatnonzero(d == -1)
+    mid = t[0] + (st + en) / 2 / s["lin_rate"]
+    in_run = [(np.any((tr.run_start.values <= m) & (m <= tr.run_end.values))) for m in mid]
+    return pd.DataFrame({"time": mid, "in_run": in_run})
+
+
+def poke_bouts(s: dict, merge_s: float = 1.0, min_s: float = 0.1) -> pd.DataFrame:
+    """Nose-poke bouts of each sensor: activity above half the median nose-poke activity of
+    that side's listed trials, held for at least `min_s`, bouts closer than `merge_s` merged.
+    Whether each overlaps a listed nose-poke period of a trial of that side."""
+    dev = sensor_activity(s)
+    fs = s["lfp_rate"]
+    tr = s["trials"]
+    rows = []
+    for col, side in enumerate(("Right", "Left")):
+        sub = tr[tr.side == side]
+        thr = 0.5 * np.median([dev[int(a * fs):int(b * fs), col].mean() for a, b in zip(sub.nosepoke_start, sub.run_start)])
+        on = dev[:, col] > thr
+        w = int(0.05 * fs)
+        on = np.convolve(on, np.ones(w) / w, "same") > 0.5
+        d = np.diff(np.r_[0, on.astype(int), 0])
+        st, en = np.flatnonzero(d == 1) / fs, np.flatnonzero(d == -1) / fs
+        keep = en - st >= min_s
+        st, en = st[keep], en[keep]
+        bouts = []
+        for a, b in zip(st, en):
+            if bouts and a - bouts[-1][1] < merge_s:
+                bouts[-1][1] = b
+            else:
+                bouts.append([a, b])
+        for a, b in bouts:
+            listed = bool(np.any((np.minimum(b, sub.run_start.values) - np.maximum(a, sub.nosepoke_start.values)) > 0))
+            rows.append({"side": side, "start": a, "stop": b, "listed": listed})
+    return pd.DataFrame(rows)
 
 
 # ---------------------------------------------------------------------------------------------
@@ -458,7 +526,9 @@ def rate_maps(s: dict, units: list[int], n_bins: int = 100) -> dict:
 
 def field_size(rate: np.ndarray, contiguous: bool = True) -> float:
     """Length (normalized) where the rate is at least half its peak: the contiguous run around the
-    peak, or (contiguous=False) all bins."""
+    peak, or (contiguous=False) all bins. NaN for a map without spikes."""
+    if not rate.max() > 0:
+        return float("nan")
     above = rate >= 0.5 * rate.max()
     if not contiguous:
         return float(above.mean())
@@ -491,7 +561,8 @@ def active_fraction(s: dict, units: list[int], window: float = 0.1) -> pd.DataFr
 
 def decode_side(s: dict, units: list[int], offsets: np.ndarray, width: float = 1.0) -> pd.DataFrame:
     """Leave-one-out nearest-centroid decoding of the trial side from spike counts in windows of
-    `width` s starting at run_start + offset (z-scored per unit). No random numbers."""
+    `width` s starting at run_start + offset, z-scored per unit with the mean and s.d. of the
+    training trials only. No random numbers."""
     tr = s["trials"]
     y = (tr.side.values == "Left").astype(int)
     rows = []
@@ -499,14 +570,15 @@ def decode_side(s: dict, units: list[int], offsets: np.ndarray, width: float = 1
         a = tr.run_start.values + off
         X = np.array([[np.searchsorted(s["trains"][u], b + width) - np.searchsorted(s["trains"][u], b)
                        for u in units] for b in a], float)
-        sd = X.std(0)
-        X = (X[:, sd > 0] - X[:, sd > 0].mean(0)) / sd[sd > 0]
         correct = 0
         for i in range(len(y)):
             keep = np.arange(len(y)) != i
-            c0 = X[keep & (y == 0)].mean(0)
-            c1 = X[keep & (y == 1)].mean(0)
-            pred = int(np.sum((X[i] - c1) ** 2) < np.sum((X[i] - c0) ** 2))
+            mu, sd = X[keep].mean(0), X[keep].std(0)
+            ok = sd > 0
+            Z = (X[:, ok] - mu[ok]) / sd[ok]
+            c0 = Z[keep & (y == 0)].mean(0)
+            c1 = Z[keep & (y == 1)].mean(0)
+            pred = int(np.sum((Z[i] - c1) ** 2) < np.sum((Z[i] - c0) ** 2))
             correct += pred == y[i]
         rows.append({"offset_s": off, "accuracy": correct / len(y), "n_trials": len(y)})
     return pd.DataFrame(rows)
@@ -640,7 +712,12 @@ def _mc_pair(lags, i, j, ccg, rng) -> dict:
 
 
 def directed(conn: pd.DataFrame, max_width: int = 2) -> pd.DataFrame:
-    """One row per ordered pair (pre, post), with exc (narrow peak) and inh (trough) flags."""
+    """One row per ordered pair (pre, post), with exc (narrow peak) and inh (trough) flags.
+
+    `opposite_peak`: the pair has a peak (any width) in the other direction. Jittering both
+    trains spreads a peak at +1 to +4 ms into negative lags, so the surrogates' band is raised
+    there and the other direction can show a trough that is only the mirror of the peak.
+    `inh_clean` is inh without those troughs (a variant; the criterion counts every trough)."""
     c = conn[~conn.check]
     ab = pd.DataFrame({"pre": c.a, "post": c.b, "exc_any": c.get("exc_ab", False), "width": c.get("width_ab", 0),
                        "inh": c.get("inh_ab", False)})
@@ -651,6 +728,9 @@ def directed(conn: pd.DataFrame, max_width: int = 2) -> pd.DataFrame:
     d["width"] = d.width.fillna(0)
     d["exc"] = d.exc_any & (d.width <= max_width)
     d["inh"] = d.inh & ~d.exc_any      # a trough beside a peak is not counted as inhibition
+    n = len(c)
+    d["opposite_peak"] = np.r_[d.exc_any.values[n:], d.exc_any.values[:n]]
+    d["inh_clean"] = d.inh & ~d.opposite_peak
     return d
 
 
@@ -683,10 +763,38 @@ def coincidence_test(s: dict, pre: int, post: int, rng, trials_mask: np.ndarray 
         lag = lags[None, :] + eb[:, jj] - ea[:, ii]
         stats[1 + c0:1 + c0 + c] = ((lag >= 0.001) & (lag <= 0.004)).astype(float) @ events
     out = {"n_coincidences": int(obs.sum())}
+    if "efficacy" in kinds:
+        out.update(_efficacy_test(lags, i, len(ia), events, rng, n_jitter, alpha))
+        kinds = [k for k in kinds if k != "efficacy"]
     for kind in kinds:
         sig, level = band_test(stats, alpha, two_sided=False, kind=kind)
         out.update({f"{kind}_sig": bool(sig.any()), f"{kind}_fraction": float(sig.mean()), f"{kind}_level": level})
     return out
+
+
+def _efficacy_test(lags, i, n_pre, events, rng, n_draws, alpha) -> dict:
+    """Variant null of constant efficacy along the track (not the criterion's test).
+
+    For each presynaptic spike, c_i is the number of post spikes 1 to 4 ms after it and e_i its
+    expectation under +-5 ms jitter of the post spikes (local rate). Under a constant gain
+    g = sum(c) / sum(e), c_i is drawn as Poisson(g e_i); the statistic is the kernel density of
+    the events' positions weighted by c_i, and the band is the one-sided "sd" global band at
+    `alpha`. A significant excess means more coincidences at some place than a constant
+    efficacy times the local rate explains."""
+    d = lags * 1000
+    obs = ((d >= 1) & (d <= 4)).astype(float)
+    exp = np.clip(np.minimum(d + 5, 4) - np.maximum(d - 5, 1), 0, None) / 10
+    c = np.bincount(i, obs, minlength=n_pre)
+    e = np.bincount(i, exp, minlength=n_pre)
+    first = np.unique(i, return_index=True)
+    dens = np.zeros((n_pre, events.shape[1]))
+    dens[first[0]] = events[first[1]]
+    if c.sum() == 0 or e.sum() == 0:
+        return {"efficacy_sig": False}
+    g = c.sum() / e.sum()
+    stats = np.vstack([c @ dens, rng.poisson(g * e, (n_draws, n_pre)) @ dens])
+    sig, _ = band_test(stats, alpha, two_sided=False, kind="sd")
+    return {"efficacy_sig": bool(sig.any())}
 
 
 def transmission(a: np.ndarray, b: np.ndarray, which: np.ndarray) -> np.ndarray:
@@ -749,3 +857,53 @@ def coincidence_gain(pres: list[np.ndarray], post: np.ndarray, duration: float, 
     g = out.groupby("n_partners").hit.agg(["mean", "size"]).rename(columns={"mean": "p_hit", "size": "events"})
     g["excess"] = g.p_hit - p0
     return g.reset_index()
+
+
+def _local_excess(post: np.ndarray, start: np.ndarray, stop: np.ndarray, flank=(0.01, 0.03)) -> np.ndarray:
+    """Post spikes in [start, stop] minus the count expected from the local post rate, measured
+    in the flanks from 30 to 10 ms before `start` - 1 ms and from 10 to 30 ms after `stop`, for
+    each window."""
+    def count(a, b):
+        return np.searchsorted(post, b, side="right") - np.searchsorted(post, a, side="left")
+    obs = count(start, stop)
+    pre0 = start - 0.001
+    fl = count(pre0 - flank[1], pre0 - flank[0]) + count(stop + flank[0], stop + flank[1])
+    rate = fl / (2 * (flank[1] - flank[0]))
+    return obs - rate * (stop - start)
+
+
+def linear_gain(pres: list[np.ndarray], post: np.ndarray, window: float = 0.005) -> dict:
+    """Variant of the Figure 7 test against a linear prediction (not the criterion's measure).
+
+    Events are formed as in `coincidence_gain`. Only events of one spike (one partner) and of
+    exactly two spikes from two different partners are used. The response of an event is the
+    number of post spikes from 1 ms after its first spike to 4 ms after its last, minus the count
+    expected from the post unit's rate in flanking windows 10 to 30 ms away (`_local_excess`). The linear prediction of a two-spike event
+    is the sum of the mean responses of each partner's one-spike events, so that under linear
+    summation of spike counts the difference is zero whatever the separation of the two spikes.
+    Returns the mean response of two-spike events, the mean linear prediction and the counts."""
+    t = np.concatenate(pres)
+    who = np.concatenate([np.full(len(p), k) for k, p in enumerate(pres)])
+    o = np.argsort(t, kind="stable")
+    t, who = t[o], who[o]
+    first, last, members = [], [], []
+    k, n = 0, len(t)
+    while k < n:
+        e = np.searchsorted(t, t[k] + window, side="right")
+        first.append(t[k]); last.append(t[e - 1]); members.append(who[k:e])
+        k = e
+    first, last = np.array(first), np.array(last)
+    resp = _local_excess(post, first + 0.001, last + 0.004)
+    single = np.array([len(m) == 1 for m in members])
+    pair = np.array([len(m) == 2 and m[0] != m[1] for m in members])
+    head = np.array([m[0] for m in members])
+    one = {p: resp[single & (head == p)].mean() for p in range(len(pres)) if np.any(single & (head == p))}
+    idx = np.flatnonzero(pair)
+    idx = [j for j in idx if members[j][0] in one and members[j][1] in one]
+    if not idx:
+        return {"events_2": 0}
+    pred = np.array([one[members[j][0]] + one[members[j][1]] for j in idx])
+    sep = last[idx] - first[idx]
+    return {"events_1": int(single.sum()), "events_2": len(idx), "excess_2": float(resp[idx].mean()),
+            "linear_2": float(pred.mean()), "excess_1_mean": float(np.mean(list(one.values()))),
+            "sep_ms_median": float(np.median(sep) * 1000)}

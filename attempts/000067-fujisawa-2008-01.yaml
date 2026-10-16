@@ -60,7 +60,11 @@ outcomes:
     or minus 63. The 350 units of EE.088 cannot be placed on a probe, and EE.152, EE.165 and
     EE.188, working memory sessions in the CRCNS table, are not in the dandiset; the paper does not
     say which sessions its 633 units come from, nor whether units recorded on several days were
-    counted once.
+    counted once. Variants; leaving out also the first unit of each shank block gives 416. Placing
+    EE.088's units by the conversion's block order (a block starts at each multi-unit cluster;
+    blocks 1 to 8 taken as prefrontal), a rule that matches the waveform placement in EE.049 and
+    EE.196 (agreement 1.000) but not in FF and GG (0.360 to 0.956), adds 214 PFC single units and
+    gives 631, within tolerance; the count of rats still fails.
   deviations:
   - Units are counted per session; the paper's way of counting is not stated.
   - Well-isolated units are selected by a refractory rule chosen here.
@@ -70,7 +74,10 @@ outcomes:
   notes: The trial table lists correct trials only (the CRCNS description of SessionNP, from which
     the conversion built the table), so the fraction of correct trials cannot be computed. The position has no y coordinate, so the choice on other trials cannot be
     recovered from the path. Error trials are not in the dandiset, and the CRCNS data need an
-    account.
+    account. Every listed run holds one lap found from x1, and the nine sessions hold 100 laps and
+    147 nose-poke bouts outside the 335 listed trials; if every lap outside a listed run were an
+    error trial, performance would be 77.0%. The files do not say which were errors, so this is a
+    bound, not a test.
 - claim: fig2c-active-fraction
   outcome: not_reproduced
   notebook: reproduce_fujisawa_2008.ipynb
@@ -92,7 +99,8 @@ outcomes:
   - 0.196
   notes: Reading (a), 346 units, mean 0.270 and s.d. 0.196; (b) 0.281 and 0.206; (c) 0.331 and
     0.220. The mean is within tolerance under every reading and the s.d. under none (0.17 plus or
-    minus 0.017). With peak thresholds from 0 to 5 Hz the mean of (a) is 0.254 to 0.330 and the
+    minus 0.017). No side without spikes entered reading (b); with only sides whose own peak is at
+    least 1 Hz it gives 0.292 and 0.214. With peak thresholds from 0 to 5 Hz the mean of (a) is 0.254 to 0.330 and the
     s.d. 0.189 to 0.243. Per rat the means are 0.221 (EE), 0.322 (FF) and 0.272 (GG).
   deviations:
   - The mean's tolerance is the paper's stated s.d. of the neurons, as the protocol asks, which
@@ -105,7 +113,8 @@ outcomes:
   notebook: reproduce_fujisawa_2008.ipynb
   output: claim:fig2b-trajectory-selective
   notes: Central arm, 22.9% (EE), 24.5% (FF) and 26.2% (GG) of units with a peak of at least 1 Hz
-    (24.0% of 346 pooled), against 0.9% with relabelled trials (Fisher p = 7.3e-24); every rat is
+    (24.0% of 346 pooled), against 0.9% with relabelled trials (Fisher p = 7.3e-24; a McNemar test
+    on the same units, 82 against 2 discordant units, p = 1.9e-22); every rat is
     above the 14.4 to 19.8% range. Side arms, 51.6%, 59.9% and 52.4%, above both layer values.
     Per session the central-arm fraction is 1.9% to 69.2%. With the s.d. band, 24.3% and 59.8%
     pooled. The procedure's chance rate (0.9% for each segment) is below the global 5%, as
@@ -117,19 +126,31 @@ outcomes:
   - In rat GG the side labels may be swapped (see channel-region-link); this does not change a
     left-right test.
 - claim: traj-diverge
-  outcome: blocked
-  blocked_by: data_missing
-  notes: The two position series are the x coordinates of the two head LEDs (the conversion took
-    columns 1 and 3 of the position file), and the second is zero in every file. The y coordinate,
-    along which the side arms differ, is not in the dandiset; only the linearized position is,
-    which by construction does not separate the arms.
+  outcome: partially_reproduced
+  notebook: reproduce_fujisawa_2008.ipynb
+  output: claim:traj-diverge
+  measured: 0.49
+  notes: Tested in the first revision on x1, the x coordinate of the first head LED, under a
+    criterion written before x1 was compared between sides. x1 runs along the maze (about 570 px
+    at the start, 190 px near position 0.5, back up towards the reward) on both sides. It differs
+    between sides somewhere in 0.5 to 1 in all 9 sessions, by at most 7 to 57 px. The median
+    divergence point is 0.49 (8 of 9 sessions have one; 0.46 to 0.58 in seven, 0.06 in GG.149),
+    above 0.33, so partially reproduced. In EE.049, FF.130 and the three GG sessions x1 also
+    differs in 11 to 14 of the 15 central-arm bins, by at most 5 to 17 px, so by x1 alone the
+    paths are not identical in the central arm there either. The sides differ mainly along the y
+    coordinate, which is not in the dandiset.
+  deviations:
+  - Only the x coordinate is available; the paper used the two-dimensional position.
+  - The test (Welch t-test per bin of 0.02, p < 0.01, divergence from the first bin of a run up
+    to 0.6) is chosen here; the paper's is in a supplementary figure that was not available.
+  - The criterion was written in the first revision, after the verifier's report.
 - claim: odor-nosepoke
   outcome: partially_reproduced
   notebook: reproduce_fujisawa_2008.ipynb
   output: claim:odor-nosepoke
   measured: 37.8
   notes: 37.8% of 397 units (Mann-Whitney P < 0.05) against 4.0% with relabelled trials (Fisher
-    p = 5.5e-35); outside 20 to 30%. A t-test gives 28.5%, which would be within, but the test was
+    p = 5.5e-35; McNemar on the same units, 142 against 8, p = 3.9e-33); outside 20 to 30%. A t-test gives 28.5%, which would be within, but the test was
     fixed beforehand. Per rat 34.9% (EE), 50.3% (FF), 11.1% (GG). Odor and side are the same
     variable here, as only correct trials are listed, so the difference can come from the odor or
     from the coming choice; the paper's Supplementary Figure 6 analysis of that point was not
@@ -153,10 +174,16 @@ outcomes:
     unscreened pairs tested anyway was significant. 40 unordered pairs (0.252%) are connected both
     ways (paper 0.17%). Counting peaks of any width gives 0.938% excitatory. The excess of
     same-shank peaks may include pairs of clusters split from one neuron, which the paper's
-    curated units may not contain.
+    curated units may not contain. The inhibitory match is fragile; 34 of the 74 inhibitory
+    connections are troughs in the reverse direction of a pair with a peak, which jittering both
+    trains can produce (on 30 synthetic excitatory pairs with no inhibition, the criterion's rule
+    finds such a trough in 21, and none once they are excluded). Without them the rates are
+    1.023%, 0.898% and 0.126%, none within tolerance, and 10 pairs (0.063%) are reciprocal.
   deviations:
   - Bins of 1 ms (not stated in the main text) and a Poisson screen before the Monte Carlo test.
   - A trough beside a peak in the same direction is not counted as inhibition (chosen here).
+    Troughs that mirror a peak in the other direction are counted, as the criterion was written;
+    the rates without them are shown as a variant.
   - The set of well-isolated units is selected here, not by the paper.
 - claim: fig3-cell-classes
   outcome: not_reproduced
@@ -173,7 +200,9 @@ outcomes:
     0.51. Of 124 targets of excitatory connections 7.3% are putative interneurons (20.2% have any
     inhibitory connection), against 50.7%. 54 of the 74 inhibitory connections come from units
     that also excite others. No value is within tolerance under any reading; the shortfall of
-    interneurons drives the ratio and the targets.
+    interneurons drives the ratio and the targets. Without the troughs that mirror a peak
+    (fig3-connection-rates), 38.6% pyramidal and 2.4% (10 units) interneurons, pooled ratio 16.10,
+    and 4.8% of targets are interneurons, further from the paper.
   deviations:
   - Units with both kinds of connection are counted in neither class (chosen here).
 - claim: fig3f-distance
@@ -185,20 +214,31 @@ outcomes:
     correlation over 0 to 1400 micrometres is -0.619, p = 0.102, so the second condition fails and
     the criterion gives not reproduced. The probability falls from 4.60% at 0 to 0.24% at 600
     micrometres and is 0.17 to 0.19% from 800 to 1200; the 1400 bin (2 of 310 pairs, 0.645%)
-    breaks the rank order. Over 0 to 1200 micrometres rho = -0.964, p = 0.00045. The fall with
-    distance is present; the outcome comes from the test fixed beforehand on eight points.
+    breaks the rank order. Over 0 to 1200 micrometres rho = -0.964, p = 0.00045, and over pairs
+    connected pairs are closer than unconnected ones (Mann-Whitney p = 2.3e-87). The fall with
+    distance is present; the outcome comes from the test fixed beforehand on eight points. The
+    distance assumes that the channel groups are in shank order; a unit's second-largest shank is
+    a neighbour of its largest for 47.7% of 407 units, against 25.0% for a random order, which is
+    consistent with it.
   deviations:
   - Distance is the shank separation only; positions within a shank were not estimated.
 - claim: fig4-position-dependence
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_fujisawa_2008.ipynb
   output: claim:fig4-position-dependence
-  measured: 3.5
-  notes: Reading (a) 10 of 285 excitatory pairs (3.5%); reading (b) 6 (2.1%); rank band 1.4% and
-    1.8%. The median pair has 7 coincidences during runs (range 0 to 442); of the 28 pairs with at
-    least 50, 21.4% are significant, of the 13 with at least 100, 7.7%. The paper's pairs may have
-    had more spikes, or its runs may have been defined over more of the trial; the low fraction
-    here is consistent with low power.
+  notes: Changed from not_reproduced in the first revision. Reading (a) 10 of 285 excitatory pairs
+    (3.5%); reading (b) 5 (1.8%); rank band 1.4% and 2.1%. The criterion's test compares
+    coincidences with jittered trains, so it finds any excess of coincidences somewhere on the
+    track, not a change of efficacy along it; on synthetic pairs with a constant efficacy driven
+    by real presynaptic trains it flags 30.0% (efficacy 0.05) and 75.0% (efficacy 0.2), against
+    the paper's P < 0.01. By the protocol's rule on stated false-positive rates the procedure is
+    not the paper's, whose thinning step and null are defined in the supplement, which was not
+    available. As a variant, a null of constant efficacy flags 0 of 285 real pairs, none of the
+    constant-efficacy synthetic pairs and 6.7% of synthetic pairs driven only on 0.5 to 0.8 of the
+    track (25.0% of those with at least 50 coincidences), so it has little power at these counts.
+    The median pair has 7 coincidences during runs (range 0 to 442). The rank band cannot reach
+    0.01 in 183 of 285 pairs.
   deviations:
   - The band is mean plus c times s.d. of the surrogates, not the Methods' rank band, because the
     rank band cannot reach a one-sided 0.01 with 1000 surrogates on 101 points (it is empty when
@@ -232,8 +272,15 @@ outcomes:
   notes: 41 satellites, 40 with at least 20 two-partner events; 15 (38%) supralinear; median excess
     0.0145 for one partner and 0.0197 for two; Wilcoxon p = 0.993. Two coincident partners
     transmit more than one, but less than twice as much. With 20 ms events, 29% supralinear (p =
-    0.998). The paper had 14 satellites; its definition of a satellite and of transmission
-    probability is in the supplementary information, which was not available.
+    0.998). The criterion's measure is biased towards sublinear (on synthetic satellites with
+    linear summation it gives -0.0278, s.d. 0.0030). A variant against a linear prediction from
+    each partner's one-spike events, with the response window from the first spike to the last,
+    is unbiased there (0.0016, s.d. 0.0046) and detects supralinear input (0.198); on the data 4
+    of 40 satellites (10%) are above the linear prediction (median 0.0015 against 0.0239, p = 1),
+    and 12 of 40 (30%) with 20 ms events. Neither measure finds supralinear summation. The paper
+    had 14 satellites converging on interneurons; here any target with two excitatory partners is
+    used, and its definitions of satellite and transmission probability are in the supplementary
+    information, which was not available.
   deviations:
   - Satellites, events and the excess measure are defined here.
 - claim: fig3-trajectory-by-class
@@ -245,7 +292,8 @@ outcomes:
     2.5%. FF matches the layer 2/3 values within 10%, EE matches neither layer, and GG cannot meet
     the criterion without interneurons. Large fractions of both classes are trajectory specific in
     EE and FF, which is the qualitative part of the claim; the interneuron counts are small, as
-    fig3-cell-classes found few interneurons.
+    fig3-cell-classes found few interneurons. With the classes without mirrored troughs, EE has 4
+    interneurons (50.0% specific) and FF 6 (66.7%); GG still has none.
   deviations:
   - Layers are matched rat by rat; trajectory specificity is the test of
     fig2b-trajectory-selective over the whole track.
@@ -286,7 +334,7 @@ findings:
 - kind: metadata_error
   statement: The two "(x,y) coordinates" series SpatialSeries1 and SpatialSeries2 are the x
     coordinates of the two head LEDs, in pixels although stated in metres, and the second is zero
-    in every file; the y coordinates are not in the dandiset. The linearized position is stated in
+    in every file; untracked frames are -1. The y coordinates are not in the dandiset. The linearized position is stated in
     metres but runs from 1 (trial start) to 2 (reward), with 0 outside trials.
 - kind: format_error
   statement: In six files (EE.049, EE.088, EE.196, FF.103, FF.130, GG.069) the spike times of unit 1
@@ -300,3 +348,161 @@ findings:
   statement: The session description of every file is the paper's abstract, and session start
     times are dates at midnight; the files do not say which sessions are sleep, test, spontaneous
     alternation or working memory sessions.
+verifications:
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed,
+    the helper module and the claims file. The verifier could not fetch the full text and read the
+    abstract and the Methods as the claims file quotes them; it checked the blocked claims against
+    the archive's asset list and tested the helper functions on synthetic inputs. Report in
+    transcripts/000067/verifier-1-report.md.
+  results:
+  - claim: channel-region-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 16; with the CRCNS channel numbers the sensor check fails in GG (agreement 0.35 to
+      0.42). With the per-rat correction found in the data (GG sensors on 65/66, CA1 on 70 to 101),
+      the theta and sensor checks hold in every session (theta 0.37 to 0.54 vs 0.16 to 0.27;
+      agreement 0.97 to 1.00).
+    response: No change.
+  - claim: rats-and-units
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 18; the dandiset has 3 rats, not 4. The readings 417, 346 and 491 units are all
+      outside 570 to 696. EE.152/165/188 are not in the archive and EE.088's 350 units are not
+      placed on a probe. It also noted (problem 12) that the multi-unit split uses only the 2% ISI
+      rule, so 35 first-of-block units are kept and the counts are slightly inflated, and asked for
+      a shank assignment of EE.088's units from the conversion's block order.
+    response: No change of outcome. Added the count leaving out also the first unit of each block
+      (416), and the block-order placement, checked against the waveform placement (agreement
+      1.000 in both other EE sessions, 0.360 to 0.956 in FF and GG). With it EE.088 adds 214 PFC
+      single units and reading (a) becomes 631, within tolerance, but the dandiset still has three
+      rats, so the criterion still gives not reproduced.
+  - claim: task-performance
+    agrees: true
+    outcome: blocked
+    reason: The trial tables hold correct trials only, so the exact percentage cannot be computed. A
+      partial test was possible and was not tried; counting nose-poke bouts with no table entry
+      would bound the error rate.
+    response: Kept blocked. Added, per session, the nose-poke bouts and the laps found from x1
+      inside and outside the listed trials; 100 laps and 147 bouts lie outside the 335 listed
+      trials, which bounds performance at 77.0% or more if every unlisted lap were an error, but
+      the files do not say which were errors.
+  - claim: fig2c-active-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 21; per-rat medians are EE 10.2%, FF 19.7% and GG 6.2%, so GG matches neither
+      layer. GG.149's max/min over position bins is 2.57, above the threshold of 2. Neither part of
+      the criterion holds.
+    response: No change.
+  - claim: fig2-field-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 23, reading a; mean 0.270 is within tolerance, s.d. 0.196 is outside 0.153 to
+      0.187. Readings b and c also fail on the s.d. The mean's tolerance is so wide that passing it
+      says little. field_size returns 1.0 for an all-zero map, so reading b can include a silent
+      side (problem 6).
+    response: No change of outcome. field_size now returns NaN for a map without spikes; no such
+      side occurred, so reading b is unchanged. Added reading b with only sides whose own peak is
+      at least 1 Hz (0.292, s.d. 0.214).
+  - claim: fig2b-trajectory-selective
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 25; no rat is in the central range of 14.4 to 19.8% (EE 22.9, FF 24.5, GG 26.2).
+      Side-arm values (52 to 60%) match neither layer. Pooled central 24.0% vs chance 0.9%, Fisher
+      p = 7e-24. The Fisher test treats paired measurements on the same units as independent;
+      McNemar is the right test (problem 10).
+    response: No change of outcome. The criterion fixes the Fisher test, so it stays; added the
+      McNemar test as a variant (82 against 2 discordant units, p = 1.9e-22).
+  - claim: traj-diverge
+    agrees: true
+    outcome: blocked
+    reason: There is no y coordinate. However, the notebook never shows that the x coordinate (x1)
+      cannot separate the two sides, so the block is unverified; it asked for the mean x1 of left
+      and right trials against normalized position, per session.
+    response: Changed to partially_reproduced. Added a criterion before comparing x1 between sides,
+      and the comparison. x1 runs along the maze and differs between sides in the side arms of
+      every session by 7 to 57 px; the median divergence point is 0.49, above 0.33, which the
+      criterion rates as partially reproduced. x1 also differs slightly in the central arm in five
+      sessions, which the notes report.
+  - claim: odor-nosepoke
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 28; the Mann-Whitney test gives 37.8%, outside 20 to 30%. Chance is 4.0%, Fisher
+      p = 6e-35. The t-test variant (28.5%) would fall within tolerance, but the criterion fixes
+      Mann-Whitney. The Fisher test should be McNemar (problem 10).
+    response: No change of outcome. Added the McNemar test as a variant (142 against 8, p =
+      3.9e-33).
+  - claim: fig3-connection-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Fragile. Total 1.131% and excitatory 0.898% are outside tolerance; inhibitory 0.233% is
+      within. The inhibitory match is unreliable because the classifier creates spurious inhibitory
+      links in the reverse direction of excitatory ones; on synthetic pairs 26 to 30 of 30 detected
+      excitatory connections also got a spurious reverse inhibitory connection (problem 1).
+    response: No change of outcome, which the criterion as written gives. Added the count (34 of 74
+      inhibitory connections mirror a peak), a synthetic check in the notebook (21 of 30 pairs get
+      such a trough, 0 once excluded), and the rates without them (1.023%, 0.898%, 0.126%, none
+      within tolerance); the notes say the match is fragile.
+  - claim: fig3-cell-classes
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 32; pyramidal 37.9%, interneurons 3.1%, ratios 11.9 / 12.2 / 13.0, targets 7.3%.
+      All four values are outside tolerance under every reading. 54 of 74 inhibitory links come
+      from "both" units, so the classes are not interpretable (problem 1).
+    response: No change. Added the classes without the mirrored troughs (38.6% and 2.4%, ratio
+      16.10, targets 4.8%), which are further from the paper.
+  - claim: fig3f-distance
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 34; the Fisher test holds and connections reach 1400 um. The Spearman test fails
+      (rho -0.62, p = 0.10), hinging on one bin with 2 connections in 310 pairs; over 0 to 1200 um
+      rho is -0.96. The distance assumes channel order equals spatial shank order, never checked
+      (problem 4).
+    response: No change of outcome. Added a check of the shank order (second-largest shank a
+      neighbour for 47.7% of units against 25.0% at random, consistent with spatial order) and a
+      pair-level Mann-Whitney test (p = 2.3e-87) as a variant.
+  - claim: fig4-position-dependence
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 36; 3.5% and 2.1% against 19.5 +- 1.95%. The null jitters both trains and keeps the
+      events' positions, so it tests for any excess, and a pair with constant efficacy is also
+      flagged; a valid test is missing (problem 3). The markdown wrongly says the rank band is empty
+      while the rank variants find pairs (problem 5).
+    response: Changed to blocked (methods_underspecified). The calibration it asked for shows the
+      criterion's test flags 30.0% and 75.0% of synthetic constant-efficacy pairs against the
+      paper's P < 0.01, which under the protocol's rule on stated false-positive rates means the
+      procedure is not the paper's. Added a constant-efficacy null as a variant (0 of 285 real
+      pairs; little power, 6.7% on a positive control) and corrected the markdown (the rank band
+      fails to reach 0.01 in 183 of 285 pairs).
+  - claim: fig6-facilitation-depression
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 38; depressing 4.9%, facilitating 15.5%; both are outside tolerance. Depressing is
+      not above the 5% null (binomial p = 0.56).
+    response: No change.
+  - claim: fig7-supralinear
+    agrees: true
+    outcome: not_reproduced
+    reason: Uninformative. 15 of 40 satellites are supralinear, Wilcoxon p = 0.993, but the measure
+      counts the response after the event's last spike and is biased toward sublinear; under exact
+      linear summation it gives -0.034 (problem 2), so this result is not evidence against the
+      claim.
+    response: No change of outcome. Added the test it asked for, against a linear prediction from
+      one-partner events with the window from the first spike, checked on synthetic data (unbiased
+      under linear summation, detects supralinear input). On the data 4 of 40 satellites are above
+      the linear prediction (p = 1), so the variant does not find supralinearity either.
+  - claim: fig3-trajectory-by-class
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 42; only FF matches a layer. EE matches neither. GG has 0 putative interneurons,
+      so the partial condition cannot hold. Affected by the spurious inhibitory links (problem 1).
+    response: No change. Added the fractions with the classes without mirrored troughs (EE 4
+      interneurons, FF 6, GG none).
+  - claim: ee188-example-session
+    agrees: true
+    outcome: blocked
+    reason: The asset list for 0.250624.0419 (28 assets) has no EE.188, EE.152 or EE.165 file. No
+      part can be tested.
+    response: No change.

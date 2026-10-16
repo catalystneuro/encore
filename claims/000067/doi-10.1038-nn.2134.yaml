@@ -15,6 +15,10 @@
 # written; no method choice of those claims was changed after it. No other claim's analysis had
 # been run.
 #
+# First revision, after the verifier's round-1 report: the criterion of traj-diverge was added
+# before the x coordinate was compared between left and right trials. No other criterion was
+# changed; new analyses asked for by the verifier are shown as variants.
+#
 # Fixed for every claim that uses units. Sessions: the eight working memory sessions that have
 # a trial table and the wideband signal (EE.049, EE.196, FF.103, FF.130, FF.167, GG.069,
 # GG.097, GG.149). EE.088 has no wideband signal, so its units cannot be placed on a probe, and
@@ -136,6 +140,17 @@ claims:
   statement: Left and right trajectories overlap in the central arm and begin to differ
     significantly at position 0.3.
   source: Results, first section; Supplementary Figure 3
+  criterion: Written in the first revision, after the verifier asked whether the x coordinate
+    separates the sides and before x was compared between sides. The only coordinate is x1, the
+    x of the first head LED in pixels; frames with x1 at or below 0 (-1, no tracking) are left out. Per trial,
+    the mean x1 in 50 bins of 0.02 of the normalized position. Per session and bin, a Welch t-test
+    of left against right trials. The divergence point of a session is the start of the first bin
+    from which every bin up to 0.6 differs at p < 0.01. Blocked (data_missing) when x1 does not
+    differ between sides (p < 0.01) over 0.5 to 1 in at least half the sessions, as then x1 does
+    not carry the side. Otherwise, reproduced when the median divergence point over sessions is
+    within 0.27 to 0.33 (10% of 0.3); partially reproduced when it is above 0.33, since one
+    coordinate can separate the paths later than both would; not reproduced when it is below
+    0.27.
 - id: odor-nosepoke
   statement: About one quarter of the neurons fire at significantly different rates (P < 0.05
     per cell) during nose poking for the two odors.
