@@ -1,0 +1,223 @@
+# Claims for Peyrache, Lacroix, Petersen & Buzsaki (2015) on dandiset 000056.
+# Source: the NIH author manuscript in PubMed Central (PMC4376557), full text, read from its
+# Results, figure legends and Methods. The supplementary files (Supplementary Table 1 and
+# Figures) could not be downloaded, as PMC served a browser check in their place.
+#
+# When these criteria were written, the author had seen the data check only: the file list
+# and metadata of both published versions, the contents of every file (the units table holds
+# spike times alone, with no electrode, shank, region or waveform), unit and spike counts per
+# file, the sleep-state tables, the electrode groups, the annotation series, and the position
+# traces used to find the open-field epoch. No claim's analysis had been run, and the number
+# of head-direction (HD) cells had not been computed.
+#
+# The dandiset gives no brain region for any unit, so every claim that separates the
+# antero-dorsal thalamic nucleus (ADn) from the post-subiculum (PoS) is blocked. The claims
+# tested here pool the HD cells of each session, whatever their region.
+#
+# Method choices fixed here where the paper leaves them open (no analysis code is linked by
+# the paper or the dandiset).
+# - Waking is the open-field exploration. The files do not mark it (their "Awake" state also
+#   covers waking in the home cage), so it is found from position as the first period of at
+#   least 15 minutes in which the 1st to 99th percentile extent of the head position over a
+#   rolling 5-minute window exceeds 30 cm on both axes (runs separated by 3 minutes or less
+#   are merged; 2 minutes trimmed from each end). SWS is the "Non-REM" state and REM the
+#   "REM" state of the files.
+# - Head direction is the angle of the vector from the red to the blue LED in the processed
+#   position (39.06 Hz), with frames where either LED is missing (-1) left out. A constant
+#   offset from the true heading does not affect any measure here.
+# - HD cells follow the Methods. Tuning curve in 1 degree bins, smoothed with a 6 degree s.d.
+#   Gaussian, spike counts over occupancy, in the waking epoch. The von Mises fit is the
+#   maximum likelihood fit to the tuning curve taken as a distribution of angles (circular
+#   mean, and concentration from the mean resultant length). The Rayleigh test uses that
+#   resultant length and the number of waking spikes. HD cell when concentration > 1, peak
+#   rate > 1 Hz and Rayleigh p < 0.001.
+# - Revision. The first criterion for fig4b-noise-correlations normalised the spike-train and
+#   intensity cross-correlations each as a Pearson correlation, on the reading that the paper
+#   does not state a normalisation. The Methods do give the formula (the mean cross-product,
+#   1/N times the sum, for both), and the Pearson scales are not comparable (an intensity
+#   function has no Poisson noise, so its correlation is far higher). After the first run showed
+#   this, the criterion was changed to the Methods' formula before that claim's outcome was
+#   recorded. The first version is kept as a variant in the notebook.
+# - Pairs are pairs of HD cells recorded in the same session. Pairs on the same shank cannot
+#   be removed, as the units carry no shank.
+schema_version: 1
+dandiset: "000056"
+paper: doi:10.1038/nn.3968
+claims:
+- id: hd-cell-fraction
+  statement: Of the recorded cells, 242 of 720 in the anterior thalamus and 111 of 357 in the
+    PoS were classified as HD cells, 353 of 1077 in all.
+  source: Methods, Head direction cells; Results, first paragraph
+  expected:
+  - quantity: HD cells, both regions
+    value: 353
+    tolerance: 35.3
+    unit: cells
+  - quantity: fraction of recorded cells classified as HD cells, both regions
+    value: 0.328
+    tolerance: 0.033
+  criterion: HD cells are counted by the rule above in every session with position. The
+    regions cannot be separated, so the pooled count and fraction are tested. The denominator
+    can be read as (a) the units with at least one spike in the waking epoch, or (b) every row
+    of the units tables in the sessions with position. Reproduced when both values are within
+    tolerance under one reading; partially reproduced when one of them is. The thalamic split
+    (242 of 720) and the PoS split (111 of 357) are blocked for lack of region labels; the
+    count in the mice that appear to be thalamus only is shown as a variant and does not
+    decide the outcome.
+- id: fig2a-rates-preserved
+  statement: The firing rates of HD neurons are strongly correlated between waking and SWS and
+    between waking and REM sleep.
+  source: Figure 2a (ADn n = 215, PoS n = 62 cells)
+  expected:
+  - quantity: HD cells in the comparison, both regions
+    value: 277
+    tolerance: 27.7
+    unit: cells
+  criterion: For each HD cell in a session with sleep states, the mean rate in waking, SWS
+    and REM. Pearson's r across cells of the waking rates against the SWS rates, and against
+    the REM rates (the paper gives the r values only in figure insets). Reproduced when both r
+    are at least 0.7 with p < 0.05; partially reproduced when both have p < 0.05 and either
+    is below 0.7; not reproduced otherwise. The cell count is reported against the expected
+    value but does not decide the outcome. Variants with log rates and per mouse are shown.
+- id: fig2b-pair-correlations-preserved
+  statement: The pairwise correlations between HD neurons, within and across structures, are
+    similar across brain states.
+  source: Results, second paragraph; Figure 2b (ADn pairs n = 970, PoS pairs n = 92)
+  criterion: For each pair of HD cells in a session with sleep states, both cells firing at
+    0.5 Hz or more (in every state as reading (a), in at least one state as reading (b)), the
+    Pearson correlation of binned spike counts in each state, with 300 ms bins in waking and
+    REM and 50 ms bins in SWS, as in Figure 3a. Pearson's r across pairs of the waking
+    correlations against the SWS correlations, and against the REM correlations. Reproduced
+    when both r are at least 0.7 with p < 0.05 under one reading; partially reproduced when
+    both have p < 0.05 and either is below 0.7.
+- id: fig2f-sws-tenfold-faster
+  statement: The angular velocity of the internal HD signal, estimated from the temporal
+    profile of pairwise cross-correlograms, is about tenfold faster during SWS than during
+    waking.
+  source: Results, second paragraph; Figure 2e,f; Abstract ("accelerated tenfold")
+  expected:
+  - quantity: median ratio of SWS to waking angular velocity over HD cell pairs
+    value: 10
+    tolerance: 1
+  criterion: The method of the paper's Methods (Estimation of angular velocity). For each pair
+    the angular correlation of the two waking tuning curves as a function of offset; angular
+    speed drawn from a chi-squared distribution with 3 degrees of freedom scaled to a mean
+    v, with both directions of turning equally likely; the expected cross-correlogram at lag
+    tau as the mean over speeds of the angular correlation at speed times tau. The observed
+    cross-correlogram (10 ms bins, lags to 4 s, ratio to the value expected for independent
+    firing) is fitted by scale times expected plus offset, with v found by a coarse grid and
+    then a Nelder-Mead search. The paper does not say how expected and observed are put on one
+    scale, so the free scale and offset are chosen here. Pairs as in fig2b reading (a), and
+    a pair is kept when its fit in each state does not end at the edge of the search range.
+    Reproduced when the median over pairs of the SWS to waking ratio is within tolerance;
+    partially reproduced when it is outside but above 2 with SWS faster than waking in most
+    pairs (sign test p < 0.05); not reproduced otherwise. The ratio is also given per mouse.
+- id: fig2f-rem-similar-to-wake
+  statement: The angular velocity of the internal HD signal is similar during REM sleep and
+    waking.
+  source: Results, second paragraph; Figure 2e,f
+  depends_on:
+  - fig2f-sws-tenfold-faster
+  criterion: The paper names no test, so "similar" is fixed here. With the pairs and fits of
+    fig2f-sws-tenfold-faster, reproduced when the median over pairs of the REM to waking
+    ratio lies between 0.67 and 1.5; not reproduced otherwise. A Wilcoxon signed-rank test
+    of the log ratio against 0 is reported as well, with its effect size.
+- id: fig3a-packet-60-degrees
+  statement: The zero-lag correlation between HD cell pairs falls with the offset of their
+    preferred directions, positive below 60 degrees, negative above it and near zero at about
+    60 degrees, and this holds in waking, REM and SWS.
+  source: Results, third paragraph; Figure 3a
+  expected:
+  - quantity: offset of preferred directions at which the zero-lag correlation crosses zero
+    value: 60
+    tolerance: 6
+    unit: degrees
+  criterion: With the pair correlations of fig2b reading (a), and preferred directions from
+    the waking tuning curves, the mean correlation in 10 degree bins of absolute offset (0 to
+    180), and the offset of its first crossing from positive to negative by linear
+    interpolation, in each state. Reproduced when the crossing is within tolerance in all
+    three states and the Pearson correlation of pair correlation with absolute offset is
+    negative with p < 1e-6 in each; partially reproduced when the Pearson test holds in all
+    three states and the crossing is within tolerance in one or two of them.
+- id: fig4b-noise-correlations
+  statement: During waking, the observed correlations of HD cell pairs exceed those expected
+    from independent rate-coded neurons for pairs with overlapping fields (0 plus or minus 15
+    degrees), and fall below them for pairs at about 60 degrees.
+  source: Results, fourth paragraph; Figure 4a,b
+  criterion: Waking only, following the Methods' formula. For each cell an intensity function,
+    its waking tuning curve read at the head direction in 10 ms bins (expected spikes per bin);
+    for each pair the mean cross-product of the two binned spike trains and of the two
+    intensity functions at each lag, and the noise correlation as their difference averaged
+    over lags from -50 to +50 ms. Pairs as in fig2b reading (a). Reproduced when the noise
+    correlation is above 0 for pairs at 0 plus or minus 15 degrees and below 0 for pairs at 60
+    plus or minus 15 degrees, each by a two-sided Wilcoxon signed-rank test at p < 0.05;
+    partially reproduced when one of the two holds. This criterion replaces one written
+    before the first run, which put both cross-correlations on a Pearson scale (see the opening
+    comment); that version is shown as a variant.
+- id: decoding-tracks-hd
+  statement: The HD signal decoded with a Bayesian decoder from the HD cells faithfully tracks
+    the head direction of the waking mouse.
+  source: Methods, Bayesian reconstruction of head-direction; Figure 1c
+  criterion: In each session with at least 6 HD cells, a Poisson Bayesian decoder (10 ms
+    bins, counts smoothed with a 300 ms s.d. Gaussian, flat prior, 6 degree angle bins)
+    trained on tuning curves from one half of the waking epoch and tested on the other, both
+    ways. The paper gives no number, so "faithfully" is fixed here as a median absolute error
+    of 30 degrees or less. Reproduced when the pooled median error is 30 degrees or less and
+    at least 80% of the sessions meet it; partially reproduced when the pooled median meets
+    it and fewer sessions do. The paper decodes from one structure at a time; here the HD
+    cells of a session are pooled.
+- id: adn-pos-peak-rate
+  statement: ADn HD cells have peak rates almost three times those of PoS HD cells (p < 1e-10,
+    Mann-Whitney, 242 ADn and 111 PoS HD cells).
+  source: Results, first paragraph; Supplementary Figure 2b
+- id: adn-pos-hd-information
+  statement: ADn HD cells convey 30% more head-direction information than PoS HD cells (1.44
+    against 1.11 bits per spike, p < 1e-6).
+  source: Results, first paragraph; Supplementary Figure 2c
+- id: ensemble-sizes
+  statement: Ensembles of 8.4 plus or minus 5.1 (s.d.) HD units per session were recorded in
+    the ADn and 5 plus or minus 2.8 in the PoS.
+  source: Results, first paragraph
+- id: fig3a-adn-stronger-than-pos
+  statement: Pairwise correlations of HD cells closer than 60 degrees are stronger in the ADn
+    than in the PoS in every brain state (p < 1e-5, 345 ADn-ADn and 55 PoS-PoS pairs).
+  source: Results, third paragraph; Supplementary Figure 5
+- id: fig3b-packet-coherence
+  statement: The activity packets in the ADn and the PoS are coherent with the packet expected
+    from the Bayesian decoded HD in waking, REM and SWS.
+  source: Results, third paragraph; Figure 3b
+- id: fig4c-noise-adn-vs-pos
+  statement: Noise correlations of HD cell pairs are stronger in the ADn than in the PoS
+    (p < 1e-9, Kruskal-Wallis).
+  source: Results, fourth paragraph; Figure 4c
+- id: fig4e-ole-covariance
+  statement: In the ADn the covariance-based optimal linear estimator of HD is about 50%
+    better than the signal-based one, and this gain is larger than in the PoS (p < 0.05, 20
+    ADn and 8 PoS ensembles).
+  source: Results, fourth paragraph; Figure 4d,e
+- id: fig5b-adn-decoded-tuning
+  statement: The HD signal decoded from ADn assemblies during sleep gives tuning curves of PoS
+    cells more similar to their waking tuning than the signal decoded from PoS assemblies
+    does for ADn cells, in all brain states.
+  source: Results, fifth paragraph; Figure 5a,b
+- id: fig5e-adn-predicts-pos
+  statement: ADn assemblies predict PoS spike trains in all brain states better than PoS
+    assemblies predict ADn spike trains, with optimal readout windows of 123 ms (waking), 133
+    ms (REM) and 79 ms (SWS).
+  source: Results, fifth paragraph; Figure 5c to e
+- id: fig6b-adn-synchrony
+  statement: Fast synchrony between ADn HD cell pairs decreases with the difference of their
+    preferred directions in all brain states (p < 1e-10, Kruskal-Wallis, 970 pairs).
+  source: Results, sixth paragraph; Figure 6
+- id: fig7-adn-pos-connections
+  statement: Putative monosynaptic connections were found in 4.45% of 6960 ADn to PoS pairs
+    and 0.35% of PoS to ADn pairs; among pyramidal PoS cells, 0.41% against 0.18% (p = 0.014).
+  source: Results, sixth paragraph; Figure 7a,b
+- id: fig7d-same-preferred-direction
+  statement: PoS HD cells postsynaptic to ADn HD cells share the preferred direction of their
+    presynaptic cell (12 pairs), and such PoS pyramidal cells convey more HD information than
+    those without an identified presynaptic cell (p = 0.011).
+  source: Results, sixth paragraph; Figure 7d,e
+- id: fig7c-adn-triggered-pos-lfp
+  statement: ADn HD cell spikes are associated with high-frequency oscillations of the PoS LFP.
+  source: Results, sixth paragraph; Figure 7c

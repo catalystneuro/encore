@@ -1,0 +1,229 @@
+schema_version: 1
+id: 000056-peyrache-2015-01
+dandiset: "000056"
+dandiset_version: 0.250624.0430
+paper: doi:10.1038/nn.3968
+date: 2026-10-16
+entry: 000056-peyrache-2015
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs: []
+outcomes:
+- claim: hd-cell-fraction
+  outcome: partially_reproduced
+  notebook: reproduce_peyrache_2015.ipynb
+  output: claim:hd-cell-fraction
+  measured:
+  - 378
+  - 0.218
+  notes: By the Methods' criteria 378 units are HD cells in the 38 sessions with position, within
+    353 plus or minus 35.3. They are 0.218 of the 1731 units with spikes in the open-field epoch
+    (reading a) and 0.205 of all 1848 unit rows of those sessions (reading b), both outside 0.328
+    plus or minus 0.033. The files hold 1959 unit rows in 40 sessions against the paper's 1077
+    recorded cells in 42 sessions. By mouse the fraction is 0.108 to 0.386; in the mice that appear
+    to be thalamus only it is 0.133 (133 of 1000) against the paper's thalamic 0.336, and in the
+    mice that appear dual-site 0.335 (245 of 731). With a concentration threshold of 0.8 or 1.2 the
+    count is 424 or 357. No HD cell is among the units whose spike times were unsorted. The split
+    into 242 thalamic and 111 PoS HD cells cannot be tested.
+  deviations:
+  - Regions pooled, as the units carry no region.
+  - The von Mises fit (maximum likelihood fit to the tuning curve as a distribution of angles) and
+    the Rayleigh test (resultant length of the tuning curve with the number of waking spikes) are
+    choices made here; the Methods do not specify them.
+  - The open-field epoch is found from position, as the files do not mark it.
+  - Mouse17-130201 and Mouse32-140820 have no processed position and are left out.
+- claim: fig2a-rates-preserved
+  outcome: reproduced
+  notebook: reproduce_peyrache_2015.ipynb
+  output: claim:fig2a-rates-preserved
+  measured: 378
+  notes: Over 378 HD cells in 37 sessions with sleep states, Pearson r of waking against SWS rates
+    is 0.838 (p = 3.7e-101) and against REM rates 0.891 (p = 4.5e-131); with log rates 0.806 and
+    0.883. By mouse r is 0.718 to 0.889 for SWS and 0.866 to 0.942 for REM. The cell count (378
+    against the paper's 277) does not decide the outcome; the paper does not say which HD cells
+    were in its figure.
+  deviations:
+  - ADn and PoS cells pooled; the paper plots them separately.
+- claim: fig2b-pair-correlations-preserved
+  outcome: reproduced
+  notebook: reproduce_peyrache_2015.ipynb
+  output: claim:fig2b-pair-correlations-preserved
+  notes: Reading (a), 1573 pairs in 33 sessions, waking against SWS pair correlations r = 0.938 and
+    against REM r = 0.963. Reading (b), 2246 pairs, r = 0.925 and 0.952. Every mouse gives r of at
+    least 0.913. 888 of 2461 pairs fail reading (a) for low rates.
+  deviations:
+  - Pairs within and across structures are pooled, and pairs on the same shank cannot be removed.
+  - Bin sizes are those of Figure 3a; Figure 2b does not state them.
+- claim: fig3a-packet-60-degrees
+  outcome: reproduced
+  notebook: reproduce_peyrache_2015.ipynb
+  output: claim:fig3a-packet-60-degrees
+  measured: 54.2
+  notes: The mean zero-lag correlation, in 10 degree bins of the offset of preferred directions,
+    crosses zero at 54.2 degrees in waking, 56.9 in REM and 55.9 in SWS (measured gives the
+    waking value, the lowest), all within 54 to 66. The Pearson correlation of pair correlation
+    with offset is -0.751, -0.741 and -0.671 (p below 1e-200). With 15 degree bins the crossings
+    are 55.4, 57.9 and 57.7 degrees; under reading (b) 54.1, 57.1 and 56.5. The waking crossing is
+    0.2 degrees inside the tolerance.
+  deviations:
+  - ADn-ADn, ADn-PoS and PoS-PoS pairs are pooled.
+- claim: fig2f-sws-tenfold-faster
+  outcome: partially_reproduced
+  notebook: reproduce_peyrache_2015.ipynb
+  output: claim:fig2f-sws-tenfold-faster
+  measured: 8.33
+  notes: Over 1509 pairs (64 of 1573 dropped for a fit at the edge of the speed range), the median
+    ratio of SWS to waking angular velocity is 8.33 (quartiles 5.91 to 11.31), below 9 to 11; SWS
+    is faster in 1420 pairs (sign test p = 4.1e-309). Median speeds are 36.9 deg/s in waking,
+    33.5 in REM and 324.4 in SWS. By mouse the ratio is 7.89 to 13.52. The Bayesian decoder
+    variant gives a median of 11.53 over 28 sessions. The waking estimates are 0.60 times the
+    measured mean angular speed of the head (median over sessions) and correlate with it at
+    r = 0.20 across 33 sessions, so the estimator as implemented here is not well calibrated, and
+    the shortfall from tenfold may come from the implementation.
+  deviations:
+  - The paper does not say how the expected and observed cross-correlograms are put on one scale;
+    a free scale and offset are fitted here.
+  - The lag range (4 s) and speed grid are chosen here.
+  - The expectation over the chi-squared speed distribution is computed exactly from its
+    characteristic function.
+  - Pairs within and across structures are pooled; the paper shows ADn-ADn and PoS-PoS pairs.
+- claim: fig2f-rem-similar-to-wake
+  outcome: reproduced
+  notebook: reproduce_peyrache_2015.ipynb
+  output: claim:fig2f-rem-similar-to-wake
+  measured: 0.87
+  notes: The median REM to waking ratio is 0.87 over 1509 pairs (quartiles 0.60 to 1.26), inside
+    0.67 to 1.5; by mouse 0.69 to 1.07; the decoder variant gives 1.05. By a Wilcoxon test of the
+    log ratio REM is slower than waking (p = 6.3e-18, median log10 ratio -0.060, about 13%), a
+    test the paper does not make.
+  deviations:
+  - The paper names no test for "similar"; the range 0.67 to 1.5 is chosen here.
+- claim: fig4b-noise-correlations
+  outcome: reproduced
+  notebook: reproduce_peyrache_2015.ipynb
+  output: claim:fig4b-noise-correlations
+  notes: With the Methods' formula (mean cross-products), the noise correlation of pairs at 0 plus
+    or minus 15 degrees is positive in 110 of 118 pairs (median 7.84 Hz2, 0.81 of the chance
+    product, Wilcoxon p = 5e-19) and of pairs at 60 plus or minus 15 degrees positive in only 35 of
+    256 (median -4.08 Hz2, p = 4.6e-32). It holds in the mice that appear thalamus only. Under the
+    first criterion, with both cross-correlations on a Pearson scale, the 0 degree pairs are
+    negative (median -0.78), which reflects the scale and not the data.
+  deviations:
+  - The criterion was revised after a first run, before this outcome was recorded, from a Pearson
+    scaling that contradicted the Methods' stated formula to that formula; the first version is
+    shown as a variant.
+  - Regions pooled.
+- claim: decoding-tracks-hd
+  outcome: reproduced
+  notebook: reproduce_peyrache_2015.ipynb
+  output: claim:decoding-tracks-hd
+  notes: In 28 sessions with at least 6 HD cells, two-fold cross-validated decoding has a pooled
+    median absolute error of 11.7 degrees (chance 90); session medians 8.1 to 27.2, all at or
+    below 30.
+  deviations:
+  - HD cells of both structures are decoded together; the paper decodes one structure at a time.
+  - The threshold of 30 degrees for "faithfully" and the 6 degree angle bins are chosen here.
+- claim: adn-pos-peak-rate
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The units table holds only spike times, with no electrode, shank or region, and every
+    electrode's location is "unknown", so units cannot be assigned to the ADn or the PoS.
+- claim: adn-pos-hd-information
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No region per unit (see adn-pos-peak-rate).
+- claim: ensemble-sizes
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No region per unit. Pooled, the sessions hold 0 to 26 HD cells (median 10).
+- claim: fig3a-adn-stronger-than-pos
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No region per unit.
+- claim: fig3b-packet-coherence
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The coherence is shown per structure, and units have no region. The measure is also
+    described only by reference to earlier work (the bootstrap of population vectors is not
+    fully specified), which would block it as methods_underspecified as well.
+- claim: fig4c-noise-adn-vs-pos
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: No region per unit.
+- claim: fig4e-ole-covariance
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The claim compares ADn and PoS ensembles, and units have no region.
+- claim: fig5b-adn-decoded-tuning
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Decoding from one structure to compute tuning in the other needs the region of each unit.
+- claim: fig5e-adn-predicts-pos
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Predicting one structure from the other needs the region of each unit.
+- claim: fig6b-adn-synchrony
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The claim is about ADn pairs on different shanks; units have neither region nor shank.
+- claim: fig7-adn-pos-connections
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the region of each unit, and for the pyramidal subset waveforms, which the dandiset
+    does not hold for units (raw broadband data are in only 3 of the 40 files).
+- claim: fig7d-same-preferred-direction
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on the ADn to PoS connections, which need the region of each unit.
+- claim: fig7c-adn-triggered-pos-lfp
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the region of the units and of the LFP channels; electrode locations are "unknown".
+findings:
+- kind: metadata_insufficient
+  statement: The units tables hold only spike times. No unit has an electrode, shank, brain region,
+    waveform or quality measure, and every electrode's location is "unknown". Units cannot be
+    assigned to the antero-dorsal thalamus or the post-subiculum, which blocks 12 of the paper's 20
+    claims. The electrode groups and ripple annotations are consistent with Mouse24, Mouse25 and
+    Mouse28 being the three dual-site mice, but the files do not say so.
+- kind: selection_undocumented
+  statement: The files hold 1959 unit rows (103 with no spikes) in 40 sessions, against the paper's
+    1077 recorded cells in 42 sessions. Mouse12-120809 alone has 292 units. Nothing marks which units
+    or sessions the paper analysed (its Methods discard some sessions).
+- kind: metadata_insufficient
+  statement: The open-field exploration (the paper's waking epoch) is not marked. The "Awake" state
+    also covers waking in the home cage, and some sessions hold a second exploration or a larger
+    second environment. The epoch had to be found from position.
+- kind: format_error
+  statement: In 36 of 40 files one unit's spike times are not sorted. Each such unit holds two
+    sorted runs, each spanning the session, joined at an index of the form k x 65536 - 1; the second
+    run rarely repeats a time of the first. This suggests an error in the conversion.
+- kind: other
+  statement: In Mouse12-120808 the position and the spikes do not share a clock. Head-direction
+    tuning is best with position shifted by -1.5 s at the start of the exploration and -3.4 s at
+    its end, and no unit passes the HD criteria as deposited. In all other sessions the best shift
+    is -0.2 to 0 s.
+- kind: metadata_error
+  statement: The raw LED positions in `acquisition` are stated in meters with a conversion of NaN
+    but hold camera pixels (values in the hundreds).
+- kind: data_missing
+  statement: Mouse32-140820 has no sleep-state table and no processed position, and Mouse17-130201
+    has no processed position; both have raw LED series only. In three Mouse20 sessions the
+    position series ends 11 to 109 minutes before the recording.
+- kind: metadata_insufficient
+  statement: The annotation series `dow`, `hdD` and `rip` (labels such as "DOWN ON 5", "HD UP ON",
+    "Ripple peak 1") have no description.
+- kind: metadata_error
+  statement: The dandiset's related resource for the paper gives its name and identifier as
+    "nternally organized mechanisms of the head direction sense" (first letter missing, and the
+    title in place of a DOI); the URL is correct.
+- kind: methods_unavailable
+  statement: Neither the paper nor the dandiset links analysis code, so the von Mises fit, the
+    Rayleigh test, the scaling in the cross-correlogram estimate of angular velocity and the
+    coherence measure had to be chosen or could not be repeated.
