@@ -274,6 +274,19 @@ def test_a_claim_on_data_in_another_archive_names_it_and_is_tested_there(repo):
     assert any("not `data_missing`" in e for e in errors(repo))
 
 
+
+def test_an_earlier_attempt_is_not_held_to_a_later_elsewhere(repo):
+    claims = {**CLAIMS, "claims": [{**CLAIMS["claims"][0], "data": "elsewhere", "where": "PRIDE PXD000001"}]}
+    (repo / "claims" / "000001" / "demo.yaml").write_text(yaml.safe_dump(claims))
+    earlier = {**ATTEMPT, "outcomes": [{**ATTEMPT["outcomes"][0], "outcome": "blocked",
+                                        "blocked_by": "data_missing", "notes": "Not in the dandiset."}]}
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(earlier))
+    later = {**ATTEMPT, "id": "demo-02", "outcomes": [{**ATTEMPT["outcomes"][0], "outcome": "blocked",
+                                                       "blocked_by": "too_large", "notes": "Too large."}]}
+    (repo / "attempts" / "demo-02.yaml").write_text(yaml.safe_dump(later))
+    assert errors(repo) == []
+
+
 def test_a_later_round_decides_the_claims_it_reviews(repo):
     round2 = {"date": "2026-10-13", "kind": "agent", "by": "v",
               "results": [{"claim": "fig1", "agrees": True, "outcome": "not_reproduced"}]}

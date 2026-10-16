@@ -229,8 +229,9 @@ def check(entry_dir: Path) -> Report:
         kinds = kinds_by_target.get((attempt.get("dandiset"), attempt.get("paper")), {})
         for outcome in attempt.get("outcomes", []):
             # A claim on data in another archive names where they are, so it is never blocked for missing data,
-            # and when it is tested the archive is an input.
-            if kinds.get(outcome.get("claim")) == "elsewhere":
+            # and when it is tested the archive is an input. Only the latest attempt is held to this: the
+            # claims file is shared, and an earlier attempt may predate the claim's `elsewhere`.
+            if kinds.get(outcome.get("claim")) == "elsewhere" and path == mine[-1]:
                 if outcome.get("blocked_by") == "data_missing":
                     report.error(where, f"claim {outcome.get('claim')!r} has its data in another archive "
                                         "(`elsewhere`); test it there, or block it for the reason it cannot be "
