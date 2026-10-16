@@ -1,0 +1,248 @@
+# Claims for Carcea et al. (2021), "Oxytocin neurons enable social transmission of maternal
+# behaviour", on dandiset 000114.
+# Source: the full text in PubMed Central (PMC8387235, CC BY), its Methods, figure legends and
+# Extended Data legends, and the paper's Source Data spreadsheets for Figures 2 to 4 and
+# Extended Data Figures 7 and 8, read for the reported numbers.
+#
+# What the author had seen when these criteria were written: the file list and metadata of
+# every file; the units tables (unit counts, spike counts, firing rates, the fraction of
+# inter-spike intervals under 2 ms, the fraction of spikes coincident with another unit's);
+# the event labels, their counts and durations per session (so the per-session fraction of
+# "Virgin in rest" intervals of 40 s or less, and the per-session counts of "Mom agressing"
+# and "Mom retrieval" events, which with the session lengths give the rates tested in
+# fig1j-shepherding-rate and ed8a-dam-retrieval-rate); the gaps between the end of each
+# "Mom agressing" event and the next "Virgin in rest" start; a test of the shared clock
+# (population contrast at annotation onsets against shifted labels); and the mean
+# retrieval-triggered photometry change per session. No firing-rate modulation, shuffle test
+# or fraction of modulated units had been computed.
+#
+# The dandiset holds the PVN single-unit recordings of four co-housed virgins (V110, V111,
+# V116, V118; 228 units over 8 sessions) with behaviour annotations, raw voltage of five
+# virgins, and fibre photometry of six non-co-housed virgins during observation. It does not
+# hold the optical tagging that identifies OT-PVN units, nor the behaviour of Figure 1, the
+# observation-session unit recordings of Figure 3, or the auditory cortex data of Figure 4.
+#
+# The event labels are not described in the files. The paper's code (GitHub
+# ic283/Carcea-et-al.-2021, commit 2db2a75) names "Mom agressing" as shepherding, "Virgin in
+# rest" as nest entry and "Mom retrieval" as dam retrieval (behStrings in
+# shepNestPup_xCorr_ForNature.m, used for "shepherding, nest entry and maternal retrievals").
+# Claims that rest on these names are `with_labels` and depend on label-link.
+#
+# Method choices fixed here, for the unit claims, from the Methods and the paper's
+# calc_spike_freq_behavior_significance.m: an episode runs from the label's start to its stop,
+# capped at 40 s for nest entry (Methods; the code has the cap commented out, shown as a
+# variant); the baseline for nest entry is an interval of the episode's duration ending 0.5 s
+# before its start (code; the Methods say only "similar in duration"), and for shepherding and
+# dam retrieval the 10 s before the start (Methods; the code's equal-duration baseline ending
+# 0.5 s before is a variant); the change is (behaviour - baseline) x 100 / (behaviour +
+# baseline) per episode, episodes with no spikes in either window are left out, and the unit's
+# value is the mean over episodes; the null shifts all episodes of a session together by one
+# integer number of seconds drawn uniformly from -500 to 500, 1000 times, with episodes without
+# spikes counted as 0 (code); p is the fraction of shifts whose value lies beyond the real one
+# in its direction (code); a unit is activated when its value is positive and it passes a
+# Benjamini-Hochberg correction at q = 0.05 over all units of its session (Methods: over all
+# PVN or all OT-PVN neurons of a day; OT identity is not in the dandiset); the fraction
+# activated is tested with a one-sided Fisher's exact test against zero of the same number of
+# units (Methods; this reproduces the Source Data p of 0.0103 for 6 of 21). Each session's
+# units are counted as separate units, as the paper counts units per day; V111's three
+# sessions hold 31 units each with spike counts correlated across days (0.93 to 0.97), so the
+# results are also given per session and per mouse.
+schema_version: 1
+dandiset: "000114"
+paper: doi:10.1038/s41586-021-03814-7
+claims:
+- id: label-link
+  statement: The dandiset's behaviour labels can be named through the paper's code; "Mom
+    agressing" is shepherding, "Virgin in rest" is nest entry (a nest dwell) and "Mom retrieval"
+    is spontaneous pup retrieval by the dam.
+  source: Methods (Spike train analysis); Extended Data Fig. 7b; shepNestPup_xCorr_ForNature.m at
+    GitHub commit 2db2a75
+  data: with_labels
+  expected:
+  - quantity: Fraction of nest dwell times of 40 s or less (Extended Data Fig. 7b)
+    value: 70.5
+    tolerance: 7.05
+    unit: percent
+  criterion: Records are matched by label text; a label that differs only in spelling ("Mom
+    aggressing") is the same label. The link holds (reproduced) when (1) in the one file that
+    carries both the code's labels and the paper's names (V116 03122018), every "Mom agressing"
+    interval coincides with a "Shepherding" interval and every "Mom retrieval" interval with a
+    "Self gen retrieval" interval (start and stop within 0.5 s), and (2) the fraction of
+    "Virgin in rest" intervals lasting 40 s or less, pooled over all files that have the label,
+    is within the tolerance of 70.5%. Partially reproduced when only one of (1) and (2) holds;
+    not reproduced when neither does.
+- id: ed7a-nest-entry-fraction
+  statement: A significant fraction of virgin PVN units were activated during nest entry
+    (6 of 21 OT-PVN and 33 of 126 PVN units; one-sided Fisher's exact test p = 0.01 and 0.0001).
+  source: Fig. 2i; Extended Data Fig. 7a (middle); Source Data Fig. 2i
+  data: with_labels
+  depends_on:
+  - label-link
+  expected:
+  - quantity: Fraction of units activated during nest entry, OT-PVN and PVN pooled (39 of 147)
+    value: 26.5
+    tolerance: 2.65
+    unit: percent
+  criterion: Method as in the file header, on all units of the sessions that have at least one
+    "Virgin in rest" episode. Two readings of the reported fraction, as OT identity is not in the
+    dandiset; (a) OT-PVN and PVN pooled, 39 of 147 = 26.5%, and (b) PVN only, 33 of 126 = 26.2%
+    (tolerance 2.62). Reproduced when the pooled fraction activated is within tolerance under
+    either reading and the one-sided Fisher's exact test against zero gives p < 0.05. Partially
+    reproduced when the Fisher test gives p < 0.05 but the fraction is outside both tolerances.
+    Not reproduced when p >= 0.05.
+- id: ed7a-shepherding-fraction
+  statement: A significant fraction of virgin PVN units were activated during shepherding by the
+    dam (5 of 21 OT-PVN and 9 of 97 PVN units; p = 0.02 and 0.001).
+  source: Fig. 2e; Extended Data Fig. 7a (left); Source Data Fig. 2e
+  data: with_labels
+  depends_on:
+  - label-link
+  expected:
+  - quantity: Fraction of units activated during shepherding, OT-PVN and PVN pooled (14 of 118)
+    value: 11.9
+    tolerance: 1.19
+    unit: percent
+  criterion: Method as in the file header, on all units of the sessions that have at least one
+    "Mom agressing" episode, with the 10 s baseline of the Methods. Readings (a) pooled, 14 of
+    118 = 11.9%, and (b) PVN only, 9 of 97 = 9.3% (tolerance 0.93). Reproduced when the fraction
+    is within tolerance under either reading and the Fisher test gives p < 0.05; partially
+    reproduced when p < 0.05 but the fraction is outside both; not reproduced when p >= 0.05.
+- id: ed7a-dam-retrieval-fraction
+  statement: Spontaneous pup retrieval by the dam, in which the virgin was not involved, activated
+    a significant fraction of virgin PVN units (5 of 17 OT-PVN and 10 of 69 PVN units; p = 0.02
+    and 0.0007).
+  source: Fig. 3b, c; Extended Data Fig. 7a (right); Source Data Fig. 3c
+  data: with_labels
+  depends_on:
+  - label-link
+  expected:
+  - quantity: Fraction of units activated during dam retrieval, OT-PVN and PVN pooled (15 of 86)
+    value: 17.4
+    tolerance: 1.74
+    unit: percent
+  criterion: Method as in the file header, on all units of the sessions that have at least one
+    "Mom retrieval" episode, with the 10 s baseline of the Methods. Readings (a) pooled, 15 of 86
+    = 17.4%, and (b) PVN only, 10 of 69 = 14.5% (tolerance 1.45). Reproduced when the fraction is
+    within tolerance under either reading and the Fisher test gives p < 0.05; partially
+    reproduced when p < 0.05 but the fraction is outside both; not reproduced when p >= 0.05.
+- id: fig2j-shepherded-entry
+  statement: PVN units fired more when the virgin entered the nest after being shepherded than
+    when she entered it voluntarily (18 units, Wilcoxon matched-pairs signed rank test,
+    p = 0.0056).
+  source: Fig. 2j; Extended Data Fig. 7a; Source Data Fig. 2j
+  data: with_labels
+  depends_on:
+  - label-link
+  criterion: A nest entry ("Virgin in rest" start) is shepherded when it starts between the start
+    of a "Mom agressing" episode and 10 s after its end, and voluntary otherwise; the paper does
+    not give a rule. Each unit's change during nest entry (method of the file header, 40 s cap)
+    is averaged separately over shepherded and voluntary entries. Units are all units of the
+    sessions with at least one entry of each kind and a defined value for both. Reproduced when
+    the shepherded value exceeds the voluntary one in the median over units and a two-sided
+    Wilcoxon signed-rank test gives p < 0.05; not reproduced otherwise. Variants, which do not
+    change the outcome; windows of 5 and 30 s, and the units activated in ed7a-nest-entry-fraction.
+- id: fig1j-shepherding-rate
+  statement: Dams shepherded virgins more often than the 0.2 events per hour at which dams chased
+    virgins without pups, at 3.5 +/- 0.9 events per hour with pups present.
+  source: Fig. 1j; Extended Data Fig. 3b
+  data: with_labels
+  depends_on:
+  - label-link
+  expected:
+  - quantity: Shepherding events per hour with pups present (Extended Data Fig. 3b, mean +/- s.e.m.,
+      N = 4)
+    value: 3.5
+    tolerance: 0.9
+    unit: events per hour
+  criterion: Rates are per session, "Mom agressing" (and "Mom aggressing") episodes over the
+    session's length (the longer of the recording and the last annotation), over every session
+    whose annotations include a label for the virgin ("Virgin in rest", "Virgin in nest" or
+    "Virgin Agressing"), as only these appear scored for interactions. Reproduced when the mean
+    per-session rate is above 0.2 with a two-sided one-sample t-test p < 0.05 and the mean is
+    within 3.5 +/- 0.9; partially reproduced when only the t-test part holds; not reproduced
+    when the t-test part fails. Per-mouse means are also shown.
+- id: ed8a-dam-retrieval-rate
+  statement: About once every two hours, dams dropped and then retrieved pups during co-housing
+    (daily means 0.34 to 0.60 retrievals per hour, N = 14 dams).
+  source: Results (Social transmission of maternal behaviour); Extended Data Fig. 8a
+  data: with_labels
+  depends_on:
+  - label-link
+  expected:
+  - quantity: Spontaneous retrievals by the dam per hour (once every two hours)
+    value: 0.5
+    tolerance: 0.05
+    unit: events per hour
+  criterion: Rates are per session, "Mom retrieval" episodes over the session's length, over the
+    same sessions as fig1j-shepherding-rate. Reproduced when the mean per-session rate is within
+    10% of 0.5 per hour or within the daily range of Extended Data Fig. 8a widened by 10% of each
+    bound (0.31 to 0.66); not reproduced otherwise.
+- id: ot-pvn-units
+  statement: Optically tagged OT-PVN units (21 units) were activated by shepherding, nest entry
+    and dam retrieval, and pairs including OT-PVN units were more correlated than PVN pairs
+    during these behaviours.
+  source: Fig. 2b, e, g-i; Fig. 3b-d; Extended Data Figs. 5, 6a, 7a, 7d, 7e
+  criterion: Needs the identity of the OT-PVN units, from the optical tagging recordings or the
+    authors' list of identified units.
+- id: fig2f-virgin-chasing
+  statement: Units activated during shepherding fired less when the virgin chased the dam (6
+    units, Wilcoxon p = 0.03).
+  source: Fig. 2f; Source Data Fig. 2f
+  criterion: Needs a label for virgin-to-dam chases. The files have "Virgin Agressing", which no
+    source names.
+- id: ed6-dam-vs-pup
+  statement: During 5-minute interactions, more virgin PVN units were activated by the dam than by
+    pups (25 of 248 against 7 of 248), and units barely responded to pup calls (1 of 71).
+  source: Extended Data Figs. 6c-e, 7c
+  criterion: Needs the 5-minute interaction periods and the pup call playback times.
+- id: fig1cd-retrieval-onset
+  statement: Virgins co-housed with a dam and litter began retrieving pups earlier than virgins
+    co-housed with pups alone (n = 14 and 10, P < 0.0001), and nest entry and shepherding on day
+    1 correlated with retrieval at the end of day 1 (r = 0.66 and 0.75).
+  source: Fig. 1c, d, f, k; Extended Data Fig. 2
+  criterion: Needs the daily retrieval tests of each co-housed virgin.
+- id: fig2a-dreadd
+  statement: Chemogenetic silencing of OT-PVN neurons delayed the onset of retrieval in co-housed
+    virgins.
+  source: Fig. 2a; Extended Data Fig. 4
+  criterion: Needs the retrieval scores of the DREADD and control cohorts.
+- id: fig3fg-observational-learning
+  statement: Non-co-housed virgins learned to retrieve after watching dams retrieve, with no
+    barrier (11 of 15) or through a transparent barrier (12 of 19), but not through an opaque
+    barrier (2 of 18) or when lacking the oxytocin receptor (3 of 10).
+  source: Fig. 3e-g; Extended Data Fig. 8c, d
+  criterion: Needs the retrieval scores of the observation cohorts.
+- id: fig3ij-observation-units
+  statement: PVN units of non-co-housed virgins were activated while watching dam retrievals (15
+    of 65), some also during the virgin's own retrievals (15 of 41), and only in virgins that went
+    on to retrieve (learners against non-learners, P = 0.0001).
+  source: Fig. 3h-j
+  criterion: Needs unit recordings from the observation sessions.
+- id: fig4c-ac-photometry
+  statement: Auditory cortex photometry responses to pup calls increased over co-housing up to the
+    day of retrieval onset (P = 0.003, n = 3).
+  source: Fig. 4a-c; Extended Data Fig. 10a
+  criterion: Needs auditory cortex photometry with pup call playback times.
+- id: fig4f-pvn-ac-correlation
+  statement: Single-trial PVN activity correlated with pup-call responses in auditory cortex
+    during observation (r = 0.5, P = 0.00001, n = 4).
+  source: Fig. 4d-f
+  criterion: Needs simultaneous PVN units and auditory cortex photometry.
+- id: fig4i-projection-photometry
+  statement: PVN to auditory cortex projections were activated during observation of dam
+    retrieval in virgins that learned to retrieve (P = 0.02) but not in those that did not
+    (P = 0.5), three animals per group.
+  source: Fig. 4g-i; Source Data Fig. 4i
+  criterion: Per-animal responses to the dam's retrievals in the observation sessions, tested
+    with a one-sample t-test per group as in the Source Data. Needs which animals learned.
+- id: fig4jk-oxytocin-in-ac
+  statement: An oxytocin receptor antagonist in auditory cortex prevented learning by observation
+    (2 of 10 against 7 of 9), and stimulating OT-PVN fibres in auditory cortex enhanced it (4 of
+    4 against 2 of 4).
+  source: Fig. 4j, k
+  criterion: Needs the retrieval scores of the infusion and optogenetic cohorts.
+- id: ed9-colliculus
+  statement: Superficial superior colliculus projects to OT-PVN neurons, and stimulating this
+    input replaced visual experience (4 of 5 against 1 of 6 virgins retrieving).
+  source: Extended Data Fig. 9
+  criterion: Needs tracing histology and the retrieval scores of the stimulation cohort.
