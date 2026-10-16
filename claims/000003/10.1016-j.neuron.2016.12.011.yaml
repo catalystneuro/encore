@@ -21,6 +21,16 @@
 # analysis was run; testing the loader on one of these files had printed its GC and MC median DS2
 # amplitudes (-83 and +150 uV).
 #
+# Revision after verification round 1. The verifier noted that the rule mapping a stored waveform
+# channel to an electrode of the shank was never checked, and that the classification used a log
+# ratio where the Methods give the ratio. The data check then showed that the electrodes table's
+# channel map disagrees with the wide-band signal, and the site in mc-deeper and gc-mc-classification
+# was changed to the wide-band column where the spike is largest, with the classification's
+# waveform taken from the wide-band signal and the ratio taken as the Methods give it. These
+# changes were made after seeing the first results with the table's site (mc-deeper P = 5.7e-09,
+# agreement 0.944 with the log ratio) and a few units of two files in the wide-band signal, and
+# before the results with the wide-band site were seen.
+#
 # The dandiset gives each unit a cell type label (granule cell, mossy cell, CA3 pyramidal cell,
 # narrow or wide waveform interneuron), taken from the authors' unit summary. Claims use these
 # labels. Only 17 files say which shank each unit was recorded on, so the paper's classification
@@ -346,8 +356,10 @@ claims:
   criterion: The files give no coordinates for the recording sites, so depth is read from the DS2
     amplitude at each unit's site, the feature the paper uses to place units (positive below the
     reversal, in the hilus, and negative above it). Only the 17 files whose units carry their
-    shank (`electrode_group`) and waveforms can be used; the site is the shank channel with the
-    largest mean waveform. Reproduced when the MC median DS2 amplitude exceeds the GC median with a
+    shank (`electrode_group`) and waveforms can be used; the site is the channel where the unit's
+    spike is largest in the wide-band signal (revised after verification round 1; the first version
+    took the shank channel with the largest stored waveform through the electrodes table, now a
+    variant). Reproduced when the MC median DS2 amplitude exceeds the GC median with a
     two-sided Mann-Whitney P < 0.001; partially reproduced at P < 0.05.
 - id: gc-mc-classification
   statement: K-means clustering on the DS2 amplitude at the unit's site, the NREM to wake rate ratio
@@ -355,8 +367,9 @@ claims:
     units into granule cells and mossy cells.
   source: Results; Figure 1D to 1F; STAR Methods, Unit classification
   criterion: On the GC and MC of the 17 files where the site is known (see mc-deeper). Features as
-    in the Methods, the waveform taken on the unit's site (normalised to its trough, upsampled to
-    100 kHz, second derivative from the trough to 0.8 ms after it), wake read as `awake`; the four
+    in the Methods, with the NREM to wake rate ratio itself and the unfiltered wide-band waveform at
+    the unit's site (normalised to its trough, upsampled to 100 kHz, second derivative from the
+    trough to 0.8 ms after it), wake read as `awake`; the four
     features standardised, then k-means with two clusters (fixed seed, 50 starts). Reproduced when
     the clusters agree with the labels for at least 90% of units (under the better of the two
     ways of naming the clusters); partially reproduced at 75% to 90%.

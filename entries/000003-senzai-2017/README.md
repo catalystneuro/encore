@@ -48,5 +48,6 @@ The attempt record, with the reasons and the differences from the paper's method
   spike times, waveforms and LFP from the 101 files.
 - `dg.py`: loading the files (with the repair of the unit boundaries cut at multiples of 65,536
   spikes), and the measures: rates by state, burst index, waveform latency, phase locking, DS2 and
-  light responses, cross-correlograms, and T-maze and open-field rate maps. Other notebooks on this
-  dandiset can import it.
+  light responses, cross-correlograms, and T-maze and open-field rate maps, and, in the 17 files
+  with the wide-band signal, each unit's site and waveform read from that signal. Other notebooks
+  on this dandiset can import it.

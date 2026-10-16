@@ -33,6 +33,12 @@ Where the parameters come from:
   within 6 ms), the T-maze run segment (trial start to the first arrival at the reward port,
   stimulation trials left out), and the waveform reading (the mean of the first 200 stored
   spike waveforms, on the channel with the largest amplitude).
+- In the 17 files with the wide-band signal and each unit's shank, each unit's site and unfiltered
+  waveform (as the Methods describe) are also read from the wide-band signal: the spike-triggered
+  mean over -1.2 to +2.4 ms in the ten 10 s storage chunks with the most GC spikes; the site is the
+  column with the largest peak-to-peak amplitude after a 300 Hz high-pass (a common choice).
+- Home-cage wake (the Methods' "awake period in home cage") is `awake` time outside the behaviour
+  epochs (`intervals/epochs`) and outside the spans of the position series (split at gaps of 60 s).
 """
 
 from __future__ import annotations
@@ -47,7 +53,7 @@ import remfile
 from dandi.dandiapi import DandiAPIClient
 from scipy import signal, stats
 from scipy.interpolate import CubicSpline
-from scipy.ndimage import gaussian_filter, gaussian_filter1d, label
+from scipy.ndimage import convolve1d, gaussian_filter, gaussian_filter1d, label
 
 DANDISET_ID = "000003"
 DANDISET_VERSION = "0.260218.2052"
@@ -184,6 +190,106 @@ def _awake_lfp(f, states: pd.DataFrame, max_s=3600.0):
 DS2_BASELINE = (-0.036, -0.016)    # Methods, the baseline of the DS2 criterion
 
 
+RAW_WINDOW = (-0.0012, 0.0024)     # s around each spike
+RAW_CHUNKS = 10
+RAW_HIGHPASS = 300.0
+
+
+def raw_unit_waveforms(f, s: dict, n_chunks=RAW_CHUNKS) -> dict:
+    """Spike-triggered mean of the wide-band signal (`acquisition/ElectricalSeries`) on every column,
+    unfiltered and high-passed at 300 Hz, from the n_chunks storage chunks (about 10 s each) holding
+    the most GC spikes. For each kept unit: the number of spikes used, the site (the column with the
+    largest high-passed peak-to-peak amplitude), the peak-to-peak profile over columns, and the
+    unfiltered and high-passed mean waveforms at the site (volts, 72 samples, spike at sample 24)."""
+    es = f["acquisition/ElectricalSeries"]
+    d = es["data"]
+    conv = float(d.attrs["conversion"])
+    rate = float(es["starting_time"].attrs["rate"])
+    t0 = int(round(float(es["starting_time"][()]) * rate))
+    chunk = d.chunks[0]
+    n_blocks = d.shape[0] // chunk
+    pre, post = int(round(-RAW_WINDOW[0] * rate)), int(round(RAW_WINDOW[1] * rate))
+    types = s["units"].set_index("unit").type
+    idx = {u: s["spikes"][u].astype(np.int64) - t0 for u in s["spikes"]}
+    gc = [idx[u] for u in idx if types[u] == "GC"]
+    pool = np.concatenate(gc) if gc else np.concatenate(list(idx.values()))
+    counts = np.bincount(pool[(pool >= 0) & (pool < n_blocks * chunk)] // chunk, minlength=n_blocks)
+    blocks = np.sort(np.argsort(counts, kind="stable")[::-1][:n_chunks])
+    b, a = signal.butter(3, RAW_HIGHPASS / (rate / 2), btype="high")
+    lags = np.arange(-pre, post)
+    sums = {u: np.zeros((2, d.shape[1], len(lags))) for u in idx}
+    n = dict.fromkeys(idx, 0)
+    lfp = f["processing/ecephys/LFP"]
+    ser = lfp[list(lfp.keys())[0]]
+    lfp_rate, lfp_t0 = float(ser["starting_time"].attrs["rate"]), float(ser["starting_time"][()])
+    match = None
+    for blk in blocks:
+        i0, i1 = int(blk) * chunk, (int(blk) + 1) * chunk
+        x = d[i0:i1, :].astype(np.float32) * conv
+        if match is None and rate == 16 * lfp_rate:
+            # do the wide-band columns and the LFP columns hold the same electrodes?
+            xd = signal.decimate(signal.decimate(x, 4, axis=0), 4, axis=0)
+            j0 = int(round((i0 + t0) / rate * lfp_rate - lfp_t0 * lfp_rate))
+            y = ser["data"][j0:j0 + len(xd), :].astype(float)
+            r = np.corrcoef(xd[:len(y)].T, y.T)[:x.shape[1], x.shape[1]:]
+            match = (int(np.sum(r.argmax(axis=1) == np.arange(len(r)))), float(np.median(np.diag(r))))
+        xf = signal.filtfilt(b, a, x, axis=0).astype(np.float32)
+        for u, sp in idx.items():
+            sp = sp[(sp >= i0 + pre) & (sp < i1 - post)] - i0
+            if len(sp) == 0:
+                continue
+            win = sp[:, None] + lags
+            sums[u][0] += x[win].sum(axis=0).T
+            sums[u][1] += xf[win].sum(axis=0).T
+            n[u] += len(sp)
+    out = {"blocks": len(blocks), "seconds": len(blocks) * chunk / rate, "columns": int(d.shape[1]), "lfp_match": match, "units": {}}
+    for u in idx:
+        if n[u] == 0:
+            continue
+        raw, hp = sums[u][0] / n[u], sums[u][1] / n[u]
+        prof = np.ptp(hp, axis=1)
+        c = int(np.argmax(prof))
+        out["units"][u] = {"n": n[u], "site_col": c, "profile": prof.astype(np.float32),
+                           "wave": raw[c].astype(np.float32), "wave_hp": hp[c].astype(np.float32)}
+    return out
+
+
+def behaviour_spans(epochs, positions: dict, gap=60.0) -> list[tuple[float, float]]:
+    """Times of behaviour outside the home cage: the epochs table, and the spans of each position
+    series split where samples are more than `gap` s apart."""
+    spans = []
+    if epochs is not None:
+        spans += list(zip(epochs.start_time.astype(float), epochs.stop_time.astype(float)))
+    for p in positions.values():
+        t = np.sort(p["t"][np.isfinite(p["t"])])
+        if len(t) < 2:
+            continue
+        cut = np.flatnonzero(np.diff(t) > gap)
+        for a, z in zip(np.r_[0, cut + 1], np.r_[cut, len(t) - 1]):
+            spans.append((float(t[a]), float(t[z])))
+    return spans
+
+
+def subtract_intervals(starts, stops, spans) -> list[tuple[float, float]]:
+    """The parts of the intervals [start, stop) outside every span."""
+    out = []
+    for a, b in zip(starts, stops):
+        pieces = [(float(a), float(b))]
+        for c, e in spans:
+            new = []
+            for x, y in pieces:
+                if e <= x or c >= y:
+                    new.append((x, y))
+                    continue
+                if x < c:
+                    new.append((x, c))
+                if e < y:
+                    new.append((e, y))
+            pieces = new
+        out += pieces
+    return out
+
+
 def unit_ds2_sites(f, s: dict):
     """For files whose units carry `electrode_group` (the shank): each unit's site, the channel of
     its shank with the largest mean waveform, and the DS2 amplitude there (mean LFP at the DS2
@@ -218,6 +324,7 @@ def unit_ds2_sites(f, s: dict):
             continue
         cols = np.flatnonzero(region == rows_e[ch])
         out["units"][u] = {"shank": eg[u], "channel": ch, "n_channels": len(rows_e), "waveform_channels": w.shape[0],
+                           "col": int(cols[0]) if len(cols) else -1,
                            "ds2_amp": float(amp[cols[0]]) if len(cols) else np.nan}
     return out
 
@@ -288,6 +395,12 @@ def load_session(path: str, url: str, waveforms=True, lfp=True) -> dict:
     s["pulse20"] = np.unique(s["pulse20"])
     s["unit_site"] = unit_ds2_sites(f, s) if "electrode_group" in units and s["waveforms"] and len(s["ds2"]) else None
     s["has_raw"] = "ElectricalSeries" in f["acquisition"]
+    E = f["general/extracellular_ephys/electrodes"]
+    s["electrodes"] = pd.DataFrame({c: (E[c][:].astype(str) if E[c].dtype.kind in "OS" else E[c][:])
+                                    for c in ("group_name", "shank_electrode_number", "theta_reference", "filtering", "location")
+                                    if c in E})
+    s["behaviour_spans"] = behaviour_spans(s["epochs"], s["positions"])
+    s["raw_units"] = raw_unit_waveforms(f, s) if s["unit_site"] is not None and s["has_raw"] else None
     s["phases"] = spike_phases(_awake_lfp(f, s["states"]), s["spikes"]) if lfp else None
     return s
 
@@ -370,6 +483,19 @@ def state_rates(s: dict) -> pd.DataFrame:
         out[f"dur_{lab}"] = dur.get(lab, 0.0)
         if f"rate_{lab}" not in out:
             out[f"rate_{lab}"] = np.nan
+    aw = st[st.label == "awake"]
+    home = subtract_intervals(aw.start_time, aw.stop_time, s.get("behaviour_spans", []))
+    d_home = sum(b - a for a, b in home)
+    d_maze = dur.get("awake", 0.0) - d_home
+    out["dur_awake_home"] = d_home
+    home_rates, maze_rates = [], []
+    for u in out.unit:
+        t = times(s, u)
+        k_home = interval_mask_count(t, [a for a, _ in home], [b for _, b in home])
+        k_all = interval_mask_count(t, aw.start_time, aw.stop_time)
+        home_rates.append(k_home / d_home if d_home >= 60 else np.nan)
+        maze_rates.append((k_all - k_home) / d_maze if d_maze >= 60 else np.nan)
+    out["rate_awake_home"], out["rate_awake_maze"] = home_rates, maze_rates
     wake = dur.get("awake", 0) + dur.get("quiet", 0)
     out["rate_wake_all"] = ((out.rate_awake.fillna(0) * dur.get("awake", 0) + out.rate_quiet.fillna(0) * dur.get("quiet", 0))
                             / wake) if wake > 0 else np.nan
@@ -463,13 +589,21 @@ def ccg(ref: np.ndarray, tgt: np.ndarray, binsize=CCG_BIN, half=CCG_HALF) -> np.
     return peth(tgt, ref, -half, half, binsize)
 
 
-def ccg_test(counts: np.ndarray, binsize=CCG_BIN, half=CCG_HALF, pctl=CCG_PCTL):
+def ccg_test(counts: np.ndarray, binsize=CCG_BIN, half=CCG_HALF, pctl=CCG_PCTL, hollow=0.0):
     """Baseline from a Gaussian of SD 10 ms, threshold at the 99.9999th percentile of a Poisson at
-    the baseline (Methods). Returns the bin left edges, baseline, upper threshold, and for the
+    the baseline (Methods). With hollow > 0 the centre weight of the Gaussian is reduced by that
+    fraction (a partially hollowed baseline, a variant; the Methods describe a plain Gaussian). Returns the bin left edges, baseline, upper threshold, and for the
     monosynaptic (+1.5 to +5 ms) and synchrony (-1 to +1 ms) windows whether two consecutive bins
     exceed the threshold, and the excess count over the baseline in the window."""
     left = np.arange(-half, half - binsize / 2, binsize)
-    base = gaussian_filter1d(counts, CCG_SD / binsize, mode="reflect")
+    if hollow:
+        sd = CCG_SD / binsize
+        r = int(4.0 * sd + 0.5)
+        k = np.exp(-0.5 * (np.arange(-r, r + 1) / sd) ** 2)
+        k[r] *= 1.0 - hollow
+        base = convolve1d(counts.astype(float), k / k.sum(), mode="reflect")
+    else:
+        base = gaussian_filter1d(counts, CCG_SD / binsize, mode="reflect")
     hi = stats.poisson.ppf(pctl, base)
     above = counts > hi
     out = {"left": left, "base": base, "hi": hi}
@@ -482,11 +616,11 @@ def ccg_test(counts: np.ndarray, binsize=CCG_BIN, half=CCG_HALF, pctl=CCG_PCTL):
     return out
 
 
-def transmission(ref: np.ndarray, tgt: np.ndarray) -> float:
+def transmission(ref: np.ndarray, tgt: np.ndarray, hollow=0.0) -> float:
     """Spike transmission probability: excess tgt spikes at +1.5 to +5 ms over the baseline, per ref spike."""
     if len(ref) == 0:
         return np.nan
-    return ccg_test(ccg(ref, tgt))["mono_excess"] / len(ref)
+    return ccg_test(ccg(ref, tgt), hollow=hollow)["mono_excess"] / len(ref)
 
 
 BURST_ISI = 0.006
