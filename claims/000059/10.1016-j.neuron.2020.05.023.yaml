@@ -1,0 +1,554 @@
+# Claims for Petersen & Buzsaki (2020), Cooling of medial septum reveals theta phase lag
+# coordination of hippocampal cell assemblies, Neuron 107, on dandiset 000059.
+# Source: the accepted author manuscript in PubMed Central (PMC7442698), full text, read from its
+# Results, figure legends and STAR Methods. The supplementary PDF could not be obtained (PMC
+# serves a captcha and Europe PMC lists the article as not open access), so supplementary
+# figures are tested only where the main text states their result.
+#
+# When these criteria were written, the author had seen the data check only (file list, the
+# contents of the files, trial counts and cooling states per session, the temperature traces of
+# six sessions, the shape of the maze) and one pilot session (MS21-180628), for which the mean
+# theta frequency, temperature and error rate by cooling state and the linearization had been
+# printed to test the code. No claim's analysis had been run across sessions. The author had
+# also read the paper's MATLAB code (GitHub petersenpeter/Code_Petersen_Buzsaki_Neuron_2020,
+# commit aec2f7e), which fixes several choices the Methods leave open (see cooling.py).
+#
+# One criterion was revised after the pilot session and before any analysis across sessions:
+# fig5d-ccg-period first took the period from the spectrum of the summed cross-correlogram
+# of all pairs. On the pilot session that spectrum peaked at the edge of its range (172 ms),
+# following the envelope of the summed correlogram, whose theta ripple cancels out when pairs
+# with different lags are summed. The period is now measured per pair, and the summed
+# correlogram is kept as a variant. In the same pilot, pair lags at the edge of the 70 ms
+# window were found to mark pairs without a peak inside it, so lags are taken at local
+# maxima and such pairs are dropped (fig5cg-compression and the claims after it).
+#
+# Session sets, fixed here.
+# - BEH: the 47 sessions of the code's behavioural list (BatchProcessing.m) that are in the
+#   dandiset, less MS21-180627 (its trials have no cooling state) and MS21-180712 (no trials);
+#   45 sessions in 5 rats. The two sessions of 2018-07-19, which the code lists as controls
+#   without cooling, and MS10-170307, which is not in that list, are left out.
+# - TEMP: BEH sessions with a recorded MS temperature, which leaves out the eight MS10 sessions
+#   (the code's recording list has no temperature channel for MS10, and the dandiset's MS10
+#   traces are smooth curves from exactly 17 to 37 C); 37 sessions in 4 rats.
+# - UNIT: BEH sessions with units of phy quality good or good2, less MS21-180621 and
+#   MS22-180621, where the data check could not establish that spikes and position share a
+#   clock (spatial information does not fall when spikes are shifted); 11 sessions in 4 rats.
+#   This exclusion was made at the data check, before any unit claim was analysed.
+# - FIG5: UNIT sessions in the code's list for Figure 5; 9 sessions in 4 rats.
+# States are the trial labels of the dandiset. 'Cooling off' trials (a transition between
+# cooling and recovery that the paper does not name) are left out of state comparisons; the
+# variants count them as cooling or as recovery. Control in Figure 5 is pre and post combined,
+# as in the paper. All tests are two-sided unless stated.
+schema_version: 1
+dandiset: "000059"
+paper: doi:10.1016/j.neuron.2020.05.023
+claims:
+- id: session-structure
+  statement: A session holds about 40 control trials, 20 to 60 cooling trials and 20 to 80
+    recovery trials, 80 to 200 trials in all with a mean of 150.
+  source: Results, first section; STAR Methods, Electrophysiological Recordings
+  expected:
+  - quantity: mean number of trials per session
+    value: 150
+    tolerance: 15
+  criterion: Over BEH sessions. Reproduced when the mean number of trials is within tolerance,
+    every session has 72 to 220 trials (80 to 200 widened by 10%), the median number of
+    pre-cooling trials is 36 to 44, and the median numbers of cooling and of post-cooling
+    trials fall within 18 to 66 and 18 to 88. Partially reproduced when the mean holds and
+    one or two of the others fail.
+- id: cooling-time-course
+  statement: MS cooling peaked about 60 s after its onset and lasted about 10 to 12 minutes.
+  source: STAR Methods, Electrophysiological Recordings
+  expected:
+  - quantity: time from cooling onset to the minimum MS temperature
+    value: 60
+    tolerance: 6
+    unit: s
+  criterion: For the first cooling block of each TEMP session, onset is the first time the
+    temperature falls 1 C below the median of the pre-cooling trials, and the minimum is the
+    lowest temperature in the following 5 minutes. The duration is read two ways, (a) the
+    time the temperature stays below 32 C, the threshold of the paper's code, and (b) the
+    time from onset until the temperature is again within 1 C of the baseline. Reproduced
+    when the median time to minimum is within tolerance and, under one reading, the median
+    duration is within 9 to 13.2 minutes. Partially reproduced when one of the two holds.
+- id: fig2g-theta-freq-temperature
+  statement: Theta frequency decreased linearly with MS temperature (R = 0.81, P = 5.4e-48).
+  source: Results, first section; Figure 2G
+  expected:
+  - quantity: Pearson R of theta frequency and MS temperature
+    value: 0.81
+    tolerance: 0.081
+  criterion: As the paper's code computes it. Each session's trials are aligned so that its
+    first cooling trial is at position 65 of 200; trial theta frequency is the mean
+    instantaneous frequency over frames above 30 cm/s; temperature is the trial mean. The
+    series are averaged over sessions at each position, and R is the Pearson correlation of
+    the two averaged series over the positions where both exist. Readings, (a) TEMP sessions,
+    (b) BEH sessions with the dandiset's MS10 temperature curves included. Reproduced when,
+    under one reading, R is within tolerance and P < 1e-10. Partially reproduced when R is
+    positive with P < 0.05 under one reading but no reading is within tolerance. The
+    correlation over single trials pooled across sessions is shown as a variant.
+- id: fig2h-theta-power-temperature
+  statement: Theta power also decreased with MS temperature, less tightly than frequency
+    (R = 0.54, P = 1.2e-16).
+  source: Results, first section; Figure 2H
+  expected:
+  - quantity: Pearson R of theta power and MS temperature
+    value: 0.54
+    tolerance: 0.054
+  criterion: As fig2g-theta-freq-temperature, with trial theta power (peak of the
+    spectrogram, minus each session's mean over its aligned trials, as the code does), and
+    the same readings. Reproduced when, under one reading, R is within tolerance and
+    P < 1e-5, and R is lower than the frequency R of fig2g-theta-freq-temperature under the
+    same reading. Partially reproduced when R is positive with P < 0.05 but outside
+    tolerance.
+- id: fig2j-frequency-consistent-across-animals
+  statement: The relationship of theta frequency with MS temperature was more consistent
+    across animals than that of theta power.
+  source: Results, first section; Figure 2J
+  criterion: Per animal, the R of the aligned series of fig2g and fig2h computed over that
+    animal's TEMP sessions. Reproduced when every animal has a positive frequency R with
+    P < 0.05, and the range (largest minus smallest) of the frequency R over animals is
+    smaller than that of the power R. Partially reproduced when only one of the two holds.
+- id: fig2i-theta-pre-cooling-post
+  statement: Theta frequency and power were lower during MS cooling than before and after it.
+  source: Figure 2I; Results, first section
+  criterion: Per BEH session, the mean over trials of theta frequency and of theta power in
+    each state. Wilcoxon signed-rank tests over sessions of cooling against pre and cooling
+    against post, for frequency and for power. Reproduced when all four show cooling lower
+    at P < 0.05; partially reproduced when the two frequency tests do and a power test does
+    not.
+- id: disc-theta-frequency-12-percent
+  statement: During MS cooling LFP theta frequency decreased by 12%.
+  source: Discussion, Theta phase organization of hippocampal cell assemblies
+  expected:
+  - quantity: decrease of theta frequency during cooling
+    value: 12
+    tolerance: 1.2
+    unit: percent
+  criterion: Readings, (a) the mean over BEH sessions of 100 (1 - cooling / pre) of the
+    session means of trial theta frequency; (b) the same with the mean of pre and post as
+    reference; (c) the same over all trials pooled. Reproduced when one reading is within
+    tolerance; partially reproduced when every reading shows a decrease but none is within
+    tolerance. The decrease of the LFP frequency within place fields is reported in
+    fig4b-fp-flfp-decrease.
+- id: fig6d-errors-increase
+  statement: MS cooling increased choice errors about 3-fold, within each rat (P < 0.05 for
+    all animals) and across all animals (P = 1e-6).
+  source: Results, MS cooling increases behavioral errors; Figure 6D and 6E
+  expected:
+  - quantity: ratio of the error rate during cooling to the control error rate
+    value: 3.0
+    tolerance: 0.3
+  criterion: Error rate is the percentage of error trials in a state, per BEH session.
+    Readings of the ratio, (a) mean cooling rate over mean pre rate; (b) mean cooling rate
+    over the mean of pre and post rates; (c) median over sessions of the per-session ratio
+    of cooling to pre (sessions with a pre rate above 0). Wilcoxon signed-rank test of
+    cooling against pre over sessions, and within each rat. Reproduced when, under one
+    reading, the ratio is within tolerance, the test over sessions has P < 0.001, and every
+    rat with at least 6 sessions has P < 0.05 (an exact signed-rank test cannot reach 0.05
+    with 5 sessions, so smaller rats are reported only). Partially reproduced when the
+    increase is significant over sessions but the ratio or a rat fails.
+- id: fig6e-errors-recover
+  statement: The error rate after cooling did not differ from the error rate before it.
+  source: Figure 6E (marked ns)
+  criterion: A claim of absence. The figure marks one comparison as not significant; it is
+    read as pre against post. Wilcoxon signed-rank test over BEH sessions of the post and
+    pre error rates. Reproduced when P >= 0.05, not reproduced when P < 0.05; the median
+    difference is given either way.
+- id: fig6c-worst-trials-4-to-8
+  statement: The worst memory performance occurred between trials 4 and 8 after the onset of
+    cooling, when MS temperature reached its minimum.
+  source: Results, MS cooling increases behavioral errors; Figure 6C
+  criterion: The smoothed error series of the code (11-point Gaussian window) averaged over
+    BEH sessions at each aligned position. The first cooling trial is trial 1 after onset.
+    Reproduced when the maximum of the mean error series over trials 1 to 40 after onset
+    falls at trials 4 to 8. The trial of the minimum of the mean temperature (TEMP sessions)
+    is reported.
+- id: fig6f-errors-temperature
+  statement: The incidence of errors correlated negatively with MS temperature (R = -0.35,
+    P < 0.01).
+  source: Results, MS cooling increases behavioral errors; Figure 6F
+  expected:
+  - quantity: Pearson R of the error rate and MS temperature
+    value: -0.35
+    tolerance: 0.035
+  criterion: The aligned series of the code (smoothed errors and trial temperature, averaged
+    over sessions at each position). Readings, (a) positions 10 to 160 over TEMP sessions,
+    the window of the code's correlation matrix; (b) all positions over TEMP sessions; (c)
+    reading (a) with the MS10 temperature curves included. Reproduced when, under one
+    reading, R is within tolerance and P < 0.01. Partially reproduced when R is negative
+    with P < 0.01 under one reading and none is within tolerance. Per-animal R values are
+    reported.
+- id: fig6g-errors-theta-frequency
+  statement: The incidence of errors correlated negatively with theta frequency (R = -0.35,
+    P < 0.01).
+  source: Results, MS cooling increases behavioral errors; Figure 6G
+  expected:
+  - quantity: Pearson R of the error rate and theta frequency
+    value: -0.35
+    tolerance: 0.035
+  criterion: As fig6f-errors-temperature with trial theta frequency over BEH sessions.
+    Readings, (a) positions 10 to 160; (b) all positions. Same rule.
+- id: fig6h-errors-theta-power
+  statement: The incidence of errors correlated less with theta power; only 2 of 5 animals
+    had a significant correlation (R beyond -0.3, P < 0.01).
+  source: Results, MS cooling increases behavioral errors; Figure 6H and 6J
+  expected:
+  - quantity: animals with a significant negative correlation of errors and theta power
+    value: 2
+    tolerance: 0
+  criterion: Per animal, the Pearson R of the smoothed error series and the theta power
+    series, each averaged over that animal's BEH sessions at each aligned position (as the
+    code's per-animal fits). An animal counts when R < -0.3 and P < 0.01. Reproduced when 2
+    animals count; partially reproduced when 1 or 3 do.
+- id: fig6i-errors-not-speed
+  statement: The incidence of errors did not correlate with the running speed of the rat
+    (R about 0.1, P > 0.05 for all animals).
+  source: Results, MS cooling increases behavioral errors; Figure 6I and 6J
+  criterion: A claim of absence, judged on the paper's per-animal correlations. Per animal,
+    the Pearson R of the smoothed error series and the trial speed series, averaged over that
+    animal's BEH sessions at each aligned position. Reproduced when no animal has P < 0.05;
+    not reproduced when any does. R and P are given for every animal.
+- id: fig4e-speed-decreases-within-session
+  statement: Running speed decreased relatively monotonically within a session.
+  source: Results, Effects of MS cooling on single neuron properties; Figure 4E and 6C
+  criterion: Per BEH session, the Spearman correlation of trial mean speed with trial number.
+    Reproduced when it is negative in at least 75% of sessions and the median over sessions
+    is negative by a Wilcoxon signed-rank test at P < 0.05; partially reproduced when it is
+    negative in more than half of the sessions but below 75%.
+- id: fig5-speed-control-cooling
+  statement: Mean running speed was 87.3 +- 8.0 cm/s in control trials and 86.2 +- 9.9 cm/s
+    during MS cooling.
+  source: Results, MS temperature effects on theta time/phase compression
+  expected:
+  - quantity: mean running speed, control (pre and post)
+    value: 87.3
+    tolerance: 8.0
+    unit: cm/s
+  - quantity: mean running speed, cooling
+    value: 86.2
+    tolerance: 9.9
+    unit: cm/s
+  criterion: The tolerances are the paper's stated spreads. Mean over sessions of the session
+    mean of trial speed. Readings, (a) all frames of the trials; (b) frames above 10 cm/s.
+    Sessions are those of the code's Figure 5 list that are in the dandiset and have cooling
+    states (15). Reproduced when both values are within tolerance under one reading.
+- id: suppl2-place-cell-rates-decrease
+  statement: Within-field and peak firing rates of place cells decreased moderately during MS
+    cooling (11% and 12%; P < 1e-9 and P < 1e-11).
+  source: Results, Effects of MS cooling on single neuron properties (Supplementary Figure 2)
+  expected:
+  - quantity: decrease of within-field firing rate
+    value: 11
+    tolerance: 1.1
+    unit: percent
+  - quantity: decrease of peak firing rate
+    value: 12
+    tolerance: 1.2
+    unit: percent
+  criterion: Place fields of putative pyramidal cells in UNIT sessions. Within-field rate is
+    the spike count over the time spent in the field on forward runs above 10 cm/s; peak rate
+    is the maximum of the state's rate map within the field. Readings, (a) median over
+    fields of the per-field percentage decrease; (b) ratio of the means over fields; (c) mean
+    of the per-field percentage decrease. Wilcoxon signed-rank test over fields of cooling
+    against pre. Reproduced when, under one reading, both decreases are within tolerance and
+    both tests give P < 0.001; partially reproduced when both decreases are significant but
+    no reading puts both within tolerance.
+- id: disc-interneuron-rates-decrease
+  statement: Firing rates of interneurons decreased during MS cooling by about 14%.
+  source: Discussion; Results, Effects of MS cooling on single neuron properties
+  expected:
+  - quantity: decrease of interneuron firing rate
+    value: 14
+    tolerance: 1.4
+    unit: percent
+  criterion: Putative interneurons of UNIT sessions (see cooling.py), rate over frames of
+    trials above 10 cm/s, cooling against pre. Readings, (a) median per-unit percentage
+    decrease; (b) ratio of means. Reproduced when one reading is within tolerance and a
+    Wilcoxon signed-rank test over units gives P < 0.05; partially reproduced when the
+    decrease is significant but outside tolerance.
+- id: fig4b-fp-flfp-decrease
+  statement: MS cooling decreased both the oscillation frequency of place cells (fp) and the
+    LFP theta frequency in their fields (fLFP) by about the same degree, and both recovered
+    (fLFP 8.4, 7.7, 8.5 Hz; fp 10.6, 9.5, 10.4 Hz before, during and after; n = 365).
+  source: Results, Effects of MS cooling on single neuron properties; Figure 4B
+  expected:
+  - quantity: fLFP pre
+    value: 8.4
+    tolerance: 0.38
+    unit: Hz
+  - quantity: fLFP cooling
+    value: 7.7
+    tolerance: 0.36
+    unit: Hz
+  - quantity: fLFP post
+    value: 8.5
+    tolerance: 0.29
+    unit: Hz
+  - quantity: fp pre
+    value: 10.6
+    tolerance: 0.95
+    unit: Hz
+  - quantity: fp cooling
+    value: 9.5
+    tolerance: 0.84
+    unit: Hz
+  - quantity: fp post
+    value: 10.4
+    tolerance: 0.72
+    unit: Hz
+  criterion: The tolerances are the paper's stated spreads. Per place field and state, fp is
+    the oscillation frequency of the field's spikes on forward runs above 10 cm/s (Methods
+    and calc_trial_averages.m), and fLFP the mean instantaneous theta frequency at those
+    spikes; fields need at least 50 such spikes in each state. Values are means over fields.
+    Reproduced when all six means are within tolerance and both fp and fLFP are lower during
+    cooling than pre by a Wilcoxon signed-rank test over fields at P < 0.05; partially
+    reproduced when both decreases are significant but a mean is outside tolerance.
+- id: fig4c-fp-flfp-correlation
+  statement: fp and fLFP were correlated across place fields before, during and after cooling
+    (R = 0.61, 0.59 and 0.36; P < 1e-6 each).
+  source: Figure 4C
+  expected:
+  - quantity: R pre
+    value: 0.61
+    tolerance: 0.061
+  - quantity: R cooling
+    value: 0.59
+    tolerance: 0.059
+  - quantity: R post
+    value: 0.36
+    tolerance: 0.036
+  depends_on:
+  - fig4b-fp-flfp-decrease
+  criterion: Pearson R over the fields of fig4b-fp-flfp-decrease in each state. Reproduced
+    when all three are within tolerance; partially reproduced when all three are positive
+    with P < 0.05 and one or more is outside tolerance.
+- id: fig4ac-fp-flfp-difference-preserved
+  statement: During MS cooling fp and fLFP decreased in parallel, so the difference fp - fLFP
+    remained constant.
+  source: Results, Effects of MS cooling on single neuron properties; Discussion
+  depends_on:
+  - fig4b-fp-flfp-decrease
+  criterion: A claim of absence. The paper names no test; its default paired test is used, a
+    Wilcoxon signed-rank test over fields of fp - fLFP during cooling against pre, at 0.05.
+    Reproduced when P >= 0.05, not reproduced when P < 0.05; the median change is given.
+- id: fig4a-frequency-temperature-slopes
+  statement: fLFP and fp measured within place fields decreased linearly with MS temperature
+    (fLFP R = 0.66, slope 0.071 Hz per C; fp R = 0.38, slope 0.09 Hz per C).
+  source: Results, Effects of MS cooling on single neuron properties; Figure 4A
+  expected:
+  - quantity: R of fLFP and temperature
+    value: 0.66
+    tolerance: 0.066
+  - quantity: slope of fLFP on temperature
+    value: 0.071
+    tolerance: 0.0071
+    unit: Hz/C
+  - quantity: R of fp and temperature
+    value: 0.38
+    tolerance: 0.038
+  - quantity: slope of fp on temperature
+    value: 0.09
+    tolerance: 0.009
+    unit: Hz/C
+  criterion: As calc_trial_averages.m, for every place field of the TEMP sessions among UNIT
+    sessions, windows of 20 consecutive trials stepped by one trial; in each window with more
+    than 50 in-field spikes, fp, fLFP and the mean temperature at those spikes. Pearson R
+    and least-squares slope over all windows pooled. Reproduced when all four values are
+    within tolerance; partially reproduced when both slopes are positive with P < 0.05 and a
+    value is outside tolerance.
+- id: fig3c-field-size-correlated
+  statement: Place field size was highly correlated before and during MS cooling (R = 0.91).
+  source: Results, Effect of MS cooling on place field features; Figure 3C
+  expected:
+  - quantity: R of field size before and during cooling
+    value: 0.91
+    tolerance: 0.091
+  criterion: Field size in a state is the length of the contiguous run of bins around the
+    field's peak where the state's rate map exceeds 10% of its peak within the field's
+    bounds widened by 4 bins. Pearson R over fields. Reproduced when within tolerance;
+    partially reproduced when R is 0.5 or more.
+- id: fig3d-size-fp-negative
+  statement: Place field size and fp were negatively correlated before, during and after
+    cooling (R = -0.49, -0.40, -0.40; P < 1e-9).
+  source: Figure 3D
+  expected:
+  - quantity: R pre
+    value: -0.49
+    tolerance: 0.049
+  - quantity: R cooling
+    value: -0.40
+    tolerance: 0.04
+  - quantity: R post
+    value: -0.40
+    tolerance: 0.04
+  depends_on:
+  - fig4b-fp-flfp-decrease
+  criterion: Pearson R over the fields of fig4b-fp-flfp-decrease of the state's field size
+    (as fig3c-field-size-correlated) and fp. Reproduced when all three are within tolerance
+    with P < 0.001; partially reproduced when all three are negative with P < 0.05.
+- id: fig3e-model-field-size
+  statement: Measured place field size correlated with the size predicted by SPF = v / (fp -
+    fLFP) before (R = 0.55) and during (R = 0.54) cooling, and weakly after (R = 0.11).
+  source: Results, Effect of MS cooling on place field features; Figure 3E
+  expected:
+  - quantity: R pre
+    value: 0.55
+    tolerance: 0.055
+  - quantity: R cooling
+    value: 0.54
+    tolerance: 0.054
+  - quantity: R post
+    value: 0.11
+    tolerance: 0.011
+  depends_on:
+  - fig4b-fp-flfp-decrease
+  criterion: v is the mean running speed at the field's spikes. Fields with fp - fLFP above
+    0.2 Hz. Reproduced when all three R are within tolerance; partially reproduced when pre
+    and cooling are positive with P < 0.05.
+- id: fig3f-information-unchanged
+  statement: The information content of place cell spikes was not altered by MS cooling
+    (P > 0.26).
+  source: Figure 3F
+  criterion: A claim of absence. Bits per spike (PlaceCellInfo.m) of each place cell's map in
+    each state; the paper's default paired test, Wilcoxon signed-rank over cells, for pre
+    against cooling, cooling against post and pre against post. Reproduced when all three
+    give P >= 0.05; not reproduced when any gives P < 0.05. Median changes are given.
+- id: fig3hi-population-vector-unchanged
+  statement: The spatial scale of the population vector correlation of pyramidal cells was not
+    affected by MS cooling.
+  source: Results, Effect of MS cooling on place field features; Figure 3H and 3I
+  criterion: A claim of absence. Per UNIT session and state, population vectors of the
+    pyramidal cells' rate maps in each bin; the decorrelation curve is the mean correlation of
+    vectors at bins d apart within a segment, and the scale is the first distance at which
+    it drops below 0.5. The paper gives no test; its default paired test, a Wilcoxon
+    signed-rank over sessions of pre against cooling, at 0.05. Reproduced when P >= 0.05.
+- id: fig4d-precession-slope-decrease
+  statement: The phase precession slope decreased slightly but significantly during MS
+    cooling (P < 0.007 and P < 0.0003).
+  source: Results, Effects of MS cooling on single neuron properties; Figure 4D
+  depends_on:
+  - fig4b-fp-flfp-decrease
+  criterion: Per field and state, circular-linear regression of spike phase on position in
+    the field. Readings, (a) the magnitude of the slope is smaller during cooling (flatter);
+    (b) the signed slope is lower during cooling. Wilcoxon signed-rank tests over fields of
+    cooling against pre and against post. Reproduced when, under one reading, both
+    comparisons give P < 0.05; partially reproduced when one does.
+- id: fig4gh-fp-speed
+  statement: fp depended on running speed more strongly than fLFP, and fp during cooling was
+    lower at all velocities.
+  source: Results, Effects of MS cooling on single neuron properties; Figure 4G and 4H
+  depends_on:
+  - fig4b-fp-flfp-decrease
+  criterion: For each field and state, fp and fLFP from in-field spikes in speed bins of 20
+    cm/s from 20 to 120 cm/s (bins with at least 50 spikes). Pooling states, least-squares
+    slopes of fp and of fLFP on bin speed over all field-bins. Reproduced when the fp slope is
+    positive (P < 0.05) and larger than the fLFP slope (95% bootstrap interval of the
+    difference over fields above 0), and in every speed bin with at least 10 fields measured
+    in both states the median fp during cooling is below that before cooling. Partially
+    reproduced when one of the two parts holds.
+- id: fig5d-ccg-period
+  statement: The theta-repeated cross-correlograms of place cell pairs had a period of about
+    85 ms before cooling, which lengthened during MS cooling (P = 0.002), while the period of
+    the phase cross-correlograms was unaffected (P = 0.32).
+  source: Figure 5D, 5E and 5F
+  expected:
+  - quantity: period of the summed pair cross-correlogram, control
+    value: 85
+    tolerance: 8.5
+    unit: ms
+  criterion: Pairs of place fields of different cells on the same segment whose bins overlap,
+    in FIG5 sessions; spikes on forward runs above 10 cm/s within the union of the two
+    fields; at least 50 spikes of each cell in the state. Each pair's cross-correlogram (1 ms
+    bins, 60-bin Gaussian window, lags up to 400 ms) has a main peak (the largest local
+    maximum within 70 ms of zero); the pair's period is the mean spacing from it to the
+    largest local maxima 60 to 200 ms away on either side. The same on the theta phase axis
+    (0.01 pi bins, main peak within pi, neighbours pi to 3 pi away). Per session and
+    condition (control is pre and post combined), the median over pairs. Reproduced when the
+    median control period over sessions is within tolerance, the cooling period is longer
+    by a Wilcoxon signed-rank test over sessions at P < 0.05, and the phase period does not
+    differ (P >= 0.05). Partially reproduced when the lengthening holds and one other part
+    fails. The period of the summed cross-correlogram of all pairs is a variant.
+- id: fig5cg-compression
+  statement: Distance-time compression of place cell pairs (0.54 cm/ms before cooling)
+    decreased during MS cooling (P = 0.02), while distance-phase compression was unchanged
+    (P = 0.92).
+  source: Figure 5C and 5G; Results
+  expected:
+  - quantity: distance-time compression before cooling
+    value: 0.54
+    tolerance: 0.054
+    unit: cm/ms
+  depends_on:
+  - fig5d-ccg-period
+  criterion: Pairs as fig5d-ccg-period. Time lag tau is the lag of the largest local maximum
+    of the smoothed pair cross-correlogram within 70 ms of zero (pairs without one are
+    dropped), phase lag the same within pi of zero on the phase axis; Ltr is the signed distance of the field peaks. Compression is
+    the least-squares slope of Ltr on tau (cm/ms), and on phase lag (cm/rad), in pairs with
+    at least 50 spikes of each cell. Reproduced when the compression over all pre pairs
+    pooled is within tolerance, the per-session compression is lower during cooling than in
+    control by a Wilcoxon signed-rank test at P < 0.05, and the phase compression does not
+    differ (P >= 0.05). Partially reproduced when the decrease holds and one other part
+    fails. The inverse slope of tau on Ltr, and a window of half the state's theta period,
+    are variants.
+- id: fig5h-time-lags-increase
+  statement: During MS cooling the theta time lags between place cell pairs increased
+    compared with before and after cooling (P = 8e-5 and P = 0.00032), and did not differ
+    between before and after (P = 0.79).
+  source: Results; Figure 5H
+  depends_on:
+  - fig5d-ccg-period
+  criterion: The absolute time lag of each pair (as fig5cg-compression) in each state.
+    Readings, (a) Wilcoxon signed-rank test over pairs measured in both states; (b) the same
+    over sessions of the median absolute lag. Reproduced when, under one reading, cooling is
+    longer than both pre and post at P < 0.05. Partially reproduced when one comparison
+    holds. Pre against post is reported.
+- id: fig5i-phase-lags-unchanged
+  statement: Theta phase lags between place cell pairs were not affected by MS cooling
+    (P > 0.24 between all conditions).
+  source: Results; Figure 5I
+  depends_on:
+  - fig5d-ccg-period
+  criterion: A claim of absence, on the paper's sign-rank test. Wilcoxon signed-rank tests over
+    pairs measured in both states of the absolute phase lag, for pre against cooling,
+    cooling against post and pre against post. Reproduced when all give P >= 0.05; not
+    reproduced when any gives P < 0.05.
+- id: fig5j-fraction-active-unchanged
+  statement: The fraction of place cells active in a theta cycle was not significantly
+    affected by MS cooling (P = 0.2).
+  source: Results; Figure 5J
+  criterion: A claim of absence, judged on pre against cooling, the comparison the text
+    reports. Theta cycles (between upward zero crossings of the theta phase) during forward
+    runs above 10 cm/s in trials of FIG5 sessions; per cycle, the fraction of the session's
+    place cells with at least one spike. The paper's default unpaired test, a Wilcoxon
+    rank-sum test over cycles pooled across sessions. Reproduced when P >= 0.05, not
+    reproduced when P < 0.05. The per-session medians and a signed-rank test over sessions
+    are shown as a variant.
+- id: fig5k-spikes-per-cycle-unchanged
+  statement: The number of spikes emitted by all neurons per theta cycle was preserved during
+    MS cooling (P > 0.058 between all conditions).
+  source: Results; Figure 5K
+  criterion: A claim of absence. Cycles as fig5j-fraction-active-unchanged; spikes of all good
+    units per cycle. Wilcoxon rank-sum tests over cycles pooled across sessions for pre
+    against cooling, cooling against post and pre against post. Reproduced when all give
+    P >= 0.05, not reproduced when any gives P < 0.05.
+- id: suppl1g-waveforms-unchanged
+  statement: The waveforms of hippocampal action potentials were not affected by MS cooling.
+  source: Results, first section (Supplementary Figure 1G)
+  criterion: A claim of absence. For units of UNIT sessions with at least 30 spikes in each
+    window, the mean waveform in 120 s of pre-cooling trials and in the 120 s around the
+    coldest cooling trial; trough-to-peak time and peak-to-peak amplitude on the channel of
+    largest amplitude. The paper's default paired test, Wilcoxon signed-rank over units, at
+    0.05 for each measure. Reproduced when neither differs; not reproduced when either does.
+- id: suppl2d-interneuron-oscillation-slows
+  statement: The theta oscillation frequency of putative fast-spiking interneurons decreased
+    during MS cooling, commensurate with the LFP theta.
+  source: Results, Effects of MS cooling on single neuron properties (Supplementary Figure 2D)
+  criterion: Putative interneurons of UNIT sessions; oscillation frequency of spikes in
+    frames of trials above 10 cm/s, per state. Reproduced when it is lower during cooling
+    than pre by a Wilcoxon signed-rank test over units at P < 0.05.
+- id: suppl1-hippocampal-temperature
+  statement: Hippocampal temperature fell by less than 1.5 C at the time of the largest MS
+    temperature decrease, and later than the MS cooling.
+  source: Results, first section (Supplementary Figure 1H to 1K)
+  criterion: Needs the hippocampal temperature recordings of the control experiment.
