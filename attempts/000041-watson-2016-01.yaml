@@ -1,0 +1,452 @@
+schema_version: 1
+id: 000041-watson-2016-01
+dandiset: "000041"
+dandiset_version: 0.250624.0419
+paper: doi:10.1016/j.neuron.2016.03.036
+date: 2026-10-16
+entry: 000041-watson-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+outcomes:
+- claim: dataset-composition
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:dataset-composition
+  measured:
+  - 10
+  - 22
+  - 286.8
+  - 826
+  - 96
+  notes: Two of five values are within tolerance, 10 rats and a mean session duration of 286.8 min
+    (SD 150.2). The files hold 22 sessions, 826 excitatory and 96 inhibitory units (and 23 of
+    unknown type); the 21 usable sessions hold 812 pE and 89 pI cells. Per session the pE count is
+    close to the paper's (mean 38.7, range 10 to 105, against 36.9 and 10 to 104).
+  deviations:
+  - Counted on the files as deposited, with session duration from the state table.
+- claim: fig2a-median-rates
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2a-median-rates
+  measured:
+  - 0.755
+  - 0.662
+  - 0.825
+  - 3.917
+  - 2.73
+  - 3.062
+  notes: Under reading (a) the three pE medians are within tolerance (0.755, 0.662 and 0.825 Hz)
+    and the three pI medians are below it (3.92, 2.73 and 3.06 Hz, against 5.59, 4.69 and 4.25).
+    Reading (b) gives the same counts (pE WAKE 0.748). The pI sample is 89 cells in 9 subjects,
+    with per-subject medians from 0.07 to 13.4 Hz across subjects and states.
+  deviations:
+  - 812 pE and 89 pI cells from 21 sessions, against 995 and 126 from 27.
+  - WAKE excludes microarousals derived from the Awake label, not the paper's scored MAs.
+- claim: fig2a-skewed-wide-distribution
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2a-skewed-wide-distribution
+  notes: WAKE rates have skewness 4.57 and a 97.5th percentile of 7.17 Hz (within a factor of 2 of 5
+    Hz), but the 2.5th percentile is 0.0124 Hz, about four times below 0.05 Hz. 13 of 812 cells have
+    a WAKE rate of zero. The log10 rates are skewed to the left (-0.74).
+  deviations:
+  - The paper's range is read from a log axis; the factor-of-2 tolerance was fixed in the
+    criterion.
+- claim: fig2a-fraction-above-2hz
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2a-fraction-above-2hz
+  measured:
+  - 17.0
+  - 18.72
+  - 9.11
+  notes: REM (18.7%) and nonREM (9.1%) are within tolerance, WAKE (17.0%) is not. nonREM is lower
+    than WAKE (chi-square 21.5, p = 3.5e-06) and REM (30.5, p = 3.4e-08), but neither test reaches
+    p < 1e-10, which the criterion requires. The direction of the effect is as in the paper, with
+    fewer cells than the paper had.
+- claim: fig2b-wake-nrem-slope
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2b-wake-nrem-slope
+  measured:
+  - 0.862
+  - 0.757
+  notes: On log10 rates (799 cells, 13 with a zero rate left out), R = 0.862 and the slope of
+    nonREM on WAKE is 0.757 (95% CI 0.727 to 0.788). In Hz the slope is 0.583 (0.560 to 0.607),
+    outside the widened interval. The reverse regression on log10 rates gives 0.982 (0.942 to
+    1.022), so the slope below 1 may in part be regression to the mean. Per subject the slope ranges
+    from 0.41 to 0.91.
+  deviations:
+  - The paper does not say whether the slope is on log or linear rates; both readings are shown and
+    the log reading matches.
+- claim: fig2-burst-index-by-state
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2-burst-index-by-state
+  measured:
+  - 6.35
+  - 2.64
+  - 3.65
+  notes: The order nonREM > REM > WAKE holds under both readings, with Kruskal-Wallis p = 5.7e-36
+    (a) and 7.3e-38 (b), and REM above WAKE (paired Wilcoxon p = 1e-32). Reading (a), the fraction
+    of intervals under 15 ms, gives medians of 6.35, 2.64 and 3.65%, none within tolerance; reading
+    (b), the fraction of spikes in such an interval, gives 11.67% in nonREM (within tolerance), 4.95%
+    in WAKE and 6.71% in REM (above). The measured values are those of reading (a), the first listed.
+  deviations:
+  - The definition "fraction of spikes with ISIs under 15 ms" can be read two ways; both are shown
+    and neither matches all three medians.
+- claim: fig2c-acg-peaks
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2c-acg-peaks
+  notes: The nonREM autocorrelogram peaks at 7.5 ms. The smoothed REM and WAKE autocorrelograms are
+    highest at the 60 ms edge of the 60 to 250 ms window, so the criterion finds no theta peak. In a
+    variant that divides the 21 ms smoothing by a 101 ms one, WAKE has a maximum at 118.5 ms (ratio
+    1.017) and REM at 149.5 ms (1.018). Per subject the REM maximum falls within 112.5 to 137.5 ms in
+    two subjects (Bogey 135.5, Dino 125.5).
+  deviations:
+  - The peak location criteria (windows, 21 ms smoothing) were fixed here; the paper shows the peaks
+    in a figure only.
+- claim: fig2c-acg-decay
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The main text gives decay fit exponents but not what is fitted (function, lag range); the
+    Supplemental Experimental Procedures, which would say, could not be retrieved (PubMed Central
+    and the publisher answer with a browser check). The autocorrelograms themselves are computed for
+    fig2c-acg-peaks.
+- claim: fig2f-rate-group-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig2f-rate-group-correlations
+  notes: Over 20764 same-session pE pairs (169 without a defined correlation), the (6,6) mean
+    correlation of 100 ms counts in nonREM is 0.0424, the largest of the 21 group combinations, and
+    correlations rise with the rates of both cells. The (1,6) mean is 0.0089, above zero (t = 10.85,
+    p = 8.7e-26); 22.8% of all pairs are negative, but no group combination has a negative mean.
+    Reading (b) gives the same pattern ((6,6) 0.0401, (1,6) 0.0087).
+  deviations:
+  - The correlation measure is Pearson correlation of raw counts in 100 ms bins; the paper's
+    measure and test are in the unavailable supplement and may differ (for example a correction
+    for the shared UP/DOWN modulation).
+- claim: ma-statistics
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:ma-statistics
+  measured:
+  - 19.0
+  - 0.096
+  - 3.22
+  notes: Under reading (a), median MA duration 19.0 s (within the spread), 0.096 MAs per minute of
+    SLEEP and 3.22% of SLEEP time; reading (b) gives 19.0 s, 0.127 per min and 4.23%. The paper
+    reports 0.32 and 9.1%. 391 MAs in 21 sessions (262 inside SLEEP periods), against 790 in 27.
+  deviations:
+  - The dandiset has no microarousal label. MAs are derived from Awake epochs under 40 s between two
+    Non-REM epochs, without the paper's EMG and theta criteria; 345 short Awake epochs elsewhere are
+    left as WAKE.
+  - The state table has 1 s resolution and may not be the scoring the paper used.
+- claim: ma-fraction-over-nrem-episodes
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:ma-fraction-over-nrem-episodes
+  measured: -0.451
+  notes: Over 243 episodes with an MA, pooled episode bins give R = -0.087 (p = 1.7e-05); the bin
+    means give R = -0.451 (p = 0.19). Neither reaches -0.85 or p < 1e-10. The mean fraction rises
+    from 0.067 to 0.157 over the first six bins and falls to 0.010 in the last.
+  deviations:
+  - MAs derived from the Awake label (see ma-statistics); the binning was fixed here.
+- claim: packet-duration
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:packet-duration
+  measured: 108
+  notes: Over all 1069 Non-REM epochs the median is 108 s (5th to 95th percentile 12 to 484 s, range
+    6 to 1199 s). Inside SLEEP periods (685 epochs) the median is 128 s, outside tolerance. Per
+    subject medians range from 76 to 219 s.
+  deviations:
+  - A packet is one Non-REM epoch of the dandiset's state table.
+- claim: wake-sleep-cycles
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:wake-sleep-cycles
+  measured: 1.43
+  notes: 30 cycles in 21 sessions, 1.43 per session, and 3 sessions (BWRat18-020513, BWRat19-032413,
+    BWRat20-101013) have none. Accepting SLEEP ended by the end of the recording gives 34 cycles (1.62
+    per session) and one session without a cycle.
+  deviations:
+  - SLEEP and cycles are rebuilt from the Results' definitions on the dandiset's state table; the
+    paper's Table 1 was not available, and its state scoring and MAs may differ.
+- claim: fig3b-population-decline
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3b-population-decline
+  measured: -0.267
+  notes: Per packet R = -0.267 (p = 4.3e-06, 287 packets in 30 cycles); in 10 bins R = -0.285 (p =
+    7.6e-07). The decline is steeper than the reported R = -0.11. R is negative in 8 of 9 subjects
+    with a cycle.
+  deviations:
+  - The paper does not give its binning or normalization; two readings were fixed in the criterion.
+  - 30 cycles from 21 sessions, against 54 from 27.
+- claim: fig3-first-last-packet
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3-first-last-packet
+  measured:
+  - 1.0915
+  - 0.9679
+  notes: Over 1070 cell and cycle pairs, 1.0915 plus or minus 1.483 Hz in the first packet and 0.9679
+    plus or minus 1.241 Hz in the last (the upper bound of tolerance is 0.968), Wilcoxon p = 3.9e-06.
+    The decrease is significant within 3 of 9 subjects.
+  deviations:
+  - 30 cycles from 21 sessions, against 54 from 27.
+- claim: fig3d-first-last-slope
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3d-first-last-slope
+  measured: 0.801
+  notes: On log10 rates (1021 pairs, 49 with a zero rate left out) the slope of last on first is
+    0.801 (95% CI 0.768 to 0.834); in Hz 0.723. The reverse regression gives 0.864 (0.829 to 0.900),
+    and the second half of the first packet regressed on its first half gives 0.855 (0.829 to
+    0.881). A slope below 1 of this size thus arises within a single packet, so it does not by itself
+    show a change across sleep; the criterion, fixed before the analysis, judges the slope alone.
+  deviations:
+  - The paper does not say whether the regression is on log or linear rates; both are shown.
+- claim: fig3e-wake-before-after
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3e-wake-before-after
+  notes: Reading (a), 1070 cell and cycle pairs, mean 1.341 Hz before and 1.180 Hz after, Wilcoxon p
+    = 4.1e-09. Sextiles 4, 5 and 6 decrease (one-tailed p = 0.03, 0.00063, 2.4e-05); sextile 1 does
+    not increase (mean change -0.002 Hz, p = 0.3), and sextiles 2 and 3 decrease. Reading (b), 727
+    cells, gives the same pattern (population p = 1.4e-09, sextile 1 p = 0.36). In 23 of 30 cycles the
+    WAKE after SLEEP is shorter than 300 s.
+  deviations:
+  - Where the WAKE after SLEEP is shorter than 5 min, all of it is used.
+- claim: fig3b-sextiles-over-sleep
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3b-sextiles-over-sleep
+  notes: Per packet, sextile 6 R = -0.447 (p = 3.1e-11) and sextile 1 R = +0.163 (p = 0.0074);
+    sextile 5 R = -0.341 and sextile 2 R = +0.143. In bins, sextile 6 R = -0.430 (p = 2e-11) and
+    sextile 1 R = +0.094 (p = 0.11). Sextile 6 has a negative R in all 7 subjects where it can be
+    computed.
+  deviations:
+  - Binning and normalization fixed here (see fig3b-population-decline).
+- claim: fig3b-cv-over-sleep
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig3b-cv-over-sleep
+  notes: R = -0.026 (p = 0.66) per packet and R = -0.014 (p = 0.81) in bins.
+  deviations:
+  - The CV is taken across a session's pE cells at each point; the paper does not define it
+    further.
+- claim: fig4iv-sextiles-within-nrem
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4iv-sextiles-within-nrem
+  notes: Within 622 episodes, sextile 6 R = -0.083 (p = 3.7e-08) and sextile 1 R = +0.060 (p =
+    6.3e-06); within 952 packets, R = -0.055 (p = 4.4e-06) and +0.061 (p = 2e-08). The signs hold
+    with 5 or 20 bins and with a 60 s minimum. The effects are small, and per subject within packets
+    sextile 6 increases in Rizzo (R = +0.121) and does not decrease in BWRat19 and BWRat20.
+  deviations:
+  - 10 bins, a 20 s minimum and normalization within each interval were fixed here.
+- claim: fig4v-cv-within-nrem
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4v-cv-within-nrem
+  notes: Episodes R = -0.005 (p = 0.71), packets R = 0.011 (p = 0.28); no variant exceeds an absolute
+    R of 0.011.
+- claim: fig4vi-burst-within-nrem
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4vi-burst-within-nrem
+  notes: Episodes R = 0.029 (p = 0.022), packets R = 0.024 (p = 0.021); variants give R = 0.020 to
+    0.047 with p from 0.069 to 0.0008. The burst index rises in the reported direction, but far from
+    p < 1e-10.
+  deviations:
+  - The burst index per bin is pooled over the session's pE cells (fraction of intervals under 15
+    ms).
+- claim: fig4i-band-power-within-nrem
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4i-band-power-within-nrem
+  notes: Sigma rises within episodes (R = 0.135) and packets (R = 0.104), both p < 1e-20. Delta rises
+    within episodes (R = 0.069, p = 1.1e-07) but not within packets (R = -0.005, p = 0.61; with a 60 s
+    minimum R = 0.022, p = 0.063). Gamma rises within episodes (R = 0.062) and packets (R = 0.182),
+    where the paper reports a fall over episodes.
+  deviations:
+  - One LFP channel per session, the one the conversion flags as spindle reference, in raw units;
+    the paper's channel choice is not stated in the main text.
+  - The LFP of Dino-061914 is left out (scrambled samples).
+- claim: fig4-delta-packet-length
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4-delta-packet-length
+  measured: 0.334
+  notes: Over 915 packets of at least 20 s, R = 0.334 (p = 2.8e-25), near the upper edge of 0.279 to
+    0.341; Spearman rho = 0.555. Positive in 9 of 10 subjects (Templeton -0.101).
+  deviations:
+  - One LFP channel per session; Dino-061914 left out.
+- claim: fig4cd-packet-rate-lfp
+  outcome: partially_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig4cd-packet-rate-lfp
+  measured:
+  - -0.416
+  - 0.57
+  - 0.104
+  notes: All three signs as stated. Sextile 6 against delta R = -0.416 (p = 1.3e-28) and against
+    gamma R = 0.570 (p = 4.2e-57), both stronger than reported; sextile 1 against sigma in the last
+    20 s R = 0.104 (p = 0.0029), weaker than 0.25 and above p < 1e-10. None within tolerance.
+  deviations:
+  - One LFP channel per session; Dino-061914 left out; z-scoring per session fixed here.
+- claim: fig5b-nrem-between-ma
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-nrem-between-ma
+  notes: 148 triplets, 6073 cell and triplet pairs. Sextile 6 mean change -0.104 Hz (p = 0.077),
+    sextile 5 -0.011 Hz (p = 0.24). With per-cell means, sextile 6 -0.120 Hz (p = 0.029) and
+    sextile 5 p = 0.79.
+  deviations:
+  - MAs derived from the Awake label (see ma-statistics).
+- claim: fig5b-wake-between-packets
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-wake-between-packets
+  notes: 265 triplets (the paper had 24). Sextile 6 mean change -0.051 Hz (p = 0.092); sextiles 1 and
+    3 increase slightly (p = 0.0063 and 0.015). The intervening WAKE lasts 40 to 3945 s (median 102).
+  deviations:
+  - Every Awake epoch of at least 40 s between two Non-REM epochs counts as WAKE here; the paper's
+    24 triplets suggest a narrower selection that the main text does not describe.
+- claim: fig5b-ma-between-packets
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-ma-between-packets
+  notes: 391 triplets. Sextile 1 mean change +0.0034 Hz (p = 0.082); sextiles 5 and 6 decrease (p =
+    0.0023 and 6.8e-05), and sextile 2 increases (p = 0.00019).
+  deviations:
+  - MAs derived from the Awake label (see ma-statistics).
+- claim: fig5b-rem-between-packets
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5b-rem-between-packets
+  notes: Only 17 triplets, as 49 of 534 REM epochs are followed directly by Non-REM. Sextiles 4 and 5
+    decrease (p = 0.022 and 0.011); the other four do not change significantly, and sextiles 1 and 2
+    have positive mean changes.
+  deviations:
+  - The paper does not give its number of REM triplets; the dandiset's state table yields few.
+- claim: fig5c-rem-duration
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5c-rem-duration
+  measured: -0.047
+  notes: Per triplet R = -0.047 (p = 0.86, 17 triplets); per cell and triplet R = -0.061 (p = 0.21,
+    436 pairs). REM durations 8 to 157 s.
+- claim: fig5c-sigma-ma
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5c-sigma-ma
+  measured: 0.033
+  notes: Over 125 MA, packet, MA triplets with sextile 1 cells and LFP, R = 0.033 (p = 0.71).
+  deviations:
+  - MAs derived from the Awake label; one LFP channel per session; Dino-061914 left out.
+- claim: fig5c-delta-change
+  outcome: reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:fig5c-delta-change
+  notes: Over 613 consecutive packet pairs, R = 0.183 (p = 5.3e-06) for sextile 1, and R = -0.368 for
+    sextile 6. Per subject the sextile 1 correlation is positive in 4 of 8 subjects, so the pooled
+    result rests on some animals.
+  deviations:
+  - One LFP channel per session; Dino-061914 left out.
+- claim: figs5-within-wake-rem
+  outcome: not_reproduced
+  notebook: reproduce_watson_2016.ipynb
+  output: claim:figs5-within-wake-rem
+  notes: Within 495 WAKE epochs sextiles 5 and 6 decrease (R = -0.122 and -0.120, p < 1e-12),
+    opposite to the claim, and sextile 2 increases (R = +0.067). Within 388 REM epochs no sextile
+    changes at p < 0.05.
+  deviations:
+  - The paper's analysis for this claim is in Figure S5, which was not available; entry into WAKE
+    may have been analysed differently (for example aligned to WAKE onset).
+- claim: fig5c-wake-movement
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds no movement, accelerometer, video or EMG data (acquisition is empty; the
+    files hold units, LFP, spike waveforms and the state table), and no other public source of the
+    movement measurements was found.
+- claim: updown-durations
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: UP and DOWN states were detected with spike and LFP criteria whose thresholds are given only
+    in the Supplemental Experimental Procedures, which could not be retrieved. The spikes and LFP
+    needed are in the dandiset.
+- claim: fig3c-slow-oscillation-spindles-over-sleep
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs UP/DOWN state and spindle detection, described only in the unavailable supplement (see
+    updown-durations); the main text says only that spindles were detected after filtering and
+    integration.
+- claim: fig4ii-iii-updown-spindles-within-packets
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs UP/DOWN state and spindle detection (see fig3c-slow-oscillation-spindles-over-sleep).
+- claim: fig2de-up-state-sequences
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs UP state onsets (see updown-durations).
+- claim: fig3f-4e-within-up-rates
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs UP state detection (see updown-durations).
+findings:
+- kind: data_missing
+  statement: The dandiset holds 22 sessions from 10 rats, where the paper and the dandiset's own
+    description report 27 sessions from 11 rats; the files hold 945 units (826 excitatory, 96
+    inhibitory, 23 unknown) against the 995 putative pyramidal cells and 126 interneurons analysed.
+    Which sessions and units were left out, and why, is not stated.
+- kind: format_error
+  statement: In sub-Dino_ses-Dino-072114 the spike times are whole seconds divided by 20000 (8451
+    distinct values from 0 to 0.4252 s, in a recording of 7959 s). The conversion read this session's
+    spikes from a CellExplorer file with a hard-coded 20 kHz rate. The session's spikes cannot be used.
+- kind: format_error
+  statement: In sub-Dino_ses-Dino-061914 the LFP has 125 columns for 128 electrodes, lasts 331.7 min
+    against 291.9 min of states and spikes, and its samples are scrambled (lag-1 autocorrelation
+    0.28 on the reference channel, against 0.99 or more in every other session), consistent with a
+    128-channel file read as 125 channels.
+- kind: data_missing
+  statement: The state table holds only Awake, Non-REM and REM. The paper scores microarousals as a
+    state of their own and builds WAKE-SLEEP episodes, nonREM packets and episodes, UP/DOWN states
+    and spindles, none of which is in the dandiset. MAs derived from short Awake epochs are fewer
+    than the paper reports (391 in 21 sessions, against 790 in 27).
+- kind: selection_undocumented
+  statement: The dandiset does not say how the state table was scored. The conversion code takes it
+    from each session's SleepState.states.mat; it yields 30 WAKE-SLEEP cycles in 21 sessions (3
+    sessions with none, though the paper kept only sessions with a full cycle), and only 49 of 534
+    REM epochs are followed directly by Non-REM, so it may not be the scoring the paper used.
+- kind: metadata_error
+  statement: The dandiset description gives 11 animals, 27 sessions and 1360 units, the paper's
+    numbers, while the files hold 10 animals, 22 sessions and 945 units (the archive's summary
+    counts 10 subjects). The description gives an age of 4-7 months, the files 3-7 months.
+- kind: format_error
+  statement: The LFP is stored as int16 with unit volts and conversion NaN, so it cannot be converted
+    to volts.
+- kind: metadata_insufficient
+  statement: Every electrode's location is "unknown" and every unit's region is "CTX" or "unknown",
+    although the paper records from medial prefrontal, orbitofrontal, anterior cingulate and
+    secondary motor cortex; only the electrode groups carry a region.
+- kind: metadata_insufficient
+  statement: 23 units of sub-BWRat21_ses-BWRat21-121613 have cell type and region "unknown", with no
+    description of what the label means.
+- kind: data_missing
+  statement: No movement, accelerometer or EMG data are in the dandiset, though the paper uses EMG to
+    score states and movement to define WAKE and to relate WAKE to rate changes.
+- kind: other
+  statement: The state labels are consistent with the spikes in 20 of 21 sessions (not established
+    for BWRat21-121813), but in 14 sessions the best agreement is with the table shifted 5 to 60 s
+    earlier, so state boundaries may lag the activity. The LFP agrees with the spikes to within 50 ms
+    in 14 of 21 sessions, and to within 88 ms in all but Dino-061914, whose LFP is scrambled.
