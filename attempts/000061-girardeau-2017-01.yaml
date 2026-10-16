@@ -1,0 +1,139 @@
+schema_version: 1
+id: 000061-girardeau-2017-01
+dandiset: "000061"
+dandiset_version: 0.250624.0426
+paper: doi:10.1038/nn.4637
+date: 2026-10-16
+entry: 000061-girardeau-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+outcomes:
+- claim: hpc-bla-reactivation-post-sleep
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:hpc-bla-reactivation-post-sleep
+  notes: 15 sessions (9 Rat08, 3 Rat10, 3 Rat11) with 341 hippocampal and 483 BLA units; every
+    session has at least one significant joint pattern, 36 in all. Post-sleep minus pre-sleep
+    Non-REM strength has a median of 0.0119, positive in 28 of 36, Wilcoxon p = 3.6e-05. The median
+    is above zero in each rat (Rat08 0.0170, 18 of 21, p = 0.00013; Rat10 0.0024, 5 of 8, p = 0.74;
+    Rat11 0.0190, 5 of 7, p = 0.11). Non-significant patterns change by a median of 0.0001. The
+    variants (25 and 100 ms bins, the wider BLA labels over 21 sessions, the first pattern of each
+    session) all give positive medians with p of 0.0084 or less. The comparison does not separate
+    reactivation from slow drift of the recording, since post-sleep is next to the run in time.
+  deviations:
+  - The paper's methods were not available; the joint-pattern method (singular vectors of the run's
+    hippocampus by BLA cross-correlation matrix, shuffle threshold, product of projections), the 50
+    ms bins and the unit criteria are common choices fixed in the claims file.
+  - BLA is taken as the units labelled bla or BLA; other undescribed labels that may be parts of
+    the basolateral complex are a variant only.
+  - Sessions without sleep states or ripples, and Rat09 (no hippocampal units), are left out;
+    which sessions and rats the paper used is not known here.
+  - Units 0 and 1 of ten files are left out because their spike times are mixed (see findings).
+- claim: reactivation-peaks-at-ripples
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:reactivation-peaks-at-ripples
+  notes: Reading (a) holds. The mean ripple-triggered strength in post-sleep Non-REM is highest in
+    the bin of the ripple peak, 4.36 times its mean at 0.5 to 1 s; the peak bin exceeds the flanks
+    in 30 of 36 patterns (median 0.103, p = 6e-06), with a positive median in each rat. 22 of 36
+    patterns have their own maximum within 100 ms of the ripple. The pre-sleep curve also peaks at
+    ripples (0.136 against 0.223 post), and the peak over flanks is larger post than pre (23 of
+    36, p = 0.022). Reading (b) also holds; the post minus pre change in ripple bins exceeds that
+    outside ripples (median difference 0.0537, 25 of 36, p = 0.0033).
+  deviations:
+  - The abstract's "peaked during SPW-Rs" can be read in two ways; both readings were fixed in
+    the criterion and both match.
+  - Ripples are the dandiset's `rip` annotations, not a detection run here.
+- claim: bla-ripple-up-subgroup
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:bla-ripple-up-subgroup
+  notes: 103 of 822 BLA units in 17 sessions (12.5%) are positively modulated in Non-REM ripple
+    windows, against a chance level of 0.7% (6 units) from the same procedure on windows shifted by
+    7 s; binomial p = 9.8e-90. Above chance in each rat (Rat08 51 of 496, Rat10 4 of 84, Rat11 48 of
+    242). 104 units (12.7%) are negatively modulated. At p of 0.05 or less the fraction is 16.3%
+    against 5.6% chance, at 0.002 or less 10.8% against 0.2%.
+  deviations:
+  - The test of modulation (spike count in ripple windows against windows shifted together by 0.5
+    to 5 s, one-sided p of 0.01 or less) is a common choice; the paper's test is not known here.
+  - Units are counted once per session; a cell recorded on several days may be counted more than
+    once, as the dandiset does not match units across days.
+- claim: reactivation-involves-ripple-up-cells
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:reactivation-involves-ripple-up-cells
+  notes: In 31 significant patterns with both kinds of BLA unit, the mean squared BLA weight of the
+    ripple-up units exceeds that of the other BLA units (medians 0.0505 and 0.0181; difference
+    positive in 24 of 31, Wilcoxon p = 0.0013). The ripple-up units are a median 20% of a pattern's
+    BLA units and carry 34% of its BLA weight. It holds in Rat08 (17 of 21) and Rat11 (6 of 7) and
+    not in Rat10 (1 of 3). In patterns whose post minus pre reactivation is positive, p = 0.0018.
+  deviations:
+  - The abstract does not say how involvement was measured; the pattern weights were chosen here
+    before the analysis.
+- claim: aversive-direction-stronger
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:aversive-direction-stronger
+  notes: Over 15 sessions, post minus pre reactivation of the air-puff templates exceeds that of
+    the safe templates by a median of 0.0133, in 9 of 15 sessions, Wilcoxon p = 0.11; the criterion
+    needs p < 0.05, and p < 0.1 for a partial outcome. Positive in 6 of 9 Rat08, 2 of 3 Rat10 and 1 of
+    3 Rat11 sessions. Variants lean the same way with mixed strength; the first pattern of each
+    direction gives p = 0.048 (10 of 15), the pooled per-pattern Mann-Whitney test p = 0.083, equal
+    numbers of template bins p = 0.28, and post-sleep strength alone p = 0.45. The safe templates
+    of some sessions rest on few bins (5610 against 66804 in Rat08-20130709).
+  deviations:
+  - Laps, and so run direction, come from the reward times, as the dandiset holds no position; the
+    paper presumably used the position on the track.
+  - The air-puff direction is the lap direction holding most puffs (927 of 957 puffs fall in it).
+  - The measure (mean over significant patterns of post minus pre strength, compared across
+    sessions) was chosen here before the analysis; the paper's is not known here.
+- claim: rats-learn-puff-location
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Learning the location of the puff is behaviour along the track, which needs the rat's
+    position; the dandiset holds no position tracking, only raw video with timestamps that are not
+    on the session clock, reward and puff times, and an undescribed trials table. Lap times between
+    rewards were looked at during the data check but give no location. No public copy of the
+    tracking linked to the paper or the dandiset was found.
+findings:
+- kind: metadata_error
+  statement: The epochs table is stored in milliseconds although its columns say seconds; in all 40
+    files its last stop time is exactly 1000 times the LFP duration and the last spike time.
+- kind: metadata_error
+  statement: Video timestamps are stated in seconds but are in milliseconds and are not on the
+    session clock. The first timestamp matches the start of the video's epoch in 1 of 114 videos,
+    while the spans match the epoch durations in 93 of 114.
+- kind: format_error
+  statement: In ten files the spike_times_index is wrong at the first units. Unit 1's spike times
+    fall back once, after 65536 times k spikes, and unit 0 stops part way through the session at
+    the time unit 1 starts, so the first part of unit 1 is the end of unit 0. Units 0 and 1 of these
+    files were left out.
+- kind: data_missing
+  statement: Seven files have no units table (Rat08-20130722, five Rat09 files and Rat11-20150403),
+    sixteen have no sleep states and fourteen have no ripple events. The Rat09 files have no
+    hippocampal units and no ripples, so Rat09 cannot enter a hippocampus and BLA analysis.
+- kind: data_missing
+  statement: There is no position tracking, so behaviour on the track, including the learning of
+    the puff location, cannot be measured; run direction can only be inferred from reward times.
+- kind: metadata_insufficient
+  statement: Unit region labels are undescribed short codes (bla, blv, bmp, ladl, cen, den, ven,
+    pir, plc01, PLCo1, cpu, hpc, HIP, no label), some in two cases for the same region, and
+    Rat09-20140328 has no location column; the electrode table gives every channel as unknown. Which
+    labels make up the paper's BLA cannot be told from the dandiset.
+- kind: metadata_insufficient
+  statement: The `trials` table of the Rat08 and Rat09 files is described only as "experimental
+    trials"; its intervals of 3 to 5 s fall partly outside the run and are not laps.
+- kind: metadata_insufficient
+  statement: The ripple annotations carry a number in each label (for example "Ripple peak 156"),
+    presumably the detection channel, with no description; ripples, puffs and rewards are stored as
+    annotation series under stimulus presentation.
+- kind: methods_unavailable
+  statement: The paper is not open access and neither it (as far as the abstract shows) nor the
+    dandiset links analysis code, so the reactivation method, unit selection and statistics had to
+    be chosen here.
