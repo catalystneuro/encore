@@ -1026,8 +1026,9 @@ def unit_session(key: str, waveform_seconds: float = 120.0, with_waveforms: bool
                 ta, tb = spikes[int(fa.u)][sa], spikes[int(fb.u)][sb]
                 row["na_" + c], row["nb_" + c] = len(ta), len(tb)
                 if len(ta) < 50 or len(tb) < 50:
-                    row["tau_" + c] = row["tau_half_" + c] = row["phase_" + c] = np.nan
+                    row["tau_" + c] = row["tau_half_" + c] = row["phase_" + c] = row["phase_half_" + c] = np.nan
                     row["period_" + c] = row["phase_period_" + c] = row["period_near_" + c] = np.nan
+                    row["phase_period_near_" + c] = np.nan
                     continue
                 pa, pb = sp_phase2[int(fa.u)][sa], sp_phase2[int(fb.u)][sb]
                 pa, pb = np.sort(pa[np.isfinite(pa)]), np.sort(pb[np.isfinite(pb)])
@@ -1036,9 +1037,11 @@ def unit_session(key: str, waveform_seconds: float = 120.0, with_waveforms: bool
                 half = 500.0 / np.nanmean(inst_f[sp_idx[int(fa.u)][sa]])
                 row["tau_half_" + c] = peak_lag(cc, TIME_LAGS, half)
                 row["phase_" + c] = peak_lag(pc, PHASE_LAGS, np.pi)
+                row["phase_half_" + c] = peak_lag(pc, PHASE_LAGS, np.pi / 2)
                 row["period_" + c] = pair_period(cc, TIME_LAGS, row["tau_" + c], 60.0, 200.0)
                 row["period_near_" + c] = pair_period(cc, TIME_LAGS, row["tau_" + c], 60.0, 200.0, nearest=True)
                 row["phase_period_" + c] = pair_period(pc, PHASE_LAGS, row["phase_" + c], np.pi, 3 * np.pi)
+                row["phase_period_near_" + c] = pair_period(pc, PHASE_LAGS, row["phase_" + c], np.pi, 3 * np.pi, nearest=True)
                 if cc.sum() > 0:
                     ccg_sum[c]["time"] += cc / cc.sum()
                 if pc.sum() > 0:

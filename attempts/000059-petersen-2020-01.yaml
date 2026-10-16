@@ -231,11 +231,12 @@ outcomes:
   output: claim:suppl1g-waveforms-unchanged
   notes: Over 646 units, trough-to-peak differs (P = 4.9e-10, median change 0 as most units do not
     move by a whole 0.05 ms sample) and amplitude rises by a median 0.8% (P = 0.00057). The windows
-    are 8 to 32 minutes apart, so drift cannot be separated from cooling; for interneurons alone
+    start 7.1 to 31.8 minutes apart (5.1 to 29.8 minutes from the end of the pre window), so drift cannot be separated from cooling; for interneurons alone
     neither differs (P = 0.066 and 0.2). Fewer spikes are averaged in the cooling window (median
     200 against 247.5), but in the 208 units whose two means both use the 300-spike cap the changes
     remain (amplitude 0.7%, P = 0.032; trough-to-peak P = 2.2e-05), so the spike count does not
-    explain them. The effect is small, and the outcome follows the paper's test as written.
+    explain them. The effect is small, and the outcome follows the paper's test as written; it
+    does not show that cooling changes the waveforms.
   deviations:
   - Waveforms from 120 s windows of the wide-band data at 20 kHz, high-passed at 300 Hz, on the
     channel of largest amplitude; the paper's measure is in its supplement, which could not be
@@ -253,7 +254,8 @@ outcomes:
   - 10.39
   notes: Over 361 fields (paper 365) all six means are within the paper's spreads; fp falls in 311
     (P = 3.5e-44) and fLFP in 352 (P = 1.2e-60), by 9.2% and 9.0%, and both recover. Each rat shows
-    the same pattern, and fields with at least 100 or 200 spikes per state give the same means.
+    the same pattern and every session the decrease; in MS22-180720-110055 fp does not recover (9.92
+    Hz after, 10.15 Hz during cooling). Fields with at least 100 or 200 spikes per state give the same means.
   deviations:
   - Fields by the automatic criteria of the Methods, from 11 sessions in 4 rats.
 - claim: fig4c-fp-flfp-correlation
@@ -354,7 +356,7 @@ outcomes:
   notebook: reproduce_petersen_2020.ipynb
   output: claim:fig4gh-fp-speed
   notes: fp slope 0.0136 Hz per cm/s (P = 3.2e-12), fLFP 0.0061; difference 0.0074 (bootstrap
-    interval 0.0036 to 0.0111). In the three speed bins from 60 to 120 cm/s with at least 10
+    interval 0.0040 to 0.0112). In the three speed bins from 60 to 120 cm/s with at least 10
     fields fp is lower during cooling (P below 1e-5 each); below 60 cm/s too few fields had 50
     spikes.
   deviations:
@@ -371,8 +373,11 @@ outcomes:
     nearest one, so it often picks the second neighbour and the 109.2 ms is biased upward. With
     the nearest neighbouring peak (a variant) the control period is 91.0 ms, within tolerance, and
     it lengthens to 95.5 ms (7 of 9, P = 0.031); pairs with |Ltr| below 10 cm give 91.0 ms. Under
-    that variant all three parts of the criterion hold; the outcome follows the criterion's
-    estimator. Both control periods are shorter than the LFP theta period (115.7 ms).
+    that variant the phase period, also from the nearest peak, does not change (1.285 pi rad in both,
+    P = 0.367), so all three parts of the criterion hold; but that estimator is biased downward, as
+    211 of 3499 pre pairs give 60 to 70 ms, at the floor of the search window and below any plausible
+    theta period, so its 91.0 ms is not a clean test of 85 ms either. The outcome follows the
+    criterion's estimator. Both control periods are shorter than the LFP theta period (115.7 ms).
   deviations:
   - The period is measured per pair and summarised per session; the paper reads it from the sum
     over pairs. The criterion was changed to this before the analysis across sessions, after a
@@ -392,7 +397,8 @@ outcomes:
     on the fit (inverse regression over pooled pre pairs 7.175 cm/ms). The 70 ms window can hold
     more than one candidate peak; in 10.5% of pre pairs the lag changes when the window is narrowed
     to half the theta period, which gives 0.156 cm/ms. The compression magnitude cannot be judged
-    from this method. The direction of the change agrees with the paper.
+    from this method. The direction of the change agrees with the paper under the criterion's fit;
+    the inverse slope goes the other way (control 9.085, cooling 10.420 cm/ms, lower in 1 of 9).
   deviations:
   - Lags from each pair's correlogram peak and compression from a regression, where the paper fits
     a surface to the density of all pairs; pairs without a peak within 70 ms are dropped.
@@ -412,7 +418,11 @@ outcomes:
   output: claim:fig5i-phase-lags-unchanged
   notes: Phase lags are slightly larger during cooling than before (1.367 against 1.304 rad, mean
     difference 0.051 rad, P = 0.0015) and after (P = 0.0043); pre and post do not differ
-    (P = 0.51). Per session medians, cooling against pre P = 0.062.
+    (P = 0.51). Per session medians, cooling against pre P = 0.062. The +-pi window spans about 1.15
+    periods of the phase correlogram (1.74 pi). With the lag picked within +-pi/2 (a variant), 43.3%
+    of pre pairs get another lag or none, and cooling is still above pre (mean difference 0.025 rad,
+    P = 0.0196) but not above post (P = 0.162); pre and post do not differ (P = 0.178). Part of the
+    increase may come from how the lag is picked.
 - claim: fig5j-fraction-active-unchanged
   outcome: not_reproduced
   notebook: reproduce_petersen_2020.ipynb
@@ -448,8 +458,8 @@ findings:
 - kind: metadata_error
   statement: The temperature series of the nine MS10 sessions and of the two control sessions of
     2018-07-19 (MS21 and MS22) is not a recording. The paper's code lists no temperature channel
-    for these sessions. In the files ten of them run from exactly 17.0 to 37.0 C and sit at exactly
-    37.0 C for 16% to 35% of samples, and MS10-170307 is a constant 37.0 C, while no recorded trace
+    for these sessions. In the files ten of them run from 17.0 to 37.0 C (exactly in nine; MS10-170313
+    reaches 16.98 C) and sit at exactly 37.0 C for 16% to 35% of samples, and MS10-170307 is a constant 37.0 C, while no recorded trace
     repeats its maximum. Nothing in the files says the series is modelled.
 - kind: metadata_error
   statement: The two sessions of 2018-07-19, which the paper's code lists as controls without
@@ -785,7 +795,248 @@ verifications:
     reason: The assets endpoint lists 100 files, all for the five behaving rats, with no subject or
       file for the MS-plus-hippocampus control experiment, and the dandiset metadata lists no
       temperature variable. The notebook never printed the full list of series in
-      processing/behavior, so no second temperature channel inside the files was stated but not
-      shown.
+      processing/behavior, so "no second temperature channel inside the files" was stated (cell
+      8) but not shown.
     response: No change of outcome. The data check now lists every series in all 100 files; the only
       temperature series is processing/behavior/Temperature.
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the revised run, with the conclusions and the summary, the helper
+    module, the claims file and this record. The verifier did not re-read the paper text this round. Report
+    in transcripts/000059/verifier-2-report.md. It also found that the Summary and the first finding say
+    the MS10 and control temperatures run from exactly 17 to 37 C, which is exact in nine of the ten (MS10-170313
+    reaches 16.9777 C, cell 11); both now say so. Everything under C of its round-1 report is resolved.
+  results:
+  - claim: session-structure
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Problem 13 is resolved: state sequences printed, and the
+      helper now stops at any return to cooling (cell 30).'
+    response: No change.
+  - claim: cooling-time-course
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the stated outcome. Problems 6 and 7 are resolved: the 90% time, the mean trace
+      and a variant without the artefact sessions are added (cell 33).'
+    response: No change.
+  - claim: fig2g-theta-freq-temperature
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Problem 12 is resolved: the LFP electrodes region is checked
+      in 49 sessions (cell 13).'
+    response: No change.
+  - claim: fig2h-theta-power-temperature
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Problem 11 is resolved: recorded as a deviation.'
+    response: No change.
+  - claim: fig2j-frequency-consistent-across-animals
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig2i-theta-pre-cooling-post
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the stated outcome. Problem 9 is resolved: the direction flag is fixed (cell
+      45).'
+    response: No change.
+  - claim: disc-theta-frequency-12-percent
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig6d-errors-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. The Summary row says "(2.3-fold; MS22 not significant)", but
+      MS13 is not significant either (P = 0.0625, cell 51). Cell 52 says so; the Summary row leaves it
+      out.
+    response: The Summary row now names MS13 and MS22.
+  - claim: fig6e-errors-recover
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig6c-worst-trials-4-to-8
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig6f-errors-temperature
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig6g-errors-theta-frequency
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig6h-errors-theta-power
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig6i-errors-not-speed
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4e-speed-decreases-within-session
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig5-speed-control-cooling
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. The record marks round 1 as agrees false and has since changed
+      the outcome to not_reproduced, which is the outcome the verifier gave.
+    response: No change.
+  - claim: suppl2-place-cell-rates-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: disc-interneuron-rates-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: suppl2d-interneuron-oscillation-slows
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: suppl1g-waveforms-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. Cell 90 and the notes say "the two windows are 8 to 32 minutes
+      apart"; from the windows in cell 89, start to start is 7.1 to 31.8 min, and from the end of the
+      pre window to the start of the cooling window 5.1 to 29.8 min. The spike-count part of problem 5
+      is resolved (cell 89). Drift still cannot be separated from cooling; the not_reproduced outcome
+      stands under the criterion, but it does not show that cooling changes the waveforms.
+    response: The conclusion and notes give the spacing as 7.1 to 31.8 minutes from start to start, and
+      the notes 5.1 to 29.8 minutes from the end of the pre window. The notes now say the outcome does
+      not show that cooling changes the waveforms. Drift cannot be separated with these data, so no analysis
+      was added.
+  - claim: fig4b-fp-flfp-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Cell 93 says "Each rat and session shows the same pattern",
+      but in cell 92 MS22-180720-110055 has fp post 9.92 Hz, below fp cooling 10.15 Hz, so fp does not
+      recover in that session. The notes say "each rat", which holds. Problem 8 is resolved (cell 92).
+    response: Cell 93 now says each rat shows the pattern and every session the decrease, and names MS22-180720-110055
+      as the session where fp does not recover; the notes say the same.
+  - claim: fig4c-fp-flfp-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4ac-fp-flfp-difference-preserved
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4a-frequency-temperature-slopes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the stated outcome. Problem 10 is resolved: the last window is included and the
+      overlap of windows is stated (cells 101 and 102).'
+    response: No change.
+  - claim: fig3c-field-size-correlated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3d-size-fp-negative
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3e-model-field-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3f-information-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Problem 3 is resolved: with spikes subsampled to equal counts,
+      P = 0.0073 and 0.0092 (cell 113).'
+    response: No change.
+  - claim: fig3hi-population-vector-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4d-precession-slope-decrease
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig4gh-fp-speed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Cell 123 and the notes say "bootstrap interval 0.0036 to 0.0111";
+      cell 122 prints 0.0040 to 0.0112. The conclusion is not affected.
+    response: Corrected to 0.0040 to 0.0112 in the conclusion and the notes.
+  - claim: fig5d-ccg-period
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the stated outcome. The notes and the round-1 response say "Under that variant
+      all three parts of the criterion hold", but the phase period was computed only with the largest-neighbour
+      estimator, so the third part is not shown under the variant. The nearest-peak variant has its own
+      downward bias: 211 pre pairs fall at 60 to 70 ms, below any plausible theta period, and the floor
+      of the search window is 60 ms (cell 125), so its 91.0 ms is not a clean test of 85 ms either. The
+      outcome follows the criterion''s estimator and is unaffected.'
+    response: 'Added the phase period from the nearest peak (the helper''s phase_period_near columns)
+      to cell 125: 1.285 pi rad in control and in cooling, P = 0.367, so it does not change and the third
+      part now is shown under the variant. Added the count of pre pairs below 70 ms (211 of 3499). The
+      conclusion and notes now say the nearest-peak estimator is biased downward and its 91.0 ms is not
+      a clean test of 85 ms.'
+  - claim: fig5cg-compression
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome. The notes say "The direction of the change agrees with the
+      paper." This holds only for the criterion's fit; the inverse-slope variant in cell 128 goes the
+      other way (control 9.085, cooling 10.420 cm/ms; cooling lower in only 1 of 9).
+    response: The notes and the conclusion now say the direction holds under the criterion's fit and give
+      the inverse-slope values, which go the other way.
+  - claim: fig5h-time-lags-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig5i-phase-lags-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Problem 2 remains: the half-period window check was run for
+      time lags but not for phase lags. The phase window of +-pi spans about 1.15 periods of the phase
+      correlogram (period 1.74 pi, cell 125), so it can hold two candidate peaks. The phase-lag effect
+      is 0.05 rad, so lag picking could produce it. A half-width phase window would settle it.'
+    response: Added the phase lag picked within +-pi/2 (the helper's phase_half columns) to cell 134.
+      43.3% of pre pairs get another lag or none; cooling is still above pre (mean difference 0.025 rad,
+      P = 0.0196) but not above post (P = 0.162). The increase over pre remains, so the outcome under
+      the paper's test stands; the conclusion and notes give the variant and say part of the increase
+      may come from how the lag is picked.
+  - claim: fig5j-fraction-active-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Problem 4 is resolved: session-level tests and cycle durations
+      added (cell 137).'
+    response: No change.
+  - claim: fig5k-spikes-per-cycle-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Problem 4 is resolved: session-level tests added (cell 140).'
+    response: No change.
+  - claim: suppl1-hippocampal-temperature
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome. Every series in the 100 files is listed (cell 13). The round-1
+      reason in the record garbles the verifier''s point: the notebook said there was no second channel
+      (cell 8) but did not show it.'
+    response: Corrected the round-1 reason to the verifier's wording.
