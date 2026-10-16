@@ -1,0 +1,519 @@
+# Claims for Watson, Levenstein, Greene, Gelinas and Buzsaki (2016) on dandiset 000041.
+# Source: the NIH author manuscript in PubMed Central (PMC4873379), full text of the main
+# article, read from its Results, Experimental Procedures and figure legends. The Supplemental
+# Experimental Procedures and the supplementary figures (NIHMS776601-supplement-1 and -2) could
+# not be retrieved (PMC and the publisher answer with a browser check), and Table 1 is not in
+# the manuscript text. Where the main text leaves a method open, the choice is fixed below.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# dandiset metadata; for every file the subject, session, scalar metadata, unit counts by
+# cell_type and region, spike-time ranges, the number and total duration of each state label,
+# LFP shape, rate and chunking, electrode columns; the first 40 rows of the state table in two
+# sessions; and the spike times of Dino-072114, which are whole seconds divided by 20000. No
+# claim's analysis had been run. The paper links no analysis code; the NWB conversion code
+# (catalystneuro/buzsaki-lab-to-nwb at commit 5f6a375) was read.
+#
+# Method choices fixed here, before the analysis:
+# - Sessions. The 21 files whose spike times are usable; Dino-072114 is left out (see the data
+#   check). Each session's units are treated as distinct cells, as the paper counts cells per
+#   session; units have no identifier across sessions.
+# - Cells. Putative pyramidal (pE) cells are units with cell_type "excitatory", putative
+#   interneurons (pI) those with "inhibitory"; the 23 "unknown" units are left out.
+# - States. The dandiset's state table has only Awake, Non-REM and REM. A microarousal (MA) is
+#   an Awake epoch shorter than 40 s whose previous and next epochs are both Non-REM (Results,
+#   identification of brain states). WAKE is every other Awake epoch. A nonREM packet is one
+#   Non-REM epoch. A nonREM episode is a maximal run of packets and MAs, beginning and ending
+#   with a packet. A SLEEP period is a maximal run of epochs that begins with the first
+#   non-Awake epoch after an Awake epoch longer than 120 s and holds no Awake epoch longer than
+#   120 s; it ends at the last non-Awake epoch before an Awake epoch longer than 120 s, must
+#   last at least 20 min from its first start to its last stop, and must be followed by such an
+#   Awake epoch (SLEEP is "terminated by prolonged (>120 sec) WAKE"). A WAKE-SLEEP cycle is a
+#   SLEEP period whose preceding Awake epoch lasts at least 7 min.
+# - Rates. A cell's rate over a set of intervals is its spike count over their total duration.
+# - Sextiles. Each pE cell's WAKE rate is its rate over all WAKE epochs of its session; the six
+#   groups are cut at the sextiles of these rates over all pE cells of all sessions (Results:
+#   "divided pE cells from across the dataset into 6 sextile groups based on their WAKE firing
+#   rates"). Sextile 1 is the slowest, 6 the fastest.
+# - Time courses. Within packets, episodes, WAKE and REM epochs, 10 bins of normalized time;
+#   packets and episodes of at least 20 s, WAKE epochs of at least 40 s, REM epochs of at least
+#   20 s; for episodes and SLEEP, only Non-REM time within a bin counts. A group's value in a
+#   bin is the mean rate of its cells, divided by the mean of that value over the bins of the
+#   same packet, episode or epoch (units with no spikes in the whole interval are dropped as
+#   undefined). R is the Pearson correlation of these values with bin centre, pooled over all
+#   intervals of all sessions. Other bin counts (5, 20) and a longer minimum (60 s) are shown
+#   as variants.
+# - LFP. One channel per session, the electrode flagged spindle_reference in the electrodes
+#   table (the first when several), read in raw int16 units as the file gives no conversion
+#   factor. Power from 2 s Hann windows stepped by 1 s; bands delta 0.5 to 4 Hz, sigma 9 to 25
+#   Hz, gamma 40 to 100 Hz (Results); log10 of the mean power in band. Only Non-REM time is read.
+schema_version: 1
+dandiset: "000041"
+paper: doi:10.1016/j.neuron.2016.03.036
+claims:
+- id: dataset-composition
+  statement: The recordings come from 11 rats and 27 sessions of 294 plus or minus 137 min,
+    yielding 995 putative pyramidal cells and 126 putative interneurons.
+  source: Results, identification of brain states and assessment of firing patterns;
+    Experimental Procedures
+  expected:
+  - quantity: rats
+    value: 11
+    tolerance: 1.1
+  - quantity: sessions
+    value: 27
+    tolerance: 2.7
+  - quantity: mean session duration
+    value: 294
+    tolerance: 137
+    unit: min
+  - quantity: putative pyramidal cells
+    value: 995
+    tolerance: 99.5
+  - quantity: putative interneurons
+    value: 126
+    tolerance: 12.6
+  criterion: Counted over the files as deposited (22 files), with session duration from the
+    first start to the last stop of the state table (the session's spike span is shown too).
+    The spread given for duration is used as its tolerance. Reproduced when all five values
+    are within tolerance, partially reproduced when at least three are, not reproduced
+    otherwise. The counts in the 21 usable sessions are reported as well.
+- id: fig2a-median-rates
+  statement: Median firing rates of pE cells are 0.76 Hz in WAKE, 0.69 Hz in nonREM and 0.88 Hz
+    in REM; of pI cells 5.59, 4.69 and 4.25 Hz.
+  source: Results, assessment of firing patterns; Figure 2A
+  expected:
+  - quantity: pE median rate, WAKE
+    value: 0.76
+    tolerance: 0.076
+    unit: Hz
+  - quantity: pE median rate, nonREM
+    value: 0.69
+    tolerance: 0.069
+    unit: Hz
+  - quantity: pE median rate, REM
+    value: 0.88
+    tolerance: 0.088
+    unit: Hz
+  - quantity: pI median rate, WAKE
+    value: 5.59
+    tolerance: 0.559
+    unit: Hz
+  - quantity: pI median rate, nonREM
+    value: 4.69
+    tolerance: 0.469
+    unit: Hz
+  - quantity: pI median rate, REM
+    value: 4.25
+    tolerance: 0.425
+    unit: Hz
+  criterion: Each cell's rate over all epochs of a state in its session. Readings (a) WAKE
+    without MAs, as defined above; (b) WAKE as every Awake epoch, MAs included. Reproduced
+    when under one reading all six medians are within tolerance; partially reproduced when at
+    least three are; not reproduced otherwise.
+- id: fig2a-skewed-wide-distribution
+  statement: The distribution of pE firing rates is strongly positively skewed and spans three
+    orders of magnitude, from 0.05 to 5 Hz.
+  source: Results, assessment of firing patterns; Figure 2A
+  criterion: On WAKE rates of pE cells (zero rates kept). Reproduced when the skewness of the
+    rates in Hz is above 1 and the 2.5th and 97.5th percentiles lie within a factor of 2 of
+    0.05 Hz and 5 Hz. The range is read from a log axis ("three orders of magnitude"), so the
+    tolerance is a factor on that scale, not 10% of each bound. Partially reproduced when only
+    one of the two holds. The same numbers for nonREM and REM are reported.
+- id: fig2a-fraction-above-2hz
+  statement: The fraction of pE cells firing above 2 Hz is 19.2% in WAKE, 19.2% in REM and 8.8%
+    in nonREM (chi-square, p < 1e-10).
+  source: Results, assessment of firing patterns; Figure 2A
+  expected:
+  - quantity: fraction above 2 Hz, WAKE
+    value: 19.2
+    tolerance: 1.92
+    unit: '%'
+  - quantity: fraction above 2 Hz, REM
+    value: 19.2
+    tolerance: 1.92
+    unit: '%'
+  - quantity: fraction above 2 Hz, nonREM
+    value: 8.8
+    tolerance: 0.88
+    unit: '%'
+  criterion: Rates as in fig2a-median-rates, reading (a). Chi-square tests on the 2 x 2 tables
+    of cells above and below 2 Hz, nonREM against WAKE and nonREM against REM. Reproduced when
+    the three fractions are within tolerance and both tests give p < 1e-10 with nonREM lower;
+    partially reproduced when the tests hold but a fraction is outside tolerance.
+- id: fig2b-wake-nrem-slope
+  statement: Per-cell nonREM and WAKE rates are highly correlated (R = 0.82), and the slope of
+    their relation is below 1 (95% confidence interval 0.66 to 0.71), so state transitions act
+    differently across the rate spectrum.
+  source: Results, assessment of firing patterns; Figure 2B
+  expected:
+  - quantity: Pearson R, nonREM against WAKE rates
+    value: 0.82
+    tolerance: 0.082
+  - quantity: slope of nonREM on WAKE rate
+    value: 0.685
+    tolerance: 0.096
+  criterion: The slope is judged against the reported interval widened by 10% of each bound,
+    0.594 to 0.781 (given above as its centre and half width). Readings (a) log10 rates,
+    cells with a zero rate in either state left out, OLS of nonREM on WAKE; (b) rates in Hz,
+    all pE cells. Reproduced when under one reading R is within tolerance, the slope is in the
+    widened interval and its 95% confidence interval excludes 1; partially reproduced when the
+    slope is below 1 with its interval excluding 1 under some reading but the values miss.
+    The reverse regression (WAKE on nonREM) is shown as a check on regression to the mean.
+- id: fig2-burst-index-by-state
+  statement: The burst index (fraction of spikes with inter-spike intervals under 15 ms) is
+    highest in nonREM (median 11.8%), lowest in WAKE (4.0%), with REM (5.5%) slightly above
+    WAKE (Kruskal-Wallis, p < 0.05).
+  source: Results, assessment of firing patterns
+  expected:
+  - quantity: median burst index, nonREM
+    value: 11.8
+    tolerance: 1.18
+    unit: '%'
+  - quantity: median burst index, WAKE
+    value: 4.0
+    tolerance: 0.4
+    unit: '%'
+  - quantity: median burst index, REM
+    value: 5.5
+    tolerance: 0.55
+    unit: '%'
+  criterion: Per pE cell and state, intervals between consecutive spikes in the same epoch of
+    that state; cells with fewer than 10 such intervals in a state are left out of it.
+    Readings (a) the fraction of intervals under 15 ms; (b) the fraction of spikes with an
+    interval under 15 ms to the previous or the next spike. Reproduced when under one reading
+    the three medians are within tolerance, the order is nonREM > REM > WAKE, and a
+    Kruskal-Wallis test across the three states gives p < 0.05; partially reproduced when the
+    order and test hold but a median misses.
+- id: fig2c-acg-peaks
+  statement: The average spike autocorrelogram of pE cells peaks near 8 ms in nonREM, with a
+    smaller peak near 125 ms (theta) in REM and WAKE.
+  source: Results, assessment of firing patterns; Figure 2C
+  criterion: Per pE cell and state, counts of spike-time differences at 1 ms resolution from 0
+    to 300 ms, pairs within the same epoch, divided by the cell's spike count in the state;
+    averaged over cells with at least 100 spikes in the state. NREM peak is the argmax from 2
+    to 50 ms. The theta peak is the location of the maximum of the mean autocorrelogram
+    smoothed with a 21 ms moving average between 60 and 250 ms, required to lie at least 3 ms
+    inside that window. Reproduced when the nonREM peak is at 7 to 9 ms (8 ms plus or minus
+    10%, rounded to whole bins) and the theta peak in both REM and WAKE is within 112.5 to
+    137.5 ms; partially reproduced when one of the two parts holds.
+- id: fig2c-acg-decay
+  statement: The autocorrelogram of pE cells decays faster in nonREM than in WAKE and REM (decay
+    fit exponent medians -1.35, -0.83 and -0.80; Kruskal-Wallis p < 0.05).
+  source: Results, assessment of firing patterns; Figure 2C
+- id: fig2f-rate-group-correlations
+  statement: In nonREM, pairs of fast-firing pE cells are positively correlated, while pairs of
+    one slow and one fast cell are negatively correlated.
+  source: Results, assessment of firing patterns; Figure 2F
+  criterion: Pearson correlation of spike counts in 100 ms bins over nonREM packets, for every
+    pair of pE cells in the same session; mean correlation for each of the 21 combinations of
+    six rate groups. Readings for the groups (a) WAKE-rate sextiles as above; (b) sextiles of
+    the rate over the whole session. Reproduced when under one reading the mean correlation of
+    group (6,6) pairs is positive and the largest of the 21, and that of (1,6) pairs is below
+    zero by a two-sided one-sample t-test at p < 0.05; partially reproduced when only the
+    (6,6) part holds.
+- id: ma-statistics
+  statement: Microarousals have a median duration of 15.9 plus or minus 3.3 s, occur 0.32 plus
+    or minus 0.12 times per minute and occupy 9.1 plus or minus 3.5% of SLEEP (790 in total).
+  source: Results, identification of brain states
+  expected:
+  - quantity: median MA duration
+    value: 15.9
+    tolerance: 3.3
+    unit: s
+  - quantity: MA frequency
+    value: 0.32
+    tolerance: 0.12
+    unit: per min
+  - quantity: fraction of SLEEP time in MA
+    value: 9.1
+    tolerance: 3.5
+    unit: '%'
+  criterion: MAs derived from the state table as defined above; the paper's spreads are the
+    tolerances. Readings (a) MAs inside SLEEP periods, frequency and fraction per session over
+    SLEEP time, then averaged over sessions, median duration over all those MAs; (b) all MAs,
+    pooled over sessions, frequency per minute of nonREM episode time. Reproduced when under
+    one reading the three values are within tolerance; partially reproduced when two are. The
+    total count is reported but not judged, as the dandiset holds 21 of 27 usable sessions.
+- id: ma-fraction-over-nrem-episodes
+  statement: The fraction of time occupied by MAs decreases over the course of nonREM episodes
+    (R = -0.85, p < 1e-10).
+  source: Results, identification of brain states
+  expected:
+    quantity: Pearson R, MA fraction against normalized episode time
+    value: -0.85
+    tolerance: 0.085
+  criterion: For each nonREM episode with at least one MA, the fraction of each of 10
+    normalized-time bins spent in MA. Readings (a) the mean fraction per bin over episodes,
+    correlated with bin centre (10 points); (b) all episode bins pooled. Reproduced when under
+    one reading R is within tolerance and p < 1e-10; partially reproduced when R is negative
+    with p < 0.05 under some reading.
+- id: packet-duration
+  statement: The duration of nonREM packets spans two orders of magnitude, with a median of 111
+    s.
+  source: Results, identification of brain states
+  expected:
+    quantity: median packet duration
+    value: 111
+    tolerance: 11.1
+    unit: s
+  criterion: Readings (a) every Non-REM epoch; (b) Non-REM epochs inside SLEEP periods.
+    Reproduced when the median is within tolerance under one reading.
+- id: wake-sleep-cycles
+  statement: The dataset holds 54 WAKE-SLEEP episodes (at least 7 min of WAKE followed by at
+    least 20 min of SLEEP), an average of 2.0 per session, and sessions without one were
+    discarded.
+  source: Results, identification of brain states and firing pattern changes across sleep
+  expected:
+    quantity: WAKE-SLEEP cycles per session
+    value: 2.0
+    tolerance: 0.2
+  criterion: Cycles as defined above. Reproduced when the mean per session is within tolerance
+    and every usable session has at least one; partially reproduced when one of the two holds.
+    A variant that also accepts SLEEP ended by the end of the recording is shown.
+- id: fig3b-population-decline
+  statement: The mean firing rate of pE cells declines over the course of SLEEP, restricted to
+    nonREM (R = -0.11, p < 1e-3).
+  source: Results, firing pattern and LFP changes across sleep; Figure 3B
+  depends_on:
+  - wake-sleep-cycles
+  expected:
+    quantity: Pearson R, population rate against normalized SLEEP time
+    value: -0.11
+    tolerance: 0.011
+  criterion: Over the SLEEP periods of WAKE-SLEEP cycles. Readings (a) one point per nonREM
+    packet at the normalized time of its midpoint, its population mean rate divided by the
+    mean of these values over the period's packets; (b) 10 bins of normalized SLEEP time,
+    Non-REM time only, bins with under 10 s of Non-REM dropped, normalized the same way.
+    Reproduced when under one reading R is within tolerance and p < 1e-3; partially
+    reproduced when R is negative with p < 1e-3 but outside tolerance.
+- id: fig3-first-last-packet
+  statement: The mean pE rate is lower in the last than in the first nonREM packet of SLEEP
+    (1.04 plus or minus 1.20 against 0.88 plus or minus 0.91 Hz; Wilcoxon p < 0.02).
+  source: Results, firing pattern and LFP changes across sleep
+  depends_on:
+  - wake-sleep-cycles
+  expected:
+  - quantity: mean rate, first packet
+    value: 1.04
+    tolerance: 0.104
+    unit: Hz
+  - quantity: mean rate, last packet
+    value: 0.88
+    tolerance: 0.088
+    unit: Hz
+  criterion: Over cell and cycle pairs, first and last Non-REM epochs of each SLEEP period of a
+    WAKE-SLEEP cycle. Reproduced when both means are within tolerance and a two-sided Wilcoxon
+    signed-rank test gives p < 0.02 with the last lower; partially reproduced when the test
+    holds but a mean misses.
+- id: fig3d-first-last-slope
+  statement: Comparing the same neurons in the first and last nonREM packets of SLEEP, the
+    regression slope departs from 1 (95% confidence interval 0.827 to 0.880), as fast cells
+    slow down and slow cells speed up.
+  source: Results, firing pattern and LFP changes across sleep; Figure 3D
+  depends_on:
+  - wake-sleep-cycles
+  expected:
+    quantity: slope of last on first packet rate
+    value: 0.8535
+    tolerance: 0.1118
+  criterion: The interval widened by 10% of each bound is 0.744 to 0.968, given as centre and
+    half width. Readings (a) log10 rates, OLS of last on first, pairs with a zero rate left
+    out; (b) rates in Hz. Reproduced when under one reading the slope is in the widened
+    interval and its 95% confidence interval excludes 1; partially reproduced when the slope
+    is below 1 with its interval excluding 1 but outside the widened interval. The reverse
+    regression and the same slope for two halves of one packet are shown as checks on
+    regression to the mean; they do not change the outcome.
+- id: fig3e-wake-before-after
+  statement: pE rates are lower in the 5 min of WAKE after SLEEP than in the 5 min before (p <
+    1e-6, Wilcoxon), with a decrease in the top three sextiles and an increase in the lowest.
+  source: Results, firing pattern changes across sleep and sleep sub-states induce lasting
+    changes; Figure 3E
+  depends_on:
+  - wake-sleep-cycles
+  criterion: The last 300 s of the WAKE epoch before each cycle's SLEEP and the first 300 s
+    of the Awake epoch that ends it (all of it when shorter). Readings for the unit of
+    analysis (a) cell and cycle pairs; (b) per cell, the mean over its session's cycles.
+    Population test, two-sided Wilcoxon signed-rank; sextile tests one-tailed Wilcoxon in the
+    stated direction. Reproduced when under one reading the population decrease has p < 1e-6
+    and sextiles 4, 5 and 6 decrease and sextile 1 increases, each at p < 0.05; partially
+    reproduced when the population decrease holds and at least two of the four sextile
+    effects do.
+- id: fig3b-sextiles-over-sleep
+  statement: Over SLEEP, restricted to nonREM, the fastest sextile decreases its rate while the
+    slowest shows a marginal increase.
+  source: Results, firing pattern changes across sleep; Figure 3B
+  depends_on:
+  - wake-sleep-cycles
+  criterion: Readings (a) and (b) of fig3b-population-decline, per sextile. Reproduced when
+    under one reading sextile 6 has R < 0 with p < 0.05 and sextile 1 has R > 0 (any p, as
+    the paper calls it marginal); partially reproduced when only one of the two holds.
+- id: fig3b-cv-over-sleep
+  statement: The coefficient of variation of pE firing rates decreases over the course of SLEEP
+    (R = -0.05, p < 0.01).
+  source: Results, firing pattern changes across sleep
+  depends_on:
+  - wake-sleep-cycles
+  criterion: CV across a session's pE cells of their rates at each point, readings (a) per
+    packet and (b) 10 bins as in fig3b-population-decline, without normalization. The value of
+    R depends on the binning, which the paper does not give, so it is not judged by
+    tolerance. Reproduced when under one reading R < 0 with p < 0.01.
+- id: fig4iv-sextiles-within-nrem
+  statement: Within both nonREM episodes and nonREM packets, the fastest sextiles decrease
+    their rates while the slowest increase.
+  source: Results, firing rate and LFP changes within nonREM; Figure 4A and 4B, panel iv
+  criterion: Time courses as defined above. Reproduced when sextile 6 has R < 0 and sextile 1
+    has R > 0, each at p < 0.05, in both episodes and packets; partially reproduced when this
+    holds in one of the two, or when one sextile's direction holds in both.
+- id: fig4v-cv-within-nrem
+  statement: The coefficient of variation of binned population rates decreases within nonREM
+    episodes (R = -0.13) and packets (R = -0.12), both p < 1e-10.
+  source: Results, firing rate and LFP changes within nonREM; Figure 4A and 4B, panel v
+  criterion: CV across the session's pE cells of their rates in each bin, pooled. As the
+    binning is not given, R is not judged by tolerance. Reproduced when R < 0 with p < 1e-10
+    in both episodes and packets; partially reproduced when in one.
+- id: fig4vi-burst-within-nrem
+  statement: The 15 ms burst index of pE cells increases within nonREM episodes (R = 0.09) and
+    packets (R = 0.08), both p < 1e-10.
+  source: Results, firing rate and LFP changes within nonREM; Figure 4A and 4B, panel vi
+  criterion: In each bin, the fraction of intervals under 15 ms among the intervals of the
+    session's pE cells whose two spikes lie in the same packet and whose later spike falls in
+    the bin; pooled R against bin centre. Reproduced when R > 0 with p < 1e-10 in both episodes
+    and packets; partially reproduced when in one.
+- id: fig4i-band-power-within-nrem
+  statement: Delta and sigma power increase over nonREM episodes and packets, while gamma power
+    decreases over episodes but not over packets.
+  source: Results, firing rate and LFP changes within nonREM; Figure 4A and 4B, panel i
+  criterion: Log band power per bin minus its mean over the bins of the same packet or
+    episode, pooled R against bin centre. Reproduced when delta and sigma have R > 0 with p <
+    0.05 in both episodes and packets, and gamma has R < 0 with p < 0.05 in episodes and p >=
+    0.05 or R >= 0 in packets; partially reproduced when the delta and sigma part holds and
+    the gamma part does not.
+- id: fig4-delta-packet-length
+  statement: Mean delta power within whole packets, normalized by nonREM delta power, is
+    positively correlated with packet length (R = 0.31, p < 0.05).
+  source: Results, firing rate and LFP changes within nonREM
+  expected:
+    quantity: Pearson R, packet delta power against packet length
+    value: 0.31
+    tolerance: 0.031
+  criterion: Per packet of at least 20 s, mean delta power over the packet divided by the mean
+    over all Non-REM time of its session, against packet duration in s, pooled. Reproduced
+    when R is within tolerance and p < 0.05; partially reproduced when R > 0 with p < 0.05.
+- id: fig4cd-packet-rate-lfp
+  statement: Per packet, the rate of the fastest sextile is negatively correlated with delta
+    power (R = -0.28) and positively with gamma power (R = 0.44), and the rate of the slowest
+    sextile is positively correlated with sigma power in the last 20 s of the packet (R =
+    0.25), all p < 1e-10.
+  source: Results, firing rate and LFP changes within nonREM; Figure 4C and 4D
+  expected:
+  - quantity: R, sextile 6 rate against packet delta power
+    value: -0.28
+    tolerance: 0.028
+  - quantity: R, sextile 6 rate against packet gamma power
+    value: 0.44
+    tolerance: 0.044
+  - quantity: R, sextile 1 rate against sigma power in the last 20 s
+    value: 0.25
+    tolerance: 0.025
+  criterion: Packets of at least 20 s. Group mean rate per packet and log band power, each
+    z-scored over the packets of its session, pooled. Reproduced when all three R are within
+    tolerance with p < 1e-10; partially reproduced when at least two have the stated sign with
+    p < 0.05.
+- id: fig5b-nrem-between-ma
+  statement: An intervening nonREM packet reduces the rates of the top two sextiles from one MA
+    to the next (both p < 0.01).
+  source: Results, sleep sub-states induce lasting changes; Figure 5B
+  criterion: Triplets of consecutive epochs MA, packet, MA. Change per pE cell and triplet is
+    the rate in the second MA minus the first. Two-sided Wilcoxon signed-rank per sextile over
+    cell and triplet pairs. Reproduced when sextiles 5 and 6 both have a negative mean change
+    with p < 0.01; partially reproduced when one does. The per-cell mean over triplets is
+    shown as a variant.
+- id: fig5b-wake-between-packets
+  statement: An intervening WAKE episode increases the rate of the fastest sextile from one
+    nonREM packet to the next (24 triplets).
+  source: Results, sleep sub-states induce lasting changes; Figure 5B
+  criterion: Triplets packet, WAKE, packet; change is the rate in the second packet minus the
+    first; tests as in fig5b-nrem-between-ma. Reproduced when sextile 6 has a positive mean
+    change with p < 0.05. The number of triplets is reported against the paper's 24.
+- id: fig5b-ma-between-packets
+  statement: An intervening MA increases the rates of slow-firing pE cells from one packet to
+    the next and does not affect fast-firing cells.
+  source: Results, sleep sub-states induce lasting changes; Figure 5B
+  criterion: Triplets packet, MA, packet; tests as in fig5b-nrem-between-ma. Reproduced when
+    sextile 1 has a positive mean change with p < 0.05 and sextile 6 has p >= 0.05; partially
+    reproduced when sextile 1 increases but sextile 6 changes too.
+- id: fig5b-rem-between-packets
+  statement: An intervening REM episode decreases the rates of all sextiles from one packet to
+    the next.
+  source: Results, sleep sub-states induce lasting changes; Figure 5B
+  criterion: Triplets packet, REM, packet; tests as in fig5b-nrem-between-ma. Reproduced when
+    all six sextiles have a negative mean change with p < 0.05; partially reproduced when at
+    least three do and none increases significantly.
+- id: fig5c-rem-duration
+  statement: Longer REM episodes produce a proportionally larger decrease of rates from one
+    packet to the next (R = -0.22, p < 1e-2).
+  source: Results, sleep sub-states induce lasting changes; Figure 5C
+  expected:
+    quantity: Pearson R, rate change against REM duration
+    value: -0.22
+    tolerance: 0.022
+  criterion: Triplets packet, REM, packet. Readings (a) per triplet, the fractional change of
+    the pE population mean rate, (post - pre) / pre; (b) per cell and triplet, the fractional
+    change, cells with a pre rate above 0. Reproduced when under one reading R is within
+    tolerance with p < 0.01; partially reproduced when R < 0 with p < 0.01.
+- id: fig5c-sigma-ma
+  statement: Sigma power in the last 20 s of a packet between two MAs correlates with a larger
+    increase of the slowest sextile from one MA to the next (R = 0.181, p < 0.01).
+  source: Results, sleep sub-states induce lasting changes; Figure 5C
+  expected:
+    quantity: Pearson R, sigma power against sextile 1 change
+    value: 0.181
+    tolerance: 0.0181
+  criterion: MA, packet, MA triplets; log sigma power of the last 20 s of the packet z-scored
+    over the session's packets; change of the sextile 1 mean rate from the first to the second
+    MA. Reproduced when R is within tolerance with p < 0.01; partially reproduced when R > 0
+    with p < 0.01.
+- id: fig5c-delta-change
+  statement: The increase of the slowest sextile's rate from one packet to the next is
+    positively correlated with the change of delta power between the packets, regardless of
+    the intervening state.
+  source: Results, sleep sub-states induce lasting changes; Figure 5C
+  criterion: Consecutive packets (any intervening epochs, within a nonREM episode or SLEEP
+    period or not), each at least 20 s; change of the sextile 1 mean rate against the change of
+    the session-normalized delta power (packet mean divided by the session's Non-REM mean).
+    Reproduced when R > 0 with p < 0.05.
+- id: figs5-within-wake-rem
+  statement: Within WAKE the two fastest sextiles increase and the two slowest decrease their
+    rates; within REM all sextiles except the fourth increase.
+  source: Results, firing rate and LFP changes within nonREM, last paragraph (Figure S5A and
+    S5B)
+  criterion: Time courses within WAKE epochs of at least 40 s and REM epochs of at least 20 s.
+    The WAKE part holds when sextiles 5 and 6 have R > 0 and sextiles 1 and 2 R < 0, each at p
+    < 0.05; the REM part when sextiles 1, 2, 3, 5 and 6 have R > 0 at p < 0.05. Reproduced when
+    both parts hold, partially reproduced when one does.
+- id: fig5c-wake-movement
+  statement: WAKE periods with more movement have a larger effect on the rate increase of the
+    fastest sextile from one packet to the next (R = 0.43, p < 0.05).
+  source: Results, sleep sub-states induce lasting changes; Figure 5C
+- id: updown-durations
+  statement: DOWN states have a median duration of 0.19 s and UP states 0.47 s.
+  source: Results, assessment of firing patterns (Figure S4A)
+- id: fig3c-slow-oscillation-spindles-over-sleep
+  statement: Over SLEEP, the incidence of spindles (R = -0.093), UP states (R = -0.10) and DOWN
+    states (R = -0.08) decreases and DOWN state duration increases, while spindle duration,
+    frequency and amplitude do not change.
+  source: Results, firing pattern and LFP changes across sleep; Figure 3C
+- id: fig4ii-iii-updown-spindles-within-packets
+  statement: Within packets the incidence of UP and DOWN states increases, UP states shorten and
+    DOWN states lengthen, and spindle incidence and duration increase.
+  source: Results, firing rate and LFP changes within nonREM; Figure 4A and 4B, panels ii and
+    iii
+- id: fig2de-up-state-sequences
+  statement: pE cells fire in stable sequences early in UP states, and the latency of a cell's
+    first spike is negatively correlated with its firing rate.
+  source: Results, assessment of firing patterns; Figure 2D and 2E
+- id: fig3f-4e-within-up-rates
+  statement: Within UP states, the fastest sextile and pI cells decrease and the slowest sextile
+    increases from early to late SLEEP, and within packets the fastest sextile drops while pI
+    cells increase.
+  source: Results; Figure 3F and Figure 4E
