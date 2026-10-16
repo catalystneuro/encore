@@ -27,7 +27,7 @@ The behaviour labels in the files have no description; their names come from the
 differences from the paper's method, is
 [`attempts/000114-carcea-2021-01.yaml`](../../attempts/000114-carcea-2021-01.yaml).
 
-- `reproduce_carcea_2021.ipynb`: the analysis. It takes about two minutes, most of it streaming
+- `reproduce_carcea_2021.ipynb`: the analysis. It takes about three minutes, most of it streaming
   the spike times and photometry.
 - `pvn.py`: loading the files without the raw voltage, the modulation index and shuffle test of the
   paper's code, and quality measures of the units. Other notebooks on this dandiset can import it.
