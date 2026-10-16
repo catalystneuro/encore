@@ -116,13 +116,17 @@ def load_session(path: str, url: str, f: h5py.File | None = None) -> Session:
     return s
 
 
-def classify_states(starts, stops, labels) -> np.ndarray:
-    """WAKE, MA, NREM or REM for each row of the state table (MA as in the module docstring)."""
+def classify_states(starts, stops, labels, ma_max: float = MA_MAX, both_sides: bool = True) -> np.ndarray:
+    """WAKE, MA, NREM or REM for each row of the state table (MA as in the module docstring).
+    `ma_max` and `both_sides=False` (Non-REM on at least one side) give looser MA rules."""
     out = np.array(["WAKE" if L == "Awake" else "NREM" if L == "Non-REM" else "REM" for L in labels],
                    dtype=object)
     dur = stops - starts
-    for i in range(1, len(labels) - 1):
-        if labels[i] == "Awake" and dur[i] < MA_MAX and labels[i - 1] == "Non-REM" and labels[i + 1] == "Non-REM":
+    for i in range(len(labels)):
+        if labels[i] != "Awake" or dur[i] >= ma_max:
+            continue
+        nb = [labels[j] == "Non-REM" for j in (i - 1, i + 1) if 0 <= j < len(labels)]
+        if (len(nb) == 2 and all(nb)) if both_sides else any(nb):
             out[i] = "MA"
     return out
 
