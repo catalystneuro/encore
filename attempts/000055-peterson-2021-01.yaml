@@ -1,0 +1,370 @@
+schema_version: 1
+id: 000055-peterson-2021-01
+dandiset: "000055"
+dandiset_version: 0.220127.0436
+paper: doi:10.1523/eneuro.0007-21.2021
+date: 2026-10-16
+entry: 000055-peterson-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The paper's projection matrices from electrodes to AAL regions (aal_<subject>_elecs2ROI.csv)
+    and the regions' left-hemisphere centroids (aal_<subject>_ROIcentroids_Lside.csv), Figshare item
+    "ROI projection matrices and labels", version 1. Used for every regional measure and for the
+    choice of electrodes in the regression.
+  source: doi:10.6084/m9.figshare.12114408.v1
+- what: The paper's analysis code, read for the method choices the Methods leave open (Morlet
+    parameters, baseline, band medians, projection, folding of the reach angle, regression design,
+    forward selection, splits and Delta R2). The Kruskal-Wallis p-values printed by
+    Plot_banded_power_Fig5.ipynb are shown as reference only.
+  source: https://github.com/BruntonUWBio/naturalistic_arm_movements_ecog at commit
+    04c6faf2f219586fa834d10c614ef48a694cec55
+outcomes:
+- claim: subjects-days-hemispheres
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:subjects-days-hemispheres
+  measured:
+  - 12
+  - 5
+  notes: 12 subjects with 3 to 5 files each, all on days 3 to 7 (subject 01 days 3, 4, 5 and 7;
+    subjects 02 and 03 days 3 to 6; subject 05 days 3, 4 and 7; the others days 3 to 7). Five
+    subjects (02, 04, 05, 07, 08) have electrodes in the right hemisphere by the sign of the mean x
+    coordinate, and every file's events are of the contralateral wrist.
+- claim: demographics
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The files' subject objects hold only species and subject_id, and the dandiset metadata has
+    no sex or age. The paper gives the values only in aggregate.
+- claim: electrode-counts
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:electrode-counts
+  measured:
+  - 84.8
+  - 7
+  - 23.7
+  notes: Under reading (a) the mean number of surface electrodes is 84.8 +/- 11.6 (paper 87.0 +/-
+    12.9) and seven subjects (01, 02, 03, 09, 10, 11, 12) have electrodes in groups described as
+    depth, 23.7 +/- 13.4 on average (paper five subjects, 23.2 +/- 12.1). Under reading (b), which
+    leaves out subject 03's 16 depth electrodes without coordinates, six subjects have depth
+    electrodes, 23.7 +/- 13.8. The surface count and the mean depth count match; the number of
+    subjects with depth electrodes does not under either reading.
+  deviations:
+  - Depth electrodes are identified by their group description, as the files have no other label.
+- claim: bad-electrodes
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:bad-electrodes
+  measured:
+  - 4.83
+  - 4.29
+  notes: Under reading (a), the `good` flags of each subject's first file as the paper's code takes
+    them, 4.83 +/- 4.99 surface electrodes per subject are bad (paper 4.9 +/- 4.9) and 4.29 +/-
+    5.85 depth electrodes per subject with depth electrodes, over seven subjects (paper 1.0 +/- 1.4
+    over five). Subject 03's 16 depth electrodes, which have no coordinates, are all flagged;
+    without that subject the depth mean is 2.33. Reading (b), bad in any file, gives 12.58 and 8.14;
+    reading (c), the mean over files, 4.17 and 4.71.
+  deviations:
+  - The `good` flag is taken as the paper's bad-electrode selection; the files do not say how it was
+    set, and it differs between a subject's files.
+- claim: event-counts
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:event-counts
+  measured:
+  - 211
+  - 996
+  - 770.5
+  notes: Reading (a), the reaches tables, gives 211 to 996 events per subject with a median of
+    770.5; reading (b), after segment rejection, 208 to 986 with a median of 748. The largest count
+    is within tolerance of 947 under both readings, the smallest and the median are not. 12 of 55
+    files hold 199 or 200 events, the Methods' cap per day, which comes before the visual removal
+    of 17.8 +/- 9.9% of events as false positives; taking 17.8% off every subject gives 173 to 819
+    with a median of 633. The dandiset appears to hold the events before that removal and does not
+    mark which were removed.
+- claim: features-differ-subjects
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:features-differ-subjects
+  notes: Kruskal-Wallis across the 12 subjects gives p < 0.001 for all ten features over 8088
+    events; the largest p is 1.2e-34 (duration). Effect sizes (eta squared from H) range from 0.022
+    (duration) to 0.250 (onset speed).
+  deviations:
+  - Includes the events the paper removed as false positives, which the dandiset does not mark.
+  - Time of day is taken from the start of each file's day, which the sleep labels place at local
+    midnight; the files' session_start_time states 19:00 at UTC-05:00.
+- claim: days-one-dominant
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:days-one-dominant
+  notes: Under reading (b) subjects 04, 05 and 09 have the largest share of their events on one day
+    (0.381, 0.610 and 0.517; next 0.308 in subjects 02 and 03). Under reading (a) only subjects 05
+    and 09 have more than half their events on one day.
+  deviations:
+  - The paper's word "most" is read two ways; the claim holds under reading (b).
+- claim: duration-magnitude-small
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:duration-magnitude-small
+  notes: 91.7% of events last less than 2 s and 91.5% cover less than 200 pixels; both fractions are
+    above half in all 12 subjects, the lowest being 0.590 for magnitude in subject 08 (median 172
+    pixels). 328 events last less than the 0.5 s the Methods keep.
+- claim: angle-bimodal
+  outcome: not_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:angle-bimodal
+  notes: Over all events the folded angle has its two most populated 15-degree bins at 60 to 75 and
+    75 to 90 degrees (1304 and 1605 of 8088 events). The downward outer bin holds 514, more than its
+    neighbour (487) but fewer than six other bins, so the pooled part of the criterion fails. In 11
+    of 12 subjects steep reaches (|angle| above 60) outnumber flat ones (below 30), and in every
+    subject upward steep reaches outnumber downward ones. The distribution has a strong upward peak
+    and a weak downward one. The stored angle is in image coordinates with y down (checked against
+    the pose, median difference 1.5 degrees), and the code's negation makes upward positive.
+  deviations:
+  - Includes the events the paper removed as false positives.
+- claim: feature-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:feature-correlations
+  measured:
+  - 0.231
+  - 0.609
+  - 0.505
+  - 0.501
+  - 0.494
+  - 0.598
+  notes: Five of six Pearson correlations are within 10% of the paper's; magnitude and duration is
+    0.231 against 0.26 +/- 0.026. All six are positive. The events left after segment rejection give
+    values within 0.004 of these.
+  deviations:
+  - Includes the events the paper removed as false positives.
+- claim: bimanual-skew
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:bimanual-skew
+  notes: Median bimanual ratio 0.137, median overlap 0.467 s against a median duration of 1.1 s, and
+    72.6% of events of class bimanual. The four subjects with the highest median ratio are 04, 07,
+    05 and 02.
+  deviations:
+  - Bimanual overlap is used as stored, in seconds; the file's description calls it a fraction of
+    the movement duration.
+- claim: projection-link
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:projection-link
+  notes: Matched by row order. In all 12 subjects the matrix has one row per electrode of the
+    dandiset's table (subject 01's four extra rows past the table are all zero), the regions with
+    average density above 3 are the paper's eight, and the median rank correlation between an
+    electrode's weight and its closeness to the region's centroid is 0.917 to 0.967, against at most
+    0.143 with shuffled rows. Zero-weight rows are subject 03's electrodes without coordinates (rows
+    80 to 95) and subject 12's rows 72 to 79 (group AID), which have coordinates in the dandiset;
+    subject 12's electrodes without stored R2 are rows 116 to 123 (group PHD).
+- claim: group-pattern-rois
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:group-pattern-rois
+  notes: Mean over subjects of the subject medians, 0 to 0.5 s. LFB and HFB change by -0.549 and
+    0.487 dB in the precentral, -0.793 and 0.596 dB in the postcentral and -0.879 and 0.280 dB in
+    the inferior parietal region; the summed absolute change in these (1.036 to 1.389 dB) exceeds
+    every temporal region (at most 0.337 dB). LFB is below 0 in 12, 10 and 12 of the 12 subjects in
+    these regions. The paper's statistical masking was not applied. The projection matrices match
+    the electrodes (projection-link), so the regional values rest on the dandiset's ECoG.
+  deviations:
+  - Five events per file (seeded subsample, 15 to 25 per subject after rejection) in place of all
+    events, for runtime.
+  - Electrodes carrying 99% of every region's weight; the rest of the weight is left out and the
+    weights renormalised.
+  - No bootstrap masking of non-significant bins; the criterion uses signs and magnitudes.
+  - Spectral power from 4 s windows of the continuous ECoG with the code's Morlet parameters, not
+    MNE on the paper's 10 s segments.
+- claim: precentral-subject-ci
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:precentral-subject-ci
+  measured:
+  - -1.46
+  - -0.45
+  - -1.8
+  - -0.1
+  - -0.45
+  - -1.2
+  - -0.73
+  - -0.03
+  - -0.33
+  - -0.3
+  - -2.05
+  - -0.48
+  - 0.11
+  - 0.52
+  - 1.5
+  - 0.5
+  - 0.35
+  - 1.99
+  - 1.16
+  - 0.52
+  - 0.11
+  - 0.19
+  - 0.18
+  - 0.16
+  notes: Under the first reading, the subject mean over events, 22 of 24 values fall inside the
+    paper's 95% intervals; under the second, the median, 20 of 24. The means outside are subject 06
+    HFB (1.99 against 2.02 to 2.37 dB) and subject 10 LFB (-0.30 against -0.87 to -0.35 dB). Spearman
+    r between these values and the interval centres is 0.846 to 0.974. Without segment rejection 21
+    medians are inside; without the three late-starting files, 19. The paper's intervals are of
+    events after false-positive removal, which cannot be repeated here.
+  deviations:
+  - Table 1 does not say whether its intervals are of the mean or the median; both readings are
+    computed and both match.
+  - Precentral power uses the electrodes that carry 95% of the precentral weight (5 to 32 per
+    subject), weights renormalised; on a subsample the full projection agrees (r = 0.999).
+  - Includes the events the paper removed as false positives; segment rejection as described in
+    the claims file.
+  - In three files the event times are moved onto the ECoG clock (see the findings).
+- claim: precentral-subjects-differ
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:precentral-subjects-differ
+  notes: Kruskal-Wallis across subjects over 7964 events gives H = 802.1 for LFB and 1243.5 for HFB,
+    with p below the smallest printed number (paper's code printed 2.1e-159 and 2.4e-278).
+  deviations:
+  - As for precentral-subject-ci.
+- claim: precentral-day-effects
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:precentral-day-effects
+  notes: 23 of 24 subject and band calls agree with the paper's; five subjects are significant in
+    each band. The difference is subject 05 in LFB, p = 0.054 here against 0.013 in the paper. The
+    same 23 agree without segment rejection.
+  deviations:
+  - As for precentral-subject-ci.
+- claim: baseline-reduces-day-variability
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:baseline-reduces-day-variability
+  notes: The SD across days of the day means is lower with baseline subtraction in 9 of 12 subjects
+    for LFB (not in 03, 06 and 11) and 12 of 12 for HFB, with median ratios 0.216 and 0.291, and it
+    stays above 0 in all (smallest 0.066 and 0.032 dB).
+  deviations:
+  - The legend of Extended Data Figure 5-1 does not name the region or the statistic; the precentral
+    region and the SD of day means were chosen.
+- claim: regression-r2-max
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:regression-r2-max
+  measured: 0.141
+  notes: The largest mean test R2 over 40 splits on the 92 tested electrodes is 0.141 (subject 03,
+    LFB); 0.137 with the code's 80/20 split. The R2 values stored in the dandiset reach 0.149 (LFB)
+    and 0.255 (HFB, subject 04) over all electrodes; on the tested electrodes they correlate with
+    the recomputed ones (r = 0.865 for LFB and 0.776 for HFB). All 101200 Huber fits converged.
+  deviations:
+  - Up to eight electrodes per subject (the good electrodes with the largest precentral weight, 92
+    in all), not every electrode, for runtime.
+  - 40 random day-balanced splits with 90% training (the Methods) in place of 200; the code's 80%
+    split with 10 splits is shown as a variant.
+  - Forward selection on all events, as in the code; the Methods do not say whether it used the
+    training events only.
+- claim: regression-r2-sensorimotor
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:regression-r2-sensorimotor
+  notes: On the stored R2 projected onto the regions and averaged over subjects, the highest region
+    is the precentral for LFB and the postcentral for HFB, and the frontoparietal mean exceeds the
+    temporal mean in both bands (LFB -0.0061 against -0.0182; HFB -0.0084 against -0.0171). The
+    projected values are all near or below 0, as only 24 (LFB) and 25 (HFB) electrodes have a stored
+    R2 above 0.05.
+  deviations:
+  - Judged on the R2 values stored in the dandiset, whose computation the files do not describe, not
+    on a recomputation; the recomputation covers precentral electrodes only and agrees with the
+    stored values there (regression-r2-max).
+  - The paper shows electrodes on a brain; here the stored R2 is projected onto the eight regions.
+- claim: regression-angle-day-top
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:regression-angle-day-top
+  notes: 12 of 92 tested electrodes have mean LFB test R2 above 0.05 (6 in subject 01, 4 in 03, 2 in
+    11). On them, reach angle (0.0645) and day (0.0280) have the largest mean Delta R2 for LFB, and
+    also for HFB (0.0108 and 0.0051). The same two lead with the code's split and scoring and over
+    all tested electrodes. The well-fit electrodes come from three subjects.
+  deviations:
+  - As for regression-r2-max.
+  - Delta R2 is scored on unshuffled test events, as the Methods say; the code scores the shuffled
+    model on shuffled test events (shown as a variant, same result).
+- claim: regression-angle-coefficient
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:regression-angle-coefficient
+  notes: On the 12 well-fit electrodes the mean reach angle coefficient is -1.065 for LFB (negative
+    on all 12, Wilcoxon p = 0.00049) and 0.2145 for HFB (positive on 11 of 12, p = 0.012). Over all
+    92 tested electrodes the means are -0.277 and 0.160.
+  deviations:
+  - As for regression-r2-max.
+- claim: regression-angle-retained
+  outcome: reproduced
+  notebook: reproduce_peterson_2021.ipynb
+  output: claim:regression-angle-retained
+  notes: Forward selection retains reach angle in 64.1% of the 184 models on the tested electrodes,
+    ahead of onset speed (38.6%) and duration (34.8%); it leads in both bands (67.4% LFB, 60.9% HFB).
+    The paper's order after angle (duration, magnitude, bimanual ratio, overlap) is not reproduced
+    on these electrodes, which the criterion does not test.
+  deviations:
+  - As for regression-r2-max; the paper's figure averages over regions, here over precentral
+    electrodes.
+findings:
+- kind: metadata_error
+  statement: In three files (sub-01 ses-7, sub-04 ses-3, sub-06 ses-3) the ECoG ElectricalSeries has
+    starting_time 0 but starts at session_start_time, 8.1 to 8.5 h after the start of the day, while
+    the reaches table, the epochs and the pose count from the start of the day. Event-locked ECoG with
+    the stored reach times shows no movement response in sub-01 ses-7 and sub-06 ses-3; with the
+    offset subtracted it shows the usual one. The ReachEvents timestamps of these files are on the
+    ECoG clock, so the two event series of a file disagree by the offset.
+- kind: metadata_error
+  statement: The full-day files give session_start_time as 19:00 at UTC-05:00, but the sleep labels
+    peak in the first six hours of each file and events are fewest 2 to 5 h in, which places the
+    start at local midnight. Consistent with the data, not shown.
+- kind: selection_undocumented
+  statement: The reaches tables hold 211 to 996 events per subject (median 770.5) where the paper
+    analysed 151 to 947 (median 640). Many days hold exactly the cap of 200 events, which the Methods
+    apply before removing 17.8 +/- 9.9% of events as false positives by visual inspection. The
+    dandiset does not say that it holds the events before that removal, nor mark the false
+    positives, so the paper's event set cannot be recovered.
+- kind: data_missing
+  statement: The subjects' sex and age are not in the files or the dandiset metadata.
+- kind: metadata_error
+  statement: Bimanual_overlap is described as a fraction of the contralateral movement duration, but
+    its values (up to 3.83, never above the duration) are in seconds.
+- kind: metadata_insufficient
+  statement: The reach angle's convention is not described; the values are the angle of the largest
+    wrist displacement in image coordinates with y pointing down, so positive angles are downward
+    reaches, the reverse of the paper's Figure 2.
+- kind: metadata_error
+  statement: The pose SpatialSeries are stated in meters with a conversion of NaN, but hold image
+    pixels. The ECGL and ECGR series of sub-01 carry the description of the EOG series
+    ("Electrooculography for tracking saccades").
+- kind: metadata_insufficient
+  statement: Electrode location is "unknown" and impedance missing for every electrode, so regions
+    can be assigned only with the paper's projection matrices on Figshare. The stored low_freq_R2 and
+    high_freq_R2 columns do not say how they were computed (they agree with a recomputation of the
+    paper's regression, r = 0.78 to 0.87).
+- kind: other
+  statement: Electrode groups described as depth occur in seven subjects, where the paper reports
+    five; sub-03's 16 depth electrodes have no coordinates and are all flagged bad. In sub-12 the
+    electrodes with zero projection weight in the paper's matrices (rows 72 to 79) have coordinates,
+    and the electrodes without stored R2 are others (rows 116 to 123).
+- kind: other
+  statement: In sub-08 ses-4 one reach has a start_time of 86440.3 s, past the end of its 24 h file,
+    where its ReachEvents timestamp is 40.3 s. 328 reaches last less than the 0.5 s the Methods keep.
+- kind: other
+  statement: The ECoG is stored in chunks of one channel, 84375 samples long (54412 in sub-01 ses-7),
+    and its chunk B-tree is spread through each file. Streamed with h5py, looking up the chunks of one
+    window costs about 0.4 s per chunk row over the network; the entry reads the chunk index directly.
+- kind: code_mismatch
+  statement: The paper's regression code splits 80/20 where the Methods say 90/10, scores Delta R2 on
+    shuffled test events where the Methods say unshuffled, and runs forward selection on all events,
+    including the test events. Here the choices make no difference to the outcomes.

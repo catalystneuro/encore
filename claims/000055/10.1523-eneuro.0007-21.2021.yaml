@@ -1,0 +1,400 @@
+# Claims for Peterson, Singh, Wang, Rao & Brunton (2021), eNeuro, on dandiset 000055 (AJILE12).
+# Source: the full text in PubMed Central (PMC8225404, CC BY 4.0), read from its Methods, Results,
+# figure legends and Tables 1 and 2. The Extended Data figures are EPS files that were not read;
+# claims on them rest on their legends and the Results.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata of every file, the number of events per subject and day, the electrode tables
+# (groups, coordinates, `good` flags, and the maximum of the stored R2 columns per subject), the
+# summary of the reach features of two files, the link between the paper's projection matrices
+# and the electrode tables, the event-time offset in three files, the noise measures of the
+# event windows, and, from a trial run of the loading code, the median precentral LFB and HFB
+# power of subject 01 on days 3 to 5. No other claim's analysis had been run. The author had also
+# read the paper's code (GitHub BruntonUWBio/naturalistic_arm_movements_ecog, commit 04c6faf),
+# including the outputs printed in Plot_banded_power_Fig5.ipynb.
+#
+# Method choices fixed here, from the paper's code where the Methods are silent: Morlet power at
+# 1 to 121 Hz in 5 Hz steps with n_cycles = f / 4, in dB, in 0.1 s bins; the baseline (-1.5 to
+# -1 s) is the mean over its bins, subtracted per event, channel and frequency; band power is the
+# median over the bins from 0 to 0.5 s and then over the band's frequencies (LFB 8 to 32 Hz, HFB
+# 76 to 100 Hz); regional power is the projection of baseline-subtracted electrode power with the
+# paper's projection matrices, bad electrodes (those of the subject's first file) set to 0 and the
+# weights renormalised; the reach angle is folded as in the code (negated, then 90 to 270 degrees
+# mapped onto 90 to -90). Choices made here: events are those of the dandiset's reaches tables;
+# an event is dropped when its ECoG window holds missing or flat data, when its mean power is below
+# 0 dB (in microvolts squared), or when its power at 116 and 121 Hz is more than 3 SD above the
+# subject's mean (the Methods' segment rejection, as far as it can be read). Regional power for
+# the precentral claims uses, per subject, the electrodes that carry 95% of the precentral weight,
+# with the weights renormalised over them; the eight-region analysis uses a seeded subsample of
+# five events per file and the electrodes that carry 99% of every region's weight.
+schema_version: 1
+dandiset: "000055"
+paper: doi:10.1523/eneuro.0007-21.2021
+claims:
+- id: subjects-days-hemispheres
+  statement: The data come from 12 subjects, each recorded for 3 to 5 days within days 3 to 7
+    after implantation, with electrodes in the right hemisphere in five subjects and in the left
+    in seven; events are movements of the wrist contralateral to the implant.
+  source: Methods (Subject information, Data collection); Results; Figure 1h; Extended Data
+    Figure 1-1
+  expected:
+  - quantity: number of subjects
+    value: 12
+    tolerance: 0
+  - quantity: subjects implanted in the right hemisphere
+    value: 5
+    tolerance: 0
+  criterion: Reproduced when the dandiset holds 12 subjects, every subject has 3 to 5 files whose
+    days lie within 3 to 7, five subjects have electrodes in the right hemisphere (sign of the
+    mean electrode x coordinate) and seven in the left, and every file's event wrist is the one
+    contralateral to its hemisphere. Counts are exact, so the tolerance is 0.
+- id: demographics
+  statement: The subjects were 8 males and 4 females, aged 29.4 +/- 7.9 years (mean +/- SD).
+  source: Methods (Subject information)
+  expected:
+  - quantity: males
+    value: 8
+    tolerance: 0
+  - quantity: mean age (years)
+    value: 29.4
+    tolerance: 2.94
+- id: electrode-counts
+  statement: Subjects had 87.0 +/- 12.9 surface electrodes (mean +/- SD), and five subjects also
+    had 23.2 +/- 12.1 depth electrodes.
+  source: Methods (Subject information)
+  expected:
+  - quantity: mean surface electrodes per subject
+    value: 87.0
+    tolerance: 8.7
+  - quantity: subjects with depth electrodes
+    value: 5
+    tolerance: 0
+  - quantity: mean depth electrodes in those subjects
+    value: 23.2
+    tolerance: 2.32
+  criterion: Electrodes are counted from the electrode tables, in a subject's first file. Two
+    readings are allowed. (a) Depth electrodes are those of every group whose description
+    contains "depth"; the others are surface electrodes. (b) As (a), but electrodes without
+    coordinates are left out, as they could not have been localised. The claim is reproduced
+    when all three values are within tolerance under a reading, partially reproduced when the
+    surface count is within tolerance but a depth value is not, and not reproduced otherwise.
+- id: bad-electrodes
+  statement: Removing electrodes with abnormal SD or kurtosis left out 4.9 +/- 4.9 surface
+    electrodes per subject, and 1.0 +/- 1.4 depth electrodes in each of the five subjects with
+    depth electrodes.
+  source: Methods (ECoG data processing)
+  expected:
+  - quantity: mean surface electrodes removed per subject
+    value: 4.9
+    tolerance: 0.49
+  - quantity: mean depth electrodes removed per subject with depth electrodes
+    value: 1.0
+    tolerance: 0.1
+  criterion: A removed electrode is one whose `good` flag is false. Three readings are allowed,
+    as the flag differs between a subject's files. (a) The subject's first file, as the paper's
+    code takes it. (b) Bad in any file. (c) The mean over the subject's files. Depth and surface
+    are as in electrode-counts, reading (a). Reproduced when both values are within tolerance
+    under a reading; partially reproduced when one is; not reproduced otherwise.
+  depends_on:
+  - electrode-counts
+- id: event-counts
+  statement: The total number of movement events per subject was between 151 and 947, with a
+    median of 640 across subjects.
+  source: Figure 2 legend
+  expected:
+  - quantity: fewest events in a subject
+    value: 151
+    tolerance: 15.1
+  - quantity: most events in a subject
+    value: 947
+    tolerance: 94.7
+  - quantity: median events per subject
+    value: 640
+    tolerance: 64
+  criterion: Two readings. (a) Every event in the dandiset's reaches tables. (b) The events left
+    after this attempt's segment rejection. Reproduced when all three values are within
+    tolerance under a reading; partially reproduced when one or two are; not reproduced when
+    none is.
+- id: features-differ-subjects
+  statement: All ten behavioural and environmental features differ across subjects (one-way
+    Kruskal-Wallis test, p < 0.001 for every feature).
+  source: Results (Behavior during naturalistic movements); Figure 2
+  criterion: A Kruskal-Wallis test across the 12 subjects on every event of the reaches tables,
+    for each of day, time of day, duration, magnitude, folded angle, onset speed, speech ratio,
+    bimanual ratio, bimanual overlap and bimanual class. Reproduced when p < 0.001 for all ten;
+    partially reproduced when for 7 to 9; not reproduced otherwise.
+- id: days-one-dominant
+  statement: The number of events was fairly consistent across recording days, except in
+    subjects 04, 05 and 09, who each had one day representing most of their events.
+  source: Results (Behavior during naturalistic movements); Figure 2
+  criterion: Two readings of "most". (a) In each of subjects 04, 05 and 09 one day holds more
+    than half of the subject's events, and in no other subject. (b) Subjects 04, 05 and 09 are
+    the three subjects with the largest share of their events on one day. Reproduced when either
+    holds; partially reproduced when two of the three subjects meet reading (b); not reproduced
+    otherwise.
+- id: duration-magnitude-small
+  statement: Most reaches last less than 2 s and cover less than 200 pixels, with minimal
+    variability across subjects.
+  source: Results (Behavior during naturalistic movements); Figure 2
+  criterion: Reproduced when, over all events, more than half last less than 2 s and more than
+    half cover less than 200 pixels, and both hold in at least 10 of the 12 subjects. Partially
+    reproduced when it holds over all events but in fewer subjects. Not reproduced otherwise.
+- id: angle-bimodal
+  statement: Reach angle distributions tend to be bimodal, with peaks at +/-90 degrees (upward and
+    downward reaches) and few side-to-side reaches.
+  source: Results (Behavior during naturalistic movements); Figure 2
+  criterion: On the folded angle (-90 down to 90 up). Over all events, the two most populated of
+    the twelve 15-degree bins from -90 to 90 are the two outer ones, and in at least 8 of the 12
+    subjects more events have |angle| above 60 degrees than below 30. Reproduced when both hold;
+    partially reproduced when only the pooled part holds; not reproduced otherwise.
+- id: feature-correlations
+  statement: Over all subjects, reach magnitude correlates with reach duration (r = 0.26) and
+    onset speed (r = 0.56), reach duration with bimanual overlap (r = 0.48), and the bimanual
+    features with each other (overlap and ratio r = 0.51, class and ratio r = 0.50, overlap and
+    class r = 0.61).
+  source: Results (Behavior during naturalistic movements); Extended Data Figure 2-2
+  expected:
+  - quantity: r magnitude and duration
+    value: 0.26
+    tolerance: 0.026
+  - quantity: r magnitude and onset speed
+    value: 0.56
+    tolerance: 0.056
+  - quantity: r duration and bimanual overlap
+    value: 0.48
+    tolerance: 0.048
+  - quantity: r bimanual overlap and bimanual ratio
+    value: 0.51
+    tolerance: 0.051
+  - quantity: r bimanual class and bimanual ratio
+    value: 0.5
+    tolerance: 0.05
+  - quantity: r bimanual overlap and bimanual class
+    value: 0.61
+    tolerance: 0.061
+  criterion: Pearson correlation over all events of all subjects, on the features in the code's
+    units (seconds, pixels, pixels per second; bimanual ratio with missing values set to 0.5).
+    Reproduced when all six are within tolerance; partially reproduced when all six are positive
+    and at least three are within tolerance; not reproduced otherwise.
+- id: bimanual-skew
+  statement: Bimanual ratio and overlap are skewed toward unimanual movements, less so in
+    subjects 02, 04 and 05, while the bimanual class is mostly bimanual.
+  source: Results (Behavior during naturalistic movements); Figure 2
+  criterion: Over all events, the median bimanual ratio is below 0.5, the median bimanual overlap
+    is below half the median reach duration, and more than half the events are of class
+    bimanual. Reproduced when these hold and subjects 02, 04 and 05 are among the four subjects
+    with the highest median bimanual ratio; partially reproduced when only the pooled part
+    holds; not reproduced otherwise.
+- id: projection-link
+  statement: The paper's projection matrices from electrodes to AAL regions can be matched to the
+    dandiset's electrodes, and selecting regions with an average electrode density above 3 gives
+    the paper's eight regions.
+  source: Methods (Projecting power into regions of interest); Data availability; Figshare
+    doi:10.6084/m9.figshare.12114408.v1
+  data: with_inputs
+  criterion: Electrodes are matched by their row order, as there is no identifier. The link holds
+    (reproduced) when, in every subject, the matrix has one row per electrode of the dandiset's
+    table (apart from rows of zeros past the end of the table), the eight regions with average
+    density above 3 are the paper's eight, and the rank correlation between an electrode's weight
+    for a region and its closeness to that region's centroid (median over the eight regions) is
+    above 0.5 and above every value from 20 shuffles of the row order. Partially reproduced when
+    this holds in 9 to 11 subjects; not reproduced otherwise.
+- id: group-pattern-rois
+  statement: At movement onset, low-frequency power decreases and high-frequency power increases
+    across subjects, with the largest changes in the precentral, postcentral and inferior
+    parietal regions and minimal changes in the three temporal regions.
+  source: Results (Intracortical spectral power during naturalistic movements); Figure 3
+  data: with_inputs
+  criterion: Projected power, median over events per subject and mean over subjects, from 0 to
+    0.5 s. Reproduced when LFB power is below 0 and HFB power above 0 in the precentral,
+    postcentral and inferior parietal regions, and in each of these three regions the sum of the
+    absolute LFB and HFB changes is larger than in each of the three temporal regions. Partially
+    reproduced when the signs hold but not the ranking. Not reproduced otherwise.
+  depends_on:
+  - projection-link
+- id: precentral-subject-ci
+  statement: Precentral LFB and HFB power from 0 to 0.5 s after movement onset differ between
+    subjects as given by their 95% confidence intervals in Table 1.
+  source: Table 1; Figure 5
+  data: with_inputs
+  expected:
+  - quantity: S01 LFB (dB), CI -1.87 to -1.29
+    value: -1.58
+    tolerance: 0.29
+  - quantity: S02 LFB (dB), CI -1.12 to -0.31
+    value: -0.715
+    tolerance: 0.405
+  - quantity: S03 LFB (dB), CI -2.11 to -1.73
+    value: -1.92
+    tolerance: 0.19
+  - quantity: S04 LFB (dB), CI -0.17 to 0.01
+    value: -0.08
+    tolerance: 0.09
+  - quantity: S05 LFB (dB), CI -0.7 to -0.38
+    value: -0.54
+    tolerance: 0.16
+  - quantity: S06 LFB (dB), CI -1.63 to -1.11
+    value: -1.37
+    tolerance: 0.26
+  - quantity: S07 LFB (dB), CI -0.84 to -0.51
+    value: -0.675
+    tolerance: 0.165
+  - quantity: S08 LFB (dB), CI -0.3 to 0.04
+    value: -0.13
+    tolerance: 0.17
+  - quantity: S09 LFB (dB), CI -0.57 to -0.08
+    value: -0.325
+    tolerance: 0.245
+  - quantity: S10 LFB (dB), CI -0.87 to -0.35
+    value: -0.61
+    tolerance: 0.26
+  - quantity: S11 LFB (dB), CI -2.3 to -1.86
+    value: -2.08
+    tolerance: 0.22
+  - quantity: S12 LFB (dB), CI -0.66 to -0.44
+    value: -0.55
+    tolerance: 0.11
+  - quantity: S01 HFB (dB), CI 0.03 to 0.23
+    value: 0.13
+    tolerance: 0.1
+  - quantity: S02 HFB (dB), CI 0.07 to 0.64
+    value: 0.355
+    tolerance: 0.285
+  - quantity: S03 HFB (dB), CI 1.39 to 1.67
+    value: 1.53
+    tolerance: 0.14
+  - quantity: S04 HFB (dB), CI 0.32 to 0.52
+    value: 0.42
+    tolerance: 0.1
+  - quantity: S05 HFB (dB), CI 0.2 to 0.48
+    value: 0.34
+    tolerance: 0.14
+  - quantity: S06 HFB (dB), CI 2.02 to 2.37
+    value: 2.195
+    tolerance: 0.175
+  - quantity: S07 HFB (dB), CI 1.14 to 1.34
+    value: 1.24
+    tolerance: 0.1
+  - quantity: S08 HFB (dB), CI 0.36 to 0.63
+    value: 0.495
+    tolerance: 0.135
+  - quantity: S09 HFB (dB), CI -0.11 to 0.23
+    value: 0.06
+    tolerance: 0.17
+  - quantity: S10 HFB (dB), CI 0.01 to 0.3
+    value: 0.155
+    tolerance: 0.145
+  - quantity: S11 HFB (dB), CI 0.09 to 0.34
+    value: 0.215
+    tolerance: 0.125
+  - quantity: S12 HFB (dB), CI 0.06 to 0.2
+    value: 0.13
+    tolerance: 0.07
+  criterion: Each expected value is the centre of the paper's 95% confidence interval and its
+    tolerance the half-width, so a value matches when it lies inside the interval. The table
+    does not say whether the interval is of the mean or the median over events; both readings
+    are computed. Reproduced when at least 20 of the 24 values match under a reading; partially
+    reproduced when 12 to 19 do; not reproduced when fewer do.
+  depends_on:
+  - projection-link
+- id: precentral-subjects-differ
+  statement: Precentral LFB and HFB power from 0 to 0.5 s differ significantly across subjects
+    (one-way Kruskal-Wallis test, p < 0.001 for both bands).
+  source: Results (Intracortical spectral power); Figure 5; Table 1
+  data: with_inputs
+  criterion: Kruskal-Wallis test across the 12 subjects on the events' precentral band power.
+    Reproduced when p < 0.001 in both bands; partially reproduced when in one; not reproduced
+    otherwise.
+  depends_on:
+  - projection-link
+- id: precentral-day-effects
+  statement: Precentral power depends on the recording day in several subjects; the effect is
+    significant (Kruskal-Wallis, p < 0.05) in LFB for subjects 03, 05, 06, 07, 08 and 11, and in
+    HFB for subjects 03, 04, 07, 08 and 10.
+  source: Results (Intracortical spectral power); Figure 5; Table 2
+  data: with_inputs
+  criterion: Kruskal-Wallis test across days within each subject and band, p < 0.05. Of the 24
+    subject and band calls, count those that agree with the paper (significant where it is, not
+    where it is not). Reproduced when at least 20 agree; partially reproduced when 14 to 19
+    agree and at least three subjects are significant in each band; not reproduced otherwise.
+  depends_on:
+  - projection-link
+- id: baseline-reduces-day-variability
+  statement: Baseline subtraction reduces the variability of LFB and HFB power across recording
+    days, but clear variability remains.
+  source: Extended Data Figure 5-1 (legend); Results
+  data: with_inputs
+  criterion: The legend does not name the region; the precentral region of Figure 5 is used. Per
+    subject and band, the SD across days of the day means of power from 0 to 0.5 s, with and
+    without baseline subtraction. Reproduced when the SD with subtraction is lower in at least 9
+    of 12 subjects in both bands and above 0 in all; partially reproduced when this holds in one
+    band; not reproduced otherwise.
+  depends_on:
+  - projection-link
+- id: regression-r2-max
+  statement: Regression models of single-event power on the behavioural features explain at
+    most 25% of the variance of withheld events (R2 at most 0.25).
+  source: Results (Modeling single-event spectral power); Figure 6b; Discussion
+  data: with_inputs
+  expected:
+    quantity: largest test R2 of any model
+    value: 0.25
+    tolerance: 0.025
+  criterion: Recomputed for the tested electrodes (the eight good electrodes per subject with the
+    largest precentral weight), LFB and HFB, as the mean test R2 over train and test splits. The
+    claim is an upper bound, so it is reproduced when the largest mean R2 is at most 0.275 and
+    not reproduced when it is above. The R2 values stored in the dandiset's electrode tables are
+    shown as reference.
+  depends_on:
+  - projection-link
+- id: regression-r2-sensorimotor
+  statement: The models with the largest R2 on withheld data are in frontoparietal sensorimotor
+    areas.
+  source: Results (Modeling single-event spectral power); Figure 6b; Extended Data Figure 6-1
+  data: with_inputs
+  criterion: Tested on the R2 values stored in the dandiset's electrode tables (low_freq_R2,
+    high_freq_R2), which cover every electrode; the recomputation covers precentral electrodes
+    only. Per subject, the stored R2 of good electrodes is projected onto the eight regions; the
+    regional values are averaged over subjects. Reproduced when, in both bands, the region with
+    the highest value is one of the five frontoparietal regions (precentral, postcentral, middle
+    frontal, inferior parietal, supramarginal) and the mean over these five is higher than the
+    mean over the three temporal regions; partially reproduced when this holds in one band; not
+    reproduced otherwise.
+  depends_on:
+  - projection-link
+- id: regression-angle-day-top
+  statement: Reach angle and recording day are the most explanatory features of single-event
+    power, especially of low-frequency power.
+  source: Results (Modeling single-event spectral power); Figure 6c
+  data: with_inputs
+  criterion: On the tested electrodes whose mean LFB test R2 is above 0.05 (the code selects
+    models on LFB R2 for both bands), the mean Delta R2 of each of the ten features. Following the
+    Methods, Delta R2 is the full model's test R2 minus that of a model fit with the feature
+    shuffled, scored on the unshuffled withheld events. Reproduced when reach angle and day have
+    the two largest mean Delta R2 in LFB; partially reproduced when one of them is among the two
+    largest; not reproduced otherwise. Blocked (other) if fewer than five electrodes pass the R2
+    threshold.
+  depends_on:
+  - regression-r2-max
+- id: regression-angle-coefficient
+  statement: Upward reaches are associated with decreased low-frequency power and increased
+    high-frequency power, enhancing the average pattern.
+  source: Results (Modeling single-event spectral power); Figure 6d
+  data: with_inputs
+  criterion: On the electrodes selected as in regression-angle-day-top, the mean over electrodes
+    of the reach angle coefficient (mean over splits, standardised features). Reproduced when it
+    is negative for LFB and positive for HFB; partially reproduced when one sign holds; not
+    reproduced otherwise.
+  depends_on:
+  - regression-angle-day-top
+- id: regression-angle-retained
+  statement: Reach angle is the feature most often retained by forward selection in sensorimotor
+    areas.
+  source: Results (Modeling single-event spectral power); Extended Data Figure 6-2 (legend)
+  data: with_inputs
+  criterion: On all tested electrodes (both bands), the fraction of models in which forward
+    selection retains each feature (day and time of day counted per one-hot column, as the code
+    does). Reproduced when reach angle has the highest fraction; partially reproduced when it is
+    second; not reproduced otherwise.
+  depends_on:
+  - regression-r2-max
