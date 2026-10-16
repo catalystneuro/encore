@@ -29,7 +29,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000044-grosmark-2016-01.yaml`](../../attempts/000044-grosmark-2016-01.yaml).
 
-- `reproduce_grosmark_2016.ipynb`: the analysis. It takes about eleven minutes on four cores, about three of
+- `reproduce_grosmark_2016.ipynb`: the analysis. It takes about sixteen minutes on four cores, about three of
   them streaming one LFP channel per session.
 - `grosmark.py`: loading the files, ripple detection on one channel, candidate events, rate maps,
   the Bayesian decoder with its weighted-correlation score, the per-cell contributions and the

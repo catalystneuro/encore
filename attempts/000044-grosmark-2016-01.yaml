@@ -61,6 +61,8 @@ outcomes:
     their scores over those of the single-template circular track.
   - The Tukey comparison is scipy's Tukey HSD on the pooled ranks, not MATLAB's Tukey-Kramer
     after kruskalwallis.
+  - Immobility for MAZE candidate events is taken from the 2D head speed, while running for the
+    rate maps is taken from the speed of the linearized position, both at 5 cm/s.
 - claim: fig1c-maze-gt-pre
   outcome: reproduced
   notebook: reproduce_grosmark_2016.ipynb
@@ -85,7 +87,11 @@ outcomes:
     linear tracks, where the contribution is taken on the template the event was selected for. A
     best-template variant of the contribution has a false-positive rate of 0.206 (0.132 in PRE,
     0.118 in POST) and finds 188 cells, outside the tolerance; at alpha 0.001 its false-positive
-    rate is 0.031 and it finds 95. The PCC definition and its test are in the unavailable Methods.
+    rate is 0.031 and it finds 95. The false-positive rates are measured on every fourth PRE and
+    POST event, so on all events they would likely be higher. The best-template numbers are not
+    identical across machines (the verifier's executed copy printed 190 cells and 0.129 in PRE);
+    no conclusion rests on the difference. The PCC definition and its test are in the unavailable
+    Methods.
   deviations:
   - The PCC and its significance test are choices made here, as the Methods were not available.
   - The 20 shifts of a cell's map are drawn afresh for every event.
@@ -232,7 +238,7 @@ outcomes:
   output: claim:fig4d-slow-sequences
   notes: On the pooled test neither half shows replay (low-rate POST minus PRE -0.024, p = 0.964;
     high-rate -0.049, p = 0.9999), as for all cells (-0.008, p = 0.916). In the within-session
-    variant both halves show replay, larger for low-rate cells (+0.116 against +0.058, p below
+    variant both halves show replay, larger for low-rate cells (+0.116 against +0.058, p of at most
     0.0001 for each), which would be the criterion's partial pattern. On the linear-track sessions
     alone the pooled test also finds both, larger for low-rate cells (+0.077, p = 0.0046, against
     +0.044, p = 0.018).
@@ -460,3 +466,152 @@ verifications:
     response: No change of outcome. Added the linear-track table; there the pooled test finds replay
       in neither half and the within-session variant in both, so the within-session pattern over all
       sessions comes from the circular-track sessions.
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the revised run, with the helper module, the claims file
+    and the attempt record. The verifier did not need the paper text for this round. Report in
+    transcripts/000044/verifier-2-report.md.
+  results:
+  - claim: sessions-and-tracks
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 13).
+    response: No change.
+  - claim: place-cell-count
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agree: 417 at 1 Hz (cell 16). The notes now say 480 at 0.5 Hz falls within tolerance.'
+    response: No change.
+  - claim: fig1c-post-gt-pre
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree under the criterion's pooled test, 0.763 against 0.770, p = 0.412 (cell 19). The
+      same test run separately on each kind of track finds POST above PRE on both (linear p =
+      5.1e-07, circular p = 1.1e-05), so the failure comes from pooling the sessions together. The
+      pooling problem is disclosed, but these outcomes say little about the paper. Problem 8 (MAZE
+      immobility from 2D speed, running from linearized speed) is not recorded as a deviation; it
+      does not affect a conclusion.
+    response: No change of outcome. Recorded the two speed measures as a deviation and in the
+      notebook's summary.
+  - claim: fig1c-maze-gt-pre
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cells 19, 23, 25).
+    response: No change.
+  - claim: fig2b-strong-contributors
+    agrees: true
+    outcome: blocked
+    reason: 'Agree. The criterion''s test has a false-positive rate of 0.561 and the best-template
+      variant still has 0.206 (cell 28). The null is computed on every fourth event, and a biased
+      test gets more significant with more events, so these rates probably understate the real
+      false-positive rate. The text says "finds 188 cells" and "0.132 in PRE" where cell 28 prints
+      190 and 0.129, and cell 0 still calls the variant "better calibrated".'
+    response: No change of outcome. Re-running the entry here prints 188 and 0.132 again, as the
+      text and the record say; the verifier's executed copy printed 190 and 0.129 from the same code
+      and seeds, so the best-template variant is not identical across machines. The cause was not
+      found. The text now says this and gives both values, and the record's notes too. Cell 0 now
+      says the variant's false-positive rate (21%) is also far above 5%. The text and notes now say
+      the null uses every fourth event and that on all events the rates would likely be higher.
+  - claim: fig2-pre-post-overlap
+    agrees: true
+    outcome: blocked
+    reason: Agree. Cell 32 says "72 of 102 (70.6%) ... chance level of 37.9%" where cell 31 prints 71
+      of 104 (68.3%) and chance 37.6%, still within 73 +/- 7.3.
+    response: No change. This run prints 72 of 102 (70.6%) and 37.9%, matching the text; the
+      difference from the verifier's copy is the machine dependence recorded under
+      fig2b-strong-contributors.
+  - claim: fig2d-shuffle-high-dpcc
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree, going by the letter of the criterion. The condition that holds tells us nothing,
+      because the pooled baseline shows no replay either (p = 0.916). The informative evidence is on
+      the linear tracks; out of sample, shuffling the top 10 or 20% lowers replay from +0.116 to
+      +0.046 and +0.042 but does not remove it (cell 40). Read with the controls, the evidence is
+      that top-dPCC cells are needed for part of the replay, not that shuffling them removes it.
+      The summary's sentence about out-of-sample reduction holds on the linear tracks but over all
+      sessions top20_cv has p_within = 0.0597, so it needs "on the linear tracks".
+    response: No change of outcome. The summary sentence now says "on the linear tracks". The
+      result cell and the notes already say that out of sample the shuffle reduces replay without
+      removing it.
+  - claim: fig2e-remove-plastic
+    agrees: true
+    outcome: blocked
+    reason: 'I now agree; in round 1 I disagreed. The claim depends on fig2b in the claims file, and
+      the protocol blocks a claim whose dependency is blocked. The rigid and plastic classes come
+      from a selection that lets through all but 1 to 3 place cells per linear-track session (cell
+      28). Cell 44 says the best-template classes give -0.125 (p = 1.0) and +0.020 (p = 0.24)
+      where cell 43 prints -0.121 and +0.016, p = 0.33.'
+    response: No change. This run prints -0.125 (p = 1.0) and +0.020 (p = 0.24), matching the text;
+      the difference is the machine dependence recorded under fig2b-strong-contributors.
+  - claim: figs2-track-distribution
+    agrees: true
+    outcome: blocked
+    reason: 'I now agree, as for fig2e (blocked dependency). Cell 47 says "All three are close to the
+      threshold" for p = 0.072, 0.079 and 0.119; the last one is not close.'
+    response: No change of outcome. The sentence now says the first two are close to the threshold.
+  - claim: fig3a-plastic-specificity
+    agrees: true
+    outcome: blocked
+    reason: I now agree, as for fig2e (blocked dependency). Cell 50 says best-template p = 0.0035 and
+      fields p = 0.10 where cell 49 prints 0.00633 and 0.126.
+    response: No change. This run prints 0.00353 and 0.104, matching the text; see the machine
+      dependence under fig2b-strong-contributors.
+  - claim: fig3b-plastic-improve
+    agrees: true
+    outcome: blocked
+    reason: I now agree, as for fig2e (blocked dependency). Cell 53 says best-template plastic p =
+      0.020 where cell 52 prints 0.0142.
+    response: No change. This run prints 0.0197, matching the text; see the machine dependence under
+      fig2b-strong-contributors.
+  - claim: fig4a-rigid-faster
+    agrees: true
+    outcome: blocked
+    reason: I now agree, as for fig2e (blocked dependency). Cell 56 says best-template p = 0.74 where
+      cell 55 prints 0.691.
+    response: No change. This run prints 0.743, matching the text; see the machine dependence under
+      fig2b-strong-contributors.
+  - claim: fig4a-plastic-ripple-burst-coactivation
+    agrees: true
+    outcome: blocked
+    reason: I now agree, as for fig2e (blocked dependency). Cell 59 says gain p = 0.15, bursting p =
+      0.11 and coactivation p = 0.41 where cell 58 prints 0.127, 0.158 and 0.378.
+    response: No change. This run prints 0.152, 0.112 and 0.412, matching the text; see the machine
+      dependence under fig2b-strong-contributors.
+  - claim: fig4c-pre-fast-coactivation
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 61).
+    response: No change.
+  - claim: fig4c-slow-coactivation-increase
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 61).
+    response: No change.
+  - claim: fig4c-slow-replay
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 61).
+    response: No change.
+  - claim: rate-split-medians
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cell 68).
+    response: No change.
+  - claim: figs16-low-rate-info-gain
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cell 71).
+    response: No change.
+  - claim: fig4d-slow-sequences
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree under the pooled test (cell 74). The record says "p below 0.0001 for each" where
+      high_rate prints p_within = 0.0001; cell 75's "p <= 0.0001" is correct.
+    response: No change of outcome. The notes now say p of at most 0.0001 for each.
+  - claim: fig4e-gain-sequences
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree under the pooled test (cell 77).
+    response: No change. The README's run time, which the verifier found too low (about 14 minutes
+      in the timed steps alone), now says about sixteen minutes, from this run's 935 s.
