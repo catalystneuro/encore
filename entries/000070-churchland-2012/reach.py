@@ -363,14 +363,17 @@ def jpca(rates: np.ndarray, times_ms=ANALYSIS_TIMES, window_ms=WINDOW_MS, n_pcs:
     fits in the n_pcs-D space and in the first plane, and the plane's rotation frequency.
     """
     data = rates.astype(np.float64).copy()
+    norm = np.ones(data.shape[2])
     if soft_norm is not None and soft_norm >= 0:
-        data /= (data.max(axis=(0, 1)) - data.min(axis=(0, 1)) + soft_norm)
-    if subtract_cc_mean:
-        data -= data.mean(axis=0, keepdims=True)
+        norm = data.max(axis=(0, 1)) - data.min(axis=(0, 1)) + soft_norm
+        data /= norm
+    cc_mean = data.mean(axis=0, keepdims=True) if subtract_cc_mean else np.zeros((1,) + data.shape[1:])
+    data -= cc_mean
     data = sample_times(data, times_ms, window_ms)                  # c x t x n
     c, t, n = data.shape
     flat = data.reshape(c * t, n)
-    flat = flat - flat.mean(axis=0)
+    flat_mean = flat.mean(axis=0)
+    flat = flat - flat_mean
     total_var = np.sum(flat ** 2)
     _, s, vt = np.linalg.svd(flat, full_matrices=False)
     pcs = vt[:n_pcs].T                                               # n x k
@@ -383,7 +386,7 @@ def jpca(rates: np.ndarray, times_ms=ANALYSIS_TIMES, window_ms=WINDOW_MS, n_pcs:
     evals, evecs = np.linalg.eig(M_skew)
     order = np.argsort(-np.abs(evals.imag), kind="stable")
     evals, evecs = evals[order], evecs[:, order]
-    planes, plane_var = [], []
+    planes, plane_var, bases = [], [], []
     for p in range(n_planes):
         v1, v2 = evecs[:, 2 * p], evecs[:, 2 * p + 1]
         u1 = np.real(v1 + v2)
@@ -403,6 +406,7 @@ def jpca(rates: np.ndarray, times_ms=ANALYSIS_TIMES, window_ms=WINDOW_MS, n_pcs:
             basis[:, 1] *= -1
             proj = red @ basis
         planes.append(proj)
+        bases.append(basis)
         plane_var.append(np.sum(proj.reshape(-1, 2) ** 2) / total_var)
     proj = planes[0]
     x, dx = proj[:, :-1].reshape(-1, 2), np.diff(proj, axis=1).reshape(-1, 2)
@@ -414,8 +418,21 @@ def jpca(rates: np.ndarray, times_ms=ANALYSIS_TIMES, window_ms=WINDOW_MS, n_pcs:
         "freq_hz": np.abs(evals.imag[0]) / DT_S / (2 * np.pi),
         "r2_skew": r2(dX, X @ M_skew), "r2_best": r2(dX, X @ M_best),
         "r2_skew_plane": r2(dx, x @ m2_skew), "r2_best_plane": r2(dx, x @ m2_best),
-        "M_skew": M_skew, "pcs": pcs,
+        "M_skew": M_skew, "pcs": pcs, "bases": bases,
+        "transform": {"norm": norm, "cc_mean": cc_mean, "flat_mean": flat_mean, "times_ms": times_ms,
+                      "window_ms": window_ms},
     }
+
+
+def project(rates: np.ndarray, res: dict, plane: int = 0) -> np.ndarray:
+    """Projection of other conditions' rates onto a jPC plane fitted by `jpca` (c x t x 2).
+
+    Uses the normalisation, cross-condition mean, PCs and plane of the fit, so that held-out
+    conditions are placed as the fitted ones were.
+    """
+    tf = res["transform"]
+    data = sample_times((rates / tf["norm"]) - tf["cc_mean"], tf["times_ms"], tf["window_ms"])
+    return ((data - tf["flat_mean"]) @ res["pcs"]) @ res["bases"][plane]
 
 
 def state_angles(proj: np.ndarray) -> np.ndarray:
@@ -499,7 +516,8 @@ def hand_kinematics(session: dict, trial_idx: np.ndarray, align: np.ndarray, win
 
 
 def simulate_population(kind: str, cond_kin: dict, recorded_rates: np.ndarray, trials_per_cond: np.ndarray,
-                        rng: np.random.Generator, lead_ms: int = 100, prep_onset_ms: int = -400) -> np.ndarray:
+                        rng: np.random.Generator, lead_ms: int = 100, prep_onset_ms: int = -400,
+                        prep_decay_ms: float | None = 100.0) -> np.ndarray:
     """Spikes from a 'velocity' or 'complex' kinematic model, averaged as for the data.
 
     cond_kin holds condition-mean kinematics (conditions x bins x 2, from `hand_kinematics`)
@@ -514,7 +532,9 @@ def simulate_population(kind: str, cond_kin: dict, recorded_rates: np.ndarray, t
 
     Choices made here, as the Methods do not give them: neural activity leads the kinematics
     by `lead_ms`; preparatory tuning is on from `prep_onset_ms` before movement onset and
-    decays with a 100 ms time constant after it; in the velocity model the movement
+    decays with a time constant of `prep_decay_ms` (100 ms) after it, or stays on to the end of
+    the window if that is None (a step); a `prep_onset_ms` at or after the end of the window
+    leaves no preparatory tuning; in the velocity model the movement
     modulation of each unit is scaled so that its range across conditions and times matches
     the recorded unit's, and preparatory modulation is half of it; the base rate is the
     recorded unit's mean rate; rates are rectified at zero. Spikes are drawn per trial from a
@@ -527,7 +547,8 @@ def simulate_population(kind: str, cond_kin: dict, recorded_rates: np.ndarray, t
     pos, vel, acc, jerk = shift(pos), shift(vel), shift(acc), shift(jerk)
     speed = np.linalg.norm(vel, axis=2)
     t = np.arange(WINDOW_MS[0], WINDOW_MS[1])
-    prep_env = np.where(t < prep_onset_ms, 0.0, np.where(t < 0, 1.0, np.exp(-np.clip(t, 0, None) / 100.0)))
+    decay = np.ones(len(t)) if prep_decay_ms is None else np.exp(-np.clip(t, 0, None) / prep_decay_ms)
+    prep_env = np.where(t < prep_onset_ms, 0.0, np.where(t < 0, 1.0, decay))
     end, peak = cond_kin["endpoint"], cond_kin["peak_speed"]
     end_n = (end - end.mean(0)) / end.std()
     peak_n = (peak - peak.mean()) / (peak.std() + 1e-12)
@@ -582,17 +603,22 @@ def condition_kinematics(session: dict, trial_idx: np.ndarray, align: np.ndarray
     return out
 
 
-def heading_change(vel: np.ndarray, t0_ms: int = 0, t1_ms: int = WINDOW_MS[1], min_frac: float = 0.1) -> np.ndarray:
+def heading_change(vel: np.ndarray, t0_ms: int = 0, t1_ms: int = WINDOW_MS[1], min_frac: float = 0.1,
+                   contiguous: bool = False) -> np.ndarray:
     """Net change of heading (degrees) of each condition's mean hand path between t0 and t1.
 
-    Only samples where speed exceeds `min_frac` of the condition's peak speed are used.
-    Positive is counter-clockwise.
+    Only samples where speed exceeds `min_frac` of the condition's peak speed are used; with
+    `contiguous`, only the unbroken run of such samples around the peak speed. Positive is
+    counter-clockwise.
     """
     seg = vel[:, t0_ms - WINDOW_MS[0]: t1_ms - WINDOW_MS[0]]
     out = []
     for v in seg:
         sp = np.linalg.norm(v, axis=1)
         keep = sp > min_frac * sp.max()
+        if contiguous:
+            run = np.cumsum(~keep)
+            keep &= run == run[np.argmax(sp)]
         h = np.unwrap(np.arctan2(v[keep, 1], v[keep, 0]))
         out.append(np.degrees(h[-1] - h[0]) if keep.sum() > 1 else 0.0)
     return np.array(out)
@@ -608,6 +634,48 @@ def prep_prediction_r2(proj: np.ndarray) -> float:
         a = np.sum(np.conj(z0[m]) * z1[m]) / np.sum(np.abs(z0[m]) ** 2)
         pred[i] = a * z0[i]
     return float(1 - np.sum(np.abs(z1 - pred) ** 2) / np.sum(np.abs(z1 - z1.mean()) ** 2))
+
+
+def prep_prediction_cv(rates: np.ndarray, **jpca_args) -> dict:
+    """Prediction of the last state from the first, with jPCA refitted leaving each condition out.
+
+    For each condition, jPCA (normalisation, cross-condition mean, PCs and plane) is fitted on
+    the other conditions and the held-out condition is projected onto that plane. Two scores
+    of the held-out conditions:
+
+    - r2: R2 of the last state predicted from the first by one complex gain fitted on the
+      other conditions (as `prep_prediction_r2`, without the plane seeing the held-out
+      condition);
+    - phase_score: mean cosine of the error of the last phase predicted as the first phase plus
+      the other conditions' circular mean phase advance, with `static_phase_score` the same
+      for a prediction of no advance, and `advance_deg` the mean advance itself. A rotation
+      shared by all conditions gives a phase score near 1 and above the static one; states
+      that do not rotate give a static score as high as the phase score.
+    """
+    times = np.asarray(jpca_args.pop("times_ms", ANALYSIS_TIMES))
+    soft_norm = jpca_args.pop("soft_norm", SOFT_NORM)
+    c = rates.shape[0]
+    # the normalisation range of each fold is taken over the whole window of its own conditions;
+    # the rest of jPCA needs only the analysed times, so the fits run on those bins alone
+    cmax, cmin = rates.max(axis=1), rates.min(axis=1)                 # conditions x units
+    lo = times[0] - WINDOW_MS[0]
+    crop = rates[:, lo:times[-1] - WINDOW_MS[0] + 1].astype(np.float64)
+    z0, z1, pred, adv = (np.empty(c, complex) for _ in range(4))
+    for i in range(c):
+        m = np.arange(c) != i
+        norm = cmax[m].max(axis=0) - cmin[m].min(axis=0) + soft_norm
+        r = jpca(crop[m] / norm, times_ms=times, window_ms=(times[0], times[-1] + 1), soft_norm=None, **jpca_args)
+        tr = r["planes"][0]
+        a0, a1 = tr[:, 0, 0] + 1j * tr[:, 0, 1], tr[:, -1, 0] + 1j * tr[:, -1, 1]
+        held = project(crop[i:i + 1] / norm, r)[0]
+        z0[i], z1[i] = held[0, 0] + 1j * held[0, 1], held[-1, 0] + 1j * held[-1, 1]
+        pred[i] = np.sum(np.conj(a0) * a1) / np.sum(np.abs(a0) ** 2) * z0[i]
+        adv[i] = np.mean(np.exp(1j * (np.angle(a1) - np.angle(a0))))
+    err = np.angle(z1) - np.angle(z0) - np.angle(adv)
+    return {"r2": float(1 - np.sum(np.abs(z1 - pred) ** 2) / np.sum(np.abs(z1 - z1.mean()) ** 2)),
+            "phase_score": float(np.mean(np.cos(err))),
+            "static_phase_score": float(np.mean(np.cos(np.angle(z1) - np.angle(z0)))),
+            "advance_deg": float(np.degrees(np.angle(np.mean(adv))))}
 
 
 def decode_accuracy(X: np.ndarray, y: np.ndarray, rng: np.random.Generator, folds: int = 5) -> float:

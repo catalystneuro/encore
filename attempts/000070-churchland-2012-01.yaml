@@ -46,7 +46,10 @@ outcomes:
   notes: 102 of 108 conditions (0.944) rotate counter-clockwise in J-array and 108 of 108 in
     N-array; median net rotation 70.2 and 114.6 degrees over the 200 ms. Under the variants (24 ms
     smoothing, two other windows, 10 PCs, all successful trials) the fraction is 0.944 to 0.981 and
-    0.972 to 1.000.
+    0.972 to 1.000. jPCA orients the plane so that the net rotation is counter-clockwise, so the
+    fraction is also 0.963 to 0.991 after shuffles 2 and 3 and 0.926 and 0.972 for the velocity
+    model with no lead; it shows that the conditions turn the same way, not on its own that the
+    rotation is specific to the data.
   deviations:
   - Tested on the 192 per-electrode units, not the paper's sorted isolations.
   - No PC smoothing of single-unit rates; the supplement reports it has essentially no effect.
@@ -62,7 +65,10 @@ outcomes:
     straight reaches do, but 0.868 (33 of 38) of clockwise reaches, under the 0.9 of the criterion
     and above 0.75. Spearman correlation of heading change with net neural rotation is 0.227
     (p 0.018) in J-array and -0.214 (p 0.026) in N-array; the J-array logistic slope is 0.0101 per
-    degree.
+    degree. The hand paths drawn by class match the classes; the five clockwise-class conditions of
+    J-array that turn clockwise in the plane are loops of 162 to 180 degrees. With the heading taken
+    over the unbroken run around peak speed, or thresholds of 10 or 30 degrees, the J-array clockwise
+    class has 38 or 41 conditions, of which 0.868 to 0.878 rotate counter-clockwise.
   deviations:
   - The paper shows this by eye in Figure 3; the classes of curvature and the thresholds were
     fixed here before the analysis.
@@ -71,9 +77,16 @@ outcomes:
   notebook: reproduce_churchland_2012.ipynb
   output: claim:fig3-phase-from-prep-state
   notes: Leave-one-condition-out R2 of the +150 ms state from the -50 ms state is 0.632 in J-array
-    and 0.748 in N-array, both above 0.5. Shuffle 3 gives a median of 0.671 (J-array) and 0.656
-    (N-array), so the data exceed the control in N-array only. Shuffle 1 gives medians of 0.891 and
-    0.867, so the measure also rewards states that move little and is a weak test of the claim.
+    and 0.748 in N-array, both above 0.5. Shuffle 3 gives 0.633 to 0.718 (median 0.671) in J-array
+    and 0.611 to 0.689 (median 0.656) in N-array, so the data exceed the control in N-array only.
+    Shuffle 1, which has no rotation, scores 0.82 to 0.91 in every run, so this R2 rewards any
+    consistent map from the first state to the last and is a weak test of the claim. With jPCA
+    refitted leaving each condition out, the R2 is 0.615 and 0.727, reached by 8 of 10 shuffle 3
+    runs in J-array and none in N-array. A phase score (the last phase predicted as the first plus
+    the other conditions' mean advance) is 0.763 and 0.894 for the data, against 0.236 and -0.356
+    for no advance; shuffle 1 scores the same with and without an advance, and shuffle 3 keeps an
+    advance of 65 and 99 degrees and scores a median 0.811 and 0.797, so this score also separates
+    the data from shuffle 3 in N-array only.
   deviations:
   - The paper gives no measure of predictability; the complex-gain prediction and its thresholds
     were fixed here before the analysis.
@@ -99,6 +112,7 @@ outcomes:
     the variance of PC2 and PC3, so the comparison the claim makes holds.
   deviations:
   - Two datasets in place of the paper's nine.
+  - Tested on per-electrode units, not sorted isolations.
 - claim: suppfig4-j-array-planes
   outcome: not_reproduced
   notebook: reproduce_churchland_2012.ipynb
@@ -153,7 +167,12 @@ outcomes:
   notes: The first plane rotates at 1.38 Hz (8.65 radians/s) in N-array, within 1.26 to 2.75 Hz,
     and 1.03 Hz (6.49 radians/s) in J-array, below it; the larger value is given as measured. No
     variant exceeds 1.68 Hz, so the upper bound holds. J-array reaches the range with the -100 to
-    +100 ms window (1.45 Hz) or 10 PCs (1.68 Hz), variants that do not decide the outcome.
+    +100 ms window (1.45 Hz) or 10 PCs (1.68 Hz), variants that do not decide the outcome. The low J-array value is not the effect of a window
+    starting before the rotation does (a synthetic 2 Hz rotation starting at movement onset reads
+    1.49 Hz from -50 ms), since windows starting at 0 and +50 ms give 1.04 and 1.13 Hz. The J-array
+    plane's mean angular speed is about 1.3 Hz from -60 to +20 ms and 0.7 to 0.9 Hz by +100 ms, and
+    windows starting at -150 or -100 ms give 1.31 and 1.45 Hz, so J-array rotates faster before
+    movement onset than over the window used, which the paper chose per dataset.
   deviations:
   - The lower bound of the range comes from the eigenvalues the paper reports for monkeys A and B,
     whose data are not in the dandiset.
@@ -206,8 +225,13 @@ outcomes:
     and 0.845 for the data, and 0.630 and 0.778 of its conditions rotate counter-clockwise. Its
     angle distribution peaks at 0.806 pi and 0.361 pi, not below pi/4, so the criterion fails in
     both datasets. With no lead the peaks are 0.194 pi and 0.417 pi and the ratios 0.362 and 0.337.
-    The part of the claim about the poor fit of M_skew holds; the angle peak depends on the
-    model's open choices.
+    The part of the claim about the poor fit of M_skew holds under every variant (6-D ratio 0.08 to
+    0.55). The angle peak depends on the model's open choices. A decay toward the origin peaks near
+    pi (0.972 pi on a synthetic decay), and the preparatory tuning decays from movement onset. With
+    the 100 ms lead the peak lies at 0.36 to 0.86 pi over five seeds and with the preparatory tuning
+    decaying, held or absent; with no lead and preparatory tuning it lies at 0.19 to 0.42 pi; with
+    no lead and no preparatory tuning it is 0.028 pi in both datasets, near zero as the paper
+    reports. The outcome follows the model fixed in the criterion.
   deviations:
   - The model is simulated here from the dandiset's condition-mean hand kinematics; its lead of
     100 ms, the time course of preparatory tuning and the modulation depths are choices made here,
@@ -219,7 +243,11 @@ outcomes:
   notes: The complex kinematic model's 6-D R2 ratio is 0.082 (J-array) and 0.132 (N-array), 0.289
     and 0.207 with no lead, and 0.565 and 0.528 of its conditions rotate counter-clockwise. Its
     angle peaks are 0.861 pi and 0.750 pi (0.806 and 0.917 pi with no lead), not below pi/4, so
-    the criterion fails in both datasets. The poor fit of M_skew holds as the paper reports.
+    the criterion fails in both datasets. The poor fit of M_skew holds as the paper reports (6-D
+    ratio 0.06 to 0.61 across variants). With the preparatory tuning held or absent, no lead, and
+    four more seeds, the peak lies within pi/4 of zero only in J-array with no preparatory tuning
+    and no lead (-0.083 pi) and in one N-array seed with no lead (0.194 pi); elsewhere it lies at
+    0.19 to 0.97 pi or near -pi.
   deviations:
   - Simulated here with the Methods' sensitivities; the lead, the preparatory time course and
     hand positions read as mm are choices made here.
@@ -292,3 +320,218 @@ findings:
     sub-Nitschke ses-20090910 has 108 conditions with the same reached target as N-array (2010) for
     all of them, and is consistent with the N-9-10-2010 dataset of Supplementary Figure 5; if so,
     its date is a year early. The other 2009 Nitschke dates may be affected in the same way.
+verifications:
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the PMC author manuscript and the publisher's
+    Supplementary Information. The verifier tested helper functions on synthetic inputs and read the
+    archive's asset metadata and one file for the blocked claims. Its report had no attempt record and
+    gave its own outcome for each claim; all 22 agree with the record.
+  results:
+  - claim: array-dataset-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both sessions are present with 108 conditions each (cell 22). The dandiset holds 192 units
+      per session, one per electrode, against the paper's 146 and 218 isolations; both counts are
+      outside the 10% tolerance. It could not check whether any file carries sorted isolations, as the
+      files hold no per-unit isolation quality or sort labels.
+    response: No change of outcome. Nothing in the files can settle the isolation question; the
+      finding that the sorted isolations are missing stands.
+  - claim: fig3ef-same-direction
+    agrees: true
+    outcome: reproduced
+    reason: 102 of 108 conditions (0.944) rotate counter-clockwise in J and 108 of 108 in N, and this
+      holds at 0.94 or more under every variant. The metric does not separate the controls well,
+      though, since jPCA orients each plane so that net rotation is counter-clockwise; shuffles 2 and
+      3 also give 0.96 to 0.99 and the velocity model at lead 0 gives 0.93 to 0.97 (reported as a
+      reference only, does not affect a conclusion).
+    response: No change of outcome. The conclusion and notes now say that the fraction is high for
+      shuffles 2 and 3 and the velocity model with no lead because of the orientation, and that it
+      shows the conditions turn the same way, not on its own that the rotation is specific to the
+      data.
+  - claim: fig3-independent-of-curvature
+    agrees: true
+    outcome: partially_reproduced
+    reason: In J the clockwise-curving class (38 conditions) rotates counter-clockwise in 0.868 of
+      cases, below 0.9; every class in both datasets is at least 0.75. The Spearman correlation of
+      curvature with net rotation is weak but significant in both datasets, with opposite signs.
+      heading_change unwraps heading over samples above 10% of peak speed across gaps and reports
+      turns up to 291 degrees, and no hand-path plot verifies the classes; moving one or two
+      conditions between classes could change the outcome. It asked for a plot of condition-mean hand
+      paths coloured by class.
+    response: No change of outcome. Added the plot of condition-mean hand paths coloured by class,
+      with the conditions that turn clockwise in the plane dotted; the classes match the paths, and
+      the five J-array clockwise-class conditions that turn clockwise are loops of 162 to 180 degrees.
+      Added an option to heading_change that uses only the unbroken run around peak speed, and
+      thresholds of 10 and 30 degrees; the J-array clockwise class keeps 0.868 to 0.878 under all of
+      them, so the outcome does not depend on how the classes are drawn.
+  - claim: fig3-phase-from-prep-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: The leave-one-out R2 is 0.632 in J, below the shuffle-3 median of 0.671 and below every
+      shuffle-3 run, and 0.748 in N, above 0.656. The metric itself is weak; prep_prediction_r2 scores
+      any consistent linear map from the -50 ms state to the +150 ms state, rotation or not, and
+      shuffle 1, which has no rotation, scores 0.87 to 0.89. There is also mild leakage, as the plane,
+      its orientation and the normalisation are fitted on all conditions and only the gain is left
+      out. It asked for shuffle 3 against shuffle 1 per run and a rotation-specific score such as the
+      mean phase advance predicted from the initial state.
+    response: No change of outcome. Added the in-sample R2 of shuffles 1 and 3 per run, and
+      prep_prediction_cv, which refits jPCA (normalisation, mean, PCs and plane) leaving each condition
+      out, with a phase score (the last phase predicted as the first plus the other conditions' mean
+      advance) and the same score for no advance. Cross-validated R2 is 0.615 (J-array) and 0.727
+      (N-array), reached by 8 of 10 shuffle 3 runs in J-array and none in N-array. The phase score
+      separates the data from shuffle 1 (0.763 and 0.894 against 0.236 and -0.356 for no advance;
+      shuffle 1 scores the same with and without an advance), but shuffle 3 keeps an advance and
+      scores 0.811 and 0.797, so the data exceed it in N-array only, as with the criterion's measure.
+      The conclusion and notes say this.
+  - claim: var-captured-jpc-plane
+    agrees: true
+    outcome: reproduced
+    reason: The first plane captures 20.0% (J) and 23.1% (N); the mean of 21.6% fails reading (a), but
+      both values fall in 18 to 38.5%, so reading (b) passes. Both are near the low end of the paper's
+      typical 20 to 35%. The units are per-electrode channels, not the paper's sorted isolations, so
+      every variance-fraction claim compares different populations, and the claims are judged without
+      a caveat on each.
+    response: No change of outcome. The conclusion of each variance-fraction claim (this one,
+      pc23-variance, suppfig4-j-array-planes, suppfig4-planes-range and suppfig5-areas-variance) now
+      says that the fractions compare the per-electrode units with the paper's sorted isolations.
+  - claim: pc23-variance
+    agrees: true
+    outcome: partially_reproduced
+    reason: PC2 and PC3 capture 21.6% (J) and 27.0% (N), mean 24.3%; neither reading passes. The jPC
+      plane captures 0.93 and 0.86 of PC2 and PC3, so that part holds. The per-electrode units make
+      this a comparison of different populations.
+    response: No change of outcome. Added the caveat on the units to the conclusion, and the
+      per-electrode units as a deviation in the record.
+  - claim: suppfig4-j-array-planes
+    agrees: true
+    outcome: not_reproduced
+    reason: J planes capture 12.3, 14.8 and 12.8%, total 40.0%, against 22/19/12/54. The top six PCs
+      capture 60.5% against 64. The three-plane total fails, so even the partial criterion is not met.
+      The per-electrode units make this a comparison of different populations.
+    response: No change of outcome. Added the caveat on the units to the conclusion.
+  - claim: suppfig4-planes-range
+    agrees: true
+    outcome: partially_reproduced
+    reason: N's three planes capture 50.1%, inside 45 to 77%; J's capture 40.0%, outside it. Planes 1
+      and 2 are 0.95 or more counter-clockwise in both datasets.
+    response: No change of outcome. Added the caveat on the units to the conclusion.
+  - claim: fig6a-angle-peak
+    agrees: true
+    outcome: reproduced
+    reason: The angle peak is 0.528 pi (J) and 0.639 pi (N), both inside 0.3 pi to 0.7 pi, and stable
+      across bin counts and variants. angle_peak gives 0.53 pi for a pure rotation on a synthetic test.
+    response: No change.
+  - claim: fig6b-skew-fit
+    agrees: true
+    outcome: reproduced
+    reason: The 6-D ratio is 0.905 (J) and 0.845 (N); the plane ratio is 0.957 and 0.881. All variants
+      are 0.82 or more and 0.88 or more. skew_fit recovers a known skew-symmetric matrix (error 5e-4).
+    response: No change.
+  - claim: rotation-frequency
+    agrees: true
+    outcome: partially_reproduced
+    reason: The first-plane frequency is 1.03 Hz in J, below 1.26 Hz, and 1.38 Hz in N, inside the
+      range; J only enters the range under the 10-PC and -100 to +100 ms variants. On synthetic tests,
+      when the rotation starts at movement onset the -50 to 0 ms static segment biases the frequency
+      down (2 Hz is read as 1.49 Hz), which may partly explain J's 1.03 Hz. It asked for plane
+      projections against time and the frequency over a window starting at the onset of the rapid
+      change.
+    response: No change of outcome. Added the first plane's projections and its mean angular speed
+      from -300 to +300 ms, the fit with 200 ms windows starting at -150 to +50 ms, and the synthetic
+      check (1.49 Hz from -50 ms, 1.99 Hz from 0 ms). J-array's low value is not that effect; windows
+      starting at 0 and +50 ms give 1.04 and 1.13 Hz. Its angular speed is about 1.3 Hz from -60 to
+      +20 ms and falls to 0.7 to 0.9 Hz by +100 ms, and windows starting at -150 or -100 ms give 1.31
+      and 1.45 Hz, so J-array rotates faster before movement onset than over the window used here.
+  - claim: suppfig3-shuffle-controls
+    agrees: true
+    outcome: not_reproduced
+    reason: Shuffle 1 removes the structure in both datasets (median over original 0.01). Shuffle 2
+      passes in J (0.714) and fails in N (0.938); shuffle 3 fails in both (0.814 and 0.937), and in N
+      its maximum run (0.524) exceeds the original (0.517). shuffle_rates matches SI Fig. 2 as written.
+      However, the SI says shuffles 2 and 3 are not expected to remove all rotational structure and
+      are meant to disrupt the link between phase and initial state, so judging them by R2(M_skew)
+      tests something the SI does not predict for them; the outcome follows the criterion as written.
+      Rates are aligned on movement only and the split uses the median go-cue time (does not affect a
+      conclusion).
+    response: No change of outcome. The conclusion now states the SI's expectation for shuffles 2 and
+      3 and that R2(M_skew) does not measure it; the record's notes already said so. The phase score
+      added for fig3-phase-from-prep-state measures the link of phase to the initial state, and shuffle
+      3 matches the data on it in J-array and falls below it in N-array. The single dividing time
+      stays a stated deviation.
+  - claim: suppfig5-areas-variance
+    agrees: true
+    outcome: partially_reproduced
+    reason: None of the four values is within tolerance (J PMd 23.7, J M1 22.8, N PMd 18.1, N M1 25.0).
+      All lie in 18 to 38.5% with 0.92 or more counter-clockwise; N PMd passes by 0.07 points. The
+      per-electrode units make this a comparison of different populations.
+    response: No change of outcome. Added the caveat on the units to the conclusion.
+  - claim: suppfig5-m1-faster
+    agrees: true
+    outcome: reproduced
+    reason: M1 is faster than PMd in both datasets, 1.82 against 0.83 Hz (J) and 1.54 against 1.02 Hz
+      (N), under all variants. The gap is 1.5 to 2.2 times, larger than the paper's "slightly higher".
+    response: No change; the conclusion already says the difference is larger than the paper's.
+  - claim: fig6-velocity-model
+    agrees: true
+    outcome: not_reproduced
+    reason: The R2 ratio part holds (6-D ratio 0.361 and 0.255, below 0.6 and below the neural values).
+      The angle peak is 0.806 pi (J) and 0.361 pi (N), so it fails the bound of pi/4 in both. The
+      model's construction likely drives this; simulate_population adds a preparatory component that
+      decays with a 100 ms time constant from movement onset, plus a 100 ms lead, neither in the
+      Methods, and on a synthetic pure decay angle_peak returns about pi. It asked for a re-run without
+      the decay (a step envelope), with the angle histograms.
+    response: No change of outcome. Added a prep_decay_ms option to simulate_population and a cell that
+      re-runs both models with the preparatory tuning held on (step) or absent, at leads of 100 and 0
+      ms, and with four more seeds, with the angle histograms and the synthetic decay (0.972 pi). With
+      the 100 ms lead the velocity model's peak lies at 0.36 to 0.86 pi under every envelope; with no
+      lead and preparatory tuning it lies at 0.19 to 0.42 pi; with no lead and no preparatory tuning it
+      is 0.028 pi in both datasets, near zero as the paper reports. The failure of the angle part thus
+      comes from choices made here; the outcome follows the model fixed in the criterion, and the
+      notes say this.
+  - claim: fig6-complex-kinematic-model
+    agrees: true
+    outcome: not_reproduced
+    reason: The R2 ratio part holds (0.082 and 0.132). The angle peak is 0.861 pi and 0.750 pi, failing
+      the bound of pi/4 in both. Same cause as the velocity model.
+    response: No change of outcome. Under the added variants the complex model's peak lies within pi/4
+      of zero only in J-array with no preparatory tuning and no lead (-0.083 pi) and in one N-array seed
+      with no lead (0.194 pi); elsewhere it lies at 0.19 to 0.97 pi or near -pi. The poor fit of
+      M_skew holds under every variant (6-D ratio 0.06 to 0.61).
+  - claim: fig1-leech-and-walking
+    agrees: true
+    outcome: blocked
+    reason: The archive's 10 assets are maze-task array sessions of the monkeys Jenkins and Nitschke
+      only, with no leech or walking data.
+    response: No change.
+  - claim: fig2-single-neuron-responses
+    agrees: true
+    outcome: blocked
+    reason: The 469 single-electrode isolations are absent. Array units could show multiphasic
+      responses, but that would not test this claim.
+    response: No change.
+  - claim: fig3abcd-single-electrode-datasets
+    agrees: true
+    outcome: blocked
+    reason: Monkeys A and B are absent. The 27-condition 2009 J and N sessions are array recordings, not
+      the J1 to J4 and N single-electrode datasets.
+    response: No change.
+  - claim: fig4-emg-no-rotation
+    agrees: true
+    outcome: blocked
+    reason: Asset variableMeasured lists only Position and Units, plus ElectricalSeries for the 2010
+      file. It opened that file; the ElectricalSeries are 96-channel LFP per array and segment, not EMG.
+      The paper says EMG was not recorded for the 108-condition sessions.
+    response: No change.
+  - claim: fig5-generator-model
+    agrees: true
+    outcome: blocked
+    reason: It requires EMG, which is not in the archive.
+    response: No change.
+  - claim: fig6cd-speed-independent-frequency
+    agrees: true
+    outcome: blocked
+    reason: The speed-task data of monkeys A and B are absent; no file has an instructed-speed condition.
+    response: No change.
