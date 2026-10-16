@@ -197,14 +197,24 @@ def modulation(spikes, start, stop, baseline, shift=0.0, empty_as_zero=False):
     return out
 
 
-def shuffle_test(spikes, start, stop, baseline, shifts):
-    """Real modulation, the shuffled values and the code's p-value for one unit."""
-    real = modulation(spikes, start, stop, baseline)[0]
+def shuffle_test(spikes, start, stop, baseline, shifts, real_empty_as_zero=False):
+    """Real modulation, the shuffled values and the code's p-value for one unit.
+
+    As in the code, real episodes with no spike in either window are left out, but shuffled ones
+    count as 0; ``real_empty_as_zero`` counts them as 0 in the real value too (a variant).
+    """
+    real = modulation(spikes, start, stop, baseline, empty_as_zero=real_empty_as_zero)[0]
     null = modulation(spikes, start, stop, baseline, shift=shifts, empty_as_zero=True)
     if np.isnan(real):
         return real, null, np.nan
     p = np.mean(null > real) if real >= 0 else np.mean(null < real)
     return real, null, p
+
+
+def empty_episodes(spikes, start, stop, baseline):
+    """Number of episodes with no spike in either the episode or its baseline."""
+    b0, b1 = baseline_windows(start, stop, baseline)
+    return int(np.sum((_counts(spikes, start, stop) == 0) & (_counts(spikes, b0, b1) == 0)))
 
 
 def bh(p, q=Q):
@@ -231,12 +241,13 @@ def draw_shifts(rng, n=N_SHIFTS):
     return rng.integers(-SHIFT_RANGE_S, SHIFT_RANGE_S + 1, size=n).astype(float)
 
 
-def unit_table(sessions, labels, baseline, cap, rng, keep=None):
+def unit_table(sessions, labels, baseline, cap, rng, keep=None, real_empty_as_zero=False):
     """Shuffle test for every unit of every session with at least one episode of ``labels``.
 
     One set of shifts per session, as the code applies the same shifts to all units. Returns a
-    DataFrame with one row per unit: session, mouse, unit, spikes, episodes, mi, p, activated
-    (positive and BH-significant over the session's units), suppressed.
+    DataFrame with one row per unit: session, mouse, unit, spikes, episodes, n_empty (episodes with
+    no spike in either window), mi, p, activated (positive and BH-significant over the session's
+    units), suppressed.
     """
     rows = []
     for s in sessions:
@@ -247,15 +258,24 @@ def unit_table(sessions, labels, baseline, cap, rng, keep=None):
             continue
         shifts = draw_shifts(rng)
         idx = [i for i in range(len(s["units"])) if keep is None or keep(s, i)]
-        res = [shuffle_test(s["units"][i], start, stop, baseline, shifts) for i in idx]
+        res = [shuffle_test(s["units"][i], start, stop, baseline, shifts, real_empty_as_zero) for i in idx]
         p = np.array([r[2] for r in res])
         sig = bh(p)
         for j, i in enumerate(idx):
             mi = res[j][0]
             rows.append({"session": s["session"], "mouse": s["subject"]["subject_id"], "unit": i,
-                         "spikes": len(s["units"][i]), "episodes": len(start), "mi": mi, "p": p[j],
+                         "spikes": len(s["units"][i]), "episodes": len(start),
+                         "n_empty": empty_episodes(s["units"][i], start, stop, baseline), "mi": mi, "p": p[j],
                          "activated": bool(sig[j] and mi > 0), "suppressed": bool(sig[j] and mi < 0)})
     return pd.DataFrame(rows)
+
+
+def poisson_sessions(sessions, rng):
+    """Copies of the sessions whose units are replaced by Poisson trains with each unit's spike count
+    spread uniformly over its first-to-last spike: units with no response to any episode, for the
+    false-positive level of ``unit_table``."""
+    return [dict(s, units=[np.sort(rng.uniform(u.min(), u.max(), len(u))) for u in s["units"]])
+            for s in sessions]
 
 
 def fisher_vs_zero(k, n):
@@ -280,6 +300,14 @@ def coincident_fraction(units, tol=1e-4):
     hit[1:] |= close
     hit[:-1] |= close
     return float(hit.mean())
+
+
+def coincident_pair(a, b, tol=1e-4):
+    """Fraction of the spikes of ``a`` that lie within ``tol`` s of a spike of ``b``."""
+    k = np.searchsorted(b, a)
+    lo = np.abs(a - b[np.clip(k - 1, 0, len(b) - 1)])
+    hi = np.abs(b[np.clip(k, 0, len(b) - 1)] - a)
+    return float(np.mean(np.minimum(lo, hi) <= tol))
 
 
 def onset_contrast(units, start, shifts, win=5.0):
