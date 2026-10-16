@@ -1,0 +1,108 @@
+# Claims for Girardeau, Inema & Buzsaki (2017) on dandiset 000061.
+# Source: the abstract only (PubMed 28892057). The article is not open access: it is not in
+# PubMed Central, Europe PMC lists no full text, and the HAL record (hal-03963137) holds metadata
+# only. So every claim is at the level of a sentence of the abstract, no claim has a reported
+# number, and every method choice below is fixed here, as a common choice, before the analysis.
+#
+# When these criteria were written, the author had seen the data check only: the file list, the
+# metadata, the units' location labels and counts per session, which files lack units, sleep
+# states or ripple events, the epoch tables, and the reward and air-puff events, including the
+# laps built from alternating rewards, which direction holds the puffs, and the median lap
+# durations per direction in the pre-run, run and post-run epochs. No reactivation, ripple
+# modulation or pattern weight had been computed.
+#
+# Method choices fixed here (the Methods were not available):
+# - Units. Hippocampus is the label `hpc` or `HIP`; BLA is the label `bla` or `BLA` (case is
+#   ignored). A session is used when it has sleep states, ripple events, a sleep epoch before and
+#   one after the run, and at least 5 hippocampal and 5 BLA units that fire at 0.1 Hz or more in
+#   the run epoch. Units are not matched across sessions.
+# - Sleep. Pre-sleep and post-sleep are the epochs tagged presleep and postsleep (or the sleep
+#   epochs before and after the first run, where tags are only "sleep"), restricted to the
+#   Non-REM intervals of the states table.
+# - Patterns. Spike counts in 50 ms bins, z-scored per unit within the epoch. The template is the
+#   hippocampus by BLA cross-correlation matrix of the run epoch; its singular vectors (u for
+#   hippocampus, v for BLA) are the joint patterns. A pattern is significant when its singular
+#   value exceeds the 95th percentile of the largest singular value over 200 surrogates in which
+#   each BLA unit's binned train is circularly shifted by a random offset.
+# - Reactivation strength in a sleep bin is (z_hpc . u)(z_bla . v), with z-scores taken over the
+#   Non-REM bins of that sleep epoch.
+# - Ripples are the start, peak and stop times of the `rip` annotations.
+# - Laps run from a reward at one end of the track to the next reward at the other end. The
+#   air-puff direction of a session is the direction of the laps that hold most of its puffs.
+schema_version: 1
+dandiset: "000061"
+paper: doi:10.1038/nn.4637
+claims:
+- id: hpc-bla-reactivation-post-sleep
+  statement: Coordinated hippocampus and BLA activity patterns of the training run are
+    reactivated during non-REM sleep after training, more than during non-REM sleep before it.
+  source: Abstract
+  criterion: For every significant joint pattern, the mean reactivation strength over post-sleep
+    Non-REM bins minus the mean over pre-sleep Non-REM bins. Reproduced when the median over
+    patterns of all sessions is above zero with a two-sided Wilcoxon signed-rank p < 0.05, and the
+    median is above zero in at least two of the three rats with usable sessions; partially
+    reproduced when the pooled test holds but the median is above zero in one rat only; not
+    reproduced otherwise. Shown as variants, which do not change the outcome, are bins of 25 and
+    100 ms, the wider BLA label set (bla, blv, bmp, ladl), and the first singular pattern of each
+    session regardless of significance.
+- id: reactivation-peaks-at-ripples
+  statement: The hippocampus and BLA reactivations peak during hippocampal sharp wave-ripples.
+  source: Abstract
+  depends_on:
+  - hpc-bla-reactivation-post-sleep
+  criterion: Over post-sleep Non-REM ripples, the ripple-peak-triggered mean of each significant
+    pattern's reactivation strength from -1 to +1 s in 50 ms bins. "Peak during SPW-Rs" can be
+    read as (a) reactivation strength in post-sleep is highest at the ripple, or (b) the increase
+    from pre-sleep to post-sleep is larger at ripples than outside them. Under (a), reproduced
+    when the mean over patterns of the triggered curve has its maximum within 100 ms of the
+    ripple peak, and the per-pattern difference between the bin of the ripple peak and the mean
+    of the bins from 0.5 to 1 s on both sides is above zero (two-sided Wilcoxon signed-rank p <
+    0.05). Under (b), reproduced when the per-pattern post minus pre change of the mean strength
+    in bins that overlap a ripple exceeds the same change in Non-REM bins outside ripples
+    (two-sided Wilcoxon signed-rank p < 0.05, median above zero). The claim is reproduced when
+    either reading holds.
+- id: bla-ripple-up-subgroup
+  statement: A subgroup of BLA cells is positively modulated during hippocampal sharp
+    wave-ripples.
+  source: Abstract
+  criterion: In sessions with ripple events, sleep states and BLA units (no minimum on units),
+    the spikes of each BLA unit in the windows (start to stop) of Non-REM ripples of pre- and
+    post-sleep, against 500 surrogates in which all windows are shifted together by a random
+    offset of 0.5 to 5 s, either sign. A unit is positively modulated when at most 1% of
+    surrogates reach its count (one-sided). The chance level is the fraction selected when the
+    real windows are replaced by the windows shifted by a fixed 7 s. Reproduced when the
+    fraction of positively modulated BLA units is above the chance level (one-sided binomial
+    test against it, p < 0.05), is below 1, and is above the chance level in at least two of the
+    three rats; partially reproduced when the pooled test holds but the fraction is above the
+    chance level in one rat only; not reproduced otherwise.
+- id: reactivation-involves-ripple-up-cells
+  statement: The hippocampus and BLA reactivations involve the subgroup of BLA cells that are
+    positively modulated during sharp wave-ripples.
+  source: Abstract
+  depends_on:
+  - hpc-bla-reactivation-post-sleep
+  - bla-ripple-up-subgroup
+  criterion: For each significant joint pattern of a session that has at least one positively
+    modulated and one other BLA unit among those used, the mean squared BLA weight (v squared) of
+    the positively modulated units minus that of the other BLA units. Reproduced when the median
+    over patterns is above zero with a two-sided Wilcoxon signed-rank p < 0.05. Shown as a
+    variant is the same test on patterns whose post minus pre reactivation is above zero.
+- id: aversive-direction-stronger
+  statement: Reactivation is stronger for the hippocampus and BLA correlation patterns of the run
+    direction that held the air puff than for those of the safe direction.
+  source: Abstract
+  depends_on:
+  - hpc-bla-reactivation-post-sleep
+  criterion: Templates are built separately from the run-epoch bins inside laps of the air-puff
+    direction and inside laps of the safe direction. For each session and direction, the mean
+    over its significant patterns of post-sleep minus pre-sleep Non-REM reactivation strength;
+    a session counts when both directions have at least one significant pattern. Reproduced when
+    the air-puff value exceeds the safe value across sessions (two-sided Wilcoxon signed-rank p <
+    0.05, median difference above zero); partially reproduced when the median difference is above
+    zero with p between 0.05 and 0.1, or the pooled test holds but the median is above zero in one
+    rat only; not reproduced otherwise. Shown as variants are a pooled per-pattern comparison
+    (Mann-Whitney), the first singular pattern of each direction in every session, templates
+    from equal numbers of bins in the two directions, and post-sleep strength alone.
+- id: rats-learn-puff-location
+  statement: Rats learned the location of an aversive air puff on a linear track.
+  source: Abstract
