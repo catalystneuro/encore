@@ -1,0 +1,352 @@
+# Claims for Even-Chen, Sheffer, Vyas, Ryu & Shenoy (2019) on dandiset 000121.
+# Source: the full text of the paper (PLOS Computational Biology, open access), read from the
+# journal's JATS XML: Methods, Results and figure legends.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata of both published versions, every group and column of the files, the trials tables of
+# all 12 sessions (counts, target positions, delays, success flags), the time span and count of
+# spikes of every unit, the hand samples of two sessions, and one check of which array is which
+# (on one session per monkey: live channels, the number of channels whose 200 ms pre-go count
+# regresses significantly on target x and y, and 5-fold SVM decoding of ring targets in windows
+# before the target, before the go cue and after it). That check found 66 significant channels
+# of 95 live ones for R (0124) and 57 for J (1015) on units 96 to 191, so it bears on
+# channels-task-correlated. No other claim's analysis had been run.
+#
+# The paper names no analysis code, and its data link (stanford.edu/~shenoy/Data/...zip) returns
+# 403. The conversion code (catalystneuro/shenoy-lab-to-nwb, commit 319acb4) was read; it settles
+# how the units and trial times were made (see the notebook header).
+#
+# The dandiset holds all 7 sessions of monkey R and 5 of the 16 of monkey J (ring 1 of 4,
+# vertical 2 of 4, 3-rings 2 of 4, horizontal 0 of 4). Results for J use those 5 sessions.
+#
+# Method choices fixed here, where the paper is silent:
+# - Trials. Successful center-out trials (target not at the center) with a delay of at least
+#   250 ms (no-delay trials removed, as in the Methods). Trials to targets outside a session's
+#   configuration are dropped.
+# - PMd. Units 96 to 191, the array whose units point to the electrode rows of group "2" (PMd),
+#   whose LFP is labelled PMd, and which carries the delay-period target signal; the units'
+#   electrode_group column labels them M1 (see the data check). The file's label is a variant.
+# - Delay activity. Threshold crossings per channel in the 200 ms before the go cue, in
+#   spikes/s, minus the channel's mean rate over the whole session (the "average rate for that
+#   day"). The mean over the session's analysed delay windows is a variant.
+# - Condition. A target within a configuration (J 96 here of 120, R 132).
+# - Kinematics. Hand x and y (1 kHz samples of a 60 Hz tracker) smoothed with a Gaussian of SD
+#   20 ms; speed from the gradient. Maximum speed between the go cue and 1000 ms after it, and
+#   the hand position at that time. Movement onset is the last time before the peak that speed
+#   is below 10% of the peak. Reaction time is onset minus go cue.
+# - Spatial plane. PCA on mean-centred condition averages (all configurations of a monkey
+#   together), keeping 6 PCs for J and 5 for R; x then y regressed (least squares, with
+#   intercept) from the PC scores of single trials to target x and y in mm, with the y fit made in
+#   the null space of the x coefficients. The plane's coordinates are in mm, with the center
+#   target at the origin.
+# - Speed axis. Least-squares regression (with intercept) of single-trial maximum speed on the
+#   full PMd delay activity after projecting out the x and y directions, fit on all trials.
+# - On- and off-axis. The unit vector from the center to the target, and its normal.
+# - SVM. sklearn SVC with an RBF kernel and default C and gamma, on z-scored features (scaler fit
+#   on the training folds), one-vs-one; 10-fold stratified cross-validation with a fixed seed;
+#   mean and SEM over folds. The paper tuned hyperparameters on 2237 held-out trials and does not
+#   report them.
+schema_version: 1
+dandiset: "000121"
+paper: doi:10.1371/journal.pcbi.1006808
+claims:
+- id: session-configurations
+  statement: The sessions are those the Methods list for each target configuration; for monkey R,
+    ring on 2017-01-24 and 25, horizontal on 2017-01-17 and 18, vertical on 2017-01-15 and 16, and
+    3-rings on 2017-01-19; for J, ring, vertical and 3-rings on the dates listed.
+  source: Materials and methods, Experimental design; Figure 1b
+  criterion: Each session's configuration is inferred from its target positions (ring, all targets
+    on one circle; horizontal, all targets on the x axis; vertical, all on the y axis; 3-rings,
+    three circles of 16). Reproduced when every session of the dandiset has the configuration the
+    Methods give for its date. Partially reproduced when the only mismatches are horizontal and
+    vertical exchanged. Not reproduced otherwise.
+- id: r-trial-counts
+  statement: Monkey R performed 3577 ring trials over two sessions, 3699 horizontal over two, 4040
+    vertical over two, and 912 3-rings trials in one session.
+  source: Materials and methods, Experimental design
+  depends_on:
+  - session-configurations
+  expected:
+  - quantity: R ring trials (2017-01-24 and 25)
+    value: 3577
+    tolerance: 357.7
+  - quantity: R horizontal trials (2017-01-17 and 18)
+    value: 3699
+    tolerance: 369.9
+  - quantity: R vertical trials (2017-01-15 and 16)
+    value: 4040
+    tolerance: 404
+  - quantity: R 3-rings trials (2017-01-19)
+    value: 912
+    tolerance: 91.2
+  criterion: Sessions are grouped by the dates the Methods give. The count can be read as (a)
+    successful center-out trials with a delay; (b) all center-out trials with a delay, successful
+    or not; (c) successful center-out trials including those without a delay. Reproduced when all
+    four counts are within tolerance under one reading; partially reproduced when two or three are.
+- id: j-sessions-complete
+  statement: Monkey J contributed 6161 ring, 5017 horizontal, 6110 vertical and 7722 3-rings trials,
+    over four sessions each.
+  source: Materials and methods, Experimental design
+- id: delays-and-times
+  statement: Delays were uniform from 300 to 700 ms for J and 400 to 900 ms for R, 10% of trials
+    had no delay; average reaction time was 346 ms (J) and 311 ms (R), average reach time 582 ms
+    (J) and 482 ms (R), and reaction time was negatively correlated with delay (p < 1e-4 for both).
+  source: Materials and methods, Experimental design
+  expected:
+  - quantity: J reaction time
+    value: 346
+    tolerance: 34.6
+    unit: ms
+  - quantity: R reaction time
+    value: 311
+    tolerance: 31.1
+    unit: ms
+  - quantity: J reach time
+    value: 582
+    tolerance: 58.2
+    unit: ms
+  - quantity: R reach time
+    value: 482
+    tolerance: 48.2
+    unit: ms
+  criterion: Successful center-out trials. Delays of delayed trials must lie in the stated range
+    widened by 10% of each bound (J 270 to 770 ms, R 360 to 990 ms), and the no-delay fraction of
+    successful center-out trials must be within 9 to 11%. Reaction time as fixed above. Reach time
+    can be read as (a) first target acquisition after the go cue minus movement onset, or (b)
+    first acquisition minus the go cue. Pearson correlation of reaction time with delay over
+    delayed trials, per monkey. Reproduced when the delays, the four times (under one reading)
+    and the negative correlations at p < 1e-4 all hold; partially reproduced when some do.
+- id: channels-task-correlated
+  statement: Of the 96 PMd electrodes, 74 for J and 80 for R had activity significantly correlated
+    with the x and y location of the target (p < .05, Bonferroni over 96).
+  source: Materials and methods, Neural recording and signal preprocessing
+  expected:
+  - quantity: J significant channels
+    value: 74
+    tolerance: 7.4
+  - quantity: R significant channels
+    value: 80
+    tolerance: 8
+  criterion: For each channel, an ordinary least-squares regression of its delay activity on target
+    x and y over all analysed trials of the monkey, F-test p < 0.05/96. Reproduced when both counts
+    are within tolerance; partially reproduced when one is. Counts per session and on the array
+    the file labels PMd are shown as variants.
+- id: pca-variance
+  statement: The top six PCs of the condition-averaged delay activity explain cumulatively 58, 82,
+    88, 92, 94 and 95% of the variance for J (120 conditions) and 81, 89, 92, 94, 95 and 96% for R
+    (132 conditions).
+  source: Materials and methods, Dimensionality reduction
+  expected:
+  - {quantity: R number of conditions, value: 132, tolerance: 0}
+  - {quantity: R cumulative variance PC1, value: 81, tolerance: 8.1, unit: "%"}
+  - {quantity: R cumulative variance PC2, value: 89, tolerance: 8.9, unit: "%"}
+  - {quantity: R cumulative variance PC3, value: 92, tolerance: 9.2, unit: "%"}
+  - {quantity: R cumulative variance PC4, value: 94, tolerance: 9.4, unit: "%"}
+  - {quantity: R cumulative variance PC5, value: 95, tolerance: 9.5, unit: "%"}
+  - {quantity: R cumulative variance PC6, value: 96, tolerance: 9.6, unit: "%"}
+  - {quantity: J cumulative variance PC1, value: 58, tolerance: 5.8, unit: "%"}
+  - {quantity: J cumulative variance PC2, value: 82, tolerance: 8.2, unit: "%"}
+  - {quantity: J cumulative variance PC3, value: 88, tolerance: 8.8, unit: "%"}
+  - {quantity: J cumulative variance PC4, value: 92, tolerance: 9.2, unit: "%"}
+  - {quantity: J cumulative variance PC5, value: 94, tolerance: 9.4, unit: "%"}
+  - {quantity: J cumulative variance PC6, value: 95, tolerance: 9.5, unit: "%"}
+  criterion: Reproduced when all values are within tolerance. Partially reproduced when those of R
+    (complete data) are and those of J (5 of 16 sessions, 96 of 120 conditions) are not.
+- id: spatial-plane-variance
+  statement: The spatial plane captures a large part of the variance of the condition-averaged
+    activity for the ring, horizontal, vertical and 3-rings tasks; 66.8, 64.4, 47.7 and 68.2% for J
+    and 33.7, 30.7, 31.0 and 30.1% for R (p < 1e-4).
+  source: Results, Structure of neural activity during delay period; Figure 2a
+  depends_on:
+  - pca-variance
+  expected:
+  - {quantity: R ring, value: 33.7, tolerance: 3.37, unit: "%"}
+  - {quantity: R horizontal, value: 30.7, tolerance: 3.07, unit: "%"}
+  - {quantity: R vertical, value: 31.0, tolerance: 3.1, unit: "%"}
+  - {quantity: R 3-rings, value: 30.1, tolerance: 3.01, unit: "%"}
+  - {quantity: J ring, value: 66.8, tolerance: 6.68, unit: "%"}
+  - {quantity: J vertical, value: 47.7, tolerance: 4.77, unit: "%"}
+  - {quantity: J 3-rings, value: 68.2, tolerance: 6.82, unit: "%"}
+  criterion: For each task, the variance of its condition averages (centred within the task) that
+    lies in the plane (orthonormalised), as a share of (a) their total variance over all PMd
+    channels, or (b) their variance within the top PCs. R's horizontal and vertical tasks are taken
+    (a) by the dates of the Methods, or (b) by the target geometry in the files. J horizontal is not
+    in the dandiset. Reproduced when, under one pairing of readings, all R values and all J values
+    are within tolerance; partially reproduced when all R values are, or when at least four of the
+    seven are. The p-value is compared with planes fit to target positions shuffled across
+    conditions (1000 shuffles).
+- id: plane-timecourse
+  statement: After target onset the neural state in the spatial plane starts at the center,
+    diverges after 50 ms (R 75 ms) and converges to the steady delay state after 300 ms (R 400 ms).
+  source: Results, Structure of neural activity during delay period; Figure 2c
+  depends_on:
+  - spatial-plane-variance
+  expected:
+  - {quantity: J divergence time, value: 50, tolerance: 50, unit: ms}
+  - {quantity: R divergence time, value: 75, tolerance: 50, unit: ms}
+  - {quantity: J convergence time, value: 300, tolerance: 50, unit: ms}
+  - {quantity: R convergence time, value: 400, tolerance: 50, unit: ms}
+  criterion: Tolerance of 50 ms because the times are round values read from a figure and the
+    thresholds are chosen here. Delay activity in 20 ms bins aligned on target onset, smoothed with
+    a 3-bin boxcar, projected onto the plane; condition averages at each time use trials whose go
+    cue comes after the bin. d(t) is the mean over conditions of the distance of the condition's
+    state from its converged delay state (the 200 ms before the go cue). With d0 the mean of d over
+    the 100 ms before target onset and dmin its minimum after onset, D(t) = (d(t) - dmin) / (d0 -
+    dmin). Divergence is the first bin after onset with D below 0.9, convergence the first with D
+    below 0.1. Reproduced when all four times are within tolerance; partially reproduced when the
+    times of one monkey are, or both divergence times are.
+- id: onoff-predicts-kinematics
+  statement: On single trials, on-axis and off-axis deviations of the neural state in the spatial
+    plane are positively correlated with the on-axis and off-axis deviations of the hand position at
+    maximum speed (on-axis p = 1e-3 J, 4e-3 R; off-axis p = 4e-4 J, 2e-4 R).
+  source: Results, Structure of neural activity during delay period; Figure 2d
+  depends_on:
+  - spatial-plane-variance
+  criterion: Deviations are from the condition mean, of the plane coordinates and of the hand
+    position at maximum speed, each split along the target direction and its normal. Pearson
+    correlation of neural with kinematic deviation, separately on and off axis, per monkey, over
+    (a) all tasks pooled, or (b) the 3-rings task alone. Reproduced when under one reading all four
+    correlations are positive with two-sided p < 0.05; partially reproduced when two or three are.
+- id: speed-axis-within-distance
+  statement: The speed axis of delay activity varies with maximum speed for reaches to the same
+    target distance, for 11 of 12 distances in J and 11 of 12 in R (p < 0.05), so it encodes speed
+    independently of distance.
+  source: Results, Structure of neural activity during delay period; Figure 2e and 2f
+  expected:
+  - {quantity: J distances with a significant positive correlation, value: 11, tolerance: 1.1}
+  - {quantity: R distances with a significant positive correlation, value: 11, tolerance: 1.1}
+  criterion: Horizontal and vertical trials, grouped by target distance (1 to 12 cm, both sides and
+    both tasks together). Per distance, Pearson correlation of the speed-axis projection with
+    maximum speed, counted when positive with p < 0.05. The axis is fit (a) on all trials of all
+    tasks, or (b) on the horizontal and vertical trials. Reproduced when both counts are within
+    tolerance under one reading; partially reproduced when one is. Projections cross-validated in
+    10 folds are shown as a variant. J has only vertical sessions here.
+- id: distance-after-speed
+  statement: After regressing out speed from the neural activity, a positive correlation with
+    target distance remains (p < 1e-4 for J and R).
+  source: Results, Structure of neural activity during delay period
+  criterion: Each channel's delay activity is regressed on maximum speed and the residuals kept. A
+    linear regression from the residuals to target distance, over all trials of all tasks, is
+    cross-validated in 10 folds (fixed seed); the Pearson correlation of the out-of-fold predictions
+    with distance must be positive with p < 1e-4 in both monkeys for reproduced, in one for
+    partially reproduced. The in-sample fit is shown as a variant.
+- id: speed-distance-projection
+  statement: Projected onto the top PCs, the distance dimension is about half as large as the speed
+    dimension.
+  source: Results, Structure of neural activity during delay period
+  expected:
+  - {quantity: J ratio of distance to speed projection, value: 0.5, tolerance: 0.1}
+  - {quantity: R ratio of distance to speed projection, value: 0.5, tolerance: 0.1}
+  criterion: Tolerance of 20% as the paper says "approximately half". The speed axis as above; the
+    distance axis is the regression of target distance on the speed-residualised activity (all
+    trials). Each axis is normalised to unit length and projected onto the top PCs (6 J, 5 R); the
+    ratio is the norm of the distance projection over that of the speed projection. Reproduced when
+    both ratios are within tolerance; partially reproduced when one is.
+- id: single-trial-variance
+  statement: Across all single trials the speed dimension explains 2% (J) and 1% (R) of the
+    variance of the neural state, and the spatial plane 20% (J) and 10% (R).
+  source: Results, Structure of neural activity during delay period
+  expected:
+  - {quantity: J speed dimension, value: 2, tolerance: 0.5, unit: "%"}
+  - {quantity: R speed dimension, value: 1, tolerance: 0.5, unit: "%"}
+  - {quantity: J spatial plane, value: 20, tolerance: 2, unit: "%"}
+  - {quantity: R spatial plane, value: 10, tolerance: 1, unit: "%"}
+  criterion: The speed values are whole percentages, so the tolerance is the rounding interval
+    (0.5 point), larger than 10%. Variance of the single-trial delay activity (centred over trials,
+    all PMd channels) along the unit speed axis, and in the orthonormalised plane, as a share of
+    the total. Reproduced when all four are within tolerance; partially reproduced when the values
+    of one monkey are, or both plane values or both speed values are.
+- id: ellipse-orientation
+  statement: The distributions of single-trial neural states for each condition are elliptical, and
+    for most conditions their major axis points along the direction of the mean neural state from
+    the origin.
+  source: Results, Neural state variability during delay; Figure 3a and 3c
+  depends_on:
+  - spatial-plane-variance
+  criterion: For each condition with at least 10 trials, the first PC of its trials in the plane;
+    the axial angle (0 to 90 degrees) between it and the direction of the condition mean from the
+    origin. Reproduced when, in each monkey, more than half of the conditions have an angle below
+    45 degrees and a one-sided Wilcoxon signed-rank test of the angles against 45 degrees has p <
+    0.05; partially reproduced when that holds in one monkey.
+- id: on-greater-than-off
+  statement: The mean absolute on-axis (distance) deviation of the neural state is larger than the
+    off-axis (direction) deviation, in each task (J p = 9e-7 ring, 4e-7 horizontal, 1e-8 vertical,
+    3e-14 3-rings; R 8e-3, 4e-7, 2e-7 and 0.19).
+  source: Results, Neural state variability during delay; Figure 3
+  depends_on:
+  - spatial-plane-variance
+  criterion: Per target, the mean absolute on-axis and off-axis deviation from the condition mean
+    in the plane. The test can be read as (a) a paired t-test over targets, (b) a Welch t-test over
+    targets, or (c) a Welch t-test over trials. Six task and monkey pairs where the paper reports p
+    < 0.05 are in the dandiset (J ring, vertical, 3-rings; R ring, horizontal, vertical; R tasks by
+    the Methods' dates). Reproduced when on-axis exceeds off-axis with p < 0.05 in all six under one
+    reading; partially reproduced when in three to five. R 3-rings is reported.
+- id: relative-deviation-decreases
+  statement: Relative deviations of the neural state (deviation as a fraction of reach distance), on
+    and off axis, decrease with reach distance.
+  source: Results, Neural state variability during delay; Figure 3b and 3d
+  depends_on:
+  - spatial-plane-variance
+  criterion: All tasks pooled, per monkey. Spearman correlation between target distance and the
+    trial's absolute on-axis (and off-axis) deviation divided by target distance. Reproduced when
+    all four correlations are negative with p < 0.05; partially reproduced when two or three are.
+- id: svm-ring-and-distance
+  statement: Direction classification of the ring targets reaches 32.2% for J (24 targets) and 16%
+    for R (36 targets); distance classification over 12 targets reaches 18.9% (J) and 21.4% (R).
+  source: Results, Accuracy of endpoint prediction from delay activity; Figure 4a and 4b
+  expected:
+  - {quantity: J ring direction accuracy, value: 32.2, tolerance: 3.22, unit: "%"}
+  - {quantity: R ring direction accuracy, value: 16.0, tolerance: 1.6, unit: "%"}
+  - {quantity: J distance accuracy, value: 18.9, tolerance: 1.89, unit: "%"}
+  - {quantity: R distance accuracy, value: 21.4, tolerance: 2.14, unit: "%"}
+  criterion: The paper's SEMs (0.1 to 0.6%) are the spread over folds of one cross-validation, not
+    the uncertainty of a repeat with other trials or with the paper's unreported hyperparameters,
+    so the tolerance is 10%. SVM as fixed above. Distance is classified separately on each side
+    (12 targets) of each of the horizontal and vertical tasks, and the accuracies are averaged
+    weighted by trials. Reproduced when all four are within tolerance; partially reproduced when
+    two or three are, or when only the R values are.
+- id: svm-3rings-by-ring
+  statement: Classifying the 16 directions of each ring of the 3-rings task separately, accuracy
+    increases with ring distance; 23, 36 and 43% for J and 22, 28 and 29% for R.
+  source: Results, Accuracy of endpoint prediction from delay activity; Figure 4c
+  expected:
+  - {quantity: J 4 cm ring, value: 23, tolerance: 2.3, unit: "%"}
+  - {quantity: J 8 cm ring, value: 36, tolerance: 3.6, unit: "%"}
+  - {quantity: J 12 cm ring, value: 43, tolerance: 4.3, unit: "%"}
+  - {quantity: R 4 cm ring, value: 22, tolerance: 2.2, unit: "%"}
+  - {quantity: R 8 cm ring, value: 28, tolerance: 2.8, unit: "%"}
+  - {quantity: R 12 cm ring, value: 29, tolerance: 2.9, unit: "%"}
+  criterion: Reproduced when all six values are within tolerance; partially reproduced when the
+    accuracy increases from the 4 cm to the 12 cm ring in both monkeys but some values are outside
+    tolerance; not reproduced otherwise.
+- id: arc-error-distance-independent
+  statement: Angular errors of direction classification decrease with ring distance, but errors
+    measured as arc length are not significantly different between rings (F test, p > .05 for J and
+    R).
+  source: Results, Accuracy of endpoint prediction from delay activity; Figure 4c and 4d
+  depends_on:
+  - svm-3rings-by-ring
+  criterion: A claim of absence, judged on the paper's F test, read as a one-way ANOVA of the
+    per-trial arc-length errors (angle error in radians times ring radius, 0 for correct trials)
+    across the three rings, per monkey. Reproduced when p > 0.05 in both monkeys and the mean
+    angular error decreases from the 4 cm to the 12 cm ring in both; not reproduced when the ANOVA
+    finds a difference (p < 0.05) in either. The test restricted to errors within the range of the
+    4 cm ring is shown as a variant, with the size of the differences.
+- id: distance-error-and-plane-projection
+  statement: Mean distance-classification error is slightly but significantly lower than the
+    arc-length error of direction classification, and projecting the activity onto the spatial
+    plane before classification raises it (J 2.64 to 3.03 cm; R given as 2.78 and 3.27 cm), to
+    the level of the direction errors.
+  source: Results, Accuracy of endpoint prediction from delay activity; Figure 4d
+  expected:
+  - {quantity: J full-dimensional distance error, value: 2.64, tolerance: 0.264, unit: cm}
+  - {quantity: J plane-projected distance error, value: 3.03, tolerance: 0.303, unit: cm}
+  - {quantity: R full-dimensional distance error, value: 2.78, tolerance: 0.278, unit: cm}
+  - {quantity: R plane-projected distance error, value: 3.27, tolerance: 0.327, unit: cm}
+  criterion: The text gives R as "2.78 cm v.s. 3.27 cm" after J's "3.03 cm v.s. 2.64 cm"
+    (projected first), so R can be read as (a) full 2.78 and projected 3.27, as the claim that
+    projection raises the error implies, or (b) projected 2.78 and full 3.27. Distance errors are
+    |true - predicted| in cm from the distance SVM. Reproduced when under one reading all four
+    values are within tolerance and the projected error exceeds the full one by a Welch t-test over
+    trials at p < 0.05 in both monkeys; partially reproduced when the increase holds in both but
+    some values are outside tolerance, or when it holds in one monkey.
