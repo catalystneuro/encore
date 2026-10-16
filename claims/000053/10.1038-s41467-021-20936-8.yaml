@@ -1,0 +1,666 @@
+# Claims for Mallory, Hardcastle et al. (2021), Nature Communications 12, 671, on dandiset 000053.
+# Source: the full text (open access, CC BY), read from Europe PMC (PMC7844029), with the
+# Supplementary Information PDF from the publisher.
+#
+# When these criteria were written, the author had seen only the data check: the file list and
+# sizes, the series, units and identifiers of every file, the unit counts per file and subject,
+# the trial tables of the large head-fixed files, the ranges of the variables in two head-fixed
+# sessions (eye position 1st and 99th percentiles about -3 and 2.6 to 4.7), and the timing of a
+# model fit (no selection result was looked at). A first version of this file marked the pitch and
+# roll claims blocked; the data check then found pitch and roll in the Cohort 1 files (the
+# `head_direction` series has three columns, described as "azimuth, pitch, roll"), and those
+# claims were given criteria before their analysis was run, having seen only the first rows and
+# the extremes of one file's columns. The code the paper names
+# (khardcastle/spline-lnp-model at 34b470f, GiocomoLab/ln-model-of-mec-neurons at 643386b) had
+# been read.
+#
+# Method choices fixed here, where the Methods leave them open:
+# - The head-fixed dataset is the 11 sessions whose identifier contains "baseline" (10 files
+#   without raw data, and npI1 0413 from its behavior+ecephys file); every bin of them is used,
+#   including the gain and contrast trials their trial tables list, which the paper does not
+#   mention.
+# - The freely moving cohorts are assigned by subject, matching unit counts to the counts the
+#   Methods give per study (claim of-cohorts-by-count); the files carry no cohort label.
+# - The LN model follows the Methods and the spline code (see mec.py): splines with s = 0.5,
+#   L2 penalty 1, ten folds of every tenth 10 s section (Methods; the code uses 3 s), forward
+#   search with one-sided signed-rank tests at 0.05, and the final model tested against the mean
+#   rate model. Cohort 1 is fitted with the paper's eight variables (B, Bs, Ha, Hp, Hr, Ha-dot,
+#   Hp-dot, Hr-dot); pitch and roll velocities are not stored, and are the change of the stored
+#   angles over time (8 bins each, as pitch, roll and Ha-dot). Cohort 2 is fitted with B, Bs, Ha
+#   and Ha-dot, the variables it was recorded with.
+# - Classification of velocity tuning curves (not fixed by the Methods): order 1 is linear
+#   asymmetric (Las). For order 2 and higher, lines are fit to the curve on each side of zero; the
+#   curve is nonlinear symmetric (NLs) when the two slopes have opposite signs and the smaller
+#   absolute slope is at least half the larger, and nonlinear asymmetric (NLas) otherwise. NLs-pos
+#   when firing rises away from zero (V shape), NLs-neg otherwise. A variant with opposite signs
+#   alone is shown.
+# - Preferred side: for position variables, the side of zero (the mean eye position) where the
+#   model tuning curve peaks; for Las velocity cells, the side where firing is higher; for NLas,
+#   the side with the larger absolute slope (variant, the side of the curve's maximum).
+# - False-positive rates (Supplementary Figure 3) are estimated by shuffling one variable in
+#   time (a random permutation of the kept bins, fixed seed) and re-running the selection:
+#   head-fixed, the four eye variables on a random 15% of the cells of each session (the full set
+#   does not fit the run time); freely moving, Ha, Hp, Hr and Ha-dot on all Cohort 1 cells.
+# - Log-likelihood increase is reported in bits per spike, with the spline code's scale (nats
+#   times log 2) and nats as readings.
+schema_version: 1
+dandiset: "000053"
+paper: doi:10.1038/s41467-021-20936-8
+claims:
+- id: vr-dataset-size
+  statement: The head-fixed dataset comprises 2861 MEC units recorded with Neuropixels probes in
+    11 sessions from 8 mice.
+  source: Results, third section; Methods, Neuropixels probes
+  expected:
+  - quantity: units
+    value: 2861
+    tolerance: 0
+  - quantity: sessions
+    value: 11
+    tolerance: 0
+  - quantity: mice
+    value: 8
+    tolerance: 0
+  criterion: Reproduced when a set of head-fixed sessions that the files' identifiers or
+    descriptions single out (not one chosen by trying sums) holds exactly these counts, each
+    recording counted once. Partially reproduced when the counts are met only by a set chosen by
+    its sum.
+- id: of-cohorts-by-count
+  statement: The freely moving dataset comprises 1200 MEC cells; Cohort 1 (6 mice, IMU and LEDs)
+    contributed 179 and Cohort 2 (20 mice, LEDs only) 1021, of which 228 unpublished (5 mice), 122
+    from Campbell et al. (2 mice), 389 from Eggink et al. (7 mice) and 282 from Munn et al. (6
+    mice).
+  source: Methods, Freely moving dataset, Animals
+  expected:
+  - quantity: freely moving cells
+    value: 1200
+    tolerance: 0
+  - quantity: Cohort 1 cells
+    value: 179
+    tolerance: 0
+  - quantity: freely moving mice
+    value: 26
+    tolerance: 0
+  criterion: The files carry no cohort or study label. Subjects are grouped by what the files
+    show (subject naming, identifiers, recording dates, arena sizes) and each group's unit total
+    is compared with the Methods' count per study. Reproduced when every group matches the
+    Methods in cells and mice; partially reproduced when the cells match for every group but a
+    mouse count differs, or when only some groups match; not reproduced otherwise. Claims that
+    use Cohort 1 or Cohort 2 depend on this assignment.
+- id: fig1b-ahv-percentiles
+  statement: Across 25 mice from both freely moving datasets, the distribution of azimuthal head
+    velocity has 2.5th, 25th, 50th, 75th and 97.5th percentiles of -389.9, -37.7, -0.1, 36.4 and
+    385.1 deg/s (mean across mice, each mouse averaged across sessions).
+  source: Figure 1b legend
+  expected:
+  - quantity: 2.5th percentile
+    value: -389.9
+    tolerance: 34.7
+    unit: deg/s
+  - quantity: 25th percentile
+    value: -37.7
+    tolerance: 3.9
+    unit: deg/s
+  - quantity: median
+    value: -0.1
+    tolerance: 0.3
+    unit: deg/s
+  - quantity: 75th percentile
+    value: 36.4
+    tolerance: 3.8
+    unit: deg/s
+  - quantity: 97.5th percentile
+    value: 385.1
+    tolerance: 34.7
+    unit: deg/s
+  criterion: Tolerances are the stated sem across mice. Percentiles of each session's azimuthal
+    head velocity (the file's series, read as deg/s; it is labelled rad/s, but the data check
+    shows its values on the scale of the head direction's change in deg/s), averaged over a
+    mouse's sessions, then over mice. This reading of the unit was settled in the data check,
+    after seeing group medians of the series' 2.5th and 97.5th percentiles. Readings, (a) all samples of each session; (b) the samples kept for
+    the model (inner 95% of every model variable). Reproduced when under one reading all five
+    values are within tolerance; partially reproduced when three or four are; not reproduced
+    otherwise.
+- id: fig1b-pitch-roll-percentiles
+  statement: Across the 6 Cohort 1 mice, head pitch had 2.5th, 25th, 50th, 75th and 97.5th
+    percentiles of -23.0, -1.4, 11.5, 25.8 and 55.6 degrees and roll of -50.9, -20.3, -0.8, 19.3
+    and 43.6 degrees; pitch velocity -303.8, -49.6, 0.1, 50.3 and 300.8 deg/s and roll velocity
+    -284.0, -45.2, 0.04, 45.1 and 284.4 deg/s.
+  source: Figure 1b legend; Methods, Measurement of behavioral variables
+  depends_on:
+  - of-cohorts-by-count
+  expected:
+  - {quantity: pitch 2.5th percentile, value: -23.0, tolerance: 4.5, unit: deg}
+  - {quantity: pitch 25th percentile, value: -1.4, tolerance: 4.1, unit: deg}
+  - {quantity: pitch median, value: 11.5, tolerance: 4.1, unit: deg}
+  - {quantity: pitch 75th percentile, value: 25.8, tolerance: 6.0, unit: deg}
+  - {quantity: pitch 97.5th percentile, value: 55.6, tolerance: 4.1, unit: deg}
+  - {quantity: roll 2.5th percentile, value: -50.9, tolerance: 3.6, unit: deg}
+  - {quantity: roll 25th percentile, value: -20.3, tolerance: 7.0, unit: deg}
+  - {quantity: roll median, value: -0.8, tolerance: 7.6, unit: deg}
+  - {quantity: roll 75th percentile, value: 19.3, tolerance: 6.0, unit: deg}
+  - {quantity: roll 97.5th percentile, value: 43.6, tolerance: 4.0, unit: deg}
+  - {quantity: pitch velocity 2.5th percentile, value: -303.8, tolerance: 19.9, unit: deg/s}
+  - {quantity: pitch velocity 25th percentile, value: -49.6, tolerance: 7.2, unit: deg/s}
+  - {quantity: pitch velocity median, value: 0.1, tolerance: 0.06, unit: deg/s}
+  - {quantity: pitch velocity 75th percentile, value: 50.3, tolerance: 7.2, unit: deg/s}
+  - {quantity: pitch velocity 97.5th percentile, value: 300.8, tolerance: 20.6, unit: deg/s}
+  - {quantity: roll velocity 2.5th percentile, value: -284.0, tolerance: 20.8, unit: deg/s}
+  - {quantity: roll velocity 25th percentile, value: -45.2, tolerance: 6.8, unit: deg/s}
+  - {quantity: roll velocity median, value: 0.04, tolerance: 0.03, unit: deg/s}
+  - {quantity: roll velocity 75th percentile, value: 45.1, tolerance: 7.0, unit: deg/s}
+  - {quantity: roll velocity 97.5th percentile, value: 284.4, tolerance: 21.2, unit: deg/s}
+  criterion: Tolerances are the stated sem across mice. Pitch and roll are the second and third
+    columns of `head_direction` in Cohort 1 files, in degrees; their velocities the change of the
+    angle per 20 ms sample. Percentiles of all finite samples per session, averaged over a mouse's
+    sessions, then over mice. The angles are judged on their ten values and the velocities on
+    theirs. Reproduced when at least 8 of the 10 angle values and at least 8 of the 10 velocity
+    values are within tolerance; partially reproduced when one of the two groups is; not
+    reproduced otherwise.
+- id: fig1c-cohort1-fractions
+  statement: Of the 179 Cohort 1 cells, 101 encoded body position, 52 body speed, 63 (35%)
+    azimuthal head direction and 12 (7%) azimuthal head velocity.
+  source: Results, first section; Figure 1c; Supplementary Figure 3b
+  depends_on:
+  - of-cohorts-by-count
+  expected:
+  - quantity: cells encoding body position
+    value: 101
+    tolerance: 10.1
+  - quantity: cells encoding body speed
+    value: 52
+    tolerance: 5.2
+  - quantity: cells encoding azimuthal head direction
+    value: 63
+    tolerance: 6.3
+  - quantity: cells encoding azimuthal head velocity
+    value: 12
+    tolerance: 1.2
+  criterion: The LN forward search on the Cohort 1 cells with the eight variables. Reproduced
+    when all four counts are within tolerance; partially reproduced when two or three are; not
+    reproduced otherwise. The code's variant of the final test is shown.
+- id: fig1c-pitch-roll-fractions
+  statement: Of the 179 Cohort 1 cells, 46 (26%) encoded head pitch and 53 (30%) head roll, and
+    few encoded pitch or roll velocity (4 and 5 cells).
+  source: Results, first section; Figure 1c
+  depends_on:
+  - of-cohorts-by-count
+  - figs3b-false-positives-of
+  expected:
+  - quantity: Cohort 1 cells encoding pitch
+    value: 46
+    tolerance: 4.6
+  - quantity: Cohort 1 cells encoding roll
+    value: 53
+    tolerance: 5.3
+  - quantity: Cohort 1 cells encoding pitch velocity
+    value: 4
+    tolerance: 0.4
+  - quantity: Cohort 1 cells encoding roll velocity
+    value: 5
+    tolerance: 0.5
+  criterion: The eight-variable forward search on Cohort 1. Reproduced when the pitch and roll
+    counts are within tolerance and each velocity is encoded by at most 10 cells (the paper's
+    "few"); partially reproduced when one of the pitch and roll counts is within tolerance, or
+    both are and a velocity count exceeds 10; not reproduced otherwise.
+- id: fig1d-conjunctive-cohort1
+  statement: Most Cohort 1 cells encoded more than one variable (95 of 179), and few encoded
+    azimuthal head direction, pitch, roll or head velocity alone, while 15% encoded body position
+    alone.
+  source: Results, first section; Figure 1d
+  depends_on:
+  - fig1c-cohort1-fractions
+  expected:
+  - quantity: Cohort 1 cells encoding more than one variable
+    value: 95
+    tolerance: 9.5
+  - quantity: fraction encoding body position alone
+    value: 0.15
+    tolerance: 0.015
+  criterion: Reproduced when both values are within tolerance and body position alone is the
+    most common single-variable model; partially reproduced when one of the values is within
+    tolerance; not reproduced otherwise. The single-variable fractions (paper Bs 2%, Ha 5%, Hp 1%,
+    Hr 5%, Ha-dot 0%) are reported.
+- id: fig1c-ahv-cohort2
+  statement: In Cohort 2, where head movements were measured in the azimuthal plane only, 55 of
+    1021 cells (5%) encoded azimuthal head velocity.
+  source: Results, first section
+  depends_on:
+  - of-cohorts-by-count
+  expected:
+  - quantity: Cohort 2 cells encoding azimuthal head velocity
+    value: 55
+    tolerance: 5.5
+  criterion: The LN forward search with B, Bs, Ha and Ha-dot on the Cohort 2 cells. Reproduced
+    when the count is within tolerance; partially reproduced when it is within 50% of 55 (28 to
+    82); not reproduced otherwise.
+- id: figs3b-false-positives-of
+  statement: In Cohort 1, shuffling a variable in time and re-running the selection gave few
+    false detections, 0 for azimuthal head direction, pitch and roll and 1 for azimuthal head
+    velocity.
+  source: Supplementary Figure 3b
+  depends_on:
+  - of-cohorts-by-count
+  expected:
+  - {quantity: Cohort 1 cells falsely detected for Ha, value: 0, tolerance: 0}
+  - {quantity: Cohort 1 cells falsely detected for Hp, value: 0, tolerance: 0}
+  - {quantity: Cohort 1 cells falsely detected for Hr, value: 0, tolerance: 0}
+  - {quantity: Cohort 1 cells falsely detected for Ha-dot, value: 1, tolerance: 0}
+  criterion: Each of Ha, Hp, Hr and Ha-dot is shuffled in time (random permutation) and the
+    selection re-run on all Cohort 1 cells. The procedures agree for a variable when the paper's
+    count of 179 (Ha 0, Hp 0, Hr 0, Ha-dot 1) lies inside the 95% Clopper-Pearson interval of the
+    count here; reproduced when it does for all four, partially for two or three, not reproduced
+    otherwise. Where it does not, the selection claims that rest on that variable are blocked as
+    methods_underspecified.
+- id: fig2c-ahv-shapes
+  statement: Of 67 cells encoding azimuthal head velocity (both cohorts), 64 had tuning curves fit
+    by a 5th or lower order polynomial; 10 of 67 were linear asymmetric, and of the 64 nonlinear
+    ones (as counted) 28 were nonlinear asymmetric and 26 nonlinear symmetric; most symmetric cells
+    increased firing with head speed (20 of 26, P = 0.009).
+  source: Results, first section; Figure 2c
+  depends_on:
+  - fig1c-cohort1-fractions
+  - fig1c-ahv-cohort2
+  criterion: Shapes of the model tuning curves of all cells selected for Ha-dot, over the range of
+    the Methods (2.5th to 97.5th percentile, within -100 to 100 deg/s), classified when that
+    range covers at least half of -100 to 100. The denominators are cells chosen by the
+    selection, whose number differs here, so each fraction is compared with the 95%
+    Clopper-Pearson interval of the fraction here (reason for this tolerance). The five fractions
+    are well fit 64/67, Las 10/67, NLas 28/64, NLs 26/64, NLs-pos 20/26. Reproduced when all five
+    paper fractions lie inside the intervals and the NLs-pos majority is significant (two-sided
+    binomial test, p < 0.05); partially reproduced when three or four fractions do; not
+    reproduced otherwise.
+- id: fig2c-ahv-direction
+  statement: Similar proportions of asymmetric head velocity cells preferred ipsiversive and
+    contraversive head rotation (contraversive 23 of 38).
+  source: Results, first section
+- id: fig2ab-pitch-roll-shapes
+  statement: Nearly all pitch and roll tuning curves were fit by a 5th or lower order polynomial
+    (44 of 46, 52 of 53); most pitch cells were linear (17 of 46) or quadratic (16 of 46), most
+    roll cells quadratic (28 of 53, linear 10 of 53); cells preferred both tilt directions in
+    similar proportions (pitch 26 of 44 upward, P = 0.29; roll 30 of 52 leftward, P = 0.41).
+  source: Results, first section; Figure 2a, b
+  depends_on:
+  - fig1c-pitch-roll-fractions
+  criterion: Model tuning curves of the cells selected for Hp and Hr over the Methods' range
+    (2.5th to 97.5th percentile within -50 to 50 degrees), smoothed with a 20-point Gaussian
+    window as the Methods (smoothdata, width 20) and classified when that range covers at least
+    half of -50 to 50. Order fractions are compared with the 95% Clopper-Pearson intervals here
+    (six fractions, well fit, linear and quadratic for each). The direction preference (side of
+    zero of the peak; the files do not say which sign is up or left) is an absence claim on a
+    two-sided binomial test at 0.05. Reproduced when at least five of the six fractions lie
+    inside the intervals and neither variable shows a preference; partially reproduced when
+    three or four lie inside, or a preference is found; not reproduced otherwise.
+- id: fig2ab-pitch-roll-stability
+  statement: The stability of tuning to pitch (median 0.67, IQR 0.35 to 0.80) and roll (0.54, IQR
+    0.23 to 0.74) was comparable to that of azimuthal head direction (0.65, IQR 0.47 to 0.81;
+    Kruskal-Wallis P = 0.12).
+  source: Results, first section; Figure 2av, bv
+  depends_on:
+  - fig1c-pitch-roll-fractions
+  - fig1c-cohort1-fractions
+  expected:
+  - {quantity: median stability of pitch tuning, value: 0.67, tolerance: 0.32}
+  - {quantity: median stability of roll tuning, value: 0.54, tolerance: 0.31}
+  - {quantity: median stability of Ha tuning, value: 0.65, tolerance: 0.18}
+  criterion: Tolerances are the distance to the farther quartile. Stability as for
+    fig2cv-ahv-stability, in Cohort 1; Ha over 0 to 360 degrees. The comparability is an absence
+    claim judged on the paper's test, a Kruskal-Wallis test across the three at 0.05. Reproduced
+    when the three medians are within tolerance and the test finds no difference; partially
+    reproduced when one part fails; not reproduced otherwise.
+- id: fig2cv-ahv-stability
+  statement: Tuning to azimuthal head velocity was highly stable between the two halves of the
+    session (median 0.91, IQR 0.74 to 0.96, n = 64), comparable to the stability of tuning to body
+    speed (0.86, IQR 0.63 to 0.95, n = 52; Wilcoxon rank-sum P = 0.097).
+  source: Results, first section; Figure 2cv
+  depends_on:
+  - fig1c-cohort1-fractions
+  - fig1c-ahv-cohort2
+  expected:
+  - quantity: median stability of Ha-dot tuning
+    value: 0.91
+    tolerance: 0.17
+  - quantity: median stability of Bs tuning
+    value: 0.86
+    tolerance: 0.23
+  criterion: Tolerances are the distance from the median to the farther quartile the paper
+    gives. Stability is the Pearson correlation of the model tuning curves fitted on the first
+    and the second half of the kept bins, over the overlap of the halves' ranges. Body speed
+    stability is taken over the Cohort 1 cells selected for Bs (the paper's n = 52 matches the
+    Cohort 1 count in Supplementary Figure 3b); all cohorts are shown as a variant. The claim of
+    comparability is an absence claim judged on the paper's test, a two-sided Wilcoxon rank-sum
+    test at 0.05. Reproduced when both medians are within tolerance and the test does not find
+    a difference; partially reproduced when one of the three parts fails; not reproduced
+    otherwise.
+- id: fig3ab-contributions-of
+  statement: In the freely moving data body position was the strongest predictor of MEC spiking
+    (contribution median 0.64), followed by azimuthal head direction (0.32), with body speed lower
+    (0.15) and azimuthal head velocity contributing least (0.06).
+  source: Results, second section; Figure 3a, b
+  depends_on:
+  - fig1c-cohort1-fractions
+  - fig1c-ahv-cohort2
+  expected:
+  - quantity: median contribution of B
+    value: 0.64
+    tolerance: 0.26
+  - quantity: median contribution of Ha
+    value: 0.32
+    tolerance: 0.26
+  - quantity: median contribution of Bs
+    value: 0.15
+    tolerance: 0.19
+  - quantity: median contribution of Ha-dot
+    value: 0.06
+    tolerance: 0.07
+  criterion: Contribution of a variable, for cells encoding it and at least one other, from the
+    ten-fold log-likelihood of the selected model and of the model refit without it. Readings of
+    the Methods' formula, (a) 1 - LLH(reduced) / LLH(selected); (b) LLH(reduced) / LLH(selected).
+    Both cohorts are pooled, as in the paper. The tolerance is the distance from the median to
+    the farther quartile the paper gives (its stated spread). Reproduced when, under one reading,
+    all four medians are within tolerance, the order of the medians is B > Ha > Bs > Ha-dot and B
+    exceeds Ha by a two-sided rank-sum test at 0.0033; partially reproduced when the order holds
+    but a median is outside tolerance; not reproduced otherwise.
+- id: fig3c-llh-of
+  statement: Of the 1200 freely moving cells, 869 significantly encoded at least one variable,
+    with a spike-normalised log-likelihood increase of median 0.11 (IQR 0.04 to 0.26).
+  source: Figure 3c
+  depends_on:
+  - of-cohorts-by-count
+  expected:
+  - quantity: cells encoding at least one variable
+    value: 869
+    tolerance: 86.9
+  - quantity: median log-likelihood increase
+    value: 0.11
+    tolerance: 0.15
+  criterion: The log-likelihood increase of the selected model, the mean over the ten test folds.
+    The tolerance of the median is the distance to the farther quartile. Readings of the unit,
+    (a) bits per spike; (b) the spline code's scale, nats times log 2; (c) nats. Reproduced when
+    the count and, under one reading, the median are within tolerance; partially reproduced when
+    one is; not reproduced otherwise.
+- id: fig3-pitch-roll-contributions
+  statement: Head pitch (contribution median 0.13) and roll (0.17) each contributed less to MEC
+    spiking than azimuthal head direction (P = 3.7e-7) but on par with body speed (P = 0.38).
+  source: Results, second section; Figure 3a, b
+  depends_on:
+  - fig1c-pitch-roll-fractions
+  expected:
+  - {quantity: median contribution of Hp, value: 0.13, tolerance: 0.06}
+  - {quantity: median contribution of Hr, value: 0.17, tolerance: 0.14}
+  criterion: Contributions as for fig3ab-contributions-of, with its readings. Reproduced when,
+    under one reading, both medians are within tolerance, pitch and roll contributions pooled are
+    below those of Ha by a two-sided rank-sum test at 0.0033, and the same test does not find
+    them different from those of Bs at 0.05 (an absence claim on the paper's test); partially
+    reproduced when one of the three parts fails; not reproduced otherwise.
+- id: fig3e-head-no-clustering
+  statement: Cells with similar tuning to a head movement variable did not tend to encode
+    similar additional variables (no clustering in tuning curve profile space).
+  source: Results, second section; Figure 3e, f; Supplementary Figure 11
+  depends_on:
+  - fig1c-pitch-roll-fractions
+  - fig1c-cohort1-fractions
+  criterion: As for fig7e-no-clustering, for the tuning curves of Hp, Hr and Ha-dot (Ha over 0
+    to 360 degrees as a fourth), labelled by each other variable, over both cohorts where the
+    variable was recorded.
+- id: fig4fghi-eye-percentiles
+  statement: Head-fixed mice moved their eyes considerably; across 8 mice the 1st, 25th, 50th,
+    75th and 99th percentiles were, for horizontal eye position, -3.50, -0.97, -0.11, 0.83 and
+    5.28; vertical position -2.74, -0.35, -0.035, 0.28 and 1.60; horizontal velocity -6.19, -0.58,
+    -0.11, 0.36 and 6.87; vertical velocity -2.83, -0.29, 0.013, 0.31 and 3.15 (percent of eye
+    width, and per second).
+  source: Figure 4f to i legends
+  depends_on:
+  - vr-dataset-size
+  expected:
+  - {quantity: Eh 1st percentile, value: -3.50, tolerance: 0.61}
+  - {quantity: Eh 25th percentile, value: -0.97, tolerance: 0.27}
+  - {quantity: Eh median, value: -0.11, tolerance: 0.032}
+  - {quantity: Eh 75th percentile, value: 0.83, tolerance: 0.26}
+  - {quantity: Eh 99th percentile, value: 5.28, tolerance: 0.87}
+  - {quantity: Ev 1st percentile, value: -2.74, tolerance: 0.64}
+  - {quantity: Ev 25th percentile, value: -0.35, tolerance: 0.11}
+  - {quantity: Ev median, value: -0.035, tolerance: 0.11}
+  - {quantity: Ev 75th percentile, value: 0.28, tolerance: 0.11}
+  - {quantity: Ev 99th percentile, value: 1.60, tolerance: 0.21}
+  - {quantity: Eh-dot 1st percentile, value: -6.19, tolerance: 0.74}
+  - {quantity: Eh-dot 25th percentile, value: -0.58, tolerance: 0.091}
+  - {quantity: Eh-dot median, value: -0.11, tolerance: 0.029}
+  - {quantity: Eh-dot 75th percentile, value: 0.36, tolerance: 0.12}
+  - {quantity: Eh-dot 99th percentile, value: 6.87, tolerance: 0.66}
+  - {quantity: Ev-dot 1st percentile, value: -2.83, tolerance: 0.55}
+  - {quantity: Ev-dot 25th percentile, value: -0.29, tolerance: 0.025}
+  - {quantity: Ev-dot median, value: 0.013, tolerance: 0.010}
+  - {quantity: Ev-dot 75th percentile, value: 0.31, tolerance: 0.031}
+  - {quantity: Ev-dot 99th percentile, value: 3.15, tolerance: 0.68}
+  criterion: Tolerances are the stated sem across mice. Percentiles of each session's values
+    (all finite samples; the files' values read as percent of eye width), averaged over a
+    mouse's sessions, then over the 8 mice. Reproduced when at least 16 of the 20 values are
+    within tolerance; partially reproduced when 10 to 15 are; not reproduced otherwise.
+- id: figs12-eye-behavior-mi
+  statement: Eye position and eye velocity on both axes were more correlated than chance with
+    body position and running speed on the virtual track.
+  source: Results, third section; Supplementary Figure 12
+  depends_on:
+  - vr-dataset-size
+  criterion: Per session, the mutual information (20 equal-width bins of the kept range) between
+    each of the four eye variables and each of B and Bs, against the 95th percentile of 100
+    random permutations of the eye variable. Reproduced when every one of the 8 pairs exceeds its
+    null in at least 6 of the 11 sessions; partially reproduced when 4 to 7 pairs do; not
+    reproduced otherwise.
+- id: fig4j-eye-fractions
+  statement: Of 2861 head-fixed MEC cells, 711 (25%) carried eye movement signals; 343 (12%)
+    encoded horizontal eye position, 234 (9%) vertical eye position, 244 (9%) horizontal eye
+    velocity and 135 (5%) vertical eye velocity.
+  source: Results, third section; Figure 4j
+  depends_on:
+  - vr-dataset-size
+  - figs3c-false-positives-vr
+  expected:
+  - quantity: cells encoding any eye variable
+    value: 711
+    tolerance: 71.1
+  - quantity: cells encoding Eh
+    value: 343
+    tolerance: 34.3
+  - quantity: cells encoding Ev
+    value: 234
+    tolerance: 23.4
+  - quantity: cells encoding Eh-dot
+    value: 244
+    tolerance: 24.4
+  - quantity: cells encoding Ev-dot
+    value: 135
+    tolerance: 13.5
+  criterion: The LN forward search with B, Bs, Eh, Ev, Eh-dot and Ev-dot on every cell of the 11
+    sessions. Reproduced when all five counts are within tolerance; partially reproduced when the
+    any-eye count is at least half of 711 and every eye variable is encoded by at least three
+    times the number of cells the false-positive estimate implies, but not all counts are within
+    tolerance; not reproduced otherwise. The code's variant of the final test is shown.
+- id: fig4j-body-fractions
+  statement: Of the 2861 head-fixed cells, 1958 encoded virtual body position and 1321 body speed.
+  source: Supplementary Figure 3c; Figure 5 (n = 1968 for body position); Figure 6
+  depends_on:
+  - vr-dataset-size
+  expected:
+  - quantity: cells encoding B
+    value: 1958
+    tolerance: 195.8
+  - quantity: cells encoding Bs
+    value: 1321
+    tolerance: 132.1
+- id: figs3c-false-positives-vr
+  statement: In the head-fixed data, shuffling an eye variable in time and re-running the
+    selection falsely detected it in few cells (Eh 5, Ev 5, Eh-dot 8, Ev-dot 13 of 2861).
+  source: Supplementary Figure 3c
+  depends_on:
+  - vr-dataset-size
+  expected:
+  - {quantity: false Eh, value: 5, tolerance: 0}
+  - {quantity: false Ev, value: 5, tolerance: 0}
+  - {quantity: false Eh-dot, value: 8, tolerance: 0}
+  - {quantity: false Ev-dot, value: 13, tolerance: 0}
+  criterion: On a random 15% of the cells of each session (seeded), each eye variable is
+    shuffled in time and the selection re-run. The procedures agree for a variable when the
+    paper's rate (count of 2861) lies inside the 95% Clopper-Pearson interval of the rate here.
+    Reproduced when it does for all four; partially reproduced for two or three; not reproduced
+    otherwise. The expected values are the paper's counts of 2861; the measured values are rates
+    scaled to 2861. When the rate here is far from the paper's (outside the interval) for an eye
+    variable, the selection claims that rest on it are blocked as methods_underspecified.
+- id: fig4k-conjunctive-eye
+  statement: The majority of eye-encoding cells also encoded body position or speed (96%), and a
+    subset encoded more than one eye movement parameter (28%).
+  source: Results, third section; Figure 4j, k
+  depends_on:
+  - fig4j-eye-fractions
+  expected:
+  - quantity: fraction of eye cells also encoding B or Bs
+    value: 0.96
+    tolerance: 0.04
+  - quantity: fraction of eye cells encoding two or more eye variables
+    value: 0.28
+    tolerance: 0.028
+  criterion: Among cells selected for any eye variable. The first tolerance is 10% capped at 1.
+    Reproduced when both are within tolerance; partially reproduced when one is.
+- id: fig5-eye-position-preference
+  statement: Cells encoding horizontal eye position preferred nasal and temporal positions in
+    similar proportions (170 of 343 nasal, P = 0.91), and cells encoding vertical eye position
+    preferred upward and downward positions in similar proportions (88 of 177, P = 1); all 343
+    horizontal and 177 of 234 vertical tuning curves were classified.
+  source: Results, third section; Figure 5a, b
+  depends_on:
+  - fig4j-eye-fractions
+  criterion: A claim of absence, judged on the paper's test, a two-sided binomial test at 0.05 of
+    the number of classified cells peaking on one side of zero. The dandiset does not say which
+    sign is nasal or upward; the test does not depend on it. Reproduced when neither Eh nor Ev
+    shows a preference; not reproduced when either does. The classified fractions (paper 343 of
+    343 and 177 of 234) are reported.
+- id: fig5-eye-position-stability
+  statement: Eye position tuning was stable across the session (Eh median 0.87, IQR 0.67 to
+    0.95; Ev 0.72, IQR 0.21 to 0.91), horizontal eye position tuning more stable than body
+    position tuning (0.71, IQR 0.52 to 0.85, n = 1968; P = 8.6e-25) and vertical eye position
+    tuning similar to it (P = 0.91).
+  source: Results, third section; Figure 5av, bv
+  depends_on:
+  - fig4j-eye-fractions
+  - fig4j-body-fractions
+  expected:
+  - quantity: median stability Eh
+    value: 0.87
+    tolerance: 0.20
+  - quantity: median stability Ev
+    value: 0.72
+    tolerance: 0.51
+  - quantity: median stability B
+    value: 0.71
+    tolerance: 0.19
+  criterion: Stability as for fig2cv-ahv-stability, over classified cells for Eh and Ev and all
+    cells encoding B. Tolerances are the distance to the farther quartile. Reproduced when the
+    three medians are within tolerance, Eh exceeds B by a two-sided rank-sum test at 0.0167, and
+    the same test does not find Ev and B different at 0.05; partially reproduced when the Eh and
+    B comparison holds but another part fails; not reproduced otherwise.
+- id: fig6-eye-velocity-shapes
+  statement: Eye velocity tuning curves were well fit by polynomials (244 of 244 horizontal, 131
+    of 135 vertical); horizontal eye velocity cells were 43 linear asymmetric, 147 nonlinear
+    asymmetric and 54 nonlinear symmetric, vertical 29, 68 and 34.
+  source: Results, third section; Figure 6a, b
+  depends_on:
+  - fig4j-eye-fractions
+  criterion: Classification as for fig2c-ahv-shapes, over the Methods' range (1st to 99th
+    percentile, within -3 to 3 for Eh-dot and -2 to 2 for Ev-dot), classified when that covers at
+    least 80% of the preset range. The six paper fractions (Las, NLas, NLs of the well-fit cells
+    for each axis) are compared with the 95% Clopper-Pearson intervals here. Reproduced when all
+    six lie inside; partially reproduced when four or five do; not reproduced otherwise.
+- id: fig6-eye-velocity-direction
+  statement: Linear asymmetric horizontal eye velocity cells preferred nasal movements (30 of 43,
+    P = 0.014) while nonlinear asymmetric ones preferred temporal movements (87 of 147, P = 0.026);
+    vertical eye velocity cells showed no preference (Las 16 of 29, NLas 31 of 68).
+  source: Results, third section; Figure 6
+  depends_on:
+  - fig6-eye-velocity-shapes
+  criterion: The sign convention of the files is not documented, so the test is of the sides,
+    not their names. Reproduced when Las Eh-dot cells show a majority side by a two-sided binomial
+    test at 0.05, NLas Eh-dot cells show a significant majority on the other side, and neither
+    vertical group shows a preference at 0.05; partially reproduced when the two horizontal
+    majorities are on opposite sides but one is not significant, or a vertical group shows a
+    preference; not reproduced otherwise.
+- id: fig6-velocity-stability
+  statement: Tuning to horizontal eye velocity was more stable than tuning to body speed (0.93,
+    IQR 0.82 to 0.98, against 0.84, IQR 0.60 to 0.94, n = 1321; P = 6.5e-18), and tuning to
+    vertical eye velocity less stable (0.74, IQR 0.21 to 0.92; P = 0.00061).
+  source: Results, third section; Figure 6av, bv
+  depends_on:
+  - fig4j-eye-fractions
+  - fig4j-body-fractions
+  expected:
+  - quantity: median stability Eh-dot
+    value: 0.93
+    tolerance: 0.11
+  - quantity: median stability Ev-dot
+    value: 0.74
+    tolerance: 0.53
+  - quantity: median stability Bs
+    value: 0.84
+    tolerance: 0.24
+  criterion: As for fig5-eye-position-stability. Reproduced when the three medians are within
+    tolerance, Eh-dot exceeds Bs and Ev-dot is below Bs, each by a two-sided rank-sum test at
+    0.05; partially reproduced when one comparison fails or a median is outside; not reproduced
+    when both comparisons fail.
+- id: fig7ab-contributions-vr
+  statement: Body position and speed influenced head-fixed MEC spiking more strongly than eye
+    movement signals (contribution medians B 0.65, Bs 0.26, Eh 0.10, Ev 0.14, Eh-dot 0.05, Ev-dot
+    0.04), and eye position contributed more than eye velocity (P = 1.9e-10).
+  source: Results, third section; Figure 7a, b
+  depends_on:
+  - fig4j-eye-fractions
+  expected:
+  - {quantity: median contribution B, value: 0.65, tolerance: 0.27}
+  - {quantity: median contribution Bs, value: 0.26, tolerance: 0.29}
+  - {quantity: median contribution Eh, value: 0.10, tolerance: 0.12}
+  - {quantity: median contribution Ev, value: 0.14, tolerance: 0.16}
+  - {quantity: median contribution Eh-dot, value: 0.05, tolerance: 0.07}
+  - {quantity: median contribution Ev-dot, value: 0.04, tolerance: 0.07}
+  criterion: Contributions as for fig3ab-contributions-of, with its two readings; tolerances are
+    the distance to the farther quartile. Reproduced when, under one reading, at least five of
+    the six medians are within tolerance, the B and Bs medians both exceed every eye median, and
+    pooled eye position contributions exceed pooled eye velocity contributions by a two-sided
+    rank-sum test at 0.0033; partially reproduced when the order holds but another part fails;
+    not reproduced otherwise.
+- id: fig7c-llh-vr
+  statement: Of the 2861 head-fixed cells, 2191 significantly encoded at least one variable, with
+    a spike-normalised log-likelihood increase of median 0.05 (IQR 0.02 to 0.11).
+  source: Figure 7c
+  depends_on:
+  - vr-dataset-size
+  expected:
+  - quantity: cells encoding at least one variable
+    value: 2191
+    tolerance: 219.1
+  - quantity: median log-likelihood increase
+    value: 0.05
+    tolerance: 0.06
+  criterion: As for fig3c-llh-of, with its three readings of the unit.
+- id: fig7e-no-clustering
+  statement: Cells with similar tuning to an eye movement variable did not tend to encode similar
+    additional variables.
+  source: Results, third section; Figure 7e, f; Supplementary Figure 11
+  depends_on:
+  - fig4j-eye-fractions
+  criterion: A claim of absence, judged on the paper's test. For each eye variable, the model
+    tuning curves of its cells (50 points over the Methods' range) are mean-subtracted, scaled to
+    unit range and projected on their first two principal components; for each other variable
+    and k from 1 to 10, the mean distance of each labelled cell (also encoding that variable) to
+    its k nearest labelled neighbours is compared with 1000 label permutations, P being the
+    fraction of permuted distances smaller than observed. Reproduced when no combination has
+    P < 0.005 (0.05 / 10, as the Methods); not reproduced otherwise. Combinations with fewer than
+    two labelled cells are skipped and counted.
+- id: fig8-landmarks
+  statement: When the virtual track had no visual landmarks, body position tuning degenerated or
+    remapped (correlation 0.02), while tuning to eye position, eye velocity and body speed was
+    preserved (0.40 to 0.82), in 1621 cells from 6 sessions in 6 mice.
+  source: Results, fourth section; Figure 8
+- id: vr-hemispheres
+  statement: Recordings were made in the left (4 recordings from 3 mice) or right MEC (7 from 7
+    mice); proportions of eye-movement cells did not differ between hemispheres, and preferences
+    held in each hemisphere.
+  source: Methods, Data collection; Results, third section
