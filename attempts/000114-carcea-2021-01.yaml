@@ -1,0 +1,603 @@
+schema_version: 1
+id: 000114-carcea-2021-01
+dandiset: "000114"
+dandiset_version: 0.230602.1643
+paper: doi:10.1038/s41586-021-03814-7
+date: 2026-10-16
+entry: 000114-carcea-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: Names of the behaviour labels ("Mom agressing" for shepherding, "Virgin in rest" for nest
+    entry, "Mom retrieval" for dam retrieval, from behStrings in shepNestPup_xCorr_ForNature.m) and
+    the parameters of the modulation index and shuffle test (calc_spike_freq_behavior_significance.m),
+    including the 0.5 s gap before the baseline and the unit-removal threshold of 1,048,500 spikes.
+  source: https://github.com/ic283/Carcea-et-al.-2021 at commit 2db2a753cd653f96b7742061da5d64de8606bd4f
+- what: The paper's Source Data spreadsheets for Figures 2 to 4 and Extended Data Figures 7 and 8,
+    read for reported numbers and test details (the one-sided Fisher test against zero, the per-unit
+    and per-animal values of Figs. 2e, 2i, 2j, 3c and 4i). No values from them enter the analysis.
+  source: doi:10.1038/s41586-021-03814-7 (Source Data files 41586_2021_3814_MOESM16 to MOESM18,
+    MOESM22, MOESM23)
+outcomes:
+- claim: label-link
+  outcome: reproduced
+  notebook: reproduce_carcea_2021.ipynb
+  output: claim:label-link
+  measured: 73.3
+  notes: In V116 03122018, the one file with both naming schemes, all 7 "Mom agressing" intervals
+    coincide with "Shepherding" intervals and both "Mom retrieval" intervals with "Self gen
+    retrieval" intervals, and all 13 "Virgin in rest" intervals lie inside "Virgin in nest"
+    intervals. Pooled over files, 366 of 499 "Virgin in rest" intervals (73.3%) last 40 s or less,
+    within 70.5% +/- 7.05. By mouse the fraction is 72.2% in V110 and 89.2% in V111, but 9.9% in
+    V116, where the label marks dwells with medians of 1103.7 to 2492.7 s, and 0 of 3 in V118
+    (median 64.1 s).
+    Adding V85's "Virgin in nest" gives 77.3% of 639.
+  deviations:
+  - The names come from the paper's code, not from the dandiset; "Mom aggressing" in V85 is taken as
+    the same label as "Mom agressing".
+- claim: ed7a-nest-entry-fraction
+  outcome: partially_reproduced
+  notebook: reproduce_carcea_2021.ipynb
+  output: claim:ed7a-nest-entry-fraction
+  measured: 21.6
+  notes: 42 of 194 units (21.6%) are activated during nest entry, outside the tolerance of both
+    readings (pooled 23.9 to 29.2%, PVN only 23.6 to 28.8%); the Fisher test against zero gives
+    p = 1.9e-14, and 7 units are suppressed. By mouse, V116 has 37 of 70 (52.9%), V110 1 of 31 and
+    V111 4 of 93. Without the 40 s cap, as in the code, 2 of 194 (1.0%, p = 0.25). Without the 20
+    units above 1,048,500 spikes, 42 of 174 (24.1%), inside the tolerance of both readings, so this
+    variant would reproduce the fraction. With q = 0.01 and 0.1, 14.4% and 28.4%. The
+    paper's statement separates OT-PVN (6 of 21) and PVN (33 of 126) units; the OT-PVN part cannot
+    be tested. The clock shared by spikes and annotations could not be established in any session.
+    Poisson units with each unit's spike count and no response give 2 of 194 (1.0%) on the same
+    episodes and test. Real episodes without spikes are left out of the mean in 116 units (median 17%
+    of their episodes); counting them as 0, as the shuffles do, gives 31 of 194 (16.0%, p = 1.3e-10).
+    Counting V111 once gives 38 to 40 of 132 (28.8 to 30.3%; 28.8% is inside the pooled reading's
+    tolerance, so this variant would reproduce the fraction); without V116 03102018, whose clock is
+    not known, 25 of 168 (14.9%, p = 1.1e-08). The baselines of 3 to 20 entries per session overlap
+    an earlier nest dwell or a shepherding episode; the largest count is in V110 03032018 (20 of 72,
+    all an earlier dwell) and the largest share in V116 03092018 (16 of 29, all shepherding).
+  deviations:
+  - Units from 4 virgins and 7 sessions (194 units), against the paper's 147 units from more animals;
+    which sessions the paper used is not stated.
+  - OT-PVN and PVN units are pooled and the false discovery rate is applied over each session's units,
+    as OT identity is not in the dandiset; the Methods apply it over OT-PVN or PVN units of a day.
+  - The baseline ends 0.5 s before the episode, from the code; the Methods do not give it.
+  - V111's three sessions probably hold the same clusters (spike counts correlated 0.93 to 0.97) and
+    are counted as separate units, as the paper counts units per day.
+  - As in the code, real episodes with no spike in either window are left out of a unit's mean, while
+    shuffled ones count as 0; counting both as 0 is shown as a variant, as is counting V111 once.
+- claim: ed7a-shepherding-fraction
+  outcome: not_reproduced
+  notebook: reproduce_carcea_2021.ipynb
+  output: claim:ed7a-shepherding-fraction
+  measured: 1.5
+  notes: With the Methods' 10 s baseline, 3 of 194 units (1.5%) are activated during shepherding,
+    Fisher p = 0.12, against 11.9% (pooled) or 9.3% (PVN only); 10 units are suppressed and 15 have no
+    value. With the code's equal-duration baseline, 9 of 194 (4.6%, p = 0.0018). V116 alone, 2 of 70
+    (p = 0.25). Sessions hold 1 to 22 shepherding episodes, so most units are tested on few events.
+    Poisson units with no response give 3 of 194 activated, as many as the real units. Counting empty
+    episodes as 0 gives 1 of 194, counting V111 once 2 or 3 of 132, and leaving out V116 03102018 2 of
+    168, none with p < 0.05.
+  deviations:
+  - Units from 4 virgins and 7 sessions, OT-PVN and PVN pooled, as for nest entry.
+  - Real episodes without spikes are left out as in the code, and V111's sessions counted separately,
+    as for nest entry; both are also shown the other way.
+  - The Methods' 10 s baseline is used; the code's equal-duration baseline is shown as a variant.
+- claim: ed7a-dam-retrieval-fraction
+  outcome: partially_reproduced
+  notebook: reproduce_carcea_2021.ipynb
+  output: claim:ed7a-dam-retrieval-fraction
+  measured: 9.8
+  notes: 13 of 132 units (9.8%) are activated during dam retrieval, Fisher p = 9e-05, outside the
+    tolerance of both readings (pooled 15.7 to 19.1%, PVN only 13.1 to 16.0%). 9 of the 13 are from
+    V111 03032018, which has one retrieval episode; over sessions with at least 2 episodes, 4 of 101
+    (p = 0.061). More units are suppressed (20) than activated, and the median change is -22.4. With
+    the code's baseline, 16 of 132 (12.1%). The OT-PVN part (5 of 17) cannot be tested. The 9 units
+    of V111 03032018 share a median 71% of their spikes pairwise within 0.1 ms (33 to 81%), against
+    1.7% among the session's other 22 units, so they are probably far fewer than 9 neurons. Counting
+    V111 once gives 11 of 101 with V111 03032018 (p = 0.00037) and 4 of 101 with V111 03062018
+    (p = 0.061). Poisson units with no response give 3 activated and 12 suppressed of 132, so the
+    suppressed count is not far above the test's false-positive level. Counting empty episodes as 0
+    gives 12 of 132 (p = 0.00019); without V116 03102018, 12 of 106 (p = 0.00018). The baseline
+    of the single retrieval in V111 03032018 is not a recording gap (537 population spikes, more
+    than in 43% of the session's 10 s windows; no interval over 0.22 s within 60 s), but 7 of 31
+    units have no spike in it and the 9 activated units fire 0 to 2.1 Hz. During the 5.2 s episode
+    about 16 units fire at 144 to 221 Hz together (14,346 population spikes in the first 5 s against
+    1,838 per 5 s over the session, a size reached in 12 of 3,325 windows), so the retrieval falls
+    on one of the session's largest synchronous bursts. The outputs cannot tell a response from a
+    burst that coincides with the episode; the outcome follows the criterion, which counts units as
+    given.
+  deviations:
+  - Units from 2 virgins and 5 sessions with 1 to 11 retrieval episodes each; OT-PVN and PVN pooled.
+  - Real episodes without spikes are left out as in the code, and V111's sessions counted separately,
+    as for nest entry; both are also shown the other way.
+  - The Methods' 10 s baseline is used; the code's equal-duration baseline is shown as a variant.
+- claim: fig2j-shepherded-entry
+  outcome: not_reproduced
+  notebook: reproduce_carcea_2021.ipynb
+  output: claim:fig2j-shepherded-entry
+  notes: Over 128 units in 5 sessions, the change is higher for shepherded than voluntary entries in
+    70, median difference 3.9, Wilcoxon p = 0.182. Sessions disagree; V110 03032018 (one shepherded
+    entry) has 30 of 31 units higher (p = 4.66e-09) and V116 03102018 has 6 of 26 (p = 0.00669). With
+    windows of 5 and 30 s, p = 0.37 and 0.166; over the 36 units activated during nest entry, median
+    difference -7.3, p = 0.148; V116 alone, -6.0, p = 0.0732. Without V116 03102018, whose clock is
+    not known, the median difference is 10.8 over 102 units and p = 0.0237; this variant does not
+    decide the outcome under the criterion, and 31 of its units come from V110 03032018, compared on a
+    single shepherded entry.
+  deviations:
+  - The paper does not say how a nest entry was classed as shepherded or which 18 units were used;
+    the rule (entry starting from the start of a shepherding episode to 10 s after its end) and the
+    unit set were fixed before the analysis.
+- claim: fig1j-shepherding-rate
+  outcome: partially_reproduced
+  notebook: reproduce_carcea_2021.ipynb
+  output: claim:fig1j-shepherding-rate
+  measured: 0.65
+  notes: Over 10 sessions from 5 mice the mean rate is 0.65 shepherding events per hour (s.e.m.
+    0.17), above 0.2 (t = 2.59, two-sided p = 0.0292), and far below 3.5 +/- 0.9. Averaged per mouse
+    first, 0.63 per hour, p = 0.193 against 0.2. Session rates run from 0 (V118 03222018) to 1.58
+    (V85). Annotations of any label span each session with no gap over 0.81 h; the virgin labels run
+    from within 0.61 h of the start to within 0.15 h of the end with gaps of up to 1.93 h. This is
+    consistent with sessions scored in full but does not show that every shepherding episode was
+    annotated.
+  deviations:
+  - Sessions are recordings of 2.5 to 15.8 h, not the paper's days of co-housing per dyad, and the
+    dandiset does not say whether each session was annotated in full.
+  - The comparison of 3.5 per hour comes from Extended Data Fig. 3b (N = 4 dyads); its dyads are not
+    identified.
+- claim: ed8a-dam-retrieval-rate
+  outcome: not_reproduced
+  notebook: reproduce_carcea_2021.ipynb
+  output: claim:ed8a-dam-retrieval-rate
+  measured: 0.21
+  notes: Dams retrieve 23 times in 108.4 h, 0.21 per hour (session mean 0.21, range 0 to 0.70),
+    below 0.31 to 0.66 and close to the 0.2 +/- 0.1 per hour (N = 5) the legend of Extended Data
+    Fig. 8a gives for singly housed dams. Two of
+    10 sessions are inside the range (V116 03082018 at 0.33, V118 03222018 at 0.40). The rate depends
+    on every retrieval being annotated, which the dandiset does not state; the annotations span each
+    session with no gap over 0.81 h, and dam retrievals are too rare (gaps of up to 9.89 h) for
+    their spacing to show unscored stretches.
+  deviations:
+  - Rates from 5 cages over 10 sessions, against the paper's 14 dams over 4 days.
+- claim: ot-pvn-units
+  outcome: blocked
+  blocked_by: data_missing
+  notes: OT-PVN units were identified by optical tagging at the end of each day; the tagging
+    recordings (laser pulse times) are not in the dandiset, the units table has no label, and the
+    paper's code reads the identities from a spreadsheet ("Identified OXT neurons.xlsx") that is not
+    public. The Zenodo record 5039601 holds Blackrock .nev files of the same co-housing sessions, not
+    the identities. The unit names in the files are the indices 0 to n-1 in every session. The pooled PVN part of these responses is tested in the three ed7a claims.
+- claim: fig2f-virgin-chasing
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The files have a "Virgin Agressing" label (32 events in 5 sessions with units), which may be
+    the virgin chasing the dam, but neither the files, the Methods nor the code name it. It
+    never overlaps "Mom agressing" and starts at least 162 s from the nearest one. Of the 3
+    shepherding-activated units, 2 have such episodes; one fires less over 11 episodes (change -25.3,
+    shuffle p = 0.054), the other stops firing in its single episode. Two units cannot test the
+    paper's 6.
+- claim: ed6-dam-vs-pup
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 5-minute interaction periods with the dam or with pups, and the pup call playback
+    times, are not annotated in any file.
+- claim: fig1cd-retrieval-onset
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The daily retrieval tests of the 14 D+ and 10 D- virgins are not in the dandiset; only
+    summary values are in the paper's Source Data, and the videos are on Databrary.
+- claim: fig2a-dreadd
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The DREADD cohort's retrieval scores are not in the dandiset.
+- claim: fig3fg-observational-learning
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The observation cohorts' retrieval scores are not in the dandiset. The photometry files of
+    six observing virgins hold retrieval tests for two of them only.
+- claim: fig3ij-observation-units
+  outcome: blocked
+  blocked_by: data_missing
+  notes: All units in the dandiset are from co-housing sessions; no unit recording from an
+    observation session is in it.
+- claim: fig4c-ac-photometry
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No photometry file has pup call playback, and fibre location is "unknown" in every file;
+    the photometry files are observation and retrieval sessions of Fig. 4g-i.
+- claim: fig4f-pvn-ac-correlation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No file holds PVN units together with photometry.
+- claim: fig4i-projection-photometry
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The six photometry animals (ROV40, 41, 43, 44, 45, 49) match the three learners and three
+    non-learners of the Source Data, but only ROV40 and ROV41 have retrieval-test files, in which
+    they retrieve on Day 1 and Day 2; whether the other four learned is not in the dandiset. The
+    response measure is also not stated; the Source Data values (-12.1 to 65.7 per animal) are on a
+    scale the files cannot be linked to without it, so the claim is also methods_underspecified.
+    The mean change in the 5 s after the dam's retrievals against the 5 s before is positive in all
+    six animals on Day 1 (0.22 to 1.85%), which does not separate the groups even if ROV40 and ROV41
+    are taken as learners.
+- claim: fig4jk-oxytocin-in-ac
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The infusion and optogenetic cohorts' retrieval scores are not in the dandiset.
+- claim: ed9-colliculus
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Tracing histology and the stimulation cohort's retrieval scores are not in the dandiset.
+findings:
+- kind: metadata_insufficient
+  statement: The behaviour labels ("Mom agressing", "Virgin in rest", "Mom retrieval", "Virgin
+    Agressing", "Mother in nest" and others) have no description; the table's description, "events
+    and states of pups", the same in every file, fits none of them. Shepherding, nest entry and dam
+    retrieval can be named only from the paper's code, and "Virgin Agressing" not at all. One file
+    (V116 03122018) carries both the code's labels and the paper's names.
+- kind: data_missing
+  statement: The optical tagging recordings and the identity of the 21 OT-PVN units are not in the
+    dandiset, so no oxytocin-specific result can be tested. The behavioural cohorts of Figures 1 to 4,
+    the unit recordings during observation, and the auditory cortex photometry and units are also
+    missing. Units are present for 4 of the paper's 17 recorded virgins.
+- kind: other
+  statement: Units in V110 and V111 have a median 7.0 to 9.2% of inter-spike intervals under 2 ms,
+    and 79 to 90% of their spikes lie within 0.1 ms of a spike of another unit. The Methods say spikes
+    violating a 2 to 3 ms refractory period and spikes recorded at once on 10 or more channels were
+    removed. These units look like multi-unit clusters or one neuron split over several wires. In
+    V111 03032018 the 9 units activated by the dam's retrieval share a median 71% of their spikes
+    pairwise within 0.1 ms, and the retrieval falls on a synchronous burst of about 16 units at 144
+    to 221 Hz, one of the 12 largest of the session's 3,325 windows of 5 s.
+- kind: metadata_error
+  statement: Session start times disagree with the dates in the session ids; V116 03082018 and
+    03102018 start in May 2018, V116 03092018 on 11 March, and V118 03182018 on 23 March, after
+    V118 03192018.
+- kind: format_error
+  statement: In V116 03102018 the raw voltage lasts 4.46 h, but spike times and annotations run to
+    13.4 h; in V118 03222018 annotations run to 2.52 h against 2.27 h of voltage. The spikes and
+    events of these files cannot all come from the recording they are stored with.
+- kind: metadata_insufficient
+  statement: The units table holds spike times and a name only, with no channel, waveform, quality
+    or cell type, and every electrode location is "unknown". V111's three sessions hold 31 units each
+    with spike counts correlated 0.93 to 0.97 across days, and nothing says whether they are the same
+    units.
+- kind: metadata_error
+  statement: Every subject is described as "Virgin female co-housed with dam and pups", including the
+    six photometry animals of the observation experiment. Photometry fibre location, fluorophore,
+    wavelengths and gain are "unknown" or NaN; the trace is stated in watts with values near 1000;
+    the commanded_voltage series, described as the LED command, varies from 0.07 to 482 within
+    sessions and is not a command signal.
+- kind: metadata_insufficient
+  statement: Which photometry animals learned to retrieve is in the dandiset for 2 of 6 (ROV40 and
+    ROV41, from their retrieval-test files), so the learner and non-learner groups of Fig. 4i cannot
+    be formed.
+- kind: other
+  statement: No test here established that spikes and annotations share a clock; the firing change
+    at annotation onsets was not larger at the stated times than at shifts of up to 2 minutes in any
+    session.
+- kind: code_mismatch
+  statement: The Methods cut nest entry episodes at 40 s and use the 10 s before shepherding and dam
+    retrieval as baseline; the paper's significance code has the cap commented out and uses an
+    equal-duration baseline for every behaviour. On this data the cap changes the fraction of units
+    activated during nest entry from 1.0% to 21.6%.
+- kind: selection_undocumented
+  statement: The dandiset holds units from 4 virgins (228 units in 8 sessions), no units for V85,
+    V116 03122018 and three V118 sessions, and annotations limited to "Mother in nest" in two V118 files,
+    against 17 recorded virgins and 541 units in the paper. It does not say which recordings were
+    deposited or why.
+verifications:
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier tested helper functions on synthetic
+    inputs and checked the archive's file list for the blocked claims. Its report had no attempt record
+    and gave its own outcome for each claim; all 19 agree with the record.
+  results:
+  - claim: label-link
+    agrees: true
+    outcome: reproduced
+    reason: In V116 03122018, 7 of 7 "Mom agressing" intervals coincide with "Shepherding" and 2 of 2
+      "Mom retrieval" with "Self gen retrieval". Pooled "Virgin in rest" of 40 s or less is 366/499 =
+      73.3%, inside 63.5 to 77.6. This passes on V111 (343 of the 499 intervals); V116 and V118 give 9.9%
+      and 0% (problem 6, "Virgin in rest" means different things across mice).
+    response: No change to the outcome. The split by mouse was already in the notes; the nest entry
+      notes now also give the variants without V116 03102018 and with V111 counted once.
+  - claim: ed7a-nest-entry-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: 42/194 = 21.6% activated, Fisher p = 1.9e-14, outside both tolerances. 37 of the 42 are in
+      V116. Without the 40 s cap, as in the authors' code, it is 2/194. The fraction depends almost
+      entirely on the cap (problem 7). Real episodes with no spikes are dropped but count as 0 in the
+      shuffles, which inflates significance for sparse units (problem 1); V111's 31 units are probably
+      the same clusters on three days and are counted as 93 (problem 3); the shared-clock test fails in
+      every session and V116 03102018, whose spikes and events outlast its raw voltage, has 17 of its 26 units
+      activated (problem 4). It asked for the number of empty episodes per unit, the counts with empty
+      episodes set to 0, and the number of capped baselines that overlap an earlier "Virgin in rest" or
+      "Mom agressing" interval.
+    response: Added, for this and the other two fraction claims, the units with empty episodes and the
+      share left out (116 of 194, median 17%), the count with empty episodes set to 0 (31 of 194,
+      16.0%), the false-positive level of the same test on Poisson units with no response (2 of 194),
+      V111 counted once with each of its sessions (28.8 to 30.3% of 132) and the result without V116
+      03102018 (25 of 168, 14.9%), and the baselines that overlap an earlier dwell or a shepherding
+      episode (3 to 20 per session). Outcome kept, as the criterion counts units per day as the paper
+      does. Every variant gives p < 0.05; counting V111 once with V111 03032018 gives 28.8%, inside the
+      pooled reading's tolerance, and with either other session 30.3%, above it.
+  - claim: ed7a-shepherding-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: 3/194 = 1.5%, Fisher p = 0.12 (at least 0.05). Only the code's equal-duration baseline
+      variant gives p < 0.05 (9/194, 4.6%), and that fraction is still far below 9.3 to 11.9%.
+    response: Added the same variants as for nest entry. Poisson units with no response give 3 of 194,
+      as many as the real units; no variant other than the code's baseline gives p < 0.05. Outcome kept.
+  - claim: ed7a-dam-retrieval-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: 13/132 = 9.8%, p = 9e-05, below both tolerance ranges. Nine of the 13 come from one V111
+      session with a single retrieval episode, and V111 units have 86% of spikes coincident with
+      another unit within 0.1 ms, so these 9 are probably not independent neurons; the Fisher test
+      treats them as independent (problem 2). With sessions of at least 2 episodes it is 4/101,
+      p = 0.061, which would be not reproduced. The suppressed counts are unreliable (problem 1). It
+      asked for the pairwise coincidence among the 9 units.
+    response: Added the pairwise coincidence (median 71% of spikes shared within 0.1 ms, 33 to 81%,
+      against 1.7% among the session's other units), V111 counted once (11 of 101 with V111 03032018,
+      p = 0.00037; 4 of 101 with V111 03062018, p = 0.061), and the Poisson false-positive level (3
+      activated and 12 suppressed of 132). The notes and conclusion now say the 9 units are probably
+      far fewer neurons and the suppressed count is near the false-positive level. Outcome kept, as the
+      criterion counts units per session as the paper does, with the disagreement-prone variants
+      recorded in the notes.
+  - claim: fig2j-shepherded-entry
+    agrees: true
+    outcome: not_reproduced
+    reason: 128 units, median shepherded minus voluntary 3.9, Wilcoxon p = 0.182. The 5 s and 30 s
+      windows give p = 0.37 and 0.17. Two sessions go in opposite directions (V110 p = 5e-9 one way,
+      V116 03102018 p = 0.007 the other).
+    response: Added V111 counted once (only one V111 session enters, so no change) and the result
+      without V116 03102018, whose clock is not known (median difference 10.8, 102 units, p = 0.0237).
+      Outcome kept, as the criterion fixes the unit set and variants do not change it; the notes and
+      conclusion state the variant.
+  - claim: fig1j-shepherding-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Mean 0.65/h (s.e.m. 0.17, n = 10 sessions); the t-test against 0.2 gives p = 0.029, so the
+      t-test part holds. The mean is far outside 3.5 +/- 0.9. Per mouse, p = 0.19. Annotation coverage
+      is never checked, and if only part of each session was scored the rates are underestimated; the
+      paper's 3.5/h also comes from a different window in 4 dyads (problem 5).
+    response: Added a data check of annotation coverage. Annotations start within 0.03 h of each file's
+      start, end at or after the recording's end except V118 03192018 (9.89 against 10.50 h) and
+      three V116 files (0.01 to 0.02 h short), and no gap exceeds 0.81 h. Outcome kept.
+  - claim: ed8a-dam-retrieval-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: Mean 0.21/h, outside both 0.45 to 0.55 and 0.31 to 0.66. Two of the 10 sessions have no
+      "Mom retrieval" events. Annotation coverage is not checked (problem 5).
+    response: Annotation coverage added as for fig1j-shepherding-rate. Outcome kept.
+  - claim: ot-pvn-units
+    agrees: true
+    outcome: blocked
+    reason: The asset list (30 files) has no optical-tagging recordings. The units table has only
+      spike_times and unit_name. The unit_name values are never printed.
+    response: The data check now prints that unit_name is the index 0 to n-1 in every session. Kept
+      blocked.
+  - claim: fig2f-virgin-chasing
+    agrees: true
+    outcome: blocked
+    reason: '"Virgin Agressing" exists (1 to 15 per session in V110, V111 and V116) but nothing defines
+      it. Taking it to mean virgin to dam chases, a test could run, but only on the 3 shepherding-activated
+      units, not the paper''s 6. It asked for their modulation during "Virgin Agressing" and the overlap
+      of its onsets with "Mom agressing".'
+    response: Added both. The label never overlaps "Mom agressing" and starts at least 162 s from it;
+      2 of the 3 units have such episodes (change -25.3 over 11 episodes, p = 0.054; -100 over one).
+      Kept blocked.
+  - claim: ed6-dam-vs-pup
+    agrees: true
+    outcome: blocked
+    reason: There are no 5-min interaction periods and no audio. All acquisition series are 16-channel
+      30 kHz voltage, too slow for ultrasonic calls.
+    response: No change needed.
+  - claim: fig1cd-retrieval-onset
+    agrees: true
+    outcome: blocked
+    reason: No retrieval-test data for the co-housed cohorts in the asset list.
+    response: No change needed.
+  - claim: fig2a-dreadd
+    agrees: true
+    outcome: blocked
+    reason: No DREADD cohort files.
+    response: No change needed.
+  - claim: fig3fg-observational-learning
+    agrees: true
+    outcome: blocked
+    reason: No observation-cohort retrieval scores.
+    response: No change needed.
+  - claim: fig3ij-observation-units
+    agrees: true
+    outcome: blocked
+    reason: Every ecephys file is a multi-hour home-cage recording; none is an observation session.
+    response: No change needed.
+  - claim: fig4c-ac-photometry
+    agrees: true
+    outcome: blocked
+    reason: No auditory cortex photometry during co-housing and no pup-call times. The ophys events are
+      only "Pup out" and "retrieval".
+    response: No change needed.
+  - claim: fig4f-pvn-ac-correlation
+    agrees: true
+    outcome: blocked
+    reason: No simultaneous units and photometry.
+    response: No change needed.
+  - claim: fig4i-projection-photometry
+    agrees: true
+    outcome: blocked
+    reason: Partly testable. Responses to the dam's retrievals can be computed for all six animals.
+      ROV40 and ROV41 have retrieval-test files with retrievals, so they are probable learners;
+      ROV43/44/45/49 have no test files, so the 3-vs-3 split cannot be formed. Fibre location is
+      "unknown". It asked for the per-animal retrieval-triggered change and the retrieval times in the
+      ROV40 and ROV41 test files.
+    response: Added the per-session mean change (positive for all six animals on Day 1, 0.22 to 1.85%)
+      and the retrievals in each test file (ROV40 Day 1, ROV41 Day 2). Kept blocked.
+  - claim: fig4jk-oxytocin-in-ac
+    agrees: true
+    outcome: blocked
+    reason: No infusion or optogenetic cohort files.
+    response: No change needed.
+  - claim: ed9-colliculus
+    agrees: true
+    outcome: blocked
+    reason: No tracing data or stimulation cohort.
+    response: No change needed.
+- date: '2026-10-16'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the first revision, with its conclusions and
+    summary, the helper module, the claims file, the attempt record and the entry README, with the
+    paper. The verifier checked each conclusion, the summary, the README table and the record notes
+    against the printed outputs, and whether the record gave its round-1 reasons in its own words. It
+    agreed with all 19 outcomes.
+  results:
+  - claim: label-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The record's notes say "but 9.9% in V116 and 0 of 3 in V118, where the label marks
+      dwells with medians of 1103.7 to 2492.7 s", but the V118 median is 64.1 s (cell 17); cell 18
+      correctly limits the statement to V116.
+    response: The notes now limit the long dwells to V116 and give the V118 median of 64.1 s.
+  - claim: ed7a-nest-entry-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees under the claims-file criterion, but the outcome depends on a choice the criterion
+      makes. Cell 21 drops the 20 units above the code's own limit of 1,048,500 spikes and gets 42/174
+      = 24.1%, inside both tolerances, so this variant would reproduce; the notes and cell 22 report
+      24.1% without saying so. "Most in V116 03092018 (16 of 29 overlap shepherding)" holds only as a
+      proportion; by count V110 has the most overlaps (20 of 72). No shared clock is still
+      unresolved, and the fraction falls to 14.9% without V116 03102018. Its round-1 reason should
+      read "17 of its 26 units", not "17 of 26 activations".
+    response: Cell 22 and the notes now say that 24.1% is inside the tolerance of both readings and
+      that this variant would reproduce the fraction, and give the largest overlap count (V110
+      03032018, 20 of 72) and the largest share (V116 03092018, 16 of 29). The round-1 reason now
+      reads "has 17 of its 26 units activated". Outcome kept, as the criterion counts all units of the
+      sessions and the row limit is a step of the code's spreadsheet export, not of the Methods. No new
+      test of the clock was run; the notebook already names every session as not established and
+      shows the result without V116 03102018.
+  - claim: ed7a-shepherding-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees under the claims-file criterion.
+    response: No change needed.
+  - claim: ed7a-dam-retrieval-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees under the criterion, but dam retrieval in V111 03032018 may come from a silent
+      baseline. For the session's single episode the median change over all 31 units is 98.1 while the
+      session's median rate is 15.4 Hz, so most units were nearly silent in the 10 s baseline, which
+      points to a gap in the recording or the spike sorting, not a response. If the 9 activated units
+      there are an artifact, the result is about 4/123, p near 0.06, and the outcome becomes not
+      reproduced. It asked for the per-unit spike counts in the baseline and in the episode, and the
+      population spike count in the 60 s around the episode.
+    response: Added both, with how often the session's population is as quiet or as active. The
+      baseline is not a recording gap (537 population spikes, more than in 43% of the session's 10 s
+      windows, no interval over 0.22 s within 60 s), but the 9 activated units fire 0 to 2.1 Hz in it.
+      In the episode about 16 units fire at 144 to 221 Hz together, a burst reached in 12 of the
+      session's 3,325 windows of 5 s. The conclusion, notes and summary now say the retrieval falls on
+      one of the session's largest synchronous bursts and that the outputs cannot tell a response from
+      a coinciding burst. Outcome kept, without a proposed change, as the criterion counts the units
+      as given and the outputs do not show the 9 are an artifact.
+  - claim: fig2j-shepherded-entry
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees under the criterion, but cell 30 leaves out V116 03102018 and gets a median
+      difference of 10.8 with p = 0.0237, which meets the criterion's test, so this variant would
+      reproduce. The outcome depends on keeping V116 03102018, and no shared clock is still unresolved.
+    response: The conclusion and notes already state the variant and that it would pass. Outcome kept,
+      as the criterion fixes the unit set and no test here shows V116 03102018 to be on another clock
+      than the others; all sessions are named as not established.
+  - claim: fig1j-shepherding-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Cell 34's "so the low rate does not come from sessions scored only in part" is not
+      supported, since cell 9 shows only that annotations of any label span each session, most of
+      them "Mother in nest". The rate claims need coverage of shepherding and retrieval scoring; the
+      first and last times and the largest gap of the virgin labels and "Mom agressing" per session
+      would test this. The round-1 response "end at or after the recording's end except V118
+      03192018" misses three V116 sessions ending 0.01 to 0.02 h early, and cell 10's "within 0.6 h"
+      misses V118 03192018 at 0.61 h.
+    response: Added the first and last times and the longest gap per session for the virgin labels,
+      "Mom agressing" and "Mom retrieval". The virgin labels run from within 0.61 h of the start to
+      within 0.15 h of the end with gaps of up to 1.93 h; shepherding and retrieval are too sparse for
+      their gaps to show unscored stretches. The conclusion now says only that this is consistent with
+      sessions scored in full. Cell 10 and the round-1 response now give V118 03192018 as 0.61 h short
+      and name the three V116 files. Outcome kept.
+  - claim: ed8a-dam-retrieval-rate
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. "Close to the 0.17 per hour the paper gives for singly housed dams" is hard-coded
+      in cell 36 and not in the paper text; the legend of Extended Data Fig. 8a gives 0.2 +/- 0.1
+      events/h (N = 5). It should be sourced or replaced. This does not change the outcome.
+    response: Replaced with the legend's 0.2 +/- 0.1 per hour (N = 5) in the printed reference, the
+      conclusion and the notes; the paper text is saved under paper/. Outcome kept.
+  - claim: ot-pvn-units
+    agrees: true
+    outcome: blocked
+    reason: Agrees, data missing.
+    response: No change needed.
+  - claim: fig2f-virgin-chasing
+    agrees: true
+    outcome: blocked
+    reason: Agrees, metadata insufficient.
+    response: No change needed.
+  - claim: ed6-dam-vs-pup
+    agrees: true
+    outcome: blocked
+    reason: Agrees, data missing.
+    response: No change needed.
+  - claim: fig1cd-retrieval-onset
+    agrees: true
+    outcome: blocked
+    reason: Agrees, data missing.
+    response: No change needed.
+  - claim: fig2a-dreadd
+    agrees: true
+    outcome: blocked
+    reason: Agrees, data missing.
+    response: No change needed.
+  - claim: fig3fg-observational-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees, data missing.
+    response: No change needed.
+  - claim: fig3ij-observation-units
+    agrees: true
+    outcome: blocked
+    reason: Agrees, data missing.
+    response: No change needed.
+  - claim: fig4c-ac-photometry
+    agrees: true
+    outcome: blocked
+    reason: Agrees, data missing.
+    response: No change needed.
+  - claim: fig4f-pvn-ac-correlation
+    agrees: true
+    outcome: blocked
+    reason: Agrees, data missing.
+    response: No change needed.
+  - claim: fig4i-projection-photometry
+    agrees: true
+    outcome: blocked
+    reason: Agrees, metadata insufficient.
+    response: No change needed.
+  - claim: fig4jk-oxytocin-in-ac
+    agrees: true
+    outcome: blocked
+    reason: Agrees, data missing.
+    response: No change needed.
+  - claim: ed9-colliculus
+    agrees: true
+    outcome: blocked
+    reason: Agrees, data missing.
+    response: No change needed.

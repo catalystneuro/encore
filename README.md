@@ -74,6 +74,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000067](https://dandiarchive.org/dandiset/000067) | [Fujisawa et al. 2008](https://doi.org/10.1038/nn.2134) | 0 | 5 | 7 | 4 | [`000067-fujisawa-2008`](entries/000067-fujisawa-2008) |
 | [000070](https://dandiarchive.org/dandiset/000070) | [Churchland et al. 2012](https://doi.org/10.1038/nature11129) | 5 | 7 | 4 | 6 | [`000070-churchland-2012`](entries/000070-churchland-2012) |
 | [000121](https://dandiarchive.org/dandiset/000121) | [Even-Chen et al. 2019](https://doi.org/10.1371/journal.pcbi.1006808) | 6 | 7 | 6 | 1 | [`000121-even-chen-2019`](entries/000121-even-chen-2019) |
+| [000114](https://dandiarchive.org/dandiset/000114) | [Carcea et al. 2021](https://doi.org/10.1038/s41586-021-03814-7) | 1 | 3 | 3 | 12 | [`000114-carcea-2021`](entries/000114-carcea-2021) |
 
 Counts are of claims that rest on the dandiset, including those that take
 names for its own codes from elsewhere. Claims that also use data from
