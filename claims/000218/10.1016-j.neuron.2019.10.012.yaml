@@ -1,0 +1,400 @@
+# Claims for Tingley and Buzsaki (2019), Routing of hippocampal ripples to subcortical
+# structures via the lateral septum, Neuron 105, 138-149, on dandiset 000218.
+# Source: the accepted author manuscript in PubMed Central (PMC6952543), full text, read from
+# its Results, figure legends and STAR Methods. The supplementary figures were not available,
+# so claims on Figures S1 to S5 rest on the main text that cites them.
+#
+# What the author had seen when writing the criteria. The data check: the file list, the
+# metadata, electrodes, units and their region labels, sleep states, epochs and trials of every
+# file, and the per-file counts of LS HFOs and hippocampal ripples from the detector below.
+# While building the detector, a few outputs of single sessions: in DT9 2017-05-02 the
+# hippocampal units lock to the ripple band at zero time shift (resultant 0.13) and not at
+# +-20 ms (the clock check); mean LS HFO and ripple durations and frequencies in two sessions
+# (DT9 2017-05-02 LS 28.8 ms and 156 Hz, ripples 37.7 ms and 151 Hz; DT7 2017-03-25 LS 21.0 ms
+# and 156 Hz, ripples 32.2 ms and 159 Hz); HFO-triggered LS firing by state in eight sessions
+# (an increase before the HFO peak and a dip after it in the DT5 sessions, little or none in
+# the others); the count of phase-locked LS units in two sessions (27 of 49, 0 of 10); the
+# CA1-LS phase coherence at the ripple peak in two sessions (0.12 and 0.14, jittered 0.04 and
+# 0.07); and the HFO-triggered band power by region in DT7 2017-03-25 (6 events; medial septum
+# channels higher than LS). No claim's analysis had been run over all sessions.
+#
+# The paper's linked code (github.com/DavidTingley/papers) holds no analysis of this paper,
+# only the network model of Figure 8, so the detector follows the Methods, with the open
+# details taken from bz_FindRipples.m in buzcode, the code the Methods name (see ls_hfo.py).
+#
+# Method choices fixed here for all claims:
+# - LS HFOs are detected on one LS channel per recording, CA1 ripples on one hippocampal
+#   channel, each the channel with the highest 120-200 Hz SD in a 300 s NREM sample. Detection:
+#   120-200 Hz, thresholds 2 and 5 SD of the normalized squared signal over the whole
+#   recording, durations 15 to 250 ms, events less than 30 ms apart merged, EMG from the LFP
+#   above 0.9 excluded. The event time is the trough of the filtered signal (the code's
+#   "peak"); amplitude is the peak normalized squared signal; frequency as in the Methods.
+# - Electrodes and units labelled `hpc` are taken as CA1 (the files separate only `ca3`).
+#   Ripple analyses use recordings with `hpc` electrodes; the CA3 recordings hold no CA1
+#   reference channel.
+# - LS neurons are units labelled `ls`. Units in files without a location column are left
+#   out. Spike times are sorted before use.
+# - NREM is the state `Non-REM` and WAKE the state `Awake`; `MA` and `REM` are left out.
+# - PRE, BEHAV and POST are the epochs `before trials`, `during trials` and `after trials`;
+#   BEHAV spikes are those inside trial intervals.
+schema_version: 1
+dandiset: "000218"
+paper: doi:10.1016/j.neuron.2019.10.012
+claims:
+- id: dataset-composition
+  statement: LS was recorded in 6 rats, with 1989 LS neurons; 37 recordings had CA1 and LS
+    and 25 had CA3 and LS recorded simultaneously; LS HFO rates come from 89 recordings and CA1
+    ripple rates from 53.
+  source: Results, first paragraph; Figure 1C legend; Figure 5B legend; STAR Methods,
+    Experimental model and subject details
+  expected:
+  - quantity: animals with LS recordings
+    value: 6
+    tolerance: 0
+  - quantity: LS neurons
+    value: 1989
+    tolerance: 198.9
+  - quantity: recordings with CA1 and LS
+    value: 37
+    tolerance: 3.7
+  - quantity: recordings with CA3 and LS
+    value: 25
+    tolerance: 2.5
+  - quantity: recordings with LS HFO rates
+    value: 89
+    tolerance: 8.9
+  - quantity: recordings with CA1 ripple rates
+    value: 53
+    tolerance: 5.3
+  criterion: Counts from the files. Readings for a recording of a region are (a) a file with
+    units labelled with that region, (b) a file with electrodes labelled with it; for LS
+    neurons (a) all units labelled `ls`, (b) those with more than 50 spikes in high-power
+    epochs (the phase-locking selection). For the HFO and ripple rate counts, the recordings
+    with sleep states are a further reading (c). Reproduced when the animal count matches and
+    all other counts are within tolerance under one reading each; partially reproduced when
+    the animal count matches and at least three of the five other counts are.
+- id: fig1c-hfo-each-animal
+  statement: Transient 120-180 Hz HFOs occur in LS in each of the 6 animals, with a robust
+    increase in the firing probability of LS neurons at the events.
+  source: Results, first paragraph; Figure 1A to C
+  criterion: Per animal, the median instantaneous frequency of its LS HFOs is within 120 to
+    180 Hz, and the HFO-triggered spike probability of its LS neurons within +-10 ms of the
+    event time, averaged over neurons, exceeds the probability at as many random times by more
+    than 3 SEM across neurons (the figure's bounds). Reproduced when this holds in all 6
+    animals, partially reproduced in 3 to 5, not reproduced in fewer.
+- id: fig1c-event-count
+  statement: Across 6 animals, 29,955 LS HFO events were analysed.
+  source: Figure 1C legend
+  expected:
+    quantity: LS HFO events
+    value: 29955
+    tolerance: 2995.5
+  criterion: Readings (a) events in all recordings with LS electrodes, (b) events in recordings
+    with LS units. Reproduced when one reading is within tolerance.
+- id: figs1-participation
+  statement: On average 16% of LS neurons take part in a given HFO, firing an average of 0.23
+    spikes per event.
+  source: Results, first paragraph (Figure S1A, B)
+  expected:
+  - quantity: fraction of LS neurons firing in an HFO
+    value: 0.16
+    tolerance: 0.016
+  - quantity: spikes per LS neuron per HFO
+    value: 0.23
+    tolerance: 0.023
+  criterion: Spikes are counted between an event's start and stop. Readings (a) the mean over
+    all events pooled, of the fraction of the recording's LS neurons with at least one spike,
+    and the mean spike count over all neuron and event pairs; (b) the mean over recordings of
+    the per-recording means. Reproduced when both values are within tolerance under one
+    reading; partially reproduced when one is.
+- id: fig1d-phase-locking
+  statement: The vast majority of LS neurons (1840 of 1989, 92%) are significantly
+    phase-locked to the 120-200 Hz band (Rayleigh P < 0.05), with a strong preference for the
+    trough of each cycle.
+  source: Results, first paragraph; Figure 1D, E; STAR Methods, Phase locking analysis
+  expected:
+    quantity: fraction of LS neurons significantly phase-locked
+    value: 0.925
+    tolerance: 0.0925
+  criterion: Phase locking as in the Methods, on the recording's HFO detection channel.
+    Readings for the denominator are (a) neurons with more than 50 spikes in high-power
+    epochs, (b) all LS neurons. The trough preference holds when the circular mean of the
+    preferred phases of significant neurons is within 45 degrees of the trough (180 degrees)
+    and their Rayleigh test gives p < 0.05. Reproduced when the fraction is within tolerance
+    under one reading and the trough preference holds; partially reproduced when one of the
+    two holds.
+- id: fig1f-shorter-than-ripples
+  statement: LS HFOs are shorter than CA1 ripples from the same animals (27 +- 9 against
+    31 +- 14 ms; rank-sum P < 0.01).
+  source: Results, first paragraph; Figure 1F
+  expected:
+  - quantity: LS HFO duration, mean
+    value: 27
+    tolerance: 9
+    unit: ms
+  - quantity: CA1 ripple duration, mean
+    value: 31
+    tolerance: 14
+    unit: ms
+  criterion: Tolerances are the paper's stated SDs. Events pooled over the animals with both
+    LS and hippocampal channels. Reproduced when both means are within tolerance, LS HFOs are
+    shorter and the rank-sum test gives p < 0.01; partially reproduced when LS HFOs are
+    significantly shorter but a mean is out of tolerance.
+- id: fig1g-slower-than-ripples
+  statement: LS HFOs are slower in frequency than CA1 ripples (147 +- 5.7 against 159 +- 8 Hz;
+    rank-sum P < 0.01).
+  source: Results, first paragraph; Figure 1G
+  expected:
+  - quantity: LS HFO peak frequency, mean
+    value: 147
+    tolerance: 5.7
+    unit: Hz
+  - quantity: CA1 ripple peak frequency, mean
+    value: 159
+    tolerance: 8
+    unit: Hz
+  criterion: Tolerances are the paper's stated SDs. As for fig1f-shorter-than-ripples, with
+    the instantaneous frequency of the Methods.
+- id: fig1h-no-amplitude-frequency-correlation
+  statement: LS HFOs show no significant correlation between event amplitude and peak
+    frequency.
+  source: Results, first paragraph; Figure 1H
+  criterion: A claim of absence. The paper does not name its test; the test here is a Pearson
+    correlation over all LS HFOs pooled, at p < 0.05. Reproduced when it finds no significant
+    correlation, not reproduced when it does. The effect size (r) is reported either way, with
+    Spearman and per-animal values as variants.
+- id: fig2-confined-to-ls
+  statement: HFO events are seen only at recording sites within LS, not at sites in
+    neighbouring structures.
+  source: Results, second paragraph; Figure 2A to C
+  criterion: In recordings with electrodes in regions other than LS and the hippocampus (cortex,
+    corpus callosum, medial septum, fimbria), the 120-200 Hz power within +-20 ms of the LS HFO
+    times in up to 30 min of all channels, divided by the power at random times, is compared
+    between regions. Recordings with at least 20 HFOs in that block are used. Reproduced when
+    the median ratio over LS channels exceeds the median ratio of every other non-hippocampal
+    region in every such recording; partially reproduced when it does in most of them.
+- id: fig2ef-intermediate-ls
+  statement: HFO power and the proportion of phase-locked neurons are highest in intermediate
+    LS and taper towards its dorsal and ventral borders.
+  source: Results, second paragraph; Figure 2D to F; Figure S1C, D
+- id: fig3-travelling-waves
+  statement: LS HFOs are travelling waves, posterior to anterior at 1.01 m/s (4 animals),
+    medial to lateral at 0.53 m/s (1 animal) and dorsal to ventral at 2.19 m/s (4 animals).
+  source: Results, second paragraph; Figure 3
+  expected:
+  - quantity: posterior to anterior speed
+    value: 1.01
+    tolerance: 0.101
+    unit: m/s
+  - quantity: medial to lateral speed
+    value: 0.53
+    tolerance: 0.053
+    unit: m/s
+  - quantity: dorsal to ventral speed
+    value: 2.19
+    tolerance: 0.219
+    unit: m/s
+- id: fig4b-pre-post-unchanged
+  statement: The co-activation of LS neuron pairs during HFOs (excess correlation) is not
+    modulated by waking experience on a familiar maze (PRE against POST, rank-sum P = 0.36).
+  source: Results, third paragraph; Figure 4B
+  criterion: A claim of absence, judged on the paper's test, a rank-sum test of PRE against POST
+    excess correlations over all pairs, at p < 0.05. Pairs are LS neurons on different shanks
+    in recordings with all three epochs. CCGs use 1 ms bins of the spikes inside LS HFOs
+    (PRE, POST) or inside trials (BEHAV), normalized by the square root of the product of
+    the spike counts, over +-400 ms, smoothed with Gaussian kernels of SD 5 ms and 200 ms
+    (each divided by the kernel mass inside the window); the excess correlation is the
+    difference of the two at zero lag. The jittered value moves every spike by a uniform
+    +-200 ms before the CCG. A pair is kept when its
+    CCG holds more than 5 spike pairs within +-200 ms in each epoch. Reproduced when the test
+    finds no difference, not reproduced when it does; the effect size is reported either way.
+- id: fig4b-hfo-above-behav
+  statement: Excess correlations during HFOs (PRE and POST) are higher than during maze
+    traversal (rank-sum P < 0.001), and those of PRE and POST HFOs exceed chance from spikes
+    jittered by +-200 ms (P < 0.01).
+  source: Results, third paragraph; Figure 4B; Figure S3A
+  depends_on:
+  - fig4b-pre-post-unchanged
+  criterion: Same pairs and measure as fig4b-pre-post-unchanged. Reproduced when PRE > BEHAV and
+    POST > BEHAV by rank-sum p < 0.001 and PRE and POST exceed their jittered values by
+    rank-sum p < 0.01; partially reproduced when one of the two comparisons holds.
+- id: fig4-sessions-few-change
+  statement: Only 7 of 53 sessions have significantly different excess correlations in PRE and
+    POST (rank-sum P < 0.01), three with PRE below POST and four with PRE above.
+  source: Results, third paragraph
+  depends_on:
+  - fig4b-pre-post-unchanged
+  expected:
+    quantity: fraction of sessions with PRE different from POST
+    value: 0.132
+    tolerance: 0.0132
+  criterion: Per recording with at least 5 pairs, rank-sum test of PRE against POST at
+    p < 0.01. Reproduced when the fraction is within tolerance and both directions occur;
+    partially reproduced when the fraction is below 0.25 and both directions occur.
+- id: fig4c-temporal-bias
+  statement: The temporal ordering of LS spike pairs during HFOs before and after the maze
+    correlates with the ordering during traversal to a similar degree (P = 0.85).
+  source: Results, fourth paragraph; Figure 4C
+  depends_on:
+  - fig4b-pre-post-unchanged
+  criterion: A claim of absence. The temporal bias of a pair is the sum of its normalized CCG
+    over +1 to +200 ms minus that over -200 to -1 ms. Per recording with at least 10 pairs, the
+    Pearson correlation over pairs of PRE with BEHAV biases, and of BEHAV with POST biases. The
+    paper's test, a two-sample two-sided t-test of the two sets of correlations, at p < 0.05.
+    Reproduced when it finds no difference, not reproduced when it does.
+- id: fig4d-compression
+  statement: Cross-correlograms of LS pairs during HFOs correlate with those during traversal
+    above chance up to about 20-fold temporal compression (P < 0.01), similarly for PRE and
+    POST (P > 0.01 for all compression factors).
+  source: Results, fourth paragraph; Figure 4D; Figure S3B
+  depends_on:
+  - fig4b-pre-post-unchanged
+  criterion: For compression factors 1, 2, 4, 6, 8, 10, 15, 20, 30, 40 and 50, the unsmoothed
+    1 ms HFO CCG over +-120/c ms is interpolated to 241 points and correlated with the BEHAV
+    CCG over +-120 ms. Chance is the same with the HFO CCG circularly shifted by a random lag.
+    Per factor, actual against chance by a paired Wilcoxon test over pairs, and PRE against
+    POST by rank-sum. Reproduced when both PRE and POST exceed chance (p < 0.01) at every
+    factor up to 20 and PRE and POST do not differ (p > 0.01) at any factor; partially
+    reproduced when they exceed chance up to at least 5 and one of the other parts fails.
+- id: figs2-post-rate-increase
+  statement: Firing rates increase during post-behavior NREM sleep in CA1, CA3 and LS.
+  source: Results, fifth paragraph (Figure S2A, B)
+  criterion: Per unit, the firing rate in NREM within PRE and within POST, for units in
+    recordings with sleep states and at least 60 s of NREM in each epoch. Per region (`hpc`,
+    `ca3`, `ls`), a Wilcoxon signed-rank test, at p < 0.05, with the median POST/PRE ratio
+    above 1. Reproduced when all three regions show the increase, partially reproduced when
+    one or two do.
+- id: fig5b-nrem-and-rates
+  statement: LS HFOs occur primarily during NREM sleep, and their rates are lower than those of
+    hippocampal SPW-Rs.
+  source: Results, sixth paragraph; Figure 5A, B
+  criterion: Per recording with sleep states, the LS HFO rate in NREM and in WAKE, and the CA1
+    ripple rate in NREM where a hippocampal channel exists. Reproduced when the NREM rate
+    exceeds the WAKE rate (Wilcoxon signed-rank over recordings, p < 0.05, median ratio
+    above 1) and the LS HFO rate in NREM is below the CA1 ripple rate in the same recordings
+    (Wilcoxon, p < 0.05); partially reproduced when one of the two holds.
+- id: fig5d-lag
+  statement: LS HFOs are reliably coupled to CA1 ripples, with a median peak-to-peak lag of
+    6.4 +- 4.2 ms, CA1 leading LS.
+  source: Results, sixth paragraph; Figure 5D
+  expected:
+    quantity: median lag of LS HFO after CA1 ripple
+    value: 6.4
+    tolerance: 4.2
+    unit: ms
+  criterion: Tolerance is the paper's stated spread. The lag is the LS HFO time minus the time
+    of the nearest CA1 ripple within +-50 ms. Readings (a) the median over recordings of
+    per-recording medians, (b) the median over all pairs pooled. Reproduced when the lag is
+    within tolerance under one reading and the CA1-LS cross-correlogram peaks within +-25 ms
+    above the mean of its flanks (100 to 200 ms) by more than 3 SD of the flanks, pooled over
+    recordings.
+- id: fig5e-state-coupling
+  statement: HPC-LS coupling is stronger in NREM sleep than in waking; the fraction of LS HFOs
+    within +-25 ms of a CA1 ripple is 0.3 in NREM and 0.15 in WAKE (P < 6.6e-6).
+  source: Results, sixth paragraph; Figure 5E and inset
+  expected:
+  - quantity: fraction of LS HFOs with a CA1 ripple within 25 ms, NREM
+    value: 0.3
+    tolerance: 0.03
+  - quantity: fraction of LS HFOs with a CA1 ripple within 25 ms, WAKE
+    value: 0.15
+    tolerance: 0.015
+  criterion: Recordings with sleep states, a hippocampal channel and at least 10 LS HFOs in each
+    state. Readings (a) the mean over recordings, (b) all HFOs pooled. NREM against WAKE by a
+    two-sample two-sided t-test over recordings. Reproduced when NREM is higher with
+    p < 0.001 and both values are within tolerance under one reading; partially reproduced
+    when NREM is higher with p < 0.001 but a value is out of tolerance.
+- id: fig5f-ripple-triggered-firing
+  statement: LS firing around CA1 ripples is higher during NREM than during waking.
+  source: Results, sixth paragraph; Figure 5F
+  criterion: Per LS neuron in recordings with sleep states and a hippocampal channel, the
+    firing rate within +-25 ms of CA1 ripple times, for NREM and WAKE ripples separately, in
+    recordings with at least 20 ripples in each state. Paired two-sided t-test over neurons.
+    Reproduced when NREM is higher with p < 0.001; the rate divided by the neuron's mean rate
+    in the same state is shown as a variant.
+- id: fig5f-no-phase-coherence
+  statement: CA1-LS phase coherence in the 120-180 Hz band around CA1 ripples does not differ
+    from that of randomly jittered windows, so LS does not inherit the ripple wave by wave.
+  source: Results, seventh paragraph; Figure 5F inset
+  criterion: A claim of absence, judged on the figure's bounds of +-3 SD. Per recording, the
+    phase-locking value across ripples of the CA1 minus LS phase at the ripple time, and at
+    20 sets of times jittered by up to +-1 s. Averaged over recordings. Reproduced when the
+    ripple value lies within the mean +-3 SD of the 20 jittered averages; not reproduced when
+    it lies above.
+- id: fig6-optogenetic-hfos
+  statement: Optogenetic activation of LS GABAergic neurons with a Gaussian light waveform
+    induces local oscillations of about 140 Hz.
+  source: Results, seventh paragraph; Figure 6
+- id: fig7e-ca1-spikes
+  statement: The number of CA1 spikes in a SPW-R significantly predicts the number of spikes of
+    38% of LS neurons.
+  source: Results, eighth paragraph; Figure 7D, E
+  expected:
+    quantity: percent of LS neurons predicted by the number of CA1 spikes
+    value: 38
+    tolerance: 3.8
+    unit: percent
+  criterion: The paper does not state its model. Fixed here, for LS neurons in recordings with
+    hippocampal units and at least 100 CA1 ripples, and with at least 20 spikes inside ripples
+    in total. Per ripple, the LS neuron's spike count between ripple start and stop is
+    predicted from the feature by a linear regression, scored by 5-fold cross-validated
+    mean squared error (MSE); the feature is shuffled over ripples 100 times. Readings of
+    "significant" are (a) the actual MSE below the 5th percentile of the shuffled MSEs, (b)
+    a one-sample two-sided t-test of the shuffled MSEs against the actual one at p < 0.05,
+    with the actual MSE lower. The chance rate is the same test applied to one shuffle
+    against the others (the figure's red points). Reproduced when the percentage is within
+    tolerance under one reading; partially reproduced when it is out of tolerance but above
+    the chance rate (binomial p < 0.05) under that reading; not reproduced otherwise.
+- id: fig7e-state
+  statement: Brain state (WAKE or NREM) in which a SPW-R occurs significantly predicts the
+    spike count of 26% of LS neurons.
+  source: Results, eighth paragraph; Figure 7E
+  expected:
+    quantity: percent of LS neurons predicted by state
+    value: 26
+    tolerance: 2.6
+    unit: percent
+  depends_on:
+  - fig7e-ca1-spikes
+  criterion: As fig7e-ca1-spikes, with the state (NREM 1, WAKE 0) as the feature, over the
+    ripples in those two states.
+- id: fig7e-duration
+  statement: The duration of hippocampal SPW-Rs significantly predicts the spike count of about
+    20% of LS neurons.
+  source: Results, eighth paragraph; Figure 7E
+  expected:
+    quantity: percent of LS neurons predicted by ripple duration
+    value: 20
+    tolerance: 2
+    unit: percent
+  depends_on:
+  - fig7e-ca1-spikes
+  criterion: As fig7e-ca1-spikes, with the ripple duration as the feature.
+- id: fig7e-ca1-depth
+  statement: The mean depth within the CA1 pyramidal layer of the neurons active in a SPW-R
+    predicts the spike count of 23% of LS neurons.
+  source: Results, eighth paragraph; Figure 7D, E; STAR Methods, Relative anatomical depth
+    within CA1
+- id: fig7e-replay
+  statement: The sequential content of SPW-Rs, by three replay scores, predicts the firing of
+    only 7.9, 6.6 and 7.1% of LS neurons.
+  source: Results, ninth paragraph; Figure 7D, E
+- id: fig7e-seqnmf
+  statement: Template sequences extracted from SPW-Rs without supervision predict the firing of
+    only 8.1% of LS neurons.
+  source: Results, tenth paragraph; Figure 7E; Figure S5
+- id: fig7e-content-independent
+  statement: All spike-content-independent ripple features predict LS firing above chance,
+    while all spike-content-based features do not.
+  source: Results, eleventh paragraph; Figure 7E, bottom row
+  depends_on:
+  - fig7e-ca1-spikes
+  - fig7e-state
+  - fig7e-duration
+  - fig7e-ca1-depth
+  - fig7e-replay
+  - fig7e-seqnmf
+- id: fig8-model
+  statement: In a model HPC-LS circuit, forward, reverse and scrambled compressed sequences
+    evoke nearly identical responses of the LS neuron.
+  source: Results, twelfth paragraph; Figure 8
