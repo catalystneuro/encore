@@ -1,0 +1,194 @@
+# Claims for Mu, Bennett, Rubinov et al. (2019), Cell 178, 27-43, on dandiset 000350.
+# Source: the full text (open access, CC BY-NC-ND), main text and STAR Methods, read from the PDF
+# posted on the first author's lab site. The Supplemental Information (Figures S1 to S6, Tables S1
+# to S3, videos) was not read.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata, the groups and table columns of every file, the imaging plane metadata, the shapes and
+# timestamps of the imaging series, the counts of rows in each ActivityStates table and the first
+# 15 rows of one, percentiles of swim duration and power in one file, the values of the DfOverF
+# series in 200 to 3724 ROIs of one file, and the time each fish spends in each stimulus condition
+# (gain above or at zero, grating moving or stationary). No claim's analysis had been run.
+#
+# The dandiset holds 12 light-sheet sessions with fictive swimming in virtual reality: 4 with
+# neurons and radial astrocytes imaged together (two colours), 4 with neurons only and processed
+# cell traces, 1 with neurons only and raw images only, and 3 with radial astrocytes only and raw
+# images only. All 12 hold the swim signals, swim bouts and stimulus signals. None of the
+# perturbation experiments (Figures 4 to 7) is in it.
+#
+# Choices fixed here for all claims, where the Methods leave them open:
+# - Closed loop is time when the stimulus gain signal is above 0 and the grating moves (baseline
+#   velocity signal above 0); open loop is time when the gain is 0 and the grating moves (Methods:
+#   "In open loop, the gain was zero"). Periods of stationary grating are left out of both.
+# - Swim bouts are the rows of SwimIntervals. A passive epoch is a gap of 5 s or more between the
+#   end of one bout and the start of the next; an active epoch is a chain of bouts separated by
+#   gaps under 5 s whose first start and last end are more than 5 s apart (Methods). Epochs are
+#   taken within one continuous closed- or open-loop period, and those cut by its edges are left
+#   out. Passivity onset is the end of the last bout of an active epoch that is followed by a
+#   passive epoch in open loop.
+# - The whole-brain signal of a cell type is the mean over ROIs of the DfOverF series, from a
+#   fixed, evenly spaced subset of ROI blocks (the full tables are 6 to 10 GB each). The series
+#   is each ROI's trace divided by its mean (see the data check), so changes are in units of that
+#   mean.
+# - Each fish's value is the mean over its epochs or events; group statistics are over fish.
+# - Tolerances for values given as mean and SEM are 1.96 times the SEM (the 95% interval of the
+#   mean); the paper states "Error bars, SEM in all figures".
+schema_version: 1
+dandiset: "000350"
+paper: doi:10.1016/j.cell.2019.05.050
+claims:
+- id: fig1h-epoch-durations
+  statement: In prolonged open loop, fish cycle between passive epochs lasting 24.4 +/- 2.5 s and
+    active epochs lasting 36.1 +/- 4.2 s (mean +/- SEM, n = 74 fish), swimming 29 +/- 6 times per
+    active epoch.
+  source: Figure 1H; Results, first section; STAR Methods, Futility-induced passivity behavioral
+    analysis
+  expected:
+  - quantity: Mean duration of passive epochs
+    value: 24.4
+    tolerance: 4.9
+    unit: s
+  - quantity: Mean duration of active epochs
+    value: 36.1
+    tolerance: 8.2
+    unit: s
+  - quantity: Swim bouts per active epoch
+    value: 29
+    tolerance: 11.8
+    unit: bouts
+  criterion: The mean over fish of each fish's mean, in open loop. Readings, listed before the
+    analysis; (a) epochs built from SwimIntervals by the Methods' rule; (b) the active and passive
+    rows of the dandiset's ActivityStates table, over the whole recording, as the table does not
+    say which condition they belong to; (c) as (a), with all epochs pooled over fish. Reproduced
+    when, under one reading, all three values are within tolerance; partially reproduced when
+    two are. The 12 fish here are a subset of the paper's 74.
+- id: methods-isi
+  statement: In closed loop fish swim in discrete bouts about once per second (inter-swim interval
+    1.2 +/- 0.05 s, n = 74), and within active epochs of open loop the interval is 1.19 +/- 0.047 s
+    against 24.4 s in passive epochs.
+  source: STAR Methods, Futility-induced passivity behavioral analysis
+  expected:
+  - quantity: Inter-swim interval in closed loop
+    value: 1.2
+    tolerance: 0.098
+    unit: s
+  - quantity: Inter-swim interval in active epochs of open loop
+    value: 1.19
+    tolerance: 0.092
+    unit: s
+  criterion: Per fish the mean interval between successive bouts, then the mean over fish. The
+    interval can be read as (a) start to start of successive bouts, or (b) end of one bout to the
+    start of the next; and in closed loop as (i) intervals under 5 s, or (ii) all intervals.
+    Reproduced when both values are within tolerance under one reading; partially reproduced
+    when one is.
+- id: fig1j-open-loop-passivity
+  statement: Fish spend much more time in the passive state when swimming produces no visual
+    feedback (open loop) than in closed loop with a naturalistic gain, where passivity is rare.
+  source: Figure 1J; Figure 1C to E; Results, first section
+  criterion: Per fish, the fraction of time in passive epochs (gaps of 5 s or more between bouts)
+    in closed loop and in open loop. Reproduced when the open-loop fraction is higher by a
+    one-sided Wilcoxon signed-rank test over fish at p < 0.05 and the median closed-loop fraction
+    is below 10%; partially reproduced when only the test holds.
+- id: fig1c-vigor-open-loop-onset
+  statement: When switched from closed to open loop, fish first swim with higher vigor, then
+    stop swimming.
+  source: Figure 1C; Results, first section
+  criterion: For each switch from closed to open loop, the mean power (SwimIntervals) of the bouts
+    from the switch to the first passive epoch, over the mean power of the bouts in the 30 s of
+    closed loop before the switch. Per fish the median log ratio over switches. Reproduced when
+    the log ratio is above 0 by a one-sided Wilcoxon signed-rank test over fish at p < 0.05.
+    Switches with fewer than 3 bouts on either side are left out.
+- id: fig1i-isi-before-passivity
+  statement: Before the switch to passivity the inter-swim interval increases progressively, and
+    fish swim more vigorously and less frequently in the seconds before passivity.
+  source: Figure 1I (n = 61 fish); Results, first section
+  criterion: For each passivity onset whose active epoch holds at least 10 bouts, the start-to-start
+    intervals numbered back from the last one (k = 1 is the interval ending at the last bout) and
+    the power of the bouts numbered back from the last. Per fish the mean at each k. Reproduced
+    when the interval at k = 1 is longer than at k = 7 (one-sided Wilcoxon over fish, p < 0.05),
+    the Spearman correlation between k and the mean over fish for k = 1 to 7 is negative, and the
+    mean power of the last 3 bouts is higher than that of bouts 8 to 10 before onset (one-sided
+    Wilcoxon over fish, p < 0.05). Partially reproduced when the interval part holds and the
+    power part does not, or the reverse.
+- id: fig2bc-neurons-lower-in-passivity
+  statement: Whole-brain average neuronal activity is higher during active behavior than during
+    passivity, and decays after passivity onset.
+  source: Figure 2B and 2C; Results, second section
+  criterion: In the 8 files with processed neuronal traces, per fish the mean of the whole-brain
+    neuronal signal over open-loop passive epochs minus that over open-loop active epochs.
+    Reproduced when it is below 0 by a one-sided Wilcoxon signed-rank test over fish at p < 0.05.
+    The change after onset (5 to 10 s after, minus 10 to 5 s before) is reported per fish.
+- id: fig2c-glia-rise-at-passivity
+  statement: Whole-brain average radial astrocyte calcium increases before passivity onset and
+    peaks soon after it.
+  source: Figure 2B and 2C (one example fish, 64 events); Figure 2G and 2I; Results, second section
+  criterion: In the 4 files with processed glial traces, per passivity onset the glial signal
+    averaged over 1 to 4 s after onset minus its mean over 10 to 5 s before (the paper's
+    reliability windows), and the mean over 2 to 0 s before onset minus the same baseline. Per
+    fish, one-tailed Wilcoxon signed-rank tests over onsets. Reproduced when, in at least 3 of the
+    4 fish, both the after-onset increase and the before-onset increase have p < 0.05 and the
+    peak of the onset-triggered average lies between 0 and 10 s after onset. Partially
+    reproduced when only the after-onset increase holds in at least 3 fish. The number of onsets
+    per fish is compared with the 64 events of the paper's example.
+- id: figs2a-open-loop-higher
+  statement: Whole-brain average neuronal and glial calcium are higher and fluctuate more strongly
+    in open loop than in closed loop.
+  source: Results, second section; Figure S2A (not read)
+  criterion: Per fish, the mean and the standard deviation of the whole-brain signal over open-loop
+    time and over closed-loop time, leaving out the first 30 s after each switch. Neurons (8 fish);
+    one-sided Wilcoxon signed-rank tests over fish for open above closed at p < 0.05. Glia (4
+    fish); open above closed in all 4 (a Wilcoxon test over 4 fish cannot reach p < 0.05).
+    Reproduced when both measures hold for both cell types; partially reproduced when at least
+    one measure holds for one cell type.
+- id: fig2h-glia-weaker-closed-loop-pauses
+  statement: When fish in closed loop stop swimming because the stimulus stops moving, glial
+    calcium signals are weaker than during futility-induced passivity.
+  source: Figure 2H and 2M; Results, second section
+  criterion: In the 4 files with processed glial traces, closed-loop pauses are gaps of 5 s or more
+    between bouts that start in closed-loop time or in stationary-grating time with gain above 0.
+    Response as in fig2c-glia-rise-at-passivity (1 to 4 s after onset minus 10 to 5 s before).
+    Per fish, a one-sided Mann-Whitney test of closed-loop pause responses against open-loop
+    passivity responses. Fish with fewer than 3 closed-loop pauses are left out; the claim is
+    blocked (other) when fewer than 2 fish remain. Reproduced when the pause responses are smaller
+    with p < 0.05 in every remaining fish; partially reproduced when they are smaller in median in
+    every remaining fish.
+- id: fig2dg-nmf-components
+  statement: Non-negative matrix factorization of neurons and radial astrocytes gives components
+    consistent across fish; glial component 1, in the lateral medulla oblongata (L-MO), is the most
+    reliable, rising before and peaking after passivity onset (n = 5 neuron fish, 6 glia fish).
+  source: Figure 2D to 2G
+- id: fig2kl-lmo-glia-most-consistent
+  statement: Of all brain regions, radial astrocytes in L-MO show the most consistent increases at
+    passivity onset, with ramping signals before it.
+  source: Figure 2K, 2L and 2M
+- id: fig1k-passive-unresponsive
+  statement: Passive fish are less responsive to visual motion than active fish (p = 4.2e-7, n = 11).
+  source: Figure 1K
+- id: fig1f-replay
+  statement: Replaying in open loop the visual motion recorded in closed loop also induces
+    passivity.
+  source: Figure 1F
+- id: fig4-glia-necessary
+  statement: Ablating radial astrocytes, or blocking their IP3 receptors, halves futility-induced
+    passivity, while random neuronal ablation does not change it.
+  source: Figure 4
+- id: fig5-glia-sufficient
+  statement: Activating radial astrocytes with TRPV1, CoChR or Opto-alpha1-AR suppresses swimming,
+    and astrocyte activation drives GABAergic neurons at the edge of L-MO.
+  source: Figure 5
+- id: fig6a-ne-ramp
+  statement: The neuronal population whose activity rises fastest before passivity overlaps the
+    noradrenergic neurons of the medulla oblongata (NE-MO).
+  source: Figure 6A
+- id: fig6-ne-drives-glia
+  statement: NE-MO activity precedes astrocyte activity at passivity, NE-MO ablation reduces
+    passivity, and NE-MO stimulation activates radial astrocytes through alpha1B receptors.
+  source: Figure 6B to 6N
+- id: fig7-ne-mismatch
+  statement: NE-MO neurons respond to swims without visual feedback, encoding sensory-motor
+    mismatch.
+  source: Figure 7A to 7G
+- id: fig7-glia-accumulate
+  statement: Radial astrocyte calcium grows with the number of consecutive failed swims and with
+    the probability that a swim fails.
+  source: Figure 7H to 7K

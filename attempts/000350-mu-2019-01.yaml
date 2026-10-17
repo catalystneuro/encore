@@ -1,0 +1,238 @@
+schema_version: 1
+id: 000350-mu-2019-01
+dandiset: "000350"
+dandiset_version: 0.240822.1759
+paper: doi:10.1016/j.cell.2019.05.050
+date: 2026-10-17
+entry: 000350-mu-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The paper's cell segmentation code, read (not run) to interpret the stored traces; its
+    censoring of the first and last frames (censor_tau = [30, 30]) and baseline settings
+    (baseline_tau = 300 s). No data or parameters from it enter a result.
+  source: https://github.com/mikarubi/segmentation at commit 54d1907b1d911ad6445428f8a79ca44875ed42b1
+outcomes:
+- claim: fig1h-epoch-durations
+  outcome: partially_reproduced
+  notebook: reproduce_mu_2019.ipynb
+  output: claim:fig1h-epoch-durations
+  measured:
+  - 20.47
+  - 22.36
+  - 19.06
+  notes: Under reading (a), epochs from the swim bouts in open loop, the mean over 12 fish is 20.47 s
+    for passive epochs (within 24.4 +/- 4.9) and 19.06 bouts per active epoch (within 29 +/- 11.8),
+    but 22.36 s for active epochs (outside 36.1 +/- 8.2). Reading (b), the ActivityStates table,
+    gives 18.19 and 15.77 s; reading (c), pooled epochs, 18.81 s, 19.66 s and 15.99 bouts; neither
+    puts any value within tolerance. Active epochs range from 7.3 to 64.1 s over fish. With a pause
+    threshold of 6 s the means are 21.46 and 25.31 s.
+  deviations:
+  - 12 imaged fish, where the paper's numbers come from 74.
+  - Pauses are measured from the end of one bout to the start of the next; the Methods say only
+    that the fish did not swim for 5 s.
+  - Open loop is read from the gain signal (gain 0, grating moving); epochs cut by the edges of an
+    open-loop period are left out, as the protocol alternates closed and open loop in 8 fish.
+  - The tolerance is 1.96 times the stated SEM, not the SEM.
+- claim: methods-isi
+  outcome: partially_reproduced
+  notebook: reproduce_mu_2019.ipynb
+  output: claim:methods-isi
+  measured:
+  - 1.143
+  - 1.332
+  notes: Read as start to start over intervals under 5 s, the closed-loop interval is 1.143 s (within
+    1.2 +/- 0.098) and the interval within open-loop active epochs is 1.332 s (outside 1.19 +/-
+    0.092). End-to-start intervals give 0.981 and 0.881 s, and all closed-loop intervals 2.886 s
+    (start to start); no reading puts both values within tolerance.
+  deviations:
+  - The paper does not say how the interval is measured or which closed-loop intervals count; four
+    readings are shown and one matches the closed-loop value.
+  - 12 fish, against 74.
+- claim: fig1j-open-loop-passivity
+  outcome: not_reproduced
+  notebook: reproduce_mu_2019.ipynb
+  output: claim:fig1j-open-loop-passivity
+  notes: Over all closed-loop time the median fraction of time in pauses of 5 s or more is 0.546,
+    against 0.551 in open loop; open loop is higher in 7 of 12 fish (Wilcoxon p = 0.285), and the
+    closed-loop median is far above the 10% the criterion allowed. Closed-loop passivity is high in
+    blocks that follow open loop and at some gain levels (for example 0.937 at gain 0.030 in
+    20170127-1). Restricted to closed loop before the first open loop, a variant, the median is
+    0.104 and open loop is higher in 8 of 10 fish (p = 0.0137).
+  deviations:
+  - The paper's Figure 1J varies the gain in 6 dedicated fish; here closed loop is all time with gain
+    above 0 in the imaging sessions, which includes closed-loop blocks between open-loop blocks.
+- claim: fig1c-vigor-open-loop-onset
+  outcome: reproduced
+  notebook: reproduce_mu_2019.ipynb
+  output: claim:fig1c-vigor-open-loop-onset
+  notes: In 9 fish with a usable switch, bouts after the switch to open loop are more powerful than the
+    closed-loop bouts of the 30 s before in 7, median ratio 3.49 (0.78 to 10.30), Wilcoxon p = 0.0195.
+    Requiring 30 s of uninterrupted closed loop before the switch leaves 4 fish (median ratio 4.87,
+    p = 0.125). 3 fish have no usable switch.
+  deviations:
+  - The paper shows this with example traces; the measure (power ratio of bouts) and its test were
+    fixed here before the analysis.
+- claim: fig1i-isi-before-passivity
+  outcome: not_reproduced
+  notebook: reproduce_mu_2019.ipynb
+  output: claim:fig1i-isi-before-passivity
+  notes: In active epochs of 10 or more bouts ending in passivity (11 fish), the last interval (1.506 s)
+    is longer than the seventh from last (1.312 s) in 8 fish, Wilcoxon p = 0.103, Spearman rho of k
+    against the mean -0.536. The last 3 bouts are not more powerful than bouts 8 to 10 back (0.636
+    against 0.575, 6 fish, p = 0.16). The outcome depends on the minimum epoch length, which the
+    paper does not state; with 8 or more bouts both parts hold (p = 0.00806, rho = -0.286; power
+    p = 0.0269), and with 15 or more the interval part holds (p = 0.00195) and the power part does
+    not (p = 0.423).
+  deviations:
+  - The minimum of 10 bouts per epoch and the comparison of k = 1 with k = 7 were chosen here; the
+    paper plots the interval against the number of swims before passivity for 61 fish.
+- claim: fig2bc-neurons-lower-in-passivity
+  outcome: reproduced
+  notebook: reproduce_mu_2019.ipynb
+  output: claim:fig2bc-neurons-lower-in-passivity
+  notes: The whole-brain neuronal signal is lower in open-loop passive epochs than in active epochs in
+    all 8 fish (Wilcoxon p = 0.00391), by 0.64 to 1.96 SD of each fish's trace, and falls 5 to 10 s
+    after passivity onset with p < 0.05 in 7 of 8 fish. The ActivityStates rows give 8 of 8.
+  deviations:
+  - The whole-brain signal is the mean of the stored DfOverF over 8 to 15% of ROIs, in units of the
+    stored series, which is not ΔF/F as the Methods define it.
+  - The paper shows this in one example fish; it was tested here over 8.
+- claim: fig2c-glia-rise-at-passivity
+  outcome: not_reproduced
+  notebook: reproduce_mu_2019.ipynb
+  output: claim:fig2c-glia-rise-at-passivity
+  notes: The whole-brain glial signal rises before passivity onset and peaks after it in 2 of 4
+    two-colour fish (20170228-3 and 20170228-4; 1 to 4 s after onset 0.61 and 0.53 SD above
+    baseline, p = 8.0e-13 and 1.1e-14; 2 to 0 s before, p = 1.7e-11 and 3.6e-17; peaks 3.5 and
+    2.5 s after onset). In 20161109-2 and 20170203-1 it falls after onset (-0.91 and -0.64 SD,
+    p = 1 for an increase). The criterion needed 3 of 4. 20170228-3 has 67 onsets, close to the 64
+    events of the paper's example fish (Figure 2B), so it may be that fish. In 20161109-2 the open
+    loop alternates with a stationary grating every 10 s. The ActivityStates variant gives the same
+    split.
+  deviations:
+  - Whole-brain average of glia, as in the paper's Figure 2C, not the L-MO component of Figure 2G
+    and 2I, which needs the cross-fish clustering and template registration.
+  - The glia of these fish carry jRGECO1b; the paper's component analysis used GCaMP6f.
+- claim: figs2a-open-loop-higher
+  outcome: partially_reproduced
+  notebook: reproduce_mu_2019.ipynb
+  output: claim:figs2a-open-loop-higher
+  notes: For neurons the whole-brain signal is higher in open than closed loop in 6 of 8 fish (Wilcoxon
+    p = 0.0195, median difference 0.17 SD) and fluctuates more in 7 of 8 (p = 0.00781, median SD
+    ratio 2.98). For glia both hold in 3 of 4 fish (median difference 0.73 SD, SD ratio 3.06), not in
+    all 4 as the criterion required; 20170203-1 is the exception for both.
+  deviations:
+  - Figure S2A was not read; the claim is taken from the Results text.
+  - Switches are those between closed and open loop; stationary-grating periods carry the label of
+    the condition before them.
+- claim: fig2h-glia-weaker-closed-loop-pauses
+  outcome: not_reproduced
+  notebook: reproduce_mu_2019.ipynb
+  output: claim:fig2h-glia-weaker-closed-loop-pauses
+  notes: The glial response to closed-loop pauses is smaller than to open-loop passivity onsets in 2 of
+    4 fish (20170228-3 and 20170228-4, Mann-Whitney p = 1.1e-05 and 5.0e-11), the two whose glia rise
+    at passivity. In 20161109-2 and 20170203-1 the glia fall after passivity onset, and the pause
+    response is not smaller (p = 0.78 and 0.98). 26 to 54% of the pauses start during a stationary
+    grating.
+  deviations:
+  - Closed-loop pauses include those with the grating moving, as the dandiset gives no stimulus
+    labels beyond the velocity signal and stationary periods are 2 to 18 s long.
+- claim: fig2dg-nmf-components
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's glial components come from 6 fish with glial GCaMP6f; the dandiset holds 3 such
+    fish, with raw images only (8499 to 9000 volumes, 0.39 to 0.42 TB per file),
+    and no processed traces. Repeating the segmentation on them does not fit the time limit
+    (too_large). The clustering of components across fish was tuned by hand and the registration
+    template is not public (methods_underspecified).
+- claim: fig2kl-lmo-glia-most-consistent
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The ROIs have voxel masks in each fish's own image space, with no registration to a reference
+    brain, no region labels and no stated orientation of the axes, so L-MO cannot be located
+    without the paper's template.
+- claim: fig1k-passive-unresponsive
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The protocol of brief static and forward stimuli (11 fish) is not in any session; the
+    protocol codes in the files are 12, 22, 23, 32, 33, 51, 52 and 53, and none has the brief
+    stimuli.
+- claim: fig1f-replay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No session replays recorded visual motion; no separate behavioural dataset is on the archive.
+- claim: fig4-glia-necessary
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The ablation, nitroreductase and xestospongin experiments are not in the dandiset, and no
+    other dandiset of this paper was found on the archive.
+- claim: fig5-glia-sufficient
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The TRPV1, CoChR, Opto-alpha1-AR and GABAergic activation experiments are not in the dandiset.
+- claim: fig6a-ne-ramp
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The neuronal traces are there (4 fish with processed GCaMP6f traces of the paper's 5), but
+    locating NE-MO needs the registration to a reference brain and the noradrenergic labels, neither
+    of which is in the files.
+- claim: fig6-ne-drives-glia
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No session images noradrenergic neurons (Tg(th-P2A-Gal4); Tg(UAS:GCaMP6s)) or stimulates NE-MO,
+    and the ablation and pharmacology experiments are not in the dandiset.
+- claim: fig7-ne-mismatch
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The randomised-gain mismatch protocol and the NE-MO imaging are not in the dandiset.
+- claim: fig7-glia-accumulate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The protocols with 1 to 16 failed bouts and with probabilistic feedback (14 fish) are not in
+    any session.
+findings:
+- kind: data_missing
+  statement: The dandiset holds the 12 light-sheet sessions behind Figure 2 and its supplement, with
+    behaviour, but none of the perturbation, noradrenergic imaging, mismatch or probabilistic-feedback
+    experiments of Figures 1F, 1K and 4 to 7, nor the behavioural recordings of the other 62 of the
+    74 fish of Figure 1. No other dandiset of the paper was found.
+- kind: data_missing
+  statement: Four files have raw images only and no cell traces, among them the only three
+    glia-only GCaMP6f recordings (the paper's glial NMF used 6). Raw images are missing for part of
+    20170113-4 (3065 of 12050 volumes) and 20170228-4 (5776 of 7200), and 20170113-2 holds 7616
+    imaging volumes against 9751 camera triggers.
+- kind: metadata_error
+  statement: The glial imaging plane of the four two-colour files is labelled GCaMP6f but excited at
+    561 nm and detected at 660 nm, the jRGECO1b channel of the Methods (Tg(gfap:jRGECO1b)). The raw
+    images are typed TwoPhotonSeries and the archive lists two-photon microscopy, though the
+    microscope is a one-photon light sheet; the device is described as Zeiss confocal microscopes.
+- kind: metadata_error
+  statement: The DfOverF series are not ΔF/F. In the four single-colour files each ROI trace is divided
+    by its mean (float64, mean 1); in the four two-colour files traces are centred near 0 (float32)
+    with the first 60 s held constant. The Fluorescence series vary by about 1e-6 per frame or not at
+    all, consistent with baselines, and carry the same description as DfOverF.
+- kind: metadata_insufficient
+  statement: The ActivityStates table is described only as classified periods of activity. It does not
+    follow the Methods' definition (many active rows of 5 s or less), its transient rows are undefined
+    and duplicate active rows, it holds 3 rows in the glia-only files, and it does not say which
+    condition each row belongs to.
+- kind: metadata_insufficient
+  statement: The stimulus signals have no units or descriptions beyond their names, and the protocol
+    codes in StimulusParameterSignals (12, 22, 23, 32, 33, 51, 52, 53) are not described. Closed and
+    open loop can be read only from the gain signal.
+- kind: metadata_insufficient
+  statement: The ROIs are in each fish's own image space, with no registration to a reference brain
+    and no region labels, so the paper's region-level results (L-MO, NE-MO) cannot be located.
+- kind: other
+  statement: The two groups of files were processed differently (trace scaling, data type, censoring,
+    chunking), and the volume rate is 1.6 to 2.9 Hz against the 3 volumes per second of the Methods.
+- kind: metadata_error
+  statement: The SwimIntervals width column is described as the estimated width spanned by the swim
+    event but equals the bout duration in seconds.
