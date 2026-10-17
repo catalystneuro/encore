@@ -13,19 +13,21 @@ holds 67 sessions of simultaneous hippocampal and lateral septum (LS) recordings
 | Phase beats rate in most neurons, conditions and all sessions | Not reproduced |
 | Phase MSE below rate MSE across LS conditions and sessions | Reproduced |
 | Mean phase minus rate MSE, LS and hippocampus | Partially reproduced |
-| Rate and phase decoding equivalent for hippocampal place fields | Reproduced |
-| 5.3% of LS and 31.7% of hippocampal rate maps have place fields | Not reproduced |
+| Rate and phase decoding equivalent for hippocampal place fields | Not reproduced |
+| 5.3% of LS and 31.7% of hippocampal rate maps have place fields | Partially reproduced |
 | Hippocampal place field counts, peak rates and widths | Partially reproduced |
-| LS place fields less stable | Partially reproduced |
+| LS place fields less stable | Not reproduced |
 | Peak information at a smaller smoothing for phase than rate | Partially reproduced |
 | Phase more informative at fine scales, rate at coarse ones | Partially reproduced |
 | Phase coding grows with LS depth | Partially reproduced |
 | Onset phase of LS phase fields varies with depth | Not reproduced |
 | LS-CA3 theta coherence rises along the run | Not reproduced |
-| Theta-gamma coupling rises along the run, stronger for CA3 | Reproduced |
+| Theta-gamma coupling rises along the run, stronger for CA3 | Not reproduced |
 | LS ensemble phases decode position better than hippocampal ensembles | Not reproduced |
-| Hippocampal-LS gamma assemblies (three claims) | Blocked: not runnable |
-| Speed and phase precession; information in bits/cm | Blocked: methods underspecified |
+| 18.5% of hippocampal-LS pairs form gamma assemblies (on a 1% sample of pairs) | Not reproduced |
+| LS rate maps carry less information than hippocampal place fields | Partially reproduced |
+| Assembly members and assembly strength along the track (two claims) | Blocked: not runnable |
+| Speed and phase precession | Blocked: methods underspecified |
 | Maze rotation (Figure S6) | Blocked: metadata insufficient |
 | Spiking model (Figure 7) | Blocked: other |
 
@@ -37,7 +39,7 @@ dandiset, so they are rebuilt here; several outcomes depend on those choices. Th
 with the reasons and the differences from the paper's method, is
 [`attempts/000213-tingley-2018-01.yaml`](../../attempts/000213-tingley-2018-01.yaml).
 
-- `reproduce_tingley_2018.ipynb`: the analysis. It takes about eight to ten minutes on four
+- `reproduce_tingley_2018.ipynb`: the analysis. It takes about twelve to fifteen minutes on four
   processes, streaming only the trials of each file.
 - `lshpc.py`: loading, linearization, conditions, the per-cell decoder, place fields, information,
-  and the LFP measures. Other notebooks on this dandiset can import it.
+  the LFP measures and the peer prediction. Other notebooks on this dandiset can import it.

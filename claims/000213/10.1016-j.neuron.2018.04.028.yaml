@@ -22,6 +22,12 @@
 # features. Per cell and condition, a two-sample t-test over the 10 splits compares phase with chance
 # and phase with rate. Units labelled hpc are taken as CA1 and units labelled ca3 as CA3, as the
 # paper's code labels regions. The LS depth of a session is the first depth in its name.
+#
+# Added in the first revision, after the verifier's round-1 report and after the results of every
+# other claim had been seen: criteria for fig5-assemblies (on a random sample of pairs) and
+# ls-information-lower, which had been blocked. Neither analysis had been run when they were written.
+# The place-field rule (lshpc.py) was changed in the same revision to the Gaussian rate map that
+# the paper's code passes to bz_getPlaceFields1D.
 schema_version: 1
 dandiset: "000213"
 paper: doi:10.1016/j.neuron.2018.04.028
@@ -270,6 +276,26 @@ claims:
   statement: Spike trains of hippocampal neurons predicted LS firing in 18.5% (2,087 of 11,264) of
     hippocampal-LS pairs, with a median optimal timescale of 25 ms.
   source: Results, fifth paragraph; Figure 5D to 5F
+  expected:
+  - quantity: Fraction of hippocampal-LS pairs forming an assembly
+    value: 0.185
+    tolerance: 0.0185
+  - quantity: Median optimal timescale of assemblies
+    value: 25
+    tolerance: 2.5
+    unit: ms
+  criterion: Tested on a random sample of pairs, as all pairs do not fit the time limit. A pair is
+    a hippocampal and an LS unit both active (1.5 spikes per trial) in the same condition, taken in
+    that condition; each is kept with probability 0.01 (seeded). Spikes are counted in 1 ms bins
+    inside the condition's trials. A Poisson GLM predicts the LS unit's counts from theta phase
+    (sine, cosine and angle), position bin, speed and the hippocampal unit's spike train smoothed
+    by a Gaussian of SD w, for w in 1, 2, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100 and 150 ms. The
+    best w has the least deviance. Assembly strength is the reduction in deviance at the best w
+    from the model without the hippocampal train, divided by the largest reduction over 10 shuffles
+    of the hippocampal train's trial order (no trial kept with its own) at that w; an assembly has
+    strength of at least 4. Reproduced when the 95% binomial interval of the fraction of
+    assemblies overlaps 0.185 plus or minus 0.0185 and the median best w of the assemblies is
+    within tolerance; partially reproduced when one of the two holds.
 - id: fig5g-assembly-neurons-stronger-phase
   statement: LS neurons that take part in at least one predictive assembly carry a stronger spatial
     phase code than those that do not (p < 1e-20).
@@ -325,6 +351,24 @@ claims:
   statement: LS rate maps have lower peak information rates than hippocampal place field maps
     (0.4 against 1.7 bits/cm; p < 1e-100).
   source: Results, third paragraph
+  expected:
+  - quantity: Peak information of LS rate maps
+    value: 0.4
+    tolerance: 0.04
+    unit: bits/cm
+  - quantity: Peak information of hippocampal place field maps
+    value: 1.7
+    tolerance: 0.17
+    unit: bits/cm
+  criterion: Information as in fig1e-phase-info-smaller-scale (7 equal-width levels over the map's
+    range, Olypher et al.) on the trial-by-bin rate map of the place-field rule (Gaussian SD 4
+    bins); its peak over bins, divided by the session's bin size in cm (median trial path over 200
+    bins). LS maps are all included LS conditions; hippocampal maps are included hippocampal
+    conditions with a place field. Sessions with positions in pixels (DT2) are left out. The paper
+    does not say whether 0.4 and 1.7 are means or medians; both readings are shown. Reproduced
+    when, under one reading, both values are within tolerance and LS is lower by a two-sample
+    t-test at p < 1e-100; partially reproduced when LS is lower at p < 0.05 but a value or the
+    bound is not reached.
 - id: figs6-reference-frame
   statement: After maze rotation many LS neurons kept their phase precession related to distal room
     cues, so the phase shift is a spatial code.

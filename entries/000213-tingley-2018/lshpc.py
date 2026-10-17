@@ -36,11 +36,25 @@ Where the parameters come from:
     uses). Chance: the same with the test features permuted.
   * Inclusion of a cell and condition: at least 10 trials, and at least 1.5 spikes per trial
     (makeFig2.m; Methods).
-  * Place fields (bz_getPlaceFields1D with a 20% threshold, the file name the code loads): the
-    trial-mean rate map (5-bin smoothing), RMS-smoothed over 5 bins for peak finding; peaks of
-    at least 2 Hz (Methods); peaks whose mean is below the across-trial SD are dropped; the
-    field extends while the mean rate is above 20% of the peak; width limits 8 cm and 120 cm
-    (Methods), taken here as 5 and 80 bins at the paper's 1.5 cm per bin.
+  * Place fields (bz_getPlaceFields1D, called on bz_firingMap1D `rateMaps` in
+    scratch_07_25_17_calc_firingMaps.m, DavidTingley/scratch): per-trial rate maps smoothed with a
+    Gaussian of SD `MAP_TAU` = 4 bins (FMAToolbox Smooth; that script uses round(nBins/50), which
+    is 4 at 200 bins), averaged over trials and RMS-smoothed over 5 bins (fastrms, zero padded) for
+    peak finding; peaks of at least 2 Hz (Methods); peaks whose mean is below the across-trial SD
+    are dropped; the field extends while the mean rate is above 20% of the peak (Methods); width
+    limits 8 cm and 120 cm (Methods), taken here as 5 and 80 bins at the paper's 1.5 cm per bin.
+    The peak rate reported is the RMS-smoothed peak, as bz_getPlaceFields1D reports it. Variants:
+    Gaussian SD 5 (the decoder script's tau), the 5-bin box map used before revision, and a 1%
+    threshold (the script that writes the 20% file passes no threshold, so its default of 1%
+    applies).
+  * Peer prediction (Figure 5), on a random sample of pairs: 1 ms bins inside the trials of one
+    condition; a Poisson GLM of the LS unit's counts on theta phase (sine, cosine and angle),
+    position bin, speed (bins per s) and the hippocampal unit's spike train smoothed by a Gaussian
+    of SD w (Methods: windows of 1 to 150 ms, covariates); the best w has the least deviance;
+    assembly strength is its reduction in deviance from the model without the hippocampal train,
+    over the largest reduction among 10 shuffles of the predictor's trial order at that w
+    (Methods); an assembly has strength of at least 4 (Methods). The bin size, the kernel and the
+    window grid are choices made here.
 - The Methods: 1250 Hz LFP; CA1 pyramidal layer theta as reference; LFP coherence from 4 to
   12 Hz phases in 150 ms windows moved in 50 ms steps; gamma power as the 50 ms RMS of the 40
   to 200 Hz band.
@@ -55,7 +69,10 @@ Where the parameters come from:
   * Theta reference channel: among the hippocampal channels whose 6 to 9 Hz power ratio (to
     1 to 4 Hz) is at least the median, the one with the most 100 to 250 Hz power (spiking in
     the pyramidal layer), measured on the first trials. The dandiset does not say which
-    channel is in the pyramidal layer.
+    channel is in the pyramidal layer. In each session the hippocampal channels are labelled
+    either `hpc` or `ca3`, never both, so in sessions with `ca3` channels the reference is a CA3
+    channel; the paper's code does the same when a session has no CA1 channel (sessionInfo.ca1,
+    else sessionInfo.ca3, in scratch_07_11_17_spatialBinnedMaxCorr.m).
   * LS LFP channel (for Figure 6): the middle channel of the first LS electrode group.
 """
 
@@ -68,9 +85,9 @@ import numpy as np
 import remfile
 from dandi.dandiapi import DandiAPIClient
 from scipy.cluster.hierarchy import fcluster, linkage
-from scipy.ndimage import convolve1d
+from scipy.ndimage import convolve1d, gaussian_filter1d
 from scipy.sparse import csr_matrix
-from scipy.signal import butter, find_peaks, hilbert, sosfiltfilt
+from scipy.signal import butter, find_peaks, hilbert, sosfiltfilt, welch
 from scipy.stats import ttest_ind
 
 DANDISET_ID = "000213"
@@ -81,6 +98,7 @@ PAD_S = 1.0
 N_BINS = 200
 SMOOTH_BINS = 20
 MAP_SMOOTH = 5
+MAP_TAU = 4
 N_ITER = 10
 TRAIN_FRACTION = 0.6
 MIN_TRIALS = 10
@@ -88,6 +106,7 @@ MIN_SPIKES_PER_TRIAL = 1.5
 PF_MIN_PEAK_HZ = 2.0
 PF_THRESHOLD = 0.2
 PF_MIN_WIDTH, PF_MAX_WIDTH = 5, 80
+PF_CODE_THRESHOLD = 0.01
 SITE_CUT = 0.3
 N_SELECT_TRIALS = 8
 HPC_LABELS = ("hpc", "ca1", "ca3")
@@ -135,8 +154,13 @@ def _select_channels(d, hpc_cols, starts, stops):
     ratio = theta / np.maximum(delta, 1e-12)
     ok = ratio >= np.median(ratio)
     k = int(np.argmax(np.where(ok, high, -np.inf)))
+    f, pxx = welch(x[:, k], fs=FS_LFP, nperseg=int(4 * FS_LFP))
+    band = (f >= 2) & (f <= 20)
+    in_theta = (f >= 6) & (f <= 9)
     return hpc_cols[k], {"theta_ratio": float(ratio[k]), "median_theta_ratio": float(np.median(ratio)),
-                         "high_power_rank": int((high > high[k]).sum())}
+                         "high_power_rank": int((high > high[k]).sum()),
+                         "psd_peak_hz": float(f[band][np.argmax(pxx[band])]),
+                         "theta_peak_over_neighbours": float(pxx[in_theta].max() / np.mean(pxx[((f >= 2) & (f < 5)) | ((f > 11) & (f <= 15))]))}
 
 
 def load_session(path, url, read_lfp=True):
@@ -161,6 +185,15 @@ def load_session(path, url, read_lfp=True):
 
     beh = f["processing/behavior"]
     task = [k for k in beh if k != "allocentric_frame_tracking"][0]
+    s["allocentric_frame_tracking"] = {}
+    if "allocentric_frame_tracking" in beh:
+        for name, obj in beh["allocentric_frame_tracking"].items():
+            for key, ds in obj.items():
+                if isinstance(ds, h5py.Dataset):
+                    unit = ds.attrs.get("unit", "")
+                    s["allocentric_frame_tracking"][f"{name}/{key}"] = (ds.shape, unit.decode() if isinstance(unit, bytes) else str(unit))
+            desc = obj.attrs.get("description", "")
+            s["allocentric_frame_tracking"][f"{name} description"] = desc.decode() if isinstance(desc, bytes) else str(desc)
     pos = beh[task]["position"]
     xyz = pos["data"][:]
     ts = pos["timestamps"][:]
@@ -245,12 +278,14 @@ def load_session(path, url, read_lfp=True):
         hpc_cols = hpc_cols or [j for j, g in enumerate(col_group) if g in hpc_groups]
         ls_cols = ls_cols or [j for j, g in enumerate(col_group) if g in ls_groups]
         s["hpc_channels_from"] = "groups of the units"
+    s["hpc_channel_labels"] = sorted({str(x) for x in col_loc[hpc_cols]})
     s["n_hpc_channels"], s["n_ls_channels"] = len(hpc_cols), len(ls_cols)
     s["theta_channel"] = s["ls_channel"] = None
     s["segments"] = []
     if not read_lfp or not hpc_cols or n == 0:
         return s
     theta_col, sel = _select_channels(d, hpc_cols, starts, stops)
+    sel["label"] = str(col_loc[theta_col])
     s["theta_channel"], s["theta_channel_selection"] = int(theta_col), sel
     if ls_cols:
         groups = [g for g in dict.fromkeys(col_group[ls_cols])]
@@ -422,13 +457,30 @@ def circ_smooth(phase, span):
     return np.where(ns > 0, np.arctan2(ss, cs), 0.0)
 
 
+def gauss_smooth(x, sd, axis=-1):
+    """FMAToolbox Smooth of each vector, linear type: Gaussian of SD `sd` bins, zero padded."""
+    x = np.asarray(x, float)
+    n = x.shape[axis]
+    r = np.arange(-n, n + 1)
+    k = np.exp(-r ** 2 / (sd + 1e-12) ** 2 / 2)
+    return convolve1d(x, k / k.sum(), axis=axis, mode="constant")
+
+
+def fastrms(x, window=5):
+    """buzcode fastrms of a vector: RMS over a rectangular window, zero padded."""
+    return np.sqrt(np.maximum(convolve1d(np.asarray(x, float) ** 2, np.ones(window), mode="constant") / window, 0))
+
+
 def rate_box(counts, occ, dt, span=SMOOTH_BINS):
     return matlab_smooth(counts, span) / (matlab_smooth(occ, span) * dt)
 
 
-def rate_map(counts, occ, dt, span=MAP_SMOOTH):
-    """Smoothed rate map used for place fields (bz_firingMap1D `rateMaps`, 5 bins)."""
-    return matlab_smooth(counts, span) / (matlab_smooth(occ, span) * dt)
+def rate_map(counts, occ, dt, tau=MAP_TAU, kind="gauss"):
+    """Rate map used for place fields: bz_firingMap1D `rateMaps` (Gaussian SD tau), or `rateMaps_box`."""
+    if kind == "box":
+        return rate_box(counts, occ, dt, span=tau)
+    out = gauss_smooth(counts, tau) / (gauss_smooth(occ, tau) * dt)
+    return np.nan_to_num(out)
 
 
 # --- decoder ---------------------------------------------------------------------------------
@@ -497,22 +549,22 @@ def decode_cell(counts, occ, phase, dt, rng, n_iter=N_ITER, split="samples"):
 
 # --- place fields ----------------------------------------------------------------------------
 
-def place_fields(rate_trials):
+def place_fields(rate_trials, threshold=PF_THRESHOLD):
     """Fields of one cell in one condition, after bz_getPlaceFields1D with the Methods' limits."""
     mean = rate_trials.mean(0)
     sd = rate_trials.std(0, ddof=1)
-    rms = np.sqrt(matlab_smooth(mean ** 2, MAP_SMOOTH))
+    rms = fastrms(mean, MAP_SMOOTH)
     pks, _ = find_peaks(rms, height=PF_MIN_PEAK_HZ, width=PF_MIN_WIDTH)
     keep = list(pks)
     # adjacent peaks without a dip below threshold * their mean: keep the higher
     drop = set()
     for a, b in zip(keep[:-1], keep[1:]):
-        if mean[a:b + 1].min() > (rms[a] + rms[b]) / 2 * PF_THRESHOLD:
+        if mean[a:b + 1].min() > (rms[a] + rms[b]) / 2 * threshold:
             drop.add(b if rms[a] > rms[b] else a)
     keep = [p for p in keep if p not in drop and mean[p] >= sd[p]]
     fields = []
     for p in keep:
-        inside = mean > rms[p] * PF_THRESHOLD
+        inside = mean > rms[p] * threshold
         a = p
         while a > 0 and inside[a]:
             a -= 1
@@ -671,7 +723,8 @@ def analyse_session(s, index):
                                           "position_z_equals_y", "electrode_locations", "lfp_shape",
                                           "lfp_chunks", "lfp_rate", "lfp_start", "lfp_conversion",
                                           "hpc_channels_from", "n_hpc_channels", "n_ls_channels",
-                                          "theta_channel", "ls_channel", "clock_trial_speed", "clock_trial_rate")}}
+                                          "theta_channel", "ls_channel", "clock_trial_speed", "clock_trial_rate",
+                                          "allocentric_frame_tracking")}}
     sm = out["summary"]
     sm["theta_channel_selection"] = s.get("theta_channel_selection")
     tr = s["trials"]
@@ -689,6 +742,8 @@ def analyse_session(s, index):
     sm["trial_starts_rounded"] = tuple(np.round(starts, 2).tolist())
     sm["has_hpc_units"] = any(region(u["location"]) == "hpc" for u in s["units"])
     sm["has_ca3_units"] = any(u["location"] == "ca3" for u in s["units"])
+    sm["has_hpc_label_units"] = any(u["location"] in ("hpc", "ca1") for u in s["units"])
+    sm["hpc_channel_labels"] = s["hpc_channel_labels"]
     sm["spikes_after_lfp_end"] = int(sum(u["last"] > s["lfp_shape"][0] / FS_LFP for u in s["units"] if np.isfinite(u["last"])))
     sm["trials_after_position_end"] = int((stops > (s["pos_t"][-1] if len(s["pos_t"]) else -1)).sum())
     has_theta = s["theta_channel"] is not None
@@ -705,7 +760,7 @@ def analyse_session(s, index):
     sm["conditions_used"] = len(use)
     trials_of = {c: [k for k in np.flatnonzero(cond == c) if s["_lin"][k] is not None] for c in use}
 
-    cells, info, ens_maps = [], [], {}
+    cells, info, ens_maps, active_in = [], [], {}, {}
     has_hpc_units = any(region(u["location"]) == "hpc" for u in s["units"])
     lag_phases = {lag: [] for lag in LFP_LAGS_MS}
     for ui, u in enumerate(s["units"]):
@@ -724,8 +779,13 @@ def analyse_session(s, index):
                 cells.append(rec)
                 continue
             counts, occ, phase = trial_maps(s, u, ks) if has_theta else (*trial_maps_counts(s, u, ks), None)
-            fields = place_fields(rate_map(counts, occ, dt))
+            rmap = rate_map(counts, occ, dt)
+            fields = place_fields(rmap)
             rec["n_fields"] = len(fields)
+            rec["n_fields_gauss5"] = len(place_fields(rate_map(counts, occ, dt, tau=5)))
+            rec["n_fields_box5"] = len(place_fields(rate_map(counts, occ, dt, tau=MAP_SMOOTH, kind="box")))
+            rec["n_fields_thresh01"] = len(place_fields(rmap, threshold=PF_CODE_THRESHOLD))
+            rec["info_peak_bits"] = olypher_peak(rmap, (rmap.min(), rmap.max()))
             if fields:
                 f0 = fields[0]
                 rec.update({"field_peak_hz": f0["peak_hz"], "field_width": f0["width"], "field_com": f0["com"],
@@ -761,6 +821,7 @@ def analyse_session(s, index):
                     rc, pc = info_curves(counts, occ, phase, dt)
                     info.append({"unit": ui, "condition": c, "rate": rc, "phase": pc, "n_trials": len(ks)})
                 ens_maps.setdefault(c, []).append((reg, ui, counts, occ, phase))
+                active_in.setdefault(c, {"ls": [], "hpc": []})[reg].append(ui)
             cells.append(rec)
         if has_theta and region(u["location"]) == "hpc":
             for k, st in enumerate(per_trial):
@@ -776,6 +837,8 @@ def analyse_session(s, index):
                         for lag, v in lag_phases.items()}
     out["fig6"] = _fig6(s) if has_theta and s["ls_channel"] is not None else None
     out["ensemble"] = _ensembles(ens_maps, dt, index)
+    out["assembly_pairs_total"] = int(sum(len(v["ls"]) * len(v["hpc"]) for v in active_in.values()))
+    out["assemblies"] = _assemblies(s, active_in, trials_of, index) if has_theta else []
     return out
 
 
@@ -865,6 +928,112 @@ def _ensembles(ens_maps, dt, index):
                 rec["hpc_phase"].append(_ensemble_mse(hp_[:, b], pos, rng))
                 rec["hpc_rate"].append(_ensemble_mse(hr[:, b], pos, rng))
             out.append(rec)
+    return out
+
+
+SEED_ASSEMBLY = 213004
+ASSEMBLY_SAMPLE_P = 0.01
+ASSEMBLY_BIN_S = 0.001
+ASSEMBLY_WINDOWS_MS = (1, 2, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100, 150)
+ASSEMBLY_SHUFFLES = 10
+ASSEMBLY_THRESHOLD = 4.0
+
+
+def _poisson_deviance(X, y, beta=None, iters=25, tol=1e-8):
+    """Poisson GLM (log link) by Newton's method; deviance and coefficients."""
+    beta = np.zeros(X.shape[1]) if beta is None else beta.copy()
+    if beta is None or not beta.any():
+        beta[0] = np.log(max(y.mean(), 1e-6))
+    for _ in range(iters):
+        eta = np.clip(X @ beta, -30, 30)
+        mu = np.exp(eta)
+        g = X.T @ (y - mu)
+        H = (X * mu[:, None]).T @ X
+        step = np.linalg.solve(H + 1e-8 * np.eye(len(beta)), g)
+        beta += step
+        if np.max(np.abs(step)) < tol:
+            break
+    mu = np.exp(np.clip(X @ beta, -30, 30))
+    with np.errstate(divide="ignore", invalid="ignore"):
+        term = np.where(y > 0, y * np.log(y / mu), 0.0)
+    return float(2 * np.sum(term - (y - mu))), beta
+
+
+def _smooth_trials(trains, w_ms):
+    sd = w_ms * 1e-3 / ASSEMBLY_BIN_S
+    return [gaussian_filter1d(t, sd, mode="constant", truncate=4.0) for t in trains]
+
+
+def _pair_strength(resp, pred, cov, rng):
+    """Best window, deviance reduction and assembly strength of one pair (lists of trials)."""
+    y = np.concatenate(resp)
+    X0 = np.column_stack([np.ones(len(y)), cov])
+    dev0, b0 = _poisson_deviance(X0, y)
+    devs = []
+    for w in ASSEMBLY_WINDOWS_MS:
+        x = np.concatenate(_smooth_trials(pred, w))
+        x = (x - x.mean()) / (x.std() + 1e-12)
+        devs.append(_poisson_deviance(np.column_stack([X0, x]), y, np.r_[b0, 0.0])[0])
+    best = int(np.argmin(devs))
+    w = ASSEMBLY_WINDOWS_MS[best]
+    gain = dev0 - devs[best]
+    T = len(resp)
+    null = []
+    for _ in range(ASSEMBLY_SHUFFLES):
+        perm = rng.permutation(T)
+        while np.any(perm == np.arange(T)):
+            perm = rng.permutation(T)
+        sh = []
+        for i, j in enumerate(perm):
+            p = np.zeros(len(resp[i]))
+            m = min(len(p), len(pred[j]))
+            p[:m] = pred[j][:m]
+            sh.append(p)
+        x = np.concatenate(_smooth_trials(sh, w))
+        x = (x - x.mean()) / (x.std() + 1e-12)
+        null.append(dev0 - _poisson_deviance(np.column_stack([X0, x]), y, np.r_[b0, 0.0])[0])
+    top = max(max(null), 1e-9)
+    return {"window_ms": w, "gain": float(gain), "null_max": float(max(null)), "strength": float(gain / top)}
+
+
+def _assemblies(s, active_in, trials_of, index):
+    """Peer prediction on a random sample of hippocampal-LS pairs active in the same condition."""
+    import time
+    rng = np.random.default_rng([SEED_ASSEMBLY, index])
+    tr = s["trials"]
+    out = []
+    for ci, c in enumerate(sorted(active_in)):
+        ls_units, hpc_units = active_in[c]["ls"], active_in[c]["hpc"]
+        pairs = [(h, l) for h in hpc_units for l in ls_units]
+        pick = [p for p in pairs if rng.random() < ASSEMBLY_SAMPLE_P]
+        if not pick:
+            continue
+        ks = trials_of[c]
+        edges, cov = [], []
+        for k in ks:
+            e = np.arange(tr["start"][k], tr["stop"][k], ASSEMBLY_BIN_S)
+            mid = e[:-1] + ASSEMBLY_BIN_S / 2
+            seg = s["segments"][k]
+            idx = np.clip(np.round((mid - seg["t0"]) * FS_LFP).astype(int), 0, seg["n"] - 1)
+            ph = seg["theta_phase"][idx].astype(float)
+            tt, b, _ = s["_lin"][k]
+            pos = np.interp(mid, tt, b.astype(float))
+            v = np.gradient(gaussian_filter1d(b.astype(float), 3)) / s["position_dt"]   # timestamps can repeat (sub-DT2)
+            vel = np.interp(mid, tt, v)
+            edges.append(e)
+            cov.append(np.column_stack([np.sin(ph), np.cos(ph), ph, pos, vel]))
+        C = np.concatenate(cov)
+        C = (C - C.mean(0)) / (C.std(0) + 1e-12)
+        units = s["units"]
+        def trains(ui):
+            t = units[ui]["times"]
+            return [np.diff(np.searchsorted(t, e)).astype(float) for e in edges]
+        for h, l in pick:
+            t0 = time.time()
+            res = _pair_strength(trains(l), trains(h), C, np.random.default_rng([SEED_ASSEMBLY, index, ci, h, l]))
+            res.update({"condition": c, "hpc_unit": h, "ls_unit": l, "n_trials": len(ks),
+                        "n_bins": int(sum(len(e) - 1 for e in edges)), "seconds": time.time() - t0})
+            out.append(res)
     return out
 
 
