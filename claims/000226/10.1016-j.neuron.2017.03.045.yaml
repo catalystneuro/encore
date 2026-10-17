@@ -1,0 +1,467 @@
+# Claims for Severson, Xu, Van de Loo, Bai, Ginty and O'Connor (2017) on dandiset 000226.
+# Source: the accepted author manuscript in PubMed Central (PMC5528144), full text, read from
+# its Results, STAR Methods, Glossary and figure legends, and the publisher's Supplemental
+# Information (mmc1.pdf), whose Table S1 lists every recording with its type and analyses.
+# The version of record is not open access. The paper's analysis code is not public (the
+# Methods say it is available on request); no repository for this paper was found.
+#
+# When these criteria were written, the author had seen the data check only: the file list,
+# the metadata and trial tables of every file, the units and ranges of every series, the
+# trial and spike counts per file, per-file mean spike rates in crude categories (contact,
+# whisking above 2.5 degrees, below 1 degree; without the distance-to-pole rule), per-file
+# phase tuning in 30 equal-width bins, and the spike rate in fifths of each progressive
+# cutting session. No claim's analysis had been run.
+#
+# The dandiset holds one NWB file per recording: 56 afferents and 4 EMG sessions, matching
+# Table S1. It does not say which experiment a recording belongs to, which recordings the
+# paper excluded, the afferent type (RA or SA), or which afferents were identified as Merkel.
+# These come from Table S1. Group membership (touch recording, cut-whisker recording,
+# whisking-only recording, progressive cutting, EMG) maps the dandiset's own recording ids to
+# experiments and brings in no measurement, so claims that use only it are `with_labels`.
+# Afferent type and Merkel identity are results of measurements not in the dandiset
+# (manual classification and optogenetic tagging), so claims that use them are `with_inputs`.
+#
+# Method choices fixed here, from the Methods and Glossary where they are explicit:
+# - Frames are the 2 ms video frames of each 5 s trial. Contact frames have contact = 1 and a
+#   distance to the pole below 1 mm; whisking frames have amplitude above 2.5 degrees;
+#   whisking-in-air frames are whisking frames with contact = 0 and distance to the pole
+#   above 2 mm; non-whisking frames have amplitude below 1 degree, are not contact frames and
+#   have distance to the pole above 2 mm. Where a file has no distance-to-pole series (no pole
+#   was presented), the distance is taken as infinite. Contact without whisking is left out.
+#   The `distanceToPoleCenter` series is taken to be the Methods' d_pole in mm (its unit is
+#   "unknown" in the files).
+# - Mean rates are spikes over time in a category. Their 95% confidence intervals are
+#   bootstrap intervals over trials (1000 resamples), a choice the Methods leave open.
+# - Outliers as in the Glossary: forces, moment and their rates of change outside the 0.5 to
+#   99.5 percentiles, kinematic variables outside 0.25 to 99.75 percentiles, per recording.
+# - Phase tuning curves: whisking-in-air frames, 30 phase bins with equal numbers of frames.
+#   Preferred phase is the centre of the bin with the highest rate; non-preferred the lowest.
+# - Statistical models: the paper fitted GAMs with mgcv (binomial, logit, 1 ms bins, UBRE
+#   smoothing). Here each variable gets a cubic B-spline basis of 10 functions with a
+#   second-difference penalty (lambda 1, fixed), fitted by penalized IRLS as a binomial model
+#   with two trials per 2 ms frame (the paper interpolates to 1 ms bins), on at most 60,000
+#   randomly chosen eligible frames per recording. Performance is the Pearson correlation of
+#   the predicted spike probability with the spike counts smoothed by a Gaussian of
+#   sigma 4 ms, over the frames fitted.
+# - Tolerances: the paper's stated spread (SD or IQR) where it gives one, as the protocol asks;
+#   otherwise 10% of the reported value.
+schema_version: 1
+dandiset: "000226"
+paper: doi:10.1016/j.neuron.2017.03.045
+claims:
+- id: table-s1-link
+  statement: The dandiset's recordings can be matched one to one to the recordings of Table S1,
+    and the matched records agree on mouse, sex, mouse line and date.
+  source: Table S1 (Supplemental Information)
+  data: with_labels
+  criterion: Records are matched by recording id, the NWB `identifier` without its "KS0"
+    prefix (for example KS0240A to 240A); an identifier that ends in "_" is matched by its
+    number alone when exactly one Table S1 recording has that number and mouse. Reproduced
+    when all 60 files match a distinct Table S1 recording and at least 95% of matches agree
+    on mouse id, sex, mouse line (ignoring spaces and case) and recording date; partially
+    reproduced when at least 80% match and agree; otherwise not reproduced.
+- id: video-frames
+  statement: The initial dataset of 33 touch afferents comprises 54,647,500 video frames with
+    simultaneous single-unit recordings, and the paper analyses 65,257,500 frames (2,175 min)
+    in total.
+  source: Results, first section; Quantification and Statistical Analysis
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+  - quantity: frames, 33 touch recordings
+    value: 54647500
+    tolerance: 5464750
+  - quantity: frames, total
+    value: 65257500
+    tolerance: 6525750
+  criterion: Frames are trials times 2,500. The first value is summed over the 33 touch
+    recordings of Table S1. For the total, the text allows these readings, in order (a) the 53
+    analysed afferents, (b) the 53 afferents and the 4 EMG sessions, (c) the 56 afferent
+    recordings, (d) all 60 files. Reproduced when the first value and the total under one
+    reading are within tolerance.
+- id: merkel-minutes
+  statement: Identified Merkel afferents account for 823 minutes of the initial dataset and 846
+    minutes (25,365,000 frames) overall, against 999 minutes for unidentified afferents in the
+    initial dataset.
+  source: Results, first section; Quantification and Statistical Analysis
+  data: with_inputs
+  depends_on:
+  - table-s1-link
+  expected:
+  - quantity: minutes, Merkel touch recordings
+    value: 823
+    tolerance: 82.3
+  - quantity: minutes, unidentified touch recordings
+    value: 999
+    tolerance: 99.9
+  - quantity: minutes, Merkel overall
+    value: 846
+    tolerance: 84.6
+  criterion: Minutes are trials times 5 s, with Merkel identity from Table S1. "Overall" can be
+    read as (a) the 17 analysed Merkel afferents or (b) all 20 identified Merkel afferents,
+    including the 3 used only for Figure S1. Reproduced when all three values are within
+    tolerance under one reading; partially reproduced when the first two are.
+- id: fig2c-baseline-rate
+  statement: During non-whisking periods most afferents spiked at low rates (0.0 plus or minus
+    0.2 Hz, median and IQR, n = 33).
+  source: Results, first section; Figure 2C
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+    quantity: median non-whisking rate over the 33 touch afferents
+    value: 0.0
+    tolerance: 0.2
+    unit: Hz
+- id: fig2c-touch-rate
+  statement: All afferents responded with increased spike rates during whisker-pole contact
+    (48.0 plus or minus 96.3 Hz, median and IQR, n = 33).
+  source: Results, first section; Figure 2C
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+    quantity: median contact rate over the 33 touch afferents
+    value: 48.0
+    tolerance: 96.3
+    unit: Hz
+  criterion: Reproduced when the median is within tolerance and, by the Glossary rule, all 33
+    afferents are touch-sensitive (the 95% CI of the contact rate above and not overlapping
+    the CIs of the non-whisking and the whisking-in-air rates). Partially reproduced when the
+    median is within tolerance and at least 30 of 33 are touch-sensitive.
+- id: fig2c-wt-star
+  statement: A subset of 13 of the 33 touch afferents (WT*) spiked especially strongly during
+    whisking in air (19.1 plus or minus 58.2 Hz, median and IQR), and the other afferents
+    divide into those sensitive to whisking and touch (WT) and to touch only (T).
+  source: Results, first section; Figure 2C; Glossary; Table S1
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+  - quantity: number of WT* afferents
+    value: 13
+    tolerance: 1.3
+  - quantity: median whisking-in-air rate of WT* afferents
+    value: 19.1
+    tolerance: 58.2
+    unit: Hz
+  criterion: Classes by the Glossary. Whisking-sensitive when the 95% CIs of the
+    whisking-in-air and non-whisking rates do not overlap; WT when also touch-sensitive; WT*
+    when WT, the whisking-in-air rate exceeds 1 Hz and at least 1,000 spikes were collected.
+    The spike count can be read as (a) all spikes in the recording or (b) spikes during
+    whisking in air. Reproduced when, under one reading, both values are within tolerance and
+    at least 30 of 33 afferents get the class (T, WT or WT*) Table S1 gives them; partially
+    reproduced when the values are within tolerance but fewer classes agree.
+- id: fig3a-direction-selective
+  statement: Merkel and SA afferents responded to contact in a dramatically direction-selective
+    manner, far more strongly to contacts in either the protraction or the retraction
+    direction.
+  source: Results, second section; Figure 3A, E, H, I
+  data: with_inputs
+  depends_on:
+  - table-s1-link
+  criterion: Each contact (a run of contact frames) is protraction when its mean moment M0 is
+    positive and retraction when negative (Figure 3F). For each Merkel or SA touch afferent
+    (26, from Table S1), the mean contact rate in each direction, and the index (preferred
+    minus non-preferred) over their sum. Reproduced when at least 80% of the 26 have an index
+    of 0.5 or more (preferred rate at least three times the other); partially reproduced when
+    at least half do. The RA afferents are shown for comparison and do not enter the
+    criterion.
+- id: fig3d-gam-full
+  statement: A full statistical model of ten mechanical and kinematic variables strongly
+    predicted ongoing spike rate during touch (r = 0.71 plus or minus 0.16, mean and SD, n =
+    33).
+  source: Results, second section; Figure 3D
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+    quantity: mean Pearson r of the full model over the 33 touch afferents
+    value: 0.71
+    tolerance: 0.16
+- id: fig3d-gam-single
+  statement: Models fitted to moment or its rate of change alone explained spiking relatively
+    poorly (r = 0.45 plus or minus 0.19 and 0.42 plus or minus 0.21).
+  source: Results, second section; Figure 3D
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+  - quantity: mean Pearson r, M0 alone
+    value: 0.45
+    tolerance: 0.19
+  - quantity: mean Pearson r, M0 rate of change alone
+    value: 0.42
+    tolerance: 0.21
+- id: fig3d-gam-best-pair
+  statement: M0 and its rate of change together explained spiking (r = 0.63 plus or minus 0.20)
+    better than any other pair of variables, and better than a model of M0, Fax and Flat (r =
+    0.48 plus or minus 0.19).
+  source: Results, second section; Figure 3D; Figure S2C
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+  - quantity: mean Pearson r, M0 and M0 rate of change
+    value: 0.63
+    tolerance: 0.20
+  - quantity: mean Pearson r, M0, Fax and Flat
+    value: 0.48
+    tolerance: 0.19
+  criterion: All 45 pairs of the ten variables are fitted. Reproduced when both values are
+    within tolerance, the M0 and M0 rate pair has the highest mean r of the 45 pairs, and it
+    is above the M0, Fax and Flat model. Partially reproduced when the pair is among the three
+    best pairs and above the M0, Fax and Flat model.
+- id: fig4c-viscoelastic
+  statement: A simple viscoelastic model of moment and its rate of change predicted spike rates
+    of Merkel and SA afferents during touch at levels comparable to the statistical model
+    based on M0 and its rate of change (25 of 26 afferents fitted).
+  source: Results, third section; Figure 4C; STAR Methods, Viscoelastic model
+  data: with_inputs
+  depends_on:
+  - table-s1-link
+  criterion: The model of Eqs. M1 to M4 (q = 1,000, five fitted parameters, M0 scaled by the
+    inverse of the 80th percentile of its absolute value), fitted by least squares between
+    predicted rate and the spike rate smoothed by a Gaussian of sigma 4 ms on contact frames
+    during whisking, for the 25 Merkel and SA touch afferents Table S1 marks as fitted.
+    Performance is r as for the statistical models, on the same frames. Reproduced when the
+    mean r of the viscoelastic model is at least the mean r of the M0 and M0 rate model minus
+    0.1; partially reproduced when it is at least that minus 0.2; otherwise not reproduced.
+- id: fig5-phase-modulation
+  statement: All 15 WT* afferents (13 touch WT* and 2 whisking-only) were dramatically modulated
+    by whisk phase, with rates at non-preferred and preferred phases of 2.1 plus or minus 3.4
+    and 51.2 plus or minus 105.7 Hz (median and IQR).
+  source: Results, fourth section; Figure 5A to C; Figure S3D
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+  - quantity: median rate at the non-preferred phase
+    value: 2.1
+    tolerance: 3.4
+    unit: Hz
+  - quantity: median rate at the preferred phase
+    value: 51.2
+    tolerance: 105.7
+    unit: Hz
+  criterion: The 15 afferents are the touch afferents Table S1 marks WT* and the two
+    whisking-only recordings (240A, 253A), as listed in Figure S3. Reproduced when both medians
+    are within tolerance and every one of the 15 has a preferred-phase rate at least twice its
+    non-preferred rate; partially reproduced when the medians are within tolerance and at
+    least 12 of 15 do.
+- id: fig5e-phase-span
+  statement: Across the population of WT* afferents, preferred phase spanned the whisk cycle.
+  source: Results, fourth section; Figure 5D, E
+  data: with_labels
+  depends_on:
+  - fig5-phase-modulation
+  criterion: Preferred phases of the 15 afferents of fig5-phase-modulation. Reproduced when they
+    fall in at least three of the four quarter cycles of (-pi, pi] and a Rayleigh test does not
+    find a single preferred direction (p > 0.05); partially reproduced when they fall in at
+    least three quarters but the Rayleigh test is significant; otherwise not reproduced.
+- id: figs3-phase-invariance
+  statement: The preferred phase of each WT* afferent was largely invariant across whisk cycles
+    of different amplitudes, frequencies and setpoints.
+  source: Results, fourth section; Figure S3
+  data: with_labels
+  depends_on:
+  - fig5-phase-modulation
+  criterion: For each of the 15 afferents and each of amplitude, frequency and setpoint, the
+    whisking-in-air frames are split at the afferent's median of that variable, and a preferred
+    phase is found in each half (30 equal-count bins). Reproduced when, for each of the three
+    variables, the median over afferents of the absolute circular difference between the halves
+    is below pi/4; partially reproduced when this holds for two of the three.
+- id: figs6-kinematic-gam
+  statement: Statistical models fitted to whisker position, velocity, acceleration and jerk
+    during whisking in air predicted phase tuning curves nearly perfectly (r = 0.97 plus or
+    minus 0.04, n = 28), while single kinematic variables performed poorly.
+  source: Results, fifth section; Figure S6A, B
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+    quantity: mean r between predicted and observed phase tuning curves, full model
+    value: 0.97
+    tolerance: 0.04
+  criterion: Models of the 15 combinations of the four variables fitted on whisking-in-air
+    frames free of kinematic outliers. A predicted phase tuning curve is the mean predicted
+    rate in each of 30 equal-count phase bins, compared by Pearson r with the observed curve.
+    Tested on the 15 WT* afferents of fig5-phase-modulation, as the intact condition of the 13
+    progressive cutting recordings cannot be separated (see fig6-cut-eliminated). Reproduced
+    when the full model's mean r is within tolerance and the mean r of each single-variable
+    model is lower than that of the full model by at least 0.1; partially reproduced when only
+    the first holds.
+- id: fig7g-phase-span-28
+  statement: Preferred phases of all 28 WT* afferents spanned the whisk cycle, with a slight
+    abundance in the retraction phase.
+  source: Discussion, fourth paragraph; Figure 7G
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  criterion: Needs the intact condition of the 13 progressive cutting recordings; see
+    fig6-cut-eliminated.
+- id: fig6-cut-eliminated
+  statement: Progressive whisker cutting eliminated spiking during whisking in air in 6 of 13
+    afferents (from 50.1 plus or minus 42.3 Hz intact to 0.9 plus or minus 0.7 Hz after the
+    final cut, mean and SD).
+  source: Results, fifth section; Figure 6B, E
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+  - quantity: rate at the preferred phase, intact, eliminated group
+    value: 50.1
+    tolerance: 42.3
+    unit: Hz
+  - quantity: rate at the preferred phase, after final cut, eliminated group
+    value: 0.9
+    tolerance: 0.7
+    unit: Hz
+  criterion: Needs the cutting condition (intact, sham, cut 1 to 3) of each trial of the 13
+    progressive cutting recordings.
+- id: fig6-cut-remained
+  statement: In 7 of 13 afferents self-motion responses remained after cutting (86.1 plus or
+    minus 71.5 Hz intact against 70.3 plus or minus 58.5 Hz after the final cut).
+  source: Results, fifth section; Figure 6C to E
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+  - quantity: rate at the preferred phase, intact, remaining group
+    value: 86.1
+    tolerance: 71.5
+    unit: Hz
+  - quantity: rate at the preferred phase, after final cut, remaining group
+    value: 70.3
+    tolerance: 58.5
+    unit: Hz
+  criterion: Needs the cutting condition of each trial; see fig6-cut-eliminated.
+- id: fig6a-final-length
+  statement: Cutting shortened the whisker to near its base (final length 0.37 plus or minus
+    0.43 mm, mean and SD, n = 13).
+  source: Results, fifth section; Figure 6A
+  expected:
+    quantity: final external whisker length
+    value: 0.37
+    tolerance: 0.43
+    unit: mm
+- id: fig7d-cut-emg
+  statement: After whisker trimming, phase tuning curves of the 7 afferents that kept spiking
+    were correlated with intrinsic protractor or nasolabialis EMG (r = 0.66 plus or minus
+    0.27).
+  source: Results, sixth section; Figure 7D
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+    quantity: mean r between cut-whisker phase tuning and the best-matching EMG curve
+    value: 0.66
+    tolerance: 0.27
+- id: fig7e-lost-rate-kinematics
+  statement: The spike rate lost after cutting was correlated with positive acceleration,
+    negative acceleration or jerk (r = 0.71 plus or minus 0.19, n = 13).
+  source: Results, sixth section; Figure 7E
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+    quantity: mean r between lost-rate curves and the best-matching kinematic curve
+    value: 0.71
+    tolerance: 0.19
+- id: fig7f-precut-emg
+  statement: In 5 afferents recorded with the whisker already cut near its base, phase tuning
+    was strongly correlated with intrinsic protractor or nasolabialis EMG (r = 0.76 plus or
+    minus 0.06).
+  source: Results, sixth section; Figure 7F
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+    quantity: mean r between phase tuning and the best-matching EMG curve
+    value: 0.76
+    tolerance: 0.06
+  criterion: The best match is chosen between the intrinsic protractor and the nasolabialis
+    phase curves, so the intrinsic protractor EMG is needed.
+- id: figs4-nasolabialis
+  statement: Motor unit activity of m. nasolabialis was phase modulated and correlated with
+    negative whisker velocity (r = 0.93) and anti-correlated with positive velocity
+    (r = -0.75) within whisk cycles.
+  source: Figure S4F to H; Figure 7A
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+  - quantity: r between motor unit phase curve and rectified negative velocity phase curve
+    value: 0.93
+    tolerance: 0.093
+  - quantity: r between motor unit phase curve and rectified positive velocity phase curve
+    value: -0.75
+    tolerance: 0.075
+  criterion: The spike times of recording 11A (KSm11) are taken as the motor unit spikes, as
+    Table S1 names it the extrinsic retractor recording. Phase curves are means over 30
+    equal-count phase bins of whisking frames (amplitude above 2.5 degrees); velocity is split
+    into its positive part and the absolute value of its negative part. Reproduced when both
+    values are within tolerance; partially reproduced when the signs are as stated and the
+    first is within tolerance.
+- id: figs4-intrinsic-protractor
+  statement: Intrinsic protractor EMG was correlated with positive whisker velocity within whisk
+    cycles (r = 0.94, 0.97 and 0.96 in three mice).
+  source: Figure S4B to D; Figure 7A
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  criterion: Needs the rectified EMG of recordings 7A, 8A and 9A.
+- id: sigma-kappa
+  statement: The noise level of curvature estimates, curvature change during whisking in air as
+    a percentage of that during contact, was 7.8 plus or minus 5.0% (mean and SD) across 33
+    sessions.
+  source: STAR Methods, Video analysis, whisker baseline curvature; Figure S7
+  data: with_labels
+  depends_on:
+  - table-s1-link
+  expected:
+    quantity: mean sigma kappa over the 33 touch recordings
+    value: 7.8
+    tolerance: 5.0
+    unit: percent
+  criterion: Per touch recording, 100 times the mean absolute deltaKappa over frames with
+    distance to the pole above 1 mm and amplitude above 2.5 degrees, divided by the mean over
+    contact frames. Contact frames can be read as (a) contact = 1 and distance below 1 mm (the
+    Glossary) or (b) contact = 1. Reproduced when the mean is within tolerance under one
+    reading.
+- id: figs1-optotag-latency
+  statement: Identified Merkel afferents spiked at short latency (4.9 plus or minus 1.3 ms) and
+    low jitter (SD of first-spike latency 0.91 plus or minus 0.29 ms) after brief light pulses.
+  source: STAR Methods, Optogenetic identification; Figure S1C, D
+  expected:
+  - quantity: mean latency to spike after light onset
+    value: 4.9
+    tolerance: 1.3
+    unit: ms
+  - quantity: SD of first-spike latency
+    value: 0.91
+    tolerance: 0.29
+    unit: ms
+- id: figs1-labelling-specificity
+  statement: In TrkC-CreER;Rosa-Ai9 mice, 99.2% of classified labelled afferent endings in
+    whisker follicles were Merkel cell-associated (1,045 of 1,053).
+  source: STAR Methods, Histology quantification; Figure S1B
+  expected:
+    quantity: percent of classified labelled endings that are Merkel
+    value: 99.2
+    tolerance: 9.92
+    unit: percent
+- id: contact-classifier
+  statement: Automatic contact classification agreed with manual curation for 99.5 plus or minus
+    0.2% of frames, with a false positive rate of 0.3 plus or minus 0.1%.
+  source: STAR Methods, Video analysis, contact detection
+  expected:
+  - quantity: correct classification rate
+    value: 99.5
+    tolerance: 0.2
+    unit: percent
+  - quantity: false positive rate
+    value: 0.3
+    tolerance: 0.1
+    unit: percent
