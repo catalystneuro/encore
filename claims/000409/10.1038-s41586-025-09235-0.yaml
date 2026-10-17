@@ -33,6 +33,11 @@
 # (1 + number of null scores at least the real score) / (1 + number of nulls), combined over sessions
 # with Fisher's method, and the Benjamini-Hochberg correction at q = 0.01 is applied over the tested
 # regions of each variable.
+#
+# The criterion of traj-stim-regions was added after the first verification round, which found
+# that the claim fits the time limit. When it was written the author had seen the latencies and
+# permutation p-values of the seven trajectory regions (all p = 0.001) and the paper's stim_euc_sig
+# column of region_info.csv (104 of the canonical regions), but no trajectory of any other region.
 schema_version: 1
 dandiset: "000409"
 paper: doi:10.1038/s41586-025-09235-0
@@ -360,6 +365,15 @@ claims:
     quantity: regions with significant stimulus trajectory distance
     value: 104
     tolerance: 10.4
+  criterion: Trajectories as in traj-latency-visual (0 to 150 ms after stimulus onset, analysed
+    trials, 1000 permutations of stimulus side within block and choice, P = (n + 1) / (M + 1) on
+    the amplitude) for every canonical region, pooling its canonical units over its sessions with
+    valid blocks; a region with fewer than 20 such units is not tested and counts as not
+    significant. Readings (a) Benjamini-Hochberg at q = 0.01 over the regions (Methods, multiple
+    comparisons), (b) P < 0.01 without correction (Methods, trajectory analysis). Reproduced when the
+    count is within 104 +/- 10.4 under one reading. The code's Benjamini-Yekutieli correction and
+    the variant with the 64 sessions of invalid blocks are shown and do not decide; agreement of each
+    region with the stim_euc_sig column of region_info.csv is reported and does not decide.
 - id: fback-oscillation-licking
   statement: During reward delivery, activity showed coherent oscillations of about 10 Hz that were
     missing after negative feedback and were closely related to licking.

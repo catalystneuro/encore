@@ -48,7 +48,10 @@ repository https://github.com/int-brain-lab/paper-brain-wide-map at commit
   differences / number of cells) minus its minimum, null from 1000 permutations of stimulus side
   within trials of the same block and choice, latency the first time above 70% of the maximum that
   is also significant point-wise at 0.05, on the code's time axis linspace(0, 0.15, 72) (Methods and
-  code `manifold/state_space_bwm.py`).
+  code `manifold/state_space_bwm.py`). The Methods permute within each block; the code merges the
+  unbiased block with the 0.2 blocks (`traj_labels`). Regions are significant after
+  Benjamini-Hochberg at q = 0.01 over regions (Methods); the code applies Benjamini-Yekutieli at
+  0.05 (`by`).
 """
 
 from __future__ import annotations
@@ -90,7 +93,10 @@ TRAJ_BIN, TRAJ_STRIDE, TRAJ_POST = 0.0125, 0.002, 0.15
 TRAJ_SHIFTS = int(TRAJ_BIN // TRAJ_STRIDE)                 # 6, as in the code
 TRAJ_NBINS = int(round(TRAJ_POST / TRAJ_BIN))              # 12
 TRAJ_TIMES = np.linspace(0, TRAJ_POST, TRAJ_SHIFTS * TRAJ_NBINS)   # the code's time axis
+TRAJ_POST_LONG = 0.2                                       # variant window, 0 to 0.2 s
+TRAJ_TIMES_LONG = np.linspace(0, TRAJ_POST_LONG, TRAJ_SHIFTS * int(round(TRAJ_POST_LONG / TRAJ_BIN)))
 N_PERM_TRAJ = 1000
+Q_TRAJ = 0.01                  # Benjamini-Hochberg level over regions (Methods)
 N_SHUF_CELL = 3000
 ALPHA_MW, ALPHA_CCMW = 0.001, 0.05
 PSTH_BIN, PSTH_POST = 0.005, 1.0
@@ -139,6 +145,12 @@ def _col(group, name):
 def run_parallel(fn, items, workers=N_WORKERS):
     with ProcessPoolExecutor(workers) as ex:
         return list(ex.map(fn, items))
+
+
+def run_parallel_iter(fn, items, workers=N_WORKERS):
+    """As run_parallel, but yields each result as it comes, so large results need not all be held."""
+    with ProcessPoolExecutor(workers) as ex:
+        yield from ex.map(fn, items)
 
 
 # --- session metadata -----------------------------------------------------------------------
@@ -217,13 +229,17 @@ def perf_easy(t: pd.DataFrame) -> float:
 
 
 def analysis_mask(t: pd.DataFrame) -> tuple[np.ndarray, int]:
-    """Trials the paper analyses, and the number of trials kept after truncation."""
+    """Trials the paper analyses, and the number of trials kept after truncation.
+
+    A session that does not pass even at 400 trials is excluded (no trial kept), as the code's
+    `load_trials_and_mask` raises an error for it.
+    """
     n = len(t)
     good = lambda k: k >= 400 and perf_easy(t.iloc[:k]) > 0.9
     while not good(n) and n > 400:
         n -= 1
     keep = np.zeros(len(t), bool)
-    keep[:n] = True
+    keep[:n] = good(n)
     ok = (keep & t.stim_on.notna() & t.first_move.notna() & t.feedback_time.notna()
           & t.p_left.notna() & (t.choice != 0) & (t.rt >= MIN_RT) & (t.rt <= MAX_RT))
     return ok.values, n
@@ -267,9 +283,12 @@ def window_counts(st: np.ndarray, starts: np.ndarray, width: float) -> np.ndarra
     return out
 
 
-def traj_starts(events: np.ndarray) -> np.ndarray:
-    """Start of each overlapping trajectory bin, in the code's order (trials x 72)."""
-    j = np.arange(TRAJ_SHIFTS * TRAJ_NBINS)
+def traj_starts(events: np.ndarray, n_points: int = TRAJ_TIMES.size) -> np.ndarray:
+    """Start of each overlapping trajectory bin, in the code's order (trials x 72 for 0 to 0.15 s).
+
+    The first 72 of the 96 points of the 0 to 0.2 s window are the 72 points of the 0 to 0.15 s window.
+    """
+    j = np.arange(n_points)
     return events[:, None] + (j // TRAJ_SHIFTS) * TRAJ_BIN + (j % TRAJ_SHIFTS) * TRAJ_STRIDE
 
 
@@ -278,8 +297,8 @@ def extract_session(job: tuple) -> dict:
 
     job = (asset_id, unit indices, which of them need trajectory bins, which need feedback PSTHs).
     Returns the trials table with the analysis mask, counts in the analysis windows (trials x units),
-    counts in 0.2 s windows around feedback for the clock check (trials x units x offsets),
-    trajectory bins (trials x units x 72, uint8), and per unit the mean feedback PSTH on correct and
+    trajectory bins over 0 to 0.2 s (trials x units x 96, uint8; the first 72 points are the 0 to
+    0.15 s window), and per unit the mean feedback PSTH on correct and
     incorrect analysed trials (units x 2 x bins, spikes/s).
     """
     asset_id, units, traj_units, psth_units = job
@@ -305,11 +324,9 @@ def extract_session(job: tuple) -> dict:
         ev = t[col].values
         counts[var] = np.stack([window_counts(trains[i], ev + a, b - a) for i in units], axis=1)
     fb = t.feedback_time.values
-    clock = np.stack([window_counts(trains[i], fb[:, None] + CLOCK_OFFSETS[None, :], 0.2)
-                      for i in units], axis=1)
     traj = None
     if len(traj_units):
-        s = traj_starts(t.stim_on.values)
+        s = traj_starts(t.stim_on.values, TRAJ_TIMES_LONG.size)
         traj = np.stack([window_counts(trains[i], s, TRAJ_BIN) for i in traj_units], axis=1).astype(np.uint8)
     psth = None
     if len(psth_units):
@@ -318,7 +335,7 @@ def extract_session(job: tuple) -> dict:
         psth = np.stack([np.stack([window_counts(trains[i], edges[sel[c]], PSTH_BIN).mean(0) / PSTH_BIN
                                    for c in (True, False)]) for i in psth_units])
     return {"asset_id": asset_id, "trials": t, "n_kept": n_kept, "units": np.asarray(units),
-            "counts": counts, "clock": clock, "traj_units": np.asarray(traj_units), "traj": traj,
+            "counts": counts, "traj_units": np.asarray(traj_units), "traj": traj,
             "psth_units": np.asarray(psth_units), "psth": psth, "unsorted_units": unsorted,
             "n_spikes": int(sum(len(v) for v in trains.values()))}
 
@@ -544,6 +561,23 @@ def nested_null_job(job: tuple) -> dict:
     return out
 
 
+def nested_p_job(job: tuple) -> dict:
+    """Stimulus nulls of one region-session decoded with the full nested search of C.
+
+    job = (key, trials, counts, seed, score, n_null), with the seed of `decode_job`, so that the
+    null sessions are the first n_null of the pseudo-sessions `decode_job` used; score is the real
+    labels' score there.
+    """
+    key, t, counts, seed, score, n_null = job
+    rng = np.random.default_rng(seed)
+    pseudo = [pseudo_session(len(t), rng) for _ in range(N_NULL)]
+    rows, y, nulls = decoding_targets(t, "stim", pseudo)
+    nulls = [yn for yn in nulls if len(np.unique(yn)) == 2 and min(np.bincount(yn)) >= N_FOLDS][:n_null]
+    X = counts["stim"][rows]
+    null = np.array([decode_nested_null(X, yn, seed + 100 + j) for j, yn in enumerate(nulls)])
+    return {"key": key, "null": null, "p": (1 + np.sum(null >= score)) / (1 + len(null))}
+
+
 def clock_job(job: tuple) -> dict:
     """Feedback decoded from 0.2 s windows at offsets around feedback, and with labels one trial off."""
     key, t, clock, seed = job
@@ -582,6 +616,12 @@ def bh(p, q) -> np.ndarray:
     sig = np.zeros(len(p), bool)
     sig[order[:k]] = True
     return sig
+
+
+def by(p, q) -> np.ndarray:
+    """Benjamini-Yekutieli, the correction of the code's trajectory analysis (`fdr_by`)."""
+    m = len(p)
+    return bh(p, q / np.sum(1.0 / np.arange(1, m + 1)))
 
 
 # --- single cells -----------------------------------------------------------------------------
@@ -654,20 +694,31 @@ def single_cell_design(t: pd.DataFrame, var: str, side=None, choice=None, p_left
 
 
 def single_cell_job(job: tuple) -> dict:
-    """Selectivity of each unit of one region-session to stimulus side and choice, with a null run."""
+    """Selectivity of each unit of one region-session to stimulus side and choice, with two null runs.
+
+    `null`: a pseudo-session (stimulus) or synthetic session (choice); `shuf`: the real label
+    permuted over the tested trials. The shuffle run has its own generator, so the real and null
+    runs give what they gave without it.
+    """
     key, t, counts, seed = job
     rng = np.random.default_rng(seed)
+    rng_shuf = np.random.default_rng([seed, 1])
     model = fit_action_kernel(t[t.analysed])
     ps = pseudo_session(len(t), rng)
     syn = synthetic_session(model, len(t), rng)
     out = {"key": key}
+    use = t.analysed.values & (t.contrast.values > 0) & (t.p_left.values != 0.5)
     for var in ("stim", "choice"):
         c = counts[var]
-        for name, kw in (("real", {}),
-                         ("null", {"side": ps.side.values, "p_left": ps.p_left.values} if var == "stim"
-                          else {"choice": syn.choice.values})):
+        col = "side" if var == "stim" else "choice"
+        shuffled = t[col].values.copy()
+        shuffled[use] = rng_shuf.permutation(shuffled[use])
+        for name, kw, g in (("real", {}, rng),
+                            ("null", {"side": ps.side.values, "p_left": ps.p_left.values} if var == "stim"
+                             else {"choice": syn.choice.values}, rng),
+                            ("shuf", {col: shuffled}, rng_shuf)):
             label, strata, blocks = single_cell_design(t, var, **kw)
-            p_cc = ccmw_p(c, label, strata, blocks, N_SHUF_CELL, rng)
+            p_cc = ccmw_p(c, label, strata, blocks, N_SHUF_CELL, g)
             p_mw = simple_mw_p(c[label >= 0], label[label >= 0])
             out[f"{var}_{name}"] = (p_mw < ALPHA_MW) & (p_cc < ALPHA_CCMW)
             out[f"{var}_{name}_mw"] = p_mw < ALPHA_MW
@@ -677,46 +728,108 @@ def single_cell_job(job: tuple) -> dict:
 
 # --- population trajectories ------------------------------------------------------------------
 
-def trajectory(sessions: list, n_perm: int, rng) -> dict:
-    """Stimulus trajectory distance of one region pooled over sessions, with its permutation null.
+def traj_labels(side, block, choice, n_perm: int, rng) -> np.ndarray:
+    """Left-stimulus indicator of the trials (row 0) and n_perm permutations of it within block x choice.
 
-    sessions: list of (traj bins trials x units x 72, side, p_left, choice) over analysed trials.
+    block: p_left, so that each of the 0.2, 0.5 and 0.8 blocks is a class (Methods), or p_left == 0.8,
+    which merges the unbiased block with the 0.2 blocks as the code's `get_d_vars` does.
     """
-    sq = np.zeros((n_perm + 1, TRAJ_TIMES.size))
-    n_cells = 0
-    for bins, side, p_left, choice in sessions:
-        n, u, nt = bins.shape
-        X = bins.reshape(n, u * nt).astype(np.float32) / TRAJ_BIN
-        labels = np.empty((n_perm + 1, n), np.float32)
-        labels[0] = side < 0
-        groups = [np.where((p_left == pl) & (choice == c))[0] for pl in np.unique(p_left) for c in (-1, 1)]
-        for k in range(1, n_perm + 1):
-            lab = labels[0].copy()
-            for g in groups:
-                lab[g] = lab[rng.permutation(g)]
-            labels[k] = lab
-        nl = labels.sum(1, keepdims=True)
-        mean_l = (labels / nl) @ X
-        mean_r = ((1 - labels) / (n - nl)) @ X
-        d = (mean_l - mean_r).reshape(n_perm + 1, u, nt)
-        sq += np.sum(d.astype(np.float64) ** 2, axis=1)
-        n_cells += u
+    n = len(side)
+    labels = np.empty((n_perm + 1, n), np.float32)
+    labels[0] = side < 0
+    groups = [np.where((block == b) & (choice == c))[0] for b in np.unique(block) for c in (-1, 1)]
+    for k in range(1, n_perm + 1):
+        lab = labels[0].copy()
+        for g in groups:
+            lab[g] = lab[rng.permutation(g)]
+        labels[k] = lab
+    return labels
+
+
+def traj_sq(bins: np.ndarray, labels: np.ndarray) -> np.ndarray:
+    """Sum over the cells of one session of the squared left minus right mean rate, per label row and time."""
+    n, u, nt = bins.shape
+    X = bins.reshape(n, u * nt).astype(np.float32) / TRAJ_BIN
+    nl = labels.sum(1, keepdims=True)
+    mean_l = (labels / nl) @ X
+    mean_r = ((1 - labels) / (n - nl)) @ X
+    d = (mean_l - mean_r).reshape(len(labels), u, nt)
+    return np.sum(d.astype(np.float64) ** 2, axis=1)
+
+
+def traj_stats(sq: np.ndarray, n_cells: int, times: np.ndarray = TRAJ_TIMES) -> dict:
+    """Distance, amplitude, permutation p and latencies from the summed squares of a region."""
     dist = np.sqrt(sq / n_cells)
     M = dist - dist.min(1, keepdims=True)
     amp = M.max(1) - M.min(1)
     ps = np.mean(M >= M[0], axis=0)
     ups = np.where(M[0] > 0.7 * M[0].max())[0]
     sig_ups = ups[ps[ups] < 0.05]
-    # The code's canonical window: the first 48 points, on the axis linspace(0, 0.1, 48).
-    Mc = dist[:, :48] - dist[:, :48].min(1, keepdims=True)
+    # The code's canonical window: the first 48 points of the curve with the full window's baseline
+    # subtracted, on the axis linspace(0, 0.1, 48) (code `d_var_stacked`).
+    Mc = M[:, :48]
     psc = np.mean(Mc >= Mc[0], axis=0)
     upc = np.where(Mc[0] > 0.7 * Mc[0].max())[0]
     sig_c = upc[psc[upc] < 0.05]
     return {"n_cells": n_cells, "d": M[0], "amp": float(amp[0]), "p": float(np.mean(amp >= amp[0])),
-            "latency": float(TRAJ_TIMES[sig_ups[0]]) if len(sig_ups) else np.nan,
-            "latency_70": float(TRAJ_TIMES[ups[0]]),
-            "latency_70_bin_start": float(traj_starts(np.zeros(1))[0, ups[0]]),
+            "latency": float(times[sig_ups[0]]) if len(sig_ups) else np.nan,
+            "latency_70": float(times[ups[0]]),
+            "latency_70_bin_start": float(traj_starts(np.zeros(1), len(times))[0, ups[0]]),
             "latency_canonical": float(np.linspace(0, 0.1, 48)[sig_c[0]]) if len(sig_c) else np.nan}
+
+
+def trajectory(sessions: list, n_perm: int, rng, times: np.ndarray = TRAJ_TIMES) -> dict:
+    """Stimulus trajectory distance of one region pooled over sessions, with its permutation null.
+
+    sessions: list of (traj bins trials x units x len(times), side, p_left, choice) over analysed trials.
+    """
+    sq = np.zeros((n_perm + 1, times.size))
+    n_cells = 0
+    for bins, side, p_left, choice in sessions:
+        sq += traj_sq(bins, traj_labels(side, p_left, choice, n_perm, rng))
+        n_cells += bins.shape[1]
+    return traj_stats(sq, n_cells, times)
+
+
+def region_traj_job(job: tuple) -> dict:
+    """Stimulus trajectory sums of every canonical region of one session, and the clock check.
+
+    job = (asset_id, unit indices, their regions, seed). One set of permutations per session is
+    shared by its regions. Returns per region the summed squares (permutations + 1 x 72, float32)
+    with the Methods' permutation classes (`sq`) and with the code's (`sq_code`), the number of
+    cells, and the feedback decoding of `clock_job` on all the units given.
+    """
+    asset_id, units, regions, seed = job
+    rng = np.random.default_rng(seed)
+    with open_nwb(asset_id) as f:
+        t = task_table(pd.DataFrame({k: _col(f["intervals/trials"], k)
+                                     for k in f["intervals/trials"] if k != "id"}))
+        t["analysed"] = analysis_mask(t)[0]
+        u = f["units"]
+        idx = u["spike_times_index"][:]
+        start = np.r_[0, idx[:-1]]
+        st_all = u["spike_times"]
+        trains = {}
+        for i in np.asarray(units)[np.argsort(start[units])]:
+            trains[i] = np.sort(st_all[start[i]:idx[i]])
+    a = t.analysed.values
+    out = {"asset_id": asset_id, "n_analysed": int(a.sum()), "sq": {}, "sq_code": {}, "n": {}}
+    fb = t.feedback_time.values
+    clock = np.stack([window_counts(trains[i], fb[:, None] + CLOCK_OFFSETS[None, :], 0.2) for i in units], axis=1)
+    out["clock"] = clock_job((asset_id, t, clock, seed))
+    if not a.any():
+        return out
+    s = traj_starts(t.stim_on.values[a])
+    labels = traj_labels(t.side.values[a], t.p_left.values[a], t.choice.values[a], N_PERM_TRAJ, rng)
+    labels_code = traj_labels(t.side.values[a], t.p_left.values[a] == 0.8, t.choice.values[a], N_PERM_TRAJ, rng)
+    regions = np.asarray(regions)
+    for r in np.unique(regions):
+        sel = np.asarray(units)[regions == r]
+        bins = np.stack([window_counts(trains[i], s, TRAJ_BIN) for i in sel], axis=1)
+        out["sq"][r] = traj_sq(bins, labels).astype(np.float32)
+        out["sq_code"][r] = traj_sq(bins, labels_code).astype(np.float32)
+        out["n"][r] = len(sel)
+    return out
 
 
 # --- behaviour --------------------------------------------------------------------------------

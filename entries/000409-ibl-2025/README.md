@@ -19,20 +19,24 @@ Neuropixels recordings from 139 mice performing the IBL decision-making task.
 | Visual latencies LGd < VISp = LP < VISpm < VISam | Not reproduced |
 | Later latencies in IRN and GRN (100 to 120 ms) | Reproduced |
 | About 10 Hz feedback oscillation tied to licking | Partially reproduced (7 Hz) |
-| Whole-brain counts: trajectories, wheel speed, encoding, video, Granger (5 claims) | Blocked: not attempted |
+| Stimulus trajectories significant in 104 regions | Not reproduced (46 of 201) |
+| Whole-brain analyses: wheel speed, encoding, video, Granger (4 claims) | Blocked: not attempted |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The neural claims are tested on a set of 14 regions fixed in advance, each with all its sessions,
-with fewer cross-validation repeats and null sessions than the paper, to fit the time limit. In 64
+The decoding, single-cell and latency claims are tested on a set of 14 regions fixed in advance,
+each with all its sessions, with fewer cross-validation repeats and null sessions than the paper, to
+fit the time limit. The stimulus trajectories are computed for all 201 canonical regions. In 64
 sessions the block column (`probability_left`) alternates on every trial and does not describe the
 blocks; analyses that need blocks leave these sessions out. The attempt record, with the reasons and
 the differences from the paper's method, is
 [`attempts/000409-ibl-2025-01.yaml`](../../attempts/000409-ibl-2025-01.yaml).
 
-- `reproduce_ibl_2025.ipynb`: the analysis. It takes about 11 minutes: 3.5 to scan the 459 processed
-  files, 2 to stream the spikes of 168 sessions, 4 to decode.
+- `reproduce_ibl_2025.ipynb`: the analysis. It takes about 26 minutes: 2 to scan the 459 processed
+  files, 1 to stream the spikes of the 14 regions in 168 sessions, 12 to stream every canonical unit
+  of the 454 canonical sessions for the trajectories of all regions and the clock check, 6 to decode
+  and 2.5 for the nested null of VISp.
 - `bwm.py`: streaming, the paper's unit and trial inclusion, decoding with pseudo- and synthetic
   null sessions, the single-cell test and the population trajectories. Other notebooks on this
   dandiset can import it.

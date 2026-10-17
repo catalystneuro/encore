@@ -15,7 +15,8 @@ provenance:
     protocol: pilot-7
 inputs:
 - what: The paper's per-region results table brainwidemap/meta/region_info.csv (decoding effects and significance,
-    single-cell fractions, canonical flag), used only as the paper's reported values for comparison.
+    single-cell fractions, trajectory significance, canonical flag), used only as the paper's reported values
+    for comparison.
   source: https://github.com/int-brain-lab/paper-brain-wide-map at commit 118fc36cb3602934466ad2c6087c2b3b441f9f1f
 - what: The paper's inclusion counts brainwidemap/meta/inclusion_info.csv (Supplementary Table 1), used
     as reported values for canonical-regions.
@@ -51,8 +52,9 @@ outcomes:
   - 75708
   - 108.3
   notes: 75,708 units have ibl_quality_score 1, 108.3 per probe. Recomputing the three metrics gives 75,708
-    with a noise cutoff below 5 and 95,430 with the Methods' 20; the score matches the threshold of 5
-    for every unit.
+    with a noise cutoff below 5 and 95,430 with the Methods' 20. The criterion's side check, that the score
+    is the fraction of the three metrics passed with the Methods' cutoff of 20, holds for 540,399 of 621,733
+    units; with a cutoff of 5 it holds for every unit.
   deviations:
   - The files hold spike sorting revision 2025-05-06; the paper's code loads revision 2024-05-06. The
     counts are identical.
@@ -137,7 +139,8 @@ outcomes:
   measured: 81.58
   notes: Reading (c), the mean over 459 sessions, gives 81.58% correct, within 81.4 +/- 0.4. The mean
     over mice is 80.76% (all trials) and 84.62% (analysed trials); all trials pooled give 81.94%. Across
-    mice the s.d. is 5.12 and the s.e.m. 0.43.
+    mice the s.d. is 5.12 and the s.e.m. 0.43. On the 454 sessions of the canonical set the mean over
+    sessions is 81.59% and over mice 80.77%.
   deviations:
   - The paper does not say how the mean is taken; four readings are shown and only the mean over sessions
     is within tolerance.
@@ -151,7 +154,8 @@ outcomes:
   notes: Over all trials the mean over 139 mice is 58.26% (s.e.m. 0.42), t138 = 19.68, P = 6.9e-42. The
     t statistic is within tolerance and the mean is 0.44 points below 58.7, just outside the 0.4 tolerance.
     Over analysed trials the mean is 59.29% and t138 = 16.21. Mice are clearly above chance; the numbers
-    match in part.
+    match in part. On the 454 canonical sessions, which the Fig. 1d legend names, the values are 58.27%
+    with t138 = 19.68 (all trials) and 59.31% with 16.23 (analysed trials).
   deviations:
   - The criterion defines only the reproduced case; the outcome is partially reproduced because the effect
     is present and one of the two values is within tolerance.
@@ -183,8 +187,9 @@ outcomes:
   measured: 9.9
   notes: Over 395 sessions with valid blocks and 16,447 zero-contrast trials, the fraction correct starts
     at 0.338 after the switch. Fitted tau is 3.86 trials, outside reading (a); 90% of the change is covered
-    at 9.9 trials, within reading (b). Per-mouse tau has a median of 3.88 (interquartile 1.86 to 11.30,
-    125 mice).
+    at 9.9 trials, within reading (b), on the point estimate. Resampling mice (1000 resamples) gives a
+    95% interval of 2.79 to 5.30 trials for tau and 7.4 to 13.2 trials for reading (b), with 75.9% of
+    resamples within 4.5 to 11. Per-mouse tau has a median of 3.88 (interquartile 1.86 to 11.30, 125 mice).
   deviations:
   - The 64 sessions whose probability_left alternates on every trial are left out.
   - The paper gives no measure of the adjustment time; two readings were fixed before the analysis and
@@ -206,15 +211,19 @@ outcomes:
     and 7 for feedback. VISp is significant (35 sessions, Fisher p = 1.3e-08, effect 0.039, paper table
     0.02). Significance agrees with region_info.csv in 10 of 10 regions and the effects correlate with
     the paper's (Spearman 0.91, p = 0.00025). With BH at q = 0.05 the counts are 4, 7 and 9. The paper
-    reports 40 of 201 regions for stimulus.
+    reports 40 of 201 regions for stimulus. With the full nested search for each null (30 nulls in each
+    of the 35 VISp sessions) VISp stays significant, Fisher p 1.8e-05 against 2.8e-05 with the reused C on
+    the same nulls, 13 sessions below 0.05 under each, and significant with BH at q = 0.01 among the 10
+    regions. The decoder fits an L1 penalty (scikit-learn 1.9.1; at C = 0.01 no coefficient of 13 is
+    nonzero in one VISp session, against 12 with L2).
   deviations:
   - The tested regions are VISp, GRN, IRN and seven drawn at random (ACAv, CL, HATA, LDT, PA, PVT, TR),
     each with all its canonical sessions, not all 201 regions; the Benjamini-Hochberg correction runs
     over these 10 regions.
   - One run of nested cross-validation (paper 10) and 100 null sessions (paper 200); each null reuses
     the C chosen for the real labels in each outer fold. On three example sessions the full nested null
-    is wider (95th percentiles 0.555 to 0.622 against 0.531 to 0.598), so per-session p-values here can
-    be smaller than the paper's procedure would give.
+    has a higher 95th percentile in 6 of 9 comparisons (0.555 to 0.622 against 0.531 to 0.598), so
+    per-session p-values here can be smaller than the paper's procedure would give.
   - The trial mask follows the Methods and the code's truncation, without the saturation intervals of
     the IBL aggregate trials table, which are not in the dandiset.
 - claim: dec-choice-widespread
@@ -225,14 +234,16 @@ outcomes:
     5 tested regions are significant for choice against 4 for stimulus, a margin of one region. Significance
     agrees with region_info.csv in 9 of 10 regions (LDT, 2 sessions, p = 0.0154, is significant in the
     paper). Effects correlate with the paper's (Spearman 0.98). The paper reports 172 of 201 regions.
+    With 100 nulls the per-session p cannot go below 1/101, so a region of 2 sessions cannot have a Fisher
+    p below about 0.0010; LDT's result may be partly this limit.
   deviations:
   - The tested regions are VISp, GRN, IRN and seven drawn at random (ACAv, CL, HATA, LDT, PA, PVT, TR),
     each with all its canonical sessions, not all 201 regions; the Benjamini-Hochberg correction runs
     over these 10 regions.
   - One run of nested cross-validation (paper 10) and 100 null sessions (paper 200); each null reuses
     the C chosen for the real labels in each outer fold. On three example sessions the full nested null
-    is wider (95th percentiles 0.555 to 0.622 against 0.531 to 0.598), so per-session p-values here can
-    be smaller than the paper's procedure would give.
+    has a higher 95th percentile in 6 of 9 comparisons (0.555 to 0.622 against 0.531 to 0.598), so
+    per-session p-values here can be smaller than the paper's procedure would give.
   - Synthetic choices and feedback come from an action-kernel model fitted per session with a logistic
     choice policy, written here; the paper uses the companion paper's model package.
   - The trial mask follows the Methods and the code's truncation, without the saturation intervals of
@@ -253,8 +264,8 @@ outcomes:
     over these 10 regions.
   - One run of nested cross-validation (paper 10) and 100 null sessions (paper 200); each null reuses
     the C chosen for the real labels in each outer fold. On three example sessions the full nested null
-    is wider (95th percentiles 0.555 to 0.622 against 0.531 to 0.598), so per-session p-values here can
-    be smaller than the paper's procedure would give.
+    has a higher 95th percentile in 6 of 9 comparisons (0.555 to 0.622 against 0.531 to 0.598), so
+    per-session p-values here can be smaller than the paper's procedure would give.
   - Synthetic choices and feedback come from an action-kernel model fitted per session with a logistic
     choice policy, written here; the paper uses the companion paper's model package.
   - The trial mask follows the Methods and the code's truncation, without the saturation intervals of
@@ -270,7 +281,10 @@ outcomes:
     and the combined test 6.9% of units. The regional fractions agree with region_info.csv (14 of 14 within
     0.02; largest 5.9% in CL with 17 units; visual regions 2.1% to 3.8%), and the pooled 1.82% is above
     the paper's 0.41% because the tested regions over-represent visual areas. Were it not for the false-positive
-    check the claim would be reproduced.
+    check the claim would be reproduced. With the stimulus side shuffled over the tested trials (one permutation
+    per region-session) the test selects 4 units (7.7e-4, interval 2.1e-4 to 2.0e-3), while the product of
+    the two tests' single rates is 4.7e-5. So the dependence of the two tests alone puts the rate above the
+    paper's, and the pseudo-session null is about 3.5 times higher again.
   deviations:
   - The 64 sessions whose probability_left alternates on every trial are left out. Here 19 region-sessions
     and 381 units.
@@ -285,7 +299,9 @@ outcomes:
   notes: 'The null run with synthetic choices selects 13 of 5,228 units (2.5e-3, interval 1.3e-3 to 4.2e-3),
     far above 5e-5. Otherwise the pattern holds: pooled 5.64% choice-selective against 1.82% for stimulus
     (270 against 70 units selective for one only, p = 3.8e-29); largest fractions CL 35%, GRN 22%, IRN
-    14%; regional fractions correlate with the paper''s (Spearman 0.84, p = 0.00016).'
+    14%; regional fractions correlate with the paper''s (Spearman 0.84, p = 0.00016). With the choices shuffled over the tested trials the test
+    selects 3 units (5.7e-4, interval 1.2e-4 to 1.7e-3), against a product of the two tests'' single rates
+    of 3.3e-5.'
   deviations:
   - The 64 sessions whose probability_left alternates on every trial are left out.
   - Regions are the 14 loaded for the neural claims.
@@ -306,7 +322,10 @@ outcomes:
     are outside 10% of 42, 42 and 78 ms. The code's significance condition and its 0 to 100 ms window
     change the values by less than 1 ms. The paper's results table (meta/Results/stim.pkl) gives 34.0,
     44.7, 46.8, 59.6 and 66.0 ms, closer to these values than the text is for VISp, LP, VISpm and VISam,
-    and also has VISam later than VISpm. All five distances are significant (p = 0.001).
+    and also has VISam later than VISpm. All five distances are significant (p = 0.001). With the 16
+    region-sessions of invalid blocks included the five latencies are unchanged. The code's canonical-window
+    variant now keeps the full window's baseline, as the code does, and gives 31.9, 46.8, 48.9, 61.7 and
+    59.6 ms.
   deviations:
   - The 64 sessions whose probability_left alternates on every trial are left out. Here 16 region-sessions.
   - Trials follow the mask here, without the saturation intervals the code uses.
@@ -321,16 +340,32 @@ outcomes:
   - 109.9
   notes: IRN 118.3 ms and GRN 109.9 ms, both within 90 to 132 ms, both distances significant (p = 0.001).
     MRN, SCm and PRNr were not tested; the paper's results table gives 89.4 ms for IRN and GRN in its
-    0 to 100 ms window.
+    0 to 100 ms window, in which IRN has no latency here and GRN 100.0 ms. With the window extended to 0 to
+    200 ms the latencies are 117.9 and 109.5 ms; the IRN distance is still rising at 190 ms.
   deviations:
   - Only IRN and GRN of the five regions named are tested.
   - The 64 sessions whose probability_left alternates on every trial are left out.
 - claim: traj-stim-regions
-  outcome: blocked
-  blocked_by: other
-  notes: Not attempted. It needs the trajectories of all 201 regions, so the spikes of all 62,857 canonical
-    units in 454 sessions; the notebook measures 0.61 s per session to stream the units used here and
-    about 13 times the trajectory cost of the 4,697 cells tested. A separate notebook could test it.
+  outcome: not_reproduced
+  notebook: reproduce_ibl_2025.ipynb
+  output: claim:traj-stim-regions
+  measured: 46
+  notes: Tested after the first verification round. Of 201 canonical regions, 195 have 20 or more units
+    in sessions with valid blocks. The distance is significant in 46 regions with Benjamini-Hochberg at
+    q = 0.01 (reading a) and 62 at P < 0.01 (reading b), against 104 +/- 10.4; 42 regions reach the smallest
+    attainable p of 0.001. With the 64 sessions of invalid blocks 51 and 70; with the code's permutation
+    classes 47 and 67, and 53 and 76 with all sessions. The code's Benjamini-Yekutieli correction at 0.05
+    gives the same counts as reading (a). Only an uncorrected P < 0.05 comes near (91 to 98). Significance
+    agrees with stim_euc_sig of region_info.csv in 133 of 201 regions (41 in both, 5 here only, 63 in the
+    paper only). The cause of the difference is not found here; the trial mask lacks the saturation
+    intervals the code uses.
+  deviations:
+  - The 64 sessions whose probability_left alternates on every trial are left out; CL, LING, MH, P5, PC5
+    and SOC then have fewer than 20 units and are not tested.
+  - The Methods permute stimulus sides within each block and choice; the code merges the unbiased block
+    with the 0.2 blocks. The Methods decide; the code's classes are a variant.
+  - One set of permutations per session, shared by its regions; the code draws them per insertion.
+  - Trials follow the mask here, without the saturation intervals the code uses.
 - claim: fback-oscillation-licking
   outcome: partially_reproduced
   notebook: reproduce_ibl_2025.ipynb
@@ -339,7 +374,10 @@ outcomes:
   notes: In 27 IRN sessions the population PSTH after correct feedback peaks at a median 7.08 Hz, outside
     the 9 to 11 Hz of the criterion. Power at the peak is higher after correct than incorrect feedback
     in 20 of 27 sessions (p = 0.0042), and the lick PSTH peaks at a median 7.23 Hz, within 1 Hz of the
-    neural peak. In 4 sessions the neural peak is at the 4 Hz edge of the band.
+    neural peak. In 4 sessions the neural peak is at 4.00 Hz, the edge of the band, and in one at 4.25 Hz.
+    The power difference holds when each unit's PSTH is z-scored (18 of 27 sessions, p = 0.028, median
+    peak 7.28 Hz) and when power at the peak is taken as a fraction of the 4 to 20 Hz power (26 of 27,
+    p = 1e-07).
   deviations:
   - Tested in IRN only, the paper's example region; the paper's analysis is a population trajectory over
     regions.
@@ -407,8 +445,9 @@ findings:
 - kind: other
   statement: The single-cell test's false-positive rate, which the paper sets to 0.001 x 0.05 = 5e-5 in
     its binomial test of regional fractions, is about 2.5e-3 to 2.7e-3 when the test is run with null
-    labels here; the simple Mann-Whitney test alone passes 5e-3 to 7e-3 under the null. The two tests
-    are not independent, so the stated rate understates false positives.
+    sessions here, and 5.7e-4 to 7.7e-4 with the labels shuffled over the tested trials, where the product
+    of the two tests' single rates is 3.3e-5 to 4.7e-5. The two tests are not independent, so the stated
+    rate understates false positives.
 - kind: code_mismatch
   statement: region_info.csv marks 210 regions as canonical; the paper's canonical set, and the code's
     inclusion table, have 201 (the 9 others have fewer than 20 neurons).
@@ -416,6 +455,230 @@ findings:
   statement: The Results give visual trajectory latencies of 34, 42, 42, 57 and 78 ms for LGd, VISp, LP,
     VISpm and VISam; the paper's own results table (meta/Results/stim.pkl) gives 34.0, 44.7, 46.8, 59.6
     and 66.0 ms.
+- kind: code_mismatch
+  statement: For the stimulus trajectories the Methods permute stimulus sides among trials of the same
+    block and choice and call a region significant at P < 0.01 with Benjamini-Hochberg at q = 0.01, while
+    state_space_bwm.py merges the unbiased block with the 0.2 blocks and applies Benjamini-Yekutieli at
+    0.05. Here neither choice brings the count of significant regions near the paper's 104 (46 to 53).
 - kind: other
   statement: The files hold IBL spike sorting revision 2025-05-06, while the paper's code loads revision
     2024-05-06; the unit and inclusion counts are identical.
+verifications:
+- date: '2026-10-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier tested helper functions on synthetic
+    inputs and checked the archive for the blocked claims. Its report gave its own outcome for each claim;
+    29 of 30 agree with the record, and behav-zero-contrast does not.
+  results:
+  - claim: dataset-sessions-mice-labs
+    agrees: true
+    outcome: reproduced
+    reason: 459 sessions, 139 mice, 12 labs.
+    response: No change needed.
+  - claim: dataset-probes-units
+    agrees: true
+    outcome: reproduced
+    reason: 699 insertions, 621,733 units, 889.5 per probe (889 +/- 1).
+    response: No change needed.
+  - claim: well-isolated-neurons
+    agrees: true
+    outcome: reproduced
+    reason: 75,708 units, 108.3 per probe. The criterion's side check fails as worded; the score equals
+      the fraction of metrics passed only with a noise cutoff below 5. With the Methods' 20, it matches
+      540,399 of 621,733 units.
+    response: The notes now state that the side check holds for 540,399 of 621,733 units with the Methods'
+      cutoff and for all units with 5; the paper_inconsistency finding already records the cutoff.
+  - claim: canonical-regions
+    agrees: true
+    outcome: reproduced
+    reason: Every inclusion step matches inclusion_info.csv; ends at 201 regions and 62,857 units.
+    response: No change needed.
+  - claim: brain-areas-279
+    agrees: true
+    outcome: reproduced
+    reason: '279.'
+    response: No change needed.
+  - claim: mice-sex
+    agrees: true
+    outcome: reproduced
+    reason: 94 M, 45 F.
+    response: No change needed.
+  - claim: mice-age-weight
+    agrees: true
+    outcome: partially_reproduced
+    reason: Weight is within tolerance under all readings. Age is not, with a maximum of about 63 to 66
+      weeks against 178 and a mean of about 28 against 44.96.
+    response: No change needed.
+  - claim: probe-versions
+    agrees: true
+    outcome: reproduced
+    reason: 586 / 109 / 4.
+    response: No change needed.
+  - claim: trials-per-session
+    agrees: true
+    outcome: reproduced
+    reason: Mean 645.1, median 601, range 401 to 1525.
+    response: No change needed.
+  - claim: rf-mapping
+    agrees: true
+    outcome: blocked
+    reason: Confirmed in the archive. In sub-NYU-37 passive_intervals lists only spontaneousActivity and
+      taskReplay, with stimulus/presentation and stimulus/templates empty; the gap between them is presumably
+      the RF mapping, but the pixel sequence is in neither the processed nor the raw file (only frame2ttl
+      pulses), so no part of rf-mapping is testable.
+    response: No change needed.
+  - claim: behav-performance
+    agrees: true
+    outcome: reproduced
+    reason: Only reading (c), 81.58%, is in 81.4 +/- 0.4. The per-mouse reading (a), whose s.e.m. of 0.43
+      matches the paper's +/- 0.4, gives 80.76% and fails. Cells 36, 38 and 42 use all 459 sessions while
+      the Fig. 1d legend says 454, and the 454-session subset was never tried.
+    response: Added the readings on the 454 canonical sessions (mean over sessions 81.59%, over mice 80.77%).
+      Outcome kept.
+  - claim: behav-zero-contrast
+    agrees: false
+    outcome: not_reproduced
+    reason: Under reading (a) t = 19.68 is within tolerance, but the mean of 58.26% misses 58.7 +/- 0.4 by
+      0.04. Reading (b) fails both. A narrow miss; the 454-session subset was never tried.
+    response: Added both readings on the 454 canonical sessions (58.27% with t138 = 19.68, and 59.31% with
+      16.23), which leave the result as it was. The outcome is kept as partially reproduced and the disagreement
+      recorded. The criterion defines only the reproduced case; the effect, performance above chance, is
+      present, the t statistic is within tolerance and the mean misses by 0.04 points, so the claim holds
+      in part, as recorded in the deviation.
+  - claim: behav-early-movements
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a), 22.75%.
+    response: No change needed.
+  - claim: fig1d-contrast
+    agrees: true
+    outcome: reproduced
+    reason: p = 1.5e-24 and 5.9e-24; the median rises at every step.
+    response: No change needed.
+  - claim: fig1ef-end-of-session
+    agrees: true
+    outcome: reproduced
+    reason: 80.0% vs 85.0% (p = 7.9e-13); 279 vs 165 ms (p = 2.6e-22).
+    response: No change needed.
+  - claim: fig1g-block-switch
+    agrees: true
+    outcome: reproduced
+    reason: Tau of 3.86 is outside 4.5 to 11, but reading (b), 1 + tau ln 10 = 9.9 trials, is inside. The
+      curve is noisy and the fit is unweighted with no CI on tau; the per-mouse tau IQR is 1.9 to 11.3, so
+      reading (b) passes on a point estimate only.
+    response: Added a bootstrap over mice. The 95% interval is 2.79 to 5.30 trials for tau and 7.4 to 13.2
+      for reading (b), with 75.9% of resamples within 4.5 to 11. Outcome kept, as the criterion is judged on
+      the fit; the notes say it rests on the point estimate.
+  - claim: fig1h-block-bias
+    agrees: true
+    outcome: reproduced
+    reason: 9 of 9 contrasts, all p < 1e-8.
+    response: No change needed.
+  - claim: dec-stim-restricted
+    agrees: true
+    outcome: reproduced
+    reason: VISp significant (Fisher p = 1.3e-8); 4 regions for stimulus, 5 for choice, 7 for feedback, a
+      margin over choice of one region. L1 is requested only through l1_ratio=1.0 with liblinear, which
+      silently fits L2 on scikit-learn 1.7.2, and the notebook never prints its version. bwm.decode reuses
+      the real labels' C for every null, which is narrower than the full nested null for VISp stimulus
+      (95th percentile 0.531 against 0.575), so stimulus p-values can be anti-conservative, and VISp
+      significance has not been checked under the nested null.
+    response: The notebook now prints the scikit-learn version (1.9.1) and the nonzero coefficients of one
+      fit (0 of 13 at C = 0.01, against 12 with L2), so L1 is in effect. Added the full nested null for
+      VISp stimulus on all 35 sessions (30 nulls each, the same pseudo-sessions); VISp stays significant
+      (Fisher p 1.8e-05 nested, 2.8e-05 reused on the same nulls) and remains significant with BH at q =
+      0.01 among the 10 regions. Outcome kept.
+  - claim: dec-choice-widespread
+    agrees: true
+    outcome: reproduced
+    reason: GRN p = 6e-15, effect 0.277 (paper 0.28); choice 5 > stimulus 4. With 100 nulls the per-session
+      p floor of 1/101 gives a 2-session region a Fisher floor of 0.0010, which limits CL and LDT; LDT's
+      non-significant choice result (p = 0.0154) may be partly a resolution effect.
+    response: Recorded the resolution limit in the notes. Outcome kept.
+  - claim: dec-feedback-nearly-all
+    agrees: true
+    outcome: partially_reproduced
+    reason: 7 of 10 significant, IRN included; 23 of 111 region-sessions above 0.9. The paper's own
+      region_info.csv marks only 8 of these 10, so this region set cannot reach the threshold of 9.
+    response: No change needed.
+  - claim: sc-stim-fraction
+    agrees: true
+    outcome: blocked
+    reason: The null fraction is 2.68e-3 (CI 1.46e-3 to 4.49e-3), which excludes the band around the
+      paper's 5e-5; the other parts would pass. The paper's chance level assumes the two tests are
+      independent; on i.i.d. Poisson null data the joint rate is about 1.0e-3, so the block comes from the
+      paper's stated chance level more than from the notebook. bwm.ccmw_p permutes x and y labels
+      independently, as the paper's Time_TwoNmannWhitneyUshuf does, which is mildly anti-conservative.
+    response: Added a null with the stimulus side shuffled over the tested trials, one permutation per
+      region-session; it selects 7.7e-4 of units (interval 2.1e-4 to 2.0e-3) while the product of the two
+      single rates is 4.7e-5, and the finding on the rate is updated. The independent permutation of x and
+      y labels follows the paper's code and is kept. Outcome kept.
+  - claim: sc-choice-fraction
+    agrees: true
+    outcome: blocked
+    reason: The null fraction is 2.49e-3, the same exclusion. The other parts would pass, binomial p =
+      3.8e-29 and Spearman 0.84 (p = 1.6e-4).
+    response: Added the shuffled-label null (5.7e-4, interval 1.2e-4 to 1.7e-3, against a product of single
+      rates of 3.3e-5). Outcome kept.
+  - claim: traj-latency-visual
+    agrees: true
+    outcome: not_reproduced
+    reason: The order fails (VISam 59.2 < VISpm 61.3 ms); VISp, LP and VISam are out of tolerance. The
+      canonical-window variant re-subtracts the minimum over the 48 points, while the paper's code reuses
+      the full-window baseline. Dropping the 64 sessions with invalid blocks may explain part of the VISam
+      latency difference (one session dropped).
+    response: The canonical-window variant now keeps the full window's baseline, as the code does (31.9,
+      46.8, 48.9, 61.7 and 59.6 ms). Added the trajectories with the 64 sessions included; the five
+      latencies are unchanged. Outcome kept.
+  - claim: traj-latency-late
+    agrees: true
+    outcome: reproduced
+    reason: IRN 118.3 ms, GRN 109.9 ms, both p = 0.001. The paper's stim.pkl puts both at 89.4 ms, and in
+      the 0 to 100 ms window IRN has no latency. Whether the latencies depend on where the window ends could
+      not be checked.
+    response: Added the distance curves as numbers and the latencies for a 0 to 200 ms window (IRN 117.9,
+      GRN 109.5 ms). Outcome kept.
+  - claim: traj-stim-regions
+    agrees: true
+    outcome: blocked
+    reason: Not attempted. The data are present, and the notebook's own cost estimate says it fit in the
+      time limit (a total run of 7.2 of 30 minutes, about 3 minutes to stream all 454 sessions); it was left
+      untested without cause.
+    response: Tested on all 201 canonical regions, with a criterion added to the claims file before the
+      analysis. 46 regions are significant under reading (a) and 62 under (b), against 104 +/- 10.4, so the
+      outcome changes from blocked to not_reproduced. The variants with the code's permutation classes, the
+      code's correction and the 64 sessions give 46 to 53.
+  - claim: fback-oscillation-licking
+    agrees: true
+    outcome: partially_reproduced
+    reason: (i) fails, median peak 7.08 Hz is outside 9 to 11; (ii) holds, 20 of 27 sessions, p = 0.0042;
+      (iii) holds, lick peak 7.23 Hz. Power is raw spikes/s squared with no normalisation for the correct
+      trials' larger evoked response, and six of 27 sessions peak at the 4 Hz band edge, so the power
+      difference may reflect the evoked transient more than an oscillation.
+    response: Added two normalised variants; the difference holds with each unit's PSTH z-scored (18 of 27,
+      p = 0.028) and with power as a fraction of the 4 to 20 Hz power (26 of 27, p = 1e-07). The notebook
+      counts 4 sessions at 4.00 Hz and one at 4.25 Hz. Outcome kept.
+  - claim: wheel-speed-decoding
+    agrees: true
+    outcome: blocked
+    reason: Not attempted. Wheel velocity is in every file.
+    response: Kept blocked. The notebook's estimate for one binary variable over all region-sessions with
+      the reduced settings is about 41 minutes, and wheel-speed decoding in 20 ms bins is heavier.
+  - claim: encoding-feedback-largest
+    agrees: true
+    outcome: blocked
+    reason: Not attempted. The inputs are present.
+    response: Kept blocked; not attempted in this revision.
+  - claim: video-correlates
+    agrees: true
+    outcome: blocked
+    reason: Not attempted. Pose, pupil and motion energy are in most sessions; left and right camera pose
+      is present in 3 of 4 sampled files.
+    response: Kept blocked; not attempted in this revision.
+  - claim: granger-interactions
+    agrees: true
+    outcome: blocked
+    reason: Not attempted. The spikes are present.
+    response: Kept blocked; not attempted in this revision.
