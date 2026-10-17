@@ -1,0 +1,414 @@
+# Claims for Chang, Finkel, Xu & O'Connor, "Rule-based modulation of a sensorimotor transformation
+# across cortical areas", bioRxiv preprint doi:10.1101/2023.08.21.554194, on dandiset 000232.
+# Source: the full text of preprint version 2 (posted 2024-03-09, CC-BY), read from the copy
+# eLife serves for its reviewed preprint 92620v2, whose source is bioRxiv version 2; bioRxiv
+# itself refused the download. Results, figure legends and Methods were read. Table 1 and the
+# table of coding-dimension trial types are images in that copy and were not read.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata, the contents of one ephys file and one file of each optogenetic task, and per file
+# the area, subject, number of units, number of trials, block and trial types, the coding of
+# the response column against lick times, and the absence of trials with licks between -1 and
+# 0.1 s of the stimulus. The counts of sessions, mice and units per area and of optogenetic
+# sessions per condition had been seen (claims fig1e-recording-counts and fig6-session-counts).
+# No other claim's analysis had been run. The author had read the paper's analysis code
+# (github.com/YitingChang/cross_modal_task, commit 227631e), and the method choices below follow
+# it where the Methods are silent.
+#
+# Common choices: a session's trials are those in the file, without cue ("Change") trials;
+# a correct trial is a tactile hit (respond-to-touch block, tactile stimulus, right lick),
+# visual correct rejection (touch block, visual stimulus, no lick), tactile correct rejection
+# (respond-to-light block, tactile, no lick) or visual hit (light block, visual, left lick).
+# Stimulus-evoked analyses use 10 ms bins smoothed by a 50 ms Gaussian; pre-stimulus analyses
+# use 100 ms bins without smoothing. Population analyses use the Methods' soft normalization
+# (x - mean) / (range + 5). Where the code differs (see each claim), its choice is a variant.
+schema_version: 1
+dandiset: "000232"
+paper: doi:10.1101/2023.08.21.554194
+claims:
+- id: fig1e-recording-counts
+  statement: Single units were recorded with 64-channel probes in S1 (6 mice, 10 sessions, 177
+    neurons), S2 (5 mice, 8 sessions, 162 neurons), MM (7 mice, 9 sessions, 140 neurons) and ALM
+    (8 mice, 13 sessions, 256 neurons), one area per session, and in AMM (110 neurons).
+  source: Results, first section; Figure 1E and 1G; Figure S1K
+  expected:
+  - {quantity: S1 sessions, value: 10, tolerance: 0}
+  - {quantity: S1 neurons, value: 177, tolerance: 0}
+  - {quantity: S2 sessions, value: 8, tolerance: 0}
+  - {quantity: S2 neurons, value: 162, tolerance: 0}
+  - {quantity: MM sessions, value: 9, tolerance: 0}
+  - {quantity: MM neurons, value: 140, tolerance: 0}
+  - {quantity: ALM sessions, value: 13, tolerance: 0}
+  - {quantity: ALM neurons, value: 256, tolerance: 0}
+  - {quantity: AMM neurons, value: 110, tolerance: 0}
+  criterion: Counts of a deposited dataset are expected to match exactly (tolerance 0). The mice
+    per area (6, 5, 7, 8) are compared as well. Reproduced when all counts match; partially
+    reproduced when the units match but sessions or mice do not.
+- id: fig6-session-counts
+  statement: The optogenetic experiments in the cross-modal task comprise S1/S2 (4 mice, 10
+    sessions), MM (4, 11), ALM (4, 10), sham (7, 28), AMM (7, 21) and PPC (7, 21); in the
+    tactile detection task sham (5, 9), S1/S2 (3, 3), MM (3, 5), ALM (3, 4), AMM (3, 4) and
+    PPC (3, 4).
+  source: Figure 6 legend
+  criterion: Sessions and mice per condition are counted from the files' descriptions and
+    subjects, and must match exactly. Reproduced when all 24 counts match; partially reproduced
+    when at least 20 do.
+- id: fig1d-performance
+  statement: Performance was about 75% correct under both rules (respond-to-touch 74 plus or minus
+    1%, respond-to-light 75 plus or minus 1%, mean and SEM over 12 mice), with no difference
+    between them (paired t-test, p = 0.56).
+  source: Results, first section; Figure 1D
+  expected:
+  - {quantity: respond-to-touch percent correct, value: 74, tolerance: 1, unit: percent}
+  - {quantity: respond-to-light percent correct, value: 75, tolerance: 1, unit: percent}
+  criterion: As the code (CM_behavioral_performance.m), per session the fraction of hits plus
+    correct rejections among all trials of each block type, using the 40 recording sessions of
+    S1, S2, MM and ALM; per mouse the mean over sessions; then mean and SEM over mice. The
+    tolerance is the paper's SEM. The Methods remove the last 20 trials of each session, the
+    code does not, and the files may already lack them, so two readings are allowed, (a) the
+    trials as deposited and (b) the last 20 trials of each session removed. Reproduced when,
+    under one reading, both values are within tolerance and a paired t-test over mice finds no
+    difference (p at least 0.05); partially reproduced when the test finds no difference but a
+    value is outside tolerance; not reproduced when the test finds a difference.
+- id: fig1d-outcome-fractions
+  statement: The fractions of trial outcomes were similar under the two rules (touch against
+    light; hit 36 against 35%, correct rejection 38 against 40%, miss 13 against 14%, false
+    alarm 13 against 12%).
+  source: Figure 1D legend
+  expected:
+  - {quantity: touch hit, value: 36, tolerance: 1, unit: percent}
+  - {quantity: light hit, value: 35, tolerance: 2, unit: percent}
+  - {quantity: touch correct rejection, value: 38, tolerance: 1, unit: percent}
+  - {quantity: light correct rejection, value: 40, tolerance: 1, unit: percent}
+  - {quantity: touch miss, value: 13, tolerance: 1, unit: percent}
+  - {quantity: light miss, value: 14, tolerance: 1, unit: percent}
+  - {quantity: touch false alarm, value: 13, tolerance: 1, unit: percent}
+  - {quantity: light false alarm, value: 12, tolerance: 1, unit: percent}
+  criterion: Fractions of all trials of the block type, as the code's GetBehavPerf (false alarms
+    include licks to the wrong port), mean over mice of the mean over sessions; tolerance the
+    paper's SEM; readings (a) and (b) as in fig1d-performance. Reproduced when, under one
+    reading, all eight are within tolerance; partially reproduced when at least five are.
+- id: fig1h-thit-tcr-selective
+  statement: 18 to 33% of neurons discriminate tactile hits from tactile correct rejections in the
+    first 150 ms after the stimulus (S1 28.8%, S2 17.9%, MM 32.9%, ALM 23.4%), and most of these
+    respond more in tactile hits (AUC above 0.5).
+  source: Results, first section; Figure 1H
+  expected:
+  - {quantity: S1 percent selective, value: 28.8, tolerance: 2.88}
+  - {quantity: S2 percent selective, value: 17.9, tolerance: 1.79}
+  - {quantity: MM percent selective, value: 32.9, tolerance: 3.29}
+  - {quantity: ALM percent selective, value: 23.4, tolerance: 2.34}
+  criterion: Per neuron, AUC of tactile hits against tactile correct rejections in each 10 ms bin
+    from 0 to 150 ms (smoothed rates), 1000 bootstrap resamples of each class; a bin is
+    significant when the Bonferroni-corrected interval (alpha 0.05 divided by the neurons of
+    the area, read as the code reads it) excludes 0.5, and a neuron is selective with 3
+    consecutive significant bins. Reproduced when all four percentages are within tolerance
+    and more than half of the selective neurons, pooled over areas, have mean AUC above 0.5;
+    partially reproduced when two or three are within tolerance, or all four lie in the stated
+    range 18 to 33% widened by 10% of each bound (16.2 to 36.3%), with the AUC condition met;
+    not reproduced otherwise.
+- id: fig2c-rule-prestim-units
+  statement: Before the stimulus (-100 to 0 ms), fewer than 5% of neurons in S1 and S2 discriminate
+    the rule, while about 10 to 20% do in MM and ALM (S1 4.5%, S2 2.5%, MM 21.4%, ALM 10.2%).
+  source: Results, second section; Figure 2C
+  expected:
+  - {quantity: S1 percent, value: 4.5, tolerance: 0.56}
+  - {quantity: S2 percent, value: 2.5, tolerance: 0.62}
+  - {quantity: MM percent, value: 21.4, tolerance: 2.14}
+  - {quantity: ALM percent, value: 10.2, tolerance: 1.02}
+  criterion: AUC of correct trials of respond-to-touch blocks (tactile hits and visual correct
+    rejections) against those of respond-to-light blocks (tactile correct rejections and
+    visual hits), from the spike count of the 100 ms bin before the stimulus, 1000 bootstrap
+    resamples, Bonferroni-corrected interval as in fig1h. The tolerance is 10% of the value or
+    one neuron of the area, whichever is larger, as 10% is less than one neuron in S1 and S2.
+    Reproduced when all four are within tolerance; partially reproduced when not, but MM and
+    ALM each have a higher percentage than both S1 and S2; not reproduced otherwise.
+- id: fig2d-stimulus-prestim-units
+  statement: As a negative control, almost no neuron discriminates tactile from visual trials
+    before the stimulus (S1 0%, S2 0%, MM 0%, ALM 0.8%).
+  source: Results, second section; Figure 2D
+  expected:
+  - {quantity: S1 percent, value: 0, tolerance: 0.56}
+  - {quantity: S2 percent, value: 0, tolerance: 0.62}
+  - {quantity: MM percent, value: 0, tolerance: 0.71}
+  - {quantity: ALM percent, value: 0.8, tolerance: 0.39}
+  criterion: As fig2c, comparing correct tactile trials (tactile hits and tactile correct
+    rejections) with correct visual trials (visual hits and visual correct rejections) in the
+    100 ms before the stimulus. Tolerance one neuron of the area. Reproduced when all four are
+    within tolerance; partially reproduced when every area is at most 2%; not reproduced
+    otherwise.
+- id: fig2e-stimulus-poststim-units
+  statement: After the stimulus (0 to 100 ms), more than 35% of neurons in S1 and S2 and about 15%
+    in MM and ALM discriminate tactile from visual trials (S1 37.3%, S2 35.2%, MM 15%, ALM 14.1%).
+  source: Results, second section; Figure 2E
+  expected:
+  - {quantity: S1 percent, value: 37.3, tolerance: 3.73}
+  - {quantity: S2 percent, value: 35.2, tolerance: 3.52}
+  - {quantity: MM percent, value: 15.0, tolerance: 1.5}
+  - {quantity: ALM percent, value: 14.1, tolerance: 1.41}
+  criterion: As fig2d, in the 100 ms bin after the stimulus. Reproduced when all four are within
+    tolerance; partially reproduced when not, but S1 and S2 each exceed both MM and ALM; not
+    reproduced otherwise.
+- id: fig2f-prestim-predicts-touch-response
+  statement: Among neurons with significant rule discrimination before the stimulus, the
+    pre-stimulus rule preference predicts the rule modulation of the early touch response (0 to
+    50 ms); Pearson r = 0.93 in MM (30 neurons) and 0.83 in ALM (26 neurons), both p < 0.001
+    (S1 r = 0.69, 8 neurons, p = 0.056; S2 r = 0.91, 4 neurons, p = 0.093).
+  source: Results, second section; Figure 2F
+  depends_on:
+  - fig2c-rule-prestim-units
+  expected:
+  - {quantity: MM Pearson r, value: 0.93, tolerance: 0.093}
+  - {quantity: ALM Pearson r, value: 0.83, tolerance: 0.083}
+  criterion: As the code, x is the mean bootstrap AUC of the rule (fig2c) and y the mean
+    bootstrap AUC of tactile hits against correct rejections over the 10 ms bins from 0 to 50 ms
+    (fig1h), over the neurons significant in fig2c. Reproduced when the MM and ALM correlations
+    are within tolerance with p < 0.001; partially reproduced when both are positive with p <
+    0.05 but not both within tolerance or at p < 0.001; not reproduced otherwise. The neuron
+    counts and the S1 and S2 values are reported.
+- id: fig3b-rule-decoding
+  statement: The rule can be decoded from pre-stimulus population activity (-100 to 0 ms) in each
+    area; median LDA accuracy over sessions, true against shuffled, S1 0.61 against 0.5, S2 0.62
+    against 0.53, MM 0.7 against 0.52, ALM 0.68 against 0.55.
+  source: Results, third section; Figure 3B
+  expected:
+  - {quantity: S1 median accuracy, value: 0.61, tolerance: 0.061}
+  - {quantity: S2 median accuracy, value: 0.62, tolerance: 0.062}
+  - {quantity: MM median accuracy, value: 0.70, tolerance: 0.07}
+  - {quantity: ALM median accuracy, value: 0.68, tolerance: 0.068}
+  criterion: Per session, correct trials, spike counts of the 100 ms bin before the stimulus,
+    LDA with a diagonal covariance (the code's fitcdiscr 'diaglinear'; diagonal LDA gives the
+    same predictions under any per-neuron scaling, so the Methods' soft normalization and the
+    code's z-score are equivalent), ten-fold stratified cross-validation, accuracy over all
+    trials; shuffled by permuting the block labels against the trials. Reproduced when all four
+    true medians are within tolerance and each exceeds its shuffled median; partially
+    reproduced when each exceeds its shuffled median but not all are within tolerance; not
+    reproduced otherwise.
+- id: fig3c-rule-decoding-motor-stronger
+  statement: Rule decoding is robust in the motor areas, whose bootstrap 95% CIs of mean accuracy
+    do not overlap those of shuffled data (MM 0.60 to 0.73 against 0.48 to 0.53; ALM 0.56 to
+    0.66 against 0.49 to 0.54), and limited in the sensory areas, whose true CIs are above 0.5
+    but overlap the shuffled ones (S1 0.52 to 0.61 against 0.49 to 0.55; S2 0.53 to 0.63
+    against 0.49 to 0.54).
+  source: Results, third section; Figure 3C
+  criterion: The code's multilevel bootstrap (sessions, then neurons, then a stratified ten-fold
+    partition with trials resampled within training and test sets; shuffled labels permuted
+    within each set), mean accuracy over sessions, 200 resamples per area. Reproduced when the
+    true and shuffled CIs do not overlap in MM and ALM and do overlap in S1 and S2; partially
+    reproduced when they do not overlap in MM and ALM but also do not overlap in S1 or S2, or
+    when they overlap in only one of MM and ALM; not reproduced when they overlap in both MM
+    and ALM.
+- id: fig3de-stimulus-decoding-controls
+  statement: Population activity discriminates tactile from visual trials after the stimulus (0 to
+    100 ms) but not before it (-100 to 0 ms).
+  source: Results, third section; Figure 3D and 3E; Figure S3C and S3D
+  criterion: As fig3c with stimulus type as the class. Reproduced when, in all four areas, the
+    true and shuffled CIs overlap before the stimulus and do not overlap after it; partially
+    reproduced when this holds in two or three areas; not reproduced otherwise.
+- id: figs3-svm-rf-decoding
+  statement: Support vector machines and random forests decode the rule from pre-stimulus
+    activity about as well as LDA (median accuracy true against shuffled; SVM S1 0.6 against
+    0.53, S2 0.61 against 0.51, MM 0.71 against 0.51, ALM 0.65 against 0.52; random forests S1
+    0.59 against 0.52, S2 0.6 against 0.52, MM 0.65 against 0.49, ALM 0.7 against 0.5).
+  source: Results, third section; Figure S3A and S3B
+  expected:
+  - {quantity: SVM S1, value: 0.60, tolerance: 0.06}
+  - {quantity: SVM S2, value: 0.61, tolerance: 0.061}
+  - {quantity: SVM MM, value: 0.71, tolerance: 0.071}
+  - {quantity: SVM ALM, value: 0.65, tolerance: 0.065}
+  - {quantity: RF S1, value: 0.59, tolerance: 0.059}
+  - {quantity: RF S2, value: 0.60, tolerance: 0.06}
+  - {quantity: RF MM, value: 0.65, tolerance: 0.065}
+  - {quantity: RF ALM, value: 0.70, tolerance: 0.07}
+  criterion: SVM with a linear kernel and box constraint 1 (MATLAB fitcsvm defaults) with ten-fold
+    cross-validation; random forest of 500 trees with the square root of the number of neurons
+    tried at each split (TreeBagger defaults), accuracy from out-of-bag predictions; inputs soft
+    normalized (Methods), with the code's z-score as a variant for the SVM. Reproduced when at
+    least seven of the eight true medians are within tolerance and all exceed their shuffled
+    medians; partially reproduced when all exceed their shuffled medians; not reproduced
+    otherwise.
+- id: fig4c-prestim-distance-predicts-divergence
+  statement: Sessions with a larger pre-stimulus distance between tactile hit and correct rejection
+    trajectories (top 50% of 40 sessions) show a larger distance after the stimulus than the
+    bottom 50% (permutation test, p < 0.001).
+  source: Results, fourth section; Figure 4B and 4C
+  criterion: Per session, PCA of the soft-normalized trial-averaged tactile hit and correct
+    rejection activity from -100 to 150 ms (10 ms bins, smoothed), single trials projected on
+    the top three components, Euclidean distance at each bin averaged over all hit and
+    correct-rejection trial pairs. Sessions split at the median of the mean distance from -100
+    to 0 ms; statistic the Euclidean norm of the difference between the groups' mean distance
+    time courses from 0 to 150 ms; 1000 permutations of the group labels, one-tailed, as the
+    code. Reproduced when the top group's mean post-stimulus distance is larger and p < 0.001;
+    partially reproduced when it is larger with p < 0.05; not reproduced otherwise. The code
+    normalizes by the range without the offset of 5; that is a variant.
+- id: fig4e-subspace-overlap
+  statement: In all four areas the subspace overlap of tactile correct rejections with tactile hits
+    (0 to 150 ms) is lower than that of held-out tactile hits (tCR minus control tHit; S1 -0.23,
+    8 sessions, p = 0.0016; S2 -0.23, 7 sessions, p = 0.0086; MM -0.36, 5 sessions, p < 0.001;
+    ALM -0.35, 11 sessions, p < 0.001; paired t-test).
+  source: Results, fifth section; Figure 4E
+  expected:
+  - {quantity: S1 difference, value: -0.23, tolerance: 0.023}
+  - {quantity: S2 difference, value: -0.23, tolerance: 0.023}
+  - {quantity: MM difference, value: -0.36, tolerance: 0.036}
+  - {quantity: ALM difference, value: -0.35, tolerance: 0.035}
+  criterion: Per session with at least ten units (Methods; the code keeps sessions with more than
+    ten, which is shown as a variant), tactile hit trials split at random into equal reference
+    and control halves; PCA (uncentred SVD, as the code) of the soft-normalized reference
+    average from 0 to 150 ms; overlap is the variance of a soft-normalized trial average in the
+    reference's top three components over its variance in its own top three. The split is
+    repeated 100 times with fixed seeds and the overlaps averaged per session; the code's single
+    split drawn separately for each neuron, and its normalization with offsets 5 and 0.01, are
+    variants. Reproduced when the difference is negative with paired t-test p < 0.05 in all four
+    areas and at least three differences are within tolerance; partially reproduced when it is
+    negative in all four but fewer are significant or within tolerance; not reproduced when it
+    is negative in fewer than three areas.
+- id: fig4f-prestim-overlap-predicts-poststim
+  statement: Across sessions, the tCR subspace overlap before the stimulus (-100 to 0 ms) correlates
+    with that after it (Pearson r = 0.68, p < 0.001, 31 sessions).
+  source: Results, fifth section; Figure 4F
+  depends_on:
+  - fig4e-subspace-overlap
+  expected:
+  - {quantity: Pearson r, value: 0.68, tolerance: 0.068}
+  criterion: Sessions and overlaps as fig4e, the pre-stimulus average of tactile correct rejections
+    projected on the reference tactile hit components. Reproduced when r is within tolerance
+    with p < 0.001; partially reproduced when r is positive with p < 0.05; not reproduced
+    otherwise.
+- id: figs4ef-coding-dimensions
+  statement: Stimulus coding dimensions are aligned between the two rules in S1, S2 and MM but not
+    in ALM, while choice coding dimensions (lick against no lick) are not aligned in any area
+    (dot product magnitudes, true against shuffled, with 95% CIs).
+  source: Results, sixth section; Figure S4E and S4F
+  criterion: As the code (CM_coding_dimension_bootstrapping.m), per block the stimulus CD is the
+    difference between tactile and visual condition averages (each the mean of lick and no-lick
+    trials) and the choice CD the difference between lick (right in touch blocks, left in light
+    blocks) and no-lick averages, both averaged over 0 to 150 ms and normalized to unit length;
+    the statistic is the magnitude of the dot product between the two blocks' CDs, averaged over
+    sessions. Inputs normalized as the code, by the range plus 0.01. 1000 bootstrap resamples
+    of sessions, neurons and trials; shuffled data permute each neuron's trials across
+    conditions. All sessions are used, as the paper's session counts state; the code's
+    restriction to sessions with more than ten units is a variant. Aligned means the true and
+    shuffled 95% CIs do not overlap. Reproduced when all eight judgements (stimulus aligned in
+    S1, S2, MM and not in ALM; choice not aligned in all four) match; partially reproduced when
+    six or seven match; not reproduced otherwise.
+- id: figs4h-choice-right-left
+  statement: Choice coding dimensions computed from right against left lick trials are still not
+    well aligned between the two rules (true against shuffled; S1 0.39 against 0.2, S2 0.32
+    against 0.2, MM 0.35 against 0.18, ALM 0.28 against 0.21).
+  source: Results, sixth section; Figure S4H
+  criterion: As figs4ef with the choice CD the difference between right-lick and left-lick
+    averages (each the mean over tactile and visual trials) in each block. The paper's own CIs
+    overlap for S1, S2 and ALM but not for MM (0.21 to 0.48 against 0.11 to 0.26), so the claim
+    is read as weak alignment; reproduced when, in each area, the true mean is below 0.5 and
+    within 0.1 of the paper's value; partially reproduced when the true mean is below 0.5 in at
+    least three areas; not reproduced otherwise. Sessions without at least two trials of a
+    needed condition are left out and counted.
+- id: fig5b-first-hit-switches
+  statement: Mice switched before or immediately after the cue on the 9th trial; there were 88
+    switches into respond-to-touch blocks and 91 into respond-to-light blocks.
+  source: Results, seventh section; Figure 5B
+  expected:
+  - {quantity: switches into touch blocks, value: 88, tolerance: 8.8}
+  - {quantity: switches into light blocks, value: 91, tolerance: 9.1}
+  criterion: Over the 40 recording sessions, blocks other than the first of a session that contain
+    a hit, as the code's GetFirstHitInfo. The code numbers trials by the behavioural system,
+    including trials the dandiset does not hold, so the first hit is placed relative to the
+    cue trial, which the files keep. Reproduced when both counts are within tolerance and, in
+    each block type, more than half of the first hits come before the cue trial or on the trial
+    after it; partially reproduced when one of the three conditions fails.
+- id: fig5de-motor-states-track-switch
+  statement: Over a rule transition, the fraction of trials classified as respond-to-touch from
+    pre-stimulus activity changes progressively in MM and ALM (Kendall's tau, mean and 95% CI;
+    touch to light MM -0.39 [-0.67, -0.11], ALM -0.29 [-0.54, -0.04]; light to touch MM 0.37
+    [0.07, 0.63], ALM 0.27 [0.03, 0.49]).
+  source: Results, seventh section; Figure 5D and 5E
+  criterion: Per session, an LDA trained on correct trials after each block's first hit (spike
+    counts of the 100 ms bin before the stimulus), with a regularized covariance (Ledoit-Wolf
+    shrinkage, standing in for the code's optimized regularization). Pre and post values are the
+    mean posterior probability of the touch block on held-out correct trials of the old and new
+    block types (ten folds); early and late transition trials (as the code's GetTransitionInfo)
+    get the mean posterior of the ten fold models. Kendall's tau of probability against the
+    four ordered periods per session, averaged over sessions; 95% CI from 500 resamples of
+    sessions, neurons and trials, with one random 90/10 split per resample as the code.
+    Reproduced when all four CIs exclude 0 with the paper's sign; partially reproduced when two
+    or three do; not reproduced otherwise.
+- id: figs5-sensory-states-no-tracking
+  statement: Classification of trials in S1 and S2 shows no clear trend across block transitions
+    (Kendall's tau touch to light S1 -0.16 [-0.43, 0.1], S2 -0.15 [-0.54, 0.21]; light to touch S1
+    0.21 [-0.07, 0.5], S2 0.25 [-0.17, 0.63]).
+  source: Results, seventh section; Figure S5
+  criterion: A claim of absence, judged on the paper's test, the 95% CI of the mean tau, computed
+    as fig5de. Reproduced when all four CIs include 0; not reproduced when any excludes it.
+- id: fig6c-pre-inhibition-tactile
+  statement: Inhibiting MM or ALM before the stimulus reduces tactile detection sensitivity in
+    respond-to-touch blocks, while inhibiting S1/S2, AMM or the sham does not (95% CI of the
+    change; S1/S2 [-0.47, 0.08], MM [-0.65, -0.12], ALM [-0.68, -0.02], sham [-0.12, 0.13], AMM
+    [-0.19, 0.06]).
+  source: Results, eighth section; Figure 6C
+  criterion: As the code, sensitivity is the tactile hit rate (right licks to tactile stimuli)
+    minus the visual false alarm rate (right licks to visual stimuli) in touch blocks; change =
+    with laser before the stimulus minus without, per session; mean over sessions per mouse and
+    over mice; 95% CI from 10000 hierarchical resamples of mice, sessions and trials, with hit
+    and false alarm trials both resampled (Methods); the code resamples only hits, which is a
+    variant. Reproduced when the MM and ALM CIs are below 0 and the S1/S2, sham and AMM CIs
+    include 0; partially reproduced when one of MM and ALM is below 0, or both are and one of
+    the others excludes 0; not reproduced when neither MM nor ALM is below 0.
+- id: figs6b-pre-inhibition-hit-rate
+  statement: The loss of tactile sensitivity with pre-stimulus inhibition is mainly a fall in the
+    tactile hit rate (95% CI of the change; S1/S2 [-0.31, 0.01], MM [-0.49, -0.15], ALM [-0.46,
+    -0.07]).
+  source: Results, eighth section; Figure S6B
+  criterion: As fig6c for the tactile hit rate. Reproduced when the MM and ALM CIs are below 0 and
+    the S1/S2 CI includes 0; partially reproduced when one of these three fails; not reproduced
+    otherwise.
+- id: fig6d-post-inhibition-tactile
+  statement: Inhibiting S1/S2, MM or ALM from the stimulus onset reduces tactile sensitivity (95% CI
+    S1/S2 [-0.67, -0.08], MM [-0.6, -0.34], ALM [-0.55, -0.27]).
+  source: Results, eighth section; Figure 6D
+  criterion: As fig6c with the laser from the stimulus onset. Reproduced when all three CIs are
+    below 0; partially reproduced when one or two are; not reproduced otherwise.
+- id: figs7gh-visual-sensitivity
+  statement: Visual detection sensitivity in respond-to-light blocks falls with pre-stimulus
+    inhibition of MM [-0.6, -0.18] and AMM [-0.35, -0.08] but not of ALM [-0.5, 0.04] or S1/S2
+    [-0.27, 0.05]; with inhibition from the stimulus onset it falls for MM, ALM and AMM but not
+    for S1/S2 [-0.44, 0.04].
+  source: Results, eighth section; Figure S7G and S7H
+  criterion: As fig6c, sensitivity the visual hit rate (left licks to visual stimuli) minus the
+    tactile false alarm rate (left licks to tactile stimuli) in light blocks. Eight judgements
+    (pre MM below 0, AMM below 0, ALM includes 0, S1/S2 includes 0; post MM, ALM, AMM below 0,
+    S1/S2 includes 0). Reproduced when all eight match; partially reproduced when five to seven
+    do; not reproduced otherwise.
+- id: fig6-ppc-inhibition
+  statement: Inhibiting PPC before or after the stimulus onset reduces both tactile and visual
+    detection sensitivity (tactile pre [-0.4, -0.06], post [-0.43, -0.04]; visual pre [-0.31,
+    -0.05], post [-0.54, -0.07]).
+  source: Results, eighth section; Figure 6C and 6D; Figure S7G and S7H
+  criterion: As fig6c and figs7gh for PPC. Reproduced when all four CIs are below 0; partially
+    reproduced when two or three are; not reproduced otherwise.
+- id: fig6fg-detection-task
+  statement: In a simple tactile detection task without rule switching, inhibiting S1/S2, MM or ALM
+    after the stimulus onset reduces sensitivity, but inhibiting them before it does not (pre S1/S2
+    [-0.34, 0.18], MM [-0.23, 0.06], ALM [-0.28, 0.07]; post S1/S2 [-0.59, -0.31], MM [-0.59,
+    -0.25], ALM [-0.45, -0.1]); AMM and PPC have no effect in either window.
+  source: Results, eighth section; Figure 6F and 6G
+  criterion: Sensitivity is the hit rate (right licks within 2 s on trials with a whisker
+    stimulus) minus the false alarm rate (trials without one), as the code; changes and
+    hierarchical bootstrap as fig6c. Six judgements for S1/S2, MM and ALM (pre includes 0, post
+    below 0); AMM and PPC reported. Reproduced when all six match; partially reproduced when four
+    or five do; not reproduced otherwise.
+- id: fig6ij-laser-only-licks
+  statement: Lick probability on laser-only trials does not change during S1/S2, MM or ALM
+    inhibition in either task, so the behavioural effects are not due to an inability to lick
+    (cross-modal S1/S2 [-0.18, 0.24], MM [-0.31, 0.03], ALM [-0.24, 0.16]; detection S1/S2 [-0.13,
+    0.31], MM [-0.06, 0.45], ALM [-0.18, 0.34]).
+  source: Results, eighth section; Figure 6H, 6I and 6J
+  criterion: A claim of absence, judged on the paper's test, the 95% CI of the change in right-lick
+    probability between the response window and the inter-trial window of laser-only trials
+    (touch blocks in the cross-modal task), with the code's windows; the text gives one CI per
+    area and task while the code computes short (0.8 s) and long (2 s) laser trials apart, so
+    both are tested. Reproduced when all twelve CIs (three areas, two tasks, two laser
+    durations) include 0; not reproduced when any excludes it.
+- id: fig1e-probe-locations
+  statement: The probe locations were reconstructed histologically and lie in S1, S2, MM and ALM.
+  source: Figure 1E; Methods, Electrophysiology
