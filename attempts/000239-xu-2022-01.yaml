@@ -1,0 +1,917 @@
+schema_version: 1
+id: 000239-xu-2022-01
+dandiset: "000239"
+dandiset_version: 0.230607.1752
+paper: doi:10.1038/s41586-022-04478-7
+date: 2026-10-17
+entry: 000239-xu-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+outcomes:
+- claim: ephys-unit-counts
+  outcome: partially_reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ephys-unit-counts
+  measured:
+  - 57
+  - 1578
+  - 339
+  notes: The 57 files described as ephys ALM, M1TJ, S1TJ, S1BF, M1B, S1L and ZZ hold 1917 units,
+    within 10% of the paper's 1840. With an ISI violation rate (2.5 ms) of at most 1% and a
+    contamination of at most 15%, 1578 are single units (1537 in the paper, within tolerance) and
+    339 multi-units (303, outside 272.7 to 333.3). Other thresholds give 1490 to 1732 single units;
+    three variants put the multi-units inside the tolerance, the contamination criterion alone at
+    15% (331), the RPV criterion alone at 0.5% (309) and both criteria with a 20% contamination
+    threshold (295). Other estimates of the contamination at 15% give 341
+    multi-units (0.5 ms censored period) and 478 (spikes inside the trial span only, T the whole
+    span). On synthetic units the estimate is 0.163 for a true contamination of 0.15 and 0.233 for
+    0.20, so 85% of units at 0.15 are called multi-units. Multi-units range from 0 to 21 per
+    session. The 22 "ephys others" sessions (742 units) and 14 opto efficiency recordings (414
+    units) are not among the 57.
+  deviations:
+  - The contamination estimate (Hill et al. 2011) uses a censored period of 0 and the mean rate
+    over 1 s bins of the trial span holding a spike, with all of a unit's spikes in the count;
+    the Methods give none of these.
+  - Units recorded outside the target structure were excluded in the paper; the files do not say
+    which these are, so all units are counted.
+- claim: fig3-session-counts
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig3-session-counts
+  measured:
+  - 8
+  - 9
+  - 13
+  - 5
+  notes: Counted from the session descriptions, the only place the files name the recorded area.
+    The sessions come from 4, 4, 8 and 3 mice, and every one holds units and at least 13 selected
+    standard trials per direction.
+- claim: fig3-units-per-session
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig3-units-per-session
+  measured:
+  - 33.6
+  - 13.0
+  notes: Reading (b), all 57 recording sessions, gives 33.6 and 13.0 units, both within tolerance.
+    Reading (a), the 35 Figure 3 sessions the claim refers to, gives a mean of 32.0 and an SD of
+    14.4, just outside 11.7 to 14.3. Single units alone give 26.4 and 13.2. Unit counts do not
+    depend on a random seed, so the SD of reading (a) is 14.4 under every seed.
+  deviations:
+  - The reading that matches, all 57 sessions, is wider than the sessions the Results describe.
+- claim: fig3a-trial-count
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig3a-trial-count
+  measured: 2886
+  notes: The Methods' trial selection gives 2169 standard and 717 backtracking trials over the 35
+    sessions; together 2886 (reading a), within 10% of 2684. Standard trials alone are 2169. The
+    count is a third of the candidates (at least 10) and does not depend on the search. The greedy
+    search finds the best subset in 43 of 70 exhaustive checks on 16 candidates (at most 8.4% above
+    the best mean distance); a swap search improves on it by at most 4.9% on the full sets, sharing
+    a median of 97% of the trials.
+  deviations:
+  - The subset of most similar trials is found by a greedy search; the Methods do not say how it
+    was searched.
+- claim: fig3c-length
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig3c-length
+  measured:
+  - 0.568
+  - 0.423
+  - 0.117
+  - 0.032
+  notes: Mean R2 by area (S1TJ, M1TJ, ALM, S1BF) are each within the SD the figure prints, and S1TJ
+    and M1TJ exceed ALM and S1BF. With folds that keep each trial in one fold, 0.551, 0.392, 0.087
+    and 0.016, same order. Decoding L with spikes shifted by 25 to 100 ms lowers R2 in S1TJ.
+  deviations:
+  - The inter-lick-interval standardisation of the Methods is not applied before the fits.
+  - Fits use scikit-learn's elastic net path (l1 ratio 0.1, 30 penalties, standardised
+    predictors, one-SE rule), not MATLAB's lasso; samples are assigned to folds at random, as
+    MATLAB does by default. Random folds let the autocorrelation within a trial into the test
+    folds; R2 values are higher than with folds that keep trials together, the orderings the same.
+  - The fitting window is -0.5 to 0.5 s from the middle touch, read from the Methods' remark that
+    0.5 to 0.8 s of the decoding was new data; the paper does not state it.
+  - The expected values were read from the figure image, as the text does not give them.
+- claim: fig3c-velocity
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig3c-velocity
+  measured:
+  - 0.361
+  - 0.326
+  - 0.081
+  - 0.019
+  notes: All four means within tolerance of 0.35, 0.32, 0.07 and 0.01, and the order holds with
+    either fold scheme. L' is the derivative of L where the tongue is out.
+  deviations:
+  - As for fig3c-length.
+- claim: fig3c-angle
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig3c-angle
+  measured:
+  - 0.569
+  - 0.534
+  - 0.520
+  - 0.111
+  notes: All four means within tolerance of 0.59, 0.57, 0.54 and 0.12. S1TJ, M1TJ and ALM differ by
+    0.049 and S1BF is below each. With trial folds the spread is 0.059. theta is the angle of the
+    tongue base-to-tip vector, used where L exceeds 1 mm.
+  deviations:
+  - As for fig3c-length. The sign of theta (left or right) cannot be fixed from the files; R2 does
+    not depend on it.
+- claim: fig3c-identity
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig3c-identity
+  measured:
+  - 0.270
+  - 0.412
+  - 0.693
+  - 0.113
+  notes: Means (S1TJ, M1TJ, ALM, S1BF) within tolerance of 0.23, 0.42, 0.67 and 0.14, in the order
+    ALM > M1TJ > S1TJ > S1BF. With trial folds 0.188, 0.323, 0.657 and 0.049, same order.
+  deviations:
+  - As for fig3c-length.
+- claim: fig3c-time
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig3c-time
+  measured:
+  - 0.198
+  - 0.440
+  - 0.637
+  - 0.087
+  notes: Means within tolerance of 0.17, 0.45, 0.60 and 0.08, in the stated order; with trial folds
+    0.145, 0.381, 0.601 and 0.063, same order.
+  deviations:
+  - As for fig3c-length. tau is the time from the middle touch without lick standardisation.
+- claim: ed5b-variables-uncorrelated
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed5b-variables-uncorrelated
+  notes: Mean absolute correlations of the ten pairs range from 0.000 (I-tau, zero by the balanced
+    design) to 0.118 (theta-I); the largest single-session value is 0.368 (L-theta).
+  deviations:
+  - The bound of 0.3 is a choice; the paper gives no threshold.
+- claim: ed5e-variance-explained
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed5e-variance-explained
+  measured: 0.454
+  notes: The median ratio over 35 sessions is 0.454 (mean 0.490, IQR 0.387 to 0.544), inside 0.45 to
+    0.55 but close to its lower bound; per area medians are 0.433 to 0.476. One coding axis of 175
+    had all weights zero. With seeds 3, 11, 12 and 13 the median is 0.453 to 0.455, inside the
+    range each time.
+  deviations:
+  - VE is computed on -0.5 to 0.8 s from the middle touch of the selected standard trials; the
+    paper says "during sequence execution".
+- claim: ed5f-axes-orthogonal
+  outcome: partially_reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed5f-axes-orthogonal
+  notes: Nine pairs have a mean absolute cosine of 0.114 to 0.225; L' and theta have 0.302, just
+    above the bound of 0.3 the criterion fixed. Random directions in the same sessions give 0.154.
+    With seeds 3, 11, 12 and 13, L' and theta give 0.302 to 0.320 and are the only pair at or above
+    0.3 each time.
+  deviations:
+  - The bound of 0.3 is a choice; the paper says "largely orthogonal".
+- claim: fig3e-cca
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig3e-cca
+  notes: Mean canonical correlation, groups 1, 2, 3; ALM 0.607, 0.900, 0.743; S1TJ 0.746, 0.589,
+    0.735; M1TJ 0.712, 0.662, 0.809. All five comparisons hold by exact sign-flip tests (ALM p =
+    0.0002 twice; S1TJ p = 0.023 and 0.008; M1TJ p = 0.020). The figure marks p < 0.001, which an
+    exact paired permutation cannot reach with 8 or 9 sessions; the criterion uses 0.05.
+  deviations:
+  - Decoded variables come from the fits of fig3c-length, without lick standardisation.
+- claim: fig3f-backtracking-svm
+  outcome: partially_reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig3f-backtracking-svm
+  notes: Sessions with backtracking in both directions are 6 ALM (as in the paper), 9 M1TJ, 8 S1TJ
+    and 5 S1BF. Mean accuracy in 0.2 to 0.4 s after the trigger is 0.740 (ALM), 0.734 (M1TJ), 0.595
+    (S1TJ) and 0.556 (S1BF), against null 95th percentiles of 0.526, 0.523, 0.516 and 0.515; before
+    0.1 s all are 0.487 to 0.519. ALM and M1TJ decode as stated; S1TJ and S1BF also exceed the
+    null, which the paper reports as an insignificant trend and no prediction. In this window the
+    classes differ in behaviour (1.854 against 0.113 missed licks, ed2e-missed-licks), which S1TJ
+    and S1BF activity may reflect.
+  deviations:
+  - The paper's null and confidence intervals come from a hierarchical bootstrap; here the null is
+    20 label shuffles per session, averaged over sessions.
+  - Trials are balanced across directions by random subsampling.
+  - The PCA before the SVM is fitted on all trials of a session, without labels, before the
+    cross-validation.
+- claim: fig4g-zigzag-context
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:fig4g-zigzag-context
+  notes: The 6 ZZ sessions come from 3 mice with 18 to 79 perfectly executed trials per sequence.
+    Mean accuracies of the four comparisons are 0.785 to 0.858 against null 95th percentiles of
+    0.510 to 0.518; the lowest session is 0.651. By mouse 0.730 to 0.916. The files do not name
+    the recorded area of the ZZ sessions; the paper says ALM.
+  deviations:
+  - Subsequences are aligned on touches (the seventh touch against the third or eleventh), not on
+    the cross-correlogram of tongue angle, and the extra selection of trials closest to the median
+    angle is not applied.
+  - The null mean over bins uses every fifth 5 ms bin.
+- claim: ed7f-target-position-alm
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed7f-target-position-alm
+  notes: Mean R2 of the upcoming direction in the second before the cue is 0.271 (ALM), 0.097
+    (M1TJ), 0.075 (S1TJ) and 0.051 (S1BF); ALM is higher than each (Mann-Whitney p = 0.0025,
+    0.0007, 0.0014). With trial folds 0.159 against 0.022 to 0.034 (p = 0.023 to 0.047). Per ALM
+    mouse 0.055 to 0.642. The 13 ALM sessions come from 8 mice; with one value per mouse, p =
+    0.012 to 0.024.
+  deviations:
+  - The paper's ITI window and trial set are not fully stated; the second before the cue of every
+    standard trial is used.
+- claim: ed7h-no-time-coding
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed7h-no-time-coding
+  notes: Mean R2 of the time to the cue is 0.008 to 0.034 by region (largest session 0.091, ALM),
+    below 0.1 everywhere; 0.004 to 0.018 with trial folds.
+  deviations:
+  - The paper gives no test; the bound of 0.1 was fixed in the criterion.
+  - Only the last second before the cue is used, where the paper may have used more of the
+    interval.
+- claim: ed4m-active-neuron-counts
+  outcome: partially_reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed4m-active-neuron-counts
+  measured:
+  - 351
+  - 223
+  - 155
+  notes: Single units with a maximal PETH rate of at least 10 spikes/s are 351 (ALM) and 223 (M1TJ),
+    within 10% of 324 and 233, and 155 (S1TJ) against 119. With multi-units, 387, 261 and 251. At 5
+    and 15 spikes/s the single-unit counts are 387, 259, 164 and 321, 200, 140.
+  deviations:
+  - PETHs are not computed on standardised inter-lick intervals.
+  - The unit classification is that of ephys-unit-counts, with its open choices.
+- claim: ed4l-alm-initiation
+  outcome: partially_reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed4l-alm-initiation
+  notes: 91 of 351 active ALM neurons (25.9%) peak in the initiation window, against 48 of 223 in
+    M1TJ (21.5%, Fisher one-sided p = 0.14) and 20 of 155 in S1TJ (12.9%, p = 0.0006). S1BF,
+    outside the criterion, has 17 of 55 (30.9%), above ALM, against the statement's "the other
+    regions". The windows differ in length (0.5, 2 and 1.2 s); per second of window ALM (0.519)
+    is still above M1TJ (0.430) and S1TJ (0.258).
+  deviations:
+  - The paper shows histograms of peak times without a test; the test was chosen in the
+    criterion.
+- claim: ed4o-rhythmicity
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed4o-rhythmicity
+  notes: Median r_avg is 0.201 (S1TJ), 0.156 (M1TJ) and 0.093 (ALM); one-sided Mann-Whitney against
+    ALM p = 2.5e-36 and 4.1e-24.
+  deviations:
+  - Without lick standardisation the rhythm of trial-averaged PETHs is blurred away from the
+    middle touch, which lowers r in every region.
+- claim: ed6-alm-reward-drop
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed6-alm-reward-drop
+  notes: Of 351 active ALM single units, 188 decrease and 92 increase from 0.5 s before to 0.5 s
+    after the first water touch (p < 0.01 each; binomial p = 5e-09). S1TJ 50 against 51, S1BF 16
+    against 15, M1TJ 96 against 74 (p = 0.054).
+  deviations:
+  - The paper shows example neurons and decoded tau; the test over units was chosen in the
+    criterion.
+- claim: ed1h-sequence-duration
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed1h-sequence-duration
+  measured: 0.992
+  notes: Over 25438 standard trials of 17 mice (the paper's number), the median over mice from the
+    first port-moving touch to the first touch at the last position is 0.992 s (0.890 to 1.138 s
+    by mouse); from the cue, 1.324 s. Recording sessions alone give 1.004 s.
+  deviations:
+  - The paper does not list the sessions of Extended Data Fig. 1h; recording sessions (except
+    zigzag) and the opto sessions' trials without light are used.
+- claim: ed1l-learning-curves
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed1l-learning-curves
+  measured: 15
+  notes: 15 mice have learning files. Median over mice of the initiation time falls from 2.573 s
+    (first 100 standard trials) to 0.291 s (last 100), Wilcoxon p = 0.00043, and the sequence speed
+    rises from 4.902 to 6.038 positions/s, p = 0.0043; 14 of 15 mice improve in both. MX181003 does
+    not; its file of 2018-10-02 was left out as a duplicate, so its other learning files may also
+    be mislabelled. Without MX181003, 14 of 14 improve (p = 0.00012 each).
+- claim: ed1l-proficiency-1500
+  outcome: not_reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed1l-proficiency-1500
+  measured: 200
+  notes: Under reading (a) the median over mice of the trial at which sequence speed reaches 90% of
+    its final value is 200 (150 and 250 at 80% and 95%); under reading (b), initiation time within
+    110% of final, 1100. Both are outside 1350 to 1650. One mouse (MX200101) reaches neither. The
+    paper does not define proficiency, and the learning files may not start at the first day of
+    training. Every mouse's first file holds standard sequences in both directions and almost
+    nothing else (2 other trials in MX170903, 1 in MX180803 and 1 in MX181002), and in 3 of 15 mice (MX170903, MX180201, MX181003) the median initiation time of the first 100 standard
+    trials is already under 1 s; if earlier training is missing, both counts are too low. In the
+    median mouse the speed reaches 90% of its final value within 200 trials, so the result under
+    reading (a) also reflects how proficiency was defined. MX200101
+    has no standard trials among its last 500 learning trials, so it has no final value.
+  deviations:
+  - Proficiency was defined in the criterion, as the paper gives no definition.
+- claim: ed2-backtracking-counts
+  outcome: not_reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed2-backtracking-counts
+  measured:
+  - 55
+  - 10365
+  - 3839
+  - 9
+  notes: Reading (c) gives 55 sessions of 9 mice with 10365 standard and 3839 backtracking trials;
+    only the number of mice matches. Readings (a) and (b) give 74 and 59 sessions. A variant
+    outside the criterion leaves out the 8 sessions whose touches are mostly a few ms long (5th
+    percentile 3 to 7 ms, against 14 ms or more in the others), which fits the Methods' 8 sessions
+    "where only touch onsets were correctly registered"; it gives 47 sessions, the paper's number,
+    of 8 mice, with 8891 and 3207 trials. On these 47 sessions, removing the first and last trial
+    and trials not finished within the video (the Methods' exclusions) leaves 8627 and 3104;
+    both above tolerance. Adding initiation under 1 s, the Figure 3 trial selection and not an
+    exclusion the Methods give for Extended Data Fig. 2, leaves 8058 and 2894, both within
+    tolerance. This chain was built after seeing the results and does not decide the outcome; it
+    has 8 mice where the paper has 9.
+  deviations:
+  - The paper's own trial exclusions (first and last trial, unfinished videos) are not applied in
+    the readings of the criterion; they are shown as a variant.
+- claim: ed2e-missed-licks
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed2e-missed-licks
+  measured: 1.854
+  notes: In 29 Figure 3 sessions with backtracking (8 mice), backtracking trials have a mean of
+    1.854 missed licks in the fourth interval, against 0.113 in standard trials (Mann-Whitney p
+    printed as 0). By mouse 0.97 to 5.39. A touch tolerance of 0 or 25 ms in place of 12.5 ms
+    gives the same mean on the same trials.
+  deviations:
+  - Sessions are the Figure 3 sessions with backtracking, not the paper's 47.
+- claim: ed6b-consummatory-licks
+  outcome: not_reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed6b-consummatory-licks
+  measured: 6.0
+  notes: After the first lick touching water, the bout continues for a median of 6 video licks
+    (mean 6.38, 6864 trials), or 4 touches (mean 3.87); counting the first water lick, 7. None is
+    within 4.5 to 5.5. The video ended during the bout in 88 trials, which are left out. By mouse,
+    4 to 10 video licks and 2 to 7 touches. Under (a) the most common count is 5 (20.2% of
+    trials; 19.6% at 6, 12.8% at 4). With the bout threshold of (b) taken from video lick
+    intervals (238 ms, against 243 ms from touches) the median is still 4 touches.
+  deviations:
+  - The paper does not say whether licks or touches are counted or where the bout ends; the bout
+    rule (1.5 times the median interval) is the Methods' rule for lick bouts.
+- claim: ed7b-correct-side
+  outcome: reproduced
+  notebook: reproduce_xu_2022.ipynb
+  output: claim:ed7b-correct-side
+  notes: In all 11 mice of the Figure 3 sessions, 0.562 to 0.923 of standard trials start with no
+    lick on the other side of the midline before the first touch (0.647 to 0.980 with a 5 degree
+    margin); pooled 0.714. The paper shows 8 mice.
+  deviations:
+  - The side of the port is taken from the angle of the lick that made the first touch, as the
+    files do not say which side each position is on.
+- claim: fig2b-s1tj-angle-variability
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 35 opto sessions at 4 mW (described "2s 5V") are 5 per mouse for 7 mice, one per
+    region presumably, but no file names the inhibited region; trial tables mark only light
+    times, and the opto1 and opto2 series give the LED drive. The 25 sessions at 2 mW are the
+    same. Checked in all 74 opto files, in the trial columns (opto takes 0, 1, 2 or NaN, without a
+    description), the session description (cut short in the files themselves), general (only
+    experimenter, institution, lab and subject), acquisition (empty), stimulus (empty presentation
+    and templates groups), and the
+    attributes of the opto1 and opto2 series (unit "categorical", no description).
+- claim: fig2b-almm1tj-angle-length
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig2b-s1tj-angle-variability; the inhibited region of each session is not stated.
+- claim: fig2c-almm1tj-initiation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig2b-s1tj-angle-variability.
+- claim: fig2c-termination
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig2b-s1tj-angle-variability.
+- claim: ed3lm-half-power
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 25 sessions at 2 mW ("2s 2.5V", 5 mice) do not name the inhibited region either.
+- claim: ed3f-inhibition-efficiency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 14 efficiency recordings (4 mice, 414 units) hold spike times and light trials, but
+    no spike waveforms, which the paper uses to separate putative pyramidal and FS cells, and no
+    distance of the fibre from the recording site. The distance is also missing from the
+    metadata (metadata_insufficient).
+- claim: ed1i-earplug
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 10 earplug sessions are two per mouse for 5 mice, as the Methods describe, but nothing
+    in the files says which session had earplugs and which was the sham. Without the labels, the
+    paper's test (paired one-tailed bootstrap of missed licks over mice) finds an effect under 4 of
+    the 32 possible assignments, so the absence cannot be shown label-free. In all 5 mice the
+    earlier session has the longer time to first touch (by 0.40 to 1.49 s), as the paper reports
+    for earplugs; under that inferred assignment missed licks differ by +0.032 per trial (p =
+    0.36), no effect, as the claim says. The inferred labels do not decide the outcome.
+- claim: ed1j-odor-masking
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 6 air sessions (6 mice) switch the air flow after the 100th trial, on first in two
+    mice and off first in four; the files do not say which. Over the 15 possible choices of the two
+    on-first mice, the paper's test finds an effect in one (smallest p = 0.018), so the absence
+    cannot be shown label-free.
+- claim: ed1k-tongue-numbing
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 11 numbing sessions (6 mice, one with a single session) do not say which session was
+    lidocaine and which saline. In all 5 mice with two sessions the earlier session has more
+    missed licks in its first 30 min (0.99 to 2.74 against 0.23 to 1.07 per trial), significant
+    in 4; the direction of the claim needs the labels.
+- claim: ed1f-lick-force
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The force sensor series (tubeH, tubeV) are in volts; the calibration to mN of Extended
+    Data Fig. 1d is not in the files; their conversion is 1 and offset 0, and the paper gives no
+    slope.
+- claim: ed4j-nnmf-clusters
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The consistency measure needs cluster labels matched across bootstrap iterations, and
+    the Methods do not say how; the paper's code could not be found.
+findings:
+- kind: metadata_insufficient
+  statement: The opto sessions do not name the inhibited region; 35 sessions at 4 mW and 25 at 2 mW,
+    five per mouse, carry only the light times and LED drive. Figure 2 and Extended Data Fig. 3j-m
+    cannot be tested.
+- kind: metadata_insufficient
+  statement: The control sessions do not mark the condition; which earplug session had earplugs,
+    which half of each air session had the air flow on, and which numbing session was lidocaine
+    are not stated.
+- kind: metadata_insufficient
+  statement: The recorded area and the kind of session are given only by the session description
+    (the name of the lab's data folder); there is no electrodes table, unit location, depth or
+    quality label, and the area of the zigzag (ZZ) and "ephys others" sessions is not given.
+- kind: data_missing
+  statement: Spike waveforms are not included, so units cannot be classified as putative pyramidal
+    or FS cells (Extended Data Fig. 3c-f), and the fibre distance of the efficiency recordings is
+    not given.
+- kind: format_error
+  statement: 1446 spike times in 35 files are duplicated within a unit, away from trial boundaries
+    (median 2.9 s). The Methods say these Phy duplicates were removed before analysis; the
+    deposited spike times keep them.
+- kind: other
+  statement: One training recording is deposited twice; the MX181003 learning file of 2018-10-02
+    15:30:57 repeats all 4028 touches of the MX181002 file with the same start time and then
+    continues, so it is unclear which mouse it belongs to.
+- kind: format_error
+  statement: In the 574 learning files start_time and stop_time count from 0 while cue, touch,
+    port and water times are on another clock (around 10^6 s), so trial intervals and events do
+    not line up.
+- kind: format_error
+  statement: The seqId column of the learning files holds the text of an unconverted MATLAB
+    categorical object, not a sequence identity.
+- kind: metadata_insufficient
+  statement: Force sensor and lick port series are in volts without a calibration, tongue landmarks
+    are in pixels without a scale (the Methods give 32 um per pixel), and every trial column is
+    described as "no description".
+- kind: selection_undocumented
+  statement: The Methods leave out 8 sessions whose touch offsets were not registered; the files
+    do not mark them. Eight sessions with backtracking have touches of a few ms (5th percentile 3
+    to 7 ms), and leaving them out gives the paper's 47 sessions.
+- kind: metadata_error
+  statement: The session description is cut short ("... se") in the files themselves, so the
+    full name of the lab's data folder, the only place the area and kind of session are given, is
+    lost.
+- kind: metadata_insufficient
+  statement: The trial column opto (values 0, 1 and 2) and the opto1 and opto2 series (unit
+    "categorical") have no description, and no file has optogenetics metadata (light source,
+    site, power).
+- kind: methods_unavailable
+  statement: The paper says its MATLAB analysis code is available at GitHub but gives no address,
+    and no repository was found under the authors' accounts.
+verifications:
+- date: 2026-10-17
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-1; same harness, separate context, did
+    not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file; the paper from PMC9109820. The archive's metadata was
+    checked for the blocked claims.
+  results:
+  - claim: ephys-unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Cell 21 finds 57 sessions and 1578 single units (allowed 1383 to 1691); multi-units are 339, above the allowed 273 to 333, and the total of 1917 is within 10% of 1840. The 1 s bins, a censored period of 0 and an active time that counts spikes outside the trial span are choices made here; on synthetic units the estimate overestimates at high contamination, and a 20% cut gives 295 multi-units. Asked for the single and multi split per session."
+    response: "Added the split per session, two other estimates of the contamination (0.5 ms censored period, 341 multi-units; spikes in the trial span only, 478) and a synthetic test (0.163 for a true 0.15, 0.233 for 0.20). The criterion's 15% gives 339 and 341 under the first two. Outcome kept."
+  - claim: fig3-session-counts
+    agrees: true
+    outcome: reproduced
+    reason: "Cell 23 gives 8, 9, 13 and 5 sessions; every one has units and at least 10 selected trials in each direction."
+    response: "None needed."
+  - claim: fig3-units-per-session
+    agrees: true
+    outcome: reproduced
+    reason: "Reading (b) gives 33.6 and 13.0. Reading (a), the 35 sessions the regressions use, gives an SD of 14.4, just above the 14.3 limit, and alone would be partial. Listed among outcomes near a threshold that could flip with another seed."
+    response: "Unit counts involve no seed; the notebook now prints the SD with another seed (14.4) and the conclusion says so. Outcome kept."
+  - claim: fig3a-trial-count
+    agrees: true
+    outcome: reproduced
+    reason: "Reading (a) gives 2886 trials (allowed 2416 to 2952). Could not check whether the greedy selection finds the minimum-distance subset; asked for a comparison with exhaustive search on a small session."
+    response: "Added exhaustive search on 16 candidates for all 70 session-directions (greedy best in 43, at most 8.4% above the best) and a swap search on the full sets (at most 4.9% better, 97% of trials shared). The count is a third of the candidates and does not depend on the search."
+  - claim: fig3c-length
+    agrees: true
+    outcome: reproduced
+    reason: "Cell 31 gives 0.568, 0.423, 0.117 and 0.032, all within tolerance, and the order holds; the trial-fold variant also passes. Random folds leak within-trial autocorrelation into the test folds; the orderings survive trial folds, the size of the R2 values does not. The R2 means and SDs of Fig. 3b are only inside the figure image, which I did not view, so I could not verify them."
+    response: "Added the leak to the deviations. Outcome kept."
+  - claim: fig3c-velocity
+    agrees: true
+    outcome: reproduced
+    reason: "Cell 33 gives 0.361, 0.326, 0.081 and 0.019, all within tolerance, and the order holds. The R2 means and SDs of Fig. 3b are only inside the figure image, which I did not view, so I could not verify them."
+    response: "None needed."
+  - claim: fig3c-angle
+    agrees: true
+    outcome: reproduced
+    reason: "Cell 35: S1BF 0.111 is below the other three, whose spread is 0.049; all four within tolerance. The R2 means and SDs of Fig. 3b are only inside the figure image, which I did not view, so I could not verify them."
+    response: "None needed."
+  - claim: fig3c-identity
+    agrees: true
+    outcome: reproduced
+    reason: "Cell 37 gives 0.693 > 0.412 > 0.270 > 0.113, all within tolerance. With trial folds S1BF is 0.049, below the allowed 0.09 to 0.19, so that variant would only be partial. The R2 means and SDs of Fig. 3b are only inside the figure image, which I did not view, so I could not verify them."
+    response: "None needed; the trial-fold variant does not decide the outcome under the criterion."
+  - claim: fig3c-time
+    agrees: true
+    outcome: reproduced
+    reason: "Cell 39 gives 0.637 > 0.440 > 0.198 > 0.087, all within tolerance. The R2 means and SDs of Fig. 3b are only inside the figure image, which I did not view, so I could not verify them."
+    response: "None needed."
+  - claim: ed5b-variables-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: "Cell 41: the largest mean |r| is 0.118 (theta-I); no pair reaches 0.3."
+    response: "None needed."
+  - claim: ed5e-variance-explained
+    agrees: true
+    outcome: reproduced
+    reason: "Median ratio 0.454, inside 0.45 to 0.55 by only 0.004, from a single seed and fold assignment; asked for a cell repeating the fits with 3 to 5 seeds."
+    response: "Added the fits with seeds 11, 12 and 13: the median is 0.453 to 0.455, inside the range each time. Outcome kept."
+  - claim: ed5f-axes-orthogonal
+    agrees: true
+    outcome: partially_reproduced
+    reason: "One pair, L' and theta, has mean |cos| 0.302, just over 0.3; random directions give 0.154. Could flip with a different seed."
+    response: "With seeds 3, 11, 12 and 13, L' and theta give 0.302 to 0.320 and are the only pair at or above 0.3 each time. Outcome kept."
+  - claim: fig3e-cca
+    agrees: true
+    outcome: reproduced
+    reason: "All 5 comparisons hold (p 0.0002 to 0.023)."
+    response: "None needed."
+  - claim: fig3f-backtracking-svm
+    agrees: true
+    outcome: partially_reproduced
+    reason: "ALM (0.740) and M1TJ (0.734) decode, but so do S1TJ (0.595) and S1BF (0.556), each above its null 95th percentile. After the trigger behaviour differs between classes (1.85 against 0.11 missed licks), which decoding in S1TJ and S1BF may reflect. The PCA is fitted on all trials before cross-validation, without labels."
+    response: "Added both points to the conclusion, the notes and the deviations. Outcome kept."
+  - claim: fig4g-zigzag-context
+    agrees: true
+    outcome: reproduced
+    reason: "6 sessions from 3 mice; all four comparisons decode (0.79 to 0.86 against a null 95th percentile of about 0.51)."
+    response: "None needed."
+  - claim: ed7f-target-position-alm
+    agrees: true
+    outcome: reproduced
+    reason: "ALM 0.271 is the highest mean (p = 0.0025, 0.0007, 0.0014; trial folds 0.02 to 0.047). Sessions are treated as independent, though ALM's 13 sessions come from 8 mice."
+    response: "Added a variant with one value per mouse: ALM is still higher than each region (p = 0.012 to 0.024). Outcome kept."
+  - claim: ed7h-no-time-coding
+    agrees: true
+    outcome: reproduced
+    reason: "Every region's mean R2 is at most 0.034."
+    response: "None needed."
+  - claim: ed4m-active-neuron-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Reading (a): ALM 351 and M1TJ 223 are within tolerance, S1TJ 155 is not (allowed 107 to 131); reading (b) has none within. Sensitive to the unit classification choices. The standardisation of inter-lick intervals is not applied; effects on ed4m and ed4o were not quantified (does not affect a conclusion)."
+    response: "The classification variants are now shown under ephys-unit-counts. Outcome kept."
+  - claim: ed4l-alm-initiation
+    agrees: true
+    outcome: partially_reproduced
+    reason: "ALM's fraction (0.259) is higher than both other regions; against S1TJ p = 0.0006, against M1TJ p = 0.136. The windows have unequal lengths, and S1BF's fraction (0.309) is above ALM's, against the claim's wording."
+    response: "Added S1BF and the fractions per second of window to the output, conclusion and notes. Outcome kept."
+  - claim: ed4o-rhythmicity
+    agrees: true
+    outcome: reproduced
+    reason: "Medians S1TJ 0.201 and M1TJ 0.156 against ALM 0.093, p = 2.5e-36 and 4.1e-24. Neurons are treated as independent. The standardisation of inter-lick intervals is not applied; effects on ed4m and ed4o were not quantified (does not affect a conclusion)."
+    response: "None needed."
+  - claim: ed6-alm-reward-drop
+    agrees: true
+    outcome: reproduced
+    reason: "In ALM, 188 neurons decrease and 92 increase (binomial p = 5e-9)."
+    response: "None needed."
+  - claim: ed1h-sequence-duration
+    agrees: true
+    outcome: reproduced
+    reason: "Reading (a) gives 0.992 s over 17 mice and 25438 trials; the paper has 17 mice and 25683 trials."
+    response: "None needed."
+  - claim: ed1l-learning-curves
+    agrees: true
+    outcome: reproduced
+    reason: "15 mice, 14 of 15 improve on both measures; Wilcoxon p = 0.0004 and 0.004. The learning file of MX181003 shows a reversed curve and duplicates a file of MX181002; it is probably mislabelled but is not excluded."
+    response: "Added a variant without MX181003 (14 of 14, p = 0.00012 each) and the note. Outcome kept."
+  - claim: ed1l-proficiency-1500
+    agrees: true
+    outcome: not_reproduced
+    reason: "Reading (a) 200 trials, (b) 1100; allowed 1350 to 1650. Assumes the first learning file is the start of training, never checked; several mice are already fast in their first 100 trials. MX200101 returns NaN without comment. Asked for the first file's date against the first ephys or opto date, and the first file's posIndex patterns."
+    response: "Added both per mouse: every first file holds standard sequences and almost nothing else, and 3 of 15 mice start under 1 s, so early training may be missing and the counts may be low. MX200101 has no standard trials in its last 500. Outcome kept."
+  - claim: ed2-backtracking-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: "No reading has 2 or more of the 4 values within tolerance. The touch-duration variant leaves exactly 47 sessions with 8 mice; only the trial counts disagree, about 19% high, and no trial-level filter (initiation under 1 s, video present) was tried. Asked for these counts."
+    response: "Added the filters on the 47-session variant: first and last trial and unfinished videos removed give 8627 and 3104; with initiation under 1 s, 8058 and 2894, both within tolerance. The variant was built after seeing the results and is outside the criterion, so the outcome is kept; the notes record it."
+  - claim: ed2e-missed-licks
+    agrees: true
+    outcome: reproduced
+    reason: "1.854 missed licks in backtracking trials (allowed 0.9 to 2.2) against 0.113 in standard trials."
+    response: "None needed."
+  - claim: ed6b-consummatory-licks
+    agrees: true
+    outcome: not_reproduced
+    reason: "Medians 6 (a), 4 (b) and 7 (c); none in 4.5 to 5.5. Reading (b) ends bouts early because consummatory licks do not all register a touch, and with integer medians the tolerance requires exactly 5. Asked for the distribution of reading (a) and a touch bout threshold from video lick intervals."
+    response: "Added both: under (a) 5 is the most common count (20.2%) but the median is 6; with the video threshold (238 ms) reading (b) still has a median of 4. Outcome kept."
+  - claim: ed7b-correct-side
+    agrees: true
+    outcome: reproduced
+    reason: "11 of 11 mice above 0.5, also with the 5 degree margin; pooled 0.714."
+    response: "None needed."
+  - claim: fig2b-s1tj-angle-variability
+    agrees: true
+    outcome: blocked
+    reason: "The archive metadata confirms the session descriptions say only 2s 5V, 2s 2.5V or efficiency. 7 mice with 5 sessions at 5V and 5 mice with 5 at 2.5V match one session per region, but the region of each session is missing. The notebook never showed the opto column values, general/optogenetics, stimulus or the full session description."
+    response: "Added a cell reading these from all 74 opto and 27 control files: opto takes 0, 1, 2 or NaN without a description, the session description is cut short in the files, general has no optogenetics, stimulus and acquisition are empty. Outcome kept; added a finding."
+  - claim: fig2b-almm1tj-angle-length
+    agrees: true
+    outcome: blocked
+    reason: "The archive metadata confirms the session descriptions say only 2s 5V, 2s 2.5V or efficiency. 7 mice with 5 sessions at 5V and 5 mice with 5 at 2.5V match one session per region, but the region of each session is missing. The notebook never showed the opto column values, general/optogenetics, stimulus or the full session description."
+    response: "Added a cell reading these from all 74 opto and 27 control files: opto takes 0, 1, 2 or NaN without a description, the session description is cut short in the files, general has no optogenetics, stimulus and acquisition are empty. Outcome kept; added a finding."
+  - claim: fig2c-almm1tj-initiation
+    agrees: true
+    outcome: blocked
+    reason: "The archive metadata confirms the session descriptions say only 2s 5V, 2s 2.5V or efficiency. 7 mice with 5 sessions at 5V and 5 mice with 5 at 2.5V match one session per region, but the region of each session is missing. The notebook never showed the opto column values, general/optogenetics, stimulus or the full session description."
+    response: "Added a cell reading these from all 74 opto and 27 control files: opto takes 0, 1, 2 or NaN without a description, the session description is cut short in the files, general has no optogenetics, stimulus and acquisition are empty. Outcome kept; added a finding."
+  - claim: fig2c-termination
+    agrees: true
+    outcome: blocked
+    reason: "The archive metadata confirms the session descriptions say only 2s 5V, 2s 2.5V or efficiency. 7 mice with 5 sessions at 5V and 5 mice with 5 at 2.5V match one session per region, but the region of each session is missing. The notebook never showed the opto column values, general/optogenetics, stimulus or the full session description."
+    response: "Added a cell reading these from all 74 opto and 27 control files: opto takes 0, 1, 2 or NaN without a description, the session description is cut short in the files, general has no optogenetics, stimulus and acquisition are empty. Outcome kept; added a finding."
+  - claim: ed3lm-half-power
+    agrees: true
+    outcome: blocked
+    reason: "The archive metadata confirms the session descriptions say only 2s 5V, 2s 2.5V or efficiency. 7 mice with 5 sessions at 5V and 5 mice with 5 at 2.5V match one session per region, but the region of each session is missing. The notebook never showed the opto column values, general/optogenetics, stimulus or the full session description."
+    response: "Added a cell reading these from all 74 opto and 27 control files: opto takes 0, 1, 2 or NaN without a description, the session description is cut short in the files, general has no optogenetics, stimulus and acquisition are empty. Outcome kept; added a finding."
+  - claim: ed3f-inhibition-efficiency
+    agrees: true
+    outcome: blocked
+    reason: "The 414 units match the n = 414 of Extended Data Fig. 3e, but there are no waveforms and no fibre distance; only a pooled rate change could be computed."
+    response: "None needed."
+  - claim: ed1i-earplug
+    agrees: true
+    outcome: blocked
+    reason: "5 mice with 2 earplug sessions each, without saying which is which. The no-effect claim could be partly tested without labels by checking that each mouse's two sessions have similar missed-lick counts; the notebook does not do this."
+    response: "Added it: the paper's test finds an effect under 4 of the 32 label assignments, so the absence is not shown label-free. Initiation time and session order agree on one assignment in all 5 mice, under which missed licks do not differ (p = 0.36). Kept blocked."
+  - claim: ed1j-odor-masking
+    agrees: true
+    outcome: blocked
+    reason: "6 single air sessions (paper n = 6); nothing marks when the air flow was on."
+    response: "Added the check over the 15 possible assignments of the on-first mice: one gives p < 0.05 (0.018). Kept blocked."
+  - claim: ed1k-tongue-numbing
+    agrees: true
+    outcome: blocked
+    reason: "5 mice have 2 numbing sessions (paper n = 5), lidocaine and saline unlabelled. A consistent difference between each mouse's two sessions could be checked without labels; its direction could not."
+    response: "Added it: the earlier session has more missed licks in all 5 mice, significant in 4; the direction needs the labels. Kept blocked."
+  - claim: ed1f-lick-force
+    agrees: true
+    outcome: blocked
+    reason: "The notebook reports the force data only as volts and never prints the TimeSeries conversion attribute; the paper gives no slope for the calibration."
+    response: "Added the attributes: unit volt, conversion 1, offset 0, no description. Kept blocked."
+  - claim: ed4j-nnmf-clusters
+    agrees: true
+    outcome: blocked
+    reason: "Acceptable, but a consistency measure that needs no label matching (how often pairs of neurons stay in the same cluster) would allow an approximate test."
+    response: "Not done: that measure differs from the paper's, so it could not decide the claim, and it would add an NNMF bootstrap over all neurons to a notebook that already runs about 21 minutes. Kept blocked."
+- date: 2026-10-17
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2; same harness, separate context, did
+    not write the notebook)
+  reviewed: Round 2. The full executed notebook with conclusions and summary, the helper module,
+    the claims file, the entry README and this record; the paper from PMC9109820. In reply the
+    entry was corrected and re-run; the README's run time, area count and claim count were also
+    corrected.
+  results:
+  - claim: ephys-unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome under the fixed criterion stands. Cell 26 and the record say only a 20% contamination threshold gives a count inside the tolerance (295), but cell 23 prints two other variants inside 272.7 to 333.3, contamination <= 15% only (331) and RPV <= 0.5% only (309). The partial outcome depends on details of the contamination estimate; dropping either criterion puts the multi-units inside tolerance. The round-1 response says the criterion's 15% gives 339 under the first two, but the 0.5 ms censored-period estimate gives 341."
+    response: "Cell 26, the notes and the round-1 response now name all three variants inside the tolerance (331, 309, 295) and give 339 and 341 for the two estimates. Outcome kept."
+  - claim: fig3-session-counts
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome under the criteria in the claims file."
+    response: "None needed."
+  - claim: fig3-units-per-session
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. This rests on reading (b), the 57 sessions. Reading (a), the 35 sessions the record itself says the claim refers to, has an SD of 14.4 against a limit of 14.3, which does not depend on the seed. The criterion allows either reading, so the outcome is reproduced only under the wider reading."
+    response: "None needed; the notes and the deviation already say this. Outcome kept."
+  - claim: fig3a-trial-count
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. The greedy trial selection point is resolved (cell 35)."
+    response: "None needed."
+  - claim: fig3c-length
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. The expected means and SDs come from the Figure 3b image, and I still cannot verify them; all five fig3c outcomes depend on those values. My round-1 point that I could not verify the Figure 3b targets is in none of the fig3c reasons."
+    response: "Added the omitted point to the round-1 reasons. The paper's only supplementary spreadsheet (Supplementary Table 1) is a table of the mice, not source data, so the targets can still only be read from the figure image; this stays a deviation. Outcome kept."
+  - claim: fig3c-velocity
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. The expected means and SDs come from the Figure 3b image, and I still cannot verify them; all five fig3c outcomes depend on those values. My round-1 point that I could not verify the Figure 3b targets is in none of the fig3c reasons."
+    response: "Added the omitted point to the round-1 reasons. The paper's only supplementary spreadsheet (Supplementary Table 1) is a table of the mice, not source data, so the targets can still only be read from the figure image; this stays a deviation. Outcome kept."
+  - claim: fig3c-angle
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. The expected means and SDs come from the Figure 3b image, and I still cannot verify them; all five fig3c outcomes depend on those values. My round-1 point that I could not verify the Figure 3b targets is in none of the fig3c reasons."
+    response: "Added the omitted point to the round-1 reasons. The paper's only supplementary spreadsheet (Supplementary Table 1) is a table of the mice, not source data, so the targets can still only be read from the figure image; this stays a deviation. Outcome kept."
+  - claim: fig3c-identity
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. The expected means and SDs come from the Figure 3b image, and I still cannot verify them; all five fig3c outcomes depend on those values. My round-1 point that I could not verify the Figure 3b targets is in none of the fig3c reasons."
+    response: "Added the omitted point to the round-1 reasons. The paper's only supplementary spreadsheet (Supplementary Table 1) is a table of the mice, not source data, so the targets can still only be read from the figure image; this stays a deviation. Outcome kept."
+  - claim: fig3c-time
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. The expected means and SDs come from the Figure 3b image, and I still cannot verify them; all five fig3c outcomes depend on those values. My round-1 point that I could not verify the Figure 3b targets is in none of the fig3c reasons."
+    response: "Added the omitted point to the round-1 reasons. The paper's only supplementary spreadsheet (Supplementary Table 1) is a table of the mice, not source data, so the targets can still only be read from the figure image; this stays a deviation. Outcome kept."
+  - claim: ed5b-variables-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome under the criteria in the claims file."
+    response: "None needed."
+  - claim: ed5e-variance-explained
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. Seed sensitivity resolved (cell 64): it stays inside its range under all four seeds."
+    response: "None needed."
+  - claim: ed5f-axes-orthogonal
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. Seed sensitivity resolved (cell 64): it stays partial under all four seeds."
+    response: "None needed."
+  - claim: fig3e-cca
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome under the criteria in the claims file."
+    response: "None needed."
+  - claim: fig3f-backtracking-svm
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. The behaviour difference and the PCA fitted before cross-validation are now in the conclusion and deviations."
+    response: "None needed."
+  - claim: fig4g-zigzag-context
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome under the criteria in the claims file."
+    response: "None needed."
+  - claim: ed7f-target-position-alm
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. The notes say \"With trial folds 0.159 against 0.028 to 0.034\"; cell 76 gives 0.022 for S1BF, so the range is 0.022 to 0.034. One value per mouse is resolved."
+    response: "Corrected the notes to 0.022 to 0.034."
+  - claim: ed7h-no-time-coding
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome under the criteria in the claims file."
+    response: "None needed."
+  - claim: ed4m-active-neuron-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. My round-1 point that the effect of the missing inter-lick-interval standardisation on ed4m and ed4o was not quantified appears in no reason; I had marked it as not affecting a conclusion."
+    response: "Added the point to the round-1 reasons. The effect is still not quantified; the deviation is recorded. Outcome kept."
+  - claim: ed4l-alm-initiation
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. S1BF and the per-second fractions are resolved (cell 85)."
+    response: "None needed."
+  - claim: ed4o-rhythmicity
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. My round-1 point that the effect of the missing inter-lick-interval standardisation on ed4m and ed4o was not quantified appears in no reason; I had marked it as not affecting a conclusion."
+    response: "Added the point to the round-1 reasons. The effect is still not quantified; the deviation is recorded. Outcome kept."
+  - claim: ed6-alm-reward-drop
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome under the criteria in the claims file."
+    response: "None needed."
+  - claim: ed1h-sequence-duration
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees with the outcome under the criteria in the claims file."
+    response: "None needed."
+  - claim: ed1l-learning-curves
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. MX181003 is handled by a variant (cell 97)."
+    response: "None needed."
+  - claim: ed1l-proficiency-1500
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees. Cell 102 and the record say every mouse's first file already holds only standard sequences, but cell 101 shows other trials in the first files of MX170903 (2), MX180803 (1) and MX181002 (1); minor. It is still unsettled whether the learning files start at the start of training: the paper says training began with the complete task, which fits standard-only first files, but 3 of 15 mice are already fast in their first 100 trials. Reading (a) also saturates within about 200 trials, so the not-reproduced outcome partly reflects how proficiency was defined."
+    response: "Corrected cell 102, the notes and the round-1 response to name the other trials in the three first files, and added to cell 102 and the notes that under reading (a) the median mouse reaches 90% of its final speed within 200 trials, so the result also reflects the definition. Whether the files start at the start of training cannot be settled from the files. Outcome kept."
+  - claim: ed2-backtracking-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees; this would still hold under the 47-session variant (cells 104 and 105), which has 8 mice, and 8891 standard and 3207 backtracking trials before the extra filters. Cell 106 says the variant shows that the paper's numbers can be reached with its own exclusions, but the last step, initiation under 1 s, is the Figure 3 trial selection, not an exclusion the Methods give for Extended Data Fig. 2; the variant has 8 mice against the paper's 9; and before that step the counts are 8627 and 3104, both above tolerance."
+    response: "Removed the sentence from cell 106. Cell 106 and the notes now say the counts after the Methods' exclusions (8627 and 3104) are above tolerance, that only the Figure 3 trial selection brings them inside, and that the variant has 8 mice against 9. Outcome kept."
+  - claim: ed2e-missed-licks
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. The notes say the touch tolerance (0 to 25 ms) changes the mean to 1.846; cell 108 gives 1.846 at both 0 and 25 ms, so the tolerance has no effect. The variant loop also skips the video-end check and the filter on sessions with backtracking, and that different trial set is what moves the mean from 1.854."
+    response: "The variants now use the same trials as the main count (cell 108): the mean is 1.854 at 0, 12.5 and 25 ms. Corrected the notes and added the result to cell 109."
+  - claim: ed6b-consummatory-licks
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees. The distribution and the video-based bout threshold are resolved (cell 111)."
+    response: "None needed."
+  - claim: ed7b-correct-side
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. Extended Data Fig. 7b shows 8 mice, as the record says."
+    response: "None needed."
+  - claim: fig2b-s1tj-angle-variability
+    agrees: true
+    outcome: blocked
+    reason: "Agrees. Cell 14 says \"stimulus and acquisition are empty\", but cell 13 prints stimulus as holding presentation and templates, whose contents are not shown."
+    response: "Cell 13 now prints the objects inside the stimulus groups: there are none in any of the 101 files. Cell 14 and the notes now say acquisition is empty and stimulus holds the empty groups presentation and templates."
+  - claim: fig2b-almm1tj-angle-length
+    agrees: true
+    outcome: blocked
+    reason: "Agrees. Cell 14 says \"stimulus and acquisition are empty\", but cell 13 prints stimulus as holding presentation and templates, whose contents are not shown."
+    response: "Cell 13 now prints the objects inside the stimulus groups: there are none in any of the 101 files. Cell 14 and the notes now say acquisition is empty and stimulus holds the empty groups presentation and templates."
+  - claim: fig2c-almm1tj-initiation
+    agrees: true
+    outcome: blocked
+    reason: "Agrees. Cell 14 says \"stimulus and acquisition are empty\", but cell 13 prints stimulus as holding presentation and templates, whose contents are not shown."
+    response: "Cell 13 now prints the objects inside the stimulus groups: there are none in any of the 101 files. Cell 14 and the notes now say acquisition is empty and stimulus holds the empty groups presentation and templates."
+  - claim: fig2c-termination
+    agrees: true
+    outcome: blocked
+    reason: "Agrees. Cell 14 says \"stimulus and acquisition are empty\", but cell 13 prints stimulus as holding presentation and templates, whose contents are not shown."
+    response: "Cell 13 now prints the objects inside the stimulus groups: there are none in any of the 101 files. Cell 14 and the notes now say acquisition is empty and stimulus holds the empty groups presentation and templates."
+  - claim: ed3lm-half-power
+    agrees: true
+    outcome: blocked
+    reason: "Agrees. Cell 14 says \"stimulus and acquisition are empty\", but cell 13 prints stimulus as holding presentation and templates, whose contents are not shown."
+    response: "Cell 13 now prints the objects inside the stimulus groups: there are none in any of the 101 files. Cell 14 and the notes now say acquisition is empty and stimulus holds the empty groups presentation and templates."
+  - claim: ed3f-inhibition-efficiency
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the outcome under the criteria in the claims file."
+    response: "None needed."
+  - claim: ed1i-earplug
+    agrees: true
+    outcome: blocked
+    reason: "Agrees; the claim stays blocked either way. Cell 121 treats the Methods' remark that mice did not have experience with earplugs prior to the earplug session as support for the earplug session being the earlier one; the remark says nothing about session order."
+    response: "Removed the remark from cell 121; it now says the paper does not give the order of the two sessions. Outcome kept."
+  - claim: ed1j-odor-masking
+    agrees: true
+    outcome: blocked
+    reason: "Agrees. The label-free check is resolved (cell 119). Air flow on first in two mice and off first in four matches the paper text."
+    response: "None needed."
+  - claim: ed1k-tongue-numbing
+    agrees: true
+    outcome: blocked
+    reason: "Agrees. The label-free check is resolved (cell 120)."
+    response: "None needed."
+  - claim: ed1f-lick-force
+    agrees: true
+    outcome: blocked
+    reason: "Agrees. The force conversion attribute is resolved (cell 13). The README's \"Optogenetic inhibition and control experiments (nine claims)\" includes ed1f-lick-force, which is a calibration claim."
+    response: "The README now lists the opto and control claims as eight and ed1f-lick-force on its own row."
+  - claim: ed4j-nnmf-clusters
+    agrees: true
+    outcome: blocked
+    reason: "Agrees with the outcome under the criteria in the claims file."
+    response: "None needed."
