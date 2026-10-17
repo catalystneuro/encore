@@ -4,8 +4,8 @@ Mu, Bennett, Rubinov et al. (2019), Cell 178, 27-43, doi:10.1016/j.cell.2019.05.
 
 Each NWB file holds one paralysed larval zebrafish swimming fictively in a one-dimensional virtual
 reality while its brain is imaged with a light-sheet microscope. Every file holds the raw signals
-of the rig at 5989.6 Hz (two swim channels, the stimulus gain, the grating's baseline velocity,
-the stimulus type and parameters, and the camera trigger), the swim bouts (`SwimIntervals`) and
+of the rig at 5989.6 Hz (two swim channels, the stimulus gain, the grating's baseline and total
+velocity, the stimulus type and parameters, and the camera trigger), the swim bouts (`SwimIntervals`) and
 a table of behavioural states (`ActivityStates`). Eight files also hold segmented cell traces
 (`processing/ophys/DfOverF`), of neurons, of radial astrocytes ("glia"), or of both. Files are
 streamed from the archive at the pinned version; nothing is written to disk.
@@ -106,6 +106,7 @@ def load_session(asset: dict) -> dict:
     s["cond_t"] = np.arange(0, s["n_samples"], step) / rate
     s["gain"] = _decimate(acq["StimulusGainSignal/data"], step)
     s["velocity"] = _decimate(acq["BaselineStimulusVelocitySignal/data"], step)
+    s["total_velocity"] = _decimate(acq["TotalStimulusVelocitySignal/data"], step)
     s["protocol_code"] = _decimate(acq["StimulusParameterSignals/data"], step, 0)
     ttl = acq["FrameCaptureTTLSignal/data"][:]
     s["ttl_volume_starts"] = np.flatnonzero((ttl[1:] > 3.8) & (ttl[:-1] <= 3.8)) / rate
@@ -150,7 +151,8 @@ def segments(t: np.ndarray, mask: np.ndarray, min_len: float = MIN_SEGMENT_S) ->
     return [(a, b) for a, b in out if b - a >= min_len]
 
 
-def epochs_in_segment(swims: pd.DataFrame, seg: tuple[float, float], gap: float = PASSIVE_GAP_S) -> dict:
+def epochs_in_segment(swims: pd.DataFrame, seg: tuple[float, float], gap: float = PASSIVE_GAP_S,
+                      keep_edges: bool = False) -> dict:
     """Passive and active epochs inside one condition period, by the Methods' rule.
 
     Passive epochs are pauses of `gap` or more between two bouts inside the period. Active epochs
@@ -158,12 +160,16 @@ def epochs_in_segment(swims: pd.DataFrame, seg: tuple[float, float], gap: float 
     end, and bounded on both sides by a pause of `gap` or more (a period edge counts as a pause
     only if the time to it is `gap` or more). Returns the epochs and every pause of `gap` or more,
     including those cut by the period's edges (for fractions of time).
+
+    With `keep_edges` (a variant), epochs cut by the period's edges are kept: a period edge counts
+    as a pause, so the chain of bouts that runs into a switch is an active epoch measured from its
+    first bout inside the period, and pauses of `gap` or more that touch an edge are passive epochs.
     """
     a, b = seg
     w = swims[(swims.start_time >= a) & (swims.stop_time <= b)].sort_values("start_time")
     st, sp, pw = w.start_time.to_numpy(), w.stop_time.to_numpy(), w.power.to_numpy()
     if len(st) == 0:
-        return {"passive": [], "active": [], "pauses": [(a, b)], "seg": seg}
+        return {"passive": [(a, b)] if keep_edges else [], "active": [], "pauses": [(a, b)], "seg": seg}
     gaps = st[1:] - sp[:-1]
     passive = [(sp[i], st[i + 1]) for i in np.flatnonzero(gaps >= gap)]
     pauses = list(passive)
@@ -171,13 +177,16 @@ def epochs_in_segment(swims: pd.DataFrame, seg: tuple[float, float], gap: float 
         pauses.append((a, st[0]))
     if b - sp[-1] >= gap:
         pauses.append((sp[-1], b))
+    if keep_edges:
+        passive = sorted(pauses)
+    edge = np.inf if keep_edges else 0.0
     breaks = np.flatnonzero(gaps >= gap)
     starts = np.r_[0, breaks + 1]
     stops = np.r_[breaks, len(st) - 1]
     active = []
     for i0, i1 in zip(starts, stops):
-        before = st[i0] - (sp[i0 - 1] if i0 > 0 else a)
-        after = (st[i1 + 1] if i1 + 1 < len(st) else b) - sp[i1]
+        before = st[i0] - sp[i0 - 1] if i0 > 0 else max(st[i0] - a, edge)
+        after = st[i1 + 1] - sp[i1] if i1 + 1 < len(st) else max(b - sp[i1], edge)
         if sp[i1] - st[i0] > gap and before >= gap and after >= gap:
             active.append({"start": st[i0], "stop": sp[i1], "n_bouts": i1 - i0 + 1,
                            "bout_starts": st[i0:i1 + 1], "bout_powers": pw[i0:i1 + 1],
@@ -185,27 +194,33 @@ def epochs_in_segment(swims: pd.DataFrame, seg: tuple[float, float], gap: float 
     return {"passive": passive, "active": active, "pauses": pauses, "seg": seg}
 
 
-def session_epochs(s: dict, condition: str) -> list[dict]:
+def session_epochs(s: dict, condition: str, keep_edges: bool = False) -> list[dict]:
     m = condition_masks(s)[condition]
-    return [epochs_in_segment(s["swims"], seg) for seg in segments(s["cond_t"], m)]
+    return [epochs_in_segment(s["swims"], seg, keep_edges=keep_edges) for seg in segments(s["cond_t"], m)]
 
 
-def passivity_onsets(s: dict) -> np.ndarray:
-    """End of the last bout of each open-loop active epoch followed by a passive epoch."""
-    return np.array(sorted(e["stop"] for seg in session_epochs(s, "open") for e in seg["active"]
+def passivity_onsets(s: dict, keep_edges: bool = False) -> np.ndarray:
+    """End of the last bout of each open-loop active epoch followed by a passive epoch. With
+    `keep_edges` (a variant), active epochs that begin at the start of an open-loop period count."""
+    return np.array(sorted(e["stop"] for seg in session_epochs(s, "open", keep_edges) for e in seg["active"]
                            if e["followed_by_passive"]))
 
 
-def closed_loop_pause_onsets(s: dict) -> np.ndarray:
+def closed_loop_pause_onsets(s: dict, whole_window: bool = False) -> np.ndarray:
     """Starts of pauses of 5 s or more that begin while the gain is above 0 (closed loop with the
-    grating moving or stationary), between two bouts."""
+    grating moving or stationary), between two bouts. The gain must be above 0 at onset and at the
+    end of the response window; with `whole_window` (a variant), over the whole window from the
+    start of the baseline to the end of the response."""
     sw = s["swims"].sort_values("start_time")
     st, sp = sw.start_time.to_numpy(), sw.stop_time.to_numpy()
     on = sp[:-1][(st[1:] - sp[:-1]) >= PASSIVE_GAP_S]
     gain_on = condition_masks(s)["gain_on"]
-    idx = np.clip(np.searchsorted(s["cond_t"], on), 0, len(gain_on) - 1)
-    # the gain must stay above 0 over the response window as well
-    idx_end = np.clip(np.searchsorted(s["cond_t"], on + RESPONSE[1]), 0, len(gain_on) - 1)
+    t = s["cond_t"]
+    if whole_window:
+        keep = [gain_on[(t >= o + BASELINE[0]) & (t <= o + RESPONSE[1])].all() for o in on]
+        return on[np.array(keep, bool)]
+    idx = np.clip(np.searchsorted(t, on), 0, len(gain_on) - 1)
+    idx_end = np.clip(np.searchsorted(t, on + RESPONSE[1]), 0, len(gain_on) - 1)
     return on[gain_on[idx] & gain_on[idx_end]]
 
 
