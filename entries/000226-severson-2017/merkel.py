@@ -19,7 +19,8 @@ Where parameters come from:
   penalty lambda = 1, binomial model with two trials per 2 ms frame, at most 60,000 frames per
   fit): a common P-spline choice; the paper used mgcv with UBRE smoothing on 1 ms bins.
 - Which recording belongs to which experiment, the afferent type and Merkel identity: Table S1 of
-  the paper's Supplemental Information (transcribed below as TABLE_S1).
+  the paper's Supplemental Information (transcribed below as TABLE_S1; `supplement_table_s1` fetches the
+  supplement and parses the table to check the transcription).
 """
 
 from __future__ import annotations
@@ -56,6 +57,8 @@ PAPER_NAME = {"M0": "M0", "Faxial": "Fax", "Flateral": "Flat", "dM0": "M0'", "dF
               "acceleration": "alpha", "jerk": "zeta"}
 DYNAMIC = {"M0", "Faxial", "Flateral", "dM0", "dFaxial", "dFlateral"}   # outliers at 0.5/99.5
 KINEMATIC_VARS = ["position", "velocity", "acceleration", "jerk"]       # outliers at 0.25/99.75
+# Series without a description that are read only to see what they hold (EMG files).
+EXTRA_VARS = ["Mi", "dMi"]
 
 # Table S1 (Supplemental Information of doi:10.1016/j.neuron.2017.03.045), transcribed.
 # Columns: recording id, mouse id, sex, mouse line, date (mm/dd/yy), type (RA, SA or NA),
@@ -139,6 +142,57 @@ def table_s1():
     return rows
 
 
+# The Supplemental Information PDF on the publisher's file server (doi:10.1016/j.neuron.2017.03.045).
+SUPPLEMENT_URL = "https://ars.els-cdn.com/content/image/1-s2.0-S0896627317302891-mmc1.pdf"
+# Table S1's row blocks, in the order of its legend.
+SUPPLEMENT_GROUPS = ["touch", "excluded", "cutonly", "whiskonly", "progressive", "emg"]
+_S1_ROW = re.compile(r"^(\d+[A-Z]) (KS[tm]\d+) ([MF]) (.*?) (\d\d/\d\d/\d\d) (RA|SA|N\.A\.) (Y )?(\S+)(?: →)?(?: \")? "
+                     r"(?:\d+\.\d|N\.A\.) (?:\d+\.\d|N\.A\.) (putative WT\*|WT\*|WT|T|N\.A\.) (Y|N|N\.A\.)(?: |$)")
+
+
+def supplement_table_s1():
+    """Table S1 parsed from the text of the Supplemental Information PDF, fetched from the publisher.
+
+    Returns the rows in the same form as `table_s1()`, the number of lines that start like a row
+    but do not parse, and the PDF's size in bytes. Rows are assigned to groups by their block:
+    a line that is not a row ends a block.
+    """
+    import logging
+    import pypdf
+    logging.getLogger("pypdf").setLevel(logging.ERROR)   # font-encoding warnings, not errors
+    content = requests.get(SUPPLEMENT_URL, headers={"User-Agent": "Mozilla/5.0"}, timeout=600)
+    content.raise_for_status()
+    reader = pypdf.PdfReader(io.BytesIO(content.content))
+    rows, unparsed, block, in_block = [], 0, -1, False
+    for page in reader.pages:
+        text = page.extract_text()
+        if "KSt" not in text:
+            continue
+        for line in text.splitlines():
+            m = _S1_ROW.match(line.strip())
+            if not m:
+                unparsed += bool(re.match(r"^\d+[A-Z] KS", line.strip()))
+                in_block = False
+                continue
+            if not in_block:
+                block, in_block = block + 1, True
+            rec, mouse, sex, mline, date, typ, merk, _, cls, visco = m.groups()
+            na = lambda x: "NA" if x == "N.A." else x
+            rows.append({"rec": rec, "mouse": mouse, "sex": sex, "line": mline, "date": date, "type": na(typ),
+                         "merkel": merk is not None, "cls": na(cls).replace("putative WT*", "putativeWT*"),
+                         "visco": na(visco), "group": SUPPLEMENT_GROUPS[block]})
+    return rows, unparsed, len(content.content)
+
+
+def compare_table_s1(ours, theirs):
+    """Per column, the recordings whose value differs between two lists of Table S1 rows."""
+    norm = lambda x: re.sub(r"[\s_]", "", str(x)).lower()
+    a, b = {r["rec"]: r for r in ours}, {r["rec"]: r for r in theirs}
+    cols = ["mouse", "sex", "line", "date", "type", "merkel", "cls", "visco", "group"]
+    diff = {c: sorted(k for k in set(a) & set(b) if norm(a[k][c]) != norm(b[k][c])) for c in cols}
+    return diff, sorted(set(a) - set(b)), sorted(set(b) - set(a))
+
+
 # --- loading ------------------------------------------------------------------------------------
 
 def assets():
@@ -199,7 +253,7 @@ def load(url):
     s["rates"] = sorted({float(g0[f"position_{i}"]["starting_time"].attrs["rate"]) for i in index})
     s["lengths"] = sorted({g0[f"position_{i}"]["data"].shape[0] for i in index})
     s["units"] = {}
-    for v in VARIABLES:
+    for v in VARIABLES + EXTRA_VARS:
         name = "BehavioralTimeSeries_" + v
         if name not in beh:
             s[v] = None
@@ -572,6 +626,19 @@ def reduce(path, url, seed, keep_touch=False, keep_wia=False, n_fit=60000, n_wia
         r["kinematics_by_phase"] = {"centres": (edges[:-1] + edges[1:]) / 2,
                                     "position": bin_means(pos[okp] - pos[okp].mean(), b[okp], 12),
                                     "velocity": bin_means(s["velocity"][wh], b, 12)}
+    # Mi and dMi by phase against positive and negative velocity, in whisking frames.
+    if wh.sum() > 3000 and all(s[v] is not None for v in EXTRA_VARS):
+        _, cm, bm = phase_tuning(s["phase"][wh], np.zeros(int(wh.sum())))
+        vel = s["velocity"][wh]
+        curves = {"centres": cm, "vel_pos": bin_means(np.maximum(vel, 0), bm),
+                  "vel_neg": bin_means(np.maximum(-vel, 0), bm)}
+        for v in EXTRA_VARS:
+            x = s[v][wh]
+            ok = np.isfinite(x)
+            curves[v] = bin_means(np.where(ok, x, 0), bm) / np.maximum(bin_means(ok.astype(float), bm), 1e-12)
+            curves[v + "_finite"] = float(ok.mean())
+            curves[v + "_range"] = (float(np.nanmin(x)), float(np.nanmax(x))) if ok.any() else (np.nan, np.nan)
+        r["extra_by_phase"] = curves
     if not r["has_spikes"]:
         return r
     st = s["spike_times"]

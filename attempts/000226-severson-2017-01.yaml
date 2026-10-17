@@ -19,9 +19,11 @@ inputs:
     and touch class, viscoelastic fit and the experiment it belongs to. Transcribed in merkel.py
     as TABLE_S1. The group membership is used as labels for the dandiset's recordings; the type
     and Merkel identification as outside data (merkel-minutes, fig3a-direction-selective,
-    fig4c-viscoelastic). The transcription was checked against the supplement (mmc1.pdf) after
-    the first verification round; all 60 rows agree on every column used.
-  source: doi:10.1016/j.neuron.2017.03.045 (Supplemental Information, Table S1)
+    fig4c-viscoelastic). The notebook fetches the supplement (mmc1.pdf) from the publisher's file
+    server, parses Table S1 from its text and compares it with the transcription; all 60 rows agree
+    on every column used, including the group.
+  source: doi:10.1016/j.neuron.2017.03.045 (Supplemental Information, Table S1, at
+    https://ars.els-cdn.com/content/image/1-s2.0-S0896627317302891-mmc1.pdf)
 outcomes:
 - claim: table-s1-link
   outcome: reproduced
@@ -31,7 +33,8 @@ outcomes:
     without "KS" and leading zeros) and 2 (KS0125_ and KS0128_, matched to 125B and 128D) by
     number and mouse. All 60 agree on mouse, sex, mouse line and date. Groups - 33 touch, 13
     progressive cutting, 5 cut-whisker, 4 EMG, 3 excluded touch, 2 whisking-only. No Table S1
-    recording lacks a file.
+    recording lacks a file. The transcription of Table S1 agrees with the table parsed from the
+    supplement on all 60 rows and every column used.
   deviations:
   - The criterion's rule of removing "KS0" was applied as removing "KS" and leading zeros, so that
     the EMG files KS0007A to KS0011A match 7A to 11A.
@@ -151,13 +154,16 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_severson_2017.ipynb
   output: claim:fig4c-viscoelastic
-  notes: Over 25 Merkel and SA afferents (Table S1's fitted set), mean r 0.657 for the viscoelastic
-    model against 0.686 for the spline model of M0 and M0' on the same frames, difference -0.029
-    (95% bootstrap CI -0.051 to -0.008); viscoelastic higher in 9 of 25; Merkel afferents alone
-    -0.029. The optimizer reported success for all 25, but 7 of 25 fits end with a parameter at a
-    bound (eps_lim in 6, E in 1, eta in 2), so some fits may be local optima, which would only
-    lower the viscoelastic r. Different parameter sets give nearly the same prediction, so the
-    fitted parameter values are not interpreted.
+  notes: Over 25 Merkel and SA afferents (Table S1's fitted set), mean r 0.656 for the viscoelastic
+    model against 0.686 for the spline model of M0 and M0' on the same frames, difference -0.030
+    (95% bootstrap CI -0.061 to -0.006); viscoelastic higher in 10 of 25; Merkel afferents alone
+    -0.034. The optimizer reported success for all 25, but 6 of 25 fits end with a parameter at a
+    bound (eps_lim in 4, E in 1, eta in 2), so some fits may be local optima, which would only
+    lower the viscoelastic r. These values differ slightly from the previous run (-0.029, 9 of 25,
+    7 at a bound) with the same code, data and locked packages; the cause was not established. With
+    three other sets of random starts the mean difference is -0.037, -0.040 and -0.017, so the
+    outcome holds, but single recordings change by up to 0.555 in r. Different parameter sets give
+    nearly the same prediction, so the fitted parameter values are not interpreted.
   deviations:
   - Fitted with L-BFGS-B from 8 starts, with the rate of change of moment scaled by its 80th
     percentile inside the fit; the Methods used fmincon. During development an unscaled version
@@ -184,10 +190,12 @@ outcomes:
     test finds a preferred direction (R = 0.448, p = 0.047, just below 0.05). The outcome sits at
     the threshold and depends on the estimator of preferred phase, which the criterion fixes as the
     bin of highest rate of 30 - with the circular mean of the tuning curve p = 0.062 (which would be
-    reproduced), with the highest of 20 or 60 bins p = 0.023 and 0.046; all four quarters are
-    occupied under every estimator. At the preferred
-    phase the whisker is retracting for 11 of 15, which fits the paper's remark of a slight
-    abundance in retraction (Figure 7G, on 28 afferents).
+    reproduced), with the highest of 20 or 60 bins, computed on the outlier-free frames kept for
+    figs6-kinematic-gam, p = 0.023 and 0.046; all four quarters are occupied under every
+    estimator. At the preferred phase the mean whisker velocity is negative for 11 of 15. Whether
+    this agrees with the paper's slight abundance in retraction (Figure 7G, on 28 afferents) is
+    not established, since the stored phase is negated and the paper's phase convention for the
+    figure is not known.
   deviations:
   - The paper gives no test for spanning the whisk cycle; the quarter-cycle and Rayleigh criterion
     was chosen before the analysis.
@@ -242,7 +250,7 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: Needs the intrinsic protractor EMG, which is not in the EMG files 7A, 8A and 9A (they hold
-    whisker video series only, with no spike times and nothing in acquisition), and the cut
+    tracked whisker series only, with no spike times and nothing in acquisition), and the cut
     condition of each trial (metadata insufficient, see fig6-cut-eliminated). The EMG is given as
     the main reason because no labelling of the trials would supply it.
 - claim: fig7e-lost-rate-kinematics
@@ -278,10 +286,14 @@ outcomes:
 - claim: figs4-intrinsic-protractor
   outcome: blocked
   blocked_by: data_missing
-  notes: Files 7A, 8A and 9A hold the whisker video series of the EMG sessions but no EMG signal,
-    no spike times and nothing in acquisition, analysis or stimulus. The archive's variableMeasured
-    for them lists only BehavioralTimeSeries and ProcessingModule, and their size per trial (0.31
-    MB) equals that of 11A and of the progressive cutting files.
+  notes: Files 7A, 8A and 9A hold the tracked whisker series of the EMG sessions (position,
+    velocity, Mi, dMi and others) but no EMG signal, no spike times and nothing in acquisition,
+    analysis or stimulus. The archive's variableMeasured for them lists only BehavioralTimeSeries
+    and ProcessingModule, and their size per trial (0.31 MB) equals that of 11A and of the
+    progressive cutting files. The undescribed Mi (N*m) and dMi (N*m/s) do not follow positive
+    velocity by phase - r -0.026 to 0.002 for Mi and -0.570 to -0.534 for dMi in 7A, 8A and 9A,
+    close to the medians in every group of afferent files (-0.026 to -0.014 and -0.536 to -0.485) -
+    so neither is the intrinsic protractor EMG.
 - claim: sigma-kappa
   outcome: reproduced
   notebook: reproduce_severson_2017.ipynb
@@ -325,8 +337,8 @@ findings:
     (intact, sham, cut 1 to 3) and the moment of inertia after each cut are missing, which blocks
     Figure 6 and parts of Figure 7.
 - kind: data_missing
-  statement: The EMG files of the intrinsic protractor recordings (7A, 8A, 9A) hold the whisker
-    video series but no EMG signal; the nasolabialis file (11A) holds spike times but not the
+  statement: The EMG files of the intrinsic protractor recordings (7A, 8A, 9A) hold the tracked
+    whisker series but no EMG signal; the nasolabialis file (11A) holds spike times but not the
     EMG. The optogenetic tagging data, the histology, the whisker geometry and the manually
     curated contact frames are not in the dandiset.
 - kind: metadata_error
@@ -344,7 +356,8 @@ findings:
     "unknown"; its median in frames with contact = 1 is between -0.08 and 0.09 in every file but one (209A, a
     cut-whisker recording with almost no contact), which fits the Methods'
     distance from whisker to pole in mm, not a distance to the pole's centre. Series not used here
-    (Mi, dMi, Fnorm, thetaAtContact, follicleCoordsX and Y) are not explained.
+    (Mi, dMi, Fnorm, thetaAtContact, follicleCoordsX and Y) are not explained; Mi and dMi have units
+    N*m and N*m/s and values below 3e-8 in absolute size, in every file including the EMG files.
 - kind: metadata_error
   statement: Trial stop_time is 6.998 s after start_time in every trial of every file, while each
     trial's series hold 2,500 frames at 500 Hz (5 s), as the Methods describe.
@@ -375,7 +388,7 @@ verifications:
     and tested helper functions on synthetic inputs. Its report gave its own outcome for each claim; all
     28 agree with the record. It listed ten problems (B1 to B10), three marked as affecting a conclusion,
     and outputs it could not check. B7 (contact requires whisking, as the claims file fixes) needed no
-    change.
+    change. The cell numbers in the reasons below refer to the round-1 notebook.
   results:
   - claim: table-s1-link
     agrees: true
@@ -431,8 +444,9 @@ verifications:
     reason: Cell 30 - mean r 0.708 (SD 0.141), against 0.71 plus or minus 0.16. GAM r is computed on the
       fitted frames, as the claims file asks; with 60,000 frames and at most 101 coefficients overfitting
       is small (B6).
-    response: No change to this claim. The held-out variant added for fig3d-gam-best-pair gives pair values
-      within 0.003 of the in-sample ones.
+    response: No change to this claim. The held-out variant added for fig3d-gam-best-pair gives values
+      within 0.003 of the in-sample ones for the five leading pairs, the only ones printed; the held-out
+      r of the full model was not computed. (Corrected in round 2.)
   - claim: fig3d-gam-single
     agrees: true
     outcome: reproduced
@@ -580,3 +594,195 @@ verifications:
     outcome: blocked
     reason: The manual contact labels are not deposited.
     response: The archive check cell shows no series or path for manual labels. Outcome kept.
+- date: '2026-10-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, the helper module, the claims
+    file and the attempt record, with the paper (PMC5528144). The verifier checked every conclusion cell,
+    the README and the record against the printed outputs and reviewed the round-1 responses. It agreed
+    with all 28 outcomes, found seven statements not fully supported by the outputs, and said the Table S1
+    transcription had still not been checked by a verifier. The cell numbers in its reasons refer to the
+    round-2 notebook; this revision adds code cells
+    at positions 19, 47 and 64, so later cells move.
+    Outside the claims, the velocity column of the data check (cell 11) was labelled degrees/s although the
+    notebook's own ratio check shows per millisecond; the label now says so.
+  results:
+  - claim: table-s1-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The record's statement that the transcription was checked against the supplement (mmc1.pdf),
+      all 60 rows agreeing, is shown by no notebook output, and the verifier could not get the supplement (PMC
+      returns a reCAPTCHA page, Europe PMC reports the article is not open access). The type, Merkel and
+      viscoelastic-fit columns drive merkel-minutes, fig3a-direction-selective and fig4c-viscoelastic, and the
+      class column drives fig2c-wt-star's agreement count.
+    response: Added a cell that fetches the supplement from the publisher's file server, parses Table S1 from
+      its text (pypdf, added to the requirements) and compares it with merkel.TABLE_S1 on every column,
+      including the group. All 60 rows parse and agree; a copy with two values changed is caught. Record inputs
+      and notes updated. Outcome kept.
+  - claim: video-frames
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion cell matches the printed numbers.
+    response: No change needed.
+  - claim: merkel-minutes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion cell matches the printed numbers. Depends on the unchecked Table S1 Merkel
+      column.
+    response: The Table S1 check is now in the notebook (see table-s1-link). Outcome kept.
+  - claim: fig2c-baseline-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B1 resolved - cell 28 prints the claim's tolerance check and labels the 10% check as not
+      the criterion.
+    response: No change needed.
+  - claim: fig2c-touch-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B1 resolved, as for fig2c-baseline-rate.
+    response: No change needed.
+  - claim: fig2c-wt-star
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion cell matches the printed numbers. The agreement count depends on the
+      unchecked Table S1 class column.
+    response: The Table S1 check is now in the notebook (see table-s1-link). Outcome kept.
+  - claim: fig3a-direction-selective
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Direction selectivity reaches 65% against the criterion's 80% (cell 34), which the summary's
+      "closely" passes over. Depends on the unchecked Table S1 type and Merkel columns.
+    response: The summary now names this, the non-preferred rate and sigma-kappa as the values that differ
+      from the paper's. The Table S1 check is now in the notebook. Outcome kept.
+  - claim: fig3d-gam-full
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The round-1 response that the held-out variant gives pair values within 0.003 of the in-sample
+      ones is supported only for the five pairs cell 40 prints (differences 0.002 to 0.003), not for the other
+      40, and the held-out r of the full model was not computed.
+    response: Corrected the round-1 response to say it holds for the five printed pairs and that the full model's
+      held-out r was not computed. Outcome kept.
+  - claim: fig3d-gam-single
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion cell matches the printed numbers.
+    response: No change needed.
+  - claim: fig3d-gam-best-pair
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. M0+M0' ranks 2nd in all three variants (cell 40). B3 resolved.
+    response: No change needed.
+  - claim: fig4c-viscoelastic
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B5 resolved - fit_visco flags bounds on the fitted scale and reports 7 of 25 fits at a bound,
+      and the parameter values are no longer interpreted. Depends on the unchecked Table S1 viscoelastic-fit
+      column.
+    response: The Table S1 check is now in the notebook. In this run the fit gives a mean difference of -0.030
+      (CI -0.061 to -0.006), 10 of 25 higher and 6 fits at a bound, against -0.029, 9 and 7 before, with the
+      same code, data and locked packages; two runs here gave the same values, and the cause of the change was
+      not established. Added a cell refitting with three other sets of random starts (mean difference -0.037,
+      -0.040, -0.017). Notes and conclusion updated. Outcome kept.
+  - claim: fig5-phase-modulation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B1 resolved. The non-preferred rate is 16% above the paper's (cell 48), which the summary's
+      "closely" passes over.
+    response: Summary reworded to name it. Outcome kept.
+  - claim: fig5e-phase-span
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The criterion fixes the estimator (highest of 30 bins), which gives p = 0.047 (cell 50); the
+      record discloses the circular-mean variant's p = 0.062. The note that retraction at the preferred phase for
+      11 of 15 fits the paper's slight abundance in retraction is not established - 73% is not slight, and if
+      Figure 7G used the stored (negated) phase under the usual convention these 11 would be protraction. The
+      note does not say the 20- and 60-bin variants use a different frame set (the outlier-free frames kept for
+      figs6).
+    response: Removed "fits the paper's remark"; the notes now give the 11 of 15 with negative mean velocity and
+      say agreement with Figure 7G is not established. They also say the 20- and 60-bin variants use the
+      outlier-free frames. Outcome kept.
+  - claim: figs3-phase-invariance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion cell matches the printed numbers.
+    response: No change needed.
+  - claim: figs6-kinematic-gam
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion cell matches the printed numbers.
+    response: No change needed.
+  - claim: fig7g-phase-span-28
+    agrees: true
+    outcome: blocked
+    reason: Agrees. B4 resolved - position by phase peaks next to 0 in 60 of 60 files, and sine -0.9999 with cosine
+      +0.9999 show the stored phase is negated, not shifted by pi.
+    response: No change needed.
+  - claim: fig6-cut-eliminated
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig6-cut-remained
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig6a-final-length
+    agrees: true
+    outcome: blocked
+    reason: Agrees. B10 resolved - cell 61 shows what the archive holds.
+    response: No change needed.
+  - claim: fig7d-cut-emg
+    agrees: true
+    outcome: blocked
+    reason: In round 1 the verifier gave the block as metadata_insufficient; the record keeps data_missing and gives
+      the missing cut condition in its notes. Both blockers apply, so it accepts this. The notes say the EMG files
+      hold the whisker video series, but cell 61 shows tracked kinematic series (position, velocity, Mi, dMi and so
+      on), not video.
+    response: Notes now say tracked whisker series. Outcome kept.
+  - claim: fig7e-lost-rate-kinematics
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig7f-precut-emg
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The "not checked" fig7f lower bound was computed (cell 64) and is uninformative.
+    response: No change needed.
+  - claim: figs4-nasolabialis
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the conclusion cell matches the printed numbers.
+    response: No change needed.
+  - claim: figs4-intrinsic-protractor
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The notes say "hold the whisker video series", but cell 61 shows tracked kinematic series, not
+      video. A minor residual, unlikely to change an outcome - the EMG files 7A, 8A and 9A hold unexplained Mi and
+      dMi series whose values were never compared with positive velocity; doing so would fully rule out that one
+      of them is the intrinsic protractor EMG.
+    response: Notes now say tracked whisker series. Added a cell comparing the phase curves of Mi and dMi with
+      positive and negative velocity in 7A, 8A, 9A and 11A and in every other file. Mi (N*m) has r -0.026 to 0.002
+      and dMi (N*m/s) -0.570 to -0.534 with positive velocity in 7A, 8A and 9A, close to the medians of the afferent
+      files, so neither is the EMG. Notes, finding and conclusion updated. Outcome kept.
+  - claim: sigma-kappa
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Sigma-kappa is 28% above the paper's mean (cell 70), which the summary's "closely" passes over.
+    response: Summary reworded to name it. Outcome kept.
+  - claim: figs1-optotag-latency
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: figs1-labelling-specificity
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: contact-classifier
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
