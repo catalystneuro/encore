@@ -1,0 +1,919 @@
+schema_version: 1
+id: 000552-huszar-2022-01
+dandiset: "000552"
+dandiset_version: 0.230630.2304
+paper: doi:10.1038/s41593-022-01138-x
+date: 2026-10-17
+entry: 000552-huszar-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: Method parameters only, no data. The figure-eight segment bins of Figure 5e (stem 1-74, turn
+    1 75-111, arm 112-185, turn 2 186-205 of 205 one-cm bins) and the list of mice left out of it
+    (e15_13f1, e16_3m2) from ratemap_remap.m; the stem bins excluded from ratemap correlations
+    (familiar 75-205, novel T-maze 51-164) and the 12 familiar-novel sessions from
+    get_corrBeh_famnov.m. The code's result files (corrHome_v7.mat and others) were read to see what
+    identifiers they hold; nothing from them is used in the notebook.
+  source: https://github.com/rhuszar/optotagCA1_final at commit 51320d45c5ee41147048128df333f251379bf755
+outcomes:
+- claim: cohort-birthdates
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:cohort-birthdates
+  measured:
+  - 17
+  - 12
+  - 5
+  notes: 17 mice, with E13.5 4, E14.5 3, E15.5 6 and E16.5 4, as the paper states. With each mouse's
+    sex taken from most of its files, 12 males and 5 females, as the paper states. The sex field
+    differs between files of two mice (e13_1f1 Female in 3 files and Male in 2; e13_1m1 Male in 9 and
+    Female in 3), so reading only each mouse's first file gives 13 and 4. The ids, which carry f or
+    m, also give 12 and 5.
+  deviations:
+  - The criterion took sex from the subject metadata without saying how to combine files that
+    disagree; the value in most of a mouse's files is used, chosen after the per-file values were
+    seen (the first round of this attempt read the first file and gave 13 and 4).
+- claim: sessions-durations
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:sessions-durations
+  measured:
+  - 104
+  - 319.6
+  notes: 104 processed files, within 10% of the 96 sessions of Figure 1e and Figure 7f but not of
+    the 92 of the Methods. Median duration 319.6 min (paper 309.1), range 113.7 to 494.2 min, all
+    inside the widened range of 102.3 to 523.2 min; two files last exactly the paper's bounds (113.7
+    and 475.6 min). Without e15_13f1 and e16_3m2 there are 96 sessions with per-birthdate counts equal
+    to Figure 1e (30, 24, 24, 18), range 113.7 to 475.6 min and median 309.9 min. Two files of
+    e13_1f1 (200305, 200307) hold one Awake interval for the whole session and no scored sleep, so
+    the statement that each session includes sleep fails for them; that part makes the outcome
+    partial.
+  deviations:
+  - Session duration is the end of the last sleep-state or ripple interval; in 57 files the last
+    spike falls 1.2 to 5.2 s later.
+  - The criterion named the sleep condition without saying which outcome its failure gives; with the
+    count, median and range holding and the sleep condition failing in 2 of 104 files, the outcome is
+    taken as partial.
+  - The session count was judged under two readings (92 and 96), as the paper gives both.
+- claim: spwr-duration
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:spwr-duration
+  measured: 36.0
+  notes: Median duration 36.0 ms over all 494,578 ripples pooled and 36.0 ms as the median of
+    the 104 session medians (paper 36.4). All ripples last 20.0 to 199.2 ms, within the 20 to 200 ms
+    limits. Per-mouse medians run from 29.6 to 40.0 ms.
+  deviations:
+  - Uses the ripples stored in the files; detection was not repeated.
+- claim: unit-count
+  outcome: not_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:unit-count
+  measured:
+  - 8201
+  - 0.878
+  notes: 8,201 units in 65 of 104 files, below the tolerance of 8,524 to 10,418. Six mice (e13_1f1,
+    e13_1m1, e14_1m1, e15_4m1, e15_4m2, e15_5m1; 39 files) have no units. Files with units hold 34 to
+    376 (median 99). The 5 Hz rule classes 87.8% as putative pyramidal cells, against the paper's
+    78.3%.
+  deviations:
+  - The pyramidal fraction uses a firing-rate rule, as the files hold no cell type.
+- claim: maze-cohort
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:maze-cohort
+  notes: 11 mice have figure-eight trials. Under reading (b), the maze mice without e15_13f1 and
+    e16_3m2 are nine, at E13.5 2, E14.5 2, E15.5 2 and E16.5 3, and three mice (e13_26m1, e15_13f1,
+    e16_3m2) have novel recordings, so e13_26m1 is in both cohorts. Reading (a), disjoint cohorts of
+    12 mice, does not hold.
+  deviations:
+  - The paper calls the novel cohort separate; the reading that matches takes the overlap from the
+    paper's code, recorded as an ambiguity.
+- claim: maze-task
+  outcome: not_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:maze-task
+  measured:
+  - 204.1
+  - 30.0
+  notes: Median trial length 204.1 cm and tracking at 30.00 Hz in all 65 familiar recordings,
+    both within tolerance. Only 38 of 65 sessions have at least ten trials on each visited arm (22 of
+    65 by expected arm), and 6 sessions have fewer than 20 trials (fewest 12), so neither the full nor
+    the partial condition holds. The requirement may have applied to training, not to every recorded
+    session.
+  deviations:
+  - Two readings of "trials along each arm" (visited and expected) were used; neither holds.
+- claim: novel-explorations
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:novel-explorations
+  measured: 9
+  notes: Three mice with 9 novel explorations that have trials and position (3 T-maze runs of about
+    164 cm, 3 linear-track runs of 110 cm and 3 of 100 cm), against 16. The novel-cohort sessions
+    also hold 7 epochs of 10 to 50 min without position that are not a session's last epoch, and the
+    files hold no other position or video series for them. They are not counted; they would bring
+    the count to 16, but they were picked after the data were seen and nothing in the files marks
+    them as explorations. No open field has position.
+- claim: fig5e-pv-decorrelation
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig5e-pv-decorrelation
+  measured:
+  - 0.937
+  - 0.547
+  - 0.492
+  - 0.465
+  notes: 57 sessions of nine mice (the paper's bin counts, 4,218 stem bins, imply the same 57), with
+    28 to 242 putative pyramidal cells per session. Kruskal-Wallis H = 7632.7 (paper 7278.3), p = 0,
+    stem highest. Stem 0.937 is within tolerance; turn 1 0.547, arm 0.492 and turn 2 0.465 are above
+    the paper's 0.412, 0.372 and 0.394. The stem is the most correlated segment in every mouse. The
+    medians depend strongly on the cell rule; at most 2 Hz gives 0.925, 0.387, 0.288, 0.306; at most
+    10 Hz gives 0.966, 0.787, 0.771, 0.746; all units 0.988, 0.948, 0.94, 0.921; no speed threshold
+    0.924, 0.589, 0.522, 0.492. With a 2.59 Hz rule, which classes the paper's fraction of units
+    (0.783) as pyramidal, the medians are 0.928, 0.436, 0.343 and 0.357, all four within tolerance;
+    the criterion fixed the 5 Hz rule, so this variant does not change the outcome. 51 of 11,685 bins
+    had no value.
+  deviations:
+  - Putative pyramidal cells by session mean rate (at most 5 Hz), not by waveform and
+    autocorrelogram; the files hold no cell type or waveforms.
+  - Speed from smoothed linearized position, not a Kalman filter.
+- claim: fig6c-theta-rate-preserved
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6c-theta-rate-preserved
+  measured: 0.726
+  notes: Spearman rho = 0.726 over 2,038 putative pyramidal cells with a familiar and a novel rate
+    (paper 0.7378 over 2,544), p = 0; per mouse 0.711 to 0.745, per session 0.586 to 0.826. Variants
+    with all units, a 10 Hz rule or a 1.5 cm/s running threshold give 0.754 to 0.802. 679 cells of the
+    3 sessions without a novel maze have no novel rate. The running rate now ends each running stretch
+    at the end of its trial (round 1 gave 0.734 with stretches that could span the gap between
+    trials).
+  deviations:
+  - The rate is the firing rate while running at 5 cm/s or faster inside maze trials, in place of
+    the rate in LFP theta cycles; the LFP is in the raw files of 8 of the 9 novel sessions but was not
+    used.
+  - Novel mazes are only those with position; the open fields are not in the data.
+  - Putative pyramidal cells by firing rate.
+- claim: fig6c-novel-ratemap-corr-higher
+  outcome: not_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6c-novel-ratemap-corr-higher
+  measured:
+  - -0.053
+  - -0.0364
+  notes: Median familiar -0.0530 over 327,656 pairs (within tolerance) and novel -0.0364 over 242,655
+    pairs (outside 0.018 to 0.078); rank-sum p = 0.67. Within each of the 9 sessions with a novel
+    maze the novel median is higher than the familiar one (sign test p = 0.0039; rank-sum p < 0.05
+    within 7 of the 9 sessions), so the direction holds session by session; the pooled test, which
+    the criterion names, is weighted by the sessions with most pairs;
+    with familiar pairs only from those sessions the pooled test gives p = 0.1. Variants with all
+    units (p = 0.38) or a 10 Hz rule (p = 0.66) agree; including the stem gives p = 3.5e-50 with novel
+    higher. Per maze kind, novel medians run from -0.0548 to 0.0073.
+  deviations:
+  - All pairs of putative pyramidal cells, where the paper's pairs each include a light-responsive
+    neuron (not identifiable in the files).
+  - Novel mazes are only the T-maze and linear tracks with position; the paper's novel pairs also
+    come from open fields with two-dimensional maps.
+- claim: fig6d-info-lower-novel
+  outcome: partially_reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6d-info-lower-novel
+  measured:
+  - 0.631
+  - 0.27
+  notes: Familiar median 0.631 bits/s over 2,709 cells and novel 0.270 over 2,028 cell-maze values,
+    rank-sum p = 1.5e-59, so information is lower in novel mazes as stated, but both medians are below
+    the tolerances (0.792 to 0.968 and 0.351 to 0.429). The code's unweighted measure gives 0.646 and
+    0.285. By mouse, familiar 0.617 to 0.645; novel 0.083 to 0.337 on linear tracks and 0.282 to 0.608
+    on the T-maze.
+  deviations:
+  - Skaggs information over left and right maps of the whole linearized track, with putative
+    pyramidal cells by firing rate; no open fields.
+- claim: fig6d-rate-lower-novel
+  outcome: reproduced
+  notebook: reproduce_huszar_2022.ipynb
+  output: claim:fig6d-rate-lower-novel
+  measured:
+  - 0.794
+  - 0.714
+  notes: Familiar median 0.794 Hz over 2,717 cells and novel 0.714 Hz over 2,038, both within
+    tolerance of the paper's 0.77 and 0.69 Hz; rank-sum p = 0.041 (paper 3.3e-3). The difference is
+    weak. The paired signed-rank test gives a median ratio of 0.942, p = 0.19; familiar from the
+    sessions with a novel maze only gives p = 0.09; the variants (all units, 10 Hz rule, 1.5 cm/s
+    threshold) give lower novel rates with p = 0.075 to 0.11. Novel is lower in two mice (0.722
+    against 0.883, 0.680 against 0.835) and slightly higher in e15_13f1 (0.734 against 0.729). Round
+    1 gave 0.958 and 0.799 Hz, p = 7e-06, with running stretches that could span the gap between
+    trials and count its spikes but not its time; in 371 of 698 pairs of consecutive trials the
+    animal was running at the end of one and the start of the next.
+  deviations:
+  - Running rate in place of the rate in LFP theta cycles.
+  - Putative pyramidal cells by firing rate; no open fields.
+- claim: ed2-light-responsive-count
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No unit is labelled light-responsive and no optogenetic pulse times are stored in the
+    processed or raw files (stimulus and acquisition are empty in the processed files; a listing of
+    every dataset in all 13 raw files finds only the ElectricalSeries, the LFP and the electrodes
+    table). The paper's labels come from CellExplorer optoTag fields and pulses.events.mat files on
+    the lab server, which the paper's data link reaches only through the lab databank and Globus, at
+    no pinned identifier. The Methods say the pulses were given at the end of each session, in blocks
+    of five 200 ms apart, and that the raw data were clipped out from 0.15 ms before to 0.8 ms after
+    each pulse; they give no interval between blocks and do not say what the clipped samples hold. In
+    the raw file of e16_3m2_211213 the wideband signal ends 2 s after the processed session, and ten 2
+    s windows over its last 30 min hold no flat or zeroed stretch on eight channels; if clipped samples
+    are flat or zero, the stimulation period is not in the deposited recording. The other 10 wideband
+    files (54 to 184 GB each) were not scanned.
+- claim: fig1e-labelled-fraction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the light-responsive units of each session; see ed2-light-responsive-count.
+- claim: fig1c-radial-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Histology (tdTomato and DAPI images) is not in the dandiset and was not found elsewhere.
+- claim: fig1f-rem-shift
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs light-responsive units by birthdate; see ed2-light-responsive-count. It also needs the
+    LFP, which is in the raw files of only 12 sessions.
+- claim: fig1g-rate-by-birthdate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the light-responsive units; see ed2-light-responsive-count. Grouping all units by the
+    mouse's birthdate would test a different quantity, as most units in a mouse are not birthdated.
+- claim: fig1h-burst-by-birthdate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the light-responsive units; see ed2-light-responsive-count.
+- claim: fig2b-synchrony-per-animal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: SBD and DBD pairs cannot be formed without light-responsiveness labels; six of the
+    homecage mice also have no units.
+- claim: fig2c-theta-cofiring
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SBD and DBD pairs (no labels) and theta cycles from the LFP (raw files of 12 sessions
+    only).
+- claim: fig2d-theta-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs light-responsive units by birthdate and the LFP.
+- claim: fig2f-ripple-firing-by-birthdate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs light-responsive units by birthdate; the ripples themselves are in the files.
+- claim: fig2g-ripple-cofiring
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SBD and DBD pairs; no labels.
+- claim: fig3c-assembly-cofiring
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The member-nonmember part could be computed, but the analysis keeps only assemblies with a
+    light-responsive member and groups them by birthdate, which needs the labels.
+- claim: fig3e-assembly-expression
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Assemblies are grouped by the birthdate of light-responsive members; no labels.
+- claim: fig4d-model-fit
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The model is fitted to the assembly expression rates of fig3e-assembly-expression, which is
+    blocked.
+- claim: fig5b-spatial-info-by-birthdate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs light-responsive units by birthdate.
+- claim: fig5c-sbd-ratemap-overlap
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SBD and DBD pairs; no labels.
+- claim: fig5d-overlap-by-distance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SBD pairs and the shank of each unit; units have no electrode link and their group_id
+    does not match the electrode groups in 64 of 65 files.
+- claim: fig5f-remap-together
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SBD and DBD pairs; no labels.
+- claim: fig6e-sbd-novel-overlap
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SBD and DBD pairs; no labels.
+- claim: fig6f-remap-together-novel
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SBD and DBD pairs; no labels.
+- claim: fig7b-sbd-convergence
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs SBD pairs and putative interneurons; neither labels nor cell types are in the files.
+- claim: fig7ce-convergence-by-birthdate
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs light-responsive units by birthdate and putative interneurons.
+- claim: fig7fg-convergence-cofiring
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Uses all pyramidal-interneuron pairs and needs no birthdate labels. The notebook applies the
+    rate rule (units above 5 Hz as interneurons, 1,001 in all against the paper's 2,060) and the
+    connection test of the Methods (0.8 ms CCG bins, hollowed-Gaussian baseline of 15 ms s.d., alpha
+    0.001) to two sessions. In e15_13f1_220117, whose mouse is not among the 15 of Figure 7f, the test
+    at fixed lags of 0.8 to 3.2 ms detects connections in 5,073 of 11,319 possible pairs (0.448,
+    against 31,932 of 184,230 or 0.173 in the paper), and 96.7% of pyramidal pairs share a target
+    (paper 65.27%). In e13_26m1_211019, inside the Figure 7f cohort, it detects 0.407, with 96.7% of
+    pairs sharing a target. The Methods test the three bins around the CCG peak, where this test uses
+    fixed lags; a peak-centred variant (peak sought at lags up to 4.0 ms, a range the Methods do not
+    give, chosen after the fixed-lag results were seen) detects 0.405 and 0.394, with 95.7% and 93.4%
+    of pairs sharing a target. With a connection rate this far from the paper's under both forms, the
+    procedure differs from the paper's, whose connections come from the lab's CellExplorer mono_res
+    files (not public; the paper's code reads them and does not compute them). The difference may lie
+    in this implementation as well as in what the Methods leave unstated (lag range, hollow fraction,
+    CCG window). Of the paper's 96 sessions (the files without e15_13f1 and e16_3m2), 39 have no units
+    in the dandiset, and cofiring in theta cycles needs the LFP, which the processed files lack.
+findings:
+- kind: data_missing
+  statement: No unit is labelled light-responsive (birthdated), and no optogenetic pulse times are
+    stored in the processed or the raw files, so the paper's comparisons of same- and
+    different-birthdate neurons and its birthdate profiles (22 of the 35 claims listed here) cannot
+    be tested. The labels exist in the lab's CellExplorer files (optoTag, putativeCellType), which are
+    not public at a pinned identifier.
+- kind: metadata_insufficient
+  statement: Units carry no putative cell type and no waveforms, though the paper classifies 7,411
+    pyramidal cells and 2,060 interneurons.
+- kind: data_missing
+  statement: Six of the 17 mice (e13_1f1, e13_1m1, e14_1m1, e15_4m1, e15_4m2, e15_5m1; 39 files) have
+    sleep states and ripples but no units and no position. The dandiset holds 8,201 units where the
+    paper reports 9,471.
+- kind: data_missing
+  statement: Of the 16 novel environment explorations, only 9 have position and trials, and no open
+    field has position. The novel-cohort sessions hold 7 further epochs of 10 to 50 min without
+    position or video that may be the missing explorations.
+- kind: metadata_error
+  statement: The subject sex differs between files of the same mouse. e13_1f1 is Female in 3 files and
+    Male in 2; e13_1m1 is Male in 9 and Female in 3. The value in most of each mouse's files gives the
+    paper's 12 males and 5 females.
+- kind: metadata_error
+  statement: The trials column is_familiar_maze is True only for the first two trials of sessions with
+    a single maze recording, where every trial is on the familiar maze (112 True, 1,182 False).
+- kind: metadata_error
+  statement: In several novel recordings (e13_26m1 211019, 211116, 211119; e15_13f1 220120; e16_3m2
+    211213) x and y lie between 0 and 1 though stated in cm.
+- kind: metadata_error
+  statement: Twelve of the 13 raw files give a session start of 2011-08-18 for sessions recorded in
+    2021 and 2022.
+- kind: metadata_error
+  statement: The processed file of e16_3m1_210201 holds a copy of the 1250 Hz LFP of the raw file,
+    labelled with a rate of 30,000 Hz and a conversion factor of 3.05e-13 V.
+- kind: identifier_missing
+  statement: Units have no link to the electrodes table, and their group_id values ("Group3") do not
+    match the electrode group names ("Group 3") in 64 of 65 files, so a unit's shank and position on
+    the probe cannot be recovered.
+- kind: metadata_insufficient
+  statement: The embryonic day of electroporation, the variable the paper is about, is stored only as
+    the prefix of each subject id (e13 for E13.5); the age is given as P3M/P6M for every mouse.
+- kind: other
+  statement: Two files of e13_1f1 (200305, 200307) hold a single Awake interval for the whole session,
+    so sleep was not scored, though both hold ripples.
+- kind: other
+  statement: Only 38 of 65 familiar-maze sessions have ten or more trials on each visited arm, and 6
+    have fewer than 20 trials, where the Methods require ten per arm in every session; 19 of 1,942
+    trials have no start or stop time.
+- kind: paper_inconsistency
+  statement: The Methods give 92 sessions, while Figure 1e (30, 24, 24 and 18 sessions) and Figure 7f
+    give 96. The dandiset's files of the 15 homecage mice are 96 sessions that match Figure 1e by
+    birthdate and the Methods' duration bounds exactly (113.7 to 475.6 min).
+- kind: paper_inconsistency
+  statement: The paper calls the novel-environment cohort of three mice separate, but one of them
+    (e13_26m1) is also among the nine figure-eight mice, in the dandiset and in the paper's code.
+verifications:
+- date: '2026-10-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper's full text (the PMC author manuscript). The verifier
+    tested helper functions on synthetic inputs and queried the archive's asset metadata for the blocked
+    claims. Its report gave its own outcome for each claim; it agreed with the record on 34 of 35 outcomes,
+    gave reproduced for cohort-birthdates, and for fig7fg-convergence-cofiring agreed on blocked but disputed
+    the reason. Problems B6 (dependent bins and pairs treated as independent, as in the paper), B8 (skaggs_information
+    weights by unsmoothed occupancy and divides by smoothed occupancy) and B9 (mean_rates divides by an
+    end time 1 to 5 s short of the last spike in 57 files) it marked as not affecting a conclusion; they
+    were left as they are, since the first follows the paper, the second follows the Methods' map definition
+    with the occupancy probability of Skaggs et al., and the third changes rates by under 0.1%.
+  results:
+  - claim: cohort-birthdates
+    agrees: false
+    outcome: reproduced
+    reason: 17 mice and the birthdate counts 4/3/6/4 match. The notebook's 13 M / 4 F comes from taking
+      each mouse's first file. The sex field differs between files of the same mouse; e13_1f1 is Male
+      in 2 files and Female in 3, e13_1m1 is Male in 9 and Female in 3 (cell 7, and the DANDI asset metadata
+      it queried). Taking each mouse's majority gives 12 M / 5 F, which matches. Problem B2 (affects a
+      conclusion) is the same point.
+    response: Changed the outcome to reproduced. The data check now tabulates the sex of each mouse by
+      file and takes the value in most of its files; the claim cell prints both readings (12 and 5 by
+      majority, 13 and 4 from the first file). The choice of the majority is recorded as a deviation,
+      and the finding now reports the sex field differing between files of e13_1f1 and e13_1m1.
+  - claim: sessions-durations
+    agrees: true
+    outcome: partially_reproduced
+    reason: Count, median and range all pass (104 files within 10% of 96, median 319.6 min, all durations
+      in 102.3 to 523.2 min). Leaving out e15_13f1 and e16_3m2 gives exactly 96 sessions, the Figure 1e
+      per-birthdate counts and the paper's range. It is partial because the criterion also requires non-REM
+      sleep in every session, and two files (e13_1f1_200305 and _200307) hold a single Awake interval.
+    response: No change.
+  - claim: spwr-duration
+    agrees: true
+    outcome: reproduced
+    reason: The median is 36.0 ms under both readings, against 36.4 +/- 3.64, and every ripple lies within
+      20 to 199.2 ms.
+    response: No change.
+  - claim: unit-count
+    agrees: true
+    outcome: not_reproduced
+    reason: 8,201 units against a lower bound of 8,524. The cause is missing data; 6 mice (39 files) have
+      no units in the archive, while Figure 7f reports pyramidal pairs from 96 sessions of 15 mice.
+    response: No change.
+  - claim: maze-cohort
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b) matches exactly; 11 maze mice, minus e15_13f1 and e16_3m2, gives 9 mice at E13.5
+      to E16.5 = 2/2/2/3, and 3 mice have novel recordings.
+    response: No change.
+  - claim: maze-task
+    agrees: true
+    outcome: not_reproduced
+    reason: Trial length (median 204.1 cm) and tracking rate (30 Hz) pass. Only 38/65 sessions (visited
+      arm) or 22/65 (expected arm) have at least 10 trials per arm, and only 59/65 have at least 20 trials,
+      the fewest being 12. That also fails the partial condition.
+    response: No change.
+  - claim: novel-explorations
+    agrees: true
+    outcome: partially_reproduced
+    reason: 3 mice but only 9 novel recordings with trials and position (3 of about 164 cm and 6 linear
+      tracks of 100 or 110 cm). The notebook's 9 + 7 = 16 counts epochs without position, which the criterion
+      excludes. No open field has position. Problem B3 (affects a conclusion) says the count of 16 includes
+      position-less epochs picked post hoc. It also asked whether any position or video series exists
+      in those 7 epochs.
+    response: Rewrote the conclusion, notes and finding so that the count is 9 and the 7 epochs are described
+      as picked after the data were seen and not counted. Added an output listing the behavior series
+      and acquisition contents of every novel-cohort file; there is no other position or video series.
+  - claim: fig5e-pv-decorrelation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Stem 0.937 is within tolerance; turn 1 0.547, arm 0.492 and turn 2 0.465 are all above tolerance.
+      Kruskal-Wallis H = 7632.7, p about 0, stem highest; the bin counts equal the paper''s, so the session
+      set matches. Problem B4 (affects a conclusion): 87.8% of units pass the 5 Hz rule against 78.3%
+      pyramidal in the paper, so some interneurons are included, and the medians move strongly with the
+      threshold; the outcome depends on this unvalidated choice.'
+    response: Added a variant with the rate threshold (2.59 Hz) that classes the paper's pyramidal fraction
+      of units as pyramidal. It gives 0.928, 0.436, 0.343 and 0.357, all four within tolerance. The criterion
+      fixed the 5 Hz rule before the analysis, so the outcome stays partially reproduced; the variant
+      is reported in the conclusion, the notes and the summary.
+  - claim: fig6c-theta-rate-preserved
+    agrees: true
+    outcome: reproduced
+    reason: Spearman rho = 0.734 >= 0.664, p about 0, n = 2,038; each mouse gives 0.72 to 0.76 and the
+      variants 0.76 to 0.81. The rate is a running-speed proxy for the paper's theta-cycle rate. Under
+      problem B1 it judged rho probably robust to the running_rate bug.
+    response: Fixed running_rate (see fig6d-rate-lower-novel). rho is now 0.726 (per mouse 0.711 to 0.745,
+      variants 0.754 to 0.802), so the outcome is unchanged.
+  - claim: fig6c-novel-ratemap-corr-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Familiar -0.053 is within tolerance. Novel -0.036 falls outside 0.018 to 0.078, and the rank-sum
+      p = 0.67. Within each session the novel median is higher in 9 of 9, but it stays negative and far
+      below 0.048. Open-field explorations are missing from the data. Problem B5 (affects a conclusion):
+      the pooled rank-sum test over about 570k pairs lets sessions with many pairs dominate and hides
+      the per-session direction; the criterion fixes the test, so the outcome stands.'
+    response: Added a sign test over sessions (9 of 9, p = 0.0039), the rank-sum p within each session
+      (below 0.05 in 7 of 9) and the pairs per session, and said in the conclusion that the pooled test
+      is weighted by the sessions with most pairs. Outcome unchanged, as the criterion names the pooled
+      test.
+  - claim: fig6d-info-lower-novel
+    agrees: true
+    outcome: partially_reproduced
+    reason: Novel is lower (0.270 against 0.631 bits/s, p = 1.5e-59), but both medians fall below tolerance.
+    response: No change.
+  - claim: fig6d-rate-lower-novel
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Novel is lower (0.799 against 0.958 Hz, p = 7e-6), but both medians are above tolerance.
+      This may be partly the running_rate bug in B1. Problem B1 (affects a conclusion): running stretches
+      are built from consecutive samples of the concatenated trial samples, so a stretch can span the
+      gap between trials, counting its spikes but not its time; on synthetic data with a 1 Hz cell and
+      10 s gaps the function returns 3.5 Hz. It asked for the gaps between trials and the speed at the
+      first and last sample of each trial, or the rates recomputed with stretches cut at trial boundaries.'
+    response: Fixed running_rate so that a running stretch ends where the trial changes or a sample is
+      missing, and added a synthetic check in the notebook (two trials 10 s apart and a 1 Hz unit; the
+      old function gives 1.5 Hz on it, the new one 1.000 Hz). Added the requested output; gaps between
+      trials have medians of 1.75 s (familiar) and 0.04 s (novel), and in 371 of 698 pairs of consecutive
+      trials the animal was running at both sides of the gap. With the fix the medians are 0.794 and 0.714
+      Hz, both within tolerance, and novel is lower with rank-sum p = 0.041, so under the criterion the
+      outcome changes to reproduced. The difference is weak (paired p = 0.19, variants p = 0.075 to 0.11,
+      one of three mice slightly higher in novel), as the notes and the conclusion say.
+  - claim: ed2-light-responsive-count
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive''s variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files. Problem
+      B7 (does not affect a conclusion): raw_file_info reads two fixed keys and never lists the raw files,
+      so the notebook does not show that no raw file has a stimulation channel; the paper says raw data
+      were clipped around pulses, so pulse times might be recoverable from the 11 wideband files (about
+      1.5 TB), which would make a partial test possible but too_large. It asked for a listing of all groups
+      in one raw file and a scan of one channel near the session end for zero runs, and for example values
+      of unit_name and clu_id.'
+    response: Added a listing of every dataset in one raw file (e16_3m2_211213; only the wideband and
+      LFP series and the electrodes table) and a scan of ten 2 s windows over its last 30 min on eight
+      channels, which finds no flat or zeroed stretch; that file's wideband signal ends 2 s after the
+      processed session, so the stimulation period seems not to be in the deposited recording. Only this
+      file was scanned. Added the forms of unit_name and clu_id over all files (unit_name is a number,
+      clu_id a number), which carry no cell type or light-response code. Outcome unchanged.
+  - claim: fig1e-labelled-fraction
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig1f-rem-shift
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig1g-rate-by-birthdate
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig1h-burst-by-birthdate
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig2b-synchrony-per-animal
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig2c-theta-cofiring
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig2d-theta-depth
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig2f-ripple-firing-by-birthdate
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig2g-ripple-cofiring
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig3c-assembly-cofiring
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig3e-assembly-expression
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig5b-spatial-info-by-birthdate
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig5c-sbd-ratemap-overlap
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig5f-remap-together
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig6e-sbd-novel-overlap
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig6f-remap-together-novel
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing, confirmed against the archive. The units tables hold only clu_id,
+      group_id, spike_times and unit_name; the archive's variableMeasured lists no optogenetic or stimulus
+      type for any asset, and stimulus and acquisition groups are empty in the processed files.
+    response: No change.
+  - claim: fig5d-overlap-by-distance
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing; these need light-responsive labels, and fig5d also needs shank
+      positions, which the unit group_id does not reliably give.
+    response: No change.
+  - claim: fig7b-sbd-convergence
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing; needs light-responsive labels.
+    response: No change.
+  - claim: fig7ce-convergence-by-birthdate
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing; needs light-responsive labels.
+    response: No change.
+  - claim: fig4d-model-fit
+    agrees: true
+    outcome: blocked
+    reason: Blocked, as it depends on fig3e. Agreed.
+    response: No change.
+  - claim: fig1c-radial-depth
+    agrees: true
+    outcome: blocked
+    reason: Blocked with data_missing. The depths come from tdTomato histology (Methods, Quantification
+      of normalized cell depth), which is not in the archive.
+    response: No change.
+  - claim: fig7fg-convergence-cofiring
+    agrees: true
+    outcome: blocked
+    reason: Blocked, but partly testable; it disagreed with the reason given. The stated reason (no cell
+      types) is inconsistent with the rest of the notebook, which classifies pyramidal cells by rate alone.
+      Using the same rule, units above 5 Hz as interneurons, plus CCG monosynaptic detection on spike
+      times, the share of pyramidal pairs with nonzero convergence and the trend of ratemap overlap with
+      convergence could be computed on 65 of 96 sessions. It asked for a per-session count of units above
+      5 Hz and a CCG-based connection count on one session.
+    response: Added both outputs. Units above 5 Hz number 6 to 38 per file (1,001 in all, against the
+      paper's 2,060 interneurons). On session e15_13f1_220117 the Methods' connection test (implemented
+      in huszar.py) detects connections in 0.448 of possible pyramidal-interneuron
+      pairs against the paper's 0.173, and 96.7% of pyramidal pairs share a target against 65.27%. A procedure
+      whose connection rate is this far from the paper's is not the paper's (whose connections come from
+      the lab's CellExplorer mono_res files, not public), so the claim stays blocked with the reason changed
+      to methods_underspecified; the notes also give the 31 sessions without units and the missing LFP
+      for theta cofiring. The full 65-session analysis was not run.
+- date: '2026-10-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook after the round-1 revision, with its conclusions and
+    summary, the helper module, the claims file and the attempt record, with the paper''s full text (the
+    PMC10807234 author manuscript). The verifier agreed with all 35 outcomes, and for fig7fg-convergence-cofiring
+    accepted the block while calling two parts of its reasoning weak. It quoted five sentences the outputs
+    do not support: the count of 31 sessions without units (39), the statement on stimulation channels
+    in the raw files (1 of 13 listed), the assumption about clipped pulses in cell 16, a swapped column
+    label in the fig6c output, and the reading of the T-maze as the novel figure-eight. Remaining points
+    bearing on a conclusion were B4 (fig5e rate rule), the weak fig6d-rate test, fig7fg''s single out-of-cohort
+    session and detector, and B7 (raw files). The round-1 response on fig7fg also gave 31 sessions; it
+    is left as recorded, and the notes are corrected.'
+  results:
+  - claim: cohort-birthdates
+    agrees: true
+    outcome: reproduced
+    reason: I agree. This is the change I asked for in round 1.
+    response: No change.
+  - claim: sessions-durations
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree.
+    response: No change.
+  - claim: spwr-duration
+    agrees: true
+    outcome: reproduced
+    reason: I agree.
+    response: No change.
+  - claim: unit-count
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree.
+    response: No change.
+  - claim: maze-cohort
+    agrees: true
+    outcome: reproduced
+    reason: I agree.
+    response: No change.
+  - claim: maze-task
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree.
+    response: No change.
+  - claim: novel-explorations
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree. The conclusion's "match the paper's figure-eight and two linear tracks" reads the
+      164 cm T-maze as the paper's novel figure-eight, which is an interpretation and should be stated
+      as one (minor).
+    response: The conclusion now says the kinds can be read as the paper's novel figure-eight and two
+      linear tracks, taking the 164 cm T-maze to be the novel figure-eight. Outcome unchanged.
+  - claim: fig5e-pv-decorrelation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'I agree under the fixed 5 Hz rule. The 2.59 Hz variant was chosen after the results were
+      seen, and its turn-2 median of 0.357 sits just inside the lower bound of 0.355. The record correctly
+      does not let the variant change the outcome. Remaining point: the outcome rests on an unvalidated
+      5 Hz choice that the criterion fixed in advance (B4).'
+    response: No change. The dependence on the rate rule is stated in the conclusion, the notes and the
+      summary; the files hold no cell type or waveforms with which to validate the rule.
+  - claim: fig6c-theta-rate-preserved
+    agrees: true
+    outcome: reproduced
+    reason: I agree. rho is 0.726.
+    response: No change.
+  - claim: fig6c-novel-ratemap-corr-higher
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree. The output label "Pairs per session (familiar, novel)" is wrong; the columns are
+      (novel, familiar), as the novel column sums to 242,655 and the sessions with no novel maze show
+      0 in the first column. This does not change any conclusion.
+    response: Corrected the label to (novel, familiar). Outcome unchanged.
+  - claim: fig6d-info-lower-novel
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree.
+    response: No change.
+  - claim: fig6d-rate-lower-novel
+    agrees: true
+    outcome: reproduced
+    reason: I agree, because the criterion is met (0.794 and 0.714 Hz, both within tolerance; rank-sum
+      p = 0.041). The outcome is fragile; the paired test gives p = 0.19, every variant gives p >= 0.075,
+      and one of the three mice goes the other way. The record says so.
+    response: No change; the fragility is stated in the notes, the conclusion and the summary.
+  - claim: ed2-light-responsive-count
+    agrees: true
+    outcome: blocked
+    reason: I agree with the data_missing block. The statement that neither the processed nor the raw
+      files have a stimulation channel (cell 62, the record's ed2 notes, the Summary and the README) covers
+      1 of 13 raw files; the other 12 were probed for two fixed keys only. The sentence "where clipping
+      around pulses given every 200 ms would leave several in each window" (cell 16) is an assumption,
+      as the Methods give blocks of five pulses 200 ms apart with no interval between blocks, and "clipped
+      out" does not say the samples were zeroed or held flat. The scan of the one file also suggests the
+      stimulation period is not in the deposited recording.
+    response: Added a listing of every dataset in all 13 raw files; none holds a stimulation, TTL, event
+      or pulse series, only the wideband series, the LFP and the electrodes table, so the general statement
+      now rests on all 13. Rewrote cell 16 and the ed2 notes to give the Methods' pulse protocol and clipping
+      window, to say that the interval between blocks and the content of clipped samples are not stated,
+      and to make the conclusion from the scan conditional on clipped samples being flat or zero. Only
+      one wideband file was scanned. Outcome unchanged.
+  - claim: fig1e-labelled-fraction
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig1c-radial-depth
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig1f-rem-shift
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig1g-rate-by-birthdate
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig1h-burst-by-birthdate
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig2b-synchrony-per-animal
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig2c-theta-cofiring
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig2d-theta-depth
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig2f-ripple-firing-by-birthdate
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig2g-ripple-cofiring
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig3c-assembly-cofiring
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig3e-assembly-expression
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig4d-model-fit
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig5b-spatial-info-by-birthdate
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig5c-sbd-ratemap-overlap
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig5d-overlap-by-distance
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig5f-remap-together
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig6e-sbd-novel-overlap
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig6f-remap-together-novel
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig7b-sbd-convergence
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig7ce-convergence-by-birthdate
+    agrees: true
+    outcome: blocked
+    reason: I agree.
+    response: No change.
+  - claim: fig7fg-convergence-cofiring
+    agrees: true
+    outcome: blocked
+    reason: I accept the block; the detector gives 0.448 connections per possible pair against the paper's
+      0.173, so this is not the paper's procedure. Two parts of the reasoning are weak. The Methods do
+      name a test; it uses "3x bins surrounding that of peak", while is_monosynaptic uses fixed lags of
+      0.8 to 3.2 ms, so the gap is at least partly in this implementation, not only in what the paper
+      leaves out. The one test session, e15_13f1_220117, belongs to a mouse that by the attempt's own
+      matching is not among the 15 mice of Fig. 7f. "The units of 31 of the paper's 96 sessions are also
+      not in the dandiset" is wrong; without e15_13f1 and e16_3m2 (8 of the 65 files with units) 57 of
+      the 96 sessions have units, so 39 lack them.
+    response: Corrected the count to 39 in the notebook and the notes, with an output that prints 57 with
+      units and 39 without. Added a peak-centred form of the test (is_monosynaptic_peak, the three bins
+      around the largest bin at lags up to 4.0 ms; the range is not in the Methods and was chosen after
+      the fixed-lag results were seen), a synthetic check of both tests, and a second session inside the
+      Figure 7f cohort (e13_26m1_211019). The fixed-lag test gives 0.448 and 0.407, the peak-centred one
+      0.405 and 0.394, all far from 0.173. The notes now say the difference may lie in this implementation
+      as well as in what the Methods leave unstated. Outcome and blocked_by unchanged.
