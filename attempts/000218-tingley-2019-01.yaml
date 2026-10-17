@@ -1,0 +1,380 @@
+schema_version: 1
+id: 000218-tingley-2019-01
+dandiset: "000218"
+dandiset_version: 0.250624.0439
+paper: doi:10.1016/j.neuron.2019.10.012
+date: 2026-10-16
+entry: 000218-tingley-2019
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The detector bz_FindRipples.m and the EMG estimate bz_EMGFromLFP.m, read for the parameters
+    the Methods leave open (zero-phase filtering, 11-sample smoothing, 30 ms merging, the trough as
+    the event time, EMG exclusion at 0.9, the EMG window). No data are taken from it.
+  source: https://github.com/buzsakilab/buzcode at commit 5981194ee764436383269d5fbe09980ae852c6fe
+- what: The paper's code repository, read to find its analysis code; it holds the network model of
+    Figure 8 and the code of Tingley and Buzsaki (2018), and nothing for the other figures of this
+    paper. Nothing is used from it.
+  source: https://github.com/DavidTingley/papers at commit 9f4cd48a44f211956954558b66d776ccbb74d693
+outcomes:
+- claim: dataset-composition
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:dataset-composition
+  measured:
+  - 6
+  - 2046
+  - 37
+  - 10
+  - 94
+  - 40
+  notes: The animal count matches (6). LS neurons number 2448 labelled `ls`, and 2046 with more
+    than 50 spikes in high-power epochs, within 10% of 1989. Files with LS and `hpc` units number 37,
+    as in the paper; files with LS electrodes 94 (paper 89). Files with LS and CA3 units number 10
+    against 25, and the CA1 recording count is 40 (units), 72 (electrodes) or 43 (electrodes and
+    states) against 53. Three of five counts beyond the animals are within tolerance.
+  deviations:
+  - The paper's recordings cannot be matched to files one by one; counts are compared under the
+    readings the criterion lists.
+- claim: fig1c-hfo-each-animal
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1c-hfo-each-animal
+  notes: Median event frequency is 152 to 158 Hz in every animal. LS firing within 10 ms of the
+    events exceeds firing at random times by more than 3 SEM only in DT1 (6.1 SEM); DT2 and DT5 are
+    higher by 1.2 and 1.3 SEM, and DT7, DT8 and DT9 are lower (-3.4, -4.7, -1.6 SEM). In variants,
+    NREM events pass in DT2 (3.3) and DT9 (3.6), and ripple-coupled events in DT9 (4.2). The
+    detected events include many that are not LS population bursts.
+  deviations:
+  - Events are detected here on one LS channel per recording chosen by a fixed rule (highest
+    120-200 Hz SD in a 300 s NREM sample); the paper does not say which channels it used.
+  - The paper's noise channel is replaced by the EMG estimated from the LFP, which the Methods
+    allow when no noise channel exists.
+- claim: fig1c-event-count
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1c-event-count
+  measured: 31984
+  notes: Under reading (b), recordings with LS units, 31,984 events are detected, within 10% of
+    29,955. Reading (a), all 94 recordings with LS electrodes, gives 67,186, of which 38,008 come
+    from DT7. More events fall in WAKE (27,676) than in NREM (20,019). The count matching does not
+    show that the same events were found.
+  deviations:
+  - Detection channels and noise exclusion differ from the paper's (see fig1c-hfo-each-animal).
+- claim: figs1-participation
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:figs1-participation
+  measured:
+  - 0.027
+  - 0.051
+  notes: Pooled over 31,984 events, 2.7% of LS neurons fire in an HFO, with 0.051 spikes per neuron
+    per event; the mean over 76 recordings gives 3.5% and 0.068. The paper reports 16% and 0.23.
+    The highest recording reaches 18.2%; the median recording 1.7%.
+  deviations:
+  - Spikes are counted between event start and stop; the paper does not give its window.
+- claim: fig1d-phase-locking
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1d-phase-locking
+  measured: 0.563
+  notes: 1151 of 2046 tested LS neurons (56.3%) are significantly locked (47.0% of all 2448), against
+    92.5%. The trough preference holds, with preferred phases centred on 189 degrees (resultant
+    0.755). By animal the fraction is 5.7% (DT7) to 70.4% (DT5). Median resultant 0.124 against
+    0.048 with the phase shifted.
+  deviations:
+  - The phase is taken on the recording's detection channel, not on a channel near each unit; the
+    paper does not say which channel it used.
+- claim: fig1f-shorter-than-ripples
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1f-shorter-than-ripples
+  measured:
+  - 33.9
+  - 38.3
+  notes: LS HFOs last 33.9 +- 25.0 ms and CA1 ripples 38.3 +- 23.7 ms (medians 23.2 and 32.0), inside
+    the tolerances of the paper's SDs, and LS HFOs are shorter (rank-sum p underflows to 0). Both
+    means are 6 to 7 ms above the paper's. DT8 shows no difference (27.5 against 28.0 ms, p =
+    0.83). With NREM events only, the means are 38.0 and 38.4 ms.
+  deviations:
+  - The tolerances are the paper's stated SDs, as the protocol asks, which makes them wide.
+  - The `hpc` channel is taken as CA1.
+- claim: fig1g-slower-than-ripples
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1g-slower-than-ripples
+  measured:
+  - 153.6
+  - 150.8
+  notes: LS HFOs average 153.6 +- 8.3 Hz and CA1 ripples 150.8 +- 9.2 Hz; LS events are faster, the
+    reverse of the claim, in four of five animals, and both means are outside tolerance. With NREM
+    events only, LS are slower by 0.8 Hz (150.3 against 151.1 Hz).
+- claim: fig1h-no-amplitude-frequency-correlation
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig1h-no-amplitude-frequency-correlation
+  notes: Over 67,186 events, Pearson r = 0.056 (p = 2.4e-47), Spearman rho = 0.123. By animal r is
+    -0.009 to 0.080, significant in four of six; NREM events only give r = 0.028 (p = 7.3e-05). The
+    correlation is weak and found because of the event count.
+  deviations:
+  - The paper names no test; a Pearson test over all events was fixed in the criterion.
+- claim: fig2-confined-to-ls
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig2-confined-to-ls
+  notes: Of 5 DT7 recordings with at least 20 HFOs in the 30 min block, LS channels have the highest
+    HFO-triggered power ratio in 2 (2017-03-18, 5.38 against 5.31 for cingulate cortex; 2017-03-21,
+    8.25 against 8.05 for medial septum). Medial septum (6.05 against 5.18), corpus callosum (50.1
+    against 42.0) and fimbria (72.1 against 64.8) channels are higher in the other three.
+  deviations:
+  - Tested on the DT7 recordings with channels in other regions, over up to 30 min of all channels,
+    in place of the paper's depth series of Figure 2C.
+- claim: fig2ef-intermediate-ls
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The claim needs each recording's depth relative to the dorsal and ventral borders of LS,
+    which the paper estimated from implant depths, drive turns and histology. The files give only
+    the drive depths in the session names and a region label per channel; the borders, the
+    histology and the relative depths are not in the dandiset.
+- claim: fig3-travelling-waves
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The speeds need the positions of the electrodes along the anterior-posterior, medial-
+    lateral and dorsal-ventral axes. The electrode x, y and z are NaN in every file, and the
+    probe layouts are named only in the device descriptions, without their orientation in the
+    brain.
+- claim: fig4b-pre-post-unchanged
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig4b-pre-post-unchanged
+  notes: PRE and POST excess correlations do not differ (medians 0.0062 and 0.0059, rank-sum p =
+    0.81; within animals p = 0.49 to 0.88). Only 106 pairs in 10 recordings pass the inclusion
+    rule, against 7,172 in 53 sessions, so the test has much less power than the paper's.
+  deviations:
+  - The CCG normalization, the smoothing at the window edges and the reading of the 5-spike
+    inclusion rule were fixed in the criterion; the Methods do not give them.
+  - HFO spikes are those inside this attempt's detected events, which hold few LS spikes.
+- claim: fig4b-hfo-above-behav
+  outcome: reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig4b-hfo-above-behav
+  notes: HFO excess correlations exceed BEHAV (median 0.0003; PRE p = 9.1e-24, POST p = 3.8e-25) and
+    their jittered values (p = 3.6e-31 and 7.8e-35); BEHAV is slightly above its jitter (p =
+    0.0022). 106 pairs in 10 recordings.
+  deviations:
+  - As for fig4b-pre-post-unchanged.
+- claim: fig4-sessions-few-change
+  outcome: blocked
+  blocked_by: other
+  notes: Too few recordings under the claim's own rule; decided after the pair selection. 7
+    recordings have at least 5 pairs, against 53 sessions in the paper; at the paper's rate of 7 in
+    53 about one significant recording would be expected, so the count cannot test the claim. For
+    the record, none of the 7 has p < 0.01 (smallest p = 0.050).
+- claim: fig4c-temporal-bias
+  outcome: blocked
+  blocked_by: other
+  notes: Too few recordings under the claim's own rule; decided after the pair selection. 4
+    recordings have at least 10 pairs, against 53 in the paper, too few for a t-test over
+    recordings. For the record, the mean correlations are 0.042 (PRE-BEHAV) and 0.084 (BEHAV-POST),
+    t-test p = 0.81.
+- claim: fig4d-compression
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig4d-compression
+  notes: PRE correlations exceed chance (p < 0.01) at factors 1 and 2 only, and POST at 1, 2, 4 and
+    20, against up to about 20 in the paper. PRE and POST do not differ at any factor (smallest p =
+    0.038), as the paper reports. Pairs with a defined correlation fall from 59 (PRE) and 77
+    (POST) at factor 1 to 5 and 11 at factor 50, so the higher factors rest on few pairs.
+  deviations:
+  - Interpolation and chance by circular shift were fixed in the criterion; the Methods describe
+    the warping but not the chance procedure in detail.
+- claim: figs2-post-rate-increase
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:figs2-post-rate-increase
+  notes: LS units fire more in POST NREM than in PRE NREM (median ratio 1.06, Wilcoxon p = 8.4e-07,
+    1326 units). The `hpc` units (ratio 1.00, p = 0.52, 2552 units) and the `ca3` units (1.03, p =
+    0.22, 466 units) do not.
+  deviations:
+  - The paper's supplementary figure was not available; the test was fixed in the criterion.
+- claim: fig5b-nrem-and-rates
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig5b-nrem-and-rates
+  notes: LS HFO rates in NREM are far below CA1 ripple rates (medians 0.006 and 0.461 per s, lower in
+    34 of 39 recordings, Wilcoxon p = 3.1e-06). The detected LS events are not more frequent in
+    NREM than in WAKE (NREM higher in 18 of 49 recordings, lower in 29, p = 0.44), while CA1
+    ripples are (about 9 times).
+  deviations:
+  - Detection as in fig1c-hfo-each-animal; 4 recordings without NREM or WAKE time are left out.
+- claim: fig5d-lag
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig5d-lag
+  measured: 0.0
+  notes: The coupling holds; the pooled CA1-LS correlogram peaks at 0 ms, 166 SD above its flanks.
+    The lag is 0.00 ms under both readings, outside 6.4 +- 4.2 ms, because 35% of LS HFOs within
+    50 ms of a ripple fall on the same sample (DT8 71%, DT2 62%, DT9 7%). Without them the pooled
+    median is 3.2 ms with LS after CA1 in 55%; DT9 alone gives 3.8 ms.
+  deviations:
+  - Detection as in fig1c-hfo-each-animal; event times are the troughs of the filtered signal.
+- claim: fig5e-state-coupling
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig5e-state-coupling
+  measured:
+  - 0.199
+  - 0.116
+  notes: Over 25 recordings with at least 10 HFOs in each state, 0.199 of LS HFOs have a CA1 ripple
+    within 25 ms in NREM and 0.116 in WAKE (t-test p = 0.089); pooled, 0.088 and 0.041. The
+    direction matches, the difference is not significant, and both are below the paper's values.
+    With ripple times shifted by 1 s the fractions are 0.019 and 0.005.
+  deviations:
+  - Detection as in fig1c-hfo-each-animal.
+- claim: fig5f-ripple-triggered-firing
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig5f-ripple-triggered-firing
+  notes: Over 978 LS neurons (paper 1,313), the rate within 25 ms of CA1 ripples is 1.39 Hz in NREM
+    and 1.33 Hz in WAKE (paired t-test p = 0.24). Relative to each neuron's rate in the state, WAKE
+    is higher (1.56 against 1.34, p = 0.00016). By animal, DT5, DT7 and DT9 are higher in NREM and
+    DT2 is lower.
+  deviations:
+  - A window of +-25 ms and a single test over neurons were fixed in the criterion; the figure tests
+    each bin of the correlogram.
+- claim: fig5f-no-phase-coherence
+  outcome: not_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig5f-no-phase-coherence
+  notes: The CA1-LS 120-180 Hz phase-locking value at ripple times is 0.405 against 0.202 +- 0.007
+    for jittered windows (31 SD above), higher in 70 of 71 recordings, and 90 of 125 lags within
+    50 ms exceed the bound. The same-sample events of fig5d-lag suggest a signal common to the LS
+    and hippocampal channels, which would raise this value; the outputs do not separate it from
+    neural coupling.
+  deviations:
+  - The coherence measure (phase-locking value of the phase difference across ripples) was fixed in
+    the criterion; the paper does not define it.
+  - The LS channel is the detection channel; the paper does not say which channel it used.
+- claim: fig6-optogenetic-hfos
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The two rats used for optogenetics are not in the dandiset, whose 6 subjects are the
+    recording rats, and no file holds optogenetic stimulation. No other dandiset of this paper was
+    found on the archive; a search for Tingley finds 000213 and 000233, of other papers.
+- claim: fig7e-ca1-spikes
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig7e-ca1-spikes
+  measured: 79.4
+  notes: The number of CA1 spikes predicts 79.4% of 880 LS neurons under reading (a) (chance 4.7%)
+    and 88.4% under (b) (chance 40.5%); above chance and far above 38%. With a fixed +-25 ms count
+    window, 24.7% under (a).
+  deviations:
+  - The paper does not state its model; a linear regression with cross-validated MSE and shuffles
+    was fixed in the criterion. Under reading (b), the paper's t-test wording, the chance rate is
+    about 40%.
+  - The `hpc` units are taken as CA1.
+- claim: fig7e-state
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig7e-state
+  measured: 34.3
+  notes: State predicts 34.3% of 813 LS neurons under (a) (chance 5.4%) and 67.4% under (b) (chance
+    41.7%), above chance and above 26 +- 2.6%. With a fixed window, 34.9% under (a).
+  deviations:
+  - As for fig7e-ca1-spikes.
+- claim: fig7e-duration
+  outcome: partially_reproduced
+  notebook: reproduce_tingley_2019.ipynb
+  output: claim:fig7e-duration
+  measured: 86.0
+  notes: Duration predicts 86.0% of 880 LS neurons under (a) (chance 5.9%) and 93.2% under (b), far
+    above about 20%. Counting spikes from ripple start to stop makes the count grow with duration;
+    with a fixed +-25 ms window it is 17.8% under (a), within tolerance, shown as a variant.
+  deviations:
+  - As for fig7e-ca1-spikes; the count window (ripple start to stop) was fixed in the criterion.
+- claim: fig7e-ca1-depth
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The depth of a CA1 neuron is estimated from its waveform amplitude on the three channels
+    where it is largest. The units carry no waveforms and no channel, only a shank. Raw 20 kHz data
+    are in 27 of the 98 files (all DT1 and DT2 files and two DT9 files, about 1.1 TB), from which
+    waveforms could be re-extracted for the DT2 and DT9 recordings; that is not possible within the
+    run time limit, and the other recordings have no raw data.
+- claim: fig7e-replay
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The three replay scores need place-field decoding of the CA1 units on the tracks (bin size,
+    smoothing, trial selection, cell inclusion, and the shuffles for the scores) and the model that
+    relates the scores to LS firing. Neither the paper nor any published code fixes them; the
+    paper's repository holds no code for this figure. The files do hold positions and trials.
+- claim: fig7e-seqnmf
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The seqNMF decomposition is described only by its reference and the 40 templates; its
+    lag, regularization, binning and the test against LS firing are not given, and no code for
+    this paper is published.
+- claim: fig7e-content-independent
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Depends on fig7e-replay, fig7e-seqnmf (methods underspecified) and fig7e-ca1-depth (data
+    missing). The three content-independent features tested here are all above chance (see their
+    outcomes).
+- claim: fig8-model
+  outcome: blocked
+  blocked_by: other
+  notes: A simulation of a model circuit, not a finding about the recorded data, so the dandiset
+    cannot test it. The model's code is in https://github.com/DavidTingley/papers (notebook
+    dynamicWeightingModel-ripple.ipynb) and was not run here.
+findings:
+- kind: data_missing
+  statement: The files hold no detected LS HFOs or hippocampal ripples, nor the detection channels
+    and parameters, which the Methods say are stored with each event structure. Every analysis of
+    events has to detect them anew, and the detection channels cannot be matched to the paper's.
+- kind: metadata_insufficient
+  statement: Nine files (DT5 2016-10-07, DT7 2017-03-14, -16, -17, -19, 2017-04-07, -10, DT9
+    2017-04-28, 2017-05-26) store units without a location column, so their 268 units cannot be
+    assigned to LS or hippocampus.
+- kind: metadata_insufficient
+  statement: Hippocampal electrodes and units are labelled `hpc` or `ca3`; `hpc` does not say
+    whether a site is in CA1, which the paper's analyses distinguish. Four DT7 files label all
+    electrodes `unknown`.
+- kind: data_missing
+  statement: The paper's CA3 recordings used a CA1 reference electrode to detect ripples. The 10
+    files with `ca3` electrodes hold 64 `ca3` and 32 `ls` channels and no CA1 channel, and the paper
+    reports 25 CA3 and LS recordings against 10 here.
+- kind: metadata_insufficient
+  statement: Electrode x, y and z are NaN in every file. The probe geometry and its orientation in
+    the brain, needed for the travelling-wave analysis of Figure 3, are not given, and the relative
+    depth of each recording within LS (Figure 2) is not given.
+- kind: data_missing
+  statement: The units carry no waveforms, no channel and no quality metric (the Methods compute
+    isolation distance), so the CA1 depth of each neuron (Figure 7) cannot be estimated and single
+    units cannot be told from multi-unit clusters; 11 units fire above 50 Hz on average.
+- kind: data_missing
+  statement: The two rats of the optogenetic experiments (Figure 6) are not in the dandiset.
+- kind: format_error
+  statement: 25 units in 9 files have spike times out of order (1 to 2782 inversions each), against
+    the NWB rule that spike times are sorted.
+- kind: methods_unavailable
+  statement: The paper's Key Resources point to github.com/DavidTingley/papers for scripts that
+    recreate each main figure, but the repository holds only the network model of Figure 8 and the
+    code of the 2018 paper; the analyses of Figures 1 to 7 are not published.
+- kind: paper_inconsistency
+  statement: The HFO band is given as 120-180 Hz in the Summary and the legends of Figures 1, 2 and 5
+    and as 120-200 Hz in the Results and Methods. The Methods call the 62-recording dataset that of Figure
+    6, which shows optogenetics, where Figure 7 is meant, and cite Figure 3A and 3B (travelling
+    waves) for the jitter control and the state of phase-locking epochs, which appear to be Figure
+    S3A and Figure 5.
+- kind: other
+  statement: In this attempt's detection, 35% of LS HFOs within 50 ms of a CA1 ripple fall on the
+    same 0.8 ms sample as the ripple (71% in DT8, 62% in DT2, 7% in DT9), and CA1-LS phase coherence
+    at ripples is far above chance. This points to a 120-200 Hz signal common to LS and hippocampal
+    channels in many recordings (a shared reference or artifact), which the files do not document
+    and the EMG check does not remove.
