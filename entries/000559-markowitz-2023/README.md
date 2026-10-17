@@ -17,7 +17,7 @@ DMS dLight mice, 20 Opto-DA mice and 12 no-opsin controls.
 | DMS dopamine does not predict future syllable use | Not reproduced |
 | Opto-DA increases target syllable use more than in controls (log2 fold change) | Reproduced |
 | The same, for the change in counts | Reproduced |
-| Nine Opto-DA mice are learners | Partially reproduced |
+| Nine Opto-DA mice are learners | Not reproduced (7) |
 | In learners, change during stimulation predicts change after it | Reproduced |
 | Brief Opto-DA does not change movement; 3-s stimulation increases velocity | Blocked: metadata insufficient |
 | Spontaneous and food-reward transients are of similar size | Blocked: data missing |
@@ -32,7 +32,7 @@ they hold fewer photometry sessions than the paper used. The attempt record, wit
 the differences from the paper's method, is
 [`attempts/000559-markowitz-2023-01.yaml`](../../attempts/000559-markowitz-2023-01.yaml).
 
-- `reproduce_markowitz_2023.ipynb`: the analysis. It takes about 13 minutes, half of it streaming
+- `reproduce_markowitz_2023.ipynb`: the analysis. It takes about 16 minutes, 6 of them streaming
   1,723 files.
 - `spontda.py`: streaming the files, the dLight processing and quality criteria of the paper,
   syllable instances, and the closed-loop counts. Other notebooks on this dandiset can import it.
