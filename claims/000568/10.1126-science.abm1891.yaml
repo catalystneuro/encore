@@ -1,0 +1,307 @@
+# Claims for Valero, Zutshi, Yoon & Buzsaki (2022), Science 375, 570-574, on dandiset 000568.
+# Source: the NIH author manuscript in PubMed Central (PMC9632609), full text of the main report
+# and its figure legends. The Materials and Methods and figures S1 to S15 are in the supplement,
+# which could not be obtained (the PMC file is behind a captcha and Science's copy is not open),
+# so method details below come from the legends, from buzcode (the code the paper names) and
+# from the first author's later lab code, as stated per claim.
+#
+# When these criteria were written the author had seen the data check only: the file list,
+# every group and table of the files, unit counts and baseline-epoch firing rates per session,
+# the epoch names, the number of laps and ripples per session, the stored values of the pulse
+# series, and the first few pulse timestamps of one session (which showed 20 ms pulses and
+# gaps of 1 to 2 s between the first pulses of a uLED). No claim's analysis had been run.
+#
+# What the data check showed and the criteria take as given: 28 sessions from 4 mice, each
+# deposited twice (a full file and a no-raw-data file with the same units); the pulse times of
+# the uLEDs are in 2 sessions only (fCamk1 sess9 and sess12), and only these 2 sessions have
+# laps. Every claim that needs light pulses or place fields is tested on these 2 sessions. The
+# files carry no cell type; pyramidal cells are taken as units whose rate in the first
+# (baseline) epoch is below 5 Hz.
+#
+# Method choices fixed here for all claims that use them (see valero.py):
+# - responsive: the three-way test of getuLEDResponse.m (HippoCookBook, commit 0cbded3) over
+#   the pulses of the home-cage PreStim epoch, per uLED, for uLEDs with at least 1000 pulses
+#   there; a cell is light-responsive when it passes for at least one uLED. Its light windows
+#   are the 0 to 20 ms after the onsets of the uLEDs it responds to.
+# - control windows: the 20 ms before each pulse onset of any uLED, kept when no uLED is on.
+# - rate maps and place fields: buzcode defaults (50 bins over 110 cm, 2-bin Gaussian
+#   smoothing; fields at 0.2 of the peak, 5% to 60% of the track, peak at least 2 Hz), per
+#   running direction, over the laps of the Maze epoch. Control maps use the time when no uLED
+#   is on; light maps use the cell's light windows. A place cell has a control field in at least
+#   one direction; a non-place cell has none.
+schema_version: 1
+dandiset: "000568"
+paper: doi:10.1126/science.abm1891
+claims:
+- id: cohort-counts
+  statement: CA1 pyramidal neurons were recorded and probed in four CaMKIIa-Cre::Ai32 mice, 822
+    pyramidal neurons in all, 43.3 plus or minus 8.37 per session.
+  source: Results, second paragraph
+  expected:
+  - quantity: mice
+    value: 4
+    tolerance: 0
+    unit: mice
+  - quantity: pyramidal neurons
+    value: 822
+    tolerance: 82
+    unit: neurons
+  - quantity: mean pyramidal neurons per session
+    value: 43.3
+    tolerance: 8.37
+    unit: neurons
+  criterion: Putative pyramidal cells (baseline-epoch rate below 5 Hz), each session counted
+    once. The paper does not say which sessions it used; the readings are (a) all sessions,
+    (b) the sessions whose epochs name the uLED stimulation protocol. Reproduced when, under
+    one reading, all three values are within tolerance (the per-session tolerance is the
+    paper's standard deviation); partially reproduced when the mice and the per-session mean
+    match but the total does not.
+- id: fig1c-pulse-protocol
+  statement: uLEDs were driven with 20 ms pulses at random sites with randomly variable 20 to 40
+    ms offsets, so that the stimulation of each site recurred at about 0.3 to 0.6 s intervals.
+  source: Results, second paragraph; Figure 1C
+  expected:
+  - quantity: pulse duration
+    value: 20
+    tolerance: 2
+    unit: ms
+  criterion: Over the stimulation epochs of the two sessions with pulse times. Reproduced when
+    the median pulse duration is within tolerance, the median offset between the end of one
+    pulse and the start of the next (any uLED) lies within 18 to 44 ms (the range widened by
+    10% of each bound), and the median interval between successive pulses of each uLED with at
+    least 1000 pulses lies within 0.27 to 0.66 s. Partially reproduced when the duration
+    holds but one of the other two does not.
+- id: fig1e-responsive-fraction
+  statement: Of 822 pyramidal neurons, 611 responded to light from the uLEDs.
+  source: Results, second paragraph; Figure 1E
+  expected:
+  - quantity: fraction of pyramidal neurons responsive to light
+    value: 74.3
+    tolerance: 7.4
+    unit: percent
+  criterion: Fraction of putative pyramidal cells in the two sessions with pulse times that
+    pass the three-way test for at least one uLED. Readings of which pulses are tested are (a)
+    the home-cage PreStim epoch, (b) all stimulation epochs (PreStim, Maze and PostStim).
+    Reproduced when the fraction is within tolerance under one reading.
+- id: fig1i-swr-decrease
+  statement: Light-induced spike responses of individual pyramidal cells decreased during
+    sharp-wave ripples (n = 485 neurons, P < 1e-55, Wilcoxon paired signed-rank test).
+  source: Results, third paragraph; Figure 1, F to I
+  criterion: Light-responsive putative pyramidal cells of the two sessions, over the home-cage
+    stimulation epochs (PreStim and PostStim). For each cell, the light rate in its light
+    windows and the control rate in control windows, each split by whether the window overlaps
+    a deposited ripple interval. Readings of the response are (a) the rate difference, light
+    minus control (Hz), (b) the ratio light over control. Reproduced when, under one reading,
+    the response inside ripples is lower than outside them by a two-sided Wilcoxon
+    signed-rank test at p < 0.05 with a negative median difference. The paper's p-value cannot
+    be reached with the few cells of two sessions and is not part of the criterion; cells
+    with no control spikes inside ripples are left out of reading (b).
+- id: figs10-swr-gain-vs-baseline-rate
+  statement: The firing-rate change of pyramidal neurons during SPW-Rs is negatively correlated
+    with their baseline firing rate (rho = -0.19, P < 1e-7).
+  source: Results, third paragraph (figure S10)
+  expected:
+  - quantity: Spearman correlation of SPW-R rate change with baseline rate
+    value: -0.19
+    tolerance: 0.068
+    unit: rho
+  criterion: Every putative pyramidal cell of every session with at least 50 deposited ripples
+    in its first epoch. Baseline rate is the rate in the first epoch; the SPW-R change is
+    measured in the same epoch, inside the deposited ripple intervals against outside them.
+    Readings of the change are (a) log2 of the ratio of the rate inside to the rate outside
+    (cells with no spikes inside ripples left out), (b) the difference inside minus outside
+    (Hz). Reproduced when, under one reading, rho is within tolerance and p < 1e-7. Partially
+    reproduced when rho is negative with p < 0.05 under one reading but no reading meets the
+    full criterion. The tolerance is the half-width of the 95% interval of a Spearman rho at
+    the paper's n of 822, since the paper gives no interval and 10% of 0.19 is below the
+    sampling error.
+- id: fig2b-theta-trough-gain
+  statement: During track running, the light-induced rate gain is largest at the trough of the
+    theta cycle (P < 1e-6, Wilcoxon test).
+  source: Results, fourth paragraph; Figure 2, A and B
+  criterion: Light-responsive putative pyramidal cells of the two sessions, Maze epoch, during
+    laps. Theta phase from the LFP channel with the largest ripple power (6 to 10 Hz, Hilbert),
+    taken at the middle of each light or control window. Gain is light rate minus control rate
+    in the trough half of the cycle (phase beyond +-90 degrees from the peak) and in the peak
+    half. Reproduced when the gain in the trough half is higher by a two-sided Wilcoxon
+    signed-rank test at p < 0.05. The gain in six 60-degree bins is shown as a variant.
+- id: figs11-place-cell-fraction
+  statement: More than half of the pyramidal neurons were place cells, 73% of light-responsive
+    and 71% of non-responsive neurons, with no difference between them (P = 0.90, chi-squared
+    test).
+  source: Results, fourth paragraph (figure S11)
+  depends_on:
+  - fig1e-responsive-fraction
+  expected:
+  - quantity: place cells among light-responsive pyramidal neurons
+    value: 73
+    tolerance: 7.3
+    unit: percent
+  - quantity: place cells among non-responsive pyramidal neurons
+    value: 71
+    tolerance: 7.1
+    unit: percent
+  criterion: Putative pyramidal cells of the two sessions, place cells by the control maps of
+    the Maze epoch. The absence of a difference is judged on the paper's test, a chi-squared
+    test of the 2 x 2 table (with Yates' correction, scipy's default) at p >= 0.05. Reproduced
+    when that test finds no difference and both fractions are within tolerance; partially
+    reproduced when the test finds no difference but a fraction is outside tolerance; not
+    reproduced when the test finds a difference.
+- id: fig2e-infield-gain
+  statement: The light-induced rate increase is higher within than outside the place field (n =
+    553 place fields, P < 1e-115, Wilcoxon test).
+  source: Results, fourth paragraph; Figure 2, C to E
+  depends_on:
+  - figs11-place-cell-fraction
+  criterion: Every control place field of a light-responsive putative pyramidal cell in the two
+    sessions. Gain is light rate minus control rate, each from unsmoothed counts over time
+    while the animal is inside the field's bins, and outside them in the same running
+    direction. Reproduced when in-field gain exceeds out-of-field gain by a two-sided Wilcoxon
+    signed-rank test at p < 0.05 with a positive median difference.
+- id: figs12-gain-rate-correlations
+  statement: The in-field gain is positively correlated with the out-of-field firing rate (rho =
+    0.17, P < 1e-5) and with the home-cage firing rate of the neuron (rho = 0.25, P < 1e-7).
+  source: Results, fourth paragraph (figure S12)
+  depends_on:
+  - fig2e-infield-gain
+  expected:
+  - quantity: Spearman rho, in-field gain against out-of-field rate
+    value: 0.17
+    tolerance: 0.084
+    unit: rho
+  - quantity: Spearman rho, in-field gain against home-cage rate
+    value: 0.25
+    tolerance: 0.084
+    unit: rho
+  criterion: Over the place fields of fig2e-infield-gain. Out-of-field rate is the control rate
+    outside the field in the same direction; home-cage rate is the rate in the first epoch.
+    Reproduced when both rho values are within tolerance, partially reproduced when one is.
+    The tolerance is the half-width of the 95% interval of rho at the paper's n of 553, as the
+    paper gives no interval. Whether p reaches the paper's values is reported, not judged.
+- id: fig3a-place-cells-more-excitable
+  statement: Light responses in the home cage before the track were stronger in place cells
+    than in non-place cells (P < 1e-4, Kruskal-Wallis test).
+  source: Results, fifth paragraph; Figure 3A
+  depends_on:
+  - figs11-place-cell-fraction
+  criterion: Every putative pyramidal cell of the two sessions with at least one tested uLED.
+    The response is the largest, over its tested uLEDs, of the rate during the pulse minus the
+    rate before it (Hz) in the PreStim epoch. Reproduced when place cells have the higher
+    median and a Kruskal-Wallis test gives p < 0.05. The z-scored response is shown as a
+    variant.
+- id: fig3c-unmasked-fields
+  statement: Optogenetic depolarization revealed place fields in the majority of non-place
+    cells, 289 of 417 (69.3%).
+  source: Results, fifth paragraph; Figure 3, B and C
+  depends_on:
+  - figs11-place-cell-fraction
+  expected:
+  - quantity: non-place cells with a light-induced place field
+    value: 69.3
+    tolerance: 6.9
+    unit: percent
+  criterion: Non-place putative pyramidal cells of the two sessions with a light map field
+    (same field rule as the control maps) in at least one direction. Readings of the
+    denominator are (a) light-responsive non-place cells, with light maps from the uLEDs each
+    responds to, (b) all non-place cells, with light maps from every uLED with at least 1000
+    pulses. Reproduced when the fraction is within tolerance under one reading.
+- id: fig3e-ghost-fields
+  statement: The spatial location of light-induced spikes matches that of spikes without
+    stimulation, both for place fields of place cells (P < 1e-40) and for unmasked place fields
+    of non-place cells, whose sparse control spikes form ghost fields (P < 1e-10).
+  source: Results, fifth paragraph; Figure 3, C and E
+  depends_on:
+  - fig3c-unmasked-fields
+  criterion: For each field (control fields of light-responsive place cells; light fields of
+    light-responsive non-place cells, reading (a) of fig3c-unmasked-fields), the peak bin of
+    the control map and of the light map in the same direction. Reproduced when the two peak
+    positions are positively correlated (Pearson, p < 0.05) in both groups; partially
+    reproduced when in one. The paper's test (chi-squared against 500 shuffles) is not
+    described in the main text; a test against shuffled cell pairings is shown as a variant.
+- id: fig3f-light-stability
+  statement: Place fields during light stimulation were more stable between the first and
+    second halves of the session than during control epochs, for both true place fields and
+    unmasked place fields (P < 1e-9 and P < 1e-19, two-way ANOVA).
+  source: Figure 3F
+  depends_on:
+  - fig3c-unmasked-fields
+  criterion: Per field direction as in fig3e-ghost-fields, stability is the Spearman correlation
+    of the map from laps 11 to 60 with the map from laps 71 to 120, as in the legend, computed
+    for the light map and for the control map. Reproduced when, in both groups, light
+    stability exceeds control stability by a two-sided Wilcoxon signed-rank test at p < 0.05;
+    partially reproduced when in one group. A two-way ANOVA (stimulation by group) is shown as
+    a variant.
+- id: fig3g-spatial-information
+  statement: Spatial information of control and light-stimulated epochs is correlated, and the
+    light-boosted increase is stronger for unmasked place fields of non-place cells than for
+    place cells (P < 1e-15, Kruskal-Wallis test).
+  source: Figure 3G
+  depends_on:
+  - fig3c-unmasked-fields
+  criterion: Skaggs spatial information (bits per spike) of the control and light maps per
+    direction, for the two groups of fig3e-ghost-fields. Reproduced when control and light
+    information are positively correlated (Spearman p < 0.05) in both groups and the increase
+    (light minus control) is larger for non-place cells than for place cells by a
+    Kruskal-Wallis test at p < 0.05. Partially reproduced when only one part holds.
+- id: fig4c-swr-cofiring-place-pairs
+  statement: Cofiring of place cell pairs during SPW-Rs in the home cage is positively
+    correlated with their spatial overlap on the track (P < 1e-27), while pairs of a place
+    cell and a non-place cell show no such relationship (P = 0.11).
+  source: Results, sixth paragraph; Figure 4, B and C
+  depends_on:
+  - figs11-place-cell-fraction
+  criterion: Pairs of putative pyramidal cells within each of the two sessions. Cofiring is the
+    Pearson correlation of spike counts per deposited ripple over the ripples of the home-cage
+    epochs without stimulation (BaselinePre and BaselinePost); spatial overlap is the Spearman
+    correlation of the two cells' control maps, both directions joined. Part 1 holds when
+    Spearman rho of cofiring against overlap is positive with p < 0.05 over place cell pairs.
+    Part 2 is a claim of absence judged on the paper's test, Spearman correlation at p < 0.05
+    over place and non-place pairs; it holds when that test finds no correlation. Reproduced
+    when both parts hold, partially reproduced when one does, not reproduced when neither.
+- id: fig4d-light-unmasked-cofiring
+  statement: With light-induced spikes, the relationship between SPW-R cofiring and spatial
+    overlap appears for pairs that include non-place cells (P < 1e-5, Spearman correlation).
+  source: Results, sixth paragraph; Figure 4, C and D (legend panel D)
+  depends_on:
+  - fig4c-swr-cofiring-place-pairs
+  - fig3c-unmasked-fields
+  criterion: Pairs of a place cell and a non-place cell, both light-responsive, within each
+    session. Cofiring as in fig4c-swr-cofiring-place-pairs; spatial overlap from the two
+    cells' light maps, both directions joined. Reproduced when Spearman rho is positive with p
+    < 0.05.
+- id: fig1j-light-intensity
+  statement: Stronger light (three intensities) decreased the light-induced response during
+    SPW-Rs, increased the in-field gain of place cells several-fold, and increased the in-field
+    gain of unmasked fields (Figure 1J, Figure 2F, Figure 3D; Friedman tests).
+  source: Figure 1J, Figure 2F, Figure 3D
+  criterion: Needs the light intensity of each pulse at three levels.
+- id: fig1km-intracellular
+  statement: Intracellular recordings in which the membrane potential was varied reproduce the
+    decreased gain during SPW-Rs (five cells in anesthetized rats and five in head-fixed mice,
+    P = 0.002).
+  source: Results, third paragraph; Figure 1, K to M
+  criterion: Needs the intracellular recordings.
+- id: figs9-excitatory-vs-inhibitory-swr
+  statement: During SPW-Rs, excitatory neurons increased their firing rates more than inhibitory
+    neurons.
+  source: Results, third paragraph (figure S9)
+  criterion: Needs the classification of units into pyramidal cells and interneurons.
+- id: fig3h-position-decoding
+  statement: Decoding of position is most accurate from light-boosted spikes of place cells, and
+    light-induced spikes of non-place cells predict position better than control spikes of
+    place cells (P = 0.001, Tukey test).
+  source: Results, fifth paragraph; Figure 3H
+  criterion: Needs the decoder, its bins and its cross-validation, which are in the supplement.
+- id: fig4ef-assemblies
+  statement: ICA assemblies of place cells in the home cage show higher spatial correlation than
+    chance, mixed assemblies of place and non-place cells do not, and with unmasked place fields
+    they reach the level of place-cell assemblies.
+  source: Results, sixth paragraph; Figure 4, E and F
+  criterion: Needs the assembly detection settings (bin size, significance of components) and
+    the chance level, which are in the supplement.
+- id: fig4gh-replay
+  statement: Sequential firing of place cells is correlated with spike sequences during SPW-Rs,
+    and the fraction of SPW-Rs with significant trajectories increases when unmasked place
+    fields are included in the template (P < 1e-4, Friedman test).
+  source: Results, sixth paragraph; Figure 4, G and H
+  criterion: Needs the Bayesian decoding and shuffle procedure, which are in the supplement.
