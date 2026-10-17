@@ -145,7 +145,7 @@ outcomes:
   - The paper does not say how the mean is taken; four readings are shown and only the mean over sessions
     is within tolerance.
 - claim: behav-zero-contrast
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_ibl_2025.ipynb
   output: claim:behav-zero-contrast
   measured:
@@ -153,18 +153,10 @@ outcomes:
   - 19.68
   notes: Over all trials the mean over 139 mice is 58.26% (s.e.m. 0.42), t138 = 19.68, P = 6.9e-42. The
     t statistic is within tolerance and the mean is 0.44 points below 58.7, just outside the 0.4 tolerance.
-    Over analysed trials the mean is 59.29% and t138 = 16.21. Mice are clearly above chance; the numbers
-    match in part. On the 454 canonical sessions, which the Fig. 1d legend names, the values are 58.27%
-    with t138 = 19.68 (all trials) and 59.31% with 16.23 (analysed trials).
-  deviations:
-  - The criterion defines only the reproduced case; the outcome is partially reproduced because the effect
-    is present and one of the two values is within tolerance.
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion defines only the reproduced case, both values within tolerance under one reading,
-      and gives no partial case, while the other criteria with two parts in the claims file do. Neither
-      reading meets it (cell 48), on all sessions or on the 454 canonical sessions, so by the criterion
-      the outcome is not reproduced, as the round-2 verifier found.
+    Over analysed trials the mean is 59.29% and t138 = 16.21, both outside tolerance. On the 454 canonical
+    sessions, which the Fig. 1d legend names, the values are 58.27% with t138 = 19.68 (all trials) and 59.31%
+    with 16.23 (analysed trials). No reading puts both values within tolerance, and the criterion defines
+    no partial case. Mice are clearly above chance, so the effect in the claim's statement holds.
 - claim: behav-early-movements
   outcome: reproduced
   notebook: reproduce_ibl_2025.ipynb
@@ -401,8 +393,8 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: Not attempted. It needs Lasso decoding in 20 ms bins for all 201 regions with imposter null sessions;
-    the notebook estimates about 30 minutes on 4 processes to decode one binary variable for all 2,458
-    region-sessions with the reduced settings used here (41 in the previous run; the estimate varies with
+    the notebook estimates about 41 minutes on 4 processes to decode one binary variable for all 2,458
+    region-sessions with the reduced settings used here (30 in the previous run; the estimate varies with
     the run), and wheel decoding is heavier.
 - claim: encoding-feedback-largest
   outcome: blocked
@@ -892,3 +884,23 @@ verifications:
     outcome: blocked
     reason: Agrees.
     response: No change needed.
+- date: '2026-10-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. Only the proposed change of outcome for behav-zero-contrast, with the analysis behind
+    it in cells 2, 48 and 49 of the executed notebook of the final revision, the helper module and the claims
+    file. The verifier did not download the paper for this check.
+  results:
+  - claim: behav-zero-contrast
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 48 takes each mouse's mean of correct over its zero-contrast trials, pooled over sessions,
+      and tests it against 50 with 138 degrees of freedom, as the criterion asks. No reading puts both values
+      within tolerance (58.26% with t138 = 19.68 and 59.29% with 16.21, and 58.27% with 19.68 and 59.31% with
+      16.23 on the 454 canonical sessions). The criterion says only "Reproduced when both values are within
+      tolerance under one reading" and gives no partial case, while other criteria in the claims file name
+      theirs, so read as written it leaves not reproduced as the only outcome once the reproduced condition
+      fails.
+    response: Applied. The outcome is now not_reproduced and the proposal is removed, as is the deviation that explained
+      the partial outcome; the notes, the notebook's conclusion and summary and the README were updated to match.
+      In the re-run the values of cell 48 are unchanged.
