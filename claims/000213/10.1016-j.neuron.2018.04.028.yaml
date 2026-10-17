@@ -1,0 +1,380 @@
+# Claims for Tingley & Buzsaki (2018) on dandiset 000213.
+# Source: the full text of the NIH author manuscript in PubMed Central (PMC6605060), read from its
+# Results, figure legends and STAR Methods. The supplementary figures were not read.
+#
+# When these criteria were written, the author had seen the data check only, and no result of any
+# claim's analysis: the file list and metadata, the units per region label and session (1696 units
+# labelled ls in 62 sessions, 2593 labelled hpc, 624 labelled ca3), the trials per session and the
+# conditions formed from them, the stated and inferred units of position, the LFP chunking, and the
+# theta channel chosen in each session. The criteria of ls-neuron-count and hpc-unit-count were
+# therefore written after their counts were seen. The author had read the paper's code
+# (DavidTingley/papers at 9f4cd48, buzcode at e615663, DavidTingley/scratch at 2f80453).
+#
+# Method choices fixed here for every decoding claim, from the paper's code where the Methods are
+# silent (see lshpc.py). A condition is a set of trials with the same trial type, direction, start
+# site and end site (the paper's conditions are not in the dandiset); a cell is analysed in a
+# condition with at least 10 trials when it fires at least 1.5 spikes per trial there. Each trial is
+# cut into 200 position bins by the fraction of its path covered. Rate maps are box-smoothed over 20
+# bins; phase maps are the circular mean of the 6 to 9 Hz theta phase of the spikes in each bin,
+# circularly smoothed over 20 bins; the phase feature is its cosine. The decoder pools the trial-by-bin
+# samples, makes 10 random 60/40 splits, and assigns each test sample the bin with the closest mean
+# training value; the score is the mean squared error (MSE) in bins squared. Chance permutes the test
+# features. Per cell and condition, a two-sample t-test over the 10 splits compares phase with chance
+# and phase with rate. Units labelled hpc are taken as CA1 and units labelled ca3 as CA3, as the
+# paper's code labels regions. The LS depth of a session is the first depth in its name.
+#
+# Added in the first revision, after the verifier's round-1 report and after the results of every
+# other claim had been seen: criteria for fig5-assemblies (on a random sample of pairs) and
+# ls-information-lower, which had been blocked. Neither analysis had been run when they were written.
+# The place-field rule (lshpc.py) was changed in the same revision to the Gaussian rate map that
+# the paper's code passes to bz_getPlaceFields1D.
+schema_version: 1
+dandiset: "000213"
+paper: doi:10.1016/j.neuron.2018.04.028
+claims:
+- id: ls-neuron-count
+  statement: A total of 1,647 LS neurons were recorded from five animals, in 62 sessions.
+  source: Results, third paragraph; Figure 2G (N = 62 sessions)
+  expected:
+  - quantity: LS units
+    value: 1647
+    tolerance: 164.7
+  - quantity: Sessions with LS units
+    value: 62
+    tolerance: 6.2
+  criterion: Units whose region label is ls, and the sessions holding at least one, over the five
+    subjects. Reproduced when both counts are within tolerance and five subjects hold LS units.
+- id: hpc-unit-count
+  statement: The hippocampal recordings hold 2,297 isolated CA1 units and 654 CA3 units (2,951 in
+    all, Figure 3A).
+  source: Results, first paragraph; Figure 3A legend
+  expected:
+  - quantity: CA1 units
+    value: 2297
+    tolerance: 229.7
+  - quantity: CA3 units
+    value: 654
+    tolerance: 65.4
+  criterion: Units labelled hpc are counted as CA1 and units labelled ca3 as CA3. Reproduced when
+    both are within tolerance; partially reproduced when only their sum is within 10% of 2,951.
+- id: ls-active-neurons
+  statement: Of the LS neurons, 840 fired at least 1.5 action potentials per trial on average.
+  source: Results, third paragraph; STAR Methods, position prediction analysis
+  expected:
+    quantity: LS neurons passing the activity criterion
+    value: 840
+    tolerance: 84
+  criterion: An LS unit passes when, in at least one condition with at least 10 trials, its spike
+    count over those trials is at least 1.5 times the number of trials (makeFig2.m). Sessions
+    without a hippocampal theta channel are counted too, as this criterion needs no LFP.
+- id: fig2-ls-phase-vs-shuffle
+  statement: The majority of LS neurons (751 of 840, 89%) showed position encoding in their spike
+    theta phase, compared with shuffled data, in at least one condition.
+  source: Results, third paragraph; Figure 2C and 2D
+  depends_on:
+  - ls-active-neurons
+  expected:
+    quantity: Fraction of active LS neurons with significant phase coding
+    value: 0.89
+    tolerance: 0.089
+  criterion: A neuron counts when, in at least one included condition, its phase MSE is below the
+    chance phase MSE by a two-sample t-test over the 10 splits at p < 0.01. The fraction is over
+    active LS neurons in sessions with a theta channel.
+- id: fig2-ls-phase-beats-rate
+  statement: Spike-phase decoding outperformed rate decoding of the rat's position for 786 of 840
+    LS neurons, 3,046 of 4,393 conditions, and 62 of 62 sessions.
+  source: Results, third paragraph; Figures 2F and 2G
+  depends_on:
+  - ls-active-neurons
+  expected:
+  - quantity: Fraction of LS neurons with phase better than rate
+    value: 0.936
+    tolerance: 0.064
+  - quantity: Fraction of LS conditions with phase better than rate
+    value: 0.693
+    tolerance: 0.069
+  - quantity: Fraction of LS sessions with lower mean phase than rate MSE
+    value: 1.0
+    tolerance: 0.1
+  criterion: A condition counts when its phase MSE is below its rate MSE by a two-sample t-test
+    over the 10 splits at p < 0.01; a neuron counts when at least one of its conditions does; a
+    session counts when its mean phase MSE over included LS conditions is below its mean rate MSE.
+    The neuron tolerance is the distance to 100%, as 10% would pass any value above 84%.
+    Reproduced when all three fractions are within tolerance; partially reproduced when phase is
+    better than rate in more than half of neurons, conditions and sessions but a fraction is
+    outside tolerance.
+- id: fig2e-ls-phase-lower-mse
+  statement: Across LS neurons the spike-phase code is stronger than the rate code (two-sample t
+    tests; N = 4,393 conditions, p < 1e-100; N = 62 sessions, p < 1e-10).
+  source: Results, third paragraph; Figure 2E
+  depends_on:
+  - ls-active-neurons
+  criterion: Two-sample t-tests of phase against rate MSE over included LS conditions and over
+    sessions (session means). Reproduced when the phase MSE is lower in both with p below the
+    paper's bounds (1e-100 and 1e-10); partially reproduced when lower in both with p < 0.05 but a
+    bound is not reached.
+- id: fig2fg-mse-difference
+  statement: The mean phase minus rate MSE is about -1,000 for LS conditions and -33 for
+    hippocampal place fields, and -1,024 and -25 for LS and hippocampal sessions.
+  source: Figure 2F and 2G legends
+  depends_on:
+  - fig1i-hpc-rate-phase-equivalent
+  expected:
+  - quantity: Mean phase minus rate MSE, LS conditions
+    value: -1000
+    tolerance: 100
+    unit: bins squared
+  - quantity: Mean phase minus rate MSE, hippocampal place fields
+    value: -33
+    tolerance: 3.3
+    unit: bins squared
+  - quantity: Mean phase minus rate MSE, LS sessions
+    value: -1024
+    tolerance: 102.4
+    unit: bins squared
+  - quantity: Mean phase minus rate MSE, hippocampal sessions
+    value: -25
+    tolerance: 2.5
+    unit: bins squared
+  criterion: Session values are the mean over the session's included LS conditions, or its
+    hippocampal place fields. Reproduced when all four are within tolerance; partially reproduced
+    when the LS values are negative and larger in magnitude than the hippocampal ones at both
+    levels but a value is outside tolerance. MSE depends on the number of position bins, which the
+    paper gives only as about 1.5 cm.
+- id: fig1i-hpc-rate-phase-equivalent
+  statement: For hippocampal place fields the distributions of rate and phase decoding errors are
+    statistically equivalent (two-sample KS test; 1,820 place fields, p = 0.19; 45 sessions, p =
+    0.61).
+  source: Results, first section; Figure 1I
+  criterion: A claim of absence, judged on the paper's test. Place fields are hippocampal cell and
+    condition pairs with at least one field (place-field rule in lshpc.py); their phase and rate
+    MSE are compared by a two-sample KS test, and so are the session means. Reproduced when
+    neither test gives p < 0.05; not reproduced when either does. The mean difference is reported
+    either way.
+- id: ls-few-place-fields
+  statement: Only 5.3% (232 of 4,393) of LS rate maps showed place fields by the criteria applied
+    to hippocampal units, where 31.7% (1,820 of 5,735) did.
+  source: Results, third paragraph
+  expected:
+  - quantity: Fraction of LS rate maps with a place field
+    value: 0.053
+    tolerance: 0.0053
+  - quantity: Fraction of hippocampal rate maps with a place field
+    value: 0.317
+    tolerance: 0.0317
+  criterion: A rate map is an included cell and condition (at least 10 trials, 1.5 spikes per
+    trial). Reproduced when both fractions are within tolerance; partially reproduced when the LS
+    fraction is lower than the hippocampal one (chi-squared test, p < 0.05) but a fraction is
+    outside tolerance.
+- id: hpc-place-field-properties
+  statement: 711 of 1,425 hippocampal neurons had at least one place field (1.27 fields per neuron
+    on average); the median peak in-field rate was 8.5 Hz and the median field width 38 bins.
+  source: STAR Methods, place field definition
+  expected:
+  - quantity: Fraction of hippocampal neurons with a field
+    value: 0.499
+    tolerance: 0.0499
+  - quantity: Median peak in-field rate
+    value: 8.5
+    tolerance: 0.85
+    unit: Hz
+  - quantity: Median field width
+    value: 38
+    tolerance: 3.8
+    unit: bins
+  criterion: The neurons are hippocampal units passing the activity rule in at least one
+    condition; a neuron has a field when any of its included conditions does. Peak rate and width
+    are taken over all fields. Reproduced when all three are within tolerance; partially when one
+    or two are.
+- id: ls-place-fields-unstable
+  statement: The few LS rate maps with a place field were less stable across trials than CA1/CA3
+    place fields (median coefficient of variance 41.5 against 10; two-sample t test, p < 1e-20).
+  source: Results, third paragraph
+  depends_on:
+  - ls-few-place-fields
+  expected:
+  - quantity: Median variability of LS place fields
+    value: 41.5
+    tolerance: 4.15
+  - quantity: Median variability of hippocampal place fields
+    value: 10
+    tolerance: 1
+  criterion: The paper does not define the quantity. Readings, for the first field of each map,
+    (a) the SD over trials of the rate at the field peak in Hz, as makeFig2.m computes; (b) that SD
+    divided by the mean, in percent. Reproduced when, under one reading, both medians are within
+    tolerance and LS is higher by a two-sample t-test at p < 1e-20; partially reproduced when, under
+    one reading, LS is higher at p < 0.05 but a median is outside tolerance.
+- id: fig1e-phase-info-smaller-scale
+  statement: Hippocampal place fields reach their peak information at smaller smoothing scales
+    for phase than for rate (medians 15 and 29 bins; two-sample t test, p < 1e-40).
+  source: Results, first section; Figure 1E
+  depends_on:
+  - fig1i-hpc-rate-phase-equivalent
+  expected:
+  - quantity: Median smoothing of peak phase information
+    value: 15
+    tolerance: 1.5
+    unit: bins
+  - quantity: Median smoothing of peak rate information
+    value: 29
+    tolerance: 2.9
+    unit: bins
+  criterion: Information as in the Methods (Olypher et al.) for each place field and smoothing of
+    1 to 50 bins. Values are discretized into 7 equal-width levels (rate over the map's range, phase
+    over -pi to pi); P(k) is over all trials and bins, P(k|x) over trials at bin x, logs base 2; the
+    peak information of a smoothing is the maximum over bins. The best smoothing is the argmax of the
+    5-point smoothed curve, and fields with a best smoothing of 49 or more are left out, as
+    makeFig1.m does. Reproduced when both medians are within tolerance and the phase scale is smaller
+    by a two-sample t-test at p < 1e-40; partially reproduced when it is smaller at p < 0.05 but a
+    median is outside tolerance.
+- id: fig1g-phase-more-info-fine-scale
+  statement: At smoothing below 6 cm (about one theta cycle) phase carries more spatial information
+    than rate in hippocampal place fields, and above 10 cm rate carries more.
+  source: Results, first section; Figure 1G
+  depends_on:
+  - fig1i-hpc-rate-phase-equivalent
+  criterion: With the information of fig1e-phase-info-smaller-scale, the phase minus rate peak
+    information per field for each smoothing. Fine smoothings are 2 and 3 bins (the first bin is
+    skipped as in makeFig1.m), coarse ones 7 to 50 bins. Reproduced when the mean difference is
+    positive at both fine smoothings with p < 1e-5 (two-sample t-test of phase against rate) and
+    negative at p < 0.05 for at least 80% of the coarse smoothings; partially reproduced when only
+    one of the two holds.
+- id: fig4d-depth-gradient
+  statement: The strength of phase coding relative to rate coding increases with recording depth
+    within the LS, within sessions and across animals.
+  source: Results, fourth paragraph; Figures 4A to 4D
+  depends_on:
+  - fig2e-ls-phase-lower-mse
+  criterion: The within-session part needs each unit's recording site, which the dandiset does
+    not hold, so the test is across sessions. Per session the mean phase minus rate MSE over
+    included LS conditions; per animal the Pearson correlation with the session's LS depth.
+    Reproduced when r < 0 in every animal with at least four LS sessions and, with depth and
+    value centred within animal, the pooled correlation is negative at p < 0.05; partially
+    reproduced when the pooled test holds but not every animal.
+- id: fig4e-onset-depth
+  statement: The theta phase at the onset of LS phase fields varies with recording depth (DT5 r =
+    0.38, DT9 r = 0.25, DT2 r = 0.27; circular-linear correlation, p < 0.001).
+  source: Results, fourth paragraph; Figure 4E
+  depends_on:
+  - fig2-ls-phase-vs-shuffle
+  expected:
+  - quantity: Circular-linear r, DT5
+    value: 0.38
+    tolerance: 0.038
+  - quantity: Circular-linear r, DT9
+    value: 0.25
+    tolerance: 0.025
+  - quantity: Circular-linear r, DT2
+    value: 0.27
+    tolerance: 0.027
+  criterion: For each LS neuron with significant phase coding (fig2-ls-phase-vs-shuffle), in its
+    significant condition with the lowest phase MSE, the circular mean phase of its spikes in the
+    first 15 bins; correlated with the session's LS depth per animal (CircStat circ_corrcl).
+    Reproduced when all three animals give p < 0.001 and r within tolerance; partially reproduced
+    when all three give p < 0.001, or one or two do, with r outside tolerance.
+- id: fig5-assemblies
+  statement: Spike trains of hippocampal neurons predicted LS firing in 18.5% (2,087 of 11,264) of
+    hippocampal-LS pairs, with a median optimal timescale of 25 ms.
+  source: Results, fifth paragraph; Figure 5D to 5F
+  expected:
+  - quantity: Fraction of hippocampal-LS pairs forming an assembly
+    value: 0.185
+    tolerance: 0.0185
+  - quantity: Median optimal timescale of assemblies
+    value: 25
+    tolerance: 2.5
+    unit: ms
+  criterion: Tested on a random sample of pairs, as all pairs do not fit the time limit. A pair is
+    a hippocampal and an LS unit both active (1.5 spikes per trial) in the same condition, taken in
+    that condition; each is kept with probability 0.01 (seeded). Spikes are counted in 1 ms bins
+    inside the condition's trials. A Poisson GLM predicts the LS unit's counts from theta phase
+    (sine, cosine and angle), position bin, speed and the hippocampal unit's spike train smoothed
+    by a Gaussian of SD w, for w in 1, 2, 5, 10, 15, 20, 25, 30, 40, 50, 75, 100 and 150 ms. The
+    best w has the least deviance. Assembly strength is the reduction in deviance at the best w
+    from the model without the hippocampal train, divided by the largest reduction over 10 shuffles
+    of the hippocampal train's trial order (no trial kept with its own) at that w; an assembly has
+    strength of at least 4. Reproduced when the 95% binomial interval of the fraction of
+    assemblies overlaps 0.185 plus or minus 0.0185 and the median best w of the assemblies is
+    within tolerance; partially reproduced when one of the two holds.
+- id: fig5g-assembly-neurons-stronger-phase
+  statement: LS neurons that take part in at least one predictive assembly carry a stronger spatial
+    phase code than those that do not (p < 1e-20).
+  source: Results, fifth paragraph; Figure 5G
+  depends_on:
+  - fig5-assemblies
+- id: fig6c-ca3-coherence-increases
+  statement: Theta phase coherence between LS and the CA3 pyramidal layer increases from the
+    beginning to the end of the run, while coherence between LS and CA1 stays relatively flat.
+  source: Results, sixth paragraph; Figure 6C
+  criterion: Sessions with units labelled ca3 are CA3 sessions and sessions with units labelled
+    hpc are CA1 sessions; the hippocampal channel is the theta channel. Coherence is the phase
+    locking of the 4 to 12 Hz phase difference between the hippocampal and the LS channel in 150 ms
+    windows moved in 50 ms steps, averaged in ten position segments per session over all trials.
+    Per session the slope of coherence on segment. Reproduced when CA3 slopes are above zero
+    (Wilcoxon signed-rank, p < 0.05) and above CA1 slopes (Mann-Whitney, p < 0.05); partially
+    reproduced when one of the two holds.
+- id: fig6d-cfc-stronger-ca3
+  statement: Coupling between hippocampal theta phase and LS gamma amplitude increases along the
+    run for both CA1 and CA3, and is stronger for CA3-LS than for CA1-LS.
+  source: Results, sixth paragraph; Figure 6D
+  criterion: Per session and position segment, the circular-linear correlation between the 4 to
+    12 Hz phase of the hippocampal channel and the 50 ms RMS of the 40 to 200 Hz LS signal, with
+    sessions grouped as in fig6c-ca3-coherence-increases. Reproduced when the session mean coupling
+    is higher in CA3 than CA1 sessions (Mann-Whitney, p < 0.05) and the slopes on segment are above
+    zero in both groups (Wilcoxon signed-rank, p < 0.05); partially reproduced when only the first
+    holds.
+- id: fig6e-assembly-position
+  statement: CA3 place fields form progressively stronger gamma assemblies with LS along the track
+    (r = 0.34) while CA1 coupling decreases (r = -0.11), and the two are anti-correlated (r =
+    -0.88).
+  source: Results, sixth paragraph; Figure 6E
+  depends_on:
+  - fig5-assemblies
+- id: figs7-ensemble-ls-phase-best
+  statement: The firing phases of ensembles of simultaneously recorded LS neurons read out position
+    better than the firing phases or rates of an equal number of hippocampal neurons (p < 0.001 at
+    15 to 25 neurons).
+  source: Results, third paragraph; STAR Methods, ensemble position prediction
+  criterion: Per session and condition with at least 15 included LS and 15 included hippocampal
+    units, for ensembles of 15, 20 and 25 (as many as available), 10 random ensembles per region;
+    features are the smoothed rate and phase of each unit, discretized into 20 levels; a Poisson
+    naive Bayes decoder (mean level per unit and bin as rate) over 10 random 60/40 splits of the
+    trial-by-bin samples; MSE averaged over splits. Reproduced when, at every ensemble size tested,
+    LS phase MSE is lower than both hippocampal phase and rate MSE by two-sample t-tests at p <
+    0.001; partially reproduced when that holds at p < 0.05 or for one of the two comparisons.
+- id: speed-independent
+  statement: Only 2.8% (125 of 4,393) of LS conditions showed a significant correlation between
+    running speed and the rate of phase precession, and 10.7% of LS rate maps were modulated by
+    running speed.
+  source: Results, third paragraph
+- id: ls-information-lower
+  statement: LS rate maps have lower peak information rates than hippocampal place field maps
+    (0.4 against 1.7 bits/cm; p < 1e-100).
+  source: Results, third paragraph
+  expected:
+  - quantity: Peak information of LS rate maps
+    value: 0.4
+    tolerance: 0.04
+    unit: bits/cm
+  - quantity: Peak information of hippocampal place field maps
+    value: 1.7
+    tolerance: 0.17
+    unit: bits/cm
+  criterion: Information as in fig1e-phase-info-smaller-scale (7 equal-width levels over the map's
+    range, Olypher et al.) on the trial-by-bin rate map of the place-field rule (Gaussian SD 4
+    bins); its peak over bins, divided by the session's bin size in cm (median trial path over 200
+    bins). LS maps are all included LS conditions; hippocampal maps are included hippocampal
+    conditions with a place field. Sessions with positions in pixels (DT2) are left out. The paper
+    does not say whether 0.4 and 1.7 are means or medians; both readings are shown. Reproduced
+    when, under one reading, both values are within tolerance and LS is lower by a two-sample
+    t-test at p < 1e-100; partially reproduced when LS is lower at p < 0.05 but a value or the
+    bound is not reached.
+- id: figs6-reference-frame
+  statement: After maze rotation many LS neurons kept their phase precession related to distal room
+    cues, so the phase shift is a spatial code.
+  source: Discussion; Figure S6; STAR Methods, reference frame analysis
+- id: fig7-dynamic-weighting-model
+  statement: In a spiking model, CA1 and CA3 inputs weighted dynamically as the measured assemblies
+    give a rate-independent phase code in the LS neuron, which static or random weights, or the
+    loss of theta sequences, do not.
+  source: Figure 7; Results, last paragraph
