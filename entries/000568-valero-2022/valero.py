@@ -25,22 +25,32 @@ The other choices are:
   random times (bootstrap), the mean z-score of the 1 ms PSTH during the pulse, against the
   20 ms before it, exceeds 1.96, and a two-sample Kolmogorov-Smirnov test of the PSTH bins
   during against before gives p < 0.01. Sites with fewer than `MIN_PULSES` pulses in the
-  window tested are not tested (the code's `minNumberOfPulses` is 2000). The number of
-  bootstrap sets (`N_BOOT`) is reduced from the code's 500 for speed.
+  window tested are not tested (the code's `minNumberOfPulses` is 2000). `N_BOOT` is the
+  code's 500. The random times of the bootstrap are drawn once per uLED and window and shared
+  by all units, on a 1 ms grid.
 - Rate maps and place fields (`rate_map`, `find_fields`): the defaults of buzcode
   (github.com/buzsakilab/buzcode at commit e615663b2b100782d1f378580f6d7aaa35c12937),
   which the paper names for its scripts: 50 bins over the track, Gaussian smoothing of 2 bins
-  (bz_firingMapAvg); a field is a run of bins at or above 0.2 of the peak, 5% to 60% of the
-  track long, with a peak of at least 2 Hz (bz_findPlaceFields1D). Maps are made per running
-  direction, from the laps only.
+  (bz_firingMapAvg); fields as in bz_findPlaceFields1D, ported in `find_fields`: the
+  connected bins at or above 0.2 of the peak, replaced by the sub-field found again above
+  0.2 of the remainder when that is under half the size; more than 5% and less than 60% of
+  the track; a first peak of at least 2 Hz and later peaks of at least 0.6 of the map's
+  maximum, each separated from the bins already taken by a dip below 0.2 of its peak. Maps
+  are made per running direction, from the laps only.
 - Putative pyramidal cells (`PYR_MAX_RATE_HZ`): the files carry no cell type. A unit is taken
   as a putative pyramidal cell when its mean rate in the first (baseline) epoch is below this
   value, a common choice for CA1, not the paper's (which used waveform and ACG features).
 - Control windows: the 20 ms before each pulse onset, kept only when no uLED is on during it.
+  The files hold the pulses of only some uLEDs (Site3 to Site8 of 12), and the gaps between
+  the deposited pulses show that most pulses are missing. Under the stated protocol the next
+  pulse at any site starts 20 to 40 ms after the end of the last, so the 20 ms before each
+  deposited onset and the 20 ms after each deposited offset are dark (`dark_intervals`).
+  Control maps use only these windows; time merely without a deposited pulse may hold the
+  light of a missing one.
 - Theta phase (`theta_phase`): 6 to 10 Hz band, zero-phase Butterworth filter of order 3,
   Hilbert phase; phase 0 at the peak and +-pi at the trough of the filtered LFP. The channel is
   the one with the largest ripple-band power at the deposited ripple peaks (pyramidal layer).
-  Common choices.
+  Common choices. `read_lfp` checks the stored rate (1250 Hz) and starting time (0 s).
 """
 
 from __future__ import annotations
@@ -59,7 +69,7 @@ DANDISET_VERSION = "0.230705.1633"
 PULSE_WINDOW_S = 0.020      # paper: 20 ms pulses
 CONTROL_WINDOW_S = 0.020    # paper: random 20 ms intervals between pulses
 MIN_PULSES = 1000           # sites with fewer pulses are not tested (code: 2000 over a whole session)
-N_BOOT = 100                # HippoCookBook getuLEDResponse.m uses 500
+N_BOOT = 500                # HippoCookBook getuLEDResponse.m
 BOOT_PERCENTILE = 0.999     # getuLEDResponse.m bootsTrapCI [0.001 0.999]
 Z_THRESHOLD = 1.96          # getuLEDResponse.m
 KS_ALPHA = 0.01             # getuLEDResponse.m
@@ -70,7 +80,8 @@ SMOOTH_BINS = 2.0           # bz_firingMapAvg default
 FIELD_THRESHOLD = 0.2       # bz_findPlaceFields1D default
 FIELD_MIN_SIZE = 0.05       # bz_findPlaceFields1D default, fraction of the track
 FIELD_MAX_SIZE = 0.60       # bz_findPlaceFields1D default
-FIELD_MIN_PEAK_HZ = 2.0     # bz_findPlaceFields1D default
+FIELD_MIN_PEAK_HZ = 2.0     # bz_findPlaceFields1D default (minPeak)
+FIELD_MIN_PEAK_2ND = 0.6    # bz_findPlaceFields1D default (minPeak2nd), fraction of the map's maximum
 GRID_S = 0.002              # time grid for occupancy, light and control masks
 THETA_BAND = (6.0, 10.0)
 RIPPLE_BAND = (130.0, 200.0)
@@ -136,7 +147,32 @@ def file_fingerprint(asset: dict) -> dict:
             "has_raw": "ElectricalSeries" in f["acquisition"],
             "has_lfp": "processing/ecephys/LFP" in f,
             "opto_sites": sorted(f["stimulus/presentation"].keys()) if "stimulus/presentation" in f else [],
+            "units_columns": ",".join(_text(c) for c in f["units"].attrs["colnames"]),
         }
+
+
+def describe_file(url: str) -> dict:
+    """Descriptions of the devices, stimulus sites and pulse series, the units and electrodes
+    columns, and the timing of the LFP and raw signals, as stored in one file."""
+    with _open(url) as f:
+        out = {"devices": {k: _text(f["general/devices"][k].attrs.get("description", ""))
+                           for k in f["general/devices"]},
+               "units_columns": [_text(c) for c in f["units"].attrs["colnames"]],
+               "electrodes_columns": [_text(c) for c in f["general/extracellular_ephys/electrodes"].attrs["colnames"]]}
+        if "general/optogenetics" in f:
+            og = f["general/optogenetics"]
+            out["sites"] = {k: {n: _text(og[k][n][()]) for n in ("description", "location", "excitation_lambda")}
+                            for k in og}
+        if "stimulus/presentation" in f:
+            sp = f["stimulus/presentation"]
+            out["series"] = {k: {"description": _text(sp[k].attrs.get("description", "")),
+                                 "unit": _text(sp[k]["data"].attrs.get("unit", ""))} for k in sp}
+        for name, path in (("lfp", "processing/ecephys/LFP/ElectricalSeriesLFP"), ("raw", "acquisition/ElectricalSeries")):
+            if path in f and "starting_time" in f[path]:
+                st = f[path]["starting_time"]
+                out[name] = {"rate": float(st.attrs["rate"]), "starting_time": float(st[()]),
+                             "samples": int(f[path]["data"].shape[0])}
+    return out
 
 
 # --- one session ---------------------------------------------------------------------------
@@ -168,6 +204,8 @@ def load_session(url: str, with_pulses: bool = True) -> dict:
         s = {"subject": _text(f["general/subject/subject_id"][()]),
              "session_id": _text(f["general/session_id"][()]),
              "spikes": spikes, "unit_name": [_text(x) for x in f["units/unit_name"][:]],
+             "shank": np.array([_text(x) for x in f["units/group_id"][:]]) if "group_id" in f["units"]
+             else np.full(len(spikes), ""),
              "epochs": epochs}
         if "processing/ecephys/RippleTimeIntervals" in f:
             r = f["processing/ecephys/RippleTimeIntervals"]
@@ -251,6 +289,19 @@ def control_onsets(s: dict) -> np.ndarray:
     return starts[ok]
 
 
+def dark_intervals(s: dict) -> np.ndarray:
+    """Windows dark under the stated protocol: the 20 ms before each deposited pulse onset and
+    the 20 ms after each offset, merged, without the deposited pulses themselves."""
+    light = all_light_intervals(s)
+    iv = merge_intervals(np.concatenate([np.column_stack([light[:, 0] - CONTROL_WINDOW_S, light[:, 0]]),
+                                         np.column_stack([light[:, 1], light[:, 1] + CONTROL_WINDOW_S])]))
+    # cut out any deposited light inside these windows
+    pts = np.sort(np.concatenate([iv.ravel(), light.ravel()]))
+    mids = (pts[:-1] + pts[1:]) / 2
+    keep = in_intervals(mids, iv) & ~in_intervals(mids, light) & (np.diff(pts) > 0)
+    return merge_intervals(np.column_stack([pts[:-1][keep], pts[1:][keep]]))
+
+
 def restrict(t: np.ndarray, ivs) -> np.ndarray:
     keep = np.zeros(len(t), bool)
     for a, b in ivs:
@@ -273,15 +324,23 @@ def psth(spk: np.ndarray, onsets: np.ndarray, lo: float = -0.02, hi: float = 0.0
     return counts / max(len(onsets), 1) / bin_s
 
 
-def response_test(spk: np.ndarray, onsets: np.ndarray, span: tuple[float, float],
-                  rng: np.random.Generator) -> dict:
-    """The three-way test of getuLEDResponse.m for one unit and one uLED."""
+def _cumcounts(spk: np.ndarray, span: tuple[float, float]) -> np.ndarray:
+    """Cumulative spike count on a 1 ms grid over the span (index k: spikes before span0 + k ms)."""
+    n = int(np.floor((span[1] - span[0]) * 1000)) + 1
+    k = np.floor((spk[(spk >= span[0]) & (spk < span[1])] - span[0]) * 1000).astype(np.int64)
+    return np.concatenate([[0], np.cumsum(np.bincount(k, minlength=n))])
+
+
+def response_test(spk: np.ndarray, onsets: np.ndarray, boot_ms: np.ndarray, cum: np.ndarray) -> dict:
+    """The three-way test of getuLEDResponse.m for one unit and one uLED.
+
+    boot_ms: N_BOOT x n random window starts (ms from the span's start); cum: `_cumcounts` of
+    the unit over the same span.
+    """
     n = len(onsets)
+    w = int(round(PULSE_WINDOW_S * 1000))
     rate_during = count_in_windows(spk, onsets, PULSE_WINDOW_S).sum() / (n * PULSE_WINDOW_S)
-    boot = np.empty(N_BOOT)
-    for k in range(N_BOOT):
-        r = np.sort(rng.uniform(span[0], span[1] - PULSE_WINDOW_S, n))
-        boot[k] = count_in_windows(spk, r, PULSE_WINDOW_S).sum() / (n * PULSE_WINDOW_S)
+    boot = (cum[boot_ms + w] - cum[boot_ms]).sum(axis=1) / (n * PULSE_WINDOW_S)
     ci_hi = stats.norm.ppf(BOOT_PERCENTILE, boot.mean(), boot.std(ddof=1) if boot.std() > 0 else 1e-12)
     h = psth(spk, onsets)
     before, during = h[:20], h[20:]
@@ -293,16 +352,28 @@ def response_test(spk: np.ndarray, onsets: np.ndarray, span: tuple[float, float]
             "responsive": bool(rate_during > ci_hi and z > Z_THRESHOLD and ks_p < KS_ALPHA)}
 
 
-def responsive_sites(s: dict, window: tuple[float, float], rng: np.random.Generator) -> list[dict]:
-    """Per unit and uLED, the light response test over the pulses inside `window`."""
+def responsive_sites(s: dict, window: tuple[float, float], rng: np.random.Generator,
+                     onsets: dict | None = None) -> list[dict]:
+    """Per unit and uLED, the light response test over the pulses inside `window`.
+
+    onsets: pulse onsets per uLED to test in place of the deposited ones (for sham tests).
+    """
+    onsets = onsets if onsets is not None else {k: p["on"] for k, p in s["pulses"].items()}
+    span_ms = int(np.floor((window[1] - window[0]) * 1000))
+    w = int(round(PULSE_WINDOW_S * 1000))
+    per_site = {}
+    for site, on in onsets.items():
+        on = on[(on >= window[0]) & (on < window[1])]
+        boot = rng.integers(0, span_ms - w, size=(N_BOOT, len(on))) if len(on) >= MIN_PULSES else None
+        per_site[site] = (on, boot)
     rows = []
-    for site, p in s["pulses"].items():
-        on = p["on"][(p["on"] >= window[0]) & (p["on"] < window[1])]
-        for u, spk in enumerate(s["spikes"]):
-            if len(on) < MIN_PULSES:
+    for u, spk in enumerate(s["spikes"]):
+        cum = _cumcounts(spk, window)
+        for site, (on, boot) in per_site.items():
+            if boot is None:
                 rows.append({"unit": u, "site": site, "n_pulses": len(on), "tested": False})
                 continue
-            r = response_test(spk, on, window, rng)
+            r = response_test(spk, on, boot, cum)
             rows.append({"unit": u, "site": site, "n_pulses": len(on), "tested": True, **r})
     return rows
 
@@ -360,12 +431,77 @@ def rate_map(spk: np.ndarray, grid: dict, mask: np.ndarray) -> np.ndarray:
     return out
 
 
+def _connected(z: np.ndarray, i: int, thr: float) -> np.ndarray:
+    """Bins connected to bin i whose value is at least thr (FMAToolbox FindField, in 1D)."""
+    field = np.zeros(len(z), bool)
+    if not z[i] >= thr:
+        return field
+    a = i
+    while a - 1 >= 0 and z[a - 1] >= thr:
+        a -= 1
+    b = i
+    while b + 1 < len(z) and z[b + 1] >= thr:
+        b += 1
+    field[a:b + 1] = True
+    return field
+
+
 def find_fields(m: np.ndarray) -> list[tuple[int, int, int]]:
     """Place fields of one direction's map, as (start bin, stop bin exclusive, peak bin).
 
-    bz_findPlaceFields1D defaults: bins >= 0.2 x peak, 5% to 60% of the track, peak >= 2 Hz.
-    Secondary fields need a peak of at least 0.6 of the map's maximum (minPeak2nd).
+    A port of bz_findPlaceFields1D (buzcode e615663) with its defaults. Repeatedly, at the
+    largest remaining bin: stop if it is below 2 Hz (first field) or below 0.6 of the map's
+    maximum (later fields); take the connected bins at or above 0.2 of it; find the field again
+    on the map minus that level, at 0.2 of what remains of the peak, and keep this sub-field
+    when it is under half the size; for a later field, reject it when the map does not dip
+    below 0.2 of its peak between it and the nearest bins already taken; keep it when it is
+    more than 5% and less than 60% of the track; then remove its bins and go on. Unvisited
+    (NaN) bins belong to no field.
     """
+    z = np.array(m, float)
+    if np.all(np.isnan(z)) or np.nanmax(z) <= 0:
+        return []
+    n = len(z)
+    max_fr = np.nanmax(z)
+    taken = np.zeros(n, bool)
+    fields = []
+    first = True
+    while True:
+        if np.all(np.isnan(z)):
+            break
+        i = int(np.nanargmax(z))
+        peak = z[i]
+        if peak < (FIELD_MIN_PEAK_HZ if first else FIELD_MIN_PEAK_2ND * max_fr):
+            break
+        f1 = _connected(z, i, FIELD_THRESHOLD * peak)
+        lvl = FIELD_THRESHOLD * peak
+        f2 = _connected(z - lvl, i, FIELD_THRESHOLD * (peak - lvl))
+        field = f2 if f2.sum() < 0.5 * f1.sum() else f1
+        good = True
+        if not first and taken.any():
+            idx = np.flatnonzero(field)
+            a, b = idx[0], idx[-1]
+            left = np.flatnonzero(taken[:a])
+            right = np.flatnonzero(taken[b + 1:]) + b + 1
+            d_left = a - left[-1] if len(left) else np.inf
+            d_right = right[0] - b if len(right) else np.inf
+            between = m[left[-1] + 1:a + 1] if d_left <= d_right else m[b:right[0]]
+            if not np.any(between < FIELD_THRESHOLD * peak):
+                good = False
+        size = field.sum()
+        if FIELD_MIN_SIZE * n < size < FIELD_MAX_SIZE * n and good:
+            idx = np.flatnonzero(field)
+            fields.append((int(idx[0]), int(idx[-1]) + 1, i))
+        first = False
+        z[field] = np.nan
+        taken |= field
+    return sorted(fields)
+
+
+def find_fields_simple(m: np.ndarray) -> list[tuple[int, int, int]]:
+    """The field rule used before verification, kept as a variant: every run of bins at or
+    above 0.2 of the map's maximum, 5% to 60% of the track, with a peak of at least 2 Hz and at
+    least 0.6 of the maximum. It lacks the sub-field and dip rules of bz_findPlaceFields1D."""
     if np.all(np.isnan(m)):
         return []
     v = np.nan_to_num(m)
@@ -382,9 +518,8 @@ def find_fields(m: np.ndarray) -> list[tuple[int, int, int]]:
                 j += 1
             peak = i + int(np.argmax(v[i:j]))
             size = (j - i) / len(v)
-            if FIELD_MIN_SIZE <= size <= FIELD_MAX_SIZE and v[peak] >= FIELD_MIN_PEAK_HZ:
-                if v[peak] == top or v[peak] >= 0.6 * top:
-                    fields.append((i, j, peak))
+            if FIELD_MIN_SIZE <= size <= FIELD_MAX_SIZE and v[peak] >= max(FIELD_MIN_PEAK_HZ, FIELD_MIN_PEAK_2ND * top):
+                fields.append((i, j, peak))
             i = j
         else:
             i += 1
@@ -416,7 +551,11 @@ def map_corr(a: np.ndarray, b: np.ndarray) -> float:
 def read_lfp(url: str, t0: float, t1: float, channels=None) -> np.ndarray:
     """LFP samples (int16, time x channel) between t0 and t1 s from a full file."""
     with _open(url) as f:
-        d = f["processing/ecephys/LFP/ElectricalSeriesLFP/data"]
+        series = f["processing/ecephys/LFP/ElectricalSeriesLFP"]
+        st = series["starting_time"]
+        if float(st.attrs["rate"]) != LFP_RATE or float(st[()]) != 0.0:
+            raise ValueError(f"LFP rate {st.attrs['rate']} Hz, start {st[()]} s: not {LFP_RATE} Hz from 0 s")
+        d = series["data"]
         a, b = int(t0 * LFP_RATE), int(t1 * LFP_RATE)
         x = d[a:b, :]
     return x if channels is None else x[:, channels]
