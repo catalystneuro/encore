@@ -1,0 +1,306 @@
+schema_version: 1
+id: 000568-valero-2022-01
+dandiset: "000568"
+dandiset_version: 0.230705.1633
+paper: doi:10.1126/science.abm1891
+date: 2026-10-17
+entry: 000568-valero-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+outcomes:
+- claim: cohort-counts
+  outcome: partially_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:cohort-counts
+  measured:
+  - 4
+  - 1351
+  - 48.2
+  notes: Under reading (a), all 28 sessions, 4 mice and 48.2 putative pyramidal cells per session (SD
+    12.18) match, but the total is 1351 against 822. Under reading (b), the 22 sessions naming the uLED
+    protocol, 3 mice, 1047 cells and 47.6 per session. 822 cells at 43.3 per session would be about 19
+    sessions. With thresholds of 2.5 and 10 Hz the total is 1205 or 1441.
+  deviations:
+  - Pyramidal cells are units with a baseline rate below 5 Hz, as the files carry no cell type; the
+    paper classified cells by other features.
+  - The paper does not say which sessions it used; two readings are shown.
+- claim: fig1c-pulse-protocol
+  outcome: partially_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig1c-pulse-protocol
+  measured: 19.75
+  notes: Pulses last 19.87 ms (sess9) and 19.63 ms (sess12). The median interval between pulses of one
+    uLED is 0.281 to 0.383 s for the four uLEDs with at least 1000 pulses, within 0.27 to 0.66 s. The
+    median offset from the end of one pulse to the start of the next is 60.4 and 80.0 ms, outside 18 to
+    44 ms; 31.8% and 30.2% of offsets fall within 20 to 40 ms, and the 95th percentiles are 241 and 328
+    ms. The same fractions fall within 40 to 60 ms measured onset to onset, the range of the file's
+    description. The files hold series for 6 of the probe's 12 uLEDs, which may explain the longer
+    gaps; this is not shown.
+  deviations:
+  - Two sessions of 28, the only ones with pulse times.
+- claim: fig1e-responsive-fraction
+  outcome: reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig1e-responsive-fraction
+  measured: 72.5
+  notes: Under reading (b), all stimulation epochs, 66 of 91 putative pyramidal cells (72.5%) respond to
+    at least one uLED. Under reading (a), the PreStim epoch, 57 of 91 (62.6%), outside tolerance. Of 364
+    unit and uLED tests in PreStim, 68 pass all three parts of the test. The criterion lists (a) first
+    but only (b) matches, so the measured value is that of (b).
+  deviations:
+  - Two sessions of one mouse (91 putative pyramidal cells), not 822 cells.
+  - The response test is the one in the first author's later code (HippoCookBook getuLEDResponse.m),
+    with 100 bootstrap sets in place of 500 and a minimum of 1000 pulses per uLED in place of 2000; the
+    paper's own test is in its unavailable Methods.
+  - Which pulses the paper tested is not stated; two readings are shown and the claim matches under
+    reading (b) only.
+- claim: fig1i-swr-decrease
+  outcome: reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig1i-swr-decrease
+  notes: In 57 light-responsive putative pyramidal cells, light minus control rate is 0.30 Hz (median)
+    in windows overlapping ripples and 2.68 Hz outside, lower inside in 49 of 57 (Wilcoxon p = 6.8e-09),
+    and in each session (p = 7.8e-06 and 9.5e-07). As a ratio, 1.25 inside and 2.89 outside (53 of 56,
+    p = 8.6e-10). The paper's n of 485 and P < 1e-55 cannot be reached with two sessions.
+  deviations:
+  - Two sessions of one mouse.
+  - Ripples are the deposited ripple intervals; a window counts as inside a ripple when it overlaps one.
+  - Control windows are the 20 ms before each pulse with no uLED on.
+- claim: figs10-swr-gain-vs-baseline-rate
+  outcome: partially_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:figs10-swr-gain-vs-baseline-rate
+  measured: -0.437
+  notes: Over 1166 putative pyramidal cells of 24 sessions, the log2 ratio of the rate inside ripples to
+    outside is negatively correlated with the baseline rate (rho = -0.437, p = 1.8e-55), in every subject
+    (-0.37 to -0.71) and every session. This is stronger than -0.19 and outside the tolerance of 0.068.
+    The difference reading gives rho = -0.002 (p = 0.95). Without the three sessions whose ripples fail
+    the clock check, rho = -0.468.
+  deviations:
+  - The paper's measure of rate change is in the unavailable supplement; two readings were fixed
+    before the analysis and they disagree.
+  - The tolerance is the sampling half-width at n = 822, not 10% of the value.
+- claim: fig2b-theta-trough-gain
+  outcome: not_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig2b-theta-trough-gain
+  notes: In 57 light-responsive putative pyramidal cells during laps, the gain is 2.04 Hz in the trough
+    half of theta and 2.07 Hz in the peak half (medians), higher at the trough in 22 of 57 cells
+    (Wilcoxon p = 0.14) and significant in neither session. In 60-degree bins the gain is largest 30
+    degrees after the peak (2.13 Hz).
+  deviations:
+  - Two sessions of one mouse.
+  - The LFP channel (largest ripple power), the theta band (6 to 10 Hz) and the half-cycle split are
+    choices made here; the paper's are in its unavailable Methods.
+- claim: figs11-place-cell-fraction
+  outcome: not_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:figs11-place-cell-fraction
+  measured:
+  - 78.9
+  - 52.9
+  notes: 45 of 57 light-responsive (78.9%) and 18 of 34 non-responsive (52.9%) putative pyramidal cells
+    are place cells; the paper's chi-squared test finds a difference (p = 0.018) where the paper reports
+    P = 0.90. Both sessions show it (71% against 44%, 91% against 61%), as do field peak thresholds of 1
+    and 3 Hz. Over all putative pyramidal cells 69.2% are place cells, so the statement that more than
+    half are place cells holds.
+  deviations:
+  - Two sessions of one mouse.
+  - Place fields follow buzcode's defaults on control maps of the laps; the paper's standard
+    definition is in its unavailable Methods.
+- claim: fig2e-infield-gain
+  outcome: reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig2e-infield-gain
+  notes: Over 64 control place fields of 45 light-responsive putative pyramidal cells, gain is 4.23 Hz
+    in the field and 1.01 Hz outside (medians), higher in the field for 51 of 64 (Wilcoxon p = 9.1e-08)
+    and in each session (p = 3.8e-07 and 0.0032). As a ratio of light to control the in-field value is
+    lower (2.16 against 2.89, p = 0.00038).
+  deviations:
+  - Two sessions of one mouse; 64 fields against 553.
+- claim: figs12-gain-rate-correlations
+  outcome: not_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:figs12-gain-rate-correlations
+  measured:
+  - 0.051
+  - -0.065
+  notes: Over 64 fields, rho is 0.051 (p = 0.69) for the out-of-field rate and -0.065 (p = 0.61) for the
+    home-cage rate, both outside tolerance. With one field per cell, rho is 0.207 for the out-of-field
+    rate (within tolerance) and -0.005 for the home-cage rate.
+  deviations:
+  - Two sessions of one mouse; 64 fields against 553.
+- claim: fig3a-place-cells-more-excitable
+  outcome: reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig3a-place-cells-more-excitable
+  notes: The PreStim light response (best uLED) has a median of 2.07 Hz in 63 place cells and 0.94 Hz in
+    28 non-place cells (Kruskal-Wallis p = 0.0041; z-scored p = 0.0021), and holds in both sessions. The
+    statement that firing rate does not explain it is not supported here. Among cells below the median
+    baseline rate the difference is 1.83 against 1.33 Hz (p = 0.32), and among the faster half 3.08
+    against 0.58 Hz (p = 0.0021).
+  deviations:
+  - Two sessions of one mouse.
+- claim: fig3c-unmasked-fields
+  outcome: not_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig3c-unmasked-fields
+  measured: 83.3
+  notes: Under reading (a), 10 of 12 light-responsive non-place cells (83.3%) have a light field, above
+    the tolerance of 69.3 plus or minus 6.9; under reading (b), 12 of 28 non-place cells (42.9%), below
+    it and close to the 35.7% found in control maps thinned at random to the time of the light maps.
+    Reading (a) rests on 12 cells.
+  deviations:
+  - Two sessions of one mouse; 28 non-place cells against 417.
+  - The paper's denominator and its rule for an induced field are in its unavailable Methods; two
+    readings are shown.
+- claim: fig3e-ghost-fields
+  outcome: partially_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig3e-ghost-fields
+  notes: For 61 place fields the light peak follows the control peak (Pearson r = 0.857, p = 1.3e-18).
+    For 19 unmasked fields r = 0.310 (p = 0.2). In the shuffle variant, 57.9% of unmasked peaks lie
+    within 4.4 cm of the control peak against 14.0% for shuffled pairings (p = 0.002), which is closer
+    to the paper's test against shuffles. 15 of the 19 unmasked fields come from one session.
+  deviations:
+  - Pearson correlation of peak positions in place of the paper's chi-squared test against 500
+    shuffles, whose details are in the unavailable Methods; a shuffle test is shown as a variant.
+- claim: fig3f-light-stability
+  outcome: not_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig3f-light-stability
+  notes: Light maps are less stable than control maps between laps 11-60 and 71-120 (place fields 0.675
+    against 0.797, light higher in 15 of 61, p = 6.2e-05; unmasked fields 0.278 against 0.610, 7 of 19, p
+    = 0.087). Against control maps from as many 20 ms control windows as light windows, the gaps shrink
+    and are not significant (0.675 against 0.732, p = 0.95; 0.278 against 0.449, p = 0.71), and light is
+    still not more stable.
+  deviations:
+  - Control maps use all time without light (88% to 90% of lap time); the paper's control epochs were
+    20 ms intervals between pulses, shown as a variant.
+  - Wilcoxon tests in place of the paper's two-way ANOVA, which is shown as a variant.
+- claim: fig3g-spatial-information
+  outcome: partially_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig3g-spatial-information
+  notes: Control and light spatial information are correlated for place fields (rho = 0.566, p = 2e-06)
+    but not significantly for unmasked fields (rho = 0.396, p = 0.093). The increase is larger for
+    unmasked fields (median 0.12 against -0.01 bits/spike, Kruskal-Wallis p = 0.0019). Against
+    time-matched control maps the increase is negative in both groups (-0.13 and -0.11) and does not
+    differ (p = 0.64).
+  deviations:
+  - Control maps use all time without light; time-matched control windows are a variant, and the
+    increase in unmasked fields depends on this choice.
+- claim: fig4c-swr-cofiring-place-pairs
+  outcome: not_reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig4c-swr-cofiring-place-pairs
+  notes: Over 961 place cell pairs, ripple cofiring is not correlated with spatial overlap (rho = 0.041,
+    p = 0.21), so part 1 fails. Over 887 place and non-place pairs the paper's test finds a correlation
+    (rho = 0.112, p = 0.00081), so part 2, a claim of absence, also fails. Correlation of participation
+    per ripple gives the same (0.032, p = 0.32; 0.116, p = 0.00051).
+  deviations:
+  - Two sessions of one mouse.
+  - Cofiring as the Pearson correlation of spike counts per deposited ripple, a choice made here; the
+    paper's measure is in its unavailable Methods.
+- claim: fig4d-light-unmasked-cofiring
+  outcome: reproduced
+  notebook: reproduce_valero_2022.ipynb
+  output: claim:fig4d-light-unmasked-cofiring
+  notes: Over 290 pairs of light-responsive place and non-place cells, cofiring correlates with the
+    overlap of light maps (rho = 0.124, p = 0.035), carried by sess9 (rho = 0.167, p = 0.008; sess12
+    -0.132, p = 0.42). The statement implies the relationship appears only with light; with control maps
+    the same pairs give rho = 0.191 (p = 0.0011), so that part does not hold.
+  deviations:
+  - Two sessions of one mouse.
+- claim: fig1j-light-intensity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pulse series hold one value per uLED in each of the two sessions with pulses (19 in sess9,
+    62623 to 63599 in sess12, stated as watts), so no pulse has an intensity level, and the other 26
+    sessions have no pulse series. The paper's other named data location, the Buzsaki Lab Databank,
+    serves data through Globus with an account and no pinned identifier.
+- claim: fig1km-intracellular
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds extracellular recordings of four mice only; the intracellular recordings in
+    rats and head-fixed mice are not in it. The lab's data page lists this dandiset for the paper and
+    otherwise points to a Globus endpoint without a pinned identifier.
+- claim: figs9-excitatory-vs-inhibitory-swr
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The units carry no cell type, and the no-raw-data files hold no waveforms. A rate threshold
+    separates cells by the very quantity the claim compares, so it was not used for this claim.
+    Waveforms could be taken from the raw signal, but the full files are 17 to 54 GB each and six of
+    them have no raw signal.
+- claim: fig3h-position-decoding
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The decoder, its spatial bins, time windows and cross-validation are described in the
+    supplement, which could not be obtained; the main text and legend do not fix them. The data for it
+    (two sessions with laps and pulses) are in the dandiset.
+- claim: fig4ef-assemblies
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The ICA assembly detection (bin size, significance of components) and the chance level for
+    spatial correlation are in the unavailable supplement. The legend gives only the member threshold
+    of 2 SD. The data are in the dandiset for two sessions.
+- claim: fig4gh-replay
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The Bayesian decoding of ripples, the template construction and the shuffle are in the
+    unavailable supplement; the legend gives only 500 shuffles. The data are in the dandiset for two
+    sessions.
+findings:
+- kind: data_missing
+  statement: Light pulse times are deposited for 2 of 28 sessions (fCamk1 sess9 and sess12). Twenty other
+    sessions name uLED stimulation in their epochs but hold no pulse series, so their light responses
+    cannot be computed. Laps are also in these two sessions only.
+- kind: metadata_error
+  statement: The OptogeneticSeries are stated in watts but hold one value per uLED, 19 in sess9 and
+    62623 to 63599 in sess12, not a light power (the paper gives 0.02 to 0.1 uW). No light intensity per
+    pulse is stored, so the paper's three intensities cannot be recovered.
+- kind: data_missing
+  statement: The files hold pulse series for 6 of the probe's 12 uLEDs (Site3 to Site8), two of them with
+    only 120 to 221 pulses.
+- kind: other
+  statement: Every session is deposited twice, as a full file and a no-raw-data file; in all 28 sessions
+    the two hold the same units, spike times, ripples and position. The full file of fCamk3 sess20 is
+    named sub-fCamk3_behavior+ecephys+image.nwb, without its session.
+- kind: data_missing
+  statement: The full file of fCamk3 sess17 is 28 MB and holds 378 s of raw signal and 6850 s of LFP of a
+    34621 s session. The six full files of fCamk1 sess13 to sess19 hold the LFP but no raw signal.
+- kind: metadata_insufficient
+  statement: Units carry no cell type and the no-raw-data files no waveforms, so pyramidal cells and
+    interneurons cannot be told apart as in the paper.
+- kind: metadata_error
+  statement: session_start_time is 2016-03-15 in every file, while the session ids date the recordings
+    to 2020 and 2021.
+- kind: metadata_error
+  statement: The linearized position holds values from 0 to 110 cm (the track length) but has a
+    conversion factor of 100, which would put it at 0 to 110 m.
+- kind: metadata_insufficient
+  statement: Six sessions (fCamk2 sess1 to sess4, fCamk3 sess13, fCamk5 sess10) name their epochs only by
+    a time stamp, without behavioral paradigm or manipulation. fCamk2 sessions have no position and 0
+    to 1110 ripples.
+- kind: selection_undocumented
+  statement: The dandiset holds 28 sessions and 1351 units with a baseline rate below 5 Hz, where the
+    paper reports 822 pyramidal neurons at 43.3 per session (about 19 sessions). It does not say which
+    sessions the paper used. 14 sessions include CNO or DMSO epochs, which the paper does not describe.
+- kind: other
+  statement: In fCamk3 sess13, fCamk3 sess17 and fCamk5 sess10 the deposited ripple intervals mark
+    population bursts weakly (population rate 1.2 to 1.98 times that 1 s later, against at least twice in
+    the other 22 sessions with ripples). fCamk5 sess10 has 217 events with a median length of 109 ms.
+- kind: paper_inconsistency
+  statement: The paper gives randomly variable 20 to 40 ms offsets between pulses, the files' description
+    40 to 60 ms. Measured onset to onset, 30% to 32% of intervals fall in 40 to 60 ms; measured end to
+    start, the median offset is 60 and 80 ms in the two sessions.
+- kind: methods_unavailable
+  statement: The paper's Materials and Methods are in its supplement. This attempt could not obtain the
+    supplement from PMC or the publisher, and the analysis code the paper names (buzcode) is a general
+    toolbox without scripts for its figures.
