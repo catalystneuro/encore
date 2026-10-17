@@ -23,7 +23,7 @@ the dandiset.
 | Compression up to 20-fold | Not reproduced |
 | Rates rise in post-behavior NREM in CA1, CA3 and LS | Partially reproduced |
 | HFOs mostly in NREM, rarer than ripples | Partially reproduced |
-| CA1 leads LS by 6.4 ms | Partially reproduced (change to not reproduced proposed) |
+| CA1 leads LS by 6.4 ms | Not reproduced |
 | Coupling 0.3 in NREM against 0.15 in WAKE | Not reproduced |
 | Ripple-triggered LS firing higher in NREM | Not reproduced |
 | CA1-LS phase coherence at chance | Not reproduced |

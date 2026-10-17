@@ -248,7 +248,7 @@ outcomes:
   deviations:
   - Detection as in fig1c-hfo-each-animal; 4 recordings without NREM or WAKE time are left out.
 - claim: fig5d-lag
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_tingley_2019.ipynb
   output: claim:fig5d-lag
   measured: 0.0
@@ -260,19 +260,11 @@ outcomes:
     DT9's median of recording medians is 3.8 ms, inside the tolerance (2.2 to 10.6 ms); the other
     animals give 0.0 ms. On the LS channel re-referenced within its shank, 4.1% of pairs fall on
     the same sample, the correlogram still peaks at 0 ms (53.4 SD above the flanks), and the lag
-    is 0.00 ms (a) and 0.80 ms (b), LS after CA1 in 52%. The criterion defines no partial outcome;
-    the coupling part holds and the lag part does not. The verifier would give not reproduced in
-    both rounds, and a change to not reproduced is proposed.
+    is 0.00 ms (a) and 0.80 ms (b), LS after CA1 in 52%. The criterion requires both the lag and
+    the correlogram peak and defines no partial outcome, so the claim is not reproduced; the
+    coupling part holds and the lag part does not. Changed from partially reproduced after round 3.
   deviations:
   - Detection as in fig1c-hfo-each-animal; event times are the troughs of the filtered signal.
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion calls the claim reproduced only when the lag is within 6.4 +- 4.2 ms under
-      one reading and defines no partial outcome. The lag is 0.00 ms under both readings on the
-      detection channel and 0.00 or 0.80 ms on the re-referenced channel (notebook, fig5d-lag cell
-      and the re-referenced check), and a peak at 0 ms does not show CA1 leading. Calling the
-      coupling alone a partial result reads more into the criterion than it says, so the outcome
-      should be not reproduced, as the verifier gave in rounds 1 and 2.
 - claim: fig5e-state-coupling
   outcome: not_reproduced
   notebook: reproduce_tingley_2019.ipynb
@@ -902,3 +894,27 @@ verifications:
     outcome: blocked
     reason: Agrees with the stated outcome.
     response: No change.
+- date: 2026-10-17
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The proposed change of outcome for fig5d-lag only, with the full executed notebook of the
+    final revision (cells 60, 61 and 68), the claims file and the attempt record. No paper text was
+    downloaded this round. Report in transcripts/000218/verifier-3-report.md.
+  results:
+  - claim: fig5d-lag
+    agrees: true
+    outcome: not_reproduced
+    reason: The criterion requires both the lag within 6.4 +- 4.2 ms (2.2 to 10.6 ms) under reading
+      (a) or (b) and a correlogram peak more than 3 SD above its flanks. The correlogram part holds
+      (peak at 0 ms, 166.3 SD above the flanks, cell 60), but the lag is 0.00 ms under (a) over 70
+      recording medians and 0.00 ms under (b) over 5,903 pairs, and the criterion defines no partial
+      outcome. On the re-referenced LS channel (cell 68) the lag is 0.00 ms (a) and 0.80 ms (b) over
+      4,509 pairs, LS follows CA1 in only 52% of pairs, and a peak at 0 ms does not show CA1
+      leading. Cell 60 computes the lag, the pair window, the flanks and the peak window as the
+      criterion defines them, and taking event times at the troughs is a listed deviation that fits
+      the paper's peak-to-peak lag. DT9's 3.8 ms and the 3.2 ms pooled median without pairs within
+      1 ms are measures outside the criterion and do not change the outcome. The record's reason and
+      the corrected 3.8 ms sentence in cell 61 match the printed numbers.
+    response: The outcome is changed to not reproduced and the proposal removed. The conclusion in
+      cell 61, the notebook summary, the entry README and the outcome's notes now say not
+      reproduced.
