@@ -32,7 +32,7 @@ cell type, and the "theta-related" rate is the rate while running; both are subs
 paper's methods. The attempt record, with the reasons and the differences from the paper's method,
 is [`attempts/000552-huszar-2022-01.yaml`](../../attempts/000552-huszar-2022-01.yaml).
 
-- `reproduce_huszar_2022.ipynb`: the analysis. It takes about seven minutes, most of it streaming the
+- `reproduce_huszar_2022.ipynb`: the analysis. It takes about eight minutes, most of it streaming the
   104 processed files.
 - `huszar.py`: loading the files, maze recordings, rate maps, spatial information, running
   rates and a monosynaptic connection test. Other notebooks on this dandiset can import it.

@@ -71,6 +71,7 @@ CCG_BASELINE_SD_S = 0.015       # Methods: hollowed Gaussian of 15 ms s.d. (the 
 CCG_HOLLOW = 0.6                # common choice (Stark & Abeles 2009)
 MONO_BINS = 3                   # Methods: three bins; their lags (0.8 to 3.2 ms) a common choice
 MONO_ALPHA = 0.001              # Methods
+MONO_PEAK_MAX_LAG_BINS = 5      # variant: peak sought at lags up to 4.0 ms (not stated in the Methods)
 SHIFT_MARGIN_S = 5.0            # spikes kept this far around the maze recordings
 RIPPLE_PSTH_EDGES = np.arange(-0.5, 0.5001, 0.01)
 RIPPLE_SHUFFLE_SEED = 0
@@ -446,6 +447,26 @@ def is_monosynaptic(ccg: np.ndarray, bin_s: float = CCG_BIN_S, alpha: float = MO
     p_base = poisson.sf(ccg[win] - 1, np.maximum(base[win], 1e-12))
     peak = ccg[win].max()
     p_anti = poisson.sf(peak - 1, max(ccg[anti].max(), 1e-12))
+    return bool(np.any(p_base < a) and p_anti < a)
+
+
+def is_monosynaptic_peak(ccg: np.ndarray, bin_s: float = CCG_BIN_S, alpha: float = MONO_ALPHA,
+                         max_lag_bins: int = MONO_PEAK_MAX_LAG_BINS) -> bool:
+    """The same test on the three bins centred on the CCG peak, as the Methods word it.
+
+    The peak is the largest bin at lags 0.8 to 4.0 ms (bins 1 to 5); the bins either side of it are
+    tested with it against the baseline, and the peak against the largest bin at the same negative
+    lags.
+    """
+    from scipy.stats import poisson
+    c = len(ccg) // 2
+    pk = c + 1 + int(np.argmax(ccg[c + 1:c + 1 + max_lag_bins]))
+    win = np.arange(pk - 1, pk + 2)
+    anti = 2 * c - win
+    base = hollowed_baseline(ccg, bin_s)
+    a = alpha / len(win)
+    p_base = poisson.sf(ccg[win] - 1, np.maximum(base[win], 1e-12))
+    p_anti = poisson.sf(ccg[pk] - 1, max(ccg[anti].max(), 1e-12))
     return bool(np.any(p_base < a) and p_anti < a)
 
 
