@@ -1,0 +1,316 @@
+schema_version: 1
+id: 000232-chang-2023-01
+dandiset: "000232"
+dandiset_version: 0.240510.2038
+paper: doi:10.1101/2023.08.21.554194
+date: 2026-10-17
+entry: 000232-chang-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The paper's MATLAB analysis code, read for method choices the Methods leave open (bin sizes,
+    smoothing kernel, bootstrap and Bonferroni rule, diagonal LDA, transition definitions, lick windows
+    and laser timing of the optogenetic analysis, performance criteria). No data were taken from it.
+  source: https://github.com/YitingChang/cross_modal_task at commit 227631ee133709df979b9914c9031cfa992c3736
+outcomes:
+- claim: fig1e-recording-counts
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig1e-recording-counts
+  notes: Sessions, mice and units per area match exactly; S1 10, 6, 177; S2 8, 5, 162; MM 9, 7, 140; ALM
+    13, 8, 256; AMM 110 units in 9 sessions from 7 mice. The units are those left after the paper's
+    quality filter.
+- claim: fig6-session-counts
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig6-session-counts
+  notes: All 24 counts of sessions and mice per optogenetic condition match the Figure 6 legend. The
+    code's performance check, ported here, passes 27 of the 28 cross-modal sham sessions and all other
+    cross-modal sessions.
+- claim: fig1d-performance
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig1d-performance
+  notes: Reading (a), trials as deposited, gives 73.6 plus or minus 0.8% (touch) and 74.8 plus or minus 1.5%
+    (light) over 12 mice, paired t-test p = 0.561, matching the reported 74, 75 and p = 0.56. Reading (b),
+    without the last 20 trials, gives 72.8 and 74.2% (p = 0.558), with the touch value outside tolerance.
+  measured:
+  - 73.6
+  - 74.8
+  deviations:
+  - The Methods remove the last 20 trials of each session and the code does not; the files may already
+    lack them. Both readings are shown and reading (a) matches.
+- claim: fig1d-outcome-fractions
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig1d-outcome-fractions
+  notes: Under reading (a) all eight fractions are within the paper's SEM (touch against light; hit 35.6
+    and 35.2, correct rejection 38.1 and 39.6, miss 13.0 and 13.6, false alarm 13.3 and 11.6%). Reading
+    (b) puts 6 of 8 within.
+  measured: [35.6, 35.2, 38.1, 39.6, 13.0, 13.6, 13.3, 11.6]
+- claim: fig1h-thit-tcr-selective
+  outcome: partially_reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig1h-thit-tcr-selective
+  measured: [30.5, 16.7, 36.4, 23.0]
+  notes: S1 30.5, S2 16.7 and ALM 23.0% are within tolerance; MM is 36.4% against 32.9 plus or minus 3.29,
+    and above the stated range widened by 10%. Over four other seeds MM gives 35.0 to 36.4%, S1 28.2 to
+    30.5, S2 17.9 to 19.1 and ALM 21.9 to 25.0%, so the MM excess is stable. 165 of 191 selective neurons
+    (86.4%) have mean AUC above 0.5, as the claim states.
+  deviations:
+  - The bootstrap resamples are shared by all units and bins of a session; the code draws them
+    separately. Each unit's interval depends only on its own resamples.
+- claim: fig2c-rule-prestim-units
+  outcome: partially_reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig2c-rule-prestim-units
+  measured: [5.6, 2.5, 20.0, 9.8]
+  notes: S2 2.5, MM 20.0 and ALM 9.8% are within tolerance; S1 is 5.6% (10 neurons) against 4.5% (8
+    neurons). Over four other seeds S1 gives 3.4 to 5.6%, so the S1 value depends on the bootstrap draw.
+    MM and ALM each exceed S1 and S2, as the claim states.
+- claim: fig2d-stimulus-prestim-units
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig2d-stimulus-prestim-units
+  measured: [0.0, 0.0, 0.0, 0.8]
+  notes: 0% in S1, S2 and MM and 0.8% (2 neurons) in ALM, as in the paper.
+- claim: fig2e-stimulus-poststim-units
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig2e-stimulus-poststim-units
+  measured: [36.2, 35.8, 13.6, 14.5]
+  notes: All four within tolerance of 37.3, 35.2, 15 and 14.1%.
+- claim: fig2f-prestim-predicts-touch-response
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig2f-prestim-predicts-touch-response
+  measured: [0.958, 0.841]
+  notes: MM r = 0.958 over 28 neurons and ALM r = 0.841 over 25 neurons, both p < 0.001 (paper 30 and 26
+    neurons). S1 r = 0.681 (10 neurons, p = 0.030) and S2 r = 0.902 (4 neurons, p = 0.0985), against the
+    paper's 0.69 (8 neurons, p = 0.056) and 0.91 (4, p = 0.093).
+- claim: fig3b-rule-decoding
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig3b-rule-decoding
+  measured: [0.606, 0.617, 0.708, 0.682]
+  notes: Shuffled medians are 0.564, 0.532, 0.526 and 0.535; 37 of 40 sessions exceed their shuffled
+    value. The S1 sessions differ from shuffled at Wilcoxon p = 0.055, the others at p below 0.01.
+  deviations:
+  - The Methods name LDA; the code's diagonal LDA is used. The Methods' soft normalization and the code's
+    z-score give the same diagonal LDA predictions.
+- claim: fig3c-rule-decoding-motor-stronger
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig3c-rule-decoding-motor-stronger
+  notes: Bootstrap 95% CIs, true against shuffled; MM 0.601 to 0.731 against 0.472 to 0.523; ALM 0.560 to
+    0.655 against 0.495 to 0.544 (no overlap); S1 0.530 to 0.614 against 0.493 to 0.545; S2 0.528 to 0.619
+    against 0.488 to 0.539 (overlap). These are within 0.012 of the paper's bounds.
+  deviations:
+  - 200 resamples per area; the code's header sets 100 and its saved file names say 1000.
+- claim: fig3de-stimulus-decoding-controls
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig3de-stimulus-decoding-controls
+  notes: Before the stimulus true means 0.495 to 0.509 with CIs overlapping shuffled in all areas; after
+    it 0.642 (MM) to 0.805 (S2), no overlap in any area.
+- claim: figs3-svm-rf-decoding
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:figs3-svm-rf-decoding
+  measured: [0.606, 0.589, 0.658, 0.648, 0.586, 0.606, 0.676, 0.655]
+  notes: All eight within 10% and above their shuffled medians. With the code's z-score the SVM medians are
+    0.575, 0.603, 0.701 and 0.642.
+  deviations:
+  - scikit-learn's SVC and random forest stand in for MATLAB fitcsvm and TreeBagger with their defaults.
+- claim: fig4c-prestim-distance-predicts-divergence
+  outcome: partially_reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig4c-prestim-distance-predicts-divergence
+  measured: 0.004
+  notes: Top 20 sessions 1.171 against bottom 20 0.966 mean post-stimulus distance, permutation p = 0.004.
+    With the code's normalization (range without the offset 5) p = 0.001. Pre- and post-stimulus mean
+    distances correlate over sessions (Spearman 0.54, p = 0.0004).
+  deviations:
+  - The code's windows are offset by one 10 ms bin from the stated ones; the stated windows are used.
+- claim: fig4e-subspace-overlap
+  outcome: partially_reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig4e-subspace-overlap
+  measured: [-0.291, -0.218, -0.466, -0.422]
+  notes: Negative in all four areas with p = 0.0007, 0.025, 0.003 and below 0.0001 (8, 7, 5 and 12
+    sessions), but only S2 is within 10% of the paper. MM and ALM are larger in magnitude than the
+    reported -0.36 and -0.35; the code's single-split procedure repeated 200 times gives 95% ranges of
+    -0.497 to -0.376 (MM) and -0.473 to -0.359 (ALM), which exclude the reported values.
+  deviations:
+  - Sessions with at least 10 units (Methods), 12 ALM sessions; the code keeps more than 10, 11 ALM
+    sessions, as the paper reports. Both are shown and give the same result.
+  - Overlaps average 100 random equal splits with offset 5 throughout; the code uses one split drawn
+    separately for each neuron and offsets 5 and 0.01, shown as a variant.
+- claim: fig4f-prestim-overlap-predicts-poststim
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig4f-prestim-overlap-predicts-poststim
+  measured: 0.688
+  notes: r = 0.688 over 32 sessions (p = 1.3e-05); 0.686 over the code's 31 sessions; the code's
+    single-split procedure gives 0.573 to 0.734 over 200 runs.
+- claim: figs4ef-coding-dimensions
+  outcome: partially_reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:figs4ef-coding-dimensions
+  notes: Seven of eight judgements match. The MM stimulus CD is not aligned (0.366, CI 0.218 to 0.521,
+    shuffled 0.150 to 0.441), where the paper reports 0.48 against 0.24 with non-overlapping CIs; with the
+    code's sessions of more than 10 units it is 0.295 and also not aligned. S1, S2 and ALM values are
+    close to the paper's (0.557, 0.620, 0.348 against 0.5, 0.62, 0.33).
+  deviations:
+  - All sessions are used, as the paper's session counts state; the code keeps sessions with more than
+    10 units, shown as a variant.
+- claim: figs4h-choice-right-left
+  outcome: partially_reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:figs4h-choice-right-left
+  measured: [0.438, 0.422, 0.445, 0.307]
+  notes: All four below 0.5; S1, MM and ALM within 0.1 of the paper, S2 0.422 against 0.32. All four CIs
+    overlap the shuffled ones.
+  deviations:
+  - The criterion's "needed condition" first read as each of the four rare categories left 1 of 10 S1
+    sessions and none in S2 and MM, so it could not decide; following the code's nanmean over stimuli,
+    right- and left-lick trials are pooled over stimuli (at least 2 each, all 40 sessions). The first
+    reading is shown as a variant.
+- claim: fig5b-first-hit-switches
+  outcome: partially_reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig5b-first-hit-switches
+  measured: [63, 75]
+  notes: Non-first blocks with a hit number 63 (touch) and 75 (light). All blocks, including the first of
+    each session, number exactly 88 and 91, so the paper's "switches" appear to count blocks. First hits
+    at or before the trial after the cue are 57.1% (touch) and 65.2% (light) of blocks with a cue row.
+  deviations:
+  - The code numbers trials by the behavioural system, including trials the files lack; first hits are
+    placed relative to the cue row in the files instead.
+- claim: fig5de-motor-states-track-switch
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig5de-motor-states-track-switch
+  notes: Touch to light MM -0.401 [-0.667, -0.111], ALM -0.302 [-0.538, -0.051]; light to touch MM 0.382
+    [0.074, 0.630], ALM 0.268 [0.026, 0.513]; all within 0.04 of the paper's values and bounds.
+  deviations:
+  - LDA with Ledoit-Wolf shrinkage stands in for the code's optimized LDA; 500 resamples (code 1000).
+- claim: figs5-sensory-states-no-tracking
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:figs5-sensory-states-no-tracking
+  notes: S1 -0.163 [-0.433, 0.117] and 0.219 [-0.067, 0.500]; S2 -0.140 [-0.500, 0.250] and 0.259 [-0.105,
+    0.620]; all include 0.
+- claim: fig6c-pre-inhibition-tactile
+  outcome: partially_reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig6c-pre-inhibition-tactile
+  notes: MM -0.390 (CI -0.658 to -0.123) is below 0; ALM -0.373 has a CI of -0.707 to 0.005 when false-alarm
+    trials are also resampled (Methods). S1/S2, sham and AMM include 0. With the code's resampling, which
+    keeps the observed false-alarm rate, ALM is -0.682 to -0.018 and every CI is within 0.03 of the paper's,
+    which would make the claim reproduced.
+  deviations:
+  - Hit and false-alarm trials are both resampled; the code resamples hits only, shown as a variant.
+- claim: figs6b-pre-inhibition-hit-rate
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:figs6b-pre-inhibition-hit-rate
+  notes: MM -0.318 (-0.492 to -0.152), ALM -0.227 (-0.463 to -0.007), S1/S2 -0.147 (-0.303 to 0.010). The
+    ALM bound is close to 0; with the code's resampling it is 0.002.
+- claim: fig6d-post-inhibition-tactile
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig6d-post-inhibition-tactile
+  notes: S1/S2 -0.389 (-0.699 to -0.080), MM -0.487 (-0.612 to -0.327), ALM -0.402 (-0.568 to -0.253).
+- claim: figs7gh-visual-sensitivity
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:figs7gh-visual-sensitivity
+  notes: All eight judgements match; pre MM -0.603 to -0.173, AMM -0.356 to -0.082, ALM -0.494 to 0.050,
+    S1/S2 -0.282 to 0.070; post MM -0.839 to -0.518, ALM -0.870 to -0.385, AMM -0.725 to -0.353, S1/S2
+    -0.460 to 0.045.
+- claim: fig6-ppc-inhibition
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig6-ppc-inhibition
+  notes: Tactile pre -0.408 to -0.052, post -0.466 to -0.009; visual pre -0.333 to -0.031, post -0.555 to
+    -0.070.
+- claim: fig6fg-detection-task
+  outcome: reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig6fg-detection-task
+  notes: Pre-stimulus CIs include 0 for S1/S2, MM and ALM; post-stimulus S1/S2 -0.643 to -0.251, MM -0.628
+    to -0.233, ALM -0.471 to -0.065. AMM and PPC include 0 in both windows.
+- claim: fig6ij-laser-only-licks
+  outcome: not_reproduced
+  notebook: reproduce_chang_2023.ipynb
+  output: claim:fig6ij-laser-only-licks
+  notes: 11 of 12 CIs include 0. On short laser-only trials of the detection task, MM inhibition raises
+    the right-lick probability from 0.333 in the inter-trial window to 0.553 in the response window
+    (change 0.258, CI 0.045 to 0.483; 141 trials, 5 sessions, 3 mice). All cross-modal CIs and all long-
+    laser CIs include 0; the paper gives one CI per area and task (MM detection -0.06 to 0.45), without
+    saying which laser duration. A rise in licking does not bear on the paper's point that inhibition
+    does not prevent licking.
+  deviations:
+  - The paper reports one CI per area and task; short and long laser-only trials were tested apart, as
+    the code computes them.
+- claim: fig1e-probe-locations
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The files give the recorded area only as a label; electrode x, y and z are NaN, electrode
+    locations are "unknown", and no histology images or reconstructed coordinates are in the dandiset or
+    the code repository.
+findings:
+- kind: selection_undocumented
+  statement: The ephys files hold only the trials and units the paper analysed. No trial has a lick
+    between -1 and 0.1 s of the stimulus (the Methods remove about 25%; gaps of 8 to 64 per session
+    remain in the trial times), and the units are those passing the quality filter and the 50 Hz cut
+    (unit counts per area equal the paper's). The dandiset does not say that trials or units were
+    removed.
+- kind: metadata_insufficient
+  statement: Units carry only spike times and observation intervals; there are no quality metrics,
+    waveforms, channel or depth, and unit ids run from 0, so units the paper names by cluster number
+    (for example unit 127 of YT084, 2020-02-01) cannot be identified.
+- kind: data_missing
+  statement: Electrode x, y and z are NaN and electrode locations "unknown"; the probe locations of
+    Figure 1E (histology) are not in the dandiset.
+- kind: metadata_insufficient
+  statement: The trials table columns have no descriptions. `response` (1 right lick, 2 left, 0 none, 3
+    on trials without a stimulus), `blockType` ("Whisker", "Visual", and "Change" for the cue trial),
+    the opto trial types and the TTT to VVN indicator columns are explained only by the paper's code.
+- kind: metadata_error
+  statement: In the 130 behaviour files `start_time` equals the stimulus onset (or laser time on
+    laser-only trials), so trial intervals overlap and do not delimit trials; licks before the stimulus
+    are stored in the trial's lists.
+- kind: metadata_error
+  statement: In the tactile detection files, trials without a whisker stimulus are labelled
+    "Stim_Vis" and "Stim_Vis_NoCue" with a visual stimulus type, though no visual onset is given.
+- kind: other
+  statement: Two laser trials start 1.6 and 2.7 s before the reference time and one lasts 9.5 s, outside
+    the stated 0.8 s pre-stimulus and 2 s post-stimulus inhibition; the code counts them as
+    pre-stimulus.
+- kind: paper_inconsistency
+  statement: Figure 5B gives 88 and 91 block switches; the 40 recording sessions hold exactly 88 touch and
+    91 light blocks when the first block of each session is counted, and 63 and 75 non-first blocks with
+    a hit, so the reported numbers appear to count blocks, not switches.
+- kind: code_mismatch
+  statement: The Methods describe soft normalization (x - mean) / (range + 5) for population analyses;
+    the code's trajectory distance divides by the range alone, its subspace overlap uses offset 5 for the
+    reference and 0.01 for compared data, the coding dimensions use 0.01, and decoding uses a z-score.
+    The Methods exclude sessions with fewer than ten units from the subspace analysis; the code requires
+    more than ten.
+- kind: code_mismatch
+  statement: The code's hierarchical bootstrap of optogenetic sensitivity draws resampled false-alarm
+    trials but computes the false-alarm rate from the original trials, so only hits are resampled.
+- kind: code_mismatch
+  statement: The coding-dimension code keeps sessions with more than ten units (S1 8, S2 7, MM 5, ALM 11),
+    while Figure S4 reports 10, 8, 9 and 13 sessions.
+- kind: other
+  statement: The cross-modal sham session set includes one session (of 28) that fails the code's own
+    performance check as ported here; it is kept, as deposited.
