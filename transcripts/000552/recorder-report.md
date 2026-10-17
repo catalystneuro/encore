@@ -1,0 +1,99 @@
+I ran `python tools/readme_row.py 000552 --write`, which added the row for 000552 to README.md (5 reproduced, 4 partially, 3 not reproduced, 23 blocked). I added this subsection at the end of `docs/pilot-notes.md`. Nothing is committed.
+
+### 000552, Huszar et al. 2022
+
+Five claims reproduced, four partially, three not reproduced and twenty-three
+blocked, all on the dandiset. Round 1 gave its own outcome for each claim
+from the notebook with its conclusions removed and agreed with 34 of the 35;
+it gave reproduced for `cohort-birthdates`, as the sex field differs between
+files of the same mouse and each mouse's majority value gives the paper's 12
+males and 5 females, and the author changed that claim from not reproduced
+to reproduced. Round 1 also disputed the reason for blocking
+`fig7fg-convergence-cofiring`, which the author changed to
+`methods_underspecified`, and found a bug in the running rate, where a
+running stretch could span the gap between trials; with the fix
+`fig6d-rate-lower-novel` moved from partially reproduced to reproduced.
+Round 2 agreed with all 35 and nothing was proposed, so there was no third
+round. The paper reports that CA1 neurons of mice electroporated at E13.5 to
+E16.5 differ in firing, burst index, theta and SPW-R participation, assembly
+expression, spatial information and convergence onto interneurons according
+to their embryonic birthdate, that same-birthdate pairs cofire and share
+ratemaps more than different-birthdate pairs, and that a model with a
+bell-shaped rate of neurogenesis reproduces the assembly expression rates.
+The cohort, session counts and durations, ripple duration, unit count, maze
+cohort and task, novel explorations, population-vector decorrelation on the
+figure-eight maze and the firing rates, ratemap correlations and spatial
+information of all putative pyramidal cells on familiar and novel mazes were
+tested. The claims that compare same- and different-birthdate neurons or
+light-responsive neurons across birthdates, the histology and the model, 22
+in all, are blocked as `data_missing`, and the convergence claim as
+`methods_underspecified`, since the Methods' connection test as implemented
+here detects connections in 0.448 and 0.407 of possible pairs (0.405 and
+0.394 peak-centred) against the paper's 0.173. Some outcomes rest on weak
+ground: in `fig5e-pv-decorrelation` the medians depend strongly on the 5 Hz
+rate rule for putative pyramidal cells, which classes 87.8% of units against
+the paper's 78.3%, and a 2.59 Hz rule chosen after the results puts all four
+medians within tolerance; `fig6d-rate-lower-novel` passes with rank-sum p =
+0.041, while the paired test gives p = 0.19 and one of three mice goes the
+other way; `fig6c-novel-ratemap-corr-higher` fails on the pooled test the
+criterion names (p = 0.67), though the novel median is higher in all 9
+sessions (sign test p = 0.0039); and the theta-related rates are a running
+rate, as the LFP was not used. The author used the author manuscript in
+PubMed Central (PMC10807234), fetched through PMC's OAI service after the
+Europe PMC full-text API returned a server error, did not read the
+Supplementary Tables, and read the paper's code at commit 51320d4 for method
+parameters only.
+
+The dandiset was converted by CatalystNeuro (Garrett Flynn and Cody Baker of
+CatalystNeuro are contributors). No unit is labelled light-responsive and no
+optogenetic pulse times are stored in the processed or the 13 raw files, so
+22 of the 35 claims cannot be tested; the labels exist in the lab's
+CellExplorer files, which the paper's data link reaches only through the lab
+databank and Globus, at no pinned identifier. In the raw file of
+e16_3m2_211213 the wideband signal ends 2 s after the processed session and
+holds no flat or zeroed stretch over its last 30 min, so if clipped samples
+are flat or zero the stimulation period is not in the deposited recording;
+the other 10 wideband files (54 to 184 GB each) were not scanned. Units carry
+no putative cell type and no waveforms, though the paper classifies 7,411
+pyramidal cells and 2,060 interneurons. Six of the 17 mice (39 files) have
+sleep states and ripples but no units and no position, so the dandiset holds
+8,201 units where the paper reports 9,471, and of the 16 novel environment
+explorations only 9 have position and trials, with no open field; 7 further
+epochs of 10 to 50 min without position or video may be the missing
+explorations. Units have no link to the electrodes table and their group_id
+values ("Group3") do not match the electrode group names ("Group 3") in 64 of
+65 files, so a unit's shank cannot be recovered. Other findings: the subject
+sex differs between files of e13_1f1 (Female in 3, Male in 2) and e13_1m1
+(Male in 9, Female in 3); is_familiar_maze is True only for the first two
+trials of sessions with a single maze recording (112 True, 1,182 False); in
+several novel recordings x and y lie between 0 and 1 though stated in cm;
+twelve of the 13 raw files give a session start of 2011-08-18 for sessions
+recorded in 2021 and 2022; the processed file of e16_3m1_210201 holds a copy
+of the 1250 Hz LFP labelled 30,000 Hz with a conversion factor of 3.05e-13 V;
+the embryonic day of electroporation is stored only as the prefix of each
+subject id, with age P3M/P6M for every mouse; two files of e13_1f1 hold a
+single Awake interval for the whole session; only 38 of 65 familiar-maze
+sessions have ten or more trials on each visited arm and 19 of 1,942 trials
+have no start or stop time; the Methods give 92 sessions while Figure 1e and
+Figure 7f give 96, and the files of the 15 homecage mice are 96 sessions that
+match Figure 1e by birthdate and the Methods' duration bounds exactly; and the
+paper calls the novel cohort separate, but e13_26m1 is also among the nine
+figure-eight mice. No duplicate recordings were found.
+
+The notebook ran in 356 s in the first clean run and in about 8 minutes after
+the revisions. Round 2 found sentences the outputs did not support, among them
+31 sessions without units where the count is 39 and a statement on
+stimulation channels resting on 1 of 13 raw files, and these were corrected,
+the round-1 response that also gave 31 being left as recorded. An empty
+`.claude/` directory in the entry could not be removed, and untracked files in
+the repository root that the author did not create were left alone. The
+author's points on the protocol: outside data must be public and pinned while
+the paper's own data link reaches only an unpinned lab server; no rule on
+whether a label held in the lab's derived files but not the dandiset is
+`data_missing` or `metadata_insufficient`; no guidance on when to stop trying
+to recover missing data from large raw files; using the paper's code to choose
+subsets lies between following the code and an outside input; a criterion
+condition with no stated outcome when it fails; a default 10% tolerance that
+does not work for values near zero; no rule for a criterion whose literal
+reading gives a result that is probably a metadata typo; and data-description
+claims that the protocol does not address.
