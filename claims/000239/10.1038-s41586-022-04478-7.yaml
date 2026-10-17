@@ -1,0 +1,520 @@
+# Claims for Xu, Dong, Chen, Delgado, Hughes, Zhang & O'Connor (2022), Nature 603, 464-469, on
+# dandiset 000239.
+# Source: the accepted author manuscript in PubMed Central (PMC9109820), full text, read from its
+# Results, Methods and figure legends. The version of record is not open access. The R2 values of
+# Figure 3b are printed only inside the figure; they were read from the figure image on the
+# publisher's page (Figure 3), which was viewed but not copied.
+#
+# The paper's analysis code is said to be "available at GitHub" with no address; no repository was
+# found (see the attempt record). The conversion code (catalystneuro/oconnor-lab-to-nwb, commit
+# 8d3e9e962ac1d65aa54e5e86e309e03f6850c105) was read; it shows how times and tables were built.
+#
+# When these criteria were written, the author had seen the data check (the file list, the
+# session descriptions, which name the recorded area or the kind of session, the trial patterns
+# of every file, the trial table columns, the units table, unit counts per file, and the clock
+# agreement of the video with the touch times in one session) and had run the decoding of the
+# five variables of Figure 3 on one ALM session (MX170903, 2018-03-04) to time it; it gave R2 of
+# 0.07 (L), 0.03 (L'), 0.54 (theta), 0.77 (I) and 0.54 (tau). No other analysis had been run.
+#
+# Method choices fixed here where the Methods leave them open:
+# - Sessions of Figure 3 are the files whose description names ALM (13), M1TJ (9), S1TJ (8) and
+#   S1BF (5); the 57 recording sessions are these with M1B (4), S1L (12) and ZZ (6, the zigzag
+#   task). "Data ephys others" (22) and the opto efficiency recordings (14) are not among them.
+# - Licks are the tongue-out bouts of the video's is_tongue_out series (10 ms or longer); touches
+#   are lickOn_times; port-moving touches are posIndex_times. The middle touch is the fourth
+#   port-moving touch.
+# - The inter-lick-interval standardisation of the Methods is not applied (see deviations); trial
+#   selection follows the Methods, with a greedy search for the most similar third of trials.
+# - Regressions are fit on -0.5 to 0.5 s from the middle touch and R2 is the 10-fold
+#   cross-validated R2 with samples assigned to folds at random, as MATLAB's lasso does by
+#   default. Folds that keep trials together are shown as a variant and do not decide outcomes.
+# - Single units: ISI violation rate (2.5 ms) at most 1% and contamination (Hill et al. 2011) at
+#   most 15%; multi-units otherwise.
+schema_version: 1
+dandiset: "000239"
+paper: doi:10.1038/s41586-022-04478-7
+claims:
+- id: ephys-unit-counts
+  statement: Silicon probe recordings gave 1537 single units and 303 multi-units from 57
+    recording sessions.
+  source: Results, "Sequence tiling of single-unit responses"; Extended Data Fig. 4a-d
+  expected:
+  - quantity: recording sessions
+    value: 57
+    tolerance: 0
+  - quantity: single units
+    value: 1537
+    tolerance: 153.7
+  - quantity: multi-units
+    value: 303
+    tolerance: 30.3
+  criterion: Sessions are the 57 files described as ephys ALM, M1TJ, S1TJ, S1BF, M1B, S1L or ZZ.
+    Units are classified by the two criteria of the Methods (a unit is multi when its ISI
+    violation rate exceeds 1% or its contamination exceeds 15%). Reproduced when the session
+    count is 57 and both unit counts are within tolerance; partially reproduced when the session
+    count and the total (1840, 10%) match but the split does not; not reproduced otherwise.
+- id: fig3-session-counts
+  statement: The population analyses of Figure 3 use 8 S1TJ, 9 M1TJ, 13 ALM and 5 S1BF sessions.
+  source: Figure 3b legend
+  expected:
+  - quantity: S1TJ sessions
+    value: 8
+    tolerance: 0
+  - quantity: M1TJ sessions
+    value: 9
+    tolerance: 0
+  - quantity: ALM sessions
+    value: 13
+    tolerance: 0
+  - quantity: S1BF sessions
+    value: 5
+    tolerance: 0
+  criterion: Counted from the session descriptions; each file must also hold a units table and
+    standard sequences in both directions. Exact counts are required, as they are counts of files.
+- id: fig3-units-per-session
+  statement: Regressions used the simultaneously recorded units of each session, 32 plus or minus
+    13 units (mean and SD).
+  source: Results, "Hierarchical population coding"
+  depends_on:
+  - fig3-session-counts
+  expected:
+  - quantity: mean units per session
+    value: 32
+    tolerance: 3.2
+  - quantity: SD of units per session
+    value: 13
+    tolerance: 1.3
+  criterion: Readings, (a) all units of the 35 Figure 3 sessions, (b) all units of the 57
+    recording sessions. Reproduced when both values are within tolerance under a reading;
+    partially when only the mean is.
+- id: fig3a-trial-count
+  statement: Figure 3a averages 2684 trials of standard and backtracking sequences.
+  source: Figure 3a legend
+  depends_on:
+  - fig3-session-counts
+  expected:
+    quantity: selected trials
+    value: 2684
+    tolerance: 268.4
+  criterion: The number of trials chosen by the trial selection of the Methods (initiation time
+    under 1 s, then the third most similar, at least 10, around the middle touch from -1 to 1 s)
+    for each session, direction and trial type (standard, and backtracking where present) over the
+    35 sessions. Readings, (a) standard and backtracking trials, (b) standard trials only.
+- id: fig3c-length
+  statement: Tongue length L is decoded from population activity best in S1TJ and M1TJ and
+    poorly in ALM and S1BF (R2 0.56, 0.42, 0.11 and 0.04).
+  source: Figure 3b,c; Results, "Hierarchical population coding"
+  depends_on:
+  - fig3-session-counts
+  expected:
+  - quantity: mean cross-validated R2, S1TJ
+    value: 0.56
+    tolerance: 0.10
+  - quantity: mean cross-validated R2, M1TJ
+    value: 0.42
+    tolerance: 0.19
+  - quantity: mean cross-validated R2, ALM
+    value: 0.11
+    tolerance: 0.09
+  - quantity: mean cross-validated R2, S1BF
+    value: 0.04
+    tolerance: 0.03
+  criterion: Tolerances are the across-session SDs the figure prints. The order holds when the
+    lower of the S1TJ and M1TJ means exceeds the higher of the ALM and S1BF means. Reproduced
+    when the order holds and all four means are within tolerance; partially reproduced when only
+    one of the two holds; not reproduced when neither does.
+- id: fig3c-velocity
+  statement: Tongue velocity L' is decoded best in S1TJ and M1TJ and poorly in ALM and S1BF (R2
+    0.35, 0.32, 0.07 and 0.01).
+  source: Figure 3b,c; Results, "Hierarchical population coding"
+  depends_on:
+  - fig3-session-counts
+  expected:
+  - quantity: mean cross-validated R2, S1TJ
+    value: 0.35
+    tolerance: 0.12
+  - quantity: mean cross-validated R2, M1TJ
+    value: 0.32
+    tolerance: 0.10
+  - quantity: mean cross-validated R2, ALM
+    value: 0.07
+    tolerance: 0.06
+  - quantity: mean cross-validated R2, S1BF
+    value: 0.01
+    tolerance: 0.02
+  criterion: As for fig3c-length. L' is the time derivative of L, taken only where the tongue is
+    out.
+- id: fig3c-angle
+  statement: Tongue angle theta is encoded comparably in S1TJ, M1TJ and ALM, but not in S1BF (R2
+    0.59, 0.57, 0.54 and 0.12).
+  source: Figure 3b,c; Results, "Hierarchical population coding"
+  depends_on:
+  - fig3-session-counts
+  expected:
+  - quantity: mean cross-validated R2, S1TJ
+    value: 0.59
+    tolerance: 0.12
+  - quantity: mean cross-validated R2, M1TJ
+    value: 0.57
+    tolerance: 0.11
+  - quantity: mean cross-validated R2, ALM
+    value: 0.54
+    tolerance: 0.12
+  - quantity: mean cross-validated R2, S1BF
+    value: 0.12
+    tolerance: 0.10
+  criterion: The pattern holds when the S1BF mean is below each of the other three and the three
+    differ by less than 0.1 from each other (largest minus smallest). Reproduced when the pattern
+    holds and all four means are within tolerance; partially when only one holds; not reproduced
+    otherwise.
+- id: fig3c-identity
+  statement: Sequence identity I is encoded most strongly in ALM, then progressively less in M1TJ,
+    S1TJ and S1BF (R2 0.67, 0.42, 0.23 and 0.14).
+  source: Figure 3b,c; Results, "Hierarchical population coding"
+  depends_on:
+  - fig3-session-counts
+  expected:
+  - quantity: mean cross-validated R2, S1TJ
+    value: 0.23
+    tolerance: 0.13
+  - quantity: mean cross-validated R2, M1TJ
+    value: 0.42
+    tolerance: 0.15
+  - quantity: mean cross-validated R2, ALM
+    value: 0.67
+    tolerance: 0.16
+  - quantity: mean cross-validated R2, S1BF
+    value: 0.14
+    tolerance: 0.05
+  criterion: The order holds when the means satisfy ALM > M1TJ > S1TJ > S1BF. Reproduced when the
+    order holds and all four means are within tolerance; partially when only one holds; not
+    reproduced otherwise.
+- id: fig3c-time
+  statement: Relative sequence time tau is encoded most strongly in ALM, then progressively less
+    in M1TJ, S1TJ and S1BF (R2 0.60, 0.45, 0.17 and 0.08).
+  source: Figure 3b,c; Results, "Hierarchical population coding"
+  depends_on:
+  - fig3-session-counts
+  expected:
+  - quantity: mean cross-validated R2, S1TJ
+    value: 0.17
+    tolerance: 0.10
+  - quantity: mean cross-validated R2, M1TJ
+    value: 0.45
+    tolerance: 0.15
+  - quantity: mean cross-validated R2, ALM
+    value: 0.60
+    tolerance: 0.10
+  - quantity: mean cross-validated R2, S1BF
+    value: 0.08
+    tolerance: 0.03
+  criterion: As for fig3c-identity. tau is the time from the middle touch.
+- id: ed5b-variables-uncorrelated
+  statement: Any pair of the five behavioural variables (L, L', theta, I, tau) is uncorrelated.
+  source: Results, "Hierarchical population coding"; Extended Data Fig. 5b
+  depends_on:
+  - fig3-session-counts
+  criterion: Over the samples of the regression (selected standard trials, -0.5 to 0.5 s from the
+    middle touch), the absolute Pearson correlation of each pair, averaged over the 35 sessions.
+    The paper gives no threshold; reproduced when every pair is below 0.3 (a common bound for a
+    weak correlation), partially when all but one pair are, not reproduced otherwise.
+- id: ed5e-variance-explained
+  statement: Across regions, the summed variance explained by the five coding axes reached about
+    half that of the top five principal components.
+  source: Results, "Hierarchical population coding"; Extended Data Fig. 5e
+  depends_on:
+  - fig3c-length
+  - fig3c-velocity
+  - fig3c-angle
+  - fig3c-identity
+  - fig3c-time
+  expected:
+    quantity: median over sessions of summed VE of coding axes over summed VE of top 5 PCs
+    value: 0.5
+    tolerance: 0.05
+  criterion: The coding axes are the unit vectors of the elastic net weights; their VE is the
+    variance of the projected normalised rates over the total variance, on -0.5 to 0.8 s around
+    the middle touch of the selected standard trials. An axis with all weights zero has VE 0.
+- id: ed5f-axes-orthogonal
+  statement: The five coding axes were largely orthogonal to each other.
+  source: Results, "Hierarchical population coding"; Extended Data Fig. 5f
+  depends_on:
+  - ed5e-variance-explained
+  criterion: The absolute cosine of each pair of coding axes, averaged over sessions where both
+    are non-zero. Reproduced when every pair is below 0.3, partially when all but one or two are,
+    not reproduced otherwise. The mean absolute cosine of random directions in the same
+    sessions is shown as a reference.
+- id: fig3e-cca
+  statement: After canonical correlation, ALM trajectories in the top three PCs correlate best
+    with the theta, I, tau coding subspace (group 2), more than with L, L', theta (group 1) or all
+    five variables with five PCs (group 3); in S1TJ and M1TJ the correlation is high only when the
+    coding subspace includes L and L'.
+  source: Figure 3d,e; Results, "Hierarchical population coding"
+  depends_on:
+  - ed5e-variance-explained
+  criterion: For each session, trial averages per direction of the decoded variables and of the
+    PC projections on -0.5 to 0.8 s from the middle touch are concatenated; the mean canonical
+    correlation is computed for group 1 (L, L', theta with PC1-3), group 2 (theta, I, tau with
+    PC1-3) and group 3 (all five with PC1-5). Paired two-tailed permutation tests (sign flips over
+    sessions) at p < 0.05 for five comparisons, the ones the figure marks; ALM 2 > 1 and 2 > 3;
+    S1TJ 1 > 2 and 3 > 2; M1TJ 3 > 2. Reproduced when all five hold, partially for three or four,
+    not reproduced for fewer.
+- id: fig3f-backtracking-svm
+  statement: ALM and M1TJ activity predicts whether the port backtracked from the initial missed
+    lick on; S1TJ shows only an insignificant trend and S1BF no prediction.
+  source: Figure 3f; Results, "Sequence branching signals in ALM, M1TJ"
+  depends_on:
+  - fig3-session-counts
+  criterion: Sessions with backtracking in both directions. Standard and backtracking trials
+    are selected as for Figure 3, and the two directions are balanced within each class by
+    random subsampling. For each 15 ms bin from -0.15 to 0.4 s after the backtracking trigger
+    (the middle touch), a linear SVM on the first 12 PCs of the normalised rates, 10-fold CV,
+    balanced classes; the null is 20 label shuffles per session. A region decodes when its mean
+    accuracy over sessions in 0.2 to 0.4 s exceeds the 95th percentile of the same mean over
+    shuffles. Reproduced when ALM and M1TJ decode and S1TJ and S1BF do not; partially when ALM
+    and M1TJ decode and S1TJ or S1BF also does, or when only one of ALM and M1TJ decodes; not
+    reproduced otherwise.
+- id: fig4g-zigzag-context
+  statement: In the zigzag task, ALM population activity predicts the sequence identity
+    (context) during subsequences with the same licking movements, across 6 sessions from 3 mice.
+  source: Figure 4f,g; Results, "Context-dependent coding of subsequences"
+  criterion: The 6 files described as ephys ZZ. Trials with perfect execution (13 touches and no
+    lick without a touch between the first and last touch). The four matched comparisons pair the
+    seventh touch of one sequence with the third or eleventh touch of the other, which are at the
+    same position and in the same direction of movement. For each 5 ms bin from -0.25 to 0.25 s, a
+    linear SVM on 12 PCs, 10-fold CV, balanced classes, 20 label shuffles per session. A comparison
+    decodes when the mean accuracy over sessions and bins exceeds the 95th percentile of the same
+    mean over shuffles. Reproduced when all four decode, partially for one to three, not
+    reproduced for none. The session and mouse counts are checked (6 and 3).
+- id: ed7f-target-position-alm
+  statement: During the inter-trial interval, ALM populations encode the upcoming target position
+    more strongly than the other regions.
+  source: Extended Data Fig. 7e,f; Results, "ALM encodes upcoming sequences"
+  depends_on:
+  - fig3-session-counts
+  criterion: For each of the 35 sessions, the cross-validated R2 of an elastic net predicting the
+    upcoming sequence direction from normalised rates in the second before the cue, over all
+    standard trials. Reproduced when the ALM mean R2 is the highest and a one-sided Mann-Whitney
+    test of ALM against each other region gives p < 0.05; partially when the ALM mean is the
+    highest but not every test is significant; not reproduced otherwise.
+- id: ed7h-no-time-coding
+  statement: None of the regions, including ALM, encoded time or distance to the trial start
+    during the inter-trial interval.
+  source: Extended Data Fig. 7h; Results, "ALM encodes upcoming sequences"
+  depends_on:
+  - fig3-session-counts
+  criterion: Same model as ed7f-target-position-alm, predicting the time to the cue over the 1 s
+    before it. The paper gives no test; the claim of absence is reproduced when the mean R2 of
+    every region is below 0.1 and not reproduced when any region's mean is 0.1 or more. The
+    effect size is reported for each region.
+- id: ed4m-active-neuron-counts
+  statement: Extended Data Fig. 4m counts 324 ALM, 233 M1TJ and 119 S1TJ neurons.
+  source: Extended Data Fig. 4m legend
+  depends_on:
+  - ephys-unit-counts
+  expected:
+  - quantity: ALM neurons
+    value: 324
+    tolerance: 32.4
+  - quantity: M1TJ neurons
+    value: 233
+    tolerance: 23.3
+  - quantity: S1TJ neurons
+    value: 119
+    tolerance: 11.9
+  criterion: Neurons are units of the Figure 3 sessions of each region that pass the PETH
+    activity threshold of the Methods (maximum of the 6 PETHs at least 10 spikes/s; PETHs over
+    the selected trials in 0 to 0.5 s from the cue, -1 to 1 s from the middle touch and -0.5 to
+    0.7 s from the last consummatory touch, per direction). Readings, (a) single units, (b) single
+    and multi-units. Reproduced when all three counts are within tolerance under a reading;
+    partially when one or two are; not reproduced otherwise.
+- id: ed4l-alm-initiation
+  statement: More ALM neurons are tuned to sequence initiation than neurons of the other regions.
+  source: Results, "Sequence tiling of single-unit responses"; Extended Data Fig. 4l
+  depends_on:
+  - ed4m-active-neuron-counts
+  criterion: For each active neuron (reading (a) of ed4m), the window holding the peak of its 6
+    PETHs. Reproduced when the fraction peaking in the initiation window is higher in ALM than in
+    M1TJ and in S1TJ, each by Fisher's exact test at p < 0.05; partially when higher than both but
+    significant for one; not reproduced otherwise.
+- id: ed4o-rhythmicity
+  statement: S1TJ and M1TJ contain more neurons modulated by individual licks than ALM.
+  source: Results, "Sequence tiling of single-unit responses"; Extended Data Fig. 4n,o
+  depends_on:
+  - ed4m-active-neuron-counts
+  criterion: For each active neuron, the correlation of each mid-sequence PETH with its best
+    fitting 6.5 Hz sinusoid, averaged over the two directions (r_avg). Reproduced when the median
+    r_avg of S1TJ and of M1TJ each exceed ALM's with a one-sided Mann-Whitney p < 0.05; partially
+    when one does; not reproduced otherwise.
+- id: ed6-alm-reward-drop
+  statement: ALM contains neurons that fire during sequence execution and decrease firing
+    abruptly when the tongue first contacts water, although licking continues.
+  source: Results, "Reward modulation in ALM"; Extended Data Fig. 6a
+  depends_on:
+  - ed4m-active-neuron-counts
+  criterion: Over standard trials of the 13 ALM sessions, for each active ALM neuron, the rate in
+    0 to 0.5 s after the first touch at or after water delivery is compared with -0.5 to 0 s
+    (Wilcoxon signed-rank over trials, p < 0.01). Reproduced when neurons that decrease outnumber
+    those that increase (binomial test p < 0.05); not reproduced otherwise. M1TJ and S1TJ are
+    shown for reference.
+- id: ed1h-sequence-duration
+  statement: Expert mice completed the 7 port positions in about a second.
+  source: Results, first section; Extended Data Fig. 1h
+  expected:
+    quantity: median time to complete a standard sequence
+    value: 1.0
+    tolerance: 0.1
+    unit: s
+  criterion: Sessions are the recording sessions with standard sequences (ephys groups except ZZ)
+    and the opto sessions (trials without light). Per mouse, the median over standard trials; the
+    value is the median over mice. Readings, (a) from the first port-moving touch to the first
+    touch at the last position, (b) from the cue to that touch. Reproduced when a reading is
+    within tolerance.
+- id: ed1l-learning-curves
+  statement: Over training, 15 mice reduced their sequence initiation time and increased their
+    sequence speed.
+  source: Extended Data Fig. 1l; Results, first section
+  expected:
+    quantity: mice with learning sessions
+    value: 15
+    tolerance: 0
+  criterion: Learning files (described as Data learning), standard trials, in session order. The
+    first and last 100 standard trials of each mouse; initiation time is the cue to the first
+    touch, sequence speed the mean over the six intervals of 1 over the time between port-moving
+    touches. Reproduced when 15 mice are present and at least 12 of them show both a lower
+    initiation time and a higher speed (medians), with a Wilcoxon signed-rank test over mice at p
+    < 0.05 for each; partially when only one of the two measures meets this; not reproduced
+    otherwise. Files deposited twice are left out.
+- id: ed1l-proficiency-1500
+  statement: Mice reached proficiency in standard sequences after about 1500 trials of training.
+  source: Results, first section; Extended Data Fig. 1l-n
+  depends_on:
+  - ed1l-learning-curves
+  expected:
+    quantity: median number of trials to proficiency
+    value: 1500
+    tolerance: 150
+  criterion: The paper does not define proficiency. Readings, counting all trials of the learning
+    files in session order, (a) the first trial at which the median sequence speed of a 100-trial
+    bin (50% overlap) reaches 90% of the median over the mouse's last 500 learning trials, (b)
+    the first bin whose median initiation time falls within 110% of the median over the last 500.
+    The median over mice under a reading must be within tolerance.
+- id: ed2-backtracking-counts
+  statement: Backtracking analyses used 7458 standard and 2695 backtracking sequences from 47
+    sessions of the 9 mice trained on backtracking.
+  source: Extended Data Fig. 2c,e legends; Methods, "Behavioural training"
+  expected:
+  - quantity: sessions
+    value: 47
+    tolerance: 4.7
+  - quantity: standard sequences
+    value: 7458
+    tolerance: 745.8
+  - quantity: backtracking sequences
+    value: 2695
+    tolerance: 269.5
+  - quantity: mice
+    value: 9
+    tolerance: 0
+  criterion: Sessions with backtracking trials ([1 2 3 1 4 5 6] or [5 4 3 5 2 1 0]). Readings,
+    (a) all such non-learning files, (b) the same without the air and earplug control sessions,
+    (c) as (b) without the opto efficiency sessions. Reproduced when all four values are within
+    tolerance under a reading; partially when two or three are; not reproduced otherwise.
+- id: ed2e-missed-licks
+  statement: After the port backtracked, mice took on average 1 to 2 missed licks before
+    relocating it.
+  source: Results, first section; Extended Data Fig. 2e
+  depends_on:
+  - fig3-session-counts
+  expected:
+    quantity: mean missed licks in the fourth interval of backtracking trials
+    value: 1.55
+    tolerance: 0.65
+  criterion: Tolerance is the stated range 1 to 2 widened by 10% of each bound (0.9 to 2.2). The
+    fourth interval runs from the middle touch to the next port-moving touch; a missed lick is a
+    video lick starting in it with no touch onset within 12.5 ms of the lick. Sessions are those
+    of Figure 3 with backtracking trials. Reproduced when the mean over backtracking trials is in
+    range and exceeds that of standard trials (Mann-Whitney p < 0.05); partially when only the
+    second holds; not reproduced otherwise.
+- id: ed6b-consummatory-licks
+  statement: After the first lick that touched water, mice continued with about 5 consummatory
+    licks.
+  source: Results, "Reward modulation in ALM"; Extended Data Fig. 6b
+  depends_on:
+  - fig3-session-counts
+  expected:
+    quantity: median number of licks after the first lick touching water
+    value: 5
+    tolerance: 0.5
+  criterion: Standard trials of the 35 Figure 3 sessions. The first water lick is the first
+    touch at or after water delivery; the bout continues while successive intervals are below 1.5
+    times the session's median inter-lick interval. Readings, (a) video licks after it, (b) touches
+    after it, (c) as (a) counting the first water lick. Trials whose video ends during the bout
+    are left out of (a) and (c). Reproduced when the median over trials is within tolerance under
+    a reading.
+- id: ed7b-correct-side
+  statement: Expert mice usually initiated sequences from the correct side without exploring the
+    other side.
+  source: Results, "ALM encodes upcoming sequences"; Extended Data Fig. 7b
+  depends_on:
+  - fig3-session-counts
+  criterion: Standard trials of the 35 Figure 3 sessions. A trial is initiated without exploring
+    when no lick before the first touch has theta_shoot on the other side of the midline from the
+    lick that made the first touch. Reproduced when the fraction exceeds 0.5 in every mouse;
+    partially when it does in most mice; not reproduced otherwise. A 5 degree margin around the
+    midline is shown as a variant.
+- id: fig2b-s1tj-angle-variability
+  statement: Inhibiting S1TJ increased the across-trial variability of lick angle, SD(theta_shoot),
+    without reducing the lateral reach |theta_shoot|, and did not shorten licks.
+  source: Figure 2b; Extended Data Fig. 3j
+  criterion: Needs the inhibited region of each opto session.
+- id: fig2b-almm1tj-angle-length
+  statement: Inhibiting ALM/M1TJ reduced the ability to direct licks to the sides and decreased
+    lick length; inhibiting M1B only slightly increased angle variability; inhibiting S1BF or S1Tr
+    changed nothing.
+  source: Figure 2b; Extended Data Fig. 3j
+  criterion: Needs the inhibited region of each opto session.
+- id: fig2c-almm1tj-initiation
+  statement: Inhibiting ALM/M1TJ at sequence initiation strongly suppressed licking (licks largely
+    absent in 4 of 7 mice), and less strongly at mid-sequence.
+  source: Figure 2c; Extended Data Fig. 3k
+  criterion: Needs the inhibited region of each opto session.
+- id: fig2c-termination
+  statement: Inhibiting S1TJ or M1B at water consumption impaired the stopping of ongoing
+    licking.
+  source: Figure 2c; Extended Data Fig. 3k
+  criterion: Needs the inhibited region of each opto session.
+- id: ed3lm-half-power
+  statement: With half the illumination power (2 mW) the effects were consistent with, though
+    weaker than, those at 4 mW, and the termination deficit of S1TJ and M1B inhibition was
+    similarly strong.
+  source: Extended Data Fig. 3l,m; Results, "Optogenetic inhibition screen"
+  criterion: Needs the inhibited region of each opto session.
+- id: ed3f-inhibition-efficiency
+  statement: At 4 mW, light within 1 mm reduced the spike rate of putative pyramidal cells by 91%,
+    at about 1.5 mm by 61% and at about 3 mm by 19%; FS neurons within 1 mm increased by 739%.
+  source: Methods, "Photostimulation"; Extended Data Fig. 3c-f
+  criterion: Needs the spike waveform widths (pyramidal against FS) and the distance of the fibre
+    from the recording site in each efficiency session.
+- id: ed1i-earplug
+  statement: Hearing loss with earplugs did not increase missed licks during sequences.
+  source: Extended Data Fig. 1i; Methods, "Hearing loss"
+  criterion: Needs which of the two sessions of each mouse had earplugs.
+- id: ed1j-odor-masking
+  statement: Masking odours with an air flow did not change missed licks.
+  source: Extended Data Fig. 1j; Methods, "Odor masking"
+  criterion: Needs which part of each session had the air flow on.
+- id: ed1k-tongue-numbing
+  statement: Numbing the tongue with lidocaine increased missed licks, so mice require tactile
+    feedback from the tongue.
+  source: Extended Data Fig. 1k; Methods, "Tongue numbing"
+  criterion: Needs which session of each mouse was lidocaine and which saline.
+- id: ed1f-lick-force
+  statement: The maximal force of a lick was on average about 4 mN.
+  source: Methods, "Two-axis optical force sensors"; Extended Data Fig. 1f
+  criterion: Needs the calibration from sensor voltage to force.
+- id: ed4j-nnmf-clusters
+  statement: Clustering the PETHs of all neurons by NNMF was most consistent with 13 clusters.
+  source: Methods, "PETH and NNMF clustering"; Extended Data Fig. 4j,k
+  criterion: Needs how cluster labels are matched across bootstrap iterations, which the Methods
+    do not give.
