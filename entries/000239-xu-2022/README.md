@@ -3,7 +3,8 @@
 Tests the findings of [Xu et al. (2022)](https://doi.org/10.1038/s41586-022-04478-7) that can be
 tested on [DANDI:000239](https://dandiarchive.org/dandiset/000239/0.230607.1752), which holds the
 trial tables of 33 mice in a sequence licking task, tongue tracking from video, and sorted spikes
-from 93 recording sessions in S1TJ, M1TJ, ALM, S1BF and other areas.
+in 93 files: 57 recording sessions in S1TJ, M1TJ, ALM, S1BF, M1B, S1L and the zigzag task, 22
+recordings in other areas, and 14 recordings of the inhibition efficiency.
 
 | Claim | Outcome |
 |---|---|
@@ -31,7 +32,8 @@ from 93 recording sessions in S1TJ, M1TJ, ALM, S1BF and other areas.
 | 1 to 2 missed licks after backtracking | Reproduced |
 | About 5 consummatory licks | Not reproduced |
 | Sequences started from the correct side | Reproduced |
-| Optogenetic inhibition and control experiments (nine claims) | Blocked: metadata insufficient |
+| Optogenetic inhibition and control experiments (eight claims) | Blocked: metadata insufficient |
+| Lick force calibration | Blocked: metadata insufficient |
 | Inhibition efficiency by cell type | Blocked: data missing |
 | NNMF clustering into 13 clusters | Blocked: methods underspecified |
 
@@ -43,8 +45,9 @@ session, so Figure 2 and Extended Data Fig. 1i-k cannot be tested. The recorded 
 by the session description. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/000239-xu-2022-01.yaml`](../../attempts/000239-xu-2022-01.yaml).
 
-- `reproduce_xu_2022.ipynb`: the analysis. It takes about 20 to 25 minutes on four cores; about
-  a quarter of it is the seed variants of the Figure 3 fits, and a few minutes streaming the files.
+- `reproduce_xu_2022.ipynb`: the analysis. It took 21 minutes on four cores (the notebook prints the
+  core count and the time); 6 minutes of it are the seed variants of the Figure 3 fits, and under
+  a minute is reading the trial tables and recording sessions.
 - `seqlick.py`: loading the files, trial types and selection, spike rates, the elastic net with
   the one-SE rule, the SVM over time, and the per-session analyses. Other notebooks on this
   dandiset can import it.
