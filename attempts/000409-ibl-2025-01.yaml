@@ -159,6 +159,12 @@ outcomes:
   deviations:
   - The criterion defines only the reproduced case; the outcome is partially reproduced because the effect
     is present and one of the two values is within tolerance.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion defines only the reproduced case, both values within tolerance under one reading,
+      and gives no partial case, while the other criteria with two parts in the claims file do. Neither
+      reading meets it (cell 48), on all sessions or on the 454 canonical sessions, so by the criterion
+      the outcome is not reproduced, as the round-2 verifier found.
 - claim: behav-early-movements
   outcome: reproduced
   notebook: reproduce_ibl_2025.ipynb
@@ -234,7 +240,8 @@ outcomes:
     5 tested regions are significant for choice against 4 for stimulus, a margin of one region. Significance
     agrees with region_info.csv in 9 of 10 regions (LDT, 2 sessions, p = 0.0154, is significant in the
     paper). Effects correlate with the paper's (Spearman 0.98). The paper reports 172 of 201 regions.
-    With 100 nulls the per-session p cannot go below 1/101, so a region of 2 sessions cannot have a Fisher
+    The margin over stimulus rests on one region; CL's choice result (2 sessions, Fisher p = 0.0010) sits
+    at the 2-session floor, and the full nested null was run only for VISp stimulus. With 100 nulls the per-session p cannot go below 1/101, so a region of 2 sessions cannot have a Fisher
     p below about 0.0010; LDT's result may be partly this limit.
   deviations:
   - The tested regions are VISp, GRN, IRN and seven drawn at random (ACAv, CL, HATA, LDT, PA, PVT, TR),
@@ -256,8 +263,8 @@ outcomes:
     0.42); HATA (Fisher p = 0.0255), PA (0.1455) and TR (0.0227) are not. The paper's table marks 8 of
     these 10 significant (HATA yes, PA and TR no). With BH at q = 0.05, 9 are significant. 23 of 111 region-sessions
     have a balanced accuracy above 0.9; median accuracy 0.913 in GRN and 0.905 in IRN. Effects correlate
-    with the paper's (Spearman 0.96). The partial outcome comes in part from the correction over 10 regions
-    and the smaller null; the paper's own table has 8 of these 10 regions significant.
+    with the paper's (Spearman 0.96). The paper's own table has 8 of these 10 regions significant, so this
+    region set could not reach the criterion's 9 with the paper's own results.
   deviations:
   - The tested regions are VISp, GRN, IRN and seven drawn at random (ACAv, CL, HATA, LDT, PA, PVT, TR),
     each with all its canonical sessions, not all 201 regions; the Benjamini-Hochberg correction runs
@@ -341,7 +348,8 @@ outcomes:
   notes: IRN 118.3 ms and GRN 109.9 ms, both within 90 to 132 ms, both distances significant (p = 0.001).
     MRN, SCm and PRNr were not tested; the paper's results table gives 89.4 ms for IRN and GRN in its
     0 to 100 ms window, in which IRN has no latency here and GRN 100.0 ms. With the window extended to 0 to
-    200 ms the latencies are 117.9 and 109.5 ms; the IRN distance is still rising at 190 ms.
+    200 ms the latencies are 117.9 and 109.5 ms; the IRN distance is still rising at 190 ms. The outcome
+    rests on the criterion's 0 to 150 ms window.
   deviations:
   - Only IRN and GRN of the five regions named are tested.
   - The 64 sessions whose probability_left alternates on every trial are left out.
@@ -377,7 +385,13 @@ outcomes:
     neural peak. In 4 sessions the neural peak is at 4.00 Hz, the edge of the band, and in one at 4.25 Hz.
     The power difference holds when each unit's PSTH is z-scored (18 of 27 sessions, p = 0.028, median
     peak 7.28 Hz) and when power at the peak is taken as a fraction of the 4 to 20 Hz power (26 of 27,
-    p = 1e-07).
+    p = 1e-07); both measure at the correct-trial peak and keep the evoked difference. With the band
+    taken within 1 Hz of each session's lick peak, which does not use the neural correct-trial PSTH,
+    power is higher after correct feedback in 15 of 26 sessions (p = 0.038), and in 15 of 26 (p = 0.031)
+    after subtracting each condition's slow evoked response (Gaussian smoothing, sigma 60 ms; faster
+    components of the evoked response remain). Each condition at its own peak after the subtraction gives
+    16 of 27 (p = 0.077). In the 9 to 11 Hz band there is no difference (12 of 27, p = 0.7 raw, 0.66 after
+    the subtraction). Condition (ii) holds when the band follows the licks.
   deviations:
   - Tested in IRN only, the paper's example region; the paper's analysis is a population trajectory over
     regions.
@@ -387,8 +401,9 @@ outcomes:
   outcome: blocked
   blocked_by: other
   notes: Not attempted. It needs Lasso decoding in 20 ms bins for all 201 regions with imposter null sessions;
-    the notebook estimates about 29 minutes to decode one binary variable for all 2,458 region-sessions
-    with the reduced settings used here, and wheel decoding is heavier.
+    the notebook estimates about 30 minutes on 4 processes to decode one binary variable for all 2,458
+    region-sessions with the reduced settings used here (41 in the previous run; the estimate varies with
+    the run), and wheel decoding is heavier.
 - claim: encoding-feedback-largest
   outcome: blocked
   blocked_by: other
@@ -682,3 +697,198 @@ verifications:
     outcome: blocked
     reason: Not attempted. The spikes are present.
     response: Kept blocked; not attempted in this revision.
+- date: '2026-10-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusions and summary,
+    the helper module, the claims file, the README and this record. The verifier did not download the paper
+    this round and checked against the notebook's outputs and the criteria. It agrees with 29 of 30 outcomes
+    and not with behav-zero-contrast. Its points outside the claims were also fixed, the README's run time
+    now matches the printed timings of the new run, and the summary no longer says the dandiset holds the
+    released dataset completely.
+  results:
+  - claim: dataset-sessions-mice-labs
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: dataset-probes-units
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: well-isolated-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: canonical-regions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: brain-areas-279
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: mice-sex
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: mice-age-weight
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: probe-versions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: trials-per-session
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: rf-mapping
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: behav-performance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The reading that passes, the mean over sessions, is not the reading whose s.e.m. matches
+      the paper's +/- 0.4 (cell 45).
+    response: No change; the notes and the paper_inconsistency finding already state this.
+  - claim: behav-zero-contrast
+    agrees: false
+    outcome: not_reproduced
+    reason: The criterion defines only the reproduced case, both values within tolerance under one reading.
+      Every other criterion in the file with two parts defines a partial case explicitly, and this one does
+      not. Neither reading meets it (cell 48). With the 454 canonical sessions the mean is still 58.27%, so
+      the miss of 0.04 points beyond the tolerance stands.
+    response: Agreed. The verified outcome is kept, as round 2 requires, and not_reproduced is proposed
+      under proposed on the outcome. Cell 49 now says the criterion gives not reproduced.
+  - claim: behav-early-movements
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig1d-contrast
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig1ef-end-of-session
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: fig1g-block-switch
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. It passes under only one reading; 75.9% of bootstrap resamples fall within 4.5 to 11 (cell 60).
+    response: No change; the notes say the outcome rests on the point estimate and give the bootstrap.
+  - claim: fig1h-block-bias
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change needed.
+  - claim: dec-stim-restricted
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B1 (L1 penalty), B2 (nested null for VISp stimulus) are resolved. Remaining, the margin
+      over choice is one region, 4 against 5, the nested null was run only for VISp stimulus, and losing
+      one choice region would fail the criterion.
+    response: The CL caveat is now in cell 76 and the dec-choice-widespread notes. A nested null for the
+      choice regions was not added. The notebook now runs in 24.4 to 29.4 minutes of the 30-minute limit,
+      and a nested null with fewer nulls cannot test CL, whose 2-session Fisher floor would rise above its
+      present p. Outcome kept.
+  - claim: dec-choice-widespread
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The margin is one region, 4 against 5; CL's choice result sits at the 2-session Fisher
+      floor of 0.0010 and the nested null was run only for VISp stimulus, so losing one choice region would
+      fail both criteria.
+    response: Cell 76 and the notes now say the margin rests on CL at the floor and that the nested null
+      covers only VISp stimulus. No nested null for choice was added, for the reason given under
+      dec-stim-restricted. Outcome kept.
+  - claim: dec-feedback-nearly-all
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The notes' sentence that the partial outcome comes in part from the smaller null is not
+      shown by any output; HATA (5 sessions, p = 0.0255) and TR (3 sessions, p = 0.0227) are not at the
+      resolution floor of 1/101 (cell 78).
+    response: Removed the sentence from the notes.
+  - claim: sc-stim-fraction
+    agrees: true
+    outcome: blocked
+    reason: Agrees. B3 resolved, the shuffled-label null gives 7.7e-4 against a product of single rates of 4.7e-5 (cell 85).
+    response: No change needed.
+  - claim: sc-choice-fraction
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: traj-latency-visual
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. B8 (canonical-window baseline) and B10 (dropped sessions) resolved.
+    response: No change needed.
+  - claim: traj-latency-late
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 97 and the notes say the latencies do not depend on where the window ends, which
+      holds only between 150 and 200 ms; in the paper's 0 to 100 ms window IRN has no latency and GRN gives
+      100.0 ms, against 89.4 ms in the paper's table, and the IRN distance is still rising at 189.5 ms. The
+      outcome depends on the criterion's 0 to 150 ms window.
+    response: Cell 97 now says moving the end from 150 to 200 ms changes the latencies by less than 1 ms,
+      that the 0 to 100 ms window does change them, and that the outcome rests on the 0 to 150 ms window;
+      the notes say the same. Outcome kept, as the criterion fixes the window.
+  - claim: traj-stim-regions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The criterion was written after round 1, but the counts are far from the target whichever
+      choice is made, 46 under reading (a), 62 under (b), 46 to 53 in the variants, against 104 +/- 10.4
+      (cell 99).
+    response: No change needed.
+  - claim: fback-oscillation-licking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. B5 is only partly resolved. The z-score is computed per unit over both conditions
+      together, so the gap between correct and incorrect amplitude remains, and the fractional variant
+      measures power at the correct-trial peak, which favours the correct trials by selection. A test that
+      subtracts each condition's mean evoked response, or picks the frequency band without using the correct
+      trials, is still missing; the partial outcome rests on (ii) and (iii).
+    response: Added to cell 102 power within 1 Hz of each session's lick peak and in the 9 to 11 Hz
+      band, each on the raw PSTHs and after subtracting each condition's slow evoked response (Gaussian
+      smoothing, sigma 60 ms), and each condition at its own peak after the subtraction. With the lick band
+      the difference holds (15 of 26, p = 0.038 raw; 15 of 26, p = 0.031 after the subtraction); at its own
+      peak 16 of 27, p = 0.077; at 9 to 11 Hz there is none (p = 0.7 and 0.66). Because the PSTHs are trial
+      means, the faster part of the evoked response cannot be removed here. Cell 103 and the notes now
+      state this. Outcome kept, as (ii) holds with a band chosen without the correct-trial PSTH.
+  - claim: wheel-speed-decoding
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The notes say the notebook estimates about 29 minutes to decode one binary variable, but
+      cell 105 prints about 41 min, and the response to round 1 also says 41.
+    response: The notes now give the estimate of this run, about 30 minutes on 4 processes, and say
+      the previous run gave 41. Outcome kept.
+  - claim: encoding-feedback-largest
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: video-correlates
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.
+  - claim: granger-interactions
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change needed.

@@ -10,7 +10,7 @@ Neuropixels recordings from 139 mice performing the IBL decision-making task.
 | Age and weight of the mice | Partially reproduced (weight yes, age no) |
 | Receptive-field mapping | Blocked: data missing |
 | 81.4% correct; 22.8% of first movements under 80 ms | Reproduced |
-| 58.7% correct at 0% contrast, t138 = 20.18 | Partially reproduced |
+| 58.7% correct at 0% contrast, t138 = 20.18 | Partially reproduced (not reproduced proposed for a third round) |
 | Figure 1d to 1h: contrast, end of session, block switch, block bias | Reproduced |
 | Stimulus decodable in fewer regions, VISp | Reproduced (10 regions) |
 | Choice decodable in more regions than stimulus, GRN | Reproduced (10 regions) |
@@ -33,10 +33,10 @@ blocks; analyses that need blocks leave these sessions out. The attempt record, 
 the differences from the paper's method, is
 [`attempts/000409-ibl-2025-01.yaml`](../../attempts/000409-ibl-2025-01.yaml).
 
-- `reproduce_ibl_2025.ipynb`: the analysis. It takes about 26 minutes: 2 to scan the 459 processed
-  files, 1 to stream the spikes of the 14 regions in 168 sessions, 12 to stream every canonical unit
-  of the 454 canonical sessions for the trajectories of all regions and the clock check, 6 to decode
-  and 2.5 for the nested null of VISp.
+- `reproduce_ibl_2025.ipynb`: the analysis. It took 24.6 minutes in the last run, and the time
+  varies with streaming speed: 3.6 to scan the 459 processed files, 1.8 to stream the spikes of the
+  14 regions in 168 sessions, 11.8 to stream every canonical unit of the 454 canonical sessions for
+  the trajectories of all regions and the clock check, 4 to decode and 1.8 for the nested null of VISp.
 - `bwm.py`: streaming, the paper's unit and trial inclusion, decoding with pseudo- and synthetic
   null sessions, the single-cell test and the population trajectories. Other notebooks on this
   dandiset can import it.
