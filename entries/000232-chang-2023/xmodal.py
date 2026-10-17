@@ -136,6 +136,9 @@ def load_file(path: str, url: str, spikes: bool = True) -> dict:
                 f["general/extracellular_ephys/electrode_group"].attrs["location"])
             out["electrode_locations"] = sorted({_text(v) for v in
                                                  f["general/extracellular_ephys/electrodes/location"][:]})
+            e = f["general/extracellular_ephys/electrodes"]
+            out["electrode_xyz_all_nan"] = bool(np.isnan(np.r_[e["x"][:], e["y"][:], e["z"][:]]).all())
+            out["unit_ids_head"] = f["units/id"][:5].tolist()
             out["unit_columns"] = list(f["units"].attrs["colnames"])
             out["n_units"] = len(f["units/id"])
             if spikes:
@@ -167,6 +170,21 @@ def code_trials(trials: pd.DataFrame) -> pd.DataFrame:
     t["category"] = [CATEGORIES.get((b, s, d), "") if b and s and d else ""
                      for b, s, d in zip(t.b, t.s, t.d)]
     return t
+
+
+def estimated_trial_numbers(trials: pd.DataFrame) -> np.ndarray:
+    """Estimated position of each row in the session's full trial sequence, counting from 0.
+
+    The ephys files lack the trials the paper removed, and have no trial numbers. Kept trials abut
+    (one's stop is the next one's start), so a gap of more than 10 ms between rows marks removed
+    trials; their number is estimated as the gap over the median trial duration, rounded, and at
+    least 1. Trials removed after the last row cannot be seen.
+    """
+    start, stop = trials.start.to_numpy(), trials.stop.to_numpy()
+    gaps = start[1:] - stop[:-1]
+    dur = np.median(stop - start)
+    removed = np.where(gaps > 0.01, np.maximum(1, np.round(gaps / dur)), 0)
+    return np.arange(len(trials)) + np.r_[0, np.cumsum(removed)].astype(int)
 
 
 def is_category(t: pd.DataFrame, cat: tuple) -> np.ndarray:

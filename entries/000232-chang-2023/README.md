@@ -18,7 +18,7 @@ the behaviour of optogenetic inhibition sessions in that task and in a tactile d
 | Subspace overlap of tCR with tHit (Figure 4E) | Partially reproduced |
 | Pre- and post-stimulus overlaps correlate (Figure 4F) | Reproduced |
 | Coding-dimension alignment (Figure S4E, S4F, S4H) | Partially reproduced |
-| Block switches and first hits (Figure 5B) | Partially reproduced |
+| Block switches and first hits (Figure 5B) | Not reproduced |
 | Motor but not sensory pre-stimulus states track rule switches (Figure 5D, 5E, S5) | Reproduced |
 | Pre-stimulus inhibition of MM and ALM lowers tactile sensitivity (Figure 6C) | Partially reproduced |
 | Hit rate, post-stimulus, visual, PPC and detection-task inhibition effects (Figure 6, S6, S7) | Reproduced |
