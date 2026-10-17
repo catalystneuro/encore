@@ -53,7 +53,8 @@ outcomes:
   notes: Under reading (b), all stimulation epochs, 66 of 91 putative pyramidal cells (72.5%, 95% interval
     62.2 to 81.4%) respond to at least one uLED. Under reading (a), the PreStim epoch, 57 of 91 (62.6%, 51.9
     to 72.6%), outside tolerance. Of 364 unit and uLED tests in PreStim, 68 pass all three parts of the test;
-    on sham onsets (jittered by up to 200 ms, or moved into BaselinePre) none of 364 passes. No putative pyramidal
+    on sham onsets (jittered by up to 200 ms, or moved into BaselinePre) none of 364 passes. For reading (b), with the onsets
+    of all stimulation epochs jittered by up to 200 ms, none of 364 tests passes either. No putative pyramidal
     cell on shank Group3 responds (0 of 17), and that shank's uLEDs are likely among those whose pulses are
     not in the files. Without Group3, 57 of 74 (77.0%) under (a), within tolerance, and 66 of 74 (89.2%) under
     (b), above it. The criterion lists (a) first but only (b) matches, so the measured value is that of (b).
@@ -84,10 +85,11 @@ outcomes:
   output: claim:figs10-swr-gain-vs-baseline-rate
   measured: -0.437
   notes: Over 1166 putative pyramidal cells of 24 sessions, the log2 ratio of the rate inside ripples to outside
-    is negatively correlated with the baseline rate (rho = -0.437, p = 1.8e-55), in every subject (-0.37 to
-    -0.71) and every session. This is stronger than -0.19 and outside the tolerance of 0.068. The difference
-    reading gives rho = -0.002 (p = 0.95). Without the three sessions whose ripples fail the clock check, rho
-    = -0.468; in the 22 sessions whose first epoch is labelled BaselinePre, -0.450; against the rate outside
+    is negatively correlated with the baseline rate (rho = -0.437, p = 1.8e-55). It is negative in every subject
+    (-0.37 to -0.71) and every session, and significant in all sessions but three (fCamk1 sess13 p = 0.12,
+    fCamk3 sess13 p = 0.29, fCamk5 sess14 p = 0.81). This is stronger than -0.19 and outside the tolerance
+    of 0.068. The difference reading gives rho = -0.002 (p = 0.95). Without the two sessions in the analysis
+    whose ripples fail the clock check (the third has under 50 first-epoch ripples), n = 1055 and rho = -0.468; in the 22 sessions whose first epoch is labelled BaselinePre, -0.450; against the rate outside
     ripples, -0.466.
   deviations:
   - The paper's measure of rate change is in the unavailable supplement; two readings were fixed before the
@@ -128,7 +130,9 @@ outcomes:
   - Two sessions of one mouse.
   - Place fields follow a port of buzcode's bz_findPlaceFields1D with its defaults, on control maps from the
     windows dark under the stated protocol (the 20 ms before each deposited onset and after each offset), since
-    most pulses are not in the files; the paper's standard definition is in its unavailable Methods.
+    most pulses are not in the files; the paper's standard definition is in its unavailable Methods. The files
+    do not follow the protocol exactly (3.2% and 3.8% of deposited offsets in PreStim are under 20 ms), so
+    missing pulses may fall in some of these windows.
 - claim: fig2e-infield-gain
   outcome: reproduced
   notebook: reproduce_valero_2022.ipynb
@@ -171,7 +175,9 @@ outcomes:
   notes: Under reading (a), 7 of 9 light-responsive non-place cells (77.8%, 95% interval 40.0 to 97.2%) have
     a light field, 1.6 points above the tolerance of 69.3 plus or minus 6.9; under reading (b), 6 of 19 non-place
     cells (31.6%, 12.6 to 56.6%), below it and above the 15.8% found in control maps thinned at random to the
-    time of the light maps. Reading (a) rests on 9 cells and its interval includes the paper's value.
+    time of the light maps. Reading (a) rests on 9 cells and its interval includes the paper's value. Its light
+    maps use only each cell's own uLEDs (2.6% to 6.2% of lap time); control maps thinned to that time give
+    a field in 31.7% of draws on average over the 9 cells.
   deviations:
   - Two sessions of one mouse; 19 non-place cells against 417.
   - The paper's denominator and its rule for an induced field are in its unavailable Methods; two readings
@@ -180,10 +186,11 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_valero_2022.ipynb
   output: claim:fig3e-ghost-fields
-  notes: For 70 place fields the light peak follows the control peak (Pearson r = 0.806, p = 3.9e-17). For
-    14 unmasked fields r = 0.321 (p = 0.26). In the shuffle variant, 35.7% of unmasked peaks lie within 4.4
-    cm of the control peak against 14.6% for shuffled pairings (p = 0.014), which is closer to the paper's
-    test against shuffles. 8 of the 14 unmasked fields come from sess9.
+  notes: For 70 field directions of light-responsive place cells the light peak follows the control peak
+    (Pearson r = 0.806, p = 3.9e-17). For 14 light field directions of 7 non-place cells r = 0.321 (p = 0.26).
+    In the shuffle variant, 35.7% of unmasked peaks lie within 4.4 cm of the control peak against 14.6% for
+    shuffled pairings (p = 0.014), which is closer to the paper's test against shuffles. 8 of the 14 unmasked
+    field directions come from sess9.
   deviations:
   - Pearson correlation of peak positions in place of the paper's chi-squared test against 500 shuffles, whose
     details are in the unavailable Methods; a shuffle test is shown as a variant.
@@ -195,7 +202,7 @@ outcomes:
     against 0.714, light higher in 28 of 70, p = 0.058; unmasked fields 0.187 against 0.527, 6 of 14, p = 0.39).
     Against control maps from as many 20 ms control windows as light windows, place fields 0.664 against 0.602
     (p = 0.68) and unmasked fields 0.187 against 0.293 (p = 0.67). Control maps from stimulated laps only give
-    p = 0.059 and 0.39. The two-way ANOVA finds an effect of condition (p = 0.046), with light the less stable
+    the same medians (p = 0.059 and 0.39), as they must, since dark windows lie only next to deposited pulses. The two-way ANOVA finds an effect of condition (p = 0.046), with light the less stable
     by the medians.
   deviations:
   - Control maps use the windows dark under the stated protocol (19% to 20% of lap time); the paper's control
@@ -214,6 +221,15 @@ outcomes:
   deviations:
   - Control maps use the windows dark under the stated protocol; time-matched control windows are a variant,
     under which the larger increase in unmasked fields does not hold.
+  proposed:
+    outcome: partially_reproduced
+    reason: The paper's control epochs are random 20 ms intervals between the light pulses, which the time-matched
+      variant follows most closely. Under it both correlations hold (rho = 0.501, p = 1e-05 and rho = 0.609,
+      p = 0.021) but the increase is negative in both groups (-0.10 and -0.17 bits/spike) and does not differ
+      (p = 0.3), so part 2 fails. The dark-window control maps are themselves a revision of the criterion's
+      control (all time with no uLED on), so they have no prior claim to decide the outcome, and the selection
+      of unmasked fields favours part 2 under either control. Part 1 holds and part 2 does not, which is
+      partially_reproduced. The analysis is in the claim:fig3g-spatial-information cell.
 - claim: fig4c-swr-cofiring-place-pairs
   outcome: reproduced
   notebook: reproduce_valero_2022.ipynb
@@ -517,4 +533,156 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Agreed. Data present; the decoder and shuffle settings are unknown.
+    response: No change needed.
+- date: '2026-10-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with its conclusions and summary,
+    the helper module, the claims file and the attempt record, with the paper (PMC author manuscript, saved as
+    paper/PMC9632609_bioc.json and paper/PMC9632609.txt). It read the new find_fields but could not run it, as
+    numpy was not installed. Report in transcripts/000568/verifier-2-report.md. Points not tied to one claim
+    were also answered. The dark-window premise (round-2 remaining point 4) is now printed in the data check
+    (3.8% and 3.2% of deposited offsets in PreStim under 20 ms) and stated in cell 12, the figs11 deviations
+    and the summary. Point 3 (two sessions of one mouse) needs no change beyond what the notes state. Point
+    5 (Methods) cannot be answered, as the supplement is still unavailable.
+  results:
+  - claim: cohort-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cell 17).
+    response: No change needed.
+  - claim: fig1c-pulse-protocol
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cell 20).
+    response: No change needed.
+  - claim: fig1e-responsive-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 23), reading (b), 66/91 = 72.5%. Cell 24 says none of the 364 sham tests passes, so
+      false positives do not inflate these fractions, but the sham tests were run on PreStim only and so
+      cover reading (a); the outcome rests on reading (b), which has no sham test.
+    response: Added the sham test for reading (b), onsets of all stimulation epochs jittered by up to 200 ms
+      (0 of 364 tests pass), and reworded cell 24 and the notes to say which test covers which reading.
+  - claim: fig1i-swr-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 27).
+    response: No change needed.
+  - claim: figs10-swr-gain-vs-baseline-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cell 30). The notes say the correlation is negative in every subject and every session;
+      the sign is negative in every session, but 3 sessions are not significant (fCamk1 sess13 p = 0.12, fCamk3
+      sess13 p = 0.29, fCamk5 sess14 p = 0.81). "Without the three sessions whose ripples fail the clock check"
+      is wrong, as only two of the three are in the analysis (fCamk5 sess10 has under 50 first-epoch ripples);
+      n drops by 111.
+    response: Cell 31 and the notes now name the three sessions that are not significant, and say the clock-check
+      variant leaves out two sessions (n = 1055).
+  - claim: fig2b-theta-trough-gain
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 33).
+    response: No change needed.
+  - claim: figs11-place-cell-fraction
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cell 37), p = 0.20; 84.2% is outside 73 ± 7.3 and 70.6% is within 71 ± 7.1.
+    response: Added to the deviations that 3% to 4% of deposited offsets are under 20 ms, so the dark windows
+      are not dark in every case. Outcome kept.
+  - claim: fig2e-infield-gain
+    agrees: true
+    outcome: reproduced
+    reason: Agree (cell 40).
+    response: No change needed.
+  - claim: figs12-gain-rate-correlations
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 43).
+    response: No change needed.
+  - claim: fig3a-place-cells-more-excitable
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 46), p = 0.19. This outcome flipped with the new place-cell calls, so it is fragile.
+    response: No change; the notes already give the per-session results and the record of round 1 says the
+      change came from the new place-cell calls.
+  - claim: fig3c-unmasked-fields
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree under the criterion (cell 49). In practice it is undecided, since reading (a) has n = 9 and
+      its interval runs 40.0 to 97.2%. There is no chance level for reading-(a) light fields; their maps use
+      only the uLEDs each cell responds to, with less time than the all-uLED maps, yet the thinned null (15.8%)
+      is matched to reading (b). Noise fields from sparse maps may explain part of the 77.8%.
+    response: Added a null for reading (a), control maps thinned to each cell's own light time (2.6% to 6.2%
+      of lap time), 20 draws per cell. They give a field in 31.7% of draws on average, against 77.8% with a
+      light field. Stated in cell 50 and the notes. Outcome kept.
+  - claim: fig3e-ghost-fields
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agree (cell 53). Cell 54 and the notes say 70 control fields or place fields, and 14 light fields
+      or unmasked fields, but cell 53 prints n = 70 field directions (fig2e has 80 fields), and the 14 are field
+      directions from 7 cells.
+    response: Cell 54 and the notes now say field directions, and that the 14 come from 7 cells.
+  - claim: fig3f-light-stability
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 56). Cell 57's statement that leaving the unstimulated laps out of the control maps
+      changes little, and the record's response that this variant was added, miss that the variant cannot
+      differ, since dark windows exist only next to deposited pulses; the control medians are identical (0.714
+      and 0.527).
+    response: Cell 57 and the notes now say the variant gives the same medians, as it must, since dark windows
+      lie only next to deposited pulses.
+  - claim: fig3g-spatial-information
+    agrees: false
+    outcome: partially_reproduced
+    reason: Part 2 rests on p = 0.039 with dark-window control maps. Against time-matched control the increase
+      is negative in both groups and does not differ (p = 0.3). The paper says random intervals (20 ms) between
+      the light pulses served as control epochs, which the time-matched variant follows most closely. The criterion
+      fixed time when no uLED is on, which the revision already replaced, so the main control maps are not the
+      pre-registered ones either, and the selection bias still favours part 2.
+    response: The outcome stays reproduced, as round 2 may not change it, and partially_reproduced is proposed
+      on the outcome for a third round, on the numbers already in cell 59. Cell 60, the summary and the README
+      say so.
+  - claim: fig4c-swr-cofiring-place-pairs
+    agrees: true
+    outcome: reproduced
+    reason: Agree under the criterion (cell 62). It is weak, p = 0.032, carried by sess9 alone, and the participation
+      variant gives p = 0.056. The coefficient for place/non-place pairs (0.062) equals that for place pairs
+      (0.060), so the contrast the claim describes is absent. The README row "for place cell pairs only" is
+      contradicted by cell 62.
+    response: The README row no longer says "only". The notes already state the weakness and the equal coefficients.
+  - claim: fig4d-light-unmasked-cofiring
+    agrees: true
+    outcome: not_reproduced
+    reason: Agree (cell 65).
+    response: No change needed.
+  - claim: fig1j-light-intensity
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change needed.
+  - claim: fig1km-intracellular
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change needed.
+  - claim: figs9-excitatory-vs-inhibitory-swr
+    agrees: true
+    outcome: blocked
+    reason: Agree. The figs9 proxy (cell 68) is shown, and the reason it stays blocked is sound.
+    response: No change needed.
+  - claim: fig3h-position-decoding
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change needed.
+  - claim: fig4ef-assemblies
+    agrees: true
+    outcome: blocked
+    reason: Agree.
+    response: No change needed.
+  - claim: fig4gh-replay
+    agrees: true
+    outcome: blocked
+    reason: Agree.
     response: No change needed.

@@ -22,8 +22,8 @@ protocol keeps dark.
 | Light unmasks place fields in 69% of non-place cells | Not reproduced |
 | Light-induced fields sit where the control spikes are | Partially reproduced |
 | Light fields are more stable than control fields | Not reproduced |
-| Spatial information, control against light | Reproduced |
-| Ripple cofiring tracks spatial overlap for place cell pairs only | Reproduced |
+| Spatial information, control against light | Reproduced (partially reproduced proposed for a third round) |
+| Ripple cofiring tracks spatial overlap for place cell pairs | Reproduced |
 | With light, the relation appears for pairs with non-place cells | Not reproduced |
 | Light intensity effects (Figures 1J, 2F, 3D) | Blocked: data missing |
 | Intracellular recordings (Figure 1K to M) | Blocked: data missing |
@@ -39,7 +39,7 @@ buzcode's bz_findPlaceFields1D, and other measures are common choices. The attem
 differences from the paper's method, is
 [`attempts/000568-valero-2022-01.yaml`](../../attempts/000568-valero-2022-01.yaml).
 
-- `reproduce_valero_2022.ipynb`: the analysis. It takes about five minutes, most of it streaming
+- `reproduce_valero_2022.ipynb`: the analysis. It takes about seven minutes, most of it streaming
   the files.
 - `valero.py`: loading the files, pulse and control windows, the light-response test, rate maps,
   place fields and theta phase. Other notebooks on this dandiset can import it.
