@@ -43,8 +43,8 @@ session, so Figure 2 and Extended Data Fig. 1i-k cannot be tested. The recorded 
 by the session description. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/000239-xu-2022-01.yaml`](../../attempts/000239-xu-2022-01.yaml).
 
-- `reproduce_xu_2022.ipynb`: the analysis. It takes about six minutes on four cores; about a
-  minute and a half of it is streaming the files.
+- `reproduce_xu_2022.ipynb`: the analysis. It takes about 20 to 25 minutes on four cores; about
+  a quarter of it is the seed variants of the Figure 3 fits, and a few minutes streaming the files.
 - `seqlick.py`: loading the files, trial types and selection, spike rates, the elastic net with
   the one-SE rule, the SVM over time, and the per-session analyses. Other notebooks on this
   dandiset can import it.

@@ -148,11 +148,25 @@ def read_video(f):
 
 # --- unit quality --------------------------------------------------------------
 
+def hill_contamination(viol, n, T, censored=0.0):
+    """Contamination fraction of Hill et al. (2011) from `viol` ISIs under REFRACTORY among `n`
+    spikes over a duration T (s), with a censored period (s) during which no spikes can be seen."""
+    x = viol * T / (2 * (REFRACTORY - censored) * n ** 2)
+    return 1.0 if x >= 0.25 else 0.5 * (1 - np.sqrt(1 - 4 * x))
+
+
 def unit_quality(spikes, t0, t1):
-    """Refractory period violation rate and contamination (Hill et al. 2011) of one unit."""
+    """ISI violation rate and contamination (Hill et al. 2011) of one unit.
+
+    Returns (rpv, contamination, contamination with a 0.5 ms censored period, contamination over
+    the trial span). The second value is the one used: T is the time the unit was active, n over
+    the mean count of 1 s bins of the trial span holding at least one spike, with no censored
+    period. The last two are variants: a 0.5 ms censored period (a common Kilosort value), and
+    only the spikes inside the trial span over the whole span as T.
+    """
     n = len(spikes)
     if n < 2:
-        return np.nan, np.nan
+        return np.nan, np.nan, np.nan, np.nan
     isi = np.diff(spikes)
     viol = int(np.sum(isi < REFRACTORY))
     rpv = viol / len(isi)
@@ -161,9 +175,24 @@ def unit_quality(spikes, t0, t1):
     active = counts >= 0.5
     rate = counts[active].mean() if active.any() else n / (t1 - t0)
     T = n / rate   # duration the unit was active, so that n / T is the rate over active periods
-    x = viol * T / (2 * REFRACTORY * n ** 2)
-    contam = 1.0 if x >= 0.25 else 0.5 * (1 - np.sqrt(1 - 4 * x))
-    return rpv, contam
+    contam = hill_contamination(viol, n, T)
+    censored = hill_contamination(int(np.sum((isi < REFRACTORY) & (isi >= 0.0005))), n, T, 0.0005)
+    inside = spikes[(spikes >= t0) & (spikes <= t1)]
+    ni = len(inside)
+    span = (hill_contamination(int(np.sum(np.diff(inside) < REFRACTORY)), ni, t1 - t0)
+            if ni >= 2 else np.nan)
+    return rpv, contam, censored, span
+
+
+def simulate_unit(rate, contamination, duration, rng):
+    """Spike times of a synthetic unit: a renewal process with a REFRACTORY dead time at
+    rate * (1 - contamination), mixed with Poisson spikes at rate * contamination."""
+    r1 = rate * (1 - contamination)
+    isi = rng.exponential(1 / r1 - REFRACTORY, int(duration * r1 * 1.2) + 10) + REFRACTORY
+    good = np.cumsum(isi)
+    good = good[good < duration]
+    bad = np.sort(rng.uniform(0, duration, rng.poisson(rate * contamination * duration)))
+    return np.sort(np.concatenate([good, bad]))
 
 
 # --- licks from the video -------------------------------------------------------
@@ -214,7 +243,7 @@ def load_session(asset, video=True, spikes=True):
     t0 = float(s["trials"]["start_time"][0]) if s["trials"]["n"] else 0.0
     t1 = float(s["trials"]["stop_time"][-1]) if s["trials"]["n"] else 1.0
     s["n_units"] = len(units)
-    s["unit_quality"] = np.array([unit_quality(u, t0, t1) for u in units]).reshape(-1, 2)
+    s["unit_quality"] = np.array([unit_quality(u, t0, t1) for u in units]).reshape(-1, 4)
     s["n_spikes"] = np.array([len(u) for u in units])
     s["unsorted"] = int(sum(np.any(np.diff(u) < 0) for u in raw))
     if spikes:
@@ -284,20 +313,48 @@ def select_trials(s, trials, align, window, frac=1 / 3, n_min=10):
         lk = s["licks"][i][:, 0] if "licks" in s else np.array([])
         h = [np.histogram(x - t0, edges)[0] for x in (lk, ev["touch"], ev["pos"])]
         feats.append(np.concatenate([_gauss_smooth(np.asarray(x), 2.0) for x in h]))
-    X = np.array(feats)
-    from scipy.spatial.distance import pdist, squareform
-    D = squareform(pdist(X))
+    D = feature_distances(feats)
     n = max(n_min, int(round(len(trials) * frac)))
-    # Greedy: start from the trial closest to all others and add the trial that keeps the mean
-    # pairwise distance lowest. The Methods do not say how the subset was searched.
+    return [trials[k] for k in greedy_subset(D, n)]
+
+
+def feature_distances(feats):
+    from scipy.spatial.distance import pdist, squareform
+    return squareform(pdist(np.array(feats)))
+
+
+def greedy_subset(D, n):
+    """Indices of n items with a low mean pairwise distance D. Greedy: start from the item closest
+    to all others and add the item that keeps the mean pairwise distance lowest. The Methods do not
+    say how the subset was searched."""
     chosen = [int(np.argmin(D.sum(1)))]
-    rest = set(range(len(trials))) - set(chosen)
+    rest = set(range(len(D))) - set(chosen)
     while len(chosen) < n:
         r = np.array(sorted(rest))
         k = int(r[np.argmin(D[np.ix_(r, chosen)].sum(1))])
         chosen.append(k)
         rest.remove(k)
-    return [trials[k] for k in sorted(chosen)]
+    return sorted(chosen)
+
+
+def subset_cost(D, idx):
+    """Mean pairwise distance within a subset."""
+    idx = list(idx)
+    sub = D[np.ix_(idx, idx)]
+    return float(sub.sum() / (len(idx) * (len(idx) - 1)))
+
+
+def selection_features(s, ttype, direction, window=(-1.0, 1.0)):
+    """The distance matrix select_trials uses for one trial type and direction of a session."""
+    tr, al = trials_of(s, ttype, direction)
+    edges = np.arange(window[0], window[1] + 1e-9, 0.010)
+    feats = []
+    for i, t0 in zip(tr, al):
+        ev = trial_events(s, i)
+        lk = s["licks"][i][:, 0] if "licks" in s else np.array([])
+        h = [np.histogram(x - t0, edges)[0] for x in (lk, ev["touch"], ev["pos"])]
+        feats.append(np.concatenate([_gauss_smooth(np.asarray(x), 2.0) for x in h]))
+    return feature_distances(feats)
 
 
 # --- spike rates ------------------------------------------------------------------
@@ -467,8 +524,9 @@ def behaviour_samples(s, trials, aligns, direction, rel):
     return np.concatenate(rows)
 
 
-def fig3_session(s, seed=0, fit_window=(-0.5, 0.5), window=(-0.5, 0.8), shifts=()):
-    """Everything Figure 3 and Extended Data Fig. 5 need from one session."""
+def fig3_session(s, seed=0, fit_window=(-0.5, 0.5), window=(-0.5, 0.8), shifts=(), trialfolds=True):
+    """Everything Figure 3 and Extended Data Fig. 5 need from one session. `trialfolds=False`
+    skips the variant fits with folds that keep trials together."""
     rel = np.arange(window[0], window[1] + BIN / 2, BIN)
     sel = {d: selected(s, "standard", d) for d in ("LR", "RL")}
     out = dict(path=s["path"], area=s["area"], subject=s["subject"], n_units=len(s["spikes"]),
@@ -490,7 +548,8 @@ def fig3_session(s, seed=0, fit_window=(-0.5, 0.5), window=(-0.5, 0.8), shifts=(
     for j, v in enumerate(VARS):
         ok = fit & ~np.isnan(Y[:, j])
         r2[v], W[v], C[v] = enet_cv_r2(Xn[ok], Y[ok, j], 10, seed)
-        r2g[v] = enet_cv_r2(Xn[ok], Y[ok, j], 10, seed, groups=Y[ok, 5])[0]
+        if trialfolds:
+            r2g[v] = enet_cv_r2(Xn[ok], Y[ok, j], 10, seed, groups=Y[ok, 5])[0]
     out.update(r2=r2, r2_trialfolds=r2g, weights=W)
     # Pairwise correlation of the behavioural variables over the fitting samples.
     corr = {}
@@ -756,3 +815,90 @@ def rhythmicity(rel, peth, freq=6.5):
     if np.std(peth) == 0 or np.std(fit) == 0:
         return np.nan
     return float(np.corrcoef(peth, fit)[0, 1])
+
+
+# --- metadata, video coverage and control sessions --------------------------------------
+
+def video_spans(asset):
+    """Start and end time of the tongue-tracking series of every trial, from the series' shape and
+    rate only (no data are read). Trials without a series are absent from the result."""
+    f = open_file(asset["url"])
+    out = {}
+    if "processing/behavior/BehavioralTimeSeries_is_tongue_out" in f:
+        g = f["processing/behavior/BehavioralTimeSeries_is_tongue_out"]
+        for k in g:
+            ts = g[k]
+            start = float(ts["starting_time"][()])
+            out[int(k.rsplit("_", 1)[1])] = (start, start + ts["data"].shape[0] / ts["starting_time"].attrs["rate"])
+    f.close()
+    return dict(path=asset["path"], spans=out)
+
+
+def _text(x):
+    return x.decode() if isinstance(x, bytes) else str(x)
+
+
+def file_metadata(asset):
+    """Everything in one file that could name a condition: free-text fields, the contents of
+    general, stimulus and acquisition, the units and conversions of the opto and force series,
+    and the values the opto series take in the first trial with light."""
+    f = open_file(asset["url"])
+    out = dict(path=asset["path"])
+    for k in ("session_description", "experiment_description", "notes", "protocol", "stimulus_notes"):
+        if k in f or "general/" + k in f:
+            out[k] = _text((f[k] if k in f else f["general/" + k])[()])
+    general = []
+    f["general"].visit(lambda name: general.append(name))
+    out["general"] = general
+    out["stimulus"] = [n for n in f.get("stimulus", {}).keys()] + [
+        "stimulus/" + a + "/" + b for a in f.get("stimulus", {}) for b in f["stimulus"][a]]
+    out["acquisition"] = list(f.get("acquisition", {}).keys())
+    b = f.get("processing/behavior")
+    series = {}
+    if b is not None:
+        for name in ("tubeH", "tubeV", "opto1", "opto2", "lickportH"):
+            g = b.get("BehavioralTimeSeries_" + name)
+            if g is None:
+                continue
+            ts = g[name + "_0"]
+            series[name] = dict(unit=_text(ts["data"].attrs.get("unit", "")),
+                                conversion=float(ts["data"].attrs.get("conversion", np.nan)),
+                                offset=float(ts["data"].attrs.get("offset", 0.0)),
+                                description=_text(ts.attrs.get("description", "")),
+                                comments=_text(ts.attrs.get("comments", "")))
+        t = f["intervals/trials"]
+        opto = t["opto_times"][:] if "opto_times" in t else np.array([])
+        lit = np.where(~np.isnan(opto))[0]
+        if len(lit) and "BehavioralTimeSeries_opto1" in b:
+            for name in ("opto1", "opto2"):
+                d = b["BehavioralTimeSeries_" + name][f"{name}_{lit[0]}"]["data"][:]
+                series[name]["values_first_light_trial"] = np.unique(np.round(d, 3))[:10].tolist()
+    out["series"] = series
+    f.close()
+    return out
+
+
+def sequence_missed_licks(s):
+    """Per standard trial with video up to the last port-moving touch: the video licks from the
+    first to the last port-moving touch with no touch onset within 12.5 ms (missed licks), the
+    video licks from the cue to the first touch without a touch, and the trial's cue time."""
+    rows = []
+    for i in range(min(s["trials"]["n"], len(s.get("video", [])))):
+        ev = trial_events(s, i)
+        if trial_type(ev["kind"])[0] != "standard" or len(ev["pos"]) < 6:
+            continue
+        v = s["video"][i]
+        if ev["pos"][-1] > v["start"] + len(v["out"]) / v["rate"]:
+            continue
+        lk = s["licks"][i]
+
+        def missed(a, b):
+            inside = lk[(lk[:, 0] > a) & (lk[:, 0] < b)]
+            return sum(1 for on, off, *_ in inside
+                       if not np.any((ev["touch"] >= on - 0.0125) & (ev["touch"] <= off + 0.0125)))
+        ft = first_touch(ev)
+        rows.append(dict(trial=i, cue=ev["cue"], missed=missed(ev["pos"][0], ev["pos"][-1]),
+                         missed_before_first=missed(ev["cue"], ft) if not np.isnan(ft) else np.nan,
+                         init=ft - ev["cue"]))
+    return dict(path=s["path"], subject=s["subject"], area=s["area"],
+                session_start=s["session_start"], rows=rows)
