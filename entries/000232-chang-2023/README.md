@@ -31,7 +31,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000232-chang-2023-01.yaml`](../../attempts/000232-chang-2023-01.yaml).
 
-- `reproduce_chang_2023.ipynb`: the analysis. It takes about 15 minutes, a quarter of it streaming the
+- `reproduce_chang_2023.ipynb`: the analysis. It takes about 9 minutes, close to 3 of them streaming the
   files.
 - `xmodal.py`: loading the files, trial coding, binned and smoothed rates, the ideal-observer and
   decoding measures, transitions, coding dimensions and the optogenetic lick outcomes with the
