@@ -36,8 +36,8 @@ progressive cutting recordings label every trial `intact`, so the cutting experi
 tested. The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000226-severson-2017-01.yaml`](../../attempts/000226-severson-2017-01.yaml).
 
-- `reproduce_severson_2017.ipynb`: the analysis. It takes about 13 minutes, half of it reading the
-  13.7 GB of files into memory.
+- `reproduce_severson_2017.ipynb`: the analysis. It takes about 21 minutes, most of it reading the
+  13.7 GB of files into memory and fitting the spline models.
 - `merkel.py`: loading, the Glossary's categories and classes, phase tuning, the spline models
   that stand in for the paper's GAMs, the viscoelastic model, and Table S1. Other notebooks on this
   dandiset can import it.

@@ -27,6 +27,7 @@ from __future__ import annotations
 import hashlib
 import io
 import itertools
+import re
 
 import h5py
 import numpy as np
@@ -155,10 +156,35 @@ def _text(f, key):
     return v.decode() if isinstance(v, bytes) else v
 
 
+def asset_variables():
+    """The archive's own description of each asset: path -> `variableMeasured` names."""
+    with DandiAPIClient() as client:
+        ds = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
+        return {a.path: sorted(v.get("value", "") for v in a.get_raw_metadata().get("variableMeasured", []))
+                for a in ds.get_assets()}
+
+
+def structure(f):
+    """Every group and dataset path in an open NWB file, with per-trial numbers replaced by "N" and
+    the datasets inside each per-trial series left out, and the set of neurodata types."""
+    paths, types = set(), set()
+
+    def visit(name, obj):
+        if re.search(r"BehavioralTimeSeries_[^/]+/[^/]+_\d+/", name):
+            return
+        paths.add(re.sub(r"_\d+(?=/|$)", "_N", name))
+        t = obj.attrs.get("neurodata_type")
+        if t is not None:
+            types.add(t.decode() if isinstance(t, bytes) else str(t))
+    f.visititems(visit)
+    return sorted(paths), sorted(types)
+
+
 def load(url):
     """Read one NWB file into memory and return its contents as arrays (trials x frames)."""
     content = requests.get(url, timeout=600).content
     f = h5py.File(io.BytesIO(content), "r")
+    paths, types = structure(f)
     beh = f["processing/behavior"]
     g0 = beh["BehavioralTimeSeries_position"]
     index = sorted(int(n.split("_")[-1]) for n in g0.keys())
@@ -167,7 +193,8 @@ def load(url):
          "strain": _text(f, "general/subject/strain"),
          "related_publications": [x.decode() for x in f["general/related_publications"][:]],
          "series_present": sorted(k.replace("BehavioralTimeSeries_", "") for k in beh.keys()),
-         "acquisition": list(f["acquisition"].keys()), "bytes": len(content)}
+         "acquisition": list(f["acquisition"].keys()), "bytes": len(content),
+         "paths": paths, "neurodata_types": types}
     s["starting_time"] = np.array([g0[f"position_{i}"]["starting_time"][()] for i in index])
     s["rates"] = sorted({float(g0[f"position_{i}"]["starting_time"].attrs["rate"]) for i in index})
     s["lengths"] = sorted({g0[f"position_{i}"]["data"].shape[0] for i in index})
@@ -334,9 +361,9 @@ def derivative_ratios(s, masks):
 
 
 def phase_direction(s, masks, n_trials=20):
-    """Correlation of sin(stored phase) with sin(Hilbert phase of 8 to 30 Hz band-passed position),
-    over whisking frames of the first trials. +1: the stored phase advances with time; -1: it runs
-    backwards."""
+    """Correlations of sin and of cos of the stored phase with those of the Hilbert phase of 8 to
+    30 Hz band-passed position, over whisking frames of the first trials. Both +1: the same phase.
+    sin -1 and cos +1: the stored phase is the negative (runs backwards). Both -1: shifted by pi."""
     b, a = butter(2, [8 / 250, 30 / 250], "band")
     x, y = [], []
     for i in range(min(n_trials, s["position"].shape[0])):
@@ -345,11 +372,13 @@ def phase_direction(s, masks, n_trials=20):
             continue
         ph = np.angle(hilbert(filtfilt(b, a, th)))
         m = masks["whisking"][i] & np.isfinite(s["phase"][i])
-        x.append(np.sin(ph[m]))
-        y.append(np.sin(s["phase"][i][m]))
+        x.append(ph[m])
+        y.append(s["phase"][i][m])
     if not x or sum(len(v) for v in x) < 100:
-        return np.nan
-    return float(np.corrcoef(np.concatenate(x), np.concatenate(y))[0, 1])
+        return {"sin": np.nan, "cos": np.nan}
+    x, y = np.concatenate(x), np.concatenate(y)
+    return {"sin": float(np.corrcoef(np.sin(x), np.sin(y))[0, 1]),
+            "cos": float(np.corrcoef(np.cos(x), np.cos(y))[0, 1])}
 
 
 def file_signature(s):
@@ -436,13 +465,15 @@ class SplineModel:
         return 1 / (1 + np.exp(-np.clip(self._design(X) @ self.beta, -30, 30)))
 
 
-def fit_r(X, y, smooth, **kw):
-    """Fit a SplineModel and return (Pearson r of prediction with smoothed spikes, model)."""
-    model = SplineModel(**kw).fit(X, y)
-    pred = model.predict(X)
-    if np.std(pred) == 0 or np.std(smooth) == 0:
+def fit_r(X, y, smooth, train=None, **kw):
+    """Fit a SplineModel and return (Pearson r of prediction with smoothed spikes, model). With a
+    boolean `train`, fit on those frames and compute r on the others (held out)."""
+    test = slice(None) if train is None else ~train
+    model = SplineModel(**kw).fit(X if train is None else X[train], y if train is None else y[train])
+    pred = model.predict(X[test])
+    if np.std(pred) == 0 or np.std(smooth[test]) == 0:
         return np.nan, model
-    return float(np.corrcoef(pred, smooth)[0, 1]), model
+    return float(np.corrcoef(pred, smooth[test])[0, 1]), model
 
 
 # --- viscoelastic model -------------------------------------------------------------------------
@@ -463,7 +494,10 @@ def fit_visco(m0, dm0, rate, rng, n_starts=8):
     """Least-squares fit of the five parameters (k, C, eps_lim, E, eta); M0 scaled by its 80th
     percentile of |M0|. dm0 is in N m per second. For a well-conditioned fit, the rate of change is
     also divided by the 80th percentile of its absolute value, and eta is fitted in those units and
-    converted back. Returns (params, loss, success, scale), with eta per second."""
+    converted back. Returns (params, loss, success, scale, at_bound), with eta per second, and
+    at_bound saying for each parameter whether the fit ended at one of its bounds (as fitted).
+    Different parameter sets can give nearly the same prediction, so the values are not
+    interpreted."""
     scale = np.percentile(np.abs(m0), 80)
     x, xdot = m0 / scale, dm0 / scale
     sdot = np.percentile(np.abs(xdot), 80)
@@ -482,7 +516,9 @@ def fit_visco(m0, dm0, rate, rng, n_starts=8):
         if best is None or res.fun < best.fun:
             best = res
     k, c, eps_lim, E, eta_u = best.x
-    return np.array([k, c, eps_lim, E, eta_u / sdot]), float(best.fun), bool(best.success), scale
+    at_bound = np.array([np.isclose(v, lo, atol=1e-6) or np.isclose(v, hi, atol=1e-6)
+                         for v, (lo, hi) in zip(best.x, bounds)])
+    return np.array([k, c, eps_lim, E, eta_u / sdot]), float(best.fun), bool(best.success), scale, at_bound
 
 
 # --- per-recording reduction --------------------------------------------------------------------
@@ -496,6 +532,7 @@ def reduce(path, url, seed, keep_touch=False, keep_wia=False, n_fit=60000, n_wia
          "strain": s["strain"], "session_start": s["session_start"], "n_trials": n_trials,
          "related_publications": s["related_publications"], "series_present": s["series_present"],
          "acquisition": s["acquisition"], "units": s["units"], "bytes": s["bytes"],
+         "paths": s["paths"], "neurodata_types": s["neurodata_types"],
          "rates": s["rates"], "lengths": s["lengths"],
          "trial_duration": (float(np.min(s["trial_stop"] - s["trial_start"])),
                             float(np.max(s["trial_stop"] - s["trial_start"]))),
@@ -508,6 +545,7 @@ def reduce(path, url, seed, keep_touch=False, keep_wia=False, n_fit=60000, n_wia
                    for v in VARIABLES if s[v] is not None}
     masks = categories(s)
     r["category_seconds"] = {k: float(m.sum() * DT) for k, m in masks.items()}
+    r["contact_flag_frames"] = int((s["contact"] == 1).sum())
     r["derivative_ratios"] = derivative_ratios(s, masks)
     r["phase_direction"] = phase_direction(s, masks)
     if s["distanceToPoleCenter"] is not None and (s["contact"] == 1).any():
@@ -529,8 +567,10 @@ def reduce(path, url, seed, keep_touch=False, keep_wia=False, n_fit=60000, n_wia
     if wh.sum() > 3000:
         edges = np.linspace(-np.pi, np.pi, 13)
         b = np.clip(np.digitize(s["phase"][wh], edges) - 1, 0, 11)
+        pos = s["position"][wh]
+        okp = np.isfinite(pos)       # position has missing frames where velocity does not
         r["kinematics_by_phase"] = {"centres": (edges[:-1] + edges[1:]) / 2,
-                                    "position": bin_means(s["position"][wh] - np.nanmean(s["position"][wh]), b, 12),
+                                    "position": bin_means(pos[okp] - pos[okp].mean(), b[okp], 12),
                                     "velocity": bin_means(s["velocity"][wh], b, 12)}
     if not r["has_spikes"]:
         return r
