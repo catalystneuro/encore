@@ -23,7 +23,7 @@ the dandiset.
 | Compression up to 20-fold | Not reproduced |
 | Rates rise in post-behavior NREM in CA1, CA3 and LS | Partially reproduced |
 | HFOs mostly in NREM, rarer than ripples | Partially reproduced |
-| CA1 leads LS by 6.4 ms | Partially reproduced |
+| CA1 leads LS by 6.4 ms | Partially reproduced (change to not reproduced proposed) |
 | Coupling 0.3 in NREM against 0.15 in WAKE | Not reproduced |
 | Ripple-triggered LS firing higher in NREM | Not reproduced |
 | CA1-LS phase coherence at chance | Not reproduced |
@@ -39,14 +39,15 @@ reasoning and the differences from the paper's method.
 
 The paper does not say which channels it used for detection, and its code repository holds no
 analysis of this paper apart from the model of Figure 8, so the detected events are this
-attempt's own. Many of them are not followed by LS firing, and a third of those coupled to CA1
-ripples fall on the same sample as the ripple; most outcomes on HFOs follow from that. Detecting
+attempt's own. LS firing at them exceeds firing at random times, or before and after the events,
+by more than 3 SEM in only one animal of six, and a third of the events coupled to CA1 ripples fall on
+the same sample as the ripple; most outcomes on HFOs follow from that. Detecting
 the events again on the LS channel re-referenced within its shank removes most same-sample events
 but changes no outcome. The attempt
 record, with the reasons and the differences from the paper's method, is
 [`attempts/000218-tingley-2019-01.yaml`](../../attempts/000218-tingley-2019-01.yaml).
 
-- `reproduce_tingley_2019.ipynb`: the analysis. It takes about 23 minutes, most of it streaming the
+- `reproduce_tingley_2019.ipynb`: the analysis. It takes about 18 minutes, most of it streaming the
   files: each file's chunk index has to be loaded over the network before a channel can be read.
 - `ls_hfo.py`: loading, fast parallel reading of single LFP channels, the HFO and ripple detector,
   phase locking and the spike measures. Other notebooks on this dandiset can import it.

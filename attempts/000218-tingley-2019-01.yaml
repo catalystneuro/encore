@@ -50,8 +50,12 @@ outcomes:
     events exceeds firing at random times by more than 3 SEM only in DT1 (6.0 SEM); DT2 and DT5 are
     higher by 1.3 and 1.4 SEM, and DT7, DT8 and DT9 are lower (-3.4, -4.6, -1.4 SEM). In variants,
     NREM events pass in DT2 (3.3) and DT9 (3.9), and ripple-coupled events in DT9 (4.2). On the LS
-    channel re-referenced within its shank no animal passes (largest 1.5 SEM, DT2). The detected
-    events include many that are not LS population bursts.
+    channel re-referenced within its shank no animal passes (largest 1.5 SEM, DT2). Random times
+    mix states; against each neuron's firing 50 to 100 ms before and after the same events, firing
+    at the events is higher in DT1, DT2, DT5 and DT9 and lower in DT7 and DT8, and exceeds 3 SEM
+    only in DT1 (5.2 SEM; DT2 1.6, DT5 1.7, DT9 0.5). In DT2 and DT5 the differences are large
+    (0.024 and 0.037 spikes) but vary widely across neurons. The test does not show raised LS
+    firing at the events outside DT1, and does not show that the events lack it.
   deviations:
   - Events are detected here on one LS channel per recording chosen by a fixed rule (highest
     120-200 Hz SD in a 300 s NREM sample); the paper does not say which channels it used.
@@ -79,7 +83,8 @@ outcomes:
   - 0.051
   notes: Pooled over 31,984 events, 2.7% of LS neurons fire in an HFO, with 0.051 spikes per neuron
     per event; the mean over 76 recordings gives 3.5% and 0.068. The paper reports 16% and 0.23.
-    The highest recording reaches 18.2%; the median recording 1.7%. On the re-referenced LS
+    The fraction is 0.17 (pooled) to 0.22 (recordings) of the paper's, the spike count 0.22 to
+    0.30. The highest recording reaches 18.2%; the median recording 1.7%. On the re-referenced LS
     channel the pooled values are 4.5% and 0.060.
   deviations:
   - Spikes are counted between event start and stop; the paper does not give its window.
@@ -107,8 +112,8 @@ outcomes:
   - 33.9
   - 38.3
   notes: LS HFOs last 33.9 +- 25.0 ms and CA1 ripples 38.3 +- 23.7 ms (medians 23.2 and 32.0), inside
-    the tolerances of the paper's SDs, and LS HFOs are shorter (rank-sum p underflows to 0). Both
-    means are 6 to 7 ms above the paper's. DT8 shows no difference (27.5 against 28.0 ms, p =
+    the tolerances of the paper's SDs, and LS HFOs are shorter (rank-sum p underflows to 0). The
+    means are 6.9 (LS) and 7.3 ms (CA1) above the paper's. DT8 shows no difference (27.5 against 28.0 ms, p =
     0.83). With NREM events only, the means are 38.0 and 38.4 ms, and on the re-referenced LS
     channel 38.2 and 38.3 ms. With 56,871 and 230,161 events the rank-sum p is small for any
     difference.
@@ -249,15 +254,25 @@ outcomes:
   measured: 0.0
   notes: The coupling holds; the pooled CA1-LS correlogram peaks at 0 ms, 166 SD above its flanks.
     The lag is 0.00 ms under both readings, outside 6.4 +- 4.2 ms, because 35% of LS HFOs within
-    50 ms of a ripple fall on the same sample (DT8 71%, DT2 62%, DT9 7%). Without them the pooled
-    median is 3.2 ms with LS after CA1 in 55%; DT9 alone gives 3.8 ms. On the LS channel
-    re-referenced within its shank, 4.1% of pairs fall on the same sample, the correlogram still
-    peaks at 0 ms (53.4 SD above the flanks), and the lag is 0.00 ms (a) and 0.80 ms (b), LS after
-    CA1 in 52%. The criterion defines no partial outcome; the coupling part holds and the lag part
-    does not, which is partial under the protocol's general definition. The verifier would give
-    not reproduced.
+    50 ms of a ripple fall on the same sample (DT8 71%, DT2 62%, DT9 7%). Without the pairs within
+    1 ms the pooled median is 3.2 ms with LS after CA1 in 55%, but by animal it is -3.2 (DT2), -5.6
+    (DT5), -6.4 (DT7), 1.6 (DT8) and 8.0 ms (DT9), so LS leads in three animals. Over all pairs,
+    DT9's median of recording medians is 3.8 ms, inside the tolerance (2.2 to 10.6 ms); the other
+    animals give 0.0 ms. On the LS channel re-referenced within its shank, 4.1% of pairs fall on
+    the same sample, the correlogram still peaks at 0 ms (53.4 SD above the flanks), and the lag
+    is 0.00 ms (a) and 0.80 ms (b), LS after CA1 in 52%. The criterion defines no partial outcome;
+    the coupling part holds and the lag part does not. The verifier would give not reproduced in
+    both rounds, and a change to not reproduced is proposed.
   deviations:
   - Detection as in fig1c-hfo-each-animal; event times are the troughs of the filtered signal.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion calls the claim reproduced only when the lag is within 6.4 +- 4.2 ms under
+      one reading and defines no partial outcome. The lag is 0.00 ms under both readings on the
+      detection channel and 0.00 or 0.80 ms on the re-referenced channel (notebook, fig5d-lag cell
+      and the re-referenced check), and a peak at 0 ms does not show CA1 leading. Calling the
+      coupling alone a partial result reads more into the criterion than it says, so the outcome
+      should be not reproduced, as the verifier gave in rounds 1 and 2.
 - claim: fig5e-state-coupling
   outcome: not_reproduced
   notebook: reproduce_tingley_2019.ipynb
@@ -302,8 +317,9 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: The two rats used for optogenetics are not in the dandiset, whose 6 subjects are the
-    recording rats, and no file holds optogenetic stimulation. No other dandiset of this paper was
-    found on the archive; a search for Tingley finds 000213 and 000233, of other papers.
+    recording rats, and no file holds an optogenetic series (notebook, fig6-optogenetic-hfos
+    cell). Archive searches for "Tingley" and "lateral septum" find only 000213, 000218 and
+    000233; 000213 and 000233 are named for other papers.
 - claim: fig7e-ca1-spikes
   outcome: partially_reproduced
   notebook: reproduce_tingley_2019.ipynb
@@ -344,10 +360,14 @@ outcomes:
   blocked_by: data_missing
   notes: The depth of a CA1 neuron is estimated from its waveform amplitude on the three channels
     where it is largest. The units carry no waveforms and no channel, only a shank; the units table
-    holds clu_id, group_id (the shank) and location, or only ids in nine files. Raw 20 kHz data
-    are in 27 of the 98 files (all DT1 and DT2 files and two DT9 files, about 1.1 TB), from which
-    waveforms could be re-extracted for the DT2 and DT9 recordings; that is not possible within the
-    run time limit, and the other recordings have no raw data.
+    holds clu_id, group_id (the shank) and location, or only ids in nine files. The notebook's
+    fig7e-ca1-depth cell lists the wide-band data. 20 kHz wide-band series are in 27 of the 98
+    files (all 12 DT1 files, all 13 DT2 files and two DT9 files, which take 1.15 TB). Twelve of
+    them (10 DT2, 2 DT9) hold hippocampal units, 1.00 TB of wide-band data, from which waveforms
+    could be re-extracted; streaming them within the 30 min run limit would need about 556 MB/s,
+    so for these recordings the block is the run time (not_runnable). The other 1579 of 2778
+    hippocampal units, including all of DT5 and DT7, have no wide-band data, so their waveforms
+    are missing, which is the main reason given.
 - claim: fig7e-replay
   outcome: blocked
   blocked_by: methods_underspecified
@@ -399,11 +419,13 @@ findings:
 - kind: data_missing
   statement: The units carry no waveforms, no channel and no quality metric (the Methods compute
     isolation distance), so the CA1 depth of each neuron (Figure 7) cannot be estimated and single
-    units cannot be told from multi-unit clusters; 11 units fire above 50 Hz on average.
+    units cannot be told from multi-unit clusters; 11 units fire above 50 Hz on average. Wide-band
+    data, from which waveforms could be re-extracted, are in 27 of the 98 files (DT1, DT2 and two
+    DT9 files); 1579 of 2778 hippocampal units have none.
 - kind: data_missing
   statement: The two rats of the optogenetic experiments (Figure 6) are not in the dandiset.
 - kind: format_error
-  statement: 25 units in 9 files have spike times out of order (1 to 2782 inversions each), against
+  statement: 25 units in 10 files have spike times out of order (1 to 2782 inversions each), against
     the NWB rule that spike times are sorted.
 - kind: methods_unavailable
   statement: The paper's Key Resources point to github.com/DavidTingley/papers for scripts that
@@ -674,4 +696,209 @@ verifications:
     agrees: true
     outcome: blocked
     reason: A simulation, with no recorded data involved.
+    response: No change.
+- date: 2026-10-17
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the second run, with its conclusions, figures and summary,
+    the helper module, the claims file and the attempt record.
+  results:
+  - claim: dataset-composition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
+    response: No change.
+  - claim: fig1c-hfo-each-animal
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees because the criterion requires it. Random times across the whole recording are a
+      baseline confounded by state; the cell 16 figure shows sharp firing peaks locked to the events
+      in DT1, DT2, DT5 and DT9 (in DT9 about 0.00135 against a baseline of about 0.00075 spikes per
+      bin), and in DT7, DT8 and DT9 the curve at HFOs lies below the curve at random times across
+      the whole window, a baseline offset. DT2 and DT5 fail the 3 SEM test because neurons vary
+      widely (differences 0.031 and 0.034, SEMs 0.025). Measured against each animal's own flanking
+      baseline, 4 of 6 animals appear to show firing locked to the events. The wording in cell 19,
+      the README and the Summary that the events are not followed by LS firing, or are not LS
+      bursts, overstates the evidence; the record should say this.
+    response: Added the test against the flanks it describes, each neuron's firing 50 to 100 ms
+      before and after the same events. Firing at the events is higher than the flanks in DT1, DT2,
+      DT5 and DT9 and lower in DT7 and DT8, but above 3 SEM only in DT1 (5.2 SEM; DT2 1.6, DT5 1.7,
+      DT9 0.5), so over +-10 ms the flanking baseline does not show locked firing in 4 animals.
+      The sentences in cell 19, the README, the Summary and the notes that called the events
+      non-bursts are replaced by what the tests show, raised firing above 3 SEM in DT1 only, and
+      say that this does not show the events lack it. The outcome stays.
+  - claim: fig1c-event-count
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Remaining problem 1, that neither the detection channel nor the re-referenced
+      one is shown to capture the paper's HFOs (jittered PLV still 0.074 against about 0.021 for
+      random phases; the re-referenced event sets are very different, DT5 4,032 against 34,492).
+    response: The Summary now says that neither channel is shown to capture the paper's HFOs. No
+      further channel choice is fixed by the paper or its code, so this is not resolved here.
+  - claim: figs1-participation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Cell 25 says "a fifth to a third of the paper's values", but the pooled fraction
+      is 0.027 against 0.16, about a sixth. Participation is low (2.7% of LS neurons per event).
+    response: The notebook prints the ratios to the paper's values (fraction 0.17 pooled and 0.22
+      over recordings, spikes 0.22 and 0.30), and cell 25 and the notes now give them.
+  - claim: fig1d-phase-locking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Problem 5 is resolved, as the phase taken on another shank still gives 189.7
+      degrees and 52.3% locked.
+    response: No change.
+  - claim: fig1f-shorter-than-ripples
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The notes say both means are 6 to 7 ms above the paper's, but the CA1 mean is
+      7.3 ms above (38.3 against 31). Minor.
+    response: The notes now give 6.9 ms (LS) and 7.3 ms (CA1).
+  - claim: fig1g-slower-than-ripples
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Affected by remaining problem 1, the detection channel.
+    response: As for fig1c-event-count.
+  - claim: fig1h-no-amplitude-frequency-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
+    response: No change.
+  - claim: fig2-confined-to-ls
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Affected by remaining problem 1, the detection channel. Problem 4 is acknowledged
+      and the data cannot fix it.
+    response: As for fig1c-event-count.
+  - claim: fig2ef-intermediate-ls
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig3-travelling-waves
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The electrode groups and devices are now printed.
+    response: No change.
+  - claim: fig4b-pre-post-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
+    response: No change.
+  - claim: fig4b-hfo-above-behav
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; "as in the paper" (cell 48) agrees with the paper's text.
+    response: No change.
+  - claim: fig4-sessions-few-change
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Problem 2 in revised form remains, the low participation (2.7% of LS neurons per
+      event) that leaves only 106 pairs and blocks this claim.
+    response: Acknowledged; the notes already say the shortfall comes from this attempt's detection.
+      No change.
+  - claim: fig4c-temporal-bias
+    agrees: true
+    outcome: blocked
+    reason: Agrees; same remaining problem as fig4-sessions-few-change.
+    response: As for fig4-sessions-few-change.
+  - claim: fig4d-compression
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
+    response: No change.
+  - claim: figs2-post-rate-increase
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
+    response: No change.
+  - claim: fig5b-nrem-and-rates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
+    response: No change.
+  - claim: fig5d-lag
+    agrees: false
+    outcome: not_reproduced
+    reason: Not reproduced, as in round 1. The criterion defines no partial outcome. The part of the
+      claim that can be measured, a lag of 6.4 ms with CA1 leading, fails on both channels, 0.00 ms
+      on the detection channel and 0.00 or 0.80 ms re-referenced. A correlogram peak at 0 ms does
+      not show CA1 leading. Also, cell 61 and the notes say "DT9 gives 3.8 ms" without those pairs,
+      but the 3.8 ms comes from all pairs, as the median of DT9's per-recording medians, and it is
+      inside the tolerance (2.2 to 10.6 ms), which neither text says.
+    response: The verified outcome is kept, and a change to not reproduced is proposed under
+      proposed, for the reason the verifier gives. The 3.8 ms sentence is corrected in cell 61 and
+      the notes, which say it is the median of DT9's recording medians over all pairs and inside
+      the tolerance; the notebook now also prints the median without same-sample pairs by animal
+      (-3.2 to 8.0 ms, LS leading in three animals).
+  - claim: fig5e-state-coupling
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Affected by remaining problem 1, the detection channel.
+    response: As for fig1c-event-count.
+  - claim: fig5f-ripple-triggered-firing
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed numbers.
+    response: No change.
+  - claim: fig5f-no-phase-coherence
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Affected by remaining problem 1; the jittered PLV on the re-referenced channel is
+      still 0.074, against about 0.021 for random phases.
+    response: As for fig1c-event-count.
+  - claim: fig6-optogenetic-hfos
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The archive search that found 000213 and 000233 has no printed output behind it.
+    response: Added a notebook cell that searches the archive for "Tingley" and "lateral septum"
+      (both find 000213, 000218 and 000233) and counts optogenetic series in the files (none).
+  - claim: fig7e-ca1-spikes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Problem 3 is resolved; the fixed-window variant is shown and the criterion's
+      window decides the outcome.
+    response: No change.
+  - claim: fig7e-state
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as for fig7e-ca1-spikes.
+    response: No change.
+  - claim: fig7e-duration
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as for fig7e-ca1-spikes.
+    response: No change.
+  - claim: fig7e-ca1-depth
+    agrees: true
+    outcome: blocked
+    reason: Agrees it is blocked, but not with the reason. The notes say raw 20 kHz data exist for
+      all DT2 files and two DT9 files, so waveforms could be re-extracted there; for those
+      recordings the limit is run time, not missing data, so data_missing holds only for the rest.
+      The claim of raw data in 27 files, about 1.1 TB, is not shown in the notebook.
+    response: Added a notebook cell listing the wide-band series. 27 of 98 files hold them (all DT1
+      and DT2 files, two DT9 files, 1.15 TB); 12 hold hippocampal units (1.00 TB of wide-band data,
+      about 556 MB/s to stream within the run limit), and 1579 of 2778 hippocampal units, all of
+      DT5 and DT7 among them, have none. The notes now name run time (not_runnable) as the reason
+      for the 12 recordings and keep data_missing as the main reason, since it holds for most units
+      and for two of the four animals with hippocampal units.
+  - claim: fig7e-replay
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The position coverage is now printed.
+    response: No change.
+  - claim: fig7e-seqnmf
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: fig7e-content-independent
+    agrees: true
+    outcome: blocked
+    reason: Agrees; the record states the round-1 reason faithfully.
+    response: No change.
+  - claim: fig8-model
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
     response: No change.

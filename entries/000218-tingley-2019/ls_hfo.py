@@ -198,6 +198,14 @@ def metadata(f):
                 m["behavior"][name[:-5]] = {"shape": obj.shape, "t0": t0, "t1": t1,
                                             "type": _s(base.attrs.get("neurodata_type", ""))}
         f["processing/behavior"].visititems(visit)
+    m["acquisition"] = {}
+    if "acquisition" in f:
+        for k, obj in f["acquisition"].items():
+            if isinstance(obj, h5py.Group) and "data" in obj:
+                st = obj["starting_time"].attrs.get("rate") if "starting_time" in obj else None
+                m["acquisition"][k] = {"type": _s(obj.attrs.get("neurodata_type", "")), "shape": obj["data"].shape,
+                                       "bytes": int(np.prod(obj["data"].shape)) * obj["data"].dtype.itemsize,
+                                       "rate": None if st is None else float(st)}
     m["lfp_conversion"] = float(d.attrs["conversion"])
     m["lfp_unit"] = _s(d.attrs["unit"])
     m["lfp_electrodes"] = f[LFP.replace("/data", "/electrodes")][:]
