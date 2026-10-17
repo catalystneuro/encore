@@ -35,6 +35,10 @@ Where the parameters come from:
   the dandiset does not hold); the "theta-related" firing rate is approximated by the firing rate
   while running at `RUN_SPEED_CM_S` or faster inside maze trials (the paper counts spikes in
   detected theta cycles of the LFP).
+- Monosynaptic connections (used only to show what a test of Figure 7f would take): CCGs in
+  0.8 ms bins, a baseline from a hollowed Gaussian of 15 ms s.d., alpha 0.001 Bonferroni-corrected,
+  and a comparison of the peak with the anticausal bins, from the Methods (after English et al.
+  2017); the hollow fraction of 0.6 and the three lag bins of 0.8 to 3.2 ms are common choices.
 """
 
 from __future__ import annotations
@@ -61,6 +65,12 @@ FIG8_POST_STEM = (75, 205)      # code, 1-based inclusive
 TMAZE_POST_STEM = (51, 164)     # code, novel T-maze
 PYR_MAX_RATE_HZ = 5.0           # common choice; no cell type in the dandiset
 RUN_SPEED_CM_S = 5.0            # common choice for the theta-rate proxy
+CCG_BIN_S = 0.0008              # Methods: 0.8 ms bins
+CCG_HALF_WINDOW_S = 0.1         # common choice (the code's CCG duration of 0.2 s)
+CCG_BASELINE_SD_S = 0.015       # Methods: hollowed Gaussian of 15 ms s.d. (the reliability test)
+CCG_HOLLOW = 0.6                # common choice (Stark & Abeles 2009)
+MONO_BINS = 3                   # Methods: three bins; their lags (0.8 to 3.2 ms) a common choice
+MONO_ALPHA = 0.001              # Methods
 SHIFT_MARGIN_S = 5.0            # spikes kept this far around the maze recordings
 RIPPLE_PSTH_EDGES = np.arange(-0.5, 0.5001, 0.01)
 RIPPLE_SHUFFLE_SEED = 0
@@ -184,6 +194,7 @@ def load_session(asset, with_units: bool = True) -> dict:
         bounds = np.r_[0, idx]
         s["unit_names"] = [_dec(x) for x in u["unit_name"][:]]
         s["unit_groups"] = [_dec(x) for x in u["group_id"][:]]
+        s["clu_ids"] = u["clu_id"][:]
         n = len(idx)
         s["n_spikes"] = np.diff(bounds)
         s["spikes_sorted"] = bool(all(np.all(np.diff(all_t[bounds[i]:bounds[i + 1]]) >= 0) for i in range(n)))
@@ -360,17 +371,82 @@ def uniform_information(maps: np.ndarray) -> np.ndarray:
 
 
 def running_rate(spikes: list[np.ndarray], rec: dict, min_speed: float = RUN_SPEED_CM_S) -> np.ndarray:
-    """Firing rate (Hz) of each unit while running at min_speed or faster inside the recording's trials."""
+    """Firing rate (Hz) of each unit while running at min_speed or faster inside the recording's trials.
+
+    Consecutive running samples form a stretch, which ends where running stops, the trial changes or
+    a sample is missing, so the time between trials is never counted. Each stretch spans half a
+    sample interval beyond its first and last samples; the rate is the spike count inside the
+    stretches over their summed length.
+    """
     pos = rec["pos"]
-    dt = np.median(np.diff(pos.t.values))
-    run = (pos.speed.values >= min_speed)
     t = pos.t.values
-    # runs of consecutive running samples become intervals
-    edges = np.diff(np.r_[0, run.astype(int), 0])
-    a, b = np.where(edges == 1)[0], np.where(edges == -1)[0]
-    starts, stops = t[a] - dt / 2, t[np.minimum(b, len(t)) - 1] + dt / 2
-    total = run.sum() * dt
-    return np.array([_in_intervals(x, starts, stops).sum() / total for x in spikes]) if total > 0 else np.full(len(spikes), np.nan)
+    dt = np.median(np.diff(t))
+    run = pos.speed.values >= min_speed
+    cut = np.r_[True, (np.diff(pos.trial.values) != 0) | (np.diff(t) > 1.5 * dt)]
+    first = run & (cut | ~np.r_[False, run[:-1]])
+    last = run & (np.r_[cut[1:], True] | ~np.r_[run[1:], False])
+    starts, stops = t[first] - dt / 2, t[last] + dt / 2
+    total = float(np.sum(stops - starts))
+    if total <= 0:
+        return np.full(len(spikes), np.nan)
+    return np.array([_in_intervals(x, starts, stops).sum() / total for x in spikes])
+
+
+def spike_trains(asset) -> list[np.ndarray]:
+    """All spike times of every unit of one processed file (s)."""
+    f = open_asset(asset)
+    idx = f["units/spike_times_index"][:]
+    all_t = f["units/spike_times"][:]
+    f.close()
+    bounds = np.r_[0, idx]
+    return [all_t[bounds[i]:bounds[i + 1]] for i in range(len(idx))]
+
+
+def ccg_counts(pre: np.ndarray, post: np.ndarray, bin_s: float = CCG_BIN_S,
+               half_window_s: float = CCG_HALF_WINDOW_S) -> np.ndarray:
+    """Cross-correlogram: counts of post spikes at each lag from pre spikes, bins centred on 0."""
+    n = int(round(half_window_s / bin_s))
+    edges = (np.arange(-n, n + 2) - 0.5) * bin_s
+    lo = np.searchsorted(post, pre + edges[0])
+    hi = np.searchsorted(post, pre + edges[-1])
+    k = hi - lo
+    if k.sum() == 0:
+        return np.zeros(2 * n + 1)
+    rep = np.repeat(np.arange(len(pre)), k)
+    j = np.arange(k.sum()) - np.repeat(np.cumsum(k) - k, k) + lo[rep]
+    return np.histogram(post[j] - pre[rep], edges)[0].astype(float)
+
+
+def hollowed_baseline(ccg: np.ndarray, bin_s: float = CCG_BIN_S, sd_s: float = CCG_BASELINE_SD_S,
+                      hollow: float = CCG_HOLLOW) -> np.ndarray:
+    """The CCG smoothed with a partially hollowed Gaussian (Stark & Abeles 2009), edges reflected."""
+    sd = sd_s / bin_s
+    x = np.arange(-int(4 * sd), int(4 * sd) + 1)
+    w = np.exp(-x ** 2 / (2 * sd ** 2))
+    w[len(x) // 2] *= 1 - hollow
+    w /= w.sum()
+    pad = len(x) // 2
+    y = np.r_[ccg[pad:0:-1], ccg, ccg[-2:-pad - 2:-1]]
+    return np.convolve(y, w, mode="valid")
+
+
+def is_monosynaptic(ccg: np.ndarray, bin_s: float = CCG_BIN_S, alpha: float = MONO_ALPHA) -> bool:
+    """Excitatory pre-to-post connection by the test of English et al. (2017), as the Methods describe.
+
+    The bins at lags 0.8 to 3.2 ms (three bins of 0.8 ms) are tested against the hollowed-Gaussian
+    baseline, and their peak against the largest of the bins at the same negative lags, each with a
+    Poisson test at alpha Bonferroni-corrected over the three bins.
+    """
+    from scipy.stats import poisson
+    c = len(ccg) // 2
+    win = np.arange(c + 1, c + 1 + MONO_BINS)
+    anti = np.arange(c - MONO_BINS, c)
+    base = hollowed_baseline(ccg, bin_s)
+    a = alpha / MONO_BINS
+    p_base = poisson.sf(ccg[win] - 1, np.maximum(base[win], 1e-12))
+    peak = ccg[win].max()
+    p_anti = poisson.sf(peak - 1, max(ccg[anti].max(), 1e-12))
+    return bool(np.any(p_base < a) and p_anti < a)
 
 
 def raw_file_info(asset) -> dict:
