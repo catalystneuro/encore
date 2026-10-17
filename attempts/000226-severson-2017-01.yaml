@@ -1,0 +1,345 @@
+schema_version: 1
+id: 000226-severson-2017-01
+dandiset: "000226"
+dandiset_version: 0.230607.1747
+paper: doi:10.1016/j.neuron.2017.03.045
+date: 2026-10-17
+entry: 000226-severson-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: Table S1 of the paper's Supplemental Information (mmc1.pdf), which lists every recording
+    with its mouse, sex, line, date, afferent type (RA or SA), Merkel identification, whisking
+    and touch class, viscoelastic fit and the experiment it belongs to. Transcribed in merkel.py
+    as TABLE_S1. The group membership is used as labels for the dandiset's recordings; the type
+    and Merkel identification as outside data (merkel-minutes, fig3a-direction-selective,
+    fig4c-viscoelastic).
+  source: doi:10.1016/j.neuron.2017.03.045 (Supplemental Information, Table S1)
+outcomes:
+- claim: table-s1-link
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:table-s1-link
+  notes: All 60 files match a distinct Table S1 recording, 58 by recording id (the NWB identifier
+    without "KS" and leading zeros) and 2 (KS0125_ and KS0128_, matched to 125B and 128D) by
+    number and mouse. All 60 agree on mouse, sex, mouse line and date. Groups - 33 touch, 13
+    progressive cutting, 5 cut-whisker, 4 EMG, 3 excluded touch, 2 whisking-only. No Table S1
+    recording lacks a file.
+  deviations:
+  - The criterion's rule of removing "KS0" was applied as removing "KS" and leading zeros, so that
+    the EMG files KS0007A to KS0011A match 7A to 11A.
+- claim: video-frames
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:video-frames
+  measured:
+  - 54660000
+  - 65710000
+  notes: The 33 touch recordings hold 54,660,000 frames (paper 54,647,500, 5 trials more). The 53
+    analysed afferents hold 65,710,000 frames, 2,190 min (paper 65,257,500 and 2,175 min, 181
+    trials more). The other readings are also within 10% - 68,455,000 (53 afferents and EMG),
+    68,005,000 (56 afferents), 70,750,000 (all files).
+- claim: merkel-minutes
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:merkel-minutes
+  measured:
+  - 823.8
+  - 998.2
+  - 846.4
+  notes: Merkel touch recordings 823.8 min (paper 823), unidentified touch recordings 998.2 min
+    (paper 999), the 17 analysed Merkel afferents 846.4 min (paper 846). All 20 identified Merkel
+    afferents hold 922.9 min, also within tolerance. Merkel identity is from Table S1; the minutes
+    are from the dandiset's trials, and they agree with the paper's.
+- claim: fig2c-baseline-rate
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:fig2c-baseline-rate
+  measured: 0.03
+  notes: Median non-whisking rate 0.03 Hz, IQR 0.20 Hz, over the 33 touch afferents (paper 0.0 and
+    0.2). Range 0.00 to 34.39 Hz; 221B fires at 34.4 Hz without whisking.
+- claim: fig2c-touch-rate
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:fig2c-touch-rate
+  measured: 47.9
+  notes: Median contact rate 47.9 Hz, IQR 94.8 Hz (paper 48.0 and 96.3), range 3.6 to 239.2 Hz.
+    All 33 afferents are touch-sensitive by the Glossary rule, with bootstrap CIs over trials and
+    with Poisson CIs. The median is also within 10% of the paper's value, so the outcome does not
+    rest on the wide tolerance.
+  deviations:
+  - The Methods do not say what the bootstrap resamples; trials were resampled (1,000 times).
+- claim: fig2c-wt-star
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:fig2c-wt-star
+  measured:
+  - 13
+  - 19.0
+  notes: Under reading (b), spikes during whisking in air, 13 afferents are WT*, the same set as
+    Table S1's (5 Merkel, 7 other SA, 1 RA), with a median whisking-in-air rate of 19.0 Hz and IQR
+    57.4 Hz (paper 19.1 and 58.2). Classes agree with Table S1 for 31 of 33; 223B and 243B are WT
+    in Table S1 and T here (whisking-in-air rates 0.23 and 0.38 Hz, CIs overlapping the
+    non-whisking rate). Under reading (a), all spikes, 15 are WT* (median 7.1 Hz) and 29 of 33
+    agree; 227A and 145B (1.05 and 1.26 Hz) have more than 1,000 spikes in all but 393 and 233
+    during whisking in air. With Poisson CIs, 15 are WT* and 29 of 33 agree.
+  deviations:
+  - The Glossary's "at least 1,000 spikes" can be read as spikes in the recording (a) or during
+    whisking in air (b); only (b) matches the paper's count and Table S1's classes.
+- claim: fig3a-direction-selective
+  outcome: partially_reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:fig3a-direction-selective
+  notes: 17 of 26 Merkel and SA afferents (65%) have a direction index of 0.5 or more (criterion
+    80%); 21 of 26 have 0.33 or more and 11 of 26 have 0.67 or more. Median index 0.65 over Merkel
+    and SA, 0.59 over the 14 Merkel afferents, 0.23 over the 7 RA afferents, none of which reaches
+    0.5. 18 of 26 prefer protraction contacts. Contacts are classified by the sign of their mean
+    M0; in 77% to 93% of contacts per recording that sign matches the whisker velocity at onset.
+  deviations:
+  - The paper shows direction selectivity in examples and tuning surfaces without a measure or
+    threshold; the index and the 0.5 threshold were chosen before the analysis.
+- claim: fig3d-gam-full
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:fig3d-gam-full
+  measured: 0.708
+  notes: Mean r 0.708, SD 0.141 (paper 0.71 and 0.16), median 0.726, range 0.363 to 0.919, 33
+    afferents. With lambda 100 the mean is 0.687. All 1,617 spline fits converged. Fits used a
+    median of 60,000 frames per recording (at least 47,342) of a median 288,418 clean contact
+    frames.
+  deviations:
+  - Penalized cubic B-splines (10 per variable, lambda 1) fitted as a binomial model with two
+    trials per 2 ms frame replace mgcv GAMs on 1 ms bins with UBRE smoothing.
+  - At most 60,000 randomly chosen contact frames per recording.
+- claim: fig3d-gam-single
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:fig3d-gam-single
+  measured:
+  - 0.441
+  - 0.415
+  notes: M0 alone mean r 0.441 (SD 0.178; paper 0.45), M0' alone 0.415 (SD 0.217; paper 0.42).
+    With lambda 100, 0.415 and 0.398.
+  deviations:
+  - Spline models in place of mgcv GAMs, as for fig3d-gam-full.
+- claim: fig3d-gam-best-pair
+  outcome: partially_reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:fig3d-gam-best-pair
+  measured:
+  - 0.622
+  - 0.475
+  notes: M0 and M0' mean r 0.622 (paper 0.63); M0, Fax and Flat 0.475 (paper 0.48), lower than M0
+    and M0' in 31 of 33 (Wilcoxon p = 4.8e-08). Of the 45 pairs, M0 and omega (velocity) has the
+    highest mean r, 0.633, and M0 and M0' is second; per afferent M0 and M0' is higher than M0 and
+    omega in 19 of 33 (median difference 0.003). Flat and omega (0.620), Flat and M0' (0.606) and
+    M0 and Flat' (0.605) follow. The values are within tolerance, but M0 and M0' is not the single
+    best pair.
+  deviations:
+  - Spline models in place of mgcv GAMs; the ranking of close pairs may depend on the smoothing
+    method.
+- claim: fig4c-viscoelastic
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:fig4c-viscoelastic
+  notes: Over 25 Merkel and SA afferents (Table S1's fitted set), mean r 0.657 for the viscoelastic
+    model against 0.686 for the spline model of M0 and M0' on the same frames, difference -0.029
+    (95% bootstrap CI -0.051 to -0.008); viscoelastic higher in 9 of 25; Merkel afferents alone
+    -0.029. The optimizer reported success for all 25, but eps_lim is at a bound in 6 fits and one
+    (221C) ends at k = -97.9, C = 19.8, so some fits may be local optima, which would only lower
+    the viscoelastic r.
+  deviations:
+  - Fitted with L-BFGS-B from 8 starts, with the rate of change of moment scaled by its 80th
+    percentile inside the fit; the Methods used fmincon. During development an unscaled version
+    found worse optima for the same model, so the result depends on the optimizer.
+  - Fitted and evaluated on the same at most 60,000 contact frames as the spline models, which
+    also exclude frames that are outliers on the other nine variables.
+- claim: fig5-phase-modulation
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:fig5-phase-modulation
+  measured:
+  - 2.43
+  - 51.1
+  notes: Over the 15 WT* afferents, non-preferred phase median 2.43 Hz, IQR 3.16 (paper 2.1 and
+    3.4); preferred phase median 51.1 Hz, IQR 96.6 (paper 51.2 and 105.7). All 15 fire at least
+    9.5 times more at the preferred than the non-preferred phase. The non-preferred median is 16%
+    above the paper's, outside a 10% band; the preferred median is within it.
+- claim: fig5e-phase-span
+  outcome: partially_reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:fig5e-phase-span
+  notes: Preferred phases occupy all four quarter cycles (7, 4, 1 and 3 of 15), but the Rayleigh
+    test finds a preferred direction (R = 0.448, p = 0.047, just below 0.05). At the preferred
+    phase the whisker is retracting for 11 of 15, which fits the paper's remark of a slight
+    abundance in retraction (Figure 7G, on 28 afferents).
+  deviations:
+  - The paper gives no test for spanning the whisk cycle; the quarter-cycle and Rayleigh criterion
+    was chosen before the analysis.
+- claim: figs3-phase-invariance
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:figs3-phase-invariance
+  notes: Median absolute circular difference between the preferred phases of the two halves 0.37
+    rad (amplitude), 0.59 (frequency), 0.48 (setpoint), against pi/4 = 0.785. 4, 6 and 5 of 15
+    afferents differ by more than pi/4.
+  deviations:
+  - The paper shows invariance with tuning surfaces only; the median split and the pi/4 threshold
+    were chosen before the analysis.
+- claim: figs6-kinematic-gam
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:figs6-kinematic-gam
+  measured: 0.975
+  notes: On the 15 WT* afferents, the full model's mean r between predicted and observed phase
+    tuning curves is 0.975, SD 0.013 (paper 0.97 and 0.04, on 28). Single-variable models give
+    0.524 (jerk) to 0.724 (acceleration); velocity and acceleration together give 0.960. No fit
+    failed to converge.
+  deviations:
+  - Tested on 15 of the paper's 28 afferents; the intact condition of the 13 progressive cutting
+    recordings cannot be separated.
+  - Spline models in place of mgcv GAMs, fitted on 60,000 frames and evaluated on up to 400,000
+    whisking-in-air frames per afferent.
+- claim: fig7g-phase-span-28
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the intact condition of the 13 progressive cutting recordings, whose trials are all
+    labelled intact (see fig6-cut-eliminated). The 15 other WT* afferents are tested in
+    fig5e-phase-span.
+- claim: fig6-cut-eliminated
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Every trial of the 13 progressive cutting recordings has cuttingGroup "intact" and each
+    file has one MOI value, so the intact, sham and cut conditions cannot be told apart. The
+    whisking-in-air rate falls over most sessions (last fifth below half the first in 10 of 13,
+    below 10% in 5 of 13), so the files appear to hold the cut conditions under the intact label.
+    Splitting by trial order would be a guess.
+- claim: fig6-cut-remained
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig6-cut-eliminated.
+- claim: fig6a-final-length
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The remaining whisker length after each cut is not in the dandiset; the trial table's MOI
+    has one value per file, the same for all trials.
+- claim: fig7d-cut-emg
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the intrinsic protractor EMG, which is not in the EMG files 7A, 8A and 9A (they hold
+    whisker video series only, with no spike times and nothing in acquisition), and the cut
+    condition of each trial (metadata insufficient, see fig6-cut-eliminated).
+- claim: fig7e-lost-rate-kinematics
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Needs the intact and fully cut conditions of the 13 progressive cutting recordings, which
+    the trial tables do not distinguish (see fig6-cut-eliminated).
+- claim: fig7f-precut-emg
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The 5 cut-whisker recordings and the nasolabialis motor units (11A) are in the dandiset,
+    but the best match is chosen between the intrinsic protractor and the nasolabialis curves, and
+    the intrinsic protractor EMG is not in the dandiset.
+- claim: figs4-nasolabialis
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:figs4-nasolabialis
+  measured:
+  - 0.924
+  - -0.716
+  notes: The spike times of 11A, taken as motor unit spikes, give r = 0.924 with negative velocity
+    (paper 0.93) and -0.716 with positive velocity (paper -0.75) across 30 phase bins of 23.3 min
+    of whisking; the rate ranges 0.7 to 37.6 Hz and peaks where velocity is negative. The raw EMG
+    is not in the file.
+  deviations:
+  - The file does not say that its spike times are motor units of m. nasolabialis; this is taken
+    from Table S1.
+- claim: figs4-intrinsic-protractor
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Files 7A, 8A and 9A hold the whisker video series of the EMG sessions but no EMG signal,
+    no spike times and nothing in acquisition.
+- claim: sigma-kappa
+  outcome: reproduced
+  notebook: reproduce_severson_2017.ipynb
+  output: claim:sigma-kappa
+  measured: 10.01
+  notes: Mean 10.01%, SD 6.97, range 4.23 to 39.89 over the 33 touch recordings (paper 7.8 and
+    5.0). The mean is within the paper's stated spread but 28% above its mean value, outside a 10%
+    band; 243B (39.89%) and 265A (28.49%) are high. Both readings of contact frames give the same
+    values.
+  deviations:
+  - The Methods give no rule for frames with a missing distance to the pole; these are treated as
+    far from the pole.
+- claim: figs1-optotag-latency
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The light pulse times and the optogenetic stimulation trials are not in the dandiset; the
+    files hold no stimulus, acquisition or optogenetics data.
+- claim: figs1-labelling-specificity
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The histology (confocal stacks and their scoring) is not in the dandiset, and was not found
+    in another public archive.
+- claim: contact-classifier
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The files hold the final contact classification only, not the manually curated frames
+    the classifier was tested against.
+findings:
+- kind: metadata_insufficient
+  statement: The files do not say which experiment each recording belongs to (touch, progressive
+    cutting, cut-whisker, whisking-only, EMG), the afferent type (RA or SA), which afferents were
+    identified as Merkel afferents by optogenetic tagging, or the whisking and touch class. All of
+    these are in the paper's Table S1, whose recording ids match the NWB identifiers.
+- kind: selection_undocumented
+  statement: The paper excludes three touch recordings (227C, 214A, 271A) from all analyses except
+    Figure S1. The dandiset holds them without saying so.
+- kind: metadata_error
+  statement: In the 13 progressive cutting recordings every trial has cuttingGroup "intact" and the
+    trial table's MOI has one value per file, although the whisking-in-air rate falls over most
+    of these sessions (last fifth below half the first in 10 of 13). The cutting conditions
+    (intact, sham, cut 1 to 3) and the moment of inertia after each cut are missing, which blocks
+    Figure 6 and parts of Figure 7.
+- kind: data_missing
+  statement: The EMG files of the intrinsic protractor recordings (7A, 8A, 9A) hold the whisker
+    video series but no EMG signal; the nasolabialis file (11A) holds spike times but not the
+    EMG. The optogenetic tagging data, the histology, the whisker geometry and the manually
+    curated contact frames are not in the dandiset.
+- kind: metadata_error
+  statement: Velocity, acceleration and jerk are stated in degree/s, degree/s^2 and degree/s^3, and
+    dM0, dFaxial and dFlateral in N*m/s and N/s, but the values are per millisecond; each is close
+    to half the change of its variable per 2 ms frame (median ratios 0.467 to 0.502 over files).
+- kind: metadata_insufficient
+  statement: The stored whisk phase runs backwards in time; its sine is anticorrelated (median
+    -0.9999 over files) with that of the Hilbert phase of the band-passed whisker position, so
+    phases from -pi to 0 are retraction, the reverse of the convention the paper cites. Neither
+    the files nor the paper describe the convention.
+- kind: metadata_insufficient
+  statement: Every series has the description "no description". distanceToPoleCenter has unit
+    "unknown"; its median in frames with contact = 1 is between -0.08 and 0.09 in every file but one (209A, a
+    cut-whisker recording with almost no contact), which fits the Methods'
+    distance from whisker to pole in mm, not a distance to the pole's centre. Series not used here
+    (Mi, dMi, Fnorm, thetaAtContact, follicleCoordsX and Y) are not explained.
+- kind: metadata_error
+  statement: Trial stop_time is 6.998 s after start_time in every trial of every file, while each
+    trial's series hold 2,500 frames at 500 Hz (5 s), as the Methods describe.
+- kind: format_error
+  statement: The spike times of file sub-KSm31 (KS0277A) are not sorted.
+- kind: metadata_error
+  statement: Two identifiers, KS0125_ and KS0128_, lack the unit letter of their Table S1
+    recordings (125B and 128D). All session start times are 12:00, so only the dates carry
+    information.
+- kind: other
+  statement: Some series hold extreme values, likely tracking errors, such as whisker position from
+    -985 to 596 degrees, whisk frequency from -250 to 250 Hz and M0 down to -0.52 N m. The
+    Glossary's percentile outlier removal excludes them, but they are not flagged in the files.
+- kind: methods_unavailable
+  statement: The paper's MATLAB and R analysis code is available only on request; no public
+    repository was found, so the GAM and viscoelastic fits had to be reimplemented.
