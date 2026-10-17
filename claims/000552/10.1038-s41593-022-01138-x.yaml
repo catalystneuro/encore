@@ -1,0 +1,347 @@
+# Claims for Huszar, Zhang, Blockus & Buzsaki (2022) on dandiset 000552.
+# Source: the author manuscript in PubMed Central (PMC10807234), full text, read from its
+# Results, Methods, figure legends and Extended Data legends. Supplementary Tables 1 to 5 are not
+# in the manuscript text and were not read. The version of record is not open access.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata of the archive, the contents of every kind of file, per file the number of units,
+# sleep states and ripples, the trials table and position segments, the session length (end of
+# the last sleep-state or ripple interval; shortest 113.7 min, longest 494.2 min), per-file
+# median ripple durations (29.6 to 42.4 ms, all durations from 20 to 199.2 ms), the number of
+# trials per visited arm in each file, the total number of units (8,201 in 65 files) and the
+# distribution of unit mean firing rates (87.8% at or below 5 Hz), and, on three files, that
+# spatial information of the units peaks at zero time shift between spikes and position. No
+# claim's analysis (population vectors, ratemap correlations, spatial information or firing
+# rates on familiar and novel mazes) had been run. The author had also read the paper's code at
+# https://github.com/rhuszar/optotagCA1_final (commit 51320d4) and the summary values in its
+# result files.
+#
+# The dandiset holds spike times, sleep states, ripples and position, but no label of which
+# units are light-responsive (birthdated), no optogenetic pulse times, no putative cell types and
+# no waveforms. Every claim that compares same-birthdate with different-birthdate neurons, or
+# light-responsive neurons across birthdates, is blocked. The claims tested here are the
+# descriptions of the dataset and the findings that use all pyramidal neurons.
+#
+# Method choices fixed here, from the Methods where they say, from the paper's code where they
+# do not (see huszar.py), and otherwise common choices: putative pyramidal cells are units whose
+# session mean rate is at most 5 Hz; speed is the derivative of linearized position smoothed with
+# a 0.2 s Gaussian; rate maps in 1 cm bins at speed above 1.5 cm/s, smoothed 9 cm FWHM, left and
+# right trials apart; the familiar figure-eight is the first maze recording of a session; the
+# "theta-related" firing rate is the rate while running at 5 cm/s or faster inside maze trials.
+schema_version: 1
+dandiset: "000552"
+paper: doi:10.1038/s41593-022-01138-x
+claims:
+- id: cohort-birthdates
+  statement: Chronic recordings were made from 17 adult mice (12 males, 5 females) electroporated
+    at E13.5 (n = 4), E14.5 (n = 3), E15.5 (n = 6) and E16.5 (n = 4).
+  source: Results, first section; Methods, Implantation and recording
+  expected:
+  - quantity: mice
+    value: 17
+    tolerance: 0
+  - quantity: males
+    value: 12
+    tolerance: 0
+  - quantity: females
+    value: 5
+    tolerance: 0
+  criterion: Mice are the distinct subject ids of the dandiset; sex from the files' subject
+    metadata; birthdate from the subject id prefix (e13 is E13.5), the only place the files hold
+    it. Reproduced when the counts of mice, of each sex and of each birthdate all match exactly
+    (counts of animals carry no measurement error, so the tolerance is zero). Not reproduced
+    otherwise.
+- id: sessions-durations
+  statement: The recordings comprise 92 sessions lasting 113.7 to 475.6 min (median 309.1 min),
+    each including a homecage period of sleep and wake.
+  source: Methods, Implantation and recording
+  expected:
+  - quantity: number of sessions
+    value: 92
+    tolerance: 9.2
+  - quantity: median session duration
+    value: 309.1
+    tolerance: 30.9
+    unit: min
+  criterion: A session is a processed (behavior+ecephys) file; its duration is the end of its
+    last sleep-state or ripple interval (the files' clocks start at 0). The paper gives two
+    session counts, 92 (Methods) and 96 (the per-birthdate session counts of Figure 1e, and the
+    Figure 7f legend); the count is judged under either reading, within 10%. The range holds when
+    every duration lies within 113.7 to 475.6 min widened by 10% of each bound (102.3 to 523.2
+    min). Reproduced when the count (either reading), the median and the range all hold. Partially
+    reproduced when the durations hold and the count does not. Not reproduced when the durations
+    do not hold. Each session must also hold sleep states including non-REM sleep.
+- id: spwr-duration
+  statement: SPW-Rs were detected with duration limits of 20 to 200 ms, and their median duration
+    across all recordings was 36.4 ms.
+  source: Figure 2b legend; Methods, SPW-R detection
+  expected:
+    quantity: median SPW-R duration
+    value: 36.4
+    tolerance: 3.64
+    unit: ms
+  criterion: Durations from the Ripples tables of all processed files. Readings for "median
+    across all recordings", listed before the analysis; (a) the median over all ripples pooled;
+    (b) the median of the per-session medians. Reproduced when the median is within tolerance
+    under one reading and every ripple lies within 20 to 200 ms. Partially reproduced when only
+    one of the two holds. Not reproduced when neither does.
+- id: unit-count
+  statement: The dataset includes 9,471 well-isolated units, 7,411 putative pyramidal cells and
+    2,060 putative interneurons.
+  source: Methods, Unit isolation and classification; Extended Data Figure 2a
+  expected:
+  - quantity: well-isolated units
+    value: 9471
+    tolerance: 947
+  - quantity: fraction putative pyramidal
+    value: 0.7825
+    tolerance: 0.078
+  criterion: Units are the rows of the units tables of all processed files. The fraction of
+    putative pyramidal cells uses this attempt's rule (session mean rate at most 5 Hz), as the
+    files hold no cell type; it is reported as a check of the rule, and the outcome rests on the
+    count. Reproduced when the count is within tolerance. Not reproduced otherwise.
+- id: maze-cohort
+  statement: Nine mice (E13.5 n = 2, E14.5 n = 2, E15.5 n = 2, E16.5 n = 3) ran a spatial
+    alternation task on a familiar figure-eight maze, and a cohort of three mice also explored
+    novel environments.
+  source: Results, SBD pyramidal neurons exhibit overlapping place tuning; Methods, Behavior
+  criterion: Mice with figure-eight trials and mice with a second maze recording are counted from
+    the trials tables. The paper calls the novel-environment cohort separate; its code
+    (ratemap_remap.m) leaves out two mice, e15_13f1 and e16_3m2, from the familiar-maze analysis,
+    so the third novel mouse is also in the nine. Readings; (a) disjoint cohorts, 12 mice with
+    maze data, 9 of them at the stated birthdates and 3 with novel recordings; (b) the code's
+    reading, the maze mice without e15_13f1 and e16_3m2 are the nine at the stated birthdates, and
+    3 mice have novel recordings. Reproduced when one reading matches exactly. Not reproduced
+    otherwise.
+- id: maze-task
+  statement: On the figure-eight maze each trial was 205 cm long, position was tracked at 30 Hz,
+    and animals ran at least ten trials along each arm in every session.
+  source: Methods, Behavior
+  expected:
+  - quantity: trial length (linearized)
+    value: 205
+    tolerance: 20.5
+    unit: cm
+  - quantity: tracking rate
+    value: 30
+    tolerance: 3
+    unit: Hz
+  criterion: Trial length is the median over familiar figure-eight trials of the largest
+    linearized position inside the trial; tracking rate is 1 over the median interval of the
+    position timestamps. Trials per arm are counted in every familiar figure-eight recording under
+    two readings of "along each arm"; (a) the visited arm; (b) the expected arm. Reproduced when
+    both values are within tolerance and every session has at least ten trials per arm under one
+    reading. Partially reproduced when the values hold and every session has at least 20 trials
+    but some session has fewer than ten on one arm. Not reproduced otherwise.
+- id: novel-explorations
+  statement: The novel-environment cohort of three mice made 16 novel environment explorations in
+    six distinct environments (two linear tracks, three open fields and one figure-eight maze).
+  source: Results, SBD pyramidal neurons exhibit overlapping place tuning; Methods, Behavior
+  expected:
+    quantity: novel environment explorations
+    value: 16
+    tolerance: 1.6
+  criterion: A novel exploration is a maze recording other than the first of its session, with
+    trials and position. Reproduced when 3 mice and 16 (within tolerance) explorations are found.
+    Partially reproduced when 3 mice are found with fewer explorations. Not reproduced otherwise.
+    The kinds of environment are read from the track length and the x-y extent, and reported.
+- id: fig5e-pv-decorrelation
+  statement: Population firing-rate vectors at the same linearized position decorrelate between
+    left and right trials once the animal leaves the common stem of the figure-eight maze
+    (median correlations stem 0.93, turn 1 0.412, arm 0.372, turn 2 0.394).
+  source: Figure 5e
+  expected:
+  - quantity: median PV correlation, stem
+    value: 0.93
+    tolerance: 0.093
+  - quantity: median PV correlation, turn 1
+    value: 0.412
+    tolerance: 0.0412
+  - quantity: median PV correlation, arm
+    value: 0.372
+    tolerance: 0.0372
+  - quantity: median PV correlation, turn 2
+    value: 0.3944
+    tolerance: 0.0394
+  criterion: Sessions are the familiar figure-eight recordings of the nine maze mice (all maze
+    mice except e15_13f1 and e16_3m2, as in ratemap_remap.m). In each session and each 1 cm bin of
+    the 205, the Pearson correlation across putative pyramidal cells of their left-trial and
+    right-trial rates; bins pooled over sessions by segment (stem bins 1-74, turn 1 75-111, arm
+    112-185, turn 2 186-205). Kruskal-Wallis test across the four segments. Reproduced when all
+    four medians are within tolerance and the test gives p < 0.05 with the stem highest.
+    Partially reproduced when the stem median exceeds each of the other three and the test gives
+    p < 0.05, but a median is outside tolerance. Not reproduced otherwise.
+- id: fig6c-theta-rate-preserved
+  statement: Individual pyramidal neurons preserve their theta-related firing rates between the
+    familiar and novel environments (Spearman rho = 0.7378, n = 2,544 neurons).
+  source: Figure 6c, top
+  expected:
+    quantity: Spearman correlation of theta-related rates, familiar and novel
+    value: 0.7378
+    tolerance: 0.0738
+  criterion: Putative pyramidal cells of the sessions with a novel exploration; for each, the
+    firing rate while running at 5 cm/s or faster in the familiar figure-eight trials and in the
+    novel maze trials. Spearman correlation over cells with both rates. Reproduced when rho is at
+    least 0.664 (the lower end of the tolerance; a stronger correlation supports preservation
+    more) with p < 0.05. Partially reproduced when rho is positive with p < 0.05 but below 0.664.
+    Not reproduced otherwise.
+- id: fig6c-novel-ratemap-corr-higher
+  statement: Pairwise spatial ratemap correlations between pyramidal neurons are higher in novel
+    environments (median 0.048) than in the familiar environment (median -0.045).
+  source: Figure 6c, bottom
+  expected:
+  - quantity: median ratemap correlation, familiar
+    value: -0.045
+    tolerance: 0.03
+  - quantity: median ratemap correlation, novel
+    value: 0.048
+    tolerance: 0.03
+  criterion: All pairs of putative pyramidal cells in the sessions of the three novel-environment
+    mice (the paper's pairs each include one light-responsive neuron, which cannot be identified
+    here). Familiar pairs from the familiar figure-eight without its stem (bins 75-205), novel
+    pairs from the novel mazes (T-maze bins 51-164, linear tracks all bins). Two-sided Wilcoxon
+    rank-sum test. The tolerance is 0.03 in place of 10%, because 10% of a median near zero
+    (0.005) is far below the spread such a median has between sessions; 0.03 is a third of the
+    reported difference. Reproduced when the novel median exceeds the familiar median with p <
+    0.05 and both medians are within tolerance. Partially reproduced when the direction and the
+    test hold but a median is outside tolerance. Not reproduced otherwise.
+- id: fig6d-info-lower-novel
+  statement: Spatial information is lower in novel environments than in the familiar one (median
+    0.39 against 0.88 bits/s).
+  source: Figure 6d, right
+  expected:
+  - quantity: median spatial information, familiar
+    value: 0.88
+    tolerance: 0.088
+    unit: bits/s
+  - quantity: median spatial information, novel
+    value: 0.39
+    tolerance: 0.039
+    unit: bits/s
+  criterion: Putative pyramidal cells of the sessions of the three novel-environment mice;
+    Skaggs information in bits/s (Methods) over the left and right maps together, whole track,
+    per cell and maze; familiar from the familiar figure-eight of every such session, novel from
+    each novel maze. Two-sided Wilcoxon rank-sum test. The code's unweighted information is shown
+    as a variant. Reproduced when novel is lower with p < 0.05 and both medians are within
+    tolerance. Partially reproduced when novel is lower with p < 0.05 but a median is outside
+    tolerance. Not reproduced otherwise.
+- id: fig6d-rate-lower-novel
+  statement: Theta-related firing rates are slightly lower in novel environments than in the
+    familiar one (median 0.69 against 0.77 Hz).
+  source: Figure 6d, left
+  expected:
+  - quantity: median theta-related rate, familiar
+    value: 0.77
+    tolerance: 0.077
+    unit: Hz
+  - quantity: median theta-related rate, novel
+    value: 0.69
+    tolerance: 0.069
+    unit: Hz
+  criterion: The same cells and running rates as fig6c-theta-rate-preserved, familiar from every
+    session of the three mice, novel from the sessions with a novel maze. Two-sided Wilcoxon
+    rank-sum test, as the paper. Reproduced when novel is lower with p < 0.05 and both medians are
+    within tolerance. Partially reproduced when novel is lower with p < 0.05 but a median is
+    outside tolerance. Not reproduced otherwise. The paired signed-rank test is shown as a variant.
+- id: ed2-light-responsive-count
+  statement: 664 of 7,411 putative pyramidal neurons (8.96%) were light-responsive, that is,
+    birthdated.
+  source: Extended Data Figure 2a
+  expected:
+    quantity: light-responsive pyramidal neurons
+    value: 664
+    tolerance: 66
+- id: fig1e-labelled-fraction
+  statement: The fraction of light-responsive pyramidal cells per session follows a bell-shaped
+    wave over birthdates, peaking at E15.5 (E13.5 5.39%, E14.5 11.16%, E15.5 14.74%, E16.5 9.16%;
+    ANOVA p = 4e-4).
+  source: Figure 1e
+- id: fig1c-radial-depth
+  statement: Neurons born on later days lie more superficially in the pyramidal layer (median
+    normalized depth 0.71, 0.48, 0.28 and 0.19 for E13.5 to E16.5).
+  source: Figure 1c
+- id: fig1f-rem-shift
+  statement: Earlier-born light-responsive neurons more often shift their preferred theta phase in
+    REM sleep (30.89% at E13.5 to 19.7% at E16.5; regression slope -3.42% per day).
+  source: Figure 1f
+- id: fig1g-rate-by-birthdate
+  statement: Earlier-born light-responsive pyramidal neurons have higher firing rates (medians
+    1.57, 1.63, 1.62 and 1.16 Hz; Kruskal-Wallis p = 0.016).
+  source: Figure 1g
+- id: fig1h-burst-by-birthdate
+  statement: Burst index is an inverted-U function of birthdate (medians 0.1167, 0.1272, 0.136,
+    0.1082; Kruskal-Wallis p = 0.0044).
+  source: Figure 1h
+- id: fig2b-synchrony-per-animal
+  statement: Same-birthdate (SBD) pairs fire more synchronously than different-birthdate (DBD)
+    pairs in 11 of 13 animals.
+  source: Figure 2a,b; Extended Data Figure 4
+- id: fig2c-theta-cofiring
+  statement: SBD pairs cofire more than DBD pairs in theta cycles (median 0.0189 against 0.0087).
+  source: Figure 2c
+- id: fig2d-theta-depth
+  statement: Intermediate-birthdate neurons have lower theta depth modulation in waking but not in
+    REM sleep.
+  source: Figure 2d
+- id: fig2f-ripple-firing-by-birthdate
+  statement: SPW-R firing rates and participation of light-responsive neurons are an inverted-U
+    function of birthdate.
+  source: Figure 2f
+- id: fig2g-ripple-cofiring
+  statement: SBD pairs cofire more than DBD pairs in SPW-Rs (median 0.0399 against 0.0231).
+  source: Figure 2g
+- id: fig3c-assembly-cofiring
+  statement: Assembly members cofire more in SPW-Rs than member-nonmember pairs, and segregation
+    from nonmembers depends nonlinearly on the members' birthdate.
+  source: Figure 3c
+- id: fig3e-assembly-expression
+  statement: Assemblies with intermediate-birthdate members are expressed in SPW-Rs at higher
+    rates (E13.5 8.16, E14.5 9.25, E15.5 8.16, E16.5 6.9 Hz; ANOVA p = 0.0158).
+  source: Figure 3e
+- id: fig4d-model-fit
+  statement: A model with a bell-shaped rate of neurogenesis and correlations among SBD neurons
+    reproduces the assembly expression rates, and a uniform-neurogenesis model does not.
+  source: Figure 4c,d; Extended Data Figure 9
+  depends_on:
+  - fig3e-assembly-expression
+- id: fig5b-spatial-info-by-birthdate
+  statement: Spatial information and coverage on the maze are largest in intermediate-birthdate
+    neurons.
+  source: Figure 5b
+- id: fig5c-sbd-ratemap-overlap
+  statement: SBD pairs have higher spatial ratemap correlations than DBD pairs on the familiar
+    maze (median 0.0152 against -0.0256).
+  source: Figure 5c
+- id: fig5d-overlap-by-distance
+  statement: The ratemap overlap of SBD pairs depends on their anatomical distance, larger within
+    250 micrometres.
+  source: Figure 5d
+- id: fig5f-remap-together
+  statement: Between left and right trials, ratemaps of SBD pairs reorganize closer together than
+    those of DBD pairs.
+  source: Figure 5f
+- id: fig6e-sbd-novel-overlap
+  statement: In novel environments SBD pairs have higher ratemap correlations than DBD pairs
+    (median 0.117 against 0.046).
+  source: Figure 6e
+- id: fig6f-remap-together-novel
+  statement: Ratemaps of SBD pairs remain closer together than those of DBD pairs between the
+    familiar and novel environments.
+  source: Figure 6f
+- id: fig7b-sbd-convergence
+  statement: SBD pyramidal pairs converge onto the same interneurons more than DBD pairs (median
+    convergence 0.2727 against 0.2).
+  source: Figure 7b
+- id: fig7ce-convergence-by-birthdate
+  statement: Convergence onto interneurons and spike transmission probability are bell-shaped
+    functions of the presynaptic neurons' birthdate.
+  source: Figure 7c-e
+- id: fig7fg-convergence-cofiring
+  statement: Of all pyramidal pairs, 65.27% share at least one postsynaptic interneuron, and
+    cofiring in SPW-Rs, theta cycles and ratemap overlap all increase with convergence.
+  source: Figure 7f,g
+  expected:
+    quantity: pairs with nonzero convergence
+    value: 65.27
+    tolerance: 6.53
+    unit: percent
