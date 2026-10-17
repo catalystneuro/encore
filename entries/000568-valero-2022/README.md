@@ -22,7 +22,7 @@ protocol keeps dark.
 | Light unmasks place fields in 69% of non-place cells | Not reproduced |
 | Light-induced fields sit where the control spikes are | Partially reproduced |
 | Light fields are more stable than control fields | Not reproduced |
-| Spatial information, control against light | Reproduced (partially reproduced proposed for a third round) |
+| Spatial information, control against light | Partially reproduced |
 | Ripple cofiring tracks spatial overlap for place cell pairs | Reproduced |
 | With light, the relation appears for pairs with non-place cells | Not reproduced |
 | Light intensity effects (Figures 1J, 2F, 3D) | Blocked: data missing |

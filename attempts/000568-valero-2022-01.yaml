@@ -209,27 +209,22 @@ outcomes:
     epochs were random 20 ms intervals between pulses, shown as a time-matched variant.
   - Wilcoxon tests in place of the paper's two-way ANOVA, which is shown as a variant.
 - claim: fig3g-spatial-information
-  outcome: reproduced
+  outcome: partially_reproduced
   notebook: reproduce_valero_2022.ipynb
   output: claim:fig3g-spatial-information
   notes: Control and light spatial information are correlated for place fields (rho = 0.655, p = 7.6e-10) and
     for unmasked fields (rho = 0.574, p = 0.032). The increase is larger for unmasked fields (median 0.03 against
     -0.03 bits/spike, Kruskal-Wallis p = 0.039), far from the paper's P < 1e-15. Against time-matched control
-    maps the increase is negative in both groups (-0.17 and -0.10) and does not differ (p = 0.3); as a ratio
-    it does not differ either (p = 0.14). Unmasked fields are chosen for a light field and no control field,
-    which favours a larger increase by construction; the paper defines its groups the same way.
+    maps both correlations hold (place rho = 0.501, p = 1e-05; unmasked rho = 0.609, p = 0.021), but the increase
+    is negative in both groups (place -0.10, unmasked -0.17) and does not differ (p = 0.3); as a ratio it does
+    not differ either (p = 0.14). The paper's control epochs are random 20 ms intervals between the light pulses,
+    which the time-matched variant follows most closely, and the dark-window control maps are themselves a
+    revision of the criterion's control (all time with no uLED on). Part 1 holds and part 2 does not. Unmasked
+    fields are chosen for a light field and no control field, which favours a larger increase by construction;
+    the paper defines its groups the same way. Changed from reproduced after verification round 3 agreed.
   deviations:
   - Control maps use the windows dark under the stated protocol; time-matched control windows are a variant,
     under which the larger increase in unmasked fields does not hold.
-  proposed:
-    outcome: partially_reproduced
-    reason: The paper's control epochs are random 20 ms intervals between the light pulses, which the time-matched
-      variant follows most closely. Under it both correlations hold (rho = 0.501, p = 1e-05 and rho = 0.609,
-      p = 0.021) but the increase is negative in both groups (-0.10 and -0.17 bits/spike) and does not differ
-      (p = 0.3), so part 2 fails. The dark-window control maps are themselves a revision of the criterion's
-      control (all time with no uLED on), so they have no prior claim to decide the outcome, and the selection
-      of unmasked fields favours part 2 under either control. Part 1 holds and part 2 does not, which is
-      partially_reproduced. The analysis is in the claim:fig3g-spatial-information cell.
 - claim: fig4c-swr-cofiring-place-pairs
   outcome: reproduced
   notebook: reproduce_valero_2022.ipynb
@@ -686,3 +681,24 @@ verifications:
     outcome: blocked
     reason: Agree.
     response: No change needed.
+- date: '2026-10-17'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome (fig3g-spatial-information) and the analysis behind
+    it in the executed notebook after the round-2 revision (cells 51, 59 and 60), with the paper text saved
+    in round 2. Nothing else was reviewed. Report in transcripts/000568/verifier-3-report.md.
+  results:
+  - claim: fig3g-spatial-information
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 59 prints every number in the reason. The time-matched control was added in round 2 as a variant,
+      with a fixed seed and a matched-to-light time ratio of 1.0, and is not tuned for fig3g. It is the fairest
+      comparison, since Skaggs SI is biased upward when a map has little time and few spikes, and the dark-window
+      control has about 19 to 20% of lap time against 11 to 12% for the light maps. It also fits the paper's
+      random 20 ms control epochs best, and the dark-window control already replaces the criterion's control,
+      so it has no prior standing. Part 1 holds under both controls; part 2 fails under the matched control
+      (both medians negative, p = 0.3) and under the main control rests on p = 0.039, which the selection of
+      unmasked fields favours. The record should label the matched increases by group (place -0.10, unmasked
+      -0.17).
+    response: Outcome changed to partially_reproduced and the proposal removed. The notes now label the matched
+      increases by group and give the matched correlations. Cell 60, the summary and the README updated.
