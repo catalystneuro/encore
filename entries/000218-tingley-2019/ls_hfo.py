@@ -32,6 +32,12 @@ Where the parameters come from:
   the median of their region, then take the LS channel and the hippocampal channel with
   the highest 120-200 Hz SD. The hippocampal channel stands for the CA1 pyramidal layer,
   where ripple power peaks (Methods, Relative anatomical depth within CA1).
+- Checks added after the first verification round, not in the paper's Methods: a
+  re-referenced LS channel (the detection channel minus the LS channel on the same shank
+  with the lowest 120-200 Hz SD), on which events are detected again with the same
+  parameters, to remove any signal common to the shank such as the reference; and phase
+  locking on the LS channel with the highest 120-200 Hz SD on another shank, so that a
+  unit's phase can be taken away from its own shank.
 """
 
 from __future__ import annotations
@@ -169,13 +175,39 @@ def metadata(f):
     d = f[LFP]
     m["lfp_shape"], m["lfp_chunks"] = d.shape, d.chunks
     m["lfp_rate"] = float(f[LFP.replace("/data", "/starting_time")].attrs["rate"])
+    m["lfp_starting_time"] = float(f[LFP.replace("/data", "/starting_time")][()])
+    eg = f["general/extracellular_ephys"]
+    m["electrode_groups"] = {k: {"location": _s(eg[k].attrs.get("location", "")),
+                                 "description": _s(eg[k].attrs.get("description", "")),
+                                 "device": eg[k]["device"].name.split("/")[-1] if "device" in eg[k] else None}
+                             for k in eg if k != "electrodes"}
+    m["devices"] = {k: _s(f["general/devices"][k].attrs.get("description", "")) for k in f["general/devices"]}
+    m["behavior"] = {}
+    if "processing/behavior" in f:
+        def visit(name, obj):
+            if isinstance(obj, h5py.Dataset) and name.endswith("/data"):
+                base = obj.parent
+                if "timestamps" in base:
+                    ts = base["timestamps"]
+                    t0, t1 = float(ts[0]), float(ts[-1])
+                elif "starting_time" in base:
+                    t0 = float(base["starting_time"][()])
+                    t1 = t0 + obj.shape[0] / float(base["starting_time"].attrs["rate"])
+                else:
+                    t0 = t1 = np.nan
+                m["behavior"][name[:-5]] = {"shape": obj.shape, "t0": t0, "t1": t1,
+                                            "type": _s(base.attrs.get("neurodata_type", ""))}
+        f["processing/behavior"].visititems(visit)
     m["lfp_conversion"] = float(d.attrs["conversion"])
     m["lfp_unit"] = _s(d.attrs["unit"])
     m["lfp_electrodes"] = f[LFP.replace("/data", "/electrodes")][:]
     m["duration"] = d.shape[0] / m["lfp_rate"]
-    units = {"spikes": [], "location": None, "group": None}
+    units = {"spikes": [], "location": None, "group": None, "columns": [], "first_row": {}}
     if "units" in f:
         u = f["units"]
+        units["columns"] = sorted(u.keys())
+        units["first_row"] = {k: _s(u[k][0]) for k in u
+                              if k not in ("spike_times", "spike_times_index") and u[k].ndim == 1 and len(u[k])}
         st, idx = u["spike_times"][:], u["spike_times_index"][:]
         units["spikes"] = np.split(st, idx[:-1])
         if "location" in u:
@@ -402,6 +434,17 @@ def choose_channels(meta, X):
     for name, regions in (("ls", ("ls",)), ("hpc", ("hpc",)), ("ca3", ("ca3",))):
         sel = np.where(good & np.isin(loc, regions))[0]
         out[name] = int(sel[np.argmax(band[sel])]) if len(sel) else None
+    # Re-referencing (a check, not in the paper's Methods): the LS channel minus the LS channel
+    # on the same shank with the lowest 120-200 Hz SD, which removes any signal common to the
+    # shank, such as the reference, while keeping most of the local HFO.
+    out["ls_ref"], out["ls_other"] = None, None
+    if out["ls"] is not None:
+        same = np.where(good & (loc == "ls") & (grp == grp[out["ls"]]) & (np.arange(len(loc)) != out["ls"]))[0]
+        out["ls_ref"] = int(same[np.argmin(band[same])]) if len(same) else None
+        # the LS channel with the highest 120-200 Hz SD on another shank, to take the phase away
+        # from each unit's own shank (phase-locking check)
+        other = np.where(good & (loc == "ls") & (grp != grp[out["ls"]]))[0]
+        out["ls_other"] = int(other[np.argmax(band[other])]) if len(other) else None
     shanks = []
     for g in dict.fromkeys(grp):  # in order of first appearance
         sel = np.where(good & (grp == g))[0]
@@ -470,10 +513,11 @@ def session_job(path, seed=None, full_channels=None):
     X = read_columns(url, d, list(range(d.shape[1])), table, rows=(w0 * FS, w1 * FS)).astype(np.float32)
     ch = choose_channels(meta, X)
     del X
-    res["channels"] = {k: ch[k] for k in ("ls", "hpc", "ca3", "emg")}
+    res["channels"] = {k: ch[k] for k in ("ls", "hpc", "ca3", "emg", "ls_ref", "ls_other")}
     res["channel_stats"] = {"band_sd": ch["band_sd"], "broad_sd": ch["broad_sd"], "good": ch["good"]}
     res["sample_window"] = (w0, w1)
-    cols = [ch["ls"]] + ([ch["hpc"]] if ch["hpc"] is not None else []) + list(ch["emg"])
+    extra = [c for c in (ch["ls_ref"], ch["ls_other"]) if c is not None]
+    cols = [ch["ls"]] + ([ch["hpc"]] if ch["hpc"] is not None else []) + list(ch["emg"]) + extra
     cols = list(dict.fromkeys(cols))
     Y = read_columns(url, d, cols, table)
     res["fingerprint"] = int(zlib.crc32(Y[: int(10 * FS), 0].tobytes()))
@@ -483,13 +527,29 @@ def session_job(path, seed=None, full_channels=None):
                                                   "median": float(np.median(emg))}
     ls = Y[:, cols.index(ch["ls"])].copy()
     hp = Y[:, cols.index(ch["hpc"])].copy() if ch["hpc"] is not None else None
+    # re-referenced LS channel (float32: the difference of two int16 channels)
+    bip = (ls.astype(np.float32) - Y[:, cols.index(ch["ls_ref"])]) if ch["ls_ref"] is not None else None
+    other = Y[:, cols.index(ch["ls_other"])].copy() if ch["ls_other"] is not None else None
     del Y
     res["ls_events"] = detect_events(ls, emg_t, emg)
     res["ls_events"]["state"] = state_of(res["ls_events"]["peak"], meta["states"])
     spikes = meta["units"]["spikes"]
     uloc = meta["units"]["location"]
     res["ls_units"] = [] if uloc is None else [i for i in range(len(spikes)) if uloc[i] == "ls"]
-    res["phase_locking"], res["clock_ls"] = phase_locking(ls, [np.sort(spikes[i]) for i in res["ls_units"]], rng)
+    ls_trains = [np.sort(spikes[i]) for i in res["ls_units"]]
+    res["phase_locking"], res["clock_ls"] = phase_locking(ls, ls_trains, rng)
+    # Checks added after the first verification round use their own generator, so that the
+    # numbers above do not depend on them.
+    rng2 = np.random.default_rng(seed + 1)
+    el_group = meta["el_group"]
+    res["channel_groups"] = {k: (None if c is None else str(el_group[c])) for k, c in
+                             (("ls", ch["ls"]), ("ls_ref", ch["ls_ref"]), ("ls_other", ch["ls_other"]))}
+    if other is not None:
+        res["phase_locking_other"], _ = phase_locking(other, ls_trains, rng2)
+    del other
+    if bip is not None:
+        res["ls_events_bip"] = detect_events(bip, emg_t, emg)
+        res["ls_events_bip"]["state"] = state_of(res["ls_events_bip"]["peak"], meta["states"])
     if hp is not None:
         res["hpc_events"] = detect_events(hp, emg_t, emg)
         res["hpc_events"]["state"] = state_of(res["hpc_events"]["peak"], meta["states"])
@@ -506,22 +566,33 @@ def session_job(path, seed=None, full_channels=None):
         del inside
         jit = [coherence_around(a, b, rp + rng.uniform(-1, 1, len(rp)))[1] for _ in range(20)]
         res["coherence"] = {"lags": lags, "plv": plv, "n": n, "jitter": np.array(jit)}
-        del a, b
-    del ls, hp
+        del b
+        if bip is not None:
+            b = analytic(bandpass(bip, 120, 180, 3))
+            lags, plv, n = coherence_around(a, b, rp)
+            jit = [coherence_around(a, b, rp + rng2.uniform(-1, 1, len(rp)))[1] for _ in range(20)]
+            res["coherence_bip"] = {"lags": lags, "plv": plv, "n": n, "jitter": np.array(jit)}
+            del b
+        del a
+    del ls, hp, bip
     if full_channels:
         r0, r1 = w0 * FS, min(meta["duration"], w0 + LOCALIZATION_S) * FS
         X = read_columns(url, d, list(range(d.shape[1])), table, rows=(r0, r1))
         res["localization"] = triggered_band_power(X, w0, res["ls_events"]["peak"], rng)
         res["localization"]["window"] = (r0 / FS, r1 / FS)
+        if "ls_events_bip" in res:
+            res["localization_bip"] = triggered_band_power(X, w0, res["ls_events_bip"]["peak"], rng2, groups=el_group)
         del X
     res["seconds"] = time.time() - t0
     f.close()
     return res
 
 
-def triggered_band_power(X, w0, peaks, rng, half=0.02, fs=FS):
+def triggered_band_power(X, w0, peaks, rng, half=0.02, fs=FS, groups=None):
     """Per channel, 120-200 Hz power in +-20 ms around the LS HFO peaks inside a block X
-    that starts at w0 s, divided by the power at as many random times in the block."""
+    that starts at w0 s, divided by the power at as many random times in the block. With
+    groups (the shank of each channel), each channel is first re-referenced to the median of
+    its shank."""
     n = len(X)
     h = int(round(half * fs))
     idx = np.round((np.asarray(peaks) - w0) * fs).astype(int)
@@ -531,8 +602,10 @@ def triggered_band_power(X, w0, peaks, rng, half=0.02, fs=FS):
     rnd = rng.integers(h + 1, n - h - 1, len(idx))
     win = np.arange(-h, h + 1)
     ratio = np.empty(X.shape[1])
+    med = {} if groups is None else {g: np.median(X[:, groups == g], axis=1).astype(np.float32) for g in set(groups)}
     for j in range(X.shape[1]):
-        p2 = bandpass(X[:, j], *BAND, order=3) ** 2
+        x = X[:, j] if groups is None else X[:, j] - med[groups[j]]
+        p2 = bandpass(x, *BAND, order=3) ** 2
         ratio[j] = p2[idx[:, None] + win].mean() / p2[rnd[:, None] + win].mean()
     return {"n_events": len(idx), "ratio": ratio}
 
