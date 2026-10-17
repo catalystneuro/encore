@@ -2,7 +2,8 @@
 
 Tests the findings of [Tingley and Buzsáki (2018)](https://doi.org/10.1016/j.neuron.2018.04.028)
 that can be tested on [DANDI:000213](https://dandiarchive.org/dandiset/000213/0.250624.0438), which
-holds 67 sessions of simultaneous hippocampal and lateral septum (LS) recordings from five rats.
+holds 67 sessions from five rats: 62 hold lateral septum (LS) units and 47 hold hippocampal units
+(36 labelled hpc, 11 labelled ca3).
 
 | Claim | Outcome |
 |---|---|

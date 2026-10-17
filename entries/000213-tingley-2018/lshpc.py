@@ -549,8 +549,10 @@ def decode_cell(counts, occ, phase, dt, rng, n_iter=N_ITER, split="samples"):
 
 # --- place fields ----------------------------------------------------------------------------
 
-def place_fields(rate_trials, threshold=PF_THRESHOLD):
-    """Fields of one cell in one condition, after bz_getPlaceFields1D with the Methods' limits."""
+def place_fields(rate_trials, threshold=PF_THRESHOLD, sd_rule=True):
+    """Fields of one cell in one condition, after bz_getPlaceFields1D with the Methods' limits.
+
+    sd_rule=False drops the code's exclusion of peaks whose SD across trials exceeds their mean (a variant)."""
     mean = rate_trials.mean(0)
     sd = rate_trials.std(0, ddof=1)
     rms = fastrms(mean, MAP_SMOOTH)
@@ -561,7 +563,7 @@ def place_fields(rate_trials, threshold=PF_THRESHOLD):
     for a, b in zip(keep[:-1], keep[1:]):
         if mean[a:b + 1].min() > (rms[a] + rms[b]) / 2 * threshold:
             drop.add(b if rms[a] > rms[b] else a)
-    keep = [p for p in keep if p not in drop and mean[p] >= sd[p]]
+    keep = [p for p in keep if p not in drop and (mean[p] >= sd[p] or not sd_rule)]
     fields = []
     for p in keep:
         inside = mean > rms[p] * threshold
@@ -785,6 +787,7 @@ def analyse_session(s, index):
             rec["n_fields_gauss5"] = len(place_fields(rate_map(counts, occ, dt, tau=5)))
             rec["n_fields_box5"] = len(place_fields(rate_map(counts, occ, dt, tau=MAP_SMOOTH, kind="box")))
             rec["n_fields_thresh01"] = len(place_fields(rmap, threshold=PF_CODE_THRESHOLD))
+            rec["n_fields_nosd"] = len(place_fields(rmap, sd_rule=False))
             rec["info_peak_bits"] = olypher_peak(rmap, (rmap.min(), rmap.max()))
             if fields:
                 f0 = fields[0]
@@ -1009,7 +1012,7 @@ def _assemblies(s, active_in, trials_of, index):
         if not pick:
             continue
         ks = trials_of[c]
-        edges, cov = [], []
+        edges, cov, pbins = [], [], []
         for k in ks:
             e = np.arange(tr["start"][k], tr["stop"][k], ASSEMBLY_BIN_S)
             mid = e[:-1] + ASSEMBLY_BIN_S / 2
@@ -1022,17 +1025,30 @@ def _assemblies(s, active_in, trials_of, index):
             vel = np.interp(mid, tt, v)
             edges.append(e)
             cov.append(np.column_stack([np.sin(ph), np.cos(ph), ph, pos, vel]))
+            pbins.append(np.clip(np.round(pos).astype(int), 0, N_BINS - 1))
         C = np.concatenate(cov)
+        pb = np.concatenate(pbins)
+        occ = gauss_smooth(np.bincount(pb, minlength=N_BINS).astype(float), MAP_TAU)
         C = (C - C.mean(0)) / (C.std(0) + 1e-12)
         units = s["units"]
         def trains(ui):
             t = units[ui]["times"]
             return [np.diff(np.searchsorted(t, e)).astype(float) for e in edges]
+        def tuning(resp):
+            # variant covariate: log of the response unit's rate map (Gaussian SD MAP_TAU bins) at the current bin
+            y = np.concatenate(resp)
+            m = gauss_smooth(np.bincount(pb, weights=y, minlength=N_BINS), MAP_TAU) / np.maximum(occ, 1e-12)
+            z = np.log(m[pb] + 1e-3 * max(y.mean(), 1e-9))
+            return (z - z.mean()) / (z.std() + 1e-12)
         for h, l in pick:
             t0 = time.time()
-            res = _pair_strength(trains(l), trains(h), C, np.random.default_rng([SEED_ASSEMBLY, index, ci, h, l]))
+            resp, pred = trains(l), trains(h)
+            res = _pair_strength(resp, pred, C, np.random.default_rng([SEED_ASSEMBLY, index, ci, h, l]))
+            sec = time.time() - t0   # the main fit only, for the time estimate
+            v = _pair_strength(resp, pred, np.column_stack([C, tuning(resp)]), np.random.default_rng([SEED_ASSEMBLY, index, ci, h, l]))
+            res.update({"strength_tuning": v["strength"], "window_ms_tuning": v["window_ms"]})
             res.update({"condition": c, "hpc_unit": h, "ls_unit": l, "n_trials": len(ks),
-                        "n_bins": int(sum(len(e) - 1 for e in edges)), "seconds": time.time() - t0})
+                        "n_bins": int(sum(len(e) - 1 for e in edges)), "seconds": sec})
             out.append(res)
     return out
 
