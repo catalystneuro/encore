@@ -2583,3 +2583,95 @@ condition with no stated outcome when it fails; a default 10% tolerance that
 does not work for values near zero; no rule for a criterion whose literal
 reading gives a result that is probably a metadata typo; and data-description
 claims that the protocol does not address.
+
+### 000568, Valero et al. 2022
+
+Four claims reproduced, six partially, six not reproduced and six blocked, all
+on the dandiset. Round 1 gave its own outcome for each claim from the notebook
+with its conclusions removed and agreed with all 22 as they then stood, but
+found that most light pulses are not in the files and that the place-field
+rule differed from buzcode's; the revision restricted control time to windows
+dark under the stated protocol and ported `bz_findPlaceFields1D`, which moved
+11 cells between place and non-place and changed five outcomes:
+`figs11-place-cell-fraction` to partially reproduced,
+`fig3a-place-cells-more-excitable` and `fig4d-light-unmasked-cofiring` to not
+reproduced, and `fig3g-spatial-information` and
+`fig4c-swr-cofiring-place-pairs` to reproduced. Round 2 agreed with 21 of the
+22 and disagreed on `fig3g-spatial-information`, whose larger increase for
+unmasked fields (p = 0.039) does not hold against time-matched control maps,
+where the increase is negative in both groups (p = 0.3); the author proposed
+partially reproduced and a third round agreed. The paper reports pulsed
+optogenetics with uLEDs in CA1 pyramidal neurons of four CaMKIIa-Cre::Ai32
+mice: light-induced spiking falls during sharp-wave ripples, rises in the
+place field and at the theta trough, unmasks place fields in non-place cells,
+and with these fields ripple cofiring tracks spatial overlap for pairs that
+include non-place cells. The cohort, the pulse protocol, the responsive
+fraction, ripple gain, theta phase, place-cell fractions, in-field gain,
+unmasked and ghost fields, stability, spatial information and ripple cofiring
+were tested, all claims that need light pulses or place fields on two sessions
+of one mouse (91 putative pyramidal cells, against the paper's 822). The light
+intensity and intracellular claims are blocked as `data_missing`, the
+excitatory against inhibitory comparison as `metadata_insufficient`, and the
+position decoding, assemblies and replay as `methods_underspecified`, since
+the Materials and Methods are in a supplement that could not be obtained.
+Some outcomes rest on weak ground: `fig1e-responsive-fraction` is reproduced
+only under reading (b), all stimulation epochs (72.5%), as the PreStim epoch
+gives 62.6%; `fig4c-swr-cofiring-place-pairs` passes at p = 0.032, in sess9
+only, with the same coefficient for place and non-place pairs (0.062) as for
+place cell pairs (0.060); `fig3a-place-cells-more-excitable` changed outcome
+with the new place-cell calls alone; and reading (a) of
+`fig3c-unmasked-fields` rests on 9 cells, 7 of which have a light field
+(77.8%, 95% interval 40.0 to 97.2%, including the paper's 69.3%). The author
+used the NIH author manuscript in PubMed Central (PMC9632609), took method
+details from buzcode and the first author's later lab code (HippoCookBook
+getuLEDResponse.m), and used pyramidal cells as units with a baseline rate
+below 5 Hz.
+
+The dandiset was converted by CatalystNeuro (catalystneuro/buzsaki-lab-to-nwb).
+Light pulse times are deposited for 2 of 28 sessions (fCamk1 sess9 and
+sess12), and only these have laps; twenty other sessions name uLED stimulation
+in their epochs but hold no pulse series. In those two sessions the files hold
+pulse series for 6 of the probe's 12 uLEDs (Site3 to Site8), two of them with
+only 120 to 221 pulses, and in PreStim the deposited pulses come at 5.76 and
+7.50 per s, where the stated protocol implies about 17 to 25; in sess9 the
+offsets between deposited pulses fall only near multiples of 20 ms, no
+putative pyramidal cell on shank Group3 responds to any deposited uLED, and
+time without a deposited pulse therefore cannot be taken as dark. The
+OptogeneticSeries are stated in watts but hold one value per uLED, 19 in sess9
+and 62623 to 63599 in sess12, so the paper's three intensities cannot be
+recovered. Units carry no cell type and the no-raw-data files no waveforms.
+The dandiset holds 28 sessions and 1351 units with a baseline rate below 5 Hz,
+where the paper reports 822 pyramidal neurons at 43.3 per session (about 19
+sessions), without saying which sessions the paper used, and 14 sessions
+include CNO or DMSO epochs that the paper does not describe. Other findings:
+every session is deposited twice, as a full file and a no-raw-data file with
+the same units, spike times, ripples and position, and the full file of
+fCamk3 sess20 is named without its session; the full file of fCamk3 sess17
+holds 378 s of raw signal and 6850 s of LFP of a 34621 s session, and the six
+full files of fCamk1 sess13 to sess19 hold no raw signal; session_start_time
+is 2016-03-15 in every file, while the session ids date the recordings to 2020
+and 2021; the linearized position holds 0 to 110 cm with a conversion factor
+of 100; six sessions name their epochs only by a time stamp; in fCamk3 sess13,
+fCamk3 sess17 and fCamk5 sess10 the deposited ripple intervals mark population
+bursts weakly (1.2 to 1.98 times the rate 1 s later); the units table of some
+files lacks the shank column; the paper gives 20 to 40 ms offsets between
+pulses and the files' description 40 to 60 ms; and the paper's 822 pyramidal
+neurons with 73% and 71% place cells leave about 230 non-place cells, against
+its 289 of 417.
+
+The notebook ran in 272 s in the first clean run and in 289 s after round 3.
+The author's own choice of control maps as all time without light, made
+before noticing that the paper's control epochs are 20 ms intervals between
+pulses, was kept with time-matched windows as a variant, and that variant
+decided `fig3g-spatial-information`. After round 1 the paper could not be
+downloaded again (PMC returned 429 and 503 errors and Europe PMC a 500), the
+round-2 verifier could not run the new field rule as numpy was not installed,
+and untracked files in the repository root that the author did not create
+were left alone. The author's points on the protocol: no rule for when the
+paper's Methods cannot be obtained; reading the code the paper links to does
+not fit a general toolbox without scripts for the paper; no guidance for data
+a claim needs that exist for only a few sessions; the duplicate check does not
+cover every session deposited twice as a full and a no-raw-data file; a 10%
+tolerance narrower than sampling error for correlations; no category for a
+named data location without a pinned identifier; and no rule for what to
+record as measured when only a later reading of the criterion matches.

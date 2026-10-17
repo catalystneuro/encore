@@ -83,6 +83,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000350](https://dandiarchive.org/dandiset/000350) | [Mu et al. 2019](https://doi.org/10.1016/j.cell.2019.05.050) | 2 | 3 | 4 | 10 | [`000350-mu-2019`](entries/000350-mu-2019) |
 | [000409](https://dandiarchive.org/dandiset/000409) | [Ibl et al. 2025](https://doi.org/10.1038/s41586-025-09235-0) | 17 | 3 | 3 | 7 | [`000409-ibl-2025`](entries/000409-ibl-2025) |
 | [000552](https://dandiarchive.org/dandiset/000552) | [Huszar et al. 2022](https://doi.org/10.1038/s41593-022-01138-x) | 5 | 4 | 3 | 23 | [`000552-huszar-2022`](entries/000552-huszar-2022) |
+| [000568](https://dandiarchive.org/dandiset/000568) | [Valero et al. 2022](https://doi.org/10.1126/science.abm1891) | 4 | 6 | 6 | 6 | [`000568-valero-2022`](entries/000568-valero-2022) |
 
 Counts are of claims that rest on the dandiset, including those that take
 names for its own codes from elsewhere. Claims that also use data from
