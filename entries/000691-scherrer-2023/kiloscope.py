@@ -28,8 +28,16 @@ preprint's Methods (10.1101/2021.09.03.458947 v2) describe the same procedures.
   (lambda 3.2e-7 for quadrant and direction, 6.75e-8 for octant), one against all; each decoder is
   trained on the first half of the running frames after a random circular shift and tested on the
   second half, with 1% of frames left out at the end of each half. MATLAB's fitcecoc with
-  templateLinear is replaced by scikit-learn's SGDClassifier with the hinge loss and the same
-  lambda as `alpha` (the same objective); `SGD_EPOCHS` passes is a choice made here.
+  templateLinear minimizes the mean hinge loss plus lambda / 2 times the squared weights. The code
+  leaves the solver at MATLAB's default, which depends on the number of predictors (templateLinear
+  documentation): for more than 100, dual SGD with 10 passes through the data; for 100 or fewer,
+  BFGS run to convergence. The same rule is followed here. For more than 100 footprints,
+  scikit-learn's SGDClassifier with the hinge loss, the same lambda as `alpha` and `SGD_EPOCHS`
+  passes (a truncated stochastic solver, like MATLAB's). For 100 or fewer, scikit-learn's
+  LinearSVC with the hinge loss, which solves the same problem exactly: the features are divided
+  by their overall standard deviation and C is set so that the objective is unchanged (this only
+  speeds up convergence). LinearSVC also penalizes the intercept, weakly at an intercept scaling
+  of 10; MATLAB does not.
 - Pixel size: 5.94 um per pixel, the value in sf3/widefield/analysis.m for the Kiloscope. The
   NWB file gives none.
 - Radial illumination profiles (sf3/*/analysis.m): images packed as RGB565 are unpacked as green
@@ -40,6 +48,7 @@ preprint's Methods (10.1101/2021.09.03.458947 v2) describe the same procedures.
 from __future__ import annotations
 
 import io
+import warnings
 
 import h5py
 import numpy as np
@@ -47,8 +56,11 @@ import png
 import remfile
 import requests
 from dandi.dandiapi import DandiAPIClient
+from joblib import Parallel, delayed
 from scipy import ndimage
+from sklearn.exceptions import ConvergenceWarning
 from sklearn.linear_model import SGDClassifier
+from sklearn.svm import LinearSVC
 
 DANDISET_ID = "000691"
 DANDISET_VERSION = "0.260827.1358"
@@ -71,6 +83,8 @@ LAMBDA_OCTANT = 6.75e-8
 HOLDOUT = 0.5
 BUFFER = 0.01
 SGD_EPOCHS = 10
+EXACT_MAX_PREDICTORS = 100   # MATLAB's templateLinear uses BFGS up to here, dual SGD above
+EXACT_MAX_ITER = 10000
 
 
 def asset_urls() -> dict[str, str]:
@@ -130,9 +144,10 @@ def load_session(f: h5py.File) -> dict:
     }
 
 
-def track_mouse(url: str) -> dict:
+def track_mouse(url: str, keep_frames=()) -> dict:
     """Per video frame: centroid (x = column, y = row, pixels) and area of the largest dark blob
-    in the maze, the number of frames, the frame size and the nominal frame rate."""
+    in the maze, the number of frames, the frame size and the nominal frame rate; and the RGB
+    images of the frames listed in `keep_frames`, for display."""
     import av
 
     container = av.open(io.BytesIO(requests.get(url, timeout=600).content))
@@ -140,10 +155,13 @@ def track_mouse(url: str) -> dict:
     nominal_rate = float(stream.average_rate)
     r0, r1 = ARENA_ROWS
     c0, c1 = ARENA_COLS
-    xs, ys, areas, shape = [], [], [], None
-    for frame in container.decode(video=0):
+    xs, ys, areas, shape, kept = [], [], [], None, {}
+    keep_frames = set(keep_frames)
+    for i, frame in enumerate(container.decode(video=0)):
         rgb = frame.to_ndarray(format="rgb24")
         shape = rgb.shape
+        if i in keep_frames:
+            kept[i] = rgb
         crop = rgb[r0:r1, c0:c1].astype(np.int32)
         dark = ((crop - DARK_RGB) ** 2).sum(-1) < DARK_LIMIT
         labels, n = ndimage.label(dark)
@@ -156,7 +174,7 @@ def track_mouse(url: str) -> dict:
         xs.append(cx + c0), ys.append(cy + r0), areas.append(int(sizes.max()))
     container.close()
     return {"x": np.array(xs), "y": np.array(ys), "area": np.array(areas),
-            "frame_shape": shape, "nominal_rate": nominal_rate}
+            "frame_shape": shape, "nominal_rate": nominal_rate, "frames": kept}
 
 
 def behaviour(t_img: np.ndarray, t_video: np.ndarray, track: dict) -> dict:
@@ -197,27 +215,131 @@ def moving_max(traces: np.ndarray) -> np.ndarray:
 
 
 def decode_once(X: np.ndarray, labels: np.ndarray, n_class: int, lam: float, rng: np.random.Generator,
-                null: bool = False) -> np.ndarray:
-    """Per-class accuracy of one decoder (NaN for a class absent from the test half). For a null
-    decoder the labels are first shifted against the activity by 10% to 90% of the frames."""
-    n = len(labels)
-    if null:
-        labels = np.roll(labels, int(rng.integers(n // 10, n - n // 10)))
+                null: bool = False, solver: str | None = None) -> tuple[np.ndarray, bool]:
+    """Per-class accuracy of one decoder (NaN for a class absent from the test half), and whether
+    the exact solver met liblinear's stopping rule within `EXACT_MAX_ITER` iterations (always
+    True for the SGD solver, which runs a fixed number of passes). For a null decoder the labels
+    are first shifted against the activity by 10% to 90% of the frames. `solver` ("exact" or
+    "sgd") overrides the choice by number of predictors."""
+    solver = _solver(X, solver)
+    return _decode_drawn(X, labels, n_class, lam, solver, *_draws(rng, len(labels), null))
+
+
+def _solver(X, solver):
+    if solver is None:
+        solver = "exact" if X.shape[1] <= EXACT_MAX_PREDICTORS else "sgd"
+    return solver
+
+
+def _draws(rng, n, null):
+    """The random numbers of one decoder, in the order they are drawn: the shift of a null
+    decoder's labels, the circular shift of the split, and the solver's seed (SGD's sample order,
+    or liblinear's order of coordinates)."""
+    roll = int(rng.integers(n // 10, n - n // 10)) if null else 0
     shift = int(rng.integers(n))
+    return roll, shift, int(rng.integers(2**31))
+
+
+def _decode_drawn(X, labels, n_class, lam, solver, roll, shift, seed):
+    Xtr, ytr, Xte, yte = _split(X, np.roll(labels, roll), shift)
+    if solver == "exact":
+        model, converged = fit_exact(Xtr, ytr, lam, seed)
+    else:
+        model, converged = fit_sgd(Xtr, ytr, lam, seed), True
+    return class_accuracy(predict(model, Xte), yte, n_class), converged
+
+
+def _split(X, labels, shift):
+    """Training and test halves after the circular shift, with the buffers."""
+    n = len(labels)
     Xs, ls = np.roll(X, shift, axis=0), np.roll(labels, shift)
     half, buffer = round(n * HOLDOUT), round(n * BUFFER)
+    return Xs[:half - buffer], ls[:half - buffer], Xs[half:n - buffer], ls[half:n - buffer]
+
+
+def fit_sgd(X, y, lam, seed):
+    """One-against-all linear SVM by SGD, `SGD_EPOCHS` passes: (weights, intercepts, classes)."""
     model = SGDClassifier(loss="hinge", penalty="l2", alpha=lam, max_iter=SGD_EPOCHS, tol=None,
-                          random_state=int(rng.integers(2**31)))
-    model.fit(Xs[:half - buffer], ls[:half - buffer])
-    test = ls[half:n - buffer]
-    predicted = model.predict(Xs[half:n - buffer])
-    return np.array([(predicted[test == c] == c).mean() if (test == c).any() else np.nan
+                          random_state=seed).fit(X, y)
+    return model.coef_, model.intercept_, model.classes_
+
+
+def fit_exact(X, y, lam, seed, max_iter=EXACT_MAX_ITER):
+    """One-against-all linear SVM minimizing mean hinge + lam / 2 |w|^2, solved by liblinear on
+    features scaled by s: with C = 1 / (lam s^2 n) the scaled problem has the same solution.
+    Returns (weights in the original units, intercepts, classes), and whether liblinear stopped by
+    its tolerance before `max_iter`."""
+    s = 1 / X.std()
+    model = LinearSVC(loss="hinge", C=1 / (lam * s * s * len(y)), intercept_scaling=10,
+                      max_iter=max_iter, random_state=seed)
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", ConvergenceWarning)
+        model.fit(X * s, y)
+    return (model.coef_ * s, model.intercept_, model.classes_), bool(model.n_iter_ < max_iter)
+
+
+def predict(model, X):
+    W, b, classes = model
+    return classes[np.argmax(X @ W.T + b, axis=1)]
+
+
+def class_accuracy(predicted, truth, n_class):
+    return np.array([(predicted[truth == c] == c).mean() if (truth == c).any() else np.nan
                      for c in range(n_class)])
 
 
-def decode_many(X, labels, n_class, lam, n, rng, null=False) -> np.ndarray:
-    """(n, n_class) per-class accuracies of n decoders."""
-    return np.array([decode_once(X, labels, n_class, lam, rng, null) for _ in range(n)])
+def svm_objective(model, X, y, lam):
+    """Sum over the one-against-all problems of mean hinge loss + lam / 2 |w|^2."""
+    W, b, classes = model
+    total = 0.0
+    for c in range(W.shape[0]):
+        sign = np.where(y == classes[c], 1.0, -1.0)
+        total += np.maximum(0, 1 - sign * (X @ W[c] + b[c])).mean() + lam / 2 * W[c] @ W[c]
+    return total
+
+
+def decode_many(X, labels, n_class, lam, n, rng, null=False, with_convergence=False, solver=None,
+                n_jobs=1):
+    """(n, n_class) per-class accuracies of n decoders; with `with_convergence`, also the number
+    of exact fits that reached the iteration limit. The random numbers are drawn in order before
+    the fits, so `n_jobs` (parallel fits) does not change the result."""
+    solver = _solver(X, solver)
+    draws = [_draws(rng, len(labels), null) for _ in range(n)]
+    if n_jobs == 1:
+        out = [_decode_drawn(X, labels, n_class, lam, solver, *d) for d in draws]
+    else:
+        out = Parallel(n_jobs=n_jobs)(delayed(_decode_drawn)(X, labels, n_class, lam, solver, *d) for d in draws)
+    acc = np.array([a for a, _ in out])
+    return (acc, sum(not c for _, c in out)) if with_convergence else acc
+
+
+def local_decoders(X: np.ndarray, labels: np.ndarray, lam: float, n_dec: int,
+                   seed: np.random.SeedSequence, solver: str | None = None) -> dict:
+    """For one point of the local decoding map (subregion_map_octant.m): `n_dec` octant decoders
+    and `n_dec` with shifted labels on the footprints in `X`, from their own generator. Returns
+    the per-decoder median class accuracies and the number of exact fits that reached the
+    iteration limit."""
+    rng = np.random.default_rng(seed)
+    real, nc_real = decode_many(X, labels, 8, lam, n_dec, rng, with_convergence=True, solver=solver)
+    null, nc_null = decode_many(X, labels, 8, lam, n_dec, rng, null=True, with_convergence=True,
+                                solver=solver)
+    return {"real": np.nanmedian(real, 1), "null": np.nanmedian(null, 1),
+            "at_iteration_limit": nc_real + nc_null}
+
+
+def solver_check(X, labels, n_class, lam, rng, null=False, max_iter=EXACT_MAX_ITER) -> dict:
+    """One split fit by both solvers: the median class accuracy and training objective of each,
+    and whether the exact solver stopped by its tolerance."""
+    roll, shift, seed = _draws(rng, len(labels), null)
+    Xtr, ytr, Xte, yte = _split(X, np.roll(labels, roll), shift)
+    sgd = fit_sgd(Xtr, ytr, lam, seed)
+    exact, converged = fit_exact(Xtr, ytr, lam, seed, max_iter)
+    out = {}
+    for name, model in [("sgd", sgd), ("exact", exact)]:
+        out[f"median_acc_{name}"] = float(np.nanmedian(class_accuracy(predict(model, Xte), yte, n_class)))
+        out[f"objective_{name}"] = svm_objective(model, Xtr, ytr, lam)
+    out["exact_converged"] = converged
+    return out
 
 
 # --- illumination profiles (Extended Data Fig. 2), images from the paper's code repository -----
@@ -239,13 +361,14 @@ def unpack_rgb565(rgb: np.ndarray) -> np.ndarray:
     return rgb[..., 1].astype(np.float64) * 8 + np.round(rgb[..., 2].astype(np.float64) / 8)
 
 
-def radial_profile(image: np.ndarray, um_per_pixel: float, max_um: int, median_um: int) -> np.ndarray:
+def radial_profile(image: np.ndarray, um_per_pixel: float, max_um: int, median_um: int,
+                   centre: tuple[float, float] | None = None) -> np.ndarray:
     """analysis.m: mean intensity in 1 um rings about the intensity-weighted centre, smoothed by a
-    moving median of `median_um` bins and normalized to its 99th percentile."""
+    moving median of `median_um` bins and normalized to its 99th percentile. `centre` (column,
+    row, counted from 1) replaces the intensity-weighted centre, for a check of sensitivity."""
     h, w = image.shape
     cols, rows = np.meshgrid(np.arange(1, w + 1), np.arange(1, h + 1))
-    total = image.sum()
-    xc, yc = (cols * image).sum() / total, (rows * image).sum() / total
+    xc, yc = weighted_centre(image) if centre is None else centre
     r = np.round(np.hypot(um_per_pixel * (cols - xc), um_per_pixel * (rows - yc))).astype(int).ravel()
     inside = r < max_um
     sums = np.bincount(r[inside], weights=image.ravel()[inside], minlength=max_um)
@@ -256,6 +379,14 @@ def radial_profile(image: np.ndarray, um_per_pixel: float, max_um: int, median_u
         avg[0] = avg[1]
     smoothed = _movmedian(avg, median_um)
     return smoothed / np.nanpercentile(smoothed, 99)
+
+
+def weighted_centre(image: np.ndarray) -> tuple[float, float]:
+    """Intensity-weighted mean (column, row) of an image, counted from 1 as in MATLAB."""
+    h, w = image.shape
+    cols, rows = np.meshgrid(np.arange(1, w + 1), np.arange(1, h + 1))
+    total = image.sum()
+    return (cols * image).sum() / total, (rows * image).sum() / total
 
 
 def _movmedian(v: np.ndarray, k: int) -> np.ndarray:
