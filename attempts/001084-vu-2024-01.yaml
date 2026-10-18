@@ -1,0 +1,349 @@
+schema_version: 1
+id: 001084-vu-2024-01
+dandiset: "001084"
+dandiset_version: 0.241023.2011
+paper: doi:10.1016/j.neuron.2023.12.011
+date: 2026-10-18
+entry: 001084-vu-2024
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The paper's per-fiber results of the salient-stimulus GLM (glm_spline_results.mat, folder
+    Fig04/general_functions of Fig04.zip), used only by fig4-link-published-results to check that the
+    dandiset holds the data behind them, and to identify DL18's 12 kHz tones for a variant.
+  source: Zenodo doi:10.5281/zenodo.10272874 (record 10272874)
+outcomes:
+- claim: fig1c-isosbestic-control
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig1c-isosbestic-control
+  notes: Mouse 842, session 2022-11-23, 61 included fibers. The SD of DF/F under 470 nm exceeds that
+    under 405 nm in 61 of 61 fibers (median ratio 3.01, range 1.56 to 19.41). Frames above 5 times the
+    median 405 nm SD make up a median 6.7% of each 470 nm trace and none of the 405 nm traces. The
+    session of 2022-11-18 gives a median ratio of 2.84.
+  deviations:
+  - The paper shows example traces; the SD ratio and its thresholds were chosen here before the
+    analysis.
+  - Figure 1C describes a 93-fiber array; the mouse its code reads (842) has 82 fibers per channel, 61
+    included.
+- claim: figs2d-correlation-distance
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:figs2d-correlation-distance
+  notes: Over 1830 pairs of the 61 included fibers (470 nm, 2022-11-23), the median pairwise correlation
+    is 0.163 (IQR -0.025 to 0.361, range -0.678 to 0.904), and correlations fall with tip distance
+    (r = -0.190, p = 2.8e-16; mean 0.293 in the closest quarter of pairs against 0.133 in the farthest).
+    The session of 2022-11-18 gives r = -0.238. The p-value treats pairs as independent, as the paper's
+    code does.
+  deviations:
+  - The code's set of fibers (goodROIs.mat) is not published; the included fibers are used.
+  - The threshold of 0.3 for "generally low" was chosen here.
+- claim: figs2ef-no-bundle-crosstalk
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:figs2ef-no-bundle-crosstalk
+  notes: In the code's linear model of pairwise correlation on Euclidean, AP, ML and DV tip distances and
+    bundle-surface distance (ROI centroids), the surface coefficient is -3.4e-05 per pixel (95% CI -2.7e-04
+    to 2.0e-04, p = 0.77), while Euclidean tip distance has -0.278 (p < 1e-5). The other session gives
+    p = 0.41. Pairs adjacent on the bundle correlate at 0.222 against 0.156 for others, which the model
+    attributes to their tips also being closer (tip and surface distances correlate at r = 0.437).
+  deviations:
+  - Surface distance is in pixels of the bundle image; the code converts it to mm, which does not change
+    the p-value.
+- claim: fig1d-chronic-reward-stability
+  outcome: partially_reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig1d-chronic-reward-stability
+  notes: In the 17 sessions with rewards and 25 rewards or fewer (2021-08-19 to 2021-09-13), the median
+    over the 44 fibers of the weekly peak reward response, relative to week 5, is 0.903, 0.932 and 1.196
+    in weeks 6 to 8, within the band of 0.7 to 1.3. These sessions end at week 8; from 2021-09-10 the
+    sessions have 44 to 70 rewards, of which the paper keeps only those of one task phase, which the
+    files do not record, so weeks 9 to 12 cannot be tested. With all rewards of all sessions the median
+    falls to 0.767 in week 8, 0.609 in week 10 and 0.392 in week 13, as expected if predicted rewards are
+    included; this variant does not test the claim.
+  deviations:
+  - Weeks are counted from the first session, labelled week 5, because the files give no implantation
+    date; the paper's code puts the first session on day 35, which gives the same weeks.
+  - Only weeks 5 to 8 can be tested.
+- claim: fig4-link-published-results
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig4-link-published-results
+  notes: Fibers matched by order within each mouse. The raw triggered averages from the dandiset equal
+    the published cue1_roi_mu for light in all 7 mice and cue2_roi_mu for tone in the 6 mice other than
+    DL18 (largest difference 0.0). The GLM spline estimates correlate with the published ones at r =
+    0.9957 for light and 0.9922 for tone over all fibers, and significance agrees for 93.6% of fiber and
+    stimulus pairs (lowest DL18 tone 0.684, where 44 tones are used in place of 14; DL29 light 0.822).
+    DL18's 14 published tone trials match 14 distinct tones of the file (r at least 0.952, best
+    competitor at most 0.693), whose raw average equals the published one.
+  deviations:
+  - The GLM is a re-implementation in Python; filtering and lag selection differ in detail (see the
+    salient-stimulus claims), which explains the significance disagreements.
+- claim: fig4e-light-increases-widespread
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig4e-light-increases-widespread
+  notes: 240 of 280 fibers (86%) have a significant increase to light and 38 a significant decrease; by
+    the signed largest value 237 are increases and 11 decreases. Each mouse has increases in most fibers
+    (34 of 51 in DL21 to 50 of 53 in DL20). The chance rate of a significant increase per fiber, from 200
+    null refits per mouse, is 0.024.
+  deviations:
+  - The low-pass filter of overall velocity is a zero-phase Butterworth filter in place of MATLAB's
+    lowpass; locomotion lags come from a cross-correlation that shifts negative lags, where the paper's
+    code does not (its version correlates at r = 0.997 with the light values used).
+  - DL18's tone regressors include all 44 tones (the files do not give tone frequency).
+- claim: fig4e-light-anterior-posterior-gradient
+  outcome: partially_reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig4e-light-anterior-posterior-gradient
+  notes: The light value is larger anteriorly (Spearman rho(AP, value) = 0.168, p = 0.0047) and smaller in
+    the tail (median 0.0055 against 0.0117 DF/F, p = 0.0013), but increases are as prevalent there (83%
+    of 35 tail fibers against 86% elsewhere, p = 0.38). The result is the same with the tail at -0.8 or
+    -1.3 mm and with the code's lags (rho = 0.162). Per mouse the gradient is positive in DL18, DL20 and
+    DL27 (rho 0.45 to 0.69) and negative in DL23 (-0.43), DL29 and DL30.
+  deviations:
+  - The tail boundary (AP at most -1.0 mm) was fixed here; the paper gives none.
+- claim: fig4f-tone-tail-increase-anterior-decrease
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig4f-tone-tail-increase-anterior-decrease
+  notes: Tail fibers have larger tone values than anterior fibers (median 0.0092 against -0.0026 DF/F,
+    p = 5.5e-13), all 10 of the largest values are in the tail, and 32 of 35 tail fibers have a
+    significant increase (none a decrease). Anterior to the tail 103 significant responses are decreases
+    and 60 increases (binomial p = 0.00047). Both comparisons hold at every tail boundary, with the code's
+    lags, and with DL18 restricted to its 14 tones of 12 kHz
+    identified from the paper's results (108 against 60), though at -1.3 mm only 5 of the 10 largest
+    values are in the tail. The anterior decrease dominates in DL21 (36
+    against 3) and DL23 (17 against 6) but not in DL18, DL20, DL27 or DL30.
+  deviations:
+  - DL18 uses all 44 tones in the main analysis.
+- claim: fig4f-decreases-lateral-ventral
+  outcome: partially_reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig4f-decreases-lateral-ventral
+  notes: Of 245 anterior fibers, the 103 with a significant tone decrease are more ventral than the others
+    (median DV 3.66 against 3.30 mm, p = 0.0031) but not more lateral (median ML 2.07 against 1.97 mm,
+    p = 0.43); the same at the other tail boundaries. They are also more anterior (p = 1e-06). 79 anterior
+    fibers (32%) have both a significant light increase and a significant tone decrease, so "many sites"
+    holds by the 20% reading.
+- claim: figs4ac-patterns-consistent-across-mice
+  outcome: partially_reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:figs4ac-patterns-consistent-across-mice
+  notes: The tone correlation with AP is negative in all 7 mice (rho -0.44 to -0.70, each p < 0.03). The
+    light correlation is positive in 4 of 7 mice (significant in DL18, DL20 and DL27) and negative in
+    DL23 (rho -0.43, p = 0.026), DL29 and DL30, below the 5 required.
+  deviations:
+  - The supplementary legend of Figure S4 was not available; the test per mouse was chosen here.
+- claim: figs4eh-patterns-not-movement
+  outcome: partially_reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:figs4eh-patterns-not-movement
+  notes: Locomotion after the stimuli varies between mice and presentations (acceleration and deceleration
+    splits from 0 and 21 in DL29 light to 21 and 23 in DL18 tone; mean velocity change of either sign for
+    both stimuli). The fiber maps of the two splits correlate (light r = 0.873 over 235 fibers, tone r =
+    0.784 over 229). The tone pattern holds after acceleration (tail median 0.0073, anterior -0.0031 DF/F)
+    but not after deceleration, where the anterior median is positive (0.0042; tail 0.0098). The test uses
+    raw DF/F, as the paper's code for Figure S4E-H does, without the GLM's locomotion regressors.
+  deviations:
+  - The supplementary legend was not available; the correlation threshold and the tone-pattern test were
+    chosen here.
+- claim: figs5-isosbestic-no-pattern
+  outcome: partially_reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:figs5-isosbestic-no-pattern
+  notes: In DL31 and DL32 (96 fibers), 2 fibers respond significantly to light and 1 to tone at 415 nm,
+    against 45 and 18 at 470 nm, and the AP correlations of the tone values at 470 nm (-0.49, -0.43) are
+    absent at 415 nm (-0.19, 0.16). The median absolute value at 415 nm is 0.49 of that at 470 nm for
+    light but 0.68 for tone, above the criterion's half; for tone most 470 nm fibers are not significant
+    either, and both medians (0.0027 and 0.0018 DF/F) are near the noise level.
+  deviations:
+  - Events are placed by behaviour sample index for both channels, because the stored regular frame rate
+    drifts from the frame timestamps by up to half a second; the clock check for these two sessions is
+    weak (decoding 0.90 and 0.80 with true onsets against 0.40 to 0.65 with shifted ones, 20
+    presentations each).
+  - The 470 and 405 nm sessions of Figure S5A-D are not in the dandiset.
+- claim: fig5ab-response-latencies
+  outcome: partially_reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig5ab-response-latencies
+  measured:
+  - 187.5
+  - 271.7
+  - 393.2
+  notes: Counted from the onset frame as the Methods define latency, the means are 187.5 ms (240 light
+    increases), 271.7 ms (94 tone increases) and 393.2 ms (108 tone decreases); the order holds and the
+    tone decrease is within tolerance, the other two are below it. Counted as the paper's code counts
+    (its 1-based index divided by the frame rate, one frame later), they are 220.8, 305.0 and 426.5 ms,
+    within 2 ms of the paper's values, with SDs of 38.1, 98.7 and 196.5 ms against 42.5, 100.0 and 197.1.
+    One tone increase has no half-maximum crossing before its peak.
+  deviations:
+  - Latency follows the Methods (from the onset frame); the code's count, one frame later, is shown as a
+    variant and matches the paper.
+  - Tone onsets are shifted by 11 frames, the speaker delay in the paper's code, which the Methods do not
+    mention.
+- claim: fig5g-light-latency-gradient
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig5g-light-latency-gradient
+  notes: Over 240 fibers with a light latency (median 18 presentations each), relative latency is shorter
+    anteriorly (Spearman rho(AP, latency) = -0.285, p = 7e-06); it also increases laterally (rho = 0.263,
+    p = 3.8e-05) and not with depth (p = 0.93).
+  deviations:
+  - Relative latencies do not depend on the code's one-frame offset, which cancels in the difference.
+- claim: fig5h-tone-latency-gradient
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig5h-tone-latency-gradient
+  notes: Over 196 fibers with a tone latency (earlier of increase and decrease), relative latency is
+    shorter posteriorly (rho(AP, latency) = 0.254, p = 0.00033; tail median 308 ms against 368 ms
+    anterior). Increases alone (rho = -0.07, p = 0.5) and decreases alone (rho = -0.21, p = 0.028) do not
+    show it, so the gradient comes from the tail's fast increases and the slower anterior decreases, as
+    the paper says of Figure S6A-B.
+- claim: figs6cd-gradients-individual-mice
+  outcome: partially_reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:figs6cd-gradients-individual-mice
+  notes: The tone gradient is positive in 6 of 7 mice (significant in DL20 and DL23); the light gradient is
+    negative in 4 of 7 (significant in DL18 and DL27), zero in DL21 and positive in DL23 and DL29.
+  deviations:
+  - The supplementary legend was not available; the count of mice was chosen here.
+- claim: fig6-inclusion-counts
+  outcome: partially_reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig6-inclusion-counts
+  measured:
+  - 22
+  - 14
+  - 20
+  notes: In Opto2, 22 fibers are flagged included and 20 of them respond to at least one stimulation, both
+    within tolerance; 14 of the 19 stimulated included fibers evoke a significant response at another
+    included fiber, below 18. Adding the two fibers labelled Caudoputamen but not flagged (16 and 34)
+    gives the paper's 24 locations and 22 responding ones, and 16 of 21 stimulated fibers with a
+    response elsewhere; the files have 29 single-fiber sessions, of which 21 stimulate a striatal fiber,
+    so 24 stimulated locations cannot be reached. With the code's further exclusions of fibers 8, 9 and
+    21 the counts are 19, 14 of 19 and 18. Session 2023-03-20f, with the laser artefact on 13 fibers, is
+    left out.
+  deviations:
+  - Stimulation epochs and the stimulated fiber are found from the DF/F alone (artefact above 0.4), without
+    the code's check against the trigger line, which the files do not hold.
+  - The bootstrap counts responses of either sign as significant, as the code does.
+- claim: fig6gh-release-decays-with-distance
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig6gh-release-decays-with-distance
+  notes: Over 266 pairs of 14 stimulated and 20 recording fibers (378 pairs, 18 by 21, in the paper), the
+    fit is a = 0.0147 DF/F and b = -1.096 per mm (95% bootstrap interval over stimulation sites -1.325 to
+    -0.890), and the response falls with absolute distance along ML, AP and DV (Spearman rho -0.30, -0.27,
+    -0.39, all p < 1e-5). The binned mean falls from 0.0079 DF/F at 0.54 mm to 0.0013 to 0.0017 beyond 2
+    mm.
+  deviations:
+  - Fewer stimulation and recording sites than the paper, from the inclusion of fig6-inclusion-counts.
+- claim: fig6g-dorsal-spread
+  outcome: partially_reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig6g-dorsal-spread
+  notes: The decay rate is -0.971 per mm for 156 dorsal pairs and -1.403 for 109 ventral pairs, in the
+    claimed order, but the 95% bootstrap interval of the difference (-0.094 to 0.969) includes 0.
+  deviations:
+  - The paper shows binned means; the comparison of fitted decay rates was chosen here.
+- claim: fig6-tdtomato-control-no-response
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:fig6-tdtomato-control-no-response
+  notes: No included non-stimulated fiber has a significant increase after stimulation in 304 fiber and
+    session pairs of Opto4 (13 sessions) or 203 of Opto9 (12 sessions); median responses are -0.0002 and
+    0.0003 DF/F, and one Opto9 pair has a significant decrease. The same test finds increases in 142 of
+    619 pairs (20 distinct fibers) in Opto2. The files hold 25 tdTomato stimulations against the paper's
+    26.
+  deviations:
+  - In these mice the laser artefact spreads to many fibers, and the stimulated fiber is taken as the one
+    with the largest artefact, which can be wrong; the true stimulated fiber is then among the fibers
+    tested, which makes the test stricter.
+- claim: figs7a-photoswitch-confined
+  outcome: reproduced
+  notebook: reproduce_vu_2024.ipynb
+  output: claim:figs7a-photoswitch-confined
+  notes: In each of UG21's 3 sessions the stimulated fiber (12, 18 and 24, the numbers of the paper's code
+    folders) has a significant increase after the laser (0.0118 to 0.0144 DF/F), and none of the 21 other
+    included fibers responds significantly in either direction.
+- claim: figs1-no-tissue-damage
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted. The histology is not in the dandiset; the paper deposited the NeuN and DAPI images
+    and its density results on Zenodo (SuppFig01.zip, about 180 MB of TIFF images). Testing it needs the
+    neuron detection of the paper's MATLAB code on those images.
+- claim: figs3-targeting-errors
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted. The dandiset holds the localized fiber tips but not the planned targets; the CT
+    fiber tables with planned positions are on Zenodo (SuppFig03.zip).
+- claim: fig3-freely-moving-signals
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted. The miniscope recordings in freely moving mice are not in the dandiset; Zenodo
+    holds two videos (3.3 GB) and the example DF/F traces with scored times (Fig03.zip).
+- claim: fig7d-ventral-not-dorsal-jaw
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted. None of the D1-cre mice of Figure 7 (OptoD1_6, 7, 8 and 10 in the paper's code) is
+    in the dandiset. Their DeepLabCut outputs, DF/F and stimulation files are on Zenodo (Fig07.zip, 2.1
+    GB, about 24 sessions for this panel).
+- claim: fig7ef-single-ventral-fiber
+  outcome: blocked
+  blocked_by: other
+  notes: Not attempted, as fig7d-ventral-not-dorsal-jaw (Fig07.zip and SuppFig07.zip on Zenodo).
+findings:
+- kind: data_missing
+  statement: The optogenetic sessions (Opto2, Opto4, Opto9, UG21) hold no stimulation times and no record
+    of which fiber was stimulated; the trigger line the paper's code uses is not in the files. Both can
+    be recovered only from the laser artefact in the DF/F, which is unambiguous in Opto2 and UG21 but
+    spreads over many fibers in the tdTomato mice.
+- kind: metadata_insufficient
+  statement: The event table gives tone presentations without their frequency. DL18 has 44 tones, of which
+    the paper analysed the 14 at 12 kHz; the frequency is stored only in a MATLAB object of the
+    behaviour file on Zenodo. The tone start times are the trigger times, 11 frames before the sound
+    according to the paper's code, which the dandiset does not say.
+- kind: data_missing
+  statement: DL15's sessions from 2021-09-10 (44 to 70 rewards) were run in a ViRMEn task; the paper keeps
+    only rewards of one task phase, but the task variables are not in the files, so unpredicted rewards
+    cannot be separated and Figure 1D can be tested only to week 8.
+- kind: metadata_error
+  statement: The FiberPhotometryTable column `included` is described as "whether this fiber has been
+    successfully implanted", but it marks fibers within the striatum (the paper's in_striatum); in Opto2
+    two fibers labelled Caudoputamen are not included, and with them the counts match the paper's "within
+    or on the border of the striatum" (24 locations).
+- kind: metadata_error
+  statement: UG21's indicator is given as tdTomato. Its 3 sessions, 22 included fibers and stimulated fibers
+    12, 18 and 24 match the paper's rDAm3.0 mouse without opsin (Figure S7A), so the indicator is
+    consistent with being a mislabel; the files cannot show which indicator was expressed.
+- kind: metadata_error
+  statement: In DL31 and DL32 (18 Hz, interleaved 470 and 415 nm) the fiber photometry series store a
+    regular rate, but the frame timestamps of the behaviour drift from it by up to 0.43 and 0.54 s over
+    the session, so times computed from the stored rate are wrong by up to half a second.
+- kind: data_missing
+  statement: The data of Figures 2, 3, 7, S1, S3 and S5A-D are not in the dandiset (the CT scans, the
+    freely moving recordings, the D1-cre jaw experiments, histology, planned fiber targets and the 470 and
+    405 nm sessions of the salient-stimulus mice); they are on Zenodo. Opto9 has 12 sessions, so one of
+    the paper's 26 tdTomato stimulations is missing.
+- kind: code_mismatch
+  statement: The paper's latency code (sal_stim_lat_plots.m) divides the 1-based index of the half-maximum
+    frame by the frame rate, so its latencies are one frame (33 ms) longer than the Methods' definition.
+    With that count the dandiset gives the paper's means within 2 ms.
+- kind: code_mismatch
+  statement: In the paper's cross-correlation of DF/F with locomotion (sal_stim_iti_acc_cc.m), negative
+    lags are not shifted; they correlate the two signals at zero lag over a truncated range. The Methods
+    describe a cross-correlation over +-500 ms.
+- kind: code_mismatch
+  statement: The Figure 1C legend describes 23 example fibers of a 93-fiber array; the paper's code for the
+    figure plots 33 fibers of mouse 842, whose recording has 82 fibers.
+- kind: metadata_insufficient
+  statement: The archive's summary gives the approach as "cell population imaging" and lists only NWB
+    container types as variables measured; the files hold multi-fiber photometry, treadmill velocity and
+    behavioural events.
