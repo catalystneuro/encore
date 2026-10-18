@@ -307,6 +307,19 @@ def wilcoxon_w(a, b) -> dict:
             "mean_diff": float(np.mean(d))}
 
 
+def wilcoxon_exact_p(w: float, n: int) -> float:
+    """Exact two-sided p of the Wilcoxon signed-rank test for a sum of signed ranks `w` (the W of
+    `wilcoxon_w`) with `n` non-zero differences and no ties: P(|W| >= |w|) under the null."""
+    counts = np.zeros(n * (n + 1) // 2 + 1)
+    counts[0] = 1
+    for k in range(1, n + 1):  # distribution of the sum of positive ranks
+        counts[k:] = counts[k:] + counts[:-k].copy()
+    probs = counts / counts.sum()
+    total = n * (n + 1) / 2
+    w_all = 2 * np.arange(len(counts)) - total  # W = 2 T+ - n(n+1)/2
+    return float(probs[np.abs(w_all) >= abs(w) - 1e-9].sum())
+
+
 def friedman(matrix) -> dict:
     """Friedman test on a mice x conditions matrix (complete rows only)."""
     from scipy import stats
