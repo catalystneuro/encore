@@ -27,6 +27,10 @@ github.com/denisecailab/RetrospectiveMemoryLinkingAnalysis_2024, is not public):
   (the intervals' own parameters are in their description).
 - Movement in offline recordings is the magnitude of the telemetry ActivitySignal averaged in
   `MOVE_BIN_S` bins (a choice made here; the paper used a webcam the dandiset does not hold).
+- Sleep scoring as in the Methods ("Sleep recordings and sleep scoring"): 6 s epochs, and a
+  two-state Gaussian mixture on EMG whose higher state is wake. The EMG feature is the log of the
+  epoch's RMS, a common choice; the Methods do not name one. The Methods give the telemetry at
+  100 Hz; the files hold it at 500 Hz.
 """
 
 from __future__ import annotations
@@ -46,6 +50,7 @@ MICE = ["Ca_EEG2-1", "Ca_EEG3-4"]
 BURST_Z = 2.0
 N_SHUFFLES = 1000
 MOVE_BIN_S = 0.1
+SCORE_EPOCH_S = 6.0
 REGISTRATION_TABLE = "OfflineDay2Session1vsConditioningSessions"
 
 
@@ -257,6 +262,25 @@ def movement(s: dict, bin_s: float = MOVE_BIN_S) -> tuple[np.ndarray, np.ndarray
     n = len(a) // k
     v = a[:n * k].reshape(n, k).mean(1)
     return s["activity_t0"] + (np.arange(n) + 0.5) * bin_s, v
+
+
+def emg_wake_gmm(emg: np.ndarray, rate: float, epoch_s: float = SCORE_EPOCH_S, log: bool = True,
+                 seed: int = 0) -> np.ndarray:
+    """Wake (1) or sleep (0) for each whole epoch of an EMG trace, by a two-state Gaussian mixture.
+
+    Epochs where the telemetry is absent (more than 90% zeros) get -1 and are left out of the fit.
+    """
+    from sklearn.mixture import GaussianMixture
+
+    k = int(round(epoch_s * rate))
+    X = emg[:len(emg) // k * k].reshape(-1, k).astype(np.float64)
+    ok = (X == 0).mean(1) <= 0.9
+    rms = np.sqrt(((X - X.mean(1, keepdims=True)) ** 2).mean(1))
+    f = (np.log(rms[ok]) if log else rms[ok])[:, None]
+    g = GaussianMixture(2, random_state=seed).fit(f)
+    out = np.full(len(X), -1)
+    out[ok] = (g.predict(f) == int(np.argmax(g.means_[:, 0]))).astype(int)
+    return out
 
 
 def window_mean(t: np.ndarray, v: np.ndarray, centres: np.ndarray, lo: float, hi: float) -> np.ndarray:

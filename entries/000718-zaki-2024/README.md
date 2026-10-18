@@ -14,7 +14,7 @@ offline, behaviour-only, inhibitory tagging and no-shock experiments are not in 
 | Offline bursts are more frequent than in shuffled activity | Blocked: methods underspecified |
 | Offline population activity is more skewed than shuffled activity | Reproduced |
 | Movement pauses around offline bursts | Not reproduced |
-| Overlap-neutral exceeds overlap-aversive co-bursting in wake after a high shock | Partially reproduced |
+| Overlap-neutral exceeds overlap-aversive co-bursting in wake after a high shock | Not reproduced |
 | Behaviour-only experiments (five claims) | Blocked: data missing |
 | One-hour offline and single-experience experiments (nine claims) | Blocked: data missing |
 | Inhibitory tagging and no-shock experiments (two claims) | Blocked: data missing |
@@ -29,5 +29,6 @@ The attempt record, with the reasons and the differences from the paper's method
 - `reproduce_zaki_2024.ipynb`: the analysis. It takes about two minutes, most of it streaming the
   files.
 - `memlink.py`: loading the session, Week and registration data, freezing, burst detection,
-  ensembles, co-participation, circular-shift surrogates and time-shift decoding. Other notebooks
+  ensembles, co-participation, circular-shift surrogates, time-shift decoding and the Methods' EMG
+  sleep/wake scoring. Other notebooks
   on this dandiset can import it.
