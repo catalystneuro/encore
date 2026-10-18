@@ -12,7 +12,9 @@ Where the parameters come from:
   ``Fig04/general_functions/run_sal_stim_glm.m``): window -1 to 2 s around onset, a cubic
   B-spline basis of 13 functions over the 1 s stimulus (knots every 3 frames at 30 Hz), lagged
   overall velocity and acceleration (most positive and most negative ITI cross-correlation
-  with p < 0.05, lags within 500 ms).
+  with p < 0.05, lags within 500 ms). At 18 Hz the code keeps knots every 3 frames, which
+  gives 9 functions (``SuppFig05/EFGH/analysis_code/run_sal_stim_glm_470_415.m``); the
+  Methods' 13 can be had with ``knot_intervals=10``.
 - Null distribution (``cue_glm_null``): the same model refitted with random onsets drawn from
   the sampleable frames and shuffled stimulus labels, 10000 times (Methods); significance is
   3 consecutive frames outside the 0.5 to 99.5 percentile band (Methods and code).
@@ -29,7 +31,11 @@ Where the parameters come from:
 - Optogenetic stimulation responses (``stim_response``): Methods ("DA release to optogenetic
   stimulation") and code (``Fig06/general functions``): stimulation epochs are where the
   stimulated fiber's DF/F exceeds 0.4, kept when at least 4 s apart; the response is the mean
-  DF/F from one frame to 0.5 s after laser offset, tested against 10000 random onsets.
+  DF/F from one frame to 0.5 s after laser offset, tested against 10000 random onsets. The
+  random onsets exclude frames with the laser trace above 0.5, the windows ending at each
+  onset and the end of the recording, as ``getNullDist_stim.m`` does.
+- Correlation within groups (``within_group_rank_corr``): a common choice, not from the paper,
+  for testing a pooled correlation without letting differences between mice drive it.
 """
 
 from __future__ import annotations
@@ -225,9 +231,14 @@ def loco_lags(dff, vel, acc, iti, max_lag: int, code_indexing: bool = False):
 
 # --- GLM ------------------------------------------------------------------------------------
 
-def spline_basis(whole_window: int, step: int = 3, degree: int = 3) -> np.ndarray:
-    """B-spline basis evaluated at frames 0..whole_window (as MATLAB spcol in the paper's code)."""
-    knots = np.arange(0, whole_window + 1, step, dtype=float)
+def spline_basis(whole_window: int, step: int = 3, degree: int = 3, n_intervals: int | None = None) -> np.ndarray:
+    """B-spline basis evaluated at frames 0..whole_window (as MATLAB spcol in the paper's code).
+
+    Knots every ``step`` frames, or, with ``n_intervals``, that many equal intervals; there are
+    ``n_intervals + degree`` functions."""
+    if n_intervals is None:
+        n_intervals = whole_window // step
+    knots = np.linspace(0, whole_window, n_intervals + 1)
     t = np.r_[[knots[0]] * degree, knots, [knots[-1]] * degree]
     nb = len(t) - degree - 1
     x = np.arange(whole_window + 1, dtype=float)
@@ -249,12 +260,12 @@ class CueGLM:
     estimates as fitting each fiber separately.
     """
 
-    def __init__(self, dff, vel, acc, lags: dict, fs: float):
+    def __init__(self, dff, vel, acc, lags: dict, fs: float, knot_intervals: int | None = None):
         self.fs = fs
         self.whole = int(round(fs))  # the 1 s stimulus: 30 frames at 30 Hz, 18 at 18 Hz
         self.pre, self.post = self.whole, 2 * self.whole  # window -1 s to +2 s
         self.tau = np.arange(-self.pre, self.post + 1)
-        self.B = spline_basis(self.whole)
+        self.B = spline_basis(self.whole, n_intervals=knot_intervals)
         self.nb = self.B.shape[1]
         self.max_lag = int(round(fs / 2))
         lag_list = np.arange(-self.max_lag, self.max_lag + 1)
@@ -434,6 +445,25 @@ def stimulated_fiber(dff: np.ndarray, fs: float, thresh: float = 0.4):
         return None, 0
     best = cand[np.argmax(dff[:, cand].max(0))]
     return int(best), int(len(cand))
+
+
+def within_group_rank_corr(x, y, groups, n_perm: int, rng: np.random.Generator):
+    """Correlation of x and y after ranking each within its group (as fractions of the group's
+    size), pooled over groups, with a two-sided p-value from permuting y within each group."""
+    df = pd.DataFrame({"x": np.asarray(x, float), "y": np.asarray(y, float), "g": np.asarray(groups)})
+    df = df.dropna()
+    gx = df.groupby("g").x.rank(pct=True).values
+    gy = df.groupby("g").y.rank(pct=True).values
+    idx = [np.flatnonzero(df.g.values == g) for g in df.g.unique()]
+    r = np.corrcoef(gx, gy)[0, 1]
+    null = np.empty(n_perm)
+    for i in range(n_perm):
+        yp = gy.copy()
+        for k in idx:
+            yp[k] = gy[rng.permutation(k)]
+        null[i] = np.corrcoef(gx, yp)[0, 1]
+    p = (1 + np.sum(np.abs(null) >= abs(r))) / (n_perm + 1)
+    return r, p
 
 
 def exp_fit(d: np.ndarray, y: np.ndarray):

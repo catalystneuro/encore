@@ -30,7 +30,8 @@ Figures 3, 7 and S1 are not in it.
 | Slower decay dorsally than ventrally (Figure 6G) | Partially reproduced |
 | No response in tdTomato controls (Figure 6) | Reproduced |
 | Photoswitching confined to the stimulated fiber (Figure S7A) | Reproduced |
-| Figures 3, 7, S1 and S3 (five claims, data only on Zenodo) | Blocked: not attempted |
+| Targeting errors (Figure S3): planned targets not public | Blocked: data missing |
+| Figures 3, 7 and S1 (four claims, data only on Zenodo) | Blocked: not attempted |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -38,7 +39,7 @@ reasoning and the differences from the paper's method.
 The DF/F traces, fiber order and stimulus times in the files are exactly those behind the paper's
 results. The files do not hold the stimulation times or the stimulated fiber of the optogenetic
 sessions (found here from the laser artefact in the DF/F, as the paper's code does), the frequency of
-DL18's tones, or the task variables that separate unpredicted rewards in DL15's later sessions. The
+DL18's tones, the planned fiber targets of Figure S3, or the task variables that separate unpredicted rewards in DL15's later sessions. The
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001084-vu-2024-01.yaml`](../../attempts/001084-vu-2024-01.yaml).
 
