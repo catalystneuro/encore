@@ -1,0 +1,287 @@
+# Claims for Ling, Moss, Smith, Deng, Kroeger, Reimer, Raman & Arenkiel, "Conserved neural
+# dynamics and computations across species in olfaction", bioRxiv doi:10.1101/2023.04.24.538157.
+# Source: the full text of version 2 of the preprint (2024-02-23, CC BY-ND), read from its JATS
+# XML; its Results, figure legends and Methods. Table S1 and the key resources table are images
+# that could not be fetched, so the list of datasets per figure was not read. The paper was later
+# published as "Conserved post-odor dynamics in the olfactory systems of mice and locusts"
+# (iScience 2026, doi:10.1016/j.isci.2026.115373); the claims are those of the preprint, which
+# the dandiset names.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata of both published versions, the trials tables (odors, concentrations, timing, block
+# structure), ROI counts, frame counts and frame rates of every file, and the conversion code.
+# The author had also read the paper's MATLAB code on Figshare (doi:10.6084/m9.figshare.31435543.v2,
+# Script_Fig1.m to Script_Fig6.m) and the small summary files it holds (medAngles.mat,
+# wrtTheta.mat, contrastCorr.mat). One comparison had been run while preparing, the one the
+# figshare-trace-link claim states: the raw traces of sub-141 ses-8 against the deposited array
+# data1_mouse_glom198.mat, which gave a median within-trial r of about 0.97 when the windows are
+# counted in frames as the code does, and about 0.4 when they are placed in seconds. No claim's
+# analysis on the paper's findings had been run.
+#
+# The dandiset holds the mouse imaging only. The locust recordings are on Figshare with the
+# paper's code; claims on them are `data: elsewhere` and are tested on those files.
+#
+# Method choices fixed here (see the helper's docstring for where each comes from):
+# - Windows are placed in seconds on a 16 Hz grid interpolated from each session's frame times
+#   (the code counts frames at a nominal 16 per second). ON is 0 to 5 s after onset, OFF is 0 to
+#   5 s after offset, the ITI is 0 to 50 s after offset.
+# - dF/F for responses to an odor uses F0 = the mean of the 2 s before that trial's onset; for the
+#   ITI and IBI analyses F0 = the ROI's median F over the session.
+# - Population vectors are trial-averaged, minus the median across glomeruli at each frame where
+#   the code does so (`medRsp`), and angles are between vectors centred over the frames analysed,
+#   as the code's PCA scores are.
+# - The block-protocol sessions are found from the trials tables (5-s pulses), the random-order
+#   sessions likewise (1-s pulses every 20 s). Each session is analysed on its own; glomeruli are
+#   not matched across sessions.
+schema_version: 1
+dandiset: "001170"
+paper: doi:10.1101/2023.04.24.538157
+claims:
+- id: mouse-sessions
+  statement: The mouse block-protocol data (four odors, 5 s pulses, 55 s between trials, blocks of
+    ten, 15 min between blocks) come from seven imaging sessions in four mice, with a median of 215
+    glomeruli per imaging session.
+  source: Results, first section; Figure 2H and 4B legends; Methods, Odor delivery to mice
+  expected:
+  - quantity: block-protocol sessions
+    value: 7
+    tolerance: 0
+  - quantity: mice in those sessions
+    value: 4
+    tolerance: 0
+  - quantity: median glomeruli per imaging session
+    value: 215
+    tolerance: 21.5
+  criterion: Sessions are classed by protocol from the trials tables; glomeruli are the ROIs of the
+    three fields of view. The median can be read over (a) the seven block-protocol sessions or (b)
+    every imaging session in the dandiset. Reproduced when the session and mouse counts match and
+    the median is within tolerance under one reading.
+- id: figshare-trace-link
+  statement: The dandiset's raw fluorescence of the 198-glomerulus session is the data the paper
+    deposited for its Figure 2D to 2F and 4C (Figshare data1_mouse_glom198.mat), up to the
+    normalisation, with glomeruli in the same order.
+  source: Methods, Time-bin-by-time-bin correlation analysis (n = 198 glomeruli for Fig. 2F); the
+    paper's Figshare record
+  data: with_inputs
+  criterion: Records are matched by ROI count (the one dandiset session with 198 ROIs) and by ROI
+    order (FOV1, FOV2, FOV3 concatenated), and the deposited solitary blocks 1 to 4 by recorded
+    order to the session's four solitary blocks. Windows are taken as the code does, 912
+    consecutive frames from 32 frames before each onset. Reproduced when the median over trials
+    and glomeruli of the within-trial Pearson r between the raw F and the deposited array is at
+    least 0.9 and, for at least 90% of glomeruli, the deposited glomerulus correlates best with
+    the dandiset ROI of the same index. Partially reproduced when the median r is at least 0.9 but
+    the order check fails. The same median r with windows placed in seconds is shown as a variant.
+- id: fig2h-onoff-angle-mouse
+  statement: In the mouse OB the angle between glomerular ON and OFF response vectors is greater
+    than 90 degrees for each odor (mean 121.8 +/- 2.98 SEM, 4 odors, 7 sessions), so ON and OFF
+    responses are inverted relative to each other.
+  source: Results, first section; Figure 2G and 2H
+  expected:
+    quantity: mean over sessions and odors of the median ON-OFF angle
+    value: 121.8
+    tolerance: 2.98
+    unit: degrees
+  criterion: As Script_Fig2.m (mouse) does, per session and odor, trial-averaged dF/F frames of the
+    5 s ON and 5 s OFF windows, minus the median across glomeruli at each frame, centred over the
+    160 frames; the median angle over all ON x OFF frame pairs. "Greater than 90 degrees for each
+    odor" is read as (a) each odor's mean over sessions above 90, or (b) every session and odor
+    value above 90. Reproduced when the mean over the 28 values is within tolerance and the
+    90-degree condition holds under one reading; partially reproduced when the 90-degree
+    condition holds but the mean is outside tolerance; not reproduced otherwise. Shown as
+    variants, uncentred vectors (the Methods' wording), no median subtraction, per-trial z-scored
+    traces, the ON-ON and OFF-OFF medians, and random Gaussian vectors.
+- id: fig2f-onoff-anticorrelated-mouse
+  statement: Time-averaged glomerular ON and OFF responses to the same odor are anticorrelated;
+    glomeruli active during the odor tend to be suppressed after it and the reverse.
+  source: Results, first and second sections; Figure 2D, 2F and 4C
+  criterion: Per session and odor, Pearson r across glomeruli between the trial- and time-averaged
+    dF/F of the ON window and of the OFF window, each minus the median across glomeruli (as
+    Script_Fig3.m does for Fig 3e). Reproduced when the median over the 28 session-odor values is
+    below 0 with a two-sided Wilcoxon signed-rank p < 0.05 and each odor's median over sessions is
+    below 0; partially reproduced when the first part holds and not every odor's median is below
+    0. The values without the median subtraction are shown as a variant.
+- id: fig4b-reference-odor-mouse
+  statement: In the mouse OB the ON response to a reference odor is closer in angle to the ON
+    responses of the other odors than to any OFF response, including its own, and this holds for
+    every odor of the panel.
+  source: Results, second section; Figure 4B and S4B
+  criterion: Per session, as the code does for the locust (Script_Fig3.m, Fig 3c), PCA of the
+    trial-averaged, median-subtracted ON and OFF frames of the four odors, mean score vector of
+    each odor and period on the top three components, and the angles from each reference odor's
+    ON vector. "True for all odors" is read as (a) for each reference odor, the session-mean
+    ON-ON angle (three other odors) is smaller than the session-mean ON-OFF angle (four odors) by
+    a paired two-sided t-test over the seven sessions at p < 0.05, or (b) in every session and for
+    every reference odor, the largest ON-ON angle is smaller than the smallest ON-OFF angle.
+    Reproduced when one reading holds for all four reference odors; partially reproduced when
+    reading (a) holds for one to three. The full-dimensional vectors are shown as a variant.
+- id: fig4d-clustering-mouse
+  statement: Hierarchical clustering of glomerular responses cleanly separates ON responses from
+    OFF responses.
+  source: Results, second section; Figure 4D
+  criterion: As Script_Fig3.m (Fig 3h), per session, complete linkage on cosine distance between
+    the trial- and time-averaged dF/F vectors of the four ON and four OFF periods; the tree is cut
+    into two clusters. Reproduced when the two clusters are exactly the ON and the OFF vectors in
+    the 198-glomerulus session (the session of Figure 2F and 4C) and in at least four of the seven
+    sessions; partially reproduced when only one of the two holds.
+- id: fig6e-contrast-msc
+  statement: Methyl salicylate presented 1 s after another odor evokes a response less correlated
+    with that odor's solitary response than the solitary methyl salicylate response is (history
+    dependent contrast enhancement; one-tailed t-test p < 0.01, 3 sessions from 2 mice).
+  source: Results, third section; Figure 6D and 6E (left)
+  criterion: As Script_Fig4.m (Fig 4i), per session and first odor X (ace, als, eug), Pearson r
+    across glomeruli between the trial- and time-averaged dF/F of solitary X (ON window) and of
+    solitary msc (ON window), and between solitary X and msc in the (X)msc pairs (its own 5 s, 6
+    to 11 s after the pair's onset), with F0 from the 2 s before the first onset. The paper's three
+    sessions are not identified, so all seven block sessions are used. Reproduced when the
+    solitary r exceeds the sequential r by a paired one-tailed t-test over the 21 session-odor
+    pairs at p < 0.01; partially reproduced when 0.01 <= p < 0.05. Per session (mean over X) and
+    per X are shown as well.
+- id: fig6e-contrast-ace
+  statement: Acetophenone presented 1 s after another odor evokes a response less correlated with
+    that odor's solitary response than solitary acetophenone (one-tailed t-test p < 0.05, 4 sessions
+    from 2 mice).
+  source: Figure 6E (right) and Figure S6
+- id: fig7d-persistent-anticorrelation
+  statement: After odor offset the glomerular population activity stays negatively correlated with
+    the odor-evoked ON response for several tens of seconds, although overall activity returns to
+    baseline quickly.
+  source: Results, fourth section; Figure 7B, 7D and S7C
+  criterion: Per session and odor, Pearson r across glomeruli between the trial- and time-averaged
+    ON vector and the trial-averaged vector in each 5 s bin from 0 to 50 s after offset, both
+    minus the median across glomeruli (as Script_Fig2.m does for the temporal correlation), dF/F
+    with F0 from the 2 s before onset. "Several tens of seconds" is read as at least 20 s.
+    Reproduced when, in each of the four bins from 0 to 20 s, the median over the 28 session-odor
+    values is below 0 with a two-sided Wilcoxon signed-rank p < 0.05; partially reproduced when
+    this holds for the first bin but not all four. All bins are reported; without the median
+    subtraction, and with F0 from the 15 min before each block, as variants.
+- id: fig7h-iti-knn-mouse
+  statement: Glomerular activity averaged over the 50 s after each odor offset classifies the
+    preceding odor with high accuracy (k-NN, k = 20).
+  source: Results, fourth section; Figure 7G and 7H; Methods, Classification analysis of average
+    ITI periods
+  criterion: In the 318-glomerulus session (the Methods' n for Fig. 7H), per trial the mean dF/F
+    (session-median F0) over 0 to 50 s after offset, 40 vectors; leave-one-out k-NN with k = 20
+    (the legend; the Methods' k = 50 exceeds the 39 other vectors) on angular distance in full
+    dimension (Methods). Reproduced when the accuracy is at least 50% and above the 99th
+    percentile of 1000 label permutations; partially reproduced when above that percentile but
+    below 50%; not reproduced otherwise. The code's choice (cosine on the top three PCs) and the
+    other six sessions are shown as variants.
+- id: fig7j-iti-timebin-mouse
+  statement: A time-bin k-NN classifier identifies the preceding odor from glomerular activity
+    throughout the 55 s inter-trial interval; accuracy stays high for its whole duration and
+    falls to chance with shuffled labels.
+  source: Results, fourth section; Figure 7J and S8C
+  criterion: In the 318-glomerulus session, dF/F (session-median F0) over 0 to 50 s after offset,
+    averaged over 4-frame bins, per trial (code, Script_Fig6.m), 4 odors x 10 trials; k-NN with
+    k = 10 and correlation distance, neighbours from other trials only. Accuracy is averaged over
+    odors in 10 s segments. Reproduced when every segment is at least 50% (twice chance) and above
+    the 99th percentile of 200 permutations of the trial labels; partially reproduced when every
+    segment is above that percentile but not all reach 50%; not reproduced when any segment is not
+    above it. The other six sessions are shown as variants.
+- id: figs7e-ibi-chance
+  statement: During the 15 min between blocks odor-specific information is no longer present;
+    classification of 1-min bins of the inter-block interval by the preceding odor is near chance
+    (34.8%).
+  source: Results, fourth section; Figure S7D and S7E, Figure 7K
+  expected:
+    quantity: IBI classification rate, 1-min bins
+    value: 34.8
+    tolerance: 3.48
+    unit: percent
+  criterion: The IBI is the 15 min from the end of each solitary block's last ITI (last onset plus
+    60 s), in 1-min bins of dF/F (session-median F0), only bins before the next presentation and
+    the end of imaging. Leave-one-out k-NN with k = 50 and angular distance (Methods) needs 60
+    bins, so it is run on the sessions with four complete IBIs. Reproduced when the mean rate over
+    those sessions is at most 38.3% (the expected value plus its tolerance; the claim is that the
+    rate is near chance, 25%). The 318-glomerulus session with k = 20, and a 1000-permutation null
+    for each session, are shown as well.
+- id: figs8e-random-order-decline
+  statement: When eleven odors are presented in random order (1 s pulses, 19 s apart), odor
+    information after offset is variable across odors and on average declines to chance after
+    several seconds.
+  source: Results, fourth section; Figure S8D and S8E
+  criterion: The dandiset's random-order sessions; the first 10 presentations of each of the 11
+    odors (not Empty), dF/F (session-median F0) over 0 to 17 s after offset in 4-frame bins; k-NN
+    with k = 10 and correlation distance, neighbours from other trials only (Methods). Per
+    session, accuracy averaged over odors; early is 0 to 2 s after offset, late is 12 to 17 s.
+    Reproduced when, in at least three of the sessions, early accuracy is above the 99th
+    percentile of 200 permutations of the trial labels and late accuracy is not above the 95th;
+    partially reproduced when early accuracy is above it in at least three sessions but late
+    accuracy is too.
+- id: figs2-pid-decay
+  statement: Photoionization detector recordings at the nostril show odor concentration rising and
+    decaying quickly at onset and offset, for every odor.
+  source: Figure S2; Methods, Odor delivery to mice
+- id: fig1g-onoff-angle-locust
+  statement: In the locust antennal lobe the median angle between PN population ON and OFF response
+    vectors exceeds 90 degrees for every one of 11 odors (mean 106.7 +/- 0.84 SEM).
+  source: Results, first section; Figure 1F and 1G, S1
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.31435543.v2 (data2_locust_PN66.mat)
+  expected:
+    quantity: mean over odors of the median ON-OFF angle
+    value: 106.7
+    tolerance: 0.84
+    unit: degrees
+  criterion: As Script_Fig2.m (locust), per odor, trial-averaged spike counts of 66 PNs in 50 ms
+    bins over the 4 s ON and 4 s OFF windows, centred over the 160 bins (PCA scores); median angle
+    over all ON x OFF bin pairs. Reproduced when all 11 medians exceed 90 and the mean is within
+    tolerance; partially reproduced when all exceed 90 and the mean is outside it; not reproduced
+    when any is at most 90. Uncentred and baseline-subtracted vectors are shown as variants.
+- id: figs4a-reference-odor-locust
+  statement: In the locust the ON response to a reference odor is closer to other odors' ON
+    responses than to OFF responses for most reference odors, significantly for 5 of 11.
+  source: Results, second section; Figure 3B and S4A
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.31435543.v2 (data2_locust_PN66.mat)
+  expected:
+    quantity: reference odors with a significant difference
+    value: 5
+    tolerance: 1
+  criterion: As Script_Fig3.m (Fig 3c), PCA of the trial-averaged ON and OFF bins of all 11 odors,
+    mean score vectors on the top three components per odor and period, angles from each reference
+    ON vector; two-sample t-test of the 11 ON angles against the 11 OFF angles at p < 0.05, with
+    ON smaller. The tolerance is one odor, as counts of 5 cannot take a 10% tolerance. Reproduced
+    when the count is within tolerance and ON angles are smaller on average for most (at least 6)
+    reference odors.
+- id: fig5e-contrast-locust
+  statement: In the locust, PN responses to geraniol presented 0.5 s after another odor are less
+    correlated with that odor's solitary response than solitary geraniol is (one-tailed t-test
+    p < 0.05, 5 odor pairs).
+  source: Results, third section; Figure 5D and 5E
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.31435543.v2 (data4_locust_PN85.mat)
+  criterion: As Script_Fig4.m (Fig 4d,e), Pearson r across 85 PNs of trial- and time-averaged
+    spike counts, solitary first odor (ON window) against solitary ger (ON window) and against
+    ger in the pair (its 4 s window); paired one-tailed t-test over the five first odors.
+    Reproduced when p < 0.05 with solitary r higher; not reproduced otherwise. The same for
+    hexanol as second odor is shown as a variant.
+- id: fig7f-iti-knn-locust
+  statement: In the locust, PN activity averaged over the 20 s after odor offset classifies the
+    preceding odor (k-NN on angular distance), so ITI activity is odor specific.
+  source: Results, fourth section; Figure 7E and 7F; Methods, Classification analysis of average
+    ITI periods
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.31435543.v2 (data5_locust_PN85.mat)
+  criterion: Per trial the mean spike count of each PN over the 20 s after offset, 7 odors x 10
+    trials; leave-one-out k-NN with k = 10 on angular distance in full dimension (Methods).
+    Reproduced when the accuracy is at least 50% and above the 99th percentile of 1000 label
+    permutations; partially reproduced when above that percentile but below 50%. The code's
+    choice (k = 4, cosine on the top three PCs) is shown as a variant.
+- id: fig7i-iti-timebin-locust
+  statement: In the locust a time-bin k-NN classifier's accuracy decays across the 20 s after
+    offset to about 40% averaged over odors, but for most odors does not fall to chance.
+  source: Results, fourth section; Figure 7I
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.31435543.v2 (data5_locust_PN85.mat)
+  expected:
+    quantity: accuracy averaged over odors at the end of the ITI
+    value: 40
+    tolerance: 4
+    unit: percent
+  criterion: As Script_Fig5.m and the Methods, 200 ms bins (four 50 ms bins) over the 21 s after
+    offset, 7 odors x 10 trials, k-NN with k = 10 and correlation distance, neighbours from other
+    trials only. "At the end" is the last 5 s. Reproduced when the mean over odors in the last 5 s
+    is within tolerance and, for at least 4 of 7 odors, that odor's accuracy in the last 5 s is
+    above the 99th percentile of 200 permutations of the trial labels; partially reproduced when
+    one of the two holds.

@@ -1,0 +1,672 @@
+schema_version: 1
+id: 001170-ling-2023-01
+dandiset: "001170"
+dandiset_version: 0.260528.1016
+paper: doi:10.1101/2023.04.24.538157
+date: 2026-10-18
+entry: 001170-ling-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The paper's Figshare record (version 2), read for method choices (Script_Fig1.m to
+    Script_Fig6.m, metaData.mat, medAngles.mat, wrtTheta.mat, contrastCorr.mat). The deposited mouse
+    array data1_mouse_glom198.mat is used by the link claim only. The locust files
+    data2_locust_PN66.mat, data4_locust_PN85.mat and data5_locust_PN85.mat are used by the locust
+    claims (data elsewhere). Each file is checked against the md5 the record gives.
+  source: Figshare doi:10.6084/m9.figshare.31435543.v2
+- what: The conversion code of the dandiset (DataJoint export, alignment of traces and trials on the
+    odor clock, conversion notes), read to establish the clock and the frame counts.
+  source: https://github.com/catalystneuro/reimer-arenkiel-lab-to-nwb at commit
+    ac8f1208c990f44c59c58214c26a93965f5ff6c7
+outcomes:
+- claim: mouse-sessions
+  outcome: reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:mouse-sessions
+  measured:
+  - 7
+  - 4
+  - 210
+  notes: The trials tables give seven block-protocol sessions from mice 134, 141, 148 and 149. The
+    median ROI count over these is 210 (reading a); over all twelve sessions it is 296 (reading b).
+    The ROI counts of sub-141 ses-8 (198), sub-149 ses-1 (219) and sub-148 ses-3 (318) equal the
+    glomerulus counts the Methods give for Figures 2F and 4C, 6D and 7. The published version's
+    Table 1 gives the same seven counts in four mice, but puts the 318 session with the 219 session
+    (mouse 4), where the dandiset puts it with the 286 session (sub-148).
+  deviations:
+  - Sessions are matched to the paper's figures by ROI count; no identifier links them.
+- claim: figshare-trace-link
+  outcome: reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:figshare-trace-link
+  notes: Matched by ROI count (sub-141 ses-8, the only 198-ROI session) and ROI order. With the
+    code's frame-counted windows the median within-trial r between the dandiset's raw F and the
+    deposited array is 0.968 (5th percentile 0.834, 0.947 to 0.994 by block), and every deposited
+    glomerulus correlates best with the dandiset ROI of the same index. With windows placed in
+    seconds the median r is 0.307, as the code counts 16 frames per second in a session imaged at
+    15.5 Hz. The deposited values are close to F z-scored within each trial window (r = 0.927).
+    No other claim depends on this one.
+- claim: fig2h-onoff-angle-mouse
+  outcome: partially_reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig2h-onoff-angle-mouse
+  measured: 127.88
+  notes: With the code's procedure (median subtraction, vectors centred over the 160 frames) the
+    median ON-OFF angle exceeds 90 degrees in all 28 session-odor pairs (101.7 to 153.9) and in each
+    odor's mean (111.0 to 140.0), but the mean is 127.9 (SEM 3.2), outside 121.8 +/- 2.98. After
+    centring the mean ON vector is exactly opposite the mean OFF vector (cosine -1 in every case),
+    and without centring the mean angle is 71.8 with 2 of 28 above 90. The same centred procedure
+    gives 101.1 between the two halves of the ON window (28 of 28 above 90), 101.6 between the
+    halves of OFF and 129.7 between the 2 s before onset and ON, and on synthetic frames around
+    patterns 2.4 to 13.0 degrees apart it gives 91.6 to 115.6; so the angles above 90 follow the
+    criterion but do not show that ON and OFF are inverted. Without the median subtraction the mean
+    is 124.2 and with per-trial z-scored traces 119.5, both within tolerance; with F z-scored on the
+    2 s before onset 125.8 and with frame-counted windows 126.1. By mouse the means are 136.3 (134),
+    136.3 (141), 116.0 (148) and 117.9 (149).
+  deviations:
+  - dF/F with F0 from the 2 s before onset; the paper's deposited arrays are close to per-trial
+    z-scores. The z-scored result is shown as a variant.
+  - Windows placed in seconds on a 16 Hz grid; the code counts frames at a nominal 16 per second.
+- claim: fig2f-onoff-anticorrelated-mouse
+  outcome: not_reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig2f-onoff-anticorrelated-mouse
+  notes: The time-averaged ON and OFF vectors are positively correlated in all 28 session-odor
+    pairs (median r 0.481, Wilcoxon p = 7.5e-09), for every odor (0.391 to 0.535) and every mouse
+    (0.245 to 0.596). The median subtraction does not change r, by construction. With F z-scored on
+    the 2 s before onset the median r is 0.526 and with frame-counted windows 0.446 (0 of 28 below 0
+    in both). With per-trial z-scored traces the median r is 0.068 (12 of 28 below 0, p = 0.33); on
+    synthetic glomeruli with excitation only, that normalisation gives r = -0.90 between ON and 10
+    to 15 s after offset, against 0.30 with the pre-onset z-score. The angles of fig2h exceed 90
+    degrees only after centring, which makes the mean ON and OFF vectors opposite by construction.
+  deviations:
+  - dF/F with F0 from the 2 s before onset, not the paper's (undocumented) normalisation.
+- claim: fig4b-reference-odor-mouse
+  outcome: partially_reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig4b-reference-odor-mouse
+  notes: Reading (a) holds for acetophenone only (ON-ON 105.7, ON-OFF 127.5 degrees, paired p =
+    0.018). Methyl salicylate and eugenol show no difference (p = 0.76 and 0.83), and allyl
+    sulfide goes the other way (ON-ON 112.1, ON-OFF 59.6, p = 0.00035). Reading (b) holds in none of
+    the seven sessions for any reference odor. Full-dimensional vectors give the same pattern. The
+    session-mean ON-ON angles are 85.6 to 123.1 degrees, against a median of 44.7 for the
+    acetophenone reference in the published version (Figure 2G), so the paper's procedure probably
+    differs from the one used here.
+  deviations:
+  - The mouse code for this figure is not in the Figshare record (it loads precomputed angles); the
+    locust code's procedure (top three PCs, mean vectors) was used.
+- claim: fig4d-clustering-mouse
+  outcome: not_reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig4d-clustering-mouse
+  notes: In 0 of 7 sessions, the 198-glomerulus session included, does the two-cluster cut put the
+    four ON vectors apart from the four OFF vectors, with dF/F or with z-scored traces.
+  deviations:
+  - The paper shows one representative session without naming it; the 198-glomerulus session is
+    taken as it, and all seven are reported.
+- claim: fig6e-contrast-msc
+  outcome: not_reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig6e-contrast-msc
+  notes: Over 21 session-odor pairs the solitary r (0.229) and the sequential r (0.219) do not
+    differ (difference 0.009, positive in 10 of 21, one-tailed paired p = 0.39); per session p =
+    0.40, per first odor p = 0.33 to 0.51. On the three sessions the published version's Table 1
+    names (sub-148 ses-2, sub-148 ses-3, sub-149 ses-1) the solitary r is 0.133 and the sequential
+    r 0.064 (p = 0.082). With F z-scored on the 2 s before the pair's onset there is no difference
+    (0.251 against 0.258, p = 0.58). With per-trial z-scored traces the solitary r is 0.289 and the
+    sequential r 0.118 (p = 5.6e-07; 0.0025 on the three sessions), as the claim states, but that
+    normalisation can produce negative correlations with later activity by itself (fig2f).
+  deviations:
+  - All seven block sessions are used, as the preprint does not identify its three sessions from two
+    mice; the three the published version names are shown as a variant.
+  - dF/F with F0 from the 2 s before the pair's first onset.
+- claim: fig6e-contrast-ace
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No sequential pair in the dandiset ends in acetophenone; in all seven block sessions the
+    second odor is always methyl salicylate (ace, als or eug first). The Figshare code builds only
+    (X)msc sequences too, so the (X)ace data of Figure 6E (right) and S6 were not found in public
+    form. The published version's Table 1 assigns this panel to the 73-, 210-, 153- and
+    198-glomerulus sessions, which in the dandiset hold only (X)msc pairs; in those sessions the
+    first odor's response in the pairs correlates 0.94 to 0.99 with solitary acetophenone when the
+    first odor is labelled acetophenone, and the second odor's response 0.76 to 0.95 with solitary
+    methyl salicylate, consistent with the dandiset's labels.
+- claim: fig7d-persistent-anticorrelation
+  outcome: not_reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig7d-persistent-anticorrelation
+  notes: The median r with the ON vector over the 28 pairs is 0.481 at 0 to 5 s after offset, 0.312
+    to 0.328 from 5 to 20 s and 0.094 at 45 to 50 s, above 0 in every bin (p <= 0.014), while the
+    mean dF/F falls from 0.071 to 0.005. With F0 from before each block r is positive in every bin
+    (0.304 to 0.600); for the first block of sub-134 and sub-141 that baseline is only 14 to 24 s.
+    With F z-scored on the 2 s before onset r is positive in every bin (0.152 to 0.527), and with
+    frame-counted windows too (0.152 to 0.446). With per-trial z-scored traces r is negative from 5
+    s on (-0.344 to -0.480, 26 to 28 of 28), as the claim states, but on synthetic glomeruli with
+    excitation only that normalisation gives negative values of the same sign and larger size (-0.90
+    and -0.93). Mice 148 and 149 keep r near
+    0.2 to 0.4 for the whole 50 s.
+  deviations:
+  - Correlation of the ON vector with 5-s bins, a summary of the paper's frame-by-frame matrix.
+  - dF/F with F0 from the 2 s before onset.
+- claim: fig7h-iti-knn-mouse
+  outcome: partially_reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig7h-iti-knn-mouse
+  notes: In sub-148 ses-3 (318 glomeruli) accuracy is 45%, above the null's 99th percentile (37.5%,
+    null mean 16.7%) but below 50%; by odor 0.9, 0.0, 0.3 and 0.6. The code's choice (cosine on the
+    top three PCs) gives 12.5%. Across the seven sessions accuracy is 22.5% to 47.5%, above the
+    null's 99th percentile in three. The null mean of this leave-one-out vote (16.7% to 17.4%) is
+    below the nominal 25%, as with k = 20 only 9 of the 39 other trials share the own odor; the
+    paper gives no chance value for this panel. With k at or below the class size accuracy is 90.0%
+    (k = 5) and 82.5% (k = 9) in sub-148 ses-3 and 80.0% to 100% in every session (null 99th
+    percentiles 42.5% to 45.0%). All trials of one odor lie in one block, so neither k separates the
+    odor from slow differences between blocks (fig7j).
+  deviations:
+  - k = 20 from the legend; the Methods' k = 50 exceeds the 39 other vectors.
+  - dF/F with F0 the session median of each ROI.
+- claim: fig7j-iti-timebin-mouse
+  outcome: reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig7j-iti-timebin-mouse
+  notes: In sub-148 ses-3 accuracy is 88.5% in the first 10 s after offset and 71.9% to 75.6% from 10
+    to 50 s, above 50% and the null's 99th percentile (32.5% to 35.9%); the other sessions give
+    72.2% to 99.4% in every segment. The statement's reading as odor memory is not supported by the
+    outputs. The trial-label null does not keep the block structure, and as each odor has one
+    block no label permutation that keeps whole blocks can serve as a null. On pseudo-trials within
+    the 15 min after each block, where no odor is given, the same classifier names the preceding
+    block at 69.6% to 96.9% (sub-148 ses-3 69.6% to 71.2%), nearly as high as in the ITIs (the
+    pseudo-trial maximum is below the ITI minimum in 4 of 7 sessions), so slow differences between
+    blocks are enough for most of this accuracy.
+  deviations:
+  - dF/F with F0 the session median of each ROI.
+  - The shuffled-label control is a permutation of whole-trial labels with the neighbours kept.
+- claim: figs7e-ibi-chance
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:figs7e-ibi-chance
+  notes: With the Methods' k = 50 on 60 one-minute bins the rate is 0.0% to 13.3% (mean 3.8%) in the
+    four sessions with complete IBIs, and this procedure's permutation null averages 10.8%, not the
+    25% chance of four odors, so the paper's 34.8% cannot come from it. With k = 20 the IBI bins are
+    classified by the preceding block at 73.3% to 95.0% in those four sessions and 35.0% to 66.7% in
+    the other three (permutation p <= 0.02), and with k at or below the 14 other bins of the own IBI
+    at 69.4% to 98.3% (k = 10) and 90.0% to 98.3% (k = 5) in all seven (null means 21.8% to 25.5%,
+    p < 0.001). These rates contradict the claim, but each odor has one IBI per session, so no
+    validation can hold out a block, and slow drift between neighbouring minutes could give them.
+  deviations:
+  - The 318-glomerulus session has only three complete IBIs (54 bins), so k = 50 was run on the
+    four sessions that have four.
+- claim: figs8e-random-order-decline
+  outcome: partially_reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:figs8e-random-order-decline
+  notes: In all five random-order sessions accuracy in the first 2 s after offset is above the null
+    (24.4% to 56.8% against 99th percentiles of 10.6% to 12.3%, chance 9.1%), with large
+    differences between odors. In the last 5 s it is 9.6% to 15.3%, still above the null's 95th
+    percentile in four of five sessions (not in sub-134 ses-6). The published version's Table 1
+    lists random-order sessions with 175, 340, 323, 306, 286, 204, 250 and 280 glomeruli; only
+    sub-126 ses-1 (323) and sub-134 ses-6 (306) have one of these counts. In those two early
+    accuracy is 24.4% and 29.0%, and late accuracy is above the null's 95th percentile in sub-126
+    ses-1 (9.6% against 9.0%) and not in sub-134 ses-6 (9.9% against 10.0%).
+  deviations:
+  - The paper's random-order session (286 glomeruli, mouse 129 in the Figshare code) is not in the
+    dandiset; five sessions with the same paradigm, four of them from mice not in the block
+    sessions, were used.
+  - In three of these sessions odors have different concentration values; the first 10
+    presentations of each odor were used regardless.
+- claim: figs2-pid-decay
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds no photoionization detector recordings (acquisition holds the movies,
+    treadmill and in one file respiration). No PID file is in the Figshare record's file list.
+- claim: fig1g-onoff-angle-locust
+  outcome: partially_reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig1g-onoff-angle-locust
+  measured: 104.92
+  notes: All 11 odors give a median ON-OFF angle above 90 degrees (99.2 to 108.7); the mean is 104.9
+    (SEM 0.87), 1.8 degrees below 106.7 +/- 0.84. Without centring the mean is 58.5; with each PN's
+    pre-odor mean subtracted and no centring it is 91.9, with 9 of 11 above 90. The centring alone
+    gives angles above 90 degrees; the two halves of the ON window are 96.0 apart on average (11 of
+    11 above 90).
+  deviations:
+  - Data from the Figshare record of the published version; the preprint's data may differ.
+- claim: figs4a-reference-odor-locust
+  outcome: reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:figs4a-reference-odor-locust
+  measured: 4
+  notes: Four reference odors have ON angles significantly smaller than OFF angles (hex, hxa, phn,
+    vny), and 9 of 11 have smaller ON angles on average. Ammonia differs significantly the other way
+    (ON 107.3, OFF 52.5 degrees, p = 0.0033). The 11 ON angles include the reference's own 0
+    degrees, as the criterion states; without it the count is still 4, and ON is smaller on average
+    for 8 of 11. Benzaldehyde (p = 0.052) and octanoic acid (p = 0.059) are near the threshold.
+- claim: fig5e-contrast-locust
+  outcome: reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig5e-contrast-locust
+  notes: Solitary first odors correlate with solitary geraniol at 0.486 on average and with
+    geraniol after them at 0.227, lower for all five (one-tailed paired p = 0.0055). With hexanol
+    as the second odor the difference is smaller (0.407 against 0.321, p = 0.13).
+- claim: fig7f-iti-knn-locust
+  outcome: reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig7f-iti-knn-locust
+  notes: The 20-s ITI averages classify all 70 trials correctly (null 99th percentile 25.7%, chance
+    14.3%); the code's choice (k = 4, cosine on three PCs) gives 97.1%. The published version's
+    Table 1 gives this dataset a solitary block structure; the Figshare file holds only the 40 s
+    around each trial, so no control for slow differences between blocks can be built, and the
+    accuracy cannot be attributed to the odor alone.
+- claim: fig7i-iti-timebin-locust
+  outcome: partially_reproduced
+  notebook: reproduce_ling_2023.ipynb
+  output: claim:fig7i-iti-timebin-locust
+  measured: 29.0
+  notes: Accuracy decays from 78.7% in the first 2 s after offset to 29.0% averaged over odors in the
+    last 5 s, below 40 +/- 4; every one of the 7 odors stays above its null's 99th percentile in the
+    last 5 s (16.0% to 54.0% against 14.0% to 27.6%). Averaged over the whole 0 to 21 s the accuracy
+    is 39.6%, a reading of "about 40%" the criterion did not list. As for fig7f, the files allow no
+    control for the block structure.
+  deviations:
+  - The paper's ~40% is read from its text; the last 5 s of the ITI was taken as the end.
+findings:
+- kind: metadata_insufficient
+  statement: The fluorescence traces are raw F (unit "n.a.") with no description of how they were
+    extracted or of the normalisation the paper applied. The paper's deposited arrays are close to F
+    z-scored within each 57-s trial window. With that normalisation the contrast enhancement and
+    negative correlations between the ON response and activity from 5 s after offset appear in these
+    data, and they do not with dF/F relative to the 2 s before each odor or with F z-scored on those
+    2 s. The time-averaged ON and OFF vectors are not anticorrelated with any of these (median r
+    0.068 with the whole-window z-score, 12 of 28 below 0). On synthetic
+    glomeruli with excitation only, the whole-window z-score gives such anticorrelations by itself.
+- kind: metadata_insufficient
+  statement: The trials table has one row per second of valve opening, without a description; odor
+    presentations, blocks and sequential pairs have to be rebuilt from timing. Five block sessions
+    fill the gaps with "Empty" rows and two do not. The concentration column has no unit, gives 0.0
+    to two odorants (2-ethylphenol, anisaldehyde) in three random-order sessions, and 0.1 to the
+    Empty rows of sub-141 ses-5.
+- kind: data_missing
+  statement: In sub-134 ses-22, sub-141 ses-5 and sub-141 ses-8 the raw TwoPhotonSeries holds half
+    the frames of the fluorescence traces (91000 against 182000 in sub-134 ses-22) at twice the frame
+    interval; the conversion notes give 182000 frames for sub-134 ses-22.
+- kind: data_missing
+  statement: No sequential pair ends in acetophenone (Figure 6E right, S6) and no PID recordings are
+    included (Figure S2). The published version's Table 1 assigns the acetophenone panel to the 73-,
+    210-, 153- and 198-glomerulus sessions, which in the dandiset hold only pairs ending in methyl
+    salicylate. The random-order session of Figure S8D and S8E (286 glomeruli) is not in the
+    dandiset, and of the eight random-order sessions that Table 1 lists (175, 340, 323, 306, 286,
+    204, 250 and 280 glomeruli) only two (323 and 306) match a dandiset session by ROI count.
+- kind: selection_undocumented
+  statement: The dandiset holds the paper's seven block-protocol sessions from four mice and five
+    random-order sessions from five mice (four not in the block sessions) with odor-specific
+    concentrations, apparently from a
+    second study (the conference paper it also names, whose authors are the dandiset's
+    contributors). Neither the metadata nor the description says which sessions belong to which
+    paper, and the description is that of the second study.
+- kind: identifier_missing
+  statement: No identifier links the paper's datasets to the dandiset's sessions. They match by ROI
+    count (198, 219, 318), but the session names in the paper's Figshare code (for example
+    m149_3_1, m129_1_2) do not all exist in the dandiset (it has no mouse 129 and only session 1 of
+    mouse 149).
+- kind: other
+  statement: The dandiset and the published version's Table 1 disagree on which mouse one session
+    belongs to. The dandiset puts the 318-ROI session under sub-148 with the 286-ROI session; Table
+    1 puts the 318-glomerulus session under mouse 4 with the 219-glomerulus session (sub-149 here).
+    Which is right cannot be told from the data.
+- kind: other
+  statement: The random-order odorant names differ from the paper's; the files have 2-ethylphenol
+    and anisaldehyde where the Methods list 2-ethylpyrizine (2ep) and isoamyl acetate (asa). Names
+    are spelled differently across sessions ("Anisole" and "anisole"), and "2-methypyrazine" is
+    misspelled.
+- kind: metadata_insufficient
+  statement: The genotype (Thy1-GCaMP6f) and the ages are not stated, and every session starts at
+    00:00, so the time of day is missing. In sub-124 ses-3 the last trial ends 8.9 s after the last
+    imaging frame.
+- kind: code_mismatch
+  statement: The paper's code counts windows in frames at a nominal 16 per second, while the
+    sessions are imaged at 13.7 to 17.8 Hz, so a nominal 57-s window of 912 frames lasts 51.2 to
+    66.4 s; in sub-141 ses-8 (15.5 Hz) the deposited trial windows
+    match the dandiset only when counted in frames (r 0.968) and not in seconds (r 0.307).
+- kind: paper_inconsistency
+  statement: The Methods give k = 50 for the ITI-average classifier of Figure 7H, which has 40
+    vectors, while the legend gives k = 20 and the code uses k = 20 on three PCs. For the IBI
+    classifier (60 vectors, k = 50) the procedure's own null is 10.8%, not the 25% chance of four
+    odors.
+- kind: code_mismatch
+  statement: The Figure 5E legend states a one-tailed t-test; Script_Fig4.m uses MATLAB's ttest,
+    which is two-tailed (p = 0.011 against 0.0055 one-tailed here).
+verifications:
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier had no attempt record and took
+    its counts from the claims file. bioRxiv refused the preprint download, so it read the v2
+    abstract and the published version (iScience, PMC13066794); the preprint's Fig 4B ON-ON value
+    and Table S1 were not checked. It gave its own outcome for each claim; 18 of 19 agree with the
+    record.
+  results:
+  - claim: mouse-sessions
+    agrees: true
+    outcome: reproduced
+    reason: 7 block sessions, 4 mice, median 210 ROIs across the block sessions (215 +/- 21.5). The
+      dandiset puts the 318-ROI session under sub-148 with the 286-ROI session; the later version's
+      Table 1 puts it with the 219-ROI session (m4) (problem 14).
+    response: Checked Table 1 of the published version and recorded the disagreement on the mouse of
+      the 318-ROI session as a finding and in the notes. Outcome kept; the session and mouse counts do
+      not change.
+  - claim: figshare-trace-link
+    agrees: true
+    outcome: reproduced
+    reason: Median within-trial r is 0.968 with windows counted in frames. All 198 deposited glomeruli
+      match the same-index ROI. With windows placed in seconds the median r is 0.307, so the paper's
+      code counted frames.
+    response: No change needed.
+  - claim: fig2h-onoff-angle-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 28 values and every odor mean are above 90 degrees, but the mean is 127.88, outside
+      121.8 +/- 2.98. The >90 result is mostly produced by the centring, which makes the mean ON vector
+      exactly opposite the mean OFF vector; ON and OFF patterns 11 degrees apart uncentred come out at
+      157 centred on synthetic data. The ">90" test follows the code but does not show inversion
+      (problem 2).
+    response: Added the centring controls it asked for (centred angle between the two halves of ON,
+      101.1; of OFF, 101.6; pre-onset against ON, 129.7; all 28 above 90), a synthetic check (patterns
+      2.4 to 13.0 degrees apart give 91.6 to 115.6 centred), and the pre-onset z-score and
+      frame-counted variants (125.8 and 126.1). The conclusion and notes now say the angles above 90
+      do not show inversion. Outcome kept, as the criterion follows the code.
+  - claim: fig2f-onoff-anticorrelated-mouse
+    agrees: true
+    outcome: not_reproduced
+    reason: Median r is +0.481, with 0 of 28 values below 0, and every odor median is positive.
+      Z-scoring each trial over a window that contains the ON response produces negative ON-vs-later
+      correlations by construction (r = -0.98 on synthetic glomeruli with pure excitation), so the
+      z-score variants are not evidence for the claim (problem 4). The median-subtraction variant is
+      identical to the main analysis by construction (problem 13).
+    response: Added the z-score with mean and SD from the 2 s before onset (median r 0.526, 0 of 28
+      below 0), the frame-counted variant (0.446), and a synthetic check of both z-scores (whole-window
+      z-score gives r = -0.90 and -0.93 at 10 to 15 and 45 to 50 s after offset for excitation only;
+      the pre-onset z-score 0.30 and 0.13). The notebook prints that the median-subtraction variant
+      equals the main values, and the conclusion says it is not a separate check. Outcome kept.
+  - claim: fig4b-reference-odor-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reading (a) holds for ace only (p = 0.018, ON-ON smaller). For als the difference is
+      significant in the opposite direction (ON-OFF 59.6 vs ON-ON 112.1). Reading (b) holds in 0 of 28
+      cases. The paired t-test is two-sided, so the als result has to be excluded by hand, and the
+      mouse ON-ON angles (85 to 123) are far from the later version's 44.7, which suggests the method
+      differs from the paper's (problem 8).
+    response: Confirmed the 44.7 degrees in the published version's Figure 2G legend, printed the range
+      of session-mean ON-ON angles (85.6 to 123.1), and added both points to the conclusion and notes.
+      The criterion's reading (a) requires ON-ON to be smaller, which is why als does not count.
+      Outcome kept.
+  - claim: fig4d-clustering-mouse
+    agrees: true
+    outcome: not_reproduced
+    reason: ON and OFF separate in 0 of 7 sessions, including the 198-ROI session, with dF/F and with
+      z-scored traces.
+    response: No change needed.
+  - claim: fig6e-contrast-msc
+    agrees: true
+    outcome: not_reproduced
+    reason: Solitary r 0.229 vs sequential r 0.219, one-tailed p = 0.39 over 21 pairs. On the paper's
+      own three sessions (Table 1 of the later version, the 286-, 219- and 318-ROI sessions) the values
+      give p = 0.082 (problem 6). The z-score variant (p = 5.6e-7) is not evidence for the claim
+      (problem 4).
+    response: Added the three sessions as a variant (p = 0.082 with dF/F, 0.0025 with the per-trial
+      z-score) and the pre-onset z-score variant (0.251 against 0.258, p = 0.58). The conclusion notes
+      that the whole-window z-score can produce the effect by itself. Outcome kept.
+  - claim: fig6e-contrast-ace
+    agrees: true
+    outcome: blocked
+    reason: In every block session each sequential block is X to msc. The random-order sessions have
+      no pairs 1 s apart, and the archive holds only these 12 files. Nothing is testable. Table 1 of
+      the later version assigns the ace panel to the 73/210/153/198-ROI sessions, which the dandiset
+      labels as X to msc; the ace-first response correlates 0.94 to 0.98 with solitary ace, which
+      supports the dandiset's labels over the table's.
+    response: Added the Table 1 assignment and the label check to the notes and to the data_missing
+      finding. Outcome kept.
+  - claim: fig7d-persistent-anticorrelation
+    agrees: true
+    outcome: not_reproduced
+    reason: The median r is positive in every bin from 0 to 50 s (0.48 down to 0.09), and positive with
+      pre-block F0 too. The z-score variant (28 of 28 negative) is not evidence for the claim, as the
+      whole-window z-score produces negative ON-vs-later correlations by construction (problem 4).
+      F0 from the 2 s before onset falls in a period the paper says still carries OFF activity; the
+      pre-block F0 variant gives the same sign (problem 11).
+    response: Added the pre-onset z-score (medians 0.152 to 0.527, positive in every bin) and the
+      frame-counted variant (0.152 to 0.446), and the conclusion refers to the synthetic check. The
+      pre-block F0 variant already addresses problem 11. Outcome kept.
+  - claim: fig7h-iti-knn-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: In the 318-ROI session accuracy is 0.45, above the null's 99th percentile (0.375) but below
+      50%. k = 20 with 9 same-class candidates out of 39 biases accuracy against the own class (null
+      mean 0.17; random data gives 0.175), so the accuracy is depressed by this choice (problem 7).
+      All trials of one odor fall in one block, so the odor and slow drift cannot be told apart
+      (problem 3).
+    response: Added k = 5 and k = 9 as variants (90.0% and 82.5% in the 318-ROI session, 80.0% to 100%
+      in every session) and stated the block confound in the conclusion and notes. Outcome kept, as
+      the criterion fixes k = 20.
+  - claim: fig7j-iti-timebin-mouse
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced on the criterion only. In the 318-ROI session all five segments are between
+      0.719 and 0.885, above the null's 99th percentile (at most 0.359). Cell 41's no-odor
+      pseudo-trials score 0.70 in the same session, so the accuracy cannot be attributed to the odor.
+      The trial-label permutation null does not keep the block structure, so a null 99th percentile
+      around 0.35 is the wrong reference (problem 3).
+    response: Added the only null that keeps whole blocks, the 24 relabellings of the four blocks
+      (68.2% to 88.5% in the 318-ROI session, close to the observed values), and the conclusion and
+      notes say the criterion is met but the outputs do not show odor memory. Outcome kept.
+  - claim: figs7e-ibi-chance
+    agrees: false
+    outcome: not_reproduced
+    reason: The k = 50 rate is 3.8%, far below 34.8 +/- 3.48 and below chance, because the k = 50
+      classifier is degenerate; on random data with 4 x 15 vectors it gives 10.7%, so the <= 38.3%
+      criterion is met by construction (problem 1). The only usable classifier (k = 20) gives 73 to
+      95% with permutation p = 0 in the four complete sessions, which contradicts "no longer present",
+      though adjacent 1-minute bins of the same IBI serve as each other's neighbours, so slow drift
+      alone could explain it.
+    response: Added k = 10 and k = 5, at or below the 14 other bins of the own IBI (69.4% to 98.3% and
+      90.0% to 98.3% in all seven sessions, null means 21.8% to 25.5%). A block-held-out validation
+      cannot be run, as each odor has one IBI per session; the conclusion says so. Outcome kept as
+      blocked (methods_underspecified) and the disagreement recorded. The protocol's chance-level rule
+      applies; the procedure the Methods describe has its own null of 10.8% against the paper's 25%, so
+      the paper's procedure is not the one described. The above-chance rates come from k values the
+      paper does not use and, as the verifier says, may reflect drift.
+  - claim: figs8e-random-order-decline
+    agrees: true
+    outcome: partially_reproduced
+    reason: Early accuracy is above the null in 5 of 5 sessions; late accuracy is still above the
+      null's 95th percentile in 4 of 5. Chance is 1/11, as in the paper. The later version's Table 1
+      lists the random-order sessions with 175, 340, 323, 306, 286, 204, 250 and 280 glomeruli; the
+      dandiset's have 559, 325, 323, 306 and 403 ROIs, so only two match and the claim is tested mostly
+      on sessions the paper may not have used (problem 5).
+    response: Checked Table 1, added the two matching sessions as a variant (early 24.4% and 29.0%;
+      late above the null's 95th percentile in sub-126 ses-1 and not in sub-134 ses-6), and recorded
+      the mismatch in the notes and the data_missing finding. Outcome kept.
+  - claim: figs2-pid-decay
+    agrees: true
+    outcome: blocked
+    reason: No file has a PID series. The acquisition groups hold only treadmill position (and
+      respiration in one file), and the asset metadata lists no other series.
+    response: No change needed.
+  - claim: fig1g-onoff-angle-locust
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 11 odors are above 90 degrees, but the mean is 104.92, outside 106.7 +/- 0.84.
+      Uncentred, the mean is 58.5. The centring problem (problem 2) applies here too.
+    response: Added the centring control (two halves of ON, 96.0 degrees, 11 of 11 above 90) to the
+      conclusion and notes. Outcome kept.
+  - claim: figs4a-reference-odor-locust
+    agrees: true
+    outcome: reproduced
+    reason: 4 odors are significant with ON smaller (5 +/- 1), and ON is smaller on average for 9 of
+      11. The set of ON angles includes the reference odor's own 0 degree angle, which biases the test
+      toward ON being smaller; bza (p = 0.052) and oca (p = 0.059) are borderline (problem 10).
+    response: Added the count without the self-angle (still 4; ON smaller on average for 8 of 11) and
+      named the borderline odors in the conclusion. Outcome kept.
+  - claim: fig5e-contrast-locust
+    agrees: true
+    outcome: reproduced
+    reason: Solitary r 0.486 vs sequential r 0.227, one-tailed p = 0.0055.
+    response: No change needed.
+  - claim: fig7f-iti-knn-locust
+    agrees: true
+    outcome: reproduced
+    reason: Accuracy 1.000 against a null 99th percentile of 0.257; chance is 1/7. The locust
+      recordings were also in blocks, and the notebook has no control for them (problem 3).
+    response: The Figshare file holds only the 40 s around each trial, so no pseudo-trial control
+      between blocks can be built; the notebook now prints the file's contents, and the conclusion
+      and notes say the accuracy cannot be attributed to the odor alone. Outcome kept.
+  - claim: fig7i-iti-timebin-locust
+    agrees: true
+    outcome: partially_reproduced
+    reason: 7 of 7 odors are above the null in the last 5 s, but the mean is 0.290, outside 0.40 +/-
+      0.04. The block-structure problem (problem 3) applies to the locust data too.
+    response: Same as fig7f for the block structure. The notes also give the mean over the whole 0 to
+      21 s (39.6%), a reading the criterion did not list. Outcome kept.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with conclusions and summary, the README, the attempt
+    record, the helper module and the claims file, with the paper. The verifier read the v2 preprint
+    text (bioRxiv API JATS, saved in paper/), which confirms 121.8, 106.7, 34.8, n = 286 and the
+    11-odor list; its Fig 4B text gives no ON-ON value, and Table S1 is an image and was not checked.
+    It agrees with 19 of 19 outcomes.
+  results:
+  - claim: mouse-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: figshare-trace-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1. The Summary's drift of "up to about 2 s" holds only for sub-141
+      ses-8; at the frame rates of cell 4, 912 frames last 66.4 s at 13.73 Hz and 51.2 s at 17.83 Hz,
+      so the drift is 6 to 9 s at the extremes.
+    response: The Summary now gives 51.2 to 66.4 s for a nominal 57-s window (6 to 9 s at the extremes,
+      about 1.8 s in sub-141 ses-8), and the code_mismatch finding gives the same range.
+  - claim: fig2h-onoff-angle-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1. For the mouse, the README's "only because of the centring" holds
+      (uncentred 71.8, 2 of 28 above 90, cell 29).
+    response: The README now limits that statement to the mouse and gives the uncentred mean.
+  - claim: fig2f-onoff-anticorrelated-mouse
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, as in round 1. The README, the Summary's first bullet and the record's first
+      metadata_insufficient finding say the ON/OFF anticorrelation appears with traces z-scored over
+      each trial window, but cell 34 prints r_zscored median +0.068, 12 of 28 below 0, p = 0.33, with
+      mixed odor medians. Only fig7d from 5 s on and fig6e show the effect with that z-score.
+    response: Corrected the README, the Summary and the finding. They now say the whole-window z-score
+      gives the fig6e contrast and the negative correlations of fig7d from 5 s on, and that the
+      time-averaged ON and OFF vectors are not anticorrelated with any normalisation tried (median r
+      0.068, 12 of 28 below 0).
+  - claim: fig4b-reference-odor-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1. The 44.7 degrees matches the published version's Fig 2G legend.
+    response: No change needed.
+  - claim: fig4d-clustering-mouse
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: fig6e-contrast-msc
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, as in round 1. The effect appears with the whole-window z-score (cell 44).
+    response: No change needed.
+  - claim: fig6e-contrast-ace
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: fig7d-persistent-anticorrelation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, as in round 1. Cell 48 and the fig7d notes say the synthetic whole-window z-score
+      gives the same negative values; the synthetic values are -0.90 and -0.93 (cell 35) and the data
+      give -0.34 to -0.48 (cell 47). The sign is the same, the size is not.
+    response: Cell 48 and the notes now say the synthetic values have the same sign and a larger size
+      (-0.90 and -0.93).
+  - claim: fig7h-iti-knn-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1. Cell 51 and the notes give null mean 17.1% for sub-148 ses-3; cell
+      50 prints 0.167.
+    response: Corrected to 16.7% in cell 51 and the notes.
+  - claim: fig7j-iti-timebin-mouse
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced holds on the criterion only, and the record and notebook now say so. The
+      block-relabelling null repeats the observed accuracy by construction, as renaming whole classes
+      does not change a k-NN classifier's accuracy except through vote ties, so it is not evidence;
+      the pseudo-trials carry the argument. Pseudo-trials are not classified "as high as" the ITIs;
+      in 4 of 7 sessions the pseudo-trial maximum is below the ITI minimum (for example sub-141 ses-1,
+      0.899 against 0.911), so "nearly as high" fits. They lie within the 15 min after each block, not
+      15 min after it.
+    response: Removed the block-relabelling null from cell 53, cell 55 and the notes, which now say
+      why no block-keeping permutation can serve as a null. Cell 55, the notes and the Summary now say
+      the pseudo-trials, within the 15 min after each block, are classified nearly as high as the
+      ITIs, with the pseudo-trial maximum below the ITI minimum in 4 of 7 sessions.
+  - claim: figs7e-ibi-chance
+    agrees: true
+    outcome: blocked
+    reason: Now accepts blocked (methods_underspecified). With the Methods' k = 50 the procedure's own
+      null averages 10.8% (cell 57), so the 3.8% cannot count as meeting the criterion, and the
+      paper's 34.8% cannot come from the procedure its Methods describe. Its round-1 not_reproduced
+      rested on k = 20, which the criterion does not specify. Every working variant gives 35% to 98%
+      (k = 20, 10, 5), well above 34.8%; if a working method were ever fixed, the outcome would be
+      not_reproduced.
+    response: No change needed; the outcome stays blocked, as the verifier now accepts.
+  - claim: figs8e-random-order-decline
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: figs2-pid-decay
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: fig1g-onoff-angle-locust
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1. The README's "The ON-OFF angles exceed 90 degrees only because of
+      the centring" does not hold for the locust, where subtracting the pre-odor baseline without
+      centring gives a mean of 91.9, with 9 of 11 odors above 90 (cell 65).
+    response: The README and the Summary now give the locust baseline-subtracted uncentred mean (91.9,
+      9 of 11 above 90) and limit "because of the centring" to the mouse.
+  - claim: figs4a-reference-odor-locust
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: fig5e-contrast-locust
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: fig7f-iti-knn-locust
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced holds on the criterion only, and the record and notebook now say so. The locust
+      "solitary block structure" matches the published version's Table 1. A locust control cannot be
+      built from the Figshare files.
+    response: No change needed.
+  - claim: fig7i-iti-timebin-locust
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
