@@ -5,7 +5,7 @@ tested on [DANDI:000718](https://dandiarchive.org/dandiset/000718/0.260825.1902)
 two of the nine mice of the paper's calcium imaging and EEG/EMG experiment (Figure 5), Ca_EEG2-1
 (high shock) and Ca_EEG3-4 (low shock), with their encoding and recall sessions, the first 10 min
 offline recording after encoding, and cell registration for Ca_EEG2-1 only. The mice of the one-hour
-offline, behaviour-only, inhibitory tagging and no-shock experiments are not in it.
+imaging, behaviour-only, inhibitory tagging and no-shock experiments are not in it.
 
 | Claim | Outcome |
 |---|---|
@@ -15,8 +15,8 @@ offline, behaviour-only, inhibitory tagging and no-shock experiments are not in 
 | Offline population activity is more skewed than shuffled activity | Reproduced |
 | Movement pauses around offline bursts | Not reproduced |
 | Overlap-neutral exceeds overlap-aversive co-bursting in wake after a high shock | Not reproduced |
-| Behaviour-only experiments (five claims) | Blocked: data missing |
-| One-hour offline and single-experience experiments (nine claims) | Blocked: data missing |
+| Behaviour-only experiments (three claims) | Blocked: data missing |
+| One-hour imaging and single-experience experiments (eleven claims) | Blocked: data missing |
 | Inhibitory tagging and no-shock experiments (two claims) | Blocked: data missing |
 | EEG cohort claims needing missing mice, sessions or registration (four claims) | Blocked: data missing |
 
