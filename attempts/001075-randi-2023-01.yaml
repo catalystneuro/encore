@@ -107,8 +107,8 @@ outcomes:
     0.376, is 6.2 times the 4 to 10 um median (0.061). Per animal the pooled fraction ranges from
     0.50 to 0.97. Leaving out rows with F0 <= 0 gives the same fractions (0.741 pooled).
   deviations:
-  - The legend does not say which neighbours its 75% refers to; reading (a) matches, (b) and (c) do
-    not.
+  - The legend does not say which neighbours its 75% refers to; readings (a) and (c) are within
+    tolerance, (b) is not.
   - Distances use 0.42 um per pixel from the paper's code and the median plane step of the imaging
     file's depth per frame (1.22 um).
 - claim: sourcedata-link
@@ -199,11 +199,14 @@ outcomes:
 - claim: edfig6-kernel-stereotypy
   outcome: blocked
   blocked_by: not_runnable
-  notes: Kernels are fitted with the paper's pumpprobe package (convolutions of exponentials in a
-    C++ extension). Installing it at commit 1dbc5e0 failed (its distutils build does not find the
-    numpy headers, and its dependency mistofrutta needs gitpython at build time), and its setup
-    script expects libraries under /projects/LEIFER. The data needed are in the dandiset. The
-    fits were not reimplemented without the package.
+  notes: Kernels are fitted with the paper's pumpprobe package (convolutions of exponentials in C++
+    extensions). A notebook cell now builds it and the packages it imports at fixed commits, with
+    the kernel's Python 3.13 and numpy 2.5.4. As published, pumpprobe 1dbc5e0 does not build, as
+    the compiler does not find the numpy headers. With the headers added by hand it builds but
+    cannot be imported, since mistofrutta 11ac8c3 fails on its version string, wormbrain d94f7a1
+    needs the Eigen library and wormdatamodel 2ab9561 uses numpy C API names removed in numpy 2.
+    The paper's setup.sh also points the compiler at libraries under /projects/LEIFER. The data
+    needed are in the dandiset. The fits were not reimplemented without the package.
 - claim: edfig7b-unc31-fewer
   outcome: blocked
   blocked_by: data_missing
@@ -493,3 +496,132 @@ verifications:
       protocol does not allow data_missing; it needs the kernel fits of edfig6-kernel-stereotypy, which
       is blocked as not runnable, and a claim that depends on a blocked claim is blocked for the same
       reason. Added that dependency to the claims file.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusions and summary,
+    the attempt record, the README, the helper module and the claims file, with the paper. The verifier
+    checked every conclusion sentence against the printed outputs and said which of its round-1 points
+    were resolved.
+  results:
+  - claim: recordings-protocol
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the recorded outcome.
+    response: No change needed. The README now says the run takes 10 to 15 minutes (the verifier's run
+      took 919 s, this one 627 s).
+  - claim: pairs-measured
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the recorded outcome.
+    response: No change needed.
+  - claim: fig1e-avjr-avdr
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the recorded outcome.
+    response: No change needed.
+  - claim: fig1f-aver-avar
+    agrees: true
+    outcome: reproduced
+    reason: The evidence is weak (7 trials, p = 0.22) and the notes say so.
+    response: No change needed.
+  - claim: fig1g-saadl-ollr
+    agrees: true
+    outcome: reproduced
+    reason: The evidence is weak and the notes say so.
+    response: No change needed.
+  - claim: edfig2ij-spatial-specificity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The deviation "reading (a) matches, (b) and (c) do not" is wrong, as cell 49 prints
+      0.817 for 10 to 16 um, which is reading (c) and lies inside 0.675 to 0.825; it does not change the
+      outcome, since reading (a) already meets the criterion.
+    response: Corrected the deviation; readings (a) and (c) are within tolerance and (b) is not.
+  - claim: sourcedata-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The cell 38 sentence "Every variant falls in the partial band" is false for the
+      detected-responses-only variant (0.360, 0.471, 0.458). The text gives 0.617 and 0.676 where the
+      outputs print 0.616 and 0.675, and 3,173 rows with F0 <= 0 where cell 21 prints 3172.
+    response: The conclusion now says the filter and exported-assignment variants are in the partial
+      band and the detected-responses-only variant falls below it. The re-run prints 0.617, 0.676 and
+      3,173 rows (and 58 and 53 failed fits, 10,160 responses in cell 11, as the text says), so the
+      text matches it; the verifier's copy came from an earlier run on another machine whose counts
+      differ by one and correlations by 0.001. The Summary now states this run-to-run difference.
+  - claim: osf-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; it is now judged on the 0.660 position-found agreement. The notes say the 3 unmatched
+      exported recordings are the 3 subjects with only imaging files, but cell 32 prints the three
+      session keys without linking them to subjects 20, 23 and 33. For subject 11, cell 32 prints 200
+      exported labels in one line and 201 exported ROIs in another.
+    response: Cell 32 now prints the session ids of subjects 20, 23 and 33, which are the three
+      unmatched export keys. The side-by-side for subject 11 now drops the export's trailing empty label
+      entry as the other line does, and prints 200.
+  - claim: fig2d-inhibitory-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: All variants run 13.4 to 15.8% (cell 53).
+    response: No change needed.
+  - claim: fig2c-1310-connected
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig2c-bilateral
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig2efg-path-length
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig3-anatomy-predictions
+    agrees: true
+    outcome: blocked
+    reason: The model predictions are not public, so data_missing is defensible.
+    response: No change needed.
+  - claim: edfig6-kernel-stereotypy
+    agrees: true
+    outcome: blocked
+    reason: Accepted with a reservation. The verifier cannot check the protocol's definition; the failed
+      install is described only in the notes and no cell shows it; the data are in the archive and no
+      reimplementation was tried.
+    response: Added a section with a cell that builds the paper's package and the three packages it
+      imports at fixed commits in a temporary environment and prints how each build ends. pumpprobe
+      builds once the numpy headers are added by hand, but cannot be imported, as mistofrutta,
+      wormbrain and wormdatamodel do not build. The notes now describe this output. No reimplementation
+      was tried, and the outcome is kept.
+  - claim: edfig7b-unc31-fewer
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing. The README row listing "unc-31 comparisons" as blocked
+      conflicts with fig4-rid-unc31, an unc-31 comparison listed as reproduced; the blocked row presumably
+      means edfig7b.
+    response: The README row now names Extended Data Fig. 7b.
+  - claim: fig4-rid-wt
+    agrees: true
+    outcome: partially_reproduced
+    reason: AWB meets the criterion. URX has 1 trial with no detected response. ADL never appears with a
+      side label (cell 56).
+    response: No change needed.
+  - claim: fig4-rid-unc31
+    agrees: true
+    outcome: reproduced
+    reason: Yes as the criterion is worded, but it is met barely. Reading (a) rests on URX 0.031 in unc-31
+      against 0.032 from a single WT trial, all Mann-Whitney p values are 0.31 or higher, and against the
+      WT export ADL goes the other way.
+    response: No change needed; the notes and the conclusion already give the single WT trial, the p
+      values and the WT export comparison.
+  - claim: fig5-extrasynaptic-screen
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig6-spontaneous
+    agrees: true
+    outcome: blocked
+    reason: Accepted, since it now depends on edfig6 in the claims file.
+    response: No change needed; the build check added for edfig6-kernel-stereotypy applies.

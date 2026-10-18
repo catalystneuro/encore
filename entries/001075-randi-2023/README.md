@@ -17,7 +17,7 @@ of Fig. 6 and the unstimulated control recordings behind every q value are not i
 | Per-pair counts and means agree with the paper's Source Data | Partially reproduced |
 | Recordings and stimulated neurons link to the paper's OSF export | Partially reproduced |
 | 11% of q < 0.05 connections are inhibitory | Not reproduced |
-| q-value results (Fig. 2c, 2e-g), unc-31 comparisons, extrasynaptic screen | Blocked: data missing |
+| q-value results (Fig. 2c, 2e-g), fewer connections in unc-31 (Extended Data Fig. 7b), extrasynaptic screen | Blocked: data missing |
 | Anatomy-model predictions (Fig. 3) | Blocked: data missing |
 | Kernel stereotypy (Extended Data Fig. 6) | Blocked: not runnable |
 | URX, ADL and AWB respond to RID stimulation in WT (Fig. 4) | Partially reproduced |
@@ -34,7 +34,7 @@ its unc-31 export supplies the unc-31 recordings for one claim.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001075-randi-2023-01.yaml`](../../attempts/001075-randi-2023-01.yaml).
 
-- `reproduce_randi_2023.ipynb`: the analysis. It takes about twelve minutes, most of it streaming
+- `reproduce_randi_2023.ipynb`: the analysis. It takes 10 to 15 minutes, most of it streaming
   the segmentation files and processing the traces in four worker processes.
 - `sigprop.py`: loading the segmentation files, the pre-processing of the Methods, the paper's
   response classifier, the identification of the stimulated ROI and the per-pair tables. Other
