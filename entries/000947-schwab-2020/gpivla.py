@@ -38,7 +38,8 @@ Where the parameters come from:
   fixes the CCF lags (-20 to +20 ms) and that each pair is significant when its peak exceeds the
   95th percentile of its own jittered controls.
 - The Methods define the surprise as S = -log(P); the natural log is used, as `log` is in the
-  paper's MATLAB. (A first run used log10, which gave bursts far longer than the paper's.)
+  paper's MATLAB. (A first run used log10, which gave bursts far longer than the paper's; the
+  notebook shows the burst durations with log10 as a variant.)
 - Common choices, where neither says: the VLa spikes are the ones jittered; the Poisson
   probability for a burst uses the unit's mean rest rate.
 """
@@ -149,7 +150,8 @@ def load_session(path: str, url: str) -> dict:
     el = g["extracellular_ephys/electrodes"]
     s["electrodes"] = pd.DataFrame({"channel_ids": [_s(x) for x in el["channel_ids"][:]],
                                     "location": [_s(x) for x in el["location"][:]],
-                                    "group_name": [_s(x) for x in el["group_name"][:]]})
+                                    "group_name": [_s(x) for x in el["group_name"][:]],
+                                    **{c: el[c][:] for c in ("acx_x", "acx_y", "acx_z") if c in el}})
     proc = {}
     if "processing" in f and "ecephys" in f["processing"] and "Processed" in f["processing/ecephys"]:
         for name, es in f["processing/ecephys/Processed"].items():
@@ -379,13 +381,45 @@ def ccf_test(gpi: np.ndarray, vla: np.ndarray, dur: float, rng: np.random.Genera
         c = (c + np.r_[c[0], c[:-1]]) / 2       # 2 ms moving average
         seg = c[sel]
         k = int(np.argmax(np.abs(seg)))
-        return np.abs(seg[k]), np.sign(seg[k])
+        return np.abs(seg[k]), np.sign(seg[k]), int(CCF_LAGS[sel][k])
 
-    p_real, s_real = peak(real)
+    p_real, s_real, lag = peak(real)
     p_ctrl = np.array([peak(c)[0] for c in ctrl])
     thr = np.percentile(p_ctrl, 95)
-    return {"peak": p_real, "sign": s_real, "ctrl_peaks": p_ctrl, "thr95": thr,
-            "significant": bool(p_real > thr), "ccf": real - mean_ctrl}
+    return {"peak": p_real, "sign": s_real, "lag_ms": lag, "ctrl_peaks": p_ctrl, "thr95": thr,
+            "significant": bool(p_real > thr), "ccf": real - mean_ctrl, "expected": expected}
+
+
+def min_detectable(expected: float, thr95: float, rng: np.random.Generator, n_sim: int = 400,
+                   grid=np.round(np.arange(0.01, 1.001, 0.01), 2)) -> float:
+    """Approximation of the Methods' minimum reliably detectable correlation c0: the lowest
+    injected peak correlation p for which 95% of simulated peaks exceed the pair's control 95th
+    percentile `thr95`. The paper simulates Poisson spike trains matched to each pair; its code
+    is not in the deposit. Here the simulation is made on the CCF counts: independent Poisson
+    counts with the pair's expected count per 2 ms bin (`expected`), plus an excess at a lag of
+    5 ms scaled so that the peak of the smoothed, control-subtracted CCF is p on average. Peaks are
+    measured as in `ccf_test`. Returns NaN when no p up to 1 is detectable."""
+    sel = (CCF_LAGS >= 0) & (CCF_LAGS <= 10)
+    lam = np.full(42, expected / 2.0)                     # 1 ms bins from -21 ms
+    inj = np.zeros(42)
+    inj[[25, 26]] = expected / 2.0 / 0.75                 # 1 ms bins [4, 5) and [5, 6) ms
+
+    def p5(p):
+        c1 = rng.poisson(lam + p * inj, size=(n_sim, 42))
+        c = (c1[:, :-1] + c1[:, 1:]) / expected - 1.0
+        c = (c + np.c_[c[:, :1], c[:, :-1]]) / 2
+        return np.percentile(np.abs(c[:, sel]).max(1), 5)
+
+    lo, hi = 0, len(grid) - 1                              # bisection on the grid
+    if p5(grid[hi]) <= thr95:
+        return np.nan
+    while lo < hi:
+        mid = (lo + hi) // 2
+        if p5(grid[mid]) > thr95:
+            hi = mid
+        else:
+            lo = mid + 1
+    return float(grid[lo])
 
 
 def ks_permutation(real: np.ndarray, ctrl: np.ndarray) -> float:
@@ -405,15 +439,16 @@ def ks_permutation(real: np.ndarray, ctrl: np.ndarray) -> float:
 
 # --- bursts and pauses ---------------------------------------------------------------------
 
-def _poisson_surprise(n_spikes: int, duration: float, rate: float) -> float:
-    """-ln of the Poisson probability of n or more spikes in `duration` at `rate`."""
-    return -np.log(max(gammainc(n_spikes, rate * duration), 1e-300))
+def _poisson_surprise(n_spikes: int, duration: float, rate: float, log=np.log) -> float:
+    """-log of the Poisson probability of n or more spikes in `duration` at `rate`."""
+    return -log(max(gammainc(n_spikes, rate * duration), 1e-300))
 
 
-def bursts(spikes: np.ndarray, rate: float, min_surprise: float = 5.0) -> list[tuple[float, float]]:
+def bursts(spikes: np.ndarray, rate: float, min_surprise: float = 5.0, log=np.log) -> list[tuple[float, float]]:
     """Legendy and Salcman bursts: start at two consecutive ISIs below half the mean ISI, extend
     while the surprise grows (up to 10 spikes beyond its maximum), then trim the start while it
-    grows. Kept with surprise >= 5, >= 3 spikes and an intraburst rate >= 2x the baseline."""
+    grows. Kept with surprise >= 5, >= 3 spikes and an intraburst rate >= 2x the baseline.
+    `log` is the logarithm of the surprise (natural by default; np.log10 for the variant)."""
     out = []
     if len(spikes) < 3 or rate <= 0:
         return out
@@ -425,16 +460,16 @@ def bursts(spikes: np.ndarray, rate: float, min_surprise: float = 5.0) -> list[t
             i += 1
             continue
         j = i + 2
-        best_j, best_s = j, _poisson_surprise(3, spikes[j] - spikes[i], rate)
+        best_j, best_s = j, _poisson_surprise(3, spikes[j] - spikes[i], rate, log)
         k = j
         while k + 1 < n and k + 1 - best_j <= 10:
             k += 1
-            s = _poisson_surprise(k - i + 1, spikes[k] - spikes[i], rate)
+            s = _poisson_surprise(k - i + 1, spikes[k] - spikes[i], rate, log)
             if s > best_s:
                 best_s, best_j = s, k
         a = i
         while best_j - a + 1 > 3:
-            s = _poisson_surprise(best_j - a, spikes[best_j] - spikes[a + 1], rate)
+            s = _poisson_surprise(best_j - a, spikes[best_j] - spikes[a + 1], rate, log)
             if s >= best_s:
                 best_s, a = s, a + 1
             else:
@@ -447,10 +482,10 @@ def bursts(spikes: np.ndarray, rate: float, min_surprise: float = 5.0) -> list[t
     return out
 
 
-def pauses(spikes: np.ndarray, rate: float, min_surprise: float = 5.0, min_len: float = 0.1):
+def pauses(spikes: np.ndarray, rate: float, min_surprise: float = 5.0, min_len: float = 0.1, log=np.log):
     """ISIs of at least 100 ms whose Poisson surprise of zero spikes is at least 5."""
     isi = np.diff(spikes)
-    s = rate * isi                              # -ln(exp(-rate * isi))
+    s = rate * isi * log(np.e)                  # -log(exp(-rate * isi))
     k = np.flatnonzero((isi >= min_len) & (s >= min_surprise))
     return [(spikes[i], spikes[i + 1]) for i in k]
 
@@ -473,7 +508,8 @@ def ap_widths(url: str, series: str, rate: float, start: float, chunk: int,
               units: list[tuple[str, int, np.ndarray]], max_spikes: int = 300) -> list[dict]:
     """Trough-to-peak time (ms) of the mean waveform of each unit on its channel of the filtered
     trace `series`, from the spikes inside one HDF5 chunk (the one holding the most spikes of
-    these units), so that each file and series is read once. `units` holds (id, column, spikes)."""
+    these units), so that each file and series is read once. `units` holds (id, column, spikes).
+    The window runs from 0.6 ms before to 1.2 ms after each spike time, which caps the width."""
     idx = {uid: np.round((sp - start) * rate).astype(int) for uid, _, sp in units}
     which = np.concatenate([v // chunk for v in idx.values()])
     vals, counts = np.unique(which, return_counts=True)
@@ -489,10 +525,11 @@ def ap_widths(url: str, series: str, rate: float, start: float, chunk: int,
         sel = idx[uid][(idx[uid] // chunk) == c] - lo
         sel = sel[(sel > pre) & (sel < len(block) - post)][:max_spikes]
         if len(sel) < 10:
-            out.append({"uid": uid, "width_ms": np.nan, "n_spikes": len(sel)})
+            out.append({"uid": uid, "width_ms": np.nan, "n_spikes": len(sel), "at_end": False})
             continue
         w = np.mean([block[k - pre:k + post, col] for k in sel], 0)
         t0 = int(np.argmin(w))
         t1 = t0 + int(np.argmax(w[t0:]))
-        out.append({"uid": uid, "width_ms": (t1 - t0) / rate * 1000.0, "n_spikes": len(sel)})
+        out.append({"uid": uid, "width_ms": (t1 - t0) / rate * 1000.0, "n_spikes": len(sel),
+                    "at_end": t1 == len(w) - 1})            # peak at the window's last sample: width capped
     return out

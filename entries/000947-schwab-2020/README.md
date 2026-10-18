@@ -24,7 +24,7 @@ of two monkeys performing a reaching task.
 | GPi-VLa spike correlations no larger than controls (Fig 4A-F) | Not reproduced |
 | GPi-VLa noise correlations no larger than controls (Fig 4G-H) | Not reproduced |
 | VLa rate decreases after GPi bursts and pauses (Fig 5) | Not reproduced |
-| Reaction times and movement durations (S2 Fig) | Partially reproduced |
+| Reaction times and movement durations (S2 Fig) | Reproduced |
 | EMG onsets (S3 Fig) | Blocked: methods underspecified |
 | Localization of VLa by stimulation (Fig 1) | Blocked: data missing |
 | Simulations (Fig 6) | Blocked: other |
@@ -34,11 +34,13 @@ reasoning and the differences from the paper's method.
 
 The units are selected from the dandiset's own labels, which gives more units than the paper
 analysed; the paper's own unit list, from its Dryad deposit, is shown as a variant, and two
-outcomes (monophasic responses, Fig 3A) would differ with it. The attempt record, with the reasons
+outcomes (monophasic responses, Fig 3A) would differ with it. A second variant takes units on the
+same day, channel and sort letter as one neuron. The notebook also gives the chance level of the
+response detection, measured with random alignment times. The attempt record, with the reasons
 and the differences from the paper's method, is
 [`attempts/000947-schwab-2020-01.yaml`](../../attempts/000947-schwab-2020-01.yaml).
 
-- `reproduce_schwab_2020.ipynb`: the analysis. It takes about 12 minutes, about 3 of them streaming
+- `reproduce_schwab_2020.ipynb`: the analysis. It takes about 13 minutes, about 3 of them streaming
   the files and another 3 reading the filtered traces for the spike widths.
 - `gpivla.py`: loading the files, valid trials, spike density and ISI functions, the detection of
   peri-movement changes, CCFs with jittered controls, burst and pause detection, and spike widths.
