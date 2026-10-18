@@ -1,0 +1,260 @@
+# Claims for Hadjas et al. (2025), bioRxiv preprint version 1, on dandiset 001528.
+# Source: the full text of the preprint (CC BY), read from its JATS XML: Results, figure legends
+# and Methods. The preprint has no data or code availability statement.
+#
+# When these criteria were written, the author had seen the data check only: the file list,
+# the metadata of every file, the number of mice per group, input and recording site, the epoch
+# tables, the units and timestamps of the 100 Hz series, a recomputation of the stored dF/F, and
+# for the clock check the median absolute response to 1 s trains per group (at true and shifted
+# onsets, without its sign). For the Anxa1 mice the author had also seen, per kind of recording
+# (DLS, SNc, and the recordings without a site suffix), the median dF/F during and after 1 s
+# trains (DLS -1.31 and +0.97, SNc -0.40 and +0.07, unsuffixed -0.27 and -0.06, in %, durations
+# protocol). No claim's analysis had been run.
+#
+# Method choices fixed here, where the Methods leave them open:
+# - The dF/F is the lab's own, stored in each file. Traces are aligned to train onset and the
+#   mean over the 1 s before onset is subtracted (Methods). Trials of one condition are averaged
+#   per mouse (Methods); statistics are across mice.
+# - The response to a train is the mean dF/F during the train (Figure 3C legend). The
+#   pre-stimulus comparison window has the length of the train and ends at onset; the rebound
+#   window is the 1 s after offset. Windows of these lengths are among those the lab's MATLAB
+#   scripts compute (analysis_notes.md in catalystneuro/hnasko-lab-to-nwb at commit deaefa7).
+#   The area under the curve during the train gives the same tests within one duration.
+# - Comparisons across train durations use the durations protocol (40 Hz); comparisons across
+#   frequencies use the frequencies protocol at the stated train duration. Where a panel shows
+#   one duration and the text does not say which, the 1 s train is used, as in the insets of
+#   Figures 2 and 4 and in Figure 5C.
+# - Each test is the one the paper reports for that comparison (paired t-test, Wilcoxon
+#   signed-rank, Friedman, repeated-measures ANOVA, two-way ANOVA). Repeated-measures ANOVA
+#   p-values use the Greenhouse-Geisser correction, as the fractional degrees of freedom in the
+#   paper (for example F2,15 for four frequencies in nine mice) imply. Alpha is 0.05.
+# - Mice are grouped by the files' own experiment description, recording site (the name of the
+#   dF/F series) and stimulated input (the opsin's name). For the Anxa1 mice the dandiset's site
+#   labels are used for the outcome; how the recordings without a site suffix affect the result
+#   is shown as a variant (see cohort-sizes).
+#
+# Test statistics (t, W, F) that the paper reports are given in the statements and printed next
+# to the values found, but the outcomes rest on the direction and significance of each test:
+# the statistic depends on the exact window and pre-processing, which the paper does not give,
+# so a tolerance on it would test those choices, not the finding.
+schema_version: 1
+dandiset: "001528"
+paper: doi:10.1101/2025.06.03.657460
+claims:
+- id: cohort-sizes
+  statement: The number of mice per experimental group is as given in the figure legends; SNr
+    GABA neurons STN 7 and PPN 8 (Figure 2); SNc pan-DA neurons STN 11 and PPN 9 (Figure 3);
+    GRAB-DA in TS and DLS, STN 6 and 7, PPN 9 and 9 (Figure 4); DA terminals in TS and DLS with
+    STN stimulation, 9 and 9 (Figure S3); Vglut2+ DA neurons STN 10 and PPN 10, Anxa1+ terminals
+    in DLS STN 8 and PPN 10 (Figure 5); Anxa1+ cell bodies in SNc STN 5 and PPN 4 (Figure S4).
+  source: Legends of Figures 2 to 5, S3 and S4
+  expected:
+  - {quantity: "SNr GABA, STN", value: 7, tolerance: 0, unit: mice}
+  - {quantity: "SNr GABA, PPN", value: 8, tolerance: 0, unit: mice}
+  - {quantity: "SNc pan-DA, STN", value: 11, tolerance: 0, unit: mice}
+  - {quantity: "SNc pan-DA, PPN", value: 9, tolerance: 0, unit: mice}
+  - {quantity: "GRAB-DA TS, STN", value: 6, tolerance: 0, unit: mice}
+  - {quantity: "GRAB-DA DLS, STN", value: 7, tolerance: 0, unit: mice}
+  - {quantity: "GRAB-DA TS, PPN", value: 9, tolerance: 0, unit: mice}
+  - {quantity: "GRAB-DA DLS, PPN", value: 9, tolerance: 0, unit: mice}
+  - {quantity: "DA terminals TS, STN", value: 9, tolerance: 0, unit: mice}
+  - {quantity: "DA terminals DLS, STN", value: 9, tolerance: 0, unit: mice}
+  - {quantity: "Vglut2 SNc, STN", value: 10, tolerance: 0, unit: mice}
+  - {quantity: "Vglut2 SNc, PPN", value: 10, tolerance: 0, unit: mice}
+  - {quantity: "Anxa1 DLS, STN", value: 8, tolerance: 0, unit: mice}
+  - {quantity: "Anxa1 DLS, PPN", value: 10, tolerance: 0, unit: mice}
+  - {quantity: "Anxa1 SNc, STN", value: 5, tolerance: 0, unit: mice}
+  - {quantity: "Anxa1 SNc, PPN", value: 4, tolerance: 0, unit: mice}
+  criterion: Mice with a usable durations recording, counted per group, input and site under the
+    dandiset's labels. The tolerance is 0, as these are counts of animals. Reproduced when all 16
+    counts match; partially reproduced when 12 to 15 match; not reproduced below 12. The counts
+    for the frequencies protocol, and the Anxa1 counts if the recordings without a site suffix
+    were DLS recordings, are reported as well.
+- id: fig2-gaba-excited
+  statement: Optogenetic stimulation of STN or PPN inputs increases SNr GABA neuron activity
+    (paired t-test on the 1 s train, STN t = 3.8, p = 0.008; PPN t = 9.2, p < 0.0001).
+  source: Results, second section; Figure 2B and 2E with insets
+  criterion: For 1 s 40 Hz trains, the mean dF/F during the train against the pre-stimulus
+    window, paired t-test across mice, per input. Reproduced when both inputs show a significant
+    increase; partially reproduced when one does; not reproduced otherwise.
+- id: fig2-gaba-frequency
+  statement: The SNr GABA response scales with stimulation frequency from 5 to 40 Hz (Friedman
+    test on 1 s trains, STN F = 21.0, p = 0.0001; PPN F = 18.2, p = 0.0004).
+  source: Results, second section; Figure 2C and 2F
+  criterion: For 1 s trains of the frequencies protocol, the Friedman test across 5, 10, 20 and
+    40 Hz of the mean dF/F during the train, per input. Reproduced when both inputs give p < 0.05
+    with the 40 Hz mean above the 5 Hz mean; partially reproduced when one does.
+- id: fig3b-da-stn-250ms-peak
+  statement: A 250 ms 40 Hz train of STN inputs elicits a net increase in SNc pan-DA neuron
+    activity that peaks after stimulus offset (latency to peak 0.50 +/- 0.03 s, mean +/- SEM).
+  source: Results, third section; Figure 3B
+  expected:
+  - quantity: Mean latency to peak after onset, STN, 250 ms train
+    value: 0.50
+    tolerance: 0.03
+    unit: s
+  criterion: Per mouse, the time of the maximum of the trial-averaged trace from onset to 2.25 s
+    after onset (the 2 s after offset); the mean over mice. The tolerance is the paper's SEM.
+    Reproduced when the mean latency is within tolerance and the mean dF/F over 0 to 1.25 s is
+    above 0 by a one-sample t-test; partially reproduced when the mean latency is after offset
+    (above 0.25 s) and the net response is positive, but outside tolerance; not reproduced
+    otherwise. The latency with a window ending 1.25 s after onset is shown as a variant.
+- id: fig3c-da-stn-duration
+  statement: For SNc pan-DA neurons the STN-evoked response varies with train duration; with 1
+    and 4 s trains an initial increase is followed by inhibition (Friedman test, F = 13.0, p =
+    0.005).
+  source: Results, third section; Figure 3B and 3C
+  criterion: The paper's F = 13.0 with p = 0.005 fits four groups, while three durations were
+    tested. Readings allowed (a) the mean dF/F during 0.25, 1 and 4 s trains (three groups);
+    (b) the same with the pre-stimulus window as a fourth group; (c) the area under the curve
+    during each train (three groups). Reproduced when the Friedman test gives p < 0.05 under one
+    reading and, for 4 s trains, the mean over 0 to 0.5 s is above the mean over the last 1 s of
+    the train (paired t-test p < 0.05); partially reproduced when only one of the two holds.
+- id: fig3d-da-stn-frequency-ns
+  statement: The amplitude of the SNc pan-DA response during STN stimulation does not scale with
+    frequency (Friedman test, F = 4.2, p = 0.24).
+  source: Results, third section; Figure 3D
+  criterion: A claim of absence, judged on the paper's test, the Friedman test across 5, 10, 20
+    and 40 Hz of the mean dF/F during 1 s trains of the frequencies protocol. Reproduced when p
+    >= 0.05; not reproduced when p < 0.05. The 0.25 s and 4 s trains are shown as variants.
+- id: fig3g-da-ppn-duration
+  statement: PPN stimulation also evokes SNc pan-DA responses that vary with train duration
+    (Friedman test, F = 11.5, p = 0.009).
+  source: Results, third section; Figure 3F and 3G
+  criterion: As fig3c-da-stn-duration for the Friedman test, with readings (a) to (c).
+    Reproduced when p < 0.05 under one reading; not reproduced otherwise.
+- id: fig3h-da-ppn-frequency-ns
+  statement: The SNc pan-DA response to PPN stimulation does not vary with frequency
+    (repeated-measures one-way ANOVA, F2,15 = 1.35, p = 0.28).
+  source: Results, third section; Figure 3H
+  criterion: A claim of absence, judged on the paper's test, a repeated-measures ANOVA
+    (Greenhouse-Geisser corrected) across 5, 10, 20 and 40 Hz of the mean dF/F during 1 s
+    trains. Reproduced when p >= 0.05; not reproduced when p < 0.05.
+- id: fig4cf-ts-dls-opposite
+  statement: STN or PPN stimulation evokes opposite DA release in TS (increase) and DLS
+    (decrease) (two-way ANOVA, striatal site, STN F1,11 = 40.9, PPN F1,16 = 36.4, p < 0.0001;
+    site by time interaction of the same size).
+  source: Results, fourth section; Figure 4C and 4F
+  criterion: GRAB-DA recordings, 1 s 40 Hz trains; a two-way mixed ANOVA with site between mice
+    and time (pre-stimulus window, train) within mice. Reproduced when, for both inputs, the
+    mean dF/F during the train is above 0 in TS and below 0 in DLS and the site by time
+    interaction has p < 0.05; partially reproduced when this holds for one input.
+- id: fig4dg-ts-frequency
+  statement: In TS, the DA increase evoked by either input scales with frequency, for all train
+    durations (STN, repeated-measures ANOVA, 0.25 s F2,8 = 7.5, 1 s F2,7 = 13.6, 4 s F2,9 = 16.9;
+    PPN, Friedman, F = 20.0, 24.0, 23.2).
+  source: Results, fourth section; Figure 4D and 4G; Figure S3C, S3D, S3I and S3J
+  criterion: For each input and train duration (six tests), the paper's test across 5, 10, 20
+    and 40 Hz of the mean dF/F during the train in TS. Reproduced when all six give p < 0.05 with
+    the 40 Hz mean above the 5 Hz mean; partially reproduced for three to five; not reproduced
+    below three.
+- id: fig4eh-dls-frequency
+  statement: In DLS, the DA inhibition scales with frequency and is most prominent at higher
+    frequencies (STN, repeated-measures ANOVA, 0.25 s F = 7.5, 1 s F = 12.8, 4 s F = 46.8; PPN,
+    0.25 s Friedman F = 12.3, 1 s and 4 s repeated-measures ANOVA F = 12.8 and 10.2).
+  source: Results, fourth section; Figure 4E and 4H; Figure S3E, S3F, S3K and S3L
+  criterion: For each input and train duration (six tests), the paper's test across 5, 10, 20
+    and 40 Hz of the mean dF/F during the train in DLS. Reproduced when all six give p < 0.05 with
+    the 40 Hz mean below the 5 Hz mean; partially reproduced for three to five; not reproduced
+    below three.
+- id: fig4eh-dls-5hz-increase
+  statement: Low-frequency (5 Hz) stimulation of either STN or PPN increases DLS dopamine.
+  source: Results, fourth section; Figure 4E and 4H; Figure S3F and S3L
+  criterion: For 1 s trains at 5 Hz, the mean dF/F during the train in DLS against 0, one-sample
+    t-test across mice, per input. Reproduced when both inputs give a mean above 0 with p < 0.05;
+    partially reproduced when one does. The 0.25 s and 4 s trains are shown as variants.
+- id: fig4cf-dls-rebound
+  statement: In DLS the DA inhibition is followed by a post-stimulus rebound above baseline.
+  source: Results, fourth section; Figure 4C and 4F
+  criterion: For 1 s 40 Hz trains, the mean dF/F in the 1 s after offset against 0, one-sample
+    t-test across mice, per input. Reproduced when both inputs give a mean above 0 with p < 0.05;
+    partially reproduced when one does.
+- id: figs3-terminals-opposite
+  statement: Calcium in DA terminals in TS and DLS shows opposite responses to STN stimulation,
+    as the GRAB-DA recordings do.
+  source: Results, fourth section; Figure S3N and S3O
+  criterion: DA terminal GCaMP recordings, 1 s 40 Hz trains; the mean dF/F during the train is
+    above 0 in TS and below 0 in DLS, and the two sites differ by a two-way mixed ANOVA site by
+    time interaction at p < 0.05. Reproduced when all hold; partially reproduced when the sites
+    differ but one site's sign is not as stated.
+- id: fig5-vglut2-excited
+  statement: Stimulation of STN or PPN inputs increases the activity of Vglut2+ DA neurons in SNc
+    (STN, Wilcoxon, 0.25 s W = 41, p = 0.012, 1 s W = 43, p = 0.008, 4 s W = -5, p = 0.82; PPN,
+    paired t-test, 0.25 s t = 2.9, p = 0.02, 1 s t = 3.4, p = 0.008, 4 s t = 3.0, p = 0.01).
+  source: Results, fifth section; Figure 5B, 5C, 5G and 5H; Figure S4A and S4D
+  criterion: Durations protocol; the mean dF/F during the train against the pre-stimulus window,
+    with the paper's test (Wilcoxon for STN, paired t-test for PPN). The claim rests on the 0.25
+    and 1 s trains of both inputs (four tests). Reproduced when all four show a significant
+    increase; partially reproduced for two or three; not reproduced otherwise. The 4 s trains
+    are reported.
+- id: fig5-vglut2-frequency
+  statement: The Vglut2+ DA neuron increase scales with frequency for short STN trains and for
+    all PPN durations (Friedman, STN 0.25 s F = 15.5, p = 0.001, 1 s F = 5.9, p = 0.11, 4 s F =
+    7.0, p = 0.07; PPN F = 18.8, 24.8, 20.2, p <= 0.0003).
+  source: Results, fifth section; Figure 5D, 5E, 5I and 5J
+  criterion: Friedman test across 5, 10, 20 and 40 Hz of the mean dF/F during the train. The
+    claim rests on STN 0.25 s and PPN 0.25, 1 and 4 s (four tests). Reproduced when all four
+    give p < 0.05 with the 40 Hz mean above the 5 Hz mean; partially reproduced for two or three;
+    not reproduced otherwise. STN 1 s and 4 s are reported.
+- id: fig5-anxa1-dls-inhibited
+  statement: In DLS terminals of SNc Anxa1+ neurons, STN and PPN stimulation produce inhibition
+    (STN, 0.25 s t = 6.4, p = 0.0004, 1 s W = -36, p = 0.005, 4 s W = -36, p = 0.008; PPN, 0.25 s
+    t = 3.9, p = 0.004, 1 s W = -55, p = 0.002, 4 s t = 3.8, p = 0.004).
+  source: Results, fifth section; Figure 5L, 5M, 5Q and 5R; Figure S4B and S4E
+  criterion: Durations protocol, Anxa1 recordings labeled DLS; the mean dF/F during the train
+    against the pre-stimulus window with the paper's test for each input and duration (six
+    tests). Reproduced when all six show a significant decrease; partially reproduced for three
+    to five; not reproduced below three. The result with the recordings without a site suffix
+    added to DLS is a variant.
+- id: fig5-anxa1-dls-frequency
+  statement: The Anxa1+ terminal inhibition scales with frequency (STN, 0.25 s F = 18.0, 1 s F =
+    15.5, 4 s F = 15.3; PPN, 0.25 s F = 11.5, 1 s F2,15 = 11.0, 4 s F2,18 = 7.2).
+  source: Results, fifth section; Figure 5N, 5O, 5S and 5T
+  criterion: Frequencies protocol, Anxa1 recordings labeled DLS; per input and duration (six
+    tests) the paper's test across 5, 10, 20 and 40 Hz of the mean dF/F during the train
+    (Friedman for STN and for PPN 0.25 s, repeated-measures ANOVA for PPN 1 s and 4 s).
+    Reproduced when all six give p < 0.05 with the 40 Hz mean below the 5 Hz mean; partially
+    reproduced for three to five; not reproduced below three.
+- id: fig5-anxa1-dls-rebound
+  statement: Anxa1+ terminals in DLS show a transient increase in activity at stimulus offset,
+    for both inputs.
+  source: Results, fifth section; Figure 5L and 5Q
+  criterion: Durations protocol, Anxa1 recordings labeled DLS, 1 s 40 Hz trains; the mean dF/F
+    in the 1 s after offset against 0, one-sample t-test. Reproduced when both inputs give a mean
+    above 0 with p < 0.05; partially reproduced when one does.
+- id: figs4-anxa1-soma-inhibited
+  statement: Anxa1+ SNc cell bodies show stimulation-induced inhibition (paired t-test, STN 0.25
+    s t = 3.1, 1 s t = 4.0, 4 s t = 7.2, n = 5; PPN t = 4.8, 8.4, 3.3, n = 4) followed by
+    post-stimulus rebound activation.
+  source: Results, fifth section; Figure S4C and S4F
+  criterion: Durations protocol, Anxa1 recordings labeled SNc; the mean dF/F during the train
+    against the pre-stimulus window, paired t-test, per input and duration (six tests).
+    Reproduced when all six show a significant decrease; partially reproduced for three to five;
+    not reproduced below three. The rebound (mean in the 1 s after offset of 1 s trains above 0)
+    is reported, and the result restricted to the mice with both a DLS and an SNc recording (the
+    paper's n) is a variant.
+- id: fig5-opposite-subtypes
+  statement: Excitatory inputs from STN and PPN activate PD-resilient Vglut2+ DA neurons but
+    inhibit PD-vulnerable Anxa1+ DA neurons.
+  source: Title; Abstract; Results, fifth section; Figure 5
+  criterion: For 1 s 40 Hz trains of the durations protocol, per input, the mean dF/F during the
+    train is above 0 for Vglut2 SNc recordings and below 0 for Anxa1 DLS recordings, and the two
+    groups differ by Welch's t-test at p < 0.05. Reproduced when this holds for both inputs;
+    partially reproduced for one.
+- id: fig1de-th-anxa1-reduced
+  statement: In human SNc, TH+ neurons (Mann-Whitney U = 2.0, p = 0.002) and TH+/ANXA1+ neurons
+    (U = 1.0, p < 0.0001) are fewer in PD cases (n = 7) than in controls (n = 12).
+  source: Results, first section; Figure 1D and 1E
+- id: fig1f-anxa1-de-enriched
+  statement: Among remaining DA neurons in PD, ANXA1+ neurons are de-enriched to 10 +/- 7% of
+    control, ALDH1A1+ to 41 +/- 12%, while CALB1+ neurons trend toward enrichment (301 +/- 103%).
+  source: Results, first section; Figure 1F
+- id: figs1-calb1-aldh1a1-counts
+  statement: TH+/CALB1+ neuron counts are not significantly changed in PD (U = 19.5, p = 0.08)
+    while TH+/ALDH1A1+ counts are reduced (U = 1.0, p < 0.0001).
+  source: Results, first section; Figure S1B to S1F
+- id: figs1-if-aldh1a1
+  statement: Immunofluorescence confirms fewer TH+ and TH+/ALDH1A1+ neurons and a lower fraction
+    of TH+ neurons expressing ALDH1A1 in PD (n = 11) than in controls (n = 15), and counts agree
+    with RNAscope in four cases processed both ways.
+  source: Results, first section; Figure S1G to S1J
