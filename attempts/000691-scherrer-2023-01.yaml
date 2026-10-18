@@ -1,0 +1,200 @@
+schema_version: 1
+id: 000691-scherrer-2023-01
+dandiset: "000691"
+dandiset_version: 0.260827.1358
+paper: doi:10.1038/s41592-023-01806-1
+date: 2026-10-17
+entry: 000691-scherrer-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: Images of a thin layer of fluorescent dye taken with the Featherscope and the Kiloscope with
+    correction optics, with diffuse light, and with the plain laser (sf3/feather and sf3/widefield),
+    used for ed2b-featherscope-flat-illumination and ed2c-kiloscope-flat-illumination. The same
+    repository's analysis code supplied the parameters of every analysis (tracking rule, decoder
+    settings, pixel size of 5.94 um for the Kiloscope).
+  source: https://github.com/FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c
+outcomes:
+- claim: abstract-thousands-of-neurons
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:abstract-thousands-of-neurons
+  notes: All 2948 footprints have a trace above zero at some time; no two have traces correlated above
+    0.77, so near-duplicate merging leaves 2948. The mouse visits all four arms and runs 48.5 loop
+    lengths during the 1081 s of imaging that overlap the tracked video.
+  deviations:
+  - The count is of EXTRACT footprints before the paper's curation (2382 kept); the dandiset does not
+    mark the curated set.
+- claim: ed6a-curated-footprints
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The dandiset holds 2948 footprints, the number the preprint gives for the extraction before
+    curation, and its plane segmentation has no column that marks the 2382 kept. The selection is in
+    the paper's Academic Torrents deposit (supporting_data/2021-07-26_isgood.mat and
+    extract_curated.mat, infohash aa2a3d2f5ff0b3974871db47db57bc3dabf3c192); no peer connected
+    in two attempts of 2.5 and 4 minutes from this environment, so it could not be fetched.
+- claim: ed6bcd-other-mice
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds one mouse (4mm-mouse-1). The Academic Torrents deposit the paper names
+    lists files of the same session only (2021-07-26), and no other dandiset of this paper was found.
+- claim: ed5-songbirds
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No bird data in the dandiset or in the Academic Torrents deposit, whose file list holds only
+    the mouse session.
+- claim: abstract-kiloscope-fov
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The NWB file gives no pixel size (no grid spacing in the imaging plane). Frames are 808 x
+    608 pixels; at the 5.94 um per pixel of the paper's code they would be 4.80 x 3.61 mm, and the
+    footprint centroids span 3.09 x 3.31 mm. The pixel size comes from the code, so this does not
+    test the claim on the dandiset.
+- claim: abstract-weights
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Weights are hardware measurements; no data on them are in the dandiset or the paper's
+    deposits.
+- claim: ed1-ed4-resolution
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The USAF target images are not in the dandiset, the Academic Torrents deposit or the code
+    repository (which holds bead images for a point spread function analysis whose numbers are in
+    the main text, not available here).
+- claim: ed3-adc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The test recordings of the analog-to-digital converter are not in the dandiset or the
+    paper's deposits.
+- claim: ed8-coactive-distributed
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed8-coactive-distributed
+  notes: For all 8 components the event has 196 to 320 active footprints, more than half of the
+    component's members, with a spread of 0.945 to 1.055 times that of all footprints (0.98 mm) and a
+    90th percentile of pairwise distance of 2.05 to 2.29 mm. Active thresholds of 0.3 and 0.7 also
+    give 8 of 8. The best of 4 NMF replicates was kept (errors 97.55 to 97.58).
+  deviations:
+  - All 2948 footprints in place of the 2382 curated ones.
+  - Event times are each component's largest temporal weight; the code sets them by hand.
+  - Distances use the code's 5.94 um per pixel, which the dandiset does not state; the outcome uses
+    ratios and does not depend on it.
+- claim: fig2-quadrant-direction-decoding
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:fig2-quadrant-direction-decoding
+  notes: Median class accuracy 0.415 over 50 decoders (0.304 to 0.604), chance 0.125, 95th
+    percentile of 50 shifted-label decoders 0.145; all 50 exceed it. 3.32 times chance; the
+    preprint's text says at least four times chance, a number not used here as the version of record's
+    text was not available. Six of eight classes reach 0.443 to 0.594, two only 0.236 and 0.239. On
+    all frames, without the running selection, 0.348 against a null 95th percentile of 0.127.
+  deviations:
+  - Position tracked here from the video (the paper's tracking output is not in the dandiset), in
+    the unrotated frame, with the loop's sides at the 2nd and 98th percentiles of position.
+  - All 2948 footprints in place of the 2382 curated ones.
+  - scikit-learn's SGD classifier (hinge loss, ridge alpha equal to the code's lambda, 10 passes) in
+    place of MATLAB's fitcecoc with templateLinear; 50 decoders in place of 200.
+  - The legend of Figure 2 was not available, so the claim is stated from the Extended Data legends
+    and the code.
+- claim: ed9b-octant-decoding
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed9b-octant-decoding
+  notes: Median class accuracy 0.313 over 50 decoders (0.211 to 0.416), chance 0.125, null 95th
+    percentile 0.144; all 50 exceed it, and each octant's mean accuracy (0.236 to 0.499) is above
+    chance.
+  deviations:
+  - As for fig2-quadrant-direction-decoding.
+- claim: ed9c-local-decoding-map
+  outcome: not_reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed9c-local-decoding-map
+  notes: With 32 footprints within 270 um (45.5 px), 151 grid points qualify and none is significant
+    at Benjamini-Hochberg 5% (smallest q 0.61); scores 0.015 to 0.140, median 0.071, against null
+    means of 0.014 to 0.093. The score (median of eight class accuracies) is below chance at most
+    points, as decoders on 32 footprints predict few of the classes. With the code's 64 footprints
+    within 50 px, 4 of 77 points are significant (scores 0.123 to 0.177, range 0.054), which would
+    meet the criterion.
+  deviations:
+  - The legend says 32 footprints within 270 um; the code uses 64 within 50 pixels. The legend is
+    followed for the outcome and the code's choice is shown as a variant.
+  - The paper does not describe its significance test. Here, 10 decoders and 10 shifted-label
+    decoders per point and a one-sided z-test, chosen before the analysis; with so few null decoders
+    the test has little power.
+  - A 30 pixel grid where the code uses 5 pixels; all 2948 footprints in place of 2382; position and
+    classifier as for fig2-quadrant-direction-decoding.
+- claim: ed10-localized-activity
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed10-localized-activity
+  notes: 100 of 2948 footprints (3.4%) have an entropy over linear position below all 100 shifted
+    values, against 29 expected (binomial p = 4.5e-25); 448 against 175 at a looser threshold. For the
+    100, the entropy is 0.20 to 0.90 bits below the shifted mean (5th to 95th percentile), out of a
+    maximum of 6.64 bits.
+  deviations:
+  - The paper selected its examples by eye and shows two-dimensional maps; here a test over all
+    footprints on linear position, with the entropy measure of place_cells.m.
+  - All 2948 footprints in place of 2382; position as for fig2-quadrant-direction-decoding.
+- claim: ed2b-featherscope-flat-illumination
+  outcome: partially_reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed2b-featherscope-flat-illumination
+  notes: At 0.4 mm the corrected profile is 0.742, total vignetting 0.342 and optical vignetting
+    0.628; the corrected profile is higher, but falls below 0.8 (minimum 0.742 over 0 to 0.4 mm).
+  deviations:
+  - The radius of 0.4 mm and the level of 0.8 that define "flat" were chosen here; the legend gives
+    no number.
+- claim: ed2c-kiloscope-flat-illumination
+  outcome: partially_reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed2c-kiloscope-flat-illumination
+  notes: At 1.5 mm the corrected profile is 0.797, total vignetting 0.253 and optical vignetting
+    0.389. The corrected profile is higher, and its minimum over 0 to 1.5 mm, 0.797, is 0.003 below
+    the criterion's 0.8; at 1.125 mm it is 0.922.
+  deviations:
+  - The radius of 1.5 mm and the level of 0.8 were chosen here; the result sits at the level.
+findings:
+- kind: data_missing
+  statement: The dandiset holds one of the paper's four mice and none of the songbird recordings or
+    optical test data. The Academic Torrents deposit the paper names for its imaging data holds
+    files of the same mouse session only, so the other mice and the birds are not public.
+- kind: metadata_error
+  statement: The device description reads "Head-mounted microscope (Kiloscope) optimized for weight
+    (1.0 mm FOV; 1.0 g)", and the dandiset description says the data come from the microscope
+    optimized for weight. The data are from the large-FOV microscope (1.4 g, about 4 mm FOV) that
+    the paper calls the Kiloscope; a 4 mm window, 2948 footprints and 808 x 608 pixel frames.
+- kind: metadata_error
+  statement: The imaging is stored as a TwoPhotonSeries and the dandiset lists two-photon microscopy
+    among its techniques, but the microscope is a one-photon head-mounted epifluorescence
+    microscope.
+- kind: metadata_error
+  statement: The behaviour video is described as about 30 fps and its AVI header says 30 frames/s,
+    but its 15521 timestamps run at a median 12.5 frames/s over 1234 s; at 30 frames/s it would
+    cover only 517 s of the 1234 s of imaging.
+- kind: metadata_insufficient
+  statement: The imaging plane gives no pixel size, and its indicator and location are "unknown"
+    with no excitation wavelength, although general/virus says GCaMP7f. Distances in the paper's
+    figures cannot be computed from the dandiset alone.
+- kind: selection_undocumented
+  statement: The 2948 footprints are the EXTRACT output before curation; the paper analyses the
+    2382 it kept (Extended Data Fig. 6a). Nothing in the dandiset marks the curated set or says that
+    the footprints are uncurated.
+- kind: data_missing
+  statement: The mouse's position, which the paper's decoding and place analyses use, is not in the
+    dandiset; it must be tracked from the behaviour video. The first 64 s of the video (by its
+    nominal rate), which the paper's code drops because the experimenter is in view, are not marked.
+- kind: code_mismatch
+  statement: The Extended Data Fig. 9c legend describes decoders on the 32 closest footprints within
+    270 um; the code (subregion_map_octant.m) uses 64 footprints within 50 pixels, which at the
+    code's own 5.94 um per pixel (sf3/widefield/analysis.m) is 297 um.
+- kind: paper_inconsistency
+  statement: The title of Extended Data Fig. 8 refers to the Kiloscope data "shown in Figure 3",
+    and its legend takes the ridgeline plot from Fig. 2d, while the version of record has two
+    figures, and Supplementary Video 1 and Extended Data Fig. 10 place the bird data in Fig. 2a-d and
+    the mouse data in Fig. 2e-h.
