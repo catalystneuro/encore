@@ -373,12 +373,44 @@ def responses(snips, win):
         return np.nan
     x = snips.copy()
     if np.isnan(x).any():
-        shifted = np.roll(x, 1, axis=1)
+        shifted = np.roll(x, 1, axis=1)          # circshift(x, 1, 2), which wraps, as in the code
         x[np.isnan(x)] = shifted[np.isnan(x)]
     t0 = NEG - 1
     b = x[:, t0 + win["base"][0]: t0 + win["base"][1] + 1]
     r = x[:, t0 + win["resp"][0]: t0 + win["resp"][1] + 1]
     return float(np.nanmean(np.trapezoid(r, dx=1 / HZ, axis=1) - np.trapezoid(b, dx=1 / HZ, axis=1)))
+
+
+def _size_amps(g, idx, peaks, desc):
+    """Transient amplitude after the events of each quintile of event size (AccDecSizeAnalysis.m).
+
+    Five values, NaN for a quintile with fewer than 3 events; None with fewer than 5 events.
+    """
+    if len(idx) < 5:
+        return None
+    L = len(g)
+    vals = peaks[idx]
+    srt = np.sort(vals)[::-1] if desc else np.sort(vals)
+    n = len(srt)
+    amps = []
+    for q in range(5):
+        lo = srt[mround(0.2 * q * n)]
+        hi = srt[mround(0.2 * (q + 1) * n) - 1]
+        if desc:
+            sel = idx[(vals <= lo) & (vals >= hi)]
+        else:
+            sel = idx[(vals >= lo) & (vals <= hi)]
+        b = np.zeros(L, bool)
+        b[sel] = True
+        sn = triggered(g, b, 100, 100)
+        if sn.shape[0] >= N_EVENTS_MIN:
+            avg = smooth_keep_ends(np.nanmean(sn, 0), 5)
+            up = np.max(avg[99:]) - avg[99]
+            dn = np.min(avg[99:]) - avg[99]
+            amps.append(up if abs(up) >= abs(dn) else dn)
+        else:
+            amps.append(np.nan)
+    return amps
 
 
 # ---------------------------------------------------------------- one file
@@ -498,12 +530,27 @@ def _read(f, asset):
     rew_long = _binary(L, t0, longs)
     rew_short = _binary(L, t0, shorts)
     reward = _binary(L, t0, longs + shorts, shift=1)      # 'Reward' starts one bin later
+    # RewardLong and RewardShort stay one bin before Reward, as selectSignals_paper.m sets them
+    # at find(diff(Reward) == 1); the rest rows already sit on Reward's bins
     rew_rest = _binary(L, t0, rests)
     puff = _binary(L, t0, puffs)
     light = _binary(L, t0, lights)
     lick = _binary(L, t0, licks)
     rec["n_events"] = {"reward": len(longs) + len(shorts), "long": len(longs), "short": len(shorts),
                        "rest": len(rests), "airpuff": len(puffs), "light": len(lights), "lick": len(licks)}
+    if rests:
+        # rest rows against the consumed rewards they tag: durations, start offsets, and the
+        # onsets left in RewardNoRest (reward & ~rest, as RewardPuffAnalysis.m builds it)
+        rs = np.array([x[0] for x in rests])
+        ls = np.array([x[0] for x in longs + shorts])
+        j = np.abs(ls[None, :] - rs[:, None]).argmin(1)
+        rec["rest_check"] = {
+            "rewards": len(onsets(reward)), "rest": len(onsets(rew_rest)),
+            "norest": len(onsets(reward & ~rew_rest)),
+            "rest_outside_reward": int((rew_rest & ~reward).sum()),
+            "start_offset_s": [float(v) for v in rs - ls[j]],
+            "dur_rest_s": [float(x[1] - x[0]) for x in rests],
+            "dur_reward_s": [float((longs + shorts)[i][1] - (longs + shorts)[i][0]) for i in j]}
     stim = reward | puff | light
 
     # movement and running, recomputed from velocity
@@ -599,36 +646,14 @@ def _read(f, asset):
                     r[f"resp_code_{name}"] = responses(sn, WIN_CODE)
                     if name in ("Reward", "AirPuff"):
                         r[f"avg_{name}"] = smooth_keep_ends(np.nanmean(sn, 0), 5)
-        # acceleration size (AccDecSizeAnalysis.m): no artifact removal there
-        sizes = {}
-        a_all = np.where(a_re)[0]
-        d_all = np.where(d_re)[0]
-        for name, idx, desc in (("acc", a_all, False), ("dec", d_all, True)):
-            if len(idx) < 5:
-                continue
-            vals = peaks[idx]
-            srt = np.sort(vals)[::-1] if desc else np.sort(vals)
-            n = len(srt)
-            amps = []
-            for q in range(5):
-                lo = srt[mround(0.2 * q * n)]
-                hi = srt[mround(0.2 * (q + 1) * n) - 1]
-                if desc:
-                    sel = idx[(vals <= lo) & (vals >= hi)]
-                else:
-                    sel = idx[(vals >= lo) & (vals <= hi)]
-                b = np.zeros(L, bool)
-                b[sel] = True
-                sn = triggered(g, b, 100, 100)
-                if sn.shape[0] >= N_EVENTS_MIN:
-                    avg = smooth_keep_ends(np.nanmean(sn, 0), 5)
-                    up = np.max(avg[99:]) - avg[99]
-                    dn = np.min(avg[99:]) - avg[99]
-                    amps.append(up if abs(up) >= abs(dn) else dn)
-                else:
-                    amps.append(np.nan)
-            sizes[name] = amps
-        r["size_amps"] = sizes
+        # acceleration size (AccDecSizeAnalysis.m): no artifact removal there. The code
+        # excludes 5 s after every reward, consumed or not; the stored onsets carry that
+        # exclusion, so `size_amps` uses the recomputed onsets that are also stored, and
+        # `size_amps_all` every recomputed onset (only consumed rewards excluded).
+        r["size_amps"] = {"acc": _size_amps(g, np.where(a_re & wacc)[0], peaks, False),
+                          "dec": _size_amps(g, np.where(d_re & wdec)[0], peaks, True)}
+        r["size_amps_all"] = {"acc": _size_amps(g, np.where(a_re)[0], peaks, False),
+                              "dec": _size_amps(g, np.where(d_re)[0], peaks, True)}
         out.append(r)
     rec["good_fibers"] = out
 
