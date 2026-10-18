@@ -1,0 +1,111 @@
+I ran `tools/readme_row.py 001170 --write`, which added this row to README.md: 2 (+1) reproduced, 4 partially, 4 not reproduced, 3 blocked. I added the subsection below at the end of docs/pilot-notes.md and checked it for em dashes and "rather". Nothing is committed. The untracked dotfiles and `scripts` folder in the repository root were already there, and I left them alone.
+
+### 001170, Ling et al. 2023
+
+Two claims reproduced, four partially, four not reproduced and three blocked
+on the dandiset. With outside data, counted apart: one reproduced. Five claims
+on the locust recordings in the paper's Figshare record: three reproduced and
+two partially reproduced. Round 1 gave its own outcome for each claim from the
+notebook with its conclusions removed and agreed with 18 of the 19; it would
+call `figs7e-ibi-chance` not reproduced, as the Methods' k = 50 classifier on
+60 one-minute bins gives 3.8% and meets the criterion by construction while
+k = 20 classifies the gaps between blocks at 73 to 95%. The author kept it
+blocked as `methods_underspecified` under the chance-level rule, since that
+procedure's own null averages 10.8% against the paper's 25%, and round 2
+accepted this. Round 2 agreed with all 19 and nothing was proposed, so there
+was no third round. The paper, a bioRxiv preprint later published in iScience
+under a new title, compares mouse olfactory bulb glomeruli imaged with two
+photons and locust recordings, and reports that ON and OFF responses point in
+opposite directions and are anticorrelated, that the anticorrelation persists
+after offset, that a preceding odor enhances contrast, and that the odor can
+be decoded from activity in the intervals between trials. The session counts,
+the link to the paper's deposited array, the ON-OFF angles, correlations,
+reference-odor comparisons and clustering, the contrast of pairs ending in
+methyl salicylate, the persistence after offset, the classifiers on the
+intervals between trials and between blocks, and the random-order sessions
+were tested on the dandiset. The acetophenone contrast panel and the
+photoionization detector recordings of Figure S2 are blocked as
+`data_missing`. Some outcomes rest on weak ground: `fig7j-iti-timebin-mouse`
+and `fig7f-iti-knn-locust` are reproduced on the criterion only, as all trials
+of one odor lie in one block, and in the mouse pseudo-trials within the 15 min
+after each block, where no odor is given, are classified by the preceding
+block at 69.6% to 96.9%, nearly as high as the intervals between trials; the
+ON-OFF angles above 90 degrees of `fig2h-onoff-angle-mouse` and
+`fig1g-onoff-angle-locust` follow from the code's centring, which makes the
+mean ON and OFF vectors opposite (the two halves of one ON window come out at
+101.1 and 96.0 degrees), and uncentred the mouse mean is 71.8; and in
+`fig7h-iti-knn-mouse` k = 20 leaves only 9 of 39 other trials of the own odor,
+so the null mean is 16.7%, while k = 5 gives 90.0% in sub-148 ses-3. The author used the full
+text of preprint v2, whose Table S1 is an image and was not read, took the
+session assignments from Table 1 of the published version (PMC13066794), and
+took method choices from the paper's code on Figshare
+(doi:10.6084/m9.figshare.31435543.v2) and the conversion code at commit
+ac8f120.
+
+The dandiset was converted by CatalystNeuro
+(catalystneuro/reimer-arenkiel-lab-to-nwb). The fluorescence traces are raw F
+(unit "n.a.") with no description of how they were extracted or of the
+normalisation the paper applied, and the paper's deposited arrays are close to
+F z-scored within each 57-s trial window. With that normalisation the contrast
+enhancement and the negative correlations between the ON response and
+activity from 5 s after offset appear, and they do not with dF/F relative to
+the 2 s before each odor or with F z-scored on those 2 s; on synthetic
+glomeruli with excitation only the whole-window z-score gives such
+anticorrelations by itself, and the time-averaged ON and OFF vectors are not
+anticorrelated with any normalisation tried (median r 0.068, 12 of 28 below
+0). No sequential pair ends in acetophenone and no PID recordings are
+included; the published version's Table 1 assigns the acetophenone panel to
+the 73-, 210-, 153- and 198-glomerulus sessions, which in the dandiset hold
+only pairs ending in methyl salicylate. The random-order session of Figure S8D
+and S8E (286 glomeruli) is not in the dandiset, and of the eight random-order
+sessions Table 1 lists only two (323 and 306) match a dandiset session by ROI
+count. The dandiset holds the paper's seven block-protocol sessions from four
+mice and five random-order sessions from five mice (four not in the block
+sessions), apparently from a second study whose conference paper it also
+names, and neither the metadata nor the description, which is that of the
+second study, says which sessions belong to which paper. No identifier links
+the paper's datasets to the sessions; they match by ROI count (198, 219, 318),
+and session names in the paper's code (m149_3_1, m129_1_2) do not all exist in
+the dandiset. The trials table has one undescribed row per second of valve
+opening, so presentations, blocks and pairs have to be rebuilt from timing;
+five block sessions fill the gaps with "Empty" rows and two do not, and the
+concentration column has no unit, gives 0.0 to two odorants in three
+random-order sessions and 0.1 to the Empty rows of sub-141 ses-5. In sub-134
+ses-22, sub-141 ses-5 and sub-141 ses-8 the raw TwoPhotonSeries holds half the
+frames of the fluorescence traces (91000 against 182000 in sub-134 ses-22) at
+twice the frame interval. Other findings: the dandiset puts the 318-ROI
+session under sub-148 with the 286-ROI session, while Table 1 puts it under
+mouse 4 with the 219-glomerulus session; the files have 2-ethylphenol and
+anisaldehyde where the Methods list 2-ethylpyrizine and isoamyl acetate,
+"Anisole" and "anisole" are both used, and "2-methypyrazine" is misspelled;
+the genotype (Thy1-GCaMP6f) and ages are not stated, every session starts at
+00:00, and in sub-124 ses-3 the last trial ends 8.9 s after the last imaging
+frame; the paper's code counts windows in frames at a nominal 16 per second
+while the sessions are imaged at 13.7 to 17.8 Hz, so a nominal 57-s window
+lasts 51.2 to 66.4 s, and in sub-141 ses-8 the deposited trial windows match
+the dandiset only when counted in frames (r 0.968, against 0.307 in seconds);
+the Methods give k = 50 for the classifier of Figure 7H, which has 40 vectors,
+while the legend and code use k = 20; and the Figure 5E legend states a
+one-tailed t-test where the code's is two-tailed (p = 0.011 against 0.0055).
+
+The notebook ran in about 2.5 minutes in the first clean run,
+`tools/entry.py all` took 2.0 minutes after round 1 and 183 s after round 2.
+Figshare returned HTTP 500 to rapid downloads, handled with retries and md5
+checks, and bioRxiv refused the preprint download to the round-1 verifier,
+which read the published version. Round 1 also found that analysis windows
+past the last frame were filled by linear extrapolation, which the author
+fixed. Round 2 found statements the outputs did not support, among them that
+the ON/OFF anticorrelation appears with the whole-window z-score, a window
+drift of up to about 2 s, and a block-relabelling null for fig7j that repeats
+the observed accuracy by construction, and these were corrected or removed.
+Untracked files in the repository root that the author did not create were
+left alone. The author's points on the protocol: a preprint later published
+under a new title, with nothing saying which version is the target; code and
+data in a Figshare record that neither the preprint nor the dandiset links; a
+standalone link claim with no dependent claims; data from another species and
+lab that the dandiset was never expected to hold; a criterion that passes
+against the chance-level rule; no place for arrays the paper deposited as a
+source for method choices; no rule for disclosing variants added after seeing
+results; an SEM as tolerance, which becomes very tight; a 10% tolerance that
+cannot apply to a count of 5; a clock check by shifted labels in a block
+design; and a criterion that passes where the reading fails.
