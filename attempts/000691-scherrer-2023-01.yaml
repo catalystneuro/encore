@@ -1,0 +1,517 @@
+schema_version: 1
+id: 000691-scherrer-2023-01
+dandiset: "000691"
+dandiset_version: 0.260827.1358
+paper: doi:10.1038/s41592-023-01806-1
+date: 2026-10-17
+entry: 000691-scherrer-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: Images of a thin layer of fluorescent dye taken with the Featherscope and the Kiloscope with
+    correction optics, with diffuse light, and with the plain laser (sf3/feather and sf3/widefield),
+    used for ed2b-featherscope-flat-illumination and ed2c-kiloscope-flat-illumination. The same
+    repository's analysis code supplied the parameters of every analysis (tracking rule, decoder
+    settings, pixel size of 5.94 um for the Kiloscope).
+  source: https://github.com/FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c
+outcomes:
+- claim: abstract-thousands-of-neurons
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:abstract-thousands-of-neurons
+  notes: All 2948 footprints have a trace above zero at some time; no two have traces correlated above
+    0.77, so near-duplicate merging leaves 2948. The mouse visits all four arms and runs 48.5 loop
+    lengths during the 1081 s of imaging that overlap the tracked video. Tracking has 2 steps above 40
+    px between video frames (one glitch at 1064.8 s) and 55 frames with a blob under 50 px; leaving
+    them out changes the arm of 0.05% of imaging frames and the octant of 0.06%.
+  deviations:
+  - The count is of EXTRACT footprints before the paper's curation (2382 kept); the dandiset does not
+    mark the curated set.
+- claim: ed6a-curated-footprints
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The dandiset holds 2948 footprints, the number the preprint gives for the extraction before
+    curation, and its plane segmentation has no column that marks the 2382 kept. The selection is in
+    the paper's Academic Torrents deposit (supporting_data/2021-07-26_isgood.mat and
+    extract_curated.mat, infohash aa2a3d2f5ff0b3974871db47db57bc3dabf3c192); no peer connected
+    in two attempts of 2.5 and 4 minutes from this environment, so it could not be fetched.
+- claim: ed6bcd-other-mice
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds one mouse (4mm-mouse-1). The Academic Torrents deposit the paper names
+    lists files of the same session only (2021-07-26), and no other dandiset of this paper was found.
+- claim: ed5-songbirds
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No bird data in the dandiset or in the Academic Torrents deposit, whose file list holds only
+    the mouse session.
+- claim: abstract-kiloscope-fov
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The NWB file gives no pixel size (no grid spacing in the imaging plane). Frames are 808 x
+    608 pixels; at the 5.94 um per pixel of the paper's code they would be 4.80 x 3.61 mm, and the
+    footprint centroids span 3.09 x 3.31 mm. The pixel size comes from the code, so this does not
+    test the claim on the dandiset.
+- claim: abstract-weights
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Weights are hardware measurements; no data on them are in the dandiset or the paper's
+    deposits.
+- claim: ed1-ed4-resolution
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The USAF target images are not in the dandiset, the Academic Torrents deposit or the code
+    repository (which holds bead images for a point spread function analysis whose numbers are in
+    the main text, not available here).
+- claim: ed3-adc
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The test recordings of the analog-to-digital converter are not in the dandiset or the
+    paper's deposits.
+- claim: ed8-coactive-distributed
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed8-coactive-distributed
+  notes: For all 8 components the event has 196 to 320 active footprints, more than half of the
+    component's members, with a spread of 0.945 to 1.055 times that of all footprints (0.98 mm) and a
+    90th percentile of pairwise distance of 2.05 to 2.29 mm. Active thresholds of 0.3 and 0.7 also
+    give 8 of 8. The best of 4 NMF replicates was kept (errors 97.55 to 97.58). Two events (80.4 and
+    122.9 s) fall in the opening 153 s the behaviour analysis leaves out; with event times from 153 s
+    on, 8 of 8 pass (spread ratios 0.94 to 1.05). The test is weak. In 100 random 50 s windows, the
+    median fraction of members active is 0.399 to 0.519, and the event's fraction (0.568 to 0.851)
+    is above the 95th percentile of random windows for 6 of 8 components. Random sets of footprints
+    of the same size have spread ratios of 0.951 to 1.042 (5th to 95th percentiles), so any set this
+    large passes the criterion's half. The event's spread ratio lies within its own component's
+    random range for 3 of 8 components, below it for 2 (0.945 and 0.956, against 5th percentiles
+    of 0.962) and above it for 3 (1.042, 1.055 and 1.050, against 95th percentiles of 1.037, 1.042
+    and 1.036).
+  deviations:
+  - All 2948 footprints in place of the 2382 curated ones.
+  - Event times are each component's largest temporal weight; the code sets them by hand.
+  - Distances use the code's 5.94 um per pixel, which the dandiset does not state; the outcome uses
+    ratios and does not depend on it.
+- claim: fig2-quadrant-direction-decoding
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:fig2-quadrant-direction-decoding
+  notes: Median class accuracy 0.415 over 50 decoders (0.304 to 0.604), chance 0.125, 95th
+    percentile of 50 shifted-label decoders 0.145; all 50 exceed it. 3.32 times chance; the
+    preprint's text says at least four times chance, a number not used here as the version of record's
+    text was not available. Six of eight classes reach 0.443 to 0.594, two only 0.236 and 0.239. On
+    all frames, without the running selection, 0.348 against a null 95th percentile of 0.127. The SGD
+    solver stops far from the optimum of its objective (2.04 to 3.21 on six splits, against 0.086 to
+    0.118 for an exact solver at its limit of 10,000 iterations). On the same splits the exact solver
+    gives 0.262 to 0.318 for three real decoders and 0.131 to 0.164 for three with shifted labels, so
+    the claim also holds with it.
+  deviations:
+  - Position tracked here from the video (the paper's tracking output is not in the dandiset), in
+    the unrotated frame, with the loop's sides at the 2nd and 98th percentiles of position.
+  - All 2948 footprints in place of the 2382 curated ones.
+  - scikit-learn's SGD classifier (hinge loss, ridge alpha equal to the code's lambda, 10 passes) in
+    place of MATLAB's fitcecoc with templateLinear, whose default for more than 100 predictors is 10
+    passes of dual SGD; 50 decoders in place of 200.
+  - The legend of Figure 2 was not available, so the claim is stated from the Extended Data legends
+    and the code.
+- claim: ed9b-octant-decoding
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed9b-octant-decoding
+  notes: Median class accuracy 0.313 over 50 decoders (0.211 to 0.416), chance 0.125, null 95th
+    percentile 0.144; all 50 exceed it, and each octant's mean accuracy (0.236 to 0.499) is above
+    chance. On six splits fit by both solvers, SGD stops at objectives of 3.89 to 6.18 and the exact
+    solver at 0.071 to 0.094 (at its limit of 10,000 iterations in all six); the exact solver gives
+    0.220 to 0.292 for three real decoders and 0.092 to 0.145 for three with shifted labels, so the
+    claim also holds with it.
+  deviations:
+  - As for fig2-quadrant-direction-decoding.
+- claim: ed9c-local-decoding-map
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed9c-local-decoding-map
+  notes: With 32 footprints within 270 um (45 px), 150 grid points qualify and 18 (12%) are
+    significant at Benjamini-Hochberg 5%, with scores of 0.112 to 0.187 (range 0.075, where the
+    criterion asks for 0.05). Scores over all points 0.068 to 0.187, median 0.125, against null
+    means of 0.065 to 0.123. The outcome depends on the solver. With 10 passes of SGD, as in round 1,
+    on the same points and seeds, 1 point is significant and the criterion is not met; at four points
+    SGD stops at objectives of 19.8 to 68.9 where the exact solver reaches 1.976 to 2.000, close to
+    the 2.0 of predicting every class absent, so the scores rest on weak classifiers. liblinear
+    reached its limit of 10,000 iterations in 2268 of 3000 fits. Null standard deviations per point
+    0.018 to 0.046 (5th to 95th percentile) from 10 shifted decoders; a point alone needs z above
+    3.40, and the smallest z among the significant points is 2.53. A Welch t-test of the 10 real
+    against the 10 shifted decoders marks 80 points significant (range 0.079), and 5 with SGD
+    (range 0.052). With the code's 64 footprints within 50 px, on a 60 px grid, 22 of 34 points are
+    significant (scores 0.141 to 0.211, range 0.070), and 32 with the t-test. The exact fits stop
+    at an iteration limit, so the counts can differ slightly between machines.
+  deviations:
+  - The legend says 32 footprints within 270 um; the code uses 64 within 50 pixels. The legend is
+    followed for the outcome and the code's choice is shown as a variant.
+  - The paper does not describe its significance test. Here, 10 decoders and 10 shifted-label
+    decoders per point and a one-sided z-test, chosen before the analysis.
+  - Local decoders are fit by liblinear (LinearSVC) on the same objective, as MATLAB's default for
+    100 or fewer predictors is BFGS run to convergence; liblinear also penalizes the intercept,
+    weakly. Round 1 used 10 passes of SGD here, which is shown as a variant.
+  - A 30 pixel grid where the code uses 5 pixels; all 2948 footprints in place of 2382; position as
+    for fig2-quadrant-direction-decoding.
+  - The code's variant is run on a 60 pixel grid where the criterion says 40; on the 40 pixel grid
+    the notebook took 32 minutes on four cores, over the 30 minute limit.
+- claim: ed10-localized-activity
+  outcome: reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed10-localized-activity
+  notes: 100 of 2948 footprints (3.4%) have an entropy over linear position below all 100 shifted
+    values, against 29 expected (binomial p = 4.5e-25); 448 against 175 at a looser threshold. For the
+    100, the entropy is 0.20 to 0.90 bits below the shifted mean (5th to 95th percentile), out of a
+    maximum of 6.64 bits. The binomial test treats footprints as independent, but the same 100 shifts
+    serve every footprint; treating each shifted copy in turn as the observed data gives counts with
+    a median of 28, a 95th percentile of 54 and a maximum of 62, and none of the 100 copies reaches
+    100.
+  deviations:
+  - The paper selected its examples by eye and shows two-dimensional maps; here a test over all
+    footprints on linear position, with the entropy measure of place_cells.m.
+  - All 2948 footprints in place of 2382; position as for fig2-quadrant-direction-decoding.
+- claim: ed2b-featherscope-flat-illumination
+  outcome: partially_reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed2b-featherscope-flat-illumination
+  notes: At 0.4 mm the corrected profile is 0.742, total vignetting 0.342 and optical vignetting
+    0.628; the corrected profile is higher, but falls below 0.8 (minimum 0.742 over 0 to 0.4 mm).
+    The minimum is 0.785 out to 0.38 mm and 0.698 out to 0.42 mm; with the centre moved by 100 um it
+    is 0.626 to 0.867, and 0.766 about the image centre.
+  deviations:
+  - The radius of 0.4 mm and the level of 0.8 that define "flat" were chosen here; the legend gives
+    no number.
+- claim: ed2c-kiloscope-flat-illumination
+  outcome: partially_reproduced
+  notebook: reproduce_scherrer_2023.ipynb
+  output: claim:ed2c-kiloscope-flat-illumination
+  notes: At 1.5 mm the corrected profile is 0.797, total vignetting 0.253 and optical vignetting
+    0.389. The corrected profile is higher, and its minimum over 0 to 1.5 mm, 0.797, is 0.003 below
+    the criterion's 0.8; at 1.125 mm it is 0.922. The minimum is 0.846 out to 1.425 mm and 0.742 out
+    to 1.575 mm; with the centre moved by 100 um it is 0.765 to 0.831 (above 0.8 for one of four
+    moves), and 0.695 about the image centre.
+  deviations:
+  - The radius of 1.5 mm and the level of 0.8 were chosen here; the result sits at the level.
+findings:
+- kind: data_missing
+  statement: The dandiset holds one of the paper's four mice and none of the songbird recordings or
+    optical test data. The Academic Torrents deposit the paper names for its imaging data holds
+    files of the same mouse session only, so the other mice and the birds are not public.
+- kind: metadata_error
+  statement: The device description reads "Head-mounted microscope (Kiloscope) optimized for weight
+    (1.0 mm FOV; 1.0 g)", and the dandiset description says the data come from the microscope
+    optimized for weight. The data are from the large-FOV microscope (1.4 g, about 4 mm FOV) that
+    the paper calls the Kiloscope; a 4 mm window, 2948 footprints and 808 x 608 pixel frames.
+- kind: metadata_error
+  statement: The imaging is stored as a TwoPhotonSeries and the dandiset lists two-photon microscopy
+    among its techniques, but the microscope is a one-photon head-mounted epifluorescence
+    microscope.
+- kind: metadata_error
+  statement: The behaviour video is described as about 30 fps and its AVI header says 30 frames/s,
+    but its 15521 timestamps run at a median 12.5 frames/s over 1234 s; at 30 frames/s it would
+    cover only 517 s of the 1234 s of imaging.
+- kind: metadata_insufficient
+  statement: The imaging plane gives no pixel size, and its indicator and location are "unknown"
+    with no excitation wavelength, although general/virus says GCaMP7f. Distances in the paper's
+    figures cannot be computed from the dandiset alone.
+- kind: selection_undocumented
+  statement: The 2948 footprints are the EXTRACT output before curation; the paper analyses the
+    2382 it kept (Extended Data Fig. 6a). Nothing in the dandiset marks the curated set or says that
+    the footprints are uncurated.
+- kind: data_missing
+  statement: The mouse's position, which the paper's decoding and place analyses use, is not in the
+    dandiset; it must be tracked from the behaviour video. The first 64 s of the video (by its
+    nominal rate), which the paper's code drops because the experimenter is in view, are not marked.
+- kind: code_mismatch
+  statement: The Extended Data Fig. 9c legend describes decoders on the 32 closest footprints within
+    270 um; the code (subregion_map_octant.m) uses 64 footprints within 50 pixels, which at the
+    code's own 5.94 um per pixel (sf3/widefield/analysis.m) is 297 um.
+- kind: paper_inconsistency
+  statement: The title of Extended Data Fig. 8 refers to the Kiloscope data "shown in Figure 3",
+    and its legend takes the ridgeline plot from Fig. 2d, while the version of record has two
+    figures, and Supplementary Video 1 and Extended Data Fig. 10 place the bird data in Fig. 2a-d and
+    the mouse data in Fig. 2e-h.
+verifications:
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper's abstract and Extended Data legends from the
+    publisher page. The verifier read the archive's asset list and metadata, read the paper's code at
+    d596646, and tested the decoder and tracking helpers on synthetic inputs. Its report had no attempt
+    record and gave its own outcome for each claim; all 15 agree with the record as it then stood. The
+    revision changed the outcome of ed9c-local-decoding-map, which round 2 reviews.
+  results:
+  - claim: abstract-thousands-of-neurons
+    agrees: true
+    outcome: reproduced
+    reason: All 2948 footprints have non-zero traces. No pairs merge, since the largest trace
+      correlation is 0.77. The mouse visits all 4 arms.
+    response: No change to the outcome. For the tracking (problems 6 and 7), added the steps between
+      video frames (2 above 40 px, one glitch at 1064.8 s), the 55 frames with a blob under 50 px, the
+      labels recomputed without them (arm changes in 0.05% of imaging frames, octant in 0.06%), and
+      eight sample frames with the tracked centroid, four of them from the opening part the code
+      leaves out. The text on the experimenter now says only what those frames show.
+  - claim: ed6a-curated-footprints
+    agrees: true
+    outcome: blocked
+    reason: The PlaneSegmentation has only image_mask and ROICentroids, so there is no curation flag.
+      2948 is the uncurated count and cannot be compared with 2382 ± 238.
+    response: No change needed.
+  - claim: ed6bcd-other-mice
+    agrees: true
+    outcome: blocked
+    reason: The API confirms 1 subject and 2 assets.
+    response: No change needed.
+  - claim: ed5-songbirds
+    agrees: true
+    outcome: blocked
+    reason: No bird data in the archive (API, species is mouse only).
+    response: No change needed.
+  - claim: abstract-kiloscope-fov
+    agrees: true
+    outcome: blocked
+    reason: The NWB file and the asset metadata give no pixel size. At the code's 5.94 um/px the frame
+      would be 4.80 x 3.61 mm, outside 4.0 ± 0.4 mm, but that value comes from outside the dandiset,
+      and FOV may mean the usable circular field, so it agrees the claim is blocked. Using the code's
+      pixel size for ed8 and ed9c while blocking this claim for lack of one is defensible but not
+      consistent (problem 8).
+    response: Outcome kept. The pixel size is kept for ed8 and ed9c because there it sets only a
+      selection radius and a unit of distance, and ed8's outcome uses ratios; for this claim the
+      length in millimetres is the claim itself, so a value from outside the dandiset cannot test
+      it. No change to the notebook.
+  - claim: abstract-weights
+    agrees: true
+    outcome: blocked
+    reason: Weight is not data. The only weight in the file is a wrong device description (1.0 g).
+    response: No change needed.
+  - claim: ed1-ed4-resolution
+    agrees: true
+    outcome: blocked
+    reason: No USAF target images in the archive.
+    response: No change needed.
+  - claim: ed3-adc
+    agrees: true
+    outcome: blocked
+    reason: No ADC test recordings in the archive.
+    response: No change needed.
+  - claim: ed8-coactive-distributed
+    agrees: true
+    outcome: reproduced
+    reason: All 8 events have 196 to 320 active footprints with spread ratios of 0.95 to 1.06, so 8 of
+      8 pass, and the same holds at thresholds 0.3 and 0.7. The test is weak. Members are assigned by
+      highest rank, so each component gets about 1/8 of all footprints and a random eighth already
+      has a spread ratio near 1; 57 to 84% of members count as active in a 50 s window, with no
+      comparison with a random window. Two event times (80.4 s and 122.9 s) fall in the first 153 s,
+      which the behaviour analysis drops (problem 4).
+    response: Outcome kept. Added the fraction of members active in 100 random 50 s windows per
+      component (medians 0.399 to 0.519; the event is above the 95th percentile for 6 of 8), the
+      spread ratio of random sets of the event's size (0.951 to 1.042, 5th to 95th percentiles), and
+      a variant with event times from 153 s on (8 of 8). The conclusion now says the criterion's
+      threshold is far below what any set this large reaches.
+  - claim: fig2-quadrant-direction-decoding
+    agrees: true
+    outcome: reproduced
+    reason: The median per-decoder median class accuracy is 0.415, above chance (0.125) and above the
+      null 95th percentile (0.145); 50 of 50 decoders exceed it. The split matches the paper's code
+      and there is no train/test leakage (problem 1). SGD at this very small alpha is noisy and was
+      never checked against an exact solver on the real data; this only lowers scores, so the passing
+      decoding claims stand (problem 2). Paper values for Fig. 2 could not be compared.
+    response: Outcome kept. Added six splits fit by both SGD and an exact solver (liblinear) of the
+      same objective. SGD stops far from the optimum (objectives 2.04 to 3.21 against 0.086 to
+      0.118); the exact solver gives 0.262 to 0.318 for real decoders and 0.131 to 0.164 for shifted
+      ones. SGD is kept for these decoders because MATLAB's default for more than 100 predictors,
+      which the code uses, is also 10 passes of a stochastic solver. The Fig. 2 legend and main text
+      remain unavailable, so no paper value is compared.
+  - claim: ed9b-octant-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Median 0.313, against a null 95th percentile of 0.144 and chance of 0.125; 50 of 50
+      decoders above.
+    response: No change; the numbers are the same after the revision.
+  - claim: ed9c-local-decoding-map
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 151 grid points are significant at BH 5%; the best z is 1.87 (q = 0.61). The code's
+      variant (64 footprints within 50 px) gives 4 of 77 significant with a score range of 0.054,
+      which would pass. The result is fragile. SGD lowers the real scores and widens the null spread
+      used in the z-test, so it could explain why no point is significant (problem 2). Each point has
+      10 real and 10 null decoders, the null standard deviation comes from 10 values, and a point
+      needs roughly z > 3.3 to pass, so the result is weakly powered (problem 3). The radius is 45.45
+      px where the criterion says 45 px (problem 8).
+    response: Outcome changed to reproduced. Following problem 2, the 32-footprint decoders were
+      checked against an exact solver; SGD stops at objectives of 19.8 to 68.9 where the optimum is
+      1.976 to 2.000. MATLAB's default for 100 or fewer predictors, which the code uses, is BFGS run
+      to convergence, so the local decoders are now fit by liblinear on the same objective. With it,
+      18 of 150 points are significant (scores 0.112 to 0.187, range 0.075), which meets the
+      criterion; with SGD on the same points and seeds, 1 point is. The radius is now 45 px. Added the
+      null standard deviation per point (0.018 to 0.046), the z a point needs alone (3.40) and the
+      smallest z among significant points (2.53). The map was not rerun with more decoders per point;
+      with 10 per point it already takes about 640 s on four cores, so more do not fit the time limit. The code's variant
+      now uses the exact solver on a 60 px grid (22 of 34 significant).
+  - claim: ed10-localized-activity
+    agrees: true
+    outcome: reproduced
+    reason: 100 of 2948 footprints are localized against 29 expected, binomial p = 4.5e-25. The same
+      100 shifts serve as the null for every footprint, so counts are correlated and the binomial p
+      is anti-conservative, and circular-shift nulls do not remove slow non-stationarity shared by
+      activity and position; the excess is large enough that the outcome holds (problem 5).
+    response: Outcome kept. Added the empirical false-positive count, each shifted copy treated as
+      the observed data against the other 99 (median 28, 95th percentile 54, maximum 62; none of 100
+      reaches 100). Slow non-stationarity is not addressed.
+  - claim: ed2b-featherscope-flat-illumination
+    agrees: true
+    outcome: partially_reproduced
+    reason: The corrected profile drops to 0.742 at 400 um, below 0.8. It is above total vignetting
+      there (0.342).
+    response: Outcome kept. Added the minimum out to R ± 5% (0.785, 0.698) and five other centres
+      (0.626 to 0.867).
+  - claim: ed2c-kiloscope-flat-illumination
+    agrees: true
+    outcome: partially_reproduced
+    reason: The corrected profile is 0.797 at 1500 um, just under 0.8, and above total vignetting
+      (0.253). The 0.003 margin depends on pixel size and centring.
+    response: Outcome kept, as the criterion fixes the code's centre and the radius. Added the minimum
+      out to R ± 5% (0.846, 0.742) and five other centres (0.695 to 0.831; above 0.8 for one).
+      The pixel size is the code's and was not varied.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, the helper module, the claims
+    file, the README and the attempt record; no paper text was downloaded this round, and the
+    verifier worked from its round-1 reading. It agreed with all 15 outcomes. It quoted sentences the
+    printed numbers contradict. Most of them (18 significant points, 2268 fits at the limit, NMF
+    errors 97.55 to 97.58, 634 s) are the numbers of a run on four cores, while the executed copy it
+    read came from another run (19, 2264, 97.79 to 97.8, 358 s, 13.7 min); the exact fits stop at an
+    iteration limit and the NMF uses float32, so these numbers differ slightly between machines. The
+    entry was re-run on four cores, which again gives 18, 2268, 97.55 to 97.58 and about 640 s, and the
+    text now matches that run. The run takes about 25 minutes, so the README and entry say about 25. The
+    verifier also found two sentences no output showed. The AVI's byte size matching the Academic
+    Torrents listing (cell 15) is removed, and the draft holding the same blobs (cell 0) is now
+    printed in the data check (same assets, sizes and blob ids).
+  results:
+  - claim: abstract-thousands-of-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Its round-1 tracking points (problems 6 and 7) are resolved;
+      jumps, small blobs, a sensitivity check and the overlay were added, and the opening frames are
+      shown in the cell 10 figure.
+    response: No change.
+  - claim: ed6a-curated-footprints
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ed6bcd-other-mice
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ed5-songbirds
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: abstract-kiloscope-fov
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Problem 8 is resolved; the radius is now 45 px, and the
+      use of the pixel size is explained.
+    response: No change.
+  - claim: abstract-weights
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ed1-ed4-resolution
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ed3-adc
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ed8-coactive-distributed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Problem 4 is resolved, as random windows and random footprint sets were added. Two
+      statements are contradicted. The record gives NMF errors of 97.55 to 97.58 where cell 35 prints
+      97.79, 97.78, 97.79 and 97.8. Cell 36 and the record say the active footprints are as spread as
+      random sets, which is true only for 3 of the 8 components; the event spread is below the random
+      5th to 95th percentile range for c1 (0.945 against 0.962) and c5 (0.956 against 0.962) and above
+      it for c0 (1.042 against 1.037), c4 (1.055 against 1.042) and c7 (1.050 against 1.036). The
+      outcome does not depend on this, since every ratio is far above 0.5.
+    response: The Result cell and the notes now say the event's spread lies within its component's
+      random range for 3 of 8, below it for 2 and above it for 3, with the numbers, and no longer say
+      the footprints are as spread as random sets. The NMF errors in the record (97.55 to 97.58) are
+      those printed by the re-run on four cores; the copy the verifier read came from another machine.
+      Outcome kept.
+  - claim: fig2-quadrant-direction-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Problem 2 is resolved by the solver check; part of the round-1 point was wrong, as
+      on these decoders SGD scores higher than the exact solver (0.44 to 0.54 against 0.26 to 0.32,
+      cell 22), and the claim holds with either solver. Fig. 2 has no paper value to compare, as the
+      main text and the Fig. 2 legend remain unavailable.
+    response: No change. The main text and the Fig. 2 legend are still not available here, so no paper
+      value is compared.
+  - claim: ed9b-octant-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, but ed9b was not solver-checked. The exact-solver check covers only the quadrant
+      and direction decoders, where the exact solver's accuracies fall to about 0.6 of their SGD
+      values; ed9b's margin (0.313 against a null 95th percentile of 0.144) is smaller in ratio, so its
+      outcome under the exact solver is untested. There is no paper value to compare.
+    response: Added the same check for the octant decoders, six splits fit by both solvers (cell 26).
+      SGD stops at objectives of 3.89 to 6.18, the exact solver at 0.071 to 0.094. The exact solver
+      gives 0.220 to 0.292 for three real decoders and 0.092 to 0.145 for three with shifted labels,
+      so the real decoders stay above chance and above every shifted one checked. Outcome kept. No
+      paper value is available to compare.
+  - claim: ed9c-local-decoding-map
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with a reservation, and the evidence is weak. The exact solver follows MATLAB's
+      documented default for 100 or fewer predictors and the criterion is met, but the outcome flips
+      with the solver (1 point with SGD), and the solver was changed after the round-1 failure. The
+      exact solver hit its iteration limit in 2264 of 3000 fits, and in the 100,000-iteration check 2
+      of 4 fits did not converge. Each z uses a null standard deviation from only 10 values; the
+      smallest significant z, 2.53, is below the 3.40 a point needs on its own, and a t-based test
+      would mark fewer points. The map was not rerun with more decoders per point. The code variant
+      uses a 60 px grid, where the claims file states 40 px. Contradicted by the outputs are 18
+      significant points (cell 28 prints 19), 2268 fits at the limit (cell 28 prints 2264) and 634 s
+      (cell 28 prints 358 s).
+    response: Added a Welch t-test of the 10 real against the 10 shifted decoders at each point as a
+      variant. It marks more points, not fewer, 80 of 150 (range 0.079), as it uses the spread of both
+      sets; with SGD it marks 5 (range 0.052), and with the code's variant 32 of 34. The map was not
+      rerun with more decoders per point; it takes about 640 s with 10. The code variant stays on the 60 px
+      grid. It was run on the 40 px grid once, and the notebook then took 32 minutes on four cores,
+      over the 30 minute limit; the deviations and the notebook now say so. The counts 18 and 2268 and
+      the time of about 640 s are those of the re-run on four cores; the copy the verifier read came from
+      another machine, and the Result cell now says the counts can differ slightly between machines.
+      The round-1 response now says about 640 s. Outcome kept.
+  - claim: ed10-localized-activity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Problem 5 is resolved; the empirical false-positive counts reach a maximum of 62
+      against the observed 100, and slow non-stationarity is acknowledged.
+    response: No change.
+  - claim: ed2b-featherscope-flat-illumination
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The radius and centre variants were added.
+    response: No change.
+  - claim: ed2c-kiloscope-flat-illumination
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. It sits at the threshold, 0.003 short of 0.8, and one of the four 100 um centre
+      shifts crosses 0.8. Partially reproduced stands under the stated criterion, but the call is
+      marginal.
+    response: No change. The notes and the Result cell already give the margin and the centre shift
+      above 0.8.
