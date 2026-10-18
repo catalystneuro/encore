@@ -1,0 +1,849 @@
+schema_version: 1
+id: 001038-azcorra-2023-01
+dandiset: "001038"
+dandiset_version: 0.241111.1719
+paper: doi:10.1038/s41593-023-01401-9
+date: 2026-10-18
+entry: 001038-azcorra-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: snRNA-seq count matrices of the two samples (barcodes, features and matrix files of
+    GSM6926026 and GSM6926027), used only by the claims with data elsewhere.
+  source: GEO GSE222558, https://ftp.ncbi.nlm.nih.gov/geo/samples/GSM6926nnn/ (files dated
+    2023-01-09)
+outcomes:
+- claim: recording-counts-locomotion
+  outcome: not_reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:recording-counts-locomotion
+  measured:
+  - 50
+  - 28
+  - 82
+  - 89
+  - 85
+  notes: With the Methods' and code's criteria (SNR above 10, stored 405 nm peak cross-correlation
+    below 0.1, more than 100 s running and at most 5% artifact samples, both recomputed), 50, 28,
+    82, 89 and 85 striatal recordings pass for Vglut2, Calb1, Anxa1, DAT and Aldh1a1, against 42,
+    22, 47, 74 and 75; none within 10%. Mice are 14, 7, 9, 14 and 15 (legend 12, 6, 10, 14, 14;
+    Methods 12, 6, 9, 14, 14). A 405 nm threshold of 0.05 gives 39, 24, 73, 68 and 73. The paper
+    gives no counts by location, fiber setup or session type, so where the excess lies cannot be
+    measured (every Anxa1 recording is from a dual-fiber file and every Calb1 recording is labelled
+    DS). One recording per mouse, date and depth gives 47, 28, 57, 89 and 78, and recordings made before
+    the paper's submission 50, 27, 75, 89 and 85. The stimulus counts match exactly from the same
+    files, including 16 air puff recordings made after submission, so the recordings are present;
+    which entered Figure 2 is not recoverable.
+  deviations:
+  - Running time and artifact flags are recomputed with the code's procedure, as the files do not
+    hold them; running after rewards that were not consumed cannot be excluded, as those rewards
+    are not in the Events table.
+- claim: recording-counts-stimuli
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:recording-counts-stimuli
+  measured:
+  - 28
+  - 17
+  - 51
+  - 63
+  - 29
+  - 17
+  - 57
+  - 69
+  notes: All eight counts and the mouse counts equal the legend's, and the recordings without
+    consumed rewards are 1/29, 0/17 and 6/57 as in the Methods.
+- claim: fig2f-xcorr-direction
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig2f-xcorr-direction
+  notes: Integral over lags 0 to 1 s, mean -0.033 for Vglut2 (94% negative), -0.036 for Calb1
+    (93%) and 0.014 for Anxa1 (26% negative), each p x3 below 0.0001. The 405 nm control integrals
+    are 0.002 to 0.005. Holds in 14/14 Vglut2, 6/7 Calb1 and 7/9 Anxa1 mice. The selection has more
+    recordings than the paper's (see recording-counts-locomotion).
+  deviations:
+  - Larger selection than the paper's (50, 28, 82 against 42, 22, 47 recordings).
+- claim: fig2i-trough-lag
+  outcome: partially_reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig2i-trough-lag
+  measured:
+  - 0.416
+  - 0.14
+  notes: Methods timing gives Vglut2 0.416 s (within tolerance) and Calb1 0.140 s (below 0.153 to
+    0.187), rank-sum p x3 = 2.1e-08. The code's timing, which reports 0.02 s later, gives 0.436 and
+    0.160 s, both within tolerance. Mouse means 0.387 against 0.193 s, p = 0.0056.
+  deviations:
+  - The Methods' lag is the main result; the code adds two bins to the reported lag, shown as a
+    variant.
+  - Larger selection than the paper's.
+- claim: fig2jk-pca-variance
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig2jk-pca-variance
+  measured:
+  - 58.32
+  - 22.09
+  notes: PC1 58.32% and PC2 22.09% against 64.2 and 20.1; both inside tolerance by small margins
+    (0.5 and 0.02 points). Bootstrap intervals 53.9 to 63.0% and 18.5 to 26.3%. 160 recordings
+    against the paper's 111.
+  deviations:
+  - Larger selection than the paper's.
+- claim: fig2l-pc-angles
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig2l-pc-angles
+  measured:
+  - 140.1
+  - 208.8
+  - 233.3
+  notes: Mean angles 140.1, 208.8 and 233.3 degrees against 141, 208, 239; rank-sum p x3 7.9e-09
+    (V-C), 7.7e-13 (V-A), 1.3e-05 (C-A). Three of nine Anxa1 mice have mean angles below 160
+    degrees. The arithmetic mean on 0 to 360 degrees follows the code; the circular means are
+    136.4, 223.0 and 301.3, so the Anxa1 mean depends on where the circle is cut.
+  deviations:
+  - Larger selection than the paper's.
+- claim: fig2g-event-counts
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig2g-event-counts
+  measured:
+  - 131.4
+  - 129.2
+  notes: 131.4 +/- 75.1 accelerations and 129.2 +/- 95.0 decelerations per recording over 334
+    recordings, against 135 +/- 77 and 138 +/- 101.
+  deviations:
+  - Larger selection than the paper's.
+- claim: ed7f-prob-transient-after-event
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:ed7f-prob-transient-after-event
+  measured:
+  - 61.8
+  - 63.9
+  - 55.8
+  notes: 61.8% (Vglut2 decelerations), 63.9% (Calb1) and 55.8% (Anxa1 accelerations), each above 50%
+    with p below 3e-06; the opposite event types give 38.7 to 43.6%.
+  deviations:
+  - Larger selection than the paper's.
+- claim: ed6f-dec-peak-timing
+  outcome: partially_reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:ed6f-dec-peak-timing
+  measured:
+  - 0.476
+  - 0.32
+  notes: Vglut2 peaks later than Calb1 (0.476 against 0.320 s, p = 0.001), but both means are about
+    0.1 s above the paper's 0.35 and 0.23 s and outside tolerance; the code's timing adds 0.01 s.
+    Vglut2 is later as a whole (median 0.5 s, peak of the mean 0.44 s, 31 of 50 recordings above
+    0.385 s). Calb1 peaks are skewed to the right (skewness 1.48); the median 0.25 s is within
+    tolerance and the peak of the mean is 0.27 s, so its gap in the mean comes from a tail of late
+    peaks (13 of 28 above 0.253 s). The cause of the Vglut2 difference is not found.
+  deviations:
+  - The Methods' time is the main result; the code adds one bin, shown as a variant.
+  - Larger selection than the paper's.
+- claim: fig5ab-transient-scaling
+  outcome: partially_reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig5ab-transient-scaling
+  measured:
+  - 241.3
+  - 246.2
+  - 231.9
+  notes: With the recomputed onsets that are also stored (which carry the code's exclusion after
+    every reward), ratios 241% (Vglut2), 246% (Calb1) and 232% (Anxa1), p x3 = 0.002, below 0.001
+    and 0.001. Calb1 is within tolerance; Vglut2 is above 235.4% and Anxa1 above 226.6%. With every
+    recomputed onset (only consumed rewards excluded), 239, 266 and 222%. The ratio over recordings
+    with both quintiles is the same.
+  deviations:
+  - The code reselects onsets and excludes 5 s after every reward; the Events table lists consumed
+    rewards only, so the recomputed onsets are kept where the stored onsets, which carry that
+    exclusion, agree. All recomputed onsets are shown as a variant.
+  - Larger selection than the paper's.
+- claim: fig4g-reward-response
+  outcome: partially_reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig4g-reward-response
+  measured:
+  - 8.77
+  - 13.73
+  - 6.69
+  notes: With the Methods' windows, Vglut2 8.77, Calb1 13.73 and DAT 6.69, all p x4 below 0.001,
+    each just above tolerance (8.69, 13.64, 6.49). With the code's windows 7.90, 12.40 and 5.88,
+    equal to the paper's values to the decimal, which suggests the paper's reward means come from
+    the code's windows; for air puffs this holds except for DAT.
+  deviations:
+  - Methods' windows (+0.05 to +0.55 s minus -0.5 to 0 s) as the main result; the code's (0 to 0.5 s
+    minus -0.55 to -0.05 s) as a variant.
+- claim: fig4g-anxa1-no-reward
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig4g-anxa1-no-reward
+  notes: Mean -0.42, p x4 = 0.12 (code windows -0.39, p x4 = 0.14), against -0.5 and P = 0.1. 37% of
+    51 recordings are above 0 and 4 above 5.
+- claim: fig4g-airpuff-response
+  outcome: partially_reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig4g-airpuff-response
+  measured:
+  - 16.77
+  - 5.41
+  - -3.66
+  - 2.69
+  notes: Vglut2 16.77, Calb1 5.41, Anxa1 -3.66 and DAT 2.69, all p x4 below 0.01 in the stated
+    direction. The DAT mean is half the paper's 5.3 under either window (code 2.46), with the
+    paper's 69 recordings; the others are within tolerance. DAT mouse means (code windows) run from
+    -3.83 to 6.03, with 3 of 11 mice at or below 0; the cause of the difference is not found.
+  deviations:
+  - Methods' windows as the main result; the code's as a variant.
+- claim: fig4h-reward-vs-airpuff
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig4h-reward-vs-airpuff
+  notes: Vglut2 air puff minus reward 8.03 (86% of 28 recordings, p x4 = 9.1e-06); Calb1 -8.32 (18%
+    favour air puffs, p x4 = 0.0034).
+- claim: fig4i-reward-size
+  outcome: partially_reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig4i-reward-size
+  measured:
+  - 4.43
+  - 2.33
+  notes: Calb1 4.43 (p x4 = 0.0049) and DAT 2.33 (p x4 = 3.7e-06) larger for large rewards; Vglut2
+    1.23 (p x4 = 0.22) and Anxa1 0.22 (p x4 = 1) not, so the significance pattern holds. The Calb1
+    and DAT differences are above tolerance with the Methods' windows and within it with the
+    code's (3.93, 1.83). n is 25, 14, 37 and 50 against 25, 14, 42 and 55; requiring 1 or 2
+    rewards of each size gives Anxa1 and DAT 47 and 58, or 40 and 53, with the same differences
+    and p-values.
+  deviations:
+  - Methods' windows as the main result; the code's as a variant.
+  - A recording needs 3 small and 3 large rewards; the paper's Anxa1 and DAT counts are higher, so
+    its rule for this panel differs.
+- claim: ed8f-rest-reward-same
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:ed8f-rest-reward-same
+  notes: At rest minus not at rest, Vglut2 0.45 (p x4 = 1, n = 8) and Calb1 -0.15 (p x4 = 1, n = 8),
+    against not-at-rest means 9.38 and 15.35. Anxa1 and DAT p x4 = 0.43 and 0.4. Counts differ from the
+    legend's for Calb1 (8 against 10), Anxa1 (36 against 42) and DAT (33 against 42), and the mice for
+    Vglut2 (3 against 6), Calb1 (4 against 6) and DAT (6 against 10); the cause is not found. The rest rows are the reward rows 0.01 s later with the same durations,
+    and the 2647 onsets left after removing them equal the rewards minus the rest rewards in every
+    file.
+- claim: fig6c-kmeans
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig6c-kmeans
+  measured: 92.6
+  notes: Median accuracy over 100 seeds 92.6% (Vglut2 89.5, Calb1 92.9, Anxa1 94.3; single starts 41
+    to 93%), chance 33%; the code's windows give the same. 19, 14 and 35 recordings against 16, 11
+    and 16. A one-to-one mapping of clusters to subtypes also gives 92.6%; the code's median-label
+    mapping sends two subtypes to one cluster in 5 of 100 seeds.
+  deviations:
+  - scikit-learn k-means summarized over 100 seeds, as MATLAB's seed cannot be repeated.
+  - Larger locomotion selection than the paper's, so more recordings are clustered.
+- claim: fig7f-soma-axon-correlation
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig7f-soma-axon-correlation
+  measured:
+  - 0.65
+  - 0.672
+  - 0.53
+  - 0.377
+  notes: Mean peaks 0.650, 0.672, 0.530 and 0.377; each subtype above DAT with rank-sum p x3 =
+    0.0003, 0.0003 and 0.0017. 405 nm control peaks -0.011 to 0.017. 11, 5, 40 and 33 pairs against
+    11, 5, 43 and 35.
+- claim: ed9c-snc-stimulus-responses
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:ed9c-snc-stimulus-responses
+  notes: SNc Vglut2 reward 10.20 and air puff 14.72, Calb1 12.34 and 4.68, all p x4 below 0.01;
+    Anxa1 reward 0.52, p x4 = 1. Counts match the legend except Anxa1 rewards (22 against 23).
+  deviations:
+  - Methods' windows as the main result; the code's as a variant.
+- claim: ed9k-snc-variance-explained
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:ed9k-snc-variance-explained
+  measured: 75.05
+  notes: Striatal PCs explain 75.05% of 62 SNc cross-correlations (PC1 48.09%, PC2 26.96%), within
+    10% of the legend's 77.6, 52.4 and 25.2. Under the Methods' 53.2 and 24.3, PC2 is outside. The
+    SNc selection has 26 Vglut2 and 30 Anxa1 recordings against 28 and 34. The 160 striatal
+    components capture 100.00% of the SNc total variance, so the code's denominator equals it.
+  deviations:
+  - The legend and the Methods give different components; the legend's reading matches.
+  - The striatal PCs come from the larger striatal selection.
+- claim: ed1h-aldh1a1-depth
+  outcome: partially_reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:ed1h-aldh1a1-depth
+  notes: Spearman rho = -0.569 (p = 1.3e-08) over 85 recordings, integrals positive above 2.5 mm
+    (mean 0.024, 85% positive), but the 5 recordings below 3 mm average 0.0001, not below 0. The
+    trend holds within 8 of 9 mice with 4 or more recordings. Depth follows the DV coordinate
+    (Spearman rho 0.92, a median 0.83 mm above it), as a depth from the brain surface would. With
+    the deep band from 2.75 or 2.9 mm (19 and 18 recordings) the mean integral is negative (-0.0043,
+    -0.0036).
+  deviations:
+  - The paper gives no test; the Spearman correlation and the depth bands were chosen here before
+    the analysis.
+- claim: ed1i-aldh1a1-reward-locomotion
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:ed1i-aldh1a1-reward-locomotion
+  notes: Spearman rho = -0.509, p = 0.011 over 24 recordings; mean reward response 9.59 with a
+    negative integral and 1.90 with a positive one.
+  deviations:
+  - The paper gives no test; the Spearman correlation was chosen here.
+- claim: fig3a-overlap-locomotion
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig3a-overlap-locomotion
+  notes: Calb1 mean integral -0.027 (16 of 17 negative), Anxa1 0.009, rank-sum p = 0.00012. 17 Calb1
+    recordings from 4 mice and 20 Anxa1 from 6, against 5 from 4 mice and 16 from 5 mice.
+  deviations:
+  - The region is the code's two circles converted to mm with the code's own scale and offsets.
+  - The paper gives no test; the sign and rank-sum test were chosen here.
+  - Larger selection than the paper's.
+- claim: fig4l-overlap-stimuli
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:fig4l-overlap-stimuli
+  notes: Calb1 reward mean 14.35 against Anxa1 0.94 (rank-sum p = 0.00052), Anxa1 air puff -2.06.
+    Counts equal the paper's (Calb1 9 from 4 mice, Anxa1 13 and 17 from 5 mice).
+  deviations:
+  - The paper gives no test; the rank-sum test and signs were chosen here.
+- claim: snrna-nuclei-qc
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:snrna-nuclei-qc
+  measured:
+  - 12065
+  - 3436
+  - 1684
+  notes: 12,065 nuclei with 500 or more genes, mean UMI 3,436 and mean genes 1,684, from the GEO
+    matrices.
+- claim: snrna-anxa1-within-aldh1a1
+  outcome: reproduced
+  notebook: reproduce_azcorra_2023.ipynb
+  output: claim:snrna-anxa1-within-aldh1a1
+  notes: Aldh1a1 detected in 76.9% of Anxa1-detected nuclei (30.9% overall), odds ratio 8.22, p =
+    1.6e-107; Anxa1 detected in 10.6% of Aldh1a1-detected nuclei.
+  deviations:
+  - Tested on raw detection without the paper's clustering.
+- claim: snrna-clusters
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The paper's pipeline is Seurat 4 (SCTransform v2 integration, FindClusters at resolution
+    0.5, FindAllMarkers) in R, which cannot be installed in the entry's Python lock file, and a
+    Python reimplementation would not give the same clusters. The count matrices themselves are
+    public (GEO GSE222558) and used by the two snRNA-seq claims above.
+- claim: scrna-meta-integration
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs four public datasets and Seurat 3.2 and LIGER 2.0 in R, which cannot be installed in
+    the entry's Python lock file.
+- claim: histology-anxa1-cre
+  outcome: blocked
+  blocked_by: other
+  notes: The raw images are on Zenodo (doi 10.5281/zenodo.7909331), but the claim rests on manual
+    cell counting on them, and no counts or annotations are deposited.
+findings:
+- kind: metadata_error
+  statement: The `coordinates` column of the fiber table is described as (AP, ML, DV) but holds
+    (ML, AP, DV); the second value takes only the reference-slice AP positions and is negative in
+    the tail of the striatum, and the paper's code builds the vector as [ML, AP, DV].
+- kind: metadata_error
+  statement: The column `cross_correlation_with_acceleration` is described as the cross-correlation
+    between dF/F and acceleration but holds the peak cross-correlation of the 405 nm control with
+    acceleration (the code's Acc405, used for exclusion), and is missing where running was under
+    100 s.
+- kind: metadata_insufficient
+  statement: The dF/F series are normalized so that the largest transient is 1, which the files do
+    not state (unit n.a., described as DF/F); the normalization factor is in the column
+    `normalized_fluorescence`, which in 123 files holds two values per row.
+- kind: selection_undocumented
+  statement: The files carry the signal-to-noise ratio and 405 nm cross-correlation but not the
+    other exclusion flags (running time, 405 nm artifacts) or which recordings each figure uses.
+    Recomputed with the paper's code, the stimulus analyses give the paper's counts exactly, but
+    the locomotion criteria select more striatal recordings than Figure 2 reports (Anxa1 82
+    against 47, Vglut2 50 against 42).
+- kind: data_missing
+  statement: The Events table lists consumed rewards only; rewards the mouse did not lick for are
+    only in the raw 4 kHz Reward trace. The code excludes 5 s after every reward, so 911
+    acceleration and 767 deceleration onsets recomputed from the processed data are not in the
+    stored WheelEvents.
+- kind: metadata_error
+  statement: Three subject ids (Anxa-I765L, Anxa-I767L, Calb-2246L) are recordings from the left
+    hemisphere of mice that also have ids without the L, so the archive's 105 subjects are 102
+    mice. The age is a range (P8W/P16W) in every file.
+- kind: metadata_error
+  statement: In the published version the related resource link to the paper is malformed
+    (https://doi.org/https://doi.org/...), fixed in the draft; the asset summary lists
+    measurementTechnique "analytical technique" and variableMeasured "ProcessingModule" only.
+- kind: metadata_insufficient
+  statement: 785 of 790 SNc fibers and 1281 of 2137 fibers overall have no coordinates.
+- kind: code_mismatch
+  statement: The Methods integrate responses from +0.05 to +0.55 s minus -0.5 to 0 s; the code
+    integrates 0 to +0.5 s minus -0.55 to -0.05 s. The paper's reward means equal those of
+    the code's windows to the decimal (Vglut2 7.90, Calb1 12.40, DAT 5.88), as do its Vglut2, Calb1
+    and Anxa1 air puff means within tolerance; its DAT air puff mean (5.3) does not (2.46). The
+    Methods' windows give about 10% more.
+- kind: code_mismatch
+  statement: The code reports the trough of the cross-correlation 0.02 s, and the peak of triggered
+    averages 0.01 s, later than the times the Methods define, and prints uncorrected p-values for
+    Figures 2i and 7f, whose legends state Bonferroni correction.
+- kind: code_mismatch
+  statement: The 405 nm artifact detection marks everything from the last noisy section to the end
+    of a recording and from the start to the first, which the Methods do not describe.
+- kind: paper_inconsistency
+  statement: The Results give reward P = 2e-5 for Calb1 and 0.001 for Vglut2; the Figure 4g legend
+    gives them the other way round. The Figure 2f legend gives 10 Anxa1 mice, the Methods 9.
+    Extended Data Figure 9k gives striatal PCs explaining 52.4% and 25.2% of SNc variance, the
+    Methods 53.2% and 24.3%.
+verifications:
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper (PMC10545540). The verifier queried the archive's
+    asset list and tested the helper functions on synthetic inputs. Its report had no attempt record
+    and gave its own outcome for each claim; all 29 outcomes agree with the record, and for the three
+    blocked claims it gave other reasons.
+  results:
+  - claim: recording-counts-locomotion
+    agrees: true
+    outcome: not_reproduced
+    reason: 0 of 5 within tolerance, 50/28/82/89/85 against 42/22/47/74/75; Anxa1 is 74% over. The four
+      Methods criteria do not account for the difference and the excess is unevenly spread (Calb1 in
+      the overlap region 17 against 5, the k-means Anxa1 set 35 against 16). The stimulus counts match
+      exactly, so some criterion is missing. Asked for counts for each step split by location, by single
+      against dual fiber and by session with or without stimuli, and the recordings per mouse.
+    response: Added the counts after each criterion split by location, fibers per file and sessions with
+      or without stimuli, the recordings per mouse for every group, and variant counts (one per mouse,
+      date and depth; recordings before the paper's submission). The excess is spread over every split
+      and no variant gives the paper's counts. Read the code's preprocessing (data_processing.m,
+      exclusionCriteria_allFigs.m), which also has manual steps (cropping and excluding recordings by
+      eye) that cannot be repeated. Outcome kept.
+  - claim: recording-counts-stimuli
+    agrees: true
+    outcome: reproduced
+    reason: 8 of 8 counts match exactly, as do the mouse counts, the Aldh1a1 30 and the unconsumed-reward
+      fractions 1/29, 0/17, 6/57 from the Methods.
+    response: No change needed.
+  - claim: fig2f-xcorr-direction
+    agrees: true
+    outcome: reproduced
+    reason: Integral over lags 0 to 1 s, Vglut2 -0.033 and Calb1 -0.036 (both negative), Anxa1 +0.014
+      (positive), all p x3 < 1e-4; the 405 nm control integrals are about 0.005. Tested on a larger set
+      of recordings than the paper's.
+    response: No change needed.
+  - claim: fig2i-trough-lag
+    agrees: true
+    outcome: partially_reproduced
+    reason: Methods measure Vglut2 0.416 s within tolerance, Calb1 0.140 s outside 0.17 +/- 0.017, p x3 =
+      2e-8. The code variant (0.436, 0.160) would pass.
+    response: No change needed.
+  - claim: fig2jk-pca-variance
+    agrees: true
+    outcome: reproduced
+    reason: PC1 58.32% and PC2 22.09%, both within tolerance but only just (bounds 57.78 and 22.11); the
+      total is 80.4% against 84.3%. The pass is within about 1% of the bound on a larger selection.
+    response: No change needed; the notes and conclusion already say the match is marginal and the
+      selection larger.
+  - claim: fig2l-pc-angles
+    agrees: true
+    outcome: reproduced
+    reason: Mean angles 140.1/208.8/233.3 against 141/208/239, the three tests give p x3 <= 1.3e-5. The
+      arithmetic mean on 0 to 360 degrees follows the code, but the circular means differ a lot (Anxa1
+      301 against 233 degrees), so the comparison of means depends on where the circle is cut (does not
+      affect a conclusion).
+    response: The conclusion and notes now give the circular means and say the Anxa1 mean depends on the
+      cut. Outcome kept.
+  - claim: fig2g-event-counts
+    agrees: true
+    outcome: reproduced
+    reason: Accelerations 131.4 +/- 75.1 and decelerations 129.2 +/- 95.0 against 135 +/- 77 and 138 +/-
+      101, both within tolerance.
+    response: No change needed.
+  - claim: ed7f-prob-transient-after-event
+    agrees: true
+    outcome: reproduced
+    reason: 61.8%, 63.9% and 55.8% against 62.4, 62.3 and 57.5, all within tolerance.
+    response: No change needed.
+  - claim: ed6f-dec-peak-timing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Vglut2 0.476 s and Calb1 0.320 s are both outside tolerance (0.35, 0.23); Vglut2 is later, p =
+      0.001. Both means are 0.09 to 0.13 s later than the paper, the code variant does not close the gap
+      and the cause is unexplained. Asked for the deceleration-triggered average for each subtype plotted
+      with the paper's peak times marked.
+    response: Added the mean deceleration-triggered average of each subtype with the paper's and this
+      attempt's mean peak times marked, the peak of the mean (0.44 and 0.27 s), the per-recording medians
+      and quartiles, and the number of peaks at the window edges. The difference remains and its cause is
+      not found. Outcome kept.
+  - claim: fig5ab-transient-scaling
+    agrees: true
+    outcome: partially_reproduced
+    reason: Ratios 239/266/222%; the Vglut2 ratio is outside 214 +/- 21.4, all three exceed 100% with p x3
+      <= 0.002. The ratio uses every recording with a value in either quintile while the test uses only
+      paired recordings, and the size analysis uses the recomputed onsets, which keep events after
+      unconsumed rewards (does not affect a conclusion).
+    response: The main result now uses the recomputed onsets that are also stored, which carry the code's
+      exclusion after every reward (241, 246 and 232%; Vglut2 and Anxa1 outside tolerance); all
+      recomputed onsets are a variant (239, 266, 222%). Added the ratio over paired recordings, which is
+      the same. Outcome kept; measured values updated.
+  - claim: fig4g-reward-response
+    agrees: true
+    outcome: partially_reproduced
+    reason: Methods windows give 8.77/13.73/6.69, all positive with p < 0.05 and all just outside
+      tolerance; the code windows give 7.90/12.40/5.88, matching the paper to 0.02. This is strong
+      evidence that the paper's numbers come from the code windows, but under the claims file's rule
+      (Methods is the main result) the claim comes out partial.
+    response: No change; the code_mismatch finding already records this. Outcome kept, as the criterion
+      fixed the Methods' windows before the analysis.
+  - claim: fig4g-anxa1-no-reward
+    agrees: true
+    outcome: reproduced
+    reason: Mean -0.42, signed-rank p x4 = 0.12, which meets the p >= 0.05 criterion.
+    response: No change needed.
+  - claim: fig4g-airpuff-response
+    agrees: true
+    outcome: partially_reproduced
+    reason: Vglut2 16.8, Calb1 5.41 and Anxa1 -3.66 are within tolerance; DAT is 2.69 against 5.3 with a
+      matching n of 69, while the other three groups match; the cause is unexplained. Asked for the DAT air
+      puff split per mouse with the code windows.
+    response: Added the DAT air puff responses per mouse and per location label under both windows; mouse
+      means run from -3.83 to 6.03 and 3 of 11 are at or below 0. The cause is not found. Outcome kept.
+  - claim: fig4h-reward-vs-airpuff
+    agrees: true
+    outcome: reproduced
+    reason: Vglut2 air puff > reward, p x4 = 9e-6; Calb1 reward > air puff, p x4 = 0.003.
+    response: No change needed.
+  - claim: fig4i-reward-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Calb1 4.43 (p x4 = 0.005) and DAT 2.33 are both significant but outside tolerance; Vglut2 (p =
+      0.22) and Anxa1 (p = 1) are not significant, as the paper says; the code windows give
+      3.93/1.83/0.95/0.04, which match the paper. Requiring at least 3 small and 3 large rewards gives
+      Anxa1 37 and DAT 50 against 42 and 55. rew_long and rew_short are not shifted by the 1 bin that
+      reward is, so the size-split responses are aligned 0.01 s differently (does not affect a
+      conclusion).
+    response: Added the counts and results with at least 1 or 2 rewards of each size (47 and 58, 40 and
+      53); none gives the paper's counts and the results do not change. The one-bin offset of the long
+      and short rewards is the code's own (selectSignals_paper.m sets them at find(diff(Reward) == 1)),
+      now said in the helper. Outcome kept.
+  - claim: ed8f-rest-reward-same
+    agrees: true
+    outcome: reproduced
+    reason: Vglut2 and Calb1 both p x4 = 1. The n differs from the paper, Calb1 8 against 10, Vglut2 from 3
+      mice against 6. RewardNoRest = reward & ~rew_rest creates a false onset if a rest interval ends
+      before its reward interval, and event durations were never checked. The ed8f counts also differ
+      from the paper (Calb1 8 against 10, Anxa1 36 against 42, DAT 33 against 42). Asked for the durations of the
+      long and short rows against the rest rows and the number of RewardNoRest onsets against rewards
+      minus rest rewards.
+    response: Added both. Every rest row starts exactly 0.01 s after its reward row with the same
+      duration, and the 2647 RewardNoRest onsets equal the rewards minus the rest rewards in every file,
+      so no false onsets arise; the construction is the code's (RewardPuffAnalysis.m). Outcome kept.
+  - claim: fig6c-kmeans
+    agrees: true
+    outcome: reproduced
+    reason: Median accuracy 92.6% over 100 seeds; the n is 19/14/35 against the paper's 16/11/16. The
+      median-label mapping can map two subtypes to the same cluster; this follows the code. Single seeds
+      range from 41 to 93% (does not affect a conclusion).
+    response: Added a one-to-one mapping variant (median 92.6%) and the number of seeds where two subtypes
+      share a cluster under the code's mapping (5 of 100). Outcome kept.
+  - claim: fig7f-soma-axon-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Means 0.650/0.672/0.530/0.377; Anxa1 is just inside tolerance (bound 0.522). All p x3 <= 0.002
+      against DAT.
+    response: No change needed.
+  - claim: ed9c-snc-stimulus-responses
+    agrees: true
+    outcome: reproduced
+    reason: Vglut2 and Calb1 reward and air puff responses are positive with p x4 <= 0.008; the Anxa1
+      reward test gives p = 1; the n matches the legend within 1.
+    response: No change needed.
+  - claim: ed9k-snc-variance-explained
+    agrees: true
+    outcome: reproduced
+    reason: Total 75.05%, PC1 48.09% and PC2 26.96%, all within 10% of the legend values. var.sum() sums
+      over the 160 components of the striatal PCA, not the SNc data's total variance, so the percentages
+      could be inflated (unchecked). Asked for the fraction of trace(Xs'Xs) the 160 components capture.
+    response: Added it. The 160 components capture 100.00% of the trace, so the percentages with the trace
+      as denominator are the same. The code uses the same sum (LocomotionAnalysis.m). Outcome kept.
+  - claim: ed1h-aldh1a1-depth
+    agrees: true
+    outcome: partially_reproduced
+    reason: Spearman rho = -0.57, p = 1e-8, the mean integral above 2.5 mm is +0.024 as expected, but over
+      3 mm it is +0.0001 where the criterion needs a negative value, and that bin has only n = 5. Asked for
+      the range of fiber_depth_in_mm and its relation to the DV coordinate.
+    response: Added the depth range (1.6 to 3.9 mm), its relation to the DV coordinate (rho 0.92, a median
+      0.83 mm above it, consistent with depth from the brain surface), and deep bands from 2.75, 2.9 and
+      3.2 mm as variants. Outcome kept, as the criterion fixed the band at 3 mm.
+  - claim: ed1i-aldh1a1-reward-locomotion
+    agrees: true
+    outcome: reproduced
+    reason: rho = -0.51, p = 0.011, n = 24.
+    response: No change needed.
+  - claim: fig3a-overlap-locomotion
+    agrees: true
+    outcome: reproduced
+    reason: Calb1 mean -0.027 and Anxa1 +0.009, rank-sum p = 1e-4. Counts do not match, Calb1 17 against
+      the legend's 5, Anxa1 20 against 16.
+    response: No change needed; the notes and conclusion already give the counts.
+  - claim: fig4l-overlap-stimuli
+    agrees: true
+    outcome: reproduced
+    reason: Calb1 reward 14.35 against Anxa1 0.94, p = 5e-4; Anxa1 air puff -2.06; the counts 9/13/17 and
+      mice match the legend exactly.
+    response: No change needed.
+  - claim: snrna-nuclei-qc
+    agrees: true
+    outcome: reproduced
+    reason: 12,065 nuclei, mean UMI 3,436, mean genes 1,684.
+    response: No change needed.
+  - claim: snrna-anxa1-within-aldh1a1
+    agrees: true
+    outcome: reproduced
+    reason: Odds ratio 8.2, p = 2e-107; Aldh1a1 is detected in 0.77 of Anxa1 nuclei and Anxa1 in 0.11 of
+      Aldh1a1 nuclei.
+    response: No change needed.
+  - claim: snrna-clusters
+    agrees: true
+    outcome: blocked
+    reason: Blocked with reason other. Not in the dandiset (1238 NWB photometry files); the data are in GEO
+      GSE222558. The exact 15-cluster Seurat SCTransform result cannot be reproduced in Python. A partial
+      test is possible, whether an Anxa1-enriched cluster exists inside the Aldh1a1 nuclei, using scanpy on
+      the GEO matrices. The blocked reasons in the header ("not runnable") are not one of the allowed
+      categories.
+    response: Kept not_runnable, the protocol's category for software that cannot be installed in the
+      locked environment. The partial test it proposes, Anxa1 within a subset of Aldh1a1 nuclei, is what
+      snrna-anxa1-within-aldh1a1 tests on the same matrices without clustering. The header and summary now
+      name the categories as not_runnable and other.
+  - claim: scrna-meta-integration
+    agrees: true
+    outcome: blocked
+    reason: Blocked with reason other. Not in the dandiset; needs four external datasets and Seurat/LIGER
+      integration. No part was attempted.
+    response: Kept not_runnable, for the reason given for snrna-clusters.
+  - claim: histology-anxa1-cre
+    agrees: true
+    outcome: blocked
+    reason: Blocked with reason data_missing. No images in the dandiset (all 1238 assets are NWB); they are
+      on Zenodo 7909331, which the dandiset metadata does not link, and need manual cell counting.
+    response: Kept other. The images are public on Zenodo, and the protocol blocks a claim on data in
+      another public archive for the reason that applies, never data_missing; the reason here is that the
+      claim rests on manual cell counts that are not deposited.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full re-executed notebook after the round-1 revision, with its conclusions and
+    summary, the README, the helper module, the claims file and this record. The verifier did not
+    re-download the paper. It agrees with all 29 outcomes. Cell numbers in the reasons are those of the
+    notebook it reviewed. Two points are not tied to a claim. The README and cell 0 say "about three
+    minutes" while cell 94 reports 2.1 min; both now say the run takes a few minutes, and the run time is
+    printed at the end. The 123 files with two normalized_fluorescence values, the malformed DOI link,
+    the asset-summary fields and the paper_inconsistency items appear in no output; cell 13 now prints the
+    value counts of normalized_fluorescence and the related resources and asset summary of the published
+    and draft versions, cells 46 and 73 print the paper's conflicting P-values and percentages (checked
+    against the paper's text, saved under paper/), and the Figure 2f legend and Methods mouse counts were
+    already printed in cell 16.
+  results:
+  - claim: recording-counts-locomotion
+    agrees: true
+    outcome: not_reproduced
+    reason: Problem 1 is unresolved; no variant reproduces the paper's counts and the paper's manual
+      exclusions cannot be repeated. "The excess is spread over locations, single- and dual-fiber files and
+      sessions with and without stimuli" is weakly supported at best; cell 16 shows only our counts per
+      split, not the paper's, so where the excess sits cannot be measured, and all Anxa1 recordings are
+      dual-fiber and all Calb1 recordings are DS. All 18 locomotion-dependent claims rest on 50/28/82/89/85
+      recordings against 42/22/47/74/75.
+    response: Cell 17 and the notes now say the paper gives no counts per split, so where the excess lies
+      cannot be measured, and that every Anxa1 recording is dual-fiber and every Calb1 recording DS. The
+      overcount itself is not resolved; no further variant was found. Outcome kept.
+  - claim: recording-counts-stimuli
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the counts match the outputs.
+    response: No change needed.
+  - claim: fig2f-xcorr-direction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; rests on the larger locomotion selection (problem 1).
+    response: No change needed.
+  - claim: fig2i-trough-lag
+    agrees: true
+    outcome: partially_reproduced
+    reason: The Summary says that with the code's choices "the Calb1 trough lag equal[s] the paper's
+      numbers"; the Calb1 code-timing lag is 0.160 s against the paper's 0.17 (cell 25), within tolerance
+      but not equal.
+    response: The Summary now says the Calb1 trough lag with the code's timing (0.160 against 0.17 s) is
+      within tolerance. Outcome kept.
+  - claim: fig2jk-pca-variance
+    agrees: true
+    outcome: reproduced
+    reason: fig2jk passes by 0.02 points on PC2 and 0.54 on PC1, so its "reproduced" depends on the larger
+      locomotion selection.
+    response: No change; the notes and conclusion already give the margins and the larger selection.
+  - claim: fig2l-pc-angles
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; rests on the larger locomotion selection (problem 1).
+    response: No change needed.
+  - claim: fig2g-event-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; rests on the larger locomotion selection (problem 1).
+    response: No change needed.
+  - claim: ed7f-prob-transient-after-event
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; rests on the larger locomotion selection (problem 1).
+    response: No change needed.
+  - claim: ed6f-dec-peak-timing
+    agrees: true
+    outcome: partially_reproduced
+    reason: '"The per-recording medians are 0.5 and 0.25 s, so a few recordings at the window edges ... do
+      not explain the difference" does not hold for Calb1: the median of 0.25 s is within the paper''s
+      tolerance (0.207 to 0.253 s) and the mean of 0.320 s equals the upper quartile, so the distribution is
+      strongly right-skewed and the Calb1 gap is a tail of late peaks, not a shift of the whole
+      distribution. Only Vglut2 is clearly later than the paper (median 0.5 s, peak of the mean 0.44 s,
+      against 0.35 s), and its cause is not found.'
+    response: Added to cell 40 the per-recording mean, skewness, the paper's tolerance and the number of
+      recordings above and below it for each subtype. Cell 41 and the notes now say Vglut2 is later as a
+      whole (31 of 50 recordings above 0.385 s) and the Calb1 gap comes from a right tail (skewness 1.48,
+      median within tolerance, 13 of 28 above 0.253 s). The Vglut2 cause is still not found. Outcome kept.
+  - claim: fig5ab-transient-scaling
+    agrees: true
+    outcome: partially_reproduced
+    reason: The main result now uses the recomputed onsets that are also stored; Vglut2 241.3% and Anxa1
+      231.9% are outside tolerance, Calb1 246.2% is inside, and all three have p x3 <= 0.002.
+    response: No change needed.
+  - claim: fig4g-reward-response
+    agrees: true
+    outcome: partially_reproduced
+    reason: '"The paper''s numbers come from the code''s windows" is stated as a fact; the output supports it
+      strongly for rewards (7.90, 12.40, 5.88) but it is still an inference, and it does not hold for the
+      DAT air puff mean. The Summary''s "with the code''s windows its response means to the decimal" and the
+      code_mismatch finding''s "the paper''s reward and air puff means equal those of the code''s windows"
+      should be limited to rewards and to the Vglut2, Calb1 and Anxa1 air puff means.'
+    response: Cell 47 and the notes now say the match suggests the reward means were computed with the
+      code's windows and that it fails for the DAT air puff mean. The Summary and the code_mismatch finding
+      are limited to the reward means and the Vglut2, Calb1 and Anxa1 air puff means, with the DAT air puff
+      mean (2.46 against 5.3) and the DAT size difference (1.83 against 1.9) given. Outcome kept.
+  - claim: fig4g-anxa1-no-reward
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig4g-airpuff-response
+    agrees: true
+    outcome: partially_reproduced
+    reason: Problem 4 is unresolved; DAT is 2.69 against 5.3 with the same n of 69, per-mouse means range
+      from -3.83 to 6.03, Dat-G557 (15 recordings, -0.60) pulls the mean down, and the cause is not found.
+      The Summary's "with the code's windows its response means to the decimal" is contradicted by the DAT
+      air puff mean (2.46 against 5.3, cell 52).
+    response: The Summary now excludes the DAT air puff mean from the match. The cause of the DAT difference
+      is still not found. Outcome kept.
+  - claim: fig4h-reward-vs-airpuff
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig4i-reward-size
+    agrees: true
+    outcome: partially_reproduced
+    reason: Anxa1 37 and DAT 50 against 42 and 55 remain unexplained (does not change an outcome). The
+      Summary's "to the decimal" does not hold for the DAT large-minus-small difference, 1.83 against 1.9
+      (cell 58).
+    response: The Summary now gives the DAT difference as 1.83 against 1.9. The count difference is not
+      explained. Outcome kept.
+  - claim: ed8f-rest-reward-same
+    agrees: true
+    outcome: reproduced
+    reason: '"The Calb1 n is 8 against the paper''s 10" implies Calb1 is the only mismatch; cell 61 also
+      prints Anxa1 36 against 42 and DAT 33 against 42, and Vglut2 comes from 3 mice. The round-1 reason in
+      the record left out the Anxa1 and DAT count differences and the response did not address them.'
+    response: Cell 61 now prints the paper's mouse counts. Cell 62 and the notes list every count
+      difference (Calb1 8 against 10, Anxa1 36 against 42, DAT 33 against 42; mice Vglut2 3 against 6,
+      Calb1 4 against 6, DAT 6 against 10) and say the cause is not found. The round-1 reason now includes
+      the Anxa1 and DAT counts. Outcome kept.
+  - claim: fig6c-kmeans
+    agrees: true
+    outcome: reproduced
+    reason: Round-1 points 9 and 11 are documented, and a one-to-one mapping variant gives 92.6%.
+    response: No change needed.
+  - claim: fig7f-soma-axon-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: ed9c-snc-stimulus-responses
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: ed9k-snc-variance-explained
+    agrees: true
+    outcome: reproduced
+    reason: The 160 components capture 100.00% of trace(XsᵀXs), so the percentages are unchanged (cell 73).
+      The SNc locomotion counts, Vglut2 26 and Anxa1 30 against 28 and 34, are unexplained (does not change
+      an outcome). The paper_inconsistency items are not backed by printed output.
+    response: Cell 73 now prints the legend's and the Methods' percentages. The SNc count difference is not
+      explained. Outcome kept.
+  - claim: ed1h-aldh1a1-depth
+    agrees: true
+    outcome: partially_reproduced
+    reason: Deep-band variants were added (cell 76), and depth tracks DV with rho 0.92.
+    response: No change needed.
+  - claim: ed1i-aldh1a1-reward-locomotion
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: fig3a-overlap-locomotion
+    agrees: true
+    outcome: reproduced
+    reason: '"The same mice, more recordings" (cell 83): the output gives Anxa1 6 mice against the paper''s 5,
+      and the notebook only shows matching counts and cannot show that the mice are the same ones.'
+    response: Cell 83 and the notes now say the Calb1 mouse count matches (4), Anxa1 has one more mouse (6
+      against 5), and that the counts cannot show whether the mice are the paper's. Outcome kept.
+  - claim: fig4l-overlap-stimuli
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: snrna-nuclei-qc
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome.
+    response: No change needed.
+  - claim: snrna-anxa1-within-aldh1a1
+    agrees: true
+    outcome: reproduced
+    reason: The record points out that this is the partial snRNA test the verifier proposed in round 1.
+    response: No change needed.
+  - claim: snrna-clusters
+    agrees: true
+    outcome: blocked
+    reason: Accepts the record's category; not_runnable covers Seurat and LIGER not being installable. Could
+      not see docs/protocol.md to confirm the category rules.
+    response: No change needed.
+  - claim: scrna-meta-integration
+    agrees: true
+    outcome: blocked
+    reason: Accepts the record's category; not_runnable covers Seurat and LIGER not being installable.
+    response: No change needed.
+  - claim: histology-anxa1-cre
+    agrees: true
+    outcome: blocked
+    reason: Accepts the record's category; other covers histology that rests on manual counts that were never
+      deposited.
+    response: No change needed.
