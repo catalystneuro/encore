@@ -34,9 +34,11 @@ Where parameters come from:
   likelihood (as ridgeMML.m, Musall et al. 2019), ten-fold cross-validation over contiguous
   blocks, R2 averaged over folds (Methods), predictors scaled with the training folds' statistics.
   The penalty grid (1e-3 to 1e6, 91 values) is a choice made here; ridgeMML optimises it. The
-  code for this step is not in the repository, so the design (signed or absolute wheel speed, no
-  lags) is a choice too; the notebook uses |WheelSpeed| (the stored series is signed; the paper's
-  predictor is "locomotion speed") and shows the signed series as a variant.
+  code for this step is not in the repository, so the design (no lags) is a choice too. The wheel
+  predictor is the signed WheelSpeed, as the Methods define speed ("a differential of distance")
+  and `wheel_changepoints.m` computes it (`db1SpeedMpS`, signed); |WheelSpeed| is a variant. The
+  paper's own per-mouse R2 values are in the code's `Figure2Regression/Fig2RawData.mat`
+  (`paper_r2`).
 """
 
 from __future__ import annotations
@@ -60,6 +62,7 @@ CODE_COMMIT = "c337686fb3776112f1609ec1a19256d277c930fd"
 CODE_RAW = f"https://raw.githubusercontent.com/{CODE_REPO}/{CODE_COMMIT}/"
 PARCELS_FILE = "Figure3ExtractStatesCorrelation/Functions/parcells_updated121519.mat"
 BRAINMASK_FILE = "PreProcessingCode/Functions/parcellation/AllenParcellationLan/allanParcellationTiffs/brainMask.mat"
+FIG2_FILE = "Figure2Regression/Fig2RawData.mat"
 
 FS_IMAGING = 10.0       # Hz per colour (Methods)
 FS_WHEEL = 5000.0       # Hz (Spike2)
@@ -583,6 +586,30 @@ def permutation_test(z1, z2, n_perm, rng):
     p = (np.abs(perm) >= np.abs(obs)).mean(0)
     p[p == 0] = 1.0 / n_perm
     return obs, p
+
+
+def paper_r2():
+    """The paper's per-mouse cross-validated R2 from the code's `Fig2RawData.mat` (6 mice x 52
+    parcels, in the order of `parcells_new.names` without ACA and PL; MakeFig2.m reads it).
+
+    Returns {colour: {model: array (6, 23)}} for the left parcels, in the order of AP_ORDER, with
+    colour "ach" (the file's grabs_*) or "ca" (rcamp_*) and model full, face, pupil, wheel, noFace,
+    noPupil or noWheel. The file does not name the mice of its rows."""
+    d = _get_mat(FIG2_FILE)
+    names = [str(n) for n in d["parcells_new"].names][:52]
+    canon = {a.lower(): a for a in AP_ORDER + LEFT_OUT}
+    col = {}
+    for i, n in enumerate(names):
+        hemi, area = n.split("-", 1)
+        area = canon[area.lower().replace("vls", "vis")]
+        if hemi == "L" and area in AP_ORDER:
+            col[area] = i
+    idx = [col[a] for a in AP_ORDER]
+    out = {}
+    for colour, prefix in (("ach", "grabs"), ("ca", "rcamp")):
+        out[colour] = {m: np.asarray(d[f"{prefix}_xls_{m}"], float)[:, idx]
+                       for m in ("full", "face", "pupil", "wheel", "noFace", "noPupil", "noWheel")}
+    return out
 
 
 # --- regression (ridgeMML) -------------------------------------------------------------------------

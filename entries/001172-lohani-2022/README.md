@@ -12,7 +12,7 @@ not in it.
 | Behaviour explains ACh and calcium differently across areas | Reproduced |
 | Inverted anterior-posterior gradients of explained variance | Reproduced |
 | Face movement is the best predictor of ACh | Reproduced |
-| Face movement is the best predictor of calcium | Partially reproduced |
+| Face movement is the best predictor of calcium | Partially reproduced (proposed: reproduced, under review) |
 | Transients at face movement onset | Partially reproduced |
 | Transients at locomotion onset | Partially reproduced |
 | ACh transients do not differ between onset types | Reproduced |
@@ -37,7 +37,7 @@ come from the parcel masks in the paper's code. The attempt record, with the rea
 differences from the paper's method, is
 [`attempts/001172-lohani-2022-01.yaml`](../../attempts/001172-lohani-2022-01.yaml).
 
-- `reproduce_lohani_2022.ipynb`: the analysis. It streams about 110 GB and takes about 13 minutes.
+- `reproduce_lohani_2022.ipynb`: the analysis. It takes about 17 minutes.
 - `meso.py`: streaming the ΔF/F movies as parcel means, the timing, the code's state and onset
   definitions, the correlation and permutation statistics, and the ridge regression. Other notebooks
   on this dandiset can import it.
