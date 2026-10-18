@@ -1,0 +1,367 @@
+# Claims for Zhuang, Lemak, Sridhar & Nelson (2025), Brain 149:238, on dandiset 001177.
+# Source: the open-access version of record (CC BY 4.0) from Europe PMC (PMC12597312), full
+# text, with its Supplementary material (figure legends, Supplementary methods and Table 1).
+#
+# When these criteria were written, the author had seen the data check only: the file list,
+# subject metadata and recording segments of every NWB file, the units tables of the two files
+# that have one (names and spike counts), and, summed over channels, the threshold-crossing rate
+# of each session in 5-min bins around the inferred injection time (the acute drop after PPX).
+# No channel had been classified and no claim's analysis had been run. Of the Zenodo deposit
+# (doi:10.5281/zenodo.15258978) the author had read the READMEs, listed the session files and
+# counted them per animal and condition, read the event names and per-block event counts of
+# three sessions, and seen the layout of the rotarod, histology and locomotion spreadsheets. No
+# choice fraction, fit, rotarod value or fluorescence ratio had been computed.
+#
+# The dandiset holds the raw voltage and threshold crossings of the open-field recordings, but
+# no sorted units with cell types (except an unlabelled units table in two files), no
+# optogenetic labels or laser times, and no injection times. The paper's unit-level claims
+# (Figures 4, 6F-K and S5) are therefore blocked. Three claims test the same effects at the level
+# the dandiset supports, the multi-unit activity of each channel (claims starting mua-).
+# Behaviour, rotarod and histology were deposited on Zenodo, so those claims are `elsewhere`.
+#
+# Method choices fixed here for the mua- claims (the Supplementary methods give the rest):
+# multi-unit activity is the number of threshold crossings per channel; channels with a
+# baseline rate under 0.5 Hz are left out; the injection time is inferred from the recording
+# segments (see icd.injection_minute), and PPX sessions in which the threshold-crossing rate
+# shows no drop at that time (a log ratio above -0.2 between the 2-22 min after and the 30 min
+# before) while a change-point search puts the largest drop more than 10 min away are treated
+# as sessions whose clock could not be established and are left out of the main analysis
+# (shown as a variant with the change-point time); a channel is classified with 1-min bins and
+# the paper's paired Wilcoxon signed-rank rule; group differences in the three types are tested
+# with a Freeman-Halton exact test by Monte Carlo (20000 permutations, fixed seed), as the paper's
+# "Fisher's exact test" on three types is an r x c exact test.
+#
+# Method choices fixed here for the behaviour claims: the condition of a session file is read
+# from its name (no drug name is baseline; PPX, A77636 or CNO is drug; "washout" is washout); a
+# session's choice is large rewards over large plus small rewards in each free-choice block;
+# each animal's value is the mean over its sessions in that condition (Summary_Cognitive.m);
+# group membership comes from README_ICD_CognitiveAssessment.txt; animals without a session in
+# a condition the test needs are left out and counted. Bonferroni comparisons at each delay are
+# paired t-tests with p multiplied by 4 (Prism's post hoc after the two-way repeated-measures
+# ANOVA uses a pooled error term; the Wilcoxon version is shown as a variant). Friedman tests with
+# Dunn's post hoc use complete animals and multiply p by the number of pairs reported.
+schema_version: 1
+dandiset: "001177"
+paper: doi:10.1093/brain/awaf312
+claims:
+
+# --- Electrophysiology, unit level (Figures 4, 6, S5, S8) -----------------------------------
+- id: fig4bc-baseline-rates-similar
+  statement: Under baseline conditions the firing rates of optogenetically identified dMSNs and
+    iMSNs in the DMS are comparable in control and parkinsonian mice.
+  source: Results, fourth section; Figure 4B and C; Supplementary Table 1
+  criterion: Mann-Whitney U test of baseline rates, control against parkinsonian, for dMSNs (12
+    against 24 cells) and iMSNs (10 against 16 cells). Reproduced when neither test gives p below
+    0.05.
+- id: fig4dg-ppx-bidirectional-identified
+  statement: At 4-5 h after PPX, firing of identified dMSNs and iMSNs is back at baseline in
+    healthy mice (p = 0.91 and 0.38), while in parkinsonian mice PPX increases dMSN firing (p =
+    0.01) and decreases iMSN firing (p < 0.001); 58.3% of parkinsonian dMSNs are of the increase
+    type and 72.7% of iMSNs of the decrease type.
+  source: Figure 4D-G and insets; Supplementary Table 1
+  expected:
+  - quantity: parkinsonian dMSNs of the increase type
+    value: 58.3
+    tolerance: 5.83
+    unit: percent
+  - quantity: parkinsonian iMSNs of the decrease type
+    value: 72.7
+    tolerance: 7.27
+    unit: percent
+  criterion: Wilcoxon signed-rank tests of baseline against 240-300 min rates per cell group, and
+    the response-type proportions by the paper's rule. Reproduced when the four tests match the
+    paper's pattern at p < 0.05 and the two proportions are within tolerance.
+- id: fig4hk-modulation-stronger-park
+  statement: The PPX-induced modulation of dMSN and iMSN firing is more marked in parkinsonian
+    than in healthy mice.
+  source: Results, fourth section; Figure 4H-K
+  criterion: Normalized 240-300 min rates of identified cells, parkinsonian against control,
+    higher for dMSNs and lower for iMSNs by a Mann-Whitney U test at p < 0.05.
+- id: figs5d-msn-response-types
+  statement: Among unlabelled putative MSNs the proportions of response types to PPX differ
+    between control and parkinsonian mice (parkinsonian 54 increase, 78 decrease, 82 no change
+    of 214 cells in 11 mice; control 117 cells in 7 mice; p = 0.0003).
+  source: Supplementary Figure 5A-D; Supplementary Table 1
+  expected:
+  - quantity: parkinsonian putative MSNs of the increase type
+    value: 25.2
+    tolerance: 2.52
+    unit: percent
+  - quantity: parkinsonian putative MSNs of the decrease type
+    value: 36.4
+    tolerance: 3.64
+    unit: percent
+  criterion: Fisher's exact test of the three types by group at p < 0.05, with the parkinsonian
+    proportions within tolerance.
+- id: figs5ef-saline-no-change
+  statement: After a saline injection nearly all putative MSNs of parkinsonian mice show no
+    change in firing rate (1 increase, 2 decrease, 37 no change, of 40 cells in 4 mice).
+  source: Results, fourth section; Supplementary Figure 5E and F
+  expected:
+    quantity: putative MSNs with no change after saline
+    value: 92.5
+    tolerance: 9.25
+    unit: percent
+- id: fig6fg-response-types-shift
+  statement: In parkinsonian mice the proportions of response types shift between the first and
+    the fourth PPX session (p = 0.002), towards more increase-type and fewer decrease-type MSNs,
+    while in control mice they do not (p = 0.11).
+  source: Results, sixth section; Figure 6F and G; Supplementary Figure 8A and B
+  criterion: Fisher's exact test of the three types, first against fourth session, at p < 0.05 in
+    parkinsonian and not in control mice, with the increase fraction higher and the decrease
+    fraction lower in the fourth session.
+- id: fig6hi-increase-type-stronger
+  statement: Increase-type MSNs of parkinsonian mice respond more strongly to the fourth than to
+    the first PPX injection (p = 0.02), while decrease-type MSNs respond similarly (p = 0.89).
+  source: Results, sixth section; Figure 6H and I
+  criterion: Mann-Whitney U test of the post-PPX rate change, first against fourth session, at p
+    < 0.05 for increase-type and not for decrease-type cells.
+
+# --- Electrophysiology, multi-unit activity from the dandiset -------------------------------
+- id: mua-ppx-park-vs-ctrl
+  statement: PPX at 4-5 h changes striatal firing in parkinsonian mice in both directions and in
+    a larger share of recording sites than in control mice, tested on the multi-unit activity of
+    each channel (the dandiset's counterpart of Supplementary Figure 5D).
+  source: Results, fourth section; Supplementary Figure 5D; Supplementary methods, In vivo
+    electrophysiology
+  criterion: Each channel of each PPX session whose clock is established and which covers the
+    baseline and both post-injection windows is classified by the paper's rule. Which sessions
+    Supplementary Figure 5D pools is not stated (its 11 parkinsonian mice include N4, which has
+    no first session in the dandiset), so three readings are shown, (a) all PPX sessions pooled,
+    one sample per channel and session, (b) the first available PPX session of each animal, (c)
+    day-1 sessions only. Reproduced when, under one reading, the share of channels with a change
+    (increase or decrease) is higher in parkinsonian than in control mice, the Freeman-Halton
+    test of the three types by group gives p < 0.05, and parkinsonian channels of both the
+    increase and the decrease type each make up at least 10%. Partially reproduced when the share
+    is higher and both directions reach 10% but p is 0.05 or more, or when the share is higher with
+    p < 0.05 but only one direction reaches 10%. Not reproduced otherwise. The breakdown by animal
+    and session, other rate thresholds, the rank-sum test and the change-point clock are shown as
+    variants, as are the units of the two files that have a units table.
+- id: mua-saline-no-change
+  statement: After a saline injection nearly all recording sites of parkinsonian mice show no
+    change in firing, tested on the multi-unit activity of each channel (counterpart of
+    Supplementary Figure 5F).
+  source: Supplementary Figure 5E and F
+  expected:
+    quantity: channels with no change after saline
+    value: 92.5
+    tolerance: 9.25
+    unit: percent
+  criterion: The saline sessions are classified as in mua-ppx-park-vs-ctrl, with the injection 30
+    min after the start (the subject description; the saline files are single segments). Blocked
+    (other) if fewer than three of the four saline sessions cover both post-injection windows;
+    otherwise reproduced when the share of no-change channels is within tolerance.
+- id: mua-response-shift-first-fourth
+  statement: In parkinsonian mice the response types of recording sites shift between the first
+    and the fourth PPX session towards more increases and fewer decreases, while in control mice
+    they do not, tested on the multi-unit activity of each channel (counterpart of Figure 6F and
+    G).
+  source: Results, sixth section; Figure 6F and G
+  criterion: Day-1 against day-4 PPX sessions, all channels classified as in
+    mua-ppx-park-vs-ctrl. Reproduced when in parkinsonian mice the Freeman-Halton test gives p <
+    0.05 with a higher increase share and a lower decrease share on day 4, and in control mice p
+    is 0.05 or more. Partially reproduced when the parkinsonian test gives p < 0.05 with only one
+    of the two shifts, or when the parkinsonian part holds and the control test also gives p <
+    0.05. Not reproduced otherwise. The same comparison restricted to animals with both sessions,
+    and the rate ratio of increase-type channels (day 4 against day 1, Mann-Whitney U), are shown
+    as variants.
+
+# --- Behaviour, rotarod and histology (Zenodo) ----------------------------------------------
+- id: fig1b-th-depletion
+  statement: The bilateral 6-OHDA lesion leaves about 50% of the TH signal in the rostral DLS and
+    DMS, with less depletion in the ventral striatum (DMS against DLS p = 0.09; VS against DMS p =
+    0.0003; VS against DLS p < 0.0001; n = 44).
+  source: Results, first section; Figure 1B; Supplementary Table 1
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig3_HistologyQuantification_striatum_raw.xlsx)
+  expected:
+  - quantity: residual TH in DLS, parkinsonian over control
+    value: 0.5
+    tolerance: 0.05
+  - quantity: residual TH in DMS, parkinsonian over control
+    value: 0.5
+    tolerance: 0.05
+  criterion: Corrected fluorescence of each ROI is (RawIntDen - Area x mean background) / Area.
+    The sheets hold four "blank" and four "background" rows per slice; the readings are (a) the
+    background rows, (b) the blank rows, (c) all eight. Each parkinsonian animal's value per
+    region is the mean over slices and hemispheres, divided by the mean of the control animals
+    of the same cohort (VS is the mean of VLS and VMS). Reproduced when, under one reading, the
+    median residual TH of DLS and DMS are within tolerance and a Kruskal-Wallis test with Dunn's
+    post hoc (3 pairs) finds VS higher than DMS and DLS at p < 0.05 and DMS against DLS at p of 0.05
+    or more. Partially reproduced when the ordering holds but the values are outside tolerance.
+- id: fig1c-rotarod
+  statement: Parkinsonian mice have a shorter latency to fall on the accelerating rotarod, which
+    PPX (0.5 mg/kg) improves and saline does not (Ctrl against Park p < 0.001; Park against PPX p <
+    0.001; Park against saline p = 0.95).
+  source: Results, first section; Figure 1C; Supplementary Table 1
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1_Rotarod_PPX.xlsx)
+  criterion: The deposited sheet has five columns (control baseline; cohort 1 baseline and PPX;
+    cohort 2 baseline and saline). Kruskal-Wallis over the five, with Dunn's post hoc for three
+    pairs, (i) control against parkinsonian baseline (both cohorts pooled), (ii) cohort 1 baseline
+    against PPX, (iii) cohort 2 baseline against saline. Reproduced when (i) and (ii) give p < 0.05
+    with control and PPX higher and (iii) gives p of 0.05 or more; partially reproduced when two of
+    the three hold. Paired Wilcoxon tests for (ii) and (iii) are shown as a variant.
+- id: fig1fg-baseline-similar
+  statement: PPX-naive control and parkinsonian mice show similar delay discounting (p > 0.05 at
+    all delays).
+  source: Results, first section; Figure 1F and G legend; Supplementary Table 1
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_PPX)
+  criterion: A claim of absence, judged on the paper's test, a two-way ANOVA (group x delay) with
+    Bonferroni comparisons at each delay (two-sample t-tests, p x 4). Reproduced when no delay
+    gives p < 0.05; the differences are reported either way.
+- id: fig1f-ctrl-ppx-no-change
+  statement: PPX does not change delay discounting in healthy control mice (n = 16, p > 0.05 at
+    all delays).
+  source: Results, first section; Figure 1F
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_PPX)
+  criterion: A claim of absence, judged on the paper's test, the two-way repeated-measures ANOVA
+    (condition x delay) of baseline against all PPX sessions with Bonferroni comparisons at each
+    delay. Reproduced when no delay gives an adjusted p below 0.05.
+- id: fig1g-park-ppx-impulsive
+  statement: In parkinsonian mice PPX reduces the choice of the delayed large reward at every
+    delay (n = 31; 0, 3 and 6 s p < 0.001, 9 s p = 0.0087).
+  source: Results, first section; Figure 1G
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_PPX)
+  criterion: Two-way repeated-measures ANOVA (condition x delay) of baseline against all PPX
+    sessions, with Bonferroni comparisons at each delay. Reproduced when the choice is lower on
+    PPX at all four delays with adjusted p < 0.05; partially reproduced when at one to three
+    delays; not reproduced otherwise.
+- id: fig1ik-a-k-auc
+  statement: In parkinsonian mice PPX decreases A (sensitivity to reward size), increases K (the
+    discount rate) and reduces the area under the discounting curve (n = 31; p < 0.0001, p = 0.03,
+    p < 0.0001).
+  source: Results, first section; Figure 1I-K; Supplementary Table 1
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_PPX)
+  criterion: A, K and AUC fitted per animal to the mean curve of each condition (baseline, PPX,
+    washout). Friedman test over the three, Dunn's post hoc for baseline against PPX and baseline
+    against washout (p x 2). Reproduced when A and AUC are lower and K higher on PPX, each with p <
+    0.05; partially reproduced when one or two of the three hold; not reproduced otherwise.
+- id: figs2ik-washout
+  statement: After a 48 h washout A returns to baseline while the changes in K and AUC persist
+    (baseline against washout, A p > 0.99, K p = 0.01, AUC p < 0.01).
+  source: Results, first section; Supplementary Figure 2I-K
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_PPX)
+  depends_on:
+  - fig1ik-a-k-auc
+  criterion: From the same Friedman and Dunn's tests as fig1ik-a-k-auc, baseline against washout.
+    Reproduced when A gives p of 0.05 or more, and K is higher and AUC lower with p < 0.05;
+    partially reproduced when two of the three hold.
+- id: fig2d-ctrl-a77636-no-change
+  statement: The D1 agonist A77636 does not change delay discounting in healthy mice (n = 10, p >
+    0.05 at all delays).
+  source: Results, second section; Figure 2D
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_A77636)
+  criterion: A claim of absence, judged as in fig1f-ctrl-ppx-no-change.
+- id: fig2e-park-a77636-impulsive
+  statement: In parkinsonian mice A77636 reduces the choice of the delayed large reward (n = 16;
+    0 s p = 0.57, 3 s p = 0.0047, 6 s p = 0.0003, 9 s p = 0.0002).
+  source: Results, second section; Figure 2E
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_A77636)
+  criterion: As fig1g-park-ppx-impulsive. Reproduced when the choice is lower on A77636 at 3, 6 and
+    9 s with adjusted p < 0.05; partially reproduced when at one or two of them.
+- id: fig2fh-a77636-a-k-auc
+  statement: In parkinsonian mice A77636 has no significant effect on A (p = 0.31) but increases K
+    (p = 0.0053) and reduces the AUC (p = 0.0008).
+  source: Results, second section; Figure 2F-H
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_A77636)
+  criterion: As fig1ik-a-k-auc, baseline against A77636. Reproduced when K is higher and AUC lower
+    with p < 0.05 and A gives p of 0.05 or more; partially reproduced when two of the three hold.
+- id: fig2bc-a77636-locomotion
+  statement: A77636 (1 mg/kg) increases locomotor speed in parkinsonian (p = 0.02) but not healthy
+    mice (p = 0.16).
+  source: Results, second section; Figure 2B and C
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_A77636OpenField_Raw.zip)
+  criterion: Wilcoxon signed-rank test of mean speed before against 30-100 min after injection.
+- id: fig3a-a-correlates-dms
+  statement: In parkinsonian mice treated with PPX, A correlates with residual TH in the DMS (r =
+    0.51, p = 0.006, n = 28) but not in the DLS (p = 0.11) or VS (p = 0.07).
+  source: Results, third section; Figure 3A; Supplementary Table 1
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (histology spreadsheet and Data_ICD_PPX)
+  depends_on:
+  - fig1b-th-depletion
+  - fig1ik-a-k-auc
+  expected:
+    quantity: Pearson r, A on PPX against residual TH in the DMS
+    value: 0.51
+    tolerance: 0.051
+  criterion: Animals are matched by their ID in the two files; the share matched is reported.
+    Pearson correlation of A on PPX with residual TH (reading (a) of fig1b-th-depletion) per
+    region. Reproduced when DMS gives p < 0.05 with r within tolerance and DLS and VS give p of 0.05
+    or more; partially reproduced when the pattern of significance holds and r is outside
+    tolerance; not reproduced otherwise.
+- id: fig3b-k-no-correlation
+  statement: K on PPX does not correlate with residual TH in DMS, DLS or VS (p = 0.07, 0.92, 0.36).
+  source: Results, third section; Figure 3B; Supplementary Table 1
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (histology spreadsheet and Data_ICD_PPX)
+  depends_on:
+  - fig1b-th-depletion
+  - fig1ik-a-k-auc
+  criterion: A claim of absence, judged on the paper's test, Pearson correlation per region at p <
+    0.05. Reproduced when no region gives p < 0.05.
+- id: fig5g-mcherry-no-change
+  statement: CNO does not change delay discounting in parkinsonian mice expressing mCherry (n =
+    15, p > 0.99 at all delays).
+  source: Results, fifth section; Figure 5G
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_DREADD)
+  criterion: A claim of absence, judged as in fig1f-ctrl-ppx-no-change, pre-CNO sessions against
+    CNO sessions.
+- id: fig5hi-dreadd-impulsive
+  statement: Chemogenetic inhibition of iMSNs (hM4Di) or excitation of dMSNs (hM3Dq) shifts
+    choices towards the immediate small reward (hM4Di 3, 6 and 9 s p < 0.05; hM3Dq 3, 6 and 9 s p
+    < 0.05; n = 12 each).
+  source: Results, fifth section; Figure 5H and I
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_DREADD)
+  criterion: As fig1g-park-ppx-impulsive, per construct. Reproduced when both constructs lower the
+    choice at 3, 6 and 9 s with adjusted p < 0.05; partially reproduced when at least one delay is
+    significant in at least one construct but not all six; not reproduced otherwise.
+- id: fig5jl-dreadd-a-k-auc
+  statement: CNO increases K and decreases AUC in hM4Di and hM3Dq mice, reduces A only in hM3Dq
+    mice, and changes none of them in mCherry mice.
+  source: Results, fifth section; Figure 5J-L; Supplementary Table 1
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_DREADD)
+  criterion: Wilcoxon signed-rank tests, pre against CNO, of A, K and AUC per construct (nine
+    tests, as in Supplementary Table 1). The paper's pattern is mCherry A, K, AUC not
+    significant; hM4Di A not significant, K higher, AUC lower; hM3Dq A lower, K higher, AUC lower.
+    Reproduced when all nine match at p < 0.05; partially reproduced when six to eight match.
+- id: fig5cf-dreadd-locomotion
+  statement: CNO increases locomotion in parkinsonian mice expressing hM4Di or hM3Dq but not in
+    mCherry mice.
+  source: Results, fifth section; Figure 5C-F
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig5_DREADDLocomotion_Raw.zip)
+  criterion: Wilcoxon signed-rank test of mean speed -20 to 0 min against 20-30 min after CNO.
+- id: fig6bc-ppx-progression
+  statement: In parkinsonian mice the effect of PPX on delay discounting grows from the first to
+    the fourth session (first against fourth p < 0.0081), while in control mice it does not (p >
+    0.99).
+  source: Results, sixth section; Figure 6B and C; Supplementary Table 1
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_PPX)
+  criterion: Two-way repeated-measures ANOVA (session x delay) of the first against the fourth PPX
+    session (sessions ordered by date). Reproduced when in parkinsonian mice the session effect
+    gives p < 0.05 with a lower mean choice in the fourth session and in control mice p is 0.05 or
+    more; partially reproduced when the parkinsonian part holds and the control part does not;
+    not reproduced otherwise.
+- id: fig6de-a77636-no-progression
+  statement: With A77636 the increase in impulsivity is present from the first session and does not
+    change by the fourth (first against fourth, parkinsonian p = 0.59, control p = 0.49).
+  source: Results, sixth section; Figure 6D and E; Supplementary Table 1
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.15258978 (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip, Data_ICD_A77636)
+  criterion: A claim of absence, judged on the same test as fig6bc-ppx-progression. Reproduced when
+    neither group gives p < 0.05 for the session effect.

@@ -1,0 +1,332 @@
+schema_version: 1
+id: 001177-zhuang-2025-01
+dandiset: "001177"
+dandiset_version: 0.250902.2127
+paper: doi:10.1093/brain/awaf312
+date: 2026-10-18
+entry: 001177-zhuang-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: Delay-discounting session files (Data_ICD_Fig1&2&5&6_CognitiveAssay.zip), the group lists of
+    README_ICD_CognitiveAssessment.txt, the rotarod sheet (Data_ICD_Fig1_Rotarod_PPX.xlsx) and the
+    striatal TH measurements (Data_ICD_Fig3_HistologyQuantification_striatum_raw.xlsx), deposited by
+    the paper's authors. The locomotion zips were listed and opened but not used.
+  source: doi:10.5281/zenodo.15258978
+- what: The paper's delay-discounting analysis code (delay_discounting_task.py, Summary_Cognitive.m),
+    read for the free-choice blocks, the choice measure, per-animal averaging and the hyperbolic fit.
+  source: https://github.com/UCSF-Nelson-Lab/ICD-Cognitive-Analysis at commit 5528e22
+    (doi:10.5281/zenodo.10703140)
+- what: The task software (DelayDiscountingTask.ino), read for the block schedule and delays.
+  source: https://github.com/UCSF-Nelson-Lab/ICD-Cognitive-Arduino at commit f7cff8b
+    (doi:10.5281/zenodo.10703132)
+outcomes:
+- claim: fig4bc-baseline-rates-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs optogenetically identified dMSNs and iMSNs. The dandiset has sorted units in 2 of 56
+    files only (columns id, spike_times, unit_name), with no electrode, cell type or optogenetic
+    label, and no file records laser pulse times (stimulus groups are empty, no intervals). The
+    other 54 files hold unsorted threshold crossings and raw voltage; the paper's manual sorting in
+    Offline Sorter and its laser-response criteria cannot be repeated from them without the laser
+    times. The Zenodo deposit holds no electrophysiology.
+- claim: fig4dg-ppx-bidirectional-identified
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig4bc-baseline-rates-similar; no identified units or optogenetic labels.
+- claim: fig4hk-modulation-stronger-park
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig4bc-baseline-rates-similar.
+- claim: figs5d-msn-response-types
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs sorted single units classified as putative MSNs. Only two files have a units table,
+    without MSN classification; see mua-ppx-park-vs-ctrl for the multi-unit counterpart.
+- claim: figs5ef-saline-no-change
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs sorted putative MSNs from the saline sessions; none of the four saline files has a
+    units table. See mua-saline-no-change.
+- claim: fig6fg-response-types-shift
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs sorted single units; see mua-response-shift-first-fourth for the multi-unit
+    counterpart.
+- claim: fig6hi-increase-type-stronger
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs sorted single units.
+- claim: mua-ppx-park-vs-ctrl
+  outcome: partially_reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:mua-ppx-park-vs-ctrl
+  notes: Under reading (a), all PPX sessions pooled (16 animals, 41 sessions, 1032 channels), 82.2% of
+    parkinsonian channels change against 77.0% of control channels (Freeman-Halton p = 0.0007), but
+    the increase type makes up only 5.9% of parkinsonian channels (decrease 76.4%), under the 10% the
+    criterion asks for both directions. Under readings (b) first session per animal and (c) day-1
+    sessions, the changed share is not higher in parkinsonian mice (88.6% against 89.7%; 88.5% against
+    96.0%). Per animal the shares do not differ (increase median 0.016 against 0.010, Mann-Whitney p
+    = 0.561). Most channels decrease in both groups, and in the one saline session that covers the
+    windows 11 of 16 channels also decrease, so a slow decline of multi-unit rate over these long
+    sessions dominates. Multi-unit activity mixes dMSNs, iMSNs and interneurons, so opposite changes
+    in the two pathways would partly cancel. In the units tables of E0 day 4 (parkinsonian) 6 of 41
+    units increase and 26 decrease; in P4 day 1 (control) 2 of 29 increase and 12 decrease.
+  deviations:
+  - Multi-unit threshold crossings per channel in place of manually sorted putative MSNs.
+  - The injection time is inferred from the recording segments and the subject description; it is
+    not in the files. E5 day 4 is left out because its acute drop comes at 80 min, not at the
+    inferred 30 min; C3-2 day 1 and E5 day 2 are left out because their event timestamps lie outside
+    the recording, and C9 day 1 because its events stop at 42 min.
+  - Channels with a baseline rate under 0.5 Hz are left out (a choice made here); 0 Hz and 2 Hz give
+    the same picture.
+  - Which sessions Supplementary Figure 5D pools is not stated; three readings are shown.
+  - Fisher's exact test on three types is run as a Monte Carlo Freeman-Halton test, and channels are
+    treated as independent samples, as the paper treats cells.
+- claim: mua-saline-no-change
+  outcome: blocked
+  blocked_by: other
+  notes: Only 1 of the 4 saline sessions (H1-3) is recorded until 300 min after the inferred
+    injection; the criterion needs three. The others end 251 (E0), 271 (H4-3) and 281 (D0) min after
+    it, assuming the injection at 30 min as the subject description says. In H1-3, 4 of 16 channels
+    (25.0%) show no change. As a variant over the last 60 recorded minutes of each saline session,
+    48.2% of 83 channels show no change, against 17.8% in PPX sessions of parkinsonian mice.
+- claim: mua-response-shift-first-fourth
+  outcome: partially_reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:mua-response-shift-first-fourth
+  notes: In parkinsonian mice the types shift from day 1 to day 4 as described, increase 0.9% to 18.0%
+    and decrease 87.6% to 59.4% (Freeman-Halton p < 0.0001; 9 animals on day 1, 5 on day 4). Control
+    mice also shift (decrease 96.0% to 57.4%, no change 4.0% to 42.6%, p < 0.0001), where the paper
+    finds no shift; no control channel increases on either day. With animals that have both sessions
+    the result is the same (parkinsonian p = 0.0002, control p = 0.0004). The day-4 increases come
+    mostly from J0 (61% of its channels) and K1 (17%). The rate ratio of increase-type channels is not
+    higher on day 4 (median 2.30, n = 2, against 1.63, n = 24, p = 0.258).
+  deviations:
+  - Multi-unit threshold crossings in place of sorted putative MSNs; the same exclusions as in
+    mua-ppx-park-vs-ctrl. Day 4 has 5 parkinsonian animals here (E0 day 4 has no threshold crossings,
+    N4 day 4 ends 181 min after the injection) where Figure 6G has 8.
+- claim: fig1b-th-depletion
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig1b-th-depletion
+  measured:
+  - 0.465
+  - 0.507
+  notes: Under reading (b), the "blank" rows as background, the median residual TH of 45 parkinsonian
+    animals is 0.465 in the DLS and 0.507 in the DMS, and 0.677 in the VS; VS is higher than DMS
+    (Dunn's p = 0.00025) and DLS (p = 1.9e-08), and DMS does not differ from DLS (p = 0.18). With the
+    "background" rows (reading a) the ordering holds but DLS is 0.343 and DMS 0.418, outside
+    tolerance; with all eight rows 0.402 and 0.474.
+  deviations:
+  - The Methods name four background areas; the sheets hold four "blank" and four "background" rows
+    per slice. The claim matches under the blank rows only.
+  - 45 parkinsonian animals where the paper gives n = 44; which one the paper left out is not
+    stated.
+- claim: fig1c-rotarod
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig1c-rotarod
+  notes: Medians 91.3 s (control) against 47.3 and 51.0 s (parkinsonian cohorts), Dunn's p = 4.7e-16;
+    PPX 47.3 to 66.7 s (p = 1.8e-05); saline 51.0 to 62.3 s (p = 0.83). Paired Wilcoxon variant, PPX p =
+    3.1e-08 and saline p = 0.074.
+  deviations:
+  - The sheet holds 40 control mice where the paper gives 31; parkinsonian counts (45 and 27) match.
+  - The paper's control comparison is labelled "Ctrl versus Park/PPX"; it is read here as control
+    against the parkinsonian baseline of both cohorts.
+- claim: fig1fg-baseline-similar
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig1fg-baseline-similar
+  notes: Control (14 of 16 with a complete curve) against parkinsonian (31) baseline differ by -5.0 to
+    1.6 points across delays, all adjusted p of 0.92 or more. Without the six P animals all adjusted p
+    = 1.
+  deviations:
+  - Two control mice (P5, P7) have no fourth free-choice block in their baseline sessions and are
+    left out.
+- claim: fig1f-ctrl-ppx-no-change
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig1f-ctrl-ppx-no-change
+  notes: In 10 of 16 control mice PPX lowers the choice by 1.6 to 8.4 points, no delay significant
+    (adjusted p 0.23 to 1; condition F(1,9) = 2.52, p = 0.15).
+  deviations:
+  - The six P animals (P1, P2, P4, P5, P6, P7) are left out; none of their PPX sessions has a fourth
+    free-choice block, and their block labels give delays of 0, 6, 12 and 18 s.
+  - Per-delay comparisons are paired t-tests with p x 4, not Prism's pooled-error post hoc.
+- claim: fig1g-park-ppx-impulsive
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig1g-park-ppx-impulsive
+  notes: In 30 of 31 parkinsonian mice PPX lowers the choice by 12.5, 14.7, 9.7 and 6.4 points at 0, 3,
+    6 and 9 s (adjusted p = 0.0007, < 0.0001, < 0.0001, 0.0034; condition F(1,29) = 48.08, p =
+    1.3e-07). E6 has no PPX session.
+  deviations:
+  - Per-delay comparisons are paired t-tests with p x 4; the paper's p-values at 0, 3 and 6 s are
+    smaller.
+- claim: fig1ik-a-k-auc
+  outcome: partially_reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig1ik-a-k-auc
+  notes: In 30 parkinsonian mice PPX lowers A (median 0.891 to 0.785, Dunn's p = 1.9e-06) and AUC
+    (3.948 to 2.905, p = 2.7e-08). K rises (0.258 to 0.321) but Dunn's p = 0.19. The Friedman test over
+    the three conditions gives p = 0.032 for K, close to the paper's 0.03, and a Wilcoxon test of
+    baseline against PPX gives p = 0.045; the paper's p for K may be one of these.
+  deviations:
+  - Curves are fitted with scipy curve_fit to the fraction of large-reward choices; the code fits the
+    percentages with MATLAB lsqcurvefit from the same start. Fits did not fail for any animal.
+- claim: figs2ik-washout
+  outcome: partially_reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:figs2ik-washout
+  notes: Baseline against washout, A Dunn's p = 0.73 (back at baseline), K higher (0.419 against 0.258,
+    p = 0.020), AUC lower but not significantly (3.379 against 3.948, p = 0.078).
+- claim: fig2d-ctrl-a77636-no-change
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig2d-ctrl-a77636-no-change
+  notes: In 10 control mice A77636 changes the choice by -4.2 to 3.1 points; adjusted p 0.56 to 1;
+    condition p = 0.67.
+- claim: fig2e-park-a77636-impulsive
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig2e-park-a77636-impulsive
+  notes: In 16 parkinsonian mice A77636 lowers the choice at 3, 6 and 9 s by 15.3, 19.0 and 19.3 points
+    (adjusted p = 0.0015, 0.0024, 0.0053) and not at 0 s (p = 0.83).
+- claim: fig2fh-a77636-a-k-auc
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig2fh-a77636-a-k-auc
+  notes: K median 0.115 to 0.291 (Dunn's p = 0.0053), AUC 5.817 to 3.971 (p = 0.00081), A p = 0.31,
+    in 16 mice. These equal the paper's p-values.
+- claim: fig2bc-a77636-locomotion
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 26 open-field files on Zenodo (Data_ICD_A77636OpenField_Raw.zip) hold time and speed for
+    3 h but do not mark the injection, and the README gives no injection time, so the before and
+    30-100 min windows cannot be placed.
+- claim: fig3a-a-correlates-dms
+  outcome: not_reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig3a-a-correlates-dms
+  measured: 0.309
+  notes: 24 of 30 fitted parkinsonian mice match a histology animal by ID (the paper has 28). A on PPX
+    against residual TH, DMS r = 0.309 (p = 0.14), DLS r = 0.221 (p = 0.30), VS r = 0.268 (p = 0.21).
+    The other background readings give DMS r = 0.255 and 0.281, not significant. Six fitted animals
+    (C3.1, E3.3, E4, H4.1, N1, N5.1) have no histology under their ID; the histology sheets hold
+    similar IDs (E3, E3.2) that may be the same animals, but nothing confirms it.
+  deviations:
+  - Residual TH from reading (a) of fig1b-th-depletion, as the criterion fixes; the paper's choice of
+    background rows is not stated.
+- claim: fig3b-k-no-correlation
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig3b-k-no-correlation
+  notes: K on PPX against residual TH, DLS r = 0.402 (p = 0.051), DMS r = 0.039 (p = 0.86), VS r = 0.310
+    (p = 0.14), n = 24. The DLS value is close to the threshold.
+- claim: fig5g-mcherry-no-change
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig5g-mcherry-no-change
+  notes: In 14 of 15 mCherry mice (R5.5 has no session files) CNO changes the choice by -3.8 to 0.4
+    points, all adjusted p = 1; condition p = 0.51.
+- claim: fig5hi-dreadd-impulsive
+  outcome: partially_reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig5hi-dreadd-impulsive
+  notes: hM3Dq mice (12) choose less often at 3, 6 and 9 s on CNO (by 18.0, 17.0, 12.4 points; adjusted p
+    = 0.035, 0.0024, 0.016). hM4Di mice (12) shift in the same direction (4.2 to 11.6 points; condition
+    F(1,11) = 6.37, p = 0.028), but no delay is significant (adjusted p 0.16 to 0.81).
+  deviations:
+  - Per-delay comparisons are paired t-tests with p x 4, not Prism's pooled-error post hoc, which may
+    explain part of the hM4Di difference.
+- claim: fig5jl-dreadd-a-k-auc
+  outcome: partially_reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig5jl-dreadd-a-k-auc
+  notes: Eight of nine tests match. The exception is K in hM4Di mice (median 0.123 to 0.136, Wilcoxon p =
+    0.20), reported higher in the paper (p = 0.02). hM4Di AUC p = 0.043; hM3Dq A p = 0.012, K p =
+    0.0015, AUC p = 0.00049; mCherry p 0.36 to 0.90.
+- claim: fig5cf-dreadd-locomotion
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 37 open-field files on Zenodo (Data_ICD_Fig5_DREADDLocomotion_Raw.zip) do not mark the CNO
+    injection, and neither the files nor the README give each mouse's Cre line, which Figure 5C-F
+    splits by.
+- claim: fig6bc-ppx-progression
+  outcome: not_reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig6bc-ppx-progression
+  notes: In 27 parkinsonian mice with a first and fourth PPX session, the choice is 5.4 points lower in
+    the fourth on average, session effect F(1,26) = 4.10, p = 0.053; per delay, adjusted p 0.052 to 1.
+    Control mice do not change (8 of 16 with both sessions and four free blocks, p = 0.79).
+  deviations:
+  - Sessions are ordered by the date in their file names; the paper does not list which sessions are
+    first and fourth.
+  - Four parkinsonian mice have fewer than four PPX sessions (E6, H2.1, H3, N5.1) and eight control
+    mice lack a complete first or fourth curve (F4, H4 and the P animals).
+- claim: fig6de-a77636-no-progression
+  outcome: reproduced
+  notebook: reproduce_zhuang_2025.ipynb
+  output: claim:fig6de-a77636-no-progression
+  notes: First against fourth A77636 session, parkinsonian (16) p = 0.71, control (10) p = 0.42.
+findings:
+- kind: data_missing
+  statement: The dandiset holds raw voltage, LFP and unsorted threshold crossings, but sorted units
+    only in 2 of 56 files, and those without electrode, cell type or putative-MSN classification. No
+    file holds the optogenetic identification of dMSNs and iMSNs or the laser pulse times needed to
+    redo it. The paper's Figures 4, 6F-K and S5 cannot be recomputed from the dandiset.
+- kind: metadata_insufficient
+  statement: No file records the time of the PPX or saline injection (no intervals, no events, empty
+    stimulus groups). It can be inferred from the recording segments and the subject description,
+    and the acute drop in firing supports it in all but one usable PPX session (E5 day 4, where the
+    drop comes about 80 min into a single-segment recording, not at 30 min).
+- kind: format_error
+  statement: In C3-2 day 1 and E5 day 2 the threshold-crossing timestamps are offset by about 30 h
+    (1815 to 2217 min and -1813 to -1404 min) from recordings that last 404 and 408 min. In C9 day 1
+    they stop at 42 min of a 414-min recording.
+- kind: metadata_error
+  statement: Three sessions have start times in 2025 (H0-2 day 3 and day 4, H4-3 day 3), after the
+    paper was first submitted in April 2024, and H0-2 day 4 starts before day 3. These are likely
+    conversion dates.
+- kind: metadata_insufficient
+  statement: Electrode locations are "unknown" in every file. The units tables have no electrode or
+    quality columns, and their units alternate between about 10^5 to 10^6 spikes and about 10^3 to
+    10^4 spikes, which suggests unsorted and sorted clusters mixed without a label.
+- kind: other
+  statement: Genotype is spelled three ways (A2aCre, Drd1aCre, Drd1a-Cre) and subject descriptions
+    contain mis-encoded characters (for example "1.5â€¯microliters").
+- kind: paper_inconsistency
+  statement: The dandiset's subjects match the paper's animal counts for Supplementary Figure 5 (7
+    control, 11 parkinsonian) and Figure 6F (7 and 3 control mice on days 1 and 4), but it has 2
+    control A2a-Cre mice where Figure 4C reports iMSNs from 4 control animals, and 7 parkinsonian mice
+    with a day-4 session where Figure 6G reports 8.
+- kind: other
+  statement: Three of the four saline recordings end 251 to 281 min after the injection time the
+    description gives, before the 240-300 min window the paper compares; P2's two sessions (152 and
+    159 min) and N4 day 4 (241 min) are also too short for it.
+- kind: selection_undocumented
+  statement: The Zenodo deposit does not say which session files the paper averaged as baseline, drug
+    and washout; conditions must be read from file names, two of which lack a full date.
+- kind: paper_inconsistency
+  statement: The six control mice P1-P7 in the PPX experiment ran sessions whose block labels give
+    delays of 0, 6, 12 and 18 s, and 30 of their 41 sessions have only three free-choice blocks, where
+    the paper and the task code describe four blocks at 0, 3, 6 and 9 s. The paper counts them among
+    its 16 control mice.
+- kind: paper_inconsistency
+  statement: The rotarod sheet on Zenodo holds 40 control mice where Figure 1C reports 31; the
+    histology sheets hold 45 parkinsonian animals where Figure 1B reports 44, and 6 of the 30 PPX
+    parkinsonian mice with behaviour have no histology under the same ID, where Figure 3 reports 28.
+- kind: metadata_insufficient
+  statement: The histology sheets hold four "blank" and four "background" rows per slice without
+    saying which is the background of the Methods; in 61 rows (5 slices) RawIntDen differs from Area
+    x Mean, by median factors of 0.77 to 1.86 in four slices and about 300 in blank rows of a fifth.
+- kind: metadata_insufficient
+  statement: The open-field speed files on Zenodo for Figures 2B-C and 5C-F do not mark the injection
+    time, and the DREADD group list does not give each mouse's Cre line.
