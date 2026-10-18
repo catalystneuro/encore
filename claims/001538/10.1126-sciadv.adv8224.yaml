@@ -1,0 +1,320 @@
+# Claims for Zhai, Cui, Wokosin, Sun, Tkatch, Crittenden, Graybiel & Surmeier (2025) on dandiset 001538.
+# Source: the full text of the version of record in PubMed Central (PMC12674127, CC BY), read from
+# its Results, figure legends and Materials and Methods.
+#
+# What the author had seen when these criteria were written. The data check: the file list and
+# metadata of every NWB file; for every patch-clamp file the cell and condition counts, the spike
+# counts per current step and each cell's rheobase, and per group the median rheobase; the
+# dendritic excitability index per cell and its group medians; the Sr2+-oEPSC events found by the
+# detector in lid.py and their per-cell counts and mean amplitudes; the GRAB-ACh areas per mouse;
+# the AIM tables. Also the paper's per-cell tables (Zenodo doi:10.5281/zenodo.17307059), and that
+# most dandiset cells match a row of them exactly. No statistical test of any claim had been run.
+#
+# The paper's statistics (Methods) are two-sided Mann-Whitney tests for unpaired and Wilcoxon tests
+# for paired data at P < 0.05, unless stated otherwise; the criteria use these. Where the dandiset
+# holds so few units that the paper's test cannot reach P < 0.05 whatever the data (the smallest
+# attainable two-sided P is 0.057 for 3 against 4, 0.10 for 3 against 3, 0.25 for 3 pairs and
+# 0.0625 for 5 pairs), the claim is blocked with `other`, and the numbers are shown under the link
+# claim for that data. Groups are formed from the file's condition_subfolder column, not from the
+# session name, because files named for a drug also hold baseline cells.
+#
+# Method choices fixed here where the paper leaves them open. Rheobase and spike counts as in the
+# paper's script (upward crossings of 0 mV over the sweep; first positive step with a spike). The
+# F-I comparison uses the per-cell sum of spike counts from 20 to 300 pA. The dendritic index uses
+# the script's backgrounds (55 red, 161 green), keeps pairs with a basal ratio between 0.5 and 2,
+# pairs proximal and distal sites by their number, and averages pairs within a cell. GRAB-ACh uses
+# the single-pulse trials and the trial table's stimulus time.
+schema_version: 1
+dandiset: "001538"
+paper: doi:10.1126/sciadv.adv8224
+claims:
+- id: link-somatic-cells
+  statement: The dandiset's somatic current-step recordings are those behind the paper's somatic
+    excitability figures, and the spike counts computed from them agree with the paper's per-cell
+    tables.
+  source: Figures 1E, 3C, 6C, 7C and 9D; the paper's tables at Zenodo doi:10.5281/zenodo.17307059
+  data: with_inputs
+  criterion: Groups are matched by name. Each dandiset cell is compared with every row of the
+    paper's table for its group over the steps from 20 to 300 pA present in both, and its best
+    match is the row with the smallest summed absolute difference in spike counts. The link holds
+    (reproduced) when, over all groups the dandiset holds, the cell counts per group equal the
+    paper's n, and at least 80% of cells have an exact match and at least 95% a best match
+    within 3 spikes in total. Partially reproduced when at least 50% match exactly; not reproduced
+    otherwise. Rheobase agreement with the best match is reported.
+- id: link-dendritic-cells
+  statement: The dandiset's dendritic line scans are those behind the paper's dendritic
+    excitability index figures, and the index computed from them agrees with the paper's per-cell
+    values.
+  source: Figures 1I, 3F, 6D and 7F; the paper's tables at Zenodo doi:10.5281/zenodo.17307059
+  data: with_inputs
+  criterion: Where the paper's table names cells by date and letter (Figure 6D), cells are matched
+    by that identifier (letter a, b, c for the first, second and third cell of the day). Elsewhere
+    the paper's rows are taken to follow the dandiset's order by date and cell number, an
+    assumption checked by the somatic link, where rows follow that order. Reproduced when the
+    counts of cells with an index equal the paper's n in at least 7 of the 10 groups and the
+    matched values differ from the paper's by a median of at most 10% of the paper's value.
+    Partially reproduced when only one of these holds.
+- id: link-sr-cells
+  statement: The dandiset's Sr2+-oEPSC recordings are cells of the paper's Figures 2 and 4, and
+    their events agree with the paper's per-cell values.
+  source: Figures 2G to 2I and 4F to 4H; the paper's tables at Zenodo doi:10.5281/zenodo.17307059
+  data: with_inputs
+  criterion: Cells are matched by date and session letter (the paper's identifiers are the date
+    followed by a letter). Reports the fraction of the paper's cells that are in the dandiset and,
+    for those, the events found by lid.detect_events against the paper's event counts and mean
+    amplitudes. Reproduced when every dandiset cell matches a paper identifier and the per-cell
+    mean amplitude and event count are within 25% of the paper's for at least 75% of cells;
+    partially reproduced when every cell matches but the values do not; not reproduced when cells
+    do not match.
+- id: link-grab-rois
+  statement: The dandiset's GRAB-ACh recordings are regions of the paper's Figure 5F, and the
+    normalised areas computed from them agree with the paper's per-region values.
+  source: Figure 5F; the paper's tables at Zenodo doi:10.5281/zenodo.17307059
+  data: with_inputs
+  criterion: The paper's regions carry no identifier that links them to the dandiset's mice, so
+    each mouse's vector of single-pulse areas (no drug, quinpirole, sulpiride, and dopamine where
+    present) is matched to the paper's region in the same group with the smallest summed absolute
+    difference. Reproduced when the counts per group are those of the paper and every mouse has a
+    match within 0.05 per treatment; partially reproduced when the dandiset holds part of the
+    regions and at least half of its mice match within 0.05 per treatment; not reproduced
+    otherwise.
+- id: link-aim-mice
+  statement: The dandiset's AIM score tables are mice of the paper's Figures 8 and 10, with
+    genotypes and scores that agree with the paper's tables.
+  source: Figures 8B, 8C and 10B; the paper's tables at Zenodo doi:10.5281/zenodo.17307059
+  data: with_labels
+  criterion: Mice are matched by their numeric identifier. The paper's total AIM score per
+    session is taken to be the sum over the session's time points of the three scores. Reproduced
+    when every dandiset mouse matches a paper mouse and every matched session total is equal;
+    partially reproduced when the matched mice agree but some dandiset mice are not in the paper or
+    the dandiset's genotype labels disagree with the paper's; not reproduced when matched values
+    differ.
+- id: fig1f-dspn-rheobase-on-lower
+  statement: In dSPNs the rheobase is lower in the LID on-state than in the off-state.
+  source: Figure 1F; Results, first section (P < 0.0001, Mann-Whitney)
+  criterion: Two-sided Mann-Whitney test of per-cell rheobase, on-state against off-state.
+    Reproduced when P < 0.05 and the on-state median is lower.
+- id: fig1e-dspn-fi-on-higher
+  statement: In on-state dSPNs suprathreshold current steps evoke more spikes than in off-state
+    dSPNs across a range of intensities.
+  source: Figure 1E; Results, first section
+  criterion: Per cell, the sum of spike counts from 20 to 300 pA (over the steps present).
+    Reproduced when a two-sided Mann-Whitney test gives P < 0.05 with the on-state higher; the
+    per-step medians are reported.
+- id: fig1f-dspn-sch-no-change
+  statement: Bath application of the D1R antagonist SCH 23390 does not reverse the lower rheobase
+    of on-state dSPNs.
+  source: Figure 1F; Results, first section (P = 0.589, Mann-Whitney)
+  criterion: A claim of absence, judged on the paper's test, a two-sided Mann-Whitney test of
+    rheobase, on-state against on-state with SCH. Reproduced when P >= 0.05. A Wilcoxon test on
+    the cells recorded in both conditions is shown as a variant.
+- id: fig1i-dspn-dendritic-on-higher
+  statement: The dendritic excitability index of dSPNs is higher in the on-state than in the
+    off-state.
+  source: Figure 1I; Results, first section (P = 0.0115, Mann-Whitney)
+  criterion: Two-sided Mann-Whitney test of the per-cell index. Reproduced when P < 0.05 and the
+    on-state median is higher.
+- id: fig1i-dspn-dendritic-sch-lower
+  statement: SCH 23390 reverses the higher dendritic excitability of on-state dSPNs.
+  source: Figure 1I; Results, first section (P = 0.0133, Mann-Whitney)
+  criterion: Two-sided Mann-Whitney test, on-state against on-state with SCH. Reproduced when
+    P < 0.05 and the SCH median is lower.
+- id: fig1-dspn-lesion-and-off-somatic
+  statement: dSPN somatic excitability (rheobase) rises after the 6-OHDA lesion and falls in the
+    LID off-state.
+  source: Figure 1F; Results, first section (both P < 0.0001)
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.17307059 (per-cell rheobase, Figure 1F sheet); raw recordings in
+    Zenodo doi:10.5281/zenodo.17260198
+  criterion: On the paper's per-cell rheobase table, two-sided Mann-Whitney tests of control
+    against 6-OHDA (lower rheobase after the lesion) and 6-OHDA against off-state (higher in the
+    off-state). Reproduced when both have P < 0.05 in the stated direction.
+- id: fig1-dspn-lesion-dendritic-unchanged
+  statement: The dSPN dendritic excitability index is not changed by the 6-OHDA lesion or in the
+    off-state.
+  source: Figure 1I; Results, first section (P = 0.824 and 0.905)
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.17307059 (Figure 1I sheet)
+  criterion: A claim of absence, on the paper's per-cell table, two-sided Mann-Whitney tests of
+    control against 6-OHDA and 6-OHDA against off-state. Reproduced when both have P >= 0.05.
+- id: fig2h-dspn-sr-amplitude-on-larger
+  statement: The amplitude of Sr2+-oEPSCs evoked from cortical afferents is larger in on-state than
+    in off-state dSPNs.
+  source: Figures 2G and 2H (P = 0.0003, Mann-Whitney)
+- id: fig2i-dspn-sr-frequency-unchanged
+  statement: The frequency of Sr2+-oEPSCs in dSPNs does not differ between states.
+  source: Figure 2I (P = 0.127)
+- id: fig2bc-dspn-spines
+  statement: dSPN spine density falls in the off-state, and mushroom spines are more common in the
+    on-state than in the off-state.
+  source: Figures 2A to 2C
+- id: fig3d-ispn-rheobase-on-higher
+  statement: In iSPNs the rheobase is higher in the on-state than in the off-state.
+  source: Figure 3D; Results, second section (P = 0.0013, Mann-Whitney)
+  criterion: Two-sided Mann-Whitney test of per-cell rheobase. Reproduced when P < 0.05 and the
+    on-state median is higher.
+- id: fig3c-ispn-fi-on-lower
+  statement: The F-I relationship of iSPNs shifts to the right in the on-state.
+  source: Figure 3C
+  criterion: Per cell, the sum of spike counts from 20 to 300 pA. Reproduced when a two-sided
+    Mann-Whitney test gives P < 0.05 with the on-state lower.
+- id: fig3d-ispn-sul-no-change
+  statement: Sulpiride does not alter the somatic excitability of on-state iSPNs.
+  source: Figure 3D; Results, second section (rheobase P = 0.287)
+  criterion: A claim of absence, two-sided Mann-Whitney test of rheobase, on-state against
+    on-state with sulpiride. Reproduced when P >= 0.05; a Wilcoxon test on cells recorded in
+    both conditions is a variant.
+- id: fig3f-ispn-dendritic-on-lower
+  statement: The dendritic excitability index of iSPNs falls in the on-state compared with the
+    off-state.
+  source: Figure 3F; Results, second section (P = 0.0029)
+  criterion: Two-sided Mann-Whitney test of the per-cell index. Reproduced when P < 0.05 and the
+    on-state median is lower.
+- id: fig3f-ispn-dendritic-sul-no-change
+  statement: Sulpiride does not significantly alter dendritic excitability in on-state iSPNs.
+  source: Figure 3F; Results, second section (P = 0.0545)
+  criterion: A claim of absence, two-sided Mann-Whitney test, on-state against on-state with
+    sulpiride. Reproduced when P >= 0.05.
+- id: fig3-ispn-lesion-and-off-somatic
+  statement: iSPN somatic excitability is lowered by the 6-OHDA lesion and restored in the LID
+    off-state.
+  source: Figure 3D; Results, second section (both P = 0.002)
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.17307059 (Figure 3D sheet)
+  criterion: On the paper's table, two-sided Mann-Whitney tests of control against 6-OHDA (higher
+    rheobase after the lesion) and 6-OHDA against off-state (lower in the off-state). Reproduced
+    when both have P < 0.05 in the stated direction.
+- id: fig3-ispn-lesion-dendritic-up
+  statement: The iSPN dendritic excitability index rises after the lesion and stays raised in the
+    off-state.
+  source: Figure 3F; Results, second section (P = 0.0327 and 0.0220)
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.17307059 (Figure 3F sheet)
+  criterion: On the paper's table, two-sided Mann-Whitney tests of control against 6-OHDA and
+    control against off-state. Reproduced when both have P < 0.05 with the later group higher.
+- id: fig4g-ispn-sr-amplitude-on-smaller
+  statement: The amplitude of Sr2+-oEPSCs is smaller in on-state than in off-state iSPNs.
+  source: Figures 4F and 4G (P = 0.0003)
+- id: fig4h-ispn-sr-frequency-unchanged
+  statement: The frequency of Sr2+-oEPSCs in iSPNs does not differ between states.
+  source: Figure 4H (P = 0.23)
+- id: fig4bc-ispn-spines
+  statement: Apparent iSPN spine density (2PLSM) falls after the lesion, returns in the off-state
+    and falls in the on-state, in total and mushroom spines.
+  source: Figures 4A to 4C
+- id: fig4k-confocal-spines
+  statement: Confocal spine density of iSPN proximal dendrites is higher than the 2PLSM estimate
+    (median 2.084 against 1.243 spines per um), falls after the lesion, rises modestly in the
+    off-state and falls in the on-state.
+  source: Figures 4I to 4K; Results, second section
+- id: fig5f-ach-off-elevated
+  statement: Evoked ACh release (GRAB-ACh3.0) in slices from LID off-state mice is greater than in
+    unlesioned striatum.
+  source: Figure 5F; Results, third section (P < 0.0001)
+  criterion: Single-pulse normalised area without drug, one region per mouse; two-sided
+    Mann-Whitney test, unlesioned against off-state. Reproduced when P < 0.05 with the off-state
+    higher.
+- id: fig5f-ach-off-like-6ohda
+  statement: Evoked ACh release in the off-state is similar to that after a 6-OHDA lesion.
+  source: Figure 5F; Results, third section (P = 0.4679)
+  criterion: A claim of absence, two-sided Mann-Whitney test of the single-pulse normalised area
+    without drug, 6-OHDA against off-state. Reproduced when P >= 0.05.
+- id: fig5f-ach-6ohda-elevated
+  statement: Evoked ACh release is markedly elevated in 6-OHDA-lesioned striatum compared with
+    unlesioned striatum.
+  source: Figure 5F (P < 0.0001)
+- id: fig5f-ach-d2-control
+  statement: In unlesioned striatum sulpiride increases and quinpirole suppresses evoked ACh
+    release.
+  source: Figure 5F (P = 0.0005 and 0.0034)
+- id: fig5f-ach-da-suppresses
+  statement: Dopamine (50 nM) strongly suppresses evoked ACh release in 6-OHDA-lesioned and
+    off-state striatum, and sulpiride has no effect after the lesion.
+  source: Figure 5F (P = 0.002, 0.001; sulpiride P = 0.5566)
+- id: fig6c-m1r-antag-somatic-unchanged
+  statement: M1R antagonism throughout the off-state does not have a strong impact on the
+    elevated somatic excitability of off-state iSPNs.
+  source: Figure 6C; Results, fourth section
+  criterion: A claim of absence. The paper gives no test; under its default, a two-sided
+    Mann-Whitney test of rheobase, off-state control against M1R antagonist. Reproduced when
+    P >= 0.05. The sum of spike counts is shown as a variant.
+- id: fig6d-m1r-antag-dendritic-lower
+  statement: M1R antagonism prevents the off-state elevation of iSPN dendritic excitability.
+  source: Figure 6D (P = 0.012)
+  criterion: Two-sided Mann-Whitney test of the index, control against M1R antagonist. Reproduced
+    when P < 0.05 and the antagonist median is lower.
+- id: fig6f-m1r-antag-spines
+  statement: M1R antagonism prevents the off-state elevation of apparent iSPN spine density.
+  source: Figures 6E and 6F (P = 0.0003)
+- id: fig7c-cdgi-ko-somatic-oscillation
+  statement: Deletion of CDGI does not blunt the oscillation of iSPN somatic excitability between
+    on- and off-states.
+  source: Figures 7A to 7C; Results, fourth section
+  criterion: In CDGI KO iSPNs, a two-sided Mann-Whitney test of rheobase, off-state against
+    on-state. Reproduced when P < 0.05 with the on-state higher, as in wild type.
+- id: fig7e-oxom-cdgi
+  statement: Oxotremorine-M increases bAP invasion of iSPN dendrites in wild-type but not in CDGI
+    KO mice.
+  source: Figure 7E (P = 0.0098 and 0.910, Wilcoxon)
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.17307059 (Figure 7E sheet); raw line scans in Zenodo
+    doi:10.5281/zenodo.17260198
+  criterion: On the paper's table, two-sided Wilcoxon tests before against after oxo-M. Reproduced
+    when wild type has P < 0.05 with oxo-M higher and KO has P >= 0.05.
+- id: fig7f-cdgi-ko-dendritic-unchanged
+  statement: The off-state elevation of iSPN dendritic excitability is absent in CDGI KO mice
+    (off against on not different), while it is present in wild type.
+  source: Figure 7F (KO P = 0.395; wild type P = 0.0029)
+  criterion: A claim of absence for the KO, two-sided Mann-Whitney test of the index, KO off-state
+    against KO on-state; reproduced when P >= 0.05. The wild-type part is fig3f-ispn-dendritic-on-lower.
+- id: fig7h-cdgi-ko-spines
+  statement: The off-state increase in apparent iSPN spine density is absent in CDGI KO mice.
+  source: Figures 7G and 7H (P = 0.613)
+- id: fig8a-cdgi-rotations
+  statement: Levodopa induces more contralateral rotations in CDGI KO mice than in wild type at
+    the fifth dose.
+  source: Figure 8A (P = 0.0092 in the text; the legend marks P < 0.05)
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.17307059 (Figure 8A sheet)
+  criterion: On the paper's per-mouse table, a two-sided Mann-Whitney test, KO against wild type.
+    Reproduced when P < 0.05 with KO higher.
+- id: fig8bc-cdgi-aims
+  statement: Axial, limb, orolingual and total AIMs are less severe in CDGI KO mice than in wild
+    type.
+  source: Figures 8B and 8C (repeated-measures two-way ANOVA, group P < 0.001 to 0.002)
+  data: with_labels
+  depends_on:
+  - link-aim-mice
+- id: fig9d-m1r-crispr-somatic-unchanged
+  statement: Deletion of M1Rs from iSPNs does not alter the elevated somatic excitability of
+    off-state iSPNs.
+  source: Figures 9C and 9D; Results, fifth section
+  criterion: A claim of absence. Under the paper's default test, a two-sided Mann-Whitney test of
+    rheobase, interleaved control against M1R CRISPR. Reproduced when P >= 0.05.
+- id: fig9f-m1r-crispr-spines
+  statement: Deletion of M1Rs from iSPNs blunts the off-state increase in apparent spine density.
+  source: Figures 9E and 9F (P = 0.0005)
+- id: fig10a-m1r-rotations
+  statement: Levodopa induces more contralateral rotations in mice lacking M1Rs in iSPNs.
+  source: Figure 10A (P = 0.0056)
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.17307059 (Figure 10A sheet)
+  criterion: On the paper's per-mouse table, a two-sided Mann-Whitney test, M1R deletion against
+    control. Reproduced when P < 0.05 with the deletion higher.
+- id: fig10b-m1r-aims
+  statement: AIMs are attenuated by deletion of M1Rs in iSPNs.
+  source: Figure 10B (repeated-measures two-way ANOVA, group P < 0.001 to 0.0015)
+  data: with_labels
+  depends_on:
+  - link-aim-mice
+- id: fig10ef-open-field
+  statement: In MCI-Park mice, a low dose of levodopa increases locomotion profoundly only when
+    M1Rs are deleted from the striatum; M1R deletion alone does not.
+  source: Figures 10D to 10F; Results, fifth section
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.17307059 (Figure 10E and 10F sheets); raw ANY-maze data in
+    Zenodo doi:10.5281/zenodo.17260198
+  criterion: On the paper's per-mouse tables, two-sided Mann-Whitney tests for distance and time
+    mobile. Reproduced when control against MCI-Park and levodopa against levodopa with M1R
+    deletion have P < 0.05 in the stated direction, and MCI-Park against M1R deletion alone has
+    P >= 0.05, for both measures.
