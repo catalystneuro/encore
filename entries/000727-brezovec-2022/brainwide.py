@@ -37,6 +37,10 @@ Where the parameters come from:
 - `SLICES` (every 7th FDA plane from 10) and `BLOCK` (6 x 6 voxel squares within a plane, used
   in place of the paper's supervoxels, which are not in the dandiset) are choices of this
   attempt. A block is kept when at least half of its voxels are inside the brain in every fly.
+- The raw GCaMP6f and tdTomato series (`TwoPhotonSeriesFunctionalGreen`, `...Red`, 256 x 128 x 49
+  voxels, uint16, chunks of 152 volumes x one plane) are read for the planes in `RAW_SLICES`
+  (a choice) and high-pass filtered as the code does (preprocessing_neural_data.py, Gaussian
+  sigma 200 volumes, truncate 1). They are not motion corrected.
 """
 
 from __future__ import annotations
@@ -58,6 +62,7 @@ DANDISET_VERSION = "0.240106.0043"
 
 PROCESSED = "processing/ophys/TwoPhotonSeriesFunctionalGreenProcessed"
 RAW_GREEN = "acquisition/TwoPhotonSeriesFunctionalGreen"
+RAW_RED = "acquisition/TwoPhotonSeriesFunctionalRed"
 FICTRAC = "processing/behavior/FicTrac"
 
 BALL_RADIUS_MM = 4.5            # Methods: 9 mm diameter ball; code: sphere_radius = 4.5e-3 m
@@ -65,6 +70,8 @@ FICTRAC_HZ = 50.0               # Methods and code
 SAVGOL_FRAMES, SAVGOL_ORDER = 25, 3   # code; Methods: 500 ms window, order 3
 WALK_THRESHOLD = 0.2            # code, make_walking_vector
 SLICES = tuple(range(10, 91, 7))  # choice of this attempt: 12 of the 91 FDA planes
+RAW_SLICES = (18, 30)           # choice of this attempt: 2 of the 49 raw planes, for the tdTomato check
+HIGH_PASS_SIGMA = 200           # code, preprocessing_neural_data.py: gaussian_filter1d(sigma=200, truncate=1)
 BLOCK = 6                       # choice of this attempt: 6 x 6 voxel blocks as supervoxels
 X_CROP, Y_CROP = (1, 313), (1, 145)  # 52 x 24 blocks, centred on the FDA's left-right midline
 N_THREADS = 16
@@ -111,20 +118,37 @@ def _session(path_url: tuple[str, str]) -> dict:
         out[key]["grid_spacing_unit"] = _text(g["grid_spacing"].attrs.get("unit", ""))
     out["anatomical"] = {"shape": f["acquisition/TwoPhotonSeriesAnatomicalRed/data"].shape,
                          "start": float(f["acquisition/TwoPhotonSeriesAnatomicalRed/starting_time"][()])}
+    datasets = []
+
+    def listing(name, obj):
+        if isinstance(obj, h5py.Dataset) and obj.ndim >= 2 and obj.size > 1000:
+            datasets.append({"dataset": name, "shape": obj.shape, "dtype": str(obj.dtype), "chunks": obj.chunks,
+                             "compression": obj.compression})
+
+    f.visititems(listing)
+    out["datasets"] = datasets
+    out["chunk_index"] = _chunk_index(f[f"{PROCESSED}/data"], SLICES)
+    out["raw_chunk_index"] = {ch: _chunk_index(f[f"{name}/data"], RAW_SLICES)
+                              for ch, name in (("green", RAW_GREEN), ("red", RAW_RED))}
+    out["raw_red_description"] = _text(f[RAW_RED].attrs["description"])
+    # Values read through h5py, to check the direct chunk reads against
+    out["h5py_check"] = f[f"{PROCESSED}/data"][0:54, :, :, SLICES[len(SLICES) // 2]]
+    f.close()
+    return out
+
+
+def _chunk_index(dataset, slices) -> dict:
+    """(time offset, byte offset, size) of the chunks of each z-plane in slices; chunks hold one plane."""
     index = {}
-    wanted = set(SLICES)
+    wanted = set(slices)
 
     def keep(info):
         t0, _, _, z = info.chunk_offset
         if z in wanted:
             index.setdefault(z, []).append((t0, info.byte_offset, info.size))
 
-    f[f"{PROCESSED}/data"].id.chunk_iter(keep)
-    out["chunk_index"] = {z: sorted(v) for z, v in index.items()}
-    # Values read through h5py, to check the direct chunk reads against
-    out["h5py_check"] = f[f"{PROCESSED}/data"][0:54, :, :, SLICES[len(SLICES) // 2]]
-    f.close()
-    return out
+    dataset.id.chunk_iter(keep)
+    return {z: sorted(v) for z, v in index.items()}
 
 
 def load_sessions(workers: int = 9) -> list[dict]:
@@ -153,20 +177,23 @@ def _get(url: str, start: int, size: int, tries: int = 4) -> bytes:
             time.sleep(2 ** attempt)
 
 
-def read_plane(session: dict, z: int, pool: ThreadPoolExecutor) -> np.ndarray:
-    """The processed series of one FDA plane, (time, x, y) float32."""
-    n_t, n_x, n_y, _ = session["processed"]["shape"]
-    chunk_t = session["processed"]["chunks"][0]
+def read_plane(session: dict, z: int, pool: ThreadPoolExecutor, channel: str | None = None) -> np.ndarray:
+    """One z-plane, (time, x, y) float32: of the processed series, or of a raw channel ('green', 'red')."""
+    key = "processed" if channel is None else "raw"
+    n_t, n_x, n_y, _ = session[key]["shape"]
+    chunk_t = session[key]["chunks"][0]
+    dtype = "<f4" if channel is None else "<u2"
+    index = session["chunk_index"] if channel is None else session["raw_chunk_index"][channel]
     out = np.empty((n_t, n_x, n_y), dtype=np.float32)
 
     def fetch(entry):
         t0, offset, size = entry
-        block = np.frombuffer(zlib.decompress(_get(session["url"], offset, size)), dtype="<f4")
+        block = np.frombuffer(zlib.decompress(_get(session["url"], offset, size)), dtype=dtype)
         block = block.reshape(chunk_t, n_x, n_y)
         stop = min(t0 + chunk_t, n_t)
         out[t0:stop] = block[: stop - t0]
 
-    list(pool.map(fetch, session["chunk_index"][z]))
+    list(pool.map(fetch, index[z]))
     return out
 
 
@@ -242,6 +269,42 @@ def load_fly(session: dict, regressors: np.ndarray, pool: ThreadPoolExecutor) ->
         if z == check_z:
             planes[z]["same_as_h5py"] = bool(np.array_equal(x[:54], session["h5py_check"]))
     return planes
+
+
+def high_pass(x: np.ndarray) -> np.ndarray:
+    """The code's high-pass filter along time (axis 0): x minus its Gaussian smoothing (sigma 200
+    volumes, truncate 1, reflected edges), plus the mean. Done by FFT convolution for speed."""
+    from scipy.signal import fftconvolve
+    s = HIGH_PASS_SIGMA
+    k = np.exp(-0.5 * (np.arange(-s, s + 1) / s) ** 2)
+    k = (k / k.sum()).astype(np.float32)
+    padded = np.concatenate([x[s - 1::-1], x, x[:-s - 1:-1]], 0)        # scipy 'reflect' mode
+    smooth = fftconvolve(padded, k[:, None], mode="valid", axes=0)
+    return x - smooth + x.mean(0)
+
+
+def raw_correlations(session: dict, regressors: np.ndarray, pool: ThreadPoolExecutor) -> dict:
+    """Within-fly correlations of raw GCaMP6f and raw tdTomato voxels with the regressors, per plane in RAW_SLICES.
+
+    The raw volumes are not motion corrected. Each channel is high-pass filtered as the code does;
+    voxels are those whose mean tdTomato is above the plane's median (a choice, to keep the brain).
+    Returns {z: {"green": r (k, voxels), "red": r (k, voxels)}}.
+    """
+    out = {}
+    b = regressors - regressors.mean(1, keepdims=True)
+    b /= np.sqrt((b ** 2).sum(1, keepdims=True))
+    for z in RAW_SLICES:
+        red = read_plane(session, z, pool, "red").reshape(regressors.shape[1], -1)
+        mask = red.mean(0) > np.median(red.mean(0))
+        out[z] = {"voxels": int(mask.sum())}
+        for ch in ("red", "green"):
+            x = red[:, mask] if ch == "red" else read_plane(session, z, pool, "green").reshape(regressors.shape[1], -1)[:, mask]
+            x = high_pass(x)
+            x -= x.mean(0)
+            with np.errstate(invalid="ignore", divide="ignore"):
+                out[z][ch] = np.nan_to_num((b.astype(np.float32) @ x) / np.sqrt((x ** 2).sum(0)))
+        del red
+    return out
 
 
 def pooled_r(sx, sxx, sxb, sb, sbb, n):
