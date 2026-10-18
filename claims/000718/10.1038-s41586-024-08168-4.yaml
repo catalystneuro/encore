@@ -1,0 +1,203 @@
+# Claims for Zaki et al. (2024), "Offline ensemble co-reactivation links memories across days",
+# Nature 637, 145-155 (issue of January 2025, published online 6 November 2024), on dandiset 000718.
+# Source: the full text, open access under CC BY (PMC11666460), read from its Results, figure and
+# Extended Data legends and Methods.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata of version 0.260825.1902, the contents of every NWB file, the ranges and timestamps of
+# the deconvolved traces, the sleep-state intervals of the three offline sessions (wake and quiet
+# wake only), the cell registration tables of mouse Ca_EEG2-1 and the sizes of the four ensembles
+# they give for its offline session (97 neutral, 80 aversive, 166 overlap, 282 remaining), the
+# agreement of registered ROI centroids, the telemetry around the fear conditioning epoch, and,
+# from the freezing check, the freezing fraction of four sessions (FC of both mice, neutral exposure
+# of Ca_EEG2-1, and Recall2 of Ca_EEG3-4, 15.1%). The last of these is one of the four values the
+# source-data-link claim compares. No burst, shuffle, locomotion or co-bursting analysis had been
+# run. The author had also read the per-mouse values in the paper's source-data repository
+# (denisecailab/RetrospectiveMemoryLinkingData_2024 at commit a508164), which list both deposited
+# mice in Figure 5c and Extended Data Figure 9.
+#
+# The dandiset holds two of the nine mice of the calcium imaging and EEG/EMG experiment (Figure 5,
+# Extended Data Figures 9 and 10): Ca_EEG2-1 (1.5 mA, high shock) and Ca_EEG3-4 (0.25 mA, low shock).
+# For Ca_EEG2-1 it holds neutral encoding, aversive encoding (FC), aversive recall (Recall1), the
+# first of the 24 offline recordings after aversive encoding, the cell registration of the 19
+# offline-day-2 recordings with the encoding and recall sessions, and a week of telemetry. For
+# Ca_EEG3-4 it holds the five encoding and recall sessions and the first offline recording of each
+# day, without cell registration. None of the mice of the one-hour offline experiments (Figures 2 to
+# 4 and 6, Extended Data Figures 3, 4, 7), the behaviour-only experiments, or the inhibitory tagging
+# and no-shock experiments are in it.
+#
+# Method choices fixed here from the Methods (the analysis code the paper names is not public):
+# deconvolved activity; each cell z-scored over time (cells without activity left out); the mean
+# over cells, z-scored, gives the population trace; a burst event is a maximal run of frames above
+# z = 2; a cell or an ensemble participates in an event when its z-scored activity exceeds 2 at any
+# frame of the event; ensembles of an offline cell come from the cell registration (matched to
+# neutral encoding only, to FC only, to both, or to neither).
+schema_version: 1
+dandiset: "000718"
+paper: doi:10.1038/s41586-024-08168-4
+claims:
+- id: source-data-link
+  statement: The two deposited mice are the mice of the same names in the paper's per-mouse source
+    data, with the same shock group, and the freezing computed from the dandiset's freezing intervals
+    agrees with the per-mouse freezing the paper reports for them.
+  source: Extended Data Figure 9b and 9c; source-data repository denisecailab/RetrospectiveMemoryLinkingData_2024
+  data: with_inputs
+  expected:
+  - quantity: Ca_EEG2-1 freezing during aversive recall (ExtData9b.csv)
+    value: 63.87
+    tolerance: 6.39
+    unit: percent
+  - quantity: Ca_EEG3-4 freezing during aversive recall (ExtData9b.csv)
+    value: 8.46
+    tolerance: 0.85
+    unit: percent
+  - quantity: Ca_EEG3-4 freezing during neutral recall (ExtData9c.csv)
+    value: 16.90
+    tolerance: 1.69
+    unit: percent
+  - quantity: Ca_EEG3-4 freezing during novel-context exposure (ExtData9c.csv)
+    value: 14.60
+    tolerance: 1.46
+    unit: percent
+  criterion: Records are matched by the mouse name (subject_id in the files, Mouse in the CSV
+    files). The session descriptions name the context of each recall session. Freezing is read in
+    two ways, (a) the percentage of MotionSeries frames that fall inside a freezing interval and (b)
+    the summed duration of the freezing intervals over the duration of the MotionSeries. Reproduced
+    when both mice are found, their shock amplitude in the files matches the source data's group,
+    and all four values are within tolerance under one reading; partially reproduced when two or
+    three are; not reproduced otherwise.
+- id: ed9b-aversive-freezing-high-vs-low
+  statement: In the calcium imaging and EEG/EMG experiment, high-shock mice froze more during
+    aversive recall than low-shock mice (t7 = 8.99, p = 0.020).
+  source: Extended Data Figure 9b
+  criterion: The dandiset holds one mouse per group, so the paper's t-test cannot be run. Freezing
+    as in source-data-link reading (a), in Recall1 (the aversive context). Reproduced when the
+    high-shock mouse (Ca_EEG2-1) freezes more than the low-shock mouse (Ca_EEG3-4) and the
+    per-30-s-bin freezing of the two sessions (10 bins each) differs by a two-sided Mann-Whitney test
+    at p < 0.05; partially reproduced when only the direction holds; not reproduced otherwise.
+- id: offline-bursts-above-shuffle
+  statement: During offline periods, hippocampal population bursts occur more often than expected
+    from shuffled neuronal activity, so CA1 neurons fire in a more coordinated way than chance.
+  source: Results, section "Neutral ensemble recruited into population bursts"; Extended Data Figure 3l and 3m
+  criterion: In each of the three deposited offline recordings, burst frequency (events per minute)
+    of the population trace, compared with 1000 surrogates in which each cell's trace is circularly
+    shifted by an independent random offset and the population trace is recomputed and z-scored as
+    for the data. Reproduced when the true frequency exceeds the 95th percentile of the surrogates in
+    all three recordings; partially reproduced when it exceeds the surrogate mean in all three but
+    the 95th percentile in fewer; not reproduced otherwise.
+- id: offline-skew-above-shuffle
+  statement: The mean population activity during offline periods is more right-skewed than in
+    shuffled data, showing brief burst-like activations that need coordinated activity of groups of
+    neurons.
+  source: Extended Data Figure 3n and 3o
+  criterion: As offline-bursts-above-shuffle, with the skewness of the population trace (scipy.stats.skew)
+    in place of the burst frequency, and the same thresholds for the three outcomes.
+- id: burst-locomotion-pause
+  statement: Offline population bursts coincide with the mouse briefly slowing down about 1 s
+    before the burst and resuming its movement about 1 to 2 s later.
+  source: Figure 2d and 2e; Extended Data Figure 6e; Results, section "Co-reactivation occurs more during wake"
+  criterion: Movement is the magnitude of the telemetry ActivitySignal (the absolute value, averaged
+    in 100 ms bins), the only movement measure in the offline files. Time zero of a burst is read
+    two ways, (a) the frame of peak population activity and (b) the first frame of the event. For
+    each burst with both windows inside the recording, the mean movement from 1 s before to time
+    zero is compared with the mean from 5 s to 3 s before, by a one-sided Wilcoxon signed-rank test
+    (lower before the burst). Reproduced when p < 0.05 in all three offline recordings under one
+    reading; partially reproduced when it holds in one or two; not reproduced otherwise. The mean
+    movement trace from 5 s before to 5 s after time zero is shown, with the same windows around
+    random times as a reference.
+- id: fig5c-wake-overlap-neutral-coburst
+  statement: After a strong (high-shock) aversive experience, during wake in the offline period the
+    overlap ensemble co-bursts more with the neutral ensemble than with the aversive ensemble (t4 =
+    4.94, P = 0.016).
+  source: Figure 5c (left); Methods, "Ensemble co-participation analysis"
+  criterion: Tested on the one deposited high-shock mouse (Ca_EEG2-1) and its one deposited offline
+    recording after aversive encoding (the first of 24). A burst is assigned the sleep state of its
+    peak frame. Two readings of wake, (a) wake and quiet wake together and (b) wake alone, and two
+    readings of a co-participation, (i) both ensembles participate, whatever the third does, and
+    (ii) both participate and the third does not. Over the wake bursts, the percentage with overlap
+    and neutral co-participation (OxN) and with overlap and aversive co-participation (OxA).
+    Reproduced when OxN > OxA under one reading and an exact McNemar test across those bursts gives p
+    < 0.05; partially reproduced when OxN > OxA under one reading without that; not reproduced when
+    OxN <= OxA under every reading.
+- id: fig1bc-retrospective-not-prospective
+  statement: Fear spreads from an aversive context to a neutral context experienced 2 days before
+    (retrospective linking) but not to one experienced 2 days after (prospective), with no difference
+    in aversive recall between the groups.
+  source: Figure 1a to 1c
+- id: fig1ef-high-shock-drives-linking
+  statement: High-shock mice froze more than low-shock mice in the aversive context, and froze more
+    in the neutral than in the novel context, while low-shock mice did not.
+  source: Figure 1d to 1f
+- id: fig1g-aversive-freezing-predicts-linking
+  statement: In high-shock mice, aversive recall freezing correlates with the strength of
+    retrospective memory linking (R2 = 0.45, P = 0.016), but not in low-shock mice.
+  source: Figure 1g
+- id: ed1n-offline-hippocampus-needed
+  statement: Chemogenetic inhibition of the hippocampus in the 12 h after aversive encoding prevents
+    retrospective memory linking and leaves the aversive memory intact.
+  source: Extended Data Figure 1l to 1p
+- id: ed2-cocaine-retrospective-linking
+  statement: A cocaine experience also drives retrospective memory linking to a neutral context
+    experienced 2 days before.
+  source: Extended Data Figure 2
+- id: ed3-aversive-ensemble-reactivated
+  statement: Cells active during aversive encoding are reactivated offline and preferentially during
+    aversive recall.
+  source: Extended Data Figure 3e to 3k
+- id: ed4f-neutral-ensemble-reactivated-high-shock
+  statement: During offline 2 the neutral ensemble is less active than the aversive and overlap
+    ensembles in low-shock mice but no differently active in high-shock mice.
+  source: Extended Data Figure 4f
+- id: fig3c-offline1-neutral-participation
+  statement: During offline 1 a greater percentage of the neutral ensemble participates in bursts
+    than of the remaining ensemble, in both shock groups.
+  source: Figure 3c
+- id: fig3f-neutral-recruited-high-shock
+  statement: During offline 2 the neutral ensemble preferentially participates in bursts relative to
+    the remaining ensemble in high-shock mice (t7 = 4.88) but not in low-shock mice.
+  source: Figure 3d to 3f
+- id: fig4b-overlap-independent-participation
+  statement: During burst periods the overlap ensemble participates independently in more bursts
+    than the aversive and neutral ensembles, with no difference between shock groups.
+  source: Figure 4b and 4c
+- id: fig4e-overlap-neutral-coburst
+  statement: In the one-hour offline experiment, high-shock mice show more overlap-neutral than
+    overlap-aversive co-bursting during bursts (t7 = 4.95), low-shock mice do not, and there is no
+    such difference outside bursts.
+  source: Figure 4e and 4f; Extended Data Figure 4k to 4o
+- id: ed6-overlap-inhibitory
+  statement: The overlap ensemble is enriched in putative inhibitory neurons identified by
+    chemotagging.
+  source: Extended Data Figures 5 and 6
+- id: ed8-no-shock-no-coburst
+  statement: Without a shock, overlap-neutral co-bursting does not exceed overlap-aversive
+    co-bursting and no memory linking occurs.
+  source: Extended Data Figure 8
+- id: ed7-contexts-discriminable
+  statement: Neural activity during neutral and aversive encoding is highly discriminable, with no
+    difference between low- and high-shock mice.
+  source: Extended Data Figure 7
+- id: ed9c-eeg-cohort-linking
+  statement: In the calcium imaging and EEG/EMG experiment, high-shock mice froze more in the neutral
+    than in the novel context (t4 = 4.02, p = 0.03), while low-shock mice did not.
+  source: Extended Data Figure 9c
+- id: fig5c-sleep-no-coburst-difference
+  statement: During NREM and REM sleep, overlap-neutral and overlap-aversive co-bursting do not differ
+    in either shock group.
+  source: Figure 5c (middle and right)
+- id: fig5c-low-shock-wake-no-difference
+  statement: In low-shock mice, overlap-neutral and overlap-aversive co-bursting during wake do not
+    differ (t3 = 1.20, P = 0.32).
+  source: Figure 5c (left)
+- id: ed9-ed10-sleep-unchanged
+  statement: Mice wearing a Miniscope sleep normally, the intermittent recording scheme captures the
+    time spent in each state, and sleep structure is not changed by neutral or aversive encoding.
+  source: Extended Data Figure 9d to 9g and Extended Data Figure 10
+- id: fig6a-overlap-reactivated-neutral-recall
+  statement: The overlap ensemble is reactivated more during neutral recall than during novel-context
+    exposure in high-shock mice compared with low-shock mice (t12 = 3.2, P = 0.007).
+  source: Figure 6a; Extended Data Figure 4q to 4s
+- id: fig6b-neutral-representation-changed
+  statement: In high-shock mice the neutral encoding-to-recall population correlation is lower than
+    in low-shock mice and lower than the aversive encoding-to-recall correlation.
+  source: Figure 6b
