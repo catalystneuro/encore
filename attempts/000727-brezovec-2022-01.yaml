@@ -84,10 +84,13 @@ outcomes:
     in image half A (x < 157) as in half B, and voxels significant for VR 3.2 times as many in half B.
     Per fly, the VF mirror correlation is 0.166 to 0.580, summed VL correlation is larger in half A in
     8 of 9 flies, summed VR correlation larger in half B in 7 of 9, and both in 6 of 9; fly_098 and fly_105
-    have VR on the same side as VL and fly_099 has VL on the other side. No fly appears flipped; each
-    fly's VL and VR maps correlate more with the pooled maps than with their mirror images (fly_105 0.418
-    against 0.240 for VL, 0.299 against 0.220 for VR). The ipsilateral part of the statement is not tested;
-    it holds if half A is the fly's left, which the dandiset does not state.
+    have VR on the same side as VL and fly_099 has VL on the other side. Against the pooled maps of the
+    other eight flies, no fly matches better mirrored for both VL and VR, as a left-right flip would
+    give; 7 of 9 match better unflipped for both. fly_099's VL map matches the mirrored map slightly
+    better (0.158 against 0.190), its VR map clearly does not (0.439 against 0.199). For fly_105 the check
+    does not decide (VL 0.274 against 0.234, VR 0.212 against 0.214), so a flip of that fly is not excluded;
+    it would lower the pooled asymmetry. The ipsilateral part of the statement is not tested; it holds
+    if half A is the fly's left, which the dandiset does not state.
   deviations:
   - Mirror about the centre of the FDA's left-right axis (156.5), chosen from the symmetry of the brain
     mask; the 0.7 threshold for symmetry is a choice of this attempt, made after the prototype run had
@@ -227,7 +230,9 @@ outcomes:
     produce; the dandiset gives neither the times nor the order of the planes. With each plane's median
     removed the 99th percentile is 0.50 s and the 1st -1.02 s, so the match within 0.03 s is not robust
     to the neural times; the lag of more than 1 s holds in both (1st percentile at least 0.84 s of lag
-    in every plane from 38 to 80). Fitted per fly, the 99th percentile is 0.36 to 4.55 s.
+    in every plane from 38 to 80, more than 1 s in planes 59 to 73). Only the lag of more than 1 s is
+    robust; the earliest lead cannot be tested with the timing the dandiset gives, and the outcome follows
+    the criterion fixed in advance. Fitted per fly, the 99th percentile is 0.36 to 4.55 s.
   deviations:
   - Neural times at the volume midpoint, an error of up to 0.27 s per block.
   - Notch filter Q = 2 is a choice; the code's notch coefficients are not in the repository.
@@ -250,8 +255,8 @@ outcomes:
   output: claim:fig6fg-ipsi-leads-contra
   notes: For VL, over 868 mirror pairs, the block in half A leads its partner by a median 0.16 s and is
     earlier in 67% of pairs; for VR, over 849 pairs, the block in half B leads by 0.14 s and is earlier
-    in 72%; both Wilcoxon p-values print as 0. The difference is 0.20 to 0.33 s in planes 17 to 38 and
-    -0.03 to 0.03 s in planes 73 and 80. Both blocks of a pair lie in one FDA plane; whether the two halves
+    in 72%; both Wilcoxon p-values print as 0. The median difference is 0.26 to 0.33 s in planes 17
+    to 38 for VL and 0.19 to 0.29 s in planes 17 to 59 for VR, and -0.03 to 0.03 s in planes 73 and 80. Both blocks of a pair lie in one FDA plane; whether the two halves
     of a plane were acquired at the same time is not known.
   deviations:
   - The ipsilateral half is the image half with more significant correlations for that turn, from fig2-symmetry,
@@ -280,8 +285,9 @@ outcomes:
   outcome: blocked
   blocked_by: too_large
   notes: Needs Ward clustering of every plane of the nine flies pooled at seven cluster numbers, so every
-    voxel of all 91 planes. The 12 planes streamed here are 22.1 GB compressed and took 319 s; all 91
-    planes are several times that, which leaves no room within the 30 minute limit for the clustering
+    voxel of all 91 planes. The 12 planes streamed here are 22.1 GB compressed and took 306 s in the
+    latest run (214 s in the run before), including about 40 s for metadata; all 91 planes are several
+    times that, which leaves no room within the 30 minute limit for the clustering
     itself. The files total 610 GB. A partial sweep on the 12 streamed planes was not attempted. It would
     need each plane's voxel time series held in memory (about 27,000 in-brain voxels x 30,456 points,
     some 3 GB per plane) for Ward clustering at seven sizes, followed by the PCA and ridge models at each
@@ -342,8 +348,11 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: 'Cells 3, 5 and 14: 9 flies, 30,456 volumes, 1.880 Hz, 1,605,632 voxels of 2.61 x 2.61 x 5
-      um, FicTrac at 50 Hz, 1800 s per session.'
-    response: No change of outcome. As asked (its points B11 and C), the data check now lists the nine
+      um, FicTrac at 50 Hz, 1800 s per session. Its point B7: in the clock check the observed statistic
+      is the maximum |r| over 101 lags, but the null is |r| at a single random shift, so the null is not
+      comparable and the margins are overstated, though the lag peaks still look sensible.'
+    response: No change of outcome. The clock-check null now takes the largest |r| over the same 101 lags
+      (B7). As asked (its points B11 and C), the data check now lists the nine
       AVI behaviour videos and prints every array of each file with its shape, type and chunks, the same
       in all nine, including the raw tdTomato series.
   - claim: fig2c-fraction-correlated
@@ -369,13 +378,15 @@ verifications:
     reason: 'VF mirror r = 0.823; VL vs mirrored VR 0.672 against 0.449 for VL vs its own mirror; VL A/B
       = 2.38 and VR A/B = 0.31. Per fly the pattern is inconsistent: the expected sign pattern holds clearly
       in only 5 of 9 flies, fly_098 and fly_105 have VR on the same side as VL, fly_099 has VL reversed,
-      and a possible left-right flip in fly_105''s registration is never checked. The criteria were written
+      and a possible left-right flip in fly_105''s registration is never checked. In the clock check fly_105''s
+      half-difference correlates negatively with rotation, and its VF R2 is -0.50. The criteria were written
       after the prototype results were seen, and the symmetry threshold of 0.7 is a choice made after
       seeing r = 0.82. The colour range of the plot is +-0.3 while the largest voxel r is 0.12.'
     response: 'No change of outcome. Added per-fly counts (both signs hold in 6 of 9 flies by the summed
       correlation; fly_097''s VL difference is small and positive), and an orientation check per fly:
-      every fly''s VL and VR maps correlate more with the pooled maps than with their mirror images, and
-      every brain mask overlaps its mirror at 0.804 to 0.916, so no fly appears flipped. The conclusion
+      every fly''s VL and VR maps correlate more with the pooled maps than with their mirror images. (The
+      round-1 text added that every brain mask overlaps its mirror at 0.804 to 0.916, so no fly appears
+      flipped; round 2 pointed out that this overlap cannot show a flip, and the check was replaced.) The conclusion
       now states the heterogeneity and that 0.7 was chosen after the prototype; the deviation says so.
       The colour range now spans the data.'
   - claim: fig2e-region-fractions
@@ -464,9 +475,11 @@ verifications:
       plane axis relative to the acquisition z-order.'
     response: No change of outcome. Added per-plane 99th and 1st percentiles and the percentiles with
       each plane's median removed (0.50 s and -1.02 s). The conclusion and notes now say the match within
-      0.03 s is not robust to the neural times, while the lag of more than 1 s holds in every plane from
-      38 on. The acquisition order of the planes is not in the dandiset, so the orientation it asked for
-      cannot be given.
+      0.03 s is not robust to the neural times, while the lag of more than 1 s holds with and without the
+      plane medians removed. (The round-1 text said the lag of more than 1 s holds in every plane from 38
+      on; per plane the 1st percentile is a lag of at least 0.84 s from plane 38 and more than 1 s only
+      in planes 59 to 73, as corrected in round 2.) The acquisition order of the planes is not in the
+      dandiset, so the orientation it asked for cannot be given.
   - claim: fig6h-peak-vs-width
     agrees: true
     outcome: reproduced
@@ -511,3 +524,140 @@ verifications:
       why: it needs each plane''s voxel time series in memory (some 3 GB per plane) for Ward clustering
       at seven sizes and the models at each, while the streaming keeps only block means and per-voxel
       sums.'
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the revised entry (after round 1), with its conclusion
+    cells and summary, the helper module, the claims file and this record.
+  results:
+  - claim: dataset-structure
+    agrees: true
+    outcome: reproduced
+    reason: Cells 3, 5, 14. B7 resolved; the null now uses the same 101 lags.
+    response: No change.
+  - claim: fig2c-fraction-correlated
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 19: (a) 31.1%, (b) 53.5%, rolled null 0.0%.'
+    response: No change.
+  - claim: fig2c-venn-categories
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 22; under (a) the ranking holds and "all three" is 11.5%, below 20.
+    response: No change.
+  - claim: fig2-symmetry
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 25: 0.823; 0.672 against 0.449; A/B 2.38 and 0.31. The statement that each fly''s brain
+      mask overlaps its own mirror image at 0.804 to 0.916, offered as evidence that no fly is flipped,
+      is not supported, since a mask''s overlap with its own mirror is unchanged by a left-right flip. The
+      comparison of each fly''s map with the pooled map against the mirrored pooled map includes that fly
+      in the pooled map, which favours the unflipped answer, and the fly_105 margins are small (0.418 against
+      0.240, 0.299 against 0.220); a leave-one-out pooled map would settle it. B6, the orientation evidence,
+      is weak but does not bear on a conclusion.'
+    response: Removed the mask mirror overlap from the check and the text. Replaced the pooled maps with
+      leave-one-out maps of the other eight flies. No fly matches better mirrored for both VL and VR; 7
+      of 9 match better unflipped for both. fly_099's VL map matches the mirrored map slightly better (0.158
+      against 0.190), its VR map does not (0.439 against 0.199). For fly_105 the check does not decide
+      (VL 0.274 against 0.234, VR 0.212 against 0.214); the conclusion and notes now say a flip of that
+      fly is not excluded. The outcome rests on the pooled maps and is unchanged.
+  - claim: fig2e-region-fractions
+    agrees: true
+    outcome: blocked
+    reason: I accept the author's category (metadata_insufficient). A label for each voxel is metadata,
+      not missing data.
+    response: No change.
+  - claim: fig3-topographic-maps
+    agrees: true
+    outcome: blocked
+    reason: As for fig2e-region-fractions; it accepts metadata_insufficient.
+    response: No change.
+  - claim: fig4bcd-pc-structure
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 30: all criteria pass under both readings.'
+    response: No change.
+  - claim: fig4fg-ridge-r2
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 33: medians 0.155, 0.196, 0.212. B8: alpha is still selected on the test folds; the nested
+      variant shows the effect is small.'
+    response: No change.
+  - claim: fig4h-r2-vs-movement
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Cell 37: rho is positive for all three, but only VR has p < 0.05. Pooled p = 0.064. Max 0.534.'
+    response: No change.
+  - claim: fig4i-weights-stereotyped
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 40: rolled null median pair r at most 0.151, against an observed 0.646 or more.'
+    response: No change.
+  - claim: fig5a-unique-variance
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 43.
+    response: No change.
+  - claim: fig5c-global-below-threshold
+    agrees: true
+    outcome: reproduced
+    reason: 'Changed from round 1. Cell 46: the circular-shift null it asked for supports the result. Under
+      (b) all 9 pass. The weakest is r = 0.013, with roll p = 0.025 against a null 95th percentile of 0.0103.
+      The pass is still marginal: it holds under one reading only (reading (a) fails, roll p = 0.89), and
+      the left region has 4 blocks.'
+    response: No change; the notes already state both limits.
+  - claim: fig5f-ipsi-contra
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Cell 49: the demixing-model variant also shows mirror blocks rising (6.5% and 18.8% fall).'
+    response: No change.
+  - claim: fig6-peak-time-range
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees by the criterion. Cell 54: reading (b) gives 0.32 s and -1.23 s. Every alternative timing
+      falls outside tolerance; volume-start times give 0.58 s, removing each plane''s median 0.50 s, and
+      reading (a) 0.44 s. The outcome follows the criterion fixed in advance, but the earliest-lead part
+      cannot be tested with the timing the dandiset gives; only the lag of more than 1 s is robust. The
+      record''s round-1 response says the lag of more than 1 s holds in every plane from 38 on, while cell
+      54 gives 1st percentiles of -0.84, -0.88, -0.88 and -0.84 s for planes 38, 45, 52 and 80, and only
+      planes 59 to 73 exceed a 1 s lag.'
+    response: Corrected the round-1 response. The notes now say that only the lag of more than 1 s is robust
+      and that the earliest lead cannot be tested with the timing the dandiset gives. The outcome is kept,
+      as it follows the criterion fixed in advance and the verifier agrees with it.
+  - claim: fig6h-peak-vs-width
+    agrees: true
+    outcome: reproduced
+    reason: 'Cell 57: partial r = 0.623, and the correlation is positive within all 10 planes.'
+    response: No change.
+  - claim: fig6fg-ipsi-leads-contra
+    agrees: true
+    outcome: reproduced
+    reason: Cell 60. The cell 61 text "largest in the planes from 17 to 38 (0.20 to 0.33 s)" is approximately
+      right; for VR, planes 45 and 52 (0.22) exceed plane 38 (0.20).
+    response: The text in the notebook and the notes now gives 0.26 to 0.33 s in planes 17 to 38 for VL
+      and 0.19 to 0.29 s in planes 17 to 59 for VR.
+  - claim: fig6eg-region-sequence
+    agrees: true
+    outcome: blocked
+    reason: As for fig2e-region-fractions; it accepts metadata_insufficient.
+    response: No change.
+  - claim: fig7-within-region-gradients
+    agrees: true
+    outcome: blocked
+    reason: As for fig2e-region-fractions; it accepts metadata_insufficient.
+    response: No change.
+  - claim: figs2-tdtomato-control
+    agrees: true
+    outcome: blocked
+    reason: 'Cell 63: the raw-channel check does not decide the claim.'
+    response: No change.
+  - claim: figs4a-supervoxel-number
+    agrees: true
+    outcome: blocked
+    reason: The full sweep is too large. A partial sweep on the 12 planes is still not attempted; the record
+      states this. The notes say the 12 planes took 319 s, while cell 1 prints 214 s, which includes 40
+      s of metadata.
+    response: Corrected the time from the printed outputs (306 s in the latest run, 214 s in the run before,
+      each including about 40 s of metadata). The partial sweep was not attempted, for the reason in the
+      notes. The README's run time (13 minutes, against 7.3 printed) is now taken from the printed outputs
+      (12.3 minutes in the latest run, 7.3 in the run before).

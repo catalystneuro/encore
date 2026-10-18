@@ -34,8 +34,8 @@ replaces supervoxels with 6 x 6 voxel blocks and samples behaviour at the middle
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000727-brezovec-2022-01.yaml`](../../attempts/000727-brezovec-2022-01.yaml).
 
-- `reproduce_brezovec_2022.ipynb`: the analysis. It takes about 13 minutes, most of it streaming
-  22 GB of compressed processed planes and two raw planes of each channel for a tdTomato check.
+- `reproduce_brezovec_2022.ipynb`: the analysis. It took 12.3 minutes in the latest run (7.3 in
+  the run before), most of it streaming 22 GB of compressed processed planes and two raw planes of each channel for a tdTomato check.
 - `brainwide.py`: loading the files (direct reads of the compressed chunks of the processed series),
   the behaviour variables of the paper's code, and the measures. Other notebooks on this dandiset can
   import it.
