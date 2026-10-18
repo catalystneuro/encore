@@ -1,0 +1,11 @@
+No outcome changed. All 26 stay as the verifier agreed in round 2 (10 reproduced, 11 partially reproduced, 5 blocked), and nothing is under `proposed`. The final re-run with `python tools/entry.py all entries/001084-vu-2024` passed with 0 errors in 12.1 min, and `tools/entry.py check` passes.
+
+**Corrected or added, one per point in the report:**
+- **fig1c:** The verifier was right that "none of the 405 nm traces" was not shown, and it is in fact false. I added an output to cell 57: only 11 of 61 traces at 405 nm have no frame above the threshold, and the largest share is 1.2% (470 nm ranges from 0.13% to 35.9%). The conclusion and the record's notes now give these numbers. The outcome does not use this measure.
+- **fig4f-tone:** Cell 31 and the notes now say that the amplitude comparison and the excess of decreases in front of the tail hold at every tail boundary. At the −1.3 mm boundary only 5 of the 10 largest values are in the tail, so part (a) fails there. The self-contradicting sentence in the record is fixed.
+- **fig6-inclusion:** "equals" and "is" are now "is close to" in cell 70 and the notes.
+- **Summary (cell 84):** It now gives the correlations with the code's lags as printed: 0.997 for light and 0.989 for tone (0.9888). The exact match of traces, fiber order and stimulus times is now limited to the 7 salient-stimulus mice and marked as not checked for DL15, 842, DL31, DL32 and the optogenetic mice.
+- **README:** It has the same limit on the exact match, and the run time now reads 12 to 16 minutes (12.1 min in this run, 16.4 in the one the verifier saw). I also fixed a wrong statement it held that the report did not flag: it said stimulation times are found from the laser artefact "as the paper's code does", but the paper's code reads a trigger line.
+- **Record:** Round 2 is added under `verifications`, with the verifier's reasons quoted or closely paraphrased and my responses.
+
+**Not done:** I left the verifier's own round-1 error in the fig1d reason ("0.39 to 0.63", where cell 66 gives 0.39 to 0.77) as it was given, because a verifier's result is recorded as given. Its correction is in the round-2 entry for fig1d. Nothing is committed or pushed; the workflow does that.
