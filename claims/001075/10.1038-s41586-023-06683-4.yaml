@@ -31,6 +31,13 @@
 # the stimulation with F0 the mean of the 30 s before; a trace is used for a stimulation when
 # it has no run of missing volumes longer than 5% of the 90 s window; head neurons are the 188
 # of the paper's code.
+#
+# The criteria of fig4-rid-wt and fig4-rid-unc31 were added after the first verification round,
+# which asked whether any ROI or stimulation names RID. When they were written, the author had
+# run every other claim and had seen only these counts for RID: 11 ROIs labelled RID in 11
+# dandiset recordings, 5 manually located targets on such ROIs, 12 stimulations of the WT export
+# whose ROI is labelled RID, and 28 stimulations in 8 of the 18 recordings of the unc-31 export
+# whose ROI is labelled RID. No response to a RID stimulation had been computed.
 schema_version: 1
 dandiset: "001075"
 paper: doi:10.1038/s41586-023-06683-4
@@ -185,12 +192,33 @@ claims:
   statement: URX, ADL and AWB, predicted from anatomy to have no response, respond strongly to
     RID stimulation in WT animals.
   source: Fig. 4a-d; Extended Data Fig. 7c
+  criterion: RID stimulations are those whose stimulated ROI, found as in the other claims,
+    carries the NeuroPAL label RID. As the Methods state for Fig. 4, no autoresponse is required
+    and values of <dF/F0>_t beyond 2 in absolute value are excluded; the dandiset holds only the
+    regular traces, not the matchless ones. Readings, (a) URX, ADL and AWB with left and right
+    pooled; (b) the neurons shown in Fig. 4, URXL, ADLR and AWBR. For each of the three, over
+    RID stimulations in which it is observed, the mean <dF/F0>_t is above 0 and the classifier
+    detects a response in at least one trial. Reproduced when this holds for all three under one
+    reading; partially reproduced when it holds for one or two; not reproduced when for none.
+    Blocked (other) when none of the three is observed after a RID stimulation. Where each mean
+    falls among the means of all head pairs is reported for "strongly".
 - id: fig4-rid-unc31
   statement: The responses of URXL, ADLR and AWBR to RID stimulation are reduced or absent in
     unc-31 mutants.
   source: Fig. 4b-d
   data: elsewhere
   where: OSF doi 10.17605/OSF.IO/E2SYT (exported_data_full.tar.gz and exported_data_unc31.tar.gz)
+  depends_on:
+  - fig4-rid-wt
+  criterion: In the 18 unc-31 recordings of the OSF export (exported_data_unc31.tar.gz), RID
+    stimulations are those whose exported stimulated ROI carries the exported label RID. The
+    exported traces are processed as the dandiset's, with the inclusion rules of fig4-rid-wt and
+    the same two readings. A neuron's response is reduced when its mean <dF/F0>_t in unc-31 is
+    below its WT mean in fig4-rid-wt. Reproduced when the response is reduced for every one of
+    the three neurons observed in both strains under one reading; partially reproduced when for
+    some; not reproduced when for none. Blocked (other) when none is observed in both. Because
+    the WT values come from the dandiset and the unc-31 values from the export, the WT values
+    computed in the same way from the WT export are shown as a variant.
 - id: fig5-extrasynaptic-screen
   statement: Fifty-three pairs are functionally connected in WT (q < 0.05) and functionally
     non-connected in unc-31 (q_eq < 0.05), with timescales similar to all functional
@@ -203,3 +231,5 @@ claims:
   source: Fig. 6
   data: elsewhere
   where: OSF doi 10.17605/OSF.IO/E2SYT (spont_data_fig6.zip)
+  depends_on:
+  - edfig6-kernel-stereotypy

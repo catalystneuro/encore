@@ -43,9 +43,9 @@ Where the parameters come from:
   - the list of the 188 head neurons, the head ganglia of
     `pumpprobe/aconnectome_ids_ganglia.json`, fetched from GitHub at the commit above.
 - Choices made here, because the dandiset lacks what the code uses:
-  - which ROI was stimulated. The files give the manually located ROI for a few
-    stimulations (`target_pumpprobe_id`) and, for all of them, the target's x and y in
-    pixels and a z value in an unstated unit (`depth_in_um`, -0.75 to 0.75). The code finds
+  - which ROI was stimulated. The files give the manually located ROI for about half of
+    the stimulations (`target_pumpprobe_id`) and, for all of them, the target's x and y in
+    pixels and a z value in an unstated unit (`depth_in_um`, -0.875 to 0.875). The code finds
     the closest neuron in the volume at the stimulation and maps it to the reference volume
     through the tracking matches, which are not in the dandiset. Here the target is matched
     to the closest ROI centroid of the reference volume, with z mapped linearly to the
@@ -53,7 +53,13 @@ Where the parameters come from:
     to the nearest centroid is smallest (no outside data are used);
   - the stimulation volume is the volume whose timestamp is closest to the stimulation's
     start time;
-  - distances use the median plane spacing of the imaging file's `depth_per_frame_in_um`.
+  - distances use the median plane spacing of the imaging file's `depth_per_frame_in_um`;
+  - the photobleaching fit runs by default on about 500 evenly spaced volumes with at most
+    300 evaluations per round, for speed; `analyse_session(url, pb_points=None,
+    pb_nfev=None)` runs it on every volume without a limit, as the code does, to check this.
+  - F0 is used as it comes: the files hold some traces with negative values, and no check
+    on the sign or size of F0 is made in <dF/F0>_t. F0 is returned with each value so that
+    callers can exclude such rows.
 """
 
 from __future__ import annotations
@@ -279,13 +285,18 @@ def _double_exp_jac(p, x):
 
 def photobleach_fit(y, max_iter=10, n_points=500, max_nfev=300):
     """The code's double-exponential fit (`Signal.calc_photobl`), on at most about `n_points`
-    evenly spaced volumes and with at most `max_nfev` evaluations per round, for speed."""
+    evenly spaced volumes (all volumes when None) and with at most `max_nfev` evaluations per
+    round (no limit when None). Returns the fit, or None when it fails; a trace with missing
+    values ("missing") or whose maximum is not positive ("nonpositive") is not fitted, and the
+    string is returned instead."""
     x = np.arange(len(y), dtype=float)
     ymax = np.max(y)
-    if not np.isfinite(ymax) or ymax <= 0:
-        return None
+    if not np.isfinite(ymax):
+        return "missing"
+    if ymax <= 0:
+        return "nonpositive"
     yn = y / ymax
-    step = max(1, len(y) // n_points)
+    step = 1 if n_points is None else max(1, len(y) // n_points)
     xs, ys = x[::step], yn[::step]
     mask = np.ones(len(xs), bool)
     p = np.array([1.0, 0.006, 1.0, 0.001, 0.2])
@@ -312,19 +323,30 @@ def photobleach_fit(y, max_iter=10, n_points=500, max_nfev=300):
     return fit if np.all(np.isfinite(fit)) else None
 
 
-def preprocess(sess):
+def preprocess(sess, pb_points=500, pb_nfev=300):
     """Interpolated green -> photobleaching corrected -> spikes removed -> causal SG smoothing.
-    Returns the smoothed and unsmoothed traces, the derivative used by the classifier and the
-    NaN mask of the original (base) trace."""
+    Returns the smoothed and unsmoothed traces, the derivative used by the classifier, the
+    NaN mask of the original (base) trace, and per trace the outcome of the photobleaching
+    fit: "ok", "missing" (values missing even after interpolation, as for an ROI never
+    tracked), "nonpositive" (maximum not positive), "failed" (the fit did not
+    converge to finite values) or "near zero" (the fit comes within 0.01 of zero, which the
+    code also leaves uncorrected). Traces whose fit is not "ok" are left uncorrected."""
     g = sess["green_interp"].astype(float).copy()
     nan_mask = ~np.isfinite(sess["green_base"])
-    n_fail = 0
+    status = np.array(["ok"] * g.shape[1], dtype=object)
     for k in range(g.shape[1]):
-        fit = photobleach_fit(g[:, k])
-        if fit is None or np.any(np.abs(fit) < 1e-2):
-            n_fail += 1
+        fit = photobleach_fit(g[:, k], n_points=pb_points, max_nfev=pb_nfev)
+        if isinstance(fit, str):
+            status[k] = fit
+            continue
+        if fit is None:
+            status[k] = "failed"
+            continue
+        if np.any(np.abs(fit) < 1e-2):
+            status[k] = "near zero"
             continue
         g[:, k] = g[:, k] / fit * fit[0]
+    n_fail = int(np.sum(status != "ok"))
     for k in range(g.shape[1]):
         y = g[:, k]
         if np.all(np.isfinite(y)):
@@ -341,7 +363,7 @@ def preprocess(sess):
     for k in range(g.shape[1]):
         deriv[:, k] = np.convolve(unsmoothed[:, k], DERIV_KERNEL, mode="same")
     return {"data": smoothed, "unsmoothed": unsmoothed, "deriv": deriv, "nan_mask": nan_mask,
-            "photobleach_failed": n_fail}
+            "photobleach_failed": n_fail, "photobleach_status": status}
 
 
 # ----------------------------------------------------------------------------------------
@@ -438,10 +460,12 @@ def detect_responses(sig, vols, dt, delta_t_pre=DELTA_T_PRE):
 def dff_post(sig, windows, dt, decaying=False):
     """Per stimulation and ROI: <dF/F0>_t over the 30 s after the stimulation, with F0 the
     mean of the 30 s before (Methods); NaN where the trace fails the 5% NaN rule or its local
-    standard deviation is 0. With decaying=True, the code's correction of decaying traces."""
+    standard deviation is 0. With decaying=True, the code's correction of decaying traces.
+    Returns the values and F0 (same shape); F0 is not checked for sign or size."""
     data, nanm = sig["data"], sig["nan_mask"]
     n_w = int(DFF_WINDOW / dt)
     out = np.full((len(windows), data.shape[1]), np.nan)
+    f0_out = np.full((len(windows), data.shape[1]), np.nan)
     for ie, (i0, i1, shift) in enumerate(windows):
         y = data[i0:i1]
         ok = _longest_run(nanm[i0:i1]) <= NAN_TH_OBS * (i1 - i0)
@@ -449,6 +473,7 @@ def dff_post(sig, windows, dt, decaying=False):
         if shift < 2:
             continue
         f0 = y[:shift].mean(0)
+        f0_out[ie] = f0
         post = y[shift:shift + n_w]
         val = (post - f0).mean(0) / f0
         if decaying:
@@ -469,7 +494,7 @@ def dff_post(sig, windows, dt, decaying=False):
                     val[k] = np.mean(y[shift:shift + m, k] - corr[:m]) / f0[k]
         val[~ok] = np.nan
         out[ie] = val
-    return out
+    return out, f0_out
 
 
 def roi_distance_um(sess, i, j, plane_step_um):
@@ -490,23 +515,23 @@ def session_key(path):
 SHIFT_CHECK_S = 15.0   # stimulation times shifted by half the inter-stimulus interval
 
 
-def analyse_session(url):
+def analyse_session(url, pb_points=500, pb_nfev=300):
     """Load, pre-process and measure one recording. Returns only compact results."""
     sess = load_segmentation(url)
     tg = identify_targets(sess)
-    sig = preprocess(sess)
+    sig = preprocess(sess, pb_points=pb_points, pb_nfev=pb_nfev)
     t = sess["t"]
     dt = float(np.median(np.diff(t)))
     vols = stim_volumes(t, sess["stim_start"])
     resp, win = detect_responses(sig, vols, dt)
-    dff = dff_post(sig, win, dt)
-    dff_dec = dff_post(sig, win, dt, decaying=True)
+    dff, f0 = dff_post(sig, win, dt)
+    dff_dec, _ = dff_post(sig, win, dt, decaying=True)
     auto = np.array([tg["roi"][i] >= 0 and tg["roi"][i] in resp[i] for i in range(len(vols))])
     auto_xy = np.array([tg["roi_xy"][i] in resp[i] for i in range(len(vols))])
     shift = int(round(SHIFT_CHECK_S / dt))
     vols_s = np.clip(vols + shift, 0, len(t) - 1)
     resp_s, win_s = detect_responses(sig, vols_s, dt)
-    dff_s = dff_post(sig, win_s, dt)
+    dff_s, _ = dff_post(sig, win_s, dt)
     auto_s = np.array([tg["roi"][i] >= 0 and tg["roi"][i] in resp_s[i] for i in range(len(vols))])
     gb = sess["green_base"]
     keep = ["subject_id", "strain", "genotype", "growth_stage", "age", "session_start",
@@ -524,6 +549,7 @@ def analyse_session(url):
         "red_range": (float(np.nanmin(sess["red_base"])), float(np.nanmedian(sess["red_base"])),
                       float(np.nanmax(sess["red_base"]))),
         "photobleach_failed": sig["photobleach_failed"],
+        "photobleach_status": sig["photobleach_status"], "f0": f0,
         "stim_roi": tg["roi"], "stim_how": tg["how"], "stim_dist_px": tg["dist_px"],
         "stim_roi_xy": tg["roi_xy"], "z_slope": tg["z_slope"], "z_offset": tg["z_offset"],
         "stim_vol": vols, "windows": np.array(win), "responders": resp, "auto": auto,
@@ -533,15 +559,41 @@ def analyse_session(url):
     return out
 
 
-def analyse_all(urls, workers=4):
-    """Run analyse_session over recordings in worker processes."""
+def analyse_export(gcamp, t, stim_vols, labels, subject_id):
+    """Pre-process and measure one recording of the paper's OSF export (`<k>_gcamp.txt`,
+    `<k>_t.txt`, `<k>_stim_volume_i.txt`, `<k>_labels.txt`) as `analyse_session` does for a
+    segmentation file. Missing values are interpolated linearly here (the dandiset provides its
+    own interpolated copy), and the stimulation volumes are the exported ones. The result has
+    the keys `observations` needs."""
+    base = np.asarray(gcamp, float)
+    interp = base.copy()
+    x = np.arange(base.shape[0])
+    for k in range(base.shape[1]):
+        ok = np.isfinite(base[:, k])
+        if 2 <= ok.sum() < len(ok):
+            interp[:, k] = np.interp(x, x[ok], base[ok, k])
+    sig = preprocess({"green_interp": interp, "green_base": base})
+    dt = float(np.median(np.diff(t)))
+    vols = np.asarray(stim_vols, int)
+    resp, win = detect_responses(sig, vols, dt)
+    dff, f0 = dff_post(sig, win, dt)
+    dff_dec, _ = dff_post(sig, win, dt, decaying=True)
+    return {"subject_id": subject_id, "n_roi": base.shape[1], "roi_label": np.asarray(labels),
+            "dff": dff, "dff_decay": dff_dec, "f0": f0, "responders": resp,
+            "photobleach_status": sig["photobleach_status"],
+            "stim_how": np.array(["exported"] * len(vols), dtype=object)}
+
+
+def analyse_all(urls, workers=4, **kwargs):
+    """Run analyse_session over recordings in worker processes (kwargs go to analyse_session)."""
     import os
     from concurrent.futures import ProcessPoolExecutor
+    from functools import partial
     os.environ.setdefault("OMP_NUM_THREADS", "1")
     os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
     os.environ.setdefault("MKL_NUM_THREADS", "1")
     with ProcessPoolExecutor(workers) as ex:
-        return list(ex.map(analyse_session, urls))
+        return list(ex.map(partial(analyse_session, **kwargs), urls))
 
 
 # ----------------------------------------------------------------------------------------
@@ -553,7 +605,8 @@ def observations(results, head, stim_roi=None, labels=None):
     target ROI is known: the stimulated and observed neuron names, <dF/F0>_t (Methods and the
     code's decaying variant), whether the observed ROI passed the classifier, and whether the
     stimulated ROI did (autoresponse). `stim_roi` optionally replaces each recording's
-    stimulated ROI array (used for the OSF variant)."""
+    stimulated ROI array (used for the OSF variant). `f0` is the F0 of the observed trace and
+    `pb_ok` says whether its photobleaching fit succeeded."""
     import pandas as pd
     head = set(head)
     parts = []
@@ -573,7 +626,8 @@ def observations(results, head, stim_roi=None, labels=None):
             parts.append(pd.DataFrame({
                 "rec": k, "subject": r["subject_id"], "stim": e, "roi_j": j, "j": names[j],
                 "j_head": in_head[j], "roi_i": ii, "i": names[ii], "i_head": in_head[ii],
-                "dff": r["dff"][e, ii], "dff_decay": r["dff_decay"][e, ii],
+                "dff": r["dff"][e, ii], "dff_decay": r["dff_decay"][e, ii], "f0": r["f0"][e, ii],
+                "pb_ok": r["photobleach_status"][ii] == "ok",
                 "responded": [x in resp for x in ii], "auto": j in resp,
                 "how": r["stim_how"][e]}))
     return pd.concat(parts, ignore_index=True)
