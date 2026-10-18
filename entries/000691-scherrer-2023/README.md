@@ -27,7 +27,7 @@ rule in the paper's code. It does not mark which footprints the paper's curation
 2948 are used. The attempt record, with the reasons and the differences from the paper's method,
 is [`attempts/000691-scherrer-2023-01.yaml`](../../attempts/000691-scherrer-2023-01.yaml).
 
-- `reproduce_scherrer_2023.ipynb`: the analysis. It takes about 24 minutes on four cores, most of it fitting
+- `reproduce_scherrer_2023.ipynb`: the analysis. It takes about 25 minutes on four cores, most of it fitting
   decoders.
 - `kiloscope.py`: loading the session, tracking the mouse, the labels and decoders of the paper's
   code, and the radial illumination profiles. Other notebooks on this dandiset can import it.

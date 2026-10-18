@@ -87,8 +87,10 @@ outcomes:
     median fraction of members active is 0.399 to 0.519, and the event's fraction (0.568 to 0.851)
     is above the 95th percentile of random windows for 6 of 8 components. Random sets of footprints
     of the same size have spread ratios of 0.951 to 1.042 (5th to 95th percentiles), so any set this
-    large passes the criterion's half; the active footprints are as spread as random sets, which
-    means they are not clustered.
+    large passes the criterion's half. The event's spread ratio lies within its own component's
+    random range for 3 of 8 components, below it for 2 (0.945 and 0.956, against 5th percentiles
+    of 0.962) and above it for 3 (1.042, 1.055 and 1.050, against 95th percentiles of 1.037, 1.042
+    and 1.036).
   deviations:
   - All 2948 footprints in place of the 2382 curated ones.
   - Event times are each component's largest temporal weight; the code sets them by hand.
@@ -122,7 +124,10 @@ outcomes:
   output: claim:ed9b-octant-decoding
   notes: Median class accuracy 0.313 over 50 decoders (0.211 to 0.416), chance 0.125, null 95th
     percentile 0.144; all 50 exceed it, and each octant's mean accuracy (0.236 to 0.499) is above
-    chance.
+    chance. On six splits fit by both solvers, SGD stops at objectives of 3.89 to 6.18 and the exact
+    solver at 0.071 to 0.094 (at its limit of 10,000 iterations in all six); the exact solver gives
+    0.220 to 0.292 for three real decoders and 0.092 to 0.145 for three with shifted labels, so the
+    claim also holds with it.
   deviations:
   - As for fig2-quadrant-direction-decoding.
 - claim: ed9c-local-decoding-map
@@ -138,9 +143,11 @@ outcomes:
     the 2.0 of predicting every class absent, so the scores rest on weak classifiers. liblinear
     reached its limit of 10,000 iterations in 2268 of 3000 fits. Null standard deviations per point
     0.018 to 0.046 (5th to 95th percentile) from 10 shifted decoders; a point alone needs z above
-    3.40, and the smallest z among the significant points is 2.53. With the code's 64 footprints
-    within 50 px, on a 60 px grid, 22 of 34 points are significant (scores 0.141 to 0.211, range
-    0.070).
+    3.40, and the smallest z among the significant points is 2.53. A Welch t-test of the 10 real
+    against the 10 shifted decoders marks 80 points significant (range 0.079), and 5 with SGD
+    (range 0.052). With the code's 64 footprints within 50 px, on a 60 px grid, 22 of 34 points are
+    significant (scores 0.141 to 0.211, range 0.070), and 32 with the t-test. The exact fits stop
+    at an iteration limit, so the counts can differ slightly between machines.
   deviations:
   - The legend says 32 footprints within 270 um; the code uses 64 within 50 pixels. The legend is
     followed for the outcome and the code's choice is shown as a variant.
@@ -151,6 +158,8 @@ outcomes:
     weakly. Round 1 used 10 passes of SGD here, which is shown as a variant.
   - A 30 pixel grid where the code uses 5 pixels; all 2948 footprints in place of 2382; position as
     for fig2-quadrant-direction-decoding.
+  - The code's variant is run on a 60 pixel grid where the criterion says 40; on the 40 pixel grid
+    the notebook took 32 minutes on four cores, over the 30 minute limit.
 - claim: ed10-localized-activity
   outcome: reproduced
   notebook: reproduce_scherrer_2023.ipynb
@@ -343,7 +352,7 @@ verifications:
       criterion; with SGD on the same points and seeds, 1 point is. The radius is now 45 px. Added the
       null standard deviation per point (0.018 to 0.046), the z a point needs alone (3.40) and the
       smallest z among significant points (2.53). The map was not rerun with more decoders per point;
-      with 10 per point it already takes 634 s on four cores, so more do not fit the time limit. The code's variant
+      with 10 per point it already takes about 640 s on four cores, so more do not fit the time limit. The code's variant
       now uses the exact solver on a 60 px grid (22 of 34 significant).
   - claim: ed10-localized-activity
     agrees: true
@@ -370,3 +379,139 @@ verifications:
     response: Outcome kept, as the criterion fixes the code's centre and the radius. Added the minimum
       out to R ± 5% (0.846, 0.742) and five other centres (0.695 to 0.831; above 0.8 for one).
       The pixel size is the code's and was not varied.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, the helper module, the claims
+    file, the README and the attempt record; no paper text was downloaded this round, and the
+    verifier worked from its round-1 reading. It agreed with all 15 outcomes. It quoted sentences the
+    printed numbers contradict. Most of them (18 significant points, 2268 fits at the limit, NMF
+    errors 97.55 to 97.58, 634 s) are the numbers of a run on four cores, while the executed copy it
+    read came from another run (19, 2264, 97.79 to 97.8, 358 s, 13.7 min); the exact fits stop at an
+    iteration limit and the NMF uses float32, so these numbers differ slightly between machines. The
+    entry was re-run on four cores, which again gives 18, 2268, 97.55 to 97.58 and about 640 s, and the
+    text now matches that run. The run takes about 25 minutes, so the README and entry say about 25. The
+    verifier also found two sentences no output showed. The AVI's byte size matching the Academic
+    Torrents listing (cell 15) is removed, and the draft holding the same blobs (cell 0) is now
+    printed in the data check (same assets, sizes and blob ids).
+  results:
+  - claim: abstract-thousands-of-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. Its round-1 tracking points (problems 6 and 7) are resolved;
+      jumps, small blobs, a sensitivity check and the overlay were added, and the opening frames are
+      shown in the cell 10 figure.
+    response: No change.
+  - claim: ed6a-curated-footprints
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ed6bcd-other-mice
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ed5-songbirds
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: abstract-kiloscope-fov
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome. Problem 8 is resolved; the radius is now 45 px, and the
+      use of the pixel size is explained.
+    response: No change.
+  - claim: abstract-weights
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ed1-ed4-resolution
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ed3-adc
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome.
+    response: No change.
+  - claim: ed8-coactive-distributed
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Problem 4 is resolved, as random windows and random footprint sets were added. Two
+      statements are contradicted. The record gives NMF errors of 97.55 to 97.58 where cell 35 prints
+      97.79, 97.78, 97.79 and 97.8. Cell 36 and the record say the active footprints are as spread as
+      random sets, which is true only for 3 of the 8 components; the event spread is below the random
+      5th to 95th percentile range for c1 (0.945 against 0.962) and c5 (0.956 against 0.962) and above
+      it for c0 (1.042 against 1.037), c4 (1.055 against 1.042) and c7 (1.050 against 1.036). The
+      outcome does not depend on this, since every ratio is far above 0.5.
+    response: The Result cell and the notes now say the event's spread lies within its component's
+      random range for 3 of 8, below it for 2 and above it for 3, with the numbers, and no longer say
+      the footprints are as spread as random sets. The NMF errors in the record (97.55 to 97.58) are
+      those printed by the re-run on four cores; the copy the verifier read came from another machine.
+      Outcome kept.
+  - claim: fig2-quadrant-direction-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Problem 2 is resolved by the solver check; part of the round-1 point was wrong, as
+      on these decoders SGD scores higher than the exact solver (0.44 to 0.54 against 0.26 to 0.32,
+      cell 22), and the claim holds with either solver. Fig. 2 has no paper value to compare, as the
+      main text and the Fig. 2 legend remain unavailable.
+    response: No change. The main text and the Fig. 2 legend are still not available here, so no paper
+      value is compared.
+  - claim: ed9b-octant-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, but ed9b was not solver-checked. The exact-solver check covers only the quadrant
+      and direction decoders, where the exact solver's accuracies fall to about 0.6 of their SGD
+      values; ed9b's margin (0.313 against a null 95th percentile of 0.144) is smaller in ratio, so its
+      outcome under the exact solver is untested. There is no paper value to compare.
+    response: Added the same check for the octant decoders, six splits fit by both solvers (cell 26).
+      SGD stops at objectives of 3.89 to 6.18, the exact solver at 0.071 to 0.094. The exact solver
+      gives 0.220 to 0.292 for three real decoders and 0.092 to 0.145 for three with shifted labels,
+      so the real decoders stay above chance and above every shifted one checked. Outcome kept. No
+      paper value is available to compare.
+  - claim: ed9c-local-decoding-map
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, with a reservation, and the evidence is weak. The exact solver follows MATLAB's
+      documented default for 100 or fewer predictors and the criterion is met, but the outcome flips
+      with the solver (1 point with SGD), and the solver was changed after the round-1 failure. The
+      exact solver hit its iteration limit in 2264 of 3000 fits, and in the 100,000-iteration check 2
+      of 4 fits did not converge. Each z uses a null standard deviation from only 10 values; the
+      smallest significant z, 2.53, is below the 3.40 a point needs on its own, and a t-based test
+      would mark fewer points. The map was not rerun with more decoders per point. The code variant
+      uses a 60 px grid, where the claims file states 40 px. Contradicted by the outputs are 18
+      significant points (cell 28 prints 19), 2268 fits at the limit (cell 28 prints 2264) and 634 s
+      (cell 28 prints 358 s).
+    response: Added a Welch t-test of the 10 real against the 10 shifted decoders at each point as a
+      variant. It marks more points, not fewer, 80 of 150 (range 0.079), as it uses the spread of both
+      sets; with SGD it marks 5 (range 0.052), and with the code's variant 32 of 34. The map was not
+      rerun with more decoders per point; it takes about 640 s with 10. The code variant stays on the 60 px
+      grid. It was run on the 40 px grid once, and the notebook then took 32 minutes on four cores,
+      over the 30 minute limit; the deviations and the notebook now say so. The counts 18 and 2268 and
+      the time of about 640 s are those of the re-run on four cores; the copy the verifier read came from
+      another machine, and the Result cell now says the counts can differ slightly between machines.
+      The round-1 response now says about 640 s. Outcome kept.
+  - claim: ed10-localized-activity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Problem 5 is resolved; the empirical false-positive counts reach a maximum of 62
+      against the observed 100, and slow non-stationarity is acknowledged.
+    response: No change.
+  - claim: ed2b-featherscope-flat-illumination
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The radius and centre variants were added.
+    response: No change.
+  - claim: ed2c-kiloscope-flat-illumination
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. It sits at the threshold, 0.003 short of 0.8, and one of the four 100 um centre
+      shifts crosses 0.8. Partially reproduced stands under the stated criterion, but the call is
+      marginal.
+    response: No change. The notes and the Result cell already give the margin and the centre shift
+      above 0.8.
