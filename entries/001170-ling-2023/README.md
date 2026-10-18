@@ -32,9 +32,13 @@ findings are tested on the recordings the paper deposited on
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The dandiset holds raw fluorescence. With dF/F relative to the 2 s before each odor, ON and OFF
-responses are positively correlated and the contrast enhancement is absent; with traces z-scored
-within each trial window, close to the arrays the paper deposited, they appear as the paper reports.
+The dandiset holds raw fluorescence. With dF/F relative to the 2 s before each odor, or F z-scored
+on those 2 s, ON and OFF responses are positively correlated and the contrast enhancement is absent.
+With traces z-scored within each trial window, close to the arrays the paper deposited, they appear
+as the paper reports, but on synthetic data that normalisation produces such anticorrelations by
+itself. The ON-OFF angles exceed 90 degrees only because of the centring the paper's code applies,
+and the classifiers of the block sessions cannot separate the odor from slow differences between
+blocks.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001170-ling-2023-01.yaml`](../../attempts/001170-ling-2023-01.yaml).
 

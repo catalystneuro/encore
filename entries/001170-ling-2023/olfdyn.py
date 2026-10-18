@@ -26,7 +26,8 @@ Where the parameters come from:
   common choice). For the ITI and IBI analyses, where a pre-trial baseline would subtract the
   activity being measured, F0 is the median of the ROI's F over the session (a common choice).
   The arrays the paper deposited on Figshare are close to a z-score of F within each trial
-  window; `zscore_trials` gives that as a variant.
+  window; `zscore_trials` gives that as a variant, and `zscore_pre` a z-score with the mean and
+  SD of the 2 s before onset only, which does not take the response into the normalisation.
 - Population vectors follow the paper's code: trial-averaged traces, minus the median across
   glomeruli at each frame (`medRsp` in Script_Fig2.m and Script_Fig3.m), and angles between
   vectors centred over the analysed frames (the code takes angles between PCA scores, which are
@@ -178,14 +179,20 @@ def open_session(path: str, url: str) -> dict:
 
 
 def windows(s: dict, onsets: np.ndarray, start: float, stop: float) -> np.ndarray:
-    """F on a 16 Hz grid from onset+start to onset+stop: trials x frames x ROIs."""
+    """F on a 16 Hz grid from onset+start to onset+stop: trials x frames x ROIs.
+
+    Grid points before the first or after the last frame are NaN (not extrapolated).
+    """
     grid = np.arange(int(round((stop - start) * GRID_HZ))) / GRID_HZ + start
-    idx = np.searchsorted(s["t"], onsets[:, None] + grid[None, :])
+    target = onsets[:, None] + grid[None, :]
+    idx = np.searchsorted(s["t"], target)
     idx = np.clip(idx, 1, len(s["t"]) - 1)
     t0, t1 = s["t"][idx - 1], s["t"][idx]
-    w = ((onsets[:, None] + grid[None, :]) - t0) / (t1 - t0)
+    w = (target - t0) / (t1 - t0)
     F = s["F"]
-    return (F[idx - 1] * (1 - w[..., None]) + F[idx] * w[..., None]).astype(np.float32)
+    out = (F[idx - 1] * (1 - w[..., None]) + F[idx] * w[..., None]).astype(np.float32)
+    out[(target < s["t"][0]) | (target > s["t"][-1])] = np.nan
+    return out
 
 
 def frame_windows(s: dict, onsets: np.ndarray, pre_frames: int, n_frames: int) -> np.ndarray:
@@ -210,6 +217,13 @@ def dff_session(win: np.ndarray, s: dict) -> np.ndarray:
 def zscore_trials(win: np.ndarray) -> np.ndarray:
     """Variant: each trial and ROI z-scored over its window, close to the deposited arrays."""
     return (win - win.mean(axis=1, keepdims=True)) / win.std(axis=1, keepdims=True)
+
+
+def zscore_pre(win: np.ndarray, pre_s: float = PRE_S) -> np.ndarray:
+    """Variant: each trial and ROI z-scored with the mean and SD of its first `pre_s` seconds only."""
+    n = int(pre_s * GRID_HZ)
+    pre = win[:, :n]
+    return (win - pre.mean(axis=1, keepdims=True)) / pre.std(axis=1, keepdims=True)
 
 
 SOL_WINDOW = (-PRE_S, ON_S + 55.0)         # a solitary trial, 2 s before onset to the next trial
