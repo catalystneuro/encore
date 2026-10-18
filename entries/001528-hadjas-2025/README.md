@@ -40,7 +40,7 @@ analyses; for the other nine mice it holds SNc recordings only. The attempt reco
 reasons and the differences from the paper's method, is
 [`attempts/001528-hadjas-2025-01.yaml`](../../attempts/001528-hadjas-2025-01.yaml).
 
-- `reproduce_hadjas_2025.ipynb`: the analysis. It takes about five minutes, most of it streaming
+- `reproduce_hadjas_2025.ipynb`: the analysis. It takes about seven minutes, most of it streaming
   the files and recomputing the dF/F for the data check.
 - `photometry.py`: loading the files, trial alignment, response measures, a recomputation of the
   dF/F, and the statistical tests. Other notebooks on this dandiset can import it.
