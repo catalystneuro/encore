@@ -52,7 +52,7 @@ here with the rule in the paper's Methods. The attempt record, with the reasons 
 from the paper's method, is
 [`attempts/000971-seiler-2022-01.yaml`](../../attempts/000971-seiler-2022-01.yaml).
 
-- `reproduce_seiler_2022.ipynb`: the analysis. It takes about 25 minutes, most of it streaming the
+- `reproduce_seiler_2022.ipynb`: the analysis. It takes 15 to 25 minutes, most of it streaming the
   events of about 2200 files and 62 photometry recordings.
 - `seiler.py`: listing the sessions, reading events and photometry, the shock probe table and phenotype
   rule, the behavioral measures, and the photometry processing of the authors' code. Other notebooks on
