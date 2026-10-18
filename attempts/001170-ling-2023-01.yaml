@@ -148,7 +148,8 @@ outcomes:
     With F z-scored on the 2 s before onset r is positive in every bin (0.152 to 0.527), and with
     frame-counted windows too (0.152 to 0.446). With per-trial z-scored traces r is negative from 5
     s on (-0.344 to -0.480, 26 to 28 of 28), as the claim states, but on synthetic glomeruli with
-    excitation only that normalisation gives the same negative values. Mice 148 and 149 keep r near
+    excitation only that normalisation gives negative values of the same sign and larger size (-0.90
+    and -0.93). Mice 148 and 149 keep r near
     0.2 to 0.4 for the whole 50 s.
   deviations:
   - Correlation of the ON vector with 5-s bins, a summary of the paper's frame-by-frame matrix.
@@ -158,7 +159,7 @@ outcomes:
   notebook: reproduce_ling_2023.ipynb
   output: claim:fig7h-iti-knn-mouse
   notes: In sub-148 ses-3 (318 glomeruli) accuracy is 45%, above the null's 99th percentile (37.5%,
-    null mean 17.1%) but below 50%; by odor 0.9, 0.0, 0.3 and 0.6. The code's choice (cosine on the
+    null mean 16.7%) but below 50%; by odor 0.9, 0.0, 0.3 and 0.6. The code's choice (cosine on the
     top three PCs) gives 12.5%. Across the seven sessions accuracy is 22.5% to 47.5%, above the
     null's 99th percentile in three. The null mean of this leave-one-out vote (16.7% to 17.4%) is
     below the nominal 25%, as with k = 20 only 9 of the 39 other trials share the own odor; the
@@ -176,11 +177,12 @@ outcomes:
   notes: In sub-148 ses-3 accuracy is 88.5% in the first 10 s after offset and 71.9% to 75.6% from 10
     to 50 s, above 50% and the null's 99th percentile (32.5% to 35.9%); the other sessions give
     72.2% to 99.4% in every segment. The statement's reading as odor memory is not supported by the
-    outputs. The trial-label null does not keep the block structure; under the 24 relabellings of
-    whole blocks, the only nulls that do, accuracy stays at 68.2% to 88.5% in sub-148 ses-3, close
-    to the observed values. On pseudo-trials in the inter-block intervals, where no odor is given, the same
-    classifier names the preceding block at 69.6% to 96.9% (sub-148 ses-3 69.6% to 71.2%), as high
-    as in the ITIs, so slow differences between blocks are enough for this accuracy.
+    outputs. The trial-label null does not keep the block structure, and as each odor has one
+    block no label permutation that keeps whole blocks can serve as a null. On pseudo-trials within
+    the 15 min after each block, where no odor is given, the same classifier names the preceding
+    block at 69.6% to 96.9% (sub-148 ses-3 69.6% to 71.2%), nearly as high as in the ITIs (the
+    pseudo-trial maximum is below the ITI minimum in 4 of 7 sessions), so slow differences between
+    blocks are enough for most of this accuracy.
   deviations:
   - dF/F with F0 the session median of each ROI.
   - The shuffled-label control is a permutation of whole-trial labels with the neighbours kept.
@@ -277,9 +279,11 @@ findings:
 - kind: metadata_insufficient
   statement: The fluorescence traces are raw F (unit "n.a.") with no description of how they were
     extracted or of the normalisation the paper applied. The paper's deposited arrays are close to F
-    z-scored within each 57-s trial window, and the paper's ON/OFF anticorrelation, its persistence
-    after offset and the contrast enhancement appear in these data with that normalisation and not
-    with dF/F relative to the 2 s before each odor or with F z-scored on those 2 s. On synthetic
+    z-scored within each 57-s trial window. With that normalisation the contrast enhancement and
+    negative correlations between the ON response and activity from 5 s after offset appear in these
+    data, and they do not with dF/F relative to the 2 s before each odor or with F z-scored on those
+    2 s. The time-averaged ON and OFF vectors are not anticorrelated with any of these (median r
+    0.068 with the whole-window z-score, 12 of 28 below 0). On synthetic
     glomeruli with excitation only, the whole-window z-score gives such anticorrelations by itself.
 - kind: metadata_insufficient
   statement: The trials table has one row per second of valve opening, without a description; odor
@@ -326,7 +330,8 @@ findings:
     imaging frame.
 - kind: code_mismatch
   statement: The paper's code counts windows in frames at a nominal 16 per second, while the
-    sessions are imaged at 13.7 to 17.8 Hz; in sub-141 ses-8 (15.5 Hz) the deposited trial windows
+    sessions are imaged at 13.7 to 17.8 Hz, so a nominal 57-s window of 912 frames lasts 51.2 to
+    66.4 s; in sub-141 ses-8 (15.5 Hz) the deposited trial windows
     match the dandiset only when counted in frames (r 0.968) and not in seconds (r 0.307).
 - kind: paper_inconsistency
   statement: The Methods give k = 50 for the ITI-average classifier of Figure 7H, which has 40
@@ -528,3 +533,140 @@ verifications:
       0.04. The block-structure problem (problem 3) applies to the locust data too.
     response: Same as fig7f for the block structure. The notes also give the mean over the whole 0 to
       21 s (39.6%), a reading the criterion did not list. Outcome kept.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with conclusions and summary, the README, the attempt
+    record, the helper module and the claims file, with the paper. The verifier read the v2 preprint
+    text (bioRxiv API JATS, saved in paper/), which confirms 121.8, 106.7, 34.8, n = 286 and the
+    11-odor list; its Fig 4B text gives no ON-ON value, and Table S1 is an image and was not checked.
+    It agrees with 19 of 19 outcomes.
+  results:
+  - claim: mouse-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: figshare-trace-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1. The Summary's drift of "up to about 2 s" holds only for sub-141
+      ses-8; at the frame rates of cell 4, 912 frames last 66.4 s at 13.73 Hz and 51.2 s at 17.83 Hz,
+      so the drift is 6 to 9 s at the extremes.
+    response: The Summary now gives 51.2 to 66.4 s for a nominal 57-s window (6 to 9 s at the extremes,
+      about 1.8 s in sub-141 ses-8), and the code_mismatch finding gives the same range.
+  - claim: fig2h-onoff-angle-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1. For the mouse, the README's "only because of the centring" holds
+      (uncentred 71.8, 2 of 28 above 90, cell 29).
+    response: The README now limits that statement to the mouse and gives the uncentred mean.
+  - claim: fig2f-onoff-anticorrelated-mouse
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, as in round 1. The README, the Summary's first bullet and the record's first
+      metadata_insufficient finding say the ON/OFF anticorrelation appears with traces z-scored over
+      each trial window, but cell 34 prints r_zscored median +0.068, 12 of 28 below 0, p = 0.33, with
+      mixed odor medians. Only fig7d from 5 s on and fig6e show the effect with that z-score.
+    response: Corrected the README, the Summary and the finding. They now say the whole-window z-score
+      gives the fig6e contrast and the negative correlations of fig7d from 5 s on, and that the
+      time-averaged ON and OFF vectors are not anticorrelated with any normalisation tried (median r
+      0.068, 12 of 28 below 0).
+  - claim: fig4b-reference-odor-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1. The 44.7 degrees matches the published version's Fig 2G legend.
+    response: No change needed.
+  - claim: fig4d-clustering-mouse
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: fig6e-contrast-msc
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, as in round 1. The effect appears with the whole-window z-score (cell 44).
+    response: No change needed.
+  - claim: fig6e-contrast-ace
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: fig7d-persistent-anticorrelation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, as in round 1. Cell 48 and the fig7d notes say the synthetic whole-window z-score
+      gives the same negative values; the synthetic values are -0.90 and -0.93 (cell 35) and the data
+      give -0.34 to -0.48 (cell 47). The sign is the same, the size is not.
+    response: Cell 48 and the notes now say the synthetic values have the same sign and a larger size
+      (-0.90 and -0.93).
+  - claim: fig7h-iti-knn-mouse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1. Cell 51 and the notes give null mean 17.1% for sub-148 ses-3; cell
+      50 prints 0.167.
+    response: Corrected to 16.7% in cell 51 and the notes.
+  - claim: fig7j-iti-timebin-mouse
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced holds on the criterion only, and the record and notebook now say so. The
+      block-relabelling null repeats the observed accuracy by construction, as renaming whole classes
+      does not change a k-NN classifier's accuracy except through vote ties, so it is not evidence;
+      the pseudo-trials carry the argument. Pseudo-trials are not classified "as high as" the ITIs;
+      in 4 of 7 sessions the pseudo-trial maximum is below the ITI minimum (for example sub-141 ses-1,
+      0.899 against 0.911), so "nearly as high" fits. They lie within the 15 min after each block, not
+      15 min after it.
+    response: Removed the block-relabelling null from cell 53, cell 55 and the notes, which now say
+      why no block-keeping permutation can serve as a null. Cell 55, the notes and the Summary now say
+      the pseudo-trials, within the 15 min after each block, are classified nearly as high as the
+      ITIs, with the pseudo-trial maximum below the ITI minimum in 4 of 7 sessions.
+  - claim: figs7e-ibi-chance
+    agrees: true
+    outcome: blocked
+    reason: Now accepts blocked (methods_underspecified). With the Methods' k = 50 the procedure's own
+      null averages 10.8% (cell 57), so the 3.8% cannot count as meeting the criterion, and the
+      paper's 34.8% cannot come from the procedure its Methods describe. Its round-1 not_reproduced
+      rested on k = 20, which the criterion does not specify. Every working variant gives 35% to 98%
+      (k = 20, 10, 5), well above 34.8%; if a working method were ever fixed, the outcome would be
+      not_reproduced.
+    response: No change needed; the outcome stays blocked, as the verifier now accepts.
+  - claim: figs8e-random-order-decline
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: figs2-pid-decay
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: fig1g-onoff-angle-locust
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1. The README's "The ON-OFF angles exceed 90 degrees only because of
+      the centring" does not hold for the locust, where subtracting the pre-odor baseline without
+      centring gives a mean of 91.9, with 9 of 11 odors above 90 (cell 65).
+    response: The README and the Summary now give the locust baseline-subtracted uncentred mean (91.9,
+      9 of 11 above 90) and limit "because of the centring" to the mouse.
+  - claim: figs4a-reference-odor-locust
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: fig5e-contrast-locust
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
+  - claim: fig7f-iti-knn-locust
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced holds on the criterion only, and the record and notebook now say so. The locust
+      "solitary block structure" matches the published version's Table 1. A locust control cannot be
+      built from the Figshare files.
+    response: No change needed.
+  - claim: fig7i-iti-timebin-locust
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees, as in round 1.
+    response: No change needed.
