@@ -444,11 +444,13 @@ def fit_exp_decay(x, y, lower=(-50, -50), upper=(50, 50)) -> np.ndarray:
     return np.array([a[k], taus[k]])
 
 
-def regress_wait_on_rewards(A: dict, nback: int) -> tuple[np.ndarray, float]:
+def regress_wait_on_rewards(A: dict, nback: int, zero: bool = True) -> tuple[np.ndarray, float]:
     """regress_wt_vs_rew.m: z-scored wait times on mixed-block catch trials (opted out)
     regressed on the current and nback-1 previous log2 offers (rewards outside mixed blocks
     NaN, the first trials padded with 0, as the code), with a constant. Coefficients from the
-    first one whose 95% CI contains 0 are set to 0; tau from an exponential fit."""
+    first one whose 95% CI contains 0 are set to 0 (unless zero is False); tau from an
+    exponential fit, set to 0 when every coefficient from 2 back on is 0 (the code's b(2:end-1),
+    which for initiation times leaves out the coefficient 1 back)."""
     use = A["optout"] & A["catch"] & (A["block"] == 1)
     WT = np.full(len(use), np.nan)
     WT[use] = zscore(A["wait_time"][use])
@@ -460,14 +462,14 @@ def regress_wait_on_rewards(A: dict, nback: int) -> tuple[np.ndarray, float]:
     X[:, -1] = 1.0
     b, ci = ols(WT[use], X[use])
     nonsig = np.flatnonzero((ci[:, 0] < 0) & (ci[:, 1] > 0))
-    if len(nonsig):
+    if len(nonsig) and zero:
         b[nonsig[0]:-1] = 0
     fit = fit_exp_decay(np.arange(1, nback + 1), 10 * b[:nback], (-10, 0), (10, 10))
     tau = 0.0 if np.all(b[1:-1] == 0) else fit[1]
     return b, tau
 
 
-def regress_initiation_on_rewards(A: dict, nback: int) -> tuple[np.ndarray, float]:
+def regress_initiation_on_rewards(A: dict, nback: int, zero: bool = True) -> tuple[np.ndarray, float]:
     """regress_latency_vs_rew.m: z-scored initiation times in mixed blocks regressed on the
     nback previous log2 rewards received (0 after unrewarded trials; NaN outside mixed blocks
     and before the first trial), with a constant; zeroing and tau as for wait times."""
@@ -483,7 +485,7 @@ def regress_initiation_on_rewards(A: dict, nback: int) -> tuple[np.ndarray, floa
     X[:, -1] = 1.0
     b, ci = ols(L, X[use])
     nonsig = np.flatnonzero((ci[:, 0] < 0) & (ci[:, 1] > 0))
-    if len(nonsig):
+    if len(nonsig) and zero:
         b[nonsig[0]:-1] = 0
     fit = fit_exp_decay(np.arange(1, nback + 1), b[:nback], (-10, 0), (0, 10))
     tau = 0.0 if np.all(b[1:-1] == 0) else fit[1]
@@ -491,13 +493,14 @@ def regress_initiation_on_rewards(A: dict, nback: int) -> tuple[np.ndarray, floa
 
 
 def tau_shuffle_test(first: np.ndarray, last: np.ndarray, betas: np.ndarray, n_shuffle: int, rng,
-                     consistent: bool = False) -> tuple[float, float]:
+                     consistent: bool = False, amp_upper: float = 1) -> tuple[float, float]:
     """myTauShuffleTest.m: tau of an exponential fit to the mean coefficients (without the
     constant) of the two groups, against random halves of the same rats; p as the code
     computes it, the count of |shuffled difference| > |observed| over 2 * n_shuffle. The code
     fits the shuffled groups to 10 x coefficients with bounds (-3, 0) to (1, 50) and the
     observed groups to the coefficients with bounds (-10, 0) to (1, 10); with consistent=True
-    the observed groups are fit as the shuffled ones."""
+    the observed groups are fit as the shuffled ones. amp_upper replaces the code's upper bound
+    of 1 on the amplitude in every fit."""
     B = betas[first | last][:, :-1]
     x = np.arange(1, B.shape[1] + 1)
     n = len(B)
@@ -505,15 +508,15 @@ def tau_shuffle_test(first: np.ndarray, last: np.ndarray, betas: np.ndarray, n_s
     for i in range(n_shuffle):
         perm = rng.permutation(n)
         g1, g2 = perm[: n // 2], perm[n // 2:]
-        t1 = fit_exp_decay(x, 10 * B[g1].mean(0), (-3, 0), (1, 50))[1]
-        t2 = fit_exp_decay(x, 10 * B[g2].mean(0), (-3, 0), (1, 50))[1]
+        t1 = fit_exp_decay(x, 10 * B[g1].mean(0), (-3, 0), (amp_upper, 50))[1]
+        t2 = fit_exp_decay(x, 10 * B[g2].mean(0), (-3, 0), (amp_upper, 50))[1]
         shuffled[i] = t1 - t2
     if consistent:
-        t1 = fit_exp_decay(x, 10 * betas[first][:, :-1].mean(0), (-3, 0), (1, 50))[1]
-        t2 = fit_exp_decay(x, 10 * betas[last][:, :-1].mean(0), (-3, 0), (1, 50))[1]
+        t1 = fit_exp_decay(x, 10 * betas[first][:, :-1].mean(0), (-3, 0), (amp_upper, 50))[1]
+        t2 = fit_exp_decay(x, 10 * betas[last][:, :-1].mean(0), (-3, 0), (amp_upper, 50))[1]
     else:
-        t1 = fit_exp_decay(x, betas[first][:, :-1].mean(0), (-10, 0), (1, 10))[1]
-        t2 = fit_exp_decay(x, betas[last][:, :-1].mean(0), (-10, 0), (1, 10))[1]
+        t1 = fit_exp_decay(x, betas[first][:, :-1].mean(0), (-10, 0), (amp_upper, 10))[1]
+        t2 = fit_exp_decay(x, betas[last][:, :-1].mean(0), (-10, 0), (amp_upper, 10))[1]
     observed = t1 - t2
     return observed, np.sum(np.abs(shuffled) > abs(observed)) / (2 * n_shuffle)
 
@@ -627,14 +630,17 @@ def fit_inferential(M: dict, inferred: np.ndarray, rng, starts: int = 20, x0=Non
     return best, best_val
 
 
-def retrospective_kappa(M: dict, alphas: np.ndarray, belief_mixed: np.ndarray) -> np.ndarray:
+K0_CODE = np.mean(np.log([5, 10, 20, 40, 80]))    # natural log, as the code; the offers are in log2
+
+
+def retrospective_kappa(M: dict, alphas: np.ndarray, belief_mixed: np.ndarray, k0: float = K0_CODE) -> np.ndarray:
     """GenerateSynthData_AlphaPHModel.m: running average of log2 offers with the learning rate
-    alpha0 / (1 - |change in P(mixed)|), capped at 1, reset at session starts; then scaled as
-    the code does. Returns (n_alpha, n_trials)."""
+    alpha0 / (1 - |change in P(mixed)|), capped at 1, reset at session starts to k0; then scaled
+    as the code does. The code's k0 is the mean of the natural logs of 5 to 80 uL (3.0) while the
+    offers are log2 (mean 4.32). Returns (n_alpha, n_trials)."""
     alphas = np.asarray(alphas, float)
     R = M["R"]
     n = len(R)
-    k0 = np.mean(np.log([5, 10, 20, 40, 80]))
     kappa = np.empty((len(alphas), n))
     kappa[:, 0] = k0
     k = np.full(len(alphas), k0)
@@ -652,10 +658,10 @@ def retrospective_kappa(M: dict, alphas: np.ndarray, belief_mixed: np.ndarray) -
     return kappa
 
 
-def fit_retrospective(M: dict, belief_mixed: np.ndarray, alphas: np.ndarray) -> tuple[np.ndarray, float]:
+def fit_retrospective(M: dict, belief_mixed: np.ndarray, alphas: np.ndarray, k0: float = K0_CODE) -> tuple[np.ndarray, float]:
     """Grid over the baseline learning rate; D/15 in [0, 1] fit at each by bounded search."""
     f = M["fitted"]
-    kappas = retrospective_kappa(M, alphas, belief_mixed)[:, f]
+    kappas = retrospective_kappa(M, alphas, belief_mixed, k0)[:, f]
     R, wt_obs = M["R"][f], M["wt"][f]
     best, best_val = None, np.inf
     for a, kap in zip(alphas, kappas):
@@ -832,11 +838,19 @@ def regress_trials_blocks(Z: dict, idx: np.ndarray) -> dict:
     return out
 
 
-def training_pairs(Z: dict, nsess: int = 50, grp: int = 2) -> tuple[pd.DataFrame, pd.DataFrame]:
+def training_pairs(Z: dict, nsess: int = 50, grp: int = 2, final_stage_only: bool = False) -> tuple[pd.DataFrame, pd.DataFrame]:
     """macro_regress_overtraining_V2.m: the measures of regress_trials_blocks for the first and
     the last nsess sessions in groups of grp, one row per group (NaN where the rat has too few
-    sessions)."""
+    sessions). The code takes every session of the struct; with final_stage_only, only the
+    sessions whose first trial is in the final stage (as Figure4.m selects for Figure 4d)."""
     Z = dict(Z)
+    if final_stage_only:
+        keep = final_stage_sessions(Z)
+        nt = np.atleast_1d(Z["ntrials"]).astype(int)
+        starts = np.r_[0, np.cumsum(nt)]
+        idx = np.concatenate([np.arange(starts[s], starts[s + 1]) for s in keep]) if len(keep) else np.array([], int)
+        Z = {k: (v[idx] if np.ndim(v) and len(v) == starts[-1] else v) for k, v in Z.items()}
+        Z["ntrials"] = nt[keep]
     Z["wait_time"] = Z["wait_time"].astype(float).copy()
     Z["wait_time"][Z["wait_time"] > float(Z["wait_thresh"])] = np.nan
     Z["ITI"] = Z["ITI"].astype(float).copy()
@@ -854,6 +868,33 @@ def training_pairs(Z: dict, nsess: int = 50, grp: int = 2) -> tuple[pd.DataFrame
                 rows.append(regress_trials_blocks(Z, idx))
     cols = ["wt_ratio", "iti_ratio", "b_reward", "b_block", "b_iti_prev"]
     return pd.DataFrame(first, columns=cols), pd.DataFrame(last, columns=cols)
+
+
+def final_stage_sessions(Z: dict) -> np.ndarray:
+    """Figure4.m: the sessions of a struct whose first trial is in the final stage (coded 9)."""
+    nt = np.atleast_1d(Z["ntrials"]).astype(int)
+    starts = np.r_[0, np.cumsum(nt)[:-1]]
+    return np.flatnonzero(Z["trainingstage"][starts] == 9)
+
+
+def struct_arrays(Z: dict, sessions: np.ndarray) -> dict:
+    """The trials of the given sessions of a Zenodo struct as the per-rat arrays that
+    initiation_dynamics and wait_dynamics use (sessions renumbered from 0)."""
+    nt = np.atleast_1d(Z["ntrials"]).astype(int)
+    starts = np.r_[0, np.cumsum(nt)]
+    idx = np.concatenate([np.arange(starts[s], starts[s + 1]) for s in sessions])
+    return {
+        "session": np.repeat(np.arange(len(sessions)), nt[sessions]),
+        "trial": np.concatenate([np.arange(nt[s]) for s in sessions]),
+        "block": Z["block"][idx].astype(int),
+        "iti": Z["ITI"][idx].astype(float),
+    }
+
+
+def overshoot(curve: np.ndarray, twin: int = 20) -> float:
+    """Figure4.m: the maximum of a high-to-mixed initiation time curve from the switch on, minus
+    its value twin trials after the switch."""
+    return np.nanmax(curve[twin:]) - curve[-1]
 
 
 def remove_outliers(x: np.ndarray, window: int = 5) -> np.ndarray:

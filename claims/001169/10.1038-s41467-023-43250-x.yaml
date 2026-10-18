@@ -19,6 +19,17 @@
 # female rats (4 to 64 uL) are treated as 5 to 80 uL; blocks are mixed, high and low; sessions
 # are in order of their start time and the duplicated L011 session is counted once.
 #
+# Changes after the first verification round. The criteria of fig2b-initiation-previous-block and
+# fig5d-precue-previous-block first required the dependence on the previous block to keep its
+# sign after the switch. The analysis found it reversed, and the verifier pointed out that the
+# paper describes that reversal (an overshoot after transitions from high to mixed blocks,
+# reminiscent of incentive contrast effects). The criteria were corrected to the sign the paper's
+# text gives, after their results were known; the first versions are shown as variants. The
+# claim fig4de-overshoot-learning was first blocked and had no criterion. The verifier found
+# that A_Structs_all holds what it needs; its criterion was written after a first exploratory
+# run of the overshoot measure (first against last 10 sessions per rat, and the population
+# overshoot over chunks of 5 sessions), whose results the author had seen.
+#
 # Tolerances. Counts of records the dandiset should hold exactly (rats, sessions, trials, sexes)
 # have tolerance 0, as they count the same records. The "~10 percent" of fig1f-wait-time-block
 # is given with 2.5 percentage points, as the text states it as an approximation. Other numbers
@@ -118,9 +129,14 @@ claims:
     wait times.
   source: Results, second section; Figure 2b; Supplementary Fig. 4
   criterion: The same measure with the code's initiation time dynamics (block_dynamics_latency,
-    detrended within sessions). Reproduced when the after/before ratio is at least 0.25 and the
-    per-rat after-switch difference is above zero by a two-sided signed-rank test at p < 0.05.
-    Partially reproduced when the test holds and the ratio is below 0.25.
+    detrended within sessions). The paper places an overshoot of initiation times after
+    transitions from high to mixed blocks (Results, fourth section, citing Fig. 2b), so after the
+    switch initiation times are slower after high than after low blocks and the difference (after
+    low minus after high) is below zero, the reverse of its sign before the switch. Reproduced when
+    the per-rat after-switch difference is below zero by a two-sided signed-rank test at p < 0.05
+    and the magnitude of the after/before ratio is at least 0.25; partially reproduced when the
+    test holds and the magnitude is below 0.25. The first version of this criterion, which
+    required the difference to stay above zero, is shown as a variant (see the opening comment).
 - id: fig2cd-regression-kernels
   statement: Wait times are explained by the current reward, while trial initiation times reflect
     an exponentially weighted effect of previous rewards.
@@ -297,6 +313,19 @@ claims:
   statement: The overshoot of trial initiation times after high-to-mixed transitions grew with
     training, on a timescale similar to the block sensitivity of wait times.
   source: Results, fourth section; Figure 4d and 4e
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.10031483 (A_Structs_all)
+  criterion: Per rat, the sessions of A_Structs_all whose first trial is in the final stage (as
+    Figure4.m selects them from the raw structs), for rats with at least 20 such sessions. The
+    initiation time dynamics at high-to-mixed transitions (block_dynamics_latency) over the first
+    10 and over the last 10 of these sessions; the overshoot is the maximum of the curve from the
+    switch on minus its value 20 trials after the switch (Figure4.m). Reproduced when the per-rat
+    overshoot is larger in the last 10 sessions than in the first 10 (two-sided signed-rank, p <
+    0.05) and the overshoot of the population mean curve, in chunks of 5 sessions over the first
+    60 sessions (the range Figure 4e plots), rises with training (Spearman correlation with the
+    chunk number above zero, p < 0.05); partially reproduced when one of the two holds. The
+    comparison of timescales with the wait times is not tested, as the paper compares the curves
+    by eye.
 - id: fig5b-precue-offer
   statement: With the reward cue played before trial initiation, trial initiation times became
     sensitive to the offered reward.
@@ -327,7 +356,8 @@ claims:
   statement: In the pre-initiation cue task, trial initiation times in mixed blocks still depended on
     the previous block.
   source: Results, fifth section; Figure 5d
-  criterion: The measure of fig2b-initiation-previous-block on the cue sessions. Reproduced when the
-    after/before ratio is at least 0.25 and the per-rat after-switch difference is above zero by a
-    two-sided signed-rank test at p < 0.05; partially reproduced when the test holds and the ratio
-    is below 0.25.
+  criterion: The measure and the criterion of fig2b-initiation-previous-block on the cue sessions.
+    Reproduced when the per-rat after-switch difference is below zero by a two-sided signed-rank
+    test at p < 0.05 and the magnitude of the after/before ratio is at least 0.25; partially
+    reproduced when the test holds and the magnitude is below 0.25. The first version, which
+    required the difference to stay above zero, is shown as a variant.
