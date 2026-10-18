@@ -36,14 +36,14 @@ Figures 3, 7 and S1 are not in it.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The DF/F traces, fiber order and stimulus times in the files are exactly those behind the paper's
-results. The files do not hold the stimulation times or the stimulated fiber of the optogenetic
-sessions (found here from the laser artefact in the DF/F, as the paper's code does), the frequency of
+For the 7 salient-stimulus mice, the DF/F traces, fiber order and stimulus times in the files are
+exactly those behind the paper's results; this was not checked for the other mice. The files do not hold the stimulation times or the stimulated fiber of the optogenetic
+sessions (found here from the laser artefact in the DF/F; the paper's code reads a trigger line), the frequency of
 DL18's tones, the planned fiber targets of Figure S3, or the task variables that separate unpredicted rewards in DL15's later sessions. The
 attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001084-vu-2024-01.yaml`](../../attempts/001084-vu-2024-01.yaml).
 
-- `reproduce_vu_2024.ipynb`: the analysis. It takes about 14 minutes, most of it the 10000 null refits
+- `reproduce_vu_2024.ipynb`: the analysis. It takes 12 to 16 minutes, most of it the 10000 null refits
   of the GLM for each mouse and streaming the files.
 - `vu2024.py`: loading the files, overall velocity, the salient-stimulus GLM and its null, the
   half-maximum latency, and the stimulation response test. Other notebooks on this dandiset can import

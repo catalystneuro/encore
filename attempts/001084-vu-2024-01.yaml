@@ -25,7 +25,8 @@ outcomes:
   output: claim:fig1c-isosbestic-control
   notes: Mouse 842, session 2022-11-23, 61 included fibers. The SD of DF/F under 470 nm exceeds that
     under 405 nm in 61 of 61 fibers (median ratio 3.01, range 1.56 to 19.41). Frames above 5 times the
-    median 405 nm SD make up a median 6.7% of each 470 nm trace and none of the 405 nm traces. The
+    median 405 nm SD make up a median 6.7% of each 470 nm trace (range 0.13% to 35.9%) and a median 0.0%
+    of each 405 nm trace (at most 1.2%; 11 of 61 have none). The
     session of 2022-11-18 gives a median ratio of 2.84.
   deviations:
   - The paper shows example traces; the SD ratio and its thresholds were chosen here before the
@@ -129,10 +130,10 @@ outcomes:
   notes: Tail fibers have larger tone values than anterior fibers (median 0.0092 against -0.0026 DF/F,
     p = 5.5e-13), all 10 of the largest values are in the tail, and 32 of 35 tail fibers have a
     significant increase (none a decrease). Anterior to the tail 103 significant responses are decreases
-    and 60 increases (binomial p = 0.00047). Both comparisons hold at every tail boundary, with the code's
-    lags, and with DL18 restricted to its 14 tones of 12 kHz
-    identified from the paper's results (108 against 60), though at -1.3 mm only 5 of the 10 largest
-    values are in the tail. The anterior decrease dominates in DL21 (36
+    and 60 increases (binomial p = 0.00047). The amplitude comparison and the anterior excess of decreases hold at every
+    tail boundary, with the code's lags, and with DL18 restricted to its 14 tones of 12 kHz identified
+    from the paper's results (108 against 60). At the -1.3 mm boundary only 5 of the 10 largest values
+    are in the tail, so part (a) of the criterion, which needs 6, fails at that variant boundary. The anterior decrease dominates in DL21 (36
     against 3) and DL23 (17 against 6) but not in DL18, DL20, DL27 or DL30.
   deviations:
   - DL18 uses all 44 tones in the main analysis.
@@ -252,7 +253,7 @@ outcomes:
   - 20
   notes: In Opto2, 22 fibers are flagged included and 20 of them respond to at least one stimulation, both
     within tolerance; 14 of the 19 stimulated included fibers evoke a significant response at another
-    included fiber, below 18; as a fraction (0.74) this equals the paper's 18 of 24 (0.75), but the
+    included fiber, below 18; as a fraction (0.74) this is close to the paper's 18 of 24 (0.75), but the
     denominators differ because fewer included fibers were stimulated in the files. Counting only
     responses to another fiber's stimulation, so that a stimulated fiber's own photoswitching does not
     count, still gives 20 responding locations. Adding the two fibers labelled Caudoputamen but not flagged (16 and 34)
@@ -619,3 +620,169 @@ verifications:
     outcome: blocked
     reason: data_missing. Same as fig7d.
     response: Outcome kept, as fig7d-ventral-not-dorsal-jaw.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, the helper module, the claims file and the
+    attempt record, with the paper. The verifier agreed with all 26 outcomes, found the round-1 reasons stated faithfully,
+    and listed six sentences the outputs do not support; README line 46 said the notebook takes about 14 minutes
+    where cell 85 printed 16.4 min. The re-run took 12.2 min, and the README now says 12 to 16 minutes.
+  results:
+  - claim: fig1c-isosbestic-control
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 58 and the record's notes say '... and none of the 405 nm traces', but cell 57 prints only
+      the median fraction for 405 nm (0.0000), which does not show that every trace has zero such frames.
+    response: Added to cell 57 the number of 405 nm traces with no frame above the threshold and the largest fraction.
+      Only 11 of 61 have none, and the largest is 1.2% (470 nm range 0.13% to 35.9%). The conclusion and the notes
+      now say a median 0.0% and at most 1.2% of each 405 nm trace. The outcome does not use this measure and is
+      kept.
+  - claim: figs2d-correlation-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: figs2ef-no-bundle-crosstalk
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: fig1d-chronic-reward-stability
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The round-1 reason says the all-rewards median 'falls to 0.39 to 0.63 from week 9'; cell 66
+      gives 0.392 to 0.773 for weeks 9 to 13 (week 11 is 0.773). The reason should say 0.39 to 0.77.
+    response: The round-1 reason is left as the verifier gave it; its correction is recorded here. The notebook
+      and the notes do not give the range. Outcome kept.
+  - claim: fig4-link-published-results
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 84 (Summary) says 'the traces, fiber order and stimulus times are exactly those of the
+      paper's analysis', and README lines 39 to 40 say '... are exactly those behind the paper's results'. The exact
+      match is shown only for the 7 salient-stimulus mice (cell 21), not for DL15, 842, DL31/32 or the optogenetic
+      mice, whose stimulus times are not in the files at all. Cell 84 also says 'the code's version is shown, r
+      >= 0.989 with the main values', while cell 19 prints 0.9888 for tone.
+    response: The Summary and the README now restrict the exact match to the 7 salient-stimulus mice and say it
+      was not checked for the others. The Summary now gives the code-lag correlations as printed in cell 19 (0.997
+      light, 0.989 tone, from 0.9969 and 0.9888). The README also no longer says the stimulation times are found
+      from the laser artefact 'as the paper's code does', since the code reads a trigger line. Outcome kept.
+  - claim: fig4e-light-increases-widespread
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: fig4e-light-anterior-posterior-gradient
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: fig4f-tone-tail-increase-anterior-decrease
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 31 says 'The tail comparison holds at every tail boundary and with the code's lags', but
+      cell 30 shows that at -1.3 mm only 5 of the top 10 fibers are in the tail, and criterion (a) needs 6, so (a)
+      fails at that variant boundary. The record's 'Both comparisons hold at every tail boundary ... though at -1.3
+      mm only 5 ...' contradicts itself. The main outcome is unaffected.
+    response: Cell 31 and the notes now say that the amplitude comparison and the anterior excess of decreases hold
+      at every tail boundary, and that at -1.3 mm only 5 of the 10 largest values are in the tail, so part (a) fails
+      at that variant boundary. The main boundary decides; outcome kept.
+  - claim: fig4f-decreases-lateral-ventral
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: figs4ac-patterns-consistent-across-mice
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: figs4eh-patterns-not-movement
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The partial outcome comes from the criterion's raw-DF/F measure, which follows the code; the
+      baseline-subtracted variant would pass. This is disclosed and does not decide the outcome.
+    response: No change needed.
+  - claim: figs5-isosbestic-no-pattern
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: fig5ab-response-latencies
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. The outcome still depends only on how latency frames are counted: under the code''s count,
+      which matches the paper within 2 ms, it would be reproduced; under the criterion''s Methods count it is partial.
+      Accepted as a disclosed choice of the criterion.'
+    response: No change; the choice is disclosed in the notes and the code_mismatch finding.
+  - claim: fig5g-light-latency-gradient
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: fig5h-tone-latency-gradient
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: figs6cd-gradients-individual-mice
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: fig6-inclusion-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Cell 70 and the record's notes say '14 of 19 (0.74) is / equals the paper's 18 of 24 (0.75)'.
+      The two fractions are close, not equal.
+    response: Cell 70 and the notes now say the fraction is close to the paper's. Outcome kept.
+  - claim: fig6gh-release-decays-with-distance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: fig6g-dorsal-spread
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: fig6-tdtomato-control-no-response
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: figs7a-photoswitch-confined
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; every outcome follows from its criterion and the printed numbers.
+    response: No change needed.
+  - claim: figs1-no-tissue-damage
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees they are blocked. The claims file marks figs1, fig3, fig7d and fig7ef data: elsewhere on Zenodo,
+      so ''other'' is accepted in place of the data_missing given in round 1.'
+    response: No change needed.
+  - claim: figs3-targeting-errors
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. Cell 5 shows that all 116 files have the same fiber-table columns and none holds a planned
+      target. That the Zenodo archives contain no calibration files cannot be checked from the notebook outputs,
+      but the claims file gives figs3 no data: elsewhere.'
+    response: No change needed.
+  - claim: fig3-freely-moving-signals
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees they are blocked. The claims file marks figs1, fig3, fig7d and fig7ef data: elsewhere on Zenodo,
+      so ''other'' is accepted in place of the data_missing given in round 1.'
+    response: No change needed.
+  - claim: fig7d-ventral-not-dorsal-jaw
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees they are blocked. The claims file marks figs1, fig3, fig7d and fig7ef data: elsewhere on Zenodo,
+      so ''other'' is accepted in place of the data_missing given in round 1.'
+    response: No change needed.
+  - claim: fig7ef-single-ventral-fiber
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees they are blocked. The claims file marks figs1, fig3, fig7d and fig7ef data: elsewhere on Zenodo,
+      so ''other'' is accepted in place of the data_missing given in round 1.'
+    response: No change needed.
