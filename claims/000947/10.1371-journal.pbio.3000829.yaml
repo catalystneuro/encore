@@ -1,0 +1,323 @@
+# Claims for Schwab, Kase, Zimnik, Rosenbaum, Codianni, Rubin & Turner (2020) on dandiset 000947.
+# Source: the full text (open access, PLOS Biology), read from its Results, tables, figure legends,
+# Methods and supporting figure legends.
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata of every file, the location labels, channels, sort letters and spike counts of the
+# curated units, the trial tables, and the link of the paper's unit list (the Dryad deposit
+# doi:10.5061/dryad.0cfxpnvxm, files Gaia_Analy.mat and Isis_Analy.mat) to the dandiset's units,
+# with the agreement of this attempt's spike density functions and detected onsets with the ones
+# stored in those files (median correlation 0.999; increase detection agreeing for 91% and decrease
+# detection for 81% of unit-directions; trial counts equal for 63%). No claim's statistic had been
+# computed.
+#
+# The dandiset holds 378 files; 254 are pre-MPTP recordings, the condition of the paper. Its
+# curated `units` tables carry a location label per unit; some labels differ only in case (GPI,
+# VLA), some Gaia VLa units are labelled "Thalamus", and some Isis units have no label.
+#
+# Unit selection, fixed here for every claim on single units (the "dandiset rule"): curated units
+# in pre-MPTP files whose location label is GPi or VLa ignoring case; valid trials as the Methods
+# define them (no error, reaction time and movement duration not more than 6 median absolute
+# differences from the file's mean); a unit-direction is analysed when it has at least 10 valid
+# trials; a unit is kept when its mean rate (spikes over the span of its spike train) is at least
+# 30 spikes/s in GPi or 1 spike/s in VLa. The dandiset has no identifier that follows a neuron
+# across files, so each file's unit is counted as one unit. The paper's own unit list, linked
+# through unit-link, is shown as a variant for every claim and does not decide outcomes.
+#
+# Method choices fixed here from the Methods and the paper's code (PeriEventChange_SDF_pctchng.m,
+# Fig2_3_S8_S9.m, Fig4_S10to13.m): activity aligned to movement onset from -1500 to +1000 ms;
+# SDF and ISI functions with a 25 ms Gaussian kernel; control period the 700 ms before the median
+# cue onset, test period the following 701 ms; the control period's linear trend removed; a change
+# needs 70 consecutive ms above norminv(1 - 0.001/10) control SDs; increases from the SDF,
+# decreases from the ISI function; a response's latency is its onset; the rest rate is the mean
+# SDF from -1500 to -301 ms; the integrated change is the summed SDF minus that rate from -300 to
+# +399 ms, in spikes. Statistics are over unit-directions where the paper's code uses them so (rest
+# rate, integrated change, latencies), and over units otherwise.
+schema_version: 1
+dandiset: "000947"
+paper: doi:10.1371/journal.pbio.3000829
+claims:
+- id: unit-link
+  statement: The units the paper analysed can be found in the dandiset, and the dandiset's spike
+    times and trials reproduce the per-unit peri-movement activity the paper's code stored.
+  source: Data Availability; Dryad doi:10.5061/dryad.0cfxpnvxm, Gaia_Analy.mat and Isis_Analy.mat
+  data: with_inputs
+  criterion: Records are matched by file name (session_id), channel id and sort letter of the
+    curated units. For the 394 records the paper's code keeps (not VLp, no missing SDF), the link
+    holds (reproduced) when at least 90% are found in every file they span and, for matched
+    unit-directions with at least 10 valid trials, the SDF computed from the dandiset correlates
+    with the stored SDF at r > 0.9 for at least 90%. Partially reproduced when 50 to 90% of the
+    records are found or match; not reproduced below 50%. Trial counts and the location labels of
+    the matched units are reported.
+- id: table1-unit-counts
+  statement: 209 single units met the criteria to be included as GPi neurons (105 in NHP G, 104 in
+    NHP I) and 185 as VLa neurons (66 and 119).
+  source: Results, first section; Table 1
+  expected:
+  - quantity: GPi units
+    value: 209
+    tolerance: 20.9
+  - quantity: VLa units
+    value: 185
+    tolerance: 18.5
+  criterion: Units under the dandiset rule, counted by area. Reproduced when both counts are within
+    tolerance. The Results text gives 218 VLa units where Table 1 gives 185; both readings are
+    checked for VLa. Counts per animal are reported, and, as variants, the count of distinct
+    channel and sort letter combinations per day (treating them as one neuron, an assumption) and
+    the count of the paper's list found in the dandiset.
+- id: table1-rest-rate
+  statement: The resting firing rate of GPi neurons (mean 70.1 spikes/s) is significantly higher
+    than that of VLa neurons (13.5 spikes/s), and the rates are consistent between the two animals.
+  source: Results, first section; Table 1
+  expected:
+  - quantity: GPi mean rest rate
+    value: 70.1
+    tolerance: 7.01
+    unit: spikes/s
+  - quantity: VLa mean rest rate
+    value: 13.5
+    tolerance: 1.35
+    unit: spikes/s
+  criterion: Rest rate per unit-direction as the mean SDF from -1500 to -301 ms around movement
+    onset (Fig2_3_S8_S9.m), averaged over unit-directions. Reproduced when both means are within
+    tolerance and a rank sum test finds GPi higher (p < 0.05). Per animal values are reported.
+- id: table1-ap-width
+  statement: Action potentials of GPi neurons are shorter than those of VLa neurons (trough to
+    peak 0.24 against 0.50 ms; rank sum p = 1e-33).
+  source: Results, first section; Table 1
+  expected:
+  - quantity: GPi mean action potential width
+    value: 0.24
+    tolerance: 0.024
+    unit: ms
+  - quantity: VLa mean action potential width
+    value: 0.50
+    tolerance: 0.05
+    unit: ms
+  criterion: Width as the time from the trough to the following peak of the mean waveform on the
+    unit's channel in the dandiset's 200 Hz high-pass filtered trace, from the spikes in one
+    stored chunk (about 3.2 s) per unit. Reproduced when both means are within tolerance and GPi
+    widths are smaller (rank sum p < 0.05); partially reproduced when only the difference holds.
+- id: hold-period-ramps
+  statement: The firing rate of most units ramps during the start-position hold period (97% of
+    GPi and 98% of VLa units with a significant linear trend); slopes are distributed symmetrically
+    around zero, without a difference between GPi and VLa (rank sum p = 0.29).
+  source: Results, first section; Fig 2A
+  expected:
+  - quantity: GPi units with a significant hold-period slope
+    value: 97
+    tolerance: 9.7
+    unit: percent
+  - quantity: VLa units with a significant hold-period slope
+    value: 98
+    tolerance: 9.8
+    unit: percent
+  criterion: A unit has a significant slope when the 95% CI of the OLS slope of its mean SDF over
+    the control period excludes zero in at least one direction (Fig2_3_S8_S9.m). Reproduced when
+    both fractions are within tolerance and the slopes of GPi and VLa do not differ by a rank sum
+    test (p >= 0.05). The mean slopes (paper -0.05 and -0.14 spikes/s2) are reported.
+- id: mvt-responsive-fraction
+  statement: Nearly all units change their discharge around movement for at least one direction
+    (GPi 99%, 206 of 209; VLa 88.1%, 163 of 185 in Table 1, 94% in the text).
+  source: Results, second section; Table 1
+  expected:
+  - quantity: GPi movement-responsive units
+    value: 99
+    tolerance: 9.9
+    unit: percent
+  - quantity: VLa movement-responsive units
+    value: 88.1
+    tolerance: 8.81
+    unit: percent
+  criterion: A unit is responsive when an increase or a decrease is detected for at least one
+    direction. Reproduced when both fractions are within tolerance; VLa is read as 88.1% (Table
+    1) or 94% (text, tolerance 9.4), and either reading counts.
+- id: increases-most-common
+  statement: Monophasic increases are the most common form of response in both GPi and VLa (48.7%
+    and 65.3% of responses), and increases make up most detected changes (61.5% and 68.8%,
+    biphasic responses counted twice), more than decreases (chi-squared p = 1.2e-17).
+  source: Results, second section; Table 1; Fig 2B
+  expected:
+  - quantity: GPi monophasic increases, percent of responses
+    value: 48.7
+    tolerance: 4.87
+  - quantity: VLa monophasic increases, percent of responses
+    value: 65.3
+    tolerance: 6.53
+  - quantity: GPi increases, percent of changes
+    value: 61.5
+    tolerance: 6.15
+  - quantity: VLa increases, percent of changes
+    value: 68.8
+    tolerance: 6.88
+  criterion: Over unit-directions with a response. Reproduced when monophasic increase is the most
+    common of the four forms in both areas, increases exceed 50% of changes in both areas, and all
+    four values are within tolerance. Partially reproduced when the order holds (increases most
+    common in both) but a value is outside tolerance.
+- id: monophasic-more-in-vla
+  statement: Monophasic changes are more common in VLa than in GPi (88.9% against 66.7% of
+    responses; chi-squared p = 2.8e-12), and polyphasic responses more common in GPi.
+  source: Results, second section; Table 1
+  expected:
+  - quantity: GPi monophasic responses, percent
+    value: 66.7
+    tolerance: 6.67
+  - quantity: VLa monophasic responses, percent
+    value: 88.9
+    tolerance: 8.89
+  criterion: Over unit-directions with a response, a chi-squared test of monophasic against
+    polyphasic by area. Reproduced when both values are within tolerance and VLa is higher with p
+    < 0.05; partially reproduced when only the significant difference holds.
+- id: integrated-change-positive
+  statement: The mean integrated change in firing over the peri-movement epoch is positive in both
+    GPi and VLa (3.89 and 1.75 spikes), significantly different from zero.
+  source: Results, second section; Table 1
+  expected:
+  - quantity: GPi mean integrated change
+    value: 3.89
+    tolerance: 0.389
+    unit: spikes
+  - quantity: VLa mean integrated change
+    value: 1.75
+    tolerance: 0.175
+    unit: spikes
+  criterion: Over unit-directions (Fig2_3_S8_S9.m). Reproduced when both means are positive with a
+    signed rank test against zero at p < 0.05 and both are within tolerance; partially reproduced
+    when both are significantly positive but a value is outside tolerance. Table 1 gives the unit
+    as "sp x 10^3"; the code divides the summed rate deviation in spikes/s at 1 ms by 1000, which
+    gives spikes, and that is the reading used.
+- id: fig3a-vla-leads-gpi
+  statement: Peri-movement changes begin later in GPi than in VLa (median onsets -47 and -90 ms;
+    rank sum p = 2.4e-5).
+  source: Results, third section; Fig 3A
+  expected:
+  - quantity: GPi median onset, all changes
+    value: -47
+    tolerance: 4.7
+    unit: ms
+  - quantity: VLa median onset, all changes
+    value: -90
+    tolerance: 9
+    unit: ms
+  criterion: All detected increases and decreases pooled per area (Fig2_3_S8_S9.m, "ALL
+    RESPONSES"). Reproduced when GPi onsets are later than VLa onsets by a rank sum test (p < 0.05)
+    and both medians are within tolerance; partially reproduced when only the significant
+    difference holds.
+- id: fig3b-gpi-decr-lag-vla-incr
+  statement: GPi decreases lag behind VLa increases (median onsets -27 and -88 ms; rank sum p =
+    4.9e-4), against the gating prediction.
+  source: Results, third section; Fig 3B
+  expected:
+  - quantity: GPi decrease median onset
+    value: -27
+    tolerance: 2.7
+    unit: ms
+  - quantity: VLa increase median onset
+    value: -88
+    tolerance: 8.8
+    unit: ms
+  criterion: As fig3a-vla-leads-gpi, on GPi decreases against VLa increases.
+- id: fig3c-vla-decr-lead-gpi-incr
+  statement: VLa decreases precede GPi increases (median onsets -108 and -62 ms; rank sum p =
+    0.01).
+  source: Results, third section; Fig 3C
+  expected:
+  - quantity: VLa decrease median onset
+    value: -108
+    tolerance: 10.8
+    unit: ms
+  - quantity: GPi increase median onset
+    value: -62
+    tolerance: 6.2
+    unit: ms
+  criterion: As fig3a-vla-leads-gpi, on VLa decreases against GPi increases.
+- id: gating-conflict-fraction
+  statement: Comparing every GPi response with every VLa response, 96% of comparisons conflict with
+    gating (178,846 of 187,154); only 4% have a GPi onset 0 to 50 ms before the VLa onset with the
+    opposite sign.
+  source: Results, third section
+  expected:
+    quantity: Comparisons that conflict with gating
+    value: 96
+    tolerance: 9.6
+    unit: percent
+  criterion: Every detected GPi change against every detected VLa change; a comparison fits gating
+    when the GPi onset precedes the VLa onset by 0 to 50 ms and the signs are opposite. Reproduced
+    when the conflicting fraction is within tolerance.
+- id: directional-units
+  statement: A majority of GPi neurons (109 of 206) and some VLa neurons (56 of 179) respond
+    significantly more strongly to one movement direction.
+  source: Results, second section; Methods
+  expected:
+  - quantity: GPi directional units, percent of responsive
+    value: 52.9
+    tolerance: 5.29
+  - quantity: VLa directional units, percent of responsive
+    value: 31.3
+    tolerance: 3.13
+  criterion: For responsive units, trial spike counts in the 300 ms from the unit's earliest
+    detected onset compared between left and right trials (rank sum p < 0.005, Methods).
+    Reproduced when both fractions are within tolerance; partially reproduced when GPi is
+    directional more often than VLa (chi-squared p < 0.05) but a value is outside tolerance.
+- id: fig4-ccf-rare
+  statement: Short-time-scale spike-to-spike correlations between simultaneously recorded GPi and
+    VLa units are rare (3.5% of 427 pairs over whole recordings, 2.2% of 183 at rest, 5.2% of 172
+    during movement) and their peaks are not larger than those of jittered controls (p = 0.975,
+    0.675 and 0.998).
+  source: Results, fourth section; Fig 4A-F; Table 2
+  criterion: A claim of absence judged on the paper's test, the one-sided permutation test of the
+    KS statistic of peak absolute CCFs (0 to 10 ms) against jittered controls (Fig4_S10to13.m).
+    Reproduced when p >= 0.05 in all three periods; not reproduced when p < 0.05 in any. Pairs are
+    GPi and VLa units of the dandiset rule in the same file, with at least 100 spikes each in the
+    period. The fraction of significant pairs, its binomial test against 5%, and the signs of the
+    significant peaks are reported.
+- id: fig4-noise-corr-rare
+  statement: Trial-to-trial noise correlations between GPi and VLa are rare (5.4% of 332 pairs at
+    rest, 7.2% of 372 during movement), not different from shuffled controls (p = 0.07 and 0.388),
+    and equally often positive and negative.
+  source: Results, fourth section; Fig 4G-H; Table 2
+  criterion: A claim of absence judged on the paper's test, the one-sided permutation test of the
+    KS statistic of the absolute noise correlations against trial-shuffled controls. Reproduced
+    when p >= 0.05 in both periods; not reproduced when p < 0.05 in either. Noise correlations are
+    computed per pair and target on 500 ms spike counts in the rest and movement windows, with the
+    Methods' exclusions; the fraction outside the 2.5 to 97.5 percentiles of the pooled shuffles
+    and its sign balance are reported, counted (a) over pair-targets and (b) over pairs.
+- id: fig5-vla-decrease-after-gpi-bursts
+  statement: At rest, GPi burst onsets, burst offsets and pause onsets are each followed by a small,
+    slow decrease of the population VLa firing rate.
+  source: Results, fifth section; Fig 5A-C; Table 2
+  criterion: Bursts and pauses detected outside the task by the Poisson surprise method (Methods);
+    VLa SDF (10 ms kernel) averaged around each event per pair, pairs with noisy baselines left
+    out as the Methods say; population average over pairs. Its control is the same average with
+    the events shifted by random offsets of 2 to 20 s within rest, 400 times, with the 2.5 and 97.5
+    percentile band widened so that 5% of controls cross it anywhere in 0 to 300 ms. Reproduced when
+    the population average falls below the band within 0 to 300 ms after the event for all three
+    event types; partially reproduced for one or two. The onset of the decrease (paper 119, 95 and
+    50 ms) and the per-pair fractions of significant changes are reported.
+- id: behavior-rt-mt
+  statement: Reaction times do not differ between the animals or reach directions; movement
+    durations are longer for reaches to the right target, and NHP G moves more slowly than NHP I.
+  source: Results, Task performance; S2 Fig
+  criterion: Per file and direction, the median reaction time and movement duration of valid
+    trials; a two-way ANOVA (animal, direction, interaction). Reproduced when the reaction time has
+    no significant animal or direction effect (p >= 0.05) and the movement duration has both,
+    right longer and G slower (p < 0.05). Partially reproduced when the movement duration part
+    holds and the reaction time part does not, or the reverse.
+- id: figs3-emg-onset
+  statement: Agonist EMG activity begins well before movement onset, at similar times in both
+    animals (-123 and -135 ms).
+  source: Results, Task performance; S3 Fig
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.0cfxpnvxm (S3_EMGdata_NHP_G.mat, S3_EMGdata_NHP_I.mat), mirrored on
+    Zenodo record 4000719
+- id: fig1-vla-localization
+  statement: Thalamic neurons inhibited by GPi stimulation lie dorsal and anterior to neurons
+    excited by SCP stimulation, with a narrow border between VLa and VLp.
+  source: Results, first section; Fig 1; S1 Fig
+- id: fig6-simulation
+  statement: In a model thalamocortical cell with N converging GPi inputs, post-spike inhibition
+    grows with GPi synchrony c and shrinks with convergence N, approximately as ((N - 1)/N)c + 1/N.
+  source: Results, sixth section; Fig 6
+  data: elsewhere
+  where: Dryad doi:10.5061/dryad.0cfxpnvxm (Data_Fig6.mat, simulation output), mirrored on Zenodo
+    record 4000719
