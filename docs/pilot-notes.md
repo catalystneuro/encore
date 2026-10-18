@@ -3128,3 +3128,104 @@ carry the target's effect; no data category for a simulation; a criterion that
 defines only the reproduced case; a method error found after a first run; a
 control first run not as the criterion stated; and no rule for a reported
 fraction that matches its chance level.
+
+### 000971, Seiler et al. 2022
+
+Seventeen claims reproduced, nine partially, six not reproduced and five
+blocked on the dandiset. With outside data, counted apart: one reproduced.
+Round 1 gave its own outcome for each claim from the notebook with its
+conclusions removed and agreed with 37 of the 38; it would block
+`fig6-nphr-learning-dropout`, as the dandiset holds 13 NpHR, 13 NpHR Scrambled
+and 16 EYFP mice where Figure 6F counts 16, 15 and 16, so the mice the paper
+dropped are, but for one, not deposited, and the author changed the claim from
+not reproduced to blocked as `data_missing`. Round 1 also asked for the
+training files with no rewards to be inspected; one is a 170 s false start of
+mouse 140.306, without which Tukey PS vs DPR in `fig2n-rewards-per-session`
+gives p = 0.059, and the author changed that claim from reproduced to
+partially reproduced. Round 2 agreed with all 38 and nothing was proposed, so
+there was no third round. The paper reports that RI60-trained mice accept more
+shocks in shock probes than RR20-trained mice, that RI60 mice split into
+punishment resistant (PR), delayed punishment resistant (DPR) and punishment
+sensitive (PS) phenotypes, that a DMS dopamine axon score from fiber
+photometry differs by phenotype and correlates with shocks while the DLS score
+does not, and that stimulating DMS dopamine terminals on rewarded nosepokes
+makes mice more likely to be PR and inhibiting them more likely to be PS,
+while DLS stimulation has no such effect. The schedule comparisons, the
+phenotype rule and the training and omission behaviour of the phenotypes, sex
+differences, the DMS and DLS scores against phenotype, shocks and omission
+time, and the DMS excitation, DMS inhibition and DLS excitation cohorts were
+tested, and the DAT protein claim on the Zenodo densitometry table the
+dandiset names. The RI30 photometry peaks, the inhibition dropouts, fear
+conditioning, open field and histology are blocked as `data_missing`. Some
+outcomes rest on weak ground: `fig4g-dls-score-shock-no-correlation` is not
+reproduced (r = 0.326, p = 0.024) only with a dropout step the author added
+after seeing per-session scores, which is in neither the Methods nor the
+authors' code, and without it r = 0.113, p = 0.45; the same step takes the
+phenotype p of `fig3f-dms-score-phenotype` from 0.389 to 0.100;
+`fig3g-dms-score-shock-correlation` is partially reproduced on one of three
+readings (r = 0.375, p = 0.045, n = 29), with p = 0.13 after correction for the
+three; `fig2n-rewards-per-session` gives p = 0.048, 0.059 or 0.044 under three
+session-exclusion rules, and the one used, set after round 1, is the only one
+above 0.05; `fig5f-dms-chr2-escalation` and `fig7f-dls-escalation-similar`
+rest on the pooled fit with no mouse term that the criterion fixed, and a mixed
+model with a random slope per mouse would make fig5f partially reproduced but
+warns of a boundary fit, while a model with a random intercept only puts ChR2
+above neither control; and the claims on Figures S1 to S7 rest on the main
+text alone. The author used the author manuscript in PubMed Central
+(PMC8930615), whose supplement could not be downloaded, and took the
+photometry processing from the authors' MATLAB code at commit 56f1529.
+
+The dandiset was converted by CatalystNeuro (catalystneuro/lerner-lab-to-nwb).
+The Methods say photometry was recorded during RI30 and on both shock probes,
+but the dandiset holds photometry only for RI60 and RR20 training (62
+sessions) and one session described as a probe test. Mice are missing against
+the paper: 6 RR20 mice against 9 in Figure 1D (7 in the Methods), 33 DMS
+excitatory mice against 39, 42 DMS inhibitory mice against 47 and 35 DLS
+excitatory mice against 36, and several mice lack a probe; the NpHR mice
+missing are about the number the paper dropped for not learning, and the 'Did
+Not Learn' flag marks one NpHR mouse and one EYFP mouse that reached RI60.
+Optogenetic mice have no stored phenotype (the notes read 'Punishment Group
+nan'), and the DMS inhibitory files do not say whether a mouse is in group 1
+or group 2. The fear conditioning, open field and histology are not deposited,
+and the paper says data are available on request. Several photometry
+recordings hold dropouts where a raw channel falls near zero (6 sessions reach
+|z| above 50 after the authors' processing, up to 1758), and in 141.308 on
+2019-08-09 the DLS channels drop out through most of the recording, with
+nothing marking these or saying which recordings the paper excluded. The 137
+files of the group 'Opto-DLS-Excitatory-Unknown' repeat sessions deposited
+under a named arm (135 share subject and start time with a named file). Other
+findings: 20 RR20 training files of four mice hold port entries only; 11
+mouse-days have two or three RI60 files, with nothing saying which is the
+day's session (81.236 on 2019-02-06 has 6, 28 and 42 rewards); in 45 of 64
+RR20 training files with rewards the reward times coincide with no nosepoke
+time; in shock probes on the left nosepoke the reward series is named
+right_reward_times (151 files); the stitched photometry session of 332.393 on
+2020-07-28 mixes MedPC reward times with TDT nosepoke times; mouse 290.407 is
+filed under two experiments; the fiber coordinates are stored without their
+signs (DV 2.8 for -2.8, DLS AP 0.1 for -0.1); the authors' MATLAB comments call
+Dv1A the control, while the conversion and the files take it as the DMS 465 nm
+signal, and the data side with the files in 46 of 61 DMS sessions; 048.392 is
+stored as PR with 13 early shocks where the Methods require more than 13, and
+the Methods call 13 a median split while the median is 9; the Results give
+omission times in seconds that fit minutes, and the Methods give 26 DMS
+inhibitory and 7 RR20 mice where the figures count 47 and 9; and the Zenodo
+densitometry table holds female samples only, labelled as lanes of one
+wild-type and one heterozygous mouse, while the dandiset's blot images include
+males.
+
+The notebook ran in 760 s in the first clean run, in about 25 minutes (1407 s)
+after round 1, and `tools/entry.py all` took 957 s after round 2. The Europe
+PMC full text returned a 500 error and NCBI BioC rate-limited the author, and
+the supplement returned a browser check, later a reCAPTCHA page, with the Cell
+and Europe PMC copies returning 403. Round 2 found sentences the outputs did
+not support, among them that the dropout step had little effect on fig3g and
+mixed-model results reported without their convergence and singularity
+warnings, and these were corrected. Untracked files in the repository root
+that the author did not create were left alone. The author's points on the
+protocol: a full text whose supplement cannot be fetched; a tolerance taken
+from a stated spread that is the SD across mice, which becomes very wide; no
+rule for a data-quality fix found after seeing scores; absence claims for
+which the paper gives no test; no outcome for a claim tested on data only
+partly deposited; a probe rule refined after the data check; a 10-minute
+runtime aim for a dandiset of 4139 files; and version pinning for a paper that
+predates its dandiset when all versions hold the same files.
