@@ -40,7 +40,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001038-azcorra-2023-01.yaml`](../../attempts/001038-azcorra-2023-01.yaml).
 
-- `reproduce_azcorra_2023.ipynb`: the analysis. It takes about three minutes, most of it streaming
+- `reproduce_azcorra_2023.ipynb`: the analysis. It takes a few minutes, most of it streaming
   the files.
 - `azcorra.py`: loading the files and a port of the paper's MATLAB selection and measures. Other
   notebooks on this dandiset can import it.

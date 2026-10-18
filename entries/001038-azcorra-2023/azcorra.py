@@ -98,6 +98,13 @@ def list_assets() -> pd.DataFrame:
     return pd.DataFrame(rows).sort_values("path").reset_index(drop=True)
 
 
+def version_metadata(version: str = DANDISET_VERSION) -> dict:
+    """The dandiset's metadata at a version ('draft' for the draft)."""
+    r = requests.get(f"{API}/dandisets/{DANDISET_ID}/versions/{version}/", timeout=120)
+    r.raise_for_status()
+    return r.json()
+
+
 def _s(x):
     return x.decode() if isinstance(x, bytes) else x
 
