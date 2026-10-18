@@ -33,15 +33,17 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The units are selected from the dandiset's own labels, which gives more units than the paper
-analysed; the paper's own unit list, from its Dryad deposit, is shown as a variant, and two
-outcomes (monophasic responses, Fig 3A) would differ with it. A second variant takes units on the
-same day, channel and sort letter as one neuron. The notebook also gives the chance level of the
+analysed; the paper's own unit list, from its Dryad deposit, is shown as a variant, and four
+outcomes would differ with it: hold-period ramps, monophasic responses and Fig 3A would be
+reproduced, and Fig 3B would be partially reproduced, as its GPi median (-36 ms) leaves its
+tolerance. The pair claims keep their outcomes with it. A second variant takes units on the same
+day, channel and sort letter as one neuron. The notebook also gives the chance level of the
 response detection, measured with random alignment times. The attempt record, with the reasons
 and the differences from the paper's method, is
 [`attempts/000947-schwab-2020-01.yaml`](../../attempts/000947-schwab-2020-01.yaml).
 
-- `reproduce_schwab_2020.ipynb`: the analysis. It takes about 13 minutes, about 3 of them streaming
-  the files and another 3 reading the filtered traces for the spike widths.
+- `reproduce_schwab_2020.ipynb`: the analysis. It takes about 19 minutes, about 6 of them streaming
+  the files and another 5 reading the filtered traces for the spike widths.
 - `gpivla.py`: loading the files, valid trials, spike density and ISI functions, the detection of
   peri-movement changes, CCFs with jittered controls, burst and pause detection, and spike widths.
   Other notebooks on this dandiset can import it.

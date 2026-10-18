@@ -97,10 +97,11 @@ outcomes:
     at alpha 0.01), and 49.9% of significant slopes are positive. GPi and VLa slopes differ (mean
     -0.598 against 0.233 spikes/s2, rank sum p = 0.042), where the paper finds no difference (p =
     0.29); they also differ with one record per presumed neuron (p = 0.013) and with one mean slope
-    per presumed neuron (p = 0.033), and not with the paper's records (p = 0.19). With every trial
-    aligned to a random time, the same slope test finds a significant slope in 98.4% of GPi and 99.0%
-    of VLa units, so the fractions do not show ramps beyond what noise in a smoothed function gives;
-    the paper's code uses the same test.
+    per presumed neuron (p = 0.033). With the paper's records the fractions are 99.5% and 98.8% and
+    the slopes do not differ (p = 0.187), which would meet the criterion, so the outcome depends on
+    the selection of units. With every trial aligned to a random time, the same slope test finds a
+    significant slope in 98.4% of GPi and 99.0% of VLa units, so the fractions do not show ramps
+    beyond what noise in a smoothed function gives; the paper's code uses the same test.
   deviations:
   - The criterion did not define a partial outcome; the outcome is partial because the first part
     (ramps are common) holds and the second (no difference between areas) does not.
@@ -131,9 +132,10 @@ outcomes:
   notes: Monophasic increase is the most common form in GPi (46.9%) and VLa (50.9%), and increases
     are 58.8% and 60.2% of changes (746 of 1254 overall, binomial p = 1.9e-11). The GPi values are
     within tolerance; the VLa values are below 65.3% and 68.8% by more than 10%, also with the paper's
-    records (54.1% and 61.4%) and with one record per presumed neuron (50.1% and 60.3%). With random
-    alignment the detector finds a decrease in 25.2% (GPi) and 33.7% (VLa) of unit-directions and an
-    increase in 14.8% and 16.2%, so chance detections add mostly decreases.
+    records (54.1% and 61.4%), with one record per presumed neuron (50.1% and 60.3%) and at alpha
+    0.0001 (51.9% and 60.1%). With random alignment the detector finds a decrease in 25.2% (GPi) and
+    33.7% (VLa) of unit-directions and an increase in 14.8% and 16.2%, so chance detections add
+    mostly decreases.
   deviations:
   - Detrending of the control period and the ISI function are implemented here from the Methods;
     the paper's own implementation of these steps is not in its deposit.
@@ -174,7 +176,7 @@ outcomes:
     outside tolerance. In Gaia the medians are equal (-48.5 and -48 ms). With one record per presumed
     neuron -73 and -72 ms (p = 0.95), with one value per presumed neuron -47 and -53 ms (p = 0.44).
     With the paper's records -49 and -85 ms (p = 0.004), which meets the criterion, so the outcome
-    depends on the selection of units.
+    depends on the selection of units. At alpha 0.0001 -42.5 and -63 ms (p = 0.052).
   deviations:
   - Unit selection by the dandiset rule (see table1-unit-counts).
 - claim: fig3b-gpi-decr-lag-vla-incr
@@ -185,11 +187,13 @@ outcomes:
   - -29.5
   - -84
   notes: GPi decreases begin at a median of -29.5 ms (264) and VLa increases at -84 ms (369), rank
-    sum p = 0.00021. Gaia 0 against -95 ms (p = 0.0014), Isis -44 against -81 ms (p = 0.055); with
-    the paper's records -36 against -85 ms (p = 0.00069). The lag also holds with one record per
-    presumed neuron (-46.5 against -92 ms, p = 0.011) and with one value per presumed neuron (-1.5
-    against -71.2 ms, p = 0.00074), but there the GPi median is outside its tolerance, and on the
-    dandiset rule it is 0.2 ms inside it, so the match of the medians is fragile.
+    sum p = 0.00021. The GPi median is 0.2 ms inside its tolerance (-29.7 to -24.3 ms). Gaia 0
+    against -95 ms (p = 0.0014), Isis -44 against -81 ms (p = 0.055). The lag also holds with the
+    paper's records (-36 against -85 ms, p = 0.00069), with one record per presumed neuron (-46.5
+    against -92 ms, p = 0.011), with one value per presumed neuron (-1.5 against -71.2 ms, p =
+    0.00074) and at alpha 0.0001 (-30 against -81.5 ms, p = 0.00054), but in all four the GPi median
+    is outside its tolerance. With the paper's records the outcome would be partially reproduced, so
+    it depends on the selection of units, and the match of the medians is fragile.
 - claim: fig3c-vla-decr-lead-gpi-incr
   outcome: not_reproduced
   notebook: reproduce_schwab_2020.ipynb
@@ -204,7 +208,10 @@ outcomes:
     presumed neuron VLa decreases come later (-8 against -92 ms, p = 0.0082), and with one value per
     presumed neuron too (20.5 against -45 ms, p = 0.021). With random alignment the detector finds a
     decrease in 33.7% of VLa unit-directions (44.2% in the data), with a median onset of -8 ms, so
-    many VLa decreases here may be chance detections, which would pull their median late.
+    many VLa decreases here may be chance detections, which would pull their median late. At alpha
+    0.0001 the medians are -21.5 (VLa) and -57.5 ms (GPi), p = 0.3, and chance still gives a decrease
+    in 30.8% of VLa unit-directions (42.0% in the data), so the stricter threshold does not remove
+    the chance decreases.
   deviations:
   - The ISI-based detection finds more decreases than the paper's on the same units (330 against 286
     on the linked units), which weighs on this comparison.
@@ -242,7 +249,12 @@ outcomes:
     0.003, 0.333 and 0.025; one file per pair of presumed neurons gives 0.003, 0.627 and 0.037. The
     significant peaks fall at lags spread over 0 to 10 ms, and GPi and VLa spikes share a sample as
     often as independent trains would (11,376 against 11,435 expected), so shared artefacts do not
-    explain the excess. Spike times are at the sample resolution (24414.0625 Hz) in every file.
+    explain the excess. Spike times are at the sample resolution (24414.0625 Hz) in every file. With
+    the paper's records, paired when a GPi and a VLa record share a file (329, 298 and 301 pairs),
+    the peaks exceed the controls over whole recordings (p = 0.005) and at rest (p = 0.033), not
+    during movement (p = 0.203), so the outcome would be the same. Neither pair set matches the
+    paper's 427 whole-recording pairs (338 on the dandiset rule, 329 on the paper's records); this
+    attempt did not find out how the paper counted its pairs.
   deviations:
   - The paper's exclusion of pairs with a minimum detectable correlation c0 above 0.3 is not applied
     in the main test, which the criterion fixed before the analysis; the paper's simulation is not in
@@ -259,8 +271,8 @@ outcomes:
     39 and 33 during movement, p = 0.56), as the paper reports. Spike counts drift with trial time
     in many units (VLa 36.1% and 38.3% of pair-targets, Spearman p < 0.05), but with counts linearly
     detrended the excess remains (9.3% and 9.7% significant, KS p < 0.001), and so it does against
-    each pair-target's own shuffles (10.8% and 14.2%) and with one file per pair of presumed neurons
-    (KS p < 0.001).
+    each pair-target's own shuffles (10.8% and 14.2%), with one file per pair of presumed neurons
+    (KS p < 0.001) and with the paper's records (9.1% and 7.4% significant, KS p < 0.001 in both).
   deviations:
   - The paper's test statistic for noise correlations is not printed in its code; the KS permutation
     test on absolute correlations was fixed in the criterion before the analysis.
@@ -277,7 +289,11 @@ outcomes:
     per-pair test on the shifted controls gives 47.5%, 47.8% and 47.0%, so the test as the Methods
     describe it is at chance here, and the paper's per-pair test must differ. Computed as Fig5_S14.m
     does (each pair in percent of its baseline, band shifted over 0 to 800 ms), the population rate
-    does not fall below the band either (lowest 98.1%, 98.4% and 96.9%).
+    does not fall below the band either (lowest 98.1%, 98.4% and 96.9%). The Methods' rule on noisy
+    baselines leaves out more than half of the pairs with at least 5 events (157 of 307 for burst
+    onsets and offsets, 143 of 253 for pause onsets). With the paper's records (131, 132 and 86 pairs
+    kept) the rate does not fall below the band either. Because the burst detector and the per-pair
+    test differ from the paper's, this outcome says little about the paper's finding.
   deviations:
   - Burst and pause detection is a reimplementation of the Legendy and Salcman surprise method; the
     paper's implementation is not in its deposit (Fig5_S14.m plots stored averages and builds the
@@ -306,7 +322,9 @@ outcomes:
     reproduced. All files and the files of the paper's records are shown as variants.
   - Movement durations exist for 20 of the 91 Gaia files used.
   - The observations are file and direction medians (330 for RT); the paper's ANOVA has 452 error
-    degrees of freedom and does not say what its observations are.
+    degrees of freedom and does not say what its observations are. No file set here gives 452 (326
+    on the files with units, 496 on all files, 320 on the files of the paper's records), and the
+    reaction-time animal effect depends on the files used.
 - claim: figs3-emg-onset
   outcome: blocked
   blocked_by: methods_underspecified
@@ -342,9 +360,10 @@ findings:
     Gaia thalamic units are labelled only "Thalamus" (25 of them are VLa units in the paper), and 33
     Isis units have an empty location and no channel id.
 - kind: data_missing
-  statement: 30 of the 394 units the paper analysed are not among the curated units. Some files have
-    no curated units at all (21 of 254 pre-MPTP files, for example G-140813-2), though their sorted
-    clusters are in processing/ecephys/units, which has no channel or sort letter to match them.
+  statement: 30 of the 394 units the paper analysed are not among the curated units. 21 of 254
+    pre-MPTP files have no curated units. 13 of them hold sorted clusters in processing/ecephys/units
+    (124 in all, 16 in G-140813-2), whose only columns are spike times, unit name and location, so
+    there is no channel or sort letter to match them; 8 have no such table.
 - kind: metadata_error
   statement: In all 254 pre-MPTP files the session_start_time is two days after the date in the
     session_id.
@@ -357,11 +376,11 @@ findings:
     with trials), and movement ends are missing from 87 files, all of them Gaia (32 of 119 Gaia files have them), so
     the Methods' trial exclusion can be applied only in part.
 - kind: format_error
-  statement: One pre-MPTP file (I-160616-4) has no trials table, no raw data and no curated units, and
-    one spike train is stored twice in I-170518-2, as two M1-S units on channels 40 and 43.
+  statement: One pre-MPTP file (I-160616-4) has no trials table, though it has 5 curated units and raw
+    data, and one spike train is stored twice in I-170518-2, as two M1-S units on channels 40 and 43.
 - kind: other
-  statement: The NWB files name the paper only by its bioRxiv preprint (doi:10.1101/546598); the
-    dandiset metadata names the published paper.
+  statement: The pre-MPTP NWB files name the paper only by its bioRxiv preprint (doi:10.1101/546598);
+    the dandiset metadata names the published paper.
 - kind: data_missing
   statement: The EMG of S3 Fig and the stimulation mapping of Fig 1 are not in the dandiset; the EMG is
     in the paper's Dryad deposit and the mapping is not public.
@@ -382,7 +401,8 @@ verifications:
   reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
     helper module and the claims file, with the paper. The verifier queried the archive metadata and the
     Zenodo deposit and tested helper functions on synthetic inputs. Its report had no attempt record and
-    gave its own outcome for each claim; all 21 agree with the record as reviewed.
+    gave its own outcome for each claim; all 21 agree with the record as reviewed. Cell numbers in the
+    reasons are those of the round-1 notebook.
   results:
   - claim: unit-link
     agrees: true
@@ -451,7 +471,8 @@ verifications:
     outcome: partially_reproduced
     reason: Monophasic increase is the most common form in both areas, and increases exceed 50% of changes.
       VLa monophasic increases (50.9 against 65.3) and VLa increases as a share of changes (60.2 against
-      68.8) are outside tolerance (cell 29).
+      68.8) are outside tolerance (cell 29). (Problem 1) the detectors have a high false-positive rate on
+      synthetic stationary Poisson trains, which weakens the form claims.
     response: Outcome kept. Added the variant with one record per presumed neuron and the chance forms,
       which show that chance detections are mostly decreases.
   - claim: monophasic-more-in-vla
@@ -520,7 +541,8 @@ verifications:
       Methods' exclusion of pairs with c0 > 0.3 and never checks the lag and timing of the positive peaks
       for shared artefacts. (Problem 8) binning with np.floor(d*1000) makes every pair significant with
       ms-quantized spike times, and the notebook never shows their resolution. (Problem 9) jittered spikes
-      can leave the 500 ms windows.
+      can leave the 500 ms windows. (Problem 3) pseudo-replication makes the p-values anti-conservative,
+      which bears on the borderline CCF movement p = 0.045.
     response: Outcome kept. Added the c0 exclusion as a variant with an approximate c0 (332, 121 and 172
       pairs, KS p = 0.003, 0.333 and 0.025), the lags of the significant peaks (spread over 0 to 10 ms),
       the count of GPi and VLa spikes at the same sample (11,376 against 11,435 expected), and one file
@@ -588,3 +610,163 @@ verifications:
       and the fit to ((N-1)/N)c + 1/N could be checked on that stored output; that is a re-analysis of
       the authors' output, not a reproduction.
     response: No change; the verifier agrees that checking the stored output is not a reproduction.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full re-executed notebook after the round-1 revision, with its conclusions and
+    summary, the README, the helper module, the claims file and this record, with the paper and the paper's
+    Fig5_S14.m. The verifier saved the paper's text under paper/. It agrees with all 21 outcomes. Cell numbers
+    in the reasons are those of the notebook it reviewed.
+  results:
+  - claim: unit-link
+    agrees: true
+    outcome: reproduced
+    reason: Follows from its criterion and the printed numbers.
+    response: No change.
+  - claim: table1-unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its criterion and the printed numbers.
+    response: No change to the outcome. The data check now prints, for the files without curated units,
+      the sorted clusters in processing/ecephys/units and their columns, which the data_missing finding
+      cites.
+  - claim: table1-rest-rate
+    agrees: true
+    outcome: reproduced
+    reason: Follows from its criterion and the printed numbers.
+    response: No change.
+  - claim: table1-ap-width
+    agrees: true
+    outcome: reproduced
+    reason: Follows from its criterion and the printed numbers.
+    response: No change.
+  - claim: hold-period-ramps
+    agrees: true
+    outcome: partially_reproduced
+    reason: The criterion defines no partial outcome, and the record says so. The outcome depends on unit
+      selection, and the README and Summary do not say so; with the paper's records it would be reproduced
+      (99.5% and 98.8%, slope p = 0.187, cell 35).
+    response: Outcome kept. The conclusion, the notes, the Summary and the README now say that with the
+      paper's records the criterion is met, so the outcome depends on the selection of units.
+  - claim: mvt-responsive-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Follows from its criterion and the printed numbers.
+    response: No change.
+  - claim: increases-most-common
+    agrees: true
+    outcome: partially_reproduced
+    reason: Follows from its criterion and the printed numbers. The decrease detector's chance level is now
+      measured but not corrected for (33.7% of VLa unit-directions with random alignment against 44.2% in
+      the data), and the detector finds more decreases than the paper's stored output (330 against 286).
+    response: Outcome kept. Added a variant with stricter detection (alpha 0.0001) on the data and on
+      random alignment; the VLa values stay outside tolerance (51.9% and 60.1%). Added the verifier's
+      problem 1 to its round-1 reason, which had left it out.
+  - claim: monophasic-more-in-vla
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its criterion and the printed numbers.
+    response: No change.
+  - claim: integrated-change-positive
+    agrees: true
+    outcome: partially_reproduced
+    reason: Follows from its criterion and the printed numbers.
+    response: No change.
+  - claim: fig3a-vla-leads-gpi
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its criterion and the printed numbers. Part of VLa's -67 ms may come from the
+      decrease detector, whose chance level is measured but not corrected for.
+    response: Outcome kept. Added the variant at alpha 0.0001 (-42.5 and -63 ms, p = 0.052), which does
+      not change the outcome.
+  - claim: fig3b-gpi-decr-lag-vla-incr
+    agrees: true
+    outcome: reproduced
+    reason: I agree under the criterion. It is fragile, as the GPi median of -29.5 ms is 0.2 ms inside its
+      tolerance, and Isis alone gives p = 0.055. With the paper's records the GPi median is -36 ms, which
+      is also outside tolerance (cell 53), and the outcome would be partially reproduced; cell 54, the
+      notes, the README and the Summary do not say so.
+    response: Outcome kept, as the verifier gave it. The conclusion, the notes, the Summary and the README
+      now say that the paper's-records GPi median (-36 ms) is outside tolerance, so the outcome would be
+      partially reproduced with them and depends on the selection. The variant at alpha 0.0001 (-30 ms)
+      is outside too, and is reported.
+  - claim: fig3c-vla-decr-lead-gpi-incr
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its criterion and the printed numbers. With random alignment, 33.7% of VLa
+      unit-directions have a decrease, against 44.2% in the data, and chance onsets fall at -8 ms; the
+      detector also finds more decreases than the paper's stored output (330 against 286). Part of the
+      fig3c failure may come from the method, not the data.
+    response: Outcome kept. Added the variant at alpha 0.0001 with its own chance level; VLa decreases
+      still do not lead (-21.5 against -57.5 ms, p = 0.3), and chance still gives a decrease in 30.8% of
+      VLa unit-directions (42.0% in the data), so a stricter threshold does not remove the chance
+      decreases. A correction for chance onsets would need a method the paper does not describe, and is
+      not attempted; the notes say that chance detections may pull the VLa median late.
+  - claim: gating-conflict-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Follows from its criterion and the printed numbers.
+    response: No change.
+  - claim: directional-units
+    agrees: true
+    outcome: partially_reproduced
+    reason: Follows from its criterion and the printed numbers.
+    response: No change.
+  - claim: fig4-ccf-rare
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its criterion and the printed numbers. The claim has no paper's-records variant,
+      although the claims file promises one for every claim. Pair counts differ from the paper's (338
+      against 427 for the whole-recording CCF), with no explanation.
+    response: Outcome kept. Added the paper's-records variant, pairing a GPi and a VLa record of the paper
+      that share a file (329 pairs); the peaks exceed the controls over whole recordings (p = 0.005) and at
+      rest (p = 0.033), so the outcome would be the same. Neither pair set matches 427, and the notes now
+      say this attempt did not find out how the paper counted its pairs. Added the verifier's problem 3 to
+      its round-1 reason, which had left it out.
+  - claim: fig4-noise-corr-rare
+    agrees: true
+    outcome: not_reproduced
+    reason: Follows from its criterion and the printed numbers. The claim has no paper's-records variant,
+      although the claims file promises one for every claim.
+    response: Outcome kept. Added the paper's-records variant (9.1% and 7.4% of pair-targets significant,
+      KS p < 0.001 in both), with the same outcome.
+  - claim: fig5-vla-decrease-after-gpi-bursts
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree under the criterion, but it is weak evidence because the burst detector does not match
+      the paper's (bursts of 67 ms here against 24 ms). The per-pair test runs at chance (47 to 48%). More
+      than half the pairs, 157 of 307, are excluded as noisy, and the conclusion does not report this. The
+      claim has no paper's-records variant.
+    response: Outcome kept. The output now splits the excluded pairs by reason, and the conclusion and notes
+      report that 157 of 307 (burst onsets and offsets) and 143 of 253 (pause onsets) are left out as noisy,
+      and that the outcome says little about the paper's finding. Added the paper's-records variant (131,
+      132 and 86 pairs kept), where the rate does not fall below the band either.
+  - claim: behavior-rt-mt
+    agrees: true
+    outcome: reproduced
+    reason: I agree. It is the defensible file set, since the test uses the files that hold the analysed
+      units. The reaction-time animal effect still depends on which files are used (p = 0.89 on the 165
+      files with analysed units, 0.053 on the 162 files of the paper's records, 1.1e-4 on all 250 files,
+      2.5e-59 with trials pooled). The paper's F[1,452] implies about 456 observations, and none of these
+      sets matches that.
+    response: Outcome kept. The conclusion and the deviations now say that no file set gives 452 degrees
+      of freedom (326, 496 and 320) and that the reaction-time animal effect depends on the files used.
+  - claim: figs3-emg-onset
+    agrees: true
+    outcome: blocked
+    reason: Follows from its criterion and the printed numbers.
+    response: No change.
+  - claim: fig1-vla-localization
+    agrees: true
+    outcome: blocked
+    reason: Follows from its criterion and the printed numbers. The metadata_insufficient finding cites the
+      column description, which is never printed; only the notebook's own label "z ventral positive"
+      appears (cell 80).
+    response: Outcome kept. The cell now prints the descriptions of acx_y and acx_z from the file
+      ("Dorso-ventral coordinate relative to the anterior commissure crossing, ventral positive, in
+      millimeters").
+  - claim: fig6-simulation
+    agrees: true
+    outcome: blocked
+    reason: Follows from its criterion and the printed numbers.
+    response: No change.

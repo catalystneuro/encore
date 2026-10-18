@@ -282,9 +282,11 @@ def detect(func: np.ndarray, median_rt_ms: float, alpha: float = ALPHA, contig: 
     return out
 
 
-def unit_direction(segments: list[tuple[np.ndarray, pd.DataFrame]], target: str) -> dict | None:
+def unit_direction(segments: list[tuple[np.ndarray, pd.DataFrame]], target: str,
+                   alpha: float = ALPHA) -> dict | None:
     """Detection for one unit and one target over its recording segments (each a spike train and
-    its file's valid trials). Returns None when there are fewer than MIN_TRIALS valid trials."""
+    its file's valid trials), at omnibus p `alpha`. Returns None when there are fewer than
+    MIN_TRIALS valid trials."""
     counts, isis, rts = [], [], []
     for spikes, tr in segments:
         t = tr[tr.valid & (tr.target == target)]
@@ -309,7 +311,7 @@ def unit_direction(segments: list[tuple[np.ndarray, pd.DataFrame]], target: str)
     m = pd.Series(np.nanmean(np.vstack(isis), 0)).interpolate(limit_direction="both").to_numpy()
     f_isi = gaussian_filter1d(m, SIGMA_MS, mode="nearest")[pad:-pad]
     med_rt = float(np.median(np.concatenate(rts))) * 1000.0
-    inc, dec = detect(f_sdf, med_rt), detect(f_isi, med_rt)
+    inc, dec = detect(f_sdf, med_rt, alpha), detect(f_isi, med_rt, alpha)
     base = f_sdf[:1200].mean()                      # Fig2_3_S8_S9.m: -1500 to -301 ms
     integ = (f_sdf[1200:1900] - base).sum() / 1000  # -300 to +399 ms, spikes
     return {"n_trials": n, "median_rt_ms": med_rt, "sdf": f_sdf, "rest_rate": base,
