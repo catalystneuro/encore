@@ -1,0 +1,627 @@
+schema_version: 1
+id: 001075-randi-2023-01
+dandiset: "001075"
+dandiset_version: 0.240930.1859
+paper: doi:10.1038/s41586-023-06683-4
+date: 2026-10-18
+entry: 001075-randi-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The list of the 188 head neurons (head ganglia of aconnectome_ids_ganglia.json), used to
+    define the head pairs. The paper's analysis code was also read for the response classifier and
+    its parameters, the photobleaching fit, the spike removal, the decaying correction and the
+    pixel size.
+  source: https://github.com/leiferlab/pumpprobe at commit 1dbc5e0a2b609d54bc9b1c90c73d4e3bf183d3c7,
+    and https://github.com/leiferlab/wormdatamodel at commit 2ab956199e3931de41a190d2b9985e961df3810c
+- what: The paper's Source Data for Extended Data Figs. 3a (mean dF/F0 per pair) and 4a, 4b
+    (observations and q value per pair), used as reference values for sourcedata-link and for the
+    q < 0.05 selection of fig2d-inhibitory-fraction (files 41586_2023_6683_MOESM11_ESM.xlsx, md5
+    02ca4ec308dc5e398f059c4f9a2c63d1, and 41586_2023_6683_MOESM12_ESM.xlsx, md5
+    8d55d8113826b809c9610e46accdf093).
+  source: Supplementary information of doi:10.1038/s41586-023-06683-4
+- what: The paper's export of the 113 WT recordings (folder name, stimulated ROI of every
+    stimulation, ROI labels), used for osf-link and its variants.
+  source: OSF doi 10.17605/OSF.IO/E2SYT, file exported_data.tar.gz (guid 9mecf, version 1, md5
+    7ae518fea414f664e2493238afe209bb)
+- what: The paper's export of the 18 unc-31 recordings (traces, stimulation volumes, stimulated ROI
+    and ROI labels), the data of fig4-rid-unc31. The traces of the 7 WT export recordings that
+    stimulate an ROI labelled RID are also used, from the file above, for a variant of that claim.
+  source: OSF doi 10.17605/OSF.IO/E2SYT, file exported_data_unc31.tar.gz (guid ty6sp, version 1, md5
+    e5c83242baa131bca95ee58bc7b58bec)
+outcomes:
+- claim: recordings-protocol
+  outcome: partially_reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:recordings-protocol
+  measured: 110
+  notes: The dandiset has 113 subjects, one session each, but only 110 have the segmentation file
+    with traces and the stimulation table; subjects 20, 23 and 33 have only the raw imaging file.
+    The median interval between stimulations is 30.81 s, and 107 of 110 recordings last no more
+    than 44 min (13 are longer than 40 min, the longest 48.7 min). Every stimulation is stored as
+    0.5 s and 1.2 mW; the conversion writes both as constants.
+  deviations:
+  - The stimulus duration cannot be checked against the data, as it is a constant in the files.
+- claim: pairs-measured
+  outcome: partially_reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:pairs-measured
+  measured:
+  - 20587
+  - 184
+  - 50
+  notes: Under reading (a), with i = j and the autoresponse required, 20,587 head pairs are observed
+    (expected 23,433 with tolerance 2,343), from 184 head neurons (186, tolerance 18.6), with at
+    most 50 observations of a pair (59, tolerance 5.9); only the neuron count is within tolerance.
+    Reading (b) gives 20,422 pairs. Reading (c), without the autoresponse requirement, gives 23,813
+    pairs and 184 neurons, within tolerance, but at most 86 observations. 107 animals contribute;
+    172 head neurons are stimulated with an autoresponse (the Source Data list 168). With the
+    stimulated ROI from the paper's export, reading (a) gives 20,351 pairs, 183 neurons and at most
+    55 observations.
+  deviations:
+  - The stimulated ROI is found from the target position for stimulations without a manually
+    located ROI; the paper maps the nearest neuron through tracking matches that are not in the
+    dandiset. The two agree for 66% of such stimulations.
+  - The paper's exclusion of some stimulations (950 marked -2 in its export) and its matchless
+    traces for dim neurons are not in the dandiset, so all stimulations and only the regular
+    traces are used.
+  - The paper's text does not say whether the 23,433 pairs include i = j; the Source Data count
+    does. Three readings are shown.
+- claim: fig1e-avjr-avdr
+  outcome: reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:fig1e-avjr-avdr
+  notes: Over 27 AVJR stimulations with an autoresponse in 17 animals, the mean dF/F0 of AVDR is
+    0.236 (Source Data 0.246), Wilcoxon p = 5.5e-05 against 0, with 12 detected AVDR responses;
+    16 of 17 animals have a positive mean. The code's decaying correction gives 0.197.
+- claim: fig1f-aver-avar
+  outcome: reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:fig1f-aver-avar
+  notes: Over 7 AVER stimulations with an autoresponse in 5 animals, the mean dF/F0 of AVAR is 0.159
+    (Source Data 0.204), with 4 detected AVAR responses. The trials do not differ from 0 by a
+    Wilcoxon test (p = 0.22) and 3 of 5 animals have a positive mean, so the evidence is thin. The
+    code's decaying correction gives 0.163.
+- claim: fig1g-saadl-ollr
+  outcome: reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:fig1g-saadl-ollr
+  notes: Over 5 SAADL stimulations with an autoresponse in 4 animals, the mean dF/F0 of OLLR is
+    -0.059 (Source Data -0.040), with 2 detected OLLR responses. The trials do not differ from 0
+    (p = 0.44), 3 of 4 animals have a negative mean, and the code's decaying correction gives
+    +0.014, so the sign is not robust.
+- claim: edfig2ij-spatial-specificity
+  outcome: reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:edfig2ij-spatial-specificity
+  measured: 0.741
+  notes: Under reading (a), 74.1% of the neighbours 4 to 16 um from the target have dF/F0 below 0.1
+    (expected 0.75, tolerance 0.075; the Source Data give 0.749). The bands give 60.4% (4 to 10 um)
+    and 81.7% (10 to 16 um), against 61.6% and 82.3% in the Source Data. The targeted ROI's median,
+    0.376, is 6.2 times the 4 to 10 um median (0.061). Per animal the pooled fraction ranges from
+    0.50 to 0.97. Leaving out rows with F0 <= 0 gives the same fractions (0.741 pooled).
+  deviations:
+  - The legend does not say which neighbours its 75% refers to; readings (a) and (c) are within
+    tolerance, (b) is not.
+  - Distances use 0.42 um per pixel from the paper's code and the median plane step of the imaging
+    file's depth per frame (1.22 um).
+- claim: sourcedata-link
+  outcome: partially_reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:sourcedata-link
+  notes: Pairs are matched by neuron names. 81.7% of the paper's 23,433 observed pairs are observed
+    here, the Spearman correlation of observation counts is 0.768 and the Pearson correlation of
+    mean dF/F0 is 0.551 (criterion for reproduced 90%, 0.9 and 0.7; for partial 70%, 0.7 and 0.5).
+    Counts are equal for 27.4% of pairs (median difference 0), and the sign of the mean agrees for
+    65.2%. With the code's decaying correction the correlation of means is 0.617. With the
+    stimulated ROI from the paper's export the values are 83.3%, 0.820 and 0.676, and with its
+    labels as well 84.5%, 0.834 and 0.684, so part of the difference comes from the identification
+    and most of it does not. Keeping only rows with F0 > 0 (Pearson 0.552) or traces corrected for
+    photobleaching (0.551), or leaving out the nine recordings with negative traces (0.534), the
+    950 stimulations the export excludes (0.601) or the nine recordings with agreement below 0.6
+    (0.544), keeps the result in the partial band; all these filters together give 76.8%, 0.765 and
+    0.569.
+  deviations:
+  - Main reading follows the Methods' dF/F0; the code's decaying correction and the mean over
+    detected responses only are shown as variants.
+- claim: osf-link
+  outcome: partially_reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:osf-link
+  notes: All 110 recordings with traces match one exported recording by session date and time,
+    with the same number of stimulations, and 109 with the same number of ROIs; the 3 unmatched
+    exported recordings are the 3 subjects with only imaging files. Of 4,479 stimulations both
+    assign to an ROI, 3,913 (87.4%) agree, which meets the criterion's 80% as worded. All 2,812
+    manual targets agree by construction, as the file's target_pumpprobe_id is the pipeline's own
+    assignment; of the 1,667 found from the target position, which is what the claim states, 1,101
+    (66.0%) agree, inside the 60 to 80% band of a partial result, and the outcome is judged on this
+    figure (changed from reproduced after the first verification round). Agreement is below 0.6 in
+    nine recordings (position-found agreement 0.10 to 0.36). Three recordings have a fitted z
+    slope of exactly 0 (median position-found agreement 0.579, against 0.739 for the other 107), and
+    agreement rises with the absolute slope (Spearman 0.478). The export marks 950 stimulations as
+    excluded. ROI labels agree with the export in every recording except six. In subject 11 the
+    export has no labels (41 distinct names here, 161 ROIs here against 200 exported); in subjects
+    64 and 76 the dandiset has 4 and 0 distinct names against 70 and 102 exported, and in 77 it has
+    15; in 86 and 91 most names are shared (35 of 69 and 59 of 81) but sit on other ROIs.
+  deviations:
+  - The criterion pools manual and position-found targets; the claim's statement concerns the
+    position-found ones, and the outcome follows the statement.
+- claim: fig2d-inhibitory-fraction
+  outcome: not_reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:fig2d-inhibitory-fraction
+  measured: 0.1507
+  notes: Of the 1,310 Source Data pairs with q < 0.05, 1,161 are observed here and 15.1% of them
+    have a negative mean dF/F0 (reading a; 17.4% without i = j), outside 0.11 with tolerance 0.011.
+    The Source Data's own means give 11.5% for the same pairs, and the signs here agree with them
+    for 89.1% of observed pairs, so the difference comes from the response amplitudes computed
+    from the dandiset, not from the outside selection. With the code's decaying correction the
+    fraction is 9.6%; it is 7.3% at q < 0.01 and 21.2% at q < 0.1. Inhibitory pairs are a minority
+    under every variant. The excess is not explained by a non-positive F0 or by failed
+    photobleaching fits (15.1% with F0 > 0 only or with corrected traces only), nor by the nine
+    recordings with negative traces (15.3% without them), the export's excluded stimulations
+    (15.2%) or the nine poorly linked recordings (15.6%); all these filters together give 15.8%.
+    With the stimulated ROI from the export, which applies its exclusions, it is 14.0%, and 13.4%
+    with the export's labels as well.
+  deviations:
+  - The q values come from the paper's Source Data, as the control recordings needed to compute them
+    are not public.
+  - The deviations of pairs-measured apply.
+- claim: fig2c-1310-connected
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The q values compare each pair's responses with a null distribution from unstimulated
+    control recordings. These are not in the dandiset, not in the paper's OSF repository, and the
+    code reads them from private paths (/projects/LEIFER/Sophie/Lists/No_stim_list.txt).
+- claim: fig2c-bilateral
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the q values, which need the unstimulated control recordings (see
+    fig2c-1310-connected).
+- claim: fig2efg-path-length
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs the q and q_eq values, which need the unstimulated control recordings (see
+    fig2c-1310-connected). The connectome files the paper uses are public in its code repository.
+- claim: fig3-anatomy-predictions
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The anatomy-derived predictions per pair come from a biophysical model whose outputs the
+    paper's scripts read from private paths (/projects/LEIFER/francesco/simulations/); the model
+    code is not in the linked repositories, and the Source Data give the predictions without pair
+    names. Panels c and d also need the q values and the unc-31 recordings.
+- claim: edfig6-kernel-stereotypy
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Kernels are fitted with the paper's pumpprobe package (convolutions of exponentials in C++
+    extensions). A notebook cell now builds it and the packages it imports at fixed commits, with
+    the kernel's Python 3.13 and numpy 2.5.4. As published, pumpprobe 1dbc5e0 does not build, as
+    the compiler does not find the numpy headers. With the headers added by hand it builds but
+    cannot be imported, since mistofrutta 11ac8c3 fails on its version string, wormbrain d94f7a1
+    needs the Eigen library and wormdatamodel 2ab9561 uses numpy C API names removed in numpy 2.
+    The paper's setup.sh also points the compiler at libraries under /projects/LEIFER. The data
+    needed are in the dandiset. The fits were not reimplemented without the package.
+- claim: edfig7b-unc31-fewer
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The unc-31 recordings are not in the dandiset; exported traces of 18 unc-31 animals are on
+    OSF, but the q values also need unc-31 control recordings, which are not public anywhere.
+- claim: fig4-rid-wt
+  outcome: partially_reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:fig4-rid-wt
+  notes: Changed from blocked after the first verification round, which asked for a check of RID
+    labels. The dandiset labels 11 ROIs RID in 11 recordings, and 8 stimulations in 5 animals
+    target such an ROI (5 manually located, 3 nearest-centroid). The criterion was written after
+    seeing these counts and before computing any response. Under both readings only AWB meets
+    it. AWB, left and right pooled, has a mean dF/F0 of 0.076 over 12 trials in 5 animals with 3
+    detected responses (82nd percentile of the head-pair means); AWBR has 0.094 over 7 trials with
+    2 detected. URX is observed once (URXR, 0.032, not detected) and ADL is never observed with a
+    side label (one trace labelled ADL without a side, 0.011). With the export's assignment (11
+    stimulations) AWB has a mean of 0.100 with 5 detected responses. "Strongly" holds for AWB only
+    in the sense of the percentile given.
+  deviations:
+  - Only RID stimulations whose target is an ROI labelled RID are found; the paper also includes
+    manually targeted RID stimulations in which RID was not segmented.
+  - The paper substitutes matchless traces for neurons such as ADL in the RID analysis; they are
+    not in the dandiset, so only regular traces are used.
+  - As in the Methods for Fig. 4, no autoresponse is required and values beyond 2 in absolute
+    value are excluded (none of URX, ADL or AWB was).
+- claim: fig4-rid-unc31
+  outcome: reproduced
+  notebook: reproduce_randi_2023.ipynb
+  output: claim:fig4-rid-unc31
+  notes: Changed from blocked after the first verification round. The earlier notes were wrong; the
+    unc-31 export labels RID, and 28 stimulations in 8 of its 18 recordings target an ROI labelled
+    RID. In unc-31, URX (left and right) has a mean dF/F0 of 0.031 over 25 trials, ADL 0.061 over 14
+    and AWB 0.067 over 50 (URXL 0.018, ADLR 0.033, AWBR 0.048). The neurons observed in both strains
+    are URX and AWB under reading (a) and AWBR under reading (b), and each is lower in unc-31 than in
+    the WT dandiset (URX 0.031 against 0.032 from one WT trial, AWB 0.067 against 0.076, AWBR 0.048
+    against 0.094), so the criterion holds under both readings. The evidence is thin. The
+    differences are small, one-sided Mann-Whitney tests do not find them (p = 0.54, 0.44 and 0.31),
+    and AWB responses are still detected in 17 of 50 unc-31 trials, so the responses are reduced
+    in mean, not absent. Against the WT export (7 recordings), URX and AWB are also lower in unc-31,
+    while ADL, observed once in WT (-0.062), is higher.
+  deviations:
+  - The unc-31 data are the paper's exported traces, processed with the dandiset pipeline
+    (missing values interpolated linearly here, the exported stimulation volumes used); the WT
+    side is the dandiset, whose traces differ from the export, and the WT export is shown as a
+    variant.
+  - The deviations of fig4-rid-wt apply.
+- claim: fig5-extrasynaptic-screen
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Needs q in WT and q_eq in unc-31, hence the control recordings of both strains, which are
+    not public, and the unc-31 recordings, which are not in the dandiset.
+- claim: fig6-spontaneous
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The spontaneous recordings are on OSF (spont_data_fig6.zip), but the kernel-based
+    prediction needs the kernel fits of edfig6-kernel-stereotypy, which is blocked as not runnable,
+    so this claim is blocked for the same reason (the dependency is now in the claims file). It also
+    needs q values (control recordings not public) and the anatomy-model predictions, which are not
+    public.
+findings:
+- kind: data_missing
+  statement: Three of the 113 subjects (20, 23, 33) have only the raw imaging file, without the
+    segmentation file that holds the traces and the stimulation table.
+- kind: data_missing
+  statement: The unc-31 recordings, the spontaneous recordings of Fig. 6 and the unstimulated control
+    recordings are not in the dandiset. The control recordings, which every q value in the paper
+    needs, are not public on OSF either, so the paper's central statistics cannot be recomputed.
+- kind: identifier_missing
+  statement: For about half of the stimulations the files do not say which ROI was stimulated; they
+    give only a target position. The paper's assignment uses tracking matches that are not in the
+    dandiset; from the position, 66% of these stimulations get the paper's ROI. RID stimulations
+    can be recognised only where RID was segmented and labelled (8 stimulations in 5 animals).
+- kind: selection_undocumented
+  statement: The paper's export marks 950 stimulations as excluded (-2); the dandiset keeps all
+    stimulations and does not say which were excluded or why.
+- kind: metadata_error
+  statement: In five recordings the labels reached through `neuropal_ids` and the NeuroPAL table
+    differ from the paper's export for every named ROI. In subjects 64, 76 and 77 the dandiset has
+    almost no labels (4, 0 and 15 distinct names against 70, 102 and 87 exported). In subjects 86
+    and 91 most names are shared with the export but sit on other ROIs. In subject 11 the number of
+    ROIs (161) differs from the export (200), and the export has no labels for it.
+- kind: format_error
+  statement: The column `neuropal_ids`, documented as a NeuroPAL ROI id or blank, holds the text
+    "merge" in 63 recordings and "check", "I4" or "RIAR" in others.
+- kind: metadata_error
+  statement: The target column `depth_in_um` holds values from -0.875 to 0.875, which cannot be
+    micrometres in a volume imaged from 2.5 to 37.5 um; the unit is not stated. 122 stimulations
+    have the target position (0, 0), meaning no stored position.
+- kind: metadata_error
+  statement: Every stimulation is stored as 0.5 s at 1.2 mW, constants from the paper written by the
+    conversion; the 0.1 to 0.5 s pulses the Methods describe for AFD stimulations are not
+    represented.
+- kind: metadata_error
+  statement: The red optical channel is described with the indicator GCaMP6s, but it images
+    tagRFP-T. Two subjects (24, 25) have strain "none". The age is P1D for every animal, L4 or young
+    adult. One label confidence is 11, outside the 0 to 1 range.
+- kind: other
+  statement: Of the 14,039 traces, 897 cannot be corrected for photobleaching with the paper's fit,
+    729 of them because values are missing even in the interpolated copy. 3,173 of 433,216
+    observation rows have a baseline F0 at or below zero, so their dF/F0 has no meaning; the
+    variants without them change no outcome.
+- kind: metadata_insufficient
+  statement: The traces have unit "n.a." and are described only as average baseline fluorescence,
+    without saying what processing they have had; while preparing (not run in the notebook) they
+    were seen to differ from the paper's exported traces. Nine recordings (subjects 2, 3, 4,
+    34, 35, 36, 38, 39, 40) hold values far below zero, down to -196,646.
+- kind: other
+  statement: Some ROIs carry the NeuroPAL label "target" (49 ROIs in 21 recordings), and labels such
+    as RIG or SAAD name no single neuron.
+- kind: metadata_error
+  statement: Thirteen recordings last longer than the "up to 40 min" of the paper (up to 48.7 min),
+    and three have gaps in their timestamps of up to 8.4 s.
+verifications:
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the
+    helper module and the claims file, with the paper. The verifier opened one imaging file of the archive
+    and sampled asset metadata, and tested helper functions on synthetic inputs; it did not stream any
+    segmentation file. Its report had no attempt record and gave its own outcome for each of the 19
+    claims.
+  results:
+  - claim: recordings-protocol
+    agrees: true
+    outcome: partially_reproduced
+    reason: Only 110 of 113 subjects have traces and a stimulation table; sub-20's imaging file has no
+      intervals and an empty stimulus/presentation, so the 3 imaging-only subjects carry no stimulations.
+      The median interval is 30.81 s and 107/110 recordings last at most 44 min. Duration is stored as a
+      constant 0.5 s, so the files cannot show any other duration.
+    response: No change needed.
+  - claim: pairs-measured
+    agrees: true
+    outcome: partially_reproduced
+    reason: Reading (a) gives 20,587 pairs (outside 21,090 to 25,776), 184 neurons (inside) and at most 50
+      observations (outside). Reading (c) has 2 of 3 inside, and the exported-assignment variant (20,351,
+      183, 55) also has 2 of 3. The share of 188 squared is 0.58 against the paper's 66%.
+    response: No change needed. The excluded stimulations (problem 4) are now left out in a variant of
+      sourcedata-link and fig2d-inhibitory-fraction; they enter the exported-assignment variant here as
+      before.
+  - claim: fig1e-avjr-avdr
+    agrees: true
+    outcome: reproduced
+    reason: 27 trials in 17 animals, mean 0.236 above 0, 12 detected responses, 16 of 17 animals positive.
+      The Source Data give 0.246 over 24 observations, and the sub-0 mean (0.107) matches the three values
+      in the claims file header.
+    response: No change needed.
+  - claim: fig1f-aver-avar
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (weak). 7 trials, mean 0.159 above 0, 4 detected, so the criterion is met, but the
+      evidence is thin (Wilcoxon p = 0.22, 3 of 5 animals positive). The classifier is strict, so
+      "detected in at least one trial" is a weak test (B9).
+    response: No change needed; the notes already say the evidence is thin.
+  - claim: fig1g-saadl-ollr
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced (weak). 5 trials, mean -0.059 below 0, 2 detected (one of them positive, +0.20), so
+      the criterion is met. It is fragile, as p = 0.44 and the decaying-correction variant flips the mean
+      to +0.014.
+    response: No change needed; the notes already say the sign is not robust.
+  - claim: sourcedata-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: 0.817 of the paper's pairs found, Spearman of counts 0.768, Pearson of dF/F0 0.551, all above
+      the partial thresholds and none above the full ones; the best variant (0.845, 0.834, 0.684) is still
+      partial. Unchecked negative or tiny F0 (B1) and uncorrected photobleaching (B2) could lower the
+      Pearson correlation.
+    response: Added F0 to every value and the outcome of the photobleaching fit to every trace, the count
+      of rows with F0 <= 0 (3,173; 761 among head pairs with an autoresponse), and variants without rows
+      with F0 <= 0, without uncorrected traces, without the nine recordings with negative traces, without
+      the export's excluded stimulations, without the nine recordings with agreement below 0.6, and with
+      all of these together. Pearson stays between 0.534 and 0.601; outcome kept. Corrected the
+      conclusion, which quoted older numbers for the exported-assignment variant. For the shortened
+      photobleaching fit (B2), re-ran 12 recordings drawn with a fixed seed with the full fit; the
+      dF/F0 values correlate with a median Pearson of 0.997 and 99.5% of classifier calls agree.
+  - claim: osf-link
+    agrees: false
+    outcome: partially_reproduced
+    reason: 110 of 110 recordings match by key and stimulation count and 109 by ROI count, and overall
+      same-ROI agreement is 0.874, which meets the criterion as worded. But all 2,812 manual targets agree
+      by construction, as target_pumpprobe_id is the pipeline's own assignment. Targets found from
+      position, which is what the claim states, agree 1,101 of 1,667 = 0.660, inside the 60 to 80% partial
+      band. Nine recordings fall below 0.6 and stay in every main analysis (B3). Six recordings have 0%
+      label agreement, which suggests an ROI-order mismatch (B5).
+    response: Outcome changed to partially_reproduced, judged on the position-found agreement as the
+      claim states. Added the per-recording position-found agreement against the fitted z slope (only 3
+      recordings have a slope of exactly 0; agreement rises with the absolute slope, Spearman 0.478), the
+      nine low recordings with their slopes, variants of the other claims without these nine recordings,
+      and a side-by-side of labels for the six recordings. These show three causes, not one ROI-order
+      mismatch; the export has no labels for subject 11, the dandiset has almost none for 64, 76 and 77,
+      and in 86 and 91 shared names sit on other ROIs. The finding is updated. Corrected the text the
+      verifier found at odds with the outputs (B7), the depth_in_um range (-0.875 to 0.875), the imaging
+      depth (2.5 to 37.5 um), the (0, 0) targets (none manual) and the share of manual targets in the
+      helper's docstring (about half).
+  - claim: fig2d-inhibitory-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Negative fraction 0.151 (a) and 0.174 (b), against 0.11 with tolerance 0.011; the decaying
+      variant gives 0.0956, just outside, and the Source Data means give 0.115. Sign flips from negative or
+      tiny F0 (B1) and spurious negatives from uncorrected bleaching (B2) could inflate the fraction, and
+      the 950 excluded stimulations are kept (B4).
+    response: Added the fraction under the same variants as sourcedata-link and with the exported
+      assignment, which applies the export's exclusions (asked for in section C). None reaches the
+      tolerance (13.4% to 15.8%), so neither F0 nor photobleaching explains the excess. Outcome kept.
+  - claim: edfig2ij-spatial-specificity
+    agrees: true
+    outcome: reproduced
+    reason: Fraction below 0.1 is 0.741 pooled (a) and 0.817 for 10 to 16 um (c), both within 0.675 to
+      0.825, and the target median over the 4 to 10 um median is 6.2. The band values agree with the
+      Source Data.
+    response: No change needed. Added the fractions without rows with F0 <= 0 (unchanged).
+  - claim: fig2c-1310-connected
+    agrees: true
+    outcome: blocked
+    reason: The q values need the unstimulated control recordings; the archive holds only 113 imaging and
+      110 segmentation files, all stimulated WT sessions. The count can be read from the Source Data but
+      not derived from the dandiset.
+    response: No change needed.
+  - claim: fig2c-bilateral
+    agrees: true
+    outcome: blocked
+    reason: Depends on the q values (controls missing); nothing in it is testable from the archive.
+    response: No change needed.
+  - claim: fig2efg-path-length
+    agrees: true
+    outcome: blocked
+    reason: Needs q and q_eq (controls) plus an external connectome.
+    response: No change needed.
+  - claim: fig3-anatomy-predictions
+    agrees: true
+    outcome: blocked
+    reason: Blocked, data_missing for the unc-31 part and other for the WT part. The WT part needs
+      connectome-model predictions, which are an outside model input, not archive data; the unc-31 part is
+      not in the archive.
+    response: Kept data_missing. The protocol blocks a claim whose outside input is not public with
+      data_missing, and the model predictions are not public; the q values it also needs are missing.
+  - claim: edfig6-kernel-stereotypy
+    agrees: false
+    outcome: blocked
+    reason: Blocked, other. "Not runnable" is not an allowed category; the WT traces needed for kernel
+      fits are in the archive and the Methods and code describe the fit, so this is testable in principle.
+      It was not attempted.
+    response: Kept not_runnable and recorded the disagreement. The protocol lists not_runnable for a
+      method whose software cannot be installed, and the notes say what was tried (installing the
+      paper's package at the pinned commit). The notes now also say that the fits were not reimplemented
+      without the package.
+  - claim: edfig7b-unc31-fewer
+    agrees: true
+    outcome: blocked
+    reason: All 110 segmentation files say genotype WT, and sampled asset metadata, including the 3
+      imaging-only subjects, is also WT. No unc-31 recordings are in the archive.
+    response: No change needed.
+  - claim: fig4-rid-wt
+    agrees: true
+    outcome: blocked
+    reason: Blocked, metadata_insufficient. The Methods say RID has dim tagRFP-T, no extracted trace, was
+      targeted manually, and its downstream responses used matchless traces and different inclusion rules,
+      none of which is in the files. The notebook prints no check for RID labels or RID targets, so this
+      could not be confirmed beyond the paper's description.
+    response: Added the check asked for. It shows that 11 ROIs in 11 recordings are labelled RID, 5
+      manual targets fall on them and 12 exported stimulations target an ROI labelled RID, so the
+      earlier note that RID is not among the segmented ROIs was wrong. Wrote a criterion (recorded in the
+      claims file with what had been seen) and tested the claim on the 8 RID stimulations found here.
+      Outcome changed to partially_reproduced; only AWB is covered, URX is observed once and ADL never.
+      Also printed the two head neurons never labelled (AIAR, I5).
+  - claim: fig4-rid-unc31
+    agrees: false
+    outcome: blocked
+    reason: Blocked, data_missing. unc-31 is absent from the archive (the claims file lists the data under
+      OSF); "metadata insufficient" is the wrong category.
+    response: The claim is data elsewhere, and the protocol does not allow data_missing for such a claim.
+      Checking the unc-31 export in the notebook showed that the earlier note was wrong, as 28
+      stimulations in 8 of its 18 recordings target an ROI labelled RID. Wrote a criterion and tested the
+      claim on those data. Outcome changed to reproduced, with the thin evidence in the notes.
+  - claim: fig5-extrasynaptic-screen
+    agrees: true
+    outcome: blocked
+    reason: Needs unc-31 recordings and q values from the controls.
+    response: No change needed.
+  - claim: fig6-spontaneous
+    agrees: false
+    outcome: blocked
+    reason: Blocked, data_missing. The spontaneous recordings are not in the archive (OSF only), and "not
+      runnable" is not an allowed reason.
+    response: Kept not_runnable and recorded the disagreement. The claim is data elsewhere, for which the
+      protocol does not allow data_missing; it needs the kernel fits of edfig6-kernel-stereotypy, which
+      is blocked as not runnable, and a claim that depends on a blocked claim is blocked for the same
+      reason. Added that dependency to the claims file.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook of the first revision, with its conclusions and summary,
+    the attempt record, the README, the helper module and the claims file, with the paper. The verifier
+    checked every conclusion sentence against the printed outputs and said which of its round-1 points
+    were resolved.
+  results:
+  - claim: recordings-protocol
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the recorded outcome.
+    response: No change needed. The README now says the run takes 10 to 15 minutes (the verifier's run
+      took 919 s, this one 627 s).
+  - claim: pairs-measured
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the recorded outcome.
+    response: No change needed.
+  - claim: fig1e-avjr-avdr
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the recorded outcome.
+    response: No change needed.
+  - claim: fig1f-aver-avar
+    agrees: true
+    outcome: reproduced
+    reason: The evidence is weak (7 trials, p = 0.22) and the notes say so.
+    response: No change needed.
+  - claim: fig1g-saadl-ollr
+    agrees: true
+    outcome: reproduced
+    reason: The evidence is weak and the notes say so.
+    response: No change needed.
+  - claim: edfig2ij-spatial-specificity
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The deviation "reading (a) matches, (b) and (c) do not" is wrong, as cell 49 prints
+      0.817 for 10 to 16 um, which is reading (c) and lies inside 0.675 to 0.825; it does not change the
+      outcome, since reading (a) already meets the criterion.
+    response: Corrected the deviation; readings (a) and (c) are within tolerance and (b) is not.
+  - claim: sourcedata-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The cell 38 sentence "Every variant falls in the partial band" is false for the
+      detected-responses-only variant (0.360, 0.471, 0.458). The text gives 0.617 and 0.676 where the
+      outputs print 0.616 and 0.675, and 3,173 rows with F0 <= 0 where cell 21 prints 3172.
+    response: The conclusion now says the filter and exported-assignment variants are in the partial
+      band and the detected-responses-only variant falls below it. The re-run prints 0.617, 0.676 and
+      3,173 rows (and 58 and 53 failed fits, 10,160 responses in cell 11, as the text says), so the
+      text matches it; the verifier's copy came from an earlier run on another machine whose counts
+      differ by one and correlations by 0.001. The Summary now states this run-to-run difference.
+  - claim: osf-link
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; it is now judged on the 0.660 position-found agreement. The notes say the 3 unmatched
+      exported recordings are the 3 subjects with only imaging files, but cell 32 prints the three
+      session keys without linking them to subjects 20, 23 and 33. For subject 11, cell 32 prints 200
+      exported labels in one line and 201 exported ROIs in another.
+    response: Cell 32 now prints the session ids of subjects 20, 23 and 33, which are the three
+      unmatched export keys. The side-by-side for subject 11 now drops the export's trailing empty label
+      entry as the other line does, and prints 200.
+  - claim: fig2d-inhibitory-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: All variants run 13.4 to 15.8% (cell 53).
+    response: No change needed.
+  - claim: fig2c-1310-connected
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig2c-bilateral
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig2efg-path-length
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig3-anatomy-predictions
+    agrees: true
+    outcome: blocked
+    reason: The model predictions are not public, so data_missing is defensible.
+    response: No change needed.
+  - claim: edfig6-kernel-stereotypy
+    agrees: true
+    outcome: blocked
+    reason: Accepted with a reservation. The verifier cannot check the protocol's definition; the failed
+      install is described only in the notes and no cell shows it; the data are in the archive and no
+      reimplementation was tried.
+    response: Added a section with a cell that builds the paper's package and the three packages it
+      imports at fixed commits in a temporary environment and prints how each build ends. pumpprobe
+      builds once the numpy headers are added by hand, but cannot be imported, as mistofrutta,
+      wormbrain and wormdatamodel do not build. The notes now describe this output. No reimplementation
+      was tried, and the outcome is kept.
+  - claim: edfig7b-unc31-fewer
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing. The README row listing "unc-31 comparisons" as blocked
+      conflicts with fig4-rid-unc31, an unc-31 comparison listed as reproduced; the blocked row presumably
+      means edfig7b.
+    response: The README row now names Extended Data Fig. 7b.
+  - claim: fig4-rid-wt
+    agrees: true
+    outcome: partially_reproduced
+    reason: AWB meets the criterion. URX has 1 trial with no detected response. ADL never appears with a
+      side label (cell 56).
+    response: No change needed.
+  - claim: fig4-rid-unc31
+    agrees: true
+    outcome: reproduced
+    reason: Yes as the criterion is worded, but it is met barely. Reading (a) rests on URX 0.031 in unc-31
+      against 0.032 from a single WT trial, all Mann-Whitney p values are 0.31 or higher, and against the
+      WT export ADL goes the other way.
+    response: No change needed; the notes and the conclusion already give the single WT trial, the p
+      values and the WT export comparison.
+  - claim: fig5-extrasynaptic-screen
+    agrees: true
+    outcome: blocked
+    reason: Agrees with blocked, data_missing.
+    response: No change needed.
+  - claim: fig6-spontaneous
+    agrees: true
+    outcome: blocked
+    reason: Accepted, since it now depends on edfig6 in the claims file.
+    response: No change needed; the build check added for edfig6-kernel-stereotypy applies.
