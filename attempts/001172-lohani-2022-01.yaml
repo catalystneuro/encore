@@ -90,12 +90,12 @@ outcomes:
   - Unique contribution of face is from shuffling PC1 only; the Methods do not say which face PCs
     were shuffled.
 - claim: fig2c-face-best-predictor-calcium
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_lohani_2022.ipynb
   output: claim:fig2c-face-best-predictor-calcium
-  notes: Kept at the verified partially_reproduced of the first revision, which rested on |speed|
-    as the wheel predictor; a change to reproduced is proposed. With the signed speed of the Methods
-    and the code, now the main analysis, single-variable R2 is face PC1 0.112, wheel 0.084, pupil
+  notes: Changed to reproduced in the third verification round, from the partially_reproduced of
+    the first revision, which rested on |speed| as the wheel predictor. With the signed speed of the
+    Methods and the code, now the main analysis, single-variable R2 is face PC1 0.112, wheel 0.084, pupil
     0.010, face best in all 4 mice by 0.016 to 0.053 over wheel speed, Friedman p = 0.018 (exact
     p = 0.0046). Unique contributions face 0.058, pupil 0.025, wheel 0.014, face largest in all 4
     mice (in grabAM05 by 0.002 over pupil), Friedman p = 0.039. With |speed| wheel speed is higher in
@@ -107,14 +107,6 @@ outcomes:
   deviations:
   - As for fig2c-face-best-predictor-ach.
   - The regression code is not public; signed speed follows the Methods and wheel_changepoints.m.
-  proposed:
-    outcome: reproduced
-    reason: The second verification round showed that the Methods and the code define speed as
-      signed, and the reason for switching to |speed| in the first revision was wrong. With signed
-      speed face PC1 is the best single variable in all 4 mice with Friedman p = 0.018, which the
-      criterion calls reproduced. The paper's own per-mouse R2 file matches the signed reading in
-      grabAM05, the one mouse where the two readings differ clearly (calcium wheel R2 0.0246 in the
-      file, 0.0253 signed, 0.0483 absolute); grabAM07 and grabAM08 do not choose between them.
 - claim: s7-face-onset-transients
   outcome: partially_reproduced
   notebook: reproduce_lohani_2022.ipynb
@@ -743,3 +735,30 @@ verifications:
     outcome: blocked
     reason: Agrees with the stated outcome.
     response: No change.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome, fig2c-face-best-predictor-calcium from
+    partially_reproduced to reproduced, with the notebook cells behind it (cells 15, 26, 27, 33, 36 and
+    38 to 43), the attempt record and the paper (PMC10661869).
+  results:
+  - claim: fig2c-face-best-predictor-calcium
+    agrees: true
+    outcome: reproduced
+    reason: The numbers come from the data (cells 27, 33, 36). Face PC1 has the highest single-variable
+      R2 in all 4 mice, over wheel by 0.053, 0.016, 0.026 and 0.017; means face 0.112, wheel 0.084,
+      pupil 0.010; Friedman chi2 = 8.00, p = 0.018 (exact p = 0.0046). The criterion says reproduced
+      when Friedman p < 0.05 and face PC1 has the highest single-variable R2 in every mouse, and both
+      hold. The signed-speed choice follows the sources, not the outcome. The Methods compute speed as
+      a differential of distance after unwrapping, which keeps the sign, wheel_changepoints.m uses a
+      signed db1SpeedMpS, and cell 15 shows the code's change-point method on WheelSpeed recovers every
+      WheelActivation epoch. In Fig2RawData.mat row 1 matches grabAM05 (Spearman 0.98 for ACh, 0.94
+      for calcium) and its calcium wheel R2 is 0.0246, against 0.0253 signed and 0.0483 with |speed|;
+      ACh gives the same picture (0.0014, 0.0017, 0.0031). grabAM07 and grabAM08 do not decide it, as
+      the record says. Caveats that do not change the outcome. The outcome depends on the reading of
+      the wheel predictor, and with |speed| wheel beats face in grabAM06 (0.147 against 0.142); the
+      external support rests on one mouse; the paper's file has face PC1 best for calcium in all 6
+      mice.
+    response: Outcome changed to reproduced and the proposal removed. The notebook's conclusion and
+      summary, the README and the notes now give reproduced; the |speed| variant and its result stay
+      in the notebook and the notes.

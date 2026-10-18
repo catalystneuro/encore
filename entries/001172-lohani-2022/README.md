@@ -12,7 +12,7 @@ not in it.
 | Behaviour explains ACh and calcium differently across areas | Reproduced |
 | Inverted anterior-posterior gradients of explained variance | Reproduced |
 | Face movement is the best predictor of ACh | Reproduced |
-| Face movement is the best predictor of calcium | Partially reproduced (proposed: reproduced, under review) |
+| Face movement is the best predictor of calcium | Reproduced |
 | Transients at face movement onset | Partially reproduced |
 | Transients at locomotion onset | Partially reproduced |
 | ACh transients do not differ between onset types | Reproduced |
