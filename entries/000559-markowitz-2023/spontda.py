@@ -130,15 +130,27 @@ def _syllables(f, which: str):
         return None, None
     ts = f[key + "/timestamps"][:]
     lab = f[key + "/data"][:].astype(np.int16)
-    # In some files the rows are rotated (one backward jump of about a session length); the
-    # frames are put back in time order here. The labels share the rows of the timestamps.
+    # In some files the rows are rotated (mostly one backward jump of about a session length), and
+    # in two every row is stored twice; the frames are put back in time order here. The labels
+    # share the rows of the timestamps.
     order = np.argsort(ts, kind="stable")
     return ts[order], lab[order]
 
 
-def _rotated(f, which: str) -> bool:
+def _clock_order(f, which: str) -> dict:
+    """Whether the stored syllable timestamps are out of time order, the number of non-ascending
+    steps, the size of the largest backward step (s), the number of repeated timestamps, and the
+    median interval between distinct timestamps after sorting (s)."""
     key = f"processing/behavior/BehavioralSyllable{which}/timestamps"
-    return bool(key in f and f[key].shape[0] > 1 and (np.diff(f[key][:]) <= 0).any())
+    if key not in f or f[key].shape[0] < 2:
+        return dict(clock_rotated=False, clock_backward_steps=0, clock_jump_s=0.0, clock_repeated=0,
+                    clock_dt_unique=np.nan)
+    t = f[key][:]
+    dt = np.diff(t)
+    n = int((dt <= 0).sum())
+    u = np.unique(t)
+    return dict(clock_rotated=n > 0, clock_backward_steps=n, clock_jump_s=float(-dt.min()) if n else 0.0,
+                clock_repeated=len(t) - len(u), clock_dt_unique=float(np.median(np.diff(u))))
 
 
 def _on_clock(series_ts, values, clock):
@@ -162,7 +174,7 @@ def load_photometry_session(asset_id: str) -> dict:
         ts, off = _syllables(f, "Offline")
         _, on = _syllables(f, "Online")
         d["t"], d["offline"], d["online"] = ts, off, on
-        d["clock_rotated"] = _rotated(f, "Offline")
+        d.update(_clock_order(f, "Offline"))
         d["has_ophys"] = "processing/ophys/SignalDfOverF" in f
         if ts is None or len(ts) == 0 or not d["has_ophys"]:
             f.close()
@@ -188,7 +200,7 @@ def load_closed_loop_session(asset_id: str, with_speed: bool = False) -> dict:
         d.update(_ogen(f))
         ts, on = _syllables(f, "Online")
         d["t"], d["online"] = ts, on
-        d["clock_rotated"] = _rotated(f, "Online")
+        d.update(_clock_order(f, "Online"))
         if with_speed and ts is not None and len(ts):
             m = f["processing/behavior/moseq_extract_group"]
             d["speed_mm_per_frame"], d["speed_on_clock"] = _on_clock(

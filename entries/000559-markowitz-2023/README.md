@@ -32,7 +32,7 @@ they hold fewer photometry sessions than the paper used. The attempt record, wit
 the differences from the paper's method, is
 [`attempts/000559-markowitz-2023-01.yaml`](../../attempts/000559-markowitz-2023-01.yaml).
 
-- `reproduce_markowitz_2023.ipynb`: the analysis. It takes about 16 minutes, 6 of them streaming
-  1,723 files.
+- `reproduce_markowitz_2023.ipynb`: the analysis. It takes about 13 minutes, about 4 of them streaming
+  1,729 files.
 - `spontda.py`: streaming the files, the dLight processing and quality criteria of the paper,
   syllable instances, and the closed-loop counts. Other notebooks on this dandiset can import it.

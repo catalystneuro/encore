@@ -123,7 +123,13 @@ outcomes:
     the same syllable. Mean r is 0.0110 to 0.0331 for n from 10 to 190, significant at 9 of those 10
     values (n = 10 to 90 at P below 0.01), positive in 8 of 8 mice at n = 10, and larger than in DLS
     (0.0044 to 0.0251). The test is this attempt's version of the paper's (see the deviations of
-    fig2e-dlight-predicts-future-usage), and the paper's own DMS analysis is not shown in numbers.
+    fig2e-dlight-predicts-future-usage). The paper's Extended Data Fig. 7 has no lagged future-usage
+    test; it supports the claim with the encoding model (panel e) and the title "DMS dopamine does
+    not correlate with syllable usage or entropy". The across-syllable count test of
+    fig2b-dlight-usage-across-syllables run on DMS agrees with the paper (held-out r = 0.026, shuffle
+    P = 0.170). That the lagged test finds DMS stronger than DLS suggests it differs from the
+    paper's (equal time segments, no z-scoring to the shuffles); the outcome follows the pre-set
+    criterion.
   deviations:
   - Same deviations as fig2e-dlight-predicts-future-usage.
 - claim: fig3e-optoda-learning
@@ -153,7 +159,8 @@ outcomes:
   notes: Seven of 20 Opto-DA mice exceed the largest control change (54.5, vta-nacc-ctrl-6), not
     nine. All seven are among the nine the paper's code printed; the other two (3442 at 47.3 and
     dls-ai32jr-1 at 41.7) fall below that control; their per-target changes range from -49 to 148
-    and -26 to 93, against -50 to 152 for vta-nacc-ctrl-6. Ranking by log2 fold change gives 10.
+    and -26 to 93, against -50 to 152 for vta-nacc-ctrl-6. Counting mice above the control
+    maximum of the log2 fold change gives 10.
     The criterion is the count, which is outside the tolerance. The statement's first part, that
     only a fraction of mice learn, holds (7 of 20).
 - claim: fig3h-stim-post-correlation
@@ -265,9 +272,13 @@ findings:
   statement: The dLight-only mice (C57BL/6J in the Methods) carry the subject description "wild-type
     DAT-IRES-Cre and Ai32 mice", the same as the optogenetic mice.
 - kind: format_error
-  statement: In 28 photometry and 547 closed-loop files the syllable timestamps are not ascending; the
-    rows are rotated, with one backward jump of about a session length. Sorting by timestamp restores
-    a regular 30-Hz clock.
+  statement: In 28 photometry and 547 closed-loop files the syllable timestamps are not ascending. In
+    573 of these 575 the rows are rotated, with one backward step, which is at least 0.95 of the
+    session length in 558 files and 0.635 of it at the least. Sorting by timestamp restores a regular
+    30-Hz clock (median interval 0.03337 s in every file).
+- kind: format_error
+  statement: Two closed-loop files of mouse 3155 store every syllable frame twice (53,822 and 53,862
+    repeated timestamps), and have two and three non-ascending steps.
 - kind: data_missing
   statement: 14 files of dLight+ChrimsonR mice hold empty syllable series; all list two target
     syllables.
@@ -499,3 +510,169 @@ verifications:
     reason: Not attempted; a simulation built on observed transition matrices and dLight, and the
       inputs are available.
     response: As for fig1f.
+- date: 2026-10-18
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the second run (after author-revise-1, commit 17be4c1), with
+    the conclusion cells and the summary, the helper module, the claims file, the README and this
+    attempt record, and the paper text.
+  results:
+  - claim: fig1e-velocity-timescales
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 12 shows transient rate positive at 47 of 100 timescales of 10 s or more and
+      amplitude at 0 of 100. Points on text outside the claim sections, which the printed outputs do
+      not support. The README says "It takes about 16 minutes, 6 of them streaming 1,723 files",
+      where cell 45 prints 13.1 min and cell 3 about 3.3 min of streaming. "Of the dLight+ChrimsonR
+      mice, only the 250-ms sessions are present" (Summary and the data_missing finding) is not
+      printed, since cell 6 leaves those mice out. "Every closed-loop file states a 635-nm
+      stimulator" (cell 9, cell 44, the metadata_error finding) is printed only for the 1,340
+      Opto-DA and control files. "With one backward jump of about a session length" (format_error
+      finding) is not printed; cells 5 and 6 print only the counts (28 and 547).
+    response: README now says about 13 minutes, about 4 of them streaming 1,729 files (the re-run
+      prints 13.3 min, and 73 s plus 146 s of streaming). Cell 3 now also loads the 6
+      dLight+ChrimsonR closed-loop files without a dLight series, and cell 6 prints all 236
+      dLight+ChrimsonR closed-loop files of 8 mice; the 88 with stimulation all have 250-ms pulses,
+      and all 236 state 635 nm, so the two statements stand. The helper now records the number of
+      non-ascending steps, the largest backward step, repeated timestamps and the interval after
+      sorting, and cells 5 and 6 print them. This showed the clock finding was inexact. 573 of the
+      575 files have one backward step, at least 0.95 of the session length in 558 and 0.635 at the
+      least; two closed-loop files of mouse 3155 store every frame twice (53,822 and 53,862 repeated
+      timestamps of 107,644 and 107,724 rows) with two and three steps. The format_error finding
+      and the Summary are corrected, and a second format_error finding records the repeated
+      frames. Outcome unchanged; the claim's numbers are the same in the re-run.
+  - claim: fig1h-syllable-dlight-differs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 16 gives H = 266.40, outside 209.29 +- 20.93. The cause of the gap is still
+      unknown; the variants in cell 16 rule out the quality filter and the post-session rule.
+    response: No change; the notes already say the cause is not found. The re-run gives the same
+      numbers.
+  - claim: fig1l-identity-not-decodable
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2b-dlight-usage-across-syllables
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2i-dlight-entropy-across-syllables
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig2e-dlight-predicts-future-usage
+    agrees: true
+    outcome: partially_reproduced
+    reason: No longer provisional. Cell 26 shows the same number of groups in the observed value and
+      in every shuffle at every n, and 6 of 10 values of n up to 190 are significant.
+    response: No change.
+  - claim: ed7-dms-fewer-transients
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The U = 97 cited from the Extended Data Fig. 7b legend matches the paper.
+    response: No change.
+  - claim: ed7-dms-no-usage-prediction
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced, as the pre-set criterion requires; cell 30 is significant at 9 of 10
+      values of n. The paper's Extended Data Fig. 7 has no lagged future-usage test; its support is
+      the encoding model (7e) and the panel title "does not correlate with syllable usage or
+      entropy". The attempt's own across-syllable count test in DMS is not significant (cell 23,
+      r = 0.026, P = 0.170), which agrees with the paper, and the notes do not mention it. That the
+      fig2e-style test finds DMS stronger than DLS suggests the attempt's version of the test (equal
+      time segments, no z-scoring to the shuffles) differs from the paper's. The outcome follows the
+      criterion, but the notes should say this.
+    response: The notes and the conclusion in cell 31 now say that Extended Data Fig. 7 has no lagged
+      test and rests on the encoding model and its title (checked against the paper text), that the
+      DMS across-syllable count test agrees with the paper (r = 0.026, P = 0.170, printed in cell
+      23), and that the lagged test probably differs from the paper's. Outcome unchanged.
+  - claim: fig3e-optoda-learning
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig3f-cumulative-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees.
+    response: No change.
+  - claim: fig3e-learner-count
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 36 finds 7 learners against the paper's 9. The cause is still unknown; the
+      per-target table shows a spread for 3442 and dls-ai32jr-1 similar to that of the control that
+      sets the threshold, and no single cause. "Ranking by the log2 fold change gives 10" in cell 38
+      is a wording issue only; cell 36 counts mice above the control maximum of log2 fold change and
+      does not rank them.
+    response: Cell 38 and the notes now say "Counting mice above the control maximum of the log2
+      fold change gives 10". The cause of 7 against 9 is not found; no change otherwise.
+  - claim: fig3h-stim-post-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Cell 37 gives r = 0.891, P = 0.017. The control P = 0.082 cited from the Fig. 3h legend
+      matches the paper.
+    response: No change.
+  - claim: fig3l-no-kinematic-effect
+    agrees: true
+    outcome: blocked
+    reason: Blocked, metadata_insufficient. Cells 40 to 42 show 9 of 12 controls significant at
+      250 ms. The 75 % of detections stimulated cited from the Methods matches the paper.
+    response: No change.
+  - claim: fig3m-long-stim-velocity
+    agrees: true
+    outcome: blocked
+    reason: Blocked, metadata_insufficient; 2 of 2 controls are significant at 3 s.
+    response: No change.
+  - claim: fig2a-food-reward-transients
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig1f-syllable-vs-movement-onset
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig2k-dlight-predicts-sequence-variability
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig3i-optoda-entropy
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: ed10d-optoda-vigour
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig4b-endo-da-influence-consistent
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig4c-endo-da-predicts-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig4f-catch-dlight-predicts-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig4h-decoding-model
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
+  - claim: fig5-rl-model
+    agrees: true
+    outcome: blocked
+    reason: Agrees.
+    response: No change.
