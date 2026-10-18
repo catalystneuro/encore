@@ -1,0 +1,371 @@
+# Claims for Lohani, Moberly et al. (2022) on dandiset 001172.
+# Source: the accepted author manuscript in PubMed Central (PMC10661869), full text, read from its
+# Results, figure legends and Methods. The version of record is not open access.
+#
+# When these criteria were written, the author had seen the data check only, run outside the
+# notebook while preparing: the file list, the metadata and every dataset of the files, the frame
+# counts of all 16 sessions, the stimulus and air-puff tables, the match of the ΔF/F brain mask to
+# the paper code's brainMask.mat (rotated by 180 degrees), and, on one session (grabAM05,
+# 11222019 spont), the frame offset between raw and ΔF/F movies (499 frames), the lag between
+# wheel speed and the calcium signal under the files' timing (499 frames), the lag between
+# FaceMap PC1 and wheel speed under the files' timestamps and under the camera pulses, and the
+# identity of the parcellated series (calcium, 150 frames later than the ΔF/F). No claim's
+# analysis had been run.
+#
+# The author also read the paper's code (github.com/cardin-higley-lab/Lohani_Moberly_et_al_2022,
+# commit c337686fb3776112f1609ec1a19256d277c930fd) and the conversion code
+# (github.com/catalystneuro/higley-lab-to-nwb, commit 20c40d39412e7c94219438f33cae52a765ba3d87).
+#
+# The dandiset holds 4 of the paper's 6 ACh3.0 and jRCaMP1b mice (grabAM05 to grabAM08; the code
+# lists grabAM05 to grabAM10), with spontaneous, air-puff and visual stimulus sessions. It holds
+# no ECoG, no drug sessions, no ChAT-GCaMP6s mice and no control (GFP, mCherry) mice.
+#
+# The cortical areas come from the paper's Allen parcel masks (parcells_updated121519.mat in the
+# paper's code), which name the pixels of the dandiset's atlas-registered ΔF/F; claims that need
+# areas are `with_labels` and depend on allen-parcel-link.
+#
+# Method choices fixed here, from the paper's code where the Methods are silent:
+# - Sessions. The code's state analyses use spontaneous and air-puff sessions and leave out visual
+#   stimulus sessions; the same set is used for every claim. The air-puff session grabAM07
+#   11262019 has no air-puff table, so periods near puffs cannot be removed; it is left out.
+# - Timing. ΔF/F frame i is taken at blue LED pulse i + 499 (the code drops the first 500 frames
+#   in detrending; the data check found the same offset). FaceMap and pupil frame i are taken at
+#   pupil camera pulse i, as in the code.
+# - Areas. 23 Allen parcels per hemisphere (PL, ACA, RSPv, SC and IC left out, as in the Methods);
+#   a parcel's trace is the mean ΔF/F over its pixels inside the brain mask. Summary values use
+#   the left hemisphere, as the paper does. Values are in percent ΔF/F, as in the code.
+# - Anterior-posterior rank. The order in the Methods (MOs first, VISpl last).
+# - Behaviour. Locomotion epochs by the wheel change-point method of the code (2 s windows,
+#   moving SD threshold 0.005, epochs under 1 s or with mean speed at or below 0.02 m/s removed).
+#   Face movement is FaceMap PC1 of the face, sign set by its skewness and normalised by its lowest
+#   10%, as in the code. Sustained states and onsets follow the code's parameters.
+# - Statistics. With 4 mice a two-sided signed-rank test cannot reach p < 0.05 (smallest p
+#   0.125), so the paper's post hoc signed-rank tests are replaced by the direction in every
+#   mouse, as stated in each criterion.
+schema_version: 1
+dandiset: "001172"
+paper: doi:10.1038/s41593-022-01202-6
+claims:
+- id: allen-parcel-link
+  statement: The paper's Allen parcel masks, from its code, can be laid on the dandiset's ΔF/F
+    pixels, so that the areas the paper names can be found in the data.
+  source: Methods, Preprocessing of imaging data and Post-processing analysis; parcells_updated121519.mat
+    and brainMask.mat in the paper's code at commit c337686
+  data: with_labels
+  criterion: The pixels with non-zero ΔF/F in the blue and green ΔF/F movies of every session used
+    must equal the code's brainMask.mat under exactly one of the eight rotations and reflections
+    (agreement of at least 99.9% of the 65536 pixels, all others below 99%). In one visual
+    stimulus session per mouse, the calcium response to 100% contrast gratings (mean ΔF/F 0 to 1 s
+    after onset minus -2 to 0 s, averaged over trials) is then computed for each of the 46
+    parcels. The code takes the left VISp parcel as the visually driven one. Reproduced when the
+    mask match holds and left VISp has the largest response of the 46 parcels in at least 3 of 4
+    mice, with left VISp above right VISp in all 4. Partially reproduced when the mask match holds
+    and the largest response is in a left visual parcel in at least 3 mice. Not reproduced
+    otherwise.
+- id: fig2a-r2-differs-across-areas
+  statement: The variance of ACh3.0 and jRCaMP1b signals explained by a ridge regression on FaceMap
+    PCs 1 to 25, locomotion speed and pupil area differs across cortical areas (Friedman's ANOVA
+    p < 0.001 for both, n = 6 mice).
+  source: Results, Calcium and cholinergic signals encode behavioral state; Figure 2a,b
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  criterion: Ten-fold cross-validated R2 (ten contiguous blocks) of a ridge model with the penalty
+    chosen per parcel by marginal likelihood, as ridgeMML does, fitted per session on the 23 left
+    parcels and averaged over each mouse's sessions. Friedman's test across the 23 parcels with
+    mice as blocks. Reproduced when p < 0.05 for both signals; partially reproduced when for one.
+    With 4 mice the paper's p < 0.001 is not required.
+- id: fig2b-ap-gradient-inverted
+  statement: The coupling of behaviour to fluorescence has anterior-posterior gradients that are
+    inverted between the signals, with ACh most strongly linked to behaviour in frontal areas and
+    calcium in posterior areas.
+  source: Results, Calcium and cholinergic signals encode behavioral state; Figure 2b
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  - fig2a-r2-differs-across-areas
+  criterion: Spearman correlation between the mean full-model R2 over mice and the
+    anterior-posterior rank of the 23 left parcels (1 = MOs, the most anterior), as in the code.
+    Reproduced when ACh has rho < 0 with p < 0.05 and calcium rho > 0 with p < 0.05; partially
+    reproduced when one of the two holds; not reproduced otherwise.
+- id: fig2c-face-best-predictor-ach
+  statement: For ACh3.0, facial movement (FaceMap PC1) predicts activity better than locomotion or
+    pupil, in single-variable models (Friedman p = 0.006, face against locomotion and against pupil
+    p = 0.031) and as unique contribution (Friedman p = 0.003).
+  source: Results, Calcium and cholinergic signals encode behavioral state; Figure 2c
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  - fig2a-r2-differs-across-areas
+  criterion: Single-variable cross-validated R2 (face PC1, pupil area, wheel speed) averaged over the
+    23 left parcels, with negative values set to 0 as in the code, per mouse. Reproduced when
+    Friedman's test across the three variables gives p < 0.05 and face PC1 has the highest R2 in
+    every mouse. Partially reproduced when face PC1 has the highest mean R2 over mice but not in
+    every mouse, or Friedman p >= 0.05. Not reproduced when face PC1 does not have the highest
+    mean. The unique contributions (full model R2 minus the model with that variable shuffled in
+    time; for face, PC1 is shuffled) are reported with the same rule and do not change the outcome.
+- id: fig2c-face-best-predictor-calcium
+  statement: For jRCaMP1b, facial movement (FaceMap PC1) is the most robust predictor of activity
+    (single-variable Friedman p = 0.006; face against locomotion and pupil p = 0.031).
+  source: Results, Calcium and cholinergic signals encode behavioral state; Figure 2c
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  - fig2a-r2-differs-across-areas
+  criterion: As for fig2c-face-best-predictor-ach, on calcium.
+- id: s7-face-onset-transients
+  statement: Facial movement onset without locomotion is associated with significant whole-cortex
+    transients in ACh (0.64 ± 0.09 ΔF/F, p = 0.001) and calcium (0.69 ± 0.15 ΔF/F, p = 0.006).
+  source: Results, paragraph on state transitions; Figure S7
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  expected:
+  - quantity: whole-cortex ACh transient at face movement onset
+    value: 0.64
+    tolerance: 0.09
+    unit: percent ΔF/F
+  - quantity: whole-cortex calcium transient at face movement onset
+    value: 0.69
+    tolerance: 0.15
+    unit: percent ΔF/F
+  criterion: Tolerances are the paper's stated spread (SEM over 6 mice). Face onsets as in the
+    code (a high face state during sustained quiescence preceded by at least 4 s of low face state
+    ending at most 0.5 s before). Per trial the mean of -4 to -2 s is subtracted; trials are
+    averaged per mouse over sessions; the peak in 0 to 1 s is taken per parcel and averaged over
+    the 23 left parcels. Reproduced when both means are within tolerance and both are above 0 by a
+    one-sample t-test at p < 0.05 over mice. Partially reproduced when both are above 0 at p < 0.05,
+    or positive in every mouse, but a mean is outside tolerance. Not reproduced otherwise.
+- id: s7-locomotion-onset-transients
+  statement: Locomotion onset is associated with transient increases in ACh (0.68 ± 0.17 ΔF/F,
+    p = 0.010) and calcium (1.50 ± 0.11 ΔF/F, p < 0.001).
+  source: Results, paragraph on state transitions; Figure S7
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  expected:
+  - quantity: whole-cortex ACh transient at locomotion onset
+    value: 0.68
+    tolerance: 0.17
+    unit: percent ΔF/F
+  - quantity: whole-cortex calcium transient at locomotion onset
+    value: 1.5
+    tolerance: 0.11
+    unit: percent ΔF/F
+  criterion: Tolerances are the paper's SEM. Locomotion onsets are those of the dandiset's
+    WheelActivation table (the code's onsets with at least 5 s of running preceded by at least 10 s
+    of quiescence). Baseline -5 to -3 s; peak in 0 to 1 s; otherwise as s7-face-onset-transients,
+    with the same rule.
+- id: s7-ach-transients-same-across-states
+  statement: ACh transients vary across cortical areas (p < 0.001) but do not differ between
+    locomotion and facial motion onsets (p = 0.734, two-way repeated measures ANOVA).
+  source: Results, paragraph on state transitions; Figure S7
+  data: with_labels
+  depends_on:
+  - s7-face-onset-transients
+  - s7-locomotion-onset-transients
+  criterion: A claim of absence, judged on the paper's test. Two-way repeated measures ANOVA of the
+    per-mouse parcel peaks (23 left parcels by 2 onset types). Reproduced when the onset-type effect
+    has p >= 0.05; not reproduced when p < 0.05. The area effect and the size of the onset-type
+    difference are reported either way.
+- id: s7-calcium-transients-largest-at-locomotion
+  statement: Calcium transients vary across cortical areas (p < 0.001) and states (p = 0.005), with
+    locomotion onset associated with the largest signal.
+  source: Results, paragraph on state transitions; Figure S7
+  data: with_labels
+  depends_on:
+  - s7-face-onset-transients
+  - s7-locomotion-onset-transients
+  criterion: The same ANOVA on calcium. Reproduced when the onset-type effect has p < 0.05 and the
+    whole-cortex locomotion transient exceeds the face transient in every mouse. Partially
+    reproduced when it exceeds it in every mouse but p >= 0.05. Not reproduced otherwise.
+- id: s7-ap-gradient-transients
+  statement: Transient magnitudes show a significant anterior-posterior gradient for ACh but not for
+    calcium.
+  source: Results, paragraph on state transitions; Figure S7
+  data: with_labels
+  depends_on:
+  - s7-face-onset-transients
+  - s7-locomotion-onset-transients
+  criterion: The paper does not say which onsets. Spearman correlation of the mean peak over mice
+    with the anterior-posterior rank, for each signal and onset type. Reproduced when ACh has
+    p < 0.05 for at least one onset type and calcium p >= 0.05 for both; partially reproduced when
+    the ACh part holds but calcium is significant for one onset type; not reproduced when ACh has
+    p >= 0.05 for both.
+- id: fig3b-ecog-desynchronization
+  statement: Sustained facial movement and locomotion are associated with progressively increasing
+    30 to 100 Hz ECoG power.
+  source: Results; Figure 3b
+- id: fig3c-ach-sustained-face
+  statement: Sustained facial motion elevates whole-cortex ACh (low face -0.13 ± 0.04, high face
+    0.18 ± 0.08 ΔF/F; low against high p = 0.046, post hoc LSD), with a main effect of state
+    (p = 0.015).
+  source: Results, paragraph on sustained states; Figure 3c
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  expected:
+  - quantity: whole-cortex ACh, sustained low facial motion
+    value: -0.13
+    tolerance: 0.04
+    unit: percent ΔF/F
+  - quantity: whole-cortex ACh, sustained high facial motion
+    value: 0.18
+    tolerance: 0.08
+    unit: percent ΔF/F
+  criterion: Tolerances are the paper's SEM. Sustained states and epoch matching as in the code's
+    SustainedStatesCorrelation.m; per epoch the mean ΔF/F, averaged over epochs and sessions per
+    mouse, then over the 23 left parcels. Two-way repeated measures ANOVA (area by state, three
+    states) and Fisher's LSD on the state means using the ANOVA's state-by-mouse error. Reproduced
+    when both means are within tolerance and high exceeds low with LSD p < 0.05. Partially
+    reproduced when high exceeds low in every mouse but a mean is outside tolerance or p >= 0.05.
+    Not reproduced otherwise.
+- id: fig3c-ach-locomotion-no-further-increase
+  statement: Locomotion does not further increase whole-cortex ACh beyond high facial motion
+    (locomotion 0.16 ± 0.06 ΔF/F; locomotion against high face p = 0.717).
+  source: Results, paragraph on sustained states; Figure 3c
+  data: with_labels
+  depends_on:
+  - fig3c-ach-sustained-face
+  criterion: A claim of absence, judged on the paper's test, the LSD comparison of locomotion with
+    high face in the ANOVA of fig3c-ach-sustained-face. Reproduced when p >= 0.05; not reproduced
+    when p < 0.05. The locomotion mean, its tolerance (0.06) and the size of the difference are
+    reported either way.
+- id: fig3c-calcium-sustained
+  statement: Sustained facial movement and locomotion both increase whole-cortex calcium (low face
+    -0.02 ± 0.02, high face 0.17 ± 0.04, locomotion 0.63 ± 0.19 ΔF/F; low against high p = 0.020,
+    locomotion against high p = 0.044), with a main effect of state (p = 0.005).
+  source: Results, paragraph on sustained states; Figure 3c
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  expected:
+  - quantity: whole-cortex calcium, sustained low facial motion
+    value: -0.02
+    tolerance: 0.02
+    unit: percent ΔF/F
+  - quantity: whole-cortex calcium, sustained high facial motion
+    value: 0.17
+    tolerance: 0.04
+    unit: percent ΔF/F
+  - quantity: whole-cortex calcium, sustained locomotion
+    value: 0.63
+    tolerance: 0.19
+    unit: percent ΔF/F
+  criterion: As fig3c-ach-sustained-face, on calcium. Reproduced when all three means are within
+    tolerance and both comparisons (high above low, locomotion above high) have LSD p < 0.05.
+    Partially reproduced when both orderings hold in every mouse but a mean is outside tolerance or
+    a p >= 0.05. Not reproduced otherwise.
+- id: s7-ap-gradient-sustained
+  statement: Differences across sustained states have significant anterior-posterior gradients,
+    for ACh comparing high and low facial movement, with larger increases in anterior areas, and
+    for calcium comparing locomotion and high facial movement.
+  source: Results, paragraph on sustained states; Discussion; Figure S7
+  data: with_labels
+  depends_on:
+  - fig3c-ach-sustained-face
+  - fig3c-calcium-sustained
+  criterion: Spearman correlation of the mean difference over mice with the anterior-posterior
+    rank. Reproduced when ACh (high minus low face) has rho < 0 with p < 0.05 and calcium
+    (locomotion minus high face) has p < 0.05; partially reproduced when one holds.
+- id: fig3d-ach-frontal-above-visual
+  statement: During high facial motion ACh3.0 amplitude is higher in frontal-motor areas than in
+    visual areas (paired t-test, p < 0.05).
+  source: Results; Figure 3d
+  data: with_labels
+  depends_on:
+  - fig3c-ach-sustained-face
+  criterion: Per mouse, the high-face ACh amplitude averaged over MOp and MOs against that averaged
+    over the eight visual areas, as in the Methods. Reproduced when frontal-motor exceeds visual
+    with paired t-test p < 0.05; partially reproduced when it exceeds it in every mouse with
+    p >= 0.05; not reproduced otherwise.
+- id: fig3e-scopolamine-motor-not-visual
+  statement: The muscarinic blocker scopolamine decreases cortical activity in motor but not visual
+    areas, and the nicotinic blocker mecamylamine has no significant effect.
+  source: Results; Figure 3e
+- id: fig4a-ach-correlations-up-with-face
+  statement: Increased facial movement is associated with significant increases in between-area
+    correlations of ACh in anterior somatosensory and motor areas.
+  source: Results, State-dependent modulation of cortical network architecture; Figure 4a
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  criterion: Peak cross-correlation within ±5 frames for the 253 pairs of the 23 left parcels, per
+    matched epoch, Fisher z averaged per mouse; the high minus low face difference averaged over
+    mice; stratified permutation of epoch labels within mice (10,000 permutations), two-sided, and
+    Benjamini-Yekutieli FDR at q = 0.01, as in the code. Motor-somatosensory pairs are those with
+    both areas in MOs, MOp, SSp-* or SSs. Reproduced when at least one pair increases significantly,
+    significant increases outnumber significant decreases, and the fraction of motor-somatosensory
+    pairs with a significant increase exceeds that of the other pairs. Partially reproduced when the
+    first two hold but not the third. Not reproduced otherwise.
+- id: fig4a-ach-correlations-down-with-locomotion
+  statement: Locomotion is associated with a reduction in between-area correlations of ACh that is
+    significant across the cortex.
+  source: Results, State-dependent modulation of cortical network architecture; Figure 4a
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  criterion: As fig4a-ach-correlations-up-with-face, for locomotion minus high face. Area groups are
+    the code's visual, retrosplenial, auditory, posterior parietal, somatosensory and frontal-motor.
+    Reproduced when significant decreases outnumber increases, at least 25% of pairs decrease
+    significantly, and every area group has at least one area in a significantly decreased pair.
+    Partially reproduced when decreases outnumber increases and at least one is significant, but
+    not broadly. Not reproduced otherwise.
+- id: fig4b-calcium-correlations-up-with-face
+  statement: Increased facial movement is associated with broad, significant increases in
+    between-area calcium correlations.
+  source: Results, State-dependent modulation of cortical network architecture; Figure 4b
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  criterion: As fig4a-ach-correlations-down-with-locomotion, for calcium, high minus low face, with
+    increases in place of decreases.
+- id: fig4b-calcium-correlations-down-posterior
+  statement: Locomotion occurs with modest decreases in calcium correlations that are significant
+    primarily across posterior cortical areas.
+  source: Results, State-dependent modulation of cortical network architecture; Figure 4b
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  criterion: As fig4a-ach-correlations-up-with-face, for calcium, locomotion minus high face.
+    Posterior pairs are those with both areas from VISam on in the Methods' order (ranks 12 to 23).
+    Reproduced when significant decreases outnumber increases, at least one is significant, and the
+    fraction of posterior pairs with a significant decrease exceeds that of the other pairs.
+    Partially reproduced when the first two hold but not the third. Not reproduced otherwise.
+- id: fig5-coupling-up-with-face
+  statement: Sustained facial movement is associated with a significant increase in the correlation
+    between ACh and calcium signals broadly across the cortex.
+  source: Results; Figure 5
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  criterion: Within-parcel peak cross-correlation (±5 frames) of ACh with calcium for the 23 left
+    parcels, with the permutation test and FDR of fig4a-ach-correlations-up-with-face over the 23
+    parcels. Reproduced when at least half of the parcels increase significantly and none decreases
+    significantly. Partially reproduced when increases outnumber decreases with at least one
+    significant. Not reproduced otherwise.
+- id: fig5-coupling-down-frontal-with-locomotion
+  statement: Sustained locomotion is associated with a significant reduction in the correlation
+    between ACh and calcium that is restricted to the frontal cortex.
+  source: Results; Figure 5
+  data: with_labels
+  depends_on:
+  - allen-parcel-link
+  criterion: As fig5-coupling-up-with-face, for locomotion minus high face. Frontal parcels are MOs
+    and MOp (the code's frontal-motor group). Reproduced when at least one frontal parcel decreases
+    significantly and no more parcels outside the frontal group than inside it decrease
+    significantly. Partially reproduced when significant decreases exist but more of them lie
+    outside the frontal group. Not reproduced when no parcel decreases significantly.
+- id: s3-hemodynamic-correction
+  statement: The spatial regression on 395 nm signals removes stimulus-evoked and behaviour-related
+    negative hemodynamic transients better than pixel-wise regression, shown in GFP and mCherry
+    control mice and in ACh3.0 mice.
+  source: Results, first section; Methods, Validation of hemodynamics correction; Figures S3, S4
+- id: s2-ach-sensor-validation
+  statement: ACh3.0 specifically reports cholinergic signalling, ex vivo (carbachol, blocked by
+    scopolamine) and in vivo (basal forebrain stimulation).
+  source: Results, first section; Figure S2
+- id: s8-cholinergic-axons
+  statement: The relationship between behavioural state and cholinergic signalling is also seen with
+    mesoscopic imaging of GCaMP6s in cholinergic axons.
+  source: Results, paragraph on sustained states; Figure S8
