@@ -32,7 +32,11 @@ Where parameters come from:
   (`permuteEpochLabels.m`, `permutePval.m`) and Benjamini-Yekutieli FDR at q = 0.01.
 - Regression: ridge regression with the penalty chosen per parcel by maximising the marginal
   likelihood (as ridgeMML.m, Musall et al. 2019), ten-fold cross-validation over contiguous
-  blocks, R2 averaged over folds (Methods). The code for this step is not in the repository.
+  blocks, R2 averaged over folds (Methods), predictors scaled with the training folds' statistics.
+  The penalty grid (1e-3 to 1e6, 91 values) is a choice made here; ridgeMML optimises it. The
+  code for this step is not in the repository, so the design (signed or absolute wheel speed, no
+  lags) is a choice too; the notebook uses |WheelSpeed| (the stored series is signed; the paper's
+  predictor is "locomotion speed") and shows the signed series as a variant.
 """
 
 from __future__ import annotations
@@ -472,14 +476,22 @@ def match_epochs(states):
     return {k: np.column_stack([picked[k][:, 0], picked[k][:, 0] + dur]) for k in keys}
 
 
-def face_onsets(s, p=None):
-    """Face movement onsets of faceStateTransition.m / extractFacePupilTStamps.m."""
+def face_onsets(s, p=None, include_last=False):
+    """Face movement onsets of faceStateTransition.m / extractFacePupilTStamps.m.
+
+    The code's quiescent periods here are [0, wheelOff(1:end-1)] to wheelOn, so the period after
+    the last locomotion epoch is left out (getSustainedStates.m keeps it). `include_last=True`
+    keeps it, as a variant."""
     p = p or dict(since_sit_on=10, before_sit_off=10, since_event=10, min_sit=5, before_arousal_on=4)
     t0, t1 = s["t"][0], s["t"][-1]
     puffs = None if s["airpuff"] is None else s["airpuff"][:, 0]
     won, woff = s["wheel_on_all"], s["wheel_off_all"]
-    sit_on = np.concatenate([[0.0], woff[:-1]])
-    sit_off = won.copy()
+    if include_last:
+        sit_on = np.concatenate([[0.0], woff])
+        sit_off = np.concatenate([won, [t1]])
+    else:
+        sit_on = np.concatenate([[0.0], woff[:-1]])
+        sit_off = won.copy()
     idx = (sit_on < t1) & (sit_off > t0)
     son, soff = _clip(sit_on[idx], sit_off[idx], t0, t1)
     son, soff = _split_fast(son, soff, s["fast_t"])
@@ -597,7 +609,9 @@ def ridge_mml_fit(X, Y):
 
 
 def cv_r2(X, Y, folds=10):
-    """Ten-fold cross-validated R2 over contiguous blocks, averaged over folds (per output)."""
+    """Ten-fold cross-validated R2 over contiguous blocks, averaged over folds (per output). The
+    predictors are centred and scaled to unit SD, and the outputs centred, with the training folds'
+    statistics only."""
     n = X.shape[0]
     edges = np.linspace(0, n, folds + 1).astype(int)
     r2 = []
@@ -605,8 +619,10 @@ def cv_r2(X, Y, folds=10):
         test = np.zeros(n, bool)
         test[edges[k]:edges[k + 1]] = True
         mx, my = X[~test].mean(0), Y[~test].mean(0)
-        W = ridge_mml_fit(X[~test] - mx, Y[~test] - my)
-        pred = (X[test] - mx) @ W + my
+        sx = X[~test].std(0)
+        sx[sx == 0] = 1.0
+        W = ridge_mml_fit((X[~test] - mx) / sx, Y[~test] - my)
+        pred = ((X[test] - mx) / sx) @ W + my
         yt = Y[test]
         r2.append(1 - ((yt - pred) ** 2).sum(0) / ((yt - yt.mean(0)) ** 2).sum(0))
     return np.mean(r2, axis=0)
