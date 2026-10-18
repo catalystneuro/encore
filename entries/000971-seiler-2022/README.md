@@ -18,7 +18,7 @@ and the shock probes, fear conditioning, open field and histology are not in it.
 | PS mice wait longer after a reward | Partially reproduced |
 | PS mice make fewer extra nosepokes than PR mice | Partially reproduced |
 | PS mice have longer inter-reward intervals | Reproduced |
-| PS mice earn fewer rewards per session | Reproduced |
+| PS mice earn fewer rewards per session | Partially reproduced |
 | PR mice escalate nosepoking in RI30, DPR mice in RI60 | Partially reproduced |
 | RI60 mice earn more rewards than RR20 mice | Reproduced |
 | Males accept more shocks than females | Reproduced |
@@ -33,7 +33,6 @@ and the shock probes, fear conditioning, open field and histology are not in it.
 | DMS ChR2 mice are mostly PR | Reproduced |
 | All male and about 71% of female ChR2 mice are PR | Partially reproduced |
 | DMS stimulation does not change omission time | Reproduced |
-| NpHR mice drop out of initial learning | Not reproduced |
 | NpHR mice accept fewer shocks on the second probe | Partially reproduced |
 | NpHR mice are more often PS | Reproduced |
 | DMS inhibition does not change omission time | Reproduced |
@@ -42,6 +41,7 @@ and the shock probes, fear conditioning, open field and histology are not in it.
 | DLS stimulation groups have similar phenotypes | Reproduced |
 | DLS stimulation does not change omission time | Reproduced |
 | DAT protein is not reduced in DAT-IRES-cre mice (Zenodo data) | Reproduced |
+| NpHR mice drop out of initial learning (dropped mice not deposited) | Blocked: data missing |
 | Peaks emerge during RI30; fear conditioning; open field; histology (four claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -52,7 +52,7 @@ here with the rule in the paper's Methods. The attempt record, with the reasons 
 from the paper's method, is
 [`attempts/000971-seiler-2022-01.yaml`](../../attempts/000971-seiler-2022-01.yaml).
 
-- `reproduce_seiler_2022.ipynb`: the analysis. It takes about 13 minutes, most of it streaming the
+- `reproduce_seiler_2022.ipynb`: the analysis. It takes about 25 minutes, most of it streaming the
   events of about 2200 files and 62 photometry recordings.
 - `seiler.py`: listing the sessions, reading events and photometry, the shock probe table and phenotype
   rule, the behavioral measures, and the photometry processing of the authors' code. Other notebooks on
