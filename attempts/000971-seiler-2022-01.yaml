@@ -1,0 +1,997 @@
+schema_version: 1
+id: 000971-seiler-2022-01
+dandiset: "000971"
+dandiset_version: 0.261013.1707
+paper: doi:10.1016/j.cub.2022.01.055
+date: 2026-10-18
+entry: 000971-seiler-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The authors' photometry analysis code (IndividualPhotometryAnalysis.m and helpers), read for the
+    smoothing, the control fit, dF/F, the z-score, the removal of the first second, the 2 s burst rule
+    for unrewarded nosepokes and the PSTH alignment, which the analysis follows.
+  source: https://github.com/jillianseiler/Seiler-et-al.-2022-MATLAB-code at commit
+    56f1529b5295db11f653198905ca88ca29230d83
+- what: The conversion code and its notes, read for the meaning of the TDT stores and MedPC variables,
+    the stitched and truncated sessions, and the 'Unknown' DLS files. No data or numbers are taken from
+    it.
+  source: https://github.com/catalystneuro/lerner-lab-to-nwb at commit d301f7e184d127b04266eb0f4887791daf44a570
+- what: Densitometry.xlsx, the western blot quantification the dandiset names as its supplement, used
+    for figs3ab-dat-protein-not-reduced.
+  source: doi:10.5281/zenodo.11266654
+outcomes:
+- claim: fig1d-ri60-vs-rr20-shocks
+  outcome: not_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig1d-ri60-vs-rr20-shocks
+  notes: In the 32 RI60 and 5 RR20 mice with both probes, RI60 mice accept more shocks (early 11.38,
+    late 16.31, against 4.80 and 6.60), but the schedule effect has p = 0.071 (F1,35 = 3.46) and the
+    interaction p = 0.59. The RI60 rise has paired p = 0.032, 0.063 after Bonferroni correction, where
+    the claim needs p < 0.01. Summing a probe day's files gives the same picture. The dandiset holds 6
+    RR20 mice (5 with both probes) against 9 in Figure 1D, so the test has little power on the RR20 side.
+  deviations:
+  - 5 RR20 mice with both probes where the paper has 9, and 32 RI60 mice where it has 36 (4 lack a probe
+    in the dandiset).
+  - The test is a two-way mixed ANOVA on complete cases, in Python; the paper used Prism.
+- claim: fig1e-omission-ri60-longer
+  outcome: partially_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig1e-omission-ri60-longer
+  notes: RI60 mice take 33.97 min (n = 19) and RR20 mice 17.72 min (n = 4); unpaired t-test p = 0.070,
+    Welch p = 0.0005. The direction holds without significance by the paper's test. The RR20 variance is
+    251 times smaller than the RI60 one, so the Student and Welch tests disagree.
+  deviations:
+  - 4 RR20 omission probes in the dandiset against 7 in the paper, and 19 RI60 against 20.
+  - Completion time is the time of the 50th reward, or 60 min when fewer were earned; the Methods give
+    the 50 reward and 60 min limits but not how incomplete sessions were scored.
+- claim: fig1f-omission-shock-no-correlation
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig1f-omission-shock-no-correlation
+  notes: Late probe shocks and omission time, r = 0.335, p = 0.175, n = 18 (paper r = 0.42, ns). With
+    the early probe r = 0.592, p = 0.0076.
+- claim: fig2a-phenotype-rule
+  outcome: partially_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig2a-phenotype-rule
+  measured:
+  - 9
+  - 9
+  - 18
+  notes: The stored labels give 9 PR, 9 DPR and 18 PS, which match by construction; only the rule check
+    is informative. The Methods rule agrees with the stored label for
+    31 of 32 mice with both probes; 048.392 (13 early, 18 late) is stored as PR but the rule's "more than
+    13" makes it PS. With 13 or more, 32 of 32 agree. The 85% cut is near the top quartile of change
+    (87.7%), but the median early count is 9.0, so 13 is not the median of these mice. Summing a day's
+    files gives 30 of 32.
+  deviations:
+  - Four RI60 mice have one probe in the dandiset and cannot be checked against the rule.
+- claim: fig2b-only-dpr-increase
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig2b-only-dpr-increase
+  notes: Phenotype by probe interaction F2,29 = 26.37, p = 3e-07. DPR mice rise from 11.56 to 32.11
+    shocks (Bonferroni p = 0.00041); PR (23.50 to 20.50) and PS (7.00 to 6.47) do not change.
+  deviations:
+  - 32 mice with both probes against 36; F2,29 where the paper gives F3,40.
+- claim: fig2c-nosepoke-rate
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig2c-nosepoke-rate
+  notes: Active nosepokes per minute over RI60 training, PR 14.20, DPR 12.79, PS 5.27; ANOVA p = 4.9e-06;
+    Tukey PR > PS p below 0.0001, DPR > PS p = 0.0003; mixed model over 492 sessions p = 2.3e-06. With the
+    empty files kept p = 4.3e-06, with one file per mouse-day p = 7.3e-06. Sex and phenotype are confounded
+    (17 of 18 PS mice female, 8 of 9 PR male).
+  deviations:
+  - The main test is a one-way ANOVA on per-mouse means; the paper used a mixed-effects analysis over
+    days, shown as a variant.
+  - Training files with no active nosepoke and no reward are left out (one PS file of 170 s here, which
+    holds inactive nosepokes and port entries).
+- claim: fig2d-omission-pr-vs-ps
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig2d-omission-pr-vs-ps
+  measured:
+  - 51.65
+  - 28.06
+  notes: PR 51.65 min (n = 4), PS 28.06 min (n = 10), DPR 31.67 (n = 5); ANOVA F2,16 = 3.85, p = 0.043;
+    Tukey PR vs PS p = 0.037. Three of four PR mice reach 60 min.
+  deviations:
+  - The Results print the values in seconds; they are read as minutes (the Methods' median split is at
+    29 minutes).
+  - 10 PS mice where the paper has 11.
+- claim: fig2k-ps-wait-longer
+  outcome: partially_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig2k-ps-wait-longer
+  measured:
+  - 53.94
+  - 21.05
+  - 21.86
+  notes: PS mice wait longest (53.94 s, SD 44.67, maximum 171 s), PR 21.05 s, DPR 21.86 s. PR and DPR are
+    within tolerance, the PS mean is above it (23 to 53 s); with each mouse's median session PS is 32.2 s.
+    The two highest PS mice (139.298 at 171.0 s, 348.393 at 168.7 s) each have one session with a mean
+    wait over 1000 s.
+    ANOVA p = 0.017; Tukey PS > PR p = 0.045, PS > DPR p = 0.051.
+  deviations:
+  - The rewarded port entry (first port entry after a reward) and the wait (to the next active
+    nosepoke) are defined here from the Results; the code for them is not published.
+- claim: fig2l-extra-nosepokes
+  outcome: partially_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig2l-extra-nosepokes
+  measured:
+  - 1.61
+  - 3.33
+  - 2.28
+  notes: PS 1.61, PR 3.33, DPR 2.28 extra nosepokes per reward, all within the stated SDs; PS < PR but
+    Tukey p = 0.117 (ANOVA p = 0.139).
+  deviations:
+  - Extra nosepokes are defined here from the Results (active nosepokes after a reward and before the
+    rewarded port entry).
+- claim: fig2m-inter-reward-interval
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig2m-inter-reward-interval
+  measured:
+  - 81.75
+  - 71.96
+  - 69.57
+  notes: Pooled RI60 intervals average PS 81.75 s, PR 71.96 s, DPR 69.57 s; KS PS vs PR p = 5e-30, PS vs
+    DPR p = 3.3e-33. Per-mouse means give ANOVA p = 0.033.
+  deviations:
+  - The Methods define the interval from rewarded nosepoke to rewarded nosepoke and cite Figure 2L for
+    it; reward times are used, which coincide with rewarded nosepokes in these files.
+- claim: fig2n-rewards-per-session
+  outcome: partially_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig2n-rewards-per-session
+  measured:
+  - 39.12
+  - 44.98
+  - 44.66
+  notes: Rewards per RI60 session, PS 39.12, DPR 44.98, PR 44.66, all within tolerance; ANOVA F = 4.02,
+    p = 0.028; Tukey PS vs DPR p = 0.059, so the pairwise test fails. The result sits at the threshold.
+    With the false start of 140.306 kept as a session of 0 rewards Tukey p is 0.048 (the first version of
+    this attempt), and with one file per mouse-day (PS 39.98, DPR 46.16, PR 44.66) it is 0.044. The rule
+    used (no active nosepoke and no reward) was set after round 1 and is the only one of the three that
+    gives p above 0.05; other kept short files of 1 to 4 rewards fit the same false-start reason. The
+    claim is borderline.
+  deviations:
+  - Training files with no active nosepoke and no reward are left out (one PS file of 170 s); other
+    files count as sessions, also when a mouse has two or three on one day.
+- claim: fig2o-escalation-timing
+  outcome: partially_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig2o-escalation-timing
+  notes: RI30 rate PR 4.85 per minute, DPR 3.03 (Mann-Whitney p = 0.114), PS 2.22 (p = 0.0063), so part
+    (i) fails on DPR. Median RI60 slope DPR 0.809, PR 0.494 nosepokes/min per day, so part (ii) holds
+    (p = 0.289).
+  deviations:
+  - The paper shows this with a segmental linear regression in Prism; the measures here (RI30 rate and
+    RI60 slope per mouse) were chosen before the analysis.
+- claim: figs1i-ri60-more-rewards
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:figs1i-ri60-more-rewards
+  notes: RI60 41.97 against RR20 22.63 rewards per session, t-test p = 5.4e-07, not below the 0.0001
+    stated. With the 21 empty files kept as sessions of 0 rewards (the 20 RR20 files that hold port
+    entries only and the RI60 false start), RR20 15.38, RI60 41.89 and p = 1.4e-11.
+  deviations:
+  - 6 RR20 mice where the paper has 9 (or 7 in the Methods).
+  - 20 RR20 files of four mice hold port entries only and are left out, with one RI60 false start.
+- claim: figs2b-males-more-shocks
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:figs2b-males-more-shocks
+  notes: Males early 16.58 and late 23.25, females 8.25 and 12.15; sex effect F1,30 = 9.81, p = 0.0039.
+    The paper's p < 0.0001 does not hold. Sex is confounded with phenotype (PR 8 males of 9, PS 17
+    females of 18).
+  deviations:
+  - The supplementary legend was not available; the test is a two-way mixed ANOVA of sex and probe.
+- claim: fig3e-ri30-dms-peaks
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds photometry for 53 RI60 sessions, 9 RR20 sessions and one session described
+    as a probe test, and none for RI30, so the emergence of peaks during RI30 cannot be tested.
+- claim: fig3f-dms-score-phenotype
+  outcome: not_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig3f-dms-score-phenotype
+  notes: Mean DMS score PR 2.35, DPR 1.66, PS 1.05 z, the paper's order, but the phenotype effect has
+    likelihood ratio p = 0.100 and neither stage alone is significant (p = 0.124 early, 0.270 late). The
+    score rises from early to late (paired p = 0.046, 17 mice; model stage p = 0.088). Without the
+    dropout step the phenotype p is 0.389. 51 scores from 34 mice. The mice with a score differ from
+    Figure 3E (late PR 4, DPR 7, PS 10 against 5, 6, 13), so the comparison with F2,33 is not like for
+    like.
+  deviations:
+  - Early and late RI60 only; the paper's test also includes RI30, which is not in the dandiset.
+  - Channel dropouts are left out (samples below half the channel median, with 1 s around them), a step
+    the authors' code does not have; it was added after seeing that dropouts made some session z-scores
+    near zero, and after the per-session scores had been seen. The authors' processing without it is
+    shown and gives p = 0.389.
+  - One DLS recording with dropouts over 10% of samples is excluded, and one session without rewarded
+    nosepokes (mixed clocks) has no score.
+  - A linear mixed model with a random intercept per mouse replaces Prism's mixed-effects analysis.
+- claim: fig3g-dms-score-shock-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig3g-dms-score-shock-correlation
+  measured: 0.17
+  notes: Reading (a), pooled early and late pairs, r = 0.170, p = 0.24, n = 49 (given as measured); (b)
+    late pairs r = 0.014, p = 0.95; (c) early pairs r = 0.375, p = 0.045, n = 29. Only (c) is positive
+    and significant, and it is below the tolerance around 0.53. The support is weak. Corrected for the three
+    readings (c) has p = 0.13, and without the dropout step (c) gives r = 0.362, p = 0.053 and the pooled
+    r is 0.100. The step leaves out more than 1% of samples in one DMS session of 51, but changes some
+    scores a lot where it leaves out less (88.239 from 0.09 to 1.92, 048.392 from 0.02 to 1.81, 346.394
+    from 0.00 to 1.10).
+  deviations:
+  - The paper does not say which scores and probes form the pairs; three readings were listed before
+    the analysis, none of which matches.
+  - RI30 scores, which may be among the paper's points, are not in the dandiset.
+- claim: fig3h-dms-score-omission-no-correlation
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig3h-dms-score-omission-no-correlation
+  notes: Late DMS score against omission time, r = 0.014, p = 0.96, n = 12 (95% interval -0.56 to 0.58);
+    pooled r = -0.050, p = 0.80. With 12 mice the test has little power.
+  deviations:
+  - 12 mice with a late score and an omission probe.
+- claim: fig4f-dls-score-no-phenotype
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig4f-dls-score-no-phenotype
+  notes: Phenotype likelihood ratio p = 0.48 (per stage p = 0.61 and 0.47); stage p = 0.034, as the paper
+    also finds a training effect in DLS.
+  deviations:
+  - No RI30 stage; dropout step as for fig3f-dms-score-phenotype (without it p = 0.68).
+- claim: fig4g-dls-score-shock-no-correlation
+  outcome: not_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig4g-dls-score-shock-no-correlation
+  notes: Pooled DLS score against shocks, r = 0.326, p = 0.024, n = 48, where the paper finds r = -0.01.
+    Late pairs r = 0.374, p = 0.10; early pairs r = 0.103, p = 0.60. Without the dropout step r = 0.113,
+    p = 0.45 (late 0.033, early 0.182), so the outcome depends on the artifact handling, a step chosen
+    here and in neither the Methods nor the authors' code. The DLS labels are consistent with the data
+    (the DLS response has the larger 2 to 10 s area, as the paper describes for DLS).
+  deviations:
+  - The pairing of scores and probes follows reading (a) of fig3g-dms-score-shock-correlation; the paper
+    does not state it.
+- claim: fig4h-dls-score-omission-no-correlation
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig4h-dls-score-omission-no-correlation
+  notes: Late DLS score against omission time, r = 0.311, p = 0.32, n = 12 (paper r = -0.21, ns); 95%
+    interval -0.32 to 0.75, so the test has little power.
+- claim: fig5f-dms-chr2-escalation
+  outcome: not_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig5f-dms-chr2-escalation
+  notes: In the pooled fit no ChR2 slope differs from a control (FR1 interaction p = 0.63 and 0.98, RI30
+    p = 0.82 and 0.49), and the pooled FR1 ChR2 slope (0.011) is not above the controls (0.051 and
+    0.005). Per-mouse slopes, a variant, put ChR2 above EYFP (p = 0.015) and Scrambled (p = 0.021) in FR1
+    but not in RI30. ChR2 mice nosepoke more in RI30 (7.75 against 4.01 and 4.21 per minute). The pooled
+    fit mixes mice with 1 to 13 FR1 sessions, which the per-mouse slopes avoid. A mixed model with a
+    random intercept and slope per mouse puts the FR1 ChR2 slope above ChR2 Scrambled (p = 0.034) and
+    EYFP (p = 0.0075) but not in RI30 (p = 0.68 and 0.70); under that model the rule would give
+    partially_reproduced. That FR1 fit converged only after a retry with lbfgs, warns that the MLE may be
+    on the boundary and has a random intercept variance near zero, and a model with a random intercept
+    only puts ChR2 above neither control (p = 0.46 and 0.33). The criterion fixed the pooled fit before
+    the analysis, so the outcome stays.
+  deviations:
+  - The paper fits a segmental linear regression in Prism; the pooled least squares fit with a group by
+    session interaction was chosen before the analysis.
+  - 33 DMS excitatory mice in the dandiset where the paper has 39.
+- claim: fig5g-dms-chr2-more-shocks-early
+  outcome: not_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig5g-dms-chr2-more-shocks-early
+  notes: First probe ChR2 28.69, EYFP 21.86, Scrambled 20.67 shocks, the paper's order; Tukey ChR2 vs
+    EYFP p = 0.51; group by probe interaction F2,29 = 1.95, p = 0.16 (paper F2,35 = 3.65).
+  deviations:
+  - 32 mice with both probes (13 ChR2, 12 Scrambled, 7 EYFP) where the paper's degrees of freedom imply
+    38.
+- claim: fig5h-dms-chr2-mostly-pr
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig5h-dms-chr2-mostly-pr
+  notes: PR in 12 of 13 ChR2 (92%), 5 of 7 EYFP (71%), 6 of 12 Scrambled (50%); Fisher ChR2 against both
+    controls p = 0.0497. The control PR fractions are higher than in the fiber photometry cohort (19%).
+  deviations:
+  - Phenotypes are computed with the Methods rule, as the dandiset stores none for optogenetic mice.
+- claim: figs5f-chr2-pr-by-sex
+  outcome: partially_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:figs5f-chr2-pr-by-sex
+  measured:
+  - 100
+  - 83.3
+  notes: 7 of 7 male ChR2 mice are PR; 5 of 6 female ChR2 mice (83.3%), outside 71 +- 7.1%.
+  deviations:
+  - One female ChR2 mouse (126.286) has a single session in the dandiset and no probes.
+- claim: fig5i-dms-stim-no-omission-effect
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig5i-dms-stim-no-omission-effect
+  notes: ChR2 25.79, Scrambled 35.53, EYFP 37.29 min; ANOVA p = 0.17, Kruskal-Wallis p = 0.14.
+- claim: fig6-nphr-learning-dropout
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig6-nphr-learning-dropout
+  notes: The dandiset holds 13 NpHR, 13 NpHR Scrambled and 16 EYFP mice, where Figure 6F counts 16, 15 and
+    16. The shortfall (3, 2, 0) equals the mice the paper drops (about 4 NpHR, 2 NpHR Scrambled) less
+    the one NpHR mouse deposited and flagged as not learning (270.476, no RI60). So the dropped mice
+    are, but for that one, not in the dandiset. The 'Did Not Learn' flag also marks an EYFP mouse that
+    reached RI60 (244.465), so it is not the paper's dropout criterion, and no file says which group (1
+    or 2) a mouse is in. Blocked under the criterion, as the dandiset does not say which mice were
+    dropped.
+- claim: fig6g-nphr-fewer-shocks-late
+  outcome: partially_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig6g-nphr-fewer-shocks-late
+  notes: Second probe NpHR 9.33 against EYFP 23.47 shocks (34 mice with both probes), Tukey p = 0.069.
+    With all 35 mice that have a second probe p = 0.043. Mixed ANOVA group p = 0.056.
+  deviations:
+  - 34 DMS inhibitory mice with both probes; the paper's degrees of freedom (F2,36) imply 39.
+- claim: fig6h-nphr-more-ps
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig6h-nphr-more-ps
+  notes: PS in 8 of 9 NpHR (89%) against 5 of 15 EYFP (33%), Fisher p = 0.013; PR in 6 of 10 NpHR
+    Scrambled (60%) against 6 of 15 EYFP (40%), p = 0.43. The NpHR effect is in both sexes here (3 of 4
+    females and 5 of 5 males PS).
+  deviations:
+  - Phenotypes computed with the Methods rule.
+- claim: fig6i-nphr-no-omission-effect
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig6i-nphr-no-omission-effect
+  notes: EYFP 28.74, NpHR 21.47, NpHR Scrambled 27.82 min; ANOVA p = 0.21.
+- claim: fig7f-dls-escalation-similar
+  outcome: not_reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig7f-dls-escalation-similar
+  notes: In FR1 the Scrambled slope (0.087) is below the EYFP slope (0.224), interaction p = 0.013 (F test
+    of all group terms p = 0.034). ChR2 differs from neither control (p = 0.12 and 0.98); in RI30 no pair
+    differs (p = 0.09 to 0.92). The difference is between the two control groups, not a ChR2 effect. A
+    mixed model with a random intercept and slope per mouse finds no difference in slope (p = 0.43 to
+    0.96, FR1 EYFP vs Scrambled p = 0.76), but its FR1 fit has a singular random effects covariance, so
+    those p values are weak evidence. A model with a random intercept only fits without warnings and finds
+    no FR1 difference either (EYFP vs Scrambled p = 0.23). The FR1 difference rests on the pooled fit the
+    criterion fixed.
+  deviations:
+  - The paper gives no test; the fit of fig5f-dms-chr2-escalation was used, judged on all three pairs.
+- claim: fig7g-dls-stim-no-shock-effect
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig7g-dls-stim-no-shock-effect
+  notes: Group p = 0.055, group by probe p = 0.068, 31 mice with both probes. EYFP mice rise most (19.11
+    to 32.89).
+  deviations:
+  - 4 DLS mice lack a late probe in the dandiset.
+- claim: fig7h-dls-similar-phenotypes
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig7h-dls-similar-phenotypes
+  notes: Chi-square p = 0.12 on a 3 x 3 table with smallest expected count 1.5; ChR2 mice include no DPR.
+  deviations:
+  - The paper gives no test; a chi-square test was chosen before the analysis.
+- claim: fig7i-dls-no-omission-effect
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:fig7i-dls-no-omission-effect
+  notes: ChR2 28.44, Scrambled 33.51, EYFP 36.08 min; ANOVA p = 0.53.
+- claim: figs3ab-dat-protein-not-reduced
+  outcome: reproduced
+  notebook: reproduce_seiler_2022.ipynb
+  output: claim:figs3ab-dat-protein-not-reduced
+  notes: DAT/actin of het samples is 131.3% of the WT mean in DMS (t-test p = 0.41) and 74.7% in DLS
+    (p = 0.20). The table holds females only, 3 WT and 4 het samples per region, named as lanes of one WT
+    mouse (410) and one het mouse (484); the male samples of Figure S3A are not in it.
+  deviations:
+  - Females only; the paper's test is in a legend that was not available, so an unpaired t-test was
+    used.
+- claim: figs1a-shock-aversive
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No fear conditioning session or freezing score is in the dandiset; every subject belongs to the
+    photometry cohort, an optogenetic cohort or the western blot. The paper says data are available on
+    request and names no archive.
+- claim: figs3cd-open-field
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No open field tracking is in the dandiset or in another public archive the paper or the dandiset
+    names.
+- claim: fig3c-gcamp-in-dopamine-neurons
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No histology images or cell counts are in the dandiset or in another public archive the paper or
+    the dandiset names.
+findings:
+- kind: data_missing
+  statement: The Methods say photometry was recorded during RI30 and on both shock probes, but the
+    dandiset holds photometry only for RI60 and RR20 training (62 sessions) and one session described as
+    a probe test. The RI30 stage of Figures 3E-F and 4E-F cannot be tested.
+- kind: data_missing
+  statement: Mice are missing against the paper. 6 RR20 mice against 9 in Figure 1D (7 in the Methods),
+    33 DMS excitatory mice against 39, 42 DMS inhibitory mice against 47 in Figure 6F, and 35 DLS
+    excitatory mice against 36. Of the photometry RI60 mice, 028.392 and 62.207 have no late probe and
+    89.247 and 78.214 no early one; several optogenetic mice lack a late probe.
+- kind: data_missing
+  statement: The fear conditioning (Figure S1A), open field (Figure S3C-D) and histology (Figures 3C, 4C
+    and the probe placements) are not in the dandiset, and the paper says data are available on request.
+- kind: metadata_insufficient
+  statement: Optogenetic mice have no stored phenotype (the notes read 'Punishment Group nan'), and the
+    DMS inhibitory files do not say whether a mouse belongs to group 1 (light from FR1) or group 2 (light
+    from RI30). Only two mice carry a 'Did Not Learn' flag, one of them an EYFP control, while the paper
+    drops NpHR and NpHR Scrambled mice.
+- kind: other
+  statement: The 137 files of the group 'Opto-DLS-Excitatory-Unknown' repeat sessions of mice that are also
+    deposited under a named arm; 135 share subject and start time with a named file, and those loaded
+    here have identical events. They count the same sessions twice if taken at face value.
+- kind: metadata_error
+  statement: Mouse 290.407 is filed under two experiments, 24 files as DMS excitatory ChR2 Scrambled and
+    2 (plus 2 'Unknown') as DLS excitatory ChR2.
+- kind: format_error
+  statement: In shock probes on the left nosepoke, the reward series is named right_reward_times while
+    its times are left nosepokes (151 files).
+- kind: format_error
+  statement: In the stitched photometry session of 332.393 on 2020-07-28, the reward times are MedPC
+    times that coincide with no nosepoke time, while the nosepokes and port entries are TDT times, so
+    rewarded nosepokes cannot be identified.
+- kind: other
+  statement: Several photometry recordings hold dropouts where a raw channel falls near zero (6 sessions
+    reach |z| above 50 after the authors' processing, up to 1758), and in one (141.308, 2019-08-09) the DLS
+    channels drop out through most of the recording. The dandiset does not mark these or say which
+    recordings the paper excluded for artifacts.
+- kind: metadata_error
+  statement: The fiber photometry table stores the fiber coordinates without the signs the Methods give
+    (DV 2.8 for -2.8 and DLS AP 0.1 for -0.1).
+- kind: code_mismatch
+  statement: The authors' MATLAB code comments call Dv1A the control and Dv2A the GCaMP signal, while the
+    conversion and the files take Dv1A as the DMS 465 nm signal. The data side with the files (a larger
+    rewarded response as labelled than swapped in 46 of 61 DMS sessions).
+- kind: selection_undocumented
+  statement: Mouse 048.392 is stored as PR with 13 shocks on its early probe, where the Methods classify
+    as PR mice with more than 13, and the Methods call 13 a median split while the median early count of
+    the RI60 mice is 9. How the stored labels were assigned is not documented.
+- kind: paper_inconsistency
+  statement: The Results give omission completion times in seconds (PR 51.50, PS 27.92), but sessions
+    last at most 60 minutes and the Methods split omission times at 29 minutes; the data fit minutes. The
+    Methods give 26 DMS inhibitory mice and 7 RR20 mice, Figure 6F counts 47 and Figure 1D 9.
+- kind: other
+  statement: The Zenodo densitometry table the dandiset names holds female samples only, labelled as
+    three lanes of one wild-type mouse and four of one heterozygous mouse, while the dandiset's blot images
+    include males.
+- kind: data_missing
+  statement: 20 RR20 training files (mice 96.259, 97.257, 99.257 and 100.258, 2019-04-29 to 2019-05-03)
+    hold port entries only, with no nosepoke or reward series, so those sessions' nosepokes and rewards
+    are not in the dandiset.
+- kind: other
+  statement: Several fiber photometry mice have two or three RI60 files on one day (11 mouse-days), most
+    a short file of 0 to 7 rewards beside a full session, some not (81.236 on 2019-02-06 has 6, 28 and
+    42 rewards). The dandiset does not say which file is the day's training session.
+- kind: data_missing
+  statement: Figure 6F counts 16 NpHR, 15 NpHR Scrambled and 16 EYFP mice; the dandiset holds 13, 13 and
+    16. The mice missing are about the number the paper dropped for not learning, so the dropped mice
+    are mostly not deposited, and the 'Did Not Learn' flag marks one NpHR mouse and one EYFP mouse that
+    reached RI60.
+- kind: other
+  statement: In 45 of 64 RR20 training files with rewards, the reward times coincide with no nosepoke
+    time, unlike RI60 and FR1 files; the relation of RR20 rewards to nosepokes is not described.
+verifications:
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier checked the archive's asset list and metadata
+    for the blocked claims and tested helper functions on synthetic inputs. It agreed with 37 of the 38 outcomes
+    and would make fig6-nphr-learning-dropout blocked. Its other points and the responses not tied to one claim
+    are as follows. B10 (events outside a recording dropped silently) - the notebook now prints the events
+    kept, 2336 of 2337 rewarded and 10892 of 10916 unrewarded. C (Figure S1 to S7 legends not in the PMC text)
+    - not resolved; the supplementary legends could not be obtained here either.
+  results:
+  - claim: fig1d-ri60-vs-rr20-shocks
+    agrees: true
+    outcome: not_reproduced
+    reason: Schedule p = 0.071 and interaction p = 0.59. The RI60 late vs early test gives Bonferroni p = 0.063,
+      missing the 0.01 bar, so even the partial condition fails. Only 5 RR20 mice have both probes (paper n
+      = 9).
+    response: No change needed; the RR20 shortfall was already in the notes and deviations.
+  - claim: fig1e-omission-ri60-longer
+    agrees: true
+    outcome: partially_reproduced
+    reason: RI60 34.0 min vs RR20 17.7 min, so the direction holds, but Student's t gives p = 0.070 (Welch
+      p = 0.0005). n = 19 and 4; the paper has 20 and 7. The test also hinges on Student vs Welch, as the variances
+      differ about 250-fold (B5).
+    response: Added the variance ratio (251) to the notebook and the notes. Outcome kept, as the claim names
+      an unpaired t-test.
+  - claim: fig1f-omission-shock-no-correlation
+    agrees: true
+    outcome: reproduced
+    reason: r = 0.335, p = 0.175, n = 18 (paper r = 0.42, ns).
+    response: No change needed.
+  - claim: fig2a-phenotype-rule
+    agrees: true
+    outcome: partially_reproduced
+    reason: Stored labels are 9/9/18 and the rule matches 31 of 32 mice; the miss is 048.392 with exactly 13
+      shocks early against the Methods' 'more than 13'. The counts match by construction because they are the
+      stored labels (B9).
+    response: The conclusion and notes now say the counts match by construction and only the rule check is
+      informative. Outcome kept.
+  - claim: fig2b-only-dpr-increase
+    agrees: true
+    outcome: reproduced
+    reason: Interaction p = 3e-7. Only DPR changes (Bonferroni p = 0.0004); PR and PS both have p = 1.
+    response: No change needed.
+  - claim: fig2c-nosepoke-rate
+    agrees: true
+    outcome: reproduced
+    reason: ANOVA p = 4e-6; Tukey DPR vs PS p = 0.0002 and PR vs PS p < 0.0001. Zero-reward and zero-rate sessions
+      enter the per-mouse means and were never inspected (B6).
+    response: Added a table of the 21 files with no reward and no nosepoke (20 RR20 files holding port entries
+      only, one 170 s PS false start followed by a full session the same day). They are now left out; the result
+      is p = 4.9e-06, Tukey DPR vs PS p = 0.0003, with variants for the files kept and for one file per mouse-day.
+      Outcome kept.
+  - claim: fig2d-omission-pr-vs-ps
+    agrees: true
+    outcome: reproduced
+    reason: PR 51.65 and PS 28.06 min, both within tolerance; Tukey PR vs PS p = 0.037. PS n = 10 (paper 11).
+    response: No change needed.
+  - claim: fig2k-ps-wait-longer
+    agrees: true
+    outcome: partially_reproduced
+    reason: PS has the longest wait, but its mean of 53.9 s is just outside 38 +- 15. Tukey PS vs DPR p = 0.051
+      (PS vs PR p = 0.045). The PS mean is driven by one mouse at 171 s; the median-of-sessions variant (32.2
+      s) would fall within tolerance (B8).
+    response: Added per-mouse mean, median and maximum session waits and the number of waits. Two PS mice (139.298,
+      348.393) each have one session with a mean wait over 1000 s; this is in the conclusion and notes. Outcome
+      kept, as the criterion specifies the mean.
+  - claim: fig2l-extra-nosepokes
+    agrees: true
+    outcome: partially_reproduced
+    reason: All three means are within tolerance and PS < PR, but Tukey p = 0.117.
+    response: No change needed.
+  - claim: fig2m-inter-reward-interval
+    agrees: true
+    outcome: reproduced
+    reason: Means 81.8, 72.0 and 69.6 s, all within tolerance, PS longest; both KS tests p < 1e-29.
+    response: No change needed.
+  - claim: fig2n-rewards-per-session
+    agrees: true
+    outcome: reproduced
+    reason: All means within tolerance; ANOVA p = 0.021; Tukey PS vs DPR p = 0.048, which is borderline. Zero-reward
+      sessions enter the per-mouse means (B6).
+    response: Changed to partially_reproduced. The one PS file with no reward is a 170 s false start followed
+      by a full 50-reward session the same day, so it is not a training session; without it Tukey PS vs DPR
+      has p = 0.059, and the criterion needs p < 0.05. The notes give the variants (0.048 with the file kept,
+      0.044 with one file per mouse-day).
+  - claim: fig2o-escalation-timing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Part (i) fails because RI30 PR vs DPR gives p = 0.114 (PR vs PS p = 0.006). Part (ii) holds; the
+      DPR median RI60 slope 0.81 is above PR's 0.49.
+    response: No change needed.
+  - claim: figs1i-ri60-more-rewards
+    agrees: true
+    outcome: reproduced
+    reason: 41.9 vs 15.4 rewards per session, p = 1.4e-11. Only 6 RR20 mice. Zero-reward sessions enter the
+      per-mouse means (B6).
+    response: The 20 RR20 files that hold port entries only are now left out; RI60 41.97 against RR20 22.63,
+      p = 5.4e-07, which is not below the paper's 0.0001 and is said so in the notes. Outcome kept.
+  - claim: figs2b-males-more-shocks
+    agrees: true
+    outcome: reproduced
+    reason: Sex effect F1,30 = 9.81, p = 0.0039, males higher. This is not p < 0.0001, and sex is confounded
+      with phenotype (17 of 18 PS mice are female).
+    response: No change needed.
+  - claim: fig3e-ri30-dms-peaks
+    agrees: true
+    outcome: blocked
+    reason: Confirmed against the archive that there is no photometry for RI30 or the shock probes. The 'slower
+      across RI60 in DPR' half could be tested from the early and late RI60 scores, but it was not (B12).
+    response: Added the early and late RI60 DMS scores by phenotype for mice with both stages; PR rise 1.17
+      z (3 mice), DPR 0.33 z (7 mice), no change with p < 0.05. Shown as information only. Outcome kept, as
+      the criterion needs RI30 photometry.
+  - claim: fig3f-dms-score-phenotype
+    agrees: true
+    outcome: not_reproduced
+    reason: Phenotype LR p = 0.10; per-stage ANOVAs p = 0.12 and 0.27. The means are ordered PR > DPR > PS.
+      The design has 2 stages where the paper had 3, and without the dropout step p = 0.39. The mice with late
+      photometry differ from Figure 3E, so the comparison with F2,33 is not like-for-like (B7).
+    response: The conclusion and notes now give the mouse counts against Figure 3E and say the comparison is
+      not like for like. Outcome kept.
+  - claim: fig3g-dms-score-shock-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Only reading (c) qualifies, r = 0.375, p = 0.045, n = 29, with no reading within 0.53 +- 0.053.
+      Pooled (a) gives r = 0.17, p = 0.24. Three readings are tested with no correction, so the support is
+      weak (B2).
+    response: Added the Bonferroni-corrected p of reading (c) (0.13), readings (b) and (c) without the dropout
+      step ((c) r = 0.362, p = 0.053), and the dropout fractions of the sessions behind the pairs (one DMS
+      session above 1%). The conclusion and notes say the support is weak. Outcome kept, as the criterion takes
+      any reading.
+  - claim: fig3h-dms-score-omission-no-correlation
+    agrees: true
+    outcome: reproduced
+    reason: r = 0.014, p = 0.96, but n = 12 only, with little power (B11).
+    response: Added the 95% interval of r (-0.56 to 0.58) to the conclusion and notes. Outcome kept.
+  - claim: fig4f-dls-score-no-phenotype
+    agrees: true
+    outcome: reproduced
+    reason: Phenotype p = 0.48.
+    response: No change needed.
+  - claim: fig4g-dls-score-shock-no-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Pooled r = 0.326, p = 0.024. Without the dropout step r = 0.11, p = 0.45. The dropout step is the
+      author's own choice, in neither the Methods nor the authors' code, and decides this claim (B1).
+    response: Added the late and early readings without the dropout step (r = 0.033 and 0.182). The conclusion,
+      notes and summary say the outcome turns on the dropout step, a choice made here. Outcome kept, as the
+      step removes dropouts that give |z| above 1000.
+  - claim: fig4h-dls-score-omission-no-correlation
+    agrees: true
+    outcome: reproduced
+    reason: r = 0.31, p = 0.32, n = 12, with little power (B11).
+    response: Added the 95% interval of r (-0.32 to 0.75). Outcome kept.
+  - claim: fig5f-dms-chr2-escalation
+    agrees: true
+    outcome: not_reproduced
+    reason: No interaction is significant (p = 0.49 to 0.98), and the ChR2 slope is not the largest in either
+      stage. The per-mouse-slope variant shows FR1 ChR2 > both controls but not RI30. The pooled fit has no
+      mouse term while mice contribute 1 to 13 FR1 sessions; the criterion fixed this design, but it is weak
+      (B3).
+    response: Added a mixed model with a random intercept and slope per mouse; FR1 ChR2 is above both controls
+      (p = 0.034 and 0.0075), RI30 not. The conclusion and notes say this model would give partially_reproduced.
+      Outcome kept, as the criterion fixed the pooled fit before the analysis.
+  - claim: fig5g-dms-chr2-more-shocks-early
+    agrees: true
+    outcome: not_reproduced
+    reason: Interaction p = 0.16; Tukey ChR2 vs EYFP on the first probe p = 0.51. n = 32 (paper about 38).
+    response: No change needed.
+  - claim: fig5h-dms-chr2-mostly-pr
+    agrees: true
+    outcome: reproduced
+    reason: 12 of 13 ChR2 mice are PR, vs 6/12 Scrambled and 5/7 EYFP. Fisher p = 0.0497, which is borderline.
+    response: No change needed.
+  - claim: figs5f-chr2-pr-by-sex
+    agrees: true
+    outcome: partially_reproduced
+    reason: Males 100% (within tolerance); females 83.3%, 5 of 6, outside 71 +- 7.1. One female ChR2 mouse
+      (126.286) has no probes.
+    response: No change needed.
+  - claim: fig5i-dms-stim-no-omission-effect
+    agrees: true
+    outcome: reproduced
+    reason: ANOVA p = 0.17.
+    response: No change needed.
+  - claim: fig6-nphr-learning-dropout
+    agrees: false
+    outcome: blocked
+    reason: Per arm the dandiset has NpHR 13, Scrambled 13 and EYFP 16 mice against 16, 15 and 16 in Figure
+      6F. The shortfall equals the paper's dropouts minus one deposited and flagged NpHR mouse, so most dropped
+      mice were never deposited. The 'Did Not Learn' flag also marks an EYFP mouse that reached RI60, so it
+      is not the paper's dropout criterion, and no file says which mouse is in group 1 or 2. This makes the
+      claim blocked, not testable (B4).
+    response: Changed to blocked (data_missing). Added the per-arm counts against the Figure 6F legend to the
+      notebook; the shortfall (3, 2, 0) matches the dropouts less 270.476, and the criterion blocks the claim
+      when the dandiset does not say which mice were dropped. Recorded as a data_missing finding.
+  - claim: fig6g-nphr-fewer-shocks-late
+    agrees: true
+    outcome: partially_reproduced
+    reason: NpHR < EYFP on the second probe, but Tukey p = 0.069 for mice with both probes (0.043 when all
+      mice with a second probe are included).
+    response: No change needed.
+  - claim: fig6h-nphr-more-ps
+    agrees: true
+    outcome: reproduced
+    reason: PS fraction NpHR 0.89 vs EYFP 0.33; PR fraction Scrambled 0.60 vs EYFP 0.40. Fisher p = 0.013 and
+      0.43.
+    response: No change needed.
+  - claim: fig6i-nphr-no-omission-effect
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.21.
+    response: No change needed.
+  - claim: fig7f-dls-escalation-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: The FR1 EYFP vs Scrambled interaction has p = 0.013, and the omnibus FR1 F-test p = 0.034. The
+      paper gives no test for this claim.
+    response: Added the mixed model with a random slope per mouse, which finds no difference (p = 0.43 to 0.96);
+      the conclusion and notes say the FR1 difference rests on the pooled fit. Outcome kept, as the criterion
+      fixed that fit.
+  - claim: fig7g-dls-stim-no-shock-effect
+    agrees: true
+    outcome: reproduced
+    reason: Group p = 0.055 and interaction p = 0.068, both borderline.
+    response: No change needed.
+  - claim: fig7h-dls-similar-phenotypes
+    agrees: true
+    outcome: reproduced
+    reason: Chi-square p = 0.12, but the smallest expected count is 1.5, so the test has low power.
+    response: No change needed; the low expected count is in the conclusion and notes.
+  - claim: fig7i-dls-no-omission-effect
+    agrees: true
+    outcome: reproduced
+    reason: p = 0.53.
+    response: No change needed.
+  - claim: figs3ab-dat-protein-not-reduced
+    agrees: true
+    outcome: reproduced
+    reason: Zenodo table, DMS p = 0.41, DLS p = 0.20. Only 3 WT vs 4 het mice, all female. The cell reads rows
+      i+1 to i+8 and columns 7 and 8 without printing them.
+    response: Added a printout of every parsed block with its header row; the columns used are the blank-corrected
+      intensity and the sheet's DAT/ACT ratio, which the computed ratio matches. Outcome kept.
+  - claim: figs1a-shock-aversive
+    agrees: true
+    outcome: blocked
+    reason: The archive's 4139 assets are all NWB, and no metadata mentions fear or freezing. Every subject
+      belongs to fiber photometry, optogenetics or western blot.
+    response: No change needed.
+  - claim: figs3cd-open-field
+    agrees: true
+    outcome: blocked
+    reason: Same archive check; there are no open field assets.
+    response: No change needed.
+  - claim: fig3c-gcamp-in-dopamine-neurons
+    agrees: true
+    outcome: blocked
+    reason: Same archive check; there is no histology or cell counts. The 16 western blot assets hold blot
+      images only.
+    response: No change needed.
+- date: '2026-10-18'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with its conclusions and summary, the
+    helper module, the claims file and the attempt record. The verifier did not re-download the paper. It agreed
+    with all 38 outcomes, and found that all round-1 points but the supplementary legends are resolved or disclosed.
+    Its general point that the runtime of about 25 minutes matches the output needs no reply; the last runs took
+    883 and 892 s, and the README now says 15 to 25 minutes.
+  results:
+  - claim: fig1d-ri60-vs-rr20-shocks
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig1e-omission-ri60-longer
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig1f-omission-shock-no-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig2a-phenotype-rule
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig2b-only-dpr-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig2c-nosepoke-rate
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome. The Summary and the fig2c and fig2n deviations say 'Training files with
+      no nosepoke and no reward are left out', but the 140.306 file holds left_nose_poke_times (30 events in the
+      file); it has no active nosepoke, which cell 21 says correctly.
+    response: The Summary and the fig2c and fig2n deviations now say no active nosepoke and no reward, and that
+      the 140.306 file holds inactive nosepokes and port entries.
+  - claim: fig2d-omission-pr-vs-ps
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig2k-ps-wait-longer
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig2l-extra-nosepokes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig2m-inter-reward-interval
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig2n-rewards-per-session
+    agrees: true
+    outcome: partially_reproduced
+    reason: Accepts partially_reproduced as the conservative choice with every variant reported, but it sits on
+      the threshold and depends on a rule chosen after round 1. Under the claims file's definition of sessions the
+      170 s file of 140.306 is included and Tukey PS vs DPR gives p = 0.048, which would be reproduced; leaving
+      it out gives 0.059 and one file per mouse-day 0.044. The false-start reason applies just as well to files
+      the analysis keeps (271.396, 88.239, 92.246, 348.393, 115.273). The claim should still be read as borderline.
+    response: Outcome kept, as the verifier agreed with it. The fig2n conclusion, cell 21 and the notes now say
+      the rule (no active nosepoke and no reward) was set after round 1, that it is the only one of the three variants
+      with p above 0.05, that the false-start reason fits kept short files of 1 to 4 rewards as well, and that the
+      claim is borderline.
+  - claim: fig2o-escalation-timing
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: figs1i-ri60-more-rewards
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome. Cell 60 and the notes say ''With the 20 RR20 files that hold port entries
+      only counted as sessions of 0 rewards'', but that variant also keeps the RI60 false start (RI60 mean 41.89
+      instead of 41.97); minor, and it does not change the result. Not resolved: the Figure S1 to S7 legends; the
+      claim is still judged on the main text alone.'
+    response: Cell 60 and the notes now say the variant keeps all 21 empty files, the RI60 false start included,
+      and give the RI60 mean of 41.89. The supplementary legends could not be obtained (PMC reCAPTCHA, 403 from
+      Cell and Europe PMC).
+  - claim: figs2b-males-more-shocks
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+      Not resolved: the Figure S1 to S7 legends; the claim is still judged on the main text alone.'
+    response: Not resolved. The supplementary PDFs on PMC are behind a reCAPTCHA page and the Cell and Europe PMC
+      copies return 403, so the legends could not be obtained here either.
+  - claim: fig3e-ri30-dms-peaks
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig3f-dms-score-phenotype
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Still open: the outcome depends on the dropout step, chosen after seeing
+      the data and in neither the Methods nor the authors'' code; this is now disclosed.'
+    response: No change to the outcome. The dependence on the dropout step was already in the conclusion, notes
+      and Summary; the step cannot be shown to be right from the data, and the variant without it stays reported.
+  - claim: fig3g-dms-score-shock-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome. Cell 73 says 'The dropout step leaves out more than 1% of samples in
+      only one DMS session of the 51 behind these pairs (1.61%)'; the count is correct but suggests the step has
+      little effect, while cell 72 shows it changes DMS scores a lot in sessions where it leaves out 1.61% or less
+      (88.239 from 0.09 to 1.92, 048.392 from 0.02 to 1.81, 346.394 from 0.00 to 1.10, 92.246 from 0.04 to 0.30).
+      The round-1 response ('one DMS session above 1%') carries the same implication. The outcome still depends
+      on the dropout step.
+    response: Cell 73 and the notes now give the four sessions whose scores the step changes most, with the fraction
+      it leaves out in each, and say that dropouts of |z| above 1000 dominate the z-score. The round-1 response
+      is left as recorded; this round corrects it.
+  - claim: fig3h-dms-score-omission-no-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig4f-dls-score-no-phenotype
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig4g-dls-score-shock-no-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome. Still open: the outcome depends on the dropout step, chosen after seeing
+      the data and in neither the Methods nor the authors'' code. This is now disclosed. In the sessions with large
+      dropouts the authors'' processing gives scores near 0 (cell 72), which supports the step but cannot prove
+      it is right.'
+    response: No change to the outcome. The conclusion, notes and Summary already say the outcome turns on the dropout
+      step, a choice made here.
+  - claim: fig4h-dls-score-omission-no-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig5f-dms-chr2-escalation
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, because the criterion fixed the pooled least-squares fit before the analysis; a mixed model
+      with a per-mouse slope reverses the result (cell 90). Cell 91 and the notes say the mixed model 'agrees with
+      the per-mouse slopes', but the fit converged only after a retry with lbfgs and warns that 'the MLE may be
+      on the boundary'. The outcome rests on a pooled fit with no mouse term, and the mixed model that reverses
+      it has convergence warnings the conclusion does not mention.
+    response: The mixed-model variant now prints its warnings and random effects covariance, and a model with a
+      random intercept only was added. Cell 91 and the notes say the FR1 random slope fit converged after a retry,
+      warns of a boundary MLE and has a random intercept variance near zero, and that the random intercept model
+      puts ChR2 above neither control (p = 0.46 and 0.33). Outcome kept.
+  - claim: fig5g-dms-chr2-more-shocks-early
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig5h-dms-chr2-mostly-pr
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: figs5f-chr2-pr-by-sex
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+      Not resolved: the Figure S1 to S7 legends; the claim is still judged on the main text alone.'
+    response: Not resolved. The supplementary PDFs on PMC are behind a reCAPTCHA page and the Cell and Europe PMC
+      copies return 403, so the legends could not be obtained here either.
+  - claim: fig5i-dms-stim-no-omission-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig6-nphr-learning-dropout
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 105 shows the shortfall against Figure 6F is 3, 2 and 0 mice, the 'Did Not Learn' flag
+      also marks an EYFP mouse, and no file says which group a mouse was in.
+    response: No change needed.
+  - claim: fig6g-nphr-fewer-shocks-late
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig6h-nphr-more-ps
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig6i-nphr-no-omission-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig7f-dls-escalation-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, because the criterion fixed the pooled least-squares fit before the analysis; a mixed model
+      with a per-mouse slope reverses the result (cell 117). Cell 118 and the notes report the mixed-model p values
+      (0.43 to 0.96) with no caveat, while cell 117 prints repeated 'Random effects covariance is singular' warnings,
+      so those p values are weak evidence that the result rests on the pooled fit.
+    response: The mixed-model variant now prints its warnings, the third pair (EYFP vs ChR2 Scrambled, which the
+      earlier variant did not test) and a model with a random intercept only. Cell 118 and the notes say the random
+      slope fit is singular in FR1, and that the random intercept model, which fits without warnings, finds no FR1
+      difference either (EYFP vs Scrambled p = 0.23). Outcome kept.
+  - claim: fig7g-dls-stim-no-shock-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig7h-dls-similar-phenotypes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig7i-dls-no-omission-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: figs3ab-dat-protein-not-reduced
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+      Not resolved: the Figure S1 to S7 legends; the claim is still judged on the main text alone.'
+    response: Not resolved. The supplementary PDFs on PMC are behind a reCAPTCHA page and the Cell and Europe PMC
+      copies return 403, so the legends could not be obtained here either.
+  - claim: figs1a-shock-aversive
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: figs3cd-open-field
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
+  - claim: fig3c-gcamp-in-dopamine-neurons
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the Result sentence, the Summary and the notes match the printed outputs.
+    response: No change needed.
