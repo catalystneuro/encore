@@ -1,0 +1,305 @@
+schema_version: 1
+id: 001172-lohani-2022-01
+dandiset: "001172"
+dandiset_version: 0.260129.0829
+paper: doi:10.1038/s41593-022-01202-6
+date: 2026-10-18
+entry: 001172-lohani-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The Allen parcel masks parcells_updated121519.mat and the brain mask brainMask.mat of the
+    paper's code, which name the pixels of the dandiset's atlas-registered ΔF/F. The procedures
+    (frame timing, locomotion change points, face normalisation, sustained states, onsets,
+    cross-correlation and permutation statistics) follow the same code where the Methods are silent.
+  source: https://github.com/cardin-higley-lab/Lohani_Moberly_et_al_2022 at commit
+    c337686fb3776112f1609ec1a19256d277c930fd
+outcomes:
+- claim: allen-parcel-link
+  outcome: partially_reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:allen-parcel-link
+  notes: Per session (pixels non-zero in either ΔF/F movie) the non-zero pixels equal the code's
+    brainMask.mat rotated by 180 degrees in all 9 sessions (agreement 1.0; best other orientation
+    0.98). Per movie, the calcium movie of grabAM08 11232019 spont agrees at 0.996, as 263 pixels
+    inside the mask are zero in every frame and none outside is non-zero. With 100% contrast
+    gratings in one visual stimulus session per mouse (47 to 49 trials), the largest calcium
+    response of the 46 parcels is in a left visual parcel in all 4 mice and left VISp exceeds right
+    VISp in all 4 (0.108 to 0.216 against -0.024 to 0.065 percent ΔF/F), but left VISp ranks 1, 1,
+    3 and 2, so first in 2 of 4 mice where the criterion asks 3 for reproduced. The dependent claims
+    are tested; the partial result bears on parcel borders, not on which areas are where.
+  deviations:
+  - The criterion's "pixels with non-zero ΔF/F in the blue and green movies" can be read per movie
+    or per session; the per-session reading was chosen after seeing that one movie fails the 99.9%
+    bar under the per-movie reading. Under the per-movie reading the mask part fails on that movie
+    and the claim would be not reproduced by the letter of the criterion.
+- claim: fig2a-r2-differs-across-areas
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig2a-r2-differs-across-areas
+  notes: Friedman across the 23 left parcels with 4 mice, ACh chi2 = 67.98, p = 1.4e-06, calcium
+    chi2 = 63.74, p = 6.1e-06. Full-model R2 ranges 0.031 to 0.397 (ACh) and 0.084 to 0.387
+    (calcium). Spontaneous sessions alone give p = 6e-07 and 0.005.
+  deviations:
+  - 4 of 6 mice; spontaneous and air-puff sessions (9) averaged per mouse, as the Methods do not say
+    which sessions were used.
+  - The ridge regression code is not public; the penalty is chosen per parcel by marginal likelihood
+    over a grid of 91 values, as ridgeMML does by optimisation.
+- claim: fig2b-ap-gradient-inverted
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig2b-ap-gradient-inverted
+  notes: Spearman of mean R2 with anterior-posterior rank (1 = MOs) gives ACh rho = -0.761
+    (p = 2.5e-05) and calcium rho = 0.555 (p = 0.0059). Per mouse ACh rho -0.44 to -0.87; calcium
+    0.57 to 0.70 in three mice and -0.01 in grabAM05. Spontaneous sessions alone give -0.897 and
+    0.655.
+  deviations:
+  - 4 of 6 mice.
+- claim: fig2c-face-best-predictor-ach
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig2c-face-best-predictor-ach
+  notes: Single-variable R2 averaged over left parcels, face PC1 0.081, wheel 0.026, pupil 0.009;
+    face highest in all 4 mice, Friedman p = 0.018. Unique contributions face 0.083, pupil 0.016,
+    wheel 0.004, face largest in all 4 mice, Friedman p = 0.039. Signed-rank tests give p = 0.125,
+    the smallest possible with 4 mice, so the paper's p = 0.031 cannot be reached.
+  deviations:
+  - The paper's post hoc signed-rank tests are replaced by the direction in every mouse.
+  - Unique contribution of face is from shuffling PC1 only; the Methods do not say which face PCs
+    were shuffled.
+- claim: fig2c-face-best-predictor-calcium
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig2c-face-best-predictor-calcium
+  notes: Single-variable R2 face PC1 0.112, wheel 0.084, pupil 0.010; face highest in all 4 mice,
+    Friedman p = 0.018. Unique contributions face 0.058, pupil 0.025, wheel 0.014, face largest in
+    all 4 mice (Friedman p = 0.039); the paper found face against pupil not significant here
+    (p = 0.063).
+  deviations:
+  - As for fig2c-face-best-predictor-ach.
+- claim: s7-face-onset-transients
+  outcome: partially_reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:s7-face-onset-transients
+  measured:
+  - 0.728
+  - 0.92
+  notes: ACh 0.728 ± 0.119 percent ΔF/F (paper 0.55 to 0.73), calcium 0.920 ± 0.131 (paper 0.54 to
+    0.84), positive in all 4 mice, one-sample t-test p = 0.0089 and 0.0060. 12 to 31 onsets per
+    mouse.
+  deviations:
+  - 4 of 6 mice; face onsets from the code's procedure, which the Methods describe only in part.
+- claim: s7-locomotion-onset-transients
+  outcome: partially_reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:s7-locomotion-onset-transients
+  measured:
+  - 0.761
+  - 1.985
+  notes: ACh 0.761 ± 0.272 percent ΔF/F (paper 0.51 to 0.85, p = 0.068 here), calcium 1.985 ± 0.489
+    (paper 1.39 to 1.61, p = 0.027), positive in all 4 mice; grabAM08 has the largest values (ACh
+    1.555, calcium 3.436). 17 to 39 onsets per mouse.
+  deviations:
+  - 4 of 6 mice.
+- claim: s7-ach-transients-same-across-states
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:s7-ach-transients-same-across-states
+  notes: Two-way repeated measures ANOVA (4 mice), onset type F = 0.03, p = 0.88; area F = 9.39,
+    p < 0.0001. Whole-cortex locomotion minus face per mouse -0.285 to 0.625, mean 0.034 percent
+    ΔF/F.
+  deviations:
+  - 4 of 6 mice.
+- claim: s7-calcium-transients-largest-at-locomotion
+  outcome: partially_reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:s7-calcium-transients-largest-at-locomotion
+  notes: Locomotion transient above face transient in all 4 mice (by 0.447 to 2.245, mean 1.065
+    percent ΔF/F), onset type F = 6.94, p = 0.078; area F = 31.6, p < 0.0001.
+  deviations:
+  - 4 of 6 mice; the ANOVA has 3 denominator degrees of freedom for onset type.
+- claim: s7-ap-gradient-transients
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:s7-ap-gradient-transients
+  notes: ACh rho = -0.605 (p = 0.0022) at face onset and -0.752 (p = 3.5e-05) at locomotion onset,
+    larger anteriorly; calcium rho = 0.014 (p = 0.95) and 0.106 (p = 0.63).
+  deviations:
+  - The paper does not say which onsets the gradient refers to; both are tested.
+- claim: fig3b-ecog-desynchronization
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The files hold no ECoG; the conversion code reads the Spike2 LFP channel but does not write
+    it. The paper offers its data on request only.
+- claim: fig3c-ach-sustained-face
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig3c-ach-sustained-face
+  measured:
+  - -0.129
+  - 0.158
+  notes: With 3 mice (grabAM07 has no sustained high face epoch), low face -0.129 ± 0.031 and high
+    face 0.158 ± 0.047 percent ΔF/F, both inside the paper's ranges; high above low in all 3 mice
+    (0.138 to 0.384), LSD p = 0.027; state effect F = 11.1, p = 0.023. Matched epochs per mouse 10,
+    2 and 13.
+  deviations:
+  - 3 of the paper's 6 mice; grabAM06 contributes 2 epochs per state.
+- claim: fig3c-ach-locomotion-no-further-increase
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig3c-ach-locomotion-no-further-increase
+  notes: Locomotion minus high face LSD t = 1.09, p = 0.34. The locomotion mean, 0.250 percent ΔF/F,
+    is above the paper's 0.10 to 0.22, and exceeds high face in all 3 mice (by 0.027 to 0.179).
+  deviations:
+  - 3 of 6 mice.
+- claim: fig3c-calcium-sustained
+  outcome: partially_reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig3c-calcium-sustained
+  measured:
+  - -0.002
+  - 0.164
+  - 1.106
+  notes: Low face -0.002, high face 0.164 (inside the paper's ranges), locomotion 1.106 percent ΔF/F
+    (paper 0.44 to 0.82). High above low in all 3 mice (0.124 to 0.222) but LSD p = 0.24; locomotion
+    above high in all 3 (0.656 to 1.2), LSD p = 0.001; state effect F = 48.3, p = 0.0016.
+  deviations:
+  - 3 of 6 mice.
+- claim: s7-ap-gradient-sustained
+  outcome: partially_reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:s7-ap-gradient-sustained
+  notes: ACh high minus low face rho = -0.801, p = 4.3e-06 (larger anteriorly); calcium locomotion
+    minus high face rho = 0.329, p = 0.13.
+  deviations:
+  - 3 of 6 mice.
+- claim: fig3d-ach-frontal-above-visual
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig3d-ach-frontal-above-visual
+  notes: High face ACh, frontal-motor 0.166 to 0.427 against visual 0.032 to 0.108 percent ΔF/F,
+    higher in all 3 mice, paired t = 4.34, p = 0.049.
+  deviations:
+  - 3 of 6 mice; p is just below 0.05.
+- claim: fig3e-scopolamine-motor-not-visual
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No drug or vehicle sessions are in the dandiset (its sessions are spontaneous, air-puff and
+    visual stimulus); the paper offers its data on request only.
+- claim: fig4a-ach-correlations-up-with-face
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig4a-ach-correlations-up-with-face
+  notes: High minus low face, 64 of 253 pairs increase significantly (BY q = 0.01) and none
+    decreases; 39 of 45 motor-somatosensory pairs (0.867) against 25 of 208 other pairs (0.120).
+    Mean change in z per mouse 0.095, 0.314 and 0.362. At q = 0.05, 98 increases.
+  deviations:
+  - 3 of 6 mice; the permutation test permutes epochs within mice, so its power comes from epochs
+    (25 per state in all) more than mice.
+- claim: fig4a-ach-correlations-down-with-locomotion
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig4a-ach-correlations-down-with-locomotion
+  notes: Locomotion minus high face, 243 of 253 pairs (0.960) decrease significantly, none
+    increases, all six area groups involved; mean r 0.539 against 0.791; per mouse mean change in z
+    -0.337 to -0.648.
+  deviations:
+  - 3 of 6 mice.
+- claim: fig4b-calcium-correlations-up-with-face
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig4b-calcium-correlations-up-with-face
+  notes: High minus low face, 161 of 253 pairs (0.636) increase significantly, none decreases, all
+    six area groups involved; per mouse mean change in z 0.227 to 0.567.
+  deviations:
+  - 3 of 6 mice.
+- claim: fig4b-calcium-correlations-down-posterior
+  outcome: reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig4b-calcium-correlations-down-posterior
+  notes: Locomotion minus high face, 100 pairs decrease significantly and none increases; 55 of 66
+    posterior pairs (0.833) against 45 of 187 other pairs (0.241). Per mouse mean change in z -0.183
+    to -0.513.
+  deviations:
+  - 3 of 6 mice; posterior is defined here as ranks 12 to 23 of the Methods' order.
+- claim: fig5-coupling-up-with-face
+  outcome: partially_reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig5-coupling-up-with-face
+  notes: ACh-calcium coupling increases in all 23 left parcels (z 0.173 to 0.737) and significantly
+    in 10 (none decreases), short of the 12 the criterion asks; 22 have uncorrected p < 0.05 and 20
+    pass BY at q = 0.05. Mean r 0.573 against 0.185; per mouse mean change 0.182 to 0.694.
+  deviations:
+  - 3 of 6 mice.
+- claim: fig5-coupling-down-frontal-with-locomotion
+  outcome: not_reproduced
+  notebook: reproduce_lohani_2022.ipynb
+  output: claim:fig5-coupling-down-frontal-with-locomotion
+  notes: No parcel decreases significantly at q = 0.01 (2 at q = 0.05). Coupling is lower with
+    locomotion in all 23 parcels (z -0.370 to -0.037) and in each mouse (-0.138 to -0.269); the
+    largest decreases are in PTLp and SSp-tr (p = 0.0007 and 0.0006), and MOs and MOp have p = 0.072
+    and 0.076. The decrease is broad here, not restricted to frontal cortex.
+  deviations:
+  - 3 of 6 mice, with 25 matched epochs per state in all.
+- claim: s3-hemodynamic-correction
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The comparisons rest on GFP, mCherry and backscatter data from control mice, which are not
+    in the dandiset. The ACh3.0 part (visual stimulus negativity in V1 before and after correction)
+    would need the uncorrected blue ΔF/F, which is not in the files; it could be recomputed from the
+    raw movies of the visual stimulus sessions, without the code's registration transforms.
+- claim: s2-ach-sensor-validation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The slice imaging with carbachol and scopolamine and the basal forebrain stimulation
+    sessions are not in the dandiset.
+- claim: s8-cholinergic-axons
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No ChAT-Cre Ai162 (GCaMP6s) mice are in the dandiset.
+findings:
+- kind: metadata_error
+  statement: The ΔF/F series (DFFOnePhotonSeriesBlue, Green and Violet) are given the starting time
+    of the first LED pulse, the time of raw frame 0, but their frame 0 is raw frame 499, as the
+    detrending drops the first frames. Their times are 49.9 s early in every session; both the raw
+    movies and the alignment of calcium with wheel speed show it.
+- kind: metadata_error
+  statement: The FaceMap, pupil, eye and video timestamps are spaced 111 ms (9 Hz) where the camera
+    pulses are 100 ms apart, span about 10% longer than the session, and end with two values equal
+    to the first camera pulse. With these timestamps face movement and wheel speed are misaligned
+    by 23 to 60 s; with frame i at camera pulse i, as the paper's code does, they align.
+- kind: metadata_error
+  statement: RoiResponseSeriesParcellated holds the calcium (green excitation) ΔF/F averaged over
+    its ROIs, but its segmentation is linked to the ACh imaging plane. Its image masks are
+    transposed relative to the ΔF/F images, and its starting time is that of the first green pulse,
+    64.9 s before its first frame (150 frames after the ΔF/F's first frame).
+- kind: metadata_insufficient
+  statement: The ΔF/F descriptions mention detrending only; the blue and green ΔF/F are also
+    hemodynamically corrected and registered to the Allen atlas, rotated by 180 degrees, as the
+    paper's code shows. The Allen parcels the paper analyses are not in the files; they come from
+    the paper's code. The parcellation in the files is a different, functional one with 89 to 107
+    ROIs per session and no area names.
+- kind: metadata_error
+  statement: In the VisualStimulus tables the columns from stimulus_size on are shifted by one;
+    stimulus_size holds the duration (2) and the first screen coordinate holds the size (20
+    degrees).
+- kind: data_missing
+  statement: The air-puff session grabAM07 11262019 has no Airpuff table, so its puff times are
+    unknown.
+- kind: selection_undocumented
+  statement: No air puff in the Airpuff tables is followed by a locomotion onset within 5 s (29
+    puffs), which fits the paper's code keeping only puffs without running. The tables then hold a
+    selection of the puffs given, which the files do not say.
+- kind: metadata_insufficient
+  statement: WheelSpeed and pupil_area have the unit "unknown"; the paper's code treats wheel speed
+    as m/s, and its range fits that.
+- kind: data_missing
+  statement: The dandiset holds 4 of the 6 ACh3.0 and jRCaMP1b mice of the paper's code (grabAM05
+    to grabAM08, not grabAM09 and grabAM10), and no ECoG, drug sessions, control mice or ChAT-GCaMP6s
+    mice. Five of the paper's findings cannot be tested.
