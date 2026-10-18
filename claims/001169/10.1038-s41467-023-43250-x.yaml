@@ -1,0 +1,333 @@
+# Claims for Mah, Schiereck, Bossio & Constantinople (2023) on dandiset 001169.
+# Source: the full text, open access (Nature Communications 14:7573; PMC10663503), read from its
+# Results, figure legends and Methods, and the paper's analysis code
+# (github.com/constantinoplelab/published, rat_behavior, commit b7b68ca).
+#
+# When these criteria were written, the author had seen the data check only: the file list and
+# metadata, the per-rat counts of sessions and trials (291 rats, median 71 sessions and 33,493
+# trials), the sex of each subject (184 M, 107 F), the reward volumes, block codes, training
+# stage and catch probabilities in the files, the duplicated session of rat L011, and that the
+# 16 rats of Figure 5 have sessions flagged with the task argument `center_port_cue`. The author
+# had also read one rat's struct in the Zenodo deposit to see its fields. No claim's analysis
+# had been run.
+#
+# Method choices fixed here. Where the Methods leave a choice open, the paper's code settles it;
+# where the Methods and the code disagree, the Methods give the main result and the code's
+# choice is shown as a variant. Per rat, as in the code: wait times are the files' thresholded
+# `wait_time` on catch trials the rat opted out of; trial initiation times are
+# `inter_trial_interval` with values above the rat's pooled 99th percentile removed; rewards of
+# female rats (4 to 64 uL) are treated as 5 to 80 uL; blocks are mixed, high and low; sessions
+# are in order of their start time and the duplicated L011 session is counted once.
+#
+# Tolerances. Counts of records the dandiset should hold exactly (rats, sessions, trials, sexes)
+# have tolerance 0, as they count the same records. The "~10 percent" of fig1f-wait-time-block
+# is given with 2.5 percentage points, as the text states it as an approximation. Other numbers
+# use 10% of the reported value. Reported p-values are not tolerances; the criteria name the
+# test and its threshold, and the notes compare the magnitudes.
+schema_version: 1
+dandiset: "001169"
+paper: doi:10.1038/s41467-023-43250-x
+claims:
+- id: dataset-counts
+  statement: Data from 291 Long-Evans rats (184 male, 107 female), with a median of 71 sessions and
+    33,493 trials per rat.
+  source: Results, first section; Methods, Subjects
+  expected:
+  - quantity: rats
+    value: 291
+    tolerance: 0
+  - quantity: median sessions per rat
+    value: 71
+    tolerance: 0
+  - quantity: median trials per rat
+    value: 33493
+    tolerance: 0
+  - quantity: male rats
+    value: 184
+    tolerance: 0
+  - quantity: female rats
+    value: 107
+    tolerance: 0
+  criterion: Counted from the files, each session once. Reproduced when every count matches.
+    Partially reproduced when the rats match and a median differs by less than 10%. The paper
+    also gives 160 male and 114 female rats (Methods, Training for male and female rats); that
+    figure is reported against the data as well.
+- id: zenodo-link
+  statement: The dandiset holds the paper's processed per-rat data (A_Structs_Final in the Zenodo
+    deposit) for every rat, session and trial, with the same values.
+  source: Data availability; Zenodo 10.5281/zenodo.10031483
+  data: with_inputs
+  criterion: Rats are matched by identifier and sessions by their order and trial counts (the
+    structs keep session dates as MATLAB datetime objects that are not read here). Reproduced
+    when all 291 rats match in session count and per-session trial counts and the trial values
+    used here (reward, block, catch, violation, rewarded, opt-out, wait time, trial initiation
+    time) are equal for every trial, up to float rounding. Partially reproduced when at least
+    90% of rats match in full. The structs' catch probability is compared with the raw trials'
+    catch_percentage, which the analysis uses in its place.
+- id: fig1f-wait-time-block
+  statement: Rats waited about 10% less for 20 uL in high blocks than in low blocks (p = 8.26e-49,
+    two-tailed Wilcoxon signed-rank test, N = 291).
+  source: Results, first section; Figure 1d to 1f
+  expected:
+  - quantity: reduction of wait time for 20 uL, high against low blocks
+    value: 10
+    tolerance: 2.5
+    unit: percent
+  criterion: Per rat, the mean wait time on 20 uL catch trials in high and in low blocks. Two
+    readings of the reduction; (a) one minus the mean over rats of the ratio high/low (the
+    line in Figure 1f), (b) one minus the ratio of the population means. Reproduced when one
+    reading is within tolerance and a two-tailed signed-rank test across rats finds high below
+    low at p < 0.05, using per-rat means of z-scored wait times as the Methods state (the
+    code's test on raw means is a variant). Partially reproduced when the test holds and no
+    reading is within tolerance.
+- id: fig1i-initiation-block
+  statement: Rats initiated trials more quickly in high than in low blocks (p = 1.82e-49, two-tailed
+    Wilcoxon signed-rank test, N = 291).
+  source: Results, first section; Figure 1g to 1i
+  criterion: Per rat, the mean trial initiation time over all trials in high and in low blocks.
+    Reproduced when a two-tailed signed-rank test across rats on per-rat means of z-scored
+    times (Methods) finds high below low at p < 0.05. The code's test on raw means and the
+    mean ratio high/low are shown as variants.
+- id: figs2-unrewarded-drive
+  statement: Block sensitivity of trial initiation times is largely driven by initiation times that
+    follow unrewarded trials.
+  source: Results, first section; Supplementary Fig. 2; Methods
+  criterion: As FigureS2.m, per rat the mean z-scored initiation time in low minus high blocks,
+    separately for trials that follow a rewarded and an unrewarded trial. Reproduced when the
+    post-unrewarded difference is larger than the post-rewarded one by a two-sided signed-rank
+    test at p < 0.05, with a larger median.
+- id: figs12-no-sex-difference
+  statement: Male and female rats did not differ in their contextual effects (wait time and trial
+    initiation time ratios).
+  source: Methods, Training for male and female rats; Supplementary Fig. 12
+  criterion: A claim of absence, judged on the code's test (FigureS12.m), a two-sided Wilcoxon
+    rank-sum test of the per-rat wait time ratio (20 uL, high/low) and of the initiation time
+    ratio (high/low) between males and females. Reproduced when neither test has p < 0.05.
+- id: fig2a-wait-time-converges
+  statement: At transitions from high or low blocks into mixed blocks, wait times converge to a
+    common value regardless of the previous block.
+  source: Results, second section; Figure 2a
+  criterion: Per rat, the code's change in z-scored wait time around transitions (block_dynamics_wt,
+    20 trials either side, 10-point smoothing), for low-to-mixed minus high-to-mixed. The
+    difference before the switch is its mean over trials -20 to -6, after the switch its mean
+    over trials +11 to +20, each averaged over rats. Reproduced when the after/before ratio is
+    at most 0.25; partially reproduced when it is above 0.25 and at most 0.5; not reproduced
+    above 0.5.
+- id: fig2b-initiation-previous-block
+  statement: Trial initiation times in mixed blocks depend strongly on the previous block, unlike
+    wait times.
+  source: Results, second section; Figure 2b; Supplementary Fig. 4
+  criterion: The same measure with the code's initiation time dynamics (block_dynamics_latency,
+    detrended within sessions). Reproduced when the after/before ratio is at least 0.25 and the
+    per-rat after-switch difference is above zero by a two-sided signed-rank test at p < 0.05.
+    Partially reproduced when the test holds and the ratio is below 0.25.
+- id: fig2cd-regression-kernels
+  statement: Wait times are explained by the current reward, while trial initiation times reflect
+    an exponentially weighted effect of previous rewards.
+  source: Results, second section; Figure 2c and 2d
+  criterion: Regressions in mixed blocks as in the Methods; wait times of catch trials (z-scored)
+    on the current and 9 previous log2 rewards, initiation times (z-scored) on 9 previous log2
+    rewards with rewards of unrewarded trials set to 0, each with a constant. Reproduced when,
+    across rats, the wait time coefficient of the current reward is above zero and the
+    initiation time coefficient of the previous reward is below zero (two-sided signed-rank, p
+    < 0.05 each), the mean wait time coefficient one trial back is under a quarter of the
+    current one in magnitude, and the mean initiation time coefficients fall in magnitude from
+    1 to 3 to 6 trials back. Partially reproduced when the wait time or the initiation time
+    part holds, not both. The code's 10 previous rewards for initiation times are a variant.
+- id: fig2e-tau-differ
+  statement: The time constants of exponentials fit to the previous-reward coefficients differ
+    between trial initiation and wait times (p = 1.30e-49, two-tailed signed-rank test, N = 291).
+  source: Results, second section; Figure 2e
+  depends_on:
+  - fig2cd-regression-kernels
+  criterion: Per rat, the coefficients from the first one whose 95% CI contains 0 are set to 0
+    and an exponential is fit to the lags as in regress_*_vs_rew.m (tau 0 when all previous
+    coefficients are 0). Reproduced when the initiation time taus exceed the wait time taus by
+    a two-sided signed-rank test at p < 0.05, with a larger median.
+- id: fig2f-tau-uncorrelated
+  statement: The time constants of trial initiation and wait times are not correlated across rats
+    (Pearson; r = -0.03, p = 0.53 in the legend; r = 0.08, p = 0.18 in the text; N = 291).
+  source: Results, second section; Figure 2f
+  depends_on:
+  - fig2e-tau-differ
+  criterion: A claim of absence, judged on the paper's test, a Pearson correlation of the two taus
+    across rats. Reproduced when p >= 0.05; not reproduced when p < 0.05. The value of r is
+    given either way.
+- id: fig2gh-fast-slow-groups
+  statement: Rats with fast and slow trial initiation time constants (below the 20th or above the
+    80th percentile) differ in their initiation time coefficients (p = 0.02, one-tailed
+    permutation test, N = 116) but not in their wait time coefficients (p = 0.1).
+  source: Results, second section; Figure 2g and 2h
+  depends_on:
+  - fig2e-tau-differ
+  criterion: As myTauShuffleTest.m, the difference of taus fit to the two groups' mean coefficients
+    against 500 random splits of the same rats, with the code's p-value. Reproduced when the
+    initiation time p < 0.05 and the wait time p >= 0.05; partially reproduced when one of the
+    two holds. The group size is reported against N = 116.
+- id: fig2j-wait-time-previous-reward
+  statement: For most rats (253 of 291), wait times for 20 uL in mixed blocks did not differ with
+    the previous reward offer; 38 rats had p < 0.05, and the population p = 0.8.
+  source: Results, second section; Figure 2j
+  expected:
+  - quantity: rats with p < 0.05 (two-tailed rank-sum, previous offer below against above 20 uL)
+    value: 38
+    tolerance: 3.8
+  criterion: As waittime_20ul_by_previous_vol.m, z-scored wait times on 20 uL catch trials in mixed
+    blocks, split by the previous trial's offer. The population part is a claim of absence,
+    judged on the legend's test, a two-tailed Wilcoxon rank-sum test of the per-rat means (the
+    code's signed-rank test is a variant). Reproduced when the count is within tolerance and the
+    population test has p >= 0.05; partially reproduced when one of the two holds.
+- id: fig2k-initiation-previous-reward
+  statement: For 89% of rats (256 of 291) trial initiation times in mixed blocks were modulated by
+    the previous reward (p < 0.05 each); population p = 1.84e-49.
+  source: Results, second section; Figure 2k
+  expected:
+  - quantity: rats with p < 0.05 (two-tailed rank-sum, previous offer below against above 20 uL)
+    value: 256
+    tolerance: 25.6
+  criterion: Z-scored initiation times in mixed blocks split by the previous offer. The Methods use
+    trials offering 20 uL; the code uses all mixed-block trials (variant). Reproduced when the
+    count is within tolerance and the legend's population test (two-tailed rank-sum of per-rat
+    means) finds slower initiation after offers below 20 uL at p < 0.05; partially reproduced
+    when one of the two holds.
+- id: fig2l-sensitivity-differs
+  statement: Sensitivity to the previous offer is larger for trial initiation times than for wait
+    times (p = 6.21e-38, two-tailed signed-rank test, N = 291).
+  source: Results, second section; Figure 2l
+  depends_on:
+  - fig2j-wait-time-previous-reward
+  - fig2k-initiation-previous-reward
+  criterion: Sensitivity is the mean after offers below 20 uL minus the mean after offers above,
+    per rat, from the two claims above. Reproduced when the initiation time sensitivity exceeds
+    the wait time sensitivity by a two-sided signed-rank test at p < 0.05.
+- id: fig3c-catch-probability
+  statement: Wait times in mixed blocks depend in a graded way on the catch probability, as the
+    wait time model predicts; the cohorts held 3, 183, 61, 151 and 39 rats at catch probabilities
+    0.1, 0.15, 0.2, 0.25 and 0.35.
+  source: Results, third section; Figure 3c; Methods, Statistical analyses
+  expected:
+  - quantity: rats at catch probability 0.1
+    value: 3
+    tolerance: 0.3
+  - quantity: rats at catch probability 0.15
+    value: 183
+    tolerance: 18.3
+  - quantity: rats at catch probability 0.2
+    value: 61
+    tolerance: 6.1
+  - quantity: rats at catch probability 0.25
+    value: 151
+    tolerance: 15.1
+  - quantity: rats at catch probability 0.35
+    value: 39
+    tolerance: 3.9
+  criterion: As Figure3.m, catch trials in mixed blocks after each rat's first 1000 trials, mean
+    wait time per rat for each reward and catch probability, averaged over rats; a rat counts
+    for a probability when it has such trials. The model (Equation 1) predicts shorter waits at
+    higher catch probability. Reproduced when the counts are within tolerance and the mean over
+    rewards of the population wait times falls strictly from 0.15 to 0.2 to 0.25 to 0.35;
+    partially reproduced when one of the two holds. A second reading of the counts, rats with
+    any trial at that probability, is also shown.
+- id: fig3j-model-comparison
+  statement: Wait times are better fit by the inferential model, which uses hidden state inference,
+    than by the retrospective model (BIC, p = 1.07e-37, two-tailed signed-rank test, N = 291).
+  source: Results, third section; Figure 3j; Supplementary Fig. 8
+  criterion: Both models as in the generative code (GenerateSynthData_Bayes.m and
+    GenerateSynthData_AlphaPHModel.m), fit per rat by maximum likelihood to catch-trial wait
+    times in all blocks under log-normal noise of variance 8, with beliefs and the running
+    average updated over all non-violation trials. The inferential model is fit from 20 random
+    starts, the retrospective one on a grid of 40 baseline learning rates refined locally.
+    BIC = k log(n) + 2 nLL, with n the number of fitted trials. Reproduced when BIC is lower for
+    the inferential model by a two-sided signed-rank test at p < 0.05, with a positive median
+    difference (retrospective minus inferential).
+- id: figs9-misinference
+  statement: Wait times in mixed blocks reflect mistaken inferences; wait times for 20 uL are shorter
+    when the inferential model infers a high block than when it infers a low block (p << 0.001,
+    signed-rank test, N = 291).
+  source: Results, third section; Supplementary Fig. 9
+  criterion: The inferred block is the most probable block of the inferential model, which does not
+    depend on its fitted parameters. As FigureS9.m, per rat the mean wait time on 20 uL catch
+    trials in mixed blocks inferred as high and as low. Reproduced when inferred high is below
+    inferred low by a two-sided signed-rank test at p < 0.05.
+- id: fig3l-inference-quality
+  statement: Rats with good and poor inference (lambda above the 80th or below the 20th percentile)
+    differ in wait time dynamics at transitions from mixed into low or high blocks, but not in
+    trial initiation time dynamics.
+  source: Results, third section; Figure 3l (mixed to low slope p = 0.02, mixed to high right
+    asymptote p = 0.003; trial initiation p = 0.15 and 0.21)
+  depends_on:
+  - fig3j-model-comparison
+  criterion: Lambda fit per rat with the suboptimal-prior model (GenerateSynthData_Bayes_subopt_onlylambda_flat.m)
+    on a grid of 11 values from 0 to 1, the other parameters refit at each. Groups below the 20th
+    and above the 80th percentile (Methods and legend; the code's 40th and 60th are a variant).
+    Logistic fits to the group means of the code's transition dynamics (30 trials either side,
+    the central 41 trials fit) and 500 label shuffles, with the code's p-value (myLambdaShuffleTest.m).
+    Reproduced when, for wait times, the slope (mixed to low) or the right asymptote (mixed to
+    high) differs at p < 0.05 and, for initiation times, neither does; partially reproduced when
+    one of the two parts holds.
+- id: fig3h-dynamic-learning-rate
+  statement: A retrospective model of trial initiation times needs a learning rate scaled by changes
+    in the inferred block to capture both the slow and fast dynamics at block transitions; a
+    static or RPE-scaled learning rate does not.
+  source: Results, third section; Figure 3g to 3i; Supplementary Fig. 7
+- id: fig4a-wait-ratio-learning
+  statement: Over training in the final stage, the wait time ratio (20 uL, high/low) fell gradually
+    toward its final value, while the trial initiation time ratio was below 1 from the first
+    session.
+  source: Results, fourth section; Figure 4a
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.10031483 (A_Structs_all)
+  criterion: As macro_regress_overtraining_V2.m, the first 50 sessions per rat in pairs, ratios from
+    regress_trials_blocksv2.m (non-violation trials). Reproduced when the per-rat initiation time
+    ratio of the first pair is below 1 (two-sided signed-rank against 1, p < 0.05) and the wait
+    time ratio of the first pair is above its mean over pairs 16 to 25 (two-sided signed-rank, p <
+    0.05); partially reproduced when one of the two holds.
+- id: fig4bc-regression-learning
+  statement: Over training, the block and reward coefficients for wait times grew gradually, while
+    the previous-reward coefficient for trial initiation times was comparable early and late.
+  source: Results, fourth section; Figure 4b and 4c
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.10031483 (A_Structs_all)
+  criterion: Coefficients from regress_trials_blocksv2.m per session pair. Reproduced when the
+    magnitudes of the wait time block and reward coefficients are larger in pairs 16 to 25 than in
+    the first pair (two-sided signed-rank, p < 0.05 each), and the population mean of the initiation
+    time coefficient over the last 50 sessions is within a factor of 1.5 of its mean over the first
+    50; partially reproduced when the wait time part or the initiation time part holds, not both.
+- id: fig4de-overshoot-learning
+  statement: The overshoot of trial initiation times after high-to-mixed transitions grew with
+    training, on a timescale similar to the block sensitivity of wait times.
+  source: Results, fourth section; Figure 4d and 4e
+- id: fig5b-precue-offer
+  statement: With the reward cue played before trial initiation, trial initiation times became
+    sensitive to the offered reward.
+  source: Results, fifth section; Figure 5b
+  criterion: Sessions flagged with center_port_cue true. Per rat, the slope of z-scored initiation
+    time against log2 offer in mixed blocks. Reproduced when the slopes in cue sessions are below
+    zero (two-sided signed-rank, p < 0.05) and, for rats with sessions of the original task,
+    below their slopes there (post-violation trials excluded in the original task, as the
+    Methods state; two-sided signed-rank, p < 0.05). Partially reproduced when only the first part
+    holds.
+- id: fig5c-precue-previous-reward
+  statement: In the pre-initiation cue task, trial initiation times for 20 uL in mixed blocks were
+    still modulated by the previous reward (p < 0.05 for 13 of 16 rats; population p = 1.03e-4,
+    two-tailed rank-sum test).
+  source: Results, fifth section; Figure 5c
+  expected:
+  - quantity: rats with p < 0.05
+    value: 13
+    tolerance: 1.3
+  criterion: All cue sessions in the dandiset (the dandiset holds only sessions that passed the
+    inclusion criteria, so the paper's 30-session wait after the switch cannot be counted as it
+    did; dropping each switched rat's first 30 cue sessions here is a variant). Per rat, the
+    initiation times of trials offering 20 uL in mixed blocks split by the previous offer, as in
+    fig2k-initiation-previous-reward. Reproduced when the count is within tolerance and the
+    population rank-sum test finds slower initiation after offers below 20 uL at p < 0.05;
+    partially reproduced when one of the two holds.
+- id: fig5d-precue-previous-block
+  statement: In the pre-initiation cue task, trial initiation times in mixed blocks still depended on
+    the previous block.
+  source: Results, fifth section; Figure 5d
+  criterion: The measure of fig2b-initiation-previous-block on the cue sessions. Reproduced when the
+    after/before ratio is at least 0.25 and the per-rat after-switch difference is above zero by a
+    two-sided signed-rank test at p < 0.05; partially reproduced when the test holds and the ratio
+    is below 0.25.
