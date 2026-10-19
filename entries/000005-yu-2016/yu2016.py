@@ -18,7 +18,9 @@ file is reduced on loading to spike times, the whisker variables of the principa
 touch times and light epochs.
 
 The paper's full text is not open access and no analysis code is linked by the paper or the
-dandiset, so every parameter below is a common choice made here, not the paper's:
+dandiset. Its supplementary figure legends and tables are public; they fix a few things (the
+spike-phase fit and its r2 > 0.25 cut-off, the opsins, the cell counts per mouse line) but give no
+windows or thresholds, so every parameter below is a common choice made here, not the paper's:
 
 - Spikes. Whole-cell recordings (median Vm below -20 mV): peaks with a prominence of at least
   `WC_PROMINENCE_MV` and a maximum rate of rise of at least `WC_MIN_DVDT` in the 1 ms before
@@ -40,7 +42,11 @@ dandiset, so every parameter below is a common choice made here, not the paper's
   observed amplitude exceeds the null with p < `ALPHA_CELL` (see `phase_modulation`). The
   Rayleigh test of spike phases (`rayleigh_p`) and 2 x vector strength x rate
   (`whisk_mod_raw_vs_hz`) are kept as the first, uncorrected version: phase occupancy is not
-  uniform, so the Rayleigh test finds modulation in spikes moved to the wrong trial.
+  uniform, so the Rayleigh test finds modulation in spikes moved to the wrong trial. The r2 of a
+  single sinusoid fitted to rate against phase (`whisk_r2`) is the paper's measure; the paper
+  counts a cell as phase-modulated when r2 > 0.25 (Supp. Fig. 2e), which is shown as a variant.
+- Touch-evoked membrane potential (whole-cell only, `vm_touch_response`): the trace 5 to 30 ms
+  after each touch onset minus 10 to 0 ms before it, after a 3 ms running median.
 """
 
 from __future__ import annotations
@@ -61,7 +67,7 @@ from scipy import signal, stats
 DANDISET_ID = "000005"
 DANDISET_VERSION = "0.220126.1853"
 
-VM_HZ = 10_000             # most files; files from September 2015 on are at 20 kHz
+VM_HZ = 10_000             # most files; files from late August 2015 on are at 20 kHz
 WHISK_HZ = 1_000
 ANALYSIS_END_S = 5.0
 WC_PROMINENCE_MV = 20.0
@@ -364,7 +370,42 @@ def load_icephys(asset):
         rec["fwhm_ms"], rec["peak_trough_ms"], rec["mean_wave"] = np.nan, np.nan, None
     rec["whiskers"] = {k_: _reduce_whisker(w, trials) for k_, w in whiskers.items()}
     rec["principal"] = next((k_ for k_, w in whiskers.items() if w["principal"]), None)
+    if mode == "whole-cell" and rec["principal"] is not None:
+        w = whiskers[rec["principal"]]
+        lit = light_trials(rec)
+        on_t = w["t"][w["touch_on"]]
+        on_t = on_t[~lit[np.clip(per_trial_index(on_t, trials), 0, None)] & (per_trial_index(on_t, trials) >= 0)]
+        rec.update(vm_touch_response(v, vt, tri, rel, fs, on_t))
+    else:
+        rec.update(vm_touch_n=0, vm_touch_mv=np.nan, vm_touch_p=np.nan)
+    g = f["general"]
+    rec["general_fields"] = sorted(g.keys())
+    rec["subject_fields"] = sorted(g["subject"].keys())
+    rec["ic_location"] = next((_str(g["intracellular_ephys"][k]["location"]) for k in g["intracellular_ephys"]
+                               if "location" in g["intracellular_ephys"][k]), "")
     return rec
+
+
+def vm_touch_response(v, vt, tri, rel, fs, touch_times):
+    """Touch-evoked change of membrane potential in a whole-cell trace: for each touch onset, the
+    mean of the trace 5 to 30 ms after it minus that 10 to 0 ms before it, after a 3 ms running
+    median that removes spikes; a one-sided Wilcoxon signed-rank test over touches. Used only to
+    tell cells (and mice) with a touch input from those without, as after ION transection."""
+    from scipy.ndimage import median_filter
+    pre, post = int(0.010 * fs), int(0.030 * fs)
+    a0 = int(0.005 * fs)
+    d = []
+    for t in touch_times:
+        i = int(np.searchsorted(vt, t))
+        if i - pre < 0 or i + post >= len(v) or tri[i - pre] != tri[i] or tri[i + post] != tri[i] or rel[i + post] >= ANALYSIS_END_S:
+            continue
+        seg = median_filter(v[i - pre:i + post], size=int(0.003 * fs) | 1, mode="nearest")
+        d.append(seg[pre + a0:].mean() - seg[:pre].mean())
+    d = np.array(d)
+    if len(d) < 5:
+        return {"vm_touch_n": int(len(d)), "vm_touch_mv": np.nan, "vm_touch_p": np.nan}
+    return {"vm_touch_n": int(len(d)), "vm_touch_mv": float(np.median(d)),
+            "vm_touch_p": float(stats.wilcoxon(d, alternative="greater").pvalue)}
 
 
 def _reduce_whisker(w, trials):
@@ -439,7 +480,7 @@ def phase_modulation(spike_idx, phase, whisk, tri, rel_window_used=False):
     used = np.unique(tri[whisk])
     if len(used) < 2 or len(spike_idx) == 0:
         return {"whisk_amp_raw_hz": np.nan, "whisk_null_median_hz": np.nan, "whisk_mod_hz": np.nan,
-                "whisk_p": np.nan, "n_null": 0}
+                "whisk_p": np.nan, "n_null": 0, "whisk_r2": np.nan}
     ks, first, cnt = np.unique(tri, return_index=True, return_counts=True)
     pos = np.searchsorted(ks, used)
     starts, lengths = first[pos], cnt[pos]
@@ -460,13 +501,21 @@ def phase_modulation(spike_idx, phase, whisk, tri, rel_window_used=False):
     ok = offs < L
     rows, offs = rows[ok], offs[ok]
 
-    def amp(r, o):
+    def rate_of(r, o):
         bb = M[r, o]
         c = np.bincount(bb[bb >= 0], minlength=PHASE_BINS)
-        rate = np.where(occ > 0, c / np.where(occ > 0, occ, 1), 0.0)
-        return 2 * np.abs(np.mean(rate * np.exp(1j * centers)))
+        return np.where(occ > 0, c / np.where(occ > 0, occ, 1), 0.0)
+
+    def amp(r, o):
+        return 2 * np.abs(np.mean(rate_of(r, o) * np.exp(1j * centers)))
 
     obs = amp(rows, offs)
+    # Goodness of fit of a single sinusoid to rate against phase (the paper's measure, Supp.
+    # Figs. 2e, 7g): with equally spaced bins the fitted sinusoid holds PHASE_BINS * A**2 / 2
+    # of the sum of squares about the mean, A being the first-harmonic amplitude.
+    rate = rate_of(rows, offs)
+    ss = np.sum((rate - rate.mean()) ** 2)
+    r2 = float(PHASE_BINS * obs ** 2 / 2 / ss) if ss > 0 else np.nan
     n = len(used)
     offsets = [0] if rel_window_used else [0, L // 4, L // 2, 3 * L // 4]
     null = []
@@ -478,17 +527,21 @@ def phase_modulation(spike_idx, phase, whisk, tri, rel_window_used=False):
     null = np.array(null)
     if len(null) == 0:
         return {"whisk_amp_raw_hz": obs, "whisk_null_median_hz": np.nan, "whisk_mod_hz": np.nan,
-                "whisk_p": np.nan, "n_null": 0}
-    return {"whisk_amp_raw_hz": float(obs), "whisk_null_median_hz": float(np.median(null)),
+                "whisk_p": np.nan, "n_null": 0, "whisk_r2": r2}
+    return {"whisk_amp_raw_hz": float(obs), "whisk_r2": r2, "whisk_null_median_hz": float(np.median(null)),
             "whisk_mod_hz": float(max(obs - np.median(null), 0.0)),
             "whisk_p": float((1 + np.sum(null >= obs)) / (1 + len(null))), "n_null": int(len(null))}
 
 
-def response_measures(spikes, rec, trial_mask=None, time_window=None):
+def response_measures(spikes, rec, trial_mask=None, time_window=None, isolated_touch_s=0.0):
     """Touch response, whisking modulation and rates for one cell.
 
     trial_mask: boolean per trial, the trials to use. time_window: per-trial (start, stop) in
     seconds after the trial start, the part of each trial to use (for light epochs).
+    isolated_touch_s: when above 0, only touch onsets of the principal whisker with no other
+    onset in the preceding span enter the touch response (a variant; the pre-touch window can
+    otherwise hold the response to the previous touch of a bout). Touch windows that cross a
+    trial boundary are left out.
     """
     w = rec["whiskers"][rec["principal"]]
     t, amp, phase, tri = w["t"], w["amp"], w["phase"], w["trial"]
@@ -531,11 +584,16 @@ def response_measures(spikes, rec, trial_mask=None, time_window=None):
     on = w["touch_on"]
     on = on[use[on]]
     win = int(TOUCH_WIN_S * WHISK_HZ)
+    if isolated_touch_s > 0:
+        prev = np.r_[np.inf, np.diff(w["touch_on"])][np.searchsorted(w["touch_on"], on)]
+        on = on[prev > isolated_touch_s * WHISK_HZ]
     on = on[(on >= win) & (on < n - win)]
+    on = on[(tri[on - win] == tri[on]) & (tri[on + win - 1] == tri[on])]   # windows inside the trial
     cs = np.r_[0, np.cumsum(count)]
     post = cs[on + win] - cs[on]
     pre = cs[on] - cs[on - win]
     out["n_touches"] = int(len(on))
+    out["touch_spikes_post"], out["touch_spikes_pre"] = int(post.sum()), int(pre.sum())
     out["touch_post_hz"] = post.mean() / TOUCH_WIN_S if len(on) else np.nan
     out["touch_pre_hz"] = pre.mean() / TOUCH_WIN_S if len(on) else np.nan
     out["touch_resp_hz"] = out["touch_post_hz"] - out["touch_pre_hz"] if len(on) else np.nan
@@ -634,3 +692,28 @@ def shift_spikes(spikes, trials, by=1):
     k = per_trial_index(spikes, trials)
     ok = (k >= 0) & (k + by < len(starts))
     return spikes[ok] - starts[k[ok]] + starts[k[ok] + by]
+
+
+# --------------------------------------------------------------------------- the paper's supplement
+
+SUPPLEMENT_URL = ("https://media.springernature.com/original/springer-static/esm/art%3A10.1038%2Fnn.4412/"
+                  "MediaObjects/41593_2016_BFnn4412_MOESM61_ESM.pdf")
+# Mouse line IDs of Supplementary Table 2, named from the JAX stock numbers given there:
+# 014548 VGAT-ChR2-EYFP, 017320 PV-IRES-Cre, 012569 Ai32, 012355 PV-ChR2, 013044 SOM-IRES-Cre.
+LINES = {1: "VGAT-ChR2-EYFP", 2: "PV-IRES-Cre", 3: "PV-IRES-Cre x Ai32", 4: "C57BL/6", 5: "PV-ChR2",
+         6: "SOM-IRES-Cre x Ai32"}
+
+
+def supplement_mouse_lines():
+    """The mouse line of each mouse, read from Supplementary Table 1 of the paper (the PDF
+    supplement on the publisher's site, part of doi:10.1038/nn.4412)."""
+    import io
+    import re
+    import pypdf
+    r = requests.get(SUPPLEMENT_URL, timeout=120)
+    r.raise_for_status()
+    text = "\n".join(p.extract_text() or "" for p in pypdf.PdfReader(io.BytesIO(r.content)).pages)
+    rows = re.findall(r"^(\d{6}) (\d) ", text, re.M)
+    if len(rows) == 0:
+        raise ValueError("Supplementary Table 1 not found in the supplement")
+    return pd.DataFrame({"subject": ["anm" + a for a, _ in rows], "line": [LINES[int(b)] for _, b in rows]})
