@@ -76,11 +76,13 @@ ALPHAS = np.logspace(-1, 6, 29)
 # --- archive --------------------------------------------------------------------------------
 
 def draft_info() -> dict:
-    """The draft's modification time and its assets (path, asset id, size)."""
+    """The draft's modification time, keywords and description, and its assets (path, asset id, size)."""
     with DandiAPIClient() as client:
         ds = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
         assets = {a.path: (a.identifier, a.size) for a in ds.get_assets()}
-        return {"modified": str(ds.version.modified), "assets": assets}
+        meta = ds.get_raw_metadata()
+        return {"modified": str(ds.version.modified), "assets": assets,
+                "keywords": meta.get("keywords", []), "description": meta.get("description", "")}
 
 
 def check_assets(info: dict) -> list[str]:

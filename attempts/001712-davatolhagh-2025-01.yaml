@@ -29,8 +29,8 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: Needs mice of both genotypes. The dandiset holds one mouse (FD-28), and its genotype is not
-    in the files, the dandiset metadata, or the public IBL database (openalyx subject FD_28 has an
-    empty genotype list). Openalyx holds other sessions of the cohort's FD and MFD mice, but is a
+    in the files or the dandiset metadata, nor in the public IBL database (openalyx subject FD_28 has an
+    empty genotype list, from a query made by hand during the attempt and not part of the notebook). Openalyx holds other sessions of the cohort's FD and MFD mice, but is a
     live database without a pinned version and also has no genotypes.
 - claim: fig1e-rt-contrast
   outcome: not_reproduced
@@ -39,13 +39,15 @@ outcomes:
   notes: Over 750 trials with a movement onset after the stimulus, the Spearman correlation of
     absolute contrast with reaction time is -0.053 (p = 0.15); the median at 0% (0.089 s) exceeds that
     at 100% (0.081 s), the second part of the criterion. Medians are 0.081 to 0.095 s at every
-    contrast, and 161 trials have no movement onset after the stimulus (151 of 899 onsets precede the
-    go cue). With reaction times above 0.15 s only (226 trials) the correlation is -0.226 (p =
+    contrast, and 161 trials have no movement onset after the stimulus (149 with an onset at or before
+    it and 12 with no onset). With reaction times above 0.15 s only (226 trials) the correlation is -0.226 (p =
     0.00062), so the relation appears among slower responses. Of the 899 onsets, 149 fall at or
     before the stimulus and 346 within 0.08 s after it, so many may mark movements begun before the
     stimulus could guide them. The response time (choice registration minus stimulus onset) is
     shorter at higher contrast over all 911 choice trials (rho -0.134, p = 5.2e-05; medians 0.326 s
-    at 0% and 0.281 s at 100%), a variant that does not decide the outcome.
+    at 0% and 0.281 s at 100%), a variant that does not decide the outcome. The paper's text calls reaction time the time to
+    first movement and does not say how that movement is detected or how earlier movements are
+    treated.
   deviations:
   - One session of one mouse.
   - Trials with a movement onset at or before the stimulus onset are left out; the paper does not
@@ -106,7 +108,12 @@ outcomes:
     stimulus, while the median movement onset is 0.086 s. Only 27 trials (13 right, 14 left) have no
     movement before 0.4 s; on them the difference at the two pixels points the same way (p = 0.02
     and 0.091), but a masked peak search on these trials alone puts the peaks on the reverse sides
-    (columns 550 and 72, p = 0.0062 and 0.012). Neither VISp nor the hemispheres can be named without
+    (columns 550 and 72, p = 0.0062 and 0.012), which is not explained here. The slow trials exclude
+    only wheel movement. In the same window paw speed and camera motion energy rise on 0.90 to 0.96
+    of all trials at 25 or 100% contrast, and wheel velocity, the right paw in both side cameras and
+    the left camera's motion energy differ between right and left stimulus trials (p = 0.0005 or
+    less); on the 27 slow trials paw speed rises on 0.44 to 0.78 of trials and the right paw in the
+    right camera still differs by side (p = 0.014). Neither VISp nor the hemispheres can be named without
     an atlas registration.
   deviations:
   - Tested in image coordinates, with a midline estimated from the mean image, as the dandiset has no
@@ -140,8 +147,12 @@ outcomes:
     of the left and right cameras added, as in the paper (encoding_all_cameras.ipynb), cvR2 is 0.574
     (a) and 0.525 (b), within the range, and 0.208 (c). With folds that keep each trial's frames
     together and each frame once per trial, it is 0.422, 0.363 and 0.047 with the body camera only,
-    and 0.472, 0.405 and 0.046 with all three cameras, below the range. Over brain pixels (the mask
-    of the fig3b variant) reading (b) is 0.434.
+    and 0.472, 0.405 and 0.046 with all three cameras, below the range. Over the masked pixels of the fig3b variant (pixels brighter than the median of
+    the mean image and 20 or more from the edge) reading (b) is 0.434. The paper's Results give 0.60
+    and 0.54 as the full model's cvR2 and say it accounts for more than half of the variance, while
+    its Figure 4C legend says the full model is shown with the trial time regressor subtracted out.
+    Under that reading the values here are 0.123 and 0.133 (a, b) with the body camera and 0.226 and
+    0.236 with all three cameras, far below the range.
   deviations:
   - One session of one mouse of unknown genotype; the expected range spans the WT and KO means.
   - No video components from the left and right cameras in the design that decides the outcome
@@ -184,12 +195,12 @@ outcomes:
 findings:
 - kind: data_missing
   statement: The dandiset holds one session of one mouse (sub-FD-28). The paper analyses 10 sessions
-    from each of 11 wild-type and 8 Nrxn1a knockout mice, and the dandiset's conversion code lists 17
-    session ids for 19 mice. Eleven of the paper's findings, all comparisons between genotypes, cannot
+    from each of 11 wild-type and 8 Nrxn1a knockout mice. Eleven of the paper's findings, all comparisons between genotypes, cannot
     be tested.
 - kind: metadata_insufficient
   statement: The genotype of the mouse is not given in the NWB files, the dandiset metadata, or the
-    public IBL database (subject FD_28 has an empty genotype list). The subject description is the
+    public IBL database (subject FD_28 has an empty genotype list, from a query made by hand during
+    the attempt). The subject description is the
     paper's general description of the cross. A comment in the conversion script lists the session
     under knockout sessions, but next to a note that the list is a placeholder.
 - kind: data_missing
@@ -203,7 +214,7 @@ findings:
   statement: The raw file's imaging planes state an imaging rate of 15 Hz; the timestamps give 31.2 Hz
     per channel (32.03 ms intervals), and the Methods give 30 Hz.
 - kind: metadata_error
-  statement: The dandiset's keywords name "CNTNALP2", which is neither the gene of the paper and the
+  statement: The dandiset's keywords and description name "CNTNALP2", which is neither the gene of the paper and the
     files (Nrxn1a) nor a correct spelling of Cntnap2.
 - kind: metadata_error
   statement: The wheel series state that counter-clockwise is positive, but trials whose choice is
@@ -381,4 +392,158 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Genotype comparison, and no unique-variance model was run.
+    response: No change needed.
+- date: 2026-10-19
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks of the revision (reproduce_davatolhagh_2025.ipynb and
+    encoding_all_cameras.ipynb), the helper module, the claims file and this record. bioRxiv refused
+    its requests and Europe PMC has no full text, so it could not read the paper. It queried the
+    dandiset's metadata from the DANDI API and downloaded no data. It agreed with all 18 outcomes.
+  results:
+  - claim: fig1c-psychometric
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the reproduced outcome.
+    response: No change needed.
+  - claim: fig1d-psychometric-params-genotype
+    agrees: true
+    outcome: blocked
+    reason: There is one subject and no genotype (cell 3). Not backed by any printed output are the
+      record's openalyx "empty genotype list", the Summary's "one of the 17 sessions the conversion
+      code lists for 19 mice", and the statements in cell 4, the Summary and a finding that the
+      dandiset's keywords name "CNTNALP2" (the notebook prints only the file's keywords; the DANDI API
+      shows the draft's keywords and description both say CNTNALP2, so the statement is true).
+    response: The record, the finding and the notebook's introduction now say the openalyx query was
+      made by hand during the attempt and is not part of the notebook; it was not added to the
+      notebook, as openalyx is a live database without a pinned version. The count of 17 sessions was
+      removed from the Summary and the finding. Cell 3 now prints the dandiset's keywords and the gene
+      names in its description from the DANDI API, which name CNTNALP2.
+  - claim: fig1e-rt-contrast
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees under the criterion. In cell 20, rho is -0.053 with p = 0.15. The result depends on
+      the reaction-time floor (p = 0.068 above 0.08 s and p = 0.00062 above 0.15 s), and response time
+      is significant (p = 5.2e-05). The outcome depends on how the trial table's movement onset treats
+      anticipatory movements; the paper's reaction-time definition and its Figure 1E distribution
+      still cannot be checked. In the record's notes, the 161 trials are 149 onsets at or before the
+      stimulus plus 12 with no onset, while the 151 counts onsets before the go cue, so the
+      parenthesis reads as if it explained the 161.
+    response: The parenthesis now gives the 149 and the 12. bioRxiv answered during this revision and
+      the full text is saved under paper/; it calls reaction time the time to first movement and does
+      not say how the movement is detected or how earlier movements are treated, which the conclusion
+      and notes now state. The Figure 1E distribution was not compared, as only the text was read.
+      Outcome kept.
+  - claim: fig1f-rt-genotype
+    agrees: true
+    outcome: blocked
+    reason: One subject and no genotype (cell 3).
+    response: No change needed.
+  - claim: fig1g-learning-genotype
+    agrees: true
+    outcome: blocked
+    reason: One subject and no genotype (cell 3).
+    response: No change needed.
+  - claim: fig2bc-prior-shift
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the reproduced outcome.
+    response: No change needed.
+  - claim: fig2bd-ko-smaller-shift
+    agrees: true
+    outcome: blocked
+    reason: One subject and no genotype (cell 3).
+    response: No change needed.
+  - claim: fig2ef-block-adaptation
+    agrees: true
+    outcome: reproduced
+    reason: The switch bootstrap (cell 29) supports the criterion, with B > A in every draw and tau of
+      40 or more in only 0.018 of draws. Its round-1 reason in the record drops the 9-trial last
+      block, which does not misstate what it said.
+    response: No change needed.
+  - claim: fig2g-ko-slower-adaptation
+    agrees: true
+    outcome: blocked
+    reason: One subject and no genotype (cell 3).
+    response: No change needed.
+  - claim: fig3b-contralateral-visual
+    agrees: true
+    outcome: not_reproduced
+    reason: The criterion's peaks are frame corners (cell 33). In the masked variant the peaks are
+      lateralized (cell 34), but on the 27 slow trials the masked search puts the peaks on the reverse
+      sides (cell 35), so a visual lateralization is not shown. The reversal (columns 550 and 72) is
+      unexplained, and the 0.4 s exclusion uses wheel onset only, so paw and whisker movements are not
+      excluded; the lateralization seen on all trials cannot yet be attributed to the stimulus.
+    response: Added a variant that compares the change of each movement variable over the evoked
+      window between right and left stimulus trials. Over all trials at 25 or 100% contrast paw speed
+      and motion energy rise on 0.90 to 0.96 of trials, and wheel velocity, the right paw in both side
+      cameras and the left camera's motion energy differ by stimulus side (p = 0.0005 or less). On the
+      27 slow trials paw speed rises on 0.44 to 0.78 of trials and the right paw in the right camera
+      still differs by side (p = 0.014). The conclusion and notes state this and that the reversal
+      is not explained. Outcome kept.
+  - claim: fig3c-ko-elevated-activity
+    agrees: true
+    outcome: blocked
+    reason: One subject and no genotype (cell 3).
+    response: No change needed.
+  - claim: fig3d-ko-higher-correlation
+    agrees: true
+    outcome: blocked
+    reason: One subject and no genotype (cell 3). It cannot check the paper_inconsistency finding
+      without the paper.
+    response: Checked against the full text, now saved under paper/. The Figure 3 legend labels two
+      panels (E), says the KO minus WT correlation matrix shows reduced correlations while the Results
+      say they are increased, and describes variance difference maps for panel C, as the finding
+      states.
+  - claim: fig3e-ko-higher-variance
+    agrees: true
+    outcome: blocked
+    reason: One subject and no genotype (cell 3).
+    response: No change needed.
+  - claim: fig4c-full-cvr2
+    agrees: true
+    outcome: partially_reproduced
+    reason: In cell 41, reading (a) is 0.471, above 0.3 but outside 0.486-0.660. The outcome depends
+      on fixed choices. With all three cameras (a) 0.574 and (b) 0.525 fall in the range, but only
+      with the chiCa folds; with trial folds the values are 0.472/0.405. The outcome therefore rests
+      on the claims file's choice, made for runtime, to use the body camera only. If the paper's
+      0.54-0.60 are intercept-subtracted ("with trial time regressor subtracted out"), the comparable
+      values are 0.12-0.13 with the body camera and 0.16-0.24 with all cameras, far below the range.
+      Cell 43 says "Three variants" where four follow, and the record calls the fig3b mask "brain
+      pixels" where it is a brightness and margin heuristic. Cell 10's "the IBL places its side-camera
+      ROI on the whisker pad" is not backed by any printed output. Its round-1 reason in the record omits
+      its tag that B5-B7 did not affect a conclusion.
+    response: Cell 43 now says four variants, and the record describes the mask as pixels brighter
+      than the median of the mean image and 20 or more from the edge. The statement about the IBL's ROI
+      was removed from cell 10; the ROI positions printed against the nose tip and pupil remain. With
+      the paper's text now read,
+      the conclusion and notes quote both the Results (0.60 and 0.54, more than half of the variance)
+      and the Figure 4C legend, and give the subtracted values (0.123 and 0.133 with the body camera,
+      0.226 and 0.236 with all cameras for readings a and b), far below the range under that reading.
+      Outcome kept, as the criterion fixes the body-camera design and the unsubtracted reading.
+  - claim: fig4cd-movement-dominates
+    agrees: true
+    outcome: partially_reproduced
+    reason: In cell 45, movement dR2 exceeds task dR2 under every reading (0.104/0.119/0.067 against
+      0.017/0.015/0.013), and none is in 0.297-0.440. With the body camera only and trial folds,
+      reading (c) gives a movement dR2 of -0.005 against 0.012 for task, which under the criterion
+      would make it not reproduced. With all three cameras and trial folds, movement exceeds task under
+      every reading (0.109/0.115/0.008 against 0.008/0.008/0.000), so under that design partially
+      reproduced is the robust outcome.
+    response: No change to the analysis; the conclusion and notes already give both fold variants.
+      Outcome kept, as the verifier finds partially reproduced robust with all three cameras.
+  - claim: fig4cd-ko-more-movement
+    agrees: true
+    outcome: blocked
+    reason: One subject and no genotype (cell 3).
+    response: No change needed.
+  - claim: figs2-ko-elevated-motion
+    agrees: true
+    outcome: blocked
+    reason: One subject and no genotype (cell 3).
+    response: No change needed.
+  - claim: figs3-ko-higher-unique
+    agrees: true
+    outcome: blocked
+    reason: One subject and no genotype (cell 3).
     response: No change needed.
