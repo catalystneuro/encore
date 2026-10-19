@@ -40,7 +40,7 @@ For each finding, the person who converted the data notes whether it holds, and 
 
 {items}
 
-Steps (docs/fixing-conversions.md in the registry):
+Steps ([fixing conversions]({REPO}/blob/main/docs/fixing-conversions.md) in the registry):
 - [ ] Triage every finding above
 - [ ] Fix what the conversion can fix, in a pull request linked here
 - [ ] Test the fix on a few sessions, and run NWB Inspector
