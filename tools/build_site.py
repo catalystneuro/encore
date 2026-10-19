@@ -465,7 +465,7 @@ SUPERSCRIPT = str.maketrans("-0123456789", "⁻⁰¹²³⁴⁵⁶⁷⁸⁹")
 
 def p_text(p: float) -> str:
     """0.002 stays as it is; 2.4e-05 becomes 2.4 × 10⁻⁵."""
-    if p >= 0.001:
+    if p == 0 or p >= 0.001:
         return f"{p:g}"
     mantissa, exponent = f"{p:.1e}".split("e")
     mantissa, exponent = mantissa.removesuffix(".0"), str(int(exponent)).translate(SUPERSCRIPT)

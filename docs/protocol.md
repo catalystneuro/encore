@@ -108,7 +108,8 @@ Do this before any analysis.
      finding, one entry per test or interval: what it compares (`about`,
      when there is more than one), the `test` and `statistic` as named, the
      `p`-value as a number (a bound such as "p < 0.05" is `p: 0.05` with
-     `p_relation: "<"`), any `corrected` for multiple comparisons, a
+     `p_relation: "<"`; a printed "P = 0" is recorded as 0), any `corrected`
+     for multiple comparisons, a
      confidence interval (`ci`), and `n` in words. It records the paper; the
      numbers the attempt must match, with tolerances, stay in `expected`.
      Record only tests whose result is the finding. A significance threshold

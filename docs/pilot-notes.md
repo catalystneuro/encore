@@ -4627,6 +4627,17 @@ compared. Stored as a number it also no longer has to be quoted: a p-value
 written as a power of ten does not survive copying from the paper's text.
 The dashboard lists them under the quote.
 
-Quotes and statistics were added by hand to the claims of 000127, 000147
-and 000947, each checked against the full text. Other attempts recorded
-under pilot-7 keep their claims as they are; a repeat attempt adds both.
+The claims of every attempt recorded so far were then brought up to
+pilot-8 from each paper's full text (Europe PMC or PMC, bioRxiv, or the
+publisher's open-access page), and every quote and recorded value was
+checked against that text. Of 1,285 claims in 56 files, 1,151 have a quote
+and 465 have statistics (958 entries); the tightened sources replaced
+ordinal ones ("Results, first section") that often did not match the
+paper's own sections. Claims whose source is a dataset, code or another
+paper have no quote. Six papers whose full text is not openly available
+(000005, 000006, 000061, 000582, 000691, 001754) have neither, as their
+claims were written from the abstract and the abstracts report no tests.
+Three files were left as they were because their full text could not be
+downloaded at the time (000350, 000727, 001699). Thresholds used to count
+significant units, cells, pairs or sessions were left out throughout, and
+a paper that prints "P = 0" is recorded as 0.

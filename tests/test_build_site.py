@@ -319,6 +319,7 @@ def test_a_claim_shows_the_papers_own_words_when_quoted():
 
 def test_small_p_values_are_written_as_powers_of_ten():
     assert site.p_text(0.002) == "0.002"
+    assert site.p_text(0) == "0"
     assert site.p_text(2.4e-5) == "2.4 × 10⁻⁵"
     assert site.p_text(4.9e-4) == "4.9 × 10⁻⁴"
     assert site.p_text(4e-66) == "4 × 10⁻⁶⁶"

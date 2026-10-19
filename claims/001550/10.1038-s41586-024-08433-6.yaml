@@ -43,6 +43,7 @@
 #   choice; the Methods do not say), and the slope of its least-squares line against bin
 #   centres in seconds. Negative values mean the difference between contexts shrinks towards
 #   the end of the stimulus, as in the Methods' definition and the code.
+# Quotes and statistics added 2026-10-19 from the full text (Europe PMC PMC11903320).
 schema_version: 1
 dandiset: "001550"
 paper: doi:10.1038/s41586-024-08433-6
@@ -52,6 +53,8 @@ claims:
     behavioural tables, and the linked records agree on trial counts, outcomes, evidence and
     pulse timing.
   source: Data availability; the paper's data/Sessions_trials at GitHub commit 0ea8fdb
+  quote: Rat behavioural and electrophysiological data are available at
+    https://github.com/Brody-Lab/flexible_decision_making_rats.
   data: with_inputs
   criterion: Records are matched by rat and session name (protocol, date and letter, taken from
     the source file names in the paper's tables). The link holds (reproduced) when at least 95%
@@ -67,6 +70,8 @@ claims:
 - id: subjects
   statement: The study used 26 male Long-Evans rats, aged between 6 and 24 months.
   source: Methods, Subjects
+  quote: All subjects were male Long-Evans rats between the ages of 6 and 24 months ... A total of
+    26 rats were used for the experiments presented in this study
   expected:
   - quantity: number of rats
     value: 26
@@ -79,6 +84,7 @@ claims:
 - id: trials-per-session
   statement: Rats performed on average 542 trials per session.
   source: Methods, Behaviour
+  quote: rats performed on average 542 trials per session
   expected:
     quantity: mean trials per session
     value: 542
@@ -90,6 +96,7 @@ claims:
 - id: blocks-per-session
   statement: On average, rats switched across 14.6 context blocks per session.
   source: Methods, Behaviour
+  quote: On average, rats switched across 14.6 context blocks per session
   expected:
     quantity: mean context blocks per session
     value: 14.6
@@ -101,6 +108,7 @@ claims:
 - id: session-duration
   statement: Behavioural sessions lasted 2 to 4 hours.
   source: Methods, Behaviour
+  quote: Behavioural sessions lasted 2–4 h
   criterion: Duration is the stop time of the last trial minus the start time of the first.
     Reproduced when the median duration lies within 1.8 to 4.4 hours (the range widened by 10%
     of each bound) over (a) sessions that pass the selection or (b) every session of the three
@@ -110,6 +118,8 @@ claims:
   statement: Block switches occurred after a minimum of 30 trials per block, and when a local
     estimate of performance reached 80% correct.
   source: Methods, Behaviour
+  quote: block switches occurred after a minimum of 30 trials per block, and when a local estimate
+    of performance reached a threshold of 80% correct
   criterion: Over the blocks of sessions that pass the selection, leaving out the last block of
     each session (which the session end cuts short), the length of a block is counted (a) over
     all trials or (b) over valid trials. Reproduced when at least 95% of blocks have at least
@@ -119,6 +129,8 @@ claims:
 - id: fig1c-20-rats
   statement: Twenty rats each contributed more than 120,000 trials after training.
   source: Figure 1c legend; Extended Data Figure 1c
+  quote: Logistic fits of psychometric curves for 20 rats after training (more than 120,000 trials
+    for each rat)
   expected:
     quantity: rats with more than 120,000 valid trials in sessions that pass the selection
     value: 20
@@ -129,6 +141,8 @@ claims:
   statement: After training, choices are mostly driven by location in the location context and
     by frequency in the frequency context.
   source: Figure 1c; Extended Data Figure 3a,d
+  quote: In the LOC context, choices are mostly affected by location; in the FRQ context, choices
+    are mostly affected by frequency
   depends_on:
   - fig1c-20-rats
   criterion: For each of the 20 rats, over its trials in sessions that pass the selection, one
@@ -138,7 +152,10 @@ claims:
 - id: ed1e-switch-four-trials
   statement: Rats switch the feature they attend to within about four trials of a new context
     block.
-  source: Results, first section; Extended Data Figure 1e (legend panel g)
+  source: Results, Flexible evidence accumulation in rats, paragraph 1; Extended Data Figure 1e
+    (legend panel g)
+  quote: were able to switch between selected stimulus features within four trials of a new context
+    block
   criterion: As in compute_taskswitch.m, per rat, a logistic regression of choice on the two
     generative strengths for the valid trials at each position k (counting all trials since the
     switch) of the new block, k from 1 to 30, pooled over sessions that pass the selection
@@ -151,7 +168,8 @@ claims:
     The weight at position 1 is reported.
 - id: ed2g-learning-2-5-months
   statement: Most rats learned the task in two to five months.
-  source: Results, first section; Extended Data Figure 2g
+  source: Results, Flexible evidence accumulation in rats, paragraph 1; Extended Data Figure 2g
+  quote: most rats learned the task in a timespan between two and five months
   criterion: Training starts at (i) the rat's first session in the dandiset or (ii) its first
     session of any TaskSwitch protocol. The rat has learned the task at (a) its first session
     with at least 100 valid trials and a feature selection index of at least 0.7 (the red line
@@ -163,7 +181,9 @@ claims:
   statement: Differential behavioural kernels predominantly converge towards the end of the
     pulse train, that is the difference between contexts in the weight of a feature shrinks for
     later pulses.
-  source: Methods, Behavioural logistic regression; Figure 4; Extended Data Figure 3c,f
+  source: Methods, Behavioural logistic regression, paragraph 3; Figure 4; Extended Data Figure 3c,f
+  quote: Empirically we found that differential behavioural kernels predominantly displayed
+    convergence towards the end of the pulse stimulus presentation
   criterion: For the 18 rats of Figure 4 (more than 120,000 valid trials and not rats numbered
     below 15, as Figure4.m selects), slope indices over all 26 bins for location and frequency,
     36 values. Reproduced when more than half are negative and their median is negative. The
@@ -172,7 +192,9 @@ claims:
 - id: fig4-loc-frq-uncorrelated
   statement: Across rats, the shape of the differential behavioural kernel for one feature does
     not predict the shape for the other feature.
-  source: Results, Linking neural and behaviour variability; Figure 4 top right
+  source: Results, Linking neural and behaviour variability, paragraph 1; Figure 4 top right
+  quote: The shape of an individual’s differential behavioural kernel for one feature did not appear
+    to predict the shape of the kernel for the other feature
   depends_on:
   - fig4-converging
   criterion: The paper gives no test; Pearson correlation across the 18 rats between the
@@ -183,6 +205,12 @@ claims:
   statement: The behavioural slope index computed from the first half of a rat's trials is
     correlated with the index from the second half (r = 0.58, p = 0.000013).
   source: Extended Data Figure 3g legend
+  quote: The slope index computed from behavioral trials in the first half split is highly
+    correlated with the slope index computed using the second half split (r = 0.58; p = 0.000013)
+  statistics:
+  - test: correlation, significance from the Student’s t distribution
+    statistic: r = 0.58
+    p: 1.3e-05
   expected:
     quantity: Pearson r between half-split slope indices
     value: 0.58
@@ -196,7 +224,9 @@ claims:
 - id: ed4-bilateral-fof-impairs
   statement: Bilateral optogenetic silencing of the frontal orienting fields during the
     stimulus impairs performance of the task (three rats).
-  source: Results, first section; Extended Data Figure 4g
+  source: Results, Flexible evidence accumulation in rats, paragraph 2; Extended Data Figure 4g
+  quote: bilateral optogenetic silencing of rat FOF demonstrated that they are required for accurate
+    performance of the task
   criterion: Opto sessions are those with an opto_epochs table and at least 100 valid trials.
     An epoch belongs to the trial whose start and stop contain its start. Per rat, the fraction
     correct on valid trials with a bilateral full-trial epoch is compared with valid trials with
@@ -208,8 +238,9 @@ claims:
 - id: neural-link
   statement: The neurons in the paper's published neural data can be linked to the dandiset's
     rats and sessions; they come from 199 sessions of 7 rats.
-  source: Results, first section (n = 199 sessions, n = 7 rats); the paper's data/neural_data
-    and data/rat_for_each_neuron.mat at GitHub commit 0ea8fdb
+  source: Results, Flexible evidence accumulation in rats, paragraph 2 (n = 199 sessions, n = 7
+    rats); the paper's data/neural_data and data/rat_for_each_neuron.mat at GitHub commit 0ea8fdb
+  quote: we recorded from n = 3,495 putative single neurons during n = 199 sessions from n = 7 rats
   data: with_inputs
   expected:
     quantity: recording sessions
@@ -223,7 +254,11 @@ claims:
 - id: units-per-rat
   statement: The recordings yielded 3,495 putative single units, 2,047, 832, 258, 94 and 54 from
     five rats in FOF and 112 and 98 from two rats in mPFC.
-  source: Results, first section; Methods, Analysis of neural data
+  source: Results, Flexible evidence accumulation in rats, paragraph 2; Methods, Analysis of neural
+    data, paragraph 1
+  quote: "In total, 3,495 putative single units were recorded from 5 rats in FOF (number of units in
+    each rat: 2,047, 832, 258, 94, 54), while 210 units were recorded from 2 rats in mPFC (number of
+    units in each rat: 112, 98)"
   data: elsewhere
   where: GitHub Brody-Lab/flexible_decision_making_rats at commit
     0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/neural_data, data/rat_for_each_neuron.mat)
@@ -244,7 +279,9 @@ claims:
 - id: fig3h-neural-uncorrelated
   statement: Neural slope indices vary across rats and features, with no apparent correlation
     between the location and frequency indices across the seven recorded rats.
-  source: Results, Pulse analyses distinguish solutions; Figure 3h
+  source: Results, Pulse analyses distinguish solutions, paragraph 2; Figure 3h
+  quote: Instead, there was high variability across rats in this measure, and even across features
+    within a single rat; no apparent correlation between the LOC and FRQ slope indices was visible
   data: elsewhere
   where: GitHub Brody-Lab/flexible_decision_making_rats at commit
     0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/combined_kernels.mat)
@@ -260,7 +297,26 @@ claims:
   statement: The behavioural slope index and the neural slope index are anti-correlated across
     rats and features (r = -0.73, P < 0.01), and for location (r = -0.71) and frequency
     (r = -0.71) alone (P < 0.1).
-  source: Results, Linking neural and behaviour variability; Figure 5d
+  source: Results, Linking neural and behaviour variability, paragraph 1; Figure 5d
+  quote: We found robust support in the data for the theoretical prediction that the two measures
+    should be correlated ... with the correlation also holding for LOC evidence alone ... or for FRQ
+    evidence alone
+  statistics:
+  - about: both features
+    statistic: r = -0.73
+    p: 0.01
+    p_relation: "<"
+    n: 7 rats, two features each
+  - about: location
+    statistic: r = -0.71
+    p: 0.1
+    p_relation: "<"
+    n: 7 rats
+  - about: frequency
+    statistic: r = -0.71
+    p: 0.1
+    p_relation: "<"
+    n: 7 rats
   data: with_inputs
   depends_on:
   - neural-link
@@ -286,7 +342,11 @@ claims:
   statement: Choice-related population activity in FOF evolves along an essentially
     one-dimensional line during the stimulus (73.3% of variance; 81.3% for the two-dimensional
     choice subspace).
-  source: Results, first section; Figure 1e
+  source: Results, Flexible evidence accumulation in rats, paragraph 3; Figure 1e
+  quote: the two-dimensional subspace that best accounts for the contribution of the animal’s choice
+    to the neural activity (accounting for 81.3% of the variance) ... this choice-related
+    information in firing rates evolved along an essentially one-dimensional straight line in neural
+    space (accounting for 73.3% of the variance)
   data: elsewhere
   where: GitHub Brody-Lab/flexible_decision_making_rats at commit
     0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/Arrays_Pagan, mbtdr)
@@ -302,7 +362,10 @@ claims:
 - id: choice-axes-parallel
   statement: Choice axes estimated separately in the two contexts are essentially parallel
     (average angle 1.6 degrees, not different from 0 in 6 of 7 rats).
-  source: Results, first section; Extended Data Figure 5
+  source: Results, Flexible evidence accumulation in rats, paragraph 3; Extended Data Figure 5
+  quote: we found that the choice axes, estimated separately for each of the two contexts, were
+    essentially parallel (average angle between contexts = 1.6°; not significantly different from 0
+    (P > 0.1) for 6 out of 7 rats
   data: elsewhere
   where: GitHub Brody-Lab/flexible_decision_making_rats at commit
     0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/combined_kernels_per_context.mat)
@@ -329,13 +392,18 @@ claims:
   statement: In FOF, trajectories for different evidence strengths separate along each sensory
     axis whether the feature is relevant or irrelevant, so irrelevant information is not gated
     out before frontal cortex.
-  source: Results, first section; Figure 1f
+  source: Results, Flexible evidence accumulation in rats, paragraph 2; Figure 1f
+  quote: We found that trajectories for different evidence strengths were clearly separated along
+    the axis of each sensory feature ... This was true regardless of whether the feature was
+    relevant or irrelevant
   data: elsewhere
   where: GitHub Brody-Lab/flexible_decision_making_rats at commit
     0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/Arrays_Pagan)
 - id: fig3a-trained-rnn-svm
   statement: RNNs trained by backpropagation through time favour selection vector modulation.
   source: Figure 3a
+  quote: "Distribution of 1,000 RNNs trained using backpropagation through time: networks favoured
+    SVM"
   data: elsewhere
   where: GitHub Brody-Lab/flexible_decision_making_rnn at commit
     13cd24544258da2e3d846115afb075443db8a8a1
@@ -343,6 +411,8 @@ claims:
   statement: In RNNs engineered across the solution space, neural and behavioural slope indices
     are tightly anti-correlated.
   source: Figure 5c
+  quote: RNN models follow the theoretical prediction, with anti-correlated slope indices for neural
+    differential pulse kernels and differential behavioural kernels
   data: elsewhere
   where: GitHub Brody-Lab/flexible_decision_making_rnn at commit
     13cd24544258da2e3d846115afb075443db8a8a1
