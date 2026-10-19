@@ -1,0 +1,571 @@
+# Claims for Bouabid, Vu et al. (2026), "An anatomical hotspot for striatal dopamine-acetylcholine
+# interactions during reward and movement", bioRxiv doi:10.64898/2026.01.20.700614, on dandiset
+# 001692. Source: the full text of the preprint (CC-BY), Results, figure legends and Methods.
+#
+# When these criteria were written, the author had seen the data check only: the file list of
+# version 0.260303.1724, the subjects and their indicators (UG27-UG31 and AD1-AD3 and ADS* express
+# ACh3.0 and rDA3m, AD4-AD6 express ACh4.3mut and tdTomato), the number of included fibers per
+# mouse (174 for UG27-UG31, 75 for AD1-AD3, 180 for the six ADS mice, 125 for AD4-AD6), the
+# processed series present in each file, the stated rate (9 Hz) against the behavior timestamps
+# (18 Hz), the event types and counts per session, and the fraction of light cues followed by a
+# reward in each Pavlovian session (1.0, 0.2 or 0.8). No claim's analysis had been run. The author
+# had read the paper's analysis code (github.com/HoweLab/BouabidVu2026 at commit 833fa3d).
+#
+# Choices fixed here, from the code where the Methods are silent: fibers are those marked
+# `included`; spontaneous and reward-session analyses use the high-pass filtered, artifact-removed
+# series (DfOverFexpHpArt, the code's Fc_exp_hp_art), Pavlovian and control analyses the
+# high-pass filtered series (DfOverFexpHp, Fc_exp_hp), and the stimulation cohort the unfiltered
+# series (DfOverFexp, Fc_exp); DA and ACh samples are paired by index, as in the code; lags are
+# ACh relative to DA, so a positive lag means DA leads; the sampling rate is 18 Hz.
+# Triggered-average significance follows the Methods (three consecutive samples beyond the 2.5th
+# or 97.5th percentile of a bootstrap null of the mean of n randomly timed events), with 1000
+# bootstrap samples (the paper 10000); the code's 0.5th and 99.5th percentiles are a variant.
+#
+# Hotspot procedure, fixed here (the paper's MATLAB pipeline, simplified to fit the time limit).
+# Site values are placed at the fiber tip coordinates in the files (AP, ML, DV in mm from bregma),
+# interpolated linearly onto a 100 um grid spanning the sites, padded outward by 5 voxels with the
+# mean of valid neighbors as the code pads before smoothing, smoothed with a Gaussian of sigma 1
+# voxel (the code uses 2 voxels of 50 um), and masked to the convex hull of the sites (the paper
+# masks with the Allen striatum, not used here). Local Moran's I is computed as in
+# local_morans_I.m with an 11 x 11 x 11 voxel neighborhood (500 um either side). The null is 200
+# shuffles of the values across sites (the paper 10000), each interpolated and smoothed in the same
+# way. Voxels whose I exceeds the null 95th percentile are significant; connected components
+# (26-connected) of at least 125 voxels (0.125 mm3, the paper's 1000 voxels of 50 um) are
+# candidates, and the hotspot is the candidate whose mean smoothed value has the largest
+# magnitude. A site is inside a hotspot when its grid voxel is; sites of another cohort are placed
+# in the same grid by their coordinates. The overlap test follows hotspot_comparison.m, with 200
+# random connected volumes of each hotspot's size grown inside the mask (the paper 10000). An
+# "anterior dorsolateral" location means the hotspot's centroid lies anterior, lateral and dorsal
+# of the median site coordinates of the cohort.
+schema_version: 1
+dandiset: "001692"
+paper: doi:10.64898/2026.01.20.700614
+claims:
+- id: fig1e-dominant-polarity
+  statement: Across 174 sites in 5 mice, the dominant DA-ACh cross-correlation (the largest
+    magnitude Pearson r within 1 s lags) during spontaneous behavior is negative at 132 sites, 127
+    of them with DA leading, and positive at 42 sites, 31 of them with ACh leading.
+  source: Results, first section; Figure 1e
+  expected:
+  - quantity: sites with dominant negative correlation
+    value: 132
+    tolerance: 13.2
+  - quantity: dominant negative sites with DA leading
+    value: 127
+    tolerance: 12.7
+  - quantity: sites with dominant positive correlation
+    value: 42
+    tolerance: 4.2
+  - quantity: dominant positive sites with ACh leading
+    value: 31
+    tolerance: 3.1
+  criterion: Spontaneous sessions of UG27 to UG31 (those without reward events). Per session and
+    site, Pearson r of DA at t with ACh at t plus k samples for k from -18 to 18, NaN samples
+    dropped; r averaged over sessions per site, as the code does; the dominant r is the extreme
+    with the larger magnitude. DA leads when k > 0 and ACh when k < 0. Reproduced when all four
+    counts are within tolerance; partially reproduced when negative sites outnumber positive ones,
+    most negative sites have DA leading and most positive ones ACh leading, but a count is outside
+    tolerance; not reproduced otherwise. Correlation over concatenated sessions is a variant.
+- id: fig1f-adls-hotspot
+  statement: The dominant correlations form a significant hotspot, identified by local Moran's I,
+    in the anterior dorsolateral striatum (aDLS), where the strongest correlations are negative.
+  source: Results, first section; Figure 1f
+  depends_on:
+  - fig1e-dominant-polarity
+  criterion: The hotspot procedure of the opening comment on the 174 dominant r values.
+    Reproduced when a hotspot is found, its mean smoothed value is negative, and its centroid is
+    anterior dorsolateral as defined above; partially reproduced when a negative hotspot is found
+    elsewhere; not reproduced when no hotspot is found or its mean is positive.
+- id: fig1h-in-vs-out
+  statement: Sites inside the aDLS hotspot have more negative dominant correlations than sites
+    outside (Wilcoxon rank-sum p = 1.67e-16).
+  source: Figure 1h
+  depends_on:
+  - fig1f-adls-hotspot
+  criterion: Two-sided Wilcoxon rank-sum test of the dominant r of sites inside against outside the
+    hotspot of fig1f-adls-hotspot. Reproduced when p < 0.05 with the median inside lower; not
+    reproduced otherwise. The p value is reported against the paper's; the test is partly circular,
+    as the hotspot is drawn from the same values.
+- id: fig1f-positive-posterior
+  statement: Dominant positive correlations lie in the posterior striatum.
+  source: Results, first section; Figure 1f
+  depends_on:
+  - fig1e-dominant-polarity
+  criterion: One-sided Wilcoxon rank-sum test that the AP coordinate of sites with a positive
+    dominant r is lower (more posterior) than that of sites with a negative dominant r. Reproduced
+    when p < 0.05; not reproduced otherwise.
+- id: ed2-hotspot-per-mouse
+  statement: The hotspot is consistent across mice; in each mouse, sites inside the group hotspot
+    have more negative dominant correlations than sites outside.
+  source: Extended Data Figure 2d; Results, first section
+  depends_on:
+  - fig1f-adls-hotspot
+  criterion: Per mouse, two-sided Wilcoxon rank-sum test of dominant r inside against outside the
+    group hotspot, for mice with at least two sites on each side. Reproduced when at least 4 of 5
+    mice have the median inside lower with p < 0.05; partially reproduced when at least 4 have the
+    median inside lower but fewer than 4 reach p < 0.05; not reproduced otherwise. The per-mouse
+    hotspots of Extended Data Figure 2b and 2c are not computed.
+- id: ed1-controls-no-organization
+  statement: Mice expressing non-functional sensors (a mutant ACh sensor and tdTomato, n = 3) show
+    only sparse, weak positive red-green correlations with no anatomical organization; no hotspot is
+    found.
+  source: Extended Data Figure 1i-k; Results, first section
+  criterion: AD4 to AD6, identified by their indicators in the files. Their 15 sessions with
+    rewards and no cues, with the 6 s after each reward delivery and first lick left out, as the
+    paper uses ITI data only; DfOverFexpHp series; dominant r as in fig1e-dominant-polarity. A claim
+    of absence, judged by the paper's test, the hotspot procedure. Reproduced when no hotspot is
+    found; not reproduced when one is. The median dominant r, the fraction positive and the
+    median magnitude against the sensor mice are reported either way.
+- id: fig2a-directionality
+  statement: For coincident transients of opposite polarity (ACh trough with DA peak, ACh peak with
+    DA trough) the DA transient leads; for same-polarity pairs (peak with peak, trough with trough)
+    the ACh transient leads.
+  source: Figure 2a; Results, second section
+  criterion: Transients per the Methods (at least 3 consecutive samples above the 97.5th or below
+    the 2.5th percentile of a null of the mean of 3 randomly drawn samples, 10000 draws per site
+    and session), on all sessions of UG27 to UG31, leaving out transients that start within 6 s after
+    a reward delivery or first lick, as the code does. A pair is a transient whose onset and
+    peak both fall within 1 s (18 samples) after those of a transient of the other signal in the
+    same session, matched as in the code. Directionality index (A - B)/(A + B), A the ACh-first
+    pairs. Reproduced when the median index over sites is negative for both opposite-polarity
+    types and positive for both same-polarity types, each with a one-sample Wilcoxon p < 0.05;
+    partially reproduced for three of the four; not reproduced otherwise.
+- id: fig2-magnitude-correlations
+  statement: Magnitudes of paired transients are negatively correlated at many sites for
+    opposite-sign pairs (121 of 174 for ACh troughs with DA peaks, 81 of 174 for ACh peaks with DA
+    troughs) and positively for same-sign pairs (97 of 174 peak-peak, 78 of 174 trough-trough), with
+    no site significant in the other direction.
+  source: Results, second section; Figure 2d
+  depends_on:
+  - fig2a-directionality
+  expected:
+  - quantity: sites with significant negative correlation, ACh trough with DA peak
+    value: 121
+    tolerance: 12.1
+  - quantity: sites with significant negative correlation, ACh peak with DA trough
+    value: 81
+    tolerance: 8.1
+  - quantity: sites with significant positive correlation, peak with peak
+    value: 97
+    tolerance: 9.7
+  - quantity: sites with significant positive correlation, trough with trough
+    value: 78
+    tolerance: 7.8
+  criterion: As the Methods describe, per site and pair type, Pearson r of the signed magnitudes of
+    100 randomly drawn pairs (pairs in either order), repeated 1000 times (the paper 10000); the
+    site's value is the mean r, and it is significant when 0 lies outside the 2.5th to 97.5th
+    percentiles; sites with fewer than 100 pairs count as not significant. Reproduced when the four
+    counts are within tolerance and no site is significant in the opposite direction; partially
+    reproduced when for each type significant sites of the stated sign outnumber those of the
+    other sign but a count is outside tolerance; not reproduced otherwise. The code's computation
+    (Pearson r over all pairs, p < 0.05) is a variant.
+- id: fig2d-magnitude-in-out
+  statement: Magnitude correlations of opposite-sign pairs, but not same-sign pairs, are stronger
+    inside the aDLS hotspot than outside (rank-sum p < 0.05 for opposite-sign pairs, p > 0.05 for
+    same-sign pairs).
+  source: Figure 2d; Results, second section
+  depends_on:
+  - fig1f-adls-hotspot
+  - fig2-magnitude-correlations
+  criterion: Two-sided Wilcoxon rank-sum test of the per-site mean r of fig2-magnitude-correlations
+    (sites with at least 100 pairs), inside against outside the hotspot. Reproduced when both
+    opposite-sign types are more negative inside with p < 0.05 and neither same-sign type differs
+    with p < 0.05; partially reproduced when one opposite-sign type holds, or both hold and a
+    same-sign type differs; not reproduced when no opposite-sign type holds.
+- id: fig2b-pairing-overlaps-hotspot
+  statement: The frequency of paired transients is highest in aDLS, in a region overlapping the
+    correlation hotspot, for all four pair types (volume overlap test, p < 0.01 for each).
+  source: Figure 2b-c; Results, second section
+  depends_on:
+  - fig1f-adls-hotspot
+  - fig2a-directionality
+  criterion: Pairing occurrence per site as in the code, the fraction of a site's ACh and DA
+    transients that belong to pairs of the type. The hotspot procedure with the highest-mean
+    component, then the overlap test against the hotspot of fig1f-adls-hotspot. Reproduced when all
+    four pair types have a hotspot overlapping with p < 0.05; partially reproduced for two or three;
+    not reproduced otherwise. Occurrence inside against outside the correlation hotspot is reported
+    as well.
+- id: ed3e-transient-rates-in-hotspot
+  statement: DA and ACh transient rates are higher at sites inside the global correlation hotspot
+    than outside.
+  source: Extended Data Figure 3d-e
+  depends_on:
+  - fig1f-adls-hotspot
+  - fig2a-directionality
+  criterion: Transients per second per site over the sessions of fig2a-directionality, for DA peaks,
+    DA troughs, ACh peaks and ACh troughs; two-sided rank-sum inside against outside. Reproduced
+    when all four are higher inside with p < 0.05; partially reproduced for one to three; not
+    reproduced otherwise.
+- id: fig3b-reward-correlation
+  statement: After unpredicted rewards, trial-by-trial DA peak magnitude correlates with ACh;
+    dominant correlations are negative at 114 of 174 sites with DA leading (mean latency 177.9 +/-
+    96.7 ms) and positive at 58 of 174 with ACh leading (-41.2 +/- 218.9 ms).
+  source: Results, third section; Figure 3b
+  expected:
+  - quantity: sites with dominant negative reward correlation
+    value: 114
+    tolerance: 11.4
+  - quantity: sites with dominant positive reward correlation
+    value: 58
+    tolerance: 5.8
+  - quantity: mean latency of dominant negative correlations
+    value: 177.9
+    tolerance: 9.1
+    unit: ms
+  - quantity: mean latency of dominant positive correlations
+    value: -41.2
+    tolerance: 28.7
+    unit: ms
+  criterion: As the code does. Reward sessions of UG27 to UG31; trigger at the first lick after each
+    reward delivery and before the next; window -0.5 to 1.5 s; trials pooled per mouse; on each
+    trial the DA peak is the local maximum within 9 samples of the trial-averaged peak in 0 to 1 s
+    that is nearest to it; ACh is taken at -9 to +9 samples from each trial's DA peak; Pearson r
+    across trials (at least 11); dominant r and its latency (lag times 1000/18 ms). The latency
+    tolerances are the standard errors implied by the stated spreads (96.7/sqrt(114) and
+    218.9/sqrt(58)), because the spreads are across sites. Reproduced when all four values are
+    within tolerance; partially reproduced when the counts are within tolerance and the mean
+    latency is positive for negative sites and negative for positive sites, or when two or three
+    values are within tolerance; not reproduced otherwise.
+- id: fig3d-reward-in-out
+  statement: Reward-evoked DA-ACh correlations are significantly more negative inside the global
+    hotspot than outside.
+  source: Figure 3d
+  depends_on:
+  - fig1f-adls-hotspot
+  - fig3b-reward-correlation
+  criterion: Two-sided rank-sum test of the dominant reward r inside against outside the hotspot of
+    fig1f-adls-hotspot. Reproduced when p < 0.05 with the median inside lower; not reproduced
+    otherwise.
+- id: fig3e-reward-hotspot-overlap
+  statement: Reward anti-correlations form an aDLS hotspot that significantly overlaps the hotspot
+    of spontaneous correlations (volume overlap test, p = 0.008).
+  source: Figure 3c, 3e
+  depends_on:
+  - fig1f-adls-hotspot
+  - fig3b-reward-correlation
+  criterion: The hotspot procedure on the dominant reward r, then the overlap test against the
+    hotspot of fig1f-adls-hotspot. Reproduced when the reward hotspot has a negative mean and
+    overlaps with p < 0.05; partially reproduced when it is negative but the overlap has p >= 0.05;
+    not reproduced when there is no negative hotspot.
+- id: fig4-cue-sequence
+  statement: After Pavlovian conditioning, the conditioned light cue evokes an ACh peak, then a DA
+    peak, then an ACh dip at a majority of sites (49 of 75).
+  source: Results, fourth section; Figure 4a
+  expected:
+  - quantity: sites with the ACh peak, DA peak, ACh dip sequence
+    value: 49
+    tolerance: 4.9
+  criterion: AD1 to AD3. Learning sessions are those in which every light cue is followed by a
+    reward (from the files' events); the last 3 per mouse are used, as the code does; light cue
+    onsets; DfOverFexpHp; window -0.5 to 3 s; trials pooled per mouse; the null is drawn from times
+    more than 9 s after a cue onset and more than 5 s after a reward. A site has the sequence when
+    its cue-triggered average has a significant ACh peak, a significant DA peak and a significant
+    ACh dip, and the times of the ACh maximum, the DA maximum and the ACh minimum of the mean trace
+    are in that order. Readings for the window of significance and of the extremes are (a) 0 to 1 s
+    for all three, as the code tests cue responses, and (b) 0 to 1.5 s. Reproduced when the count is
+    within tolerance under either reading; partially reproduced when the sequence is found at
+    between a third and the lower bound of the tolerance; not reproduced otherwise.
+- id: fig4c-cue-correlation
+  statement: For conditioned light cues, ACh correlates with the trial-by-trial DA peak negatively
+    at lagging times at 39 of 75 sites (ACh lagging, 202.28 +/- 128.4 ms) and positively at leading
+    times at 26 of 75 (ACh leading, -79.1 +/- 224.0 ms).
+  source: Results, fourth section; Figure 4c
+  depends_on:
+  - fig4-cue-sequence
+  expected:
+  - quantity: sites with dominant negative cue correlation
+    value: 39
+    tolerance: 3.9
+  - quantity: sites with dominant positive cue correlation
+    value: 26
+    tolerance: 2.6
+  - quantity: mean latency of dominant negative correlations
+    value: 202.28
+    tolerance: 20.6
+    unit: ms
+  - quantity: mean latency of dominant positive correlations
+    value: -79.1
+    tolerance: 43.9
+    unit: ms
+  criterion: The correlation of fig3b-reward-correlation on the light-cue trials of
+    fig4-cue-sequence, DA peak in 0 to 1 s. The denominator can be read as (a) the sites with a
+    significant cue DA peak, which the code uses for this panel and which fits 39 + 26 = 65 of 75,
+    or (b) all 75 sites. Latency tolerances are standard errors from the stated spreads. Reproduced
+    when under one reading all four values are within tolerance; partially reproduced when under
+    one reading the counts are within tolerance and the latency signs are as stated, or two or
+    three values are within tolerance; not reproduced otherwise.
+- id: fig4h-extinction-correlation
+  statement: After cue-specific extinction (light cue rewarded on 20% of trials), cue-evoked DA dips
+    correlate negatively with lagging ACh (DA dip then ACh late peak) at 41 of 74 sites, mean lag
+    117.9 +/- 176.2 ms.
+  source: Results, fourth section; Figure 4g-h
+  depends_on:
+  - fig4-cue-sequence
+  expected:
+  - quantity: sites with dominant negative extinction correlation
+    value: 41
+    tolerance: 4.1
+  - quantity: mean lag of dominant negative correlations
+    value: 117.9
+    tolerance: 27.5
+    unit: ms
+  criterion: Light-extinction sessions are those in which 20% of light cues are rewarded; the last 3
+    per mouse; all light-cue trials; on each trial the DA trough nearest the trial-averaged trough
+    in 0 to 1.5 s, as the legend and Methods describe; ACh correlated as in fig4c-cue-correlation.
+    The denominator can be read as (a) sites with a significant DA dip in 0 to 1.5 s, as the code
+    selects, or (b) all 75 sites. Reproduced when under one reading both values are within
+    tolerance; partially reproduced when the count is within tolerance and the mean lag positive,
+    or the lag within tolerance and most selected sites negative; not reproduced otherwise. The
+    code correlates the DA peak (polarity 1) in this step; that is shown as a variant.
+- id: fig4d-cue-in-out
+  statement: Conditioned-cue DA-ACh correlations are more negative at sites inside the global aDLS
+    hotspot than outside.
+  source: Figure 4d-e
+  depends_on:
+  - fig1f-adls-hotspot
+  - fig4c-cue-correlation
+  criterion: AD1 to AD3 sites with a significant cue DA peak, placed in the grid of
+    fig1f-adls-hotspot by their coordinates; two-sided rank-sum test of the dominant cue r inside
+    against outside. Reproduced when p < 0.05 with the median inside lower; not reproduced
+    otherwise. The overlap test of the cue hotspot is shown as a variant.
+- id: fig4j-extinction-in-out
+  statement: After extinction, DA dip to ACh correlations are more negative at sites inside the
+    global aDLS hotspot than outside.
+  source: Figure 4i-j
+  depends_on:
+  - fig1f-adls-hotspot
+  - fig4h-extinction-correlation
+  criterion: As fig4d-cue-in-out for the extinction correlations of fig4h-extinction-correlation,
+    among sites with a significant DA dip. Reproduced when p < 0.05 with the median inside lower; not
+    reproduced otherwise.
+- id: fig5d-initiation-responses
+  statement: At locomotion initiations, ACh rises and then falls at 131 of 174 sites; DA dips at 119
+    of 174 sites, rises at 73, and both rises and dips at 32.
+  source: Results, fifth section; Figure 5d
+  expected:
+  - quantity: sites with ACh rise then fall
+    value: 131
+    tolerance: 13.1
+  - quantity: sites with a significant DA dip
+    value: 119
+    tolerance: 11.9
+  - quantity: sites with a significant DA rise
+    value: 73
+    tolerance: 7.3
+  - quantity: sites with both a DA rise and a DA dip
+    value: 32
+    tolerance: 3.2
+  criterion: Spontaneous sessions of UG27 to UG31, concatenated per mouse with NaN padding.
+    Velocity is the wheel velocity low-pass filtered at 1.3 Hz (zero-phase 4th-order Butterworth,
+    standing in for MATLAB lowpass) and smoothed over 5 samples (0.3 s). Initiations are a crossing
+    of 0.0208 m/s (the code's value of the median velocity during reward consumption) after at
+    least 1 s below it, with the bout lasting at least 2.27 s (the Methods; the code's 2.2 s is a
+    variant). Triggered averages from -1 to 2 s, significance in -0.5 to 1 s. The ACh count can be
+    read as (a) sites with both a significant ACh peak and a significant ACh dip, the peak first,
+    or (b) sites with a significant ACh peak. Reproduced when all four counts are within tolerance
+    under one reading; partially reproduced when two or three are; not reproduced otherwise.
+- id: fig5-latency-order
+  statement: Initiation-related signals occur in sequence; DA dips first (median latency 111.11
+    ms), then ACh peaks (222.22 ms) and DA peaks (227.78 ms), then ACh dips (611.11 ms).
+  source: Results, fifth section
+  depends_on:
+  - fig5d-initiation-responses
+  expected:
+  - quantity: median latency of DA dips
+    value: 111.11
+    tolerance: 55.6
+    unit: ms
+  - quantity: median latency of ACh peaks
+    value: 222.22
+    tolerance: 55.6
+    unit: ms
+  - quantity: median latency of DA peaks
+    value: 227.78
+    tolerance: 55.6
+    unit: ms
+  - quantity: median latency of ACh dips
+    value: 611.11
+    tolerance: 55.6
+    unit: ms
+  criterion: Latency is the time of the minimum (dips) or maximum (peaks) of the site's
+    initiation-triggered average within -0.5 to 1 s, over sites with that significant feature in
+    fig5d-initiation-responses. The tolerance is one sample (55.6 ms), because the latencies are
+    multiples of the sample interval and 10% of them is smaller than it. Reproduced when the
+    medians are in the order DA dip, then ACh peak and DA peak, then ACh dip, and all four are within
+    tolerance; partially reproduced when the order holds but a value is outside tolerance; not
+    reproduced when the order does not hold.
+- id: fig5e-initiation-topography
+  statement: Initiation-related DA dips are concentrated in the aDLS and DA peaks in dorsomedial and
+    posterior striatum; ACh dips are localized to the aDLS.
+  source: Results, fifth section; Figure 5e-g
+  depends_on:
+  - fig5d-initiation-responses
+  criterion: Dominant DA response per site, the extreme of the initiation-triggered average in -0.5
+    to 1 s with the larger magnitude. (i) Sites with a negative dominant DA response are more
+    anterior and more lateral than sites with a positive one (one-sided rank-sum p < 0.05 for both
+    AP and ML). (ii) Sites with a significant ACh dip are more anterior and more lateral than sites
+    without (same test). Reproduced when (i) and (ii) hold; partially reproduced when one holds; not
+    reproduced otherwise.
+- id: fig6a-initiation-correlation
+  statement: At sites with initiation-related DA dips (119 sites), trial-by-trial DA dip magnitudes
+    correlate negatively with ACh with DA leading (mean latency 193.80 +/- 177.68 ms).
+  source: Results, sixth section; Figure 6a
+  depends_on:
+  - fig5d-initiation-responses
+  expected:
+  - quantity: mean latency of dominant negative initiation correlations
+    value: 193.8
+    tolerance: 16.3
+    unit: ms
+  criterion: As the code does; on each initiation the DA trough within 9 samples of the averaged
+    trough in -0.5 to 1 s nearest to it; ACh at -9 to +9 samples; Pearson r across initiations;
+    sites with a significant DA dip. The mean latency can be read over (a) sites with a dominant
+    negative r, or (b) all selected sites. The tolerance is the standard error from the stated
+    spread (177.68/sqrt(119)). Reproduced when most selected sites have a dominant negative r and
+    the mean latency is within tolerance under one reading; partially reproduced when most are
+    negative with a positive mean latency outside tolerance; not reproduced otherwise.
+- id: fig6c-initiation-in-out
+  statement: Initiation DA dip to ACh correlations are concentrated in the aDLS and more negative
+    inside the global hotspot than outside.
+  source: Figure 6b-d
+  depends_on:
+  - fig1f-adls-hotspot
+  - fig6a-initiation-correlation
+  criterion: Two-sided rank-sum test of the dominant initiation r inside against outside the
+    hotspot of fig1f-adls-hotspot, among sites with a significant DA dip. Reproduced when p < 0.05
+    with the median inside lower; not reproduced otherwise.
+- id: fig6g-invigoration-in-out
+  statement: At locomotion invigorations, GLM-estimated DA peak magnitudes correlate negatively with
+    ACh at lagging times, and these correlations are concentrated in the aDLS, more negative inside
+    the global hotspot (131 sites with invigoration DA peaks).
+  source: Results, sixth section; Figure 6e-h; Methods, generalized linear model
+  depends_on:
+  - fig1f-adls-hotspot
+  - fig5d-initiation-responses
+  criterion: As the code does. Per site, a linear model of DA or ACh, over samples within -1 to 2 s
+    of initiations, on velocity, acceleration, and FIR terms at -0.5 to 1 s for initiations and for
+    all positive local maxima of acceleration; residuals with the invigoration terms set to zero;
+    invigoration events are the first local maximum of acceleration after each initiation. Sites
+    with an invigoration DA peak are those with at least 3 consecutive FIR coefficients positive
+    with p < 0.05. The correlation of fig6a-initiation-correlation on the residuals with the DA peak.
+    Reproduced when most selected sites have a dominant negative r and the rank-sum test inside
+    against outside the hotspot gives p < 0.05 with the median inside lower; partially reproduced
+    when one of the two holds; not reproduced otherwise. The number of selected sites is reported
+    against 131.
+- id: fig7-da-release
+  statement: Optogenetic stimulation of midbrain DA neurons evokes significant DA release at 179 of
+    180 sites.
+  source: Results, seventh section; Extended Data Figure 10b
+  expected:
+  - quantity: sites with significant stimulation-evoked DA release
+    value: 179
+    tolerance: 17.9
+  criterion: The six ADS mice; DfOverFexp (not high-pass filtered, as the Methods state); stimulation
+    trains during the ITI (no reward within 1 s), as the code selects; triggered averages -0.5 to
+    2.5 s, significance in -0.11 to 2 s (the code's -2 to 36 samples); null times exclude 5 s after
+    reward deliveries and first licks and 1 s after stimulation onsets. Reproduced when the count of
+    sites with a significant DA peak is within tolerance; not reproduced otherwise.
+- id: fig7e-ach-suppression
+  statement: DA stimulation evokes significant ACh suppression at a subset of sites (116 of 180,
+    64%).
+  source: Results, seventh section; Figure 7e
+  expected:
+  - quantity: sites with significant stimulation-evoked ACh dips
+    value: 116
+    tolerance: 11.6
+  criterion: As fig7-da-release, counting sites with a significant ACh dip. Reproduced when the count
+    is within tolerance; partially reproduced when the count is outside tolerance but a minority of
+    sites show no dip as stated (between 40% and 90% of sites); not reproduced otherwise.
+- id: ed9-cohort-hotspot
+  statement: The stimulation cohort replicates the aDLS anti-correlation hotspot in spontaneous
+    release outside stimulation periods; its dominant correlations are more negative inside the
+    original hotspot, and its own hotspot overlaps the original.
+  source: Extended Data Figure 9a-d; Results, seventh section
+  depends_on:
+  - fig1f-adls-hotspot
+  criterion: As the code does. Sessions of the six ADS mice concatenated per mouse, DfOverFexp,
+    samples left out when within 6 s after a reward delivery and within 6 s after a first lick and
+    within 3 s after a stimulation onset (the code combines the three with AND; OR is a variant);
+    dominant r over lags of -18 to 18 samples. (i) Two-sided rank-sum test of dominant r for sites
+    inside against outside the original hotspot (sites placed by coordinates). (ii) The hotspot
+    procedure on the cohort and the overlap test against the original. Reproduced when (i) gives
+    p < 0.05 with the median inside lower and (ii) gives a negative hotspot overlapping with
+    p < 0.05; partially reproduced when one holds; not reproduced otherwise.
+- id: fig7f-ach-dip-in-out
+  statement: Stimulation-evoked ACh dips are larger inside the cohort's correlation hotspot than
+    outside, and their own hotspot overlaps it.
+  source: Figure 7d, 7f-g
+  depends_on:
+  - fig7e-ach-suppression
+  - ed9-cohort-hotspot
+  criterion: ACh dip magnitude per site is the mean over trials of each trial's minimum in -0.11 to
+    2 s, as the code computes. Two-sided rank-sum test inside against outside the cohort hotspot of
+    ed9-cohort-hotspot. Reproduced when p < 0.05 with the minima inside lower; not reproduced
+    otherwise. The overlap test of the ACh-minimum hotspot and the test against the original
+    hotspot are variants.
+- id: fig8b-quinpirole-region
+  statement: The D2 agonist quinpirole suppresses evoked ACh release in DLS and NAcC, more strongly
+    in DLS; two-way ANOVA region effect F(1,40) = 105.9, region by stimulus interaction F(4,40) =
+    3.014, stimulus effect F(4,40) = 17.80.
+  source: Figure 8b
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.18202873, file Bouabid_Vu (2026)_Source_Data_Fig8.xlsx
+  expected:
+  - quantity: region F
+    value: 105.9
+    tolerance: 10.59
+  - quantity: interaction F
+    value: 3.014
+    tolerance: 0.3014
+  - quantity: stimulus F
+    value: 17.8
+    tolerance: 1.78
+  criterion: Ordinary two-way ANOVA of Peak_ACh in sheet Figure_8b on region, stimulus number and
+    their interaction, each stimulus a row as the degrees of freedom imply. Reproduced when the
+    three F values are within tolerance and the DLS mean is lower than the NAcC mean; partially
+    reproduced when the region effect is within tolerance and DLS lower but another F is not; not
+    reproduced otherwise.
+- id: fig8e-cocaine-region
+  statement: Cocaine reduces evoked ACh release more in DLS than in NAcC; two-way ANOVA stimulus by
+    region interaction F(4,55) = 10.75, stimulus effect F(4,55) = 36.37, region effect F(1,55) =
+    199.9.
+  source: Figure 8e
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.18202873, file Bouabid_Vu (2026)_Source_Data_Fig8.xlsx
+  expected:
+  - quantity: interaction F
+    value: 10.75
+    tolerance: 1.075
+  - quantity: stimulus F
+    value: 36.37
+    tolerance: 3.637
+  - quantity: region F
+    value: 199.9
+    tolerance: 19.99
+  criterion: As fig8b-quinpirole-region, on sheet Figure_8e.
+- id: fig8fg-d2-block
+  statement: The D2 antagonist L-741,626 attenuates the cocaine-induced suppression in both regions;
+    D2R block effect F(1,55) = 231.9 in DLS and F(1,40) = 32.57 in NAcC.
+  source: Figure 8f-g
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.18202873, file Bouabid_Vu (2026)_Source_Data_Fig8.xlsx
+  expected:
+  - quantity: D2R block F in DLS
+    value: 231.9
+    tolerance: 23.19
+  - quantity: D2R block F in NAcC
+    value: 32.57
+    tolerance: 3.257
+  criterion: Ordinary two-way ANOVA of Peak_ACh on condition, stimulus number and their interaction,
+    sheets Figure_8f (DLS) and Figure_8g (NAcC). Reproduced when both condition F values are within
+    tolerance and the block raises ACh in both; partially reproduced when one is; not reproduced
+    otherwise.
+- id: fig8c-cocaine-da-similar
+  statement: Cocaine elevates evoked DA release to a similar degree in DLS and NAcC (two-way ANOVA,
+    cocaine by region interaction F(8,36) = 0.20, p = 0.98).
+  source: Figure 8c
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.18202873, file Bouabid_Vu (2026)_Source_Data_Fig8.xlsx
+  criterion: Blocked unless the ANOVA's factors can be identified. The sheets hold mean DA time
+    courses per mouse and condition, and the stated degrees of freedom (8 for cocaine) do not match
+    a two-level cocaine factor.
