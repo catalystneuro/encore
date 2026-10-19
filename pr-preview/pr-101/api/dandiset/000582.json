@@ -1,0 +1,172 @@
+{
+ "dandiset": "000582",
+ "page": "dandisets/000582/",
+ "generated": "2026-10-19T19:52:01+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 2,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000582-sargolini-2006-01",
+   "dandiset": "000582",
+   "dandiset_version": "0.251111.2151",
+   "paper": "10.1126/science.1125572",
+   "paper_title": "Conjunctive Representation of Position, Direction, and Velocity in Entorhinal Cortex",
+   "date": "2026-10-13",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code",
+    "model": "not recorded",
+    "protocol": "pilot-0"
+   },
+   "tier": "agent_verified",
+   "entry": "000582-sargolini-2006",
+   "entry_title": "Grid, head-direction and conjunctive cells by entorhinal layer (Sargolini et al. 2006)",
+   "description": "Tests three conclusions of Sargolini et al. (2006) on dandiset 000582, which holds spike times and tracked positions for 620 cell-sessions from the medial entorhinal cortex of 15 rats. For every cell it computes a grid score, head-direction tuning and speed tuning, with chance levels from time-shifted spike trains, and compares the cell types found in each cortical layer.",
+   "notebooks": [
+    {
+     "path": "reproduce_sargolini_2006.ipynb",
+     "title": "Reproducing Sargolini et al. (2006) from dandiset 000582",
+     "executed": "notebooks/000582-sargolini-2006/reproduce_sargolini_2006.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "layer2-grid",
+     "statement": "Layer II of the medial entorhinal cortex was predominated by grid cells.",
+     "source": "Abstract",
+     "quote": "",
+     "statistics": [],
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sargolini_2006.ipynb",
+     "notes": "Layer II has the highest grid scores (median 0.33 against 0.10 in the deeper layers). With a grid-score threshold of 0.3, 54% of layer II cell-sessions are grid cells, more than in any other layer. Against the stricter chance level from shuffled spike trains (0.61), 22 of 70 (31%) are, the same as layer III (34%) and above layers V and VI (18% each). Whether grid cells are the majority in layer II depends on the criterion, and the paper's was not available (closed access). The dandiset is described as a sample without saying how cells were selected, and most sessions last 10 minutes.",
+     "deviations": [],
+     "disagreed": true,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "deep-hd-conjunctive",
+     "statement": "In the deeper layers, grid cells colocalized with head-direction cells and with conjunctive grid x head-direction cells.",
+     "source": "Abstract",
+     "quote": "",
+     "statistics": [],
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sargolini_2006.ipynb",
+     "notes": "Head-direction tuning above chance in 58% (layer III), 91% (V) and 73% (VI) of cells against 12% in layer II, which holds within the one rat recorded in both. Conjunctive cells are 62 of 396 in the deeper layers and 2 of 43 in layer II. Uses only the 71 sessions with two tracking LEDs. Counts are of cell-sessions from few rats, so they are not independent.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "speed",
+     "statement": "All cell types were modulated by running speed.",
+     "source": "Abstract",
+     "quote": "",
+     "statistics": [],
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sargolini_2006.ipynb",
+     "notes": "The correlation of firing rate with running speed has a positive median in every cell type (0.28 to 0.58) against -0.06 for time-shifted spike trains, and 20% to 33% of cells in each type pass the 95th percentile of the shuffles where 5% are expected. Tested for each type as a population, not for each cell.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "Every file's session description says the enclosure was 1 x 1 m, but in 23 of the 118 sessions the tracked positions span 1.5 to 2.5 m."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The session descriptions say position is given for two LEDs, but 47 of the 118 sessions have one, so head direction cannot be computed for 167 of 620 cell-sessions."
+    },
+    {
+     "kind": "identifier_missing",
+     "statement": "No identifier links a cell across sessions, so the same cell may be counted more than once."
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset is described as a sample of the paper's cells without saying how they were selected."
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The paper is not open access and the dandiset does not give the analysis parameters, such as the criterion for a grid cell."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-13",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "First draft, before the enclosure-size fix. The author's conclusions were withheld.",
+     "agreed": 2,
+     "of": 3,
+     "disagreements": [
+      {
+       "claim": "layer2-grid",
+       "outcome": "not_reproduced",
+       "reason": "In that draft, 13 of 71 layer II cell-sessions passed the grid threshold, below layer III. The verifier also pointed out that the 1 m enclosure was assumed and never checked. That was a real error; 23 sessions used larger enclosures and the rate maps were clipping them. The attempt was corrected."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-13",
+     "kind": "agent",
+     "by": "The same independent agent, second round",
+     "reviewed": "The corrected notebook, with the author's conclusions.",
+     "agreed": 3,
+     "of": 3,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000582-sargolini-2006",
+   "type": "reproduction",
+   "title": "Grid, head-direction and conjunctive cells by entorhinal layer (Sargolini et al. 2006)",
+   "description": "Tests three conclusions of Sargolini et al. (2006) on dandiset 000582, which holds spike times and tracked positions for 620 cell-sessions from the medial entorhinal cortex of 15 rats. For every cell it computes a grid score, head-direction tuning and speed tuning, with chance levels from time-shifted spike trains, and compares the cell types found in each cortical layer.",
+   "dandisets": [
+    "000582"
+   ],
+   "papers": [
+    "10.1126/science.1125572"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_sargolini_2006.ipynb",
+     "title": "Reproducing Sargolini et al. (2006) from dandiset 000582",
+     "executed": "notebooks/000582-sargolini-2006/reproduce_sargolini_2006.html"
+    }
+   ]
+  }
+ ]
+}
