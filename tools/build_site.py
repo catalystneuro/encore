@@ -1030,7 +1030,7 @@ def page_dandiset(data: dict, dandiset: str) -> str:
         provenance_html += ('<p class="sub small" style="margin-top:14px">Earlier attempts: ' + ", ".join(
             f'{e(x["id"])} ({e(x["date"])})' for x in earlier) + "</p>")
 
-    actions = [f'<a href="https://dandiarchive.org/dandiset/{e(dandiset)}">View on DANDI</a>']
+    actions = [f'<a href="https://dandiarchive.org/dandiset/{e(dandiset)}" target="_blank" rel="noopener">View on DANDI</a>']
     actions += [f'<a href="https://doi.org/{e(a["paper"])}">Paper</a>' for a in atts] if len(atts) == 1 else []
     actions += [f'<a href="{root}api/dandiset/{e(dandiset)}.json">JSON</a>',
                 f'<a href="{root}#caution">How to read outcomes</a>']
