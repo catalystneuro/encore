@@ -14,12 +14,12 @@ waveforms, head direction, position and sleep stages.
 | No differences in contamination, rates, vector length (juvenile, adult) | Reproduced (2 claims) |
 | Juvenile Fmr1-/y cells more sharply tuned | Partially reproduced (HD information yes, width no) |
 | Juvenile Fmr1-/y tuning curves drift less within a session | Reproduced |
-| Juvenile Fmr1-/y decoder drift lower | Not reproduced (p = 0.079, same direction) |
-| Juvenile Fmr1-/y better tuned to the waking Isomap angle | Reproduced (p = 0.046) |
-| Juvenile Fmr1-/y better tuned to the REM Isomap angle | Not reproduced (p = 0.056, same direction) |
+| Juvenile Fmr1-/y decoder drift lower | Not reproduced (p = 0.085, same direction) |
+| Juvenile Fmr1-/y better tuned to the waking Isomap angle | Not reproduced (p = 0.056, same direction) |
+| Juvenile Fmr1-/y better tuned to the REM Isomap angle | Reproduced (p = 0.045) |
 | Adult tuning, Isomap tuning (waking and REM) unchanged | Reproduced (3 claims) |
 | Adult Fmr1-/y drift more, within and between sessions, and by decoding | Reproduced (3 claims) |
-| Correlations of HD information (halves, sessions, Isomap) | 1 reproduced, 7 partially reproduced |
+| Correlations of HD information (halves, sessions, Isomap) | 1 reproduced, 5 partially reproduced, 2 not reproduced |
 | Juvenile drift between sessions unchanged | Reproduced |
 | Probe tracts in PoSub (histology) | Blocked |
 
@@ -28,11 +28,12 @@ the differences from the paper's method.
 
 The archive labels H3026 as wild type and gives H3029 an adult's birth date; the paper's unit counts
 match only if H3026 is a juvenile Fmr1-/y rat and H3029 a juvenile wild-type rat, and the analysis uses
-that grouping, with the archive's labels as a variant. H4825's file is a re-timed copy of H4824's
+that grouping, with the archive's labels and the juvenile results without H3026 as variants. Several juvenile effects
+are near p = 0.05 and lose significance under these variants. H4825's file is a re-timed copy of H4824's
 recording, so one adult Fmr1-/y rat is missing. The attempt record, with the reasons and the differences
 from the paper's method, is [`attempts/001699-moore-2025-01.yaml`](../../attempts/001699-moore-2025-01.yaml).
 
-- `reproduce_moore_2025.ipynb`: the analysis. It takes about three minutes, most of it streaming the
-  units and tracking of the 36 files in parallel.
+- `reproduce_moore_2025.ipynb`: the analysis. It takes about five minutes, most of it streaming the
+  units and tracking of the 36 files and fitting Isomap, in parallel.
 - `hdfx.py`: loading, cell selection, tuning curves, HD information, offsets, the decoder, Isomap and
   the mixed-model test. Other notebooks on this dandiset can import it.

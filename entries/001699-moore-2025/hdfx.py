@@ -40,9 +40,8 @@ Where the parameters come from:
 - Common choices where neither says: the half maximum is half the peak rate; a curve that
   never falls below it has half-width 360 degrees; tracking gaps up to 1 s are interpolated;
   for the two files with positions in pixels, the scale makes the x extent of the exploration
-  tracking equal to the 73 cm arena diameter; Isomap and kernel PCA are fitted on at most
-  `ISOMAP_FIT_MAX` bins chosen with a fixed seed and applied to all bins, to keep the run
-  short.
+  tracking equal to the 73 cm arena diameter; each exploration session is the first 20 min (`SESSION_S`, the paper's session
+  length) of its tracking block.
 """
 
 from __future__ import annotations
@@ -71,10 +70,10 @@ TC_BINS, TC_SIGMA = 360, 6.0          # 1 degree bins, 6 degree SD
 ISO_BINS, ISO_SIGMA = 60, 2.0         # 6 degree bins, 12 degree SD (2 bins)
 POP_BIN_S, POP_SMOOTH_S = 0.2, 0.4
 ISOMAP_NEIGHBOURS, KPCA_COMPONENTS = 30, 6
-ISOMAP_FIT_MAX = 3000
+ISOMAP_FIT_MAX = None     # fit on every bin, as in the paper; a number fits on that many bins
 MIN_CELLS_POP = 6
 HAMPEL_WINDOW_S, DRIFT_SMOOTH_S = 5.0, 0.8
-SESSION_CAP_S = 1300.0    # a tracking block over 30 min holds more than one session
+SESSION_S = 1200.0        # 20 min sessions (paper v1); longer tracking blocks are cut
 MIN_SESSION_S = 600.0
 
 
@@ -153,6 +152,8 @@ def load_session(asset_id):
          "session_id": _str(f["general/session_id"][()]),
          "session_start": _str(f["session_start_time"][()])[:10],
          "session_description": _str(f["session_description"][()])}
+    acq = f.get("acquisition", {})
+    s["histology"] = sorted(acq["histology_images"].keys()) if "histology_images" in acq else []
     s["epochs"] = _tagged(f["intervals/epochs"])
     s["sleep_stages"] = _tagged(f["intervals/sleep_stages"])
     tasks = f["processing/tasks"]
@@ -185,7 +186,7 @@ def load_session(asset_id):
     return s
 
 
-def load_all(asset_ids, workers=8):
+def load_all(asset_ids, workers=4):
     with ProcessPoolExecutor(workers) as ex:
         return list(ex.map(load_session, asset_ids))
 
@@ -235,8 +236,8 @@ def tracking_blocks(t, gap=5.0):
 
 def exploration_sessions(s):
     """The first tracking block of at least MIN_SESSION_S (session 1) and the first such block
-    starting at least 60 min later (session 2, after the sleep), each capped at SESSION_CAP_S
-    when longer than 30 min."""
+    starting at least 60 min later (session 2, after the sleep), each cut to its first
+    SESSION_S seconds."""
     blocks = [(a, b) for a, b in tracking_blocks(s["t"]) if b - a >= MIN_SESSION_S]
     out = []
     if blocks:
@@ -244,7 +245,7 @@ def exploration_sessions(s):
         later = [blk for blk in blocks[1:] if blk[0] - blocks[0][0] >= 3600]
         if later:
             out.append(later[0])
-    return [(a, a + SESSION_CAP_S) if b - a > 1800 else (a, b) for a, b in out]
+    return [(a, min(b, a + SESSION_S)) for a, b in out]
 
 
 def pixel_scale(s, sessions):
@@ -272,14 +273,11 @@ def smooth_circular(arr, sigma_bins):
 
 
 def frame_counts(spikes, t, dt):
-    """Spike counts per tracking frame, frame i covering t[i] - dt/2 to t[i] + dt/2."""
-    edges = np.r_[t - dt / 2, t[-1] + dt / 2]
+    """Spike counts per tracking frame, frame i covering t[i] - dt/2 to t[i] + dt/2. Each frame
+    is counted on its own window, so the frames need not be contiguous (speed-filtered)."""
     out = np.zeros((len(spikes), len(t)))
     for i, sp in enumerate(spikes):
-        c = np.histogram(sp, edges)[0]
-        out[i] = c
-    gaps = np.r_[np.diff(t) > 2 * dt, False]
-    out[:, gaps] = 0  # frames at the edge of a gap do not take the gap's spikes
+        out[i] = np.searchsorted(sp, t + dt / 2) - np.searchsorted(sp, t - dt / 2)
     return out
 
 
@@ -391,7 +389,9 @@ def hampel(x, window, n_sd=1.0):
 def drift(track, spikes, a, b, speed_min=SPEED_POP, tc_speed=SPEED_POP):
     """Decoder drift within one exploration session (paper v2 Methods): tuning curves from the
     first half, decoding of the second half; returns mean absolute drift and its SD (degrees)
-    over bins with speed above speed_min."""
+    over bins with speed above speed_min, and the counts of second-half bins: all, with valid
+    tracking, and valid with speed above speed_min (the bins averaged). The error is unwrapped
+    over the valid bins and interpolated across the invalid ones."""
     mid = (a + b) / 2
     m1 = (track["t"] >= a) & (track["t"] < mid) & track["valid"] & (track["speed"] > tc_speed)
     counts = frame_counts(spikes, track["t"][m1], track["dt"])
@@ -400,19 +400,22 @@ def drift(track, spikes, a, b, speed_min=SPEED_POP, tc_speed=SPEED_POP):
     hd_b, sp_b, ok_b = bin_angle(track, centres)
     dec = bayesian_decode(tc, pv, POP_BIN_S)
     e = np.angle(np.exp(1j * (hd_b - dec)))
-    e = np.unwrap(np.where(ok_b, e, np.interp(np.arange(len(e)), np.where(ok_b)[0], e[ok_b])))
+    good = np.where(ok_b)[0]
+    e = np.interp(np.arange(len(e)), good, np.unwrap(e[good]))
     e = hampel(e, int(HAMPEL_WINDOW_S / POP_BIN_S))
     e = gaussian_filter1d(e, DRIFT_SMOOTH_S / POP_BIN_S, mode="nearest")
     e = np.angle(np.exp(1j * e))
     keep = ok_b & (sp_b > speed_min)
     d = np.degrees(np.abs(e[keep]))
-    return float(d.mean()), float(np.degrees(np.std(e[keep]))), int(keep.sum())
+    return (float(d.mean()), float(np.degrees(np.std(e[keep]))),
+            {"bins": len(e), "valid": int(ok_b.sum()), "used": int(keep.sum())})
 
 
-def isomap_angle(pv, seed):
+def isomap_angle(pv, seed, fit_max=ISOMAP_FIT_MAX):
     """Isomap angle of population vectors (paper v1): square root, z-score per cell, unit norm,
     Laplacian kernel PCA to 6 components, Isomap (30 neighbours, 2 dimensions), angle around
-    the manifold's centre. Fitted on at most ISOMAP_FIT_MAX bins, applied to all."""
+    the manifold's centre. Fitted on every bin, or on fit_max bins chosen with the seed and
+    applied to all."""
     from sklearn.decomposition import KernelPCA
     from sklearn.manifold import Isomap
     from sklearn.metrics.pairwise import laplacian_kernel
@@ -422,9 +425,10 @@ def isomap_angle(pv, seed):
     norm = np.linalg.norm(x, axis=1)
     x = x / np.where(norm > 0, norm, 1)[:, None]
     rng = np.random.default_rng(seed)
-    fit = np.sort(rng.choice(len(x), min(len(x), ISOMAP_FIT_MAX), replace=False))
-    kp = KernelPCA(n_components=KPCA_COMPONENTS, kernel="precomputed").fit(laplacian_kernel(x[fit]))
+    fit = np.sort(rng.choice(len(x), min(len(x), fit_max or len(x)), replace=False))
+    kp = KernelPCA(n_components=KPCA_COMPONENTS, kernel="precomputed", random_state=seed).fit(laplacian_kernel(x[fit]))
     z = kp.transform(laplacian_kernel(x, x[fit]))
+    np.random.seed(seed)  # Isomap's eigensolver draws its starting vector from the global generator
     iso = Isomap(n_neighbors=ISOMAP_NEIGHBOURS, n_components=2).fit(z[fit])
     y = iso.transform(z)
     y = y - y.mean(0)
@@ -533,8 +537,9 @@ def _mask(t, intervals):
     return m
 
 
-def analyse(s, age_group, seed=0):
-    """Every per-cell and per-recording measure the claims use, for one recording."""
+def analyse(s, age_group, seed=0, fit_max=ISOMAP_FIT_MAX):
+    """Every per-cell and per-recording measure the claims use, for one recording. fit_max is
+    the number of bins Isomap is fitted on (None: all)."""
     out = {"cells": None, "rec": {}}
     sessions = exploration_sessions(s)
     rec = out["rec"]
@@ -605,13 +610,14 @@ def analyse(s, age_group, seed=0):
         cells["offset_epochs"] = np.where(n2 >= MIN_SPIKES, offset_deg(tc, tc2), np.nan)
 
     if len(spk) >= MIN_CELLS_POP:
-        rec["drift_mean"], rec["drift_sd"], rec["drift_bins"] = drift(tr, spk, a, b)
+        rec["drift_mean"], rec["drift_sd"], nb = drift(tr, spk, a, b)
+        rec["drift_bins_all"], rec["drift_bins_valid"], rec["drift_bins"] = nb["bins"], nb["valid"], nb["used"]
         rec["drift_mean_v2"], rec["drift_sd_v2"], _ = drift(tr, spk, a, b, speed_min=1.5, tc_speed=1.5)
 
         # Isomap of the waking session
         centres, pv, raw = pop_bins(spk, a, b, raw=True)
         hd_b, sp_b, ok_b = bin_angle(tr, centres)
-        iso = isomap_angle(pv, seed)
+        iso = isomap_angle(pv, seed, fit_max)
         use = ok_b & (sp_b > SPEED_POP)
         iso_al, flipped = align_direction(iso, hd_b)
         rec["iso_flipped"] = bool(flipped)
@@ -622,31 +628,55 @@ def analyse(s, age_group, seed=0):
         cells["iso_wake_info"] = hd_info(tci, occi)
         cells["real200_info"] = hd_info(tcr, occr)
 
-        # Isomap of REM sleep
+        # Isomap of REM sleep on every REM interval of the file; a variant leaves out the REM
+        # intervals that overlap an exploration session, computed only where there are any
         st = s["sleep_stages"]
-        rem = st[st.tag == "rem"][["start", "stop"]].to_numpy()
-        rec["rem_s"] = float((rem[:, 1] - rem[:, 0]).sum()) if len(rem) else 0.0
-        nrem_spk = np.array([np.sum(_mask(x_, rem)) for x_ in spk])
-        cells["n_spikes_rem"] = nrem_spk
-        rsel = np.where(nrem_spk >= MIN_SPIKES)[0]
-        rec["n_cells_rem"] = len(rsel)
-        if rec["rem_s"] >= 60 and len(rsel) >= MIN_CELLS_POP:
-            pvs, raws = [], []
-            sub = [spk[i] for i in rsel]
-            for ra, rb in rem:
-                if rb - ra < 2 * POP_BIN_S:
-                    continue
-                _, p_, r_ = pop_bins(sub, ra, rb, raw=True)
-                pvs.append(p_)
-                raws.append(r_)
-            pv_r, raw_r = np.vstack(pvs), np.vstack(raws)
-            ang = isomap_angle(pv_r, seed + 1)
-            tcm, occm = binned_tuning(ang, raw_r)
-            info = np.full(len(spk), np.nan)
-            info[rsel] = hd_info(tcm, occm)
-            cells["iso_rem_info"] = info
-            rec["rem_bins"] = len(pv_r)
+        rem_all = st[st.tag == "rem"][["start", "stop"]].to_numpy()
+        overlap = np.array([any(ra < sb and rb > sa for sa, sb in exploration_blocks(s)) for ra, rb in rem_all], bool)
+        rec["rem_in_sessions"] = int(overlap.sum())
+        rec["rem_in_sessions_s"] = float((rem_all[overlap, 1] - rem_all[overlap, 0]).sum()) if overlap.any() else 0.0
+        for col, rem in (("iso_rem_info", rem_all), ("iso_rem_info_outside", rem_all[~overlap] if overlap.any() else None)):
+            if rem is None:
+                cells[col] = cells["iso_rem_info"] if "iso_rem_info" in cells else np.nan
+                continue
+            r = _rem_isomap(spk, rem, seed + 1, fit_max)
+            if col == "iso_rem_info":
+                rec["rem_s"], rec["n_cells_rem"], rec["rem_bins"] = r["rem_s"], r["n_cells"], r["bins"]
+                cells["n_spikes_rem"] = r["n_spikes"]
+            cells[col] = r["info"]
     out["cells"] = cells
+    return out
+
+
+def exploration_blocks(s):
+    """The whole tracking blocks that hold the exploration sessions (before any cut)."""
+    starts = {a for a, _ in exploration_sessions(s)}
+    return [(a, b) for a, b in tracking_blocks(s["t"]) if a in starts]
+
+
+def _rem_isomap(spk, rem, seed, fit_max):
+    """HD information of the cells' tuning to the Isomap angle of REM population activity, for
+    cells with at least MIN_SPIKES spikes in REM, when there are at least 60 s of REM and
+    MIN_CELLS_POP such cells."""
+    rem_s = float((rem[:, 1] - rem[:, 0]).sum()) if len(rem) else 0.0
+    n_spk = np.array([np.sum(_mask(x_, rem)) for x_ in spk])
+    rsel = np.where(n_spk >= MIN_SPIKES)[0]
+    out = {"rem_s": rem_s, "n_cells": len(rsel), "n_spikes": n_spk, "bins": 0, "info": np.full(len(spk), np.nan)}
+    if rem_s < 60 or len(rsel) < MIN_CELLS_POP:
+        return out
+    pvs, raws = [], []
+    sub = [spk[i] for i in rsel]
+    for ra, rb in rem:
+        if rb - ra < 2 * POP_BIN_S:
+            continue
+        _, p_, r_ = pop_bins(sub, ra, rb, raw=True)
+        pvs.append(p_)
+        raws.append(r_)
+    pv_r, raw_r = np.vstack(pvs), np.vstack(raws)
+    ang = isomap_angle(pv_r, seed, fit_max)
+    tcm, occm = binned_tuning(ang, raw_r)
+    out["info"][rsel] = hd_info(tcm, occm)
+    out["bins"] = len(pv_r)
     return out
 
 
@@ -694,15 +724,20 @@ def process(asset_id, seed=0):
         "n_units": len(s["spikes"]), "n_spikes": s["n_spikes_total"], "spike_checksum": s["spike_checksum"],
         "unit_columns": ",".join(s["unit_columns"]), "n_unsorted_units": s["n_unsorted_units"],
         "n_channels": s["n_channels"], "n_positive": int(s["positive"].sum()),
+        "histology_images": ", ".join(s["histology"]),
         "pos_unit": s["pos_unit"], "px_per_cm": px,
         "pos_x_range": (float(np.nanmin(s["pos"][:, 0])), float(np.nanmax(s["pos"][:, 0]))),
         "pos_y_range": (float(np.nanmin(s["pos"][:, 1])), float(np.nanmax(s["pos"][:, 1]))),
         "hd_range": (float(np.nanmin(s["hd"])), float(np.nanmax(s["hd"]))),
         "hd_nan_fraction": float(np.mean(np.isnan(s["hd"]))),
+        "pos_nan_frames": int(np.isnan(s["pos"][:, 0]).sum()),
+        "pos_y_zero_frames": int(np.sum(s["pos"][:, 1] == 0)), "pos_x_zero_frames": int(np.sum(s["pos"][:, 0] == 0)),
+        "pos_y_zero_in_sessions": int(np.sum((s["pos"][:, 1] == 0) & _mask(s["pos_t"], sessions))),
+        "pos_y_zero_hd_nan": int(np.sum((s["pos"][:, 1] == 0) & np.isnan(s["hd"]))) if len(s["hd"]) == len(s["pos"]) else None,
         "frame_rate": float(1 / np.median(np.diff(s["t"]))), "same_pos_hd_times": bool(np.array_equal(s["pos_t"], s["t"])),
         "epochs": s["epochs"], "task_epochs": s["task_epochs"], "blocks": tracking_blocks(s["t"]),
         "sessions": sessions, "emg_median": emg,
-        "rem_in_exploration": int(sum(((rem[:, 0] < b) & (rem[:, 1] > a)).sum() for a, b in sessions)) if len(rem) else 0,
+        "rem_in_exploration": int(sum(((rem[:, 0] < b) & (rem[:, 1] > a)).sum() for a, b in exploration_blocks(s))) if len(rem) else 0,
         "sleep_s": {tag: float((st.stop - st.start)[st.tag == tag].sum()) for tag in ("wake", "nrem", "rem")},
         "ttp": s["ttp"], "contamination": s["contamination"],
         "first_spikes": np.concatenate([x[:20] for x in s["spikes"]]),
@@ -722,6 +757,6 @@ def process(asset_id, seed=0):
     return {"meta": meta, "main": res, "other_age": other}
 
 
-def process_all(asset_ids, workers=8):
+def process_all(asset_ids, workers=4):
     with ProcessPoolExecutor(workers) as ex:
         return list(ex.map(process, asset_ids, range(len(asset_ids))))
