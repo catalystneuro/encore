@@ -537,7 +537,8 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
           description: str = SITE_DESCRIPTION, structured: dict | None = None) -> str:
     r = rows_cache(data)
     tabs = [("overview", "Overview", root or "./", None),
-            ("dandisets", "Dandisets", f"{root}dandisets/", len({a["dandiset"] for a in data["attempts"]}))]
+            ("dandisets", "Dandisets", f"{root}dandisets/", len({a["dandiset"] for a in data["attempts"]})),
+            ("about", "About", f"{root}about/", None)]
     nav = ""
     for key, label, href, n in tabs:
         current = ' aria-current="page"' if key == active else ""
@@ -792,9 +793,9 @@ def page_overview(data: dict) -> str:
     redirect = json.dumps({a["id"]: a["dandiset"] for a in data["attempts"]})
     body = f'''<header class="page" id="top">
   <h1>Can the findings of a paper be reproduced from its open data?</h1>
-  <p class="lede">Agents and people take papers whose data is on the <a href="https://dandiarchive.org">DANDI Archive</a>
-  and try to reproduce their key findings from that data alone. Every finding gets an outcome, whether or not it
-  worked, and every attempt records what it learned about the data. The notebooks are a starting point for new analyses.</p>
+  <p class="lede">AI agents try to reproduce the key findings of papers from their open data on the
+  <a href="https://dandiarchive.org">DANDI Archive</a>. Independent agents check each attempt, and every finding gets
+  an outcome, whether or not it reproduced. <a href="about/">How it works</a></p>
   {"" if dashboard else f'<div class="tiles">{tile_html}</div>'}
 </header>
 <main>
@@ -820,6 +821,70 @@ def page_overview(data: dict) -> str:
     }
     return shell(data, "Reproduction registry: can the findings of a paper be reproduced from its open data?", "",
                  "overview", body, scripts, path="", structured=structured)
+
+
+ABOUT_STEPS = [
+    ("Choose a target",
+     "The queue holds every public dandiset on the DANDI Archive whose metadata names a paper. Dandisets converted "
+     "by CatalystNeuro go first."),
+    ("Write down the claims",
+     "An author agent reads the paper and records its key findings as claims, each with the numbers it rests on, a "
+     "tolerance, and the test that will decide it. The claims are written before any analysis is run."),
+    ("Check the data and test each claim",
+     "The author checks the dandiset against its own description, then writes a notebook that streams the data from "
+     "the archive and tests each claim. Every claim gets an outcome: reproduced, partially reproduced, not reproduced, "
+     "or blocked, with the reason. What the author learns about the data along the way is recorded as findings."),
+    ("First verification",
+     "A second agent, in a separate run that has not seen the author's reasoning or conclusions, reviews the notebook "
+     "and the paper and decides its own outcome for each claim. The author then answers each point, revising the "
+     "analysis where needed."),
+    ("Second verification",
+     "The verifier sees the author's conclusions, checks every sentence of them against the outputs, and says whether "
+     "it agrees with each outcome. The author revises once more. Any change of outcome proposed after this goes to a "
+     "third round that reviews only those changes."),
+    ("Record and publish",
+     "The attempt is added to the registry's records. The notebook runs again in a clean environment, "
+     "and once the checks pass the attempt is merged and appears here."),
+]
+
+
+def page_about(data: dict) -> str:
+    """How an attempt is made: the agents, their roles, and where they run."""
+    root = "../"
+    steps = "".join(f'<li><h3>{e(head)}</h3><p>{e(text)}</p></li>' for head, text in ABOUT_STEPS)
+    body = f'''<header class="page">
+  <h1>How the registry works</h1>
+  <p class="lede">Every attempt here is made by AI agents, in a fixed sequence of roles, following a
+  <a href="{REPO_URL}/blob/main/docs/protocol.md">written protocol</a>. The author and the verifiers are separate runs
+  that do not share their reasoning.</p>
+</header>
+<main class="about">
+  <div class="panel"><h2>An attempt, step by step</h2><ol class="steps">{steps}</ol></div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="panel"><h2>Where the agents run</h2>
+      <p>Each role runs in GitHub Actions on a fresh machine with no personal configuration. The agent's commands
+      cannot see the credentials it runs on, and a verifier sees only the materials it is given: the repository is
+      removed before it starts. Each run commits its work, its cleaned transcript and its report, so every step can
+      be read afterwards in the <a href="{REPO_URL}/tree/main/transcripts">transcripts</a> and the
+      <a href="{REPO_URL}/actions">agent runs</a>.</p></div>
+    <div class="panel"><h2>Reading an outcome</h2>
+      <p>An outcome says what one attempt could recover from the data in a dandiset, with the methods available to it.
+      A failure to reproduce may be a failure of the attempt, and is not a finding that the paper is wrong. Claims that
+      also use data from outside the dandiset, or that rest on data the paper deposited in another archive, are counted
+      apart. <a href="{root}#caution">More on reading outcomes</a></p></div>
+    <div class="panel"><h2>Repeat attempts</h2>
+      <p>When a dandiset changes, for example after its data are corrected, or when the protocol changes, a new attempt
+      can be made on the same paper. The author agent then reports, for each earlier finding, whether it is fixed,
+      partly fixed or still present. Earlier attempts stay in the record.</p></div>
+    <div class="panel"><h2>Disagreeing with an attempt</h2>
+      <p>The agents make mistakes. If you are an author of a paper here, or know the data, and think an attempt is
+      wrong, <a href="{REPO_URL}/issues">open an issue</a> on the registry. Every attempt links to its notebook, its
+      claims and the reasoning behind each outcome.</p></div>
+  </div>
+</main>'''
+    return shell(data, "How the registry works · Reproduction registry", root, "about", body, path="about/",
+                 description="How AI agents attempt to reproduce papers from their open data on the DANDI Archive: "
+                             "the claims, the author and verifier roles, and where the agents run.")
 
 
 LISTS = {
@@ -1181,6 +1246,8 @@ def build(data: dict, output: Path) -> None:
     for sub in ("dandisets", "data", "api/dandiset"):
         (output / sub).mkdir(parents=True, exist_ok=True)
     (output / "index.html").write_text(page_overview(data))
+    (output / "about").mkdir(exist_ok=True)
+    (output / "about" / "index.html").write_text(page_about(data))
     for kind in LISTS:
         (output / kind / "index.html").write_text(page_list(data, kind))
         (output / "data" / f"{kind}.json").write_text(json.dumps(r[kind], separators=(",", ":")) + "\n")
@@ -1202,7 +1269,8 @@ def build(data: dict, output: Path) -> None:
 
 def sitemap(data: dict) -> str:
     """Every page of the site, for search engines; each dandiset page dated by its latest attempt."""
-    pages = [("", data["generated"][:10])] + [(f"{kind}/", data["generated"][:10]) for kind in LISTS]
+    pages = [("", data["generated"][:10]), ("about/", data["generated"][:10])]
+    pages += [(f"{kind}/", data["generated"][:10]) for kind in LISTS]
     pages += [(f"dandisets/{d}/", max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'

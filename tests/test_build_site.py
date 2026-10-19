@@ -297,3 +297,12 @@ def test_a_preview_is_kept_out_of_search_results(tmp_path):
     data["noindex"] = True
     site.build(data, tmp_path)
     assert '<meta name="robots" content="noindex">' in (tmp_path / "index.html").read_text()
+
+
+def test_the_about_page_explains_the_roles_and_is_in_the_nav(built):
+    data, out = built
+    about = (out / "about" / "index.html").read_text()
+    assert "How the registry works" in about and "First verification" in about
+    assert 'aria-current="page">About' in about
+    assert 'href="about/">About' in (out / "index.html").read_text()
+    assert f"<loc>{site.SITE_URL}about/</loc>" in (out / "sitemap.xml").read_text()
