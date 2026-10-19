@@ -37,7 +37,7 @@ outcomes:
   output: claim:resident-is-black
   notes: In 746 of 794 sampled frames (every 30th) the body centres are at least 60 px apart; in all of
     them the 12 px patch on the resident is darker than the one on the intruder (median grey level
-    46.4 against 250.9). With 6 and 24 px patches the fractions are 0.996 and 1.000, with separations
+    46.4 against 250.9). With 8 and 24 px patches the fractions are 0.997 and 1.000, with separations
     of 30 and 120 px 0.999 and 1.000, and 1.0 in every minute.
   deviations:
   - The coat colour test (grey level of the video at the body centre) was chosen here; the paper states
@@ -63,8 +63,8 @@ outcomes:
   output: claim:contact-during-social-behaviors
   notes: Median distance from the resident's nose to the nearest intruder keypoint is 21.4 px in 4,679
     investigation frames and 15.0 px in 2,894 mount frames, against 376.0 px in 16,237 other frames
-    (differences -354.6 and -361.0 px, 95% block bootstrap intervals -407.3 to -292.7 and -412.0 to
-    -304.2). The centroid distance gives -307.2 and -355.5 px, with intervals excluding 0, and each half
+    (differences -354.6 and -361.0 px, 95% block bootstrap intervals -408.9 to -295.2 and -413.6 to
+    -303.8, with blocks of contiguous session time). The centroid distance gives -307.2 and -355.5 px, with intervals excluding 0, and each half
     of the session gives the same order. Attack is absent from the session, so the attack part of the
     statement is untested.
   deviations:
@@ -79,8 +79,16 @@ outcomes:
     IQR. In the closest 10% of frames (centroid distance at most 66.4 px) the fraction is 0.131 against
     0.016 elsewhere (difference 0.115, 95% interval 0.064 to 0.179). In the fastest 10% (at least 389
     px/s) it is 0.010 against 0.030 (difference -0.020, interval -0.033 to -0.008), the reverse of the
-    claim. Both directions hold at 5% and 20% and with a factor of 1.5. Error fractions by label are
-    0.045 (investigation), 0.105 (mount) and 0.009 (other).
+    claim. Both directions hold at 5% and 20% and with a factor of 1.5. With the speed taken as the
+    running median of the larger speed per frame, the fast difference is -0.020 (interval -0.033 to
+    -0.008) at 10% and -0.011 (interval -0.025 to 0.001) at 20%. Error fractions by label are 0.045
+    (investigation), 0.105 (mount) and 0.009 (other), so a hunched posture in mount could give real
+    outliers. Checked against the MARS confidence of the same frames, flagged close frames have a lower
+    confidence than unflagged close frames (median 0.574 against 0.657, difference -0.082, interval
+    -0.107 to -0.050), and in each of eight flagged close frames drawn at random and shown with the
+    video, at least one segment visibly runs across the other mouse or the background (judged by eye).
+    The flags in close frames therefore mark mostly tracking errors, though the share of real postures
+    among them is not measured.
   deviations:
   - The dandiset has no confidence values, so pose errors are counted with an anatomical proxy chosen
     here; the paper gives no measure of pose error.
@@ -104,8 +112,9 @@ outcomes:
     -0.074), most of all for the intruder (-0.149 against -0.031 for the resident). In the fastest 10%
     of frames it is higher (0.751 against 0.732, difference 0.018, interval 0.012 to 0.025), the reverse
     of the claim. Both hold at 5% and 20%. The confidence correlates with the body-length error flags of
-    pose-errors-close-fast (point-biserial r = -0.366). The link holds in full, so the match of scores
-    to frames is exact.
+    pose-errors-close-fast (point-biserial r = -0.366). With the speed taken as the running median of
+    the larger speed per frame, the fast difference is 0.018 (interval 0.012 to 0.025). The link holds
+    in full, so the match of scores to frames is exact.
   deviations:
   - Confidence is a proxy for pose error; the paper gives no measure.
   - The confidence scores come from CaltechDATA, as the dandiset's are missing.
@@ -119,7 +128,8 @@ outcomes:
   - 262107
   - 19
   notes: The training file holds 70 sequences with 507,738 frames and the test file 19 with 262,107, as
-    reported. Annotation lengths equal the frame counts of the scores in every sequence.
+    reported. Annotation lengths equal the frame counts of the scores in every sequence, and the frame
+    counts of the keypoints and the scores agree in all 574 sequences of the deposit.
 - claim: table5-task2-counts
   outcome: partially_reproduced
   notebook: reproduce_sun_2021.ipynb
@@ -127,8 +137,9 @@ outcomes:
   measured: [139122, 6, 286810, 13, 135623, 6, 150919, 6, 107420, 6, 77079, 4, 108325, 6, 76174, 4,
     92383, 6, 364007, 20]
   notes: 19 of 20 counts match exactly. Annotator 1's training set has 139,122 frames where Table 5 gives
-    139,112 (10 frames, 0.007%); its six sequences match. Annotator ids in the metadata agree with
-    those in the keys.
+    139,112 (10 frames, 0.007%); its six sequences match. The six sequences have the same frame counts
+    in scores, keypoints and annotations; the paper gives no per-sequence counts, so the sequence that
+    holds the 10 frames is not known. Annotator ids in the metadata agree with those in the keys.
 - claim: table5-task3-counts
   outcome: reproduced
   notebook: reproduce_sun_2021.ipynb
@@ -157,11 +168,13 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_sun_2021.ipynb
   output: claim:fig4b-task2-label-fractions
-  measured: [59.98, 20.58, 16.20, 3.25, 65.51, 25.82, 3.40, 5.27, 68.91, 13.49, 9.50, 8.09, 75.23, 11.62,
-    4.46, 8.69, 69.53, 26.42, 1.03, 3.03]
+  measured: [59.977, 20.578, 16.199, 3.247, 65.511, 25.816, 3.398, 5.274, 68.910, 13.495, 9.505, 8.091,
+    75.232, 11.623, 4.456, 8.689, 69.532, 26.415, 1.027, 3.025]
   notes: Under the training split with the class order of the Task 1 pie (other, investigation, mount,
     attack), all 20 percentages are within 0.05 of the figure's values; the best assignment of classes
-    gives the same 20. Training and test together match 1 of 20 under either class reading.
+    gives the same 20. The closest case is annotator 1 attack, 4,517 of 139,122 frames (3.2468%, 0.047
+    from 3.2), which would stay within 0.05 with up to 4 more attack frames. Training and test together
+    match 1 of 20 under either class reading.
   deviations:
   - The Task 2 pies carry no class names; the order was read from the Task 1 pie, and the alternative
     reading (best assignment) was listed before the analysis. Both match.
@@ -179,7 +192,8 @@ outcomes:
   measured:
   - 282
   - 5952058
-  notes: The unlabeled set has 282 sequences and 5,952,058 frames (55.1 h). Annotated frames are 769,845
+  notes: The unlabeled set has 282 sequences and 5,952,058 frames (55.1 h), counted the same in the
+    keypoints and the scores. Annotated frames are 769,845
     (7.1 h) in Task 1, 3,243,734 (30.0 h) over all labelled sets, and 2,273,674 (21.1 h) with each
     recording counted once; tracked pose including the unlabeled set is 62.2, 85.2 and 76.2 h. So the
     three "over" statements (1 million annotated frames, 10 hours of annotation, 70 hours of pose) hold
@@ -229,12 +243,15 @@ outcomes:
 - claim: fig7-errors-at-transitions
   outcome: blocked
   blocked_by: methods_underspecified
-  notes: Needs the baseline model's predictions; its code is unavailable (see table1-architectures).
+  notes: Needs the baseline model's predictions; its code is unavailable (see table1-architectures), so
+    the claim depends on a blocked claim. The predictions are also not deposited in either archive
+    (data_missing).
 - claim: fig11-annotator-similarity
   outcome: blocked
   blocked_by: methods_underspecified
   notes: Needs the trained top entry's annotator embedding; the entry's code is not linked and the
-    paper describes the model only in outline.
+    paper describes the model only in outline. The learned matrix is also not deposited in either
+    archive (data_missing).
 findings:
 - kind: data_missing
   statement: The MARS confidence scores, which CalMS21 distributes with every keypoint, are missing from
@@ -273,7 +290,8 @@ findings:
     the whole sequence). 93 of the 109 Task 3 test sequences are Task 1 training recordings, six Task 1
     test recordings (mouse071 among them) are Task 3 training sequences, and four Task 2 recordings are
     in the training set of one of annotators 3 and 4 and the test set of the other. The paper describes
-    each sequence as an independent observation and does not mention the overlap.
+    each sequence as an independent observation and does not mention the overlap, and the CaltechDATA
+    readme says that training and test sets are split by animal identity.
 - kind: paper_inconsistency
   statement: The paper's datasheet says the dataset does not include the raw videos, while Section 3.1
     says all source videos of Task 1 are released, and the deposit holds them. The datasheet also gives
@@ -286,3 +304,178 @@ findings:
     is not reachable and no archived copy of the repository was found; the code of the challenge's top
     entries is not linked. The paper leaves the architectures' settings to that code, so none of the
     benchmark results can be repeated.
+verifications:
+- date: 2026-10-19
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed, the
+    helper module and the claims file (commit cf06231).
+  results:
+  - claim: format-keypoints
+    agrees: true
+    outcome: partially_reproduced
+    reason: 14 correctly named series, pixels, 30 Hz, all coordinates inside 1024 x 570. But all 333,340
+      confidence values are NaN, and the criterion's partial rule covers exactly that case.
+    response: No change.
+  - claim: resident-is-black
+    agrees: true
+    outcome: reproduced
+    reason: With 746 frames at least 60 px apart and the 12 px patch, the resident is darker in 1.000 of
+      frames (median grey 46 vs 251). This holds in every minute and every patch-size variant. The
+      smallest patch is labelled 6 px but is 4 full-resolution pixels (h = 1 with STEP = 2), and the
+      slices are off-centre by half a pixel; the main 12 px patch is correct.
+    response: The patches are now centred on the body centre and the smallest is a true 8 px patch
+      (half-width 4 px). The 8 px fraction is 0.997; the main result is unchanged.
+  - claim: task1-vocab
+    agrees: true
+    outcome: reproduced
+    reason: Codes {attack 0, investigation 1, mount 2, other 3} and annotator "CalMS21 annotator 0". Bouts
+      tile 0 to 793.67 s with no gaps, so 0 unlabelled frames, and frame_labels raises on overlap. The
+      annotator check is a string test on free text; it is adequate here.
+    response: No change.
+  - claim: task1-video
+    agrees: true
+    outcome: reproduced
+    reason: 1024 x 570, 30 fps, 23,810 frames decoded, equal to the pose count. Motion energy peaks at lag
+      0. CaltechDATA also holds 89 Task 1 mp4s. Section 3.1 says the Task 1 videos are released, but the
+      datasheet says the dataset does not include the original raw videos; the dandiset mp4 is a
+      re-encode of CaltechDATA's.
+    response: No change; both points were already findings.
+  - claim: contact-during-social-behaviors
+    agrees: true
+    outcome: reproduced
+    reason: Nose-to-intruder minus other is -354.6 px for investigation and -361.0 px for mount, with
+      intervals far from 0; attack has 0 frames, so it is untested, as the criterion allows. The block
+      bootstrap runs on a concatenation of non-contiguous frames, so some 300-frame blocks straddle
+      removed stretches; the effect sizes are far from 0.
+    response: The block bootstrap now draws blocks of contiguous session time and keeps only the frames
+      of the two labels compared (new include argument of block_bootstrap_diff, tested on synthetic
+      data). The intervals are now -408.9 to -295.2 and -413.6 to -303.8; the outcome is unchanged.
+  - claim: pose-errors-close-fast
+    agrees: true
+    outcome: partially_reproduced
+    reason: Errors are higher in close frames (+0.115, CI 0.064 to 0.179) but lower in fast frames
+      (-0.020, CI -0.033 to -0.008), in every variant. The proxy flags body lengths outside the IQR
+      bounds; during mount and close investigation a hunched or occluded posture can produce real
+      outliers, so the close excess may partly reflect behaviour and not pose error, and the close half
+      is weaker evidence than its interval suggests. The order of the fast measure is ambiguous (running
+      median per mouse, then the maximum); the result is unlikely to change.
+    response: Added a check of the flags in close frames against the MARS confidence (flagged close
+      frames median 0.574 against 0.657 unflagged, difference -0.082, interval -0.107 to -0.050) and a
+      figure of eight flagged close frames with the keypoints drawn on the video, in each of which a
+      segment visibly runs across the other mouse or the background. Added the fast measure in the other
+      order as a variant (-0.020 at 10%, interval -0.033 to -0.008; at 20% the interval includes 0). The
+      outcome is unchanged.
+  - claim: link-mouse071
+    agrees: true
+    outcome: reproduced
+    reason: 23,810 frames in both, max coordinate difference 0 px, frame labels agree on 23,810 of 23,810.
+      The CaltechDATA confidence scores (0.03 to 0.98) are absent from the dandiset.
+    response: No change.
+  - claim: pose-errors-close-fast-confidence
+    agrees: true
+    outcome: partially_reproduced
+    reason: Median confidence is lower in close frames (-0.091, CI -0.107 to -0.074) but higher in fast
+      frames (+0.018, CI 0.012 to 0.025). The link it depends on is reproduced.
+    response: Added the fast measure in the other order as a variant (0.018, interval 0.012 to 0.025).
+      No change of outcome.
+  - claim: table5-task1-counts
+    agrees: true
+    outcome: reproduced
+    reason: 507,738 frames / 70 sequences (train) and 262,107 / 19 (test), all exact. The unlabelled frame
+      counts were not cross-checked against keypoints length.
+    response: Frames are now also counted in the keypoints field of every sequence; the two counts agree
+      in all 574 sequences.
+  - claim: table5-task2-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 19 of 20 counts are exact. Annotator 1 training frames are 139,122 against the paper's 139,112
+      (confirmed in the arXiv v4 text), within 10% but the tolerance is 0. A per-sequence frame table
+      for annotator 1's training set would show whether one sequence accounts for the gap.
+    response: Added the per-sequence table (frames in scores, keypoints and annotations). The paper gives
+      no per-sequence counts, so it cannot show which sequence holds the 10 frames.
+  - claim: table5-task3-counts
+    agrees: true
+    outcome: reproduced
+    reason: 28 of 28 counts exact.
+    response: No change.
+  - claim: table6-task1-label-fractions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Attack is 14,039 / 507,738 = 2.76501%, which misses the 0.005 tolerance around 2.76 by 9e-6.
+      The other three are within tolerance and all four are within 10%. Figure 4B's pie shows 2.8%,
+      consistent with 2.765. Raw integer counts per class would make the boundary cases auditable.
+    response: The table now prints the frame count of every class and the total, and percentages to five
+      decimals.
+  - claim: fig4b-task2-label-fractions
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a) training split in Task 1 class order, 20 of 20 within 0.05. Annotator 1 attack
+      prints as 3.25; it is 4521/139122 = 3.2497%, 0.0497 from 3.2, so the 20/20 result depends on a
+      single frame, and the 2-decimal printout hides this.
+    response: The table now prints the counts and percentages to four decimals. The count is 4,517
+      frames, not 4,521, so the value is 3.2468%, 0.047 from 3.2, and it stays within 0.05 with up to 4
+      more attack frames (printed). Measured values are now recorded to three decimals.
+  - claim: table7-task3-label-fractions
+    agrees: true
+    outcome: reproduced
+    reason: All 7 within tolerance under reading (a) (largest gap 0.045, intromission). In v4 these
+      percentages sit in the "% Frames" column of Table 7, the class-weight table.
+    response: The table now prints the frame counts behind each percentage.
+  - claim: dataset-size
+    agrees: true
+    outcome: reproduced
+    reason: 282 unlabelled sequences with 5,952,058 frames. The over-1M-frames, over-10 h and over-70 h
+      statements all hold under readings (b) and (c), and (c) counts duplicates once (2.27 M frames,
+      21.1 h annotated, 76.2 h pose). The unlabelled frame counts were not cross-checked against
+      keypoints length.
+    response: Added the count of unlabelled frames from the keypoints field (5,952,058, equal in all 282
+      sequences).
+  - claim: table10-task3-difficulty
+    agrees: true
+    outcome: partially_reproduced
+    reason: The percent-of-frames correlation is significant (train rho 0.786, p 0.024; test 0.929, p
+      0.003), but mean bout length is positive and not significant (train 0.321, p 0.249; test 0.607, p
+      0.083). Recomputed exactly from the printed features; the F1 constants match Table 10.
+    response: No change.
+  - claim: table1-architectures
+    agrees: true
+    outcome: blocked
+    reason: Model training is needed. The baseline repo timed out from here too, and GitHub has no
+      repository of that name. Neither the DANDI assets nor the CaltechDATA files hold predictions or
+      weights.
+    response: No change.
+  - claim: table2-task-programming
+    agrees: true
+    outcome: blocked
+    reason: Same as table1. The task-programming features are deposited, so only a reimplemented
+      baseline could be tried, not the paper's. The top-entry 0.864 cannot be tested (data_missing).
+    response: No change.
+  - claim: table3-task2-style-transfer
+    agrees: true
+    outcome: blocked
+    reason: Model outputs are needed and none are deposited.
+    response: No change.
+  - claim: table4-task3-new-behaviors
+    agrees: true
+    outcome: blocked
+    reason: Same. The "far below Tasks 1 and 2" comparison exists only between the paper's own reported
+      numbers.
+    response: No change.
+  - claim: fig7-errors-at-transitions
+    agrees: true
+    outcome: blocked
+    reason: Blocked by data_missing. Needs the baseline models' per-frame predictions, which are in
+      neither archive.
+    response: Kept methods_underspecified as the main reason. The predictions would come from the
+      baseline of table1-architectures, which is blocked by methods_underspecified, and a claim that
+      depends on a blocked claim is blocked for the same reason. The missing predictions are now given
+      in the notes as a second reason.
+  - claim: fig11-annotator-similarity
+    agrees: true
+    outcome: blocked
+    reason: Blocked by data_missing. Needs the top entry's learned annotator matrix. Its code is not
+      linked and the matrix is not deposited.
+    response: Kept methods_underspecified as the main reason, since the matrix is a model output and the
+      paper describes the model only in outline, so it could not be produced even with the data. The
+      missing matrix is now given in the notes as a second reason.

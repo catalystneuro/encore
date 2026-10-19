@@ -185,17 +185,22 @@ def nose_to_intruder(kp: np.ndarray) -> np.ndarray:
 
 
 def block_bootstrap_diff(values: np.ndarray, group: np.ndarray, block: int, n_boot: int,
-                         rng: np.random.Generator, stat=np.median) -> tuple[float, float, float]:
+                         rng: np.random.Generator, stat=np.median,
+                         include: np.ndarray | None = None) -> tuple[float, float, float]:
     """Difference stat(values[group]) - stat(values[~group]) with a 95% CI from a moving-block
-    bootstrap over frames (contiguous blocks of `block` frames, resampled with replacement)."""
+    bootstrap over frames (contiguous blocks of `block` frames of the session, resampled with
+    replacement). With `include`, only the frames where it is True enter either group; the blocks
+    are still drawn from the whole session, so each block is a contiguous stretch of time."""
     n = len(values)
-    obs = stat(values[group]) - stat(values[~group])
+    inc = np.ones(n, bool) if include is None else include.astype(bool)
+    obs = stat(values[inc & group]) - stat(values[inc & ~group])
     starts = np.arange(0, n - block + 1)
     k = int(np.ceil(n / block))
     diffs = []
     for _ in range(n_boot):
         s = rng.choice(starts, size=k, replace=True)
         idx = (s[:, None] + np.arange(block)[None, :]).ravel()[:n]
+        idx = idx[inc[idx]]
         g, v = group[idx], values[idx]
         if g.all() or not g.any():
             continue
@@ -217,6 +222,19 @@ def video_frames(every: int = 1, step: int = 4):
         if i % every == 0:
             yield i, frame.to_ndarray(format="gray")[::step, ::step]
     container.close()
+
+
+def video_frames_at(indices, step: int = 1) -> dict:
+    """Decode the video up to the largest requested index and return {index: gray image
+    downsampled by `step`} for the requested frames."""
+    want = set(int(i) for i in indices)
+    out = {}
+    for i, img in video_frames(every=1, step=step):
+        if i in want:
+            out[i] = img
+        if i >= max(want):
+            break
+    return out
 
 
 def video_info() -> dict:
@@ -383,7 +401,7 @@ def set_summary(task: str, split: str) -> pd.DataFrame:
     for key, text in caltech_sequences(zip_name, member):
         s = sequence_summary(text)
         row = {"task": task, "split": split, "key": key, "n_frames": s["n_frames"],
-               "kp_hash": s["keypoints_sha1"]}
+               "n_frames_keypoints": s["n_frames_keypoints"], "kp_hash": s["keypoints_sha1"]}
         a = s["annotations"]
         if a is not None:
             row["n_annotations"] = len(a)
@@ -418,7 +436,8 @@ def sequence_summary(text: bytes) -> dict:
 
     Frames are counted in the `scores` field, where each frame is [[7 scores], [7 scores]]: with
     whitespace removed, each frame ends with one "]]" (the last frame's "]]]" holds one
-    non-overlapping "]]"). `keypoints_sha1` is a hash of the whole keypoints field without
+    non-overlapping "]]"). They are counted again in the `keypoints` field, where each frame is
+    [[[7 x], [7 y]], [[7 x], [7 y]]] and ends with one "]]]" (the last frame's "]]]]" holds one). `keypoints_sha1` is a hash of the whole keypoints field without
     whitespace, used to find sequences deposited more than once; `keypoints_head` is its start.
     """
     dec = json.JSONDecoder()
@@ -432,7 +451,8 @@ def sequence_summary(text: bytes) -> dict:
         return text[start:min(later)] if later else text[start:]
 
     out = {"n_frames": field("scores").translate(None, b" \n\r\t").count(b"]]"),
-           "annotations": None, "metadata": None, "keypoints_head": None, "keypoints_sha1": None}
+           "n_frames_keypoints": None, "annotations": None, "metadata": None, "keypoints_head": None,
+           "keypoints_sha1": None}
     if pos["annotations"] >= 0:
         a = field("annotations").translate(None, b" \n\r\t")
         out["annotations"] = np.array(dec.raw_decode(a[a.index(b"["):].decode())[0])
@@ -441,6 +461,7 @@ def sequence_summary(text: bytes) -> dict:
         out["metadata"] = dec.raw_decode(m[m.index(b"{"):].decode())[0]
     if pos["keypoints"] >= 0:
         k = field("keypoints").translate(None, b" \n\r\t")
+        out["n_frames_keypoints"] = k.count(b"]]]")
         out["keypoints_head"] = k[:3000]
         out["keypoints_sha1"] = hashlib.sha1(k).hexdigest()
     return out
