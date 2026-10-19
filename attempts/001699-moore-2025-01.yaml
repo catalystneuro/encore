@@ -1,0 +1,352 @@
+schema_version: 1
+id: 001699-moore-2025-01
+dandiset: "001699"
+dandiset_version: 0.260917.2322
+paper: doi:10.1101/2025.01.09.632139
+date: 2026-10-19
+entry: 001699-moore-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+outcomes:
+- claim: unit-counts
+  outcome: partially_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:unit-counts
+  measured:
+  - 406
+  - 7
+  - 372
+  - 5
+  - 543
+  - 6
+  - 440
+  - 5
+  notes: Counting all units of each recording once (reading a), juvenile WT 406 units in 7 rats,
+    juvenile Fmr1-/y 372 in 5 and adult WT 543 in 6 match the paper exactly; adult Fmr1-/y has 440
+    units in 5 rats against 507 in 6, as H4825's file holds H4824's recording. Counting H4825's file as
+    a recording of its own gives 528 units in 6 rats, within tolerance, but counts one recording twice.
+    As putative excitatory units (reading b) no group matches (326, 249, 399, 289). With the archive's
+    labels no group matches (juvenile WT 328 units in 5 rats, juvenile Fmr1-/y 221 in 4, adult WT 575 in
+    7). Version 2 of the paper gives 372 units in 6 adult Fmr1-/y rats and 406 in 6 adult WT rats, the
+    juvenile numbers repeated.
+  deviations:
+  - H3026 is counted as a juvenile Fmr1-/y rat and H3029 as a juvenile WT rat, where the archive labels
+    H3026 WT and gives H3029 a birth date that makes it an adult; this grouping is the one that matches
+    the paper's counts, and it was chosen from those counts.
+  - H4825's file is left out as a copy of H4824's recording.
+- claim: units-per-recording
+  outcome: partially_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:units-per-recording
+  measured:
+  - 8
+  - 83
+  - 55
+  - 114
+  notes: Under reading (a), all units, juvenile recordings hold 8 to 83 units (paper 8 to 83) and adult
+    recordings 55 to 114 (paper 30 to 114), so the juvenile pair and the adult maximum match and the
+    adult minimum does not. Under reading (b), putative excitatory units by trough-to-peak duration,
+    juvenile 5 to 50 and adult 30 to 81; under (c), cells of session 1, juvenile 5 to 49 and adult 30 to
+    80. The paper's adult minimum of 30 is the putative excitatory count of H4822, while its other three
+    bounds are counts of all units, so the reported ranges mix two readings.
+  deviations:
+  - The paper calls these putative excitatory units; three of its four bounds match all units instead.
+- claim: figs1c-juvenile-behaviour-similar
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:figs1c-juvenile-behaviour-similar
+  notes: t-tests on the means of 7 WT and 5 Fmr1-/y rats; time inactive (speed below 1 cm/s) 0.179
+    against 0.105, t(10) = -0.95, p = 0.37; time in the centre 0.082 against 0.178, t(10) = 1.91,
+    p = 0.085; speed while active 4.86 against 5.77 cm/s, t(10) = 2.22, p = 0.0504. With 2 cm/s
+    thresholds and a larger centre, p = 0.21, 0.096 and 0.22. With the first day of each rat alone the
+    active speed differs (t(10) = 2.50, p = 0.031), so the absence of a speed difference is fragile.
+  deviations:
+  - The paper does not define inactivity, the centre or the active period; the thresholds were fixed
+    in the criterion and variants are shown.
+- claim: figs2c-adult-behaviour-similar
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:figs2c-adult-behaviour-similar
+  notes: 6 WT and 5 Fmr1-/y rats; time inactive p = 0.98, time in the centre p = 0.35, speed while
+    active 7.19 against 7.46 cm/s, p = 0.67 (t(9)). The threshold variants give p = 0.89, 0.71 and 0.53.
+  deviations:
+  - 5 Fmr1-/y rats where the paper has 6 (H4825's data are a copy of H4824's).
+  - The thresholds are not given in the paper; fixed in the criterion, variants shown.
+- claim: figs1-juvenile-cell-metrics-similar
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:figs1-juvenile-cell-metrics-similar
+  notes: LME tests over 323 WT and 237 Fmr1-/y cells; contamination p = 0.71, mean rate p = 0.72, peak
+    rate p = 0.62, vector length p = 0.11 (median 0.425 against 0.280). Mann-Whitney tests on cells,
+    which ignore the rat, find differences in mean rate (p = 0.037) and vector length (p = 0.0001).
+  deviations:
+  - Contamination is computed here from the spike trains, as the files hold no quality metric.
+- claim: figs2-adult-cell-metrics-similar
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:figs2-adult-cell-metrics-similar
+  notes: LME tests over 395 WT and 282 Fmr1-/y cells; contamination p = 0.11, mean rate p = 0.35, peak
+    rate p = 0.11, vector length p = 0.25. Mann-Whitney tests on cells find lower mean rate, peak rate
+    and vector length in Fmr1-/y cells (p = 0.031, 0.0030 and 0.0025).
+  deviations:
+  - 5 Fmr1-/y rats where the paper has 6.
+- claim: fig1ef-juvenile-sharper-tuning
+  outcome: partially_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:fig1ef-juvenile-sharper-tuning
+  notes: HD information is higher in Fmr1-/y cells (median 0.603 against 0.184 bits/spike, LME
+    coefficient 0.33, p = 0.033; first day alone p = 0.038). It is not significant on log values
+    (p = 0.12), with uniform occupancy as in version 2 (p = 0.081), on rat means (t(10) = 2.07,
+    p = 0.065) or with the archive's labels (p = 0.24). The half-width does not differ (median 50
+    against 64 degrees, p = 0.69; 27 Fmr1-/y and 48 WT cells never fall below half their peak).
+  deviations:
+  - Cells re-recorded on consecutive days could not be excluded as in the paper; the first day alone
+    is a variant.
+  - A linear mixed model on raw values; the paper chose linear or generalized models by the
+    distribution.
+- claim: fig1g-juvenile-halves-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  measured:
+  - 0.761
+  - 0.840
+  output: claim:fig1g-juvenile-halves-correlation
+  notes: HD information of the two halves of session 1 correlates with r = 0.761 over 323 WT cells and
+    0.840 over 237 Fmr1-/y cells, higher in Fmr1-/y as in the paper, but both below the paper's 0.90
+    and 0.95 by more than the tolerance (lower bounds 0.81 and 0.855). The effect is present and weaker.
+    Version 2 reports 0.86 and 0.93.
+  deviations:
+  - The claims file gave no rule for values outside tolerance; the protocol's definition (effect
+    present but weaker) was applied.
+- claim: fig1h-juvenile-smaller-offset
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:fig1h-juvenile-smaller-offset
+  notes: The absolute offset between the two halves' tuning curves is smaller in Fmr1-/y cells (median
+    7 against 27 degrees, LME coefficient -28.5, p = 0.0125). First day alone p = 0.0081, cells with
+    half-width below 120 degrees p = 0.016, rat means t(10) = -2.67, p = 0.024; with the archive's
+    labels p = 0.080.
+- claim: fig1j-juvenile-less-drift
+  outcome: not_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:fig1j-juvenile-less-drift
+  notes: Mean absolute decoder drift over rat means is 17.5 degrees in 5 Fmr1-/y rats and 34.6 in 7 WT
+    rats, the paper's direction, but t(10) = -1.95, p = 0.079 (paper t(10) = 2.44, P < 0.05; version 2
+    t(10) = 3.17). With version 2's 1.5 cm/s threshold p = 0.064, for the SD of drift p = 0.13, with
+    the first day alone p = 0.079, with the archive's labels p = 0.22. H3019 210618-1 is left out (5
+    cells) and H3001 200201 is decoded on 22 bins, as the rat barely moved in the second half.
+  deviations:
+  - Version 1 does not describe the decoder; version 2's Methods were followed (Hampel filter, 0.8 s
+    smoothing, tuning curves from the first half), with version 1's 2 cm/s threshold.
+- claim: figs1j-juvenile-epochs-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  measured:
+  - 0.854
+  - 0.757
+  output: claim:figs1j-juvenile-epochs-correlation
+  notes: HD information correlates between the two sessions with r = 0.854 over 309 WT cells (paper
+    0.85, within tolerance) and 0.757 over 226 Fmr1-/y cells (paper 0.85, lower bound 0.765). Version 2
+    reports 0.87 and 0.86.
+  deviations:
+  - Sessions are taken from the tracking blocks; sessions longer than 30 min are cut to 1300 s.
+- claim: figs1k-juvenile-epoch-drift-similar
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:figs1k-juvenile-epoch-drift-similar
+  notes: The offset between the tuning curves of the two sessions does not differ (median 14 degrees
+    in Fmr1-/y, 23 in WT; LME coefficient 1.1, p = 0.93; first day p = 0.82; archive labels p = 0.39).
+    Version 2's text says juvenile Fmr1-/y rats were more stable between sessions, while its legend
+    for the same panel reports no genotype effect.
+- claim: fig2c-juvenile-isomap-wake-correlation
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  measured:
+  - 0.826
+  - 0.914
+  output: claim:fig2c-juvenile-isomap-wake-correlation
+  notes: Isomap and real-HD information (200 ms bins, 6 degree bins) correlate with r = 0.826 over 323
+    WT cells and 0.914 over 232 Fmr1-/y cells (paper 0.84 and 0.92). The Isomap angle aligned with real
+    HD with Rayleigh lengths of 0.20 to 0.89 over 23 recordings; H3019 210618-1 is left out (5 cells).
+  deviations:
+  - Kernel PCA and Isomap were fitted on at most 3000 bins of each session and applied to all bins.
+- claim: fig2d-juvenile-isomap-wake-sharper
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:fig2d-juvenile-isomap-wake-sharper
+  notes: Isomap HD information is higher in Fmr1-/y cells (median 0.430 against 0.234 bits/spike, LME
+    coefficient 0.21, p = 0.046). The result is at the threshold; on log values p = 0.091, first day
+    alone p = 0.12, archive labels p = 0.15, rat means t(10) = 1.98, p = 0.076.
+  deviations:
+  - Kernel PCA and Isomap fitted on at most 3000 bins.
+- claim: fig2g-juvenile-isomap-rem-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  measured:
+  - 0.831
+  - 0.833
+  output: claim:fig2g-juvenile-isomap-rem-correlation
+  notes: REM Isomap information correlates with waking real-HD information with r = 0.831 over 323 WT
+    cells (paper 0.73, above the tolerance of 0.657 to 0.803) and 0.833 over 231 Fmr1-/y cells (paper
+    0.90, within tolerance). REM per recording 539 to 1706 s. Version 2 reports 0.84 and 0.93.
+  deviations:
+  - REM intervals are the files' sleep_stages; Isomap fitted on at most 3000 bins.
+- claim: fig2h-juvenile-isomap-rem-sharper
+  outcome: not_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:fig2h-juvenile-isomap-rem-sharper
+  notes: REM Isomap HD information is higher in Fmr1-/y cells (median 0.392 against 0.178 bits/spike,
+    LME coefficient 0.20) but p = 0.056. On log values p = 0.097, first day p = 0.19, archive labels
+    p = 0.28, rat means t(10) = 1.86, p = 0.093; only the Mann-Whitney test on cells, which ignores the
+    rat, gives p below 0.05. The direction matches the paper.
+- claim: fig3ef-adult-tuning-similar
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:fig3ef-adult-tuning-similar
+  notes: In adults HD information (median 0.193 in Fmr1-/y against 0.311 in WT, LME p = 0.58) and
+    half-width (74 against 74 degrees, p = 0.64) do not differ. The Mann-Whitney test on cells finds
+    lower HD information in Fmr1-/y cells (p = 0.014).
+  deviations:
+  - 5 Fmr1-/y rats where the paper has 6.
+- claim: fig3g-adult-halves-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  measured:
+  - 0.810
+  - 0.742
+  output: claim:fig3g-adult-halves-correlation
+  notes: r = 0.810 over 395 WT cells and 0.742 over 282 Fmr1-/y cells, against 0.94 for both in the
+    paper (lower bound 0.846); the correlation is present and weaker. Version 2 reports 0.95 and 0.95.
+  deviations:
+  - The claims file gave no rule for values outside tolerance; the protocol's definition was applied.
+- claim: fig3h-adult-larger-offset
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:fig3h-adult-larger-offset
+  notes: The offset between halves is larger in Fmr1-/y cells (median 54.5 against 18 degrees, LME
+    coefficient 30.8, p = 0.040); for cells with half-width below 120 degrees p = 0.017. On rat means
+    t(9) = 2.05, p = 0.071, and with the archive's labels p = 0.070.
+  deviations:
+  - 5 Fmr1-/y rats where the paper has 6.
+- claim: fig3j-adult-more-drift
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:fig3j-adult-more-drift
+  notes: Decoder drift over rat means is 64.5 degrees in 5 Fmr1-/y rats and 19.7 in 6 WT rats, t(9) =
+    2.75, p = 0.022 (paper t(10) = 3.33, P < 0.01; version 2 t(10) = 3.55). Version 2's threshold gives
+    p = 0.023 and the SD of drift p = 0.086. Three Fmr1-/y rats drift by 74 to 104 degrees; H4819 (28.7)
+    and H4827 (19.0) lie within the WT range of 10.8 to 36.7.
+  deviations:
+  - Decoder from version 2's Methods, as for the juveniles; 5 Fmr1-/y rats where the paper has 6.
+- claim: figs2j-adult-epochs-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  measured:
+  - 0.786
+  - 0.570
+  output: claim:figs2j-adult-epochs-correlation
+  notes: r = 0.786 over 395 WT cells and 0.570 over 276 Fmr1-/y cells, lower in Fmr1-/y as in the
+    paper (0.90 and 0.76), with both below the tolerance; the correlation is present and weaker.
+    Version 2 reports 0.91 and 0.75.
+  deviations:
+  - The claims file gave no rule for values outside tolerance; the protocol's definition was applied.
+- claim: figs2k-adult-epoch-drift-larger
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:figs2k-adult-epoch-drift-larger
+  notes: The offset between the sessions is larger in Fmr1-/y cells (median 79.5 against 31 degrees,
+    LME coefficient 37.6, p = 0.028; archive labels p = 0.021; rat means t(9) = 2.20, p = 0.055).
+- claim: fig4c-adult-isomap-wake-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  measured:
+  - 0.935
+  - 0.688
+  output: claim:fig4c-adult-isomap-wake-correlation
+  notes: r = 0.935 over 395 WT cells (paper 0.95, within tolerance) and 0.688 over 282 Fmr1-/y cells
+    (paper 0.90, outside). The Isomap angle aligned poorly with real HD in H4822 (0.116) and H4824
+    (0.194), two of the Fmr1-/y rats with the largest decoder drift. Version 2 reports 0.99 and 0.96.
+- claim: fig4d-adult-isomap-wake-similar
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:fig4d-adult-isomap-wake-similar
+  notes: Isomap HD information does not differ between genotypes (median 0.290 in Fmr1-/y against 0.337
+    in WT; LME p = 0.97; rat means t(9) = 0.00, p = 0.997).
+- claim: fig4g-adult-isomap-rem-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_moore_2025.ipynb
+  measured:
+  - 0.820
+  - 0.656
+  output: claim:fig4g-adult-isomap-rem-correlation
+  notes: r = 0.820 over 378 WT cells (paper 0.82) and 0.656 over 280 Fmr1-/y cells (paper 0.80, lower
+    bound 0.72). REM per recording 116 to 988 s; H4823 and H4830 have 116 and 133 s. Version 2 reports
+    0.84 and 0.83.
+- claim: fig4h-adult-isomap-rem-similar
+  outcome: reproduced
+  notebook: reproduce_moore_2025.ipynb
+  output: claim:fig4h-adult-isomap-rem-similar
+  notes: REM Isomap HD information does not differ between genotypes (median 0.409 in Fmr1-/y against
+    0.333 in WT; LME p = 0.29; rat means p = 0.29).
+- claim: figs1d-probe-in-posub
+  outcome: blocked
+  blocked_by: other
+  notes: Every file holds RGB histology images (acquisition/histology_images, for example H3001_D2 and
+    H3001_D3) with no annotation of the probe tract or of the postsubiculum, and the electrodes table
+    gives a location string per channel but no histological confirmation. Judging whether a tract
+    passes through PoSub from the images needs an anatomist; it was not attempted.
+findings:
+- kind: metadata_error
+  statement: The paper's unit counts (406 units in 7 juvenile WT rats, 372 in 5 juvenile Fmr1-/y rats,
+    543 in 6 adult WT rats) and its range of 8 to 83 units per juvenile recording are matched exactly
+    only if H3026, labelled WT, is a juvenile Fmr1-/y rat and H3029, whose date of birth makes it 97
+    days old, is a juvenile WT rat. With the archive's labels the juvenile groups have 5 WT and 4
+    Fmr1-/y rats, and the juvenile effects weaken (HD information p = 0.24, offsets p = 0.080).
+- kind: metadata_error
+  statement: The dates of birth of H3023 (2022-08-13) and H3026 (2022-09-13) are after their recordings
+    in 2021, and H3029 shares H4830's date of birth. No file sets the subject's age.
+- kind: data_missing
+  statement: The file of H4825 holds the recording of H4824 (identical waveforms, unit and spike counts,
+    and spike times up to 1248 s), with its spike and tracking times shifted piece by piece onto H4825's
+    epoch table and clipped at its end, where 131373 spikes share the last spike time and 12970 tracking
+    frames repeat a timestamp. H4825's own
+    recording is not in the dandiset, so the adult Fmr1-/y group has 5 rats and 440 units where the
+    paper has 6 and 507.
+- kind: selection_undocumented
+  statement: The units table holds all curated units with only spike times, mean waveforms, electrode
+    group and sampling rate; no cell type, contamination or depth. The paper excluded cells recorded in
+    the part of PoSub already recorded on the previous day, and the files give no probe depth per day,
+    so that selection cannot be repeated.
+- kind: metadata_error
+  statement: The epochs and processing/tasks tables do not mark the exploration sessions reliably. In
+    H3001 200202 task epoch 1 is called wake but lasts 94 min without tracking; in H3026 211003 epoch 1
+    spans 112 min of waking and sleep; in H3023 210813-1 epoch 2 runs from the end of the first session
+    into the second; H4823 has a single epoch and no sleep task. Every file's session description mentions a cue rotation, and most
+    files hold a third tracked session (`wake_cue_rot`), which version 1 of the paper does not describe.
+- kind: metadata_error
+  statement: In H3015 210417 and H4823 221108 position is stated in centimetres but spans about 300 and
+    700 units, so it is in pixels, and head direction runs from -pi to pi where the other files use 0 to
+    2 pi.
+- kind: format_error
+  statement: One unit of H3023 210812 has spike times out of order. 22 of the 24 juvenile files have one
+    to three tracking frames whose timestamp does not increase.
+- kind: metadata_error
+  statement: The dandiset's `about` field lists "Fmr1 protein, rat" as an anatomy term with the MeSH
+    identifier of Fragile X Syndrome (D005600).
+- kind: methods_unavailable
+  statement: The paper's analysis code (Matlab and R, per its Methods) is not public; its Code
+    Availability says it will be released at publication. The repository the dandiset links, woodcode
+    (commit 61ee178), is the lab's general library and does not hold the paper's analysis. Version 1
+    does not describe the Bayesian decoder; version 2 does.
+- kind: paper_inconsistency
+  statement: The Methods exclude units with contamination scores "below 0.5", which would remove nearly
+    every unit (1727 of 1761 are below). The ranges of units per recording mix counts of all units
+    (8 to 83, maximum 114) with a count of putative excitatory units (minimum 30), while the text calls
+    them all putative excitatory. Version 2 gives the adult counts as 372 and 406 units in 6 rats each,
+    the juvenile numbers repeated.
