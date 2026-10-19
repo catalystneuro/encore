@@ -79,3 +79,12 @@ def test_the_recorder_prompt_names_the_attempt():
     latest = tool.attempt_of("001933")[0]["id"]
     text = tool.fill("recorder", "001933", "m")
     assert latest in text and "readme_row.py 001933 --write" in text and "{" not in text
+
+
+def test_the_conversion_issue_lists_every_finding():
+    import conversion_issue
+    record = tool.attempt_of("000559")[0]
+    text = conversion_issue.issue("000559")
+    assert text.splitlines()[0] == "Problems found in DANDI:000559 by a reproduction attempt"
+    assert text.count("\n- [ ] ") == len(record["findings"]) + 7
+    assert record["id"] in text
