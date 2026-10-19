@@ -1,0 +1,401 @@
+{
+ "dandiset": "000035",
+ "page": "dandisets/000035/",
+ "generated": "2026-10-19T14:08:11+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 3,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 9
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 2,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 1
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000035-scala-2021-01",
+   "dandiset": "000035",
+   "dandiset_version": "0.211014.0808",
+   "paper": "10.1038/s41586-020-2907-3",
+   "paper_title": "Phenotypic variation of transcriptomic cell types in mouse motor cortex",
+   "date": "2026-10-14",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-5"
+   },
+   "tier": "runs",
+   "entry": "000035-scala-2021",
+   "entry_title": "Patch-seq neurons of mouse motor cortex at physiological temperature (Scala, Kobak et al. 2021)",
+   "description": "Tests the findings of Scala, Kobak et al. (2021) that can be tested on dandiset 000035, which holds the paper's follow-up recordings at 34 degrees C (185 neurons, mostly layer 5 Sst and excitatory cells). It extracts the paper's 17 electrophysiological features from the traces, checks the cohort and the stimulus against the Methods, tests whether IT and ET neurons overlap electrophysiologically, and compares Sst t-types between temperatures using the paper's published room-temperature features. The findings on the main room-temperature data set are in dandiset 000008 and are not tested here.",
+   "notebooks": [
+    {
+     "path": "reproduce_scala_2021.ipynb",
+     "title": "Reproducing Scala, Kobak et al. (2021) from dandiset 000035",
+     "executed": null
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1-ttype-coverage",
+     "statement": "After quality control, 1,227 Patch-seq neurons from mouse primary motor cortex were assigned to transcriptomic types, covering 77 of the 90 neuronal t-types of the reference taxonomy.",
+     "source": "Results, \"Patch-seq of mouse primary motor cortex\"; Figure 1a",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The finding rests on the 1,329 cells of the main data set and their sequencing. The dandiset holds only the 185 cells of the follow-up at 34 degrees, with their t-type labels but no gene counts. The main data set's recordings are in dandiset 000008, its sequencing data at NeMO (dat-kq04hua) and GEO (GSE163764), and its processed tables in the paper's repository.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-rrr-prediction",
+     "statement": "A sparse reduced-rank regression of 17 electrophysiological features on gene expression, using 25 genes and a rank-5 latent space, reached a cross-validated R2 of 0.38, with cross-validated correlations of 0.90, 0.74 and 0.67 between the first three pairs of projections.",
+     "source": "Results, \"Distinct phenotypes of major families\"; Figure 2",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs gene expression and features of the main data set. The dandiset holds no gene counts and none of the main data set's cells; they are in dandiset 000008 and at NeMO and GEO.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed5-rrr-ion-channels",
+     "statement": "A reduced-rank regression restricted to ion channel genes did not perform much worse than the full model, with a cross-validated R2 of 0.33 and correlations of 0.86, 0.71 and 0.56.",
+     "source": "Results, \"Distinct phenotypes of major families\"; Extended Data Figure 5e-f",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As fig2-rrr-prediction.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-families-separate",
+     "statement": "In a k-nearest-neighbour classification of cells into seven transcriptomic families from electrophysiological features, the confusion matrix was mostly diagonal, with only the ET and IT subclasses strongly overlapping.",
+     "source": "Figure 3a, d",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the main data set's cells, which are in dandiset 000008. The same classifier was run on the 34 degree cells for ed6-it-et-overlap, where Lamp5, Vip and CT cells are absent.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-morphology-combined",
+     "statement": "Families were less separable by morphology than by electrophysiology among inhibitory neurons, and most separable when electrophysiological and morphological features were combined.",
+     "source": "Figure 3b-d",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs morphological reconstructions, which are not in the dandiset (none were recovered in the 34 degree experiments). They are in the Brain Image Library, with features in the paper's repository.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-distance-correlation",
+     "statement": "Across 200 pairs of t-types from the same family, the transcriptomic distance and the electrophysiological distance between t-types were correlated with r = 0.60.",
+     "source": "Figure 4c",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the main data set's cells (dandiset 000008) and the reference 10x expression data.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-it-depth",
+     "statement": "Among IT t-types, transcriptomic distances were strongly correlated with differences in average soma depth, r = 0.70.",
+     "source": "Figure 4d",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the main data set's IT cells (their soma depths are in the paper's repository and dandiset 000008) and the reference 10x expression data.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5a-ttypes-between-families",
+     "statement": "Most t-types were classified into their own family from electrophysiology, but some, such as Sst Pvalb Calb2, Lamp5 Egln3_1 and Vip Mybpc1, were often classified into another family.",
+     "source": "Figure 5a",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the main data set's cells, in dandiset 000008. The t-types named in the claim are not among the 34 degree cells except Sst Pvalb Calb2.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5b-ttype-variability",
+     "statement": "Many t-types had a normalized total variance of electrophysiological features well above that of k-means clusters, while some, such as Pvalb Vipr2_2, appeared homogeneous.",
+     "source": "Figure 5b",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the main data set's cells, in dandiset 000008.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6-cohort",
+     "statement": "At physiological temperature, 185 neurons were sequenced from 8 adult mice (7 Sst-Cre/Ai9 and 1 Pvalb-Cre/Ai9); 177 got a t-type (110 Sst, 43 IT, 12 ET, 10 Pvalb, 2 NP); 175 were in layer 5; electrophysiological features were extracted for 184.",
+     "source": "Methods, \"Experiments at physiological temperature\"",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scala_2021.ipynb",
+     "notes": "Every count matches the Methods. All 17 features are defined for 185 cells against 184 in the paper, within the 10% tolerance. Families are read from the t-type names in the files; the 12 ET cells are named L5 PT_1 to L5 PT_4 there.",
+     "deviations": [
+      "The number of cells with features comes from the re-implemented extraction here; the paper's table has no row for 20200406_sample_4."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6-stimulus-protocol",
+     "statement": "Cells at physiological temperature were stimulated with the same paradigm as the main data set, 600 ms current pulses from -200 pA upwards in 20 pA steps up to 1,380 pA, sometimes stopped earlier.",
+     "source": "Methods, \"Patch-seq recording procedures\" and \"Experiments at physiological temperature\"",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scala_2021.ipynb",
+     "notes": "In all 185 cells every step lasts 600 ms and consecutive steps differ by 20 pA; all 14,054 sweeps with a nonzero step start at 0.1 s and end at 0.7 s, and 139 cells end at 1,380 pA. 174 of 185 (94.1%) conform to the whole ladder. Nine cells of mouse_UEQOU end at 1,400 to 1,580 pA, and two cells of other mice start at -180 pA and -100 pA and end above 1,380 pA. The intervals of 1.3 or 1.4 s between pulses cannot be checked because every series has an undefined starting time.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6-it-et-overlap",
+     "statement": "Follow-up experiments at 34 degrees C confirmed the electrophysiological overlap between IT and ET neurons seen at room temperature.",
+     "source": "Results, \"Distinct phenotypes of major families\"; Extended Data Figure 6a-g",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scala_2021.ipynb",
+     "notes": "With the paper's kNN classifier (k = 10, leave-one-out, 17-feature representation, all 185 cells), 58.3% of ET cells (7 of 12) are classified as IT and no IT cell as ET; Sst cells are classified as Sst 100% of the time and Pvalb cells 60%. ET cells go to IT in both mice with ET cells (1 of 3 and 6 of 9). The overlap is one-sided and partly reflects that IT cells are 78% of IT and ET cells. With IT subsampled to 12 cells and an odd k (no ties), 10.5% (k = 9) and 12.4% (k = 11) of ET cells go to IT and 33.4% and 36.5% of IT cells to ET; a class-balanced logistic regression separates layer 5 IT from ET with a balanced accuracy of 0.83 against a shuffled-label null of 0.50 (p = 0.005). The result on layer 5 cells alone, and without 20200406_sample_4 (the paper's 184 cells), is the same as on all cells (58.3% and 0%). All ET cells come from two mice. Within mouse_UEQOU alone (10 IT, 9 ET), the kNN classifies 33.3% of ET cells as IT and 20.0% of IT cells as ET, and the logistic regression reaches 0.78 (p = 0.025). The criterion does not require a test within mouse.",
+     "deviations": [
+      "The paper shows the 34 degree comparison as feature distributions and two-feature scatter plots (Extended Data Fig. 6a-g); it reports no classifier at 34 degrees. The test applies the room-temperature classifier of Fig. 3d to the 34 degree cells, with four families present instead of seven.",
+      "Features are computed by the re-implementation here; link-features shows they agree with the paper's.",
+      "The main test uses all 185 cells, including 20200406_sample_4 (layer 5 IT), which the paper leaves out; the 184-cell result is shown as a variant."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6-it-et-ap-threshold",
+     "statement": "At 34 degrees C, the AP threshold showed a prominent difference between layer 5 IT and ET neurons.",
+     "source": "Extended Data Figure 6e and its legend",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scala_2021.ipynb",
+     "notes": "Layer 5 IT median -27.0 mV (43 cells) against ET -33.1 mV (12 cells), Mann-Whitney p = 0.00035, area under the curve 0.84; second of 17 features after input resistance (p = 0.0001). Without 20200406_sample_4, p = 0.00026 (42 IT cells). Same sign in both mice with both subclasses, but within mouse_UEQOU alone the gap is smaller and not significant (-29.3 against -31.8 mV, area under the curve 0.73, p = 0.094, 10 IT and 9 ET cells). All ET cells come from two mice, so a difference between mice may contribute; the criterion does not require a test within mouse. The ranking of the first two features is the one the paper's code prints for 34 degrees.",
+     "deviations": [
+      "The ranking covers the 17 features used here, not all 29 the paper's code ranks.",
+      "The main test uses all 185 cells, including 20200406_sample_4, which the paper leaves out; the 184-cell result is shown as a variant."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-cells",
+     "statement": "The dandiset's recordings are the cells of the paper's published table of the 34 degree cohort, with the same t-type, layer and soma depth.",
+     "source": "Data availability; mini-atlas data/m1_patchseq_phys_temp_meta_data.csv",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scala_2021.ipynb",
+     "notes": "All 185 files match a row of the paper's table by cell id and no row lacks a file. Family, layer, soma depth and mouse agree for every cell; the files' inferred layer equals the layer the paper's code computes from soma depth and cortical thickness. The t-type name agrees for 93.5% of cells, below the criterion's 95%, only because the 12 ET cells are named L5 PT_1 to L5 PT_4 in the files and L5 ET_1 to L5 ET_4 in the table, one to one; with that renaming the agreement is 100%. The partial outcome reflects the names, not a mismatch of cells. The verifier of round 1 would call this reproduced; the outcome is kept because the criterion, written before the analysis, compares t-type names.",
+     "deviations": [
+      "The criterion did not anticipate renamed t-types and was applied as written, to the names."
+     ],
+     "disagreed": true,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-features",
+     "statement": "The electrophysiological features computed here from the dandiset's traces agree with the paper's published features for the same cells.",
+     "source": "Methods, \"Extraction of electrophysiological features\"; mini-atlas data/m1_patchseq_phys_temp_ephys_features.csv",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scala_2021.ipynb",
+     "notes": "184 of the 185 cells are in the paper's feature table. The Spearman correlation between the features computed here and the published ones is at least 0.9 for 16 of 17 features and 0.877 for the lowest, the AP coefficient of variation. The median absolute difference is zero to three decimals for all features but the AHP (0.011 mV). By mouse, 0.895 (mouse_UEQOU) to 0.995 of values are within 10% of the paper's. The maximum number of APs differs between the Methods' and the code's definitions for 3 cells.",
+     "deviations": [
+      "The extraction is a re-implementation of the paper's methods and code (scala34.py), not the paper's code, which is under the Allen Institute's license.",
+      "The maximum number of APs follows the Methods (sweeps with spikes in the 100 ms before or the 200 ms after the step are excluded before taking the maximum); the code's version is shown."
+     ],
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6-sst-temperature",
+     "statement": "For layer 5 Sst t-types, AP amplitude and AP width changed the most between room temperature and 34 degrees C, but the relative differences between t-types stayed roughly the same; AHP, input resistance, rebound and sag ratio changed little, and the relative differences between t-types stayed the same.",
+     "source": "Extended Data Figure 6h and its legend",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scala_2021.ipynb",
+     "notes": "147 layer 5 Sst cells at 25 degrees (published features) and 101 at 34 degrees (computed here); seven t-types have at least 5 cells in both. Shifts in units of the 25 degree SD are AP width -1.78, AP amplitude -1.66, input resistance -0.61, rebound -0.33, AHP -0.25 and sag ratio -0.02, so AP width and amplitude change most. Spearman correlations of t-type medians between temperatures are 0.75 (AP amplitude), 0.88 (AP width), 0.93 (AHP, input resistance, rebound) and 0.96 (sag ratio), median 0.93. The same holds with the paper's published 34 degree features and with t-type means. In each of the 7 mice with such cells, the 34 degree medians of AP amplitude and width lie below the room-temperature medians.",
+     "deviations": [
+      "The room-temperature side uses the paper's published features of dandiset 000008's cells, not features recomputed from that dandiset.",
+      "The legend says the relative differences \"stayed roughly the same\"; the criterion turns this into Spearman correlations of t-type medians and a shift measured in standard deviations."
+     ],
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6-sst-transcriptomic-distance",
+     "statement": "At physiological temperature, as at room temperature, morpho-electric properties of layer 5 Sst neurons varied continuously across the transcriptomic landscape, and the electrophysiological distance between Sst t-types correlated with their transcriptomic distance.",
+     "source": "Results, \"Continuous phenotypic variation\"; Extended Data Figure 6i",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The transcriptomic distance between Sst t-types needs the average expression of each t-type in the single-cell 10x v2 reference data (Yao et al. 2021). The paper's code reads it from reduced-allen-data.zip on Zenodo (doi:10.5281/zenodo.5118962), member 10X_cells_v2_AIBS.pickle. The notebook reads the archive's directory (87.9 MB compressed, 517.0 MB uncompressed) and times a 1 MB range request. In the delivered run the rate was 62 kB/s, about 24 minutes for the member. The rate varies between runs; in the earlier runs of this attempt (not in the delivered notebook) it was 27, 114, 44, 149 and 58 kB/s, about 55, 13, 33, 10 and 25 minutes. A run that fetched the member would have exceeded the 30 minute limit in two of these six runs and fitted in the others, so the claim was not tested. The reference is public, and the verifier of round 2 holds that the claim is testable; the block reflects this attempt's choice not to make the run depend on Zenodo's rate. Proposed change for another round, fetch the member in the run, write a criterion for the claim (it has none), and test it. The original reference data at NeMO are much larger. The electrophysiological half is computed from the dandiset as in the paper's code (cell 19 of physiological-temperature.ipynb), for 9 layer 5 Sst t-types with at least 5 cells (Sst Chodl left out), as the paper's code prints, with distances between their mean standardized features of 1.54 to 5.24. It tests nothing without the transcriptomic half. A proxy transcriptomic distance from the paper's own 34 degree Patch-seq counts was not computed, as it differs from the paper's method. The paper reports the correlation and its p-value only inside the figure.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "Every voltage series states the unit volts and every stimulus series amperes, with a conversion of 1, but the values are in millivolts (-150 to 67) and picoamperes (-200 to 1,580)."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Every series has an undefined (NaN) starting time, so the timing of sweeps relative to each other is not recorded. Within a sweep the response and the stimulus share a clock (onset at 0.1 s, offset at 0.7 s)."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The t-type of the 12 ET cells is stored under the older names L5 PT_1 to L5 PT_4, which differ from the paper's and its tables' L5 ET_1 to L5 ET_4; no mapping is given. All other t-type names match the paper's table."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The dandiset's description repeats the main data set's \"over 1300 neurons\"; the dandiset holds 185 neurons of the follow-up at 34 degrees."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In the published version the contributor list has a placeholder \"Last, First\" with Zizhen Yao's ORCID, the brain region is typed as a disorder, and the assets summary gives no approach or measurement technique. The unpublished draft corrects these."
+    },
+    {
+     "kind": "other",
+     "statement": "Eleven cells were stimulated beyond the 1,380 pA the Methods give (up to 1,580 pA), and two of them started at -180 pA and -100 pA, not -200 pA. Nine of the eleven are from one mouse (mouse_UEQOU)."
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The paper's code takes the maximum number of APs before excluding sweeps with spikes outside the step, and looks for those spikes over the whole trace before and after the step; the Methods exclude such sweeps first and look 100 ms before and 200 ms after. The two definitions differ for 3 of the 185 cells."
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Methods build the electrophysiological representation from 17 principal components of 17 features and later call it \"the 16-dimensional electrophysiological representation\"; the paper's code uses all 17."
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The legend of Extended Data Fig. 6j describes it as \"the same analysis as in (c)\", but in the paper's code panel j is the 34 degree version of panel i (the Sst overlay and the transcriptomic-distance correlation), not of panel c."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper. The verifier listed the version's assets through the DANDI API and ran synthetic checks of the helper functions (input resistance, time constant, sag, rebound, spike counts, rheobase, family_of, layer_from_depth, knn_family_confusion).",
+     "agreed": 16,
+     "of": 17,
+     "disagreements": [
+      {
+       "claim": "link-cells",
+       "outcome": "reproduced",
+       "reason": "185 of 185 cells match, and layer, soma depth and mouse agree 100%. Literal t-type agreement is 93.5% because the files say L5 PT_k where the table says L5 ET_k. The mapping is one-to-one, and after renaming agreement is 100%. The claims file itself treats PT as ET."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the first revision, with its conclusions and summary, the helper module, the claims file, the README and this attempt record, with the paper.",
+     "agreed": 16,
+     "of": 17,
+     "disagreements": [
+      {
+       "claim": "link-cells",
+       "outcome": "reproduced",
+       "reason": "As in round 1. The only mismatch is the one-to-one PT/ET renaming. After renaming, agreement is 1.000 (cell 26), and the claims file itself treats PT as ET. The record states the disagreement correctly."
+      }
+     ]
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000035-scala-2021",
+   "type": "reproduction",
+   "title": "Patch-seq neurons of mouse motor cortex at physiological temperature (Scala, Kobak et al. 2021)",
+   "description": "Tests the findings of Scala, Kobak et al. (2021) that can be tested on dandiset 000035, which holds the paper's follow-up recordings at 34 degrees C (185 neurons, mostly layer 5 Sst and excitatory cells). It extracts the paper's 17 electrophysiological features from the traces, checks the cohort and the stimulus against the Methods, tests whether IT and ET neurons overlap electrophysiologically, and compares Sst t-types between temperatures using the paper's published room-temperature features. The findings on the main room-temperature data set are in dandiset 000008 and are not tested here.",
+   "dandisets": [
+    "000035"
+   ],
+   "papers": [
+    "10.1038/s41586-020-2907-3"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_scala_2021.ipynb",
+     "title": "Reproducing Scala, Kobak et al. (2021) from dandiset 000035",
+     "executed": null
+    }
+   ]
+  }
+ ]
+}
