@@ -174,6 +174,8 @@ def collect(executed: Path | None = None) -> dict:
                 "source": known.get(o["claim"], {}).get("source"),
                 "quote": squash(known.get(o["claim"], {}).get("quote")),
                 "statistics": known.get(o["claim"], {}).get("statistics") or [],
+                "kind": known.get(o["claim"], {}).get("kind", "finding"),
+                "inferred": squash(known.get(o["claim"], {}).get("inferred")),
                 "outcome": o["outcome"],
                 "blocked_by": o.get("blocked_by"),
                 "notebook": o.get("notebook"),
@@ -245,6 +247,7 @@ def finish(data: dict) -> dict:
     data["outcome_counts"] = outcome_counts(data["attempts"])
     data["outcome_counts_with_outside_data"] = outcome_counts(data["attempts"], "with_inputs")
     data["outcome_counts_elsewhere"] = outcome_counts(data["attempts"], "elsewhere")
+    data["outcome_counts_links"] = outcome_counts(data["attempts"], "link")
     attempted = {a["dandiset"] for a in data["attempts"]}
     for t in data["targets"]:
         if t["dandiset"] in attempted:
@@ -325,16 +328,20 @@ def current_attempts(data: dict) -> dict[str, list[dict]]:
 def outcome_counts(attempts, group: str = "dandiset") -> dict:
     """Outcome totals over one attempt or a list of them, for one group of claims.
 
-    The groups are the claims that rest on the dandiset ("dandiset"), those that also use data from
-    elsewhere ("with_inputs"), and those on data the paper deposited in another archive ("elsewhere").
-    They are never added together, so that an outcome that may reflect outside data does not count as
-    a judgement of the dandiset.
+    The groups are the paper's findings that rest on the dandiset ("dandiset"), those that also use
+    data from elsewhere ("with_inputs"), those on data the paper deposited in another archive
+    ("elsewhere"), and the registry's checks that the dandiset is the paper's data ("link"), which are
+    not findings of the paper. They are never added together, so that an outcome that may reflect
+    outside data, or a link, does not count as a judgement of the paper's findings on the dandiset.
     """
     attempts = [attempts] if isinstance(attempts, dict) else attempts
     # Names for the dandiset's own codes taken from elsewhere (`with_labels`) count as the dandiset.
     groups = {"with_labels": "dandiset", None: "dandiset"}
+
+    def group_of(o):
+        return "link" if o.get("kind") == "link" else groups.get(o.get("data"), o.get("data"))
     return {k: sum(1 for a in attempts for o in a["outcomes"]
-                   if o["outcome"] == k and groups.get(o.get("data"), o.get("data")) == group) for k in OUTCOMES}
+                   if o["outcome"] == k and group_of(o) == group) for k in OUTCOMES}
 
 
 def outside_note(attempts, root: str = "") -> str:
@@ -344,7 +351,9 @@ def outside_note(attempts, root: str = "") -> str:
             ("with_inputs", "1 claim that also uses data from outside the dandiset",
              "claims that also use data from outside the dandiset", "claims using outside data"),
             ("elsewhere", "1 claim on data the paper deposited in another archive",
-             "claims on data the paper deposited in other archives", "claims on data in other archives")):
+             "claims on data the paper deposited in other archives", "claims on data in other archives"),
+            ("link", "1 check that the dandiset is the data behind the paper",
+             "checks that the dandiset is the data behind the paper", "checks of the link to the paper")):
         counts = outcome_counts(attempts, group)
         m = sum(counts.values())
         if not m:
@@ -496,7 +505,9 @@ def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
     tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
-    if o.get("data") == "with_inputs":
+    if o.get("kind") == "link":
+        tags += '<span class="tag">checks the link to the paper’s data</span>'
+    elif o.get("data") == "with_inputs":
         tags += '<span class="tag">uses data from outside the dandiset</span>'
     elif o.get("data") == "elsewhere":
         tags += f'<span class="tag">data in {e(o.get("where") or "another archive")}</span>'
@@ -518,6 +529,8 @@ def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
     if o.get("statistics"):
         items = "".join(f"<li>{e(statistic_text(s))}</li>" for s in o["statistics"])
         body = f'<p class="deviations-title">What the paper reports</p><ul class="stats">{items}</ul>' + body
+    if o.get("inferred"):
+        body = f'<p class="inferred"><strong>Not quoted:</strong> {e(o["inferred"])}</p>' + body
     if o.get("quote"):
         cite = f'<cite>{e(o["source"])}</cite>' if o["source"] else ""
         body = f'<blockquote class="quote"><p>{e(o["quote"])}</p>{cite}</blockquote>' + body
@@ -1299,7 +1312,8 @@ def build(data: dict, output: Path) -> None:
             "caution": CAUTION + " It may be a failure of the attempt.",
             "outcome_counts": outcome_counts(attempts),
             "outcome_counts_with_outside_data": outcome_counts(attempts, "with_inputs"),
-            "outcome_counts_elsewhere": outcome_counts(attempts, "elsewhere"), "attempts": attempts,
+            "outcome_counts_elsewhere": outcome_counts(attempts, "elsewhere"),
+            "outcome_counts_links": outcome_counts(attempts, "link"), "attempts": attempts,
             "entries": entries_for(data, dandiset),
         }, indent=1) + "\n")
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")

@@ -3,9 +3,10 @@
     python tools/readme_row.py DANDISET            # print the row
     python tools/readme_row.py DANDISET --write    # add it to README.md, or replace the dandiset's row
 
-Counts are of claims on the dandiset, including those that name its codes from elsewhere
-(`with_labels`); claims that also use outside data (`with_inputs`) are shown in brackets; claims on
-data in other archives (`elsewhere`) are left out, as the README says.
+Counts are of the paper's findings on the dandiset, including those that name its codes from
+elsewhere (`with_labels`); findings that also use outside data (`with_inputs`) are shown in brackets;
+findings on data in other archives (`elsewhere`) and the registry's link checks (`kind: link`) are
+left out, as the README says.
 """
 
 from __future__ import annotations
@@ -28,7 +29,8 @@ def claim_kinds(dandiset: str, paper: str) -> dict[str, str]:
     for path in sorted((ROOT / "claims" / dandiset).glob("*.yaml")):
         data = yaml.safe_load(path.read_text())
         if data.get("paper") == paper:
-            return {c["id"]: c.get("data", "dandiset") for c in data["claims"]}
+            return {c["id"]: "link" if c.get("kind") == "link" else c.get("data", "dandiset")
+                    for c in data["claims"]}
     raise SystemExit(f"error: no claims file for {dandiset} and {paper}")
 
 

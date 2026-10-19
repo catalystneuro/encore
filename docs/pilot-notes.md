@@ -4630,14 +4630,28 @@ The dashboard lists them under the quote.
 The claims of every attempt recorded so far were then brought up to
 pilot-8 from each paper's full text (Europe PMC or PMC, bioRxiv, or the
 publisher's open-access page), and every quote and recorded value was
-checked against that text. Of 1,285 claims in 56 files, 1,151 have a quote
-and 465 have statistics (958 entries); the tightened sources replaced
-ordinal ones ("Results, first section") that often did not match the
-paper's own sections. Claims whose source is a dataset, code or another
-paper have no quote. Six papers whose full text is not openly available
-(000005, 000006, 000061, 000582, 000691, 001754) have neither, as their
-claims were written from the abstract and the abstracts report no tests.
-Three files were left as they were because their full text could not be
-downloaded at the time (000350, 000727, 001699). Thresholds used to count
-significant units, cells, pairs or sessions were left out throughout, and
-a paper that prints "P = 0" is recorded as 0.
+checked against that text. Of 1,285 claims in 56 files, 465 have
+statistics (958 entries), and the tightened sources replaced ordinal ones
+("Results, first section") that often did not match the paper's own
+sections. Six papers whose full text is not open (000005, 000006, 000061,
+000582, 000691, 001754) were quoted from the abstract, figure titles and
+public Extended Data legends where those state the finding. Three files
+were left as they were because their full text could not be downloaded at
+the time (000350, 000727, 001699). Thresholds used to count significant
+units, cells, pairs or sessions were left out throughout, and a paper that
+prints "P = 0" is recorded as 0.
+
+The backfill showed two kinds of claim mixed together. Twenty-four were
+not findings of the paper but the registry's own checks that the dandiset
+is the data behind the paper's tables, source data, code or deposits (the
+link claims of step 6). They now say `kind: link` and are counted apart:
+the README table and the dashboard's totals are of the paper's findings
+only, and the links have a line of their own. And a finding with no quote
+gave no sign of whether the paper states it at all. Every finding now has
+either a quote or an `inferred` note saying why the statement is the
+author's reading, such as numbers that appear only in a supplementary
+table. Abstract-only papers are quoted from the abstract where it states the
+finding. Of the 1,219 claims outside the three files still waiting for
+their full text, 24 are links, 1,179 findings are quoted and 16 are
+inferred. Four inferred findings of 001754 come from the dandiset's
+description, not the paper.

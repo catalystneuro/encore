@@ -48,8 +48,20 @@
             "description": "Where the paper shows it, precise enough to find without searching: a figure panel, e.g. 'Figure 2B', or a section and paragraph, e.g. 'Results, Place fields, paragraph 3'.",
             "type": "string"
           },
+          "kind": {
+            "description": "A finding the paper reports (`finding`, the default), or a check the registry adds that the dandiset is the data the paper's outside material describes (`link`: the paper's tables, source data, code or deposits). Links are not findings of the paper and are counted apart from them.",
+            "enum": [
+              "finding",
+              "link"
+            ]
+          },
           "quote": {
-            "description": "The sentence of the paper that states the finding, word for word, from the place `source` names, so a reader can check the statement against the paper. Cut with '...' where it runs long. Only when the full text was read.",
+            "description": "The sentence of the paper that states the finding, word for word, from the place `source` names, so a reader can check the statement against the paper. Cut with '...' where it runs long. From the full text, or from the abstract when only the abstract could be read.",
+            "type": "string",
+            "minLength": 1
+          },
+          "inferred": {
+            "description": "For a finding with no quote: why the statement is the author's reading and not a sentence of the paper, e.g. 'Numbers from Supplementary Table 1; no sentence states them.'",
             "type": "string",
             "minLength": 1
           },
@@ -104,6 +116,33 @@
           }
         },
         "allOf": [
+          {
+            "not": {
+              "required": [
+                "quote",
+                "inferred"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "link"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "inferred"
+                ]
+              }
+            }
+          },
           {
             "if": {
               "properties": {

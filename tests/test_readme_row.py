@@ -14,7 +14,9 @@ import readme_row as tool  # noqa: E402
 def test_the_row_matches_the_readme():
     readme = (REPO / "README.md").read_text()
     assert tool.row("001933") in readme
-    assert "| 1 (+1) |" in tool.row("001933")
+    # 001933's one claim with outside data is its link to the paper's source data, which the table leaves out.
+    assert "(+" not in tool.row("001933")
+    assert "| 6 (+1) |" not in tool.row("000004") and "| 8 (+1) |" in tool.row("000004")
 
 
 def test_writing_replaces_a_dandisets_row_or_adds_one(tmp_path):

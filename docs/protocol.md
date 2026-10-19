@@ -63,20 +63,19 @@ Do this before any analysis.
      dandiset already holds, such as stimulus names for its stimulus codes.
      They bring in no measurements. A link claim must confirm the names, and
      the missing names are recorded as a finding (`metadata_insufficient`).
-   - When outside data has to be matched to the dandiset's cells, sessions or
-     subjects, a claim of its own tests the link: how records are matched
-     (an identifier, or, where there is none, summary values the paper or
-     its code published, such as per-condition medians), what fraction
-     match, and whether
-     the matched records agree on what both describe, such as counts,
-     layers, or the paper's own per-cell tables. A dandiset that cannot be
-     linked to the data it was published with is a finding about the
-     dandiset. Every claim that needs the match lists the link claim in
-     `depends_on`, so it is blocked when the link fails. When the link holds
-     only in part, the dependent claims are still tested, and their notes say
-     how the partial link bears on them. A label that differs only in
-     spelling (one cell type named two ways) is the same label: criteria
-     compare identity, not spelling.
+   - When outside data has to be matched to the dandiset's cells, sessions
+     or subjects, a claim of its own (`kind: link`) tests the link: how
+     records are matched (an identifier, or, where there is none, summary
+     values the paper or its code published, such as per-condition medians),
+     what fraction match, and whether the matched records agree on what both
+     describe, such as counts, layers, or the paper's own per-cell tables. A
+     dandiset that cannot be linked to the data it was published with is a
+     finding about the dandiset. Every claim that needs the match lists the
+     link claim in `depends_on`, so it is blocked when the link fails. When
+     the link holds only in part, the dependent claims are still tested, and
+     their notes say how the partial link bears on them. A label that
+     differs only in spelling (one cell type named two ways) is the same
+     label: criteria compare identity, not spelling.
    - Outside data supplies only what the dandiset lacks, such as a label for
      each cell. The analysis runs on the dandiset's data.
    - `elsewhere` is for a claim whose data the dandiset does not hold at
@@ -99,11 +98,21 @@ Do this before any analysis.
    - `statement`: the finding in words. `source`: where the paper shows it,
      precise enough to find without searching: a figure panel, or a section
      and paragraph ("Results, Place fields, paragraph 3").
-   - `quote`: when the full text was read, the sentence at `source` that
-     states the finding, copied word for word, cut with "..." where it runs
-     long. It lets a reader check the statement against the paper without
-     opening it. For a finding shown only in a figure, quote the legend or
-     the sentence of the Results that cites the panel.
+   - `kind`: a claim that only checks the link between the dandiset and
+     the paper's outside material (step 6) is `kind: link`. It is not a
+     finding of the paper and is counted apart from the findings.
+   - `quote`: the sentence at `source` that states the finding, copied word
+     for word from the full text (or from the abstract when only the
+     abstract could be read), cut with "..." where it runs long. It lets a
+     reader check the statement against the paper without opening it. For a
+     finding shown only in a figure, quote the legend or the sentence of the
+     Results that cites the panel.
+   - `inferred`: every finding has a quote or, when no sentence of the paper
+     states it (numbers only in a table, a result spread over several
+     legends, a claim at the level of the abstract that the abstract does
+     not state), a short note under `inferred` saying so. The statement is
+     then the author's reading of the paper, and the note says what it was
+     read from.
    - `statistics`: the statistical support the paper reports for the
      finding, one entry per test or interval: what it compares (`about`,
      when there is more than one), the `test` and `statistic` as named, the

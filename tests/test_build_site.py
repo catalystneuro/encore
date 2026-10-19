@@ -337,3 +337,34 @@ def test_a_claim_lists_the_statistics_the_paper_reports():
              "blocked_by": None, "notes": "N.", "deviations": [], "disagreed": False}
     html = site.claim_item(claim, "../")
     assert '<ul class="stats"><li>Onsets: Wilcoxon rank-sum' in html and html.index("stats") < html.index("N.")
+
+
+def test_link_claims_are_counted_apart_from_the_papers_findings():
+    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dandiset"},
+                            {"claim": "l", "outcome": "reproduced", "data": "with_inputs", "kind": "link"},
+                            {"claim": "w", "outcome": "blocked", "data": "with_inputs"}]}
+    assert sum(site.outcome_counts(attempt).values()) == 1
+    assert sum(site.outcome_counts(attempt, "with_inputs").values()) == 1
+    assert site.outcome_counts(attempt, "link")["reproduced"] == 1
+    assert "1 check that the dandiset is the data behind the paper" in site.outside_note([attempt])
+
+
+def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
+    claim = {"claim": "t", "statement": "Few respond.", "source": "Table S1", "inferred": "Numbers from Table S1.",
+             "outcome": "reproduced", "blocked_by": None, "notes": "N.", "deviations": [], "disagreed": False}
+    html = site.claim_item(claim, "../")
+    assert '<p class="inferred"><strong>Not quoted:</strong> Numbers from Table S1.</p>' in html
+    link = site.claim_item({**claim, "inferred": None, "kind": "link"}, "../")
+    assert "checks the link to the paper’s data" in link
+
+
+def test_the_schema_keeps_quotes_inferences_and_links_apart():
+    from jsonschema import Draft202012Validator
+    schema = Draft202012Validator(json.loads((REPO / "schemas" / "claims.schema.json").read_text()))
+    base = {"schema_version": 1, "dandiset": "000001", "paper": "doi:10.1000/x"}
+    claim = {"id": "a", "statement": "S.", "source": "Figure 1"}
+    assert schema.is_valid({**base, "claims": [{**claim, "quote": "Q."}]})
+    assert schema.is_valid({**base, "claims": [{**claim, "inferred": "From Table 1."}]})
+    assert not schema.is_valid({**base, "claims": [{**claim, "quote": "Q.", "inferred": "From Table 1."}]})
+    assert not schema.is_valid({**base, "claims": [{**claim, "kind": "link", "inferred": "From code."}]})
+    assert schema.is_valid({**base, "claims": [{**claim, "statistics": [{"p": 0}]}]})
