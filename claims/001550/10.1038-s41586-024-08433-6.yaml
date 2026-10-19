@@ -1,0 +1,348 @@
+# Claims for Pagan, Tang, Aoi, Pillow, Mante, Sussillo & Brody (2025), Nature 639, 421-429, on
+# dandiset 001550. Source: the open access full text in PubMed Central (PMC11903320, CC BY), read
+# from its main text, Methods and figure legends, including the Extended Data legends.
+#
+# The dandiset holds the behaviour only: 16,115 sessions of 26 rats in 11 protocols, with per-trial
+# context, outcome, evidence strengths and pulse times, and optogenetic epochs in some TaskSwitch6
+# sessions. The electrophysiology is not in it. The paper's data statement points to
+# https://github.com/Brody-Lab/flexible_decision_making_rats, read at commit
+# 0ea8fdb7c56d755d99155171cc314dbbc24393ac, which holds the paper's per-session behavioural
+# tables, its per-neuron spike counts and fitted pulse kernels, and its analysis code (MATLAB).
+# The RNN claims rest on https://github.com/Brody-Lab/flexible_decision_making_rnn at commit
+# 13cd24544258da2e3d846115afb075443db8a8a1.
+#
+# When these criteria were written the author had seen: the file list and metadata; the trials
+# table columns; for every session of TaskSwitch4, TaskSwitch4new and TaskSwitch6, the number of
+# valid trials, fraction correct and the two relative weights, and their exact agreement with
+# the paper's per-session tables (so the outcome of session-link was largely known); the
+# per-rat counts of trials that pass the session selection, which equal the paper's (20 rats
+# above 120,000; so fig1c-20-rats was known); fits by the code's method for two rats (P055,
+# P101), whose weights match the paper's saved weights, and their slope indices under the code's
+# and a plain ridge penalty; the correlation of the paper's own saved behavioural slope indices
+# with neural slope indices ported from its code (r = -0.77, not the dandiset's behaviour); the
+# number of units per rat in the paper's neural files; which rats have optogenetic epochs; and
+# the match of the first 40 neural cell files to dandiset sessions. No other claim's analysis
+# had been run.
+#
+# Method choices fixed here, for every claim unless it says otherwise:
+# - Valid trial: outcome code 1 (correct) or 2, 5, 6 (error), as the `hit_history` description
+#   gives; choice is right when the correct side is right and the trial correct, or the correct
+#   side is left and the trial an error. Sessions are those of TaskSwitch4, TaskSwitch4new and
+#   TaskSwitch6, the protocols in the paper's tables.
+# - Session selection (Methods): at least 100 valid trials, fraction correct at least 0.7, and a
+#   feature selection index (Methods equations 4 to 8, on the stored generative strengths
+#   gamma_dir and gamma_freq) at least 0.7. The code's extra `good` flag is not in the dandiset.
+# - Behavioural kernels: 26 bins of 50 ms; per bin the log ratio of counts each plus machine
+#   epsilon (the code's choice, where the Methods leave zero counts open); one logistic
+#   regression per context. The Methods call the fit ridge regression with the regulariser
+#   chosen by cross-validation; the code penalises squared differences of neighbouring weights
+#   with a fixed weight of 200. The main fit here uses the code's penalty form (a generalised
+#   ridge) with its weight chosen per rat and context by 3-fold cross-validated log loss over
+#   20, 200 and 2000 (folds random over trials, seeded); the code's fixed 200 is a variant.
+# - Slope index: the differential kernel divided by its largest absolute value (the code's
+#   choice; the Methods do not say), and the slope of its least-squares line against bin
+#   centres in seconds. Negative values mean the difference between contexts shrinks towards
+#   the end of the stimulus, as in the Methods' definition and the code.
+schema_version: 1
+dandiset: "001550"
+paper: doi:10.1038/s41586-024-08433-6
+claims:
+- id: session-link
+  statement: The dandiset's sessions can be linked to the paper's published per-session
+    behavioural tables, and the linked records agree on trial counts, outcomes, evidence and
+    pulse timing.
+  source: Data availability; the paper's data/Sessions_trials at GitHub commit 0ea8fdb
+  data: with_inputs
+  criterion: Records are matched by rat and session name (protocol, date and letter, taken from
+    the source file names in the paper's tables). The link holds (reproduced) when at least 95%
+    of the paper's sessions that have valid trials are found in the dandiset; in at least 95%
+    of matched sessions the number of valid trials and the fraction correct are equal; and in a
+    seeded sample of 20 sessions that pass the selection, the per-trial context, correct side,
+    evidence strengths, choice and position in block agree on at least 99% of valid trials and
+    the pulse counts in the code's 10 ms bins agree on at least 99% of trial bins. It is
+    partially reproduced when the lowest of these fractions is between 80% and the threshold,
+    and not reproduced below 80%. The per-rat numbers of trials passing the selection are
+    compared with the paper's table numsessions_all_rats.mat, and the sessions in one source
+    only are listed.
+- id: subjects
+  statement: The study used 26 male Long-Evans rats, aged between 6 and 24 months.
+  source: Methods, Subjects
+  expected:
+  - quantity: number of rats
+    value: 26
+    tolerance: 0
+  criterion: The tolerance on the count is 0 as it is a count of named animals. Reproduced when
+    the dandiset holds 26 subjects, all male and Long Evans, and the age at every session that
+    passes the selection lies within 5.4 to 26.4 months (the range widened by 10% of each
+    bound). Partially reproduced when the count, sex and strain hold and at least 90% of those
+    sessions are within the widened range.
+- id: trials-per-session
+  statement: Rats performed on average 542 trials per session.
+  source: Methods, Behaviour
+  expected:
+    quantity: mean trials per session
+    value: 542
+    tolerance: 54.2
+  criterion: The paper does not say which sessions or trials are counted. Readings, before the
+    analysis are (a) all trials in sessions that pass the selection; (b) valid trials in those
+    sessions; (c) all trials in every session of the three task protocols; (d) valid trials in
+    those. Reproduced when the mean is within tolerance under any reading.
+- id: blocks-per-session
+  statement: On average, rats switched across 14.6 context blocks per session.
+  source: Methods, Behaviour
+  expected:
+    quantity: mean context blocks per session
+    value: 14.6
+    tolerance: 1.46
+  criterion: A block is a run of trials with the same context, over all trials. Readings are
+    the number of blocks or the number of switches (blocks minus one), each over (a) sessions
+    that pass the selection or (b) every session of the three task protocols. Reproduced when
+    the mean is within tolerance under any reading.
+- id: session-duration
+  statement: Behavioural sessions lasted 2 to 4 hours.
+  source: Methods, Behaviour
+  criterion: Duration is the stop time of the last trial minus the start time of the first.
+    Reproduced when the median duration lies within 1.8 to 4.4 hours (the range widened by 10%
+    of each bound) over (a) sessions that pass the selection or (b) every session of the three
+    task protocols, under either reading. The fraction of sessions inside the range is
+    reported.
+- id: block-min-30
+  statement: Block switches occurred after a minimum of 30 trials per block, and when a local
+    estimate of performance reached 80% correct.
+  source: Methods, Behaviour
+  criterion: Over the blocks of sessions that pass the selection, leaving out the last block of
+    each session (which the session end cuts short), the length of a block is counted (a) over
+    all trials or (b) over valid trials. Reproduced when at least 95% of blocks have at least
+    30 trials under either reading; partially reproduced when at least 80% do. The local
+    performance estimate is not defined in the paper, so the 80% part is described (fraction
+    correct over the last 30 valid trials before each switch) and does not decide the outcome.
+- id: fig1c-20-rats
+  statement: Twenty rats each contributed more than 120,000 trials after training.
+  source: Figure 1c legend; Extended Data Figure 1c
+  expected:
+    quantity: rats with more than 120,000 valid trials in sessions that pass the selection
+    value: 20
+    tolerance: 0
+  criterion: Tolerance 0, as the count follows from a fixed rule on the trial counts. Valid
+    trials are counted over sessions that pass the selection, as Figure1c.m does.
+- id: fig1c-context-selection
+  statement: After training, choices are mostly driven by location in the location context and
+    by frequency in the frequency context.
+  source: Figure 1c; Extended Data Figure 3a,d
+  depends_on:
+  - fig1c-20-rats
+  criterion: For each of the 20 rats, over its trials in sessions that pass the selection, one
+    logistic regression per context of choice on the two generative strengths. Reproduced when
+    the relative weight of location in the location context and of frequency in the frequency
+    context both exceed 0.5 in all 20 rats; partially reproduced when they do in at least 15.
+- id: ed1e-switch-four-trials
+  statement: Rats switch the feature they attend to within about four trials of a new context
+    block.
+  source: Results, first section; Extended Data Figure 1e (legend panel g)
+  criterion: As in compute_taskswitch.m, per rat, a logistic regression of choice on the two
+    generative strengths for the valid trials at each position k (counting all trials since the
+    switch) of the new block, k from 1 to 30, pooled over sessions that pass the selection
+    (main) or the code's looser selection (fraction correct and index at least 0.65; variant);
+    relative weights are averaged over rats with a fit. The plateau is the mean relative weight
+    of the new block's relevant feature over positions 10 to 30. Readings are "within four
+    trials" (position 4) and "within 4 to 5 trials" (position 5). Reproduced when, under either
+    reading, the across-rat mean relative weight of the relevant feature at that position is at
+    least 90% of its plateau for both switch directions; partially reproduced when for one.
+    The weight at position 1 is reported.
+- id: ed2g-learning-2-5-months
+  statement: Most rats learned the task in two to five months.
+  source: Results, first section; Extended Data Figure 2g
+  criterion: Training starts at (i) the rat's first session in the dandiset or (ii) its first
+    session of any TaskSwitch protocol. The rat has learned the task at (a) its first session
+    with at least 100 valid trials and a feature selection index of at least 0.7 (the red line
+    of Extended Data Figure 2g; the index is undefined until both features vary in both
+    contexts), or (b) its first session that passes the full selection. Months are 30.44 days.
+    Reproduced when, under any pairing of readings, more than half of the rats with a defined
+    value took 1.8 to 5.5 months (two to five widened by 10% of each bound).
+- id: fig4-converging
+  statement: Differential behavioural kernels predominantly converge towards the end of the
+    pulse train, that is the difference between contexts in the weight of a feature shrinks for
+    later pulses.
+  source: Methods, Behavioural logistic regression; Figure 4; Extended Data Figure 3c,f
+  criterion: For the 18 rats of Figure 4 (more than 120,000 valid trials and not rats numbered
+    below 15, as Figure4.m selects), slope indices over all 26 bins for location and frequency,
+    36 values. Reproduced when more than half are negative and their median is negative. The
+    count of negative values and their range are reported; Figure4.m sets its axes to -0.8 to
+    -0.15, which suggests all 36 lie in that range.
+- id: fig4-loc-frq-uncorrelated
+  statement: Across rats, the shape of the differential behavioural kernel for one feature does
+    not predict the shape for the other feature.
+  source: Results, Linking neural and behaviour variability; Figure 4 top right
+  depends_on:
+  - fig4-converging
+  criterion: The paper gives no test; Pearson correlation across the 18 rats between the
+    location and frequency slope indices, two-sided, is chosen here as the paper uses it for
+    Figure 5d and Extended Data Figure 3g. Reproduced when p is 0.05 or more; not reproduced
+    when below. The correlation and its 95% interval are reported.
+- id: ed3g-halfsplit
+  statement: The behavioural slope index computed from the first half of a rat's trials is
+    correlated with the index from the second half (r = 0.58, p = 0.000013).
+  source: Extended Data Figure 3g legend
+  expected:
+    quantity: Pearson r between half-split slope indices
+    value: 0.58
+    tolerance: 0.058
+  criterion: As ExtDataFigure3g.m, rats with at least 100,000 valid trials in sessions that
+    pass the selection; trials of each context split in their order into a first and second
+    half; kernels fitted on each half with the penalty weight chosen for that rat and context on
+    all its trials; slope indices over all 26 bins; one correlation over location and frequency
+    values together. Reproduced when r is within tolerance and p < 0.05; partially reproduced
+    when r is positive with p < 0.05 but outside tolerance; not reproduced otherwise.
+- id: ed4-bilateral-fof-impairs
+  statement: Bilateral optogenetic silencing of the frontal orienting fields during the
+    stimulus impairs performance of the task (three rats).
+  source: Results, first section; Extended Data Figure 4g
+  criterion: Opto sessions are those with an opto_epochs table and at least 100 valid trials.
+    An epoch belongs to the trial whose start and stop contain its start. Per rat, the fraction
+    correct on valid trials with a bilateral full-trial epoch is compared with valid trials with
+    no epoch in the same sessions, two-sided Fisher exact test. Readings of which rats are
+    meant, as the paper does not name them, are (a) the three with the most opto sessions and
+    (b) all rats with opto sessions; the epoch type reading is (i) full trial, as the legend
+    says, or (ii) any bilateral epoch. Reproduced when, under a reading, accuracy is lower with
+    p < 0.05 in every rat of that reading; partially reproduced when it is in at least one.
+- id: neural-link
+  statement: The neurons in the paper's published neural data can be linked to the dandiset's
+    rats and sessions; they come from 199 sessions of 7 rats.
+  source: Results, first section (n = 199 sessions, n = 7 rats); the paper's data/neural_data
+    and data/rat_for_each_neuron.mat at GitHub commit 0ea8fdb
+  data: with_inputs
+  expected:
+    quantity: recording sessions
+    value: 199
+    tolerance: 19.9
+  criterion: The neural files name the rat but not the session. A cell is matched to a session
+    of the same rat when its trials (context, location strength and choice) equal a contiguous
+    run of that session's valid trials. The link holds (reproduced) when the 7 rats are in the
+    dandiset, at least 95% of cells match exactly one session, and the number of distinct
+    matched sessions is within tolerance; partially reproduced when 80% to 95% of cells match.
+- id: units-per-rat
+  statement: The recordings yielded 3,495 putative single units, 2,047, 832, 258, 94 and 54 from
+    five rats in FOF and 112 and 98 from two rats in mPFC.
+  source: Results, first section; Methods, Analysis of neural data
+  data: elsewhere
+  where: GitHub Brody-Lab/flexible_decision_making_rats at commit
+    0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/neural_data, data/rat_for_each_neuron.mat)
+  expected:
+  - quantity: units in total
+    value: 3495
+    tolerance: 0
+  - quantity: FOF units in total
+    value: 3285
+    tolerance: 0
+  - quantity: mPFC units in total
+    value: 210
+    tolerance: 0
+  criterion: Tolerance 0, as these are counts of files. The Methods state both that 3,495 units
+    were recorded in FOF and per-rat FOF counts that sum to 3,285; the per-rat counts are taken
+    as the claim. Reproduced when the per-rat counts and the region named in each cell file
+    match the seven stated counts.
+- id: fig3h-neural-uncorrelated
+  statement: Neural slope indices vary across rats and features, with no apparent correlation
+    between the location and frequency indices across the seven recorded rats.
+  source: Results, Pulse analyses distinguish solutions; Figure 3h
+  data: elsewhere
+  where: GitHub Brody-Lab/flexible_decision_making_rats at commit
+    0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/combined_kernels.mat)
+  depends_on:
+  - units-per-rat
+  criterion: Neural slope indices per rat and feature from the paper's fitted per-neuron pulse
+    kernels, by the procedure of get_neural_slope.m (choice axis from the first principal
+    component of the choice kernels from 0 to 1.3 s; the projected differential pulse response,
+    time-reversed, divided by its largest absolute value, slope against time). The paper gives
+    no test; Pearson correlation across the 7 rats, two-sided, p of 0.05 or more reproduces the
+    absence. The range across rats is reported.
+- id: fig5d-behaviour-neural
+  statement: The behavioural slope index and the neural slope index are anti-correlated across
+    rats and features (r = -0.73, P < 0.01), and for location (r = -0.71) and frequency
+    (r = -0.71) alone (P < 0.1).
+  source: Results, Linking neural and behaviour variability; Figure 5d
+  data: with_inputs
+  depends_on:
+  - neural-link
+  - fig3h-neural-uncorrelated
+  expected:
+  - quantity: Pearson r, both features (14 points)
+    value: -0.73
+    tolerance: 0.073
+  - quantity: Pearson r, location (7 points)
+    value: -0.71
+    tolerance: 0.071
+  - quantity: Pearson r, frequency (7 points)
+    value: -0.71
+    tolerance: 0.071
+  criterion: Behavioural slope indices of the seven recorded rats from the dandiset, sessions
+    passing the Methods selection (the code's 0.65 and 0.6 thresholds are a variant), over the
+    second half of the stimulus (bins 14 to 26, as the Methods and compute_slope.m say);
+    neural slope indices as in fig3h-neural-uncorrelated, matched by rat. Reproduced when the
+    14-point r is within tolerance with p < 0.01; partially reproduced when it is negative with
+    p < 0.05 but outside tolerance; not reproduced otherwise. The two single-feature values are
+    reported and do not decide the outcome.
+- id: fig1e-choice-axis
+  statement: Choice-related population activity in FOF evolves along an essentially
+    one-dimensional line during the stimulus (73.3% of variance; 81.3% for the two-dimensional
+    choice subspace).
+  source: Results, first section; Figure 1e
+  data: elsewhere
+  where: GitHub Brody-Lab/flexible_decision_making_rats at commit
+    0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/Arrays_Pagan, mbtdr)
+  expected:
+  - quantity: variance explained by the two-dimensional choice subspace
+    value: 81.3
+    tolerance: 8.13
+    unit: '%'
+  - quantity: variance explained by the line during the stimulus
+    value: 73.3
+    tolerance: 7.33
+    unit: '%'
+- id: choice-axes-parallel
+  statement: Choice axes estimated separately in the two contexts are essentially parallel
+    (average angle 1.6 degrees, not different from 0 in 6 of 7 rats).
+  source: Results, first section; Extended Data Figure 5
+  data: elsewhere
+  where: GitHub Brody-Lab/flexible_decision_making_rats at commit
+    0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/combined_kernels_per_context.mat)
+  depends_on:
+  - units-per-rat
+  expected:
+    quantity: average angle between context choice axes
+    value: 1.6
+    tolerance: 0.16
+    unit: degrees
+  criterion: As ExtDataFigure5ag.m, per rat the first principal component of the choice kernels
+    (from 0 s, 66 time points) of the paper's per-neuron fits in each context; the two are
+    projected on the first 3 principal components of both contexts' choice kernels from 0 s
+    (each divided by its matrix norm, stacked), and the angle between the projections is folded
+    to at most 90 degrees, the value the code plots. The average over the 7 rats decides the
+    outcome. The paper's test of each angle against 0, a permutation test over shuffled context
+    labels described in the Methods, is not in its code and needs the per-neuron kernels
+    refitted for every shuffle, so it is not run; the angle in the full space, which the code
+    computes first and overwrites, is shown as a variant. (Corrected after the first
+    verification round. The criterion first described only that first angle, unfolded, as the
+    code's; both readings are outside the tolerance. After the second round the sentence on the
+    test against 0 was corrected; it first said the Methods do not describe the test.)
+- id: fig1f-irrelevant-encoded
+  statement: In FOF, trajectories for different evidence strengths separate along each sensory
+    axis whether the feature is relevant or irrelevant, so irrelevant information is not gated
+    out before frontal cortex.
+  source: Results, first section; Figure 1f
+  data: elsewhere
+  where: GitHub Brody-Lab/flexible_decision_making_rats at commit
+    0ea8fdb7c56d755d99155171cc314dbbc24393ac (data/Arrays_Pagan)
+- id: fig3a-trained-rnn-svm
+  statement: RNNs trained by backpropagation through time favour selection vector modulation.
+  source: Figure 3a
+  data: elsewhere
+  where: GitHub Brody-Lab/flexible_decision_making_rnn at commit
+    13cd24544258da2e3d846115afb075443db8a8a1
+- id: fig5c-engineered-rnn
+  statement: In RNNs engineered across the solution space, neural and behavioural slope indices
+    are tightly anti-correlated.
+  source: Figure 5c
+  data: elsewhere
+  where: GitHub Brody-Lab/flexible_decision_making_rnn at commit
+    13cd24544258da2e3d846115afb075443db8a8a1
