@@ -1,0 +1,589 @@
+# Claims for Gao, Davis, Thomas, Economo, Abrego, Svoboda, De Zeeuw & Li (2018), Nature, on
+# dandiset 000007. Source, the author manuscript in PubMed Central (PMC6212318), full text, with
+# its Methods, figure legends and Extended Data legends, and the Supplementary Information from
+# the publisher (Supplemental Table 1 lists the mice of each experiment).
+#
+# The dandiset holds the ALM recordings only, 54 sessions from 13 mice (9 with ChR2 in the
+# fastigial or dentate nucleus, 4 L7-cre x Ai32 for CN photo-inhibition), with spike times, a
+# trial table and an undescribed photostimulation code. The CN recordings, the lesion and
+# behaviour-only sessions, the anatomy and the lick times are not in it. The paper's data
+# description and the CN recordings are on Zenodo (NWB, doi:10.5281/zenodo.6647629; MATLAB with
+# the paper's CN analysis scripts, doi:10.5281/zenodo.6653158), found through CRCNS alm-6, which
+# the paper's reporting summary names. Claims on the CN recordings are `elsewhere`; claims that
+# need the names of the photostimulation codes take them from the Zenodo data description
+# (`with_labels`) and depend on stim-code-link.
+#
+# When these criteria were written the author had seen the data check only: the file list and
+# metadata, counts of sessions, trials, outcomes, codes and units per file, the cell type labels
+# and spike widths, a search for duplicated units and sessions, and, to see what the codes are,
+# the mean absolute difference in ALM firing between each code's trials and control trials in
+# 10 ms and 100 ms bins from 0.6 s before to 3.6 s after pole in, pooled over all units. That
+# last check showed the change starting 5 to 15 ms after sample onset for codes 1 and 3 and
+# after delay onset for codes 2, 4, 5 and 6, lasting longer after code 1 and 2 (fastigial) than
+# after 3 and 4 (dentate), and longer after 6 than after 5. It bears on stim-code-link,
+# ed9a-fn-latency, ed9a-dn-latency, fig4f-fn-persistent and fig4g-dn-recovery. No unit-level
+# test, selectivity, performance or coding direction had been computed. The author had also
+# read the paper's CN analysis scripts.
+#
+# Method choices fixed here, from the Methods and the paper's CN scripts where the Methods are
+# silent (see the helper module). Epochs are sample (pole in to pole out), delay (pole out to
+# cue) and response (cue to 1.3 s after). Trials with early licks are dropped, and each unit
+# uses its stable trials (first to last trial with a spike). The trial type is the R or L of
+# `response`. Units are the putative pyramidal neurons as labelled in the files, unless a claim
+# says otherwise. A unit is selective when a two-tailed t-test on spike rates of correct
+# control trials, lick right against lick left, has p < 0.05 in the sample, delay or response
+# epoch. Photostimulation effects use control (code 0) against photostimulation trials, correct
+# and error trials together, grouped by instructed type where selectivity is computed.
+schema_version: 1
+dandiset: "000007"
+paper: doi:10.1038/s41586-018-0633-x
+claims:
+- id: stim-code-link
+  statement: The dandiset's photostimulation codes 1 to 6 can be named from the paper's Zenodo
+    data description (1 and 2 fastigial photo-activation in the sample and delay epochs, 3 and 4
+    dentate photo-activation in the sample and delay, 5 and 6 CN photo-inhibition in the delay
+    for 0.5 and 1.3 s), and the ALM responses agree with those names.
+  source: Data description of Zenodo records 6647629 and 6653158; Methods
+  data: with_labels
+  criterion: Codes are matched by their integer value. Reproduced when (1) codes 1 and 2 occur
+    only in the mice with ChR2 in the fastigial nucleus, 3 and 4 only in the dentate mice and 5
+    and 6 only in the L7-cre mice; (2) for each code the population change in ALM firing
+    (mean over units of the absolute difference from control trials, 10 ms bins) first exceeds
+    the pre-trial level by 4 standard deviations within 50 ms after the stated onset (pole in
+    for the sample codes, pole out for the delay codes), and not before it; and (3) the change
+    after code 5 ends earlier than after code 6 (smaller mean change 0.7 to 1.2 s after onset).
+    Partially reproduced when (1) and (2) hold and (3) does not.
+- id: methods-alm-unit-counts
+  statement: The ALM recordings comprise 912 putative pyramidal neurons in the 9 mice tested
+    with CN photo-activation (446 with fastigial and 466 with dentate photo-activation), and
+    490 single units (454 putative pyramidal) in 4 mice across 19 sessions during CN
+    photo-inhibition.
+  source: Methods, Electrophysiology data analysis; Figure 4f and 4g legends
+  expected:
+  - quantity: putative pyramidal neurons, photo-activation mice
+    value: 912
+    tolerance: 91.2
+  - quantity: putative pyramidal neurons, fastigial photo-activation mice
+    value: 446
+    tolerance: 44.6
+  - quantity: putative pyramidal neurons, dentate photo-activation mice
+    value: 466
+    tolerance: 46.6
+  - quantity: single units, photo-inhibition mice
+    value: 490
+    tolerance: 49
+  - quantity: putative pyramidal neurons, photo-inhibition mice
+    value: 454
+    tolerance: 45.4
+  - quantity: sessions, photo-inhibition mice
+    value: 19
+    tolerance: 1.9
+  criterion: Pyramidal neurons are counted under two readings, (a) the files' cell type label
+    and (b) the Methods' width rule (trough to peak above 0.45 ms). Reproduced when every count
+    is within tolerance under one reading, partially reproduced when at least half are, not
+    reproduced otherwise.
+- id: fig1g-fn-delay-performance
+  statement: Fastigial photo-activation during the early delay epoch reduced behavioural
+    performance (incorrect choices).
+  source: Results, paragraph 4; Figure 1g; Extended Data Figure 10b
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: Performance (fraction correct, without early-lick and no-lick trials) on code 2
+    trials against control trials in the fastigial mice, trial types pooled. Reproduced when
+    performance is lower with photostimulation and the one-tailed hierarchical bootstrap
+    (mice, sessions, trials; 10,000 resamples) gives p < 0.05.
+- id: fig1-fn-sample-no-effect
+  statement: Fastigial photo-activation during the early sample epoch had no effect on
+    behavioural choice (p > 0.05 for either trial type, bootstrap).
+  source: Results, paragraph 4
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: A claim of absence, judged on the paper's test, the one-tailed hierarchical
+    bootstrap of the performance change on code 1 trials, for lick right and lick left trials
+    separately. Reproduced when neither trial type shows a decrease with p < 0.05; not
+    reproduced when either does.
+- id: fig1g-dn-little-effect
+  statement: Dentate photo-activation produced little effect on behavioural choice (p = 0.06,
+    bootstrap).
+  source: Results, paragraph 5; Figure 1g
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: A claim of absence, judged on the paper's test, the one-tailed hierarchical
+    bootstrap of the performance change with delay-epoch dentate photo-activation (code 4),
+    trial types pooled. Reproduced when the decrease has p >= 0.05; not reproduced when p <
+    0.05. The size of the change is reported either way.
+- id: fig1h-fn-delay-bias-either-direction
+  statement: Fastigial photo-activation during the delay epoch biased future movements to
+    either the contralateral or the ipsilateral direction in individual mice.
+  source: Results, paragraph 4; Figure 1h; Extended Data Figure 1e
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: For each fastigial mouse, the bias is the performance change on ipsilateral
+    trials minus that on contralateral trials (trial types relative to the manipulated
+    hemisphere; a contralateral trial instructs licking to the side opposite the stimulated
+    nucleus), on code 2 trials, with a bootstrap over that mouse's sessions and trials (10,000
+    resamples, two-tailed p < 0.05). Reproduced when at least one mouse is significantly biased
+    in each direction; partially reproduced when mice are biased in one direction only.
+- id: ed1f-fn-no-early-licks
+  statement: Fastigial photo-activation during the delay epoch did not evoke early licks.
+  source: Results, paragraph 5; Extended Data Figure 1f
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: A claim of absence. The paper gives no test; the test fixed here is the one-tailed
+    hierarchical bootstrap of the increase in the early-lick rate on code 2 trials against
+    control trials. Reproduced when p >= 0.05; not reproduced when the increase has p < 0.05.
+- id: fig1k-pi-delay-performance
+  statement: CN photo-inhibition during the delay epoch resulted in incorrect behavioural
+    choices.
+  source: Results, paragraph 6; Figure 1k; Extended Data Figure 2g and 2h
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: Performance on photo-inhibition trials (codes 5 and 6 pooled) against control
+    trials in the L7-cre mice, trial types pooled. Reproduced when performance is lower and the
+    one-tailed hierarchical bootstrap gives p < 0.05. Codes 5 and 6 are also shown apart.
+- id: fig1d-fn-lesion
+  statement: Fastigial lesions impaired initiation of contralesional licking, while dentate
+    lesions did not change behavioural choice or movement execution.
+  source: Results, paragraph 3; Figure 1d
+- id: fig1e-lesion-lick-timing
+  statement: Fastigial lesions slowed initiation of contralesional licking after the go cue,
+    and licking after initiation was unaffected.
+  source: Results, paragraph 3; Figure 1e; Extended Data Figure 1b and 1c
+- id: fig1h-response-contra-bias
+  statement: Fastigial photo-activation immediately before movement onset (response epoch)
+    produced a contralateral bias.
+  source: Results, paragraph 4; Figure 1h
+- id: fig1i-licking-unaffected
+  statement: Fastigial photo-activation did not block or perturb the frequency and duration of
+    licking after initiation of lick bouts, and CN photo-inhibition minimally affected movement
+    execution.
+  source: Results, paragraphs 5 and 6; Figure 1i and 1l
+- id: fig1k-response-ipsi-bias
+  statement: CN photo-inhibition during the response epoch produced an ipsilateral bias, and
+    photo-inhibition during the early sample epoch did not affect choice.
+  source: Results, paragraph 6; Figure 1k; Extended Data Figure 2g
+- id: ed2-pi-silences-fastigial
+  statement: Photostimulation of Purkinje cells in L7-cre x Ai32 mice silenced fastigial
+    neurons, and at the intensities used in the task evoked no consistent movement.
+  source: Figure 1j; Extended Data Figure 2b to 2f
+- id: fig2-alm-selective-fraction
+  statement: Most ALM pyramidal neurons distinguished lick left and lick right trials
+    (980/1194, p < 0.05, two-tailed t-test).
+  source: Results, paragraph 7
+  expected:
+    quantity: fraction of ALM putative pyramidal neurons that are selective
+    value: 0.821
+    tolerance: 0.082
+  criterion: The paper's 1194 neurons come from the 10 mice recorded during behaviour (Figure 2;
+    Supplemental Table 1), the 9 photo-activation mice of the dandiset and one excluded mouse.
+    The readings are (a) the pyramidal neurons of the 9 photo-activation mice and (b) those of
+    all 13 mice. Reproduced when the fraction is within tolerance under one reading.
+- id: fig2-alm-preparatory-fraction
+  statement: Preparatory activity (selectivity before the response epoch) was present in 59% of
+    ALM neurons.
+  source: Results, paragraph 7
+  expected:
+    quantity: fraction of ALM neurons selective in the sample or delay epoch
+    value: 0.59
+    tolerance: 0.059
+  criterion: Readings (a) and (b) as in fig2-alm-selective-fraction; the denominator is all
+    pyramidal neurons, as "59% of neurons" reads. Reproduced when the fraction is within
+    tolerance under one reading.
+- id: fig2-alm-perimovement-fraction
+  statement: Peri-movement activity (selectivity in the response epoch) was present in 67% of
+    ALM neurons.
+  source: Results, paragraph 7
+  expected:
+    quantity: fraction of ALM neurons selective in the response epoch
+    value: 0.67
+    tolerance: 0.067
+  criterion: Readings (a) and (b) as in fig2-alm-selective-fraction. Reproduced when the fraction
+    is within tolerance under one reading.
+- id: fig2c-alm-selectivity-time-course
+  statement: Selectivity for lick left and lick right trials emerged gradually in the ALM
+    population average, starting during the sample epoch and reaching a maximum in the
+    response epoch.
+  source: Results, paragraph 8; Figure 2c
+  depends_on:
+  - fig2-alm-selective-fraction
+  criterion: Selective pyramidal neurons of the 9 photo-activation mice with at least 15
+    correct control trials of each type; the preferred type from 10 random trials of each type
+    (delay epoch counts), selectivity (preferred minus non-preferred rate, 200 ms box-car) on
+    the rest. Reproduced when (1) the mean selectivity over the last 300 ms of the sample epoch
+    is above 0 (bootstrap over neurons, 95% interval above 0) and (2) the maximum of the mean
+    selectivity between pole in and 1.3 s after the cue lies in the response epoch.
+- id: fig2-cn-unit-counts
+  statement: 878 CN-region single units were recorded in 18 mice across 169 sessions, 314 from
+    outside the CN, 268 in the fastigial, 139 in the interposed and 157 in the dentate nucleus.
+  source: Methods, Electrophysiology data analysis
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip)
+  expected:
+  - quantity: single units
+    value: 878
+    tolerance: 87.8
+  - quantity: units outside the CN
+    value: 314
+    tolerance: 31.4
+  - quantity: fastigial units
+    value: 268
+    tolerance: 26.8
+  - quantity: interposed units
+    value: 139
+    tolerance: 13.9
+  - quantity: dentate units
+    value: 157
+    tolerance: 15.7
+  - quantity: sessions
+    value: 169
+    tolerance: 16.9
+  criterion: Unit locations from each unit's cell type comment in the files. Reproduced when all
+    six counts are within tolerance, partially reproduced when at least three are.
+- id: fig2-cn-selective-fraction
+  statement: A similar proportion of CN neurons as of ALM neurons showed trial-type selectivity
+    (416/564).
+  source: Results, paragraph 7
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip)
+  expected:
+    quantity: fraction of CN neurons that are selective
+    value: 0.738
+    tolerance: 0.074
+  criterion: CN units are those located in the fastigial, interposed or dentate nucleus, with
+    the test of the paper's script analysis_compile_all_DCN_data.m (correct, control,
+    non-early-lick, performing trials; any epoch p < 0.05). Reproduced when within tolerance.
+- id: fig2-cn-preparatory-fraction
+  statement: Preparatory activity was more prevalent in ALM than in CN (59% against 35% of
+    neurons, p < 0.001, chi-square test).
+  source: Results, paragraph 7
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip), with the ALM neurons of the
+    dandiset
+  expected:
+    quantity: fraction of CN neurons selective in the sample or delay epoch
+    value: 0.35
+    tolerance: 0.035
+  criterion: Reproduced when the CN fraction is within tolerance and a chi-square test of the
+    ALM fraction (reading (a) of fig2-alm-preparatory-fraction) against the CN fraction gives
+    p < 0.001 with ALM higher. Partially reproduced when the test holds and the CN fraction is
+    outside tolerance.
+- id: fig2-cn-perimovement-fraction
+  statement: Peri-movement activity was equally prevalent in ALM and CN (67% against 66%).
+  source: Results, paragraph 7
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip)
+  expected:
+    quantity: fraction of CN neurons selective in the response epoch
+    value: 0.66
+    tolerance: 0.066
+- id: ed4e-cn-predict-movement
+  statement: Most CN neurons with delay selectivity predicted the upcoming licking direction,
+    switching their trial-type preference on error trials (67%, n = 73 neurons tested on more
+    than 3 error trials).
+  source: Results, paragraph 8; Extended Data Figure 4e
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip)
+  expected:
+  - quantity: fraction of neurons with a negative error to correct selectivity ratio
+    value: 0.67
+    tolerance: 0.067
+  - quantity: neurons tested
+    value: 73
+    tolerance: 7.3
+  criterion: CN neurons with significant delay selectivity and more than 3 error trials of each
+    type; the ratio is the delay selectivity (lick right minus lick left by instructed type) on
+    error trials over that on correct trials. Reproduced when the fraction is within tolerance;
+    the count is reported.
+- id: ed4g-fn-contra-late-delay
+  statement: In the fastigial nucleus, equal numbers of neurons preferred contralateral or
+    ipsilateral movement in the early delay, and a population preference for contralateral
+    movement developed right before movement initiation.
+  source: Results, paragraph 9; Extended Data Figure 4g
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip)
+  criterion: Fastigial units (all recorded in the left CN, so contralateral is lick right)
+    significant (t-test p < 0.05, correct control trials) in the first or in the last 500 ms of
+    the delay; per mouse the fraction of those preferring contralateral in each window. One-
+    tailed bootstrap over mice (10,000). Reproduced when the late fraction exceeds 0.5 with p <
+    0.05 and the early fraction does not differ from 0.5 (two-tailed p >= 0.05); partially
+    reproduced when only the late part holds.
+- id: ed4c-lick-modulation
+  statement: In ALM and CN a similar small proportion (below 10%) of neurons modulated their
+    spike rates during individual licks.
+  source: Results, paragraph 7; Extended Data Figure 4a to 4c
+  data: elsewhere
+  where: CRCNS alm-4 doi:10.6080/K0NS0S26 (the ALM sessions in MATLAB format, with tongue
+    movement traces by the Zenodo data description), and Zenodo doi:10.5281/zenodo.6647629 for the
+    CN sessions
+- id: fig3b-cn-modulated-fraction
+  statement: Activity of many CN neurons was rapidly altered by bilateral ALM photo-inhibition
+    (185/389, p < 0.01, two-tailed t-test).
+  source: Results, paragraph 10; Figure 3b
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip)
+  expected:
+    quantity: fraction of CN neurons modulated by ALM photo-inhibition
+    value: 0.476
+    tolerance: 0.048
+  criterion: CN units (fastigial, interposed or dentate) of sessions with bilateral ALM
+    photo-inhibition (code 9); delay-epoch spike counts, control against code 9 trials, trial
+    types pooled, p < 0.01. Reproduced when within tolerance; the count is reported.
+- id: fig3b-cn-net-increase
+  statement: ALM photo-inhibition caused more CN neurons to increase than to decrease their
+    activity (123/185 increase, p < 0.001, binomial test).
+  source: Results, paragraph 10; Figure 3b
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip)
+  depends_on:
+  - fig3b-cn-modulated-fraction
+  expected:
+    quantity: fraction of modulated CN neurons that increased
+    value: 0.665
+    tolerance: 0.066
+  criterion: Reproduced when the fraction is within tolerance and a two-tailed binomial test
+    against 0.5 gives p < 0.001.
+- id: fig3-cn-latency
+  statement: The CN response to ALM photo-inhibition had a latency of 10.7 +/- 4.0 ms (mean +/-
+    s.e.m.).
+  source: Results, paragraph 10
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip)
+  depends_on:
+  - fig3b-cn-modulated-fraction
+  expected:
+    quantity: onset latency
+    value: 10.7
+    tolerance: 4.0
+    unit: ms
+  criterion: The latency method of Extended Data Figure 9a, on the modulated CN neurons,
+    aligned to delay onset.
+- id: fig3c-cn-selectivity-abolished
+  statement: CN selectivity for lick left and lick right trials was abolished by bilateral ALM
+    photo-inhibition.
+  source: Results, paragraph 10; Figure 3c; Extended Data Figure 5b to 5d
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip)
+  criterion: As in the paper's script analysis_compiled_all_DCN_ALMsilencing_selectivity.m, CN
+    units selective in the sample or delay epoch (correct and error trials by instructed type),
+    with at least 30 control trials of each type and more than 2 code 9 trials of each type;
+    preferred type from the delay rate of 20 random control trials of each type; selectivity
+    is the preferred minus non-preferred rate in the delay epoch on the remaining control
+    trials and on code 9 trials. Reproduced when the photo-inhibition selectivity is at most
+    25% of control; partially reproduced when it is lower than control (bootstrap over neurons,
+    one-tailed p < 0.05) but above 25%; not reproduced otherwise.
+- id: ed6-cn-either-hemisphere
+  statement: Photo-inhibiting either side of ALM reduced CN preparatory activity.
+  source: Results, paragraph 11; Extended Data Figure 6a to 6d
+  data: elsewhere
+  where: Zenodo doi:10.5281/zenodo.6647629 (datafiles_NWB.zip)
+  criterion: As fig3c-cn-selectivity-abolished, for left (code 7) and right (code 8) ALM
+    photo-inhibition. Reproduced when selectivity is lower than control for both (one-tailed
+    bootstrap p < 0.05 each); partially reproduced when for one.
+- id: fig3e-alm-modulated-fraction
+  statement: Activity of many ALM neurons was rapidly altered by CN photo-inhibition (197/454,
+    p < 0.01, two-tailed t-test).
+  source: Results, paragraph 12; Figure 3e; Extended Data Figure 5e
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  expected:
+    quantity: fraction of ALM pyramidal neurons modulated by CN photo-inhibition
+    value: 0.434
+    tolerance: 0.043
+  criterion: Pyramidal neurons of the L7-cre mice; delay-epoch spike counts of control against
+    photo-inhibition trials, trial types pooled, p < 0.01. The Methods state a 1.3 s
+    photostimulus, and the files hold 0.5 s (code 5) and 1.3 s (code 6) trials. Readings (a)
+    code 6 trials and (b) codes 5 and 6 pooled. Reproduced when within tolerance under one
+    reading.
+- id: fig3e-alm-mean-rate-unchanged
+  statement: CN photo-inhibition left the average ALM spike rate nearly unchanged (control 4.15,
+    photo-inhibition 4.39 spikes/s, p = 0.58, two-tailed t-test).
+  source: Results, paragraph 12
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  expected:
+  - quantity: mean delay-epoch rate, control
+    value: 4.15
+    tolerance: 0.415
+    unit: spikes/s
+  - quantity: mean delay-epoch rate, photo-inhibition
+    value: 4.39
+    tolerance: 0.439
+    unit: spikes/s
+  criterion: Per-neuron mean delay-epoch rates on control and on code 6 trials, over the
+    pyramidal neurons of the L7-cre mice. The absence is judged on a two-sample two-tailed
+    t-test across neurons (the paper's form is not stated; the paired test is shown as a
+    variant). Reproduced when both rates are within tolerance and the test gives p >= 0.05;
+    partially reproduced when the test gives p >= 0.05 and a rate is outside tolerance; not
+    reproduced when p < 0.05.
+- id: fig3e-alm-up-down
+  statement: Individual ALM neurons increased (108/197) or decreased (89/197) their responses
+    during CN photo-inhibition.
+  source: Results, paragraph 12; Figure 3e
+  data: with_labels
+  depends_on:
+  - fig3e-alm-modulated-fraction
+  expected:
+    quantity: fraction of modulated ALM neurons that increased
+    value: 0.548
+    tolerance: 0.055
+  criterion: Under the reading of fig3e-alm-modulated-fraction that matched (the first listed
+    if both or neither did). Reproduced when within tolerance.
+- id: fig3-alm-latency-pi
+  statement: The ALM response to CN photo-inhibition had a latency of 7.1 +/- 3.8 ms (mean +/-
+    s.e.m.).
+  source: Results, paragraph 12
+  data: with_labels
+  depends_on:
+  - fig3e-alm-modulated-fraction
+  expected:
+    quantity: onset latency
+    value: 7.1
+    tolerance: 3.8
+    unit: ms
+  criterion: The method of Extended Data Figure 9a on the modulated neurons of
+    fig3e-alm-modulated-fraction (same reading), rate change in 10 ms bins stepped by 1 ms from
+    20 ms before to 100 ms after delay onset, with the sign of suppressed neurons flipped; the
+    onset is the centre of the first bin whose change across neurons is above 0 (one-sample
+    t-test p < 0.01); mean and standard deviation over 10,000 resamples of neurons. Reproduced
+    when the mean is within tolerance.
+- id: fig3f-alm-selectivity-abolished
+  statement: ALM trial-type selectivity was abolished by CN photo-inhibition.
+  source: Results, paragraph 12; Figure 3f
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: Pyramidal neurons of the L7-cre mice selective in the sample or delay epoch (correct
+    and error trials by instructed type, control trials) with more than 3 photo-inhibition
+    trials of each type and at least 15 control trials of each type; preferred type from the
+    delay rate of 10 random control trials of each type; selectivity is the preferred minus
+    non-preferred delay-epoch rate on the remaining control trials and on code 6 trials.
+    Reproduced when the photo-inhibition selectivity is at most 25% of control; partially
+    reproduced when it is lower than control (bootstrap over neurons, one-tailed p < 0.05) but
+    above 25%; not reproduced otherwise. Codes 5 and 6 pooled are shown as a variant.
+- id: ed9a-fn-latency
+  statement: Fastigial photo-activation induced rapid changes in ALM activity, with a latency
+    of 4.5 +/- 2.6 ms, in 227 significantly modulated neurons.
+  source: Results, paragraph 14; Extended Data Figure 9a
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  expected:
+  - quantity: onset latency
+    value: 4.5
+    tolerance: 2.6
+    unit: ms
+  - quantity: neurons significantly modulated
+    value: 227
+    tolerance: 22.7
+  criterion: Pyramidal neurons of the fastigial mice; modulated when the spike count in the 0.5 s
+    after photostimulus onset differs between control and photostimulation trials (p < 0.01);
+    latency as in fig3-alm-latency-pi aligned to photostimulus onset. Readings (a) delay
+    photostimulation (code 2) and (b) codes 1 and 2 pooled, each aligned to its own onset.
+    Reproduced when both values are within tolerance under one reading; partially reproduced
+    when the latency is and the count is not.
+- id: ed9a-dn-latency
+  statement: Dentate photo-activation also induced ALM response changes, with a latency of 8.3
+    +/- 5.0 ms, in 163 significantly modulated neurons.
+  source: Results, paragraph 14; Extended Data Figure 9a
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  expected:
+  - quantity: onset latency
+    value: 8.3
+    tolerance: 5.0
+    unit: ms
+  - quantity: neurons significantly modulated
+    value: 163
+    tolerance: 16.3
+  criterion: As ed9a-fn-latency, for the dentate mice and codes 4 (reading a) and 3 and 4
+    (reading b).
+- id: fig4f-fn-persistent
+  statement: Transient photo-activation of the fastigial nucleus altered ALM preparatory activity
+    long (more than 1 s) after the photostimulus ended.
+  source: Results, paragraph 14; Figure 4f; Extended Data Figure 9b
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: Pyramidal neurons of the fastigial mice, delay photostimulation (code 2). For each
+    400 ms bin (50 ms steps) the fraction of neurons whose spike counts differ between control
+    and code 2 trials (two-tailed t-test, p < 0.01). Reproduced when the fraction in the bin
+    from 1.0 to 1.4 s after photostimulus offset is more than twice the fraction in the bin
+    ending at photostimulus onset and higher than it by a one-tailed Fisher exact test (p <
+    0.05).
+- id: fig4g-dn-recovery
+  statement: ALM activity quickly recovered after dentate photo-activation.
+  source: Results, paragraph 14; Figure 4g
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: As fig4f-fn-persistent, for the dentate mice and code 4. Reproduced when, in the
+    bin from 1.0 to 1.4 s after offset, the dentate fraction is less than twice its own fraction
+    in the bin ending at onset and lower than the fastigial fraction in the same bin (two-tailed
+    Fisher exact test, p < 0.05).
+- id: fig4i-fn-cd-collapse
+  statement: Fastigial photo-activation resulted in a collapse of ALM activity trajectories
+    along the coding direction, destroying the coding of future movement.
+  source: Results, paragraph 15; Figure 4i
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: Sessions of the fastigial mice with more than 5 pyramidal neurons and more than 5
+    trials of each type in each condition. The coding direction from a random half of the
+    correct control trials (400 ms windows stepped by 10 ms, the lick right minus lick left
+    mean, averaged over the delay epoch); projections of the other control trials and of all
+    code 2 trials (correct and error, by instructed type), offset by the mean projection of
+    the training trials. Separation is the lick right minus lick left projection in the last
+    400 ms of the delay; the ratio is its mean over sessions for code 2 over that for control,
+    with a bootstrap over sessions (10,000). Reproduced when the ratio is below 0.5 and its
+    upper 95% bound below 1; partially reproduced when the upper bound is below 1 and the ratio
+    is 0.5 or more.
+- id: fig4i-dn-cd-minimal
+  statement: Dentate photo-activation minimally impacted ALM activity trajectories along the
+    coding direction, despite having an impact on ALM neuron responses.
+  source: Results, paragraph 15; Figure 4i; Extended Data Figure 9c
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  criterion: As fig4i-fn-cd-collapse, for the dentate mice and code 4. Reproduced when the ratio
+    is above 0.75 and lower for the fastigial than for the dentate photo-activation in at least
+    95% of paired bootstrap resamples; partially reproduced when the ratio is between 0.5 and
+    0.75.
+- id: ed10d-fn-no-prediction
+  statement: After fastigial photo-activation, ALM activity along the coding direction no longer
+    predicted the future movement direction (n = 337 trials).
+  source: Supplementary Information; Extended Data Figure 10d
+  data: with_labels
+  depends_on:
+  - stim-code-link
+  expected:
+    quantity: fastigial photo-activation trials analysed
+    value: 337
+    tolerance: 33.7
+  criterion: Sessions and coding direction as in fig4i-fn-cd-collapse; the projection in the
+    last 400 ms of the delay, minus the midpoint of the two training-trial endpoints. A
+    claim of absence; the paper gives no test, the test fixed here is a logistic regression of
+    licking right on the projection, pooled over sessions. Reproduced when the slope on code 2
+    trials has p >= 0.05 while the slope on held-out control trials has p < 0.05; not
+    reproduced when the code 2 slope has p < 0.05. The trial count is reported.
+- id: ed10c-alm-pi-endpoints
+  statement: After bilateral ALM photo-inhibition the distance of ALM trajectories to the
+    endpoints along the coding direction still predicted future movements (n = 690 trials).
+  source: Supplementary Information; Extended Data Figure 10c
+- id: ed10efg-alm-needed-after-fn
+  statement: ALM activity remained necessary for directional licking after a fastigial
+    perturbation, as unilateral and bilateral ALM photo-inhibition affected licking with or
+    without a preceding fastigial perturbation.
+  source: Supplementary Information; Extended Data Figure 10e to 10g
+- id: fig4bc-fastigial-thalamus
+  statement: Fastigial projections mostly overlapped with the parts of the thalamus that project
+    to ALM (VM and parts of VAL), while dentate projections targeted an adjacent region.
+  source: Results, paragraph 13; Figure 4a to 4c; Extended Data Figures 7 and 8
