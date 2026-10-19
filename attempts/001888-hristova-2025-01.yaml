@@ -62,8 +62,9 @@ outcomes:
   measured: 57.77
   notes: The Het mean of 57.77 min per day (SEM 9.04, 14 rats) is within 59.97 +- 6.0. The WT mean
     is 1.37 min (0 and 2.75), not below 1 min. Without GRIN2B-228 the Het mean is 62.21, also within
-    tolerance; without GRIN2B-238 the WT mean is 2.75. Counting flagged epochs as 5 s each gives
-    110.57 min.
+    tolerance; without GRIN2B-238 the WT mean is 2.75. Counting the epochs SWD events overlap as
+    5 s each gives 110.57 min, and counting the epochs the scorer flags gives 60.2 min, so the
+    paper's number fits both the event durations and the flags.
   deviations:
   - Two WT rats, where the paper has nine; the WT part rests on GRIN2B-240 alone.
 - claim: figs5a-swd-light-dark
@@ -112,10 +113,11 @@ outcomes:
   notebook: reproduce_hristova_2025.ipynb
   output: claim:fig3d-rem-hourly
   notes: Genotype F = 4.69, p = 0.048 (Het lower); interaction p = 0.096. At the threshold; with
-    GRIN2B-132 as WT p = 0.19, as Het p = 0.038; with the scorer's flags or the stored scores p =
-    0.049 and 0.050. Without GRIN2B-228 genotype p = 0.060; without GRIN2B-238 or both genotype p
-    = 0.019 and 0.025 but the interaction has p = 0.0001 and 0.00005, so the outcome holds only
-    with all 16 rats. A fitted mixed model (MixedLM) gives genotype Wald p = 0.030 and interaction
+    GRIN2B-132 as WT p = 0.19, as Het p = 0.038 (interaction p = 0.071); with the scorer's flags
+    or the stored scores p = 0.049 and 0.050. Without GRIN2B-228 genotype p = 0.060; without
+    GRIN2B-238 or both genotype p = 0.019 and 0.025 but the interaction has p = 0.0001 and
+    0.00005. The outcome holds with all 16 rats and with GRIN2B-132 counted as Het, and not
+    without GRIN2B-228 or GRIN2B-238. A fitted mixed model (MixedLM) gives genotype Wald p = 0.030 and interaction
     p = 0.086.
   deviations:
   - Two WT rats; the mixed model is tested as a split-plot ANOVA.
@@ -227,7 +229,7 @@ outcomes:
   notebook: reproduce_hristova_2025.ipynb
   output: claim:fig4c-wake-power
   notes: Normalized wake power is higher in Het on average (+0.081; genotype F = 0.58, p = 0.45),
-    and higher on average in every variant on the raw EEG with both WT (+0.0065 to +0.165). The
+    and higher on average in every variant on the raw EEG with both WT (+0.0065 to +0.168). The
     stored spectra have Het lower on average (-0.027, p = 0.59; p = 0.0072 only with GRIN2B-132
     counted as WT), as does the cleaner S1 channel without GRIN2B-238 (-0.0072, p = 0.93).
   deviations:
@@ -331,8 +333,8 @@ outcomes:
   outcome: blocked
   blocked_by: data_missing
   notes: The pharmacology recordings (2-channel EEG of 17 rats over baseline, treatment and washout
-    days) are not in the dandiset, whose 17 files are all 24-h baseline recordings with the
-    14-channel grid. No other dandiset for this paper was found.
+    days) are not in the dandiset, whose 17 files are 73 to 99 h recordings with the 14-channel
+    grid, each holding two 24-h baseline windows. No other dandiset for this paper was found.
 - claim: fig6c-systemic-duration
   outcome: blocked
   blocked_by: data_missing
@@ -649,4 +651,219 @@ verifications:
     agrees: true
     outcome: blocked
     reason: Confirmed in the archive; there are no pharmacology sessions, so no part can be tested.
+    response: No change needed.
+- date: '2026-10-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round-1 revision, with its conclusions and
+    summary, the helper module, the claims file, the attempt record and the README, with the paper
+    and its Supplementary Methods. The verifier agreed with all 34 outcomes, including the change of
+    figs5b-transition-percent to reproduced, and found all round-1 points resolved. It found
+    sentences the outputs did not support. The disc-het-swd-minutes conclusion said the paper's
+    59.97 min does not match the scorer's flags; cell 32 now prints the flagged epochs as 60.2 min,
+    and the conclusion says the figure fits both. The fig4c range now ends at +0.168. The fig3d
+    conclusion now says the outcome also holds with GRIN2B-132 counted as Het. The summary now names
+    fig5def-no-other-correlations among the claims that would change without GRIN2B-228, and the
+    fig3d interaction without GRIN2B-238. The README run time and the description of the recordings
+    (73 to 99 h, each with two 24-h baseline windows) are corrected, as is the same description in
+    the fig6b note and the claims-file comment. No outcome changed, and none is proposed to change.
+  results:
+  - claim: fig2b-swd-hourly
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig2c-swd-number
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig2c-swd-mean-duration
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig2c-swd-total-duration
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: disc-het-swd-minutes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Cell 33 and the record's note say counting each flagged epoch as 5 s gives 110.57 min,
+      so the paper's number matches the event durations, not the flags. Cell 32 computes the 110.57
+      from A.swd_epochs, the epochs SWD events overlap. The flag6_epochs column in cell 6 gives a
+      Het mean of 722 flagged epochs per day, 60.2 min, within 59.97 +- 6, so the paper's figure
+      fits the flags as well as the event durations, and the conclusion 'not the flags' is
+      contradicted. The outcome does not change.
+    response: Cell 32 now prints both counts (epochs SWD events overlap 110.57 min, epochs the
+      scorer flags 60.2 min), and cell 33 and the note say the paper's number fits both the event
+      durations and the flags. Outcome kept.
+  - claim: figs5a-swd-light-dark
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: figs8-swd-sex
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig2d-swd-spectrum-peak
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig2e-swd-delta-power
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig3d-rem-hourly
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion at p = 0.048, though only just. The sentence 'The outcome holds only
+      with all 16 rats' is not supported; it also holds with GRIN2B-132 counted as Het (genotype p =
+      0.038, interaction p = 0.071). Without GRIN2B-238 the interaction becomes significant (p =
+      0.0001, cell 47).
+    response: Cell 48 and the note now say the outcome holds with all 16 rats and with GRIN2B-132
+      counted as Het (interaction p = 0.071), and not without GRIN2B-228 or GRIN2B-238. The summary
+      now gives the fig3d interaction without GRIN2B-238. Outcome kept.
+  - claim: fig3g-rem-total
+    agrees: true
+    outcome: reproduced
+    reason: Meets its criterion at p = 0.048, though only just. Drops to p = 0.060 without
+      GRIN2B-228.
+    response: No change needed.
+  - claim: fig3g-rem-bouts
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig3g-rem-bout-duration
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig3h-nrem-total
+    agrees: true
+    outcome: reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig3h-nrem-bouts
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig3i-wake-total
+    agrees: true
+    outcome: partially_reproduced
+    reason: Depends on how SWD epochs are removed from wake. This is disclosed and follows the
+      paper's method, but the outcome is partly built in by that choice.
+    response: No change needed.
+  - claim: fig3i-wake-bouts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Depends on how SWD epochs are removed from wake. This is disclosed and follows the
+      paper's method, but the outcome is partly built in by that choice.
+    response: No change needed.
+  - claim: fig4a-rem-spectrum
+    agrees: true
+    outcome: reproduced
+    reason: Round-1 point B4 resolved. The slope rule removes no epoch, which fits the Supplementary
+      Methods thresholds given a steepest slope of -3.76 and at most 5.34 mV2/Hz at 1 Hz.
+    response: No change needed.
+  - claim: fig4b-nrem-beta
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig4c-wake-power
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 78 and the record's note give the range +0.0065 to +0.165. The largest value among
+      the raw-EEG variants with both WT is +0.1683 (scorer flags, without 228), so the range should
+      end at +0.168.
+    response: Corrected to +0.0065 to +0.168 in cell 78 and the note. Outcome kept.
+  - claim: fig5a-swd-state-distribution
+    agrees: true
+    outcome: partially_reproduced
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig5a-het-more-nrem-swds
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig5c-transition-swds
+    agrees: true
+    outcome: partially_reproduced
+    reason: Would become reproduced without GRIN2B-228; which deposited rats the paper analysed
+      cannot be settled from the archive.
+    response: No change needed.
+  - claim: figs5b-transition-percent
+    agrees: true
+    outcome: reproduced
+    reason: I agree with the change. The Supplementary Methods use the first 30 seconds (six epochs)
+      prior to assess SWD initiation in NREM and wake-NREM transitions, and the Fig. S5B legend
+      gives SWDs in NREM as the denominator. Reading (i) gives 22.93% (cell 86). The record and the
+      claims file both say the criterion was corrected after round 1.
+    response: No change needed.
+  - claim: fig5f-swd-wake-correlation
+    agrees: true
+    outcome: reproduced
+    reason: R = -0.81 meets its criterion. The Supplementary Methods support removing whole SWD
+      epochs. It depends on how SWD epochs are removed from wake; this is disclosed and follows the
+      paper's method, but the outcome is partly built in by that choice.
+    response: No change needed.
+  - claim: fig5def-no-other-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: The summary leaves out that without GRIN2B-228 this claim would meet its criterion,
+      since 0 of 8 tests have p < 0.05 (cells 92 and 93). It depends on how SWD epochs are removed
+      from wake.
+    response: The summary now says that without GRIN2B-228 fig5def-no-other-correlations would meet
+      its criterion. Outcome kept.
+  - claim: fig1c-glun2b-reduced
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig1df-other-proteins-unchanged
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: figs4-normal-development
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: figs1-scorer-agreement
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig6b-systemic-etx-number
+    agrees: true
+    outcome: blocked
+    reason: The record's note says the 17 files are all 24-h baseline recordings; cell 4 shows 73 to
+      99 h recordings, each with two 24-h baseline windows.
+    response: Corrected the note, the README and the claims-file comment to 73 to 99 h recordings
+      with two 24-h baseline windows. Outcome kept.
+  - claim: fig6c-systemic-duration
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig6d-systemic-total
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 34 stated outcomes.
+    response: No change needed.
+  - claim: fig7c-nrt-infusion
+    agrees: true
+    outcome: blocked
+    reason: I agree with all 34 stated outcomes.
     response: No change needed.

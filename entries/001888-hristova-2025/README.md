@@ -2,9 +2,9 @@
 
 Tests the findings of [Hristova, Fasol et al. (2025)](https://doi.org/10.1111/epi.18606) that can
 be tested on [DANDI:001888](https://dandiarchive.org/dandiset/001888/draft) (draft as modified on
-2026-07-31; there is no published version). The dandiset holds the 24-h wireless EEG and EMG
-recordings, automated sleep scores and SWD events of 14 Grin2b+/- rats, 2 wild type rats and one
-rat without genotype. The paper analysed 15 Grin2b+/- and 9 wild type rats, so every genotype
+2026-07-31; there is no published version). The dandiset holds 73 to 99 h wireless EEG and EMG
+recordings, each with two 24-h baseline windows, and the automated sleep scores and SWD events of
+those windows, for 14 Grin2b+/- rats, 2 wild type rats and one rat without genotype. The paper analysed 15 Grin2b+/- and 9 wild type rats, so every genotype
 comparison here rests on two wild type rats; each is also shown without the Grin2b+/- rat with
 almost no SWDs (GRIN2B-228) and without the wild type rat with none (GRIN2B-238).
 
@@ -31,7 +31,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001888-hristova-2025-01.yaml`](../../attempts/001888-hristova-2025-01.yaml).
 
-- `reproduce_hristova_2025.ipynb`: the analysis. It takes about six minutes, most of it streaming
+- `reproduce_hristova_2025.ipynb`: the analysis. It takes about four minutes, most of it streaming
   the processed tables of the 17 files and about 4.8 h of raw EEG per rat.
 - `grin2b.py`: loading the files, the per-day sleep and SWD measures (with SWD epochs or only SWD
   time removed, and bouts split or not by SWD epochs), raw-EEG spectra following the Methods on
