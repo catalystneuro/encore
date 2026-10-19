@@ -110,7 +110,7 @@ outcomes:
     mice whisk and touch about as much with light as without (0.35 against 0.29 s of whisking, 3.4
     against 3.6 touches per trial). The PV-Cre juxtacellular cells not suppressed by light, mostly
     excitatory by Supplementary Table 2 (38 of 42 cell-attached PV-Cre cells), rise in 24 of 32 (p =
-    0.00042). The light cuts the firing of 3 PV-Cre cells by more than half, as for the 3 of 4 PV
+    0.00042), but that selection is biased toward a rise and does not decide the outcome. The light cuts the firing of 3 PV-Cre cells by more than half, as for the 3 of 4 PV
     cells inhibited in Supp. Fig. 13a.
   deviations:
   - The supplement (read after the first run) states that this light drives eNpHR in PV cells; the
@@ -169,7 +169,7 @@ findings:
   statement: No file marks the mice whose infraorbital nerve was transected (9 VGAT-ChR2 mice in
     Supplementary Table 2 of the paper), and the files hold no surgery or notes field. Their cells
     cannot be told from control cells except by inference; 4 mice whose cells have no touch input
-    are probably among them. This blocks the test of Figure 7 and mixes these cells into any
+    are probably among them. This blocks the test of Figure 7, and these cells may be mixed into any
     analysis of control cells.
 - kind: metadata_error
   statement: The genotype is missing for the 6 VPM mice (VGAT-ChR2-EYFP in Supplementary Table 1)
@@ -196,7 +196,7 @@ findings:
     trials once multiplied by 1000). In the VPM files it is correct.
 - kind: metadata_insufficient
   statement: The L4 trace is sampled at 10 kHz in files up to March 2015 and at 20 kHz from late
-    August 2015 on, with trials of 5.5 and 5.9 s; nothing but the timestamps states the rate.
+    August 2015 on, with trials of 5.2 or 5.5 s at 10 kHz and 5.9 s at 20 kHz; nothing but the timestamps states the rate.
 - kind: metadata_insufficient
   statement: 8 files name no principal whisker, and the VPM files give one principal whisker per
     file though the session description says each unit has its own.
@@ -300,3 +300,76 @@ verifications:
     response: Reason changed to metadata_insufficient. The notebook now prints every metadata field
       of the L4 files; none marks ION transection. Mice without touch input are flagged by inference
       and their FS cells are compared with the others, shown as not a test.
+- date: 2026-10-19
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the revised run, with its conclusions and summary, the
+    helper module, the claims file, the README and this record. The verifier also downloaded the
+    supplement and checked the figures quoted from it.
+  results:
+  - claim: vpm-touch
+    agrees: true
+    outcome: reproduced
+    reason: Cell 27 gives 20 of 24 (0.83), and 0.0 with spikes moved to the next trial.
+    response: No change.
+  - claim: vpm-whisking
+    agrees: true
+    outcome: reproduced
+    reason: Cell 30 gives 21 of 24 (0.88) against a null of 0.12.
+    response: No change.
+  - claim: fs-touch-and-whisking
+    agrees: true
+    outcome: reproduced
+    reason: Cell 33 gives 0.65 and 0.80, unchanged across tag thresholds, and 0.81 and 0.81 without
+      the flagged mice. ION-cut cells cannot be removed from the files, but removing 4 more
+      unresponsive cells would still leave the touch fraction above 0.5.
+    response: No change of outcome. The Summary no longer states as fact that ION-cut cells are in
+      both groups; it says they may be, and gives the 3 excitatory and 4 included FS cells of the
+      inferred-transected mice.
+  - claim: exc-mainly-touch
+    agrees: true
+    outcome: not_reproduced
+    reason: Not reproduced by the criterion as written (p = 0.074 and 0.090), but weak, since
+      without the flagged mice it passes (p = 0.024 and 0.038). ION-cut cells and possibly an
+      untaggable whole-cell FS cell may sit in the excitatory group, though the 0.7 ms variant keeps
+      the outcome (p = 0.112 and 0.126). Selectivity is degenerate for cells with few spikes.
+    response: Outcome kept. The Summary said leaving out the flagged mice changes the result; it now
+      says the test passes under that variant but the outcome stays not reproduced, as the flag is
+      drawn from touch responses. The notes already state the fragility and the width variant.
+  - claim: fs-suppress-movement-spiking
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced but weak. Cell 39 gives 6 of 7, p = 0.016; without anm266945, 3 of 3, p =
+      0.125. The juxtacellular variant (24 of 32, p = 0.00042) is presented as support without the
+      claims file's caveat that this selection is biased toward a rise and does not decide the
+      outcome.
+    response: Outcome kept. The caveat is now in the conclusion (cell 40) and in the notes.
+  - claim: fs-enhance-touch-selectivity
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 42 gives lower selectivity with light in 2 of 6, p = 0.953, and 14 of 30 in the
+      juxtacellular variant. The index is degenerate for these cells (0, 1 and 13 spikes at the
+      floor).
+    response: No change; the floor and spike counts were already reported.
+  - claim: thalamus-drives-fs
+    agrees: true
+    outcome: reproduced
+    reason: Cell 45 gives 9 of 9, p = 0.00195, and the whisking-period rate also falls in 9 of 9.
+    response: No change.
+  - claim: sensory-input-drives-fs
+    agrees: true
+    outcome: blocked
+    reason: Cell 5 prints the general and subject fields, with no surgery, notes or lesion field and
+      no keyword match. The keyword check covers only session_description and the electrode
+      location, not experiment_description, keywords or the optogenetics descriptions, which is
+      unlikely to change the blocked reason.
+    response: The search now covers every text value of each file (root descriptions and every string
+      dataset and attribute under general/) for ION, infraorbital, nerve, transection, lesion, cut,
+      surgery, sham and control; no file matches any of them, and all files share the same keywords.
+      Also corrected in this round, from section 2 of the report, the count of other cells (85, not
+      80, cell 16); the sampling-rate text (10 kHz up to March 2015 with 5.2 or 5.5 s trials, cell 8
+      and the finding); the count of ION-cut candidate whole-cell cells (8 tested, one not tested,
+      cell 25); and the statements the outputs did not show, now printed (the draft has the same 148
+      asset paths and sizes, cell 3; whisker samples span 5.0 s per trial, cell 9) or reworded (the
+      README run time).

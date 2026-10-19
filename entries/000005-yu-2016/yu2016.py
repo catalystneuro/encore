@@ -112,6 +112,17 @@ def assets():
     return sorted(out, key=lambda a: a["path"])
 
 
+def versions_check():
+    """The published versions of the dandiset, and whether the draft holds the same asset paths and
+    sizes as the pinned version."""
+    client = DandiAPIClient()
+    published = [v.identifier for v in client.get_dandiset(DANDISET_ID).get_versions() if v.identifier != "draft"]
+    pinned = {(a.path, a.size) for a in client.get_dandiset(DANDISET_ID, DANDISET_VERSION).get_assets()}
+    draft = {(a.path, a.size) for a in client.get_dandiset(DANDISET_ID, "draft").get_assets()}
+    return {"published": published, "pinned_assets": len(pinned), "draft_assets": len(draft),
+            "draft_same_paths_and_sizes": pinned == draft}
+
+
 _session = threading.local()
 
 
@@ -381,6 +392,17 @@ def load_icephys(asset):
     g = f["general"]
     rec["general_fields"] = sorted(g.keys())
     rec["subject_fields"] = sorted(g["subject"].keys())
+    # every text value in the file's metadata: the root text fields and every string dataset or
+    # attribute under general/ (experiment description, keywords, optogenetics sites and others)
+    texts = [_str(f[k]) for k in ("session_description", "experiment_description") if k in f]
+
+    def collect(name, obj):
+        if isinstance(obj, h5py.Dataset) and obj.dtype.kind in "OSU":
+            texts.append(_str(obj))
+        texts.extend(str(a.decode() if isinstance(a, bytes) else a) for a in obj.attrs.values()
+                     if isinstance(a, (str, bytes)))
+    g.visititems(collect)
+    rec["metadata_text"] = " ".join(" ".join(t) if isinstance(t, list) else str(t) for t in texts)
     rec["ic_location"] = next((_str(g["intracellular_ephys"][k]["location"]) for k in g["intracellular_ephys"]
                                if "location" in g["intracellular_ephys"][k]), "")
     return rec

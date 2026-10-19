@@ -25,12 +25,12 @@ reasoning and the differences from the paper's method.
 The files give no cell type for the L4 neurons. FS cells are identified here by their spikes to 5 ms
 light pulses in VGAT-ChR2 mice, and excitatory cells by broad action potentials in whole-cell
 recordings. The files do not mark the mice whose infraorbital nerve was cut (Figure 7 of the paper),
-so the test of that figure is blocked and cells from those mice are mixed into the groups; the
+so the test of that figure is blocked and cells from those mice may be in the groups; the
 notebook flags four mice whose cells have no touch input. The attempt record, with the reasons and
 the differences from the paper's method, is [`attempts/000005-yu-2016-01.yaml`](../../attempts/000005-yu-2016-01.yaml).
 
-- `reproduce_yu_2016.ipynb`: the analysis. It takes about four minutes, most of it streaming the
-  files.
+- `reproduce_yu_2016.ipynb`: the analysis. Streaming the files took 121 s in the recorded run
+  (printed in the first cell).
 - `yu2016.py`: loading the files with range requests, spike detection, light epochs, the touch
   and whisking measures, and the mouse lines of the paper's Supplementary Table 1. Other notebooks
   on this dandiset can import it.
