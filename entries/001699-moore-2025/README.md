@@ -19,7 +19,7 @@ waveforms, head direction, position and sleep stages.
 | Juvenile Fmr1-/y better tuned to the REM Isomap angle | Reproduced (p = 0.045) |
 | Adult tuning, Isomap tuning (waking and REM) unchanged | Reproduced (3 claims) |
 | Adult Fmr1-/y drift more, within and between sessions, and by decoding | Reproduced (3 claims) |
-| Correlations of HD information (halves, sessions, Isomap) | 1 reproduced, 5 partially reproduced, 2 not reproduced |
+| Correlations of HD information (halves, sessions, Isomap) | 1 reproduced, 4 partially reproduced, 3 not reproduced |
 | Juvenile drift between sessions unchanged | Reproduced |
 | Probe tracts in PoSub (histology) | Blocked |
 

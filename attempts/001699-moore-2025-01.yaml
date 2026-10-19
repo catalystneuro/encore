@@ -125,32 +125,25 @@ outcomes:
     tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
     and the claims file's definition is shown as a variant in the notebook.
 - claim: fig1g-juvenile-halves-correlation
-  outcome: partially_reproduced
-  proposed:
-    outcome: not_reproduced
-    reason: With the sessions as the claims file defines them (blocks over 30 min cut to 1300 s, the others
-      whole), WT r is 0.761 (lower bound 0.81) and Fmr1-/y r 0.839 (lower bound 0.855), so neither value
-      is within tolerance. The WT value is within tolerance only with the 20 min sessions, a definition
-      adopted after the first round that departs from the claims file.
+  outcome: not_reproduced
   notebook: reproduce_moore_2025.ipynb
   measured:
-  - 0.815
-  - 0.835
+  - 0.761
+  - 0.839
   output: claim:fig1g-juvenile-halves-correlation
-  notes: HD information of the two halves of session 1 correlates with r = 0.815 over 323 WT cells (paper
-    0.90, lower bound 0.81, within) and 0.835 over 237 Fmr1-/y cells (paper 0.95, lower bound 0.855, outside),
-    so one of the two values holds. The WT value is 0.005 above its bound and is 0.739 with the first
-    day alone. With H3026 left out the Fmr1-/y r is 0.869, within tolerance; five of the ten cells farthest
-    from the diagonal are from H3026. Spearman correlations are 0.863 and 0.909. Version 2 reports 0.86
-    and 0.93. With the claims file's session definition WT r is 0.761 and Fmr1-/y r 0.839, neither within
-    tolerance; the outcome is the one round 2 agreed with, and a change to not_reproduced is proposed.
+  notes: With the sessions as the claims file defines them (tracking blocks over 30 min cut to 1300 s,
+    the others whole), HD information of the two halves of session 1 correlates with r = 0.761 over 323
+    WT cells (paper 0.90, lower bound 0.81) and 0.839 over 237 Fmr1-/y cells (paper 0.95, lower bound 0.855),
+    so neither value is within tolerance. With H3026 left out the Fmr1-/y r is 0.869, within tolerance,
+    and WT stays at 0.761; with the first day of each rat alone WT r is 0.650. With sessions cut to their
+    first 20 min, the definition used for the main analysis, WT r is 0.815 (0.005 above its bound) and
+    Fmr1-/y r 0.835; that cut was adopted after the first round and departs from the claims file, and
+    the outcome follows the claims file's definition. Spearman correlations with the 20 min sessions are
+    0.863 and 0.909. Version 2 reports 0.86 and 0.93.
   deviations:
   - The claims file gave no rule for values outside tolerance; the claim is taken as partially reproduced
     when one of its two values is within tolerance and not reproduced when neither is, as for the other
     correlation claims.
-  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
-    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
-    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig1h-juvenile-smaller-offset
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -859,3 +852,28 @@ verifications:
       files, including the four whose names lack +image. Images exist for every rat; none of them
       marks the tract or PoSub.'
     response: 'Outcome kept; the notes already state this.'
+- date: '2026-10-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 3. The one proposed change of outcome (fig1g-juvenile-halves-correlation) and the analysis
+    behind it in the executed notebook after the round-2 revision (cells 43, 83 and 84), with the helper
+    module and the claims file. Nothing else was reviewed, and the paper text was not needed. Report in
+    transcripts/001699/verifier-3-report.md.
+  results:
+  - claim: fig1g-juvenile-halves-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 83 re-runs the analysis with the claims file's session definition, which hdfx.exploration_sessions(rule="claims")
+      implements as written (blocks over 1800 s cut to their first 1300 s, others whole; H3001 200201 kept
+      at 1662.8 s). Session 1 holds the same 323 WT and 237 Fmr1-/y cells. Pearson r is 0.7610 for WT (lower
+      bound 0.81) and 0.8385 for Fmr1-/y (lower bound 0.855), neither within tolerance, matching round 1's
+      0.761 and 0.840, so the spike-counting fix and the full Isomap fit do not affect it. The proposal returns
+      to the definition the claims file fixed before the analysis and moves the outcome against the author's
+      interest; the 0.815 came only from the 20 min cut adopted after round 1. The rule (not reproduced when
+      neither value is within tolerance) is the one round 2 accepted and the one behind fig3g and figs2j.
+      With H3026 left out the Fmr1-/y r is 0.869 but WT stays at 0.761; with the first day alone WT falls
+      to 0.650. No other claim crosses its criterion under the claims file's definition (cell 84).
+    response: Outcome changed to not_reproduced and the proposal removed. The measured values and notes now
+      give the claims file's definition (0.761 and 0.839) with the 20 min values as a variant, and the 20
+      min deviation is dropped from this claim. The fig1g conclusion, cell 84, the Summary and the README
+      updated.
