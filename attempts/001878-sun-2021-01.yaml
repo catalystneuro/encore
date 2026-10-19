@@ -287,8 +287,8 @@ findings:
     Benchmarks).
 - kind: other
   statement: On CaltechDATA, 574 CalMS21 sequences hold 450 distinct recordings (identical keypoints over
-    the whole sequence). 93 of the 109 Task 3 test sequences are Task 1 training recordings, six Task 1
-    test recordings (mouse071 among them) are Task 3 training sequences, and four Task 2 recordings are
+    the whole sequence). 93 of the 109 Task 3 test sequences are Task 1 training recordings, five Task 1
+    test recordings (mouse071 among them) appear as six Task 3 training sequences, and four Task 2 recordings are
     in the training set of one of annotators 3 and 4 and the test set of the other. The paper describes
     each sequence as an independent observation and does not mention the overlap, and the CaltechDATA
     readme says that training and test sets are split by animal identity.
@@ -479,3 +479,139 @@ verifications:
     response: Kept methods_underspecified as the main reason, since the matrix is a model output and the
       paper describes the model only in outline, so it could not be produced even with the data. The
       missing matrix is now given in the notes as a second reason.
+- date: 2026-10-19
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the second run, with its conclusion cells and summary, the helper module, the claims file and the attempt record (commit c209e2e).
+  results:
+  - claim: format-keypoints
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the Result cell and the record's notes check out against the printed outputs.
+    response: No change.
+  - claim: resident-is-black
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B4 is resolved; patches are centred, and the smallest is a true 8 px patch.
+    response: No change.
+  - claim: task1-vocab
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the Result cell and the record's notes check out against the printed outputs.
+    response: No change.
+  - claim: task1-video
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the Result cell and the record's notes check out against the printed outputs.
+    response: No change.
+  - claim: contact-during-social-behaviors
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. B2 is resolved; bootstrap blocks are now contiguous session time, with the new include
+      argument.
+    response: No change.
+  - claim: pose-errors-close-fast
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Round-1 points B1 to B4 are resolved; flagged close frames have lower confidence than
+      unflagged ones (-0.082, CI -0.107 to -0.050) and the eight random frames all show tracking errors,
+      so 8 of 8 supports "mostly". Cell 32 says most flagged frames fall in mount, but the label counts
+      and error fractions imply about 304 of 657 (46%), the largest share and not a majority; only within
+      close frames is mount the majority (243 of 312). This does not change the outcome.
+    response: Cell 31 now prints the flagged frames by label (mount 304, investigation 212, other 141; share
+      0.463, 0.323, 0.215), and cell 32 says mount holds the largest share of flagged frames (304 of 657),
+      not most of them. The record's notes did not make the statement.
+  - claim: link-mouse071
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 14 and the finding say six Task 1 test recordings are Task 3 training sequences, but
+      the six Task 3 training sequences of cell 13 fall in five keypoint groups, so they come from five
+      recordings. This does not change any outcome. Also, cell 4 gives 71,524 and 14,991 frames for the
+      other two NWB files, and no cell prints these numbers; this does not change any outcome.
+    response: Cell 13 now prints the number of distinct recordings among the six sequences (5, one of them
+      deposited as two Task 3 training sequences). Cell 14 and the finding now say five Task 1 test
+      recordings appear as six Task 3 training sequences. Cell 3 now prints the pose series, frame
+      counts and related publications of all three NWB files (new helper pose_overview), which give
+      71,524 and 14,991 frames and the other DOIs stated in cell 4.
+  - claim: pose-errors-close-fast-confidence
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. B3 is resolved; the other order of the fast measure is shown as a variant and gives the same
+      direction.
+    response: No change.
+  - claim: table5-task1-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Keypoints-versus-scores frame counts are now checked and agree in all 574 sequences.
+    response: No change.
+  - claim: table5-task2-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. Table 5 gives 139,112. The per-sequence table for annotator 1 is added; it cannot locate the
+      10 frames because the paper gives no per-sequence counts.
+    response: No change.
+  - claim: table5-task3-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the Result cell and the record's notes check out against the printed outputs.
+    response: No change.
+  - claim: table6-task1-label-fractions
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The 2.765009% attack value and its 0.00001 excess check out against the outputs.
+    response: No change.
+  - claim: fig4b-task2-label-fractions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The 3.2468% value with up to 4 more frames allowed checks out; its round-1 count of 4,521
+      was wrong and the response corrects it from the printed output to 4,517.
+    response: No change.
+  - claim: table7-task3-label-fractions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. 5 of 7 outside 10% under reading (b) checks out against the outputs.
+    response: No change.
+  - claim: dataset-size
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. 62.2, 85.2 and 76.2 h check out against the outputs.
+    response: No change.
+  - claim: table10-task3-difficulty
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees; the Result cell and the record's notes check out against the printed outputs.
+    response: No change.
+  - claim: table1-architectures
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Blocked, as in round 1.
+    response: No change.
+  - claim: table2-task-programming
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Blocked, as in round 1.
+    response: No change.
+  - claim: table3-task2-style-transfer
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Blocked, as in round 1.
+    response: No change.
+  - claim: table4-task3-new-behaviors
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Blocked, as in round 1.
+    response: No change.
+  - claim: fig7-errors-at-transitions
+    agrees: true
+    outcome: blocked
+    reason: Agrees. In round 1 it gave data_missing; the record keeps methods_underspecified and names the
+      missing predictions as a second reason. It accepts this, since the claim depends on models that cannot be
+      rebuilt, so the outcome is the same.
+    response: No change.
+  - claim: fig11-annotator-similarity
+    agrees: true
+    outcome: blocked
+    reason: Agrees. In round 1 it gave data_missing; the record keeps methods_underspecified and names the
+      missing matrix as a second reason. It accepts this, since the claim depends on models that cannot be
+      rebuilt, so the outcome is the same.
+    response: No change.

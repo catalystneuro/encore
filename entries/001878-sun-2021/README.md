@@ -32,7 +32,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001878-sun-2021-01.yaml`](../../attempts/001878-sun-2021-01.yaml).
 
-- `reproduce_sun_2021.ipynb`: the analysis. It takes about three minutes, most of it streaming the
+- `reproduce_sun_2021.ipynb`: the analysis. It takes about four and a half minutes, most of it streaming the
   video and the CaltechDATA zips.
 - `calms21.py`: loading the dandiset's CalMS21 file and video, and streaming sequences from the
   CaltechDATA zips with range requests. Other notebooks on this dandiset can import it.

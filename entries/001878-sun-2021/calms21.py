@@ -25,11 +25,14 @@ Parameters and conventions:
 
 from __future__ import annotations
 
+import datetime
 import hashlib
 import io
 import json
 import re
 import struct
+import time
+import urllib.parse
 import zipfile
 import zlib
 
@@ -150,6 +153,18 @@ def load_session(path: str = CALMS21_NWB) -> dict:
     return out
 
 
+def pose_overview(path: str) -> dict:
+    """Pose series names, their frame counts and the related publications of any NWB file of the draft."""
+    f = h5py.File(remfile.File(asset_url(path)), "r")
+    pe = f["processing/behavior/PoseEstimation"]
+    series = {k: pe[k]["data"].shape[0] for k in pe.keys()
+              if isinstance(pe[k], h5py.Group) and "reference_frame" in pe[k]}
+    pubs = ([_text(v) for v in f["general/related_publications"][:]]
+            if "related_publications" in f["general"] else [])
+    f.close()
+    return {"series": sorted(series), "frames": sorted(set(series.values())), "related_publications": pubs}
+
+
 def frame_labels(bouts: pd.DataFrame, n_frames: int, rate: float = RATE) -> np.ndarray:
     """Label name of each frame from the bouts table; '' where no bout covers the frame.
 
@@ -250,13 +265,23 @@ def video_info() -> dict:
 
 # --- CaltechDATA ----------------------------------------------------------------
 
-def caltech_url(filename: str) -> str:
+def caltech_url(filename: str, min_left: float = 30.0) -> str:
     """Direct URL of a file of the CalMS21 record. It is presigned for 60 s, so a fresh one is
-    taken for each read."""
-    with requests.get(f"https://data.caltech.edu/records/{CALTECH_RECORD}/files/{filename}?download=1",
-                      allow_redirects=True, stream=True, timeout=60) as r:
-        r.raise_for_status()
-        return r.url
+    taken for each read. The server reuses a signed URL for a while, so one with less than
+    `min_left` seconds of validity left is not used: the function waits for it to expire and asks
+    again."""
+    for _ in range(3):
+        with requests.get(f"https://data.caltech.edu/records/{CALTECH_RECORD}/files/{filename}?download=1",
+                          allow_redirects=True, stream=True, timeout=60) as r:
+            r.raise_for_status()
+            url = r.url
+        q = dict(urllib.parse.parse_qsl(urllib.parse.urlparse(url).query))
+        signed = datetime.datetime.strptime(q["X-Amz-Date"], "%Y%m%dT%H%M%SZ").replace(tzinfo=datetime.timezone.utc)
+        left = (signed - datetime.datetime.now(datetime.timezone.utc)).total_seconds() + int(q["X-Amz-Expires"])
+        if left >= min_left:
+            return url
+        time.sleep(max(left, 0) + 1)
+    raise RuntimeError(f"no signed URL for {filename} with {min_left} s of validity left")
 
 
 def caltech_files() -> pd.DataFrame:
@@ -293,6 +318,7 @@ class _HTTPRange(io.RawIOBase):
     def seek(self, offset, whence=0):
         if whence == 2 and self.size is None:
             r = requests.get(self.url, headers={"Range": "bytes=0-0"}, timeout=60)
+            r.raise_for_status()
             self.size = int(r.headers["content-range"].split("/")[1])
         self.pos = {0: offset, 1: self.pos + offset, 2: (self.size or 0) + offset}[whence]
         return self.pos
