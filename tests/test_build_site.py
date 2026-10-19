@@ -263,3 +263,11 @@ def test_the_overview_shows_the_dashboard(built):
         page = (out / "index.html").read_text()
         assert 'id="progress-data"' in page and "assets/progress.js" in page
         assert (out / "assets" / "progress.js").is_file()
+
+
+def test_view_on_dandi_opens_a_new_window(built):
+    data, out = built
+    dandiset = next(iter(site.current_attempts(data)))
+    page = (out / "dandisets" / dandiset / "index.html").read_text()
+    assert (f'<a href="https://dandiarchive.org/dandiset/{dandiset}" target="_blank" rel="noopener">View on DANDI</a>'
+            in page)
