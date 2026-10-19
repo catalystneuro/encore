@@ -109,8 +109,8 @@ Do this before any analysis.
      when there is more than one), the `test` and `statistic` as named, the
      `p`-value as a number (a bound such as "p < 0.05" is `p: 0.05` with
      `p_relation: "<"`; a printed "P = 0" is recorded as 0), any `corrected`
-     for multiple comparisons, a
-     confidence interval (`ci`), and `n` in words. It records the paper; the
+     for multiple comparisons, a confidence interval (`ci`), and `n` in
+     words. It records the paper; the
      numbers the attempt must match, with tolerances, stay in `expected`.
      Record only tests whose result is the finding. A significance threshold
      used to select or count units, cells or pairs ("238 of 288 neurons were
