@@ -1,8 +1,10 @@
 name: Publish the dashboard
 
 # Rebuilds the public dashboard from the registry's files and publishes it to
-# GitHub Pages on every push to main, and again when the entry checks finish,
-# so the executed notebooks they produce are included.
+# the root of the gh-pages branch, which GitHub Pages serves, on every push to
+# main, and again when the entry checks finish, so the executed notebooks they
+# produce are included. Previews of pull requests live in pr-preview/ on the
+# same branch (preview.yml) and are left in place.
 
 on:
   push:
@@ -14,13 +16,12 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
+# Shared with preview.yml: both push to gh-pages.
 concurrency:
-  group: pages
-  cancel-in-progress: true
+  group: gh-pages
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -45,18 +46,13 @@ jobs:
           fi
 
       - name: Build the site
-        run: python tools/build_site.py --output site
+        run: |
+          python tools/build_site.py --output site
+          touch site/.nojekyll
 
-      - uses: actions/upload-pages-artifact@v3
+      - uses: JamesIves/github-pages-deploy-action@v4.9.0
         with:
-          path: site
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
-      - id: deployment
-        uses: actions/deploy-pages@v4
+          folder: site
+          branch: gh-pages
+          clean-exclude: pr-preview/
+          force: false

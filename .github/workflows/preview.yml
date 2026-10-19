@@ -1,0 +1,52 @@
+name: Preview the dashboard
+
+# Builds the dashboard from a pull request's branch and publishes it under
+# pr-preview/pr-<number>/ on the gh-pages branch, which GitHub Pages serves,
+# then comments the link on the pull request. The preview is removed when the
+# pull request is closed. Pull requests from forks cannot push here and get
+# no preview.
+
+on:
+  pull_request:
+    types: [opened, reopened, synchronize, closed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+# Shared with site.yml: both push to gh-pages.
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        if: github.event.action != 'closed'
+        with:
+          python-version: '3.13'
+
+      - name: Build the site
+        if: github.event.action != 'closed'
+        run: |
+          pip install --no-cache-dir pyyaml
+          mkdir -p site/notebooks
+          if git fetch --depth 1 origin executed 2>/dev/null; then
+            git archive FETCH_HEAD | tar -x -C site/notebooks
+            rm -f site/notebooks/.nojekyll
+          fi
+          python tools/build_site.py --output site
+
+      - uses: rossjrw/pr-preview-action@v1.8.1
+        with:
+          source-dir: site
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          qr-code: false
