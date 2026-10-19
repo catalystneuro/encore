@@ -11,7 +11,10 @@
 # claim cells; their outputs were not read before this file was revised after the data check
 # (genotype taken from the files, where an earlier draft took it from the conversion
 # repository; SWD epochs taken from the events, where an earlier draft took the scorer's
-# flags), and no criterion was changed after any claim output was read.
+# flags), and no criterion was changed after any claim output was read, with one exception: after
+# the first verification round, the NREM rule of figs5b-transition-percent was corrected to the
+# Supplementary Methods (see that claim). Its first rule gave 36.3%, outside tolerance; the
+# corrected rule gives 22.9%, inside it.
 #
 # The dandiset holds the 24-h EEG/EMG recordings of 17 rats, not the western blots, the
 # development measures, the visual scoring or the pharmacology recordings. The files give 14
@@ -33,7 +36,9 @@
 #   bouts per day and mean bout duration per day, then averaged over the two days.
 # - The state of an SWD is the stored state of the 5-s epoch before the epoch holding its start.
 #   An SWD is at a wake-NREM transition when the six epochs before it hold a wake epoch followed
-#   directly by an NREM epoch.
+#   directly by an NREM epoch. The Supplementary Methods judge wake and REM on the epoch before
+#   and initiation in NREM on the six epochs before; readings (c) and (d) of
+#   fig5a-swd-state-distribution and reading (i) of figs5b-transition-percent use that rule.
 # - Spectra follow the Supplementary Methods on raw EEG from the SWD-detection channel (S1_Tr_R,
 #   AP -3.0, ML 2.8), read in one 24-min storage chunk at ZT 0, 4, 8, 12, 16 and 20 of each day
 #   (about 4.8 h per animal): 0.2-100 Hz third-order Butterworth, 5-s epochs on the scoring grid,
@@ -46,8 +51,9 @@
 #   split-plot ANOVA, which gives the same F tests for complete data.
 # - For a genotype difference: reproduced when the paper's test has p < 0.05 in the paper's
 #   direction; partially reproduced when the group means differ in the paper's direction with
-#   p >= 0.05; not reproduced when they differ in the other direction. With two WT animals a
-#   two-sided rank-sum test cannot reach p < 0.05 unless both WT rank below (or above) all 14 Het.
+#   p >= 0.05; not reproduced when they differ in the other direction. With two WT animals and 14
+#   Het, an exact two-sided rank-sum test reaches p < 0.05 only when U <= 1 (p = 0.017 or 0.033):
+#   both WT rank below (or above) all Het, or one Het is out of order.
 schema_version: 1
 dandiset: "001888"
 paper: doi:10.1111/epi.18606
@@ -261,9 +267,12 @@ claims:
     tolerance: 2.42
     unit: percent
   criterion: The denominator is not stated. Readings, (i) the percentage of an animal's
-    NREM-initiated SWDs (state of the epoch before) that are transitional; (ii) the percentage of
-    all its SWDs that are transitional; each as the mean over Het animals that have at least one
-    SWD in the denominator. Reproduced when the Het value is within tolerance under one reading.
+    NREM-initiated SWDs that are transitional, an SWD being initiated in NREM when any of the six
+    epochs before it is NREM (Supplementary Methods); (ii) the percentage of all its SWDs that are
+    transitional; each as the mean over Het animals that have at least one SWD in the
+    denominator. Corrected after verification round 1, where reading (i) first took NREM from the
+    epoch before the SWD, which the Supplementary Methods use for wake and REM only; that rule is
+    shown as a variant. Reproduced when the Het value is within tolerance under one reading.
     The WT value is reported for WT animals that have transitional SWDs; the t test needs at
     least two of them and is otherwise not run.
 - id: fig5f-swd-wake-correlation

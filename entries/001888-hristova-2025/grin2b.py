@@ -19,12 +19,21 @@ Where parameters come from:
   epochs dropped when any sample exceeds 3000 (stated as mV; taken here as microvolts, as the
   amplifier's full range is 13 mV), Welch with a Hann window and 50% overlap, each epoch
   normalized to the animal's average spectrum over REM, NREM and wake). The Welch segment length
-  (2 s) and the spectral-slope rejection, which the paper does not specify fully, are common
-  choices made here; the slope rejection is not applied.
+  (2 s) is a common choice made here. The spectral-slope rejection (slope over 1 to 48 Hz from a
+  first-order polyfit, thresholds of -5 for the slope and 500 for the offset, units as stated
+  "log10(mV2)/Hz" and "mV") is not fully specified; window_epochs computes the slope and offset of
+  log10 power (mV^2/Hz) against log10 frequency, a reading chosen here, and the rejection is a
+  variant.
+- Channel: the Methods detect SWDs on S1_Tr_R and chose, by eye, the S1 channel (left or right)
+  with fewer artefacts for sleep scoring; that choice is not in the dandiset. S1_Tr_R is the main
+  channel here; the variant takes, per animal, whichever of S1_Tr_R and S1_Tr_L has fewer epochs
+  above the artefact threshold in the windows read.
 - Frequency bands: not defined in the paper. Common choices: delta 1-4, theta 4-8, sigma 10-15,
   beta 15-30, gamma 30-48 Hz (BANDS); a contiguous variant is in BANDS_ALT.
 - Bouts: a run of consecutive epochs of one state; SWD epochs are a state of their own and so
-  end a bout. The paper does not define a bout; this is a common choice.
+  end a bout. The paper does not define a bout; this is a common choice. A variant drops SWD
+  epochs before forming bouts, so a bout of one state interrupted by an SWD stays one bout
+  (state_measures, bridge=True).
 """
 
 from __future__ import annotations
@@ -58,6 +67,8 @@ WELCH_SEG_S = 2.0               # common choice
 BANDS = {"delta": (1, 4), "theta": (4, 8), "sigma": (10, 15), "beta": (15, 30), "gamma": (30, 48)}
 BANDS_ALT = {"delta": (0.5, 4), "theta": (4, 8), "sigma": (8, 15), "beta": (15, 30), "gamma": (30, 100)}
 SWD_CHANNEL = "S1_Tr_R"         # AP -3.0, ML 2.8 right: the SWD detection channel of the Methods
+ALT_CHANNEL = "S1_Tr_L"         # the left S1 channel, the other channel the Methods chose from
+SLOPE_MIN, OFFSET_MAX = -5.0, 500.0  # spectral-slope rejection thresholds (Supplementary Methods)
 RAW_ZT_HOURS = (0, 4, 8, 12, 16, 20)  # one storage chunk (about 24 min) read at each of these ZT hours
 
 
@@ -201,9 +212,13 @@ def runs(states: np.ndarray):
     return states[starts], lengths
 
 
-def state_measures(states: np.ndarray) -> dict:
-    """Minutes, number of bouts and mean bout duration (s) of wake, NREM and REM in one day."""
-    codes, lengths = runs(states)
+def state_measures(states: np.ndarray, bridge: bool = False) -> dict:
+    """Minutes, number of bouts and mean bout duration (s) of wake, NREM and REM in one day.
+
+    With bridge=True, SWD epochs (state 4) are dropped before bouts are formed, so they do not
+    split a bout; minutes are unchanged.
+    """
+    codes, lengths = runs(states[states != 4] if bridge else states)
     out = {}
     for c, name in ((0, "wake"), (1, "nrem"), (2, "rem")):
         L = lengths[codes == c]
@@ -211,6 +226,21 @@ def state_measures(states: np.ndarray) -> dict:
         out[f"{name}_bouts"] = len(L)
         out[f"{name}_bout_s"] = L.mean() * EPOCH_S if len(L) else np.nan
     return out
+
+
+def exact_minutes(day) -> dict:
+    """Minutes of wake, NREM and REM in the stored scores, less the SWD time inside each epoch.
+
+    Removes the SWD time itself (event start to stop), where removing SWD epochs removes whole
+    5-s epochs.
+    """
+    swd_s = np.zeros(len(day["states"]))
+    for a, b in zip(day["sz_start"], day["sz_stop"]):
+        for k in range(int(a // EPOCH_S), int(np.ceil(b / EPOCH_S))):
+            swd_s[k] += min(b, (k + 1) * EPOCH_S) - max(a, k * EPOCH_S)
+    left = EPOCH_S - np.minimum(swd_s, EPOCH_S)
+    return {f"{name}_min": left[day["states"] == c].sum() / 60
+            for c, name in ((0, "wake"), (1, "nrem"), (2, "rem"))}
 
 
 def hourly_minutes(states: np.ndarray, code: int) -> np.ndarray:
@@ -252,20 +282,22 @@ def swd_onsets(day, nrem_rule: str = "prev") -> pd.DataFrame:
 def raw_windows(s, zt_hours=RAW_ZT_HOURS) -> list[dict]:
     """For each baseline day, the storage chunk of raw EEG and EMG holding each ZT hour in zt_hours.
 
-    Returns the SWD-detection EEG channel and both EMG channels as raw integer codes, with the
-    time (s from the start of the day) of the first sample.
+    Returns the SWD-detection EEG channel (eeg), the left S1 channel (eeg_alt) and both EMG
+    channels as raw integer codes, with the time (s from the start of the day) of the first sample.
     """
     f = _open(s["url"])
     eeg, emg = f["acquisition/EEGElectricalSeries/data"], f["acquisition/EMGElectricalSeries/data"]
     chunk = eeg.chunks[0]
     ch = s["eeg_channels"].index(SWD_CHANNEL)
+    ch_alt = s["eeg_channels"].index(ALT_CHANNEL)
     out = []
     for day in s["days"]:
         for zt in zt_hours:
             i0 = int(round((day["t0"] + zt * 3600) * FS)) // chunk * chunk
             i1 = min(i0 + chunk, eeg.shape[0])
+            x = eeg[i0:i1, :]
             out.append({"bl": day["bl"], "zt": zt, "t_start": i0 / FS - day["t0"],
-                        "eeg": eeg[i0:i1, :][:, ch], "emg": emg[i0:i1, :]})
+                        "eeg": x[:, ch], "eeg_alt": x[:, ch_alt], "emg": emg[i0:i1, :]})
     return out
 
 
@@ -281,10 +313,11 @@ def _volts_uv(codes, s):
     return x, bad
 
 
-def window_epochs(win, s, day) -> pd.DataFrame:
+def window_epochs(win, s, day, channel: str = "eeg") -> pd.DataFrame:
     """Per whole 5-s epoch of the day's grid inside a raw window: EEG Welch PSD (Methods filter and
-    artefact rule), EMG 60-90 Hz log power (right minus left), and whether the epoch is usable."""
-    eeg, bad = _volts_uv(win["eeg"], s)
+    artefact rule), its spectral slope and offset, EMG 60-90 Hz log power (right minus left), and
+    whether the epoch is usable. `channel` is "eeg" (S1_Tr_R) or "eeg_alt" (S1_Tr_L)."""
+    eeg, bad = _volts_uv(win[channel], s)
     emg_r, bad_r = _volts_uv(win["emg"][:, 0], s)
     emg_l, bad_l = _volts_uv(win["emg"][:, 1], s)
     bad = bad | bad_r | bad_l
@@ -297,6 +330,8 @@ def window_epochs(win, s, day) -> pd.DataFrame:
     rows, psds = [], []
     nseg = int(WELCH_SEG_S * FS)
     pad = int(FS)  # one second around an epoch must be free of dropouts (filter edges)
+    fw = welch_freq()
+    fit_band = (fw >= 1) & (fw <= 48)
     k = first
     while True:
         a = int(round((k * EPOCH_S - win["t_start"]) * FS))
@@ -311,8 +346,10 @@ def window_epochs(win, s, day) -> pd.DataFrame:
         freq, p = signal.welch(seg, fs=FS, window="hann", nperseg=nseg, noverlap=nseg // 2)
         fe, pe = signal.welch(emg[a:b], fs=FS, window="hann", nperseg=nseg, noverlap=nseg // 2)
         emg_pow = np.log10(pe[(fe >= 60) & (fe <= 90)].mean() + 1e-12)
+        # log10 power in mV^2/Hz (1 uV^2 = 1e-6 mV^2) against log10 frequency, 1-48 Hz
+        slope, offset = np.polyfit(np.log10(fw[fit_band]), np.log10(p[fit_band] * 1e-6 + 1e-30), 1)
         rows.append({"epoch": k, "dropout": bool(dropout), "artefact": bool(artefact),
-                     "emg_logpow": emg_pow})
+                     "emg_logpow": emg_pow, "slope": slope, "offset": offset})
         psds.append(p)
         k += 1
     df = pd.DataFrame(rows)
