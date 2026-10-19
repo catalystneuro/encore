@@ -12,7 +12,7 @@ entries/ and transcripts/, and writes:
     data/dandisets.json           rows for the list page
     api/dandiset/<id>.json        one dandiset's results, for other sites
     registry.json                 everything, as before
-    assets/                       app.css and list.js from tools/site_assets/
+    assets/                       app.css, list.js and progress.js from tools/site_assets/
 
 If <output>/notebooks/<entry>/<notebook>.html exists (the executed notebooks
 CI keeps on the `executed` branch), pages link to it.
@@ -590,6 +590,99 @@ def attempt_row(a: dict, root: str) -> str:
             f'<div class="right">{tier_badge(a["tier"])}<span class="small muted">{e(a["date"])}</span></div></div>')
 
 
+PROGRESS_METRICS = {
+    "dandisets": "Dandisets attempted",
+    "papers": "Papers",
+    "attempts": "Attempts",
+    "claims": "Claims tested",
+    "findings": "Findings about the data",
+}
+
+
+def progress_data(data: dict) -> dict:
+    """Daily counts for the overview's dashboard, for all dandisets and for CatalystNeuro conversions.
+
+    Each series is a list over the days of what was new that day: dandisets and papers on the date of their first attempt, attempts
+    on their own date, and the claims (those resting on the dandiset) and findings of each dandiset's
+    current attempts on the date of those attempts.
+    """
+    ours = {t["dandiset"] for t in data["targets"] if t["catalystneuro"]}
+    current = [a for atts in current_attempts(data).values() for a in atts]
+    if not data["attempts"]:
+        return {"days": [], "series": {}}
+    start = datetime.date.fromisoformat(min(a["date"] for a in data["attempts"]))
+    end = datetime.date.fromisoformat(max(a["date"] for a in data["attempts"]))
+    days = [(start + datetime.timedelta(n)).isoformat() for n in range((end - start).days + 1)]
+    series = {}
+    for subset, keep in (("all", lambda d: True), ("catalystneuro", lambda d: d in ours)):
+        new = {day: {**{m: 0 for m in PROGRESS_METRICS}, **{k: 0 for k in OUTCOMES}} for day in days}
+        first_dandiset: dict = {}
+        first_paper: dict = {}
+        for a in data["attempts"]:
+            if not keep(a["dandiset"]):
+                continue
+            new[a["date"]]["attempts"] += 1
+            first_dandiset[a["dandiset"]] = min(first_dandiset.get(a["dandiset"], a["date"]), a["date"])
+            first_paper[a["paper"]] = min(first_paper.get(a["paper"], a["date"]), a["date"])
+        for day in first_dandiset.values():
+            new[day]["dandisets"] += 1
+        for day in first_paper.values():
+            new[day]["papers"] += 1
+        for a in current:
+            if not keep(a["dandiset"]):
+                continue
+            counts = outcome_counts(a)
+            for k, n in counts.items():
+                new[a["date"]][k] += n
+            new[a["date"]]["claims"] += sum(counts.values())
+            new[a["date"]]["findings"] += len(a["findings"])
+        series[subset] = {k: [new[day][k] for day in days] for k in new[days[0]]}
+    return {"days": days, "series": series, "metrics": PROGRESS_METRICS,
+            "outcomes": {k: {"label": label, "css": css} for k, (label, css, _) in OUTCOMES.items()}}
+
+
+def progress_panel(data: dict) -> str:
+    """The dashboard at the top of the overview: totals, a filter, and two charts of the effort over time.
+
+    The page draws the charts from the JSON it carries (assets/progress.js); without scripts, the table
+    below them gives the same numbers.
+    """
+    p = progress_data(data)
+    if len(p["days"]) < 2:
+        return ""
+    totals = {m: sum(p["series"]["all"][m]) for m in PROGRESS_METRICS}
+    tiles = "".join(
+        f'<button class="tile metric" type="button" data-metric="{m}" aria-pressed="{str(m == "dandisets").lower()}">'
+        f'<div class="n">{totals[m]:,}</div><div class="l">{e(label)}</div><div class="delta"></div></button>'
+        for m, label in PROGRESS_METRICS.items())
+    rows = "".join(
+        f"<tr><td>{day}</td>" + "".join(f"<td>{p['series']['all'][m][i]:,}</td>" for m in PROGRESS_METRICS) + "</tr>"
+        for i, day in enumerate(p["days"]))
+    head = "".join(f"<th>{e(label)}</th>" for label in PROGRESS_METRICS.values())
+    return f'''<section class="progress" aria-label="Progress over time">
+  <div class="progress-bar">
+    <div class="segmented" role="group" aria-label="Which dandisets">
+      <button type="button" data-subset="all" aria-pressed="true">All dandisets</button>
+      <button type="button" data-subset="catalystneuro" aria-pressed="false">Converted by CatalystNeuro</button>
+    </div>
+    <span class="muted small">Totals so far; the small line is the last 7 days.</span>
+  </div>
+  <div class="tiles metrics">{tiles}</div>
+  <div class="grid2" style="margin-top:16px">
+    <div class="panel"><h2 id="progress-title">Dandisets attempted over time</h2>
+      <p class="small muted" style="margin:0">Running total, by day.</p>
+      <div class="chart" id="progress-line"></div></div>
+    <div class="panel"><h2>Outcomes of claims tested, by day</h2>
+      <p class="small muted" style="margin:0">Claims that rest on the dandiset, on the date of their attempt.</p>
+      <div class="chart" id="progress-outcomes"></div><div id="progress-legend"></div></div>
+  </div>
+  <details class="table-view panel"><summary>Table: new each day, all dandisets</summary>
+    <div class="scroll"><table><thead><tr><th>Date</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>
+  </details>
+  <script type="application/json" id="progress-data">{json.dumps(p, separators=(",", ":"))}</script>
+</section>'''
+
+
 def page_overview(data: dict) -> str:
     r = rows_cache(data)
     current = current_attempts(data)
@@ -658,15 +751,17 @@ def page_overview(data: dict) -> str:
     recent = sorted(attempts, key=lambda a: (a["date"], a["dandiset"]), reverse=True)[:6]
     recent_html = "".join(attempt_row(a, "") for a in recent) or '<p class="empty">No attempts yet.</p>'
 
+    dashboard = progress_panel(data)
     redirect = json.dumps({a["id"]: a["dandiset"] for a in data["attempts"]})
     body = f'''<header class="page" id="top">
   <h1>Can the findings of a paper be reproduced from its open data?</h1>
   <p class="lede">Agents and people take papers whose data is on the <a href="https://dandiarchive.org">DANDI Archive</a>
   and try to reproduce their key findings from that data alone. Every finding gets an outcome, whether or not it
   worked, and every attempt records what it learned about the data. The notebooks are a starting point for new analyses.</p>
-  <div class="tiles">{tile_html}</div>
+  {"" if dashboard else f'<div class="tiles">{tile_html}</div>'}
 </header>
 <main>
+  {dashboard}
   <div class="panel">
     <h2>Outcomes of the {n_claims:,} claims that rest on the dandiset alone</h2>
     {outcomes}{outside_note(attempts)}
@@ -679,7 +774,8 @@ def page_overview(data: dict) -> str:
   </div>
 </main>'''
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
-               'if(h&&m[h[1]])location.replace("dandisets/"+m[h[1]]+"/");})();</script>')
+               'if(h&&m[h[1]])location.replace("dandisets/"+m[h[1]]+"/");})();</script>'
+               + ('<script src="assets/progress.js"></script>' if dashboard else ""))
     return shell(data, "Reproduction registry", "", "overview", body, scripts)
 
 
