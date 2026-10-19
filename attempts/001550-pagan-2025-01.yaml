@@ -41,8 +41,9 @@ outcomes:
     dandiset; the missing one, P189 TaskSwitch6-210516a, has 27 valid trials. In all 15,277 the
     number of valid trials and the fraction correct are equal, and both relative weights agree to
     1e-6 in 0.898; of the 1,553 that differ, 861 agree once this attempt's values are capped at 1
-    as the paper's table does, 632 have a missing value on one side, and 3 of the rest are in the
-    paper's selection. In 20 seeded sessions every valid trial agrees on context, correct side,
+    as the paper's table does. Of the 692 left, 627 have a missing value on both sides, 5 in the
+    paper's table only, and 60 differ with both values present (median difference 0.87 after
+    capping, not explained); 3 of the 692 are in the paper's selection. In 20 seeded sessions every valid trial agrees on context, correct side,
     strengths, choice, outcome and position in block, and 0.99996 of 10 ms pulse bins agree. Over
     every matched session, 627 have an empty per-trial record in the paper's tables; in the other
     14,650 the 7,447,692 valid trials agree on every per-trial field and position in block, and
@@ -191,8 +192,8 @@ outcomes:
     valid trials). With bilateral full-trial epochs accuracy is lower than on control trials in
     the same sessions with p < 0.05 in 2 of the 3 rats with most sessions, P116 (0.639 against
     0.733, 873 trials, p below 1e-4) and P131 (0.686 against 0.727, 1,988 trials, p = 0.0001).
-    P124 is higher (0.712 against 0.687, p = 0.17) and P127 not lower (0.603 against 0.634,
-    p = 0.55). Any bilateral epoch gives 2 of 3 and 2 of 4 as well. Every trial with an epoch has
+    P124 is higher (0.712 against 0.687, p = 0.17) and P127 lower but not significantly (0.603
+    against 0.634, p = 0.55). Any bilateral epoch gives 2 of 3 and 2 of 4 as well. Every trial with an epoch has
     the laser connected; with laser-connected trials only the accuracies and p values are the
     same.
   deviations:
@@ -231,7 +232,10 @@ outcomes:
   notebook: reproduce_pagan_2025.ipynb
   output: claim:fig3h-neural-uncorrelated
   notes: Neural slope indices range from -0.221 to 1.728 (location) and 0.465 to 1.500
-    (frequency); across the 7 rats r = -0.177 (95% CI -0.821 to 0.665), p = 0.704.
+    (frequency); across the 7 rats r = -0.177 (95% CI -0.821 to 0.665), p = 0.704. The Methods
+    say differential pulse responses only showed positive (or zero) slope indices; three location
+    indices here are negative (P049 -0.221, P101 -0.045, P095 -0.007). The criterion does not test
+    this.
   deviations:
   - The per-neuron kernels are the paper's fitted ones from its repository; the GLM was not
     refitted from spikes.
@@ -248,7 +252,9 @@ outcomes:
     (tolerance 1.44 to 1.76); no rat is in the tolerance. The 3 components explain 0.85 to 0.94
     of the variance. The full-space angle, which the code computes first and overwrites, averages
     40.34 (29.43 folded). All units of each rat have fits in both contexts. The reported test
-    against 0 is in neither the Methods nor the code and was not run.
+    against 0 (not different from 0 in 6 of 7 rats) is a permutation test the Methods describe,
+    shuffling the trials' context labels and recomputing both axes; it is not in the repository's
+    code and needs the per-neuron kernels refitted for every shuffle, so it was not run.
   deviations:
   - The criterion was corrected after the first verification round to follow the angle the code
     plots; it first described only the full-space angle, now a variant. Both are outside the
@@ -353,7 +359,8 @@ findings:
 - kind: code_mismatch
   statement: The paper's own code (ExtDataFigure5ag.m), applied to its own fitted per-context
     kernels, gives angles of 1.1 to 8.0 degrees between the context choice axes (mean 4.7), not
-    the reported average of 1.6 degrees.
+    the reported average of 1.6 degrees. The permutation test of each angle against 0 that the
+    Methods describe is not in the code.
 - kind: paper_inconsistency
   statement: The Methods say 3,495 units were recorded from 5 rats in FOF and list FOF counts that
     sum to 3,285; the 3,495 include the 210 mPFC units. The main text calls a converging
@@ -559,3 +566,161 @@ verifications:
     outcome: blocked
     reason: Same as fig3a, blocked (other).
     response: Kept blocked_by not_runnable, as the MATLAB scripts cannot run in the entry's environment.
+- date: '2026-10-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the first revision with its conclusions and summary, the helper
+    module, the claims file, the README and this attempt record, with the paper's full text
+    (paper/PMC11903320.txt).
+  results:
+  - claim: session-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cells 11 and 12). The Summary's "links one to one
+      ... with identical trial counts, outcomes, strengths and pulse timing" is not supported, since the 50
+      ms pulse bins agree on 0.99996, the per-trial fields could not be compared in the 627 sessions with an
+      empty record in the paper's tables, and 6 dandiset sessions are not in the paper's tables. The Summary's
+      "which give the paper's own per-session values" is not supported, since the relative weights agree in
+      0.898 of sessions and about 60 sessions differ with both values present. The notes' "632 have a missing
+      value on one side" should be "one side or both", and cell 13's "(sessions where a feature does not vary
+      or the fit has too few trials)" is shown by no output; the printed H113 rows that are NaN on both sides
+      have 473 to 914 valid trials. Point 5 is mostly resolved; about 60 differing sessions remain unexplained
+      and do not affect a conclusion.
+    response: Added to cell 11 a breakdown of the 692 sessions that still differ after capping (627 missing on
+      both sides, 5 in the paper's table only, 60 with both values present) and a table of the 60 with their
+      differences. Removed the unsupported parenthetical, and rewrote cell 13, the notes and the Summary to
+      state these counts, the 0.99996 pulse-bin agreement, the 627 sessions without a per-trial record and the
+      6 extra dandiset sessions. The 60 sessions remain unexplained and are said to be. Outcome unchanged.
+  - claim: subjects
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (cell 15, 0.913).
+    response: No change.
+  - claim: trials-per-session
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cell 18).
+    response: No change.
+  - claim: blocks-per-session
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cell 18).
+    response: No change.
+  - claim: session-duration
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cells 18 and 19).
+    response: No change.
+  - claim: block-min-30
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cell 22).
+    response: No change.
+  - claim: fig1c-20-rats
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cell 25).
+    response: No change.
+  - claim: fig1c-context-selection
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cell 27).
+    response: No change.
+  - claim: ed1e-switch-four-trials
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (cell 30). The position-4 reading is thin, the switch to location reaching 0.9 in only 0.678
+      of bootstrap resamples; the position-5 reading, which the criterion also allows, is firm (0.956 and
+      0.977). Point 7 is resolved.
+    response: No change; the conclusion and notes already say this.
+  - claim: ed2g-learning-2-5-months
+    agrees: true
+    outcome: reproduced
+    reason: Agrees (cell 33), 17, 19 and 17 of 26 rats.
+    response: No change.
+  - claim: fig4-converging
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cell 38). Point 6, the cross-validation folds, is
+      acknowledged and left as the criterion fixed them; it does not affect a conclusion.
+    response: No change.
+  - claim: fig4-loc-frq-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cell 42).
+    response: No change.
+  - claim: ed3g-halfsplit
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cell 45).
+    response: No change.
+  - claim: ed4-bilateral-fof-impairs
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (cell 48, 2 of 3 and 2 of 4 rats under every reading). "nor is P127 ... (0.603 against
+      0.634, p = 0.55)" and "P127 not lower" are not supported, since 0.603 is lower than 0.634; the supported
+      statement is "not significantly lower". Which three rats the paper analysed is still unknown; the result
+      is partial under both readings.
+    response: Cell 49 and the notes now say P127 is lower but not significantly. Outcome unchanged.
+  - claim: neural-link
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (cell 52); at most 0.958 of cells match one session, from 110 to 115 sessions against 199.
+      The Summary's "match 112 dandiset sessions (115 ...)" gives the gap-tolerant counts; under the
+      criterion's contiguous rule cell 52 gives 110 (113). This is minor.
+    response: The Summary now gives 110 and 113 sessions as contiguous runs and 112 and 115 with gaps.
+      Outcome unchanged.
+  - claim: units-per-rat
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cell 51).
+    response: No change.
+  - claim: fig3h-neural-uncorrelated
+    agrees: true
+    outcome: reproduced
+    reason: Agrees; the printed numbers meet the criterion (cell 55). Minor and outside any criterion, the
+      paper says neural differential pulse responses "only displayed positive (or zero) slope indices", while
+      cell 55 gives P049 location -0.221, P101 location -0.045 and P095 location -0.007, and the record does
+      not mention it.
+    response: The conclusion (cell 56) and the notes now state the three negative location indices against the
+      Methods' sentence, and that the criterion does not test it. Outcome unchanged.
+  - claim: choice-axes-parallel
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees (cell 57), mean 4.73 degrees, no rat within 1.44 to 1.76; this matches the verifier's own
+      round-1 recomputation. The notes and the claims file say the reported test against 0 is in neither the
+      Methods nor the code, but the Methods ("Estimating the choice axis") describe a per-rat permutation test
+      that shuffles context labels and recomputes the two axes. The mean angle decides the outcome, so it
+      stands, but the notes, the criterion and the code_mismatch context should be corrected.
+    response: Saved the paper's text under paper/. The conclusion (cell 58), the notes, the criterion (with a
+      note of the correction) and the code_mismatch finding now say the Methods describe the permutation test,
+      that ExtDataFigure5ag.m and the rest of the repository's code do not implement it, and that it was not
+      run because it needs the per-neuron kernels refitted for every shuffle. Outcome unchanged.
+  - claim: fig5d-behaviour-neural
+    agrees: true
+    outcome: reproduced
+    reason: Agrees under the criterion's main reading (cell 60, r = -0.697, p = 0.0056). It stays fragile, 0.04
+      inside the tolerance edge; the better-powered variants for P049 and P059 (-0.830, -0.834) fall outside
+      the tolerance on the negative side, and leaving out one rat at a time keeps only 4 of 7 inside. This is
+      disclosed, and the outcome holds by the criterion.
+    response: No change; the conclusion and the deviations already state this.
+  - claim: fig1e-choice-axis
+    agrees: true
+    outcome: blocked
+    reason: Agrees that it is blocked.
+    response: No change.
+  - claim: fig1f-irrelevant-encoded
+    agrees: true
+    outcome: blocked
+    reason: Agrees that it is blocked, and accepts not_runnable in place of the round-1 "other".
+    response: No change.
+  - claim: fig3a-trained-rnn-svm
+    agrees: true
+    outcome: blocked
+    reason: Agrees that it is blocked, and accepts not_runnable in place of the round-1 "other".
+    response: No change.
+  - claim: fig5c-engineered-rnn
+    agrees: true
+    outcome: blocked
+    reason: Agrees that it is blocked, and accepts not_runnable in place of the round-1 "other".
+    response: No change.
