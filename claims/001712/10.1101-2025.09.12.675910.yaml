@@ -1,0 +1,165 @@
+# Claims for Davatolhagh, Couto, Melin, Oesch, Findling, Morales, Hong, International Brain
+# Laboratory & Churchland (2025), bioRxiv preprint version 1, on dandiset 001712.
+# Source: the full text of the preprint (CC-BY-NC-ND), read from its Results, figure legends,
+# Methods and Supplementary Table 1.
+#
+# When these criteria were written, the author had seen the data check only: the dandiset's
+# file list and metadata, the trial table's columns, counts and value ranges, the sampling
+# rates and timestamps of the imaging and video-derived series, the orthonormality of the SVD
+# spatial components, and the speed of streaming the body camera video. No claim's analysis
+# had been run. The author had read the encoding-model code of the lab (churchlandlab/chiCa at
+# commit d98b3c6), which the paper links for its linear encoding analyses.
+#
+# The dandiset holds one session of one mouse (FD-28), with no genotype in the files, the
+# dandiset metadata or the public IBL database. The paper's findings that compare Nrxn1a KO
+# with wild-type mice (8 against 11 mice, 10 sessions each) cannot be tested. The findings
+# that the paper states for both genotypes, or for every mouse, are tested on this one session.
+#
+# Method choices fixed here, where the Methods are silent:
+# - Reaction time is the wheel movement onset minus the stimulus onset (the paper's "time to
+#   first movement"). A rightward choice is a counter-clockwise wheel turn, which moves the
+#   stimulus leftward, toward the center for a right stimulus (the file's column description).
+# - The encoding model follows chiCa's encoding_model_full_version.py and encoding_utils.py:
+#   trial-aligned frames, a time-varying intercept (one binary column per trial time point),
+#   task variables multiplied into that block so each has a kernel over the trial, analog
+#   movement variables at each frame, z-scoring of analog columns on the training set, 10
+#   folds stratified by trial time point, ridge with a penalty per target chosen on the
+#   training data, and shuffles that permute each shuffled column independently over rows.
+#   Frames: stimulus onset -0.5 to +0.5 s and feedback -0.2 to +1.0 s (the paper aligns to
+#   these two events and names the ITI, stimulus and feedback periods). Targets: the 200
+#   haemodynamically corrected SVD temporal components. Task group: choice, left stimulus
+#   contrast, right stimulus contrast, outcome, true prior, subjective prior (an action
+#   kernel model fitted to this session's choices). Movement group: wheel velocity, the speed
+#   of both paws in the left and right cameras, the three ROI motion energies, and the top 200
+#   components of the video and of the video motion energy of the body camera. The left and
+#   right camera videos are not decomposed, for runtime.
+# - cvR2 can be read three ways, all listed before the analysis: (a) variance explained in
+#   pixel space pooled over the frame (with orthonormal spatial components, one minus the
+#   trace of the residual covariance over the trace of the data covariance); (b) the mean over
+#   pixels of each pixel's cvR2 (the maps of Figure 4B); (c) the mean over the 200 components
+#   of each one's cvR2, as chiCa computes it over z-scored targets. Each is shown as is and
+#   with the intercept-only model's cvR2 subtracted (the Figure 4C legend: "with trial time
+#   regressor subtracted out"). Each value is averaged over the 10 folds.
+schema_version: 1
+dandiset: "001712"
+paper: doi:10.1101/2025.09.12.675910
+claims:
+- id: fig1c-psychometric
+  statement: Mice of both genotypes show sigmoidal psychometric curves, with the proportion of
+    rightward choices increasing as the stimulus contrast increases on the right.
+  source: Figure 1C; Results, first section
+  criterion: Over the nine signed contrasts of the session (left contrasts negative), the
+    proportion of rightward choices has a Spearman correlation with signed contrast of at least
+    0.9, and the proportion at +100% exceeds that at -100% by at least 0.5. A lapse-and-erf
+    psychometric fit (bias, slope, two lapses) is reported, with its slope.
+- id: fig1d-psychometric-params-genotype
+  statement: Psychometric bias, slope and lapse rates do not differ between WT and KO mice (bias
+    p = 0.94, slope p = 0.95, left lapse p = 0.16, right lapse p = 0.22).
+  source: Figure 1D; Results, first section
+- id: fig1e-rt-contrast
+  statement: Reaction time (time to first movement) is longer at lower contrasts in both
+    genotypes.
+  source: Figure 1E
+  criterion: Over choice trials with a wheel movement onset after the stimulus onset, the
+    Spearman correlation between absolute contrast and reaction time is negative with p < 0.05,
+    and the median reaction time at 0% contrast exceeds that at 100%.
+- id: fig1f-rt-genotype
+  statement: Reaction times do not differ between genotypes on correct (p = 0.234) or incorrect
+    (p = 0.522) trials.
+  source: Figure 1F; Results, first section
+- id: fig1g-learning-genotype
+  statement: WT and KO mice learn the task with similar trajectories, reaching asymptotic
+    performance after about 20 sessions.
+  source: Figure 1G and Supplementary Figure 1
+- id: fig2bc-prior-shift
+  statement: Mice use the block prior; rightward choices are more frequent in right-likely
+    blocks than in left-likely blocks, most clearly when contrast is low, shifting the
+    psychometric curve toward the likely side (shown for WT, and present but smaller in KO).
+  source: Figure 2B and 2C; Results, second section
+  criterion: At 0% contrast, the proportion of rightward choices in right-likely (20:80) blocks
+    minus that in left-likely (80:20) blocks is greater than zero by a one-sided Fisher exact
+    test at p < 0.05. The difference at every signed contrast and the bias of psychometric fits
+    per block are reported.
+- id: fig2bd-ko-smaller-shift
+  statement: KO mice shift their choices less between biased blocks than WT mice, with a
+    difference in psychometric bias and none in slope or lapses.
+  source: Figure 2B to 2D
+- id: fig2ef-block-adaptation
+  statement: After a block switch, mice adapt their choices toward the newly likely side, and
+    the proportion of choices toward the block side rises from an initial value A to an
+    asymptote B with a time constant tau.
+  source: Figure 2E to 2G
+  criterion: Over the switches between biased blocks, the proportion of choices toward the new
+    block side, by trial number after the switch (0 to 39), all contrasts. Fitted with
+    B - (B - A) exp(-t / tau). Reproduced when the fit gives B > A with tau between 0 and 40
+    trials, and the proportion in trials 20 to 39 exceeds that in trials 0 to 4 by a one-sided
+    Fisher exact test at p < 0.05. Trials at contrasts of 12.5% or less are shown as a variant.
+- id: fig2g-ko-slower-adaptation
+  statement: KO mice adapt more slowly after a block switch (longer tau, p = 0.004) and have lower
+    initial performance after the switch (p = 0.041) than WT littermates.
+  source: Figure 2G; Results, second section
+- id: fig3b-contralateral-visual
+  statement: Visual cortex (VISp) responds robustly to contralateral visual stimuli.
+  source: Figure 3B; Results, third section
+  criterion: The dandiset has no registration to the Allen atlas, so VISp and the hemispheres
+    cannot be named; the lateralization is tested in image coordinates. The midline is the
+    column of lowest mean fluorescence in the middle 40% of columns of the mean image. Evoked
+    maps are the mean dF/F 0.1 to 0.4 s after onset minus -0.3 to 0 s, for trials at 25% and
+    100% contrast. Lateralized when the peak pixel of the right-minus-left stimulus map and the
+    peak pixel of the left-minus-right map lie on opposite sides of the midline, and at each
+    peak the trials of the stimulus that defines it respond more than those of the other side
+    (one-sided Mann-Whitney p < 0.05). Partially reproduced when lateralized, since the area
+    cannot be identified as VISp; not reproduced otherwise.
+- id: fig3c-ko-elevated-activity
+  statement: KO mice show elevated dF/F across cortex in the ITI (most prominent in motor regions),
+    stimulus and feedback periods compared with WT.
+  source: Figure 3C; Results, third section
+- id: fig3d-ko-higher-correlation
+  statement: KO mice show globally increased pairwise correlations between regional dF/F time
+    series during the task.
+  source: Figure 3D (legend labelled E); Results, third section
+- id: fig3e-ko-higher-variance
+  statement: KO mice show higher pixel-wise trial-to-trial variance across all cortical regions
+    and task periods.
+  source: Figure 3E; Results, third section
+- id: fig4c-full-cvr2
+  statement: The full linear encoding model explains more than half of single-trial cortical
+    variance (cvR2 0.60 +/- 0.02 in KO and 0.54 +/- 0.02 in WT).
+  source: Figure 4B and 4C; Results, fourth section
+  expected:
+    quantity: full-model cvR2
+    value: 0.573
+    tolerance: 0.087
+  criterion: The genotype of the mouse is not known, so the tolerance spans both group means
+    widened by 10% of each bound (0.486 to 0.660). Reproduced when, under one of the readings
+    (a) to (c), as is or with the intercept-only cvR2 subtracted, the full-model cvR2 is in
+    that range. Partially reproduced when it is above 0.3 under some reading but in the range
+    under none.
+- id: fig4cd-movement-dominates
+  statement: Movement predictors account for most of the explained variance; shuffling them
+    reduces cvR2 by much more than shuffling task predictors (delta R2 for movement 0.40 +/- 0.02
+    in KO and 0.33 +/- 0.02 in WT; task shuffle beta -0.02).
+  source: Figure 4C and 4D; Results, fourth section
+  expected:
+    quantity: delta R2 when movement predictors are shuffled
+    value: 0.3685
+    tolerance: 0.0715
+  criterion: delta R2 is the full model's cvR2 minus that of the model with the group shuffled,
+    under the same reading as fig4c-full-cvr2. The tolerance spans both group means widened by
+    10% of each bound (0.297 to 0.440). Reproduced when, under one reading, movement delta R2 is
+    in that range and task delta R2 is below one fifth of it. Partially reproduced when movement
+    delta R2 exceeds task delta R2 under every reading but the range is not met under any. Not
+    reproduced when task delta R2 is at least the movement delta R2 under any reading.
+- id: fig4cd-ko-more-movement
+  statement: KO mice lose more explained variance than WT when movement predictors are shuffled
+    (Group x Movement beta = 0.071, p = 0.006; delta R2 KO 0.40 against WT 0.33, p = 0.032), with
+    no group difference for task predictors; full-model cvR2 tends to be higher in KO (p = 0.076).
+  source: Figure 4C and 4D; Results, fourth section
+- id: figs2-ko-elevated-motion
+  statement: KO mice show elevated baseline motion energy relative to WT, with comparable
+    stimulus-evoked movement dynamics after baseline correction.
+  source: Supplementary Figure 2
+- id: figs3-ko-higher-unique
+  statement: Individual movement variables explain more unique variance in KO than in WT mice,
+    and task variables explain little unique variance in either group.
+  source: Supplementary Figure 3; Results, fourth section
