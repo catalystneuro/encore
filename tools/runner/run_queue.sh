@@ -3,7 +3,9 @@
 # $RUNNER_STATE/STOP exists, or STOP_AT (UTC, e.g. 2026-10-19T12:00) has passed; an attempt already
 # started is always finished. Run it from a clone of the repository:
 #
-#   RUNNER_STATE=~/registry-runner tools/runner/run_queue.sh LANES [STOP_AT]
+#   RUNNER_STATE=~/registry-runner tools/runner/run_queue.sh [LANES] [STOP_AT]
+#
+# LANES defaults to 1: two lanes reach the subscription's usage limits about twice as fast.
 #
 # Each lane takes the next item from $RUNNER_STATE/queue.txt (lines "DANDISET [VERSION]", consumed
 # from the top), and when that is empty the next target that describe.py chooses. The scripts are
@@ -11,7 +13,7 @@
 # script while it runs it. Progress goes to $RUNNER_STATE/runner.log, and each dandiset's chain to
 # $RUNNER_STATE/logs/<dandiset>.log.
 set -uo pipefail
-STATE=${RUNNER_STATE:?set RUNNER_STATE}; LANES=${1:-2}; STOP_AT=${2:-}
+STATE=${RUNNER_STATE:?set RUNNER_STATE}; LANES=${1:-1}; STOP_AT=${2:-}
 export RUNNER_STATE=$STATE REGISTRY_ROOT=$PWD
 mkdir -p "$STATE/logs" "$STATE/bin"; touch "$STATE/queue.txt" "$STATE/started.txt"
 cp tools/runner/chain.sh tools/runner/describe.py "$STATE/bin/"
