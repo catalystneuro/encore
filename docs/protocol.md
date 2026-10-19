@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-7`. Record this version in the attempt's provenance.
+Version: `pilot-8`. Record this version in the attempt's provenance.
 
 This is what an agent, or a person, does to attempt a target and deposit the
 result. It is written from the eight pilot attempts
@@ -96,7 +96,26 @@ Do this before any analysis.
    - One claim per finding, at the level of a figure panel or a reported
      number when the full text is available. Cover the paper's main findings,
      including those the dandiset cannot test.
-   - `statement`: the finding in words. `source`: where the paper shows it.
+   - `statement`: the finding in words. `source`: where the paper shows it,
+     precise enough to find without searching: a figure panel, or a section
+     and paragraph ("Results, Place fields, paragraph 3").
+   - `quote`: when the full text was read, the sentence at `source` that
+     states the finding, copied word for word, cut with "..." where it runs
+     long. It lets a reader check the statement against the paper without
+     opening it. For a finding shown only in a figure, quote the legend or
+     the sentence of the Results that cites the panel.
+   - `statistics`: the statistical support the paper reports for the
+     finding, one entry per test or interval: what it compares (`about`,
+     when there is more than one), the `test` and `statistic` as named, the
+     `p`-value as a number (a bound such as "p < 0.05" is `p: 0.05` with
+     `p_relation: "<"`), any `corrected` for multiple comparisons, a
+     confidence interval (`ci`), and `n` in words. It records the paper; the
+     numbers the attempt must match, with tolerances, stay in `expected`.
+     Record only tests whose result is the finding. A significance threshold
+     used to select or count units, cells or pairs ("238 of 288 neurons were
+     better fit, p < 0.05") is a method, not a result, and is left out.
+     Leave the field out when the paper reports no test or interval for the
+     finding.
    - `expected`: each reported number the claim rests on, with a tolerance.
      Use the paper's own uncertainty when it gives one (a confidence
      interval, or the stated spread); otherwise 10% of the reported value.

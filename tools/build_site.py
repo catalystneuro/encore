@@ -172,6 +172,8 @@ def collect(executed: Path | None = None) -> dict:
                 "claim": o["claim"],
                 "statement": squash(known.get(o["claim"], {}).get("statement", o["claim"])),
                 "source": known.get(o["claim"], {}).get("source"),
+                "quote": squash(known.get(o["claim"], {}).get("quote")),
+                "statistics": known.get(o["claim"], {}).get("statistics") or [],
                 "outcome": o["outcome"],
                 "blocked_by": o.get("blocked_by"),
                 "notebook": o.get("notebook"),
@@ -401,6 +403,7 @@ def rows(data: dict) -> dict[str, list]:
             for o in a["outcomes"]:
                 nb = notebook_of(a, o.get("notebook"))
                 claims.append({**common, "claim": o["claim"], "statement": o["statement"], "source": o["source"],
+                               "quote": o.get("quote"), "statistics": o.get("statistics"),
                                "outcome": o["outcome"], "blocked_by": o["blocked_by"], "notes": o["notes"],
                                "deviations": o["deviations"], "disagreed": o["disagreed"],
                                "verifier": "disagreed" if o["disagreed"] else None,
@@ -457,6 +460,36 @@ def tier_badge(tier: str, href: str | None = None) -> str:
     return f'<a class="{css}" href="{e(href)}">{e(text)}</a>' if href else f'<span class="{css}">{e(text)}</span>'
 
 
+SUPERSCRIPT = str.maketrans("-0123456789", "⁻⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+
+def p_text(p: float) -> str:
+    """0.002 stays as it is; 2.4e-05 becomes 2.4 × 10⁻⁵."""
+    if p >= 0.001:
+        return f"{p:g}"
+    mantissa, exponent = f"{p:.1e}".split("e")
+    mantissa, exponent = mantissa.removesuffix(".0"), str(int(exponent)).translate(SUPERSCRIPT)
+    return f"10{exponent}" if mantissa == "1" else f"{mantissa} × 10{exponent}"
+
+
+def statistic_text(s: dict) -> str:
+    """One reported test or interval in a line, e.g. 'Onsets: Wilcoxon rank-sum, p = 2.4 × 10⁻⁵ (n = 385 units)'."""
+    parts = [x for x in (s.get("test"), s.get("statistic")) if x]
+    if "p" in s:
+        parts.append(f'p {s.get("p_relation", "=")} {p_text(s["p"])}')
+    if s.get("corrected"):
+        parts.append(f'{s["corrected"]}-corrected')
+    if "ci" in s:
+        ci = s["ci"]
+        level = f'{ci["level"] * 100:g}% CI' if "level" in ci else "CI"
+        unit = f' {ci["unit"]}' if ci.get("unit") else ""
+        parts.append(f'{level} {ci["low"]:g} to {ci["high"]:g}{unit}')
+    text = ", ".join(parts)
+    if s.get("about"):
+        text = f'{s["about"]}: {text}'
+    return text + (f' (n = {s["n"]})' if s.get("n") else "")
+
+
 def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
     """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
@@ -482,6 +515,12 @@ def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
                  f'<ul class="deviations">{items}</ul>')
     if not body:
         body = '<p class="notes muted">No explanation recorded.</p>'
+    if o.get("statistics"):
+        items = "".join(f"<li>{e(statistic_text(s))}</li>" for s in o["statistics"])
+        body = f'<p class="deviations-title">What the paper reports</p><ul class="stats">{items}</ul>' + body
+    if o.get("quote"):
+        cite = f'<cite>{e(o["source"])}</cite>' if o["source"] else ""
+        body = f'<blockquote class="quote"><p>{e(o["quote"])}</p>{cite}</blockquote>' + body
     # The chip is not a link here: inside the summary a click should open the claim.
     return (f'<li class="claim" id="claim-{e(o["claim"])}" data-outcome="{e(o["outcome"])}"><details><summary>'
             f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}</div>'

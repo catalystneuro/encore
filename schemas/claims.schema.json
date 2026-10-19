@@ -45,8 +45,13 @@
             "minLength": 1
           },
           "source": {
-            "description": "Where the paper shows it, e.g. 'Figure 2B' or 'Results, paragraph 3'.",
+            "description": "Where the paper shows it, precise enough to find without searching: a figure panel, e.g. 'Figure 2B', or a section and paragraph, e.g. 'Results, Place fields, paragraph 3'.",
             "type": "string"
+          },
+          "quote": {
+            "description": "The sentence of the paper that states the finding, word for word, from the place `source` names, so a reader can check the statement against the paper. Cut with '...' where it runs long. Only when the full text was read.",
+            "type": "string",
+            "minLength": 1
           },
           "expected": {
             "description": "The reported numbers the claim rests on, each with a tolerance: one, or a list.",
@@ -62,6 +67,14 @@
                 }
               }
             ]
+          },
+          "statistics": {
+            "description": "The statistical support the paper reports for the finding: one entry per test or interval, as the paper gives it. A record of the paper, not a target with a tolerance (that is `expected`).",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/statistic"
+            }
           },
           "criterion": {
             "description": "For a claim without a number, how it will be judged. Written before the analysis is run.",
@@ -132,6 +145,83 @@
           "minimum": 0
         },
         "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "statistic": {
+      "type": "object",
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "p"
+          ]
+        },
+        {
+          "required": [
+            "ci"
+          ]
+        }
+      ],
+      "properties": {
+        "about": {
+          "description": "What the test compares or the interval bounds, when the claim has more than one, e.g. 'GPi against VLa onset times'.",
+          "type": "string"
+        },
+        "test": {
+          "description": "The test as the paper names it, e.g. 'Wilcoxon rank-sum', 'two-tailed t-test'.",
+          "type": "string"
+        },
+        "statistic": {
+          "description": "The test statistic as reported, e.g. 't(14) = 3.2', 'F(2, 40) = 5.1', 'r = 0.38'.",
+          "type": "string"
+        },
+        "p": {
+          "description": "The reported p-value, or its bound when the paper gives one ('p < 0.05' is p 0.05 with p_relation '<').",
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "maximum": 1
+        },
+        "p_relation": {
+          "description": "How p was reported: exactly (the default) or as a bound.",
+          "enum": [
+            "=",
+            "<",
+            ">"
+          ]
+        },
+        "corrected": {
+          "description": "The correction for multiple comparisons the paper applied, e.g. 'Bonferroni', 'FDR'.",
+          "type": "string"
+        },
+        "ci": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "low",
+            "high"
+          ],
+          "properties": {
+            "level": {
+              "description": "The confidence level, e.g. 0.95.",
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            },
+            "low": {
+              "type": "number"
+            },
+            "high": {
+              "type": "number"
+            },
+            "unit": {
+              "type": "string"
+            }
+          }
+        },
+        "n": {
+          "description": "The sample the test was run on, in words, e.g. '206 GPi and 179 VLa units'.",
           "type": "string"
         }
       }

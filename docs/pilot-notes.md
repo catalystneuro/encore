@@ -4604,3 +4604,29 @@ sources; a criterion's test that fails its own null control; a clock check for
 single-cell sessions, where decoding a task variable does not fit; undocumented
 optogenetics, tested where the data support the assumption and blocked
 elsewhere; and runtime advice that was not enough to keep loading short.
+
+## Protocol pilot-8 (2026-10-19): the paper's own words
+
+A reviewer reading claims to check them found the statements hard to hold
+against the paper: a statement is the author's paraphrase, and `source`
+often named only a section ("Results, active/passive section"), so checking
+a claim meant searching the paper for it. pilot-8 adds `quote`, the
+sentence at `source` that states the finding, copied word for word, and asks
+that `source` name a figure panel or a section and paragraph. The quote is
+written only when the full text was read. The dashboard shows it, with its
+source, at the top of each claim's explanation.
+
+pilot-8 also adds `statistics`, the tests and intervals the paper reports
+for each finding: the test, its statistic, the p-value as a number with
+its relation when it is a bound, any correction, a confidence interval and
+the sample. Only tests whose result is the finding are recorded; the
+threshold used to count significant units or pairs is left out. The
+pipeline finds claims by their p-values, and until now the p-value lived
+only in the statement's wording, when at all, so it could not be listed or
+compared. Stored as a number it also no longer has to be quoted: a p-value
+written as a power of ten does not survive copying from the paper's text.
+The dashboard lists them under the quote.
+
+Quotes and statistics were added by hand to the claims of 000127, 000147
+and 000947, each checked against the full text. Other attempts recorded
+under pilot-7 keep their claims as they are; a repeat attempt adds both.

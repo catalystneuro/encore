@@ -306,3 +306,33 @@ def test_the_about_page_explains_the_roles_and_is_in_the_nav(built):
     assert 'aria-current="page">About' in about
     assert 'href="about/">About' in (out / "index.html").read_text()
     assert f"<loc>{site.SITE_URL}about/</loc>" in (out / "sitemap.xml").read_text()
+
+
+def test_a_claim_shows_the_papers_own_words_when_quoted():
+    claim = {"claim": "fig2", "statement": "Rates rise.", "source": "Figure 2B", "quote": "Firing rates rose <sharply>.",
+             "outcome": "reproduced", "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
+    html = site.claim_item(claim, "../")
+    assert '<blockquote class="quote"><p>Firing rates rose &lt;sharply&gt;.</p><cite>Figure 2B</cite>' in html
+    assert html.index("blockquote") < html.index("It rose.")
+    assert "blockquote" not in site.claim_item({**claim, "quote": None}, "../")
+
+
+def test_small_p_values_are_written_as_powers_of_ten():
+    assert site.p_text(0.002) == "0.002"
+    assert site.p_text(2.4e-5) == "2.4 × 10⁻⁵"
+    assert site.p_text(4.9e-4) == "4.9 × 10⁻⁴"
+    assert site.p_text(4e-66) == "4 × 10⁻⁶⁶"
+    assert site.p_text(1e-10) == "10⁻¹⁰"
+
+
+def test_a_claim_lists_the_statistics_the_paper_reports():
+    stats = [{"about": "Onsets", "test": "Wilcoxon rank-sum", "p": 2.4e-5, "n": "206 and 179 units"},
+             {"test": "t-test", "p": 0.05, "p_relation": "<", "corrected": "Bonferroni"},
+             {"ci": {"level": 0.95, "low": 0.1, "high": 0.4, "unit": "Hz"}}]
+    lines = [site.statistic_text(s) for s in stats]
+    assert lines == ["Onsets: Wilcoxon rank-sum, p = 2.4 × 10⁻⁵ (n = 206 and 179 units)",
+                     "t-test, p < 0.05, Bonferroni-corrected", "95% CI 0.1 to 0.4 Hz"]
+    claim = {"claim": "a", "statement": "S.", "source": None, "statistics": stats, "outcome": "reproduced",
+             "blocked_by": None, "notes": "N.", "deviations": [], "disagreed": False}
+    html = site.claim_item(claim, "../")
+    assert '<ul class="stats"><li>Onsets: Wilcoxon rank-sum' in html and html.index("stats") < html.index("N.")
