@@ -36,7 +36,7 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001550-pagan-2025-01.yaml`](../../attempts/001550-pagan-2025-01.yaml).
 
-- `reproduce_pagan_2025.ipynb`: the analysis. It takes about 11 minutes: 2 to read the 15,853
+- `reproduce_pagan_2025.ipynb`: the analysis. It takes about 7 minutes: 2 to read the 15,853
   TaskSwitch sessions, 2 to read the paper's neural files from GitHub, and 3 to fit the kernels.
 - `taskswitch.py`: loading the sessions (each file is read whole into memory), the session
   selection, the behavioural kernels and slope indices, and ports of the paper's neural slope and

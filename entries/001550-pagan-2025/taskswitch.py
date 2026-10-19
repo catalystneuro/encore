@@ -32,7 +32,7 @@ Where the parameters come from:
   log loss. `kernels` uses the code's penalty form with its weight chosen by 3-fold
   cross-validation over `CV_LAMS` (grid and folds chosen here), or a fixed weight such as 200.
 - Neural slope indices and choice-axis angles (`neural_slopes`, `choice_axis_angle`) port
-  get_neural_slope.m and ExtDataFigure5ag.m, applied to the paper's fitted per-neuron kernels
+  get_neural_slope.m and ExtDataFigure5ag.m (both of its angles), applied to the paper's fitted per-neuron kernels
   (data/combined_kernels*.mat in the repository above, read with `paper_mat`).
 - Slope index (Methods, and compute_slope.m / plot_logistic_regression.m): the differential
   kernel (relevant minus irrelevant context weights) divided by its largest absolute value, as
@@ -424,14 +424,27 @@ def neural_slopes(k, rat_numbers, rat: int) -> tuple[float, float]:
     return out[0], out[1]
 
 
-def choice_axis_angle(k_loc, k_frq, rat_numbers, rat: int) -> float:
-    """ExtDataFigure5ag.m: angle (degrees) between the first PCs of the choice kernels from 0 s
-    (66 time points) fitted in the location and in the frequency context."""
+def _angle(a, b) -> float:
+    return float(np.degrees(np.arccos(np.clip(a @ b / np.linalg.norm(a) / np.linalg.norm(b), -1, 1))))
+
+
+def choice_axis_angle(k_loc, k_frq, rat_numbers, rat: int) -> dict:
+    """ExtDataFigure5ag.m, per rat. `full`: the angle (degrees) between the first PCs of the
+    choice kernels from 0 s (66 time points) fitted in the location and in the frequency context,
+    the code's first value of `ango`. `projected`: the value the code then writes over it and
+    plots, the same two PCs projected on the first 3 PCs of both contexts' choice kernels from
+    0 s (101 time points each, each divided by its matrix 2-norm as MATLAB's norm does, stacked),
+    folded to at most 90 degrees. `var3`: the variance those 3 PCs explain."""
     good = ~np.isnan(k_loc.glm_choice.mean(0)) & ~np.isnan(k_frq.glm_choice.mean(0))
     ind = np.flatnonzero(good & (rat_numbers == rat))
-    a = matlab_pc1(k_loc.glm_choice[50:, ind][:66])
-    b = matlab_pc1(k_frq.glm_choice[50:, ind][:66])
-    return float(np.degrees(np.arccos(np.clip(a @ b / np.linalg.norm(a) / np.linalg.norm(b), -1, 1))))
+    w1, w2 = k_loc.glm_choice[50:, ind], k_frq.glm_choice[50:, ind]
+    a, b = matlab_pc1(w1[:66]), matlab_pc1(w2[:66])
+    both = np.vstack([w1 / np.linalg.norm(w1, 2), w2 / np.linalg.norm(w2, 2)])
+    _, sv, vt = np.linalg.svd(both - both.mean(0), full_matrices=False)
+    pcs = vt[:3].T
+    proj = _angle(a @ pcs, b @ pcs)
+    return dict(full=_angle(a, b), projected=min(proj, 180 - proj), var3=float(np.sum(sv[:3] ** 2) / np.sum(sv ** 2)),
+                units=len(ind))
 
 
 def trial_symbols(task, gdir, gfreq, choice) -> str:
