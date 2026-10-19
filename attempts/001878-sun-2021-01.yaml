@@ -1,0 +1,288 @@
+schema_version: 1
+id: 001878-sun-2021-01
+dandiset: "001878"
+dandiset_version: draft
+paper: doi:10.22002/d1.1991
+date: 2026-10-19
+entry: 001878-sun-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: The CalMS21 dataset as deposited by the paper's authors (version 1.0), streamed from its zips
+    with range requests. The pose, confidence scores and annotations of every sequence of Tasks 1 to 3
+    and the unlabeled set, used for the link claim, the confidence-based pose-error claim and all
+    claims with data elsewhere; the directory of task1_videos_mp4.zip, used to compare the size of the
+    mouse071 video.
+  source: doi:10.22002/D1.1991 (CaltechDATA record s0vdx-0k302, version 1.0)
+outcomes:
+- claim: format-keypoints
+  outcome: partially_reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:format-keypoints
+  notes: The file holds 14 keypoint series named for the seven parts of the resident and the intruder,
+    in pixels, at 30 Hz, with every coordinate inside the 1024 x 570 image (x 5.0 to 991.2, y 9.0 to
+    563.3). The confidence field is present for every keypoint but all 333,340 values are NaN, so the
+    confidence part of the claim fails.
+  deviations:
+  - Judged on the one CalMS21 sequence in the dandiset.
+- claim: resident-is-black
+  outcome: reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:resident-is-black
+  notes: In 746 of 794 sampled frames (every 30th) the body centres are at least 60 px apart; in all of
+    them the 12 px patch on the resident is darker than the one on the intruder (median grey level
+    46.4 against 250.9). With 6 and 24 px patches the fractions are 0.996 and 1.000, with separations
+    of 30 and 120 px 0.999 and 1.000, and 1.0 in every minute.
+  deviations:
+  - The coat colour test (grey level of the video at the body centre) was chosen here; the paper states
+    the identities without a test.
+- claim: task1-vocab
+  outcome: reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:task1-vocab
+  notes: The catalogue holds attack 0, investigation 1, mount 2 and other 3; the bouts give the
+    annotator as "CalMS21 annotator 0"; the 170 bouts tile the session from 0 to 793.67 s with no gaps,
+    so all 23,810 frames have exactly one label. The session has no attack bouts.
+- claim: task1-video
+  outcome: reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:task1-video
+  notes: The video is 1024 x 570, h264, at 30 frames per second with 23,810 frames, equal to the pose.
+    Its motion energy correlates best with the pose speed at lag 0 (r = 0.754, falling to 0.19 and 0.26
+    at 15 frames either way). It is 184,059,454 bytes against 964,451,532 for CaltechDATA's
+    mouse071_task1_annotator1.mp4, so it was re-encoded; the two were not compared frame by frame.
+- claim: contact-during-social-behaviors
+  outcome: reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:contact-during-social-behaviors
+  notes: Median distance from the resident's nose to the nearest intruder keypoint is 21.4 px in 4,679
+    investigation frames and 15.0 px in 2,894 mount frames, against 376.0 px in 16,237 other frames
+    (differences -354.6 and -361.0 px, 95% block bootstrap intervals -407.3 to -292.7 and -412.0 to
+    -304.2). The centroid distance gives -307.2 and -355.5 px, with intervals excluding 0, and each half
+    of the session gives the same order. Attack is absent from the session, so the attack part of the
+    statement is untested.
+  deviations:
+  - The paper defines the behaviors in words; the distance measure, the comparison with other frames
+    and the bootstrap were chosen here.
+  - One session, with no attack frames.
+- claim: pose-errors-close-fast
+  outcome: partially_reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:pose-errors-close-fast
+  notes: 657 of 23,810 frames (2.8%) have a body length outside the session's quartiles widened by 3
+    IQR. In the closest 10% of frames (centroid distance at most 66.4 px) the fraction is 0.131 against
+    0.016 elsewhere (difference 0.115, 95% interval 0.064 to 0.179). In the fastest 10% (at least 389
+    px/s) it is 0.010 against 0.030 (difference -0.020, interval -0.033 to -0.008), the reverse of the
+    claim. Both directions hold at 5% and 20% and with a factor of 1.5. Error fractions by label are
+    0.045 (investigation), 0.105 (mount) and 0.009 (other).
+  deviations:
+  - The dandiset has no confidence values, so pose errors are counted with an anatomical proxy chosen
+    here; the paper gives no measure of pose error.
+  - The thresholds for close and fast frames were chosen here.
+- claim: link-mouse071
+  outcome: reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:link-mouse071
+  notes: Matched by name to task1/test/mouse071_task1_annotator1 on CaltechDATA. Both have 23,810 frames;
+    every keypoint coordinate is identical (largest difference 0 px), while swapping the mice or the
+    axes gives differences of about 895 px. The frame labels from the bouts agree with the CaltechDATA
+    annotations on all 23,810 frames (4,679 investigation, 2,894 mount, 16,237 other). CaltechDATA's
+    confidence scores (0.030 to 0.980, all finite) are NaN in the dandiset. The same recording is also
+    deposited on CaltechDATA as the Task 3 training sequence task3/groom/train/mouse002_task3_groom.
+- claim: pose-errors-close-fast-confidence
+  outcome: partially_reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:pose-errors-close-fast-confidence
+  notes: The mean confidence per frame (CaltechDATA scores, matched frame by frame) is lower in the
+    closest 10% of frames (median 0.649 against 0.740, difference -0.091, 95% interval -0.107 to
+    -0.074), most of all for the intruder (-0.149 against -0.031 for the resident). In the fastest 10%
+    of frames it is higher (0.751 against 0.732, difference 0.018, interval 0.012 to 0.025), the reverse
+    of the claim. Both hold at 5% and 20%. The confidence correlates with the body-length error flags of
+    pose-errors-close-fast (point-biserial r = -0.366). The link holds in full, so the match of scores
+    to frames is exact.
+  deviations:
+  - Confidence is a proxy for pose error; the paper gives no measure.
+  - The confidence scores come from CaltechDATA, as the dandiset's are missing.
+- claim: table5-task1-counts
+  outcome: reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:table5-task1-counts
+  measured:
+  - 507738
+  - 70
+  - 262107
+  - 19
+  notes: The training file holds 70 sequences with 507,738 frames and the test file 19 with 262,107, as
+    reported. Annotation lengths equal the frame counts of the scores in every sequence.
+- claim: table5-task2-counts
+  outcome: partially_reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:table5-task2-counts
+  measured: [139122, 6, 286810, 13, 135623, 6, 150919, 6, 107420, 6, 77079, 4, 108325, 6, 76174, 4,
+    92383, 6, 364007, 20]
+  notes: 19 of 20 counts match exactly. Annotator 1's training set has 139,122 frames where Table 5 gives
+    139,112 (10 frames, 0.007%); its six sequences match. Annotator ids in the metadata agree with
+    those in the keys.
+- claim: table5-task3-counts
+  outcome: reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:table5-task3-counts
+  measured: [20624, 3, 126468, 25, 35751, 2, 19088, 1, 45174, 2, 156664, 13, 19200, 1, 55218, 10, 46847,
+    4, 85836, 12, 19244, 3, 251793, 47, 36181, 2, 17939, 1]
+  notes: All 28 counts match Table 5.
+- claim: table6-task1-label-fractions
+  outcome: partially_reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:table6-task1-label-fractions
+  measured:
+  - 2.765
+  - 28.876
+  - 5.636
+  - 62.723
+  notes: Under reading (a), the training split, investigation, mount and other are within half a unit
+    of the last reported digit; attack is 14,039 of 507,738 frames, 2.765009%, 0.005009 from 2.76
+    against a tolerance of 0.005. It rounds to 2.77 and truncates to the reported 2.76. All four are
+    within 10% of the reported values. Reading (b), training and test, gives 3.46, 27.00, 7.85 and
+    61.68% and does not match.
+  deviations:
+  - The tolerance of half a unit of the last digit is tighter than the protocol's default of 10%,
+    because these are percentages of a fixed file; under the default the claim would be reproduced.
+- claim: fig4b-task2-label-fractions
+  outcome: reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:fig4b-task2-label-fractions
+  measured: [59.98, 20.58, 16.20, 3.25, 65.51, 25.82, 3.40, 5.27, 68.91, 13.49, 9.50, 8.09, 75.23, 11.62,
+    4.46, 8.69, 69.53, 26.42, 1.03, 3.03]
+  notes: Under the training split with the class order of the Task 1 pie (other, investigation, mount,
+    attack), all 20 percentages are within 0.05 of the figure's values; the best assignment of classes
+    gives the same 20. Training and test together match 1 of 20 under either class reading.
+  deviations:
+  - The Task 2 pies carry no class names; the order was read from the Task 1 pie, and the alternative
+    reading (best assignment) was listed before the analysis. Both match.
+- claim: table7-task3-label-fractions
+  outcome: reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:table7-task3-label-fractions
+  measured: [3.249, 1.466, 13.988, 19.255, 0.903, 4.744, 9.295]
+  notes: Under reading (a), the training split, all seven are within tolerance. Training and test
+    together give values outside 10% for five of seven (for example groom 7.36%).
+- claim: dataset-size
+  outcome: reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:dataset-size
+  measured:
+  - 282
+  - 5952058
+  notes: The unlabeled set has 282 sequences and 5,952,058 frames (55.1 h). Annotated frames are 769,845
+    (7.1 h) in Task 1, 3,243,734 (30.0 h) over all labelled sets, and 2,273,674 (21.1 h) with each
+    recording counted once; tracked pose including the unlabeled set is 62.2, 85.2 and 76.2 h. So the
+    three "over" statements (1 million annotated frames, 10 hours of annotation, 70 hours of pose) hold
+    under readings (b) and (c) and none holds under reading (a).
+  deviations:
+  - The paper does not say which sets its totals cover; three readings were listed before the analysis.
+- claim: table10-task3-difficulty
+  outcome: partially_reproduced
+  notebook: reproduce_sun_2021.ipynb
+  output: claim:table10-task3-difficulty
+  notes: Across the seven behaviors the baseline F1 of Table 10 rises with the percentage of labelled
+    frames (Spearman 0.786, exact one-sided p = 0.024 on the training split; 0.929, p = 0.003 on the
+    test split) and with mean bout length, but the latter is not significant (0.321, p = 0.249; 0.607,
+    p = 0.083). With the task programming model's F1 the bout-length correlations are 0.536 (p = 0.118)
+    and 0.679 (p = 0.055). The direction of both parts of the statement holds; only the frequency part
+    is significant with seven behaviors.
+  deviations:
+  - The paper states the dependence without a test; the correlation and the permutation test were
+    chosen here, using the paper's published F1 scores with frequencies and bout lengths computed from
+    the data.
+- claim: table1-architectures
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs the four baseline networks trained on Task 1. The paper gives some settings (input
+    window, skip factor, the ranges searched) and refers to the project code for the rest, but the code
+    at gitlab.aicrowd.com/aicrowd/research/mab-e/mab-e-baselines did not answer, with or without the
+    sandbox, and no copy was found in Software Heritage or on GitHub; the web archive holds its landing
+    page only. The data are public on CaltechDATA. Training five runs of each network was also not
+    attempted within the time limit.
+- claim: table2-task-programming
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs the baseline network (code unavailable, see table1-architectures) and the challenge's
+    top entry, whose code is not linked. The task programming code (GitHub neuroethology/TREBA) and
+    precomputed features on CaltechDATA are public, but without the baseline classifier the comparison
+    cannot be repeated.
+- claim: table3-task2-style-transfer
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs the fine-tuned baseline and the top entry; the baseline code is unavailable (see
+    table1-architectures) and the top entry's code is not linked.
+- claim: table4-task3-new-behaviors
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs the fine-tuned baseline with per-behavior learning rates hand-tuned on a validation set,
+    and the top entry; neither's code is available (see table1-architectures).
+- claim: fig7-errors-at-transitions
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs the baseline model's predictions; its code is unavailable (see table1-architectures).
+- claim: fig11-annotator-similarity
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: Needs the trained top entry's annotator embedding; the entry's code is not linked and the
+    paper describes the model only in outline.
+findings:
+- kind: data_missing
+  statement: The MARS confidence scores, which CalMS21 distributes with every keypoint, are missing from
+    the dandiset's CalMS21 file; the confidence field of all 14 pose series is present but all 333,340
+    values are NaN. CaltechDATA's copy of the same sequence has them (0.03 to 0.98).
+- kind: selection_undocumented
+  statement: For CalMS21 the dandiset holds one sequence, the Task 1 test sequence mouse071, out of 574
+    sequences on CaltechDATA. Its description presents a collection of datasets and does not say that
+    only one CalMS21 sequence is included or why this one was chosen.
+- kind: metadata_insufficient
+  statement: The behavior catalogue (CalMS21_ethogram) has an empty definition for attack,
+    investigation, mount and other, though the paper defines the three behaviors (Appendix D.2) and
+    states that annotations refer to behaviors initiated by the resident.
+- kind: metadata_insufficient
+  statement: The two mice are stored as one subject with strain C57BL/6, sex unknown and age P0D/; the
+    intruder's strain (BALB/c) and the residents' sex (male) are known from the paper but not
+    recorded, and which series belongs to the black or white mouse is given only by the series names.
+- kind: metadata_error
+  statement: The session start time is 2024-01-01T00:00, a placeholder; CalMS21 gives no recording
+    dates.
+- kind: metadata_insufficient
+  statement: The `centroid_speed` series, and the bout columns mean_speed, peak_speed and
+    immobility_fraction that reduce it, are the speed of the mean of all 14 keypoints, which is the
+    midpoint of the two mice, not the speed of either animal. The description ("the pose centroid,
+    mean over keypoints") does not make this clear.
+- kind: other
+  statement: The dandiset's mouse071 video (184 MB) is a re-encoding of CaltechDATA's (964 MB). It has
+    the same frame count, size and rate, and its motion follows the pose at lag 0, but the dandiset does
+    not say it was re-encoded.
+- kind: metadata_insufficient
+  statement: The dandiset links the CalMS21 dataset DOI (10.22002/D1.1991) as IsDerivedFrom, but not the
+    paper that describes the dataset and its benchmarks (arXiv 2104.02710, NeurIPS 2021 Datasets and
+    Benchmarks).
+- kind: other
+  statement: On CaltechDATA, 574 CalMS21 sequences hold 450 distinct recordings (identical keypoints over
+    the whole sequence). 93 of the 109 Task 3 test sequences are Task 1 training recordings, six Task 1
+    test recordings (mouse071 among them) are Task 3 training sequences, and four Task 2 recordings are
+    in the training set of one of annotators 3 and 4 and the test set of the other. The paper describes
+    each sequence as an independent observation and does not mention the overlap.
+- kind: paper_inconsistency
+  statement: The paper's datasheet says the dataset does not include the raw videos, while Section 3.1
+    says all source videos of Task 1 are released, and the deposit holds them. The datasheet also gives
+    the licence as CC-BY-NC-SA, while the CaltechDATA record and the dandiset give CC-BY 4.0.
+- kind: other
+  statement: Table 5 gives 139,112 training frames for Task 2 annotator 1; the deposited file holds
+    139,122. The other 47 counts of Table 5 match.
+- kind: methods_unavailable
+  statement: The baseline code the paper links (gitlab.aicrowd.com/aicrowd/research/mab-e/mab-e-baselines)
+    is not reachable and no archived copy of the repository was found; the code of the challenge's top
+    entries is not linked. The paper leaves the architectures' settings to that code, so none of the
+    benchmark results can be repeated.
