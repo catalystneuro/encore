@@ -247,14 +247,16 @@ def pair_transients(first, second, window=18):
     transient i of `first`. Each first transient takes its earliest such partner (Methods) and
     each second transient is used once."""
     pairs, used = [], set()
+    on2, pk2 = second[:, 0], second[:, 2]
+    lo = np.searchsorted(on2, first[:, 0], side="right")
+    hi = np.searchsorted(on2, first[:, 0] + window, side="right")
     for i in range(len(first)):
-        d_on = second[:, 0] - first[i, 0]
-        d_pk = second[:, 2] - first[i, 2]
-        cand = np.flatnonzero((d_on > 0) & (d_on <= window) & (d_pk > 0) & (d_pk <= window))
-        cand = [j for j in cand if j not in used]
-        if cand:
-            pairs.append((i, cand[0]))
-            used.add(cand[0])
+        pk = first[i, 2]
+        for j in range(lo[i], hi[i]):
+            if j not in used and pk < pk2[j] <= pk + window:
+                pairs.append((i, j))
+                used.add(j)
+                break
     return np.array(pairs, int).reshape(-1, 2)
 
 
@@ -347,7 +349,7 @@ def event_correlation(ref, other, polarity, input_idx, ref_idx, corr_idx=np.aran
             off0 = max(lo, 0)
             if np.isnan(seg).all():
                 continue
-            v = polarity * np.nan_to_num(seg, nan=-np.inf)
+            v = np.nan_to_num(polarity * seg, nan=-np.inf)  # NaN is never a peak of either sign
             pk, _ = signal.find_peaks(v, distance=3)
             pk = pk[polarity * seg[pk] > 0]
             if not len(pk):
@@ -477,7 +479,7 @@ def invigoration_glm(y, vel, acc, init_ev, invig_all, fir=np.arange(-9, 19), fit
 # ---------------------------------------------------------------- hotspots
 
 class Grid:
-    """A 100 um grid over striatal coordinates (ML, DV, AP in mm) shared by all cohorts."""
+    """A 100 um grid over striatal coordinates (AP, ML, DV in mm) shared by all cohorts."""
 
     def __init__(self, coords, step=0.1, pad=0.5):
         lo = np.floor((coords.min(0) - pad) / step) * step
@@ -615,11 +617,32 @@ def overlap_test(hs_a, mask_a, hs_b, mask_b, shape, rng, n=200):
 
 
 def in_out(values, is_in):
-    """Two-sided rank-sum inside against outside; medians and counts."""
+    """Two-sided rank-sum test inside against outside, as MATLAB's ranksum computes it (exact when
+    the smaller group has fewer than 10 values and both fewer than 20 together, otherwise the normal
+    approximation with tie and continuity correction); medians and counts. `p_exact` is the exact
+    p (ties ignored) whenever the smaller group has 10 values or fewer."""
     a, b = values[is_in & ~np.isnan(values)], values[~is_in & ~np.isnan(values)]
-    p = stats.ranksums(a, b).pvalue if len(a) and len(b) else np.nan
+    p = p_exact = np.nan
+    if len(a) and len(b):
+        small = min(len(a), len(b))
+        exact = small < 10 and len(a) + len(b) < 20
+        p = stats.mannwhitneyu(a, b, method="exact" if exact else "asymptotic").pvalue
+        if small <= 10:
+            p_exact = stats.mannwhitneyu(a, b, method="exact").pvalue
     return {"n_in": len(a), "n_out": len(b), "median_in": np.median(a) if len(a) else np.nan,
-            "median_out": np.median(b) if len(b) else np.nan, "p": p}
+            "median_out": np.median(b) if len(b) else np.nan, "p": p, "p_exact": p_exact}
+
+
+def hotspot_shuffles(interp, values, null, rng, n=100, how="dominant", pct=95, min_vox=125):
+    """The hotspot procedure on site values shuffled across sites, with the given null (the null of
+    Moran's I under shuffling is the same for any permutation of the values). Per shuffle: whether
+    a hotspot is found, its voxels and mean, and the striatal mean."""
+    out = []
+    for _ in range(n):
+        h = hotspot(interp, values[rng.permutation(len(values))], rng, how=how, pct=pct, min_vox=min_vox, null=null)
+        out.append({"found": h["voxels"] is not None, "voxels": 0 if h["voxels"] is None else len(h["voxels"]),
+                    "mean": h["mean"], "striatal_mean": h["striatal_mean"]})
+    return out
 
 
 # ---------------------------------------------------------------- per-figure pipelines
@@ -685,23 +708,35 @@ def pair_name(tp):
     return f"ACh {names[tp[1]]} / DA {names[tp[3]]}"
 
 
-def transient_pairs(sessions, rng, n_rep=1000, exclude_s=6.0):
+def _occurrence(a, d):
+    """Pairs in both orders for one pair type in one session, and the number of transients of each
+    signal that belong to a pair."""
+    pa, pdd = pair_transients(a, d), pair_transients(d, a)
+    return pa, pdd, len(set(pa[:, 0]) | set(pdd[:, 1])), len(set(pa[:, 1]) | set(pdd[:, 0]))
+
+
+def transient_pairs(sessions, rng, n_rep=1000, exclude_s=6.0, n_null=10):
     """Transient detection, pairing, directionality, occurrence and magnitude correlation per site
-    (Methods and code fig2_paired_transients.m)."""
+    (Methods and code fig2_paired_transients.m). Rates are per second of data that is not NaN and
+    not within exclude_s after a reward or first lick. The null occurrence (Methods) pairs the DA
+    transients of each session with the ACh transients of a randomly chosen other session of the
+    same mouse, both cut to the shorter session, averaged over n_null shuffles."""
     per_site = []
-    rates = []
     for m, ss in by_mouse(sessions).items():
         nsite = ss[0]["DA"].shape[1]
         acc = {tp: [dict(A=0, B=0, pa=0, pd=0, ta=0, td=0, ma=[], md=[], ra=[], rd=[]) for _ in range(nsite)]
                for tp in PAIR_TYPES}
         cnt = {k: np.zeros(nsite) for k in ("DA_pos", "DA_neg", "ACh_pos", "ACh_neg")}
-        dur = 0.0
+        dur = np.zeros(nsite)
+        kept = []  # per session, the kept transients of each (channel, sign) per site
         for s in ss:
             tr = {ch: transients(s[ch], rng) for ch in ("DA", "ACh")}
             n = len(s["DA"])
-            dur += n / SR
             rew, lick = first_licks(s)
             since = np.minimum(time_since(n, rew), time_since(n, lick))
+            usable = (since > exclude_s)[:, None] & ~np.isnan(s["DA"]) & ~np.isnan(s["ACh"])
+            dur += usable.sum(0) / SR
+            ks = []
             for si in range(nsite):
                 filt = {}
                 for ch in ("DA", "ACh"):
@@ -710,30 +745,52 @@ def transient_pairs(sessions, rng, n_rep=1000, exclude_s=6.0):
                         keep = since[x[:, 0].astype(int)] > exclude_s if len(x) else np.zeros(0, bool)
                         filt[(ch, sg)] = x[keep]
                         cnt[f"{ch}_{sg}"][si] += keep.sum()
+                ks.append(filt)
                 for tp in PAIR_TYPES:
                     a, d = filt[(tp[0], tp[1])], filt[(tp[2], tp[3])]
-                    pa, pdd = pair_transients(a, d), pair_transients(d, a)
+                    pa, pdd, n_a, n_d = _occurrence(a, d)
                     st = acc[tp][si]
                     st["A"] += len(pa)
                     st["B"] += len(pdd)
-                    st["pa"] += len(set(pa[:, 0]) | set(pdd[:, 1]))
-                    st["pd"] += len(set(pa[:, 1]) | set(pdd[:, 0]))
+                    st["pa"] += n_a
+                    st["pd"] += n_d
                     st["ta"] += len(a)
                     st["td"] += len(d)
                     st["ma"] += list(a[pa[:, 0], 3])
                     st["md"] += list(d[pa[:, 1], 3])
                     st["ra"] += list(a[pdd[:, 1], 3])
                     st["rd"] += list(d[pdd[:, 0], 3])
+            kept.append((n, ks))
+        null = {tp: np.zeros((n_null, nsite)) for tp in PAIR_TYPES}
+        for r in range(n_null):
+            num = {tp: np.zeros(nsite) for tp in PAIR_TYPES}
+            den = {tp: np.zeros(nsite) for tp in PAIR_TYPES}
+            for i, (n_i, ks_i) in enumerate(kept):
+                j = rng.choice([k for k in range(len(kept)) if k != i])
+                n_j, ks_j = kept[j]
+                L = min(n_i, n_j)
+                for si in range(nsite):
+                    for tp in PAIR_TYPES:
+                        a = ks_j[si][(tp[0], tp[1])]  # ACh of the other session
+                        d = ks_i[si][(tp[2], tp[3])]  # DA of this session
+                        a, d = a[a[:, 0] < L], d[d[:, 0] < L]
+                        _, _, n_a, n_d = _occurrence(a, d)
+                        num[tp][si] += n_a + n_d
+                        den[tp][si] += len(a) + len(d)
+            for tp in PAIR_TYPES:
+                with np.errstate(invalid="ignore", divide="ignore"):
+                    null[tp][r] = num[tp] / den[tp]
         for si in range(nsite):
             row = {"mouse": m, "site": si}
             for k in cnt:
-                row[f"rate_{k}"] = cnt[k][si] / dur
+                row[f"rate_{k}"] = cnt[k][si] / dur[si]
             for tp in PAIR_TYPES:
                 st = acc[tp][si]
                 key = pair_name(tp)
                 tot = st["A"] + st["B"]
                 row[f"di|{key}"] = (st["A"] - st["B"]) / tot if tot else np.nan
                 row[f"occ|{key}"] = (st["pa"] + st["pd"]) / (st["ta"] + st["td"]) if st["ta"] + st["td"] else np.nan
+                row[f"null_occ|{key}"] = np.nanmean(null[tp][:, si])
                 ach = np.array(st["ma"] + st["ra"])  # ACh-first pairs then DA-first pairs
                 da = np.array(st["md"] + st["rd"])
                 mean, lo, hi = boot_corr(ach, da, rng, n_rep=n_rep)

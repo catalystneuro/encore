@@ -26,7 +26,7 @@ of Figure 8 are tested on the paper's source data on Zenodo.
 | Locomotion: topography of DA dips, DA peaks and ACh dips | Not reproduced |
 | Stimulation: DA release at 179 of 180 sites; ACh dips larger inside the cohort hotspot | Reproduced |
 | Stimulation: ACh dips at 116 of 180 sites; cohort hotspot replication | Partially reproduced |
-| Figure 8 slice ANOVAs (Zenodo source data): quinpirole, D2 block / cocaine / FCV | Reproduced / partially reproduced / blocked |
+| Figure 8 slice ANOVAs (Zenodo source data): quinpirole, cocaine, D2 block / FCV | Reproduced / blocked |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -37,7 +37,7 @@ the notebook infers this from subject names, indicators and events. The attempt 
 reasons and the differences from the paper's method, is
 [`attempts/001692-bouabid-2026-01.yaml`](../../attempts/001692-bouabid-2026-01.yaml).
 
-- `reproduce_bouabid_2026.ipynb`: the analysis. It takes about ten minutes, a third of it streaming.
+- `reproduce_bouabid_2026.ipynb`: the analysis. It takes about fifteen minutes, a quarter of it streaming.
 - `daach.py`: loading the files, lagged correlations, transient detection and pairing, triggered
   averages with bootstrap significance, the paper's trial-by-trial event correlation, locomotion
   events and the invigoration GLM, and a simplified version of the paper's hotspot procedure.
