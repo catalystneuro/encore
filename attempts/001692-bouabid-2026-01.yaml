@@ -91,14 +91,15 @@ outcomes:
   notes: In AD4 to AD6 (ACh4.3mut and tdTomato) the hotspot procedure finds a hotspot with mean
     smoothed r +0.33 (551 voxels, centroid AP 0.68, ML 1.29, DV -4.14 mm), so by the paper's test
     the claim of no organization fails. The procedure also finds a hotspot in 73 of 100 shuffles of
-    the control values across sites, so finding one says little, but none of those reaches 551
-    voxels (31 have a mean of at least +0.33). The outcome rests mainly on the strength of the
-    correlations. They are mostly positive (68% of 124 sites, median 0.20), as stated, but not weak;
+    the control values across sites, but none of those reaches 551 voxels (31 have a mean of at
+    least +0.33), so by the paper's own test the control correlations are organized in space. The
+    correlations are mostly positive (68% of 124 sites, median 0.20), as stated, but not weak;
     the median absolute dominant r is 0.238 against 0.240 in the sensor mice, and 65% of control
     sites exceed 0.2 against 54%. One control site has no defined correlation (a constant red trace)
     and is dropped; 19 site-sessions have constant red traces. Keeping the reward periods gives
-    median r 0.22. The controls use the high-pass series without artifact removal (none is in their
-    files), which may leave shared artifacts that inflate red-green correlations.
+    median r 0.22. Two deviations could add correlated red-green signal and so bear on this outcome; the
+    controls use the high-pass series without artifact removal (none is in their files), and only
+    their 15 reward sessions, where the paper used all ITI data.
   deviations:
   - The 15 uncued reward sessions of the control mice are used, with 6 s after rewards and first
     licks left out; the paper used the ITI data of all their sessions, which the files' event
@@ -136,9 +137,9 @@ outcomes:
   outcome: partially_reproduced
   notebook: reproduce_bouabid_2026.ipynb
   output: claim:fig2d-magnitude-in-out
-  notes: ACh troughs with DA peaks are more negative inside (median -0.32 against -0.23, p = 0.0001);
-    ACh peaks with DA troughs do not differ (-0.18 against -0.17, p = 0.12). Same-sign pairs do not
-    differ (p = 0.12 and 0.21), as stated.
+  notes: ACh troughs with DA peaks are more negative inside (median -0.33 against -0.23, p = 0.0001);
+    ACh peaks with DA troughs do not differ (-0.19 against -0.16, p = 0.11). Same-sign pairs do not
+    differ (p = 0.11 and 0.22), as stated.
 - claim: fig2b-pairing-overlaps-hotspot
   outcome: reproduced
   notebook: reproduce_bouabid_2026.ipynb
@@ -220,7 +221,7 @@ outcomes:
     negative (mean latency 206.0 ms, 37 with ACh lagging) and 34 positive (-83.3 ms, 22 with ACh
     leading). The positive count is above its range (23.4 to 28.6); the paper's 39 plus 26 make 65,
     which fits neither reading here. The code's percentiles also give 75 sites, and the null draws
-    from 68868 to 74196 candidate times per mouse, so neither explains the difference.
+    from 68868 to 74196 candidate times per mouse, so neither explains the difference. The difference remains unexplained.
   deviations:
   - The denominator is ambiguous (75 sites or those with a significant DA peak); both readings are
     shown and agree here.
@@ -309,8 +310,9 @@ outcomes:
   measured: 188.8
   notes: Of 129 sites with a DA dip (the paper 119), 98 are dominant negative (88 with ACh lagging),
     mean latency 188.8 ms under reading (a); 98.2 ms under reading (b). Most dip sites are negative
-    in every mouse. The trough search now ignores NaNs (2197 of 30341 site-trials have a NaN in the
-    range searched); before the fix the result was 99 sites and 182.4 ms.
+    in every mouse. The trough search now ignores NaNs; before the fix a trough within 2 samples of a
+    NaN was missed. 2197 of 30341 site-trials have a NaN in the range searched, so at most that
+    many were affected. Before the fix the result was 99 sites and 182.4 ms.
   deviations:
   - The latency tolerance is the standard error implied by the paper's spread.
 - claim: fig6c-initiation-in-out
@@ -353,7 +355,7 @@ outcomes:
     (mean -0.44, 1536 voxels, centroid AP 0.71, ML 2.00, DV -3.45 mm) and shares 564 voxels with the
     original against a null median of 65, but overlap p = 0.085 with 200 random volumes. 167 of 180
     cohort sites are dominant negative. The AND exclusion leaves out 6.5% of samples and the OR
-    exclusion 32.7%, so with AND most stimulation responses stay in the data. With OR the cohort
+    exclusion 32.7%. Of the samples within 3 s after a stimulation, AND keeps 42% and OR none. With OR the cohort
     hotspot is similar (mean -0.41, centroid AP 0.72, ML 2.08, DV -3.43 mm), with overlap p = 0.085.
   deviations:
   - The code's AND of the three exclusions is followed; OR is a variant.
@@ -362,10 +364,11 @@ outcomes:
   notebook: reproduce_bouabid_2026.ipynb
   output: claim:fig7f-ach-dip-in-out
   notes: ACh minima are deeper inside the cohort hotspot (median -0.0179 against -0.0149 dF/F, 17
-    against 163 sites, p = 0.0005). The cohort hotspot of the AND exclusion is built partly from
-    stimulation periods; with the hotspot of the OR exclusion, which leaves them out, the result
+    against 163 sites, p = 0.0005). The AND exclusion keeps 42% of the samples within 3 s after a
+    stimulation, so its cohort hotspot is built partly from stimulation responses; with the hotspot of the OR exclusion, which leaves them out, the result
     holds (19 against 161 sites, median -0.0188 against -0.0149, p = 0.0003). Against the original
-    hotspot p = 0.094; the ACh-minimum hotspot's overlap with the cohort hotspot has p = 0.065.
+    hotspot p = 0.094; the ACh-minimum hotspot's overlap with the cohort hotspot has p = 0.065, so the
+    claim's second part is not supported at p < 0.05; the criterion treats it as a variant.
     Inside sites are lower in all six mice, significantly in ADS19.
 - claim: fig8b-quinpirole-region
   outcome: reproduced
@@ -467,7 +470,8 @@ verifications:
   kind: agent
   by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
   reviewed: The executed notebook of the first run with the conclusion cells and the summary
-    removed, the helper module and the claims file.
+    removed, the helper module and the claims file. It also read the paper and the Zenodo Figure 8
+    source data, and queried the DANDI asset list.
   results:
   - claim: fig1e-dominant-polarity
     agrees: true
@@ -535,7 +539,8 @@ verifications:
     outcome: partially_reproduced
     reason: ACh trough with DA peak is more negative inside (p = 1e-4). ACh peak with DA trough is
       not (p = 0.12). Neither same-sign type differs.
-    response: No change needed; the values are as before.
+    response: No change at the time. The random stream changed with the chance-pairing null, and the
+      values moved slightly; the text kept the old values until round 2 corrected them.
   - claim: fig2b-pairing-overlaps-hotspot
     agrees: true
     outcome: reproduced
@@ -630,7 +635,8 @@ verifications:
     outcome: reproduced
     reason: 99 of 129 sites negative; mean latency 182.4 ms against 193.8 +/- 16.3. The trough
       search turns NaNs into +inf peaks for polarity -1, which suppresses a real trough within 2
-      samples of a NaN (B6); it asked for the number of fig6a trials concerned.
+      samples of a NaN (B6, which it classed as not affecting a conclusion); it asked for the number
+      of fig6a trials concerned.
     response: Fixed the trough search (NaNs now never form a peak) and added a synthetic check in
       the notebook that fails without the fix. 2197 of 30341 site-trials have a NaN in the range
       searched. The result is now 98 of 129 sites with mean latency 188.8 ms, closer to the paper.
@@ -638,7 +644,8 @@ verifications:
   - claim: fig6c-initiation-in-out
     agrees: true
     outcome: reproduced
-    reason: p = 6e-8, inside median lower. Affected by the NaN trough bug (B6).
+    reason: p = 6e-8, inside median lower. Affected by the NaN trough bug (B6), which it classed as
+      not affecting a conclusion.
     response: With the fix, p = 1.7e-05, inside median -0.35 against -0.21. The outcome is
       unchanged.
   - claim: fig6g-invigoration-in-out
@@ -708,3 +715,208 @@ verifications:
       1.47 in NAcC.
     response: Added the voltammogram sheet and the per-mouse peak ratios to the notebook (mean 1.48
       in both regions). The outcome stays blocked, since the stated test is the ANOVA.
+- date: '2026-10-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the revised run (121 cells), the helper module, the claims file
+    and the attempt record. It also read the paper, checking the Figure 8 legend statistics against it.
+  results:
+  - claim: fig1e-dominant-polarity
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion. The README's first row, "132 negative
+      (DA leading), 42 positive (ACh leading)", is inexact; in the paper 127 of the 132 have DA leading
+      and 31 of the 42 have ACh leading (cell 17).
+    response: Corrected the README row to 127 and 31. The outcome is unchanged.
+  - claim: fig1f-adls-hotspot
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged from round 1. B1 is resolved; in 67 of 100 shuffles the procedure finds a hotspot,
+      but none reaches the real 1010 voxels or its mean.
+    response: No change needed.
+  - claim: fig1h-in-vs-out
+    agrees: true
+    outcome: reproduced
+    reason: The numbers moved and the outcome still follows from its criterion.
+    response: No change needed.
+  - claim: fig1f-positive-posterior
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: ed2-hotspot-per-mouse
+    agrees: true
+    outcome: reproduced
+    reason: The numbers moved and the outcome still follows from its criterion.
+    response: No change needed.
+  - claim: ed1-controls-no-organization
+    agrees: true
+    outcome: not_reproduced
+    reason: Unchanged from round 1. The control hotspot (551 voxels) is larger than any of the 100 shuffles,
+      so by the paper's own test the controls do show organization, and "the outcome rests mainly on the
+      strength of the correlations" understates this. Two deviations could produce correlated red-green
+      signal in the controls and bear on this outcome; the high-pass series has no artifact removal, and
+      only the 15 reward sessions are used where the paper used all ITI data.
+    response: Rewrote the conclusion and notes to say that by the paper's test the controls are organized
+      in space, and named both deviations as bearing on the outcome. The outcome is unchanged.
+  - claim: fig2a-directionality
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig2-magnitude-correlations
+    agrees: true
+    outcome: partially_reproduced
+    reason: The numbers moved and the outcome still follows from its criterion. The second count (69,
+      3.9 below its bound) changes by several sites between random streams; the partial outcome held in
+      both runs.
+    response: No change needed; the notes state that the counts move with the random draws.
+  - claim: fig2d-magnitude-in-out
+    agrees: true
+    outcome: partially_reproduced
+    reason: The outcome is unchanged and not affected, but the conclusion and notes keep round-1 values.
+      Cell 44 prints -0.3252 / -0.2323, -0.1861 / -0.1626 with p = 0.1134, and same-sign p = 0.1079 and
+      0.2169, which round to -0.33, -0.19 against -0.16, p = 0.11, and 0.11 and 0.22. The round-1 response,
+      "No change needed; the values are as before", is wrong because the random stream changed.
+    response: Corrected the values in the conclusion and notes, and the round-1 response. The outcome
+      is unchanged.
+  - claim: fig2b-pairing-overlaps-hotspot
+    agrees: true
+    outcome: reproduced
+    reason: The numbers moved and the outcome still follows from its criterion.
+    response: No change needed.
+  - claim: ed3e-transient-rates-in-hotspot
+    agrees: true
+    outcome: reproduced
+    reason: The numbers moved and the outcome still follows from its criterion.
+    response: No change needed.
+  - claim: fig3b-reward-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig3d-reward-in-out
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig3e-reward-hotspot-overlap
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig4-cue-sequence
+    agrees: true
+    outcome: not_reproduced
+    reason: Unchanged from round 1. The not-reproduced label comes only from the criterion's wording;
+      58 of 75 sites is above the tolerance and the criterion has no band for counts above it. The qualitative
+      claim holds, and the code's percentiles give 52, within tolerance. Keeping the criterion as written
+      is correct; readers should take the label in that light.
+    response: No change needed; the notes already state this.
+  - claim: fig4c-cue-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged from round 1. It is still unexplained why the paper reports 65 cue-responsive sites
+      where every site here responds.
+    response: The notes now say the difference remains unexplained. The outcome is unchanged.
+  - claim: fig4h-extinction-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig4d-cue-in-out
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig4j-extinction-in-out
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig5d-initiation-responses
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged from round 1 and follows from its criterion. Cell 79's "three to five times as many
+      as each other mouse" is inexact; the ratio is 501/149 = 3.4 up to 501/92 = 5.4.
+    response: Cell 79 now says 3.4 to 5.4 times (92 to 149). The outcome is unchanged.
+  - claim: fig5-latency-order
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig5e-initiation-topography
+    agrees: true
+    outcome: not_reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig6a-initiation-correlation
+    agrees: true
+    outcome: reproduced
+    reason: The numbers moved and the outcome still follows from its criterion. Cell 88's wording can
+      be read as 2197 missed troughs; 2197 is the number of site-trials with a NaN in the search range,
+      not the number missed. The round-1 entry does not say it classed B6 as not affecting a conclusion.
+    response: Reworded cell 88 and the notes to say 2197 site-trials have a NaN in the range and at most
+      that many were affected. Added to the round-1 reason that B6 was classed as not affecting a conclusion.
+      The outcome is unchanged.
+  - claim: fig6c-initiation-in-out
+    agrees: true
+    outcome: reproduced
+    reason: The numbers moved and the outcome still follows from its criterion. The round-1 entry does
+      not say it classed B6 as not affecting a conclusion.
+    response: Added to the round-1 reason that B6 was classed as not affecting a conclusion. The outcome
+      is unchanged.
+  - claim: fig6g-invigoration-in-out
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig7-da-release
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig7e-ach-suppression
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: ed9-cohort-hotspot
+    agrees: true
+    outcome: partially_reproduced
+    reason: The numbers moved and the outcome still follows from its criterion. The statement that with
+      AND "most stimulation responses stay in the data" follows from how the mask is defined, but the
+      notebook prints only the overall fractions removed (6.5% and 32.7%), not the fraction of post-stimulation
+      samples kept.
+    response: Added the fraction of samples within 3 s after a stimulation that each exclusion keeps;
+      AND keeps 42% and OR none. "Most" was wrong, so cells 103 and 106 and the ed9 and fig7f notes now
+      give 42%. The outcome is unchanged.
+  - claim: fig7f-ach-dip-in-out
+    agrees: true
+    outcome: reproduced
+    reason: The test now also holds against the OR-exclusion hotspot (p = 0.0003). The statement's second
+      part, that the dips' own hotspot overlaps the cohort hotspot, gives p = 0.065 and is not supported,
+      although the criterion treats that part as a variant, so the outcome stands.
+    response: The conclusion and notes now say the second part is not supported at p < 0.05 and that the
+      criterion treats it as a variant. The outcome is unchanged.
+  - claim: fig8b-quinpirole-region
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig8e-cocaine-region
+    agrees: true
+    outcome: reproduced
+    reason: Now reproduced. Cell 111 uses Type III and gives 199.86, 36.37 and 10.75; the legend gives
+      199.9, 36.37 and 10.75, so this matches.
+    response: No change needed.
+  - claim: fig8fg-d2-block
+    agrees: true
+    outcome: reproduced
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.
+  - claim: fig8c-cocaine-da-similar
+    agrees: true
+    outcome: blocked
+    reason: Unchanged from round 1 and follows from its criterion.
+    response: No change needed.

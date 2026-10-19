@@ -9,7 +9,7 @@ of Figure 8 are tested on the paper's source data on Zenodo.
 
 | Claim | Outcome |
 |---|---|
-| Dominant DA-ACh correlations: 132 negative (DA leading), 42 positive (ACh leading) of 174 | Reproduced |
+| Dominant DA-ACh correlations: 132 negative (127 with DA leading), 42 positive (31 with ACh leading) of 174 | Reproduced |
 | A negative correlation hotspot in the anterior dorsolateral striatum | Partially reproduced |
 | More negative inside the hotspot; positive correlations posterior; consistent across mice | Reproduced |
 | Control mice show only weak correlations and no hotspot | Not reproduced |
@@ -37,7 +37,7 @@ the notebook infers this from subject names, indicators and events. The attempt 
 reasons and the differences from the paper's method, is
 [`attempts/001692-bouabid-2026-01.yaml`](../../attempts/001692-bouabid-2026-01.yaml).
 
-- `reproduce_bouabid_2026.ipynb`: the analysis. It takes about fifteen minutes, a quarter of it streaming.
+- `reproduce_bouabid_2026.ipynb`: the analysis. It takes eight to nine minutes, two to three of them streaming.
 - `daach.py`: loading the files, lagged correlations, transient detection and pairing, triggered
   averages with bootstrap significance, the paper's trial-by-trial event correlation, locomotion
   events and the invigoration GLM, and a simplified version of the paper's hotspot procedure.
