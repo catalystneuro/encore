@@ -1,0 +1,431 @@
+{
+ "dandiset": "001712",
+ "page": "dandisets/001712/",
+ "generated": "2026-10-19T14:06:27+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 3,
+  "partially_reproduced": 2,
+  "not_reproduced": 2,
+  "blocked": 11
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001712-davatolhagh-2025-01",
+   "dandiset": "001712",
+   "dandiset_version": "draft",
+   "paper": "10.1101/2025.09.12.675910",
+   "paper_title": "Altered Use of Prior Expectations and Modified Neural Dynamics in a Mouse Model of Autism",
+   "date": "2026-10-19",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "tier": "agent_verified",
+   "entry": "001712-davatolhagh-2025",
+   "entry_title": "Prior use and cortical dynamics in a Nrxn1a mouse model (Davatolhagh et al. 2025)",
+   "description": "Tests the findings of Davatolhagh et al. (2025) that can be tested on dandiset 001712, which holds one widefield imaging and behaviour session of one mouse of unstated genotype in the IBL biased choice task. It tests the psychometric curve, reaction times, the use of the block prior, adaptation after block switches, lateralized visual responses and a linear encoding model of the imaging with task and movement predictors. The comparisons between knockout and wild-type mice cannot be tested.",
+   "notebooks": [
+    {
+     "path": "reproduce_davatolhagh_2025.ipynb",
+     "title": "Reproducing Davatolhagh et al. (2025) from dandiset 001712",
+     "executed": "notebooks/001712-davatolhagh-2025/reproduce_davatolhagh_2025.html"
+    },
+    {
+     "path": "encoding_all_cameras.ipynb",
+     "title": "Encoding model with the video components of all three cameras (variant)",
+     "executed": "notebooks/001712-davatolhagh-2025/encoding_all_cameras.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1c-psychometric",
+     "statement": "Mice of both genotypes show sigmoidal psychometric curves, with the proportion of rightward choices increasing as the stimulus contrast increases on the right.",
+     "source": "Figure 1C; Results, first section",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_davatolhagh_2025.ipynb",
+     "notes": "P(right) rises at every step of signed contrast, from 0.112 at -100% to 1.000 at +100% (Spearman rho 1.000 over nine levels, span 0.887). The lapse-and-erf fit gives sigma 17.04% contrast (bootstrap 95% interval 13.98 to 20.47), bias -6.77% and left lapse 0.116. The claim covers both genotypes; this is one mouse of unknown genotype.",
+     "deviations": [
+      "One session of one mouse, where the paper pools 10 sessions from each of 19 mice.",
+      "The criterion (Spearman rho and span) was set here; the paper shows the curves without a test."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-psychometric-params-genotype",
+     "statement": "Psychometric bias, slope and lapse rates do not differ between WT and KO mice (bias p = 0.94, slope p = 0.95, left lapse p = 0.16, right lapse p = 0.22).",
+     "source": "Figure 1D; Results, first section",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs mice of both genotypes. The dandiset holds one mouse (FD-28), and its genotype is not in the files or the dandiset metadata, nor in the public IBL database (openalyx subject FD_28 has an empty genotype list, from a query made by hand during the attempt and not part of the notebook). Openalyx holds other sessions of the cohort's FD and MFD mice, but is a live database without a pinned version and also has no genotypes.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-rt-contrast",
+     "statement": "Reaction time (time to first movement) is longer at lower contrasts in both genotypes.",
+     "source": "Figure 1E",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_davatolhagh_2025.ipynb",
+     "notes": "Over 750 trials with a movement onset after the stimulus, the Spearman correlation of absolute contrast with reaction time is -0.053 (p = 0.15); the median at 0% (0.089 s) exceeds that at 100% (0.081 s), the second part of the criterion. Medians are 0.081 to 0.095 s at every contrast, and 161 trials have no movement onset after the stimulus (149 with an onset at or before it and 12 with no onset). With reaction times above 0.15 s only (226 trials) the correlation is -0.226 (p = 0.00062), so the relation appears among slower responses. Of the 899 onsets, 149 fall at or before the stimulus and 346 within 0.08 s after it, so many may mark movements begun before the stimulus could guide them. The response time (choice registration minus stimulus onset) is shorter at higher contrast over all 911 choice trials (rho -0.134, p = 5.2e-05; medians 0.326 s at 0% and 0.281 s at 100%), a variant that does not decide the outcome. The paper's text calls reaction time the time to first movement and does not say how that movement is detected or how earlier movements are treated.",
+     "deviations": [
+      "One session of one mouse.",
+      "Trials with a movement onset at or before the stimulus onset are left out; the paper does not say how it treats them."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-rt-genotype",
+     "statement": "Reaction times do not differ between genotypes on correct (p = 0.234) or incorrect (p = 0.522) trials.",
+     "source": "Figure 1F; Results, first section",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs mice of both genotypes; see fig1d-psychometric-params-genotype.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1g-learning-genotype",
+     "statement": "WT and KO mice learn the task with similar trajectories, reaching asymptotic performance after about 20 sessions.",
+     "source": "Figure 1G and Supplementary Figure 1",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs the training sessions of both genotypes; the dandiset holds one biased-task session.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2bc-prior-shift",
+     "statement": "Mice use the block prior; rightward choices are more frequent in right-likely blocks than in left-likely blocks, most clearly when contrast is low, shifting the psychometric curve toward the likely side (shown for WT, and present but smaller in KO).",
+     "source": "Figure 2B and 2C; Results, second section",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_davatolhagh_2025.ipynb",
+     "notes": "At 0% contrast P(right) is 0.831 (74 of 89) in right-likely blocks and 0.507 (37 of 73) in left-likely blocks, difference 0.325, one-sided Fisher p = 9.2e-06. The difference is 0.182 to 0.458 at every signed contrast except +100% (0.000), and the psychometric bias moves by 19.41% contrast between blocks. Whether the shift is smaller in KO than in WT is not testable here.",
+     "deviations": [
+      "One session of one mouse; the test (Fisher exact at 0% contrast) was chosen here."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2bd-ko-smaller-shift",
+     "statement": "KO mice shift their choices less between biased blocks than WT mice, with a difference in psychometric bias and none in slope or lapses.",
+     "source": "Figure 2B to 2D",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs mice of both genotypes; see fig1d-psychometric-params-genotype.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2ef-block-adaptation",
+     "statement": "After a block switch, mice adapt their choices toward the newly likely side, and the proportion of choices toward the block side rises from an initial value A to an asymptote B with a time constant tau.",
+     "source": "Figure 2E to 2G",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_davatolhagh_2025.ipynb",
+     "notes": "Over 14 switches between biased blocks, choices toward the new block side are 0.543 in trials 0 to 4 and 0.827 in trials 20 to 39 (one-sided Fisher p = 2.7e-06). The fit gives A = 0.480, B = 1.000 (at its bound) and tau = 25.12 trials (SE 16.14), so tau is poorly determined. Resampling the switches gives 95% intervals of 0.279 to 0.643 for A, 0.836 to 1.000 for B and 6.41 to 38.37 trials for tau; B exceeds A in every draw and tau is 40 or more in 0.018 of them. A maximum-likelihood fit on single trials gives A = 0.479, B = 1.000, tau = 25.03. At contrasts of 12.5% or less, 0.452 against 0.820, tau 21.57.",
+     "deviations": [
+      "The paper's parametric curve is not given; B - (B - A) exp(-t / tau) over trials 0 to 39, all contrasts, was chosen here."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2g-ko-slower-adaptation",
+     "statement": "KO mice adapt more slowly after a block switch (longer tau, p = 0.004) and have lower initial performance after the switch (p = 0.041) than WT littermates.",
+     "source": "Figure 2G; Results, second section",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs mice of both genotypes; see fig1d-psychometric-params-genotype.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3b-contralateral-visual",
+     "statement": "Visual cortex (VISp) responds robustly to contralateral visual stimuli.",
+     "source": "Figure 3B; Results, third section",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_davatolhagh_2025.ipynb",
+     "notes": "Under the criterion, the right-minus-left and left-minus-right peaks both fall at the left edge of the frame (columns 0 and 2, rows 0 and 539), on the same side of the estimated midline (column 316), with trial tests at p = 0.053 and 0.14. These corner pixels are darker in the mean image (534 and 926) than 95% of the frame (5th percentile 1538), outside the imaged brain; the spatial components cover the whole frame with no mask. In a variant restricted to bright pixels 20 or more from the edge, the right-minus-left peak lies left of the midline (column 199) and the left-minus-right peak right of it (column 481), p = 8.1e-15 and 1.6e-17; the variant does not decide the outcome. It does not show that the lateralization is visual. At these two pixels the side difference exceeds 3 standard errors from 0.128 s after the stimulus, while the median movement onset is 0.086 s. Only 27 trials (13 right, 14 left) have no movement before 0.4 s; on them the difference at the two pixels points the same way (p = 0.02 and 0.091), but a masked peak search on these trials alone puts the peaks on the reverse sides (columns 550 and 72, p = 0.0062 and 0.012), which is not explained here. The slow trials exclude only wheel movement. In the same window paw speed and camera motion energy rise on 0.90 to 0.96 of all trials at 25 or 100% contrast, and wheel velocity, the right paw in both side cameras and the left camera's motion energy differ between right and left stimulus trials (p = 0.0005 or less); on the 27 slow trials paw speed rises on 0.44 to 0.78 of trials and the right paw in the right camera still differs by side (p = 0.014). Neither VISp nor the hemispheres can be named without an atlas registration.",
+     "deviations": [
+      "Tested in image coordinates, with a midline estimated from the mean image, as the dandiset has no atlas registration.",
+      "The peak search of the criterion did not exclude pixels outside the brain; the masked search is a variant."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3c-ko-elevated-activity",
+     "statement": "KO mice show elevated dF/F across cortex in the ITI (most prominent in motor regions), stimulus and feedback periods compared with WT.",
+     "source": "Figure 3C; Results, third section",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs mice of both genotypes; see fig1d-psychometric-params-genotype. The atlas registration needed for regional measures is also missing.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3d-ko-higher-correlation",
+     "statement": "KO mice show globally increased pairwise correlations between regional dF/F time series during the task.",
+     "source": "Figure 3D (legend labelled E); Results, third section",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs mice of both genotypes and the registration to Allen areas, neither of which is in the dandiset; see fig1d-psychometric-params-genotype.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3e-ko-higher-variance",
+     "statement": "KO mice show higher pixel-wise trial-to-trial variance across all cortical regions and task periods.",
+     "source": "Figure 3E; Results, third section",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs mice of both genotypes; see fig1d-psychometric-params-genotype.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4c-full-cvr2",
+     "statement": "The full linear encoding model explains more than half of single-trial cortical variance (cvR2 0.60 +/- 0.02 in KO and 0.54 +/- 0.02 in WT).",
+     "source": "Figure 4B and 4C; Results, fourth section",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_davatolhagh_2025.ipynb",
+     "notes": "Full-model cvR2 is 0.471 pooled in pixel space (reading a), 0.422 as the mean over pixels (b) and 0.126 as the mean over components (c); minus the intercept-only model (the time-point columns alone), 0.123, 0.133 and 0.078. None is within 0.486 to 0.660; reading (a) is above 0.3, which the criterion counts as partial. Without the body camera's video components the pooled cvR2 is 0.414. Variants that do not decide the outcome are as follows. With the video components of the left and right cameras added, as in the paper (encoding_all_cameras.ipynb), cvR2 is 0.574 (a) and 0.525 (b), within the range, and 0.208 (c). With folds that keep each trial's frames together and each frame once per trial, it is 0.422, 0.363 and 0.047 with the body camera only, and 0.472, 0.405 and 0.046 with all three cameras, below the range. Over the masked pixels of the fig3b variant (pixels brighter than the median of the mean image and 20 or more from the edge) reading (b) is 0.434. The paper's Results give 0.60 and 0.54 as the full model's cvR2 and say it accounts for more than half of the variance, while its Figure 4C legend says the full model is shown with the trial time regressor subtracted out. Under that reading the values here are 0.123 and 0.133 (a, b) with the body camera and 0.226 and 0.236 with all three cameras, far below the range.",
+     "deviations": [
+      "One session of one mouse of unknown genotype; the expected range spans the WT and KO means.",
+      "No video components from the left and right cameras in the design that decides the outcome (left out for runtime; the body camera's are included; a second notebook adds them as a variant), paw speeds from Lightning Pose where the paper uses DeepLabCut, ROI motion energies assumed to be the whisker pads and body.",
+      "The subjective prior is an action-kernel model fitted here; trial windows, the penalty selection (generalized cross-validation) and the readings of cvR2 were chosen here, as the paper's widefield model code is not public."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4cd-movement-dominates",
+     "statement": "Movement predictors account for most of the explained variance; shuffling them reduces cvR2 by much more than shuffling task predictors (delta R2 for movement 0.40 +/- 0.02 in KO and 0.33 +/- 0.02 in WT; task shuffle beta -0.02).",
+     "source": "Figure 4C and 4D; Results, fourth section",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_davatolhagh_2025.ipynb",
+     "notes": "Shuffling movement predictors lowers cvR2 by 0.104 (a), 0.119 (b) and 0.067 (c); shuffling task predictors by 0.017, 0.015 and 0.013. Movement dominates under every reading and in every fold (smallest movement drop 0.065, largest task drop 0.019), but the movement drop is below 0.297 to 0.440 under every reading. Without the body camera's video components the movement drop is 0.042 against 0.021 for task pooled, and 0.010 against 0.015 over components. Variants that do not decide the outcome are as follows. With folds by trial and each frame once per trial, the movement drop is 0.049, 0.060 and -0.005 against 0.017, 0.016 and 0.012 for task, so over components task exceeds movement, which the criterion would count as not reproduced. With all three cameras the movement drop is 0.216, 0.232 and 0.161 against 0.008, 0.008 and 0.007 for task, still below the range; with folds by trial, 0.109, 0.115 and 0.008 against 0.008, 0.008 and 0.000.",
+     "deviations": [
+      "As for fig4c-full-cvr2; the missing side-camera video components likely lower the movement contribution."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4cd-ko-more-movement",
+     "statement": "KO mice lose more explained variance than WT when movement predictors are shuffled (Group x Movement beta = 0.071, p = 0.006; delta R2 KO 0.40 against WT 0.33, p = 0.032), with no group difference for task predictors; full-model cvR2 tends to be higher in KO (p = 0.076).",
+     "source": "Figure 4C and 4D; Results, fourth section",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs mice of both genotypes; see fig1d-psychometric-params-genotype.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2-ko-elevated-motion",
+     "statement": "KO mice show elevated baseline motion energy relative to WT, with comparable stimulus-evoked movement dynamics after baseline correction.",
+     "source": "Supplementary Figure 2",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs mice of both genotypes; see fig1d-psychometric-params-genotype.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs3-ko-higher-unique",
+     "statement": "Individual movement variables explain more unique variance in KO than in WT mice, and task variables explain little unique variance in either group.",
+     "source": "Supplementary Figure 3; Results, fourth section",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "Needs mice of both genotypes; see fig1d-psychometric-params-genotype.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds one session of one mouse (sub-FD-28). The paper analyses 10 sessions from each of 11 wild-type and 8 Nrxn1a knockout mice. Eleven of the paper's findings, all comparisons between genotypes, cannot be tested."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The genotype of the mouse is not given in the NWB files, the dandiset metadata, or the public IBL database (subject FD_28 has an empty genotype list, from a query made by hand during the attempt). The subject description is the paper's general description of the cross. A comment in the conversion script lists the session under knockout sessions, but next to a note that the list is a placeholder."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Neither NWB file holds the cortical landmarks or the registration to the Allen atlas that the conversion code's documentation describes for the processed file (lab_meta_data localization and atlas_registration), so no pixel can be assigned to a cortical area."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Both imaging planes give the indicator as GCaMP6f; the paper's Methods and the file's keywords give GCaMP6s (CamKII-tTA x TRE-GCaMP6s)."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The raw file's imaging planes state an imaging rate of 15 Hz; the timestamps give 31.2 Hz per channel (32.03 ms intervals), and the Methods give 30 Hz."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The dandiset's keywords and description name \"CNTNALP2\", which is neither the gene of the paper and the files (Nrxn1a) nor a correct spelling of Cntnap2."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The wheel series state that counter-clockwise is positive, but trials whose choice is labelled counter_clockwise turn the wheel with negative velocity (95.5% of them 0.1 to 0.3 s after movement onset). The choice labels agree with the rewards, so the sign convention of the wheel or of the labels is misdescribed."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The wheel movement onset is described as the first movement after the go cue, but 151 of 899 onsets precede the go cue (by up to 0.18 s)."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The ROI motion energy series give the ROI position in pixels but not the body part it covers; the paper's model uses whisker-pad and body motion energy."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The SVD spatial components cover the whole 540 x 640 frame with no brain mask, and the corners of the frame carry large values in stimulus-evoked maps."
+    },
+    {
+     "kind": "other",
+     "statement": "The dandiset has no published version; only the draft exists, so no version can be cited or pinned."
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The paper's analysis code is to be made public on publication. The encoding code it links (churchlandlab/chiCa) implements the model for single-cell data in another task, not the widefield analysis."
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "In the Figure 3 legend the correlation panel is labelled (E) twice and (D) is missing, the correlation panel's legend says the KO minus WT matrix shows reduced inter-regional correlations while the Results say correlations are increased, and the legend of panel C describes variance difference maps, as does panel E."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-19",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The executed notebook of the first run with the conclusion cells and the summary removed, the helper module and the claims file. bioRxiv refused its requests, so it read only the abstract and relied on the claims file's account of the paper's methods. It queried the archive's metadata for the blocked claims and tested the helper functions on synthetic inputs. Its report had no attempt record and gave its own outcome for each claim; all 18 agree with the record.",
+     "agreed": 18,
+     "of": 18,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-19",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebooks of the revision (reproduce_davatolhagh_2025.ipynb and encoding_all_cameras.ipynb), the helper module, the claims file and this record. bioRxiv refused its requests and Europe PMC has no full text, so it could not read the paper. It queried the dandiset's metadata from the DANDI API and downloaded no data. It agreed with all 18 outcomes.",
+     "agreed": 18,
+     "of": 18,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001712-davatolhagh-2025",
+   "type": "reproduction",
+   "title": "Prior use and cortical dynamics in a Nrxn1a mouse model (Davatolhagh et al. 2025)",
+   "description": "Tests the findings of Davatolhagh et al. (2025) that can be tested on dandiset 001712, which holds one widefield imaging and behaviour session of one mouse of unstated genotype in the IBL biased choice task. It tests the psychometric curve, reaction times, the use of the block prior, adaptation after block switches, lateralized visual responses and a linear encoding model of the imaging with task and movement predictors. The comparisons between knockout and wild-type mice cannot be tested.",
+   "dandisets": [
+    "001712"
+   ],
+   "papers": [
+    "10.1101/2025.09.12.675910"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_davatolhagh_2025.ipynb",
+     "title": "Reproducing Davatolhagh et al. (2025) from dandiset 001712",
+     "executed": "notebooks/001712-davatolhagh-2025/reproduce_davatolhagh_2025.html"
+    },
+    {
+     "path": "encoding_all_cameras.ipynb",
+     "title": "Encoding model with the video components of all three cameras (variant)",
+     "executed": "notebooks/001712-davatolhagh-2025/encoding_all_cameras.html"
+    }
+   ]
+  }
+ ]
+}
