@@ -1,0 +1,110 @@
+I ran `tools/readme_row.py 001550 --write`, which added the 001550 row to README.md: 11 (+2) reproduced, 2 partially, 0 (+1) not reproduced, 0 blocked. I also added the subsection below to the end of `docs/pilot-notes.md`. Nothing is committed, and the attempt, claims and entry are unchanged. Some untracked files in the repository root (`.bashrc`, `.idea`, `scripts` and others) were already there; I did not touch them.
+
+### 001550, Pagan et al. 2025
+
+Eleven claims reproduced and two partially on the dandiset, none not
+reproduced or blocked. With outside data, counted apart: two reproduced and
+one not reproduced. Seven claims on the paper's neural data and RNNs in its
+GitHub repositories: two reproduced, one not reproduced and four blocked.
+Round 1 gave its own outcome for each claim from the notebook with its
+conclusions removed and agreed with all 23, giving `other` as the reason for
+the three blocks the author gave as `not_runnable`; the author kept
+`not_runnable` and round 2 accepted it. Round 1 also found that the port of
+`ExtDataFigure5ag.m` took the full-space angle, which the code computes first
+and overwrites, and not the projected, folded angle the code plots; with the
+plotted angle `choice-axes-parallel` went from a mean of 40.34 to 4.73
+degrees, still outside 1.44 to 1.76, and its criterion was corrected after
+round 1 and again after round 2. Round 2 agreed with all 23 and nothing was
+proposed, so there was no third round. The paper studies rats that weigh
+pulses by location or by frequency depending on a context that switches in
+blocks, and reports that rats switch within about four trials, that their
+differential behavioural kernels mostly converge with shapes that vary across
+rats, and that behavioural and neural slope indices from FOF and mPFC are
+anti-correlated across rats, as in RNNs engineered across the solution space.
+The link to the paper's per-session tables, the subjects, trials, blocks and
+durations, the 20 rats of Figure 1c and their context selection, switching
+and learning times, the behavioural kernels and their half-split reliability,
+bilateral FOF silencing, the link of the paper's units to dandiset sessions,
+the unit counts, the neural slope indices, the choice axis angle and the
+correlation of Figure 5d were tested. `fig1e-choice-axis` is blocked as
+`methods_underspecified`, as `Figure1e.m` computes neither 81.3% nor 73.3%,
+and the mTDR claim and the two RNN claims as `not_runnable`, as they need
+MATLAB or 1,000 trained RNNs. `neural-link` is not reproduced: 2,371 of 3,495
+cells (0.678) match one session as a contiguous run, from 110 sessions
+against 199. Some outcomes rest on weak ground: `fig5d-behaviour-neural`
+gives r = -0.697 against a tolerance of -0.803 to -0.657 and depends on P049
+and P059, whose Methods selection keeps 23,014 and 25,847 trials; with those
+two rats from the code's selection r = -0.834, and leaving out one rat at a
+time gives -0.655 to -0.895, inside the tolerance for 4 of 7; in
+`ed1e-switch-four-trials` the switch to location reaches 0.9 of its plateau
+at position 4 in 0.678 of bootstrap resamples, while position 5 is firm; and
+`trials-per-session`, `blocks-per-session` and `ed2g-learning-2-5-months`
+match on two, two and three of four readings. The author used the full text
+in PubMed Central (PMC11903320), took method choices from the paper's code at
+commit 0ea8fdb and used its fitted per-neuron kernels without refitting them
+from spikes.
+
+The dandiset was converted by CatalystNeuro
+(catalystneuro/pagan-lab-to-nwb). It holds only the
+behaviour; the electrophysiology behind Figures 1d to 1f, 3h and 5d (3,495
+units from 7 rats) is public only in the paper's GitHub repository, as one
+MATLAB file per unit with binned spike counts, without raw data or spike
+sorting output. Nothing links the units to dandiset sessions: matched by
+trial sequence, 3,269 units fall in exactly one session when gaps are allowed
+(2,371 without), from 112 sessions where the paper reports 199, and 226 match
+none; searching every TaskSwitch protocol gives 3,349 units from 115
+sessions, and 146 unmatched. The behaviour matches the paper's tables
+closely: 15,277 of its 15,278 sessions with valid trials are in the
+dandiset, and in the 14,650 with a per-trial record in the paper's tables
+the 7,447,692 valid trials agree on every per-trial field, with 0.99996 of
+50 ms pulse bins agreeing. The missing session, P189 TaskSwitch6-210516a with
+27 valid trials, is listed in the conversion's notes among aborted sessions
+left out, and six P187 and P189 sessions are in the dandiset but not in the
+paper's tables, five of them passing the selection and adding 1,442 and 609
+trials. Relative weights agree to 1e-6 in 0.898 of sessions, 861 more agree
+once capped at 1, and 60 differ with both values present, not explained.
+Every optogenetic epoch gives a wavelength of 473 nm, where Extended Data
+Figure 4 says 450 nm and the conversion's documentation says the value was
+corrected to 450, and epochs are present for four rats (P116, P124, P127,
+P131) where the paper reports three, with nothing saying which three. The
+dates of birth give ages of 3.0 to 39.1 months at the selected sessions (18
+rats younger than 5.4 months at some), where the Methods state 6 to 24; they
+put 25 rats at 1.6 to 2.7 months at their first session, and P189's
+(2018-02-21) puts it at 14.1 months on the day P187, born 2019-02-21, starts,
+and may be a year early. Other findings: thirteen task sessions (1 to 3
+trials each) lack HistorySection_result_history or a pulse column, and 95 of
+the other 15,400 lack HistorySection_hit_history; HistorySection_gammafreq_history,
+a signed strength, is stored as uint8 or int16 in 570 files, with no values
+lost; the paper's code requires a per-session `good` flag the Methods do not
+describe and the dandiset does not hold, caps relative weights at 1, uses a
+fixed penalty of 200 on neighbouring weight differences where the Methods
+describe ridge regression with a cross-validated regulariser, and uses looser
+selections (0.65 correct and 0.6 index) for Figure 5d and Extended Data
+Figure 1e; the paper's own angle code on its own per-context kernels gives
+1.1 to 8.0 degrees (mean 4.7), not 1.6, and the permutation test the Methods
+describe is not in the code; the Methods put 3,495 units in FOF from 5 rats
+while the FOF counts sum to 3,285; the main text calls a converging kernel a
+slope index above 0, while the Methods and code give it a negative index, as
+the data have; and three neural location slope indices are negative (P049
+-0.221, P101 -0.045, P095 -0.007) where the Methods say only positive or zero.
+
+The notebook ran in 642 s in the first clean run, 419 s after round 1 and 856
+s after round 2. While preparing, listing assets with one URL call each took 8
+minutes and was replaced by one paginated listing (4 s), partial remote reads
+took 110 minutes because h5py serialises the reads, so each file was read
+whole into memory, sessions lacking columns were skipped by the loader, and
+the gh CLI had no token, so the repositories were cloned over HTTPS. Round 2
+found statements the outputs did not support, among them a one to one link
+with identical trial fields, relative weights equal to the paper's, P127 "not
+lower" at 0.603 against 0.634, a README run time of about 7 minutes, and that
+the Methods describe no test of the angle against 0, and these were
+corrected. The author's points on the protocol: a paper repository that
+duplicates the dandiset's behaviour, which the data kinds do not foresee;
+fitted per-neuron kernels used in place of refitting the GLM from spikes; a
+dependent claim that needs only the match of neurons to rats when its link
+claim fails on sessions; a link criterion requiring contiguous trials that
+proved too strict; the Methods' "ridge" read as the code's neighbour-difference
+penalty; whether reading whole files into memory counts as streaming;
+criteria written after the data check had shown the answer; whether
+`not_runnable` covers MATLAB code that could in principle be ported; and which
+value to record when several readings in two dimensions match.
