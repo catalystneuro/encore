@@ -15,7 +15,7 @@ cannot be tested.
 | Lateralized responses to visual stimuli (Figure 3B) | Not reproduced |
 | The encoding model explains over half the variance (Figure 4C) | Partially reproduced |
 | Movement predictors dominate the explained variance (Figure 4C, D) | Partially reproduced |
-| Comparisons between genotypes (twelve claims) | Blocked: data missing |
+| Comparisons between genotypes (eleven claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
 and the differences from the paper's method.
@@ -23,8 +23,11 @@ and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/001712-davatolhagh-2025-01.yaml`](../../attempts/001712-davatolhagh-2025-01.yaml).
 
-- `reproduce_davatolhagh_2025.ipynb`: the analysis. It takes about seven minutes, nearly half of it
+- `reproduce_davatolhagh_2025.ipynb`: the analysis. It takes about seven minutes, a quarter of it
   streaming and decoding the body camera video.
-- `wfprior.py`: loading the session, movement variables binned to imaging frames, the body camera's
+- `encoding_all_cameras.ipynb`: a variant of the encoding model with the video components of the
+  left and right cameras added, as in the paper. It takes about 20 minutes, most of it streaming
+  and decoding the three videos. It does not decide an outcome.
+- `wfprior.py`: loading the session, movement variables binned to imaging frames, the cameras'
   video components, psychometric and action-kernel fits, and the cross-validated ridge encoding model.
   Other notebooks on this dandiset can import it.

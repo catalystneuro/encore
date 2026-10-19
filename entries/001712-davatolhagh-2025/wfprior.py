@@ -28,9 +28,12 @@ Where the parameters come from:
   penalty per target chosen on the training data (here by generalized cross-validation), and
   shuffles that permute each shuffled column over rows. The trial windows (`STIM_WINDOW`,
   `FEEDBACK_WINDOW`) are a choice here: the paper aligns to stimulus onset and feedback.
-- Video components: the top `N_VIDEO_COMPONENTS` (200, the paper's number) of the body
-  camera video and of its motion energy, from frames binned 16 x 16 (a choice here, for speed
-  and memory).
+- Video components: the top `N_VIDEO_COMPONENTS` (200, the paper's number) of a camera's
+  video and of its motion energy, from frames reduced to 1280 pixels by area averaging (blocks
+  of 16 x 16 pixels for the body and right cameras, 32 x 32 for the left camera, which records
+  at twice their resolution; a choice here, for speed and memory). The main notebook uses the
+  body camera; the left and right cameras take about 15 minutes more to stream and decode and
+  are used in a second notebook.
 """
 
 from __future__ import annotations
@@ -49,19 +52,24 @@ DANDISET_VERSION = "draft"
 SESSION = "sub-FD-28/sub-FD-28_ses-81f90b18-e61c-4d32-bbce-3e0c5f33f06c"
 PROCESSED = f"{SESSION}_desc-processed_behavior+ophys.nwb"
 RAW = f"{SESSION}_desc-raw_behavior+ophys.nwb"
-BODY_VIDEO = f"{SESSION}_ecephys+image/sub-FD-28_ses-81f90b18-e61c-4d32-bbce-3e0c5f33f06c_VideoBodyCamera.mp4"
+VIDEOS = {cam: f"{SESSION}_ecephys+image/sub-FD-28_ses-81f90b18-e61c-4d32-bbce-3e0c5f33f06c_Video{cam}Camera.mp4"
+          for cam in ("Body", "Left", "Right")}
+POSE_SERIES = {"Body": "PoseEstimationSeriesTailStart", "Left": "PoseEstimationSeriesNoseTip",
+               "Right": "PoseEstimationSeriesNoseTip"}
 # The draft's assets when this entry was written (draft modified 2026-05-28T10:04:28Z).
 DRAFT_ASSETS = {
     PROCESSED: ("3102badd-5260-498a-aaaf-acec7d7960e7", 1048736052),
     RAW: ("d99e80d1-1b9e-4a83-836c-dec4a46e4cce", 33347222662),
-    BODY_VIDEO: ("07e84de1-50e0-443d-9ca0-caa5d7a2636d", 609146151),
+    VIDEOS["Body"]: ("07e84de1-50e0-443d-9ca0-caa5d7a2636d", 609146151),
+    VIDEOS["Left"]: ("8ee6d630-f8d1-4400-aa82-782341c16309", 3496105008),
+    VIDEOS["Right"]: ("18493935-8c8c-4f8b-b04f-802e8a7cdef5", 1100744490),
 }
 
 STIM_WINDOW = (-16, 16)       # frames around stimulus onset (about -0.5 to +0.5 s at 31.2 Hz)
 FEEDBACK_WINDOW = (-6, 32)    # frames around feedback (about -0.2 to +1.0 s)
 N_FOLDS = 10                  # Methods: 10-fold cross-validation
 N_VIDEO_COMPONENTS = 200      # Results: the top 200 dimensions of the video SVD
-VIDEO_BIN = 16
+VIDEO_BIN = {"Body": 16, "Left": 32, "Right": 16}   # 1280 pixels per camera after binning
 ALPHAS = np.logspace(-1, 6, 29)
 
 
@@ -238,24 +246,27 @@ def load_movement(f: h5py.File, frame_t: np.ndarray) -> pd.DataFrame:
     return df.interpolate(limit_direction="both")
 
 
-def body_video_components(f: h5py.File, frame_t: np.ndarray, n: int = N_VIDEO_COMPONENTS) -> dict:
-    """Top `n` temporal components of the body camera video and of its motion energy (absolute
-    difference of consecutive frames), from frames binned `VIDEO_BIN` x `VIDEO_BIN`, binned to
-    imaging frames. The video is streamed and decoded once; binned frames are kept as uint8."""
+def video_components(f: h5py.File, frame_t: np.ndarray, camera: str = "Body", n: int = N_VIDEO_COMPONENTS) -> dict:
+    """Top `n` temporal components of one camera's video and of its motion energy (absolute
+    difference of consecutive frames), from frames reduced by area averaging over blocks of
+    `VIDEO_BIN[camera]` pixels in each direction, binned to imaging frames. The video is streamed
+    and decoded once; reduced frames are kept as uint8.
+    The camera's frame times are those of its pose estimation series."""
     import av
     started = time.time()
-    cam_t = f["processing/pose_estimation/BodyCamera/PoseEstimationSeriesTailStart/timestamps"][:]
-    container = av.open(remfile.File(url(BODY_VIDEO), verbose=False))
+    path = VIDEOS[camera]
+    cam_t = f[f"processing/pose_estimation/{camera}Camera/{POSE_SERIES[camera]}/timestamps"][:]
+    container = av.open(remfile.File(url(path), verbose=False))
     stream = container.streams.video[0]
     stream.thread_type = "AUTO"
     frames = []
+    k = VIDEO_BIN[camera]
     for fr in container.decode(stream):
-        a = fr.to_ndarray(format="gray")
-        h, w = (a.shape[0] // VIDEO_BIN) * VIDEO_BIN, (a.shape[1] // VIDEO_BIN) * VIDEO_BIN
-        b = a[:h, :w].reshape(h // VIDEO_BIN, VIDEO_BIN, w // VIDEO_BIN, VIDEO_BIN).mean((1, 3))
-        frames.append(np.round(b).astype(np.uint8).ravel())
+        b = fr.reformat(width=fr.width // k, height=fr.height // k, format="gray", interpolation="AREA")
+        frames.append(b.to_ndarray().ravel())
     container.close()
     video = np.asarray(frames)
+    del frames
     n_frames = len(video)
     m = min(n_frames, len(cam_t))
     video, cam_t_used = video[:m], cam_t[:m]
@@ -393,16 +404,27 @@ def folds(timepoints: np.ndarray, rng: np.random.Generator) -> list[np.ndarray]:
     return [np.flatnonzero(assign == k) for k in range(N_FOLDS)]
 
 
+def trial_folds(trial_of_row: np.ndarray, rng: np.random.Generator) -> list[np.ndarray]:
+    """Test rows of `N_FOLDS` folds that keep each trial's rows together: trials are shuffled
+    and dealt to folds in turn. A variant of `folds`, which splits rows at random within each
+    time point (chiCa) and so puts frames of one trial in both training and test rows."""
+    trials_ = rng.permutation(np.unique(trial_of_row))
+    fold_of = dict(zip(trials_, np.arange(len(trials_)) % N_FOLDS))
+    assign = np.array([fold_of[t] for t in trial_of_row])
+    return [np.flatnonzero(assign == k) for k in range(N_FOLDS)]
+
+
 def fit_model(X, Y, analog, test_folds, shuffle_cols, rng, u_flat=None) -> dict:
     """Cross-validated fit. Shuffled columns are permuted over rows, each independently (chiCa).
     Returns, averaged over folds: (a) pooled pixel-space R2, (b) mean over pixels of per-pixel R2
     (when `u_flat`, pixels x components, is given; also the per-pixel map), (c) mean over
-    components of per-component R2."""
+    components of per-component R2; and the penalty chosen for each target in each fold."""
     Xs = np.array(X, dtype=np.float64)
     for k in shuffle_cols:
         Xs[:, k] = Xs[rng.permutation(Xs.shape[0]), k]
     n = len(Xs)
     res = {"pooled": [], "pixel_mean": [], "component_mean": [], "alpha_median": []}
+    all_alphas = []
     pixel_maps = []
     for te in test_folds:
         tr = np.setdiff1d(np.arange(n), te)
@@ -421,6 +443,7 @@ def fit_model(X, Y, analog, test_folds, shuffle_cols, rng, u_flat=None) -> dict:
         res["pooled"].append(1 - ss_res.sum() / ss_tot.sum())
         res["component_mean"].append(np.mean(1 - ss_res / ss_tot))
         res["alpha_median"].append(np.median(alphas))
+        all_alphas.append(alphas)
         if u_flat is not None:
             R = resid.T @ resid
             S = cen.T @ cen
@@ -431,6 +454,7 @@ def fit_model(X, Y, analog, test_folds, shuffle_cols, rng, u_flat=None) -> dict:
             res["pixel_mean"].append(np.mean(r2))
     out = {k: float(np.mean(v)) for k, v in res.items() if v}
     out["folds"] = {k: np.array(v) for k, v in res.items() if v}
+    out["alphas"] = np.array(all_alphas)          # folds x targets
     if pixel_maps:
         out["pixel_map"] = np.mean(pixel_maps, axis=0)
     return out

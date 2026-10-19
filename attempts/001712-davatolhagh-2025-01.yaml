@@ -41,7 +41,11 @@ outcomes:
     at 100% (0.081 s), the second part of the criterion. Medians are 0.081 to 0.095 s at every
     contrast, and 161 trials have no movement onset after the stimulus (151 of 899 onsets precede the
     go cue). With reaction times above 0.15 s only (226 trials) the correlation is -0.226 (p =
-    0.00062), so the relation appears among slower responses.
+    0.00062), so the relation appears among slower responses. Of the 899 onsets, 149 fall at or
+    before the stimulus and 346 within 0.08 s after it, so many may mark movements begun before the
+    stimulus could guide them. The response time (choice registration minus stimulus onset) is
+    shorter at higher contrast over all 911 choice trials (rho -0.134, p = 5.2e-05; medians 0.326 s
+    at 0% and 0.281 s at 100%), a variant that does not decide the outcome.
   deviations:
   - One session of one mouse.
   - Trials with a movement onset at or before the stimulus onset are left out; the paper does not
@@ -75,7 +79,10 @@ outcomes:
   notes: Over 14 switches between biased blocks, choices toward the new block side are 0.543 in
     trials 0 to 4 and 0.827 in trials 20 to 39 (one-sided Fisher p = 2.7e-06). The fit gives A =
     0.480, B = 1.000 (at its bound) and tau = 25.12 trials (SE 16.14), so tau is poorly determined.
-    At contrasts of 12.5% or less, 0.452 against 0.820, tau 21.57.
+    Resampling the switches gives 95% intervals of 0.279 to 0.643 for A, 0.836 to 1.000 for B and
+    6.41 to 38.37 trials for tau; B exceeds A in every draw and tau is 40 or more in 0.018 of them. A
+    maximum-likelihood fit on single trials gives A = 0.479, B = 1.000, tau = 25.03. At contrasts of
+    12.5% or less, 0.452 against 0.820, tau 21.57.
   deviations:
   - The paper's parametric curve is not given; B - (B - A) exp(-t / tau) over trials 0 to 39, all
     contrasts, was chosen here.
@@ -94,8 +101,13 @@ outcomes:
     spatial components cover the whole frame with no mask. In a variant
     restricted to bright pixels 20 or more from the edge, the right-minus-left peak lies left of the
     midline (column 199) and the left-minus-right peak right of it (column 481), p = 8.1e-15 and
-    1.6e-17, which points to lateralized responses; the variant does not decide the outcome. Neither
-    VISp nor the hemispheres can be named without an atlas registration.
+    1.6e-17; the variant does not decide the outcome. It does not show that the lateralization is
+    visual. At these two pixels the side difference exceeds 3 standard errors from 0.128 s after the
+    stimulus, while the median movement onset is 0.086 s. Only 27 trials (13 right, 14 left) have no
+    movement before 0.4 s; on them the difference at the two pixels points the same way (p = 0.02
+    and 0.091), but a masked peak search on these trials alone puts the peaks on the reverse sides
+    (columns 550 and 72, p = 0.0062 and 0.012). Neither VISp nor the hemispheres can be named without
+    an atlas registration.
   deviations:
   - Tested in image coordinates, with a midline estimated from the mean image, as the dandiset has no
     atlas registration.
@@ -121,13 +133,19 @@ outcomes:
   output: claim:fig4c-full-cvr2
   measured: 0.4709
   notes: Full-model cvR2 is 0.471 pooled in pixel space (reading a), 0.422 as the mean over pixels
-    (b) and 0.126 as the mean over components (c); minus the intercept-only model, 0.131, 0.142 and
-    0.087. None is within 0.486 to 0.660; reading (a) is above 0.3, which the criterion counts as
-    partial. Without the body camera's video components the pooled cvR2 is 0.414.
+    (b) and 0.126 as the mean over components (c); minus the intercept-only model (the time-point
+    columns alone), 0.123, 0.133 and 0.078. None is within 0.486 to 0.660; reading (a) is above 0.3,
+    which the criterion counts as partial. Without the body camera's video components the pooled
+    cvR2 is 0.414. Variants that do not decide the outcome are as follows. With the video components
+    of the left and right cameras added, as in the paper (encoding_all_cameras.ipynb), cvR2 is 0.574
+    (a) and 0.525 (b), within the range, and 0.208 (c). With folds that keep each trial's frames
+    together and each frame once per trial, it is 0.422, 0.363 and 0.047 with the body camera only,
+    and 0.472, 0.405 and 0.046 with all three cameras, below the range. Over brain pixels (the mask
+    of the fig3b variant) reading (b) is 0.434.
   deviations:
   - One session of one mouse of unknown genotype; the expected range spans the WT and KO means.
-  - No video components from the left and right cameras (left out for runtime; the body camera's
-    are included), paw speeds from Lightning Pose where the paper uses DeepLabCut, ROI motion
+  - No video components from the left and right cameras in the design that decides the outcome
+    (left out for runtime; the body camera's are included; a second notebook adds them as a variant), paw speeds from Lightning Pose where the paper uses DeepLabCut, ROI motion
     energies assumed to be the whisker pads and body.
   - The subjective prior is an action-kernel model fitted here; trial windows, the penalty selection
     (generalized cross-validation) and the readings of cvR2 were chosen here, as the paper's
@@ -141,7 +159,13 @@ outcomes:
     task predictors by 0.017, 0.015 and 0.013. Movement dominates under every reading and in every
     fold (smallest movement drop 0.065, largest task drop 0.019), but the movement drop is below
     0.297 to 0.440 under every reading. Without the body camera's video components the movement drop
-    is 0.042 against 0.021 for task pooled, and 0.010 against 0.015 over components.
+    is 0.042 against 0.021 for task pooled, and 0.010 against 0.015 over components. Variants that do
+    not decide the outcome are as follows. With folds by trial and each frame once per trial, the
+    movement drop is 0.049, 0.060 and -0.005 against 0.017, 0.016 and 0.012 for task, so over
+    components task exceeds movement, which the criterion would count as not reproduced. With all
+    three cameras the movement drop is 0.216, 0.232 and 0.161 against 0.008, 0.008 and 0.007 for
+    task, still below the range; with folds by trial, 0.109, 0.115 and 0.008 against 0.008, 0.008
+    and 0.000.
   deviations:
   - As for fig4c-full-cvr2; the missing side-camera video components likely lower the movement
     contribution.
@@ -161,7 +185,7 @@ findings:
 - kind: data_missing
   statement: The dandiset holds one session of one mouse (sub-FD-28). The paper analyses 10 sessions
     from each of 11 wild-type and 8 Nrxn1a knockout mice, and the dandiset's conversion code lists 17
-    session ids for 19 mice. Twelve of the paper's findings, all comparisons between genotypes, cannot
+    session ids for 19 mice. Eleven of the paper's findings, all comparisons between genotypes, cannot
     be tested.
 - kind: metadata_insufficient
   statement: The genotype of the mouse is not given in the NWB files, the dandiset metadata, or the
@@ -207,3 +231,154 @@ findings:
     correlation panel's legend says the KO minus WT matrix shows reduced inter-regional correlations
     while the Results say correlations are increased, and the legend of panel C describes variance
     difference maps, as does panel E.
+verifications:
+- date: 2026-10-19
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the first run with the conclusion cells and the summary
+    removed, the helper module and the claims file. bioRxiv refused its requests, so it read only the
+    abstract and relied on the claims file's account of the paper's methods. It queried the archive's
+    metadata for the blocked claims and tested the helper functions on synthetic inputs. Its report had
+    no attempt record and gave its own outcome for each claim; all 18 agree with the record.
+  results:
+  - claim: fig1c-psychometric
+    agrees: true
+    outcome: reproduced
+    reason: Spearman rho is 1.000 over 9 signed contrasts; P(right) at +100% minus -100% is 0.887 (needs
+      at least 0.5). The lapse-and-erf fit is reported (bias -6.8, sigma 17.0, lapses 0.116 and 0.0).
+    response: No change needed.
+  - claim: fig1d-psychometric-params-genotype
+    agrees: true
+    outcome: blocked
+    reason: One mouse and no genotype anywhere; the asset's wasAttributedTo record has sex, strain and
+      age, and no genotype.
+    response: No change needed.
+  - claim: fig1e-rt-contrast
+    agrees: true
+    outcome: not_reproduced
+    reason: rho is -0.053 with p = 0.15, which fails the p < 0.05 requirement, though the median at 0%
+      (0.089 s) exceeds that at 100% (0.081 s). The result depends on how anticipatory movements are
+      handled (p = 0.0006 with RT > 0.15 s). The median RT is 0.069 s and 149 of 899 onsets fall at or
+      before stimulus onset, which points to wheel_movement_onset_time capturing many anticipatory
+      movements (B2).
+    response: Added the counts of movement onsets by interval after the stimulus (149 at or before it,
+      346 within 0.08 s), histograms of movement onset and of response time, and the contrast
+      correlation using response time (choice registration minus stimulus onset), rho -0.134, p =
+      5.2e-05 over 911 choice trials. Outcome kept, as the criterion and the paper's "time to first
+      movement" use the movement onset; the conclusion and notes now say the result depends on the
+      fast onsets. The RT distribution could not be compared with the paper's Figure 1E, since bioRxiv
+      also refused requests from this host during the revision.
+  - claim: fig1f-rt-genotype
+    agrees: true
+    outcome: blocked
+    reason: Genotype comparison.
+    response: No change needed.
+  - claim: fig1g-learning-genotype
+    agrees: true
+    outcome: blocked
+    reason: One session only, and no genotype; the training history is not in the archive.
+    response: No change needed.
+  - claim: fig2bc-prior-shift
+    agrees: true
+    outcome: reproduced
+    reason: At 0% contrast P(right) is 74/89 in right blocks against 37/73 in left blocks, one-sided
+      Fisher p = 9.2e-6. Differences at each contrast and per-block biases (+2.9 vs -16.5) point the
+      right way.
+    response: No change needed.
+  - claim: fig2bd-ko-smaller-shift
+    agrees: true
+    outcome: blocked
+    reason: Genotype comparison.
+    response: No change needed.
+  - claim: fig2ef-block-adaptation
+    agrees: true
+    outcome: reproduced
+    reason: A = 0.48, B = 1.00, tau = 25.1 trials, all within the criterion; trials 20-39 vs 0-4, 0.827
+      vs 0.543, Fisher p = 2.7e-6. The fit is weak. B sits at its upper bound, tau has SE 16, so its
+      plausible range extends past 40, and the curve is fitted unweighted to per-trial means whose n
+      varies. The Fisher test carries the result on its own (B3).
+    response: Added a bootstrap over switches (A 0.279 to 0.643, B 0.836 to 1.000, tau 6.41 to 38.37
+      trials; B above A in every draw, tau 40 or more in 0.018 of draws) and a maximum-likelihood fit on
+      single trials, which weights by count (A 0.479, B 1.000, tau 25.03). Outcome kept.
+  - claim: fig2g-ko-slower-adaptation
+    agrees: true
+    outcome: blocked
+    reason: Genotype comparison.
+    response: No change needed.
+  - claim: fig3b-contralateral-visual
+    agrees: true
+    outcome: not_reproduced
+    reason: Both peaks lie left of the midline and the Mann-Whitney p values (0.053, 0.14) exceed 0.05.
+      Both peaks are frame-corner pixels outside the brain, so the failure is an artefact of the
+      criterion; with the post hoc mask the peaks fall on opposite sides with p of about 1e-15, which
+      would make the outcome partially_reproduced. But the evoked window (0.1-0.4 s) contains the choice
+      movement (median onset 0.086 s) and the notebook never separates the two, so the evidence that
+      the response is visual is weak (B1).
+    response: Added, with the mask set from the mean image only, the peak search and tests on the 27
+      trials with no movement before 0.4 s, and time courses at the two masked peaks aligned to the
+      stimulus and to the movement onset. The side difference exceeds 3 standard errors from 0.128 s
+      after the stimulus; on the slow trials the difference at the masked peaks points the same way (p
+      = 0.02 and 0.091) but the slow-trial peak search puts the peaks on the reverse sides. Outcome
+      kept; the conclusion now says the variants do not show the lateralization is visual.
+  - claim: fig3c-ko-elevated-activity
+    agrees: true
+    outcome: blocked
+    reason: Genotype comparison. The single-session quantities are in the data, but with no comparison
+      group they cannot test the claim.
+    response: No change needed.
+  - claim: fig3d-ko-higher-correlation
+    agrees: true
+    outcome: blocked
+    reason: Genotype comparison.
+    response: No change needed.
+  - claim: fig3e-ko-higher-variance
+    agrees: true
+    outcome: blocked
+    reason: Genotype comparison.
+    response: No change needed.
+  - claim: fig4c-full-cvr2
+    agrees: true
+    outcome: partially_reproduced
+    reason: The best reading is (a), full model cvR2 = 0.471, above 0.3 but below 0.486-0.660; (b) 0.422
+      and (c) 0.126 also miss, as do all three with the intercept subtracted. The movement set is
+      reduced (no left or right camera video components), so the shortfall may come from this design,
+      but the claims file pre-specified it, so the criterion outcome stands (B4). Train and test data
+      overlap (B5), the "intercept only" model shuffles the columns and keeps them (B7), and reading
+      (b) is over all pixels, brain and non-brain (B6).
+    response: The intercept-only model now has the time-point columns alone (minus intercept 0.123,
+      0.133, 0.078); the earlier all-shuffled model is still printed. Added a second notebook,
+      encoding_all_cameras.ipynb, with the left and right camera video components (0.574, 0.525,
+      0.208; (a) and (b) in range); a variant with folds by trial and each frame once (0.422, 0.363,
+      0.047 with the body camera, 0.472, 0.405, 0.046 with all three); reading (b) over brain pixels
+      (0.434); and the spread of ridge penalties (none at either end of the grid for the full model).
+      The data check now compares each ROI with the camera's nose tip and pupil positions, which agree
+      with whisker pads and body (B9); the action-kernel form of the prior remains an assumption.
+      Outcome kept, as the claims file fixed the design; with all cameras the range is met only under
+      the chiCa folds.
+  - claim: fig4cd-movement-dominates
+    agrees: true
+    outcome: partially_reproduced
+    reason: Movement dR2 is 0.104 / 0.119 / 0.067 under readings a / b / c and task dR2 0.017 / 0.015 /
+      0.013. Movement exceeds task under every reading but is nowhere near 0.297-0.440. Without the
+      video components movement dR2 drops to 0.04, and under reading (c) below task (0.010 vs 0.015),
+      so it depends heavily on the video regressors (B4).
+    response: Added the same variants as for fig4c-full-cvr2. With all three cameras movement dR2 is
+      0.216, 0.232, 0.161, still below the range. With folds by trial and the body camera only it is
+      0.049, 0.060 and -0.005 against 0.017, 0.016 and 0.012 for task, so over components task exceeds
+      movement. Outcome kept, as the claims file fixed the design; the notes and conclusion state the
+      fold variant.
+  - claim: fig4cd-ko-more-movement
+    agrees: true
+    outcome: blocked
+    reason: Genotype comparison.
+    response: No change needed.
+  - claim: figs2-ko-elevated-motion
+    agrees: true
+    outcome: blocked
+    reason: Genotype comparison.
+    response: No change needed.
+  - claim: figs3-ko-higher-unique
+    agrees: true
+    outcome: blocked
+    reason: Genotype comparison, and no unique-variance model was run.
+    response: No change needed.
