@@ -1,0 +1,356 @@
+schema_version: 1
+id: 001888-hristova-2025-01
+dandiset: "001888"
+dandiset_version: draft
+paper: doi:10.1111/epi.18606
+date: 2026-10-19
+entry: 001888-hristova-2025
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+outcomes:
+- claim: fig2b-swd-hourly
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig2b-swd-hourly
+  notes: Split-plot ANOVA on SWDs per ZT hour, genotype F = 11.45, p = 0.0045 (Het higher), hour p
+    = 0.069, interaction p = 0.9998. Het hourly means 19.2 to 37.8, WT 0 to 8.2. With GRIN2B-132 as
+    WT or Het the genotype effect holds (p = 0.0011, 0.013) and hour reaches p = 0.041. The paper's
+    genotype F is 55.36 with 9 WT; here there are 2.
+  deviations:
+  - Two WT rats, where the paper has nine.
+  - The random-intercept mixed model is tested as a split-plot ANOVA.
+- claim: fig2c-swd-number
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig2c-swd-number
+  notes: Het 690.6 SWDs per day, WT 56.3 (GRIN2B-238 none, GRIN2B-240 112.5); W = 1, p = 0.047.
+    GRIN2B-240 ranks above one Het, GRIN2B-228, which has 1 SWD per day. With GRIN2B-132 as WT p =
+    0.020, as Het p = 0.062.
+  deviations:
+  - Two WT rats, where the paper has nine.
+- claim: fig2c-swd-mean-duration
+  outcome: partially_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig2c-swd-mean-duration
+  notes: Het mean SWD duration 4.54 s against 1.47 s in GRIN2B-240, the only WT rat with SWDs; t
+    test p = 0.16 (df 13). With GRIN2B-132 (1.70 s) as WT p = 0.062.
+  deviations:
+  - One WT rat has SWDs, so the WT group has one value.
+- claim: fig2c-swd-total-duration
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig2c-swd-total-duration
+  notes: Het 57.77 min per day, WT 1.37 min; W = 1, p = 0.033. With GRIN2B-132 as WT p = 0.012, as
+    Het p = 0.029.
+  deviations:
+  - Two WT rats, where the paper has nine.
+- claim: disc-het-swd-minutes
+  outcome: partially_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:disc-het-swd-minutes
+  measured: 57.77
+  notes: The Het mean of 57.77 min per day (SEM 9.04, 14 rats) is within 59.97 +- 6.0. The WT mean
+    is 1.37 min (0 and 2.75), not below 1 min. Without GRIN2B-228 the Het mean is 62.21. Counting
+    flagged epochs as 5 s each gives 110.57 min.
+  deviations:
+  - Two WT rats, where the paper has nine; the WT part rests on GRIN2B-240 alone.
+- claim: figs5a-swd-light-dark
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:figs5a-swd-light-dark
+  notes: Phase F = 1.19, p = 0.29; genotype F = 11.45, p = 0.0045; interaction p = 0.86. Het 316.7
+    SWDs in the light and 373.9 in the dark, WT 12.5 and 43.8. Within Het, light minus dark median
+    -79.8 (signed-rank p = 0.19).
+  deviations:
+  - Two WT rats; the mixed model is tested as a split-plot ANOVA.
+- claim: figs8-swd-sex
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:figs8-swd-sex
+  notes: Sex term p = 0.29, 0.94 and 0.78 for number, mean duration and total duration. Within Het,
+    females 763.3 SWDs per day against 617.9 in males (t test p = 0.31), 4.59 against 4.50 s, 60.3
+    against 55.2 min.
+  deviations:
+  - The ANOVA has no sex by genotype interaction, as both WT are female; the paper's model has one.
+- claim: fig2d-swd-spectrum-peak
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig2d-swd-spectrum-peak
+  notes: All 15 rats with at least 5 usable SWD epochs in the raw windows (13 Het, the WT
+    GRIN2B-240 and GRIN2B-132) have a peak at 7.0 to 8.0 Hz and another at 14.0 to 16.0 Hz. The
+    stored spectra show peaks near the same frequencies (7.4 to 8.2 and 14.4 to 16.2 Hz). GRIN2B-240 has 18 usable SWD epochs.
+  deviations:
+  - Spectra from about 4.8 h of raw EEG per rat (one 24-min chunk at six ZT hours of each day), on
+    the SWD-detection channel, with a 2-s Welch segment chosen here.
+  - The peak rule (local maximum with prominence 0.1 in log10 power, harmonic within 1 Hz of twice
+    the peak) was chosen here; the paper describes the peak by eye.
+- claim: fig2e-swd-delta-power
+  outcome: blocked
+  blocked_by: other
+  notes: Only one WT rat (GRIN2B-240) has SWDs; GRIN2B-238 has none in either day. The claim's rule
+    needs at least two animals per genotype. A search of the archive for GRIN2B, Gonzalez-Sulser
+    and the paper's DOI finds only this dandiset.
+- claim: fig3d-rem-hourly
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig3d-rem-hourly
+  notes: Genotype F = 4.69, p = 0.048 (Het lower); interaction p = 0.096. At the threshold; with
+    GRIN2B-132 as WT p = 0.19, as Het p = 0.038; with the scorer's flags or the stored scores p =
+    0.049 and 0.050.
+  deviations:
+  - Two WT rats; the mixed model is tested as a split-plot ANOVA.
+  - SWD epochs are the epochs SWD events overlap; the lab's scorer uses its per-epoch flags.
+- claim: fig3g-rem-total
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig3g-rem-total
+  notes: Het 44.8 min of REM per day, WT 69.7 (54.3 and 85.2); t = 2.16, df 14, p = 0.048. With
+    GRIN2B-132 as WT p = 0.19, as Het p = 0.038; SWD-epoch variants p = 0.049 and 0.050.
+  deviations:
+  - Two WT rats, where the paper has nine.
+- claim: fig3g-rem-bouts
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig3g-rem-bouts
+  notes: Het 37.9 REM bouts per day, WT 74.0; t = 4.12, df 14, p = 0.0010. Both WT have more bouts
+    than every Het. With GRIN2B-132 as WT p = 0.068.
+  deviations:
+  - Two WT rats; the bout definition (runs of one state, ended by SWD epochs) was chosen here.
+- claim: fig3g-rem-bout-duration
+  outcome: partially_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig3g-rem-bout-duration
+  notes: Het REM bouts 71.9 s, WT 56.8 s; W = 2, p = 0.067. With GRIN2B-132 (95.5 s) as WT the
+    difference is 2.2 s (p = 0.59).
+  deviations:
+  - Two WT rats; bout definition chosen here.
+- claim: fig3h-nrem-total
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig3h-nrem-total
+  notes: Het 450.5 min, WT 419.3 min, difference 31.2 min; t = -1.29, p = 0.22. With GRIN2B-132 as
+    WT the difference is 48.4 min, p = 0.035. With two WT the test has little power to find a
+    difference.
+  deviations:
+  - Two WT rats, where the paper has nine.
+- claim: fig3h-nrem-bouts
+  outcome: partially_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig3h-nrem-bouts
+  notes: Mean NREM bout duration Het 127.1 s, WT 92.3 s, W = 0, p = 0.017. Number of NREM bouts Het
+    218.5, WT 273.0 per day, W = 25, p = 0.10. With the scorer's flags or the stored scores both
+    parts have p < 0.05 (bouts p = 0.032).
+  deviations:
+  - Two WT rats; bout definition chosen here.
+- claim: fig3i-wake-total
+  outcome: partially_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig3i-wake-total
+  notes: Het 834.1 min awake per day, WT 944.9, difference -110.8 min; Welch p = 0.35. With the
+    scorer's flags -68.1 min (p = 0.49), with the stored scores -10.8 min (p = 0.89), so most of
+    the difference is SWD time removed from wake.
+  deviations:
+  - Two WT rats; SWD epochs are the epochs SWD events overlap.
+- claim: fig3i-wake-bouts
+  outcome: partially_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig3i-wake-bouts
+  notes: Het 559.4 wake bouts per day against WT 294.5 (W = 2, p = 0.067); mean wake bout 100.6 s
+    against 206.2 s (Welch p = 0.31). With the stored scores, where SWD epochs count as wake, both
+    reverse (190.8 against 241.0 bouts, p = 0.017; 304.2 against 239.2 s).
+  deviations:
+  - Two WT rats; bout definition chosen here; SWD epochs end wake bouts.
+- claim: fig4a-rem-spectrum
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig4a-rem-spectrum
+  notes: Normalized REM band power, genotype F = 3.30, p = 0.073; interaction p = 0.998; Het lower
+    by 0.19 on average. Contiguous bands give genotype p = 0.034, SWD epochs from flags p < 0.0001,
+    the stored spectra p = 0.17. With two WT the test has little power.
+  deviations:
+  - Spectra from about 4.8 h of raw EEG per rat on the SWD-detection channel; the paper used one
+    representative channel and all epochs.
+  - Band limits (delta 1-4, theta 4-8, sigma 10-15, beta 15-30, gamma 30-48 Hz) and the Welch
+    segment are not given in the paper; the spectral-slope rejection is not applied.
+- claim: fig4b-nrem-beta
+  outcome: not_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig4b-nrem-beta
+  notes: NREM beta is lower in Het (difference -0.078 normalized, Tukey p = 1.0); interaction p =
+    0.90. Every variant (GRIN2B-132 either way, contiguous bands, SWD epochs from flags, stored
+    spectra) has Het beta lower, by 0.0035 to 0.30.
+  deviations:
+  - As for fig4a-rem-spectrum; two WT rats.
+- claim: fig4c-wake-power
+  outcome: not_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig4c-wake-power
+  notes: Normalized wake power is higher in Het on average (+0.081; genotype F = 0.58, p = 0.45),
+    and higher in at least four of five bands in every Methods variant. The stored spectra have Het lower in four of five bands
+    (p = 0.59), and p = 0.0072 only with GRIN2B-132 counted as WT.
+  deviations:
+  - As for fig4a-rem-spectrum; two WT rats.
+- claim: fig5a-swd-state-distribution
+  outcome: partially_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig5a-swd-state-distribution
+  measured:
+  - 94.18
+  - 5.55
+  - 0.27
+  notes: Reading (a) gives wake 94.18%, NREM 5.55%, REM 0.27% over 16 rats with SWDs; wake is within
+    tolerance and the order holds, NREM and REM are not. Reading (b) 92.87, 6.81, 0.32; (c) 91.17,
+    8.64, 0.19; (d) 89.27, 10.50, 0.23. No reading puts all three within tolerance.
+  deviations:
+  - The paper's text allows four readings of how the percentages are formed; all are shown.
+  - Two of the paper's nine WT rats; GRIN2B-132 is included.
+- claim: fig5a-het-more-nrem-swds
+  outcome: blocked
+  blocked_by: other
+  notes: Only one WT rat has SWDs (GRIN2B-240, 0% of its SWDs after NREM), so the per-state
+    comparison between genotypes cannot be tested under the claim's rule of two animals per group.
+- claim: fig5c-transition-swds
+  outcome: partially_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig5c-transition-swds
+  notes: 13 of 14 Het rats have at least one SWD at a wake-NREM transition, 0 of 2 WT; Fisher p =
+    0.025. GRIN2B-228 (2 SWDs in two days, none after NREM) has none. The claim's statement that
+    all Het have such SWDs does not hold for GRIN2B-228; it may not be one of the paper's rats.
+  deviations:
+  - The definition of a wake-NREM transition (a wake epoch followed by an NREM epoch within the six
+    epochs before the SWD) was chosen here.
+- claim: figs5b-transition-percent
+  outcome: not_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:figs5b-transition-percent
+  measured: 36.31
+  notes: Reading (i), the share of NREM-initiated SWDs that are transitional, gives 36.31% (SEM
+    2.46, 13 Het); reading (ii), the share of all SWDs, 2.23%. Neither is within 24.2 +- 2.42.
+    With an SWD called NREM when any of the six epochs before it is NREM, reading (i) gives 22.93%,
+    within tolerance; that rule is a variant, not one of the readings fixed beforehand. No WT rat
+    has transitional SWDs, so the WT value and the t test were not computed.
+  deviations:
+  - The denominator is not stated; two readings are shown.
+  - Transition and NREM-onset definitions chosen here.
+- claim: fig5f-swd-wake-correlation
+  outcome: reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig5f-swd-wake-correlation
+  measured: -0.81
+  notes: R = -0.81, p = 0.0005 over 14 Het (-0.82 with GRIN2B-132, -0.73 without GRIN2B-228). With
+    the scorer's flags R = -0.75; with the stored scores R = -0.06 (p = 0.83), so the correlation
+    arises from SWD time being taken out of wake.
+  deviations:
+  - 14 Het, where the paper has 15.
+- claim: fig5def-no-other-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_hristova_2025.ipynb
+  output: claim:fig5def-no-other-correlations
+  notes: Two of the eight measures correlate with total SWD time, the number of wake bouts (R =
+    0.54, p = 0.046) and mean wake bout duration (R = -0.58, p = 0.028); the other six have p from
+    0.16 to 0.96. With the scorer's flags the same two correlate (R = 0.82, -0.72); with the stored
+    scores none does. The paper gives R = 0.17 and -0.25 for these two.
+  deviations:
+  - 14 Het; the criterion grades eight tests (none significant reproduced, one or two partial).
+- claim: fig1c-glun2b-reduced
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The western blot quantification is not in the dandiset, which holds only EEG/EMG files,
+    and the paper's data statement says raw data are available on request.
+- claim: fig1df-other-proteins-unchanged
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Western blot data not in the dandiset (see fig1c-glun2b-reduced).
+- claim: figs4-normal-development
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Survival, body weight, righting reflex and negative geotaxis measures are not in the
+    dandiset or any public archive the paper names.
+- claim: figs1-scorer-agreement
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The visual scores of the 4-h validation periods are not in the dandiset; the files hold
+    only the automated scores.
+- claim: fig6b-systemic-etx-number
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The pharmacology recordings (2-channel EEG of 17 rats over baseline, treatment and washout
+    days) are not in the dandiset, whose 17 files are all 24-h baseline recordings with the
+    14-channel grid. No other dandiset for this paper was found.
+- claim: fig6c-systemic-duration
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Pharmacology recordings not in the dandiset (see fig6b-systemic-etx-number).
+- claim: fig6d-systemic-total
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Pharmacology recordings not in the dandiset (see fig6b-systemic-etx-number).
+- claim: fig7c-nrt-infusion
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The intrathalamic infusion recordings of 4 Grin2b+/- rats are not in the dandiset.
+findings:
+- kind: data_missing
+  statement: The dandiset holds 2 of the paper's 9 analysed wild type rats (14 or 15 of its 15
+    Grin2b+/-), so genotype comparisons rest on two WT, one of which has no SWDs. The
+    pharmacology and intrathalamic infusion recordings (Figures 6, 7, S11, S12), western blots
+    (Figures 1, S2, S3), development measures (Figure S4) and the visual scoring used to validate
+    the scorer (Table S1) are not in it. The paper says raw data are available on request.
+- kind: metadata_insufficient
+  statement: GRIN2B-132 has no genotype and sex U, so it cannot be placed in either group. The
+    conversion repository marks both as still to be confirmed by the lab.
+- kind: selection_undocumented
+  statement: The paper analysed 15 Grin2b+/- and 9 WT rats and excluded 4 and 9 descendants of one
+    founder. The dandiset does not say which of its rats the paper analysed, and holds a Grin2b+/-
+    rat (GRIN2B-228) with 1 SWD per day, unlike the paper's statement that all Grin2b+/- rats had
+    SWDs at wake-NREM transitions.
+- kind: metadata_error
+  statement: The sleep_states description gives code 4 for SWD epochs, but no file holds code 4;
+    the stored scores are the scorer's output before SWD epochs are set, so SWD epochs are scored
+    as wake, NREM or REM.
+- kind: metadata_error
+  statement: swd_epoch_counts is described as the number of SWD events per 5-s epoch but holds the
+    scorer's flags (6 for an SWD epoch, 4 otherwise). The flagged epochs cover a median of 51% (0
+    to 73%) of the epochs SWD events overlap, mostly the last epoch of each SWD, and only about a
+    tenth of SWD onsets fall in a flagged epoch.
+- kind: metadata_error
+  statement: In seizure_totals_by_zt the per-hour SWD counts are in spike_wave_discharge, while
+    number_of_seizure_events and Day hold the day's total in the first row and 0 elsewhere; the
+    description itself marks the columns as unconfirmed.
+- kind: metadata_error
+  statement: sleep_state_power_spectra is described as a baseline-corrected PSD normalized to the
+    average over states, with units to be confirmed. The lab's scorer writes the mean log10
+    multitaper amplitude referenced to each frequency's 5th percentile over the day, which is what
+    the values (0 to about 1.6) fit; the paper's Welch spectra are not in the dandiset.
+- kind: format_error
+  statement: The raw EEG and EMG are stored as unsigned 12-bit codes with offset 0, so every channel
+    reads about +8 mV of DC in volts. Signal loss is written as 32767 on all channels at once, and
+    some files hold other values outside 0 to 4095; neither is described. In the windows read, 21
+    to 73% of 5-s epochs per rat contain such samples (73% for GRIN2B-238).
+- kind: metadata_error
+  statement: The dandiset's assets summary counts 16 files and 16 subjects, while the draft holds 17
+    NWB files of 17 rats.
+- kind: code_mismatch
+  statement: The Methods exclude SWD times from the sleep states, while the lab's scorer replaces
+    only the flagged epochs, which cover about half of the epochs SWD events overlap. The paper's
+    wake results depend on this; with the stored scores (SWD epochs as wake) the wake bout
+    differences reverse and the correlation of SWD time with wake time disappears.
+- kind: paper_inconsistency
+  statement: In the Figure 5 legend, NREM time gives T = -1.47 with R = -0.13 and df = 13, which
+    implies T = -0.47; REM bouts give T = 0.704 with R = -0.19, of opposite sign; and REM bout
+    duration and wake bouts have identical statistics (T = 0.61, R = 0.17, p = 0.55). The Figure 5A
+    ANOVA gives genotype F = 1 with p = 0.98, which do not match for df = 1.
+- kind: paper_inconsistency
+  statement: The Figure 3 legend says no net differences between genotypes were observed for wake,
+    while reporting a genotype effect on hourly wake time of F = 7.14, p = 0.014, and the Results
+    say Grin2b+/- rats spent less time awake.
+- kind: methods_unavailable
+  statement: The paper does not give its frequency band limits, Welch segment length, bout
+    definition or the rule for wake-NREM transitions, and neither linked repository holds the
+    statistics or figure code.
