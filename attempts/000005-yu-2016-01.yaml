@@ -1,0 +1,157 @@
+schema_version: 1
+id: 000005-yu-2016-01
+dandiset: "000005"
+dandiset_version: 0.220126.1853
+paper: doi:10.1038/nn.4412
+date: 2026-10-19
+entry: 000005-yu-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+outcomes:
+- claim: vpm-touch
+  outcome: reproduced
+  notebook: reproduce_yu_2016.ipynb
+  output: claim:vpm-touch
+  notes: 20 of 24 included VPM units (0.83) fire more 0 to 25 ms after a touch onset than 25 to 0 ms
+    before it (one-sided Wilcoxon over touches, p < 0.01); 0 of 24 with spikes moved to the next
+    trial. Median touch response 7.5 Hz (rate 25.0 Hz after, 14.4 Hz before). At least one
+    responsive unit in each of the 6 mice. 5 of 29 units were dropped for too few spikes or touches
+    in trials without light.
+  deviations:
+  - Abstract only; the touch window, the test and the threshold are choices made here, and no
+    number of the paper is compared.
+- claim: vpm-whisking
+  outcome: reproduced
+  notebook: reproduce_yu_2016.ipynb
+  output: claim:vpm-whisking
+  notes: 21 of 24 VPM units (0.88) are modulated by whisking phase away from touch under the
+    occupancy-corrected test with a trial-shift null (p < 0.01), against 0.12 with spikes moved to
+    the next trial. 23 of 24 fire more during whisking than at rest (median 12.78 against 3.78 Hz,
+    p = 1.2e-06). With a 5 degree whisking threshold, 0.92. One mouse (2 units) has no modulated
+    unit. The first version of the test (Rayleigh) gave 0.92 with the true alignment and 0.88 with
+    the wrong one.
+  deviations:
+  - The whisking test of the claims file (a Rayleigh test of spike phases) was replaced after the
+    first run, because its null control marked 0.88 of units as modulated with spikes in the wrong
+    trial; the claims file records the amendment and what had been seen. Both versions are shown.
+  - Abstract only; the whisking band (6 to 30 Hz), threshold (2.5 degrees) and the measure are
+    choices made here.
+- claim: fs-touch-and-whisking
+  outcome: reproduced
+  notebook: reproduce_yu_2016.ipynb
+  output: claim:fs-touch-and-whisking
+  notes: 20 tagged cells (10 mice) are included; 13 (0.65) are touch-responsive, 16 (0.80) are
+    modulated by whisking phase, 11 are both. Median touch response 34.9 Hz, whisking modulation
+    2.64 Hz (VPM 1.30 Hz, Mann-Whitney p = 0.085). Unchanged with tag thresholds 0.1 and 0.3. 3 of
+    23 tagged cells were dropped for lack of a named principal whisker; 2 included cells have fewer
+    than 99 null draws, so p < 0.01 was out of reach for them. Under the first (Rayleigh) version,
+    0.75 are modulated.
+  deviations:
+  - FS cells are identified here as cells spiking within 6 ms of isolated 5 ms light pulses in
+    VGAT-ChR2 mice (23 cells); this tags GABAergic cells, which may include interneurons other
+    than FS cells. The paper's identification is not known.
+  - The whisking test was amended as for vpm-whisking.
+- claim: exc-mainly-touch
+  outcome: not_reproduced
+  notebook: reproduce_yu_2016.ipynb
+  output: claim:exc-mainly-touch
+  notes: Touch selectivity of the 18 included excitatory cells (median 0.980) is not significantly
+    higher than that of FS cells (0.916, one-sided Mann-Whitney p = 0.074) or VPM units (0.883, p =
+    0.090). Under the first (uncorrected) version p = 0.176 and 0.258. The measures the criterion
+    reports go the claim's way, 0.28 of excitatory cells are modulated by whisking against 0.80 of FS
+    cells (Fisher p = 0.0016) and 0.88 of VPM units (p = 0.00011), and their median whisking
+    modulation is 0.03 Hz against 2.64 and 1.30 Hz; a selectivity built from the whisking-minus-rest
+    rate is higher than both (p = 0.047 and 0.032). 0.56 of excitatory cells are touch-responsive
+    (FS 0.65, VPM 0.83). The selectivity test is weakened by sparse firing; 4 of 18 excitatory cells
+    have selectivity 0 because their touch response is not above zero. With a 0.7 ms width threshold
+    p = 0.112 and 0.126.
+  deviations:
+  - Excitatory cells are identified here as untagged whole-cell cells with action potentials at
+    least 0.6 ms wide at half maximum (22 cells); the paper's identification is not known.
+  - The touch selectivity index is a choice made here; the abstract gives no measure.
+- claim: fs-suppress-movement-spiking
+  outcome: reproduced
+  notebook: reproduce_yu_2016.ipynb
+  output: claim:fs-suppress-movement-spiking
+  notes: In PV-Cre mice, inside the vS1 light window (about 0.8 to 2.3 s after the trial start),
+    the rate of excitatory cells during non-touch whisking rises in 6 of 7 cells (median 0.05 Hz
+    without light, 1.07 Hz with; one-sided Wilcoxon p = 0.016), from 4 mice; the seventh has no
+    spikes during whisking in either condition. Over the whole light window 5 of 7 rise (p = 0.188),
+    and the phase modulation rises in 3 of 6 (p = 0.219). The biased variant (PV-Cre juxtacellular
+    cells not suppressed by light) rises in 24 of 32 (p = 0.00042). Whether the light silences PV
+    cells is not stated in the files; it cuts the firing of 3 PV-Cre cells by more than half and
+    raises that of 13, as an inhibitory opsin in PV cells would.
+  deviations:
+  - The light at the vS1 site of PV-Cre mice is assumed to silence PV interneurons; the files do
+    not name the opsin or the purpose of the light.
+  - 7 whole-cell excitatory cells only; the juxtacellular PV-Cre cells could not be classed
+    without a selection that biases the result.
+- claim: fs-enhance-touch-selectivity
+  outcome: not_reproduced
+  notebook: reproduce_yu_2016.ipynb
+  output: claim:fs-enhance-touch-selectivity
+  notes: Touch selectivity inside the light window is lower with light in 2 of 6 excitatory cells
+    (median 0.083 without light, 0.949 with; one-sided Wilcoxon p = 0.953). The touch response rises
+    with the light (median 0.4 to 8.62 Hz, 5 of 7) more than the whisking modulation does. The first
+    (uncorrected) version gives lower selectivity in 1 of 5.
+  deviations:
+  - As for fs-suppress-movement-spiking; the selectivity index is a choice made here, and the touch
+    counts inside the light window are smaller than over whole trials.
+- claim: thalamus-drives-fs
+  outcome: reproduced
+  notebook: reproduce_yu_2016.ipynb
+  output: claim:thalamus-drives-fs
+  notes: With light at the site labelled VPM (pulse trains of 250 pulses over 0.32 to 2.82 s), the
+    rate of all 9 tagged FS cells falls (median 17.9 to 7.7 Hz, median ratio 0.40, one-sided
+    Wilcoxon p = 0.00195), and so does their rate during non-touch whisking (9 of 9). The cells come
+    from 2 mice. The drop is not specific to FS cells; 18 of 21 cells recorded with this light fire
+    less.
+  deviations:
+  - The VPM-site light in VGAT-ChR2 mice is assumed to silence VPM; the files do not say what it
+    does, and its wavelength is given as 594 nm.
+- claim: sensory-input-drives-fs
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The abstract states that FS cells are driven by sensory input and the Figure 7 title that
+    sensory input drives them, without the experiment that shows it. The files hold light at a site
+    labelled vM1 (473 nm) in 25 VGAT-ChR2 sessions, and pulse trains at vS1, but do not say what
+    either does, and without the Methods the test cannot be designed from the paper.
+findings:
+- kind: metadata_insufficient
+  statement: No L4 file names the cell type of its neuron (excitatory or FS). The cell types the
+    paper compares can only be inferred from the data, here from light tagging in VGAT-ChR2 mice and
+    from action potential width.
+- kind: metadata_insufficient
+  statement: The optogenetic conditions are not described. `photo_stim_mode` has an empty
+    description and its labels do not map to one kind of light (VPM-site pulse trains are labelled
+    `5ms_pulse` in early files and `shift` in later ones); `photo_stim_power` is NaN in every L4
+    file; no file names the opsin. The light epochs can be read only from the photostimulation
+    series.
+- kind: metadata_error
+  statement: The session description gives the wrong recording mode for 24 of 130 L4 files. 23
+    described as whole-cell hold traces near 0 mV with small extracellular spikes, as juxtacellular
+    recordings do, and one described as juxtacellular sits near -65 mV.
+- kind: metadata_error
+  statement: In the L4 files the trial table's `first_touch_time` is the trial start plus the true
+    first-touch latency divided by 1000 (it matches the touch onset series within 2 ms in 0.956 of
+    trials once multiplied by 1000). In the VPM files it is correct.
+- kind: metadata_insufficient
+  statement: The L4 trace is sampled at 10 kHz in files up to March 2015 and at 20 kHz from August
+    2015 on, with trials of 5.5 and 5.9 s; nothing but the timestamps states the rate.
+- kind: metadata_insufficient
+  statement: 8 files name no principal whisker, and the VPM files give one principal whisker per
+    file though the session description says each unit has its own.
+- kind: other
+  statement: The light at the site labelled VPM in VGAT-ChR2 mice is given as 594 nm, and isolated
+    pulses at the site labelled vS1 (594 nm) evoke short-latency spikes in VGAT-ChR2 cells; these
+    wavelengths may be worth checking against the experiment.
+- kind: methods_unavailable
+  statement: The paper is not open access and neither it nor the dandiset links analysis code, so
+    the cell classification, the measures and the optogenetic designs cannot be taken from the
+    source.
