@@ -68,6 +68,9 @@ outcomes:
   deviations:
   - The paper does not define inactivity, the centre or the active period; the thresholds were fixed in
     the criterion and variants are shown.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: figs2c-adult-behaviour-similar
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -77,6 +80,9 @@ outcomes:
   deviations:
   - 5 Fmr1-/y rats where the paper has 6 (H4825's data are a copy of H4824's).
   - The thresholds are not given in the paper; fixed in the criterion, variants shown.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: figs1-juvenile-cell-metrics-similar
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -87,6 +93,9 @@ outcomes:
     (p = 0.038) and vector length (p = 0.0001).
   deviations:
   - Contamination is computed here from the spike trains, as the files hold no quality metric.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: figs2-adult-cell-metrics-similar
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -96,6 +105,9 @@ outcomes:
     and vector length in Fmr1-/y cells (p = 0.022, 0.0026 and 0.0032).
   deviations:
   - 5 Fmr1-/y rats where the paper has 6.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig1ef-juvenile-sharper-tuning
   outcome: partially_reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -109,8 +121,17 @@ outcomes:
   - Cells re-recorded on consecutive days could not be excluded as in the paper; the first day alone is
     a variant.
   - A linear mixed model on raw values; the paper chose linear or generalized models by the distribution.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig1g-juvenile-halves-correlation
   outcome: partially_reproduced
+  proposed:
+    outcome: not_reproduced
+    reason: With the sessions as the claims file defines them (blocks over 30 min cut to 1300 s, the others
+      whole), WT r is 0.761 (lower bound 0.81) and Fmr1-/y r 0.839 (lower bound 0.855), so neither value
+      is within tolerance. The WT value is within tolerance only with the 20 min sessions, a definition
+      adopted after the first round that departs from the claims file.
   notebook: reproduce_moore_2025.ipynb
   measured:
   - 0.815
@@ -121,11 +142,15 @@ outcomes:
     so one of the two values holds. The WT value is 0.005 above its bound and is 0.739 with the first
     day alone. With H3026 left out the Fmr1-/y r is 0.869, within tolerance; five of the ten cells farthest
     from the diagonal are from H3026. Spearman correlations are 0.863 and 0.909. Version 2 reports 0.86
-    and 0.93.
+    and 0.93. With the claims file's session definition WT r is 0.761 and Fmr1-/y r 0.839, neither within
+    tolerance; the outcome is the one round 2 agreed with, and a change to not_reproduced is proposed.
   deviations:
   - The claims file gave no rule for values outside tolerance; the claim is taken as partially reproduced
     when one of its two values is within tolerance and not reproduced when neither is, as for the other
     correlation claims.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig1h-juvenile-smaller-offset
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -133,7 +158,11 @@ outcomes:
   notes: The absolute offset between the two halves' tuning curves is smaller in Fmr1-/y cells (median
     7 against 26 degrees, LME coefficient -24.1, p = 0.035). First day alone p = 0.017; cells with half-width
     below 120 degrees p = 0.060; rat means t(10) = -2.09, p = 0.063; H3026 left out p = 0.068; archive
-    labels p = 0.17.
+    labels p = 0.17; with the claims file's session definition p = 0.014.
+  deviations:
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig1j-juvenile-less-drift
   outcome: not_reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -142,11 +171,16 @@ outcomes:
     rats, the paper's direction, but t(10) = -1.91, p = 0.085 (paper t(10) = 2.44, P < 0.05; version 2
     t(10) = 3.17). With version 2's 1.5 cm/s threshold p = 0.064, for the SD of drift p = 0.12, with the
     first day alone p = 0.088, with the archive's labels p = 0.20, with H3026 left out p = 0.14. H3019
-    210618-1 is left out (5 cells). H3001 200201 is decoded on 279 bins with speed above 2 cm/s where
-    the others have 491 to 2480; leaving out recordings under 300 bins gives p = 0.085.
+    210618-1 is left out (5 cells). H3001 200201 is decoded on 279 bins where the others have 491 to 2480;
+    only 330 of its 3000 second-half bins have speed above 2 cm/s, though 2914 have valid tracking.
+    Leaving out recordings under 300 bins gives p = 0.085. With the claims file's session definition
+    p = 0.069.
   deviations:
   - Version 1 does not describe the decoder; version 2's Methods were followed (Hampel filter, 0.8 s smoothing,
     tuning curves from the first half), with version 1's 2 cm/s threshold.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: figs1j-juvenile-epochs-correlation
   outcome: partially_reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -158,7 +192,9 @@ outcomes:
     within tolerance) and 0.753 over 225 Fmr1-/y cells (paper 0.85, lower bound 0.765). Spearman 0.869
     and 0.810. Version 2 reports 0.87 and 0.86.
   deviations:
-  - Exploration sessions are taken from the tracking blocks and cut to their first 20 min.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: figs1k-juvenile-epoch-drift-similar
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -167,6 +203,10 @@ outcomes:
     Fmr1-/y, 21 in WT; LME coefficient 2.3, p = 0.87; first day p = 0.72; archive labels p = 0.44; H3026
     left out p = 0.60). Version 2's text says juvenile Fmr1-/y rats were more stable between sessions,
     while its legend for the same panel reports no genotype effect.
+  deviations:
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig2c-juvenile-isomap-wake-correlation
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -177,6 +217,10 @@ outcomes:
   notes: Isomap and real-HD information (200 ms bins, 6 degree bins) correlate with r = 0.815 over 323
     WT cells and 0.910 over 232 Fmr1-/y cells (paper 0.84 and 0.92). The Isomap angle aligned with real
     HD with Rayleigh lengths of 0.21 to 0.90 over 23 recordings; H3019 210618-1 is left out (5 cells).
+  deviations:
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig2d-juvenile-isomap-wake-sharper
   outcome: not_reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -187,6 +231,10 @@ outcomes:
     on cells (p = 0.0007) is below 0.05. The direction matches the paper. Isomap is fitted on every bin,
     as the criterion says; a fit on 3000 bins raises the median Isomap information of H3026 211003 from
     0.435 to 0.546 bits/spike.
+  deviations:
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig2g-juvenile-isomap-rem-correlation
   outcome: partially_reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -200,6 +248,9 @@ outcomes:
     sessions left out, 0.831 and 0.831. Version 2 reports 0.84 and 0.93.
   deviations:
   - REM intervals are the files' sleep_stages.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig2h-juvenile-isomap-rem-sharper
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -208,7 +259,12 @@ outcomes:
     LME coefficient 0.21, p = 0.045). The result is at the threshold; on log values p = 0.092, first day
     p = 0.16, archive labels p = 0.25, H3026 left out p = 0.095, rat means t(10) = 1.95, p = 0.079; with
     the REM inside exploration left out p = 0.045. Waking Isomap information (fig2d) has a similar coefficient
-    (0.20) and p = 0.056.
+    (0.20) and p = 0.056. With the claims file's session definition p is unchanged (0.045), as REM Isomap
+    does not use the sessions and session 1 holds the same cells.
+  deviations:
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig3ef-adult-tuning-similar
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -218,6 +274,9 @@ outcomes:
     in Fmr1-/y cells (p = 0.0095).
   deviations:
   - 5 Fmr1-/y rats where the paper has 6.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig3g-adult-halves-correlation
   outcome: not_reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -232,6 +291,9 @@ outcomes:
   - The claims file gave no rule for values outside tolerance; the claim is taken as not reproduced when
     neither value is within tolerance.
   - 5 Fmr1-/y rats where the paper has 6.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig3h-adult-larger-offset
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -241,6 +303,9 @@ outcomes:
     p = 0.017. On rat means t(9) = 2.20, p = 0.056.
   deviations:
   - 5 Fmr1-/y rats where the paper has 6.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig3j-adult-more-drift
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -251,6 +316,9 @@ outcomes:
     and H4827 (18.3) lie within the WT range of 11.3 to 37.1.
   deviations:
   - Decoder from version 2's Methods, as for the juveniles; 5 Fmr1-/y rats where the paper has 6.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: figs2j-adult-epochs-correlation
   outcome: not_reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -265,13 +333,19 @@ outcomes:
   deviations:
   - The claims file gave no rule for values outside tolerance; the claim is taken as not reproduced when
     neither value is within tolerance.
-  - Exploration sessions are taken from the tracking blocks and cut to their first 20 min.
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: figs2k-adult-epoch-drift-larger
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
   output: claim:figs2k-adult-epoch-drift-larger
   notes: The offset between the sessions is larger in Fmr1-/y cells (median 74 against 30 degrees, LME
     coefficient 37.0, p = 0.028; archive labels p = 0.022; rat means t(9) = 2.20, p = 0.055).
+  deviations:
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig4c-adult-isomap-wake-correlation
   outcome: partially_reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -284,12 +358,20 @@ outcomes:
     (0.386), the three Fmr1-/y rats with the largest decoder drift; the three Fmr1-/y cells with the highest
     Isomap information are from H4817 and carry 0.45 to 0.67 bits/spike of real-HD information. Version
     2 reports 0.99 and 0.96.
+  deviations:
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig4d-adult-isomap-wake-similar
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
   output: claim:fig4d-adult-isomap-wake-similar
   notes: Isomap HD information does not differ between genotypes (median 0.279 in Fmr1-/y against 0.336
     in WT; LME p = 0.79; rat means t(9) = -0.26, p = 0.80).
+  deviations:
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig4g-adult-isomap-rem-correlation
   outcome: partially_reproduced
   notebook: reproduce_moore_2025.ipynb
@@ -301,12 +383,20 @@ outcomes:
     bound 0.72); with the REM intervals inside exploration sessions left out (196 s in H4822) the Fmr1-/y
     r is 0.691. REM per recording 116 to 988 s; H4823 and H4830 have 116 and 133 s. Version 2 reports
     0.84 and 0.83.
+  deviations:
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: fig4h-adult-isomap-rem-similar
   outcome: reproduced
   notebook: reproduce_moore_2025.ipynb
   output: claim:fig4h-adult-isomap-rem-similar
   notes: REM Isomap HD information does not differ between genotypes (median 0.413 in Fmr1-/y against
     0.332 in WT; LME p = 0.27; with the REM inside exploration left out p = 0.73; rat means p = 0.27).
+  deviations:
+  - Sessions are cut to their first 20 min, the paper's session length, where the claims file cuts only
+    tracking blocks over 30 min, to 1300 s; the change was made after the first round of verification,
+    and the claims file's definition is shown as a variant in the notebook.
 - claim: figs1d-probe-in-posub
   outcome: blocked
   blocked_by: other
@@ -321,7 +411,7 @@ findings:
     543 in 6 adult WT rats) and its range of 8 to 83 units per juvenile recording are matched exactly
     only if H3026, labelled WT, is a juvenile Fmr1-/y rat and H3029, whose date of birth makes it 97 days
     old, is a juvenile WT rat. With the archive's labels the juvenile groups have 5 WT and 4 Fmr1-/y rats,
-    and the juvenile effects weaken (HD information p = 0.24, offsets p = 0.080).
+    and the juvenile effects weaken (HD information p = 0.23, offsets p = 0.17).
 - kind: metadata_error
   statement: The dates of birth of H3023 (2022-08-13) and H3026 (2022-09-13) are after their recordings
     in 2021, so the archive's asset metadata, which derive the age from the date of birth, give them negative
@@ -552,3 +642,220 @@ verifications:
     response: Outcome kept. The notebook now lists the histology images of every file; all 36 files hold
       them, including the four whose asset names lack +image, so images exist for every rat. None marks
       the tract or PoSub.
+- date: '2026-10-19'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full re-executed notebook of the first revision, with its conclusions and
+    summary, the helper module, the claims file and the attempt record. The verifier could not
+    download the paper (bioRxiv rate limits), so the version-2 numbers quoted in the notes were
+    unchecked; this revision could not get the text either (bioRxiv answered 429 again). It agreed
+    with all 27 outcomes. Replies to the points not tied to one claim: the first finding now gives
+    the re-executed values with the archive''s labels (HD information p = 0.23, offsets p = 0.17); a
+    new notebook section repeats the main test of every claim with the claims file''s session
+    definition (tracking blocks, only those over 30 min cut to 1300 s), which changes only fig1g,
+    for which a change of outcome is proposed; the 20 min cut is recorded as a deviation under every
+    claim that uses the sessions and in the Summary. Cells counted on every day (problem 2) and
+    H3026''s label (problem 1) cannot be settled from the files and stay as variants.'
+  results:
+  - claim: unit-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept; the numbers are unchanged.'
+  - claim: units-per-recording
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept; the numbers are unchanged.'
+  - claim: figs1c-juvenile-behaviour-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, the active speed gives p = 0.0504.'
+  - claim: figs2c-adult-behaviour-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, p = 0.98, 0.35 and 0.67.'
+  - claim: figs1-juvenile-cell-metrics-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, p = 0.71, 0.72, 0.60 and 0.11.'
+  - claim: figs2-adult-cell-metrics-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, p = 0.11, 0.35, 0.10 and 0.25.'
+  - claim: fig1ef-juvenile-sharper-tuning
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees. Remaining on H3026 (problem 1): HD information is above 0.05 both with H3026
+      left out (0.072) and with the archive''s labels (0.23).'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, HD information gives p = 0.031 and half-width p = 0.60.
+      H3026''s label cannot be settled from the files; the variants stay in the notes.'
+  - claim: fig1g-juvenile-halves-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees under the rule now applied (one value within tolerance). The margin is 0.005, WT
+      r = 0.8151 against a bound of 0.81; with the first day of each rat alone WT r is 0.739. The
+      analysis changes made after round 1 (new session definition, spike counting, full Isomap fit)
+      moved it from not reproduced; the 20 min cut departs from the claims file, and its effect on
+      its own is not shown.'
+    response: 'Outcome kept, as round 2 agreed with it, and a change to not_reproduced proposed. The
+      notebook now repeats every claim''s main test with the claims file''s session definition; for
+      fig1g WT r is 0.761 and Fmr1-/y r 0.839, neither within tolerance. The 20 min cut is now
+      recorded as a deviation under every claim that uses the sessions.'
+  - claim: fig1h-juvenile-smaller-offset
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Remaining: with H3026 left out p = 0.068 and with the archive''s labels 0.17;
+      for cells with half-width below 120 degrees p = 0.060, so the reproduced outcome no longer
+      survives restriction to tuned cells.'
+    response: 'Outcome kept; the conclusion and notes state the tuned-cell, H3026 and archive-label
+      variants. With the claims file''s session definition, added in reply to the round''s point on
+      the 20 min cut, p = 0.014.'
+  - claim: fig1j-juvenile-less-drift
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees, p = 0.0845. The stated cause of H3001 200201''s 279 bins (the rat moved faster
+      than 2 cm/s in few bins of the second half) is not shown by any output, is hard to square with
+      cell 34, and does not explain the change from 22 bins; it does not bear on the outcome.'
+    response: 'Outcome kept. The drift table now prints the second-half bins with speed above 2
+      cm/s: 330 of 3000 for H3001 200201, with 2914 valid, so the low count comes from speed. Cell
+      34 averages both sessions and both recordings of the rat with a 1 cm/s threshold. The change
+      from 22 bins in round 1 is no longer stated with a cause, as the round-1 analysis is not
+      rerun. With the claims file''s session definition p = 0.069.'
+  - claim: figs1j-juvenile-epochs-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with all 27 outcomes. The 20 min cut is recorded as a deviation only under
+      figs1j and figs2j.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, WT r 0.855 and Fmr1-/y r 0.758, the same side of tolerance.'
+  - claim: figs1k-juvenile-epoch-drift-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, p = 0.96.'
+  - claim: fig2c-juvenile-isomap-wake-correlation
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, WT r 0.826 and Fmr1-/y r 0.910.'
+  - claim: fig2d-juvenile-isomap-wake-sharper
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. The main test gives p = 0.0556, and every variant that keeps the rat is above
+      0.05.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, p = 0.079.'
+  - claim: fig2g-juvenile-isomap-rem-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, WT r 0.833 and Fmr1-/y r 0.831.'
+  - claim: fig2h-juvenile-isomap-rem-sharper
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees under the criterion, with p = 0.0451, at the threshold. The first day alone
+      gives 0.158, the archive''s labels 0.253, H3026 left out 0.095 and rat means 0.079. The new
+      session definition and full Isomap fit moved it from not reproduced, and the effect of the 20
+      min cut on its own is not shown.'
+    response: 'Outcome kept. With the claims file''s session definition p is the same (0.0451): REM
+      Isomap does not use the sessions and session 1 holds the same cells, so the change from round
+      1 came from fitting Isomap on every bin, as the criterion prescribes. The first-day and H3026
+      variants stay in the notes.'
+  - claim: fig3ef-adult-tuning-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, p = 0.58 and 0.66.'
+  - claim: fig3g-adult-halves-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees; neither value is within tolerance (cell 65).'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, WT r 0.809 and Fmr1-/y r 0.742.'
+  - claim: fig3h-adult-larger-offset
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, p = 0.042.'
+  - claim: fig3j-adult-more-drift
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, t(9) = 2.75, p = 0.023.'
+  - claim: figs2j-adult-epochs-correlation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees; neither value is within tolerance (cell 74). The 20 min cut is recorded as a
+      deviation only under figs1j and figs2j.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, WT r 0.786 and Fmr1-/y r 0.570.'
+  - claim: figs2k-adult-epoch-drift-larger
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, p = 0.029.'
+  - claim: fig4c-adult-isomap-wake-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, WT r 0.937 and Fmr1-/y r 0.604.'
+  - claim: fig4d-adult-isomap-wake-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, p = 0.80.'
+  - claim: fig4g-adult-isomap-rem-correlation
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, WT r 0.820 and Fmr1-/y r 0.652.'
+  - claim: fig4h-adult-isomap-rem-similar
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with all 27 outcomes; the Result cells, the README''s outcome rows and the
+      record''s notes check against the outputs.'
+    response: 'Outcome kept. With the claims file''s session definition, added in reply to the
+      round''s point on the 20 min cut, p = 0.27.'
+  - claim: figs1d-probe-in-posub
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. The round-1 reason was wrong in part: cell 6 shows histology images in all 36
+      files, including the four whose names lack +image. Images exist for every rat; none of them
+      marks the tract or PoSub.'
+    response: 'Outcome kept; the notes already state this.'

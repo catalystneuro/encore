@@ -41,7 +41,8 @@ Where the parameters come from:
   never falls below it has half-width 360 degrees; tracking gaps up to 1 s are interpolated;
   for the two files with positions in pixels, the scale makes the x extent of the exploration
   tracking equal to the 73 cm arena diameter; each exploration session is the first 20 min (`SESSION_S`, the paper's session
-  length) of its tracking block.
+  length) of its tracking block. This departs from the claims file, which cuts only blocks over 30 min
+  (to 1300 s); its definition is computed as a variant (`rule="claims"`).
 """
 
 from __future__ import annotations
@@ -75,6 +76,7 @@ MIN_CELLS_POP = 6
 HAMPEL_WINDOW_S, DRIFT_SMOOTH_S = 5.0, 0.8
 SESSION_S = 1200.0        # 20 min sessions (paper v1); longer tracking blocks are cut
 MIN_SESSION_S = 600.0
+CLAIMS_CUT = (1800.0, 1300.0)   # the claims file's rule: a block over 30 min is cut to its first 1300 s
 
 
 # --- loading --------------------------------------------------------------------------------
@@ -234,10 +236,11 @@ def tracking_blocks(t, gap=5.0):
     return list(zip(np.r_[t[0], t[br + 1]], np.r_[t[br], t[-1]]))
 
 
-def exploration_sessions(s):
+def exploration_sessions(s, rule="20min"):
     """The first tracking block of at least MIN_SESSION_S (session 1) and the first such block
     starting at least 60 min later (session 2, after the sleep), each cut to its first
-    SESSION_S seconds."""
+    SESSION_S seconds (rule "20min"), or with rule "claims" cut to CLAIMS_CUT[1] seconds only
+    when longer than CLAIMS_CUT[0], as the claims file defines them."""
     blocks = [(a, b) for a, b in tracking_blocks(s["t"]) if b - a >= MIN_SESSION_S]
     out = []
     if blocks:
@@ -245,6 +248,8 @@ def exploration_sessions(s):
         later = [blk for blk in blocks[1:] if blk[0] - blocks[0][0] >= 3600]
         if later:
             out.append(later[0])
+    if rule == "claims":
+        return [(a, a + CLAIMS_CUT[1] if b - a > CLAIMS_CUT[0] else b) for a, b in out]
     return [(a, min(b, a + SESSION_S)) for a, b in out]
 
 
@@ -408,7 +413,7 @@ def drift(track, spikes, a, b, speed_min=SPEED_POP, tc_speed=SPEED_POP):
     keep = ok_b & (sp_b > speed_min)
     d = np.degrees(np.abs(e[keep]))
     return (float(d.mean()), float(np.degrees(np.std(e[keep]))),
-            {"bins": len(e), "valid": int(ok_b.sum()), "used": int(keep.sum())})
+            {"bins": len(e), "valid": int(ok_b.sum()), "used": int(keep.sum()), "fast": int(np.sum(sp_b > speed_min))})
 
 
 def isomap_angle(pv, seed, fit_max=ISOMAP_FIT_MAX):
@@ -537,13 +542,14 @@ def _mask(t, intervals):
     return m
 
 
-def analyse(s, age_group, seed=0, fit_max=ISOMAP_FIT_MAX):
+def analyse(s, age_group, seed=0, fit_max=ISOMAP_FIT_MAX, rule="20min"):
     """Every per-cell and per-recording measure the claims use, for one recording. fit_max is
-    the number of bins Isomap is fitted on (None: all)."""
+    the number of bins Isomap is fitted on (None: all); rule is the session definition."""
     out = {"cells": None, "rec": {}}
-    sessions = exploration_sessions(s)
+    sessions = exploration_sessions(s, rule)
     rec = out["rec"]
     rec["n_sessions"] = len(sessions)
+    rec["session_s"] = [round(b - a, 1) for a, b in sessions]
     if not sessions:
         return out
     px = pixel_scale(s, sessions) if s["pos_unit"] != "centimeters" or np.nanmax(s["pos"]) > 200 else None
@@ -612,6 +618,7 @@ def analyse(s, age_group, seed=0, fit_max=ISOMAP_FIT_MAX):
     if len(spk) >= MIN_CELLS_POP:
         rec["drift_mean"], rec["drift_sd"], nb = drift(tr, spk, a, b)
         rec["drift_bins_all"], rec["drift_bins_valid"], rec["drift_bins"] = nb["bins"], nb["valid"], nb["used"]
+        rec["drift_bins_fast"] = nb["fast"]
         rec["drift_mean_v2"], rec["drift_sd_v2"], _ = drift(tr, spk, a, b, speed_min=1.5, tc_speed=1.5)
 
         # Isomap of the waking session
@@ -748,13 +755,14 @@ def process(asset_id, seed=0):
     }
     meta["non_increasing_frames"] = int(np.sum(np.diff(s["t"]) <= 0))
     if not sessions or grp["age_group"] is None or s["subject"] in DUPLICATE_OF:
-        return {"meta": meta, "main": None, "other_age": None}
+        return {"meta": meta, "main": None, "other_age": None, "claims_rule": None}
     meta["lag_info"] = lag_check(s, grp["age_group"], sessions, tr)
     res = analyse(s, grp["age_group"], seed)
     other = None
     if archive_age is not None and archive_age != grp["age_group"]:
         other = analyse(s, archive_age, seed)
-    return {"meta": meta, "main": res, "other_age": other}
+    claims_rule = analyse(s, grp["age_group"], seed, rule="claims")
+    return {"meta": meta, "main": res, "other_age": other, "claims_rule": claims_rule}
 
 
 def process_all(asset_ids, workers=4):

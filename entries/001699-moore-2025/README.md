@@ -33,7 +33,7 @@ are near p = 0.05 and lose significance under these variants. H4825's file is a 
 recording, so one adult Fmr1-/y rat is missing. The attempt record, with the reasons and the differences
 from the paper's method, is [`attempts/001699-moore-2025-01.yaml`](../../attempts/001699-moore-2025-01.yaml).
 
-- `reproduce_moore_2025.ipynb`: the analysis. It takes about five minutes, most of it streaming the
+- `reproduce_moore_2025.ipynb`: the analysis. It takes about 13 minutes, most of it streaming the
   units and tracking of the 36 files and fitting Isomap, in parallel.
 - `hdfx.py`: loading, cell selection, tuning curves, HD information, offsets, the decoder, Isomap and
   the mixed-model test. Other notebooks on this dandiset can import it.
