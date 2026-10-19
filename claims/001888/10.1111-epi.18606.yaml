@@ -1,0 +1,339 @@
+# Claims for Hristova, Fasol et al. (2025), Epilepsia 66:4996-5013, on dandiset 001888.
+# Source: the open-access full text (CC BY, PMC12779324) and its Supporting Information
+# (Supplementary Methods, Tables S1-S2, legends of Figures S1-S12).
+#
+# When these criteria were written, the author had seen the data check only: the file list, the
+# subject metadata, the recording lengths and baseline windows, the codes present in the sleep
+# scores and the per-epoch SWD file, the number and total duration of SWD events per animal and
+# day, the minutes of each stored sleep state per animal and day (without SWD epochs removed),
+# the ranges of the stored spectra, the raw values, and the clock checks. No bout, hourly,
+# spectral-band or SWD-onset measure had been seen. A first execution of the notebook ran the
+# claim cells; their outputs were not read before this file was revised after the data check
+# (genotype taken from the files, where an earlier draft took it from the conversion
+# repository; SWD epochs taken from the events, where an earlier draft took the scorer's
+# flags), and no criterion was changed after any claim output was read, with one exception: after
+# the first verification round, the NREM rule of figs5b-transition-percent was corrected to the
+# Supplementary Methods (see that claim). Its first rule gave 36.3%, outside tolerance; the
+# corrected rule gives 22.9%, inside it.
+#
+# The dandiset holds the 73 to 99 h EEG/EMG recordings of 17 rats (two 24-h baseline windows
+# each), not the western blots, the development measures, the visual scoring or the pharmacology recordings. The files give 14
+# Grin2b+/- (Het), 2 wild type (WT) and one rat without genotype or sex (GRIN2B-132). The paper
+# analysed 15 Het and 9 WT, so every genotype comparison here has two WT animals.
+#
+# Method choices fixed here, for all claims unless the claim says otherwise:
+# - Each animal's value is the mean of its values for the two 24-h baseline days (BL1, BL2),
+#   as the Supplementary Methods state. ZT 0 is the start of each day (07:00, lights on).
+# - GRIN2B-132 (no genotype) is left out of genotype comparisons; it is added to each group in
+#   turn as a variant.
+# - SWDs are the rows of the file's seizure_events table.
+# - SWD epochs, a state of their own, are the epochs an SWD event overlaps, following the Methods
+#   ("SWD times were excluded"). The lab's scorer instead takes the epochs its per-epoch SWD file
+#   marks with 6; in the dandiset these flags mark mostly the last epoch of each event and cover
+#   about half of the epochs SWD events overlap (data check), so they are a variant, as are the
+#   stored scores without SWD epochs.
+# - A bout is a run of consecutive 5-s epochs of one state; SWD epochs end a bout. Number of
+#   bouts per day and mean bout duration per day, then averaged over the two days.
+# - The state of an SWD is the stored state of the 5-s epoch before the epoch holding its start.
+#   An SWD is at a wake-NREM transition when the six epochs before it hold a wake epoch followed
+#   directly by an NREM epoch. The Supplementary Methods judge wake and REM on the epoch before
+#   and initiation in NREM on the six epochs before; readings (c) and (d) of
+#   fig5a-swd-state-distribution and reading (i) of figs5b-transition-percent use that rule.
+# - Spectra follow the Supplementary Methods on raw EEG from the SWD-detection channel (S1_Tr_R,
+#   AP -3.0, ML 2.8), read in one 24-min storage chunk at ZT 0, 4, 8, 12, 16 and 20 of each day
+#   (about 4.8 h per animal): 0.2-100 Hz third-order Butterworth, 5-s epochs on the scoring grid,
+#   epochs with signal loss or any sample above 3000 uV dropped, Welch (Hann, 2-s segments, 50%
+#   overlap), each epoch divided by the animal's mean spectrum over wake, NREM and REM epochs.
+#   Bands: delta 1-4, theta 4-8, sigma 10-15, beta 15-30, gamma 30-48 Hz (not given in the
+#   paper). The stored spectra and contiguous bands are variants.
+# - Two-group comparisons use the test the paper reports for that measure, WT against Het.
+#   Hourly and light-dark comparisons use a random-intercept model per animal, tested as a
+#   split-plot ANOVA, which gives the same F tests for complete data.
+# - For a genotype difference: reproduced when the paper's test has p < 0.05 in the paper's
+#   direction; partially reproduced when the group means differ in the paper's direction with
+#   p >= 0.05; not reproduced when they differ in the other direction. With two WT animals and 14
+#   Het, an exact two-sided rank-sum test reaches p < 0.05 only when U <= 1 (p = 0.017 or 0.033):
+#   both WT rank below (or above) all Het, or one Het is out of order.
+schema_version: 1
+dandiset: "001888"
+paper: doi:10.1111/epi.18606
+claims:
+- id: fig2b-swd-hourly
+  statement: Grin2b+/- rats have more SWDs than WT across the 24-h day; hour of day has no
+    effect and does not interact with genotype (linear mixed model, genotype F = 55.36, p <
+    .00001; hour p = .16; interaction p = .49).
+  source: Figure 2B
+  criterion: SWD counts per ZT hour per animal (mean of the two days); split-plot ANOVA with
+    genotype between and hour within animals. Reproduced when the genotype effect has p < 0.05
+    with Het higher and neither hour nor the interaction has p < 0.05. Partially reproduced when
+    Het are higher on average but the genotype p >= 0.05, or hour or the interaction is
+    significant. Not reproduced when Het are not higher.
+- id: fig2c-swd-number
+  statement: Grin2b+/- rats have more SWDs over 24 h than WT (Wilcoxon rank-sum, W = 4.5, p =
+    .0002).
+  source: Figure 2C, left
+  criterion: Number of SWD events per day, Wilcoxon rank-sum test, judged by the rule for
+    genotype differences in the opening comment (Het higher).
+- id: fig2c-swd-mean-duration
+  statement: SWDs are longer on average in Grin2b+/- rats than in WT (two-sample t test, df =
+    22, T = -5.26, p = .00003).
+  source: Figure 2C, middle
+  criterion: Mean SWD duration per day, two-sample t test, judged by the rule for genotype
+    differences (Het higher). An animal with no SWDs has no mean duration and is left out of
+    this test; the count left out is reported.
+- id: fig2c-swd-total-duration
+  statement: The total time in SWDs over 24 h is higher in Grin2b+/- rats than in WT (Wilcoxon
+    rank-sum, W = 5.5, p = .0002).
+  source: Figure 2C, right
+  criterion: Total SWD duration per day, Wilcoxon rank-sum test, judged by the rule for genotype
+    differences (Het higher).
+- id: disc-het-swd-minutes
+  statement: Over 24 h, Grin2b+/- rats spend on average 59.97 min in SWDs, while WT littermates
+    average less than a minute.
+  source: Discussion, paragraph 2
+  expected:
+  - quantity: mean total SWD duration per 24 h, Het
+    value: 59.97
+    tolerance: 6.0
+    unit: min
+  criterion: Mean over animals of the total SWD duration per day. Reproduced when the Het mean is
+    within tolerance and the WT mean is below 1 min; partially reproduced when one of the two
+    holds; not reproduced when neither does.
+- id: figs5a-swd-light-dark
+  statement: The number of SWDs does not differ between the light and dark phases, and
+    Grin2b+/- rats have more SWDs than WT in both (linear mixed model, genotype p < .00001, phase
+    p = .28, interaction p = .53).
+  source: Figure S5A; Results 3.3
+  criterion: SWD counts in ZT 0-12 and ZT 12-24 per animal (mean of the two days); split-plot
+    ANOVA with genotype between and phase within. Reproduced when phase has p >= 0.05 and the
+    genotype effect has p < 0.05 with Het higher. Partially reproduced when phase has p >= 0.05
+    and Het are higher on average without p < 0.05. Not reproduced when phase has p < 0.05 or
+    Het are not higher.
+- id: figs8-swd-sex
+  statement: Sex does not affect the number, mean duration or total duration of SWDs (two-way
+    ANOVA sex x genotype, sex p = .74, .99 and .99).
+  source: Figure S8B
+  criterion: The paper's two-way ANOVA with interaction cannot be fitted, as both WT are female.
+    The sex term of a two-way ANOVA (type II) with genotype and sex, without interaction, is
+    used for each of the three measures. Reproduced when none of the three sex terms has p <
+    0.05; not reproduced when any has.
+- id: fig2d-swd-spectrum-peak
+  statement: The EEG spectrum during SWDs has a clear peak in the theta range with a harmonic,
+    in both genotypes.
+  source: Figure 2D; Results 3.3
+  criterion: Mean Welch spectrum (absolute, uV^2/Hz) of the SWD epochs in the raw windows, per
+    animal with at least 5 usable SWD epochs. A peak is a local maximum of log10 power between 3
+    and 30 Hz with a prominence of at least 0.1. Reproduced when every such animal has a peak at
+    5-10 Hz (f0) and another within 1 Hz of 2 x f0, and both genotypes have such an animal.
+    Partially reproduced when this holds in at least half of these animals, or holds in all but
+    no WT animal has enough SWD epochs. Not reproduced otherwise.
+- id: fig2e-swd-delta-power
+  statement: Delta power during SWDs is higher in Grin2b+/- rats than in WT (two-way ANOVA
+    genotype x band, interaction p = .015; Tukey delta p = .039).
+  source: Figure 2E
+  criterion: Normalized SWD spectra (Methods) in the five bands per animal with at least 5
+    usable SWD epochs; two-way ANOVA genotype x band and Tukey tests within bands, as for
+    fig4b-nrem-beta. Needs at least two animals per genotype; otherwise blocked.
+- id: fig3d-rem-hourly
+  statement: Grin2b+/- rats have less REM sleep per hour than WT across the day, and the
+    reduction is not specific to certain hours (linear mixed model, genotype F = 9.98, p = .0045;
+    hour x genotype p = .53).
+  source: Figure 3D
+  criterion: REM minutes per ZT hour per animal (mean of two days); split-plot ANOVA. Reproduced
+    when the genotype effect has p < 0.05 with Het lower and the interaction has p >= 0.05.
+    Partially reproduced when Het are lower on average but genotype p >= 0.05, or the
+    interaction is significant. Not reproduced when Het are not lower.
+- id: fig3g-rem-total
+  statement: Grin2b+/- rats spend less total time in REM sleep over 24 h than WT (two-sample t
+    test, df = 22, T = 3.16, p = .0045).
+  source: Figure 3G, left
+  criterion: REM minutes per day, two-sample t test, judged by the rule for genotype differences
+    (Het lower).
+- id: fig3g-rem-bouts
+  statement: Grin2b+/- rats have fewer REM bouts than WT (two-sample t test, df = 22, T = 3.94, p
+    = .00069).
+  source: Figure 3G, middle
+  criterion: Number of REM bouts per day, two-sample t test, judged by the rule for genotype
+    differences (Het lower).
+- id: fig3g-rem-bout-duration
+  statement: REM bouts are longer on average in Grin2b+/- rats than in WT (Wilcoxon rank-sum, W =
+    33, p = .043).
+  source: Figure 3G, right; Results 3.4
+  criterion: Mean REM bout duration per day, Wilcoxon rank-sum test, judged by the rule for
+    genotype differences (Het higher).
+- id: fig3h-nrem-total
+  statement: Total NREM sleep over 24 h does not differ between genotypes (two-sample t test, df
+    = 22, T = -.09, p = .93).
+  source: Figure 3H, left
+  criterion: NREM minutes per day, two-sample t test. Reproduced when p >= 0.05, not reproduced
+    when p < 0.05; the difference is reported either way.
+- id: fig3h-nrem-bouts
+  statement: Grin2b+/- rats have fewer NREM bouts, which are longer, than WT (Wilcoxon rank-sum,
+    bouts W = 29.5, p = .025; mean bout duration W = 26, p = .015).
+  source: Figure 3H, middle and right
+  criterion: Number of NREM bouts and mean NREM bout duration per day, each with a Wilcoxon
+    rank-sum test. Reproduced when both have p < 0.05 in the paper's direction (fewer, longer).
+    Partially reproduced when both means are in the paper's direction but not both tests have p <
+    0.05, or one measure is reproduced and the other is not. Not reproduced when neither mean
+    is in the paper's direction.
+- id: fig3i-wake-total
+  statement: Grin2b+/- rats spend less total time awake over 24 h than WT (Welch t test, df =
+    10.25, T = 2.26, p = .047).
+  source: Figure 3I, left; Results 3.4
+  criterion: Wake minutes per day (SWD epochs not counted as wake), Welch t test, judged by the
+    rule for genotype differences (Het lower).
+- id: fig3i-wake-bouts
+  statement: Grin2b+/- rats have more wake bouts of shorter duration than WT (Wilcoxon rank-sum,
+    W = 18, p = .0035; Welch t test on mean bout duration, df = 8.91, T = 2.97, p = .016).
+  source: Figure 3I, middle and right
+  criterion: Number of wake bouts (Wilcoxon rank-sum) and mean wake bout duration (Welch t test)
+    per day. Reproduced when both have p < 0.05 in the paper's direction (more, shorter).
+    Partially reproduced when both means are in the paper's direction but not both tests have p <
+    0.05, or one measure is reproduced and the other is not. Not reproduced when neither mean is
+    in the paper's direction.
+- id: fig4a-rem-spectrum
+  statement: EEG spectral power during REM sleep does not differ between genotypes (two-way
+    ANOVA genotype x band, genotype p = .14, interaction p = .69).
+  source: Figure 4A
+  criterion: Normalized REM band powers per animal (Methods spectra), two-way ANOVA (type II)
+    genotype x band. Reproduced when neither the genotype effect nor the interaction has p <
+    0.05; not reproduced when either has. The effect sizes are reported.
+- id: fig4b-nrem-beta
+  statement: During NREM sleep Grin2b+/- rats have higher beta power than WT (two-way ANOVA
+    genotype x band, interaction p = .038; Tukey beta p = .0008, other bands p >= .82).
+  source: Figure 4B
+  criterion: Normalized NREM band powers per animal, two-way ANOVA (type II) genotype x band, and
+    Tukey HSD over the ten genotype-band groups, read for the five same-band pairs. Reproduced
+    when the interaction has p < 0.05 and the beta pair has p < 0.05 with Het higher. Partially
+    reproduced when Het beta is higher on average without both tests reaching p < 0.05. Not
+    reproduced when Het beta is not higher.
+- id: fig4c-wake-power
+  statement: During wake, spectral power is reduced in Grin2b+/- rats overall, without a
+    difference in single bands (two-way ANOVA genotype x band, genotype p = .01, interaction p =
+    .86).
+  source: Figure 4C
+  criterion: Normalized wake band powers per animal, two-way ANOVA (type II) genotype x band.
+    Reproduced when the genotype effect has p < 0.05 with Het lower. Partially reproduced when
+    Het are lower on average over the bands without p < 0.05. Not reproduced when Het are not
+    lower.
+- id: fig5a-swd-state-distribution
+  statement: Over both genotypes, SWDs occur mostly in wake (94.8%), then NREM (4.4%), and rarely
+    in REM sleep (0.5%).
+  source: Figure 5A; Results 3.5
+  expected:
+  - quantity: SWDs in wake
+    value: 94.8
+    tolerance: 9.48
+    unit: percent
+  - quantity: SWDs in NREM
+    value: 4.4
+    tolerance: 0.44
+    unit: percent
+  - quantity: SWDs in REM
+    value: 0.5
+    tolerance: 0.05
+    unit: percent
+  criterion: All animals with at least one SWD, whatever their genotype (GRIN2B-132
+    included). The paper's text allows these readings, (a) the mean over animals of each
+    animal's percentages, with the state of the epoch before the SWD; (b) the percentages of all
+    SWDs pooled, same state rule; (c) as (a), with an SWD called NREM when any of the six epochs
+    before it is NREM; (d) as (b) with that NREM rule. Reproduced when the three values are
+    within tolerance under one reading. Partially reproduced when, under one reading, wake is
+    within tolerance and the order wake > NREM > REM holds. Not reproduced otherwise.
+- id: fig5a-het-more-nrem-swds
+  statement: Compared with WT, Grin2b+/- rats have a higher share of SWDs in NREM and a lower
+    share in wake (two-way ANOVA genotype x state, interaction p = .00008; Tukey NREM p = .0011,
+    wake p = .0022).
+  source: Figure 5A
+  criterion: Per-animal SWD state percentages (reading (a) of fig5a-swd-state-distribution);
+    two-way ANOVA genotype x state and Tukey tests within states. Needs at least two animals
+    with SWDs in each genotype; otherwise blocked.
+- id: fig5c-transition-swds
+  statement: All Grin2b+/- rats have SWDs that start at wake-NREM transitions, against 3 of 9 WT
+    rats (Fisher's exact test, p = .00062).
+  source: Figure 5C; Results 3.5
+  criterion: An animal counts when at least one of its SWDs over the two days is at a wake-NREM
+    transition (definition in the opening comment). Reproduced when every Het counts and
+    Fisher's exact test of Het against WT has p < 0.05. Partially reproduced when the Het
+    proportion exceeds the WT proportion without both conditions. Not reproduced when it does
+    not.
+- id: figs5b-transition-percent
+  statement: In Grin2b+/- rats 24.2% of SWDs occur during the wake-NREM transition, similar to
+    the 22.39% of the WT rats that have such SWDs (two-sample t test, p = .74).
+  source: Results 3.5; Figure S5B
+  expected:
+  - quantity: transitional SWDs, Het, mean over animals
+    value: 24.2
+    tolerance: 2.42
+    unit: percent
+  criterion: The denominator is not stated. Readings, (i) the percentage of an animal's
+    NREM-initiated SWDs that are transitional, an SWD being initiated in NREM when any of the six
+    epochs before it is NREM (Supplementary Methods); (ii) the percentage of all its SWDs that are
+    transitional; each as the mean over Het animals that have at least one SWD in the
+    denominator. Corrected after verification round 1, where reading (i) first took NREM from the
+    epoch before the SWD, which the Supplementary Methods use for wake and REM only; that rule is
+    shown as a variant. Reproduced when the Het value is within tolerance under one reading.
+    The WT value is reported for WT animals that have transitional SWDs; the t test needs at
+    least two of them and is otherwise not run.
+- id: fig5f-swd-wake-correlation
+  statement: In Grin2b+/- rats, total SWD duration is negatively correlated with total time awake
+    (Pearson, R = -.51, p = .048).
+  source: Figure 5F, left
+  expected:
+  - quantity: Pearson R, total SWD duration against total wake time, Het
+    value: -0.51
+    tolerance: 0.3
+    unit: dimensionless
+  criterion: Pearson correlation over Het animals of total SWD minutes and wake minutes per day.
+    The tolerance is about the half-width of the 95% interval of R for 15 animals. Reproduced
+    when R < 0 with p < 0.05; partially reproduced when R < 0 with p >= 0.05; not reproduced when
+    R >= 0.
+- id: fig5def-no-other-correlations
+  statement: In Grin2b+/- rats, total SWD duration is not correlated with total REM or NREM time,
+    the number of REM, NREM or wake bouts, or the mean REM, NREM or wake bout duration (Pearson,
+    all p >= .066).
+  source: Figure 5D-F
+  criterion: Pearson correlation over Het animals of total SWD minutes with each of the eight
+    measures. Reproduced when none has p < 0.05. The claim spans eight tests, so it is partially
+    reproduced when one or two have p < 0.05, and not reproduced when three or more do.
+- id: fig1c-glun2b-reduced
+  statement: GluN2B protein is reduced by about 50% in somatosensory cortex and hippocampus of
+    Grin2b+/- rats (homogenate t test p = .000104; synaptosome Wilcoxon p = .00094).
+  source: Figure 1C; Figure S2C
+  criterion: Needs the western blot quantification, which is not in the dandiset.
+- id: fig1df-other-proteins-unchanged
+  statement: GluN2A, GluR1 and PSD95 expression are unchanged in Grin2b+/- rats.
+  source: Figure 1D-F; Figure S2D-F
+  criterion: Needs the western blot quantification, which is not in the dandiset.
+- id: figs4-normal-development
+  statement: Grin2b+/- rats survive, grow and develop motor reflexes like WT littermates (survival
+    48% and 52%; body weight, righting reflex and negative geotaxis do not differ).
+  source: Results 3.2; Figure S4
+  criterion: Needs the survival, weight and reflex measures, which are not in the dandiset.
+- id: figs1-scorer-agreement
+  statement: The automated sleep scorer agrees with visual scoring on 90.8% of epochs (Cohen's
+    kappa 0.83).
+  source: Supplementary Methods; Table S1; Figure S1
+  criterion: Needs the visual scores of the 4-h validation periods, which are not in the
+    dandiset.
+- id: fig6b-systemic-etx-number
+  statement: Systemic ethosuximide reduces the number of SWDs relative to saline and memantine in
+    both genotypes (linear mixed model, treatment p = .0049; ethosuximide-saline p = .0081).
+  source: Figure 6B
+  criterion: Needs the pharmacology recordings (2-channel EEG, baseline, treatment and washout
+    days), which are not in the dandiset.
+- id: fig6c-systemic-duration
+  statement: Systemic ethosuximide and memantine reduce the mean SWD duration in Grin2b+/- rats
+    but not in WT (treatment x genotype p = .044).
+  source: Figure 6C
+  criterion: Needs the pharmacology recordings, which are not in the dandiset.
+- id: fig6d-systemic-total
+  statement: Systemic ethosuximide reduces the total SWD duration in both genotypes (treatment p =
+    .0011; ethosuximide-saline p = .0005).
+  source: Figure 6D
+  criterion: Needs the pharmacology recordings, which are not in the dandiset.
+- id: fig7c-nrt-infusion
+  statement: Infusion of ethosuximide or memantine into the reticular thalamic nucleus reduces
+    the number and total duration of SWDs in Grin2b+/- rats but not their mean duration.
+  source: Figure 7C
+  criterion: Needs the intrathalamic infusion recordings, which are not in the dandiset.
