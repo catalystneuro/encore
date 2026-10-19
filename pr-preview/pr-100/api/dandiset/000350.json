@@ -1,0 +1,434 @@
+{
+ "dandiset": "000350",
+ "page": "dandisets/000350/",
+ "generated": "2026-10-19T15:41:18+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 2,
+  "partially_reproduced": 3,
+  "not_reproduced": 4,
+  "blocked": 10
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000350-mu-2019-01",
+   "dandiset": "000350",
+   "dandiset_version": "0.240822.1759",
+   "paper": "10.1016/j.cell.2019.05.050",
+   "paper_title": "Glia Accumulate Evidence that Actions Are Futile and Suppress Unsuccessful Behavior",
+   "date": "2026-10-17",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "tier": "agent_verified",
+   "entry": "000350-mu-2019",
+   "entry_title": "Futility-induced passivity and whole-brain neuronal and glial activity in zebrafish (Mu et al. 2019)",
+   "description": "Tests the findings of Mu, Bennett, Rubinov et al. (2019) that dandiset 000350 can test. The dandiset holds 12 light-sheet sessions of paralysed larval zebrafish swimming fictively in virtual reality, with swim bouts, stimulus signals and, in 8 of them, segmented neuronal or neuronal and glial traces. The entry measures passive and active epochs, swim intervals and vigor in closed and open loop, and whole-brain neuronal and glial activity around passivity onset. The perturbation and noradrenergic imaging experiments of Figures 4 to 6 are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_mu_2019.ipynb",
+     "title": "Reproducing Mu et al. (2019) from dandiset 000350",
+     "executed": "notebooks/000350-mu-2019/reproduce_mu_2019.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1h-epoch-durations",
+     "statement": "In prolonged open loop, fish cycle between passive epochs lasting 24.4 +/- 2.5 s and active epochs lasting 36.1 +/- 4.2 s (mean +/- SEM, n = 74 fish), swimming 29 +/- 6 times per active epoch.",
+     "source": "Figure 1H; Results, first section; STAR Methods, Futility-induced passivity behavioral analysis",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mu_2019.ipynb",
+     "notes": "Under reading (a), epochs from the swim bouts in open loop, the mean over 12 fish is 20.47 s for passive epochs (within 24.4 +/- 4.9) and 19.06 bouts per active epoch (within 29 +/- 11.8), but 22.36 s for active epochs (outside 36.1 +/- 8.2). Reading (b), the ActivityStates table, gives 18.19 and 15.77 s; reading (c), pooled epochs, 18.81 s, 19.66 s and 15.99 bouts; neither puts any value within tolerance. Active epochs range from 7.3 to 64.1 s over fish. With a pause threshold of 6 s the means are 21.46 and 25.31 s. Keeping the epochs cut by the edges of an open-loop period (a variant) gives 20.87 s, 21.20 s and 18.06 bouts, again 2 of 3 within tolerance.",
+     "deviations": [
+      "12 imaged fish, where the paper's numbers come from 74.",
+      "Pauses are measured from the end of one bout to the start of the next; the Methods say only that the fish did not swim for 5 s.",
+      "Open loop is read from the gain signal (gain 0, grating moving); epochs cut by the edges of an open-loop period are left out, as the protocol alternates closed and open loop in 8 fish.",
+      "The tolerance is 1.96 times the stated SEM, not the SEM."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "methods-isi",
+     "statement": "In closed loop fish swim in discrete bouts about once per second (inter-swim interval 1.2 +/- 0.05 s, n = 74), and within active epochs of open loop the interval is 1.19 +/- 0.047 s against 24.4 s in passive epochs.",
+     "source": "STAR Methods, Futility-induced passivity behavioral analysis",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mu_2019.ipynb",
+     "notes": "Read as start to start over intervals under 5 s, the closed-loop interval is 1.143 s (within 1.2 +/- 0.098) and the interval within open-loop active epochs is 1.332 s (outside 1.19 +/- 0.092). End-to-start intervals give 0.981 and 0.881 s, and all closed-loop intervals 2.886 s (start to start); no reading puts both values within tolerance.",
+     "deviations": [
+      "The paper does not say how the interval is measured or which closed-loop intervals count; four readings are shown and one matches the closed-loop value.",
+      "12 fish, against 74."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1j-open-loop-passivity",
+     "statement": "Fish spend much more time in the passive state when swimming produces no visual feedback (open loop) than in closed loop with a naturalistic gain, where passivity is rare.",
+     "source": "Figure 1J; Figure 1C to E; Results, first section",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mu_2019.ipynb",
+     "notes": "Over all closed-loop time the median fraction of time in pauses of 5 s or more is 0.546, against 0.551 in open loop; open loop is higher in 7 of 12 fish (Wilcoxon p = 0.285), and the closed-loop median is far above the 10% the criterion allowed. Closed-loop passivity is high in blocks that follow open loop and at some gain levels (for example 0.937 at gain 0.030 in 20170127-1). Restricted to closed loop before the first open loop, a variant, the median is 0.104 and open loop is higher in 8 of 10 fish (p = 0.0137). By gain level, closed-loop passivity has a median of 0.183 before the first open loop and 0.825 after it, and it is lower at the highest gain than at the lowest in 2 of 7 fish before and 3 of 7 after (2 fish tied at 0.000 before). The gain is in arbitrary units, and no level can be identified as the paper's naturalistic gain. The outcome rests on the choice of closed-loop time; the closed-loop blocks after the first open loop decide it. The variant with closed loop before the first open loop is closer to the paper's comparison and meets the criterion for partially reproduced. The main reading was fixed before the analysis and is kept.",
+     "deviations": [
+      "The paper's Figure 1J varies the gain in 6 dedicated fish; here closed loop is all time with gain above 0 in the imaging sessions, which includes closed-loop blocks between open-loop blocks.",
+      "The dandiset's gain units cannot be mapped to the paper's, so closed loop is not restricted to a naturalistic gain."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1c-vigor-open-loop-onset",
+     "statement": "When switched from closed to open loop, fish first swim with higher vigor, then stop swimming.",
+     "source": "Figure 1C; Results, first section",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mu_2019.ipynb",
+     "notes": "In 9 fish with a usable switch, bouts after the switch to open loop are more powerful than the closed-loop bouts of the 30 s before in 7, median ratio 3.49 (0.78 to 10.30), Wilcoxon p = 0.0195. Requiring 30 s of uninterrupted closed loop before the switch leaves 4 fish (median ratio 4.87, p = 0.125). 3 fish have no usable switch. The bouts counted after a switch are limited to that open-loop period, a correction made after the first verification round that left every number unchanged.",
+     "deviations": [
+      "The paper shows this with example traces; the measure (power ratio of bouts) and its test were fixed here before the analysis."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1i-isi-before-passivity",
+     "statement": "Before the switch to passivity the inter-swim interval increases progressively, and fish swim more vigorously and less frequently in the seconds before passivity.",
+     "source": "Figure 1I (n = 61 fish); Results, first section",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mu_2019.ipynb",
+     "notes": "In active epochs of 10 or more bouts ending in passivity (11 fish), the last interval (1.506 s) is longer than the seventh from last (1.312 s) in 8 fish, Wilcoxon p = 0.103. The Spearman rho of k against the mean is -0.536, but only k = 1 stands out; the means for k = 2 to 7 lie between 1.274 and 1.357 s with no trend. The last 3 bouts are not more powerful than bouts 8 to 10 back (0.636 against 0.575, 6 fish, p = 0.16). The outcome depends on the minimum epoch length, which the paper does not state; with 8 or more bouts both parts hold (p = 0.00806, rho = -0.286; power p = 0.0269), and with 15 or more the interval part holds (p = 0.00195) and the power part does not (p = 0.423). Keeping the epochs cut by either edge of an open-loop period (a variant) gives p = 0.0874 for the intervals and p = 0.139 for the power.",
+     "deviations": [
+      "The minimum of 10 bouts per epoch and the comparison of k = 1 with k = 7 were chosen here; the paper plots the interval against the number of swims before passivity for 61 fish."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2bc-neurons-lower-in-passivity",
+     "statement": "Whole-brain average neuronal activity is higher during active behavior than during passivity, and decays after passivity onset.",
+     "source": "Figure 2B and 2C; Results, second section",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mu_2019.ipynb",
+     "notes": "The whole-brain neuronal signal is lower in open-loop passive epochs than in active epochs in all 8 fish (Wilcoxon p = 0.00391), by 0.64 to 1.96 SD of each fish's trace, and falls 5 to 10 s after passivity onset with p < 0.05 in 7 of 8 fish. The ActivityStates rows give 8 of 8.",
+     "deviations": [
+      "The whole-brain signal is the mean of the stored DfOverF over 8 to 15% of ROIs, in units of the stored series, which is not \u0394F/F as the Methods define it.",
+      "The paper shows this in one example fish; it was tested here over 8."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-glia-rise-at-passivity",
+     "statement": "Whole-brain average radial astrocyte calcium increases before passivity onset and peaks soon after it.",
+     "source": "Figure 2B and 2C (one example fish, 64 events); Figure 2G and 2I; Results, second section",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mu_2019.ipynb",
+     "notes": "The whole-brain glial signal rises before passivity onset and peaks after it in 2 of 4 two-colour fish (20170228-3 and 20170228-4; 1 to 4 s after onset 0.61 and 0.53 SD above baseline, p = 8.0e-13 and 1.1e-14; 2 to 0 s before, p = 1.7e-11 and 3.6e-17; peaks 3.5 and 2.5 s after onset). In 20161109-2 and 20170203-1 it falls after onset (-0.91 and -0.64 SD, p = 1 for an increase). The criterion needed 3 of 4. 20170228-3 has 67 onsets, close to the 64 events of the paper's example fish (Figure 2B), so it may be that fish. All 26 onsets of 20161109-2 and 42 of the 46 of 20170203-1 fall in code 32, prolonged open loop with the grating moving. The ActivityStates variant gives the same split, and so does keeping the epochs cut by the edges of an open-loop period, which adds 1 or 2 onsets per fish. Over the first five onsets after the start of each open-loop period the glial response is -1.13 and -0.62 SD in 20161109-2 and 20170203-1, and 0.83 and 1.36 SD in the other two. In 20161109-2 and 20170203-1 the glial trace has an SD of 0.0016 and 0.0011 (0.0097 and 0.0072 in the other two) and correlates with the neuronal trace at 0.58 and 0.59 (0.06 and 0.15). In 20170203-1 the neuronal trace also has a low SD (0.0016, against 0.0069 to 0.0180 in the other fish) and rises after onset (+0.28 SD, p = 0.0023), unlike the other three two-colour fish, so there the low SD affects both channels. The data here do not show why these two files differ.",
+     "deviations": [
+      "Whole-brain average of glia, as in the paper's Figure 2C, not the L-MO component of Figure 2G and 2I, which needs the cross-fish clustering and template registration.",
+      "The glia of these fish carry jRGECO1b; the paper's component analysis used GCaMP6f."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2a-open-loop-higher",
+     "statement": "Whole-brain average neuronal and glial calcium are higher and fluctuate more strongly in open loop than in closed loop.",
+     "source": "Results, second section; Figure S2A (not read)",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mu_2019.ipynb",
+     "notes": "For neurons the whole-brain signal is higher in open than closed loop in 6 of 8 fish (Wilcoxon p = 0.0195, median difference 0.17 SD) and fluctuates more in 7 of 8 (p = 0.00781, median SD ratio 2.98). For glia both hold in 3 of 4 fish (median difference 0.73 SD, SD ratio 3.06), not in all 4 as the criterion required; 20170203-1 is the exception for both. With the SD taken within each continuous period, raw or detrended (a variant), it is higher in open loop in 8 of 8 neuron fish (p = 0.0039, median ratios 3.72 and 5.15) and in 4 of 4 glia fish (median ratios 5.04 and 6.11). These periods differ in length (in 20170228-3, 10 closed-loop periods over 213 frames against 2 open-loop periods over 5477), so slow fluctuations count only in the long ones. With the SD in 10 s windows in both conditions (a variant), it is higher in open loop in 7 of 8 neuron fish (p = 0.0195, median ratio 2.52) and 3 of 4 glia fish (median ratio 2.07), with 20170203-1 the exception.",
+     "deviations": [
+      "Figure S2A was not read; the claim is taken from the Results text.",
+      "Switches are those between closed and open loop; stationary-grating periods carry the label of the condition before them."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2h-glia-weaker-closed-loop-pauses",
+     "statement": "When fish in closed loop stop swimming because the stimulus stops moving, glial calcium signals are weaker than during futility-induced passivity.",
+     "source": "Figure 2H and 2M; Results, second section",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_mu_2019.ipynb",
+     "notes": "The glial response to closed-loop pauses is smaller than to open-loop passivity onsets in 2 of 4 fish (20170228-3 and 20170228-4, Mann-Whitney p = 1.1e-05 and 5.0e-11), the two whose glia rise at passivity. In 20161109-2 and 20170203-1 the glia fall after passivity onset, and the pause response is not smaller (p = 0.78 and 0.98). 26 to 54% of the pauses start during a stationary grating. Requiring the gain above 0 over the whole window from 10 s before to 4 s after the pause, keeping the edge epochs, or both (variants) give the same 2 of 4.",
+     "deviations": [
+      "Closed-loop pauses include those with the grating moving, as the dandiset gives no stimulus labels beyond the velocity signal and stationary periods are 2 to 18 s long."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2dg-nmf-components",
+     "statement": "Non-negative matrix factorization of neurons and radial astrocytes gives components consistent across fish; glial component 1, in the lateral medulla oblongata (L-MO), is the most reliable, rising before and peaking after passivity onset (n = 5 neuron fish, 6 glia fish).",
+     "source": "Figure 2D to 2G",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "The claim is that components are consistent across fish, and the paper's clustering of components across fish was tuned by hand, with no code or parameters published. The paper's glial components come from 6 fish with glial GCaMP6f; the dandiset holds 3 such fish, with raw images only (8499 to 9000 volumes, 0.39 to 0.42 TB per file), and repeating the segmentation on them does not fit the time limit (too_large). The 4 two-colour files hold full glial DfOverF tables (jRGECO1b), so an NMF per fish could be run on them, but without the cross-fish clustering or a registration to a reference brain it would not test the claim.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2kl-lmo-glia-most-consistent",
+     "statement": "Of all brain regions, radial astrocytes in L-MO show the most consistent increases at passivity onset, with ramping signals before it.",
+     "source": "Figure 2K, 2L and 2M",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The ROIs have voxel masks in each fish's own image space, with no registration to a reference brain, no region labels and no stated orientation of the axes, so L-MO cannot be located without the paper's template.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1k-passive-unresponsive",
+     "statement": "Passive fish are less responsive to visual motion than active fish (p = 4.2e-7, n = 11).",
+     "source": "Figure 1K",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The protocol of a brief static stimulus followed by brief forward motion (11 fish) cannot be identified. The protocol codes are not described. Code 33, in 10 files, is a 0.3 to 0.5 s speed-up of the grating within open loop (faster in 390 of 462 blocks, never stationary), which is not the paper's static then forward stimulus; code 12 occurs once, for 3.4 s. Whether the paper's probe sessions are absent or present without labels cannot be told.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-replay",
+     "statement": "Replaying in open loop the visual motion recorded in closed loop also induces passivity.",
+     "source": "Figure 1F",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "A replay would show as open loop whose grating velocity follows an earlier closed-loop session. Only the baseline velocity is usable, which takes a few fixed levels; the TotalStimulusVelocitySignal stays between -0.002 and 0.008 and does not hold the velocity it describes. No protocol code is described, so a replay, if recorded, cannot be recognised. Code 52 has a randomised gain, not a replay. No separate behavioural dataset is on the archive.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-glia-necessary",
+     "statement": "Ablating radial astrocytes, or blocking their IP3 receptors, halves futility-induced passivity, while random neuronal ablation does not change it.",
+     "source": "Figure 4",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The ablation, nitroreductase and xestospongin experiments are not in the dandiset, and no other dandiset of this paper was found on the archive.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-glia-sufficient",
+     "statement": "Activating radial astrocytes with TRPV1, CoChR or Opto-alpha1-AR suppresses swimming, and astrocyte activation drives GABAergic neurons at the edge of L-MO.",
+     "source": "Figure 5",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The TRPV1, CoChR, Opto-alpha1-AR and GABAergic activation experiments are not in the dandiset.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-ne-ramp",
+     "statement": "The neuronal population whose activity rises fastest before passivity overlaps the noradrenergic neurons of the medulla oblongata (NE-MO).",
+     "source": "Figure 6A",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The neuronal traces are there (4 fish with processed GCaMP6f traces of the paper's 5), but locating NE-MO needs the registration to a reference brain and the noradrenergic labels, neither of which is in the files.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-ne-drives-glia",
+     "statement": "NE-MO activity precedes astrocyte activity at passivity, NE-MO ablation reduces passivity, and NE-MO stimulation activates radial astrocytes through alpha1B receptors.",
+     "source": "Figure 6B to 6N",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No session images noradrenergic neurons (Tg(th-P2A-Gal4); Tg(UAS:GCaMP6s)) or stimulates NE-MO, and the ablation and pharmacology experiments are not in the dandiset.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-ne-mismatch",
+     "statement": "NE-MO neurons respond to swims without visual feedback, encoding sensory-motor mismatch.",
+     "source": "Figure 7A to 7G",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Code 52, in 20170113-4 and 20170127-1 (neuronal GCaMP6f), has 16 and 22 gain levels and is consistent with the randomised gain of Figure 7C, but the code is not described, and NE-MO cannot be located without a registration to a reference brain or noradrenergic labels. The paper's NE imaging in Tg(th-P2A-Gal4); Tg(UAS:GCaMP6s) fish is not in the dandiset.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-glia-accumulate",
+     "statement": "Radial astrocyte calcium grows with the number of consecutive failed swims and with the probability that a swim fails.",
+     "source": "Figure 7H to 7K",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "Figure 7H uses open loop for 1, 2, 4, 8 or 16 bouts before a return to closed loop. No protocol code is described as ending open loop after a number of bouts. In the two-colour files, switches from closed to open loop followed by 16 or more bouts number 7 in 20170203-1, 2 in 20170228-3 and 3 in 20170228-4, so an analogue of Figure 7H (glia against the number of bouts since the switch, within long open-loop periods) could be run in three fish, two of them with 2 and 3 events. It was not run, as the claims file fixes no criterion for it and it would test only half of the claim; it is left for a new attempt. Figures 7J and 7K need to know which bouts produced visual flow. Codes 51 and 53 in 20170228-3 and 20170228-4 alternate with the gain at 0 in both, which may be the probabilistic task, but the codes are not described and TotalStimulusVelocitySignal does not hold the feedback of each bout, so the task cannot be identified.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds the 12 light-sheet sessions behind Figure 2 and its supplement, with behaviour, but none of the perturbation or noradrenergic imaging experiments of Figures 4 to 6, nor the behavioural recordings of the other 62 of the 74 fish of Figure 1. Some sessions hold undescribed protocols (randomised gain, brief grating speed-ups) that may belong to Figures 1K and 7, but they cannot be identified. No other dandiset of the paper was found."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Four files have raw images only and no cell traces, among them the only three glia-only GCaMP6f recordings (the paper's glial NMF used 6). Raw images cover only part of 20170113-4 (3065 of 12050 volumes present) and 20170228-4 (5776 of 7200 present), and 20170113-2 holds 7616 imaging volumes against 9751 camera triggers."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The glial imaging plane of the four two-colour files is labelled GCaMP6f but excited at 561 nm and detected at 660 nm, the jRGECO1b channel of the Methods (Tg(gfap:jRGECO1b)). The raw images are typed TwoPhotonSeries and the archive lists two-photon microscopy, though the microscope is a one-photon light sheet; the device is described as Zeiss confocal microscopes."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The DfOverF series are not \u0394F/F. In the four single-colour files each ROI trace is divided by its mean (float64, mean 1); in the four two-colour files traces are centred near 0 (float32) with the first 60 s held constant. The Fluorescence series vary by about 1e-6 per frame or not at all, consistent with baselines, and carry the same description as DfOverF."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The ActivityStates table is described only as classified periods of activity. It does not follow the Methods' definition (many active rows of 5 s or less), its transient rows are undefined and duplicate active rows, it holds 3 rows in the glia-only files, and it does not say which condition each row belongs to."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The stimulus signals have no units or descriptions beyond their names, and the protocol codes in StimulusParameterSignals (12, 22, 23, 32, 33, 51, 52, 53) are not described. Closed and open loop can be read only from the gain signal. From the signals, code 33 is a 0.3 to 0.5 s speed-up of the grating in open loop, code 52 a randomised gain, and codes 51 and 53 alternate closed and open loop in six files but both have the gain at 0 in 20170228-4."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "TotalStimulusVelocitySignal is described as the drift speed minus the motosensory gain times the swim power, but its values lie between -0.002 and 0.008 in every file, against baseline velocities of 0.5 to 2. The visual feedback each bout produced is not recorded."
+    },
+    {
+     "kind": "other",
+     "statement": "In two of the four two-colour files (20161109-2 and 20170203-1) the whole-brain glial trace has an SD of 0.0016 and 0.0011, against 0.0097 and 0.0072, correlates with the neuronal trace at 0.58 and 0.59 (0.06 and 0.15 in the others), and falls after passivity onset. In 20170203-1 the neuronal trace also has a low SD (0.0016, against 0.0069 to 0.0180 in the other fish), so there the low SD affects both channels. The files do not allow the cause to be checked."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The ROIs are in each fish's own image space, with no registration to a reference brain and no region labels, so the paper's region-level results (L-MO, NE-MO) cannot be located."
+    },
+    {
+     "kind": "other",
+     "statement": "The two groups of files were processed differently (trace scaling, data type, censoring, chunking), and the volume rate is 1.6 to 2.9 Hz against the 3 volumes per second of the Methods."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The SwimIntervals width column is described as the estimated width spanned by the swim event but equals the bout duration in seconds."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-17",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's full text (main text and STAR Methods; the Supplemental Information was not read). The verifier tested helper functions on synthetic inputs and read the archive's file list for the blocked claims. Its report had no attempt record and gave its own outcome for each claim; all 19 agree with the record on the outcome, and for five blocked claims it gave a different reason for the block.",
+     "agreed": 19,
+     "of": 19,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-17",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook after the first revision, with the conclusions and the summary, the helper module, the claims file and the attempt record. The verifier could not download the paper text this round (cell.com returned 403, the lab-site URL 404) and did not check the record's description of the Figure 7H protocol against the paper. It agreed with all 19 outcomes and listed sentences the outputs do not support.",
+     "agreed": 19,
+     "of": 19,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000350-mu-2019",
+   "type": "reproduction",
+   "title": "Futility-induced passivity and whole-brain neuronal and glial activity in zebrafish (Mu et al. 2019)",
+   "description": "Tests the findings of Mu, Bennett, Rubinov et al. (2019) that dandiset 000350 can test. The dandiset holds 12 light-sheet sessions of paralysed larval zebrafish swimming fictively in virtual reality, with swim bouts, stimulus signals and, in 8 of them, segmented neuronal or neuronal and glial traces. The entry measures passive and active epochs, swim intervals and vigor in closed and open loop, and whole-brain neuronal and glial activity around passivity onset. The perturbation and noradrenergic imaging experiments of Figures 4 to 6 are not in the dandiset.",
+   "dandisets": [
+    "000350"
+   ],
+   "papers": [
+    "10.1016/j.cell.2019.05.050"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_mu_2019.ipynb",
+     "title": "Reproducing Mu et al. (2019) from dandiset 000350",
+     "executed": "notebooks/000350-mu-2019/reproduce_mu_2019.html"
+    }
+   ]
+  }
+ ]
+}
