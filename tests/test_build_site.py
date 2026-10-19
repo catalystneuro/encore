@@ -236,3 +236,30 @@ def test_dandisets_converted_by_catalystneuro_can_be_filtered(built):
     ours = {t["dandiset"] for t in data["targets"] if t["catalystneuro"]}
     assert ours and {r["id"] for r in rows if r["converted"] == "catalystneuro"} == ours
     assert ("converted", "Converted by") in site.LISTS["dandisets"]["facets"]
+
+
+def test_the_dashboard_counts_each_dandiset_from_its_first_attempt():
+    claims = [{"claim": "a", "outcome": "reproduced", "data": "dandiset"}]
+    data = {"targets": [{"dandiset": "000001", "catalystneuro": ["repo"]}, {"dandiset": "000002", "catalystneuro": []}],
+            "attempts": [
+                {"id": "x-01", "dandiset": "000001", "paper": "p1", "date": "2026-10-13", "outcomes": claims, "findings": []},
+                {"id": "y-01", "dandiset": "000002", "paper": "p2", "date": "2026-10-13", "outcomes": claims,
+                 "findings": [{"kind": "other"}]},
+                {"id": "x-02", "dandiset": "000001", "paper": "p1", "date": "2026-10-15", "outcomes": claims * 2,
+                 "findings": []}]}
+    p = site.progress_data(data)
+    assert p["days"] == ["2026-10-13", "2026-10-14", "2026-10-15"]
+    every = p["series"]["all"]
+    assert every["dandisets"] == [2, 0, 0] and every["attempts"] == [2, 0, 1]
+    # Claims and findings come from each dandiset's current attempt, on its date.
+    assert every["claims"] == [1, 0, 2] and every["findings"] == [1, 0, 0]
+    assert p["series"]["catalystneuro"]["dandisets"] == [1, 0, 0]
+    assert 'data-metric="findings"' in site.progress_panel(data)
+
+
+def test_the_overview_shows_the_dashboard(built):
+    data, out = built
+    if len(site.progress_data(data)["days"]) > 1:
+        page = (out / "index.html").read_text()
+        assert 'id="progress-data"' in page and "assets/progress.js" in page
+        assert (out / "assets" / "progress.js").is_file()
