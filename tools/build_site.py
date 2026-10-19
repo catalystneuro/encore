@@ -45,6 +45,9 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = Path(__file__).resolve().parent / "site_assets"
 REPO_URL = "https://github.com/catalystneuro/reproduction-registry"
+SITE_URL = "https://catalystneuro.github.io/reproduction-registry/"
+SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of neuroscience papers from their open data on the "
+                    "DANDI Archive, and record every outcome and what they find about the data.")
 
 OUTCOMES = {  # key: (label, css class, icon)
     "reproduced": ("Reproduced", "good", "✓"),
@@ -497,7 +500,41 @@ def rows_cache(data: dict) -> dict:
     return _ROWS[key]
 
 
-def shell(data: dict, title: str, root: str, active: str, body: str, scripts: str = "") -> str:
+def head_tags(data: dict, title: str, path: str, description: str, structured: dict | None) -> str:
+    """The description, canonical link and social-card tags of one page.
+
+    Links are absolute and point at the published site, also in a preview, so search engines and link previews
+    resolve them to the real page. Demo and preview builds are kept out of search results.
+    """
+    url = SITE_URL + path
+    card = SITE_URL + "assets/social-card.png"
+    tags = [
+        f'<meta name="description" content="{e(description)}">',
+        f'<link rel="canonical" href="{e(url)}">',
+        '<meta property="og:type" content="website">',
+        '<meta property="og:site_name" content="Reproduction registry">',
+        f'<meta property="og:title" content="{e(title)}">',
+        f'<meta property="og:description" content="{e(description)}">',
+        f'<meta property="og:url" content="{e(url)}">',
+        f'<meta property="og:image" content="{card}">',
+        '<meta property="og:image:width" content="1200">',
+        '<meta property="og:image:height" content="630">',
+        '<meta property="og:image:alt" content="Reproduction registry: can the findings of a paper be reproduced '
+        'from its open data?">',
+        '<meta name="twitter:card" content="summary_large_image">',
+        f'<meta name="twitter:title" content="{e(title)}">',
+        f'<meta name="twitter:description" content="{e(description)}">',
+        f'<meta name="twitter:image" content="{card}">',
+    ]
+    if data["demo"] or data.get("noindex"):
+        tags.append('<meta name="robots" content="noindex">')
+    if structured:
+        tags.append('<script type="application/ld+json">' + json.dumps(structured).replace("</", "<\\/") + "</script>")
+    return "\n".join(tags)
+
+
+def shell(data: dict, title: str, root: str, active: str, body: str, scripts: str = "", path: str = "",
+          description: str = SITE_DESCRIPTION, structured: dict | None = None) -> str:
     r = rows_cache(data)
     tabs = [("overview", "Overview", root or "./", None),
             ("dandisets", "Dandisets", f"{root}dandisets/", len({a["dandiset"] for a in data["attempts"]}))]
@@ -512,7 +549,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <html lang="en"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{e(title)}</title>
-<meta name="description" content="Which findings of papers can be reproduced from the open data on the DANDI Archive.">
+{head_tags(data, title, path, description, structured)}
 <script>try{{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t;}}catch(e){{}}</script>
 <link rel="icon" href="{root}assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="{root}assets/favicon-32.png" type="image/png" sizes="32x32">
@@ -776,7 +813,13 @@ def page_overview(data: dict) -> str:
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
                'if(h&&m[h[1]])location.replace("dandisets/"+m[h[1]]+"/");})();</script>'
                + ('<script src="assets/progress.js"></script>' if dashboard else ""))
-    return shell(data, "Reproduction registry", "", "overview", body, scripts)
+    structured = {
+        "@context": "https://schema.org", "@type": "WebSite", "name": "Reproduction registry",
+        "url": SITE_URL, "description": SITE_DESCRIPTION,
+        "publisher": {"@type": "Organization", "name": "CatalystNeuro", "url": "https://www.catalystneuro.com"},
+    }
+    return shell(data, "Reproduction registry: can the findings of a paper be reproduced from its open data?", "",
+                 "overview", body, scripts, path="", structured=structured)
 
 
 LISTS = {
@@ -838,7 +881,8 @@ def page_list(data: dict, kind: str) -> str:
 </main>'''
     scripts = (f'<script type="application/json" id="list-config">{json.dumps(config)}</script>'
                f'<script src="../assets/list.js"></script>')
-    return shell(data, f'{spec["title"]} · Reproduction registry', "../", kind, body, scripts)
+    return shell(data, f'{spec["title"]} · Reproduction registry', "../", kind, body, scripts, path=f"{kind}/",
+                 description=spec["intro"])
 
 
 CLAIMS_JS = """<script>(function(){
@@ -916,6 +960,22 @@ def notebooks_panel(data: dict, dandiset: str, root: str) -> tuple[str, int]:
                 f'<p class="sub small">{e(en["description"])}{also}{built_on}{code}</p>'
                 f'<ul class="plain">{items}</ul></div>')
     return out, count
+
+
+def dandiset_title(dandiset: str, atts: list[dict]) -> str:
+    """The page title: the paper when there is one, then the dandiset."""
+    titles = {a["paper_title"] for a in atts if a.get("paper_title")}
+    paper = titles.pop() if len(titles) == 1 else None
+    return f"{paper} (DANDI:{dandiset}) · Reproduction registry" if paper else f"DANDI:{dandiset} · Reproduction registry"
+
+
+def dandiset_description(dandiset: str, atts: list[dict]) -> str:
+    """One sentence with what was tested and what came of it, for search results and link previews."""
+    counts = outcome_counts(atts)
+    n, findings = sum(counts.values()), sum(len(a["findings"]) for a in atts)
+    parts = [f"{counts[k]:,} {OUTCOMES[k][0].lower()}" for k in OUTCOMES if counts[k]]
+    return (f"An attempt to reproduce the findings of a paper from dandiset {dandiset} on the DANDI Archive: "
+            f"{n:,} claims tested ({', '.join(parts)}) and {findings:,} findings about the data.")
 
 
 def page_dandiset(data: dict, dandiset: str) -> str:
@@ -1108,8 +1168,8 @@ def page_dandiset(data: dict, dandiset: str) -> str:
   {related}
   <div class="prevnext">{prev_link}{next_link}</div>
 </main>'''
-    return shell(data, f"Dandiset {dandiset} · Reproduction registry", root, "dandisets", body,
-                 CLAIMS_JS + TABS_JS)
+    return shell(data, dandiset_title(dandiset, atts), root, "dandisets", body, CLAIMS_JS + TABS_JS,
+                 path=f"dandisets/{dandiset}/", description=dandiset_description(dandiset, atts))
 
 
 # --- writing -------------------------------------------------------------------
@@ -1137,6 +1197,16 @@ def build(data: dict, output: Path) -> None:
             "entries": entries_for(data, dandiset),
         }, indent=1) + "\n")
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
+    (output / "sitemap.xml").write_text(sitemap(data))
+
+
+def sitemap(data: dict) -> str:
+    """Every page of the site, for search engines; each dandiset page dated by its latest attempt."""
+    pages = [("", data["generated"][:10])] + [(f"{kind}/", data["generated"][:10]) for kind in LISTS]
+    pages += [(f"dandisets/{d}/", max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
+    urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)
+    return ('<?xml version="1.0" encoding="UTF-8"?>\n'
+            f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
 
 
 def main() -> int:
@@ -1145,11 +1215,14 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=ROOT / "site")
     parser.add_argument("--demo", type=int, metavar="N",
                         help="build from N made-up attempts, to test the site at scale; never publish")
+    parser.add_argument("--noindex", action="store_true",
+                        help="keep the pages out of search results, for a preview of a pull request")
     args = parser.parse_args()
     args.output.mkdir(parents=True, exist_ok=True)
     data = collect(args.output / "notebooks")
     if args.demo:
         data = demo(data, args.demo)
+    data["noindex"] = args.noindex
     build(data, args.output)
     print(f"wrote {args.output} ({len(data['attempts'])} attempts, {len(data['targets'])} targets"
           f"{', DEMO DATA' if data['demo'] else ''})")

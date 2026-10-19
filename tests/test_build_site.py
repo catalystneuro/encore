@@ -271,3 +271,29 @@ def test_view_on_dandi_opens_a_new_window(built):
     page = (out / "dandisets" / dandiset / "index.html").read_text()
     assert (f'<a href="https://dandiarchive.org/dandiset/{dandiset}" target="_blank" rel="noopener">View on DANDI</a>'
             in page)
+
+
+def test_pages_carry_a_description_canonical_link_and_social_card(built):
+    data, out = built
+    home = (out / "index.html").read_text()
+    assert f'<link rel="canonical" href="{site.SITE_URL}">' in home
+    assert f'<meta property="og:image" content="{site.SITE_URL}assets/social-card.png">' in home
+    assert '"@type": "WebSite"' in home and 'name="robots"' not in home
+    assert (out / "assets" / "social-card.png").is_file()
+    dandiset = next(iter(site.current_attempts(data)))
+    page = (out / "dandisets" / dandiset / "index.html").read_text()
+    assert f'href="{site.SITE_URL}dandisets/{dandiset}/"' in page and "claims tested" in page
+
+
+def test_the_sitemap_lists_every_dandiset_page(built):
+    data, out = built
+    sitemap = (out / "sitemap.xml").read_text()
+    for dandiset in site.current_attempts(data):
+        assert f"<loc>{site.SITE_URL}dandisets/{dandiset}/</loc>" in sitemap
+
+
+def test_a_preview_is_kept_out_of_search_results(tmp_path):
+    data = site.collect()
+    data["noindex"] = True
+    site.build(data, tmp_path)
+    assert '<meta name="robots" content="noindex">' in (tmp_path / "index.html").read_text()
