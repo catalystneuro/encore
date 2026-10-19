@@ -103,6 +103,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [001878](https://dandiarchive.org/dandiset/001878) | [Sun et al. 2021](https://doi.org/10.22002/d1.1991) | 4 (+1) | 2 (+1) | 0 | 0 | [`001878-sun-2021`](entries/001878-sun-2021) |
 | [001712](https://dandiarchive.org/dandiset/001712) | [Davatolhagh et al. 2025](https://doi.org/10.1101/2025.09.12.675910) | 3 | 2 | 2 | 11 | [`001712-davatolhagh-2025`](entries/001712-davatolhagh-2025) |
 | [001888](https://dandiarchive.org/dandiset/001888) | [Hristova et al. 2025](https://doi.org/10.1111/epi.18606) | 13 | 9 | 2 | 10 | [`001888-hristova-2025`](entries/001888-hristova-2025) |
+| [000005](https://dandiarchive.org/dandiset/000005) | [Yu et al. 2016](https://doi.org/10.1038/nn.4412) | 5 | 0 | 2 | 1 | [`000005-yu-2016`](entries/000005-yu-2016) |
 
 Counts are of claims that rest on the dandiset, including those that take
 names for its own codes from elsewhere. Claims that also use data from
