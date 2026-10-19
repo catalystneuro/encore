@@ -1,0 +1,443 @@
+schema_version: 1
+id: 001692-bouabid-2026-01
+dandiset: "001692"
+dandiset_version: 0.260303.1724
+paper: doi:10.64898/2026.01.20.700614
+date: 2026-10-19
+entry: 001692-bouabid-2026
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-7
+inputs:
+- what: Source data of Figure 8 (per-slice peak ACh values and FCV time courses), used only for the
+    claims with data elsewhere (fig8b-quinpirole-region, fig8e-cocaine-region, fig8fg-d2-block,
+    fig8c-cocaine-da-similar). The same record's Key Resources Table names the pinned dandiset
+    version and the code repository.
+  source: doi:10.5281/zenodo.18202873
+- what: The paper's analysis code, read for the procedures and parameters the Methods leave open
+    (session selection, windows, lags, significance windows, the stillness threshold of 0.0208 m/s,
+    the hotspot procedure, the invigoration GLM). No data were taken from it.
+  source: https://github.com/HoweLab/BouabidVu2026 at commit 833fa3dd5f6799a61d078630c0680cfd6028023b
+outcomes:
+- claim: fig1e-dominant-polarity
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig1e-dominant-polarity
+  measured:
+  - 133
+  - 128
+  - 41
+  - 32
+  notes: Of 174 sites, 133 have a dominant negative correlation (128 with DA leading) and 41 a
+    dominant positive one (32 with ACh leading); 6 have their extreme at lag 0. All four counts are
+    within 10% of the paper's. Every mouse has more negative than positive sites. Correlation over
+    concatenated sessions gives 133, 128, 41 and 30.
+  deviations:
+  - One UG27 reward session (240313r) lacks the artifact-removed green series and is skipped, as the
+    code skips empty series; it is not a spontaneous session, so this claim is unaffected.
+- claim: fig1f-adls-hotspot
+  outcome: partially_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig1f-adls-hotspot
+  notes: The hotspot procedure finds a significant hotspot of 1.01 mm3 with mean smoothed r -0.368
+    (hull mean -0.185). Its centroid (AP 0.63, ML 2.02, DV -3.14 mm) is anterior and dorsal of the
+    median site (0.10, 2.04, -3.21 mm) but 0.02 mm medial of it, which fails the lateral part of the
+    criterion fixed beforehand. With the 99th percentile of the null the hotspot has 518 voxels and
+    its centroid is at ML 2.09 mm, lateral of the median. 28 sites from all five mice are inside.
+    The location test against the median site is a coarse stand-in for the paper's maps, in which
+    the hotspot lies in aDLS; the shortfall is small.
+  deviations:
+  - The hotspot procedure is simplified from the paper's code (linear in place of natural-neighbor
+    interpolation, 100 um voxels in place of 50 um, the convex hull of the sites in place of the
+    Allen striatum mask, 200 in place of 10000 shuffles).
+  - The paper does not define the aDLS location in numbers; the criterion compares the centroid
+    with the median site coordinates.
+- claim: fig1h-in-vs-out
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig1h-in-vs-out
+  notes: The 28 sites inside have median dominant r -0.41 against -0.14 for the 146 outside,
+    rank-sum p = 1.8e-13 (the paper 1.67e-16). The test is partly circular, as in the paper.
+  deviations:
+  - The hotspot is the simplified one of fig1f-adls-hotspot.
+- claim: fig1f-positive-posterior
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig1f-positive-posterior
+  notes: Sites with a positive dominant r have median AP -0.40 mm (41 sites) against 0.24 mm for
+    negative sites (133), one-sided rank-sum p = 4.3e-07. The direction holds in all five mice and is
+    significant in UG27, UG29 and UG31.
+  deviations:
+  - The paper shows this on maps; the test of AP coordinates was chosen here.
+- claim: ed2-hotspot-per-mouse
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:ed2-hotspot-per-mouse
+  notes: All five mice have lower median r inside the group hotspot; p < 0.05 in UG27, UG28, UG30 and
+    UG31, and p = 0.079 in UG29, which has 2 sites inside.
+  deviations:
+  - The per-mouse hotspots of Extended Data Figure 2b-c are not computed.
+- claim: ed1-controls-no-organization
+  outcome: not_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:ed1-controls-no-organization
+  notes: In AD4 to AD6 (ACh4.3mut and tdTomato) the hotspot procedure finds a hotspot with mean
+    smoothed r +0.33 (551 voxels, centroid AP 0.68, ML 1.29, DV -4.14 mm), so by the paper's test
+    the claim of no organization fails. Correlations are mostly positive (68% of 124 sites, median
+    0.20), as stated, but not weak; the median absolute dominant r is 0.238 against 0.240 in the
+    sensor mice, and 65% of control sites exceed 0.2 against 54%. One control site has no defined
+    correlation (a constant red trace) and is dropped; 19 site-sessions have constant red traces.
+    Keeping the reward periods gives median r 0.22. The controls use the high-pass series without
+    artifact removal (none is in their files), which may leave shared artifacts that inflate
+    red-green correlations.
+  deviations:
+  - The 15 uncued reward sessions of the control mice are used, with 6 s after rewards and first
+    licks left out; the paper used the ITI data of all their sessions, which the files' event
+    tables would allow but which would take most of the time limit to stream.
+  - The control files hold no artifact-removed series; the high-pass series is used.
+- claim: fig2a-directionality
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig2a-directionality
+  notes: Median directionality indices are -0.27 (ACh trough with DA peak), -0.30 (ACh peak with DA
+    trough), +0.33 (peak with peak) and +0.12 (trough with trough) over 174 sites, each with
+    Wilcoxon p below 1e-24, and each mouse has the same four signs.
+  deviations:
+  - Pairs are matched by the Methods' rule (each first transient takes its earliest partner, each
+    partner used once), a simplification of the code's two-way matching.
+  - The code keeps only sites flagged as having signal in both channels (`sig`); these flags are not
+    in the files and all 174 included sites are used, as the paper reports 174.
+- claim: fig2-magnitude-correlations
+  outcome: partially_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig2-magnitude-correlations
+  measured:
+  - 115
+  - 70
+  - 90
+  - 76
+  notes: Significant sites of the stated sign are 115, 70, 90 and 76 against 121, 81, 97 and 78;
+    the second is 2.9 below its tolerance. No site is significant in the opposite direction, as
+    stated. All sites have at least 100 pairs. The code's computation (Pearson r over all pairs,
+    p < 0.05) finds 143 to 150 sites per type, so the paper's counts fit the Methods' bootstrap.
+  deviations:
+  - 1000 in place of 10000 repetitions of the 100-pair bootstrap.
+- claim: fig2d-magnitude-in-out
+  outcome: partially_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig2d-magnitude-in-out
+  notes: ACh troughs with DA peaks are more negative inside (median -0.32 against -0.23, p = 0.0001);
+    ACh peaks with DA troughs do not differ (-0.18 against -0.17, p = 0.12). Same-sign pairs do not
+    differ (p = 0.12 and 0.21), as stated.
+- claim: fig2b-pairing-overlaps-hotspot
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig2b-pairing-overlaps-hotspot
+  notes: The occurrence hotspot of each pair type overlaps the correlation hotspot by 782 to 829
+    voxels against null medians of 53 to 128 (overlap p 0.015, 0.020, 0.005 and below 0.005; the
+    paper 0.005, 0.005, 0.002 and below 0.001). Occurrence is higher inside than outside for each
+    type (p < 0.001). The paper's correction for chance pairing (Extended Data Figure 3g-h) is not
+    computed.
+  deviations:
+  - 200 random volumes in the overlap test, so p cannot fall below 0.005.
+- claim: ed3e-transient-rates-in-hotspot
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:ed3e-transient-rates-in-hotspot
+  notes: All four transient types are more frequent inside the hotspot (for example DA peaks 0.198
+    against 0.156 per second), p of 0.003 or less.
+- claim: fig3b-reward-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig3b-reward-correlation
+  measured:
+  - 122
+  - 52
+  - 172.1
+  - -59.8
+  notes: 122 sites are dominant negative (mean latency 172.1 ms, 120 with DA leading) and 52 dominant
+    positive (mean latency -59.8 ms, 37 with ACh leading). Three values are within tolerance; the
+    positive count is 0.2 below its range (52.2 to 63.8). Negative sites outnumber positive ones in
+    every mouse.
+  deviations:
+  - The latency tolerances are the standard errors implied by the paper's spreads.
+  - One UG27 reward session (240313r) is skipped for lacking the artifact-removed green series.
+- claim: fig3d-reward-in-out
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig3d-reward-in-out
+  notes: Median r -0.52 inside against -0.31 outside, p = 7.2e-09; same sign in all five mice,
+    significant in three.
+- claim: fig3e-reward-hotspot-overlap
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig3e-reward-hotspot-overlap
+  notes: The reward hotspot has mean -0.53 (1022 voxels, centroid AP 0.54, ML 2.07, DV -3.26 mm) and
+    shares 721 voxels with the spontaneous hotspot against a null median of 116, overlap p = 0.01
+    (the paper 0.008).
+  deviations:
+  - 200 random volumes in the overlap test.
+- claim: fig4-cue-sequence
+  outcome: not_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig4-cue-sequence
+  measured: 58
+  notes: The sequence is found at 58 of 75 sites under both readings (code percentiles 55 and 52),
+    above the tolerance of 44.1 to 53.9. The qualitative statement holds; a majority of sites shows
+    the sequence overall and in each mouse (12 of 17, 19 of 24, 27 of 34). The criterion counted
+    only a shortfall as partial; a count above the range is not reproduced by its wording.
+  deviations:
+  - The paper does not define how the sequence is identified; significant ACh peak, DA peak and ACh
+    dip with ordered extremes in the mean trace was chosen here.
+  - Learning sessions are identified from the events (every light cue rewarded); the last 3 per
+    mouse are used, following the code's intent (see findings on the code).
+  - Tone trials cannot be analysed (no tone events); the paper's figure uses light trials.
+- claim: fig4c-cue-correlation
+  outcome: partially_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig4c-cue-correlation
+  measured:
+  - 41
+  - 34
+  - 206.0
+  - -83.3
+  notes: All 75 sites have a significant cue DA peak, so the two readings agree. 41 sites are
+    negative (mean latency 206.0 ms, 37 with ACh lagging) and 34 positive (-83.3 ms, 22 with ACh
+    leading). The positive count is above its range (23.4 to 28.6); the paper's 39 plus 26 make 65,
+    which fits neither reading here.
+  deviations:
+  - The denominator is ambiguous (75 sites or those with a significant DA peak); both readings are
+    shown and agree here.
+- claim: fig4h-extinction-correlation
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig4h-extinction-correlation
+  measured:
+  - 38
+  - 118.4
+  notes: Under reading (a), 38 of 61 sites with a significant DA dip are negative with mean lag 118.4
+    ms (the paper 41 of 74, 117.9 ms). Over all 75 sites, 47 negative with mean lag 114.7 ms. Only 28
+    of the 38 have ACh lagging, and AD2's negative sites have a mean lag of -79.4 ms. The code's
+    polarity (DA peak) gives 44 sites with mean lag 137.6 ms.
+  deviations:
+  - The DA trough is used, as the legend and Methods state; the code correlates the DA peak in this
+    step, shown as a variant.
+  - The paper's denominator (74) and the legend's 48 sites in 5 mice do not match each other or the
+    75 sites in 3 mice of the files; two readings are shown.
+- claim: fig4d-cue-in-out
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig4d-cue-in-out
+  notes: The 9 AD1 to AD3 sites inside the global hotspot have median r -0.31 against 0.02 for the 66
+    outside, p = 0.023. The cue hotspot's own overlap with the global hotspot is not significant
+    (p = 0.175), unlike the paper's Figure 4e.
+  deviations:
+  - Sites of the Pavlovian cohort are placed in the global hotspot by their coordinates on the
+    shared grid.
+- claim: fig4j-extinction-in-out
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig4j-extinction-in-out
+  notes: Among dip sites, median r -0.35 inside (8 sites) against -0.21 outside (53), p = 0.034; all
+    sites p = 0.018. The extinction hotspot's overlap with the global one is not significant
+    (p = 0.17).
+- claim: fig5d-initiation-responses
+  outcome: partially_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig5d-initiation-responses
+  measured:
+  - 107
+  - 129
+  - 77
+  - 46
+  notes: DA dips at 129 sites and rises at 77 are within 10% (the paper 119 and 73); both at 46 is
+    not (32). ACh rise then fall at 107 sites under reading (a) and a rise at 147 under reading (b),
+    neither within 117.9 to 144.1. Code percentiles give 114 dips, 61 rises and 26 both. The code's
+    bout of 2.2 s gives 132, 74 and 44. UG27 contributes 501 initiations against 92 to 149 for the
+    others; its wheel velocity exceeds the threshold 49% of the time.
+  deviations:
+  - A zero-phase Butterworth filter replaces MATLAB's lowpass.
+  - 1000 bootstrap samples in place of 10000.
+  - The Methods' bout of 2.27 s is used; the code's 2.2 s is a variant.
+- claim: fig5-latency-order
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig5-latency-order
+  measured:
+  - 111.1
+  - 277.8
+  - 277.8
+  - 666.7
+  notes: Medians are 111.1 ms (DA dips), 277.8 ms (ACh peaks), 277.8 ms (DA peaks) and 666.7 ms (ACh
+    dips), in the stated order; the ACh peak and dip medians are exactly one sample later than the
+    paper's, at the edge of the tolerance. The per-mouse order is irregular (DA peak medians from
+    -388.9 to 527.8 ms).
+  deviations:
+  - The Methods do not say how latency is measured; the time of the extreme of the triggered average
+    in -0.5 to 1 s was chosen here.
+- claim: fig5e-initiation-topography
+  outcome: not_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig5e-initiation-topography
+  notes: Dominant DA dips are more anterior than DA rises (median AP 0.36 against -0.48 mm,
+    p < 0.0001) but more medial (ML 1.88 against 2.30 mm) and ventral; ACh-dip sites (148 of 174) are
+    not more anterior or lateral than the 26 others (p = 0.33 and 0.25). All 28 hotspot sites have a
+    dominant DA dip and an ACh dip. The paper describes maps; with ACh dips at 85% of sites a
+    contrast between sites with and without dips may not capture where dips are strongest.
+  deviations:
+  - The paper shows the topography as smoothed maps; site-level coordinate tests were chosen here.
+- claim: fig6a-initiation-correlation
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig6a-initiation-correlation
+  measured: 182.4
+  notes: Of 129 sites with a DA dip (the paper 119), 99 are dominant negative (89 with ACh lagging),
+    mean latency 182.4 ms under reading (a); 99.1 ms under reading (b). Most dip sites are negative in
+    every mouse.
+  deviations:
+  - The latency tolerance is the standard error implied by the paper's spread.
+- claim: fig6c-initiation-in-out
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig6c-initiation-in-out
+  notes: Median r -0.36 inside (28 sites) against -0.21 outside (101), p = 6.1e-08.
+- claim: fig6g-invigoration-in-out
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig6g-invigoration-in-out
+  notes: The GLM finds invigoration DA peaks at 160 sites (the paper 131); 105 are dominant negative
+    (97 with ACh lagging, mean lag 179.4 ms); median r -0.34 inside (28) against -0.21 outside (132),
+    p = 4.5e-05.
+  deviations:
+  - Ordinary least squares in numpy in place of MATLAB fitglm (normal family, identical model).
+- claim: fig7-da-release
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig7-da-release
+  measured: 179
+  notes: 179 of 180 sites show a significant DA peak after ITI stimulation (178 with the code's
+    percentiles); 115 ITI trains in total (20 per mouse, 15 in ADS6).
+- claim: fig7e-ach-suppression
+  outcome: partially_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig7e-ach-suppression
+  measured: 147
+  notes: 147 of 180 sites (82%) show a significant ACh dip against 116 (64%); 128 (71%) with the
+    code's percentiles. The 33 sites without a dip are mostly in ADS19 (17 of 27) and ADS16 (9 of 37).
+  deviations:
+  - 1000 bootstrap samples in place of 10000.
+- claim: ed9-cohort-hotspot
+  outcome: partially_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:ed9-cohort-hotspot
+  notes: The 9 cohort sites inside the original hotspot are more negative (median -0.42 against
+    -0.30, p = 0.049; OR exclusion p = 0.041). The cohort's own hotspot is negative (mean -0.44, 1536
+    voxels, centroid AP 0.71, ML 2.00, DV -3.45 mm) and shares 564 voxels with the original against a
+    null median of 65, but overlap p = 0.085 with 200 random volumes. 167 of 180 cohort sites are
+    dominant negative.
+  deviations:
+  - The code's AND of the three exclusions is followed; OR is a variant.
+- claim: fig7f-ach-dip-in-out
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig7f-ach-dip-in-out
+  notes: ACh minima are deeper inside the cohort hotspot (median -0.0179 against -0.0149 dF/F, 17
+    against 163 sites, p = 0.0005); against the original hotspot p = 0.094; the ACh-minimum hotspot's
+    overlap with the cohort hotspot has p = 0.065. Inside sites are lower in all six mice,
+    significantly in ADS19.
+- claim: fig8b-quinpirole-region
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig8b-quinpirole-region
+  measured:
+  - 105.87
+  - 3.014
+  - 17.8
+  notes: Region F 105.87, interaction F 3.014 and stimulus F 17.80 match the paper; DLS mean 25.1
+    against NAcC 68.1.
+- claim: fig8e-cocaine-region
+  outcome: partially_reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig8e-cocaine-region
+  measured:
+  - 10.75
+  - 47.68
+  - 199.86
+  notes: Interaction F 10.75 and region F 199.86 match (10.75 and 199.9); stimulus F is 47.68 against
+    the paper's 36.37. DLS 32.8 against NAcC 74.1.
+- claim: fig8fg-d2-block
+  outcome: reproduced
+  notebook: reproduce_bouabid_2026.ipynb
+  output: claim:fig8fg-d2-block
+  measured:
+  - 231.87
+  - 32.57
+  notes: Block F 231.87 (DLS) and 32.57 (NAcC) match; the antagonist raises ACh in both (32.8 to 78.6,
+    74.1 to 107.9). The DLS stimulus F is 45.04 where the legend gives 34.46.
+- claim: fig8c-cocaine-da-similar
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_bouabid_2026.ipynb
+  notes: The source data hold mean DA time courses (24 time points from 0.625 to 3.5 s) for three
+    mice per region and two conditions. The legend's ANOVA has 8 degrees of freedom for cocaine and
+    36 residual, which fits neither a two-level cocaine factor nor the 24 time points, so the test
+    cannot be repeated.
+findings:
+- kind: metadata_error
+  statement: Every photometry series states a sampling rate of 9 Hz (starting_time rate 8.999 to
+    9.0). Each series has as many samples as the behavior series, which steps at 55.6 ms (18 Hz), and
+    the Methods and code use 18 Hz; at the stated rate the recordings would last twice as long as
+    their timestamps.
+- kind: metadata_insufficient
+  statement: No field in the files states which experiment (spontaneous, unpredicted reward,
+    Pavlovian learning or extinction, control, stimulation) a session belongs to, or which Pavlovian
+    phase. Cohorts can be told only from subject names and indicators, and phases only by counting
+    rewarded light cues (1.0, 0.8 or 0.2). The paper's Zenodo record has a table of this mapping
+    outside the dandiset.
+- kind: data_missing
+  statement: The Pavlovian files have light cue events but no tone cue events, although each session
+    has 30 tone cues (the 68 rewards of a learning session are 30 light, 30 tone and 8 uncued). Tone
+    trials cannot be analysed.
+- kind: data_missing
+  statement: Session sub-UG27_ses-240313r lacks the high-pass, artifact-removed green series that all
+    other UG sessions hold, so it cannot enter the analyses that use it.
+- kind: metadata_error
+  statement: The device description of ExcitationSource470 describes 470 nm and 405 nm (isosbestic)
+    light alternated at 100 Hz, and that of ExcitationSource570 reads "405 nm"; the Methods alternate
+    470 and 570 nm at 36 Hz. The mutant sensor is named ACh4.3mut in the files where the Methods and
+    Key Resources Table name ACh3.0-mut. The session description gives 9 uL rewards at 5 to 30 s,
+    where the Methods give 5 uL at 10 to 30 s, and stores the micro sign mis-encoded.
+- kind: metadata_insufficient
+  statement: The code keeps only sites with signal in both channels (a `sig` flag per site) for the
+    transient analyses; the flags are not in the files. All 174 included sites gave the paper's
+    count, so this did not change the result here.
+- kind: code_mismatch
+  statement: In fig4_pav.m (commit 833fa3d) the loop over a phase's last three sessions loads
+    exp_dirs{d} in place of task_dirs{d}, so it reads the mouse's first three recordings for every
+    phase, and the extinction correlation is called with polarity 1 (the DA peak) although the
+    legend and Methods describe the DA trough. The notebook follows the evident intent and the
+    Methods.
+- kind: code_mismatch
+  statement: The code departs from the Methods in several parameters; triggered-average significance
+    uses the 0.5th and 99.5th percentiles (Methods 2.5th and 97.5th), the minimum locomotion bout is
+    2.2 s (Methods 2.27 s), paired-transient magnitude correlations are Pearson r over all pairs
+    (Methods a 100-pair bootstrap), and the stimulation cohort's exclusion of reward and stimulation
+    periods combines the three conditions with AND, so a sample is dropped only when all three hold.
+    hotspot_comparison.m places the second hotspot's random volumes with the first grid's dimensions.
+- kind: paper_inconsistency
+  statement: For extinction, the Results give 41 of 74 sites and the Figure 4g legend 48 sites in 5
+    mice, while the Methods give 3 Pavlovian mice and the files hold 75 sites in 3 mice. For learned
+    cues the Results give 39 of 75 negative and 26 of 75 positive sites, which sum to 65.
+- kind: paper_inconsistency
+  statement: In the Figure 8 source data, the Figure 8b DLS group holds 6 slice labels from 4 mouse
+    labels (slice_B_4 holds only stimulus 5) where the legend states 5 slices from 5 mice, and the
+    stimulus F values computed from the source data for Figures 8e and 8f (47.68 and 45.04) differ
+    from the legends (36.37 and 34.46), while all other F values match.
+- kind: other
+  statement: The ex vivo slice data of Figure 8 are not in the dandiset; their source data are in the
+    paper's Zenodo record (doi:10.5281/zenodo.18202873).
