@@ -28,7 +28,8 @@ Where the parameters come from:
   background), a 6-sample running mean, the three trials of a site averaged, R0 and G0 the means
   from 0.5 to 0.95 s, and the area of (G - G0)/R0 from 0.95 to 1.5 s; the index is the distal area
   over the proximal area. The Methods keep only pairs "with similar baseline levels (G0/R0)" and
-  give no threshold; `BASAL_RATIO_RANGE` is a choice made here.
+  give no threshold; `BASAL_RATIO_RANGE` is a choice made here. Splitting the three series that
+  hold two sites under one name (see `dendritic_sites`) is a choice made here from the data.
 - Sr2+-oEPSC events: the Methods detect events 40 to 400 ms after the light pulse at five standard
   deviations above the noise (TaroTools in Igor Pro, with visual verification, which cannot be
   repeated). `detect_events` is a common threshold detector written here: low-pass filter, noise
@@ -152,13 +153,14 @@ def load_patch(path: str, url: str) -> dict:
         for c in sorted(set(cell)):
             for cd in sorted({cond[i] for i in range(len(cell)) if cell[i] == c and comp[i] == "Soma"}):
                 rows = [i for i in range(len(cell)) if cell[i] == c and comp[i] == "Soma" and cond[i] == cd]
-                counts, vrest, duplicates, in_step, out_step, stim_err = {}, [], 0, 0, 0, []
+                counts, counts_last, vrest, duplicates, in_step, out_step, stim_err = {}, {}, [], 0, 0, 0, []
                 digest = hashlib.md5()
                 for i in rows:
                     data, rate = series(resp[i]["timeseries"])
                     v = data[resp[i]["idx_start"]:resp[i]["idx_start"] + resp[i]["count"]] * 1e3
                     amp = int(round(current[i]))
-                    if amp in counts:          # a repeated step: keep the first
+                    counts_last[amp] = _spike_count(v)
+                    if amp in counts:          # a repeated step: keep the first (counts_last keeps the last)
                         duplicates += 1
                         continue
                     counts[amp] = _spike_count(v)
@@ -171,7 +173,8 @@ def load_patch(path: str, url: str) -> dict:
                     up = np.where(above[1:] & ~above[:-1])[0] / rate
                     in_step += int(np.sum((up >= 0.2) & (up < 0.7)))
                     out_step += int(np.sum((up < 0.2) | (up >= 0.7)))
-                out["somatic"].append({"cell": int(c), "condition": cd, "counts": counts, "n_sweeps": len(rows),
+                out["somatic"].append({"cell": int(c), "condition": cd, "counts": counts, "counts_last": counts_last,
+                                       "n_sweeps": len(rows),
                                        "duplicates": duplicates, "vrest_mV": float(np.median(vrest)),
                                        "md5": digest.hexdigest(), "stim_error_pA": float(np.max(stim_err)),
                                        "spikes_in_step": in_step, "spikes_outside_step": out_step,
@@ -276,18 +279,43 @@ def somatic_table(days: list[dict]) -> pd.DataFrame:
                    "cell": s["cell"], "condition": s["condition"], "n_sweeps": s["n_sweeps"],
                    "duplicates": s["duplicates"], "vrest_mV": s["vrest_mV"], "rheobase": rheobase(s["counts"]),
                    "spikes_in_step": s["spikes_in_step"], "spikes_outside_step": s["spikes_outside_step"],
-                   "md5": s["md5"], "stim_error_pA": s["stim_error_pA"]}
+                   "md5": s["md5"], "stim_error_pA": s["stim_error_pA"],
+                   "counts_last": [s["counts_last"].get(a, np.nan) for a in range(20, 301, 20)]}
             for amp in range(20, 301, 20):
                 row[amp] = s["counts"].get(amp, np.nan)
             rows.append(row)
     return pd.DataFrame(rows)
 
 
-def dendritic_sites(day: dict, bg_red: float = DEND_BG_RED, bg_green: float = DEND_BG_GREEN) -> pd.DataFrame:
+def _site_measures(recs: list, bg_red: float, bg_green: float) -> dict:
+    """R0, G0 and the area of dG/R0 of the trials of one site, averaged after background
+    subtraction and smoothing, as in the paper's script."""
+    n = min(min(len(r["ch1"]), len(r["ch2"])) for r in recs)
+    red = np.nanmean([_smooth(r["ch1"][:n] - bg_red, DEND_SMOOTH) for r in recs], axis=0)
+    green = np.nanmean([_smooth(r["ch2"][:n] - bg_green, DEND_SMOOTH) for r in recs], axis=0)
+    rate = recs[0]["ch2_rate"]
+    dt = 1.0 / rate
+    a, b = int(DEND_BASE[0] / dt), int(DEND_BASE[1] / dt)
+    c, d = b, int(DEND_AREA[1] / dt)
+    r0, g0 = np.nanmean(red[a:b]), np.nanmean(green[a:b])
+    # contrast for the clock check: the same window shifted 1.5 s later, after the transient
+    late = np.nansum((green[c + int(1.5 / dt):d + int(1.5 / dt)] - g0) / r0) * dt
+    return {"n_trials": len(recs), "R0": r0, "G0": g0, "area": np.nansum((green[c:d] - g0) / r0) * dt,
+            "late_area": late, "rate": rate,
+            "first_spike_s": float(np.median([r["spike_times"][0] if len(r["spike_times"]) else np.nan for r in recs])),
+            "n_spikes": float(np.median([len(r["spike_times"]) for r in recs]))}
+
+
+def dendritic_sites(day: dict, bg_red: float = DEND_BG_RED, bg_green: float = DEND_BG_GREEN,
+                    split_merged: bool = True) -> pd.DataFrame:
     """Per dendritic site (cell, compartment, site series): R0, G0 and the area of dG/R0.
 
-    The three trials of a site are averaged after background subtraction and smoothing, as in
-    the paper's script; time is the sample index over the series' rate.
+    Time is the sample index over the series' rate. A site is recorded in three trials. Three
+    series hold six trials under one name while the cell has no series of the other compartment
+    with that number; their first and last three trials differ in baseline and area, so each holds
+    two sites. With `split_merged` such a series is split into its first and last three trials,
+    and the half with the smaller area is taken as the distal site (bAP-evoked Ca2+ signals fall
+    with distance; an assumption made here, flagged in the column `split`).
     """
     rows = []
     groups: dict[tuple, list] = {}
@@ -295,24 +323,19 @@ def dendritic_sites(day: dict, bg_red: float = DEND_BG_RED, bg_green: float = DE
         key = (rec["cell"], rec["compartment"], rec["ch2_series"], rec["condition"])
         groups.setdefault(key, []).append(rec)
     for (cell, comp, name, cond), recs in groups.items():
-        n = min(min(len(r["ch1"]), len(r["ch2"])) for r in recs)
-        red = np.nanmean([_smooth(r["ch1"][:n] - bg_red, DEND_SMOOTH) for r in recs], axis=0)
-        green = np.nanmean([_smooth(r["ch2"][:n] - bg_green, DEND_SMOOTH) for r in recs], axis=0)
-        rate = recs[0]["ch2_rate"]
-        dt = 1.0 / rate
-        a, b = int(DEND_BASE[0] / dt), int(DEND_BASE[1] / dt)
-        c, d = b, int(DEND_AREA[1] / dt)
-        r0, g0 = np.nanmean(red[a:b]), np.nanmean(green[a:b])
-        area = np.nansum((green[c:d] - g0) / r0) * dt
-        # contrast for the clock check: the same window shifted 1.5 s later, after the transient
-        late = np.nansum((green[c + int(1.5 / dt):d + int(1.5 / dt)] - g0) / r0) * dt
-        site = re.search(r"(Proximal|Distal)(\d+)$", name)
-        rows.append({"cell": cell, "compartment": comp, "site": int(site.group(2)) if site else 0,
-                     "condition": cond, "n_trials": len(recs), "R0": r0, "G0": g0, "area": area,
-                     "late_area": late, "rate": rate,
-                     "first_spike_s": float(np.median([r["spike_times"][0] if len(r["spike_times"]) else np.nan
-                                                       for r in recs])),
-                     "n_spikes": float(np.median([len(r["spike_times"]) for r in recs]))})
+        m = re.search(r"(Proximal|Distal)(\d+)$", name)
+        site = int(m.group(2)) if m else 0
+        other = "Distal" if comp == "Proximal" else "Proximal"
+        has_other = any(k[0] == cell and k[3] == cond and re.search(rf"{other}{site}$", k[2]) for k in groups)
+        if split_merged and len(recs) == 6 and not has_other:
+            halves = [_site_measures(recs[:3], bg_red, bg_green), _site_measures(recs[3:], bg_red, bg_green)]
+            halves.sort(key=lambda h: h["area"])
+            for comp_h, h in zip(("Distal", "Proximal"), halves):
+                rows.append({"cell": cell, "compartment": comp_h, "site": site, "condition": cond,
+                             "series": name, "split": True, **h})
+        else:
+            rows.append({"cell": cell, "compartment": comp, "site": site, "condition": cond,
+                         "series": name, "split": False, **_site_measures(recs, bg_red, bg_green)})
     return pd.DataFrame(rows)
 
 
@@ -337,6 +360,8 @@ def dendritic_index(sites: pd.DataFrame, basal_range=BASAL_RATIO_RANGE) -> pd.Da
                 kept += 1
         rows.append({"cell": cell, "condition": cond, "pairs": len(pairs), "pairs_kept": kept,
                      "unpaired_sites": len(set(prox.index) ^ set(dist.index)),
+                     "sites": " ".join(f"{c[0]}{s}" for c, s in sorted(zip(g.compartment, g.site), key=lambda x: (x[1], x[0]))),
+                     "split": bool(g.split.any()),
                      "basal_ratios": np.round(basal, 2).tolist(),
                      "index": float(np.mean(ratios)) if ratios else np.nan})
     return pd.DataFrame(rows)
@@ -488,6 +513,17 @@ def load_aim(path: str, url: str) -> pd.DataFrame:
         df["subject_genotype"] = _text(f["general/subject/genotype"])
         df["path"] = path
     return df
+
+
+def file_contents(path: str, url: str) -> dict:
+    """What a file holds outside its metadata: the acquisition objects with their types and
+    number of members, and the names in processing and analysis."""
+    with h5py.File(remfile.File(url), "r") as f:
+        acq = {k: (_text(f["acquisition"][k].attrs.get("neurodata_type", "")), len(f["acquisition"][k]))
+               for k in f.get("acquisition", {})}
+        return {"path": path, "acquisition_types": sorted({t for t, _ in acq.values()}),
+                "acquisition_objects": len(acq), "images": sum(n for _, n in acq.values()),
+                "processing": sorted(f.get("processing", {})), "analysis": sorted(f.get("analysis", {}))}
 
 
 def load_many(fn, items, workers: int = 8):

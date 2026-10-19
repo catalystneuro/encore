@@ -32,8 +32,13 @@ outcomes:
   notes: Groups are matched by name and every group the dandiset holds has the paper's n (12 of 12
     groups, 123 cells). 90 of 123 cells (73.2%) match a row of the paper's table exactly over 20 to
     300 pA and 105 (85.4%) within 3 spikes, below the 80% and 95% of the criterion; 108 have the same
-    rheobase as their best match. dSPN on has the fewest exact matches (6 of 15). Where cells match,
-    the paper's rows follow the dandiset's order by date and cell number.
+    rheobase as their best match. dSPN on has the fewest exact matches (6 of 15). The best matches
+    are not one-to-one (9 paper rows are the best match of two or three cells); with each row used
+    once, 89 cells (72.4%) match exactly and 103 (83.7%) within 3 spikes. The best-match rows follow
+    the dandiset's order by date and cell number, every cell at its own rank in 8 of 12 groups and
+    10 of 15, 11 of 15, 11 of 12 and 10 of 11 cells in the others. Of the 14 cells with a repeated
+    step, keeping the last sweep in place of the first gives the same best-match difference in 13
+    and a closer one in 1.
   deviations:
   - The paper's spike counts come from its script run on Prairie View exports; the differences of
     1 to 24 spikes may come from the export or from cells whose steps are missing or repeated in the
@@ -42,17 +47,25 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_zhai_2025.ipynb
   output: claim:link-dendritic-cells
-  notes: 89 of 92 cells have an index; three have no proximal and distal site of the same number.
-    Counts equal the paper's n in 7 of 10 groups (iSPN on 9 against 10, iSPN on+sul 7 against 8, KO
-    off 10 against 11). Over 63 matched cells the index differs from the paper's by a median of 4.0%
-    (50 within 10%, Spearman 0.911). The Figure 6D cells, matched by date and letter, differ by
-    medians of 3.5% and 6.4%. Matching by order was possible in 7 groups whose counts equal the
-    paper's.
+  notes: Three site series hold six trials, two sites under one name; split, they give their cells
+    0.293, 0.146 and 0.327 against the paper's 0.299, 0.146 and 0.309. With the split, 91 of 92 cells
+    have an index (iSPN on+sul 20190508 cell 3 has only a distal site). Counts of cells with an index
+    equal the paper's n in 9 of 10 groups, and counts of cells with dendritic sites in 10 of 10, so
+    every group is matched, by order or (Figure 6D) by date and letter. Over 91 matched cells the
+    index differs from the paper's by a median of 2.9% (78 within 10%, Spearman 0.938). Two cells
+    differ by more than the paper's value, dSPN on+SCH 20190411 cell 1 (0.584 against 0.228; only its
+    second pair of sites is in the dandiset) and iSPN off 20160524 cell 2 (1.062 against 0.527; its
+    first proximal site has one trial, and without it the cell gives 0.553). The best-match rows of
+    the somatic link follow the dandiset's order (link-somatic-cells), which supports matching by
+    order. With the sites as labelled, 89 of 92 cells have an index.
   deviations:
   - Outside Figure 6D the paper's table has no cell identifiers, so cells are matched by order, an
     assumption supported by the somatic link.
   - The background constants of the paper's script (55 red, 161 green) are used for every session,
     as the files carry no per-session background.
+  - Three six-trial series are split into their first and last three trials, the half with the
+    smaller area taken as distal, a choice made here from the data; the sites as labelled are a
+    variant.
 - claim: link-sr-cells
   outcome: partially_reproduced
   notebook: reproduce_zhai_2025.ipynb
@@ -60,7 +73,11 @@ outcomes:
   notes: All 14 dandiset cells match a paper identifier (date and session letter); the paper has 33
     cells (17 off, 16 on), so the dandiset holds one cell per mouse. In every cell the detector here
     finds fewer events (2 to 85, against 29 to 127 in the paper's tables) and a higher mean amplitude
-    than the paper's events; 2 of 14 cells are within 25% on both. The paper's frequency equals its
+    than the paper's events; 2 of 14 cells are within 25% on both, and also 2 of 14 when the paper's
+    amplitude is read as its per-cell value (0.70 to 0.96 times the mean of its histogram events).
+    In 20230405b (2 events against 73) the detection window opens on the slow decay of a large
+    synchronous current, and the small events on it stay below the threshold (figure in the
+    notebook). The paper's frequency equals its
     event count over 3.6 s. With the paper's per-cell amplitudes, on-state dSPNs are all above
     off-state ones and on-state iSPNs all below (Mann-Whitney P = 0.057 each).
   deviations:
@@ -73,7 +90,9 @@ outcomes:
   notes: The dandiset holds one region per mouse, 11 of the paper's 34 (3 of 13 unlesioned, 3 of 10
     6-OHDA, 5 of 11 off-state). The paper's regions have no identifier linking them to mice; by the
     nearest vector of single-pulse areas only 5 of 11 mice have a paper region within 0.05 on every
-    treatment (the 20240402 mouse within 0.007), so the regions cannot be identified.
+    treatment (the 20240402 mouse within 0.007), so the regions cannot be identified. One paper
+    region is the best match of two off-state mice; with each region used once, 5 of 11 are still
+    within 0.05.
   deviations:
   - The stimulus time is taken from the trial table (3 s after the trial start in six files), where
     the paper's script fixes 10 s.
@@ -85,11 +104,13 @@ outcomes:
     mice (5844 control, 5846 M1R deletion) have totals equal to the paper's in all 10 sessions; the
     five Figure 8 mice (1945, 2519, 2828 and 6572 KO, 2587 wild type) agree in 5 of 25 sessions (for
     1945, session 1, 33.5 against 27.0). The dandiset's own genotype labels for the CDGI mice
-    contradict each other, so the paper's labels were used.
+    contradict each other, so the paper's labels were used. The paper's tables give session totals
+    only; for the Figure 8 mice they equal neither the dandiset's sums over 20 to 80 min nor, outside
+    those 5 sessions, the sums over all time points (1945 session 1 has four time points summing to
+    33.5), so the scores differ, not only the time points summed.
   deviations:
   - The paper's session total is taken to be the sum over the session's time points; the Figure 8
-    mice have 4 time points in some dandiset sessions and 6 in others, which may explain part of the
-    difference.
+    mice have 4 time points in some dandiset sessions and 6 in others.
 - claim: fig1f-dspn-rheobase-on-lower
   outcome: reproduced
   notebook: reproduce_zhai_2025.ipynb
@@ -112,28 +133,31 @@ outcomes:
   output: claim:fig1f-dspn-sch-no-change
   notes: Rheobase on-state 140 pA (15 cells) against on-state with SCH 140 pA (10 cells), P = 1.0,
     effect r = 0.007. In the 5 cells recorded in both conditions the median paired difference is
-    0 pA (Wilcoxon P = 1.0).
+    0 pA (Wilcoxon P = 1.0). Five cells are in both groups, so the unpaired test's samples are not
+    independent; the criterion follows the paper's test.
 - claim: fig1i-dspn-dendritic-on-higher
   outcome: reproduced
   notebook: reproduce_zhai_2025.ipynb
   output: claim:fig1i-dspn-dendritic-on-higher
-  notes: Index on-state 0.476 against off-state 0.353 (10 cells each), P = 0.0091, effect r = 0.70;
-    without background P = 0.00728; with a basal-ratio rule of 0.8 to 1.25 (8 cells each)
-    P = 0.0148.
+  notes: Index on-state 0.476 against off-state 0.330 (10 cells each), P = 0.0058 (exact 0.0039),
+    effect r = 0.74; without background P = 0.0046; with a basal-ratio rule of 0.8 to 1.25 (8 cells
+    each) P = 0.0070; with the sites as labelled P = 0.0091.
   deviations:
   - Background constants from the paper's script; basal-ratio rule (0.5 to 2) chosen here, dropping
-    no pair.
+    no pair; one six-trial series split into two sites.
 - claim: fig1i-dspn-dendritic-sch-lower
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_zhai_2025.ipynb
   output: claim:fig1i-dspn-dendritic-sch-lower
-  notes: The criterion (P < 0.05) is not met but the effect has the stated direction. On-state with
-    SCH 0.419 (9 cells) against on-state 0.476 (10 cells), P = 0.0662, effect r = -0.51; with the
-    stricter basal-ratio rule P = 0.524. The paper's own SCH median is 0.338, lower than here, and
-    one SCH cell differs from the paper's value by more than its size when matched by order.
+  notes: The criterion (P < 0.05 with the SCH median lower) is not met, though the difference has the
+    stated direction. On-state with SCH 0.419 (9 cells) against on-state 0.476 (10 cells), P = 0.0662
+    (exact 0.0653), effect r = -0.51; with the stricter basal-ratio rule P = 0.524. The difference
+    from the paper comes from one cell, SCH 20190411 cell 1, whose index is 0.584 here and 0.228 in
+    the paper's table; the dandiset holds only its second pair of sites. Without that cell P = 0.0266;
+    with the paper's value for it P = 0.016 (exact 0.0133, the paper's P). The other eight SCH cells
+    differ from the paper's values by 2.4% to 10.9%.
   deviations:
-  - The criterion gives only the reproduced case; the outcome partially reproduced is chosen
-    because the difference is in the stated direction with a moderate effect but not significant.
+  - Matching the SCH cells to the paper's rows by order is an assumption (link-dendritic-cells).
 - claim: fig2h-dspn-sr-amplitude-on-larger
   outcome: blocked
   blocked_by: other
@@ -149,10 +173,12 @@ outcomes:
     link-sr-cells (P = 0.229).
 - claim: fig2bc-dspn-spines
   outcome: blocked
-  blocked_by: not_runnable
+  blocked_by: methods_underspecified
   notes: The dandiset holds the two-photon z-stacks of dSPN dendrites (off- and on-state) but no spine
-    counts. The paper deconvolved them in AutoQuant X3 and counted spines semi-automatically in
-    NeuronStudio with manual classification of mushroom spines, which cannot be run here. No
+    counts; none of the 86 spine files has a processing module or analysis entry. The paper
+    deconvolved them in AutoQuant X3 and counted spines semi-automatically in NeuronStudio with
+    manual classification of mushroom spines, a procedure that cannot be repeated from its
+    description (also not runnable here, AutoQuant being commercial software). No
     control or 6-OHDA stacks for dSPNs were found. The per-cell densities are in the paper's
     Zenodo tables.
 - claim: fig3d-ispn-rheobase-on-higher
@@ -175,26 +201,34 @@ outcomes:
   output: claim:fig3d-ispn-sul-no-change
   notes: Rheobase on-state 160 pA (11) against on-state with sulpiride 120 pA (7), P = 0.143, effect
     r = -0.43. The two cells recorded in both conditions have a lower rheobase with sulpiride (160 to
-    120 and 160 to 100 pA), so the absence rests on the test's power.
+    120 and 160 to 100 pA), so the absence rests on the test's power. Those two cells are in both
+    groups, so the unpaired samples are not independent; the criterion follows the paper's test.
 - claim: fig3f-ispn-dendritic-on-lower
   outcome: reproduced
   notebook: reproduce_zhai_2025.ipynb
   output: claim:fig3f-ispn-dendritic-on-lower
-  notes: Index on-state 0.340 (9) against off-state 0.524 (10), P = 0.0128, effect r = -0.69;
-    without background P = 0.0128; with the stricter basal-ratio rule P = 0.0774.
+  notes: Index on-state 0.339 (10) against off-state 0.524 (10), P = 0.0073 (exact 0.0052), effect
+    r = -0.72; without background P = 0.0073; with the sites as labelled (9 on-state cells)
+    P = 0.0128; dropping sites with fewer than 3 trials P = 0.0091. With the stricter basal-ratio rule
+    (0.8 to 1.25, 9 cells each) P = 0.0774, so the result depends on keeping pairs whose basal
+    ratios differ by more than 25%.
   deviations:
-  - One on-state cell of the paper's 10 has no index here (no paired sites).
+  - One on-state cell gets its index only from splitting a six-trial series into two sites.
+  - The Methods keep pairs with similar G0/R0 without a threshold; the 0.5 to 2 rule chosen here
+    drops no pair.
 - claim: fig3f-ispn-dendritic-sul-no-change
   outcome: not_reproduced
   notebook: reproduce_zhai_2025.ipynb
   output: claim:fig3f-ispn-dendritic-sul-no-change
   notes: The paper's test finds the difference the claim says is absent. On-state with sulpiride
-    0.506 (7 cells) against on-state 0.340 (9 cells), P = 0.0164, effect r = 0.71; the paper reports
+    0.506 (7 cells) against on-state 0.339 (10 cells), P = 0.0097, effect r = 0.74; the paper reports
     P = 0.0545 with 8 and 10 cells, and its own medians go the same way (0.499 and 0.345). With the
-    stricter basal-ratio rule P = 0.0663. The paper's P is close to the threshold and one cell per
-    group is missing here, so the difference in outcome is small in substance.
+    sites as labelled P = 0.0164, with the stricter basal-ratio rule P = 0.0663. The sulpiride cell
+    without an index (20190508 cell 3, only a distal site in the dandiset) has 0.217 in the paper's
+    table; with that value P = 0.0545, the paper's P, so the difference in outcome comes from that
+    one cell.
   deviations:
-  - One cell of each group has no index here (no paired sites).
+  - One sulpiride cell has no index here (only a distal site).
 - claim: fig4g-ispn-sr-amplitude-on-smaller
   outcome: blocked
   blocked_by: other
@@ -209,17 +243,19 @@ outcomes:
     reach P < 0.05.
 - claim: fig4bc-ispn-spines
   outcome: blocked
-  blocked_by: not_runnable
+  blocked_by: methods_underspecified
   notes: Two-photon z-stacks of iSPN dendrites are in the dandiset (off- and on-state, CDGI KO,
     M1R antagonist, M1R deletion) but no counts; counting needs AutoQuant deconvolution and
-    semi-automatic NeuronStudio reconstruction with manual checks. Control and 6-OHDA stacks were
-    not found.
+    semi-automatic NeuronStudio reconstruction with manual checks, which the paper does not
+    describe well enough to repeat. The control and 6-OHDA stacks the lesion part needs are not in
+    the dandiset (data_missing); the off- and on-state part is blocked by the counting alone.
 - claim: fig4k-confocal-spines
   outcome: blocked
-  blocked_by: not_runnable
-  notes: Ten confocal stacks of sparsely labelled iSPN dendrites (control, 6-OHDA, off and on) and one
-    larger Olympus stack are in the dandiset, of the paper's 87 dendrites. Counting used Imaris 10
-    with trained pixel classification and manual correction, which cannot be run here.
+  blocked_by: methods_underspecified
+  notes: Eleven confocal files of sparsely labelled iSPN dendrites (3 control, 3 6-OHDA, 3 off and 2
+    on) are in the dandiset, of the paper's 87 dendrites, with no counts. Counting used Imaris 10
+    with trained pixel classification and manual correction, which cannot be repeated from its
+    description (and Imaris is commercial software).
 - claim: fig5f-ach-off-elevated
   outcome: reproduced
   notebook: reproduce_zhai_2025.ipynb
@@ -239,6 +275,8 @@ outcomes:
     supported.
   deviations:
   - One region per mouse, 8 of the paper's 21 regions in these two groups.
+  - The test cannot find any difference short of complete separation, so this claim of absence
+    passes with little power.
 - claim: fig5f-ach-6ohda-elevated
   outcome: blocked
   blocked_by: other
@@ -272,7 +310,7 @@ outcomes:
     stricter basal-ratio rule P = 0.0164.
 - claim: fig6f-m1r-antag-spines
   outcome: blocked
-  blocked_by: not_runnable
+  blocked_by: methods_underspecified
   notes: Z-stacks are in the dandiset without counts (see fig4bc-ispn-spines).
 - claim: fig7c-cdgi-ko-somatic-oscillation
   outcome: reproduced
@@ -286,13 +324,13 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_zhai_2025.ipynb
   output: claim:fig7f-cdgi-ko-dendritic-unchanged
-  notes: KO index off-state 0.347 (10) against on-state 0.286 (8), P = 0.315, effect r = -0.30
-    (P = 0.601 with the stricter rule); wild type P = 0.0128.
+  notes: KO index off-state 0.312 (11) against on-state 0.286 (8), P = 0.310, effect r = -0.30
+    (P = 0.659 with the stricter rule, 0.315 with the sites as labelled); wild type P = 0.0073.
   deviations:
-  - One KO off-state cell of the paper's 11 has no index here.
+  - One KO off-state cell gets its index only from splitting a six-trial series into two sites.
 - claim: fig7h-cdgi-ko-spines
   outcome: blocked
-  blocked_by: not_runnable
+  blocked_by: methods_underspecified
   notes: Z-stacks are in the dandiset without counts (see fig4bc-ispn-spines).
 - claim: fig8bc-cdgi-aims
   outcome: blocked
@@ -306,12 +344,13 @@ outcomes:
   notebook: reproduce_zhai_2025.ipynb
   output: claim:fig9d-m1r-crispr-somatic-unchanged
   notes: Rheobase control 160 pA (6) against M1R CRISPR 120 pA (8), P = 0.147, effect r = -0.48;
-    summed spikes P = 0.245.
+    summed spikes P = 0.245. The control group is 6 cells from 2 mice, so the absence
+    rests on little power.
   deviations:
   - The paper gives no test; its default Mann-Whitney test on rheobase was used.
 - claim: fig9f-m1r-crispr-spines
   outcome: blocked
-  blocked_by: not_runnable
+  blocked_by: methods_underspecified
   notes: Z-stacks are in the dandiset without counts (see fig4bc-ispn-spines).
 - claim: fig10b-m1r-aims
   outcome: blocked
@@ -357,7 +396,9 @@ outcomes:
   notebook: reproduce_zhai_2025.ipynb
   output: claim:fig7e-oxom-cdgi
   notes: On the paper's table, wild type 8 of 10 increase, Wilcoxon P = 0.009766 (reported 0.0098);
-    KO 4 of 12 increase, P = 0.4697 (reported 0.910).
+    KO 4 of 12 increase, P = 0.4697 (reported 0.910). Pairs are formed by the table's experiment
+    number (printed); an unpaired Mann-Whitney test gives 0.885 for KO and 0.0539 for wild type, so
+    neither test gives the reported 0.910.
   deviations:
   - Tested on the paper's table; the oxo-M line scans are not in the dandiset.
 - claim: fig8a-cdgi-rotations
@@ -414,9 +455,23 @@ findings:
   statement: The AIM session totals of the five Figure 8 mice in the dandiset differ from the paper's
     table in 20 of 25 sessions (mouse 1945 session 1, 33.5 against 27.0), while the two Figure 10
     mice agree in all sessions. Some dandiset sessions have 4 time points and others 6.
+- kind: metadata_error
+  statement: Three dendritic site series hold six trials, two sites under one name, while the cell has
+    no series of the other compartment with that number (iSPN 20160526 cell 3 Distal1, iSPN 20160608
+    cell 1 Proximal1, dSPN 20170204 cell 1 Proximal1); their first and last three trials differ in
+    baseline and area. Split, they give the paper's values for these cells. One series holds a
+    single trial (iSPN 20160524 cell 2 Proximal1), one two and one four.
+- kind: data_missing
+  statement: Two dendritic cells lack the sites the paper's values need. dSPN on+SCH 20190411 cell 1
+    has only its second pair of sites, which gives 0.584 against the paper's 0.228; with the paper's
+    value the SCH test gives the paper's P (0.0133), without it P = 0.066. iSPN on+sul 20190508 cell 3
+    has only a distal site; with the paper's 0.217 the sulpiride test gives the paper's P (0.0545),
+    without it P = 0.0097. These two cells decide fig1i-dspn-dendritic-sch-lower and
+    fig3f-ispn-dendritic-sul-no-change.
 - kind: metadata_insufficient
   statement: The dandiset holds the raw spine image stacks and the rotation videos but no spine
-    counts or rotation counts, the measurements behind Figures 2B, 2C, 4B, 4C, 4K, 6F, 7H, 8A, 9F and
+    counts or rotation counts (none of the 86 spine files has a processing module or analysis
+    entry), the measurements behind Figures 2B, 2C, 4B, 4C, 4K, 6F, 7H, 8A, 9F and
     10A. They are only in the paper's Zenodo tables.
 - kind: metadata_error
   statement: The stimulus series of every dendritic sweep (CurrentClampSeries_CellN_Dendritic_Stimulus)
@@ -446,3 +501,304 @@ findings:
 - kind: other
   statement: 18 somatic cells miss one or more current steps between 20 and 300 pA and 14 repeat a
     step; spike counts for these cells cannot be complete.
+verifications:
+- date: 2026-10-18
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The executed notebook of the first run with the conclusion cells and the summary removed,
+    the helper module and the claims file.
+  results:
+  - claim: link-somatic-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 12 groups have the paper's n, but only 73.2% of cells match exactly (80% needed) and
+      85.4% match within 3 spikes (95% needed). Best matches are not one-to-one (dSPN off row 23 used
+      twice, dSPN on row 39 three times and row 44 twice), which can only inflate the counts. The
+      first of a repeated step is kept (14 cells), and nothing checks this against the paper's script.
+    response: Added a one-to-one assignment (89 exact, 72.4%; 103 within 3 spikes, 83.7%), the
+      best-match row position of every cell against the dandiset's date and cell order, and the
+      best-match difference keeping the last of a repeated step (equal in 13 of 14 cells, closer in
+      1). The outcome is unchanged.
+  - claim: link-dendritic-cells
+    agrees: true
+    outcome: reproduced
+    reason: Cell counts equal the paper's n in 7 of 10 groups, and the median relative difference is
+      0.040 (Spearman 0.91). Two cells are far off (1.559 in dSPN on+SCH, 1.014 in iSPN off). Matching
+      by order is assumed and never checked against the somatic best-match order; the two large
+      differences could be misaligned rows. Proximal and distal sites are paired only by number, and
+      three cells get no index. The 0.5 to 2 basal-ratio rule drops 0 of 162 pairs, so the paper's
+      rule of keeping pairs with similar G0/R0 is never applied. It asked for a per-cell table with
+      date, cell, index, the paper's value and the basal ratios for every group.
+    response: Added the per-cell table for all 91 matched cells with sites, basal ratios and the
+      paper's values, the somatic order check, and the basal-ratio range (0.67 to 1.75; 38 of 165
+      pairs outside 0.8 to 1.25). The check found three series that hold two sites under one name
+      (six trials); split, they give two of the three missing cells the paper's values (0.146 and
+      0.293 against 0.146 and 0.299), and the third missing cell has only a distal site. Now 9 of 10
+      groups have the paper's n, all 10 are matched, and the median difference is 2.9% (Spearman
+      0.938). The two large differences are not misalignments; the SCH cell holds only its second
+      pair of sites, and the iSPN off cell has a proximal site with one trial (0.553 without it,
+      paper 0.527). The basal-ratio rule was fixed before the analysis and is kept; its stricter
+      variant is shown for every claim and its effect stated in the notes. Recorded as findings.
+  - claim: link-sr-cells
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 14 cells match a paper identifier, but only 2 of 14 are within 25% on both event count
+      and amplitude. The detector works on synthetic events but finds far fewer events than the paper
+      on real cells (20230405b, 2 against 73). The 25% criterion compares against the mean of the
+      paper's histogram events, not the paper's per-cell amplitude, and these differ (11.13 against
+      12.37). It asked for traces with detected events marked for 20230405b and one cell that agrees.
+    response: Added the figure for 20230405b and 07062023c, which shows the 20230405b window opening on
+      the decay of a large synchronous current, and the count under the per-cell amplitude reading
+      (also 2 of 14). The outcome is unchanged.
+  - claim: link-grab-rois
+    agrees: true
+    outcome: not_reproduced
+    reason: The dandiset holds part of the regions (3/13, 3/10, 5/11). Only 5 of 11 mice match within
+      0.05 on every treatment, short of half. Off-state ROI 29 is used twice as a best match.
+    response: Added a one-to-one assignment; 5 of 11 mice are still within 0.05.
+  - claim: link-aim-mice
+    agrees: true
+    outcome: not_reproduced
+    reason: 7 of 9 mice are in the paper, but only 15 of 35 matched session totals are equal. All five
+      Fig. 8 mice differ; the two Fig. 10 mice agree exactly. It asked for a per-time-point
+      comparison for the five mismatched mice, to tell a scoring difference (for example the 120-min
+      point) from different data.
+    response: The paper's tables give session totals only, so a per-time-point comparison with the
+      paper is not possible. Added the dandiset's scores per time point for the five mice beside the
+      paper's totals, with the sums over all points and over 20 to 80 min; neither sum explains the
+      differences (1945 session 1 has four points summing to 33.5 against 27.0), so the scores
+      differ.
+  - claim: fig1f-dspn-rheobase-on-lower
+    agrees: true
+    outcome: reproduced
+    reason: P = 8.9e-6; medians 140 (on) against 220 (off). Some cells miss a step, so rheobase can come
+      out 20 pA high, but the margins are large.
+    response: No change.
+  - claim: fig1e-dspn-fi-on-higher
+    agrees: true
+    outcome: reproduced
+    reason: P = 8.8e-5, on-state higher (88 against 36); the same with complete cells only.
+    response: No change.
+  - claim: fig1f-dspn-sch-no-change
+    agrees: true
+    outcome: reproduced
+    reason: P = 1.0; the paired Wilcoxon (n = 5) also gives P = 1.0. The on-state and on+SCH groups
+      share 5 cells, so the unpaired samples are not independent; the criterion follows the paper.
+    response: Stated the shared cells in the notes.
+  - claim: fig1i-dspn-dendritic-on-higher
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.0091, on-state higher; holds in all variants.
+    response: Re-run with the split series, P = 0.0058, and in every variant.
+  - claim: fig1i-dspn-dendritic-sch-lower
+    agrees: false
+    outcome: not_reproduced
+    reason: P = 0.066 (paper 0.0133). The SCH median is 0.419 against the paper's 0.338; one SCH cell
+      differs 2.6-fold from the paper and may drive this. Replacing each of the top five SCH values in
+      turn with value/2.559 gives P = 0.014 to 0.041, so the claim may fail because of one computed
+      index, not the data. The stricter 0.8 to 1.25 basal-ratio variant gives P = 0.52.
+    response: Changed to not_reproduced, since the criterion gives only the reproduced case and P is
+      above 0.05. Identified the cell (20190411 cell 1, 0.584 against 0.228). Its index is computed
+      from the only pair of sites the dandiset holds for it, with three trials each, so the
+      difference is in the data deposited, not the computation. Without it P = 0.0266; with the
+      paper's value P = 0.0133, the paper's P. Recorded as a data_missing finding.
+  - claim: fig2h-dspn-sr-amplitude-on-larger
+    agrees: true
+    outcome: blocked
+    reason: The archive has 3 off and 4 on cells, so the smallest P is 0.057. Both the detector and the
+      paper's per-cell values put on above off at that floor.
+    response: No change.
+  - claim: fig2i-dspn-sr-frequency-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Same 3 against 4; P = 0.229 says nothing for an absence claim.
+    response: No change.
+  - claim: fig2bc-dspn-spines
+    agrees: true
+    outcome: blocked
+    reason: Blocked by methods_underspecified. Raw 2PLSM stacks only; counting needs AutoQuant
+      deconvolution and semi-automated NeuronStudio counting. All 86 stack files have empty
+      variableMeasured, which points to no stored annotations; a listing of each spine file's
+      processing modules would confirm it.
+    response: Changed blocked_by from not_runnable to methods_underspecified, as the manual counting
+      is the part that cannot be repeated. Added the listing; none of the 86 files has a processing
+      module or analysis entry.
+  - claim: fig3d-ispn-rheobase-on-higher
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.00083; medians 160 against 120.
+    response: No change.
+  - claim: fig3c-ispn-fi-on-lower
+    agrees: true
+    outcome: reproduced
+    reason: P = 7.2e-5, on-state lower.
+    response: No change.
+  - claim: fig3d-ispn-sul-no-change
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.143. Weak, medians 160 against 120, only 2 paired cells; the groups share cells, so
+      the unpaired samples are not independent, and the absence passes with little power.
+    response: Stated the shared cells and the low power in the notes.
+  - claim: fig3f-ispn-dendritic-on-lower
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.0128, on-state lower. Fragile, the 0.8 to 1.25 basal-ratio variant gives P = 0.077.
+    response: Re-run with the split series (10 on-state cells), P = 0.0073; the stricter variant still
+      gives 0.077, now stated in the conclusion and notes.
+  - claim: fig3f-ispn-dendritic-sul-no-change
+    agrees: true
+    outcome: not_reproduced
+    reason: P = 0.0164 (paper 0.0545), sulpiride higher (0.506 against 0.340). n is 9 and 7, against the
+      paper's 10 and 8; the missing cells come from pairing sites by number.
+    response: With the split series the on-state group has the paper's 10 cells and P = 0.0097. The
+      missing sulpiride cell has only a distal site in the dandiset; with the paper's value for it
+      P = 0.0545, the paper's P. Recorded as a data_missing finding.
+  - claim: fig4g-ispn-sr-amplitude-on-smaller
+    agrees: true
+    outcome: blocked
+    reason: 3 against 4. The paper's per-cell values put off above on (P = 0.057), but the detector
+      does not (P = 0.229).
+    response: No change.
+  - claim: fig4h-ispn-sr-frequency-unchanged
+    agrees: true
+    outcome: blocked
+    reason: 3 against 4; P = 0.114.
+    response: No change.
+  - claim: fig4bc-ispn-spines
+    agrees: true
+    outcome: blocked
+    reason: Blocked by data_missing and methods_underspecified. No 2PLSM stacks from control or 6-OHDA
+      mice, only off/on and manipulation sessions; counting method as for fig2bc.
+    response: Changed blocked_by to methods_underspecified, which blocks the whole claim; the missing
+      control and 6-OHDA stacks are stated in the notes.
+  - claim: fig4k-confocal-spines
+    agrees: true
+    outcome: blocked
+    reason: Blocked by methods_underspecified. Confocal stacks only (CTRL 3+1, PD 3, OFF 3, ON 2 files).
+      Counting used Imaris with supervised learning and manual correction.
+    response: Changed blocked_by to methods_underspecified and corrected the file counts in the notes.
+  - claim: fig5f-ach-off-elevated
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.0357, the smallest P possible for 3 against 5, with off-state higher. The
+      unnormalised dF/F0 variant gives P = 0.25.
+    response: No change.
+  - claim: fig5f-ach-off-like-6ohda
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.143; little power with 3 against 5.
+    response: Stated the low power as a deviation.
+  - claim: fig5f-ach-6ohda-elevated
+    agrees: true
+    outcome: blocked
+    reason: 3 against 3, smallest P 0.10. All 3 lesioned values (0.18 to 0.27) are above all 3 controls
+      (0.09 to 0.11).
+    response: No change.
+  - claim: fig5f-ach-d2-control
+    agrees: true
+    outcome: blocked
+    reason: 3 pairs, smallest P 0.25. Direction holds in 3 of 3 for both drugs.
+    response: No change.
+  - claim: fig5f-ach-da-suppresses
+    agrees: true
+    outcome: blocked
+    reason: 3 lesioned pairs and 5 off-state pairs (smallest P 0.0625). Dopamine is lower than no drug
+      in 8 of 8.
+    response: No change.
+  - claim: fig6c-m1r-antag-somatic-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.681 (sum of spikes, P = 0.45).
+    response: No change.
+  - claim: fig6d-m1r-antag-dendritic-lower
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.0229, antagonist lower.
+    response: No change.
+  - claim: fig6f-m1r-antag-spines
+    agrees: true
+    outcome: blocked
+    reason: Blocked by methods_underspecified. Raw stacks only.
+    response: Changed blocked_by to methods_underspecified.
+  - claim: fig7c-cdgi-ko-somatic-oscillation
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.00104, on-state higher (210 against 140).
+    response: No change.
+  - claim: fig7f-cdgi-ko-dendritic-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.315. KO off has n = 10 against the paper's 11.
+    response: With the split series KO off has the paper's 11 cells; P = 0.310.
+  - claim: fig7h-cdgi-ko-spines
+    agrees: true
+    outcome: blocked
+    reason: Blocked by methods_underspecified. Raw stacks only.
+    response: Changed blocked_by to methods_underspecified.
+  - claim: fig8bc-cdgi-aims
+    agrees: true
+    outcome: blocked
+    reason: Only 1 wild-type mouse by the paper's labels (2587). Dandiset genotype labels contradict each
+      other, and the link fails.
+    response: No change.
+  - claim: fig9d-m1r-crispr-somatic-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.147; the control group is 6 cells from 2 mice.
+    response: Stated the low power in the notes.
+  - claim: fig9f-m1r-crispr-spines
+    agrees: true
+    outcome: blocked
+    reason: Blocked by methods_underspecified. Raw stacks only.
+    response: Changed blocked_by to methods_underspecified.
+  - claim: fig10b-m1r-aims
+    agrees: true
+    outcome: blocked
+    reason: One mouse per group.
+    response: No change.
+  - claim: fig1-dspn-lesion-and-off-somatic
+    agrees: true
+    outcome: reproduced
+    reason: Paper's table, P = 0.0003 (lower after lesion) and 9.5e-5 (higher in off-state).
+    response: No change.
+  - claim: fig1-dspn-lesion-dendritic-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.82 and 0.90 (paper 0.824 and 0.905).
+    response: No change.
+  - claim: fig3-ispn-lesion-and-off-somatic
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.0004 and 0.0006, both in the stated direction (paper gives 0.002).
+    response: No change.
+  - claim: fig3-ispn-lesion-dendritic-up
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.035 and 0.024, later group higher.
+    response: No change.
+  - claim: fig7e-oxom-cdgi
+    agrees: true
+    outcome: reproduced
+    reason: WT P = 0.0098, oxo-M higher; KO P = 0.47. The paper reports 0.910 for KO; the pivot on expt
+      may pair the wrong rows. The criterion is met either way. It asked for the KO pairing table.
+    response: Added the KO pairing table; rows pair by the table's experiment number (KO_1 to KO_12),
+      so the pairing is right. Added an unpaired test (KO 0.885), which also does not give 0.910.
+  - claim: fig8a-cdgi-rotations
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.012, KO higher (paper 0.0092).
+    response: No change.
+  - claim: fig10a-m1r-rotations
+    agrees: true
+    outcome: reproduced
+    reason: P = 0.0078, deletion higher.
+    response: No change.
+  - claim: fig10ef-open-field
+    agrees: true
+    outcome: reproduced
+    reason: Distance and time mobile both meet the criterion; control against MCI-Park P = 1e-5 and
+      7e-6; levodopa against levodopa with deletion P = 0.0003 and 0.0006; MCI-Park against deletion
+      alone P = 0.63 and 0.47.
+    response: No change. The notebook now also prints the exact Mann-Whitney P where there are no
+      ties (the verifier's point that scipy is asymptotic for n > 8 while Prism is exact); no outcome
+      changes.
