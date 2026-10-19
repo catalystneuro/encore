@@ -4630,7 +4630,7 @@ The dashboard lists them under the quote.
 The claims of every attempt recorded so far were then brought up to
 pilot-8 from each paper's full text (Europe PMC or PMC, bioRxiv, or the
 publisher's open-access page), and every quote and recorded value was
-checked against that text. Of 1,285 claims in 56 files, 465 have
+checked against that text. Of 1,280 claims in 56 files, 465 have
 statistics (958 entries), and the tightened sources replaced ordinal ones
 ("Results, first section") that often did not match the paper's own
 sections. Six papers whose full text is not open (000005, 000006, 000061,
@@ -4651,7 +4651,10 @@ gave no sign of whether the paper states it at all. Every finding now has
 either a quote or an `inferred` note saying why the statement is the
 author's reading, such as numbers that appear only in a supplementary
 table. Abstract-only papers are quoted from the abstract where it states the
-finding. Of the 1,219 claims outside the three files still waiting for
-their full text, 24 are links, 1,179 findings are quoted and 16 are
-inferred. Four inferred findings of 001754 come from the dandiset's
-description, not the paper.
+finding. Every claim must come from and pertain to its paper, so five
+claims that the paper's open text does not state were dropped, with their
+outcomes: four of 001754 taken from the dandiset's description, and one of
+000691 read from the paper's code (its method is now written out in the
+claim that referred to it). Of the 1,214 claims outside the three files
+still waiting for their full text, 24 are links, 1,179 findings are quoted
+and 11 are inferred.

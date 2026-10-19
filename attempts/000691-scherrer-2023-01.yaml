@@ -96,28 +96,6 @@ outcomes:
   - Event times are each component's largest temporal weight; the code sets them by hand.
   - Distances use the code's 5.94 um per pixel, which the dandiset does not state; the outcome uses
     ratios and does not depend on it.
-- claim: fig2-quadrant-direction-decoding
-  outcome: reproduced
-  notebook: reproduce_scherrer_2023.ipynb
-  output: claim:fig2-quadrant-direction-decoding
-  notes: Median class accuracy 0.415 over 50 decoders (0.304 to 0.604), chance 0.125, 95th
-    percentile of 50 shifted-label decoders 0.145; all 50 exceed it. 3.32 times chance; the
-    preprint's text says at least four times chance, a number not used here as the version of record's
-    text was not available. Six of eight classes reach 0.443 to 0.594, two only 0.236 and 0.239. On
-    all frames, without the running selection, 0.348 against a null 95th percentile of 0.127. The SGD
-    solver stops far from the optimum of its objective (2.04 to 3.21 on six splits, against 0.086 to
-    0.118 for an exact solver at its limit of 10,000 iterations). On the same splits the exact solver
-    gives 0.262 to 0.318 for three real decoders and 0.131 to 0.164 for three with shifted labels, so
-    the claim also holds with it.
-  deviations:
-  - Position tracked here from the video (the paper's tracking output is not in the dandiset), in
-    the unrotated frame, with the loop's sides at the 2nd and 98th percentiles of position.
-  - All 2948 footprints in place of the 2382 curated ones.
-  - scikit-learn's SGD classifier (hinge loss, ridge alpha equal to the code's lambda, 10 passes) in
-    place of MATLAB's fitcecoc with templateLinear, whose default for more than 100 predictors is 10
-    passes of dual SGD; 50 decoders in place of 200.
-  - The legend of Figure 2 was not available, so the claim is stated from the Extended Data legends
-    and the code.
 - claim: ed9b-octant-decoding
   outcome: reproduced
   notebook: reproduce_scherrer_2023.ipynb
@@ -129,7 +107,12 @@ outcomes:
     0.220 to 0.292 for three real decoders and 0.092 to 0.145 for three with shifted labels, so the
     claim also holds with it.
   deviations:
-  - As for fig2-quadrant-direction-decoding.
+  - Position tracked here from the video (the paper's tracking output is not in the dandiset), in
+    the unrotated frame, with the loop's sides at the 2nd and 98th percentiles of position.
+  - All 2948 footprints in place of the 2382 curated ones.
+  - scikit-learn's SGD classifier (hinge loss, ridge alpha equal to the code's lambda, 10 passes) in
+    place of MATLAB's fitcecoc with templateLinear, whose default for more than 100 predictors is 10
+    passes of dual SGD; 50 decoders in place of 200.
 - claim: ed9c-local-decoding-map
   outcome: reproduced
   notebook: reproduce_scherrer_2023.ipynb
@@ -156,8 +139,8 @@ outcomes:
   - Local decoders are fit by liblinear (LinearSVC) on the same objective, as MATLAB's default for
     100 or fewer predictors is BFGS run to convergence; liblinear also penalizes the intercept,
     weakly. Round 1 used 10 passes of SGD here, which is shown as a variant.
-  - A 30 pixel grid where the code uses 5 pixels; all 2948 footprints in place of 2382; position as
-    for fig2-quadrant-direction-decoding.
+  - A 30 pixel grid where the code uses 5 pixels; all 2948 footprints in place of 2382; position
+    tracked from the video, as for octant decoding.
   - The code's variant is run on a 60 pixel grid where the criterion says 40; on the 40 pixel grid
     the notebook took 32 minutes on four cores, over the 30 minute limit.
 - claim: ed10-localized-activity
@@ -174,7 +157,7 @@ outcomes:
   deviations:
   - The paper selected its examples by eye and shows two-dimensional maps; here a test over all
     footprints on linear position, with the entropy measure of place_cells.m.
-  - All 2948 footprints in place of 2382; position as for fig2-quadrant-direction-decoding.
+  - All 2948 footprints in place of 2382; position tracked from the video, as for octant decoding.
 - claim: ed2b-featherscope-flat-illumination
   outcome: partially_reproduced
   notebook: reproduce_scherrer_2023.ipynb
@@ -314,20 +297,6 @@ verifications:
       spread ratio of random sets of the event's size (0.951 to 1.042, 5th to 95th percentiles), and
       a variant with event times from 153 s on (8 of 8). The conclusion now says the criterion's
       threshold is far below what any set this large reaches.
-  - claim: fig2-quadrant-direction-decoding
-    agrees: true
-    outcome: reproduced
-    reason: The median per-decoder median class accuracy is 0.415, above chance (0.125) and above the
-      null 95th percentile (0.145); 50 of 50 decoders exceed it. The split matches the paper's code
-      and there is no train/test leakage (problem 1). SGD at this very small alpha is noisy and was
-      never checked against an exact solver on the real data; this only lowers scores, so the passing
-      decoding claims stand (problem 2). Paper values for Fig. 2 could not be compared.
-    response: Outcome kept. Added six splits fit by both SGD and an exact solver (liblinear) of the
-      same objective. SGD stops far from the optimum (objectives 2.04 to 3.21 against 0.086 to
-      0.118); the exact solver gives 0.262 to 0.318 for real decoders and 0.131 to 0.164 for shifted
-      ones. SGD is kept for these decoders because MATLAB's default for more than 100 predictors,
-      which the code uses, is also 10 passes of a stochastic solver. The Fig. 2 legend and main text
-      remain unavailable, so no paper value is compared.
   - claim: ed9b-octant-decoding
     agrees: true
     outcome: reproduced
@@ -453,15 +422,6 @@ verifications:
       the footprints are as spread as random sets. The NMF errors in the record (97.55 to 97.58) are
       those printed by the re-run on four cores; the copy the verifier read came from another machine.
       Outcome kept.
-  - claim: fig2-quadrant-direction-decoding
-    agrees: true
-    outcome: reproduced
-    reason: Agrees. Problem 2 is resolved by the solver check; part of the round-1 point was wrong, as
-      on these decoders SGD scores higher than the exact solver (0.44 to 0.54 against 0.26 to 0.32,
-      cell 22), and the claim holds with either solver. Fig. 2 has no paper value to compare, as the
-      main text and the Fig. 2 legend remain unavailable.
-    response: No change. The main text and the Fig. 2 legend are still not available here, so no paper
-      value is compared.
   - claim: ed9b-octant-decoding
     agrees: true
     outcome: reproduced

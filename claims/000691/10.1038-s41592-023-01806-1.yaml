@@ -31,6 +31,10 @@
 # predicted correctly. All 2948 footprints are used, as the curated set is not in the dandiset.
 # Quotes from the abstract and the public Extended Data legends added 2026-10-19 where they state
 # the finding; the rest are marked inferred (no open full text).
+# Dropped 2026-10-19: fig2-quadrant-direction-decoding, whose finding the paper's open text
+# (abstract, figure titles, Extended Data legends) does not state; it was read from the paper's
+# code. Its method is written out in ed9b-octant-decoding's criterion, which referred to it. Its
+# section remains in the notebook.
 schema_version: 1
 dandiset: "000691"
 paper: doi:10.1038/s41592-023-01806-1
@@ -141,24 +145,15 @@ claims:
     from their mean. Reproduced when, for at least 6 of the 8 components, the event has at least
     10 active footprints and their spread is at least half the spread of all 2948 footprints;
     partially reproduced for 3 to 5 components.
-- id: fig2-quadrant-direction-decoding
-  statement: The mouse's position in the maze (quadrant) together with its direction of movement
-    can be decoded from the activity of the imaged population.
-  source: Figure 2 (legend not available); Extended Data Fig. 9a ("in this case, direction is not
-    coded") and Fig. 10a; quadrant_direction_decoding.m
-  inferred: Not stated in the abstract or the Figure 2 title; the Figure 2 legend and the main text
-    are not open.
-  criterion: Eight classes (four arms of the loop, two directions). 50 decoders with the
-    procedure above, and 50 null decoders with the labels circularly shifted against the activity
-    by a random offset between 10% and 90% of the frames. Per decoder, the median of the 8 class
-    accuracies. Reproduced when the median over the 50 decoders exceeds both chance (1/8) and the
-    95th percentile of the null decoders.
 - id: ed9b-octant-decoding
   statement: Position within the maze can be decoded with octant resolution from the activity.
   source: Extended Data Fig. 9a and 9b
   quote: Decoding position within the maze with octant resolution.
-  criterion: As for fig2-quadrant-direction-decoding, with the eight octants (each arm halved,
-    direction not coded) and lambda 6.75e-8, as in octant_decoding.m.
+  criterion: Eight classes, the eight octants (each arm halved, direction not coded). 50 decoders
+    with the procedure above and lambda 6.75e-8, as in octant_decoding.m, and 50 null decoders with
+    the labels circularly shifted against the activity by a random offset between 10% and 90% of
+    the frames. Per decoder, the median of the 8 class accuracies. Reproduced when the median over
+    the 50 decoders exceeds both chance (1/8) and the 95th percentile of the null decoders.
 - id: ed9c-local-decoding-map
   statement: Decoders that use the 32 footprints closest to a point, within 270 um, decode octant
     position significantly (Benjamini-Hochberg false discovery rate 5%) in parts of the field of
