@@ -104,7 +104,11 @@ outcomes:
   output: claim:pt-retrograde-sublaminae
   notes: Anatomy.zip holds only image stacks of six brains (657 jpg files; thalamus and medulla H2B labelling,
     anterograde labelling, ChR2 expression), without cell counts or co-labelling annotations, and no folder is
-    named for superior colliculus labelling, which the 77.1% needs. What the answer changed - it confirmed that
+    named for superior colliculus labelling, which the 77.1% needs. The two H2B folders of brain BL648, its
+    thalamus and medulla retrograde labelling, hold 108 images each (0.78 to 2.07 MB), with no scale, cell
+    positions or counts beside them, so a co-labelling count would need a cell detection method the paper does
+    not give. One image of each folder, opened outside the notebook while preparing, is 8600 by 6200 pixels,
+    greyscale; this decides nothing. What the answer changed - it confirmed that
     neither the paper nor its code says how labelled and co-labelled cells were counted, so the outcome is
     unchanged.
 - claim: pt-projection-cluster-mapping
@@ -129,7 +133,10 @@ outcomes:
     AA0134, AA0169) are all in Axons.zip and are the 18 with somata in motor cortex. None lacks both thalamus
     and medulla (0 of 18), but 17 of 18 reach the superior colliculus; AA0134, a partial medulla-projecting
     neuron of the table, has neither termini nor axon there (13 medullary termini). The readings of projecting
-    (termini, axon length) agree. Over all 22 neurons of the file, a variant, 19 reach it. What the answer
+    (termini, axon length) agree. Over all 22 neurons of the file, a variant, 19 reach it. No node of AA0134's
+    axon (2368 nodes, 36 termini) lies in a structure named for the superior colliculus; it runs through the
+    midbrain reticular nucleus (141 nodes) and the tectospinal pathway (55) to the intermediate reticular
+    nucleus (235 nodes, 6 termini) and other reticular nuclei of the pons and medulla. What the answer
     changed - it fixed which 18 neurons are meant, which the run before the answers had read as those with
     motor cortex somata; the neurons are the same and the outcome is unchanged.
 - claim: pt-marker-genes
@@ -167,7 +174,9 @@ outcomes:
     PTlower units and the session rule 42 and 63, from 8 and 4 mice under both; only the session rule's 63 is
     within tolerance, and no reading gives both counts. The code's rule gives 61 and 69 from 8 and 4 mice on
     the processed data; the dandiset lacks 11 of the paper's sessions, which hold 17 included PTupper and 13
-    included PTlower units. What the answer changed - when neither reading matches, the other claims use the
+    included PTlower units. The processed data hold 150 tagged units, the paper's 143 of good quality
+    (Excellent or Good) and 7 PTlower units of Fair quality that the code's quality filter leaves out; of the
+    143 the code's rule keeps 130. What the answer changed - when neither reading matches, the other claims use the
     code's per-unit rule, so they now run on the 44 and 56 units, with the session rule as a variant. This
     claim's outcome is unchanged.
 - claim: pt-depth
@@ -191,8 +200,10 @@ outcomes:
     Hz (PTlower), only the PTupper peak within tolerance; s.d. 3.67, 11.18, 5.85 and 22.92 Hz. All trials, a
     variant, gives p = 0.069 and 0.028; the session rule, a variant, p = 0.34 to 0.44 with medians out of
     tolerance. On the paper's units all four medians are within tolerance (4.27, 17.65, 5.18, 17.17 Hz) and
-    neither test differs (p = 0.18 and 0.14), so the difference here may come from the 11 missing sessions.
-    What the answer changed - it fixed the selection as the code's rule; the run before the answers was
+    neither test differs (p = 0.18 and 0.14). On the processed data for the same 44 and 56 units the dandiset
+    holds, peak rates also differ (p = 0.03) and baseline rates do not (p = 0.085), so the difference comes from
+    the 11 missing sessions, not from the files. The files raise every unit's baseline rate (median 0.99 Hz for
+    PTupper and 0.97 Hz for PTlower), as spikes of neighbouring trials fall in the baseline epoch. What the answer changed - it fixed the selection as the code's rule; the run before the answers was
     blocked because the two selections gave different outcomes.
   deviations:
   - The dandiset lacks 11 of the paper's sessions; the test runs on 44 PTupper and 56 PTlower units, not 61 and
@@ -218,7 +229,9 @@ outcomes:
   notes: With the code's selection 11 of 56 PTlower (19.6%) and 2 of 44 PTupper units (4.5%) burst (two-sided
     Fisher p = 0.035). The PTlower share and the test hold; the PTupper share is out of 3.3 +/- 0.33%. The
     session rule, a variant, gives 12 of 63 (19.0%) and 2 of 42 (4.8%), p = 0.042. On the paper's units 13 of 69
-    (18.8%) and 2 of 61 (3.3%), p = 0.0058. What the answer changed - it fixed the selection; the outcome is
+    (18.8%) and 2 of 61 (3.3%), p = 0.0058. The processed data for the same units give the dandiset's 2 of 44
+    and 11 of 56, so the PTupper share is out of tolerance because units are missing; with 44 units one unit is
+    2.3%, and 3.3 +/- 0.33% cannot be reached. What the answer changed - it fixed the selection; the outcome is
     unchanged.
   deviations:
   - The files do not mark trial boundaries; intervals are taken in the stored order, a boundary where the time
@@ -231,8 +244,9 @@ outcomes:
   notes: With the code's selection and the unit's range, 99 of 100 units are selective in at least one epoch,
     under both readings of the sample epoch; the dandiset holds 100 included units, so the count cannot reach
     122 +/- 12.2. The fraction is 0.99 (the paper 94%). The variants give 95 to 100 of 100 or 105 units. Of the
-    paper's 130 units from the processed data, 121 or 125 are selective, within tolerance. What the answer
-    changed - it fixed the selection; the outcome is unchanged.
+    paper's 130 units from the processed data, 121 or 125 are selective, within tolerance; of the 100 the
+    dandiset holds, 97. Whether such counts should be judged as fractions when units are missing is asked in
+    questions/000006.yaml. What the answer changed - it fixed the selection; the outcome is unchanged.
 - claim: pt-variance-explained
   outcome: reproduced
   notebook: reproduce_economo_2018.ipynb
@@ -256,7 +270,9 @@ outcomes:
     selective in the late delay, below 40 +/- 4 and 44 +/- 4.4; the variants give 27 or 28 and 37 to 41. (b)
     CDlate selectivity is significant at every late delay bin and for the window mean (no iteration at or
     below zero) in both populations under the four open readings and under the variants. On the paper's units
-    (a) gives 40 of 61 and 44 of 69 and (b) holds. What the answer changed - it fixed the selection; the
+    (a) gives 40 of 61 and 44 of 69 and (b) holds; on the processed data for the same 100 units, 29 of 44 and 38
+    of 56, the dandiset's counts. As fractions (65.9% and 67.9%) they are close to those of the paper's units
+    (65.6% and 63.8%). What the answer changed - it fixed the selection; the
     outcome is unchanged. The earlier attempt had it reproduced, with a criterion written from the abstract.
 - claim: pt-upper-early-preparatory
   outcome: blocked
@@ -281,7 +297,9 @@ outcomes:
     with the code's selection and the unit's range - the PTupper 5th percentile is at or below zero in 68 and
     160 of the 420 bins from -2.1 s to the go cue (projections a and b), and the mean over -0.4 to 0 s is at or
     below zero in 5.3% and 5.8% of iterations. The selectivity in the last 400 ms is 0.78 and 0.74 of that in
-    the CDearly window. On the paper's 61 PTupper units both readings hold (p = 0.007 and 0.011). What the
+    the CDearly window. On the paper's 61 PTupper units both readings hold (p = 0.007 and 0.011); on the
+    processed data for the 44 the dandiset holds neither does (85 and 153 bins not significant, p = 0.060 and
+    0.066), so its own test fails because units are missing, not because of the files. What the
     answers changed - its dependency stays blocked, so the outcome is unchanged. The earlier attempt had it
     reproduced, with a criterion written from the abstract.
 - claim: pt-lower-cdearly-decay
@@ -327,8 +345,9 @@ outcomes:
     p = 0.0001 to four decimals), 64.3% against 58.7%, both within tolerance, and 3 PTlower units reach 70%.
     But 9 PTupper units reach 70% and 9 pass the code's cut, against 15 +/- 1.5, and 8 of the 10 most accurate
     units are PTupper. The variants give 7 to 9 PTupper units and 8 of 10. On the paper's units 15 of 61 and 3
-    of 69, 64.4% and 58.8%, and all ten best units are PTupper. What the answer changed - it fixed the
-    selection; the outcome is unchanged.
+    of 69, 64.4% and 58.8%, and all ten best units are PTupper. The processed data for the same 100 units give
+    the dandiset's 9 and 3 at 70% and 8 of the top 10, so the shortfall comes from the missing units. What the
+    answer changed - it fixed the selection; the outcome is unchanged.
 - claim: pt-upper-decoding-rectified
   outcome: partially_reproduced
   notebook: reproduce_economo_2018.ipynb
@@ -337,8 +356,11 @@ outcomes:
   notes: With the code's selection and the unit's range, no PTlower unit reaches 70% and the Mann-Whitney test
     holds (p below 0.0001), and the PTupper mean (61.8%) is within tolerance. But 8 PTupper units reach 70% (11
     pass the recomputed cut, as does 1 PTlower unit), 16 of the 21 most predictive are PTupper, and the PTlower
-    mean (56.2%) is below 56.7 +/- 0.4%. On the paper's units 15 and 0 at 70%, 20 of 21, 62.7% and 56.6%. What
-    the answer changed - it fixed the selection; the outcome is unchanged.
+    mean (56.2%) is below 56.7 +/- 0.4%. On the paper's units 15 and 0 at 70%, 20 of 21, 62.7% and 56.6%. On
+    the processed data for the same 100 units, 9 and 0 at 70%, 15 of 21, 62.33% and 56.84%; the counts fall short
+    because units are missing, and the PTlower mean moves out of tolerance with the files, whose baseline rates,
+    the rectification threshold, are higher. What the answer changed - it fixed the selection; the outcome is
+    unchanged.
 - claim: pt-cdgo-onset
   outcome: partially_reproduced
   notebook: reproduce_economo_2018.ipynb
@@ -347,8 +369,12 @@ outcomes:
   notes: With the code's selection and the unit's range, PTlower selectivity along CDgo becomes significant
     before PTupper's under all 24 combinations of the open readings, 30 to 40 ms after the go cue against 75 to
     85 ms; neither onset is within one bin of 24 and 48 ms under any reading. On the paper's units the onsets
-    are 30 to 40 ms and 55 to 80 ms, also out of tolerance. What the answer changed - it fixed the selection;
-    the outcome is unchanged.
+    are 30 to 40 ms and 55 to 80 ms, also out of tolerance. In the first 100 ms after the go cue the PTlower 5th
+    percentile first rises above zero in the 37.5 ms bin in the files, in the processed data for the same units
+    and in all the paper's units alike, so its distance from 24 ms comes from the method shared by all three,
+    not from the data (what in the method is not tested); the PTupper 5th percentile first rises above zero at
+    77.5, 82.5 and 57.5 ms, so most of its delay comes from the missing units. What the answer changed - it
+    fixed the selection; the outcome is unchanged.
 - claim: pt-lower-late-and-motor
   outcome: reproduced
   notebook: reproduce_economo_2018.ipynb
@@ -374,7 +400,9 @@ outcomes:
   notes: With the code's selection and the unit's range, the correlation with CDlate falls sooner in PTlower
     under both levels and both readings of what a mouse is. At level 0.5 PTlower falls below it at 0.37 or 0.27
     s and PTupper at 0.37 s (reproduced); at level 0.75 at 0.06 s against 0.19 s, under the 0.2 s bound
-    (partially reproduced). The code's variant and the paper's units give the same order. What the answer
+    (partially reproduced). At level 0.5 with the 4 and 8 mice the two differ by one 5 ms bin (0.3675 against
+    0.3725 s), on a bootstrap median with no interval. The code's variant and the paper's units give the same
+    order. What the answer
     changed - neither the paper nor its code fixes the level, so both stay and the claim stays blocked.
 - claim: pt-lower-movement-termination
   outcome: blocked
@@ -390,7 +418,10 @@ outcomes:
     projection (a), 1 bin of PTlower CDgo stays significant from 0.2 to 0.4 s after the last lick, so window
     (a) no longer holds there. PTupper CDlate selectivity is not significant before the last lick. The PTlower
     coding direction changes more after the last lick (inner product with the direction before it 0.52 at
-    +0.3 s, against 0.79 for PTupper). What the answer changed - the paper gives no windows, so both stay and
+    +0.3 s, against 0.79 for PTupper). Lick-aligned bins later than 3.0 s after the go cue count no spikes, but
+    the last lick is more than 2.5 s after the go cue in only 0.16% of PTupper and 0.17% of PTlower unit-trials,
+    so this cut does not bear on the result. The windows also fail for CDlate on the paper's own units and
+    licks. What the answer changed - the paper gives no windows, so both stay and
     the claim stays blocked; the last lick is the code's, and a rebuilt one is acceptable only where the check
     above leaves the outcome the same, which it does not in that one combination.
   deviations:
@@ -409,7 +440,9 @@ outcomes:
     the PTlower cohort's left ALM median CDearly selectivity (9.8 and 10.1) is outside the PTupper cohort's
     5-95% interval (4.0 to 8.9, 4.2 to 9.3). The dandiset holds 232, 430 and 226 unidentified units (226, 403
     and 212 after the code's rule) against the paper's 495, 511 and 276, out of tolerance. The z-scored PT
-    populations keep the PT difference. What the answer changed - it fixed the selection, which leaves out the
+    populations keep the PT difference. The CDearly part fails because the PTlower cohort is the more selective,
+    the opposite of the PT difference (PTupper 3.97 against PTlower 2.09); whether that should count as a failure
+    is asked in questions/000006.yaml. What the answer changed - it fixed the selection, which leaves out the
     one combination where the CDearly part held before the answers (session rule, all trials, projection b);
     the claim stays blocked through its dependency.
   deviations:
@@ -423,7 +456,9 @@ outcomes:
   notes: Two of the six claims it summarises are blocked (pt-upper-early-preparatory, and pt-upper-persistent
     through its dependency), so it is blocked for the same reason. Of the others pt-single-neuron-early-selectivity,
     pt-lower-cdearly-decay and pt-lower-late-and-motor are reproduced and pt-cdgo-onset is partially
-    reproduced. What the answers changed - pt-single-neuron-early-selectivity moved from blocked to reproduced;
+    reproduced. Without the dependency rule the criterion would give partially reproduced
+    (pt-single-neuron-early-selectivity on the PTupper side, pt-lower-late-and-motor on the PTlower side).
+    What the answers changed - pt-single-neuron-early-selectivity moved from blocked to reproduced;
     this claim's outcome is unchanged. The earlier attempt had it not reproduced, with a criterion written from
     the abstract.
 findings:
@@ -450,7 +485,9 @@ findings:
     They were written trial by trial as trial start + go cue time + the spike time from the go cue, and
     consecutive trials overlap on the file's clock, so some spikes of one trial lie in the next trial's early
     epochs (11.7% of the spikes counted in the baseline epoch, under 2% in later epochs, are detectably out of
-    order). Trial membership of a spike cannot be recovered in full from the files.
+    order). Trial membership of a spike cannot be recovered in full from the files. On the same 100 tagged
+    units, every unit's baseline rate is higher in the files than in the paper's processed data (median by 0.99
+    Hz for PTupper and 0.97 Hz for PTlower units).
 - kind: format_error
   statement: New. The lick times are stored the same way, trial by trial, and are out of order in 105 of 106 lick
     series (14,360 backward steps in 180,679 licks). The files do not assign licks to trials; rebuilt from the
@@ -475,3 +512,249 @@ findings:
     than those of the other trials (session medians 1.73 to 5.84 s after the pole comes in, against -0.97 to
     -0.16 s); the paper's code leaves out the first ten trials of each unit, which hides this. The files carry
     the same shift, as their spike times equal the processed ones in every unit.
+verifications:
+- date: '2026-10-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier checked the archive and the Anatomy.zip listing
+    for the blocked claims and tested the helper functions on synthetic inputs. 28 of its 31 outcomes agree
+    with the record; for pt-upper-persistent, pt-cohort-control and pt-types-differ-in-timing it gives the
+    outcome of the claim's own test, where the record blocks them through a blocked dependency.
+  results:
+  - claim: pt-types-transcriptomic
+    agrees: true
+    outcome: reproduced
+    reason: The criterion's counting rule gives 27 clusters, and the PT cells fall in Slco2a1, Hpgd and Npsr1
+      only.
+    response: No change needed.
+  - claim: pt-upper-thalamus-projection
+    agrees: true
+    outcome: reproduced
+    reason: Reading (c) gives 8 of 12, the same 8 as the thalamus group. Readings (a) and (b) give 11. A match
+      under one reading is enough.
+    response: No change needed.
+  - claim: pt-lower-medulla-projection
+    agrees: true
+    outcome: reproduced
+    reason: Reading (c) gives 4 of 12, and all 4 of the medulla group reach the intermediate reticular nucleus.
+    response: No change needed.
+  - claim: pt-types-shared-targets
+    agrees: true
+    outcome: blocked
+    reason: Part 1 reproduced, superior colliculus 12 of 12. Part 2 can only be tested on the bulk-labelling
+      images, and the paper gives no method for them; the test on the reconstructions is only a variant.
+    response: No change needed.
+  - claim: pt-retrograde-sublaminae
+    agrees: true
+    outcome: blocked
+    reason: Anatomy.zip holds 657 jpgs and no counts. The counting method is open, and no folder holds superior
+      colliculus labelling. It could not check whether the BL648 H2B stacks would allow the thalamus-medulla
+      co-labelling count, for want of a sample image and its resolution.
+    response: Added the number and sizes of the images in each folder, read from the archive's directory; the
+      check forbids opening images in the notebook, so the pixel size of one image per folder (8600 by 6200,
+      greyscale), found while preparing, is mentioned as not run here. No scale or cell positions come with
+      them, so a count would need a cell detection method the paper does not give. Outcome kept.
+  - claim: pt-projection-cluster-mapping
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b), medulla 62 of 62 in Slco2a1; thalamus 72 + 19 = 91 of 94.
+    response: No change needed.
+  - claim: pt-types-account-for-all-pt
+    agrees: true
+    outcome: partially_reproduced
+    reason: Superior colliculus 17 of 18 under both readings (AA0134 has 0 termini and 0 mm there); 0 of 18
+      lack both thalamus and medulla. The criterion has no partial rule, so this is its label for one part
+      holding. It could not check why AA0134 has no superior colliculus node, for want of a list of the
+      structures its axon nodes fall in.
+    response: Added the structures of AA0134's axon nodes and termini. None lies in a structure named for the
+      superior colliculus; the axon runs through the midbrain reticular nucleus and the tectospinal pathway to
+      the reticular nuclei of the pons and medulla. Outcome kept.
+  - claim: pt-marker-genes
+    agrees: true
+    outcome: blocked
+    reason: Confirmed, no smFISH data in the dandiset or in Anatomy.zip.
+    response: No change needed.
+  - claim: pt-bulk-sc-fold-change-correlation
+    agrees: true
+    outcome: reproduced
+    reason: r = 0.874 (0.87 +/- 0.087). It checked the replicate columns against the sample key.
+    response: No change needed.
+  - claim: pt-tagged-units
+    agrees: true
+    outcome: not_reproduced
+    reason: 44 PTupper and 56 PTlower (code rule) or 42 and 63 (session rule), against 61 +/- 6.1 and 69 +/-
+      6.9; mice 8 and 4 match. The cause is missing data, as the same rule gives 61 and 69 on the processed
+      data and the dandiset lacks 11 sessions (problem 1). Also, the processed data hold 150 tagged units,
+      not the paper's 143, and the notebook does not reconcile the two (problem 10).
+    response: Added a table of the processed data's tagged units by quality and inclusion. They are the paper's
+      143 of good quality and 7 PTlower units of Fair quality, which the code's quality filter leaves out; of
+      the 143 the code's rule keeps 130. Outcome kept.
+  - claim: pt-depth
+    agrees: true
+    outcome: reproduced
+    reason: 636 um against 1004 um, and 636 against 892 um without the right hemisphere.
+    response: No change needed.
+  - claim: pt-spike-rates-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Main reading, the peak t-test gives p = 0.030 (< 0.05). PTlower medians are also out of tolerance
+      (6.69 Hz baseline, 20.96 Hz peak). Separately, a trial's spikes are taken by time window on the file's
+      clock, so at least 11.65% of baseline-epoch spikes belong to the previous trial, which inflates baseline
+      rates; it could not check how much this moves results without the processed-data variant restricted to
+      the 100 units the dandiset holds (problem 3).
+    response: Added a section that reruns the measures on the processed data for the 100 units the dandiset
+      holds. There peak rates also differ (p = 0.03), so the failure comes from the missing units. On these
+      units every unit's baseline rate is higher in the files (median by 0.99 and 0.97 Hz), which quantifies
+      problem 3; spikes are not reassigned by stored order, as a trial boundary is detectable only where the
+      time steps backwards. Outcome kept.
+  - claim: pt-lower-heterogeneous-rates
+    agrees: true
+    outcome: reproduced
+    reason: PTlower variance is larger. Bartlett and F test, baseline p = 0.002, peak p < 1e-4.
+    response: No change needed.
+  - claim: pt-lower-bursting
+    agrees: true
+    outcome: partially_reproduced
+    reason: Fisher p = 0.035; PTlower 19.6% is in tolerance, PTupper 4.5% (2 of 44) is not. With 44 units,
+      3.3 +/- 0.33% cannot be reached (one unit is 2.3%) (problem 2).
+    response: Added the same units on the processed data (2 of 44 and 11 of 56, the same counts) and said in
+      the conclusion and notes that the share cannot be reached with 44 units. Asked in questions/000006.yaml
+      whether such counts should be judged as fractions. Outcome kept.
+  - claim: pt-selective-any-epoch
+    agrees: true
+    outcome: not_reproduced
+    reason: 99 (or 96 to 100 under other readings) against 122 +/- 12.2. The fraction is 0.99 against the
+      paper's 0.94; the count fails because units are missing (problems 1 and 2).
+    response: Added the same units on the processed data (97 of 100) and asked in questions/000006.yaml whether
+      the counts of this and the other count claims should be judged as fractions when units are missing.
+      Outcome kept, as the criterion judges the count.
+  - claim: pt-variance-explained
+    agrees: true
+    outcome: reproduced
+    reason: Main reading, maximum ratio 1.08 (PTupper) and 1.23 (PTlower), both at most 1.3. The session-rule
+      variant exceeds the bound for PTlower (1.36).
+    response: No change needed.
+  - claim: pt-preparatory-activity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Part (b) holds under every reading. Part (a) counts are 29 and 38, against 40 +/- 4 and 44 +/- 4.4;
+      as fractions, 66% and 68% against 66% and 64% (problem 2).
+    response: Added the same units on the processed data (29 of 44 and 38 of 56) and the fractions; asked in
+      questions/000006.yaml whether such counts should be judged as fractions. Outcome kept.
+  - claim: pt-upper-early-preparatory
+    agrees: true
+    outcome: blocked
+    reason: Methods underspecified. Main reading, "larger" holds under rule (i) and fails under (ii); "more
+      consistent" fails (PTupper spread 0.31 against PTlower 0.25). That is partial under (i) and not
+      reproduced under (ii).
+    response: No change needed.
+  - claim: pt-upper-persistent
+    agrees: false
+    outcome: not_reproduced
+    reason: Reading (a) fails (68 to 165 of 420 bins not significant); reading (b) gives p = 0.053 and 0.058.
+      Close to the threshold; the processed-data variant passes.
+    response: Outcome kept as blocked, with the disagreement recorded. The claims file makes it depend on
+      pt-upper-early-preparatory, which is blocked, and the protocol blocks a claim that depends on a blocked
+      claim; its own test is reported as not holding. Added the processed data for the same 44 PTupper units,
+      where neither reading holds either (85 and 153 bins, p = 0.060 and 0.066), so the failure comes from the
+      missing units, not from the files.
+  - claim: pt-lower-cdearly-decay
+    agrees: true
+    outcome: reproduced
+    reason: p from 0.30 to 0.40 under every reading (main 0.348; paper 0.34).
+    response: No change needed.
+  - claim: pt-cd-stability
+    agrees: true
+    outcome: reproduced
+    reason: PTupper is higher under both measures and every reading (r 0.49 against 0.18; inner product 0.46
+      against 0.22).
+    response: No change needed.
+  - claim: pt-single-neuron-early-selectivity
+    agrees: true
+    outcome: reproduced
+    reason: Measure (a), unit range, 0.410 and 0.237, both in tolerance; t-test p = 0.0012, Mann-Whitney p =
+      0.0041.
+    response: No change needed.
+  - claim: pt-upper-decoding
+    agrees: true
+    outcome: partially_reproduced
+    reason: Means 64.3% and 58.7% in tolerance; Mann-Whitney p = 1e-4; PTlower count 3 matches. PTupper count
+      is 9 against 15 +/- 1.5, and 8 (not 10) of the top 10 are PTupper (problems 1 and 2).
+    response: Added the same units on the processed data (9 and 3 at 70%, 8 of the top 10, as the dandiset), so
+      the shortfall comes from the missing units; asked in questions/000006.yaml whether such counts should be
+      judged as fractions. Outcome kept.
+  - claim: pt-upper-decoding-rectified
+    agrees: true
+    outcome: partially_reproduced
+    reason: Mann-Whitney test holds, PTlower 0 reach 70%, PTupper mean 61.8% in tolerance. Out of tolerance,
+      PTupper count 8 (15 +/- 1.5), top 21 has 16 PTupper (20 +/- 2), PTlower mean 56.20% (needs at least
+      56.3%). The borderline PTlower mean does not change the outcome, as other conditions decide it (problem
+      3).
+    response: Added the same units on the processed data (9 and 0 at 70%, 15 of 21, means 62.33% and 56.84%).
+      The counts fall short because units are missing, and the PTlower mean leaves tolerance with the files,
+      whose baseline rates, the rectification threshold, are higher. Outcome kept.
+  - claim: pt-lower-late-and-motor
+    agrees: true
+    outcome: reproduced
+    reason: CDlate, larger (a and b), faster and longer all hold under all 16 readings.
+    response: No change needed.
+  - claim: pt-cdgo-onset
+    agrees: true
+    outcome: partially_reproduced
+    reason: PTlower is earlier under every reading, but the onsets are 30 to 45 ms and 75 to 85 ms, against 24
+      +/- 5 and 48 +/- 5. The onsets are also out of tolerance on the paper's own units (37.5 and 57.5 ms,
+      about 13 ms late for PTlower), which points to a systematic difference in the onset or projection method
+      that the notebook does not look into (problem 8); the q5 curves from 0 to 0.1 s were needed.
+    response: Added the 5th percentile from 0 to 0.1 s on the dandiset, the processed data for the same units
+      and all the paper's units. The PTlower onset is the 37.5 ms bin in all three, so its offset comes from
+      the method shared by all three, not from the data; what in it is not tested. The PTupper onset is 77.5,
+      82.5 and 57.5 ms, so most of its delay comes from the missing units. Outcome kept.
+  - claim: reaction-time
+    agrees: true
+    outcome: blocked
+    reason: Confirmed in the archive, the files hold lick times only and no video. Lick latency (median 0.122 s)
+      measures something else.
+    response: No change needed.
+  - claim: pt-cd-change-at-go-cue
+    agrees: true
+    outcome: blocked
+    reason: Methods underspecified. Level 0.5 meets the criterion (PTlower shorter and PTupper at least 0.2 s);
+      level 0.75 gives PTupper 0.19 s < 0.2 s, so only partial. At level 0.5 the main reading separates the
+      types by one bin (0.3675 against 0.3725 s), on a median with no uncertainty, and PTlower's 0.37 s is
+      hardly "rapid"; the code variant gives 0.07 s (problem 9).
+    response: The conclusion and notes now say that at level 0.5 the types differ by one bin on a bootstrap
+      median with no interval. Outcome kept.
+  - claim: pt-lower-movement-termination
+    agrees: true
+    outcome: blocked
+    reason: Methods underspecified (at best partial). CDlate selectivity stays significant after the last lick
+      under every reading (5 to 29 bins). CDgo passes only with window (a) and the subject reading of a mouse.
+      The notebook's own check of the rebuilt last lick prints False (subject, projection (a), CDgo, window (a)
+      flips) (problem 4). Lick-aligned rates hold only spikes up to 3.0 s after the go cue, which biases toward
+      "selectivity ceases", not quantified (problem 5). The windows fail for CDlate even on the paper's own
+      units and licks, so they likely do not capture the claim (problem 6).
+    response: Added the share of unit-trials whose last lick is more than 2.5 s after the go cue (0.16% PTupper,
+      0.17% PTlower), so the cut does not bear on the result. Problem 4 was already in the conclusion and notes;
+      problem 6 is now in the notes. Outcome kept.
+  - claim: pt-cohort-control
+    agrees: false
+    outcome: partially_reproduced
+    reason: Main reading, the CDgo onsets agree within the PT difference, but the PTlower-cohort CDearly median
+      (9.82) lies above the PTupper-cohort 95th percentile (8.86). The CDearly test fails because the PTlower
+      cohort is more selective than the PTupper cohort, the opposite direction to the PT-type difference; the
+      criterion does not test whether the cohorts explain that difference (problem 7). The dandiset lacks the
+      unidentified units of 11 sessions (problem 1).
+    response: Outcome kept as blocked, with the disagreement recorded. The claims file makes it depend on
+      pt-upper-early-preparatory, which is blocked, and the protocol blocks a claim that depends on a blocked
+      claim; its own test gives partially reproduced, as the verifier finds. Problem 7 is now in the conclusion
+      and notes and is asked in questions/000006.yaml.
+  - claim: pt-types-differ-in-timing
+    agrees: false
+    outcome: partially_reproduced
+    reason: Of the six claims it depends on, single-neuron early selectivity (PTupper side) and late-and-motor
+      (PTlower side) are reproduced; persistent, early-preparatory and onset are not.
+    response: Outcome kept as blocked, with the disagreement recorded. Two of the six claims it depends on are
+      blocked (pt-upper-early-preparatory, and pt-upper-persistent through it), and the protocol blocks a
+      claim that depends on a blocked claim. The conclusion and notes now say the criterion would give
+      partially reproduced without that rule.

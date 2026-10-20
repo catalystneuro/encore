@@ -33,7 +33,10 @@ decided under those, with the Methods' session rule and all trials shown as vari
 dandiset the code's rule keeps 44 PTupper and 56 PTlower units, not the paper's 61 and 69, because
 11 sessions are missing from it. Where the remaining open readings give different outcomes, the
 claim is blocked. The same code run on the paper's units from its processed data gives most of the
-paper's numbers; those runs are variants, and no outcome rests on them. The spike and lick times in
+paper's numbers; those runs are variants, and no outcome rests on them. Run on the processed data for
+only the 100 units the dandiset holds, the code gives the dandiset's counts and test results, so most
+failures here come from the missing units; the files' clock raises every unit's baseline rate by about
+1 Hz. The spike and lick times in
 the files are not sorted, and consecutive trials overlap on the files' clock; the notebook shows
 this and rebuilds the trials from the stored order.
 
