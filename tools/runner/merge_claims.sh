@@ -22,14 +22,17 @@ for try in 1 2 3 4 5; do
   git -C "$tmp" checkout -q "origin/attempt/$d" -- "claims/$d"
   if git -C "$tmp" diff --cached --quiet; then echo "$d: main already has these claims"; exit 0; fi
   (cd "$tmp" && python - "claims/$d" <<'PY'
-import sys
+import json, sys
 from pathlib import Path
-sys.path.insert(0, "tools")
 import yaml
-from entry import _plain, schema
+from jsonschema import Draft202012Validator
+def plain(v):   # YAML dates as strings, so the schema's formats apply
+    return ({k: plain(x) for k, x in v.items()} if isinstance(v, dict) else [plain(x) for x in v]
+            if isinstance(v, list) else v.isoformat() if hasattr(v, "isoformat") else v)
+schema = Draft202012Validator(json.loads(Path("schemas/claims.schema.json").read_text()))
 bad = 0
 for path in sorted(Path(sys.argv[1]).glob("*.yaml")):
-    for err in schema("claims").iter_errors(_plain(yaml.safe_load(path.read_text()))):
+    for err in schema.iter_errors(plain(yaml.safe_load(path.read_text()))):
         print(f"{path}: {'/'.join(map(str, err.path)) or '(top level)'}: {err.message}")
         bad += 1
 sys.exit(1 if bad else 0)
