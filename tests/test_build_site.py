@@ -431,3 +431,10 @@ def test_the_schema_keeps_quotes_inferences_and_links_apart():
     assert not schema.is_valid({**base, "claims": [{**claim, "quote": "Q.", "inferred": "From Table 1."}]})
     assert not schema.is_valid({**base, "claims": [{**claim, "kind": "link", "inferred": "From code."}]})
     assert schema.is_valid({**base, "claims": [{**claim, "statistics": [{"p": 0}]}]})
+
+
+def test_stylesheets_and_scripts_are_named_by_their_contents(built):
+    data, out = built
+    page = (out / "pipeline" / "index.html").read_text()
+    assert re.search(r'href="\.\./assets/app\.css\?v=[0-9a-f]{10}"', page)
+    assert re.search(r'src="assets/progress\.js\?v=[0-9a-f]{10}"', (out / "index.html").read_text())
