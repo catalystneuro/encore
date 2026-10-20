@@ -1,0 +1,705 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001084",
+  "label": "DANDI:001084"
+ },
+ "page": "datasets/dandi/001084/",
+ "generated": "2026-10-20T18:54:15+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 10,
+  "partially_reproduced": 10,
+  "not_reproduced": 0,
+  "blocked": 1
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 4
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001084-vu-2024-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001084",
+    "version": "0.241023.2011",
+    "doi": "10.48324/dandi.001084/0.241023.2011"
+   },
+   "key": "dandi:001084",
+   "label": "DANDI:001084",
+   "dataset_version": "0.241023.2011",
+   "paper": "10.1016/j.neuron.2023.12.011",
+   "paper_title": "Targeted micro-fiber arrays for measuring and manipulating localized multi-scale neural dynamics over large, deep brain volumes during behavior",
+   "date": "2026-10-18",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39127852554"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001084-vu-2024",
+   "entry_title": "Striatal dopamine release patterns and targeted stimulation through micro-fiber arrays (Vu et al. 2024)",
+   "description": "Tests the findings of Vu, Brown, Wen et al. (2024) on dandiset 001084, which holds multi-fiber photometry from mice with arrays of 30 to 103 fibers across the striatum. It re-runs the paper's GLM of dopamine release to light and tone in 280 fibers of 7 mice (amplitude maps, latencies and their spatial gradients), the isosbestic controls, the D1 calcium correlations, the chronic reward responses, and the spread of release evoked by single-fiber stimulation with its controls. The freely moving, histology and jaw movement data of Figures 3, 7 and S1 are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_vu_2024.ipynb",
+     "title": "Reproducing Vu et al. (2024) from dandiset 001084",
+     "executed": "notebooks/001084-vu-2024/reproduce_vu_2024.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "fig1c-isosbestic-control",
+     "statement": "In a D1-cre mouse expressing GCaMP7f in D1 spiny projection neurons, fluorescence under 470 nm excitation shows Ca2+ transients across fibers that are absent under 405 nm (isosbestic) excitation.",
+     "source": "Figure 1C; Results, Chronic measurements of large-scale calcium and neuromodulator signals in head-fixed mice, paragraph 1",
+     "quote": "470 nm excitation light (green trace) was alternated with 405nm light (black) at 18hz to provide a quasi-simultaneous isosbestic control. Significant transients are absent with 405 illumination",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "Mouse 842, session 2022-11-23, 61 included fibers. The SD of DF/F under 470 nm exceeds that under 405 nm in 61 of 61 fibers (median ratio 3.01, range 1.56 to 19.41). Frames above 5 times the median 405 nm SD make up a median 6.7% of each 470 nm trace (range 0.13% to 35.9%) and a median 0.0% of each 405 nm trace (at most 1.2%; 11 of 61 have none). The session of 2022-11-18 gives a median ratio of 2.84.",
+     "deviations": [
+      "The paper shows example traces; the SD ratio and its thresholds were chosen here before the analysis.",
+      "Figure 1C describes a 93-fiber array; the mouse its code reads (842) has 82 fibers per channel, 61 included."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2d-correlation-distance",
+     "statement": "Pairwise correlations of D1 SPN Ca2+ signals are generally low but variable, and drop off significantly with the distance between fiber tips.",
+     "source": "Results, Chronic measurements of large-scale calcium and neuromodulator signals in head-fixed mice, paragraph 1; Figure S2D; code SuppFig02/DEF/surface_brain_dist.m",
+     "quote": "Pairwise correlations of SPN Ca2+ signals were generally low, but were highly variable and dropped off significantly with distance between fibers (Figure S2D)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "Over 1830 pairs of the 61 included fibers (470 nm, 2022-11-23), the median pairwise correlation is 0.163 (IQR -0.025 to 0.361, range -0.678 to 0.904), and correlations fall with tip distance (r = -0.190, p = 2.8e-16; mean 0.293 in the closest quarter of pairs against 0.133 in the farthest). The session of 2022-11-18 gives r = -0.238. The p-value treats pairs as independent, as the paper's code does.",
+     "deviations": [
+      "The code's set of fibers (goodROIs.mat) is not published; the included fibers are used.",
+      "The threshold of 0.3 for \"generally low\" was chosen here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs2ef-no-bundle-crosstalk",
+     "statement": "After accounting for distance in the brain, signal correlations do not depend on the distance between fibers on the bundle surface, so nearby fibers in the bundle do not cross-talk.",
+     "source": "Results, Chronic measurements of large-scale calcium and neuromodulator signals in head-fixed mice, paragraph 1; Figure S2E-F; code SuppFig02/DEF/surface_brain_dist.m",
+     "quote": "No relationship was observed between signal correlations and distance on the bundle surface after accounting for brain distance, indicating no cross-talk between nearby fibers in the bundle (Figure S2E\u2013F)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "In the code's linear model of pairwise correlation on Euclidean, AP, ML and DV tip distances and bundle-surface distance (ROI centroids), the surface coefficient is -3.4e-05 per pixel (95% CI -2.7e-04 to 2.0e-04, p = 0.77), while Euclidean tip distance has -0.278 (p < 1e-5). The other session gives p = 0.41. Pairs adjacent on the bundle correlate at 0.222 against 0.156 for others, which the model attributes to their tips also being closer (tip and surface distances correlate at r = 0.437).",
+     "deviations": [
+      "Surface distance is in pixels of the bundle image; the code converts it to mm, which does not change the p-value."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1d-chronic-reward-stability",
+     "statement": "Dopamine release to unpredicted water reward is reliable and of comparable amplitude over at least 12 weeks after implantation (median over 44 fibers, normalized to week 5).",
+     "source": "Figure 1D; Results, Chronic measurements of large-scale calcium and neuromodulator signals in head-fixed mice, paragraph 1; code Fig01/D",
+     "quote": "DA release at a single location to unpredicted water reward delivery was highly reliable and comparable in amplitude over at least 12 weeks following stable expression of dLight1.3b",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "In the 17 sessions with rewards and 25 rewards or fewer (2021-08-19 to 2021-09-13), the median over the 44 fibers of the weekly peak reward response, relative to week 5, is 0.903, 0.932 and 1.196 in weeks 6 to 8, within the band of 0.7 to 1.3. These sessions end at week 8; from 2021-09-10 the sessions have 44 to 70 rewards, of which the paper keeps only those of one task phase, which the files do not record, so weeks 9 to 12 cannot be tested. With all rewards of all sessions the median falls to 0.767 in week 8, 0.609 in week 10 and 0.392 in week 13, as expected if predicted rewards are included; this variant does not test the claim.",
+     "deviations": [
+      "Weeks are counted from the first session, labelled week 5, because the files give no implantation date; the paper's code puts the first session on day 35, which gives the same weeks.",
+      "Only weeks 5 to 8 can be tested."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-link-published-results",
+     "statement": "The dandiset's DF/F traces, fibers and stimulus times are those behind the paper's salient-stimulus analysis, so that its per-fiber responses can be linked to the paper's.",
+     "source": "Figure 4E-F; the paper's intermediate file glm_spline_results.mat (Zenodo, Fig04)",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "Fibers matched by order within each mouse. The raw triggered averages from the dandiset equal the published cue1_roi_mu for light in all 7 mice and cue2_roi_mu for tone in the 6 mice other than DL18 (largest difference 0.0). The GLM spline estimates correlate with the published ones at r = 0.9957 for light and 0.9922 for tone over all fibers, and significance agrees for 93.6% of fiber and stimulus pairs (lowest DL18 tone 0.684, where 44 tones are used in place of 14; DL29 light 0.822). DL18's 14 published tone trials match 14 distinct tones of the file (r at least 0.952, best competitor at most 0.693), whose raw average equals the published one. Refitted with these 14 tones, DL18's tone spline estimates correlate with the published ones at r = 0.9977 and significance agrees for 0.947 of its fibers; with them, agreement over all pairs is 94.5% and the pooled tone r is 0.9974. Per mouse, r is below 0.99 for DL29 light (0.979) and DL27 and DL29 tone (0.989, 0.986).",
+     "deviations": [
+      "The GLM is a re-implementation in Python; filtering and lag selection differ in detail (see the salient-stimulus claims), which explains the significance disagreements."
+     ],
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-light-increases-widespread",
+     "statement": "The light evokes transient increases in dopamine release across many striatal locations.",
+     "source": "Figure 4B, 4E; Results, Spatial topography of modality specific dopamine release magnitudes over large-scale 3-dimensional volumes, paragraph 1",
+     "quote": "The light evoked transient increases in DA release across many locations",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "240 of 280 fibers (86%) have a significant increase to light and 38 a significant decrease; by the signed largest value 237 are increases and 11 decreases. Each mouse has increases in most fibers (34 of 51 in DL21 to 50 of 53 in DL20). The chance rate of a significant increase per fiber, from 200 null refits per mouse, is 0.024 (about 7 of 280 fibers), and 0.043 for an increase or a decrease.",
+     "deviations": [
+      "The paper gives p < 1e-6 for its test (3 consecutive frames outside the 99% band), which is 0.01 cubed and assumes independent frames. With the same test, three given consecutive frames are all outside the band at a rate of 0.0037 in the null refits, and the per-fiber chance rate is 0.024. The protocol blocks a claim when the chance rate of a selection is far from the paper's, as a sign that the procedures differ; here the procedure is shown to be the paper's (raw averages identical, significance agreeing with the published calls for 93.6 to 94.5% of pairs, fig4-link-published-results), so the gap is in how the paper states the rate, and the outcome is kept. 240 increases against about 7 expected by chance.",
+      "The low-pass filter of overall velocity is a zero-phase Butterworth filter in place of MATLAB's lowpass; locomotion lags come from a cross-correlation that shifts negative lags, where the paper's code does not (its version correlates at r = 0.997 with the light values used).",
+      "DL18's tone regressors include all 44 tones (the files do not give tone frequency)."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-light-anterior-posterior-gradient",
+     "statement": "Light-evoked dopamine increases follow an amplitude gradient from the anterior striatum into the posterior tail, where increases are less prevalent and smaller.",
+     "source": "Figure 4E; Figure S4A; Results, Spatial topography of modality specific dopamine release magnitudes over large-scale 3-dimensional volumes, paragraph 1",
+     "quote": "The light evoked transient increases in DA release across many locations with an amplitude gradient extending from the anterior striatum into the posterior tail, where increases were less prevalent and smaller amplitude",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "The light value is larger anteriorly (Spearman rho(AP, value) = 0.168, p = 0.0047) and smaller in the tail (median 0.0055 against 0.0117 DF/F, p = 0.0013), but increases are as prevalent there (83% of 35 tail fibers against 86% elsewhere, p = 0.38). The result is the same with the tail at -0.8 or -1.3 mm and with the code's lags (rho = 0.162). Per mouse the gradient is positive in DL18, DL20 and DL27 (rho 0.45 to 0.69) and negative in DL23 (-0.43), DL29 and DL30. With AP and the light value ranked within each mouse and a permutation test within mice, so that differences between mice cannot drive it, the correlation is r = 0.152 (p = 0.013); (a) holds this way too.",
+     "deviations": [
+      "The tail boundary (AP at most -1.0 mm) was fixed here; the paper gives none."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-tone-tail-increase-anterior-decrease",
+     "statement": "The tone evokes the strongest dopamine increases at sites in the posterior tail, while anterior to the tail it evokes primarily decreases.",
+     "source": "Figure 4D, 4F; Figure S4C; Results, Spatial topography of modality specific dopamine release magnitudes over large-scale 3-dimensional volumes, paragraph 1",
+     "quote": "the tone evoked the strongest increases in DA release at sites in the posterior tail, while anterior to the tail, the tone evoked primarily decreases in DA release",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "Tail fibers have larger tone values than anterior fibers (median 0.0092 against -0.0026 DF/F, p = 5.5e-13), all 10 of the largest values are in the tail, and 32 of 35 tail fibers have a significant increase (none a decrease). Anterior to the tail 103 significant responses are decreases and 60 increases (binomial p = 0.00047). The amplitude comparison and the anterior excess of decreases hold at every tail boundary, with the code's lags, and with DL18 restricted to its 14 tones of 12 kHz identified from the paper's results (108 against 60). At the -1.3 mm boundary only 5 of the 10 largest values are in the tail, so part (a) of the criterion, which needs 6, fails at that variant boundary. The anterior decrease dominates in DL21 (36 against 3) and DL23 (17 against 6) but not in DL18, DL20, DL27 or DL30.",
+     "deviations": [
+      "DL18 uses all 44 tones in the main analysis."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4f-decreases-lateral-ventral",
+     "statement": "Tone-evoked decreases are slightly more prevalent in the anterior lateral and ventral striatum, with many sites showing both increases to the light and decreases to the tone.",
+     "source": "Figure 4F; Results, Spatial topography of modality specific dopamine release magnitudes over large-scale 3-dimensional volumes, paragraph 1",
+     "quote": "Decreases were slightly more prevalent in the anterior lateral and ventral striatum, with many sites exhibiting both increases to the light and decreases to the tone (Figure 4F)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "Of 245 anterior fibers, the 103 with a significant tone decrease are more ventral than the others (median DV 3.66 against 3.30 mm, p = 0.0031) but not more lateral (median ML 2.07 against 1.97 mm, p = 0.43); the same at the other tail boundaries. They are also more anterior (p = 1e-06). 79 anterior fibers (32%) have both a significant light increase and a significant tone decrease, so \"many sites\" holds by the 20% reading.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4ac-patterns-consistent-across-mice",
+     "statement": "The modality-specific release patterns are consistent within and across mice.",
+     "source": "Results, Spatial topography of modality specific dopamine release magnitudes over large-scale 3-dimensional volumes, paragraph 1 (Figure S4A, C)",
+     "quote": "These distinct release patterns were consistent within and across mice (Figure S4A, C)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "The tone correlation with AP is negative in all 7 mice (rho -0.44 to -0.70, each p < 0.03). The light correlation is positive in 4 of 7 mice (significant in DL18, DL20 and DL27) and negative in DL23 (rho -0.43, p = 0.026), DL29 and DL30, below the 5 required.",
+     "deviations": [
+      "The supplementary legend of Figure S4 was not available; the test per mouse was chosen here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs4eh-patterns-not-movement",
+     "statement": "Locomotor changes to the stimuli are variable and bi-directional, while the dopamine release patterns to light and tone are consistent, so the patterns are stimulus and not movement driven.",
+     "source": "Results, Spatial topography of modality specific dopamine release magnitudes over large-scale 3-dimensional volumes, paragraph 1 (Figure S4); Methods; code SuppFig04/EFGH/sal_stim_bubbles_loco.m",
+     "quote": "Locomotor changes to stimuli were variable, bi-directional, and differed across mice and individual stimulus presentations, while DA release patterns to light and tone were consistent, indicating that modality-specific patterns were stimulus, not movement driven",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "Locomotion after the stimuli varies between mice and presentations (acceleration and deceleration splits from 0 and 21 in DL29 light to 21 and 23 in DL18 tone; mean velocity change of either sign for both stimuli). The fiber maps of the two splits correlate (light r = 0.873 over 235 fibers, tone r = 0.784 over 229). The tone pattern holds after acceleration (tail median 0.0073, anterior -0.0031 DF/F) but not after deceleration, where the anterior median is positive (0.0042; tail 0.0098). The test uses raw DF/F, as the paper's code for Figure S4E-H (sal_stim_bubbles_loco.m) does, with no baseline and without the GLM's locomotion regressors. With each split's mean over the 1 s before onset subtracted (a variant, which does not decide the outcome), the maps correlate at r = 0.755 (light) and 0.823 (tone) and the tone pattern holds in both splits (anterior median -0.0043 after acceleration and -0.0024 after deceleration, tail 0.0069 and 0.0101), so the failure under the code's measure follows from the level before onset in the deceleration trials.",
+     "deviations": [
+      "The supplementary legend was not available; the correlation threshold and the tone-pattern test were chosen here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs5-isosbestic-no-pattern",
+     "statement": "With isosbestic (415 nm) excitation, large fluorescence changes and spatial patterns to light and tone are not observed, ruling out a hemodynamic origin of the release patterns.",
+     "source": "Results, Spatial topography of modality specific dopamine release magnitudes over large-scale 3-dimensional volumes, paragraph 1 (Figure S5E-H); code SuppFig05/EFGH",
+     "quote": "Large fluorescence changes and spatial patterns were not observed with 405nm or 415mn (dLight1.3 isosbestic point) illumination, ruling out a significant impact of hemodynamic changes on the spatial DA release patterns",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "In DL31 and DL32 (96 fibers), 2 fibers respond significantly to light and 1 to tone at 415 nm, against 45 and 18 at 470 nm, and the AP correlations of the tone values at 470 nm (-0.49, -0.43) are absent at 415 nm (-0.19, 0.16). The median absolute value at 415 nm is 0.49 of that at 470 nm for light but 0.68 for tone, above the criterion's half; for tone most 470 nm fibers are not significant either, and both medians (0.0027 and 0.0018 DF/F) are near the noise level. With random onsets the median absolute value is 0.0025 at 470 nm and 0.0019 at 415 nm, so the tone median at 470 nm is only 0.0002 above this floor and the ratio cannot fall to half; for light the 470 nm median is 0.0017 above the floor and the 415 nm one 0.0001. With 13 spline functions (the Methods' number for the main GLM) in place of the code's 9 at 18 Hz, the ratios are 0.55 (light) and 0.70 (tone), with 36 and 15 significant fibers at 470 nm against 1 and 0 at 415 nm.",
+     "deviations": [
+      "The spline basis has 9 functions at 18 Hz, as the paper's code (run_sal_stim_glm_470_415.m, knots every 3 frames) has; the Methods give 13 for the GLM at 30 Hz. The 13-function basis is shown as a variant.",
+      "Events are placed by behaviour sample index for both channels, because the stored regular frame rate drifts from the frame timestamps by up to half a second; the clock check for these two sessions is weak (decoding 0.90 and 0.80 with true onsets against 0.40 to 0.65 with shifted ones, 20 presentations each).",
+      "The 470 and 405 nm sessions of Figure S5A-D are not in the dandiset."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5ab-response-latencies",
+     "statement": "Latencies to half-maximum are shorter for dopamine increases to light than to tone, and shorter for increases than decreases to tone (light increase 221.6 ms, SD 42.5; tone increase 305.4 ms, SD 100.0; tone decrease 428.3 ms, SD 197.1).",
+     "source": "Figure 5A-B; Results, Modality specific gradients of dopamine release timing across the striatum, paragraph 1",
+     "quote": "Response latencies (from stimulus onset to the half-max or half-min amplitude) were shorter, on average, for DA increases to light, and shorter for DA increases than for decreases to the tone",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "Counted from the onset frame as the Methods define latency, the means are 187.5 ms (240 light increases), 271.7 ms (94 tone increases) and 393.2 ms (108 tone decreases); the order holds and the tone decrease is within tolerance, the other two are below it. Counted as the paper's code counts (its 1-based index divided by the frame rate, one frame later), they are 220.8, 305.0 and 426.5 ms, within 2 ms of the paper's values, with SDs of 38.1, 98.7 and 196.5 ms against 42.5, 100.0 and 197.1. One tone increase has no half-maximum crossing before its peak.",
+     "deviations": [
+      "Latency follows the Methods (from the onset frame); the code's count, one frame later, is shown as a variant and matches the paper.",
+      "Tone onsets are shifted by 11 frames, the speaker delay in the paper's code, which the Methods do not mention."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5g-light-latency-gradient",
+     "statement": "Dopamine release latencies to light follow an anterior-posterior gradient, with faster increases in the anterior striatum, consistent with wave-like dynamics.",
+     "source": "Figure 5C, E, G; Results, Modality specific gradients of dopamine release timing across the striatum, paragraph 1; code Fig05/general_functions",
+     "quote": "DA release latencies (time to half-max) for light presentations followed a spatial gradient along the anterior-posterior axis, with relatively faster latencies to increase in the anterior striatum than in the posterior striatum, consistent with wave-like dynamics",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "Over 240 fibers with a light latency (median 18 presentations each), relative latency is shorter anteriorly (Spearman rho(AP, latency) = -0.285, p = 7e-06); it also increases laterally (rho = 0.263, p = 3.8e-05) and not with depth (p = 0.93). Ranked within each mouse and tested by permuting within mice, which removes differences between mice and the dependence of relative latency on the number of fibers in a mouse, the gradient remains (r = -0.223, p = 0.0014).",
+     "deviations": [
+      "Relative latencies do not depend on the code's one-frame offset, which cancels in the difference."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5h-tone-latency-gradient",
+     "statement": "Dopamine release latencies to tone follow a different gradient, faster in the posterior striatum than in the anterior striatum.",
+     "source": "Figure 5D, F, H; Figure S6A-B; Results, Modality specific gradients of dopamine release timing across the striatum, paragraph 1",
+     "quote": "DA release latencies to tone presentations followed a different spatial gradient with faster latencies in the posterior striatum relative to the anterior striatum (Figure 5D, F, H)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "Over 196 fibers with a tone latency (earlier of increase and decrease), relative latency is shorter posteriorly (rho(AP, latency) = 0.254, p = 0.00033; tail median 308 ms against 368 ms anterior). Increases alone (rho = -0.07, p = 0.5) and decreases alone (rho = -0.21, p = 0.028) do not show it, so the gradient comes from the tail's fast increases and the slower anterior decreases, as the paper says of Figure S6A-B. Ranked within each mouse and tested by permuting within mice, the gradient remains (r = 0.214, p = 0.003).",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6cd-gradients-individual-mice",
+     "statement": "The spatial latency gradients are also present in individual mice.",
+     "source": "Results, Modality specific gradients of dopamine release timing across the striatum, paragraph 1 (Figure S6C-D)",
+     "quote": "Spatial gradients were also present at the level of individual mice (Figure S6C\u2013D)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "The tone gradient is positive in 6 of 7 mice (significant in DL20 and DL23); the light gradient is negative in 4 of 7 (significant in DL18 and DL27), zero in DL21 and positive in DL23 and DL29.",
+     "deviations": [
+      "The supplementary legend was not available; the count of mice was chosen here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-inclusion-counts",
+     "statement": "In the mouse with ChR2 in dopamine axons and rDAm3.0 in the striatum, 24 recording locations lie within or on the border of the striatum; 18 of the 24 stimulated locations evoke a significant response at another location, and 22 of the 24 recording locations respond to at least one stimulation.",
+     "source": "Methods, \"DA release to optogenetic stimulation\", paragraph 4; Figure 6G legend",
+     "quote": "the position of the fiber tip had to be within, or on the border of, the striatum ... (24 recording locations) ... (18 out of 24 included locations) ... (22 out of 24 included locations)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "In Opto2, 22 fibers are flagged included and 20 of them respond to at least one stimulation, both within tolerance; 14 of the 19 stimulated included fibers evoke a significant response at another included fiber, below 18; as a fraction (0.74) this is close to the paper's 18 of 24 (0.75), but the denominators differ because fewer included fibers were stimulated in the files. Counting only responses to another fiber's stimulation, so that a stimulated fiber's own photoswitching does not count, still gives 20 responding locations. Adding the two fibers labelled Caudoputamen but not flagged (16 and 34) gives the paper's 24 locations and 22 responding ones, and 16 of 21 stimulated fibers with a response elsewhere; the files have 29 single-fiber sessions, of which 21 stimulate a striatal fiber, so 24 stimulated locations cannot be reached. With the code's further exclusions of fibers 8, 9 and 21 the counts are 19, 14 of 19 and 18. Session 2023-03-20f, with the laser artefact on 13 fibers, is left out.",
+     "deviations": [
+      "Stimulation epochs and the stimulated fiber are found from the DF/F alone (artefact above 0.4), without the code's check against the trigger line, which the files do not hold.",
+      "The bootstrap counts responses of either sign as significant, as the code does."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6gh-release-decays-with-distance",
+     "statement": "Stimulating dopamine axons through one fiber evokes release at neighbouring non-stimulated sites that drops off sharply with distance in all three dimensions.",
+     "source": "Figure 6E-H; Results, Local control of striatal dopamine release through micro-fiber arrays, paragraph 1",
+     "quote": "Significant transient increases in stimulation-evoked DA release were detected at sites neighboring the targeted fiber which dropped off sharply with distance in all 3 dimensions (Figure 6E\u2013H)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "Over 266 pairs of 14 stimulated and 20 recording fibers (378 pairs, 18 by 21, in the paper), the fit is a = 0.0147 DF/F and b = -1.096 per mm (95% bootstrap interval over stimulation sites -1.325 to -0.890), and the response falls with absolute distance along ML, AP and DV (Spearman rho -0.30, -0.27, -0.39, all p < 1e-5). The binned mean falls from 0.0079 DF/F at 0.54 mm to 0.0013 to 0.0017 beyond 2 mm.",
+     "deviations": [
+      "Fewer stimulation and recording sites than the paper, from the inclusion of fig6-inclusion-counts."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6g-dorsal-spread",
+     "statement": "Evoked release drops off less with distance dorsal to the stimulated fiber than ventral to it, consistent with dorsally extending dopamine axon branches.",
+     "source": "Figure 6G (D/V distance); Results, Local control of striatal dopamine release through micro-fiber arrays, paragraph 1",
+     "quote": "activation dorsal to the stimulation location dropped off less with distance than ventral (Figure 6G, D/V Distance, right) ... consistent with the dorsally extending axon morphology of branching DA axons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "The decay rate is -0.971 per mm for 156 dorsal pairs and -1.403 for 109 ventral pairs, in the claimed order, but the 95% bootstrap interval of the difference (-0.094 to 0.969) includes 0.",
+     "deviations": [
+      "The paper shows binned means; the comparison of fitted decay rates was chosen here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-tdtomato-control-no-response",
+     "statement": "In control mice expressing tdTomato in place of rDAm3.0, single-fiber stimulation evokes no significant fluorescence increase at non-stimulated sites (0 of 48 sites, 26 stimulations in 2 mice), so the release is not a hemodynamic effect.",
+     "source": "Results, Local control of striatal dopamine release through micro-fiber arrays, paragraph 1; Figure 6G controls",
+     "quote": "there were no significant stimulation-evoked fluorescent increases in control mice which were injected with tdTomato instead of rDAm3.0 (0/48 non-stimulated sites for 26 single-site stimulations across 2 mice",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "No included non-stimulated fiber has a significant increase after stimulation in 304 fiber and session pairs of Opto4 (13 sessions) or 203 of Opto9 (12 sessions); median responses are -0.0002 and 0.0003 DF/F, and one Opto9 pair has a significant decrease. The same test finds increases in 142 of 619 pairs (20 distinct fibers) in Opto2. The files hold 25 tdTomato stimulations against the paper's 26.",
+     "deviations": [
+      "In these mice the laser artefact spreads to many fibers, and the stimulated fiber is taken as the one with the largest artefact, which can be wrong; the true stimulated fiber is then among the fibers tested, which makes the test stricter."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7a-photoswitch-confined",
+     "statement": "In mice expressing rDAm3.0 without opsin, light through one fiber raises fluorescence at the stimulated site by photoswitching, but at no other site (0 of 22 non-stimulated sites for 3 stimulations).",
+     "source": "Results, Local control of striatal dopamine release through micro-fiber arrays, paragraph 1; Figure 6E, Figure S7A",
+     "quote": "Photoswitching in controls, but not opsin expressing mice, was entirely confined to the stimulated site (0/22 non-stimulated sites for 3 single-site stimulations",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_vu_2024.ipynb",
+     "notes": "In each of UG21's 3 sessions the stimulated fiber (12, 18 and 24, the numbers of the paper's code folders) has a significant increase after the laser (0.0118 to 0.0144 DF/F), and none of the 21 other included fibers responds significantly in either direction.",
+     "deviations": [
+      "The paper included these sites only if they responded to reward; UG21 has no reward events in the files, so that step is not applied.",
+      "The files give UG21's indicator as tdTomato; it is treated as the paper's rDAm3.0 mouse without opsin from its sessions, fiber counts and stimulated fibers (see findings)."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs1-no-tissue-damage",
+     "statement": "Neuronal density is not reduced under 50 um fiber tips or between neighbouring fibers relative to unimplanted tissue.",
+     "source": "Results, Microfiber array design, paragraph 1; Figure S1",
+     "quote": "there was no significant reduction in neuronal density under 50\u03bcm fiber tips or between neighboring fibers, relative to unimplanted tissue (Figure S1)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted. The histology is not in the dandiset; the paper deposited the NeuN and DAPI images and its density results on Zenodo (SuppFig01.zip, about 180 MB of TIFF images). Testing it needs the neuron detection of the paper's MATLAB code on those images.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Zenodo doi:10.5281/zenodo.10272874 (SuppFig01.zip, NeuN and DAPI images and densities)",
+     "proposed": null
+    },
+    {
+     "claim": "figs3-targeting-errors",
+     "statement": "The magnitude and type of targeting errors (fiber tip relative to its intended target) vary across mice and fibers.",
+     "source": "Results, Micro-CT based method for precise fiber localization and atlas alignment, paragraph 1; Figure S3",
+     "quote": "found that the magnitudes and types of targeting errors varied across mice and fibers (Figure S3)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The fiber table of every file holds the localized tips (stereotactic and Allen coordinates), the location label and the included flag, and no planned target (data check). The paper's code (SuppFig03/B/analysis_code/planned_v_actual.m) reads the planned targets from per-mouse calibration files (calibPath), which are in none of the archives of the Zenodo record; SuppFig03.zip holds the CT fiber tables (MATLAB table objects) and the code only. Changed after verification round 1 from blocked by other with the data taken to be on Zenodo.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-freely-moving-signals",
+     "statement": "Fiber arrays imaged with a miniscope in freely moving mice show robust D1 SPN Ca2+ signals during locomotion, and dopamine transients associated with the approach to food rewards.",
+     "source": "Figure 3; Results, Chronic measurements of large-scale calcium and neuromodulator signals in freely moving mice, paragraph 1",
+     "quote": "This revealed robust, high-SNR signals from GCaMP7f expressed in D1 spiny projection neurons that varied dynamically during locomotion (Figure 3B) ... large transients that appeared to be reliably associated with the initial approach toward food rewards",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted. The miniscope recordings in freely moving mice are not in the dandiset; Zenodo holds two videos (3.3 GB) and the example DF/F traces with scored times (Fig03.zip).",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Zenodo doi:10.5281/zenodo.10272874 (Fig03.zip)",
+     "proposed": null
+    },
+    {
+     "claim": "fig7d-ventral-not-dorsal-jaw",
+     "statement": "Stimulating D1 SPNs through a group of ventral striatum fibers, but not dorsal ones, increases jaw movement, an effect absent in a control mouse (interaction p = 7.4e-7; ventral p = 0.0002, dorsal p = 0.45).",
+     "source": "Figure 7D; Results, Targeted optogenetic manipulations can localize region-specific behavioral effects in the striatum at multiple scales, paragraph 1",
+     "quote": "We found that stimulating regions in the ventral, but not the dorsal striatum led to rapid increases in jaw movement, which were not present in the non-opsin expressing control mouse",
+     "statistics": [
+      {
+       "about": "interaction between region and optogenetic stimulation group",
+       "test": "2-way ANOVA",
+       "p": 7.4e-07
+      },
+      {
+       "about": "optogenetic stimulation against control, ventral",
+       "test": "two-sample t-test",
+       "p": 0.0002
+      },
+      {
+       "about": "optogenetic stimulation against control, dorsal",
+       "test": "two-sample t-test",
+       "p": 0.45
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted. None of the D1-cre mice of Figure 7 (OptoD1_6, 7, 8 and 10 in the paper's code) is in the dandiset. Their DeepLabCut outputs, DF/F and stimulation files are on Zenodo (Fig07.zip, 2.1 GB, about 24 sessions for this panel).",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Zenodo doi:10.5281/zenodo.10272874 (Fig07.zip, DeepLabCut outputs and stimulation files)",
+     "proposed": null
+    },
+    {
+     "claim": "fig7ef-single-ventral-fiber",
+     "statement": "Of the eight ventral fibers stimulated singly in each mouse, only one per mouse has a significant effect on jaw movement (3 mice), located in the posterior medial striatum.",
+     "source": "Figure 7E-F, Figure S7B; Results, Targeted optogenetic manipulations can localize region-specific behavioral effects in the striatum at multiple scales, paragraph 2",
+     "quote": "We found that only one of the eight ventral fibers from each mouse produced a significant effect on jaw movements ... Post-hoc CT scanning (Figure 7F) localized these fibers to the posterior medial striatum",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "Not attempted, as fig7d-ventral-not-dorsal-jaw (Fig07.zip and SuppFig07.zip on Zenodo).",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "Zenodo doi:10.5281/zenodo.10272874 (Fig07.zip and SuppFig07.zip)",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The optogenetic sessions (Opto2, Opto4, Opto9, UG21) hold no stimulation times and no record of which fiber was stimulated; the trigger line the paper's code uses is not in the files. Both can be recovered only from the laser artefact in the DF/F, which is unambiguous in Opto2 and UG21 but spreads over many fibers in the tdTomato mice."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The event table gives tone presentations without their frequency. DL18 has 44 tones, of which the paper analysed the 14 at 12 kHz; the frequency is stored only in a MATLAB object of the behaviour file on Zenodo. The tone start times are the trigger times, 11 frames before the sound according to the paper's code, which the dandiset does not say."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "DL15's sessions from 2021-09-10 (44 to 70 rewards) were run in a ViRMEn task; the paper keeps only rewards of one task phase, but the task variables are not in the files, so unpredicted rewards cannot be separated and Figure 1D can be tested only to week 8."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The FiberPhotometryTable column `included` is described as \"whether this fiber has been successfully implanted\", but it marks fibers within the striatum (the paper's in_striatum); in Opto2 two fibers labelled Caudoputamen are not included, and with them the counts match the paper's \"within or on the border of the striatum\" (24 locations)."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "UG21's indicator is given as tdTomato. Its 3 sessions, 22 included fibers and stimulated fibers 12, 18 and 24 match the paper's rDAm3.0 mouse without opsin (Figure S7A), so the indicator is consistent with being a mislabel; the files cannot show which indicator was expressed."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In DL31 and DL32 (18 Hz, interleaved 470 and 415 nm) the fiber photometry series store a regular rate, but the frame timestamps of the behaviour drift from it by up to 0.43 and 0.54 s over the session, so times computed from the stored rate are wrong by up to half a second."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The data of Figures 2, 3, 7, S1 and S5A-D are not in the dandiset (the CT scans, the freely moving recordings, the D1-cre jaw experiments, histology and the 470 and 405 nm sessions of the salient-stimulus mice); they are on Zenodo. Opto9 has 12 sessions, so one of the paper's 26 tdTomato stimulations is missing."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The planned fiber targets behind Figure S3 are neither in the dandiset, whose fiber table gives only the localized tips, nor on Zenodo, where the code reads them from calibration files that were not deposited."
+    },
+    {
+     "kind": "other",
+     "statement": "The paper gives p < 1e-6 for its test of a significant response (3 consecutive frames outside the 99% band of the null), the value for independent frames. With the same test the chance rate of a significant increase is 0.024 per fiber and stimulus, and three given consecutive frames are all outside the band at a rate of 0.0037."
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The paper's latency code (sal_stim_lat_plots.m) divides the 1-based index of the half-maximum frame by the frame rate, so its latencies are one frame (33 ms) longer than the Methods' definition. With that count the dandiset gives the paper's means within 2 ms."
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "In the paper's cross-correlation of DF/F with locomotion (sal_stim_iti_acc_cc.m), negative lags are not shifted; they correlate the two signals at zero lag over a truncated range. The Methods describe a cross-correlation over +-500 ms."
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Figure 1C legend describes 23 example fibers of a 93-fiber array; the paper's code for the figure plots 33 fibers of mouse 842, whose recording has 82 fibers."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The archive's summary gives the approach as \"cell population imaging\" and lists only NWB container types as variables measured; the files hold multi-fiber photometry, treadmill velocity and behavioural events."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper (PMC author manuscript). The verifier tested the helper functions on synthetic inputs and checked the archive's asset list for the blocked claims. Its report had no attempt record and gave its own outcome for each claim; all 26 outcomes agree with the record, and for the five blocked claims it gave data_missing as the reason.",
+     "agreed": 26,
+     "of": 26,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook of the first revision, the helper module, the claims file and the attempt record, with the paper. The verifier agreed with all 26 outcomes, found the round-1 reasons stated faithfully, and listed six sentences the outputs do not support; README line 46 said the notebook takes about 14 minutes where cell 85 printed 16.4 min. The re-run took 12.2 min, and the README now says 12 to 16 minutes.",
+     "agreed": 26,
+     "of": 26,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001084-vu-2024",
+   "type": "reproduction",
+   "title": "Striatal dopamine release patterns and targeted stimulation through micro-fiber arrays (Vu et al. 2024)",
+   "description": "Tests the findings of Vu, Brown, Wen et al. (2024) on dandiset 001084, which holds multi-fiber photometry from mice with arrays of 30 to 103 fibers across the striatum. It re-runs the paper's GLM of dopamine release to light and tone in 280 fibers of 7 mice (amplitude maps, latencies and their spatial gradients), the isosbestic controls, the D1 calcium correlations, the chronic reward responses, and the spread of release evoked by single-fiber stimulation with its controls. The freely moving, histology and jaw movement data of Figures 3, 7 and S1 are not in the dandiset.",
+   "datasets": [
+    "dandi:001084"
+   ],
+   "papers": [
+    "10.1016/j.neuron.2023.12.011"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_vu_2024.ipynb",
+     "title": "Reproducing Vu et al. (2024) from dandiset 001084",
+     "executed": "notebooks/001084-vu-2024/reproduce_vu_2024.html"
+    }
+   ]
+  }
+ ]
+}
