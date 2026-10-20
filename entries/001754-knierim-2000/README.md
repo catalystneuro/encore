@@ -17,11 +17,11 @@ not published and has changed since the second attempt read it, so it is not use
 | Rat 1, FD9 spatial information as preflight (`si-rat1-fd9-vs-preflight`) | Blocked: methods underspecified |
 | Rat 3, FD4 spatial information as preflight (`si-rat3-fd4-vs-preflight`) | Reproduced |
 | Abnormal selectivity on FD4 in rats 1 and 2 (`fd4-abnormal-selectivity`) | Partially reproduced |
-| Fields kept from session 2 to session 3 (`fig3-stability-across-sessions`) | Blocked: methods underspecified |
+| Fields kept from session 2 to session 3 (`fig3-stability-across-sessions`) | Not reproduced |
 | Counterclockwise-only fields (`direction-selectivity`) | Blocked: methods underspecified |
 | Normal theta (`theta-normal`) | Blocked: data missing |
 | Normal sharp waves and ripples (`ripples-normal`) | Blocked: data missing |
-| Representations on three surfaces (`three-orthogonal-surfaces`) | Blocked: methods underspecified |
+| Representations on three surfaces (`three-orthogonal-surfaces`) | Not reproduced |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -31,11 +31,16 @@ information on the deposited maps (1.377 bits per spike) is above the paper's 1.
 rat 1 the outcome depends on which preflight epoch is compared (p = 0.50 against ES, 0.0055
 against MC), which the paper does not say. On flight day 4 rat 2's cells carry less information
 than preflight and rat 1's do not. Rat 3's session 2 has 16 active units (11 deposited maps), not
-the paper's 7; more than half keep their field under one of the four readings of the stability
-claim (6 of 11 maps by correlation) and not under the others, so it stays blocked. The questions
+the paper's 7. The deposited maps cannot be tied one to one to units by best match (in session 3
+four units are each the best match of two maps), so the stability claim is judged on recomputed
+maps alone, where 6 of 16 cells keep their field by correlation and 1 of 16 by peak position, not
+more than half; it is not reproduced, and the three-surfaces claim, which needs it, follows. The questions
 this attempt asked, and the reader's answers of 2026-10-20, are in
 [`questions/001754.yaml`](../../questions/001754.yaml); the answers moved the direction claim from
-data missing to methods underspecified and changed no other outcome.
+data missing to methods underspecified and changed no other outcome. The first verification
+round (`transcripts/001754/verifier-1-report.md`) found that the stability claim's pairing check did
+not test the criterion's condition; with it corrected, that claim and the three-surfaces claim moved
+from blocked to not reproduced.
 
 On this version the rate maps cannot be linked to units, the Rat1 and Rat2 files share one
 position trace, position is given only at spike times and none preflight, and no file holds EEG.

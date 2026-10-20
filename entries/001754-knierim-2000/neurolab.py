@@ -268,6 +268,27 @@ def spike_positions(s: dict, spikes: np.ndarray) -> tuple[np.ndarray, np.ndarray
     return ok, row, col
 
 
+def map_unit_matches(s: dict, epoch: str) -> pd.DataFrame:
+    """For every distinct deposited map of a flight epoch and every unit of its tetrode with a
+    spike at a position in the epoch, the correlation of the map's rate x occupancy with the
+    unit's spike-count map (one row per pair; pairs with an undefined correlation are left out)."""
+    a, b = s["epochs"].set_index("name").loc[epoch, ["start", "stop"]]
+    maps = s["maps"][(s["maps"].epoch == epoch) & ~s["maps"].duplicate]
+    rows = []
+    for ui, u in s["units"].iterrows():
+        ok, r, c = spike_positions(s, u.spikes[(u.spikes >= a) & (u.spikes <= b)])
+        if ok.sum() == 0:
+            continue
+        counts = count_map(r, c).ravel()
+        for i in maps.index[maps.tetrode == u.tetrode]:
+            x = (np.clip(s["rate_maps"][i], 0, None) * clean_occupancy(s["occupancy_maps"][i])).ravel()
+            v = np.corrcoef(x, counts)[0, 1]
+            if np.isfinite(v):
+                rows.append({"map_row": i, "map_name": s["maps"].source_file[i], "tetrode": u.tetrode,
+                             "unit": ui, "cluster": int(u.cluster), "r": float(v)})
+    return pd.DataFrame(rows)
+
+
 def mb_maps(s: dict, epoch: str) -> pd.DataFrame:
     """Reading M-b for every unit of a flight file in one epoch: spike-count map over the
     deposited occupancy (unsmoothed), spatial information over every visited bin, and the unit's
