@@ -4655,6 +4655,15 @@ finding. Every claim must come from and pertain to its paper, so five
 claims that the paper's open text does not state were dropped, with their
 outcomes: four of 001754 taken from the dandiset's description, and one of
 000691 read from the paper's code (its method is now written out in the
-claim that referred to it). Of the 1,214 claims outside the three files
-still waiting for their full text, 24 are links, 1,179 findings are quoted
-and 11 are inferred.
+claim that referred to it).
+
+The full texts of the nine remaining papers were obtained on 2026-10-20 as
+PDFs (the six abstract-only papers with their supplements where they have
+one, the Cell paper of 000350, and version 1 of the two preprints), and
+their claims were quoted from them; the manuscript quotes of 000067 were
+also checked against the publisher's PDF. Of the 1,280 claims, 24 are
+links, 1,248 findings are quoted and 8 are inferred; 509 have statistics
+(1,040 entries). The six papers first written from the abstract had their
+method choices fixed by the author without the paper's Methods; reviewing
+them against the full text found several criteria that test a different
+measure from the paper's, which is taken up separately.

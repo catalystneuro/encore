@@ -35,6 +35,7 @@
 # (abstract, figure titles, Extended Data legends) does not state; it was read from the paper's
 # code. Its method is written out in ed9b-octant-decoding's criterion, which referred to it. Its
 # section remains in the notebook.
+# Quotes and statistics added 2026-10-20 from the full text (PDF of the version of record).
 schema_version: 1
 dandiset: "000691"
 paper: doi:10.1038/s41592-023-01806-1
@@ -42,9 +43,10 @@ claims:
 - id: abstract-thousands-of-neurons
   statement: The large-FOV microscope images thousands of neurons at once in a freely behaving
     mouse.
-  source: Abstract; Extended Data Fig. 6a
-  quote: Here we present a fluorescence microscope light path that enables imaging, during free
-    behavior, of thousands of neurons in mice
+  source: Abstract; main text, paragraph 3; Fig. 2f; Extended Data Fig. 6a
+  quote: The second design, the Kiloscope, provides cellular resolution imaging across a 4.8 × 3.6
+    mm FOV in a device weighing only 1.4 g, allowing us to simultaneously record from thousands of
+    neurons in a freely behaving mouse.
   criterion: Counted on the dandiset's footprints. Reproduced when at least 2000 footprints have
     a trace that is not zero throughout and remain after near-duplicates are merged (pairs whose
     traces correlate above 0.9 and whose centroids are within 10 pixels count once), and the
@@ -53,8 +55,9 @@ claims:
 - id: ed6a-curated-footprints
   statement: In the mouse with the 4 mm cranial window shown in the main figure, 2382 footprints
     remain after curation.
-  source: Extended Data Fig. 6a
-  quote: 4 mm cranial window, 2382 footprints after curation.
+  source: Main text, paragraph 9; Methods, Data analysis, paragraph 1; Extended Data Fig. 6a
+  quote: In the data from the mouse with the most footprints, manual curation using the same
+    criteria described above yielded 2,382 footprints.
   expected:
   - quantity: footprints after curation
     value: 2382
@@ -74,8 +77,9 @@ claims:
     ... 225 footprints after curation.
 - id: abstract-kiloscope-fov
   statement: The microscope optimized for field of view has a field of view of about 4 mm.
-  source: Abstract
-  quote: one optimized for FOV (~4 mm FOV; 1.4 g)
+  source: Abstract; main text, paragraph 3
+  quote: one optimized for FOV (~4 mm FOV; 1.4 g) ... The second design, the Kiloscope, provides
+    cellular resolution imaging across a 4.8 × 3.6 mm FOV in a device weighing only 1.4 g
   expected:
   - quantity: field of view, longer side
     value: 4.0
@@ -91,8 +95,10 @@ claims:
     Featherscope and 4.38 um with the Kiloscope, and 2.2 um with Kiloscope optics on a sensor with
     1.4 um pixels.
   source: Extended Data Fig. 1b, 1e and 4b
-  inferred: The 2.19 um and 2.2 um widths are in the Extended Data Fig. 1b and 4b legends, but the
-    Kiloscope's 4.38 um is read from Extended Data Fig. 1e, whose legend gives no number.
+  quote: The line widths of the largest and smallest elements visible in the inset are 3.91 μm and
+    2.19 μm, respectively ... The line widths of the largest and smallest elements visible in the
+    inset are 6.96 μm and 4.38 μm, respectively ... The smallest element in group 7 is resolvable
+    and has a linewidth of 2.2 μm.
 - id: ed2b-featherscope-flat-illumination
   statement: For the Featherscope, the axicon correction optics give a flat signal intensity
     profile across the field of view, where total vignetting (optical vignetting with Gaussian
@@ -132,9 +138,9 @@ claims:
 - id: ed8-coactive-distributed
   statement: The footprints that take part in a large correlated event of each NMF component are
     spread across the field of view.
-  source: Extended Data Fig. 8
-  inferred: Read from the panels of Extended Data Fig. 8; its legend describes the plot but does not
-    say how the footprints are spread.
+  source: Main text, paragraph 10; Extended Data Fig. 8
+  quote: Note that the correlated activity visible in each component is driven by footprints from
+    across the FOV (Extended Data Fig. 8).
   criterion: As in the code (ridgeline_nmf_grouping.m and single_component_raster.m), the traces
     of all 2948 footprints over the recording are factored by NMF into 8 components
     (multiplicative updates, 4 replicates, the best kept), and each footprint is assigned to the
@@ -147,8 +153,15 @@ claims:
     partially reproduced for 3 to 5 components.
 - id: ed9b-octant-decoding
   statement: Position within the maze can be decoded with octant resolution from the activity.
-  source: Extended Data Fig. 9a and 9b
-  quote: Decoding position within the maze with octant resolution.
+  source: Main text, paragraph 10; Extended Data Fig. 9a and 9b
+  quote: We used the same approach to decode even more fine-grained position information (Extended
+    Data Fig. 9, P < 0.001, Monte Carlo sampling as in Fig. 2j) ... Decoding position within the
+    maze with octant resolution.
+  statistics:
+  - test: Monte Carlo sampling of shuffled datasets
+    p: 0.001
+    p_relation: "<"
+    n: 1,000 shuffled datasets (as in Fig. 2j)
   criterion: Eight classes, the eight octants (each arm halved, direction not coded). 50 decoders
     with the procedure above and lambda 6.75e-8, as in octant_decoding.m, and 50 null decoders with
     the labels circularly shifted against the activity by a random offset between 10% and 90% of
@@ -159,8 +172,11 @@ claims:
     position significantly (Benjamini-Hochberg false discovery rate 5%) in parts of the field of
     view, and accuracy differs across the field of view.
   source: Extended Data Fig. 9c
-  inferred: The Extended Data Fig. 9c legend gives the method only; that accuracy is significant in
-    parts of the field of view and varies across it is read from the map.
+  inferred: The Extended Data Fig. 9c legend and the Methods give the method only. The main text
+    says accuracy differs across the field of view for the quadrant and direction map (Fig. 2l) and
+    that octant position was decoded with the same approach, but states no result for the octant
+    map; that its accuracy is significant in parts of the field of view and varies across it is
+    read from the map.
   criterion: Grid points every 30 pixels over the extent of the centroids; a point is used when
     at least 32 centroids lie within 270 um, at the code's 5.94 um per pixel (45 pixels). At each
     point, 10 octant decoders on its 32 nearest footprints and 10 null decoders with shifted labels
@@ -171,9 +187,9 @@ claims:
     The code's choice (64 footprints within 50 pixels) is shown as a variant on a 40 pixel grid.
 - id: ed10-localized-activity
   statement: Some footprints have activity localized to subregions of the maze.
-  source: Extended Data Fig. 10
-  inferred: Read from the receptive fields in Extended Data Fig. 10; its legend says only that the
-    footprints were selected for large-scale structure.
+  source: Main text, paragraph 10; Extended Data Fig. 10
+  quote: An examination of individual neural firing rate maps yielded footprints whose activity was
+    localized to subregions of the maze (Extended Data Fig. 10).
   criterion: The paper selected its examples by eye. Here, as in place_cells.m, frames where speed
     is above its 80th percentile, linear position in 100 bins between its 1st and 99th
     percentiles, and per footprint the entropy of its mean activity over bins (normalized to sum
