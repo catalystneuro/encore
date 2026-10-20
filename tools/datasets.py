@@ -11,12 +11,13 @@ under its folder name: the identifier alone for DANDI, which the registry began 
 "<archive>-<id>" for any other archive. How an agent reads each archive's datasets is in
 docs/archives.md.
 
-Targets come from every list in targets/ that names its archive: targets/dandisets.json is DANDI's,
-built by tools/build_targets.py.
+Targets come from each archive's list in targets/: targets/dandisets.json is DANDI's, built by
+tools/build_targets.py; targets/crcns.json is CRCNS's, written by hand.
 """
 
 from __future__ import annotations
 
+import functools
 import json
 import re
 import sys
@@ -32,6 +33,14 @@ ARCHIVES = {
         "access": ("Use the DANDI API (docs/archives.md, \"DANDI\") and stream the NWB files; do not download "
                    "them to disk."),
         "list": "dandisets.json",
+    },
+    "crcns": {
+        "label": "CRCNS", "name": "CRCNS.org", "url": "https://crcns.org/data-sets",
+        "access": ("Read the files anonymously from the public S3 bucket crcnsarchive "
+                   "(https://crcnsarchive.s3-us-west-2.amazonaws.com/<id>/), as docs/archives.md says under "
+                   "\"CRCNS\": stream them, opening a zip in place with fsspec and zipfile; do not download them "
+                   "to disk."),
+        "list": "crcns.json",
     },
 }
 
@@ -78,8 +87,17 @@ def parse(text: str) -> str:
 
 
 def url(key: str) -> str:
+    """A dataset's page at its archive: the target list's own address for it, else the archive's pattern."""
+    listed = _urls().get(key)
+    if listed:
+        return listed
     archive, id_ = split_key(key)
     return ARCHIVES[archive]["url"].format(id=id_) if archive in ARCHIVES else ""
+
+
+@functools.lru_cache(maxsize=1)
+def _urls() -> dict[str, str]:
+    return {t["key"]: t["url"] for t in targets() if t.get("url")}
 
 
 def archive_name(key: str) -> str:

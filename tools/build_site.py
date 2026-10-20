@@ -265,7 +265,7 @@ def collect(executed: Path | None = None) -> dict:
         "transcripts": {**transcripts, **archived},
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
-        "queue_counts": queue["counts"],
+        "queue_counts": {**queue["counts"], "with_a_paper": len(targets)},   # every archive's targets
         "attempts": attempts,
         "entries": entry_list,
         "targets": targets,

@@ -30,6 +30,30 @@ take a dataset in any of these forms.
 - **In an entry.** The entry names the dataset as `dandi:<id>/<version>` under
   `related`. The helper module keeps the version in one constant.
 
+## CRCNS
+
+- **Datasets.** A CRCNS data set, identified by its short name (`ret-1`,
+  `hc-3`), with a DOI of its own (`10.6080/...`). The registry's list is
+  `targets/crcns.json`, written by hand; for now it holds one data set, to test
+  the pipeline beyond DANDI.
+- **Versions.** CRCNS data sets are not versioned. Record the version as
+  `unversioned`, with the data set's DOI under `dataset: doi`, and give in the
+  notebook header the MD5 sums from the data set's `checksums.md5` for the
+  files read, so a later change is detectable.
+- **Reading.** The files are in the public S3 bucket `crcnsarchive` (region
+  us-west-2), under `<id>/`, readable without an account at
+  `https://crcnsarchive.s3-us-west-2.amazonaws.com/<id>/<file>`; list a data
+  set with `?list-type=2&prefix=<id>/` on the bucket's address. The site
+  crcns.org asks for a login to download; the bucket does not. Most data sets
+  are zip files of MATLAB or other files: open the zip in place with
+  `fsspec.open(url, block_size=2**20).open()` and Python's `zipfile`, which
+  read only the parts needed over range requests (`remfile` lacks what
+  `zipfile` needs to read a member), and load members in memory
+  (`scipy.io.loadmat`, or `h5py` for MATLAB 7.3 files). Do not download whole
+  files to disk. The data set's `docs/` folder describes the files.
+- **In an entry.** The entry names the data set as `crcns:<id>/unversioned`
+  under `related`.
+
 ## Adding an archive
 
 1. Add the archive to `ARCHIVES` in `tools/datasets.py`: its label, its name,
