@@ -1,0 +1,61 @@
+name: Track DANDI
+
+# Rebuilds the target list (targets/dandisets.json) from the DANDI Archive every day, and when it
+# changed, opens or updates a pull request from the branch targets-update whose description says
+# what changed (tools/targets_diff.py): new dandisets that name a paper, papers added to existing
+# ones, and new published versions of attempted dandisets. Merging it puts the new targets in the
+# runner's queue; their papers then show as missing in papers/manifest.yaml until they are fetched.
+#
+# A pull request opened with the workflow's token starts no other workflows, so the entry checks
+# do not run on it; the list is generated and checked by the builder itself.
+
+on:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: targets
+  cancel-in-progress: false
+
+jobs:
+  track:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Rebuild the target list
+        run: |
+          cp targets/dandisets.json "$RUNNER_TEMP/old.json"
+          python tools/build_targets.py --output targets/dandisets.json
+
+      - name: Open or update the pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          if ! python tools/targets_diff.py "$RUNNER_TEMP/old.json" targets/dandisets.json > "$RUNNER_TEMP/summary.md"; then
+            echo "No change in the targets"; exit 0
+          fi
+          cat "$RUNNER_TEMP/summary.md" >> "$GITHUB_STEP_SUMMARY"
+          git switch -C targets-update
+          git add targets/dandisets.json
+          git -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' \
+            commit -q -m "Update the targets from the DANDI Archive" \
+            -m "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          git push -q --force origin targets-update
+          body="$RUNNER_TEMP/body.md"
+          { echo "The daily rebuild of \`targets/dandisets.json\` from the DANDI Archive found changes against main."
+            echo; cat "$RUNNER_TEMP/summary.md"
+            echo; echo "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"; } > "$body"
+          pr=$(gh pr list --head targets-update --state open --json number --jq '.[0].number // empty')
+          if [ -n "$pr" ]; then gh pr edit "$pr" --body-file "$body"
+          else gh pr create --base main --head targets-update --title "Update the targets from the DANDI Archive" --body-file "$body"; fi
