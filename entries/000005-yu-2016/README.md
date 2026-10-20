@@ -43,7 +43,7 @@ reasoning and the differences from the paper's method.
 The files give no cell type for the L4 neurons and do not mark the mice whose infraorbital nerve was
 cut. Cell classes are built by the claims file's rules (light tag, the waveform boundary of
 Supplementary Fig. 6, PV inactivation, spike width), and every group holds the cells of all mice; a
-variant leaves out four mice flagged as lacking touch input. Open method details were asked in
+variant leaves out four VGAT-ChR2 mice flagged as lacking touch input or performing below 0.5 correct. Open method details were asked in
 [`questions/000005.yaml`](../../questions/000005.yaml) and answered by a reader on 2026-10-20; the
 claims they bear on were re-run under the updated criteria, which moved `behavior-false-alarms`
 from blocked to reproduced and left the other outcomes as they were.
@@ -52,10 +52,12 @@ After the first verification round the tag test counts every pulse of the 5 and 
 claim on whisking epochs or onsets runs the touch and onset readings O10 and O11, and the data check
 shows spike detection quality, tagging coverage, the injected current of every file, the pole times
 and the ION-cut candidates. Three outcomes changed: `fs-touch-response` is blocked because its FS
-readings disagree, and `auc-weak-strong` and `auc-groups` are not reproduced because their readings
-do not match under most of 20 random seeds.
+readings disagree; `auc-weak-strong` is not reproduced because its reading (b) matches under only 8
+of 20 random seeds (reading (a) under 19), and `auc-groups` because neither of its readings matches
+under most of them. The second verification round agreed with every outcome; the revision after it
+corrected the text and changed no outcome.
 
-- `reproduce_yu_2016.ipynb`: the analysis. The recorded run took about 6 minutes from a clean environment,
+- `reproduce_yu_2016.ipynb`: the analysis. The recorded run took about 10 minutes from a clean environment,
   most of it streaming the files.
 - `yu2016.py`: loading the files with range requests and reducing them as they load (spikes, the
   whisking epochs of the principal whisker under both filter readings and under each whisking-onset
