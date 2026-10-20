@@ -1,16 +1,16 @@
 #!/bin/bash
-# One attempt on one dandiset, start to finish, run from a clone of the repository:
+# One attempt on one dataset, start to finish, run from a clone of the repository:
 #
-#   tools/runner/chain.sh DANDISET [VERSION]
+#   tools/runner/chain.sh DATASET [VERSION]      (000147, DANDI:000147 or <archive>:<id>)
 #
 # Runs the roles of the attempt in GitHub Actions, one after another: the reader's claims and their
 # check (papers.yml, the only runs that write the claims file), the author, the reader's answers to the
 # author's questions and the author's run on them when there are questions, two verification rounds
 # and their revisions, and a third round when the last revision proposed changes. Then it records
 # and merges the attempt. A claims file whose check says it is not ready stops the chain, for a
-# person to look at. A repeat attempt on a new version of the dandiset (VERSION given) keeps the
+# person to look at. A repeat attempt on a new version of the dataset (VERSION given) keeps the
 # claims file, unless the earlier attempt is deprecated. Picks up where an earlier chain stopped: roles already committed to the branch
-# attempt/<dandiset> are skipped, and a run of the next role that is still going is waited for. A
+# attempt/<dataset> are skipped, and a run of the next role that is still going is waited for. A
 # branch already merged into main belongs to an earlier attempt and is deleted first, so a repeat
 # attempt starts from main. A run that fails on the subscription's session limit is retried after
 # 30 minutes from where it started; any other failure stops the chain.
@@ -18,24 +18,26 @@
 # Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
 # account's safety checks flag (FLAGGED), or that has no token for it (UNVERIFIED-UNAVAILABLE), is
 # not committed; the branch is put back and the role runs again on the verified account, as do the
-# rest of the dandiset's roles: a paper that was flagged once will be again. With RUNNER_FALLBACK=none
-# the chain stops there instead, leaving $RUNNER_STATE/flagged-<dandiset>, and the lane goes on to the
-# next dandiset: for when the verified account has no budget left.
+# rest of the dataset's roles: a paper that was flagged once will be again. With RUNNER_FALLBACK=none
+# the chain stops there instead, leaving $RUNNER_STATE/flagged-<dataset>, and the lane goes on to the
+# next dataset: for when the verified account has no budget left.
 #
 # Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time is rebased on
 # main, recorded (the recorder role adds the README row and the pilot notes) and merged once its
 # checks pass; each lands on a main that has the ones before it.
 #
-# The last line printed is "<dandiset> MERGED <pr>", "<dandiset> STOPPED ...", or
-# "<dandiset> CHECKS FAILED <pr>", which leaves the pull request open.
+# The last line printed is "<dataset> MERGED <pr>", "<dataset> STOPPED ...", or
+# "<dataset> CHECKS FAILED <pr>", which leaves the pull request open.
 set -uo pipefail
-d=$1; VERSION=${2:-}
+VERSION=${2:-}
 STATE=${RUNNER_STATE:-/tmp}
-# The account the next run uses; verified for the rest of the dandiset once a run is flagged.
-account=${RUNNER_ACCOUNT:-unverified}
-[ -e "$STATE/verified-$d" ] && account=verified
 here=$(cd "$(dirname "$0")" && pwd)
 export REGISTRY_ROOT=$PWD
+# The dataset's folder name (000147 for DANDI, <archive>-<id> otherwise) names its files and branch.
+d=$(python "$here/describe.py" folder "$1") || { echo "$1 STOPPED: not a dataset"; exit 1; }
+# The account the next run uses; verified for the rest of the dataset once a run is flagged.
+account=${RUNNER_ACCOUNT:-unverified}
+[ -e "$STATE/verified-$d" ] && account=verified
 log(){ echo "$(date -u +%Y-%m-%dT%H:%MZ) $d $*"; }
 
 remote_branch(){ git ls-remote --heads origin "attempt/$d" | cut -f1; }
@@ -68,9 +70,9 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
       # The recorder reads no paper and writes only the README row and the pilot notes.
       acct=$account; [ "$role" = recorder ] && acct=verified
       if [ "$role" = author ] && [ -n "$VERSION" ]; then
-        gh workflow run attempt.yml -f dandiset="$d" -f role="$role" -f version="$VERSION" -f account="$acct" || { sleep 60; continue; }
+        gh workflow run attempt.yml -f dataset="$d" -f role="$role" -f version="$VERSION" -f account="$acct" || { sleep 60; continue; }
       else
-        gh workflow run "$(workflow_of "$role")" -f dandiset="$d" -f role="$role" -f account="$acct" || { sleep 60; continue; }
+        gh workflow run "$(workflow_of "$role")" -f dataset="$d" -f role="$role" -f account="$acct" || { sleep 60; continue; }
       fi
       id=""
       for _ in $(seq 1 60); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
@@ -118,6 +120,8 @@ if [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
   fetch
   ready=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=(yaml.safe_load(sys.stdin) or {}).get('checks') or [{}]; print(str(c[-1].get('ready', False)).lower())")
   [ "$ready" = true ] || { echo "$d STOPPED: the claims check says the claims file is not ready"; exit 1; }
+  # The checkpoint: the checked claims go into main now, ahead of the attempt. A failure here does not stop it.
+  "$here/merge_claims.sh" "$d" 2>&1 | while read -r line; do log "$line"; done || true
 fi
 step author
 fetch
@@ -135,7 +139,7 @@ if git show "origin/attempt/$d:$latest" | python -c "import yaml,sys; sys.exit(0
   for role in verifier-3 author-revise-3; do step "$role"; done
 fi
 
-# Finish, one dandiset at a time.
+# Finish, one dataset at a time.
 until mkdir "$STATE/finalize.lock" 2>/dev/null; do sleep 60; done
 trap 'rmdir "$STATE/finalize.lock" 2>/dev/null' EXIT
 log "finishing"

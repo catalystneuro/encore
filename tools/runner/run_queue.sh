@@ -7,16 +7,16 @@
 #
 # LANES defaults to 1: two lanes reach the subscription's usage limits about twice as fast.
 #
-# Each lane takes the next item from $RUNNER_STATE/queue.txt (lines "DANDISET [VERSION]", consumed
+# Each lane takes the next item from $RUNNER_STATE/queue.txt (lines "DATASET [VERSION]", consumed
 # from the top), and when that is empty the next target that describe.py chooses. The scripts are
 # copied to $RUNNER_STATE/bin first: chain.sh checks out branches in the clone, and bash reads a
-# script while it runs it. Progress goes to $RUNNER_STATE/runner.log, and each dandiset's chain to
-# $RUNNER_STATE/logs/<dandiset>.log.
+# script while it runs it. Progress goes to $RUNNER_STATE/runner.log, and each dataset's chain to
+# $RUNNER_STATE/logs/<dataset>.log.
 set -uo pipefail
 STATE=${RUNNER_STATE:?set RUNNER_STATE}; LANES=${1:-1}; STOP_AT=${2:-}
 export RUNNER_STATE=$STATE REGISTRY_ROOT=$PWD
 mkdir -p "$STATE/logs" "$STATE/bin"; touch "$STATE/queue.txt" "$STATE/started.txt"
-cp tools/runner/chain.sh tools/runner/describe.py "$STATE/bin/"
+cp tools/runner/chain.sh tools/runner/describe.py tools/runner/merge_claims.sh "$STATE/bin/"
 rmdir "$STATE/finalize.lock" "$STATE/pick.lock" 2>/dev/null
 log(){ echo "$(date -u +%Y-%m-%dT%H:%MZ) $*" >> "$STATE/runner.log"; }
 

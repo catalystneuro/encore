@@ -3,15 +3,17 @@
 Version: `pilot-10`. Record this version in the attempt's provenance.
 
 This is what agents, or people, do to attempt a target and deposit the
-result. It is written from the pilot attempts
+result. A target is a dataset in a public archive and a paper it names. How
+each archive's datasets are named, versioned and read is in
+[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
 ([pilot notes](pilot-notes.md)); the reasons for the rules are there.
 
 An attempt has three roles, each a separate run with a separate context:
 
 - The **reader** reads the paper and writes the claims file: every finding,
   and how each is to be tested, taken from the paper. A second reader checks
-  it against the paper. Readers never see the dandiset's data.
-- The **author** tests the claims on the dandiset. It reads the paper to
+  it against the paper. Readers never see the dataset's data.
+- The **author** tests the claims on the dataset. It reads the paper to
   understand the claims, but the claims file binds it: it cannot change a
   claim, and it asks a reader for any method detail the file lacks.
 - The **verifier** checks the author's work and must not be the author.
@@ -27,8 +29,9 @@ write the claims file. The other runs are made with the
 `author-revise-1`, `verifier-2`, `author-revise-2`, and, when the last of these
 proposes changes of outcome, `verifier-3` and `author-revise-3`. Each run's
 transcript and final report are kept in
-[`transcripts/<dandiset>/`](../transcripts). The pipeline is described in
-[pipeline.md](pipeline.md).
+[`transcripts/<folder>/`](../transcripts). A dataset's folder is its identifier
+on DANDI and `<archive>-<id>` otherwise ([archives.md](archives.md)). The
+pipeline is described in [pipeline.md](pipeline.md).
 
 ## Reader
 
@@ -40,7 +43,7 @@ the PDF only to read a figure or a table the text garbles. If the full text is
 not there, or lacks the Methods or a supplement the results rest on, stop:
 write no claims, and end with a report that names what is missing, so that it
 can be supplied. Never write claims from the abstract. Do not copy figures.
-Do not look at the dandiset's data: its title and description on the archive
+Do not look at the dataset's data: its title and description on the archive
 are enough to know which paper and which experiments it is meant to hold.
 
 ### 2. Read the paper's code
@@ -55,15 +58,15 @@ then other software.
 
 ### 3. Write the claims file
 
-Write `claims/<dandiset>/<doi with / replaced by ->.yaml`. Its opening comment
+Write `claims/<folder>/<doi with / replaced by ->.yaml`. Its opening comment
 says which text was read (the version of record or a preprint version, and the
 supplement), and describes the data the paper used: the subjects, sessions,
 conditions and measured variables, as the paper reports them, so that the
-author can find them in the dandiset.
+author can find them in the dataset.
 
    - One claim per finding, at the level of a figure panel or a reported
      number when the full text is available. Cover the paper's main findings,
-     including those the dandiset cannot test.
+     including those the dataset cannot test.
    - `statement`: the finding in words. `source`: where the paper shows it,
      precise enough to find without searching: a figure panel, or a section
      and paragraph ("Results, Place fields, paragraph 3").
@@ -132,7 +135,7 @@ author can find them in the dandiset.
    - `data`: what the paper's test of the finding uses, from the paper:
      `dataset` (the default: the data the paper describes recording),
      `with_labels`, `with_inputs` or `elsewhere` (step 4, and author, step
-     4). Whether the dandiset holds those data is the author's to find.
+     4). Whether the dataset holds those data is the author's to find.
    - `depends_on`: the claims whose result this one uses, such as the cells
      another claim selects.
 
@@ -161,7 +164,7 @@ says so.
 
 When an attempt needs something the claims file does not give, the author asks
 (author, step 6). A reader answers each question from the paper, in the claims
-file, and marks it answered in `questions/<dandiset>.yaml`. An answer
+file, and marks it answered in `questions/<folder>.yaml`. An answer
 the paper does not give is said to be that: the claim stays as it is, and the
 author treats the detail as open (step 3, on details none of the sources fix).
 
@@ -177,10 +180,10 @@ even one the paper gives. Ask for it (step 6).
 
 Do this before any analysis.
 
-1. List the dandiset's files and read its metadata from the archive. Open a
+1. List the dataset's files and read its metadata from the archive. Open a
    file and list everything it holds, including every column of every table.
 2. Work out which of the subjects, sessions, conditions and measured
-   variables that the claims file describes are in the dandiset. A dandiset
+   variables that the claims file describes are in the dataset. A dataset
    that names a paper may hold only part of its data. Check for recordings
    deposited more than once (identical traces, frame counts or annotations),
    report each pair, and count each recording once. Where the analysis treats
@@ -191,23 +194,23 @@ Do this before any analysis.
    unless an earlier one matches the claims file's description better. Say
    why in the notebook's header. If versions differ in content the analysis
    uses, show the difference.
-4. Decide what comes from outside the dandiset. Data from elsewhere may be
+4. Decide what comes from outside the dataset. Data from elsewhere may be
    used only when the claims file says the paper relies on it, it is public,
    and it is pinned: a DOI, or a repository at a commit. Record each under
    `inputs` in the attempt. A claim whose outside input is not public is
    blocked with `data_missing`, and its notes say where you looked.
 
-   The registry judges the dandiset, so claims that use outside data are
+   The registry judges the dataset, so claims that use outside data are
    kept apart:
    - Each claim says what its test uses: `data: dataset` (the default),
      `data: with_labels`, `data: with_inputs` or `data: elsewhere`. The
      `with_inputs` and `elsewhere` claims are counted apart, each group on
-     its own; the others count towards what is said about the dandiset.
+     its own; the others count towards what is said about the dataset.
    - `with_labels` is for outside sources that only name or map codes the
-     dandiset already holds, such as stimulus names for its stimulus codes.
+     dataset already holds, such as stimulus names for its stimulus codes.
      They bring in no measurements. A link claim must confirm the names, and
      the missing names are recorded as a finding (`metadata_insufficient`).
-   - When outside data has to be matched to the dandiset's cells, sessions
+   - When outside data has to be matched to the dataset's cells, sessions
      or subjects, a claim of its own (`kind: link`) tests the link. Link
      claims are the registry's checks, not findings of the paper, so the
      author adds them to the claims file; they are the only claims the
@@ -216,16 +219,16 @@ Do this before any analysis.
      values the paper or its code published, such as per-condition medians),
      what fraction match, and whether the matched records agree on what both
      describe, such as counts, layers, or the paper's own per-cell tables. A
-     dandiset that cannot be linked to the data it was published with is a
-     finding about the dandiset. Every claim that needs the match lists the
+     dataset that cannot be linked to the data it was published with is a
+     finding about the dataset. Every claim that needs the match lists the
      link claim in `depends_on`, so it is blocked when the link fails. When
      the link holds only in part, the dependent claims are still tested, and
      their notes say how the partial link bears on them. A label that
      differs only in spelling (one cell type named two ways) is the same
      label: criteria compare identity, not spelling.
-   - Outside data supplies only what the dandiset lacks, such as a label for
-     each cell. The analysis runs on the dandiset's data.
-   - `elsewhere` is for a claim whose data the dandiset does not hold at
+   - Outside data supplies only what the dataset lacks, such as a label for
+     each cell. The analysis runs on the dataset's data.
+   - `elsewhere` is for a claim whose data the dataset does not hold at
      all, because the paper deposited them in another public archive (for
      example imaging in the BioImage Archive, proteomics in PRIDE, blots on
      Zenodo). Give the archive and the pinned identifier under `where`.
@@ -235,14 +238,14 @@ Do this before any analysis.
      never `data_missing`. Data the paper names but that are not public
      anywhere stay `data: dataset`, blocked with `data_missing`.
    - The notes of a `with_inputs` claim say which side a difference comes
-     from as far as the outputs show: whether the dandiset's measures match
+     from as far as the outputs show: whether the dataset's measures match
      the paper's per-cell values where those are published, and whether the
      outside labels match the paper's counts.
 5. Decide now which claims are blocked, and why; a block that depends on a
    selection (too few units under the claim's own rule) is decided once the
    selection is made. Give the main reason under
    `blocked_by` and any others in the notes:
-   - `data_missing`: something the claim needs is not in the dandiset and
+   - `data_missing`: something the claim needs is not in the dataset and
      not public anywhere else, or for an outside input, not public. When the
      paper deposited it in another public archive, the claim is
      `data: elsewhere` instead (step 4).
@@ -264,7 +267,7 @@ Do this before any analysis.
 6. Ask when the claims file does not say. When a claim needs something the
    claims file does not give (which trials, which subset, a window, a
    threshold, what a measure is compared with), do not choose it, even when
-   you find it in the paper. Add a question to `questions/<dandiset>.yaml`
+   you find it in the paper. Add a question to `questions/<folder>.yaml`
    (`claim`, `question`, the passage of the paper that bears on it if you
    found one, and why the answer could change the outcome), and test the claim
    under each reading you can see, the passage's among them, or block it as
@@ -288,18 +291,19 @@ and record it as a finding.
 
 ### 3. Write the entry
 
-An entry is a directory `entries/<dandiset>-<first author>-<year>/` holding
+An entry is a directory `entries/<folder>-<first author>-<year>/` holding
 `entry.yaml`, `requirements.in`, one or more notebooks, and usually a helper
 module.
 
-- **Stream the data** from the archive, at a pinned dandiset version. Do not
-  download files to disk or read local paths.
+- **Stream the data** from the archive, at a pinned version of the dataset
+  ([archives.md](archives.md)). Do not download files to disk or read local
+  paths.
 - **Compute every result from the data.** No embedded numbers, arrays or
   images, and no figures read from files.
 - **Fix every random seed**, and give each claim's section its own generator,
   so that adding a cell earlier does not change its numbers.
 - **Put loading and reusable measures in a helper module**, so later notebooks
-  on the dandiset can import it. Say in its docstring where a parameter comes
+  on the dataset can import it. Say in its docstring where a parameter comes
   from: the claim's criterion (which cites the paper or its code), or a
   standard choice for a detail that cannot change a result (say so).
 - **Keep it fast.** Reduce the data to what the analysis needs as it loads.
@@ -308,7 +312,7 @@ module.
 
 The notebook has these parts, in this order:
 
-1. **Header.** The paper, the dandiset and version, the text the claims file
+1. **Header.** The paper, the dataset and version, the text the claims file
    was written from, and a table of the claims saying which are tested and which blocked.
 2. **Data check.** A cell tagged `sanity` that prints what was loaded: counts
    by subject, session and condition, and the ranges and units of every
@@ -332,7 +336,7 @@ The notebook has these parts, in this order:
      the notebook, while preparing, may be mentioned as not run here, but
      never decide an outcome or supply a number in the record.
 4. **Summary.** A table of all claims and outcomes, how the analysis differs
-   from the paper's, and what was found about the dandiset.
+   from the paper's, and what was found about the dataset.
 
 ### 4. Lock, check and run
 
@@ -373,9 +377,9 @@ Write `attempts/<entry name>-<nn>.yaml`.
   lists.
 - **`proposed`**: on an outcome, a change of outcome found after the last
   verification round, with its `reason` (see "Hand over for verification").
-- **`inputs`**: everything used that is not in the dandiset, each with where
+- **`inputs`**: everything used that is not in the dataset, each with where
   it came from (a DOI, or a repository at a commit).
-- **`findings`**: what the attempt found about the dandiset, whatever the
+- **`findings`**: what the attempt found about the dataset, whatever the
   outcomes. These are for the data owner and the archive. The kinds are
   `metadata_error`, `data_missing`, `identifier_missing`,
   `selection_undocumented`, `methods_unavailable`, `format_error` (files that
@@ -428,7 +432,7 @@ new attempt.
 
 ## Repeat attempts
 
-When a dandiset changes after an attempt, for example after its owners fix
+When a dataset changes after an attempt, for example after its owners fix
 what an attempt found, a new attempt tests the new version. It keeps the
 claims file, updates the entry in place to the new version, re-runs every
 check and claim, and says for each finding of the earlier attempt whether it
@@ -478,6 +482,6 @@ Run only when the final revision proposed changes of outcome. Review each
 proposal and the analysis behind it as in round 1, and say whether you agree
 with the proposed outcome. Nothing else is reviewed.
 
-The verifier does not edit the entry. It does not download the dandiset or
+The verifier does not edit the entry. It does not download the dataset or
 re-run the whole notebook; if a check needs that, it asks for the output to be
 added.

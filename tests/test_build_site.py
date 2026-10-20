@@ -207,6 +207,21 @@ def test_the_chart_counts_a_step_not_reached_as_to_do_and_old_claims_as_made_bef
     assert site.chart_state("check", "none", "before checks") == "older"
     assert site.chart_state("paper", "waiting", "not in store") == "waiting"
 
+
+def test_claims_checked_since_an_attempt_was_deprecated_count_as_read_again():
+    target = {"key": "dandi:000001", "label": "DANDI:000001", "name": "x"}
+    attempt = {"key": "dandi:000001", "paper": "p", "date": "2026-10-01", "id": "x-01", "tier": "runs",
+               "deprecated": "From the abstract.", "deprecated_on": "2026-10-20", "outcomes": []}
+    def row(check_date):
+        data = {"targets": [target], "attempts": [attempt],
+                "pipeline": {"papers": {}, "questions": {},
+                             "checks": {"dandi:000001": {"ready": True, "date": check_date}}}}
+        return site.pipeline_rows(data)[0]["state"]
+    old, new = row("2026-10-12"), row("2026-10-21")
+    assert old["claims"] == ("todo", "to read again") and old["check"][0] == "todo"
+    assert new["claims"] == ("done", "read again") and new["check"] == ("done", "ready")
+    assert old["attempt"][0] == new["attempt"][0] == "deprecated"
+
 def test_the_pipeline_has_a_row_per_target(built):
     data, out = built
     rows = json.loads((out / "data" / "pipeline.json").read_text())
@@ -217,7 +232,9 @@ def test_the_pipeline_has_a_row_per_target(built):
     for dandiset, attempts in site.current_attempts(data).items():
         row = next(r for r in rows if r["key"] == dandiset)
         if any(a.get("deprecated") for a in attempts):
-            assert row["state"]["attempt"][0] == "deprecated" and row["state"]["claims"][0] == "todo"
+            # Its claims are to be read again, until a claims file checked since then is merged.
+            assert row["state"]["attempt"][0] == "deprecated"
+            assert tuple(row["state"]["claims"]) in (("todo", "to read again"), ("done", "read again"))
         else:
             assert row["state"]["attempt"][0] == "done"
     assert "Pipeline" in (out / "pipeline" / "index.html").read_text()

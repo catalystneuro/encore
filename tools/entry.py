@@ -16,7 +16,7 @@ tied to the data:
 - every notebook in the directory is listed in entry.yaml, and exists;
 - notebooks are committed without outputs;
 - the lock file is present and newer requirements are not left unlocked;
-- each notebook, or a helper it imports, names the dandiset the entry uses;
+- each notebook, or a helper it imports, names the dataset the entry uses (its identifier and version);
 - each notebook has a cell tagged `sanity` that prints what was loaded;
 - no notebook or helper embeds a large literal array or an encoded image, or
   reads a figure from somewhere else.
@@ -74,7 +74,7 @@ class Report:
 
 
 def dataset_id(record: dict) -> str | None:
-    """The identifier of the dataset a claims file or attempt record is about (a dandiset's id on DANDI)."""
+    """The identifier of the dataset a claims file or attempt record is about, in its archive."""
     return (record.get("dataset") or {}).get("id")
 
 def schema(name: str) -> Draft202012Validator:
@@ -151,16 +151,19 @@ def check(entry_dir: Path) -> Report:
             if name and not name.startswith("#") and name not in pinned:
                 report.error(rel / "requirements.lock.txt", f"{name} is required but not locked; re-run lock")
 
+    # Datasets are related as <archive>:<id>/<version> (docs/archives.md); papers as doi:, entries as entry:.
     used = [r["id"].split(":", 1)[1].partition("/")
-            for r in entry.get("related", []) if r["id"].startswith("dandi:")]
+            for r in entry.get("related", []) if not r["id"].startswith(("doi:", "entry:"))]
+    archives = {r["id"].split(":", 1)[1].partition("/")[0]: r["id"].split(":", 1)[0]
+                for r in entry.get("related", []) if not r["id"].startswith(("doi:", "entry:"))}
     dandisets = [d for d, _, _ in used]
     versions = {d: v for d, _, v in used}
     if entry.get("type") in ("orientation", "reproduction"):
         if not dandisets:
-            report.error(rel / "entry.yaml", "an orientation or reproduction entry must relate to a dandiset")
+            report.error(rel / "entry.yaml", "an orientation or reproduction entry must relate to a dataset")
         for d, v in versions.items():
             if not v:
-                report.error(rel / "entry.yaml", f"pin the version of dandiset {d}, as dandi:{d}/<version>")
+                report.error(rel / "entry.yaml", f"pin the version of dataset {d}, as {archives[d]}:{d}/<version>")
     helper_code = "\n".join((entry_dir / h).read_text() for h in helpers if (entry_dir / h).is_file())
 
     for name in [n for n in listed if n in present]:
@@ -173,11 +176,11 @@ def check(entry_dir: Path) -> Report:
         code = code_of(path)
         for dandiset in dandisets:
             if dandiset not in code and dandiset not in helper_code:
-                report.error(rel / name, f"neither the notebook nor a helper names dandiset {dandiset}")
+                report.error(rel / name, f"neither the notebook nor a helper names dataset {dandiset}")
             version = versions[dandiset]
             if version and version not in code and version not in helper_code:
                 report.error(rel / name, f"neither the notebook nor a helper names version {version} "
-                                         f"of dandiset {dandiset}, which entry.yaml pins")
+                                         f"of dataset {dandiset}, which entry.yaml pins")
         _derivation_checks(report, rel / name, code)
     for name in helpers:
         if (entry_dir / name).is_file():
@@ -210,15 +213,19 @@ def check(entry_dir: Path) -> Report:
         # The entry streams the version of its latest attempt; earlier attempts keep the version they used.
         if pinned and path == mine[-1] and version != pinned:
             report.error(where, f"dataset version {version!r} differs from {pinned!r} in entry.yaml")
+        # A deprecated attempt no longer stands: its claims are being read again, and the claims file it was
+        # tested on may already have been replaced (docs/pipeline.md), so it is not held to the current one.
+        if attempt.get("deprecated"):
+            continue
         known = claims_by_target.get((dataset_id(attempt), attempt.get("paper")))
         if labels_used.get((dataset_id(attempt), attempt.get("paper"))):
             kinds = {f.get("kind") for f in attempt.get("findings") or []}
             if not attempt.get("inputs") or not kinds & {"metadata_insufficient", "identifier_missing"}:
-                report.error(where, "claims take names for the dandiset's codes from elsewhere (`with_labels`), so "
+                report.error(where, "claims take names for the dataset's codes from elsewhere (`with_labels`), so "
                                     "list the source under `inputs` and record the missing names as a finding "
                                     "(metadata_insufficient or identifier_missing)")
         if known is None:
-            report.error(where, "no claims file for this dandiset and paper")
+            report.error(where, "no claims file for this dataset and paper")
             continue
         recorded = [o.get("claim") for o in attempt.get("outcomes", [])]
         for claim in sorted(known - set(recorded)):
@@ -358,7 +365,7 @@ def handover(entry_dir: Path, output_dir: Path) -> int:
         shutil.copy(entry_dir / helper, target / helper)
     papers = {r["id"] for r in entry.get("related", []) if r["relation"] == "reproduces"}
     dandisets = {r["id"].split(":", 1)[1].split("/")[0]
-                 for r in entry.get("related", []) if r["id"].startswith("dandi:")}
+                 for r in entry.get("related", []) if not r["id"].startswith(("doi:", "entry:"))}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         claims = yaml.safe_load(path.read_text()) or {}
         if dataset_id(claims) in dandisets and claims.get("paper") in papers:

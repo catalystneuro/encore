@@ -41,6 +41,7 @@ import json
 import random
 import re
 import shutil
+import sys
 from pathlib import Path
 
 import yaml
@@ -52,53 +53,25 @@ SITE_URL = "https://catalystneuro.github.io/reproduction-registry/"
 SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of neuroscience papers from their open data on the "
                     "DANDI Archive, and record every outcome and what they find about the data.")
 
-# The archives the registry reads from. A dataset is keyed as "<archive>:<id>" (dandi:000003), shown as
-# "<label>:<id>" (DANDI:000003), and has its page at datasets/<archive>/<id>/. Its files in the repository
-# (claims/, questions/, transcripts/, the paper store) are under the id for DANDI and "<archive>-<id>" otherwise.
-ARCHIVES = {
-    "dandi": {"label": "DANDI", "name": "the DANDI Archive", "url": "https://dandiarchive.org/dandiset/{id}"},
-}
-
-
-def key_of(archive: str, id_: str) -> str:
-    return f"{archive}:{id_}"
-
-
-def split_key(key: str) -> tuple[str, str]:
-    archive, _, id_ = key.partition(":")
-    return archive, id_
-
-
-def dataset_label(key: str) -> str:
-    """How a dataset is named on the site: DANDI:000003."""
-    archive, id_ = split_key(key)
-    return f'{ARCHIVES.get(archive, {}).get("label", archive.upper())}:{id_}'
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
+from datasets import folder as dir_of, key_of_folder as key_of_dir, label as dataset_label, url as archive_url  # noqa: E402,F401
 
 
 def page_of(key: str) -> str:
+    """A dataset's page on the site: datasets/<archive>/<id>/."""
     archive, id_ = split_key(key)
     return f"datasets/{archive}/{id_}/"
 
 
-def archive_url(key: str) -> str:
-    archive, id_ = split_key(key)
-    return ARCHIVES[archive]["url"].format(id=id_) if archive in ARCHIVES else ""
-
-
-def archive_name(key: str) -> str:
-    archive, _ = split_key(key)
-    return ARCHIVES.get(archive, {}).get("name", archive)
-
-
-def dir_of(key: str) -> str:
-    """The directory name a dataset's files have in the repository."""
-    archive, id_ = split_key(key)
-    return id_ if archive == "dandi" else f"{archive}-{id_}"
-
-
-def key_of_dir(name: str) -> str:
-    return key_of("dandi", name) if re.fullmatch(r"[0-9]{6}", name) else key_of(*name.split("-", 1))
-
+# GitHub's mark (Octicons, mark-github), drawn in the text colour.
+GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 '
+               '8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 '
+               '3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2'
+               '-.27-.68 0-1.36.09-2 .27-1.53-1.03-2.2-.82-2.2-.82-.44 1.1-.16 1.92-.08 2.12-.51.56-.82 1.28-.82 2.15 0 '
+               '3.06 1.86 3.75 3.64 3.95-.23.2-.44.55-.51 1.07-.46.21-1.61.55-2.33-.66-.15-.24-.6-.83-1.23-.82-.67.01'
+               '-.27.38.01.53.34.19.73.9.82 1.13.16.45.68 1.31 2.69.94 0 .67.01 1.3.01 1.49 0 .21-.15.45-.55.38A7.995 '
+               '7.995 0 0 1 0 8c0-4.42 3.58-8 8-8Z"/></svg>')
 
 OUTCOMES = {  # key: (label, css class, icon)
     "reproduced": ("Reproduced", "good", "✓"),
@@ -223,8 +196,10 @@ def collect(executed: Path | None = None) -> dict:
             "kind": a["provenance"]["kind"],
             "accountable": a["provenance"]["accountable"]["name"],
             "agent": a["provenance"].get("agent"),
+            "runner": a["provenance"].get("runner"),
             "tier": tier_of(a),
             "deprecated": squash((a.get("deprecated") or {}).get("reason")),
+            "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
             "description": squash(entry.get("description")) if entry else None,
@@ -262,9 +237,9 @@ def collect(executed: Path | None = None) -> dict:
 
     attempted = {a["key"] for a in attempts}
     targets = []
-    for t in queue["targets"]:
+    for t in all_targets():
         papers = [p for p in t["papers"] if not p["preprint"]] or t["papers"]
-        key = key_of("dandi", t["dandiset"])
+        key = t["key"]
         status = "attempted" if key in attempted else "pilot" if key in pilot else "open"
         targets.append({
             "key": key, "label": dataset_label(key), "name": t["name"], "size_gb": t["size_gb"],
@@ -301,7 +276,7 @@ def collect(executed: Path | None = None) -> dict:
         "transcripts": {**transcripts, **archived},
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
-        "queue_counts": queue["counts"],
+        "queue_counts": {**queue["counts"], "with_a_paper": len(targets)},   # every archive's targets
         "attempts": attempts,
         "entries": entry_list,
         "targets": targets,
@@ -317,7 +292,8 @@ def pipeline_inputs() -> dict:
     checks, questions = {}, {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         last = ((load_yaml(path) or {}).get("checks") or [None])[-1]
-        checks[key_of_dir(path.parent.name)] = None if last is None else bool(last.get("ready"))
+        checks[key_of_dir(path.parent.name)] = {"ready": None if last is None else bool(last.get("ready")),
+                                                "date": None if last is None else str(last.get("date"))}
     for path in sorted((ROOT / "questions").glob("*.yaml")):
         q = load_yaml(path) or []
         q = q.get("questions", []) if isinstance(q, dict) else q
@@ -473,19 +449,24 @@ def pipeline_rows(data: dict) -> list[dict]:
         papers = inputs["papers"].get(d, [])
         missing = [p["doi"] for p in papers if p["status"] == "missing"]
         stored = sum(1 for p in papers if p["status"] == "stored")
-        check = inputs["checks"].get(d, "absent")
+        found = inputs["checks"].get(d)
+        check = "absent" if found is None else found["ready"]
         atts = current.get(d, [])
         open_q = inputs["questions"].get(d, 0)
-        # A deprecated attempt's claims are to be read again from the paper.
-        rerun = any(a.get("deprecated") for a in atts)
+        # A deprecated attempt's claims are to be read again from the paper, unless a claims file checked
+        # since it was deprecated has been merged (the checkpoint in docs/pipeline.md).
+        deprecated_on = max((a["deprecated_on"] or "" for a in atts if a.get("deprecated")), default="")
+        reread = bool(deprecated_on) and found is not None and (found["date"] or "") >= deprecated_on
+        rerun = bool(deprecated_on) and not reread
         state = {
             "paper": ("done", f"{stored} of {len(papers)}") if papers and not missing
             else ("waiting", f"{len(missing)} not in store") if papers else ("waiting", "no paper named"),
-            "claims": ("todo", "to read again") if rerun else ("done", "") if check != "absent" else ("todo", ""),
+            "claims": ("todo", "to read again") if rerun else ("done", "read again" if reread else "")
+            if check != "absent" else ("todo", ""),
             "check": ("todo", "") if rerun else ("done", "ready") if check is True
             else ("waiting", "not ready") if check is False
             else ("none", "before checks") if check is None else ("todo", ""),
-            "attempt": ("deprecated", "rerun due") if rerun
+            "attempt": ("deprecated", "rerun due") if deprecated_on
             else ("done", atts[-1]["date"]) if atts else ("todo", ""),
             "questions": ("todo", f"{open_q} open") if open_q else ("none", ""),
             "verified": ("done", "") if atts and all(a["tier"] != "runs" for a in atts)
@@ -746,7 +727,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
   <a class="brand" href="{home}">Reproduction registry</a>{nav}
-  <a class="tab ext" href="{REPO_URL}">GitHub</a>
+  <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
   <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
@@ -1426,6 +1407,9 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                      if a["dataset"].get("doi") else "")
                   + (f', modified {e(a["dataset"]["modified"])}' if a["dataset"].get("modified") else ""))]
         if a["kind"] == "agent":
+            runner = a.get("runner") or {}
+            rows_ += [("Run on", (f'<a href="{e(runner["url"]) }">{e(runner.get("platform"))}</a>' if runner.get("url")
+                                  else e(runner.get("platform", "not recorded"))))]
             rows_ += [("Harness", e(agent.get("harness", "not recorded"))),
                       ("Model", e(agent.get("model", "not recorded"))),
                       ("Protocol", e(agent.get("protocol", "not recorded")))]

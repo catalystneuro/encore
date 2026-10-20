@@ -3,8 +3,8 @@
     python tools/papers_manifest.py STORE        # STORE: a checkout of catalystneuro/registry-papers
 
 The store is private; the manifest is public and holds none of the text, only where each text
-came from and what is missing (docs/pipeline.md). A target's papers are those its DANDI metadata
-names (targets/dandisets.json), corrected by hand in papers/triage.yaml, and the paper of each of
+came from and what is missing (docs/pipeline.md). A target's papers are those its archive's metadata
+names (the lists in targets/, tools/datasets.py), corrected by hand in papers/triage.yaml, and the paper of each of
 its claims files.
 """
 
@@ -16,6 +16,9 @@ import sys
 from pathlib import Path
 
 import yaml
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import datasets  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -46,8 +49,8 @@ def header(path: Path) -> dict:
 def target_papers() -> dict[str, list[str]]:
     triage = (yaml.safe_load((ROOT / "papers" / "triage.yaml").read_text()) or {}).get("targets", {})
     papers: dict[str, list[str]] = {}
-    for t in json.loads((ROOT / "targets" / "dandisets.json").read_text())["targets"]:
-        papers[t["dandiset"]] = [clean_doi(p["doi"]) for p in t.get("papers") or []]
+    for t in datasets.targets():
+        papers[t["folder"]] = [clean_doi(p["doi"]) for p in t.get("papers") or []]
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         data = yaml.safe_load(path.read_text()) or {}
         if data.get("paper"):

@@ -90,7 +90,7 @@ def test_committed_outputs_are_an_error(repo):
 
 def test_a_notebook_must_name_its_dandiset(repo):
     nbformat.write(notebook("print(1)"), repo / "entries" / "demo" / "analysis.ipynb")
-    assert any("names dandiset 000001" in e for e in errors(repo))
+    assert any("names dataset 000001" in e for e in errors(repo))
 
 
 def test_a_helper_may_name_the_dandiset(repo):
@@ -151,7 +151,7 @@ def test_every_claim_needs_one_outcome(repo):
 def test_the_dandiset_version_must_be_pinned(repo):
     entry = {**ENTRY, "related": [{"id": "dandi:000001", "relation": "uses_data"}, ENTRY["related"][1]]}
     (repo / "entries" / "demo" / "entry.yaml").write_text(yaml.safe_dump(entry))
-    assert any("pin the version of dandiset 000001" in e for e in errors(repo))
+    assert any("pin the version of dataset 000001" in e for e in errors(repo))
 
 
 def test_the_dandiset_version_must_agree_across_files(repo):
