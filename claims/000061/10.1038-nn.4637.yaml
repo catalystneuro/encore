@@ -210,6 +210,40 @@ claims:
     when the ANOVA has p < 0.05 and the post-run ratio exceeds the pre-run ratio by paired t-test
     at p < 0.05/3 (O5 reading a) or p < 0.05 (reading b); the run against pre-run and run against
     post-run tests are reported.
+- id: each-rat-learns-puff-location
+  statement: The speed ratio changes across pre-run, run and post-run in each of the four rats
+    taken alone, indicating that every rat learned the new air puff location.
+  source: Supplementary Fig. 1b legend
+  quote: The reversal of ratio between pre and post RUN indicates that all animals learned the new
+    location during RUN and remembered it during post-RUN
+  statistics:
+  - about: speed ratio over pre-run, run and post-run, rat 1
+    test: one-way repeated measure ANOVA
+    statistic: F = 13.26, d.f. = 2
+    p: 0.000214
+    n: 11 sessions
+  - about: the same, rat 2
+    test: one-way repeated measure ANOVA
+    statistic: F = 7.02, d.f. = 2
+    p: 0.00556
+    n: 10 sessions
+  - about: the same, rat 3
+    test: one-way repeated measure ANOVA
+    statistic: F = 27.41, d.f. = 2
+    p: 3.9469e-7
+    n: 14 sessions
+  - about: the same, rat 4
+    test: one-way repeated measure ANOVA
+    statistic: F = 4.36, d.f. = 2
+    p: 0.021754
+    n: 16 sessions
+  depends_on:
+  - rats-learn-puff-location
+  criterion: The per-session speed ratios of rats-learn-puff-location (each O1 reading), split by
+    rat. Per rat, a one-way repeated-measures ANOVA over the three epochs (Supplementary Fig. 1b
+    legend). Reproduced when every rat has p < 0.05; partially reproduced when three of the four
+    rats do. The legend's
+    Bonferroni-corrected post hoc tests are shown but give no P values to match.
 - id: dz-speed-slower-post-run
   statement: Speed in the current danger zone is lower in post-run than in pre-run, and in run and
     post-run rats run slower in the current than in the previous danger zone.
@@ -361,7 +395,8 @@ claims:
     pre- and post-sleep (M2, M3). A two-sided Wilcoxon signed rank test of EV against REV across
     sessions (Online Methods, Statistical analysis; ExplainedVarianceMean_Ultimate.m). Reproduced
     when EV exceeds REV with p < 0.05 and the expected values hold (the mean EV - REV of 3.13 +-
-    0.73% s.e.m. is from Results, A subset of BLA cells, paragraph 1, Fig. 3d test); partially
+    0.73% s.e.m. is from Results, BLA-hippocampus coordinated reactivations during NREM sleep,
+    paragraph 2, the Fig. 3d test); partially
     reproduced when the test holds and an expected value does not.
 - id: reactivation-all-cell-pairs
   statement: Hippocampus-BLA NREM reactivation holds when pyramidal cells and interneurons are both
@@ -376,10 +411,20 @@ claims:
     statistic: z = 3.79
     p: 0.00014
     n: 27 sessions in 3 rats
-  - about: EV against REV over the first, second and third 20 min of NREM, all cell pairs
-    test: Wilcoxon signed rank tests
-    statistic: z = 3.91; z = 2.98; z = -0.71
+  - about: EV against REV, 0-20 min of post-NREM, all cell pairs
+    test: Wilcoxon signed rank test
+    statistic: z = 3.91
     p: 8.85e-5
+    n: 17 sessions in 3 rats
+  - about: EV against REV, 20-40 min, all cell pairs
+    test: Wilcoxon signed rank test
+    statistic: z = 2.98
+    p: 0.00282
+    n: 17 sessions in 3 rats
+  - about: EV against REV, 40-60 min, all cell pairs
+    test: Wilcoxon signed rank test
+    statistic: z = -0.71
+    p: 0.14458
     n: 17 sessions in 3 rats
   criterion: As hpc-bla-reactivation-post-sleep with all hippocampal and BLA units. Reproduced when
     EV exceeds REV with two-sided Wilcoxon signed rank p < 0.05 across sessions. The 20-min
@@ -440,7 +485,8 @@ claims:
     expected values hold; partially reproduced when the means fall and the test or an expected
     value fails.
 - id: no-rem-reactivation
-  statement: Hippocampus-BLA reactivations are not significant in REM sleep.
+  statement: Hippocampus-BLA and hippocampus-piriform cortex reactivations are not significant in
+    REM sleep.
   source: Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 2;
     Figure 3c, left
   quote: Reactivations during REM sleep ... were not significant in any structure
@@ -455,10 +501,17 @@ claims:
     statistic: z = -0.71
     p: 0.47583
     n: 25 sessions in 3 rats
+  - about: EV against REV, REM, hippocampus-piriform pyramidal pairs (Fig. 3d)
+    test: Wilcoxon signed rank test
+    p: 0.301
+    n: 15 sessions in 3 rats
   criterion: A claim of absence, judged on the paper's test. EV and REV (M4) from the REM bins of
     pre- and post-sleep, sessions with more than 180 s of REM in each, pyramidal pairs; two-sided
-    Wilcoxon signed rank test of EV against REV. Reproduced when p >= 0.05, not reproduced when
-    p < 0.05; the median EV - REV is reported. All cell pairs shown as a variant.
+    Wilcoxon signed rank test of EV against REV, for hippocampus-BLA pairs and for
+    hippocampus-piriform pairs (piriform units per M1). Reproduced when neither test has p < 0.05,
+    not reproduced when either does; the median EV - REV is reported. Hippocampus-BLA all cell
+    pairs shown as a variant. Central nuclei REM is in cen-no-reactivation and intra-structure REM
+    in intra-structure-reactivation.
 - id: piriform-weaker-reactivation
   statement: Piriform cortex neurons show weaker reactivation with hippocampal CA1 neurons than BLA
     neurons do, though still significant in NREM.
@@ -515,7 +568,9 @@ claims:
     but not in REM sleep.
   source: Supplementary Fig. 4; Results, BLA-hippocampus coordinated reactivations during NREM
     sleep, paragraph 1
-  quote: Intra-structure reactivations for hippocampus and BLA.
+  inferred: No sentence states this finding. It is read from the tests in the Supplementary Fig. 4
+    legend (titled "Intra-structure reactivations for hippocampus and BLA"), with the REM part also
+    covered by the Results sentence that REM reactivations were not significant in any structure.
   statistics:
   - about: hippocampus, all pairs, NREM
     test: Wilcoxon signed rank test
@@ -797,11 +852,21 @@ claims:
     statistic: z = 2.408
     p: 0.992
     n: 73 cells in 3 rats
-  - about: second, third and fourth quartiles separately (Supplementary Fig. 8a)
-    test: Wilcoxon signed rank one-tailed tests
-    statistic: z = 0.7839; z = 1.8873; z = 1.5420
+  - about: second quartile, upmodulated cells (Supplementary Fig. 8a)
+    test: Wilcoxon signed rank one-tailed test
+    statistic: z = 0.7839
     p: 0.7834
-    n: 18, 16 and 39 cells
+    n: 18 cells
+  - about: third quartile, upmodulated cells (Supplementary Fig. 8a)
+    test: Wilcoxon signed rank one-tailed test
+    statistic: z = 1.8873
+    p: 0.9704
+    n: 16 cells
+  - about: fourth quartile, upmodulated cells (Supplementary Fig. 8a)
+    test: Wilcoxon signed rank one-tailed test
+    statistic: z = 1.5420
+    p: 0.9384
+    n: 39 cells
   depends_on:
   - bla-ripple-up-subgroup
   - run-correlated-pair-fractions
@@ -978,10 +1043,13 @@ claims:
     statistic: z = 0.302
     p: 0.763
   criterion: A claim of absence, judged on the paper's test, a two-sided Wilcoxon signed rank test
-    across BLA cells of the sessions entering aversive-direction-stronger, safe against air puff
-    rate in the run epoch, for pyramidal cells and for all cells. The rate per O7, both readings,
-    laps per O1. Reproduced when neither test has p < 0.05; not reproduced when either does under
-    every reading. Median differences reported.
+    across BLA cells, safe against air puff rate in the run epoch, for pyramidal cells and for all
+    cells. The paper gives no n and does not say which sessions enter; readings (a) the BLA cells
+    of the sessions entering aversive-direction-stronger (pyramidal) and direction-all-cell-pairs
+    (all cells); (b) all BLA cells of sessions with a run epoch. The rate per O7, both readings,
+    laps per O1. Reproduced when neither test has p < 0.05 under every reading; not reproduced
+    when either test has p < 0.05 under every reading; methods_underspecified when the readings
+    disagree. Median differences reported.
 - id: ripple-rate-unchanged
   statement: The occurrence rate of SPW-Rs does not differ between pre-NREM and post-NREM.
   source: Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1;
@@ -997,7 +1065,8 @@ claims:
     number of ripple peaks in pre-NREM over pre-NREM duration and the same in post-NREM
     (RippleRatePrePost.m). A two-sided Wilcoxon signed rank test (Online Methods default; the
     printed P of 0.192 for z = -1.289 is two-sided, while RippleRatePrePost_All.m calls tail
-    right). Reproduced when p >= 0.05; not reproduced when p < 0.05. Median difference reported.
+    right; Supplementary Fig. 11d prints P = 0.1972 for the same test). Reproduced when p >= 0.05;
+    not reproduced when p < 0.05. Median difference reported.
 - id: contributing-pairs-run-sleep-coupling
   statement: For the 2.5% most strongly contributing hippocampus-BLA pairs, the pre-run to post-run
     change in correlation correlates with the pre-NREM to post-NREM change (r = 0.27), but not for
@@ -1070,3 +1139,21 @@ claims:
     percentiles of contribution (quantile), strongest quartile below the 25th. Reproduced when the
     strongest quartile has r > 0 with p < 0.05 and r within tolerance, and the weakest has
     p >= 0.05; partially reproduced when only the strongest quartile's test holds.
+checks:
+- date: "2026-10-20"
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - The five values the quote checker flags (9.70e-9, 8.85e-5, 7.75e-5, 6.45e-5, and 3.9469e-7 of the new claim) were confirmed by reading; the text prints them as "9.70 x 10-9" and "x10-05" or "x10-07", forms the checker does not match.
+  - hpc-bla-reactivation-post-sleep, the criterion cited the 3.13 +- 0.73% value to Results, A subset of BLA cells, paragraph 1; it is in Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 2. Corrected.
+  - reactivation-all-cell-pairs, one statistics entry held three 20-min tests with only the first P; split into three entries with the P values of Supplementary Fig. 5a (8.85e-5, 0.00282, 0.14458).
+  - contributing-up-cells-gain-increase, one statistics entry held the three lower quartile tests with only the second quartile P; split into three entries with the P values of Supplementary Fig. 8a (0.7834, 0.9704, 0.9384).
+  - no-rem-reactivation, the paper says REM reactivations were not significant in any structure, citing Fig. 3c-e; the statement covered only hippocampus-BLA. Added the hippocampus-piriform REM test of Fig. 3d (P = 0.301, n = 15) to the statement, statistics and criterion.
+  - intra-structure-reactivation, the quote was the figure title, which does not state the finding; replaced by an inferred note saying the finding is read from the Supplementary Fig. 4 legend tests.
+  - bla-rate-same-across-directions, the criterion fixed the cells to the sessions of aversive-direction-stronger, which the paper does not say, and its outcome rule left the case of disagreeing readings undecided. Named the session sets as readings and added the methods_underspecified case.
+  - ripple-rate-unchanged, noted in the criterion that Supplementary Fig. 11d prints P = 0.1972 for the test the main text gives as 0.192.
+  - Added claim each-rat-learns-puff-location for the per-rat ANOVAs of Supplementary Fig. 1b ("all animals learned"), a finding with no claim.
+  - Open, the paper's code (github.com/buzsakilab/papers) was not available to this check, so the details the criteria take from it (script names, smoothing, cell minimums, tails, run.signot, ExplainedVariance_Ultimate_IntraStruct.m, which is not in the header's list of scripts read) were not re-verified.
+  - Open, no-rem-reactivation and M4 use more than 180 s of REM; the Methods say a minimum of 3 min. The difference cannot matter unless a session has exactly 180 s.
+  - Open, habituation-over-days and ev-independent-of-firing-rate rest on readings of a figure the paper does not test; the criteria name them and fall back to methods_underspecified when they disagree.
