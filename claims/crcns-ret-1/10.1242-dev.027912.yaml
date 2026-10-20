@@ -1,0 +1,504 @@
+# Claims for Lefebvre, Zhang, Meister, Wang & Sanes (2008), Development 135:4141-4151, on CRCNS
+# data set ret-1 (doi:10.6080/K0RF5RZT).
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20,
+# protocol pilot-10 as stated in docs/protocol.md (Reader).
+#
+# Text read: the NIH author manuscript in PubMed Central (PMC2644426), as supplied under paper/,
+# with its Methods, Results, Discussion and the legends of Figures 1 to 9; the version of
+# record's abstract is appended to it. No PDF was supplied. The supplement (Supplementary
+# Figures 1 to 3, which PMC lists as present) is not in the text and was not read. Its
+# contents are known only from the main text's citations: the Chx10-Cre recombination pattern
+# (S1), synapse density in Bax mutants and example spike-triggered averages (S2; the
+# manuscript cites S2 for both), and receptive field surrounds (S3). Its legends were not seen
+# and may hold method details (the test of S2, the measure of S3). The claims that cite it are
+# quoted from the main text and take no number from it. The paper links no analysis code, so none was read.
+#
+# Data the paper used. Mice on a C57/B6J background. Conditional Pcdh-gamma alleles (fdel, the
+# whole cluster floxed; fcon3, the last constant exon floxed), excised in retina by Chx10-Cre
+# or Pax6alpha-Cre (Pax6alpha-Cre spares a central sector except for Pax6alpha amacrines); some
+# crossed onto Bax-/-. Histology (Figures 1 to 8): sections and dissociated cells, layer
+# thickness and cell counts at E17.5 to P150, 3 to 8 animals per genotype; none of it is in
+# the data set. Electrophysiology (Figure 9), the data the CRCNS data set describes holding:
+# isolated dark-adapted retina, a piece of about 3 to 4 mm on a 61-electrode array, RGCs facing
+# down, room temperature, spike-sorted single units. Mutant group: Chx10-Cre;Pcdh-gamma
+# mutant retinas and the peripheral region of Pax6alpha-Cre;Pcdh-gamma mutant retinas, pooled
+# (115 cells). Control group: Pax6-Cre;Pcdh-gamma +/f-del or Pcdh-gamma f-del/f-del without Cre
+# (143 cells). The Results name the mutant allele fcon3 and the Figure 9 legend names f-del;
+# the paper does not say which, nor the age of the mice, nor the number of retinas. Stimuli:
+# a flashing spot at photopic intensity (Figure 9A, 9C); very dim and bright flashes; moving
+# bars and gratings in 8 directions (grating wavelength 664 um, speed 664 um/s; Figure 9B);
+# flickering bars of 8.3 or 16.6 um width, each black or white by a pseudo-random binary
+# sequence with 16.6 ms frames (Figure 9D to 9H). Measured variables per cell: On-Off index,
+# receptive field centre width (FWHM of b(x)), time to peak of a(t), mean firing rate during
+# flicker, and LN-model threshold and gain.
+#
+# The CRCNS description says the data set holds, for each recording session, the spike times
+# of all units and the information needed to generate the stimulus, recorded by Yifeng Zhang in
+# Markus Meister's lab in 2008. Which sessions are mutant or control, and which stimuli each
+# holds, is for the author to find.
+#
+# Method choices for Figure 9 come from the Methods (Electrophysiology, Eqns 1 to 3) and the
+# Figure 9 legend. Details neither fixes are named in each criterion with the readings the
+# text allows. Common to all panels C to H: the legend gives one count per group (115 mutant,
+# 143 control cells), so the cells are read as all units of each group, the same for every
+# panel; the paper names no exclusion of cells. The "shaded range indicates 95% confidence
+# interval" of each cumulative histogram is the paper's only statistical comparison for
+# Figure 9, and its construction is not given. The readings are (a) a pointwise binomial
+# interval on each cumulative fraction (normal approximation); (b) the Dvoretzky-Kiefer-
+# Wolfowitz simultaneous band; (c) a pointwise percentile bootstrap over cells. "Bands
+# separate" below means that over some range of the measured value the two groups' 95% bands
+# do not overlap; "bands overlap" means that they overlap at every value.
+schema_version: 2
+dataset:
+  archive: crcns
+  id: ret-1
+  doi: 10.6080/K0RF5RZT
+paper: doi:10.1242/dev.027912
+claims:
+- id: fig1-broad-expression
+  statement: Pcdh-gamma proteins (Pcdh-gamma-GFP in fusg mice) are present in all five retinal
+    layers and in all six retinal cell types (photoreceptors, horizontal, bipolar, amacrine,
+    RGCs and Mueller glia).
+  source: Results, Broad expression of gamma protocadherins in retina, paragraphs 2 and 3; Figure 1
+  quote: As judged by localization of GFP in Pcdh-γ fusg mice, Pcdh-γs are present in all five
+    retinal layers ... All six cell types were Pcdh-γ-positive ... Thus, Pcdh-γs are expressed in
+    all cell types of the neural retina.
+  criterion: Qualitative, from immunostained sections and dissociated cells. Reproduced when
+    GFP is seen in all five layers and in cells carrying each of the markers the paper lists.
+    Not testable on a spike-recording data set.
+- id: fig2-postnatal-localization
+  statement: Pcdh-gamma is present in the IPL, neuroblast layer and RGC axons at P0, appears in
+    the developing OPL by P7, and reaches the adult pattern by P14.
+  source: Results, Broad expression of gamma protocadherins in retina, paragraph 4; Figure 2
+  quote: At this time, Pcdh-γ is present on cells in the neuroblast layer, in the IPL, and on RGC
+    axons ( Figure 2A ) ... By P7, Pcdh-γ appears in the OPL, as it divides the neuroblast layer
+    into INL and ONL ( Figure 2C ). By P14, the adult pattern described above is established
+  criterion: Qualitative, from sections at P0, P3, P7 and P14. Not testable on a
+    spike-recording data set.
+- id: fig3-synaptic-localization
+  statement: Pcdh-gammas are present in pre- and postsynaptic compartments of rod and cone
+    synapses in the OPL, though little is in horizontal cell varicosities, and at many but not
+    only synaptic sites in the IPL.
+  source: Results, Synaptic localization of Pcdh-γ proteins in the retina, paragraphs 1 and 2;
+    Figure 3
+  quote: Thus, Pcdh-γs were present in pre- and post-synaptic compartments of rod and cone
+    synapses. In contrast, although horizontal cell processes labeled with anti-calbindin ...
+    were Pcdh-γ-positive, little Pcdh-γ was present in their synaptic varicosities
+  criterion: Qualitative, from double-labelled confocal sections. Not testable on a
+    spike-recording data set.
+- id: s1-chx10-recombination
+  statement: Chx10-Cre recombination is extensive (above 90%) in the INL and ONL, while about
+    half of the cells in the GCL are not recombined.
+  source: Results, Inactivation of Pcdh-γs in the retina leads to neuronal and synaptic loss,
+    paragraph 4; Supplementary Figure 1A and 1B (not read)
+  quote: Recombination was extensive (>90%) in the INL and ONL but occasional columns of cells
+    were spared ... In contrast, approximately half of the cells in the GCL were GFP-negative and
+    LacZ-positive
+  expected:
+  - quantity: fraction of GCL cells not recombined (GFP-negative, LacZ-positive)
+    value: 50
+    tolerance: 5
+    unit: percent
+  criterion: Reproduced when the recombined fraction exceeds 90% in the INL and ONL and the
+    GCL value is within tolerance. From Z/EG reporter sections, which the data set does not hold.
+- id: fig4h-inl-ipl-thinner
+  statement: At P18, retinas lacking Pcdh-gammas in Chx10-Cre mutants are properly laminated but
+    about 25% thinner than controls, from a selective reduction of about 40% in INL and IPL
+    thickness.
+  source: Results, Inactivation of Pcdh-γs in the retina leads to neuronal and synaptic loss,
+    paragraph 5; Figure 4B to 4H
+  quote: However, mutant retinas were ∼25% thinner than those of wild-type mice or heterozygote
+    littermates. The difference resulted from a selective reduction of ∼40% in the thickness of
+    the INL and the IPL ( Figure 4H ).
+  statistics:
+  - test: ANOVA and post-hoc Tukey test
+    p: 0.01
+    p_relation: "<"
+    n: 3-4 animals of each genotype
+  expected:
+  - quantity: reduction of total retinal thickness, mutant against control
+    value: 25
+    tolerance: 2.5
+    unit: percent
+  - quantity: reduction of INL and of IPL thickness, mutant against control
+    value: 40
+    tolerance: 4
+    unit: percent
+  criterion: Thickness from single optical sections adjacent to the optic nerve head, two to
+    four areas per retina and two sets of perpendicular measurements per area (Methods,
+    Histology). Reproduced when both reductions are within tolerance and the INL and IPL
+    differences have p < 0.01 by ANOVA with Tukey post hoc. Not testable on a spike-recording
+    data set.
+- id: fig4-alleles-equivalent
+  statement: The INL and IPL are thinned to the same extent in Chx10-Cre;Pcdh-gamma fcon3/fcon3
+    and fdel/fdel retinas, so fcon3 is functionally a null.
+  source: Results, Inactivation of Pcdh-γs in the retina leads to neuronal and synaptic loss,
+    paragraph 5; Figure 4D to 4H
+  quote: The INL and IPL were thinned to the same extent in Chx10-Cre;Pcdh-γ fcon3/fcon3 and
+    Chx10-Cre;Pcdh-γ fdel/fdel mice
+  criterion: A claim of absence. The paper names no test for the difference between the two
+    alleles; Figure 4H uses ANOVA with Tukey post hoc at p < 0.01 over the three genotypes.
+    Reproduced when the Tukey comparison of fcon3 against fdel is not significant for INL and
+    IPL. Not testable on a spike-recording data set.
+- id: fig4i-cell-type-loss
+  statement: In peripheral Pax6alpha-Cre;Pcdh-gamma fcon3/fcon3 retina at P18, bipolar, amacrine
+    and retinal ganglion cells are reduced by 45 to 65%, Mueller glia by about 20%, while
+    horizontal cells and photoreceptors differ little from controls.
+  source: Results, Inactivation of Pcdh-γs in the retina leads to neuronal and synaptic loss,
+    paragraph 6; Figure 4I
+  quote: Numbers of bipolar, amacrine, and retinal ganglion cells were reduced by 45-65% (
+    Figure 4I ). Müller glia were also decreased, but only by ∼20%. In contrast, numbers of
+    horizontal cells and photoreceptors differed little between mutants and controls
+  statistics:
+  - test: Mann-Whitney non-parametric test
+    p: 0.0001
+    p_relation: "<"
+    n: 6-8 animals of each genotype
+  expected:
+  - quantity: reduction of Mueller glia (Sox9+)
+    value: 20
+    tolerance: 2
+    unit: percent
+  criterion: Counts of marker-positive cells per area (0.13 mm2 for calbindin, Brn3a and
+    Pax6alpha-GFP; 0.05 mm2 for Chx10; 0.02 mm2 for Sox9; 1280 um2 for photoreceptors; Methods,
+    Histology). Reproduced when the bipolar, amacrine and RGC reductions each lie within 40.5
+    to 71.5% (the stated range widened by 10% of each bound), the Mueller glia reduction is
+    within tolerance, and horizontal cells and photoreceptors are not significantly reduced by
+    Mann-Whitney test. Not testable on a spike-recording data set.
+- id: fig5-postnatal-onset
+  statement: Mutant and control retinas do not differ perinatally (E17.5 to P3); INL and IPL are
+    thinner in mutants by P7, about 40% thinner by P14, and change little over the following
+    months.
+  source: Results, Increased postnatal apoptosis in the absence of Pcdh-γs, paragraph 1; Figure
+    5A to 5I
+  quote: We detected no differences in laminar arrangement or thickness between mutant and
+    control retinas perinatally ... Both layers were ∼40% thinner in mutants than in controls by
+    P14, then changed little over the following several months
+  statistics:
+  - test: Student's t-test
+    p: 0.001
+    p_relation: "<"
+    n: 3-4 animals per stage
+  expected:
+  - quantity: INL and IPL thickness reduction at P14 and later, Chx10-Cre;Pcdh-gamma fcon3
+      mutants against controls
+    value: 40
+    tolerance: 4
+    unit: percent
+  criterion: Reproduced when no stage up to P3 differs by Student's t-test, the reductions from
+    P14 on are within tolerance with p < 0.001, and they do not grow over later stages. Not
+    testable on a spike-recording data set.
+- id: fig5-increased-apoptosis
+  statement: Apoptosis (cleaved caspase-3) follows the normal time course but is significantly
+    higher in mutant than control retinas during the first postnatal weeks.
+  source: Results, Increased postnatal apoptosis in the absence of Pcdh-γs, paragraph 2; Figure
+    5J to 5N
+  quote: Apoptosis followed a similar time course in Pcdh-γ deficient retinas, but levels were
+    significantly higher in mutants than in controls ... Although increased apoptosis was seen in
+    both neuroblast and ganglion cell layers at P0, it was confined to the INL at P7
+  statistics:
+  - test: Student's t-test or Mann-Whitney test
+    p: 0.05
+    p_relation: "<"
+    n: 3-6 animals per stage
+  criterion: The Results and the legend disagree on the layers. The Results say the increase is
+    in both neuroblast and ganglion cell layers at P0 and only in the INL at P7; the legend says
+    the differences are significant in the "NBL/IPL" (as printed, likely NBL/INL) at P0 and P7 and in the ganglion cell layer only
+    at P7. The text also cites panels K, L and M where the legend labels J, K, M and N. Both
+    readings are named. Reproduced when mutant counts exceed control counts by Student's t-test
+    or Mann-Whitney test at p < 0.05 at P0 and P7, with the layer pattern of either reading.
+    Not testable on a spike-recording data set.
+- id: fig6f-amacrine-loss-central
+  statement: In central retina of Pax6alpha-Cre;Pcdh-gamma fcon3/fcon3 mice, where only the
+    Pax6alpha amacrines lack Pcdh-gammas, these amacrines are 58% fewer than in controls, a loss
+    equivalent to that in peripheral retina.
+  source: Results, Cell autonomy of Pcdh- γ -dependent cell survival in retina, paragraph 2;
+    Figure 6B, 6C and 6F
+  quote: The number of Pax6α-amacrines in central retina was 58% lower in mutants than in
+    controls ... loss of Pax6α-positive amacrines is equivalent in peripheral and central retina
+  statistics:
+  - about: Pax6alpha amacrines, central retina, mutant against control; the weakest mark the
+      legend defines, as the text does not say which mark this bar carries
+    test: Student's t-test or Mann-Whitney test
+    p: 0.05
+    p_relation: "<"
+    n: 6 to 8 animals per genotype
+  expected:
+  - quantity: reduction of Pax6alpha-GFP amacrines in central retina
+    value: 58
+    tolerance: 5.8
+    unit: percent
+  criterion: Reproduced when the reduction is within tolerance and significant at p < 0.05 by
+    Student's t-test (equal variances by F-test) or Mann-Whitney test (Figure 6F legend,
+    Methods), and the central and peripheral (Figure 4I, AC) reductions do not differ
+    significantly. The paper names no test for the central against peripheral comparison; the
+    same tests at p < 0.05 are used, and this is open. The figure's significance marks run from
+    p < 0.05 to p < 0.0001 and the legend does not say which applies to which bar. Not testable
+    on a spike-recording data set.
+- id: fig6f-neighbours
+  statement: Loss of Pcdh-gammas from Pax6alpha amacrines in central retina does not affect the
+    survival of bipolar cells, horizontal cells, Mueller glia or starburst amacrines, but causes
+    a small (about 15%) significant loss of Brn3a-positive RGCs.
+  source: Results, Cell autonomy of Pcdh- γ -dependent cell survival in retina, paragraph 3;
+    Figure 6F
+  quote: Loss of Pcdh-γs from the Pax6α-positive amacrines had no detectable effect on the
+    survival of bipolar cells, horizontal cells or Müller glia ... In contrast, we detected a
+    small (∼15%) but significant loss of Brn3a-positive RGCs from central retina
+  statistics:
+  - about: Brn3a+ RGCs, central retina, mutant against control
+    test: Student's t-test or Mann-Whitney test
+    p: 0.05
+    p_relation: "<"
+    n: 6 to 8 animals per genotype
+  expected:
+  - quantity: reduction of Brn3a+ RGCs in central retina
+    value: 15
+    tolerance: 1.5
+    unit: percent
+  criterion: For the spared types a claim of absence, judged on the paper's tests (Student's
+    t-test, with equal variances checked by F-test, or Mann-Whitney test, at p < 0.05; Methods,
+    Histology). Reproduced when none of bipolar, horizontal, Mueller glia and starburst counts
+    differ and the RGC reduction is within tolerance and significant. Not testable on a
+    spike-recording data set.
+- id: fig7-laminar-targeting
+  statement: In Pcdh-gamma mutant retina at P18, processes of all ten examined amacrine and
+    bipolar subtypes are arrayed in their appropriate IPL sublaminae, though with occasional
+    gaps.
+  source: Results, Pcdh- γ s are dispensable for laminar targeting of retinal neurons,
+    paragraph 1; Figure 7
+  quote: In all ten cases, processes were arrayed in appropriate sublaminae in mutant retinas at
+    P18, although disruptions or gaps were sometimes present
+  criterion: Qualitative, from immunostained sections with the ten markers listed in the
+    Results. Not testable on a spike-recording data set.
+- id: fig8ad-bax-rescue
+  statement: Deleting Bax rescues the neurons that die in Pcdh-gamma mutant retina; INL and GCL
+    thickness and Chx10+ bipolar number do not differ between Pcdh-gamma-positive and -negative
+    Bax-/- retinas, and the IPL expands to the Bax-/- thickness.
+  source: Results, Synapses and arbors of Pcdh-γ-deficient neurons destined to die, paragraph 1;
+    Figure 8A to 8D
+  quote: "Likewise, Bax deletion rescued neurons destined to die in Pcdh-γ mutant retina: the
+    thickness of the INL and GCL and the number of Chx10-positive bipolar cells were
+    indistinguishable"
+  criterion: A claim of absence. The paper names no test for this comparison; the Methods list
+    ANOVA, Student's t-test (equal variances by F-test) and Mann-Whitney test. Reproduced when
+    none of these finds a difference at p < 0.05 between the two Bax-/- genotypes for INL,
+    GCL, IPL thickness and Chx10+ count. Not testable on a spike-recording data set.
+- id: fig8el-synapse-density
+  statement: Synapse density in the IPL and OPL (PNA or Bassoon staining) does not differ
+    significantly between Pcdh-gamma-positive and Pcdh-gamma-negative Bax-/- retinas.
+  source: Results, Synapses and arbors of Pcdh-γ-deficient neurons destined to die, paragraph 2;
+    Figure 8E to 8L; Supplementary Figure 2 (not read)
+  quote: The density of synapses in the IPL and OPL, as judged by staining for PNA or Bassoon,
+    did not differ significantly between Pcdh-γ-positive and Pcdh-γ-negative Bax −/− retinas
+  criterion: A claim of absence. The test is not named in the text read; it may be in the
+    Supplementary Figure 2 legend, which was not available. The Methods list ANOVA, Student's
+    t-test and Mann-Whitney test. Reproduced when the test used finds no difference at p <
+    0.05. Not testable on a spike-recording data set.
+- id: fig8mn-bax-laminar
+  statement: Neurons rescued from death by Bax deletion target their processes to the
+    appropriate IPL sublaminae as specifically as in Pcdh-gamma single mutants, and the gaps of
+    the single mutants are absent.
+  source: Results, Synapses and arbors of Pcdh-γ-deficient neurons destined to die, paragraph 3;
+    Figure 8M and 8N
+  quote: In all cases, targeting of processes to appropriate laminae was as specific in double
+    mutants as in Pcdh-γ single mutants
+  criterion: Qualitative, from immunostained sections. Not testable on a spike-recording data
+    set.
+- id: fig9-cell-counts
+  statement: Figure 9C to 9H report 115 RGCs from mutant retinas and 143 RGCs from control
+    retinas.
+  source: Figure 9 legend, panels C to H
+  quote: plots a cumulative histogram of that quantity for RGCs in mutant retinas (red curve, 115
+    cells ... and control retinas (black curve, 143 cells
+  expected:
+  - quantity: mutant RGCs
+    value: 115
+    tolerance: 11.5
+    unit: cells
+  - quantity: control RGCs
+    value: 143
+    tolerance: 14.3
+    unit: cells
+  criterion: Counted as the sorted units in the data set's mutant and control recordings, as
+    the data set labels them. Mutant pools Chx10-Cre mutant retinas with the peripheral region
+    of Pax6alpha-Cre mutant retinas (Results, Functional visual circuits, paragraph 2); control
+    is Pax6-Cre;Pcdh-gamma +/f-del or Pcdh-gamma f-del/f-del (Figure 9 legend). The paper does
+    not say whether every unit was kept, so the counts both of all units and of units with a
+    flicker response are reported. Reproduced when the counts are within tolerance.
+- id: fig9a-response-variety
+  statement: RGCs in mutant and control retinas show a similar variety of responses to small
+    flashing spots, including sustained and transient ON, OFF and ON-OFF responses.
+  source: Results, Functional visual circuits form in the absence of Pcdh- γ s, paragraph 3;
+    Figure 9A
+  quote: RGCs in Pcdh-γ mutant and control retinas showed a similar variety of responses to small
+    flashing spots, including sustained and transient ON, OFF and ON-OFF responses
+  depends_on:
+  - fig9c-on-off-index
+  criterion: The paper shows example rasters only and defines no classes. ON, OFF and ON-OFF
+    are read from the On-Off index of Figure 9C (spikes in the on-phase over all spikes); the
+    paper gives no cut-offs and none for transient against sustained. Readings for the
+    ON/OFF cut-offs are (a) index below 1/3 OFF, above 2/3 ON, otherwise ON-OFF; (b) below 0.2
+    OFF, above 0.8 ON. Transient against sustained is read as the ratio of the spike rate in the
+    second half of a phase to that in the first, with readings (a) below 0.5 transient, (b)
+    below 0.3 transient. Reproduced when, under every reading, the mutant group and the control
+    group each hold cells of each of the three polarities and of both time courses; the class
+    counts per group are reported.
+- id: fig9c-on-off-index
+  statement: The proportions of ON- and OFF-dominated responses are the same in mutant and
+    control retinas.
+  source: Results, Functional visual circuits form in the absence of Pcdh- γ s, paragraph 3;
+    Figure 9C
+  quote: Proportions of ON- and OFF-dominated responses were identical in mutants and controls (
+    Figure 9C )
+  criterion: A claim of absence. The measure is from the Figure 9C legend, per cell, (number of
+    spikes fired during the on-phase of the spot)/(total number of spikes fired), from the
+    flashing-spot experiment of panel A. The paper's comparison is the overlap of the 95%
+    confidence bands of the two cumulative histograms (header, readings a to c). Reproduced
+    when the bands overlap under every reading; not reproduced when they separate under every
+    reading; blocked as methods_underspecified when the readings disagree. A two-sample
+    Kolmogorov-Smirnov test and the difference of medians are shown as a variant.
+- id: fig9-rod-cone
+  statement: Mutant RGCs respond to very dim flashes, which excite only rods, and to bright
+    flashes, which mainly excite cones, so both rod and cone pathways function.
+  source: Results, Functional visual circuits form in the absence of Pcdh- γ s, paragraph 3
+    (data not shown)
+  quote: Mutant RGCs responded to very dim flashes, which excite only rods, and also to bright
+    flashes, which predominantly excite cones (data not shown)
+  criterion: The paper shows no data and gives no flash intensities. Reproduced when the data
+    set holds mutant recordings at two flash intensities the data set marks as dim (scotopic)
+    and bright (photopic), and some mutant cells fire more during either phase of the flash
+    than in the matched part of the other phase at each intensity. Blocked when the data set
+    holds no such pair of intensities.
+- id: fig9b-direction-selective
+  statement: Both ON and ON-OFF direction-selective RGCs are found in mutant retinas.
+  source: Results, Functional visual circuits form in the absence of Pcdh- γ s, paragraph 3;
+    Figure 9B
+  quote: Both ON and ON-OFF direction-selective cells were encountered in mutant retinas (
+    Figure 9B and data not shown)
+  depends_on:
+  - fig9a-response-variety
+  criterion: The stimulus is from the Figure 9B legend, a grating moving in 8 directions
+    (wavelength 664 um, speed 664 um/s), with the average firing rate per direction. The paper
+    defines no direction selectivity index and no threshold. Readings are (a) the vector-sum
+    index |sum r e^(i theta)| / sum r above 0.3; (b) (preferred minus opposite) / (preferred
+    plus opposite) above 0.5; in each also requiring the index to exceed the 95th percentile
+    of 1000 shuffles of the direction labels over trials. ON and ON-OFF are taken from the
+    flash readings of fig9a-response-variety. The Results also name moving bars ("moving bars
+    and gratings", with "data not shown"), whose parameters are not given; mutant moving-bar
+    recordings are analysed the same way, per direction. Reproduced when, under every reading,
+    at least one mutant ON cell and one mutant ON-OFF cell are direction selective. Blocked
+    when the data set holds no moving-grating or moving-bar recordings from mutant retinas.
+- id: s3-receptive-field-surrounds
+  statement: Some control and mutant RGCs have receptive field surrounds of opposite sign to the
+    centre, so lateral inhibition functions in mutant circuits.
+  source: Results, Functional visual circuits form in the absence of Pcdh- γ s, paragraph 3;
+    Supplementary Figure 3 (not read)
+  quote: Some control and mutant RGCs had receptive field surrounds, where light has the opposite
+    effect of the center
+  depends_on:
+  - fig9d-rf-size-similar
+  criterion: The supplementary figure was not available and the text gives no measure. Read
+    from the spatial profile b(x) of fig9d-rf-size-similar, a surround is a lobe of b(x) of sign
+    opposite to the centre peak on both flanks, with readings for its size of (a) any minimum
+    beyond 10% of the centre peak; (b) beyond 20%. Reproduced when, under every reading, at
+    least one mutant and one control cell have a surround.
+- id: fig9d-rf-size-similar
+  statement: Receptive field centre size varies greatly among RGCs, but its distribution is
+    similar in control and mutant retinas.
+  source: Results, Functional visual circuits form in the absence of Pcdh- γ s, paragraph 4;
+    Figure 9D
+  quote: The size of the receptive field center varied greatly among RGCs, but the distribution
+    was similar in control and mutant retinas ( Figure 9D )
+  criterion: A claim of absence. Methods, Electrophysiology, Eqns 1 and 2, and Figure 9D
+    legend. The spike-triggered average of the flickering-bar stimulus, intensity with its time
+    average subtracted, over all spikes of the cell; its length in time is not given, and a
+    window of 0.5 s (30 frames) before each spike is used as a standard choice that holds the
+    response. The separation h(x, t) = b(x) a(t) is not specified; readings are (i) the
+    leading singular vectors of h, (ii) b(x) as h at the time of its largest absolute value and
+    a(t) as h at the bar of its largest absolute value. Centre size is the full width at half
+    maximum of |b(x)| around its peak, in um from the bar width (8.3 or 16.6 um) of each
+    recording, with linear interpolation between bars as a standard choice. Reproduced when the
+    95% bands of the two cumulative histograms overlap under every combination of the CI
+    readings (header) and the separation readings; not reproduced when they separate under
+    all; blocked as methods_underspecified otherwise. The medians and a Kolmogorov-Smirnov test
+    are shown as a variant.
+- id: fig9e-slower-time-course
+  statement: The time course of the light response is significantly slower in mutant retina,
+    measured as the time to peak of the temporal integration function a(t).
+  source: Results, Functional visual circuits form in the absence of Pcdh- γ s, paragraph 4;
+    Figure 9E
+  quote: On the other hand, the time course of the light response was significantly slower in
+    mutant retina ( Figure 9E )
+  depends_on:
+  - fig9d-rf-size-similar
+  criterion: The paper names no test; the Figure 9E legend gives the measure, the time to peak
+    of a(t) from Eqn 2, and 95% confidence bands. a(t) as in fig9d-rf-size-similar (both
+    separation readings); the peak is the extremum of largest absolute value, so that OFF cells
+    are timed at their trough. Its time is read (a) at the 16.6 ms frame resolution, (b) with
+    parabolic interpolation over the three frames around the extremum. Reproduced when, under
+    every combination of the CI, separation and peak readings, the mutant curve lies at longer
+    times and the bands separate; not reproduced when the bands overlap under all; blocked as
+    methods_underspecified otherwise. Group medians and a Kolmogorov-Smirnov test are reported.
+- id: fig9f-lower-firing-rate
+  statement: Mutant RGCs fire at much lower rates than control RGCs in response to flickering
+    gratings.
+  source: Results, Functional visual circuits form in the absence of Pcdh- γ s, paragraph 4;
+    Figure 9F
+  quote: Moreover, mutant RGCs fired at much lower rates in reponse to flicker stimuli ( Figure
+    9F )
+  criterion: Figure 9F legend, the average firing rate observed during stimulation with
+    flickering gratings, per cell as its spike count over the duration of the flicker stimulus.
+    Reproduced when the mutant curve lies at lower rates and the 95% bands separate under every
+    CI reading (header); not reproduced when they overlap under all; blocked as
+    methods_underspecified otherwise. Group medians and their ratio are reported.
+- id: fig9g-threshold-unaltered
+  statement: In a Linear-Nonlinear model fitted to the flicker responses, the response threshold
+    of mutant RGCs is unaltered.
+  source: Results, Functional visual circuits form in the absence of Pcdh- γ s, paragraph 4;
+    Figure 9G
+  quote: Based on fitting with a Linear-Nonlinear model ... we found that the threshold is
+    unaltered, but the gain is reduced in mutants ( Figures 9G-H )
+  depends_on:
+  - fig9d-rf-size-similar
+  criterion: A claim of absence. Methods, Eqn 3, the generator y(t) is the stimulus filtered by
+    the cell's spike-triggered average h(x, t) (Eqn 1), summed over bars and scaled by Z to unit
+    variance; the rate is N(y) = B for y below theta and B + G y above. The fitting procedure
+    is not given; readings are (a) least squares of the model against the firing rate in bins
+    of one stimulus frame (16.6 ms); (b) least squares against the mean rate in bins of y
+    (the empirical nonlinearity of Chichilnisky 2001), with 20 bins of equal count as a
+    standard choice. The printed form B + G y is discontinuous at theta unless B is adjusted;
+    the continuous form B + G (y - theta) is a second reading of the nonlinearity. The filter
+    and the fit use the same data, as the Methods describe no split. Judged on the paper's
+    comparison, the overlap of the 95% bands of the cumulative histograms of theta. Reproduced
+    when they overlap under every combination of the CI, fit and form readings; not
+    reproduced when they separate under all; blocked as methods_underspecified otherwise.
+    Medians and a Kolmogorov-Smirnov test are shown as a variant.
+- id: fig9h-gain-reduced
+  statement: In the same Linear-Nonlinear model, the gain of mutant RGCs is reduced.
+  source: Results, Functional visual circuits form in the absence of Pcdh- γ s, paragraph 4;
+    Figure 9H
+  quote: we found that the threshold is unaltered, but the gain is reduced in mutants ( Figures
+    9G-H )
+  depends_on:
+  - fig9g-threshold-unaltered
+  criterion: G from the fits of fig9g-threshold-unaltered, under the same readings. Reproduced
+    when, under every combination of the CI, fit and form readings, the mutant curve lies at
+    lower gains and the 95% bands separate; not reproduced when they overlap under all;
+    blocked as methods_underspecified otherwise. Group medians are reported.
+checks:
+- date: 2026-10-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - header, the line saying the supplement holds figures only and no methods is unsupported, as its legends were not read; now says they may hold method details.
+  - fig5-increased-apoptosis, the criterion quoted the Figure 5 legend as "NBL"; the legend prints "NBL/IPL", now quoted as printed.
+  - fig6f-amacrine-loss-central, p < 0.0001 was not the paper's for this bar, since the legend defines three marks and the text does not say which this bar carries; now p < 0.05, the weakest mark, with a note under about.
+  - fig6f-amacrine-loss-central, the criterion now names the tests (Figure 6F legend, Methods) and says that the paper names no test for central against peripheral, which is left open.
+  - fig6f-amacrine-loss-central and fig6f-neighbours, expected written as a list like the other claims.
+  - fig9a-response-variety, the statement covers mutant and control retinas ("similar variety") but the criterion tested only the mutant group; it now requires both groups to hold every class.
+  - fig9b-direction-selective, the Results name moving bars as well as gratings for the direction-selective cells, so moving-bar recordings are now included and the claim is blocked only when neither is present.
+  - open, the supplement (Supplementary Figures 1 to 3 and their legends) is not in the text; the test of fig8el-synapse-density and the measure of s3-receptive-field-surrounds may be given there.
+  - open, the paper gives no class cut-offs (fig9a), direction selectivity index (fig9b), surround measure (s3), flash response test or intensities (fig9-rod-cone), construction of the 95% bands (fig9c to fig9h) or LN fitting procedure (fig9g, fig9h); the readings named in the criteria are the file's, chosen because the paper fixes none, and outcomes are blocked when they disagree.
+  - open, the Results name the mutant allele fcon3 and the Figure 9 legend names f-del; the paper does not settle which.
+  - open, fig5-postnatal-onset requires the reductions "do not grow" after P14, from "changed little"; the paper gives no test for this.
