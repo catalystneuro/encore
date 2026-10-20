@@ -347,8 +347,9 @@ def bar_recordings(retina: dict, reading: str) -> list[dict]:
     """The flickering-bar recordings of 8.3 or 16.6 um used for a retina under a reading.
 
     A: the first vertical-bar recording; B: all vertical-bar recordings, pooled; C: the
-    horizontal-bar recording where there is one, otherwise as A. The readings are this attempt's
-    (questions/crcns-ret-1.yaml); the claims file names the bar widths only.
+    horizontal-bar recording where there is one, otherwise as A. The readings are those of the
+    criterion of fig9d-rf-size-similar, added after questions/crcns-ret-1.yaml was answered; under
+    B the spikes and frames of the recordings are pooled.
     """
     ok = [r for r in retina["recordings"] if kind(r) != "checker" and round(bar_width_um(r), 1) in (8.3, 16.6)]
     vb = [r for r in ok if kind(r) == "vbars"]
