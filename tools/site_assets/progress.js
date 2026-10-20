@@ -1,4 +1,4 @@
-// The overview's dashboard: totals for the chosen dandisets, a running total of one measure, and the outcomes
+// The overview's dashboard: totals for the chosen datasets, a running total of one measure, and the outcomes
 // of the claims tested each day. Drawn from the JSON in #progress-data, at the width of its panel.
 (function () {
   var node = document.getElementById("progress-data");
@@ -13,7 +13,7 @@
       return row;
     });
   });
-  var state = { subset: "all", metric: "dandisets" };
+  var state = { subset: "all", metric: "datasets" };
   var root = document.querySelector(".progress");
   var line = document.getElementById("progress-line"), cols = document.getElementById("progress-outcomes");
   var outcomeKeys = Object.keys(P.outcomes);

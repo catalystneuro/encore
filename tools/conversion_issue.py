@@ -34,7 +34,7 @@ def issue(dandiset: str) -> str:
                       for i, f in enumerate(findings, 1))
     return f"""Problems found in DANDI:{dandiset} by a reproduction attempt
 
-An agent attempt to reproduce the paper from the published dandiset ([DANDI:{dandiset}]({dandi}), version {version}) recorded {len(findings)} findings about the data. The details are in the reproduction registry ([findings]({SITE}/dandisets/{dandiset}/#findings), [attempt record]({REPO}/blob/main/attempts/{record['id']}.yaml), [notebook]({REPO}/tree/main/entries/{entry_dir.name})). The attempt was made and checked by AI agents, so each finding needs confirming against the source data before anything is changed.
+An agent attempt to reproduce the paper from the published dandiset ([DANDI:{dandiset}]({dandi}), version {version}) recorded {len(findings)} findings about the data. The details are in the reproduction registry ([findings]({SITE}/datasets/dandi/{dandiset}/#findings), [attempt record]({REPO}/blob/main/attempts/{record['id']}.yaml), [notebook]({REPO}/tree/main/entries/{entry_dir.name})). The attempt was made and checked by AI agents, so each finding needs confirming against the source data before anything is changed.
 
 For each finding, the person who converted the data notes whether it holds, and if it does, where it comes from: the conversion code, information the source has that the conversion dropped, or something the source data does not contain.
 
