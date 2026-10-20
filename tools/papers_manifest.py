@@ -24,7 +24,8 @@ def clean_doi(doi: str) -> str:
     doi = re.sub(r"^(https?://(dx\.)?doi\.org/|doi:)", "", doi.strip().lower())
     doi = re.sub(r"[?#].*$", "", doi)
     doi = re.sub(r"\.(full|short|abstract)$", "", doi).rstrip(".)")
-    doi = re.sub(r"(elife\.[0-9]+)\.[0-9]{3}$", r"\1", doi)
+    # eLife: a figure's DOI (.001) or a reviewed preprint's version (.1, .2) names the article.
+    doi = re.sub(r"(elife\.[0-9]+)\.[0-9]{1,3}$", r"\1", doi)
     return re.sub(r"(10\.(1101|64898)/[0-9.]+)v[0-9]+$", r"\1", doi)
 
 
