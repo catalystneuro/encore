@@ -9,7 +9,7 @@ grating experiments of Figure 9A to 9C are not in it.
 | Claim | Outcome |
 |---|---|
 | Figure 9 counts, 115 mutant and 143 control cells | Not reproduced (200 and 122) |
-| Receptive field centre size similar in mutant and control | Not reproduced (mutant smaller) |
+| Receptive field centre size similar in mutant and control | Blocked: methods underspecified (17 of 18 readings separate, mutant smaller) |
 | Some mutant and control cells have surrounds | Reproduced by the criterion, which noise also meets |
 | Slower time course in mutants | Reproduced |
 | Lower firing rate in mutants | Reproduced |
@@ -23,11 +23,12 @@ reasoning and the differences from the paper's method.
 
 The data set's unit counts and control genotypes differ from the paper's, many mutant units have
 weak or no receptive fields, the spike trains of four retinas hold a misplaced last minute, and
-the bar stimulus of one retina cannot be rebuilt from its description. The attempt record, with
+the frame length stated for the bar stimulus of two retinas is wrong (the notebook rebuilds it with
+the frame of the other recordings). The attempt record, with
 the reasons and the differences from the paper's method, is
 [`attempts/crcns-ret-1-lefebvre-2008-01.yaml`](../../attempts/crcns-ret-1-lefebvre-2008-01.yaml).
 
-- `reproduce_lefebvre_2008.ipynb`: the analysis. It takes about five minutes, streaming the
+- `reproduce_lefebvre_2008.ipynb`: the analysis. It takes about eight minutes, streaming the
   data set's zip from the CRCNS S3 bucket.
 - `ret1.py`: loading the zip in place, rebuilding the white-noise stimulus from `ran1.bin`, and
   the spike-triggered average, its separation, the LN fit and the 95% bands of the cumulative

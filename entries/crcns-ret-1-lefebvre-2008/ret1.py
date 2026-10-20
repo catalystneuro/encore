@@ -37,7 +37,8 @@ Where the parameters come from:
   y = stimulus filtered by h, scaled to unit variance; N(y) = B below theta and B + G y
   ("printed") or B + G (y - theta) ("continuous") above; least squares against the rate in bins of
   one frame ("frame") or against the mean rate in 20 bins of y of equal count ("binned"). Theta is
-  searched on a grid of quantiles of y (a standard choice of resolution).
+  searched on a grid of quantiles of y (a standard choice of resolution); a fit whose theta is
+  the first or last value of its grid is flagged (`theta_edge_*`).
 - The 95% bands of the cumulative histograms have the three readings of the claims file's header:
   "binomial" (pointwise, normal approximation), "dkw" (Dvoretzky-Kiefer-Wolfowitz) and
   "bootstrap" (pointwise percentile bootstrap over cells, 1000 resamples, a standard number).
@@ -198,6 +199,23 @@ def counts(rec: dict) -> np.ndarray:
     return np.stack([np.histogram(t, edges)[0] for t in rec["spikes"]], axis=1).astype(np.float32)
 
 
+def wide_sta(S: np.ndarray, C: np.ndarray, lags: np.ndarray) -> np.ndarray:
+    """STA at any lags, negative ones included (spikes before the stimulus), cells by tiles by lags.
+
+    Used to search the alignment of a recording: moving the stimulus onset by k frames moves the
+    STA's window of lags by k. Unlike `sta`, no spikes are left out at the edges.
+    """
+    S = S - S.mean(axis=1, keepdims=True)
+    N = S.shape[1]
+    h = np.zeros((C.shape[1], S.shape[0], len(lags)), dtype=np.float32)
+    for i, j in enumerate(lags):
+        if j >= 0:
+            h[:, :, i] = (S[:, : N - j] @ C[j:]).T
+        else:
+            h[:, :, i] = (S[:, -j:] @ C[: N + j]).T
+    return h / np.maximum(C.sum(axis=0), 1)[:, None, None]
+
+
 def sta(S: np.ndarray, C: np.ndarray, nlag: int = STA_FRAMES) -> tuple[np.ndarray, np.ndarray]:
     """Spike-triggered averages, cells by tiles by lags, and the spikes used per cell.
 
@@ -298,7 +316,7 @@ def fit_ln(y: np.ndarray, rate: np.ndarray, fit: str, form: str) -> dict:
     y, r = y[ok], rate[ok]
     sd = y.std()
     if not np.isfinite(sd) or sd == 0:
-        return {"B": np.nan, "G": np.nan, "theta": np.nan, "sse": np.nan}
+        return {"B": np.nan, "G": np.nan, "theta": np.nan, "sse": np.nan, "edge": False}
     y = y / sd
     order = np.argsort(y, kind="stable")
     y, r = y[order], r[order].astype(float)
@@ -335,7 +353,8 @@ def fit_ln(y: np.ndarray, rate: np.ndarray, fit: str, form: str) -> dict:
     sse = Srr - B * Sr - G * Sgr
     sse = np.where(np.abs(det) > 1e-12 * max(1.0, n * n), sse, np.inf)
     i = int(np.argmin(sse))
-    return {"B": float(B[i]), "G": float(G[i]), "theta": float(grid[i]), "sse": float(sse[i])}
+    return {"B": float(B[i]), "G": float(G[i]), "theta": float(grid[i]), "sse": float(sse[i]),
+            "edge": bool(i == 0 or i == len(grid) - 1)}
 
 
 # --- recordings and per-cell measures --------------------------------------------
@@ -436,8 +455,9 @@ def measure_retina(retina: dict, recs: list[dict], bits: np.ndarray, ln: bool = 
             r = np.concatenate([C[:, c] / rec["frame"] for (_, C), rec in zip(data, recs)])
             for fit in ("frame", "binned"):
                 for form in ("printed", "continuous"):
-                    p = fit_ln(y, r, fit, form) if n[c] else {"B": np.nan, "G": np.nan, "theta": np.nan}
+                    p = fit_ln(y, r, fit, form) if n[c] else {"B": np.nan, "G": np.nan, "theta": np.nan, "edge": False}
                     d[f"theta_{fit}_{form}"] = p["theta"]
+                    d[f"theta_edge_{fit}_{form}"] = p["edge"]
                     d[f"gain_{fit}_{form}"] = p["G"]
                     d[f"base_{fit}_{form}"] = p["B"]
         out.append(d)
