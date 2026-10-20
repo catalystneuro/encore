@@ -1,126 +1,712 @@
-# Claims for Girardeau, Inema & Buzsaki (2017) on dandiset 000061.
-# Source: the abstract only (PubMed 28892057). The article is not open access: it is not in
-# PubMed Central, Europe PMC lists no full text, and the HAL record (hal-03963137) holds metadata
-# only. So every claim is at the level of a sentence of the abstract, no claim has a reported
-# number, and every method choice below is fixed here, as a common choice, before the analysis.
-# Quotes from the abstract added 2026-10-19 where it states the finding; the rest are marked
-# inferred (no open full text).
+# Claims for Girardeau, Inema & Buzsaki (2017), Nat. Neurosci. 20, 1634-1642, on dandiset 000061.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20, protocol
+# pilot-10 as stated in docs/protocol.md (Reader, steps 1 to 4). The reader did not look at the
+# dandiset's data or files; only its archive title and description, which name this paper.
 #
-# When these criteria were written, the author had seen the data check only: the file list, the
-# metadata, the units' location labels and counts per session, which files lack units, sleep
-# states or ripple events, the epoch tables, and the reward and air-puff events, including the
-# laps built from alternating rewards, which direction holds the puffs, and the median lap
-# durations per direction in the pre-run, run and post-run epochs. No reactivation, ripple
-# modulation or pattern weight had been computed.
+# Why this file was rewritten. The earlier file was written from the abstract alone (the full text
+# was not open then) and its methods were fixed by an agent. Read against the full text and the
+# supplement on 2026-10-20, two of its claims were tested with measures the paper does not use:
+# aversive-direction-stronger (the paper compares peri-ripple reactivation strength R of a run
+# correlation template, Fig. 6b, not singular-vector patterns over all sleep bins) and
+# reactivation-involves-ripple-up-cells (the paper compares post-NREM minus pre-NREM pair
+# correlations across nine pair groups with a one-way ANOVA, Fig. 5a, not BLA pattern weights). The
+# other claims of that file also used agent-chosen methods (SVD patterns, shuffled ripple windows)
+# in place of the paper's EV/REV, Poisson ripple-modulation test and reactivation strength R, and
+# many findings had no claim. Every criterion is now taken from the Online Methods, the legends,
+# the supplement and the paper's code. Ids are kept where the finding is the same:
+# hpc-bla-reactivation-post-sleep (EV against REV, Fig. 3c), reactivation-peaks-at-ripples
+# (Supplementary Fig. 11a), bla-ripple-up-subgroup (Fig. 4), reactivation-involves-ripple-up-cells
+# (Fig. 5a), aversive-direction-stronger (Fig. 6b) and rats-learn-puff-location (Fig. 1b). The
+# other 25 claims are new.
 #
-# Method choices fixed here (the Methods were not available):
-# - Units. Hippocampus is the label `hpc` or `HIP`; BLA is the label `bla` or `BLA` (case is
-#   ignored). A session is used when it has sleep states, ripple events, a sleep epoch before and
-#   one after the run, and at least 5 hippocampal and 5 BLA units that fire at 0.1 Hz or more in
-#   the run epoch. Units are not matched across sessions.
-# - Sleep. Pre-sleep and post-sleep are the epochs tagged presleep and postsleep (or the sleep
-#   epochs before and after the first run, where tags are only "sleep"), restricted to the
-#   Non-REM intervals of the states table.
-# - Patterns. Spike counts in 50 ms bins, z-scored per unit within the epoch. The template is the
-#   hippocampus by BLA cross-correlation matrix of the run epoch; its singular vectors (u for
-#   hippocampus, v for BLA) are the joint patterns. A pattern is significant when its singular
-#   value exceeds the 95th percentile of the largest singular value over 200 surrogates in which
-#   each BLA unit's binned train is circularly shifted by a random offset.
-# - Reactivation strength in a sleep bin is (z_hpc . u)(z_bla . v), with z-scores taken over the
-#   Non-REM bins of that sleep epoch.
-# - Ripples are the start, peak and stop times of the `rip` annotations.
-# - Laps run from a reward at one end of the track to the next reward at the other end. The
-#   air-puff direction of a session is the direction of the laps that hold most of its puffs.
-# Quotes and statistics added 2026-10-20 from the full text (PDF of the version of record, with
-# its Online Methods, and its supplement).
+# Text read. The version of record (PDF supplied by a person, text extracted 2026-10-20), with the
+# main text, figure legends, Online Methods, Life Sciences Reporting Summary, and the
+# Supplementary Information PDF (41593_2017_BFnn4637_MOESM1_ESM.pdf; Supplementary Figs. 1 to 11
+# and Supplementary Tables 1 and 2). Supplementary Table 1 is an image whose numbers the text
+# does not carry.
+#
+# Code read. The code the paper links (Code availability), github.com/buzsakilab/papers, folder
+# GGirardeau-BLAHpcInteractions-Package, commit cdcec89f8d1f5cf11f407f82827f9af44405c5b7: Matlab
+# scripts for behavior (BehavioralMeasures, ClassifyLaps, LapType, Performance,
+# AirpuffPositionDistribution), cell classification (MonoSynConvClick, CellClassifkmeans,
+# FinalType), physiology (PoissonRippleMod, PoissonRippleModPercent, StatesFiringRates,
+# AllRippleCCGs_2, RippleMod_PrePost, RippleRatePrePost, AirpuffRewardMod_Structures_2) and
+# reactivations (ExplainedVariance_Ultimate, ExplainedVarianceMean_Ultimate,
+# ExplainedVariance_PrePostCorr_Ultimate, ExplainedVariance_PooledCorr,
+# ExplainedVariance_PooledCorr_Groups, ReplayInTime, ReplayInTime_LapTypes and their _All and
+# _Plot scripts). They call FMAToolbox (fmatoolbox.sourceforge.net, read at
+# github.com/michael-zugaro/FMAToolbox commit 6bbb3662f7ed1ccf09c5ff4b4d233e27e17c71a6 for
+# SyncHist) and a poissonTest function that is not in the repository.
+#
+# The data the paper used. Four male Long-Evans rats (rats 1 to 4), 61 sessions, 7,390 units.
+# Silicon probes in both amygdalae (two 8-shank probes, lowered 140 um after each session) and in
+# dorsal CA1 (one 4-shank probe); the hippocampal probe of one rat (rat 2) failed, so
+# hippocampus-BLA analyses use 3 rats (29 sessions with simultaneous BLA and hippocampus units).
+# Each daily session is pre-sleep, pre-run (track, no air puff), run (training; air puff at one
+# location in one running direction, location changed daily, water rewards at both ends),
+# post-sleep, post-run (no air puff). Measured variables used here: sorted spike times with unit
+# location (BLA, central nuclei, piriform cortex, hippocampus, from histology maps) and putative
+# type (pyramidal or interneuron); the epochs; scored brain states (wake, NREM, REM); hippocampal
+# ripple events (start, peak, stop); head position on the track; air puff times and locations, and
+# the previous day's air puff location and direction (for the danger zones); reward times. 55
+# sessions in 4 rats enter the behavioral analysis. Data were to be deposited at CRCNS; the
+# dandiset is described as this paper's data.
+#
+# Methods shared by the criteria (each from the paper or its code, as cited):
+# M1 Units. Hippocampal units are those on hippocampal CA1 shanks; BLA units those the paper's
+#   histology maps place in the BLA (Online Methods, Histology; Supplementary Fig. 2). Putative
+#   pyramidal cells and interneurons are the paper's types (monosynaptic identification, then
+#   k-means on spike width and peak-to-trough for the rest; Online Methods, Preprocessing;
+#   FinalType.m, type 1 pyramidal, type 2 interneuron). "Pyramidal pairs" means both cells
+#   pyramidal.
+# M2 Epochs. Pre-sleep and post-sleep are the sleep epochs before and after the run (training)
+#   epoch; pre-NREM and post-NREM are the scored NREM intervals inside them; the template epoch
+#   is the whole run epoch, including reward platforms (Supplementary Fig. 11a legend;
+#   ExplainedVariance_Ultimate.m and ReplayInTime.m use the second run interval whole).
+# M3 Binning. Spike counts in 50-ms bins (Online Methods), spikes after the end of the last run
+#   epoch dropped (ReplayInTime.m).
+# M4 EV and REV. For each hippocampus-BLA pair, the Pearson correlation of binned counts in the
+#   pre-NREM bins, the run bins and the post-NREM bins; the three pair-correlation matrices are
+#   correlated with one another over pairs, pairs with an undefined correlation left out
+#   (corrcoef with 'rows','complete'), giving r(run,post), r(run,pre), r(pre,post).
+#   EV = ((r(run,post) - r(run,pre) r(pre,post)) / sqrt((1 - r(run,pre)^2)(1 - r(pre,post)^2)))^2,
+#   REV the same with pre and post swapped (Online Methods; ExplainedVariance_Ultimate.m). Shown
+#   as percent. A session enters when it has at least 6 hippocampal and 6 BLA cells of the cell
+#   type used (Online Methods says "a minimum of 1 shank and 6 cells in each structure";
+#   ExplainedVarianceMean_Ultimate.m tests more than 5 cells in each structure).
+#   For REM, sessions need more than 3 min (180 s) of REM in both pre- and post-sleep.
+# M5 Ripples. The paper's ripple events (detection in Online Methods), kept when inside NREM.
+# M6 Ripple modulation of a unit (Online Methods; PoissonRippleMod.m; ExplainedVariance_Ultimate.m).
+#   Over all NREM of the session: baseline is NREM minus every ripple widened by 100 ms on each
+#   side; the unit's spike count inside ripples (start to stop) is compared with a Poisson
+#   distribution of mean (baseline rate x total ripple time). Upmodulated when the upper tail
+#   probability is below 0.0005, downmodulated when the lower tail probability is below 0.0005
+#   (the code's 0.001/2, the Methods' "P < 0.001"); units with no spike in ripples or in baseline
+#   are untested. Otherwise not modulated.
+# M7 Reactivation strength R (Online Methods; Supplementary Fig. 10; ReplayInTime.m,
+#   ReplayInTime_LapTypes.m). Binned counts of the pyramidal cells (or all cells, where stated)
+#   are z-scored per cell within the template bins, and within the NREM bins of each sleep epoch.
+#   Template C = Z_hpc' Z_bla / nBins over the template bins. R(t) = z_hpc(t) C z_bla(t)' for each
+#   NREM bin t of pre- and post-sleep; R is z-scored over the NREM bins of each epoch. Around each
+#   ripple peak of that epoch's NREM, R is averaged in 100 bins of 40 ms over -2 to +2 s
+#   (FMAToolbox SyncHist, mode mean, its default 100 bins) with Gaussian smoothing of SD 2 bins
+#   ('smooth', 2), giving one peri-ripple curve per session and epoch. The ripple-peak value of a
+#   session is the mean of that curve over bin centres strictly between -0.25 and +0.25 s (12
+#   bins; ReplayInTime_All.m). A session enters with at least 6 hippocampal and 6 BLA cells of
+#   the type used (ReplayInTime_All.m, ReplayInTime_LapTypes_All.m).
+# M8 Air puff and safe laps (ClassifyLaps.m, LapType.m). In the run epoch, laps are the intervals
+#   during which position stays inside a 150-cm window of the track; a lap goes left to right or
+#   right to left when its end lies more than 10 cm from its start in that direction. Air puff
+#   laps are those in the air puff direction of the day, safe laps the others.
+#
+# Details the paper and its code leave open, with the readings the text allows (each criterion
+# that uses one says so; the notebook runs every reading):
+# O1 The 150-cm lap window of M8 starts at a left limit picked by hand on a plot (ClassifyLaps.m).
+#   Readings (a) lap intervals the dataset holds, if any; (b) the M8 rule with the window's left
+#   edge at the smallest run-epoch position; (c) laps as the intervals between consecutive
+#   rewards at opposite ends of the track.
+# O2 poissonTest (M6) is not in the repository. Readings (a) upper tail P(X >= n) and lower tail
+#   P(X <= n); (b) upper tail P(X > n) and lower tail P(X < n).
+# O3 Bin time stamps (bin start or centre) when aligning R to ripple peaks. A standard choice (bin
+#   centre); it cannot change an outcome at 40-ms resolution.
+# O4 Fig. 2c uses monosynaptically identified pyramidal cells and interneurons (675 and 175). If
+#   the dataset does not mark which cells were identified monosynaptically, the readings are
+#   (a) the identified cells where marked; (b) all putative cells of each type.
+# O5 The family size of the Bonferroni corrections in Fig. 1b is not given. Readings (a) all post
+#   hoc tests of the panel (four for speeds, three for ratios); (b) uncorrected 0.05.
+# O6 The post hoc correction of Fig. 5a. The Online Methods say Bonferroni; the legend says
+#   Tukey-Kramer, as the code does (multcompare default, alpha 0.01). Main reading Bonferroni
+#   (Methods first, protocol step 2), variant Tukey-Kramer.
+# O7 How the BLA firing rate of safe and air puff trajectories is taken is not in the text or the
+#   code read. Readings (a) spike count over time on safe laps and on air puff laps of the run;
+#   (b) the mean of the cell's position firing-rate curve on each lap type.
 schema_version: 2
 dataset:
   archive: dandi
   id: "000061"
 paper: doi:10.1038/nn.4637
 claims:
+- id: unit-counts
+  statement: Over 61 sessions in 4 rats, 7,390 well-isolated units were recorded (rat 1, 2,444;
+    rat 2, 1,294; rat 3, 1,138; rat 4, 2,514), of which 2,038 were in the BLA, 782 in the central
+    nuclei, 1,560 in the piriform cortex and 1,210 in the hippocampus.
+  source: Results, BLA recordings and sleep physiology, paragraph 1; Supplementary Table 1
+  quote: Over the course of a total of 61 sessions, we recorded 7,390 well-isolated units (rat 1,
+    2,444; rat 2, 1,294; rat ... 3, 1,138; rat 4, 2,514). On the basis of histological
+    reconstruction of probe placement and probe movement record, 2,038 of these were in the BLA,
+    782 in the central nuclei, 1,560 in the piriform cortex and 1,210 in the hippocampus
+  expected:
+  - quantity: sessions
+    value: 61
+    tolerance: 6.1
+  - quantity: units, all rats
+    value: 7390
+    tolerance: 739
+  - quantity: units, rat 1
+    value: 2444
+    tolerance: 244.4
+  - quantity: units, rat 2
+    value: 1294
+    tolerance: 129.4
+  - quantity: units, rat 3
+    value: 1138
+    tolerance: 113.8
+  - quantity: units, rat 4
+    value: 2514
+    tolerance: 251.4
+  - quantity: BLA units
+    value: 2038
+    tolerance: 203.8
+  - quantity: central nuclei units
+    value: 782
+    tolerance: 78.2
+  - quantity: piriform cortex units
+    value: 1560
+    tolerance: 156
+  - quantity: hippocampal units
+    value: 1210
+    tolerance: 121
+  criterion: Counts of distinct sorted units and sessions, per rat and per location label (M1).
+    Reproduced when every count is within its tolerance; partially reproduced when the totals
+    are and some location counts are not.
+- id: rats-learn-puff-location
+  statement: Rats learned the daily location of the air puff. The speed ratio between the previous
+    and the current danger zone rises from pre-run to run and post-run, reversing between pre-run
+    and post-run.
+  source: Results, Rats learn the daily location of an aversive air puff on a linear track,
+    paragraph 1; Figure 1b, right; Supplementary Fig. 1b
+  quote: Therefore, the systematic reversal in the speed ratio (previous/current danger zone)
+    between pre- and ... post-run indicates learning of the new air puff location (Fig. 1b and
+    Supplementary Fig. 1b).
+  statistics:
+  - about: speed ratio over pre-run, run and post-run
+    test: one-way repeated measure ANOVA
+    statistic: F = 40.48, d.f. = 2
+    p: 1.31e-13
+    n: 55 sessions in 4 animals
+  - about: speed ratio, pre-run against run
+    test: post hoc t-test
+    statistic: t(51) = -8.49
+    p: 2.5e-11
+    corrected: Bonferroni (on the significance thresholds; the P shown is uncorrected)
+  - about: speed ratio, pre-run against post-run
+    test: post hoc t-test
+    statistic: t(51) = -5.08
+    p: 5.3e-6
+    corrected: Bonferroni (on the significance thresholds; the P shown is uncorrected)
+  - about: speed ratio, run against post-run
+    test: post hoc t-test
+    statistic: t(50) = 4.43
+    p: 5.1e-5
+    corrected: Bonferroni (on the significance thresholds; the P shown is uncorrected)
+  criterion: Per session and run epoch (pre-run, run, post-run), the mean speed in the current
+    danger zone (the 20 cm before the day's air puff location, on laps of the day's air puff
+    direction) and in the previous danger zone (the 20 cm before the previous day's location, on
+    laps of the previous day's direction); speed from positions smoothed over 5 samples
+    (LinearVelocity(pos,5)); ratio = (previous - current)/(previous + current) (Online Methods;
+    BehavioralMeasures.m). Laps per M8 under each reading of O1. Sessions with all three ratios
+    defined enter (the first session of a rat has no previous day). A one-way repeated-measures
+    ANOVA over the three epochs, then paired t-tests (BehavioralMeasures_Stats.m). Reproduced
+    when the ANOVA has p < 0.05 and the post-run ratio exceeds the pre-run ratio by paired t-test
+    at p < 0.05/3 (O5 reading a) or p < 0.05 (reading b); the run against pre-run and run against
+    post-run tests are reported.
+- id: dz-speed-slower-post-run
+  statement: Speed in the current danger zone is lower in post-run than in pre-run, and in run and
+    post-run rats run slower in the current than in the previous danger zone.
+  source: Results, Rats learn the daily location of an aversive air puff on a linear track,
+    paragraph 2; Figure 1b, left; Figure 1c
+  quote: This was quantitatively reflected by the significantly slower speed in the current
+    danger zone in post-run compared to pre-run (Fig. 1b,c).
+  statistics:
+  - about: speed over epochs (pre-run, run, post-run)
+    test: two-way repeated measures ANOVA, session effect
+    statistic: F = 41.51, d.f. = 2
+    p: 7.48e-14
+    n: 55 sessions in 4 animals
+  - about: speed, current against previous danger zone
+    test: two-way repeated measures ANOVA, air puff location effect
+    statistic: F = 11.81, d.f. = 1
+    p: 0.0012
+  - about: epoch by danger zone
+    test: two-way repeated measures ANOVA, interaction
+    statistic: F = 30.53, d.f. = 2
+    p: 4.46e-11
+  - about: previous against current danger zone speed, pre-run
+    test: post hoc paired t-test
+    statistic: t(52) = 3.45
+    p: 0.0011
+    corrected: Bonferroni
+  - about: previous against current danger zone speed, run
+    test: post hoc paired t-test
+    statistic: t(51) = -6.84
+    p: 9.70e-9
+    corrected: Bonferroni
+  - about: previous against current danger zone speed, post-run
+    test: post hoc paired t-test
+    statistic: t(51) = -3.10
+    p: 0.00307
+    corrected: Bonferroni
+  - about: current danger zone speed, pre-run against post-run
+    test: post hoc paired t-test
+    statistic: t(53) = 5.47
+    p: 1.21e-6
+    corrected: Bonferroni
+  depends_on:
+  - rats-learn-puff-location
+  criterion: The danger-zone speeds of rats-learn-puff-location. A two-way repeated-measures
+    ANOVA (epoch by danger zone) over sessions with all six speeds, then paired t-tests
+    (BehavioralMeasures_Stats.m). Reproduced when current-zone speed is lower in post-run than in
+    pre-run and current-zone speed is lower than previous-zone speed in run and in post-run, each
+    by paired t-test at p < 0.05/4 (O5 reading a) or p < 0.05 (reading b); partially reproduced
+    when the post-run against pre-run test holds and one of the other two does not.
+- id: puff-location-no-speed-bias
+  statement: The location of the air puff on the track does not correlate with the speed in the
+    current danger zone in pre-run, run or post-run.
+  source: Results, Rats learn the daily location of an aversive air puff on a linear track,
+    paragraph 2
+  quote: The location of the air puff on the track did not correlate with the speed in the
+    current danger zone in pre-run, training or post-run
+  depends_on:
+  - rats-learn-puff-location
+  criterion: A claim of absence. The text names no test; the code computes Pearson correlations
+    (corrcoef) across sessions between the air puff location normalised to the track (0 to 1,
+    flipped for right-to-left days so that 0 is the start of the air puff run) and the
+    current-zone speed of each epoch (AirpuffPositionDistribution_Plot.m). Reproduced when none of
+    the three correlations has p < 0.05; not reproduced when any does. The code's second measure,
+    the distance of the location from the track centre, is shown as a variant. r is reported.
+- id: habituation-over-days
+  statement: The aversive valence of the air puff diminishes over training days; rats run more laps
+    per unit time as they habituate.
+  source: Results, Rats learn the daily location of an aversive air puff on a linear track,
+    paragraph 2; Supplementary Fig. 1c
+  quote: The aversive valence of the air puff gradually diminished with training days
+    (Supplementary Fig. 1c).
+  criterion: Habituation index per training session = laps / time on the track x 100 (Online
+    Methods; Performance.m counts left-to-right laps over the run epoch duration). The laps
+    counted are open between the Methods ("back-and-forth laps"), the Supplementary Fig. 1c
+    legend ("airpuff laps") and the code (left-to-right laps); all three are run. The paper shows
+    the index per day for each rat and gives no test. Readings of "gradually diminished" (a) a
+    Spearman correlation between the training day rank within the rat and the index, sessions of
+    all rats pooled, positive with p < 0.05; (b) a positive Spearman correlation in at least 3 of
+    the 4 rats. Reproduced when the outcome holds under every reading; otherwise reported as
+    methods_underspecified with all results.
+- id: bla-pyr-sleep-firing-increase
+  statement: BLA pyramidal cells fire faster in REM sleep and, to a lesser extent, in NREM sleep
+    than in wakefulness.
+  source: Results, BLA recordings and sleep physiology, paragraph 1; Figure 2c
+  quote: we found a specific increase in the firing rate of BLA pyramidal cells, but not
+    interneurons, during REM sleep and, to a lesser extent, NREM sleep relative to wakefulness
+  statistics:
+  - about: NREM/wake firing rate ratio of BLA pyramidal cells
+    test: Wilcoxon signed rank test
+    statistic: z = 14.25
+    p: 4.07e-46
+    n: 675 monosynaptically identified pyramidal cells
+  - about: REM/wake firing rate ratio of BLA pyramidal cells
+    test: Wilcoxon signed rank test
+    statistic: z = 13.54
+    p: 8.0e-42
+    n: 675 monosynaptically identified pyramidal cells
+  criterion: Per BLA pyramidal cell, firing rates over all REM, all NREM and all wake intervals of
+    the session (StatesFiringRates.m); ratios (REM - wake)/(REM + wake) and (NREM - wake)/(NREM +
+    wake) (Online Methods). A two-sided Wilcoxon signed rank test of each ratio against 0. Cells
+    per O4. Reproduced when both ratios have a positive median with p < 0.05 and the REM median
+    exceeds the NREM median; partially reproduced when both are positive and significant but the
+    REM median does not exceed the NREM median.
+- id: bla-int-sleep-firing
+  statement: BLA interneurons do not change their firing rate between REM sleep and wake, and fire
+    slightly less in NREM sleep than in wake.
+  source: Figure 2c legend
+  quote: Interneurons do not change firing rates between REM and wake ... and slightly decrease
+    firing rates during NREM compared to wake
+  statistics:
+  - about: REM/wake firing rate ratio of BLA interneurons
+    test: Wilcoxon signed rank test
+    statistic: z = 1.25
+    p: 0.21
+    n: 175 monosynaptically identified interneurons
+  - about: NREM/wake firing rate ratio of BLA interneurons
+    test: Wilcoxon signed rank test
+    statistic: z = -6.00
+    p: 1.97e-9
+    n: 175 monosynaptically identified interneurons
+  criterion: As bla-pyr-sleep-firing-increase, for BLA interneurons (cells per O4). The REM part
+    is a claim of absence judged on the paper's test, a two-sided Wilcoxon signed rank test of the
+    REM/wake ratio against 0 at p < 0.05. Reproduced when that test does not reach p < 0.05 and
+    the NREM/wake ratio has a negative median with p < 0.05; partially reproduced when only one
+    of the two holds.
 - id: hpc-bla-reactivation-post-sleep
-  statement: Coordinated hippocampus and BLA activity patterns of the training run are
-    reactivated during non-REM sleep after training, more than during non-REM sleep before it.
-  source: Results, BLA–hippocampus coordinated reactivations during NREM sleep, paragraph 1;
-    Figure 3c
+  statement: Hippocampus-BLA pyramidal cell pair correlations of the run are reinstated in
+    post-sleep NREM, measured as explained variance (EV) exceeding the reverse explained variance
+    (REV) across sessions.
+  source: Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 1;
+    Figure 3a-c
   quote: The EV and REV, calculated using hippocampus–BLA pyramidal cell pairs, showed significant
     reactivations between the hippocampus and BLA during post-NREM (Fig. 3c).
   statistics:
-  - about: hippocampus–BLA pyramidal cell pairs, EV against REV in post-NREM
+  - about: EV against REV, NREM, pyramidal pairs
     test: Wilcoxon signed rank test
     statistic: z = 3.72
     p: 0.00019
     n: 25 sessions in 3 rats
-  - about: all hippocampus–BLA cell pairs (pyramidal cells and interneurons), EV against REV in NREM
-      (Supplementary Fig. 5a)
+  expected:
+  - quantity: mean EV - REV over sessions, hippocampus-BLA pyramidal pairs, NREM
+    value: 3.13
+    tolerance: 0.73
+    unit: percent
+  - quantity: sessions entering
+    value: 25
+    tolerance: 2.5
+  criterion: EV and REV per session (M4) over hippocampal and BLA pyramidal cells, NREM bins of
+    pre- and post-sleep (M2, M3). A two-sided Wilcoxon signed rank test of EV against REV across
+    sessions (Online Methods, Statistical analysis; ExplainedVarianceMean_Ultimate.m). Reproduced
+    when EV exceeds REV with p < 0.05 and the expected values hold (the mean EV - REV of 3.13 +-
+    0.73% s.e.m. is from Results, A subset of BLA cells, paragraph 1, Fig. 3d test); partially
+    reproduced when the test holds and an expected value does not.
+- id: reactivation-all-cell-pairs
+  statement: Hippocampus-BLA NREM reactivation holds when pyramidal cells and interneurons are both
+    included.
+  source: Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 1;
+    Supplementary Fig. 5a
+  quote: Reactivations were maintained when both pyramidal cells and interneurons were included in
+    the EV calculation (Supplementary Fig. 5).
+  statistics:
+  - about: EV against REV, NREM, all cell pairs
     test: Wilcoxon signed rank test
     statistic: z = 3.79
     p: 0.00014
     n: 27 sessions in 3 rats
-  criterion: For every significant joint pattern, the mean reactivation strength over post-sleep
-    Non-REM bins minus the mean over pre-sleep Non-REM bins. Reproduced when the median over
-    patterns of all sessions is above zero with a two-sided Wilcoxon signed-rank p < 0.05, and the
-    median is above zero in at least two of the three rats with usable sessions; partially
-    reproduced when the pooled test holds but the median is above zero in one rat only; not
-    reproduced otherwise. Shown as variants, which do not change the outcome, are bins of 25 and
-    100 ms, the wider BLA label set (bla, blv, bmp, ladl), and the first singular pattern of each
-    session regardless of significance.
-- id: reactivation-peaks-at-ripples
-  statement: The hippocampus and BLA reactivations peak during hippocampal sharp wave-ripples.
-  source: Supplementary Fig. 11a; Figure 6a; Results, The aversive trajectory is reactivated
-    during SPW-Rs, paragraph 1
-  quote: Mean z-scored peri-ripple reactivation strength of the whole training session ...
-    reactivation strength in a 500ms window around ripple peaks (grey bar in a) was significantly
-    higher in post-NREM compared to pre-NREM
+  - about: EV against REV over the first, second and third 20 min of NREM, all cell pairs
+    test: Wilcoxon signed rank tests
+    statistic: z = 3.91; z = 2.98; z = -0.71
+    p: 8.85e-5
+    n: 17 sessions in 3 rats
+  criterion: As hpc-bla-reactivation-post-sleep with all hippocampal and BLA units. Reproduced when
+    EV exceeds REV with two-sided Wilcoxon signed rank p < 0.05 across sessions. The 20-min
+    epochs are reported as in reactivation-decay.
+- id: reactivation-decay
+  statement: Hippocampus-BLA reactivation decays over the first hour of post-sleep NREM (mean EV -
+    REV 2.89, 1.72 and 1.31% in successive 20-min NREM periods).
+  source: Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 1;
+    Figure 3c, right
+  quote: The gradual decay in reactivations over the first hour of NREM sleep ... paralleled the
+    previously described decay for pairs of hippocampal neurons
   statistics:
-  - about: post-NREM against pre-NREM reactivation strength around ripple peaks, whole training
-      session, pyramidal cell pairs
-    test: Wilcoxon one-tailed signed rank test
-    statistic: z = -3.175
-    p: 7.49e-4
-    n: 25 sessions in 3 rats
-  - about: the same, all cell pairs
-    test: Wilcoxon one-tailed signed rank test
-    statistic: z = -2.895
-    p: 0.00189
-    n: 27 sessions in 3 rats
+  - about: EV - REV across the three 20-min NREM periods
+    test: Kruskal-Wallis test
+    statistic: chi2 = 8.53, d.f. = 2
+    p: 0.014
+    n: 19 sessions
+  - about: EV against REV, 0-20 min of post-NREM
+    test: Wilcoxon signed rank test
+    statistic: z = 0.38 (as printed)
+    p: 0.00013
+    n: 19 sessions in 3 rats
+  - about: EV against REV, 20-40 min
+    test: Wilcoxon signed rank test
+    statistic: z = 3.5
+    p: 0.00046
+    n: 19 sessions in 3 rats
+  - about: EV against REV, 40-60 min
+    test: Wilcoxon signed rank test
+    statistic: z = 2.15
+    p: 0.0312
+    n: 19 sessions in 3 rats
+  expected:
+  - quantity: mean EV - REV, 0-20 min of post-NREM
+    value: 2.89
+    tolerance: 0.47
+    unit: percent
+  - quantity: mean EV - REV, 20-40 min
+    value: 1.72
+    tolerance: 0.44
+    unit: percent
+  - quantity: mean EV - REV, 40-60 min
+    value: 1.31
+    tolerance: 0.60
+    unit: percent
+  - quantity: sessions with EV > REV in the first 20 min
+    value: 19
+    tolerance: 1.9
   depends_on:
   - hpc-bla-reactivation-post-sleep
-  criterion: Over post-sleep Non-REM ripples, the ripple-peak-triggered mean of each significant
-    pattern's reactivation strength from -1 to +1 s in 50 ms bins. "Peak during SPW-Rs" can be
-    read as (a) reactivation strength in post-sleep is highest at the ripple, or (b) the increase
-    from pre-sleep to post-sleep is larger at ripples than outside them. Under (a), reproduced
-    when the mean over patterns of the triggered curve has its maximum within 100 ms of the
-    ripple peak, and the per-pattern difference between the bin of the ripple peak and the mean
-    of the bins from 0.5 to 1 s on both sides is above zero (two-sided Wilcoxon signed-rank p <
-    0.05). Under (b), reproduced when the per-pattern post minus pre change of the mean strength
-    in bins that overlap a ripple exceeds the same change in Non-REM bins outside ripples
-    (two-sided Wilcoxon signed-rank p < 0.05, median above zero). The claim is reproduced when
-    either reading holds.
+  criterion: Pyramidal pairs, sessions of hpc-bla-reactivation-post-sleep. The post-NREM bins are
+    concatenated in time order and cut into the first 24,000 bins (20 min), the next 24,000, and
+    the next 24,000 or what remains when fewer; each period's EV and REV use the whole pre-NREM
+    and the run (ExplainedVariance_Ultimate.m). Only sessions with EV > REV in the first period
+    enter (Online Methods). A Kruskal-Wallis test of EV - REV across the three periods (Results)
+    and two-sided Wilcoxon signed rank tests of EV against REV in each period. Reproduced when the
+    Kruskal-Wallis p < 0.05 with the means falling from the first to the third period and the
+    expected values hold; partially reproduced when the means fall and the test or an expected
+    value fails.
+- id: no-rem-reactivation
+  statement: Hippocampus-BLA reactivations are not significant in REM sleep.
+  source: Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 2;
+    Figure 3c, left
+  quote: Reactivations during REM sleep ... were not significant in any structure
+  statistics:
+  - about: EV against REV, REM, pyramidal pairs
+    test: Wilcoxon signed rank test
+    statistic: z = 0.88
+    p: 0.377
+    n: 23 sessions in 3 rats
+  - about: EV against REV, REM, all cell pairs (Supplementary Fig. 5a)
+    test: Wilcoxon signed rank test
+    statistic: z = -0.71
+    p: 0.47583
+    n: 25 sessions in 3 rats
+  criterion: A claim of absence, judged on the paper's test. EV and REV (M4) from the REM bins of
+    pre- and post-sleep, sessions with more than 180 s of REM in each, pyramidal pairs; two-sided
+    Wilcoxon signed rank test of EV against REV. Reproduced when p >= 0.05, not reproduced when
+    p < 0.05; the median EV - REV is reported. All cell pairs shown as a variant.
+- id: piriform-weaker-reactivation
+  statement: Piriform cortex neurons show weaker reactivation with hippocampal CA1 neurons than BLA
+    neurons do, though still significant in NREM.
+  source: Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 2;
+    Figure 3d
+  quote: Neurons in the piriform cortex showed weaker experience-induced ... reactivation with
+    their CA1 partner neurons (Fig. 3d
+  statistics:
+  - about: EV - REV, hippocampus-BLA against hippocampus-piriform
+    test: Wilcoxon one-tailed rank sum test
+    statistic: z = 2.38
+    p: 0.0092
+    n: 25 hippocampus-BLA and 14 hippocampus-piriform sessions
+  - about: EV against REV, hippocampus-piriform, NREM, pyramidal pairs
+    test: Wilcoxon signed rank test
+    p: 0.0052
+    n: 17 sessions
+  expected:
+  - quantity: mean EV - REV, hippocampus-piriform
+    value: 0.85
+    tolerance: 0.34
+    unit: percent
+  depends_on:
+  - hpc-bla-reactivation-post-sleep
+  criterion: EV and REV (M4) for hippocampus-piriform pyramidal pairs, piriform units as the
+    paper's maps label them (M1). Reproduced when EV - REV of hippocampus-BLA sessions exceeds that
+    of hippocampus-piriform sessions by one-tailed Wilcoxon rank sum p < 0.05, the
+    hippocampus-piriform EV exceeds REV by two-sided signed rank p < 0.05, and the expected value
+    holds. Partially reproduced when the comparison holds and one of the others does not. The
+    paper gives 14 sessions for the comparison and 17 for Fig. 3d; both session sets are shown.
+- id: cen-no-reactivation
+  statement: There are no reactivations between the central amygdala nuclei and the hippocampus.
+  source: Results, BLA-hippocampus coordinated reactivations during NREM sleep, paragraph 2;
+    Figure 3e
+  quote: while there were no reactivations at all between the central nuclei and the hippocampus
+    (Fig. 3e)
+  statistics:
+  - about: EV against REV, NREM, all cell pairs
+    test: Wilcoxon signed rank test
+    statistic: z = 0.36
+    p: 0.717
+    n: 19 sessions in 3 rats
+  - about: EV against REV, REM, all cell pairs
+    test: Wilcoxon signed rank test
+    statistic: z = -0.40
+    p: 0.687
+    n: 19 sessions in 3 rats
+  criterion: A claim of absence, judged on the paper's test. EV and REV (M4) for all
+    hippocampus-central nuclei cell pairs; two-sided Wilcoxon signed rank of EV against REV in NREM
+    and in REM. Reproduced when neither has p < 0.05 with EV above REV; not reproduced when either
+    does. Medians reported.
+- id: intra-structure-reactivation
+  statement: Within the hippocampus and within the BLA, pair correlations are reactivated in NREM
+    but not in REM sleep.
+  source: Supplementary Fig. 4; Results, BLA-hippocampus coordinated reactivations during NREM
+    sleep, paragraph 1
+  quote: Intra-structure reactivations for hippocampus and BLA.
+  statistics:
+  - about: hippocampus, all pairs, NREM
+    test: Wilcoxon signed rank test
+    statistic: z = 3.95
+    p: 7.75e-5
+    n: 38 sessions in 3 rats
+  - about: hippocampus, pyramidal pairs, NREM
+    test: Wilcoxon signed rank test
+    statistic: z = 3.99
+    p: 6.45e-5
+    n: 38 sessions in 3 rats
+  - about: BLA, all pairs, NREM
+    test: Wilcoxon signed rank test
+    statistic: z = 2.74
+    p: 0.00606
+    n: 34 sessions in 4 rats
+  - about: BLA, pyramidal pairs, NREM
+    test: Wilcoxon signed rank test
+    statistic: z = 3.16
+    p: 0.00157
+    n: 32 sessions in 4 rats
+  - about: hippocampus, all pairs, REM
+    test: Wilcoxon signed rank test
+    statistic: z = 0.04
+    p: 0.965
+    n: 34 sessions in 3 rats
+  - about: hippocampus, pyramidal pairs, REM
+    test: Wilcoxon signed rank test
+    statistic: z = -0.67
+    p: 0.499
+    n: 34 sessions in 3 rats
+  - about: BLA, all pairs, REM
+    test: Wilcoxon signed rank test
+    statistic: z = 0.84
+    p: 0.39948
+    n: 28 sessions in 4 rats
+  - about: BLA, pyramidal pairs, REM
+    test: Wilcoxon signed rank test
+    statistic: z = 1.40
+    p: 0.158
+    n: 26 sessions in 4 rats
+  criterion: EV and REV (M4) over the distinct pairs within one structure (upper triangle of the
+    correlation matrix, ExplainedVariance_Ultimate_IntraStruct.m), for all cells and for pyramidal
+    cells, NREM and REM (REM sessions per M4). Two-sided Wilcoxon signed rank of EV against REV.
+    Reproduced when all four NREM tests have EV above REV at p < 0.05 and none of the four REM
+    tests reaches p < 0.05 (absence on the paper's test); partially reproduced when the NREM tests
+    hold and a REM test does not, or three of four NREM tests hold.
 - id: bla-ripple-up-subgroup
-  statement: A subgroup of BLA cells is positively modulated during hippocampal sharp
-    wave-ripples.
+  statement: A subset of BLA neurons is positively modulated during hippocampal SPW-Rs, 25.8% of
+    interneurons (42 of 163) and 11.1% of pyramidal cells (137 of 1,233).
   source: Results, A subset of BLA cells are modulated during hippocampal SPW-Rs, paragraph 1;
     Figure 4a
   quote: A fraction of BLA neurons were significantly and positively modulated (‘upmodulation’; 42
     of 163 interneurons (25.8%), 137 of 1,233 pyramidal cells (11.1%)) ... during hippocampal
     SPW-Rs (Fig. 4).
-  criterion: In sessions with ripple events, sleep states and BLA units (no minimum on units),
-    the spikes of each BLA unit in the windows (start to stop) of Non-REM ripples of pre- and
-    post-sleep, against 500 surrogates in which all windows are shifted together by a random
-    offset of 0.5 to 5 s, either sign. A unit is positively modulated when at most 1% of
-    surrogates reach its count (one-sided). The chance level is the fraction selected when the
-    real windows are replaced by the windows shifted by a fixed 7 s. Reproduced when the
-    fraction of positively modulated BLA units is above the chance level (one-sided binomial
-    test against it, p < 0.05), is below 1, and is above the chance level in at least two of the
-    three rats; partially reproduced when the pooled test holds but the fraction is above the
-    chance level in one rat only; not reproduced otherwise.
-- id: reactivation-involves-ripple-up-cells
-  statement: The hippocampus and BLA reactivations involve the subgroup of BLA cells that are
-    positively modulated during sharp wave-ripples.
+  expected:
+  - quantity: upmodulated BLA interneurons
+    value: 25.8
+    tolerance: 2.58
+    unit: percent
+  - quantity: upmodulated BLA pyramidal cells
+    value: 11.1
+    tolerance: 1.11
+    unit: percent
+  - quantity: BLA interneurons tested
+    value: 163
+    tolerance: 16.3
+  - quantity: BLA pyramidal cells tested
+    value: 1233
+    tolerance: 123.3
+  criterion: M6 for every BLA unit of the sessions with ripple events (29 sessions, 3 rats, Fig. 4a
+    legend), under both readings of O2; denominators are the BLA pyramidal cells and interneurons
+    of those sessions (PoissonRippleModPercent.m counts all typed BLA cells in the table). An
+    untested unit (no spikes in ripples or baseline) counts in the denominator as not modulated;
+    the fractions excluding untested units are shown as a variant. Reproduced when both fractions
+    are within tolerance; partially reproduced when both are above 0 and one is outside it.
+- id: bla-ripple-down-subgroup
+  statement: Another subset of BLA neurons is negatively modulated during hippocampal SPW-Rs, 14.7%
+    of interneurons (24 of 163) and 8.3% of pyramidal cells (102 of 1,233).
+  source: Results, A subset of BLA cells are modulated during hippocampal SPW-Rs, paragraph 1;
+    Figure 4a
+  quote: or negatively modulated (‘downmodulation’; 24 of 163 interneurons (14.7%), 102 of 1,233
+    pyramidal cells (8.3%)) during hippocampal SPW-Rs (Fig. 4)
+  expected:
+  - quantity: downmodulated BLA interneurons
+    value: 14.7
+    tolerance: 1.47
+    unit: percent
+  - quantity: downmodulated BLA pyramidal cells
+    value: 8.3
+    tolerance: 0.83
+    unit: percent
+  depends_on:
+  - bla-ripple-up-subgroup
+  criterion: As bla-ripple-up-subgroup, for the lower tail. Reproduced when both fractions are
+    within tolerance; partially reproduced when both are above 0 and one is outside it.
+- id: ripple-modulated-cells-larger-reactivation
+  statement: Reactivation (EV - REV) is larger for hippocampus-BLA pairs whose BLA cell is
+    ripple-modulated than for pairs with a non-modulated BLA cell.
+  source: Results, A subset of BLA cells are modulated during hippocampal SPW-Rs, paragraph 1;
+    Supplementary Fig. 5b
+  quote: Moreover, reactivations calculated using SPW-R-modulated BLA cells were larger than for
+    nonmodulated pairs (Supplementary Fig. 5b).
+  statistics:
+  - about: EV - REV, ripple-modulated against non-modulated BLA partners, all cells
+    test: Wilcoxon ranksum test
+    statistic: z = 2.71
+    p: 0.00662
+    n: 19 sessions in 3 rats
+  - about: EV - REV, ripple-modulated against non-modulated BLA partners, pyramidal pairs
+    test: Wilcoxon ranksum test
+    statistic: z = 2.57
+    p: 0.00992
+    n: 18 sessions in 3 rats
+  expected:
+  - quantity: mean EV - REV, ripple-modulated BLA partner, all cells
+    value: 6.07
+    tolerance: 1.3
+    unit: percent
+  - quantity: mean EV - REV, non-modulated BLA partner, all cells
+    value: 1.76
+    tolerance: 0.56
+    unit: percent
+  - quantity: mean EV - REV, ripple-modulated BLA partner, pyramidal pairs
+    value: 7.16
+    tolerance: 2.19
+    unit: percent
+  - quantity: mean EV - REV, non-modulated BLA partner, pyramidal pairs
+    value: 1.90
+    tolerance: 0.71
+    unit: percent
+  depends_on:
+  - bla-ripple-up-subgroup
+  - hpc-bla-reactivation-post-sleep
+  criterion: Per session, EV and REV (M4) computed twice, with the BLA cells that are up- or
+    downmodulated (M6) and with the non-modulated BLA cells; a session enters when it has more
+    than 5 hippocampal and more than 5 modulated BLA cells of the type used
+    (ExplainedVarianceMean_Ultimate.m). A two-sided Wilcoxon rank sum test on EV - REV of the two
+    sets, as the paper names it (Supplementary Fig. 5b legend); the signed rank test on the same
+    sessions is shown as a variant. Reproduced when, for all cells and for pyramidal pairs,
+    modulated exceeds non-modulated with p < 0.05; partially reproduced when one of the two holds.
+- id: run-correlated-pair-fractions
+  statement: During run, 6.69% of hippocampus-BLA pyramidal pairs (2,521 of 37,660) are
+    significantly positively correlated, 3.34% (1,258) negatively, and 89.96% (33,881) not
+    reliably correlated.
   source: Results, Ripple-modulated BLA cells are preferentially involved in reactivations,
-    paragraph 1; Figure 5a
+    paragraph 1; Supplementary Table 2
+  quote: During run, a fraction of hippocampal–BLA pyramidal neuron pairs showed significantly
+    positively correlated spike trains (2,521 of 37,660; 6.69%). Another small percentage (1,258
+    of 37,660; 3.34%) was negatively correlated, while the remaining majority (33,881 of 37,660;
+    89.96%) was not reliably correlated
+  expected:
+  - quantity: hippocampus-BLA pyramidal pairs, all sessions pooled
+    value: 37660
+    tolerance: 3766
+  - quantity: pairs, rat 1
+    value: 16056
+    tolerance: 1605.6
+  - quantity: pairs, rat 3
+    value: 3836
+    tolerance: 383.6
+  - quantity: pairs, rat 4
+    value: 17768
+    tolerance: 1776.8
+  - quantity: positively correlated pairs
+    value: 6.69
+    tolerance: 0.669
+    unit: percent
+  - quantity: negatively correlated pairs
+    value: 3.34
+    tolerance: 0.334
+    unit: percent
+  - quantity: not reliably correlated pairs
+    value: 89.96
+    tolerance: 8.996
+    unit: percent
+  criterion: All hippocampus-BLA pyramidal pairs of the 29 sessions with simultaneous recordings
+    and ripple events (Supplementary Fig. 6a legend; ExplainedVariance_PrePostCorr_Ultimate.m has
+    no cell minimum), pooled. Run correlation is the Pearson correlation of 50-ms binned counts
+    over the whole run epoch; positive when p < 0.01 and r > 0, negative when p < 0.01 and r < 0,
+    otherwise not reliably correlated (Online Methods; the code's isnosig is p >= 0.01). Pairs
+    with an undefined correlation (a silent cell) are left out of the fractions. Reproduced when
+    every expected value holds; partially reproduced when the three fractions hold and a pair
+    count does not.
+- id: reactivation-involves-ripple-up-cells
+  statement: Among nine groups of hippocampus-BLA pyramidal pairs formed by run correlation and BLA
+    ripple modulation, the pairs with a significant positive run correlation and an upmodulated BLA
+    partner show the largest pre-NREM to post-NREM increase in correlation, and differ from every
+    other group.
+  source: Results, Ripple-modulated BLA cells are preferentially involved in reactivations,
+    paragraph 1; Figure 5a; Supplementary Fig. 6a; Supplementary Table 2
   quote: Hippocampus–BLA pairs with significant, positive run correlations and SPW-R upmodulation
     of the BLA partner showed the largest pre-NREM to post-NREM change
   statistics:
@@ -133,73 +719,354 @@ claims:
     test: post hoc comparisons
     p: 0.001
     p_relation: "<"
-    corrected: Tukey–Kramer (Fig. 5a legend; the Online Methods say Bonferroni)
+    corrected: Tukey-Kramer (Fig. 5a legend, which gives P < 0.01; the Online Methods say Bonferroni)
+  expected:
+  - quantity: pairs, upmodulated BLA partner and positive run correlation
+    value: 595
+    tolerance: 59.5
+  - quantity: pairs, upmodulated and non-significant
+    value: 3686
+    tolerance: 368.6
+  - quantity: pairs, upmodulated and negative
+    value: 334
+    tolerance: 33.4
+  - quantity: pairs, non-modulated and positive
+    value: 1774
+    tolerance: 177.4
+  - quantity: pairs, non-modulated and non-significant
+    value: 28087
+    tolerance: 2808.7
+  - quantity: pairs, non-modulated and negative
+    value: 801
+    tolerance: 80.1
+  - quantity: pairs, downmodulated and positive
+    value: 152
+    tolerance: 15.2
+  - quantity: pairs, downmodulated and non-significant
+    value: 2108
+    tolerance: 210.8
+  - quantity: pairs, downmodulated and negative
+    value: 123
+    tolerance: 12.3
+  depends_on:
+  - bla-ripple-up-subgroup
+  - run-correlated-pair-fractions
+  criterion: The pairs and run-correlation classes of run-correlated-pair-fractions, crossed with
+    the BLA partner's ripple modulation (M6, both O2 readings). Per pair, post-NREM correlation
+    minus pre-NREM correlation (Pearson, 50-ms bins, M2). A one-way ANOVA across the nine groups,
+    then post hoc comparisons (ExplainedVariance_PrePostCorr_Ultimate.m, anova1 and multcompare).
+    Post hoc correction per O6, Bonferroni over the 36 pairwise comparisons (main) and
+    Tukey-Kramer (variant). Reproduced when the ANOVA has p < 0.05, the upmodulated positive group
+    has the largest mean, and it differs from each of the other eight groups at p < 0.01 after
+    correction; partially reproduced when it has the largest mean and differs from at least five.
+    The group counts are reported against Supplementary Table 2.
+- id: pair-group-ev
+  statement: EV computed within each of the nine pair groups confirms the dominant contribution of
+    the pairs with positive run correlation and an upmodulated BLA partner.
+  source: Results, Ripple-modulated BLA cells are preferentially involved in reactivations,
+    paragraph 1; Supplementary Fig. 6b
+  quote: The dominant contribution of this specific subgroup of cell pairs to reactivations was
+    confirmed by calculating the EVs across the nine subgroups
+  depends_on:
+  - reactivation-involves-ripple-up-cells
+  criterion: For each group of reactivation-involves-ripple-up-cells, EV and REV (M4 formula) over
+    the pooled pairs of the group, with pre-NREM, run and post-NREM correlations
+    (ExplainedVariance_PooledCorr_Groups.m). The paper gives no test. Reproduced when the
+    upmodulated positive group has the largest EV - REV of the nine. In the code the
+    non-significant group is restricted to negative run correlations (run.signot); the Methods
+    define it by p > 0.01 alone, so the Methods' groups are the main reading and the code's the
+    variant.
+- id: contributing-up-cells-gain-increase
+  statement: Upmodulated BLA cells in the quartile contributing most to the reactivation increase
+    their SPW-R gain from pre-NREM to post-NREM, while upmodulated cells of the other three
+    quartiles do not.
+  source: Results, Ripple-modulated BLA cells are preferentially involved in reactivations,
+    paragraph 2; Figure 5b; Supplementary Fig. 8a
+  quote: We found that upmodulated BLA neurons in the most strongly contributing quartile showed a
+    specific increase in SPW-R gain (that is, firing rate during versus outside SPW-R) from
+    pre-NREM to post-NREM compared to the upmodulated cells of the remaining three,
+    low-contribution quartiles
+  statistics:
+  - about: post-NREM against pre-NREM gain, upmodulated cells of the highest-contribution quartile
+    test: Wilcoxon one-tail signed rank test
+    statistic: z = -3.913
+    p: 4.57e-5
+    n: 63 cells in 3 rats
+  - about: the same, upmodulated cells of the remaining three quartiles
+    test: Wilcoxon one-tail signed rank test
+    statistic: z = 2.408
+    p: 0.992
+    n: 73 cells in 3 rats
+  - about: second, third and fourth quartiles separately (Supplementary Fig. 8a)
+    test: Wilcoxon signed rank one-tailed tests
+    statistic: z = 0.7839; z = 1.8873; z = 1.5420
+    p: 0.7834
+    n: 18, 16 and 39 cells
+  depends_on:
+  - bla-ripple-up-subgroup
+  - run-correlated-pair-fractions
+  expected:
+  - quantity: upmodulated BLA cells, highest-contribution quartile
+    value: 63
+    tolerance: 6.3
+  - quantity: upmodulated BLA cells, remaining quartiles
+    value: 73
+    tolerance: 7.3
+  criterion: Contribution of a pair (Online Methods; ExplainedVariance_PooledCorr.m). Over all
+    pooled pyramidal pairs with defined pre-NREM, run and post-NREM correlations, the global EV
+    (M4 formula on pooled pairs) and, for each pair, the EV with that pair removed; contribution =
+    EV without the pair minus global EV (negative is a positive contribution). A BLA cell's
+    contribution is the mean over its pairs; BLA cells are split at the quartiles, the highest
+    contribution quartile being the most negative. Gain (AllRippleCCGs_2.m, RippleMod_PrePost.m)
+    is the cell's peri-ripple firing in 10-ms bins over -2 to +2 s around ripple peaks of
+    pre-NREM, and of post-NREM, divided by the baseline rate of the same sleep epoch (NREM minus
+    ripples widened by 100 ms); cells with an all-zero or undefined gain in either epoch are
+    dropped; each curve is smoothed over 2 bins (the Methods' 20-ms Gaussian) and averaged over
+    -250 to +250 ms. A one-tailed Wilcoxon signed rank test (post greater than pre) in the
+    upmodulated cells (M6, both O2 readings) of the highest quartile and in those of the other
+    three. Reproduced when the highest quartile has p < 0.05 and the other three do not;
+    partially reproduced when the highest quartile has p < 0.05 and the other quartiles do too.
+- id: ev-independent-of-firing-rate
+  statement: Hippocampus-BLA EV does not depend on firing rates; EV exceeds REV across firing-rate
+    octiles of the pairs, of the BLA cells and of the hippocampal cells.
+  source: Results, Ripple-modulated BLA cells are preferentially involved in reactivations,
+    paragraph 2; Supplementary Fig. 9
+  quote: This control showed that EV did not depend on firing rates (Supplementary Fig. 9).
+  depends_on:
+  - run-correlated-pair-fractions
+  criterion: The pooled pyramidal pairs of run-correlated-pair-fractions, split into octiles of
+    (a) the mean of the two cells' rates, (b) the BLA cell's rate, (c) the hippocampal cell's
+    rate, rate being the spike count over the whole recording span of the scored states
+    (StatesFiringRates.m, all-states rate, used by ExplainedVariance_PooledCorr_Groups.m); EV and
+    REV (M4 formula) over the pairs of each octile. The paper gives no test. Readings of "did not
+    depend" (a) EV exceeds REV in all eight octiles of each of the three splits; (b) the Spearman
+    correlation between octile rank and EV - REV has p >= 0.05 in each split. Reproduced when
+    the outcome holds under both readings; otherwise reported as methods_underspecified with all
+    results.
+- id: reactivation-peaks-at-ripples
+  statement: Reactivation strength of the whole-run template around hippocampal ripple peaks is
+    higher in post-NREM than in pre-NREM, for pyramidal pairs and for all cell pairs.
+  source: Supplementary Fig. 11a
+  quote: Mean z-scored peri-ripple reactivation strength of the whole training session ...
+    reactivation strength in a 500ms window around ripple peaks (grey bar in a) was significantly
+    higher in post-NREM
+  statistics:
+  - about: post-NREM against pre-NREM ripple-peak reactivation strength, whole training session,
+      pyramidal cell pairs
+    test: Wilcoxon one-tailed signed rank test
+    statistic: z = -3.175
+    p: 7.49e-4
+    n: 25 sessions in 3 rats
+  - about: the same, all cell pairs
+    test: Wilcoxon one-tailed signed rank test
+    statistic: z = -2.895
+    p: 0.00189
+    n: 27 sessions in 3 rats
   depends_on:
   - hpc-bla-reactivation-post-sleep
-  - bla-ripple-up-subgroup
-  criterion: For each significant joint pattern of a session that has at least one positively
-    modulated and one other BLA unit among those used, the mean squared BLA weight (v squared) of
-    the positively modulated units minus that of the other BLA units. Reproduced when the median
-    over patterns is above zero with a two-sided Wilcoxon signed-rank p < 0.05. Shown as a
-    variant is the same test on patterns whose post minus pre reactivation is above zero.
-- id: aversive-direction-stronger
-  statement: Reactivation is stronger for the hippocampus and BLA correlation patterns of the run
-    direction that held the air puff than for those of the safe direction.
-  source: Figure 6a,b; Supplementary Fig. 11b,c; Results, The aversive trajectory is reactivated
-    during SPW-Rs, paragraph 1
-  quote: We found that the reinstatement of the joint hippocampus–BLA neuron representation was
-    significantly enhanced during post-NREM SPW-R compared to pre-NREM SPW-Rs for the air puff
-    direction but not for the safe direction
+  criterion: R per M7 with the whole run epoch as template, pyramidal cells (and all cells as the
+    second test). Per session, the ripple-peak value in pre-NREM and in post-NREM; a one-tailed
+    Wilcoxon signed rank test, post greater than pre (ReplayInTime_All.m, tail left on pre
+    against post). Reproduced when both tests have p < 0.05; partially reproduced when one does.
+- id: airpuff-trajectory-ripple-reactivation
+  statement: The hippocampus-BLA correlation pattern of the air puff trajectory is reactivated more
+    around post-NREM ripples than around pre-NREM ripples.
+  source: Figure 6a, top; Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1
+  quote: reactivation strength in a 500-ms window around ripple peaks (gray bars) was significantly
+    higher in post-NREM compared to pre-NREM for air puff trajectory
   statistics:
-  - about: post-NREM minus pre-NREM reactivation strength at the ripple peak, air puff against
-      safe trajectory
+  - about: post-NREM against pre-NREM ripple-peak reactivation strength, air puff trajectory,
+      pyramidal pairs
     test: Wilcoxon one-tail signed rank test
-    statistic: z = −2.798
-    p: 0.00257
-    n: 25 sessions
-  - about: post-NREM against pre-NREM reactivation strength around ripple peaks, air puff trajectory
-    test: Wilcoxon one-tail signed rank test
-    statistic: z = −3.793
+    statistic: z = -3.793
     p: 7.42e-5
     n: 25 sessions in 3 rats
-  - about: post-NREM against pre-NREM reactivation strength around ripple peaks, safe trajectory
+  depends_on:
+  - reactivation-peaks-at-ripples
+  criterion: R per M7, pyramidal cells, with the template built only from run bins inside air puff
+    laps (M8, each O1 reading), the run counts z-scored within those bins
+    (ReplayInTime_LapTypes.m). Per session, ripple-peak values in pre- and post-NREM; one-tailed
+    Wilcoxon signed rank test, post greater than pre (ReplayInTime_LapTypes_All.m). Reproduced
+    when p < 0.05 under every O1 reading; methods_underspecified when the readings disagree.
+- id: safe-trajectory-no-ripple-reactivation
+  statement: The hippocampus-BLA correlation pattern of the safe trajectory is not significantly
+    more reactivated around post-NREM ripples than around pre-NREM ripples (pyramidal pairs).
+  source: Figure 6a, bottom; Results, The aversive trajectory is reactivated during SPW-Rs,
+    paragraph 1
+  quote: significantly higher in post-NREM compared to pre-NREM for air puff trajectory ... but not
+    for safe trajectory
+  statistics:
+  - about: post-NREM against pre-NREM ripple-peak reactivation strength, safe trajectory,
+      pyramidal pairs
     test: Wilcoxon one-tail signed rank test
-    statistic: z = −0.780
+    statistic: z = -0.780
     p: 0.217
     n: 25 sessions in 3 rats
-  - about: post-NREM minus pre-NREM peak difference, air puff against safe trajectory, all cell
-      pairs (Supplementary Fig. 11c)
+  depends_on:
+  - airpuff-trajectory-ripple-reactivation
+  criterion: A claim of absence, judged on the paper's test. As
+    airpuff-trajectory-ripple-reactivation with the template built from run bins inside safe laps.
+    Reproduced when the one-tailed Wilcoxon signed rank test (post greater than pre) has
+    p >= 0.05; not reproduced when p < 0.05. The median post minus pre difference is reported. The
+    O1 readings are each run and reported; absence is judged on each.
+- id: aversive-direction-stronger
+  statement: The post-NREM minus pre-NREM change in reactivation strength at the ripple peak is
+    larger for the air puff trajectory than for the safe trajectory (pyramidal pairs).
+  source: Figure 6b; Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1
+  quote: The pre-NREM vs. post-NREM difference in reactivation strength (RS) at the ripple peak is
+    significantly higher for the air puff trajectory compared to safe trajectory
+  statistics:
+  - about: post-NREM minus pre-NREM ripple-peak reactivation strength, air puff against safe
+      trajectory
+    test: Wilcoxon one-tail signed rank-test
+    statistic: z = -2.798
+    p: 0.00257
+    n: 25 sessions
+  depends_on:
+  - airpuff-trajectory-ripple-reactivation
+  - safe-trajectory-no-ripple-reactivation
+  criterion: Per session, the post-NREM minus pre-NREM ripple-peak value (M7) for the air puff
+    template and for the safe template of the two claims above. One-tailed Wilcoxon signed rank
+    test across sessions, air puff greater than safe (ReplayInTime_LapTypes_Plot.m, signrank of
+    safe against air puff, tail left). Reproduced when p < 0.05 under every O1 reading;
+    methods_underspecified when the readings disagree.
+- id: direction-all-cell-pairs
+  statement: With all cell types included, both the air puff and the safe trajectory patterns are
+    more reactivated around post-NREM than pre-NREM ripples, and the post minus pre difference does
+    not differ significantly between the two trajectories.
+  source: Supplementary Fig. 11b,c
+  quote: Reactivation strength in a 500ms window around ripple peaks (grey bar in a) was
+    significantly higher in post-NREM compared to pre-NREM for airpuff ... and safe trajectories
+    ... Pre/Post peak differences (postNREM - preNREM; see methods) in reactivation strength are
+    not significantly different for safe and airpuff trajectories when all cell types are included
+  statistics:
+  - about: post-NREM against pre-NREM, air puff trajectory, all cell pairs
+    test: Wilcoxon one-tail signed rank test
+    statistic: z = -3.327
+    p: 4.38e-4
+    n: 27 sessions in 3 rats
+  - about: post-NREM against pre-NREM, safe trajectory, all cell pairs
+    test: Wilcoxon one-tail signed rank test
+    statistic: z = -1.789
+    p: 0.036
+    n: 27 sessions in 3 rats
+  - about: post minus pre difference, air puff against safe, all cell pairs
     test: Wilcoxon one-tailed signed rank test
     statistic: z = -1.333
     p: 0.0912
     n: 27 sessions in 3 rats
   depends_on:
-  - hpc-bla-reactivation-post-sleep
-  criterion: Templates are built separately from the run-epoch bins inside laps of the air-puff
-    direction and inside laps of the safe direction. For each session and direction, the mean
-    over its significant patterns of post-sleep minus pre-sleep Non-REM reactivation strength;
-    a session counts when both directions have at least one significant pattern. Reproduced when
-    the air-puff value exceeds the safe value across sessions (two-sided Wilcoxon signed-rank p <
-    0.05, median difference above zero); partially reproduced when the median difference is above
-    zero with p between 0.05 and 0.1, or the pooled test holds but the median is above zero in one
-    rat only; not reproduced otherwise. Shown as variants are a pooled per-pattern comparison
-    (Mann-Whitney), the first singular pattern of each direction in every session, templates
-    from equal numbers of bins in the two directions, and post-sleep strength alone.
-- id: rats-learn-puff-location
-  statement: Rats learned the location of an aversive air puff on a linear track.
-  source: Results, Rats learn the daily location of an aversive air puff on a linear track,
-    paragraph 1; Figure 1b
-  quote: Therefore, the systematic reversal in the speed ratio (previous/current danger zone)
-    between pre- and ... post-run indicates learning of the new air puff location (Fig. 1b and
-    Supplementary Fig. 1b).
+  - aversive-direction-stronger
+  criterion: The three tests of airpuff-trajectory-ripple-reactivation,
+    safe-trajectory-no-ripple-reactivation and aversive-direction-stronger with all cells (ctype
+    all). Reproduced when both within-trajectory tests have p < 0.05 and the between-trajectory
+    test has p >= 0.05 (absence on the paper's one-tailed test); partially reproduced when two of
+    the three hold.
+- id: bla-rate-same-across-directions
+  statement: Firing rates of BLA cells do not differ significantly between the safe and the air
+    puff trajectories.
+  source: Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1
+  quote: Because the firing rates of BLA cells did not significantly differ between safe and air
+    puff trajectories
   statistics:
-  - about: speed ratio over pre-run, run and post-run
-    test: one-way repeated measure ANOVA
-    statistic: F = 40.48, d.f. = 2
-    p: 1.31e-13
-    n: 55 sessions in 4 animals
-  - about: speed ratio, pre-run against post-run
-    test: post hoc t-test
-    statistic: t(51) = −5.08
-    p: 5.3e-6
-    corrected: Bonferroni (on the significance thresholds; the P shown is uncorrected)
+  - about: BLA pyramidal cells
+    test: Wilcoxon signed rank test
+    statistic: z = 1.101
+    p: 0.270
+  - about: all BLA cells
+    test: Wilcoxon signed rank test
+    statistic: z = 0.302
+    p: 0.763
+  criterion: A claim of absence, judged on the paper's test, a two-sided Wilcoxon signed rank test
+    across BLA cells of the sessions entering aversive-direction-stronger, safe against air puff
+    rate in the run epoch, for pyramidal cells and for all cells. The rate per O7, both readings,
+    laps per O1. Reproduced when neither test has p < 0.05; not reproduced when either does under
+    every reading. Median differences reported.
+- id: ripple-rate-unchanged
+  statement: The occurrence rate of SPW-Rs does not differ between pre-NREM and post-NREM.
+  source: Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1;
+    Supplementary Fig. 11d
+  quote: The occurrence rate of SPW-R was also not significantly different between the pre-NREM
+    and postNREM epochs
+  statistics:
+  - test: Wilcoxon signed rank test
+    statistic: z = -1.289
+    p: 0.192
+    n: 41 sessions in 3 rats
+  criterion: A claim of absence, judged on the paper's test. Per session with ripple events, the
+    number of ripple peaks in pre-NREM over pre-NREM duration and the same in post-NREM
+    (RippleRatePrePost.m). A two-sided Wilcoxon signed rank test (Online Methods default; the
+    printed P of 0.192 for z = -1.289 is two-sided, while RippleRatePrePost_All.m calls tail
+    right). Reproduced when p >= 0.05; not reproduced when p < 0.05. Median difference reported.
+- id: contributing-pairs-run-sleep-coupling
+  statement: For the 2.5% most strongly contributing hippocampus-BLA pairs, the pre-run to post-run
+    change in correlation correlates with the pre-NREM to post-NREM change (r = 0.27), but not for
+    the 2.5% least contributing pairs.
+  source: Results, NREM contributes to reinstatement of new place-threat representations,
+    paragraph 1; Figure 7b; Supplementary Fig. 7c
+  quote: We found that for strongly contributing, but not for weakly contributing, pairs the
+    increase between pre-run and post-run coactivity was significantly correlated with the
+    increase in coactivity between pre-NREM and post-NREM (Fig. 7b).
+  statistics:
+  - about: strongly contributing pairs (2.5% highest contributions)
+    test: Pearson correlation
+    statistic: r = 0.27
+    p: 2.11e-16
+    n: 866 pairs, 3 rats
+  - about: weakly contributing pairs (2.5% lowest contributions)
+    test: Pearson correlation
+    statistic: r = 0.03
+    p: 0.305
+    n: 845 pairs, 3 rats
+  expected:
+  - quantity: Pearson r, strongly contributing pairs
+    value: 0.27
+    tolerance: 0.027
+  - quantity: strongly contributing pairs with defined run changes
+    value: 866
+    tolerance: 86.6
+  - quantity: weakly contributing pairs with defined run changes
+    value: 845
+    tolerance: 84.5
+  depends_on:
+  - contributing-up-cells-gain-increase
+  criterion: Pair contributions as in contributing-up-cells-gain-increase. Strongly contributing
+    pairs are those below the 2.5th percentile of contribution (most negative), weakly
+    contributing those above the 97.5th (ExplainedVariance_PooledCorr.m, prctile 2.5 and 97.5).
+    Per pair, post-NREM minus pre-NREM correlation, and post-run minus pre-run correlation
+    (Pearson, 50-ms bins over the pre-run and post-run test epochs); pairs with an undefined run
+    change left out. Pearson correlation of the two changes in each group. Reproduced when the
+    strong group has r > 0 with p < 0.05 and r within tolerance, and the weak group has p >= 0.05;
+    partially reproduced when the strong group's r is positive and significant but outside
+    tolerance, or the weak group's p < 0.05.
+- id: contributing-quartiles-run-sleep-coupling
+  statement: The coupling between run and sleep correlation changes holds when the most and least
+    contributing quartiles of pairs are compared (r = 0.13 against r = 0.013).
+  source: Results, NREM contributes to reinstatement of new place-threat representations,
+    paragraph 1; Figure 7c; Supplementary Fig. 7b
+  quote: This result was maintained when the most strongly and the most weakly contributing
+    quartiles (instead of 2.5th percentiles) of the distribution were compared (Fig. 7c).
+  statistics:
+  - about: most strongly contributing quartile
+    test: Pearson correlation
+    statistic: r = 0.13
+    p: 1.07e-32
+    n: 9,415 pairs, 3 rats
+  - about: least contributing quartile
+    test: Pearson correlation
+    statistic: r = 0.013
+    p: 0.22
+    n: 9,415 pairs, 3 rats
+  expected:
+  - quantity: Pearson r, strongest quartile
+    value: 0.13
+    tolerance: 0.013
+  - quantity: pairs per quartile
+    value: 9415
+    tolerance: 941.5
+  depends_on:
+  - contributing-pairs-run-sleep-coupling
+  criterion: As contributing-pairs-run-sleep-coupling with the pairs split at the 25th and 75th
+    percentiles of contribution (quantile), strongest quartile below the 25th. Reproduced when the
+    strongest quartile has r > 0 with p < 0.05 and r within tolerance, and the weakest has
+    p >= 0.05; partially reproduced when only the strongest quartile's test holds.
