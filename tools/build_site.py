@@ -1045,7 +1045,7 @@ def pipeline_chart(counts: dict, total: int) -> str:
     for key, label in CHART_STEPS:
         c = counts[key]
         segs = "".join(f'<span class="seg st-{st}" style="width:{100 * c[st] / total:.2f}%" '
-                       f'title="{e(name)}: {c[st]:,}"></span>' for st, name in PIPELINE_STATES if c.get(st))
+                       f'data-tip="{e(name)}: {c[st]:,}"></span>' for st, name in PIPELINE_STATES if c.get(st))
         parts = ", ".join(f"{c[st]:,} {name.lower()}" for st, name in PIPELINE_STATES[1:] if c.get(st))
         done = c.get("done", 0) + c.get("older", 0)
         rows += (f'<div class="frow"><span class="flabel">{e(label)}</span>'
@@ -1055,6 +1055,68 @@ def pipeline_chart(counts: dict, total: int) -> str:
     legend = "".join(f'<span><i class="seg st-{st}"></i>{e(name)}</span>' for st, name in PIPELINE_STATES)
     return (f'<div class="panel"><h2>Targets at each step</h2><div class="funnel">{rows}</div>'
             f'<p class="flegend small">{legend}</p></div>')
+
+
+TABLE_STATES = [("done", "Done"), ("waiting", "Waiting on a person"), ("deprecated", "To redo"),
+                ("todo", "To do"), ("none", "Not applicable")]
+
+# Filters, sorts and pages the pipeline table in place. Sorting a step's column orders its rows by state
+# (done first), then by the cell's note.
+PIPELINE_TABLE_JS = r"""
+(function(){
+var table=document.querySelector('table.pipeline'),tools=document.querySelector('.pipeline-tools');
+if(!table||!tools)return;tools.hidden=false;
+var tbody=table.tBodies[0],rows=[].slice.call(tbody.rows),ths=[].slice.call(table.tHead.rows[0].cells);
+var steps=[].slice.call(document.getElementById('pstep').options,1).map(function(o){return o.value;});
+var rank={done:0,waiting:1,deprecated:2,todo:3,none:4};
+var state={q:'',step:'',st:'',col:-1,dir:1,page:1,size:50};
+var $=function(id){return document.getElementById(id);};
+function key(tr,col){var td=tr.cells[col],t=td.textContent.trim();
+  return td.classList.contains('ps')?[rank[td.className.split(' ')[1]],t]:[0,t];}
+function cmp(a,b){return a[0]-b[0]||a[1].localeCompare(b[1],undefined,{numeric:true,sensitivity:'base'});}
+function shown(tr){
+  if(state.q&&(tr.cells[0].textContent+' '+tr.cells[1].textContent).toLowerCase().indexOf(state.q)<0)return false;
+  var keys=state.step?[state.step]:steps;
+  if(state.st)return keys.some(function(k){return tr.dataset[k]===state.st;});
+  return true;}
+function draw(){
+  var list=rows.filter(shown);
+  if(state.col>=0)list.sort(function(a,b){return state.dir*cmp(key(a,state.col),key(b,state.col));});
+  var pages=Math.max(1,Math.ceil(list.length/state.size));if(state.page>pages)state.page=pages;
+  var start=(state.page-1)*state.size,page=list.slice(start,start+state.size);
+  rows.forEach(function(tr){tr.hidden=true;});
+  page.forEach(function(tr){tr.hidden=false;tbody.appendChild(tr);});
+  ths.forEach(function(th,i){if(i===state.col)th.setAttribute('aria-sort',state.dir>0?'ascending':'descending');
+    else th.removeAttribute('aria-sort');});
+  $('pcount').textContent=list.length===rows.length?rows.length.toLocaleString()+' targets'
+    :list.length.toLocaleString()+' of '+rows.length.toLocaleString()+' targets';
+  var el=$('ppager');if(!list.length){el.innerHTML='';return;}
+  var nums=[1,pages,state.page-1,state.page,state.page+1].filter(function(p,i,a){return p>=1&&p<=pages&&a.indexOf(p)===i;})
+    .sort(function(a,b){return a-b;}),last=0,buttons='';
+  nums.forEach(function(p){if(p-last>1)buttons+='<span class="muted">…</span>';
+    buttons+='<button type="button" data-page="'+p+'"'+(p===state.page?' aria-current="page"':'')+'>'+p+'</button>';last=p;});
+  el.innerHTML='<span class="muted">'+(start+1)+'–'+(start+page.length)+' of '+list.length.toLocaleString()+'</span><span class="grow"></span>'
+    +'<button type="button" data-page="'+(state.page-1)+'"'+(state.page===1?' disabled':'')+' aria-label="Previous page">‹</button>'+buttons
+    +'<button type="button" data-page="'+(state.page+1)+'"'+(state.page===pages?' disabled':'')+' aria-label="Next page">›</button>'
+    +'<select class="ghost" id="psize" aria-label="Rows per page">'+[25,50,100,250].map(function(s){
+      return '<option value="'+s+'"'+(s===state.size?' selected':'')+'>'+s+' per page</option>';}).join('')+'</select>';}
+var timer;
+$('pq').addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(function(){
+  state.q=$('pq').value.trim().toLowerCase();state.page=1;draw();},120);});
+$('pstep').addEventListener('change',function(){state.step=this.value;state.page=1;draw();});
+$('pstate').addEventListener('change',function(){state.st=this.value;state.page=1;draw();});
+table.tHead.addEventListener('click',function(ev){var b=ev.target.closest('button.sort');if(!b)return;
+  var col=ths.indexOf(b.closest('th'));state.dir=col===state.col?-state.dir:1;state.col=col;state.page=1;draw();});
+$('ppager').addEventListener('click',function(ev){var b=ev.target.closest('[data-page]');if(!b||b.disabled)return;
+  state.page=+b.dataset.page;draw();table.scrollIntoView({block:'start'});});
+$('ppager').addEventListener('change',function(ev){if(ev.target.id==='psize'){state.size=+ev.target.value;state.page=1;draw();}});
+draw();
+})();
+"""
+
+
+def sort_button(label: str) -> str:
+    return f'<button class="sort" type="button">{e(label)}</button>'
 
 
 def page_pipeline(data: dict) -> str:
@@ -1068,7 +1130,7 @@ def page_pipeline(data: dict) -> str:
             counts[key][st] = counts[key].get(st, 0) + 1
     # Claims files made before the check existed count as checked, as in the chart.
     older = {key: sum(1 for r in rows if chart_state(key, *r["state"][key]) == "older") for key, _ in PIPELINE_STEPS}
-    head = "".join(f'<th>{e(label)}<div class="small muted">{counts[key].get("done", 0) + older[key]:,} done'
+    head = "".join(f'<th>{sort_button(label)}<div class="small muted">{counts[key].get("done", 0) + older[key]:,} done'
                    + (f', {counts[key]["waiting"]:,} waiting' if counts[key].get("waiting") else "")
                    + "</div></th>" for key, label in PIPELINE_STEPS)
     body = ""
@@ -1076,7 +1138,8 @@ def page_pipeline(data: dict) -> str:
         name = (f'<a href="{root}{e(r["page"])}">{e(r["dataset"])}</a>' if r["page"] else e(r["dataset"]))
         cells = "".join(f'<td class="ps {e(r["state"][key][0])}" title="{e(r["state"][key][0])}">'
                         f'{e(r["state"][key][1])}</td>' for key, _ in PIPELINE_STEPS)
-        body += (f'<tr data-waiting="{"1" if r["waiting"] else "0"}"><td>{name}</td>'
+        states = " ".join(f'data-{key}="{e(r["state"][key][0])}"' for key, _ in PIPELINE_STEPS)
+        body += (f'<tr {states}><td>{name}</td>'
                  f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}</td></tr>')
     waiting = [r for r in rows if r["waiting"]]
     papers_missing = sum(len(r["missing"]) for r in waiting)
@@ -1086,6 +1149,8 @@ def page_pipeline(data: dict) -> str:
             st = chart_state(key, *r["state"][key])
             charted[key][st] = charted[key].get(st, 0) + 1
     chart = pipeline_chart(charted, len(rows))
+    step_opts = "".join(f'<option value="{key}">{e(label)}</option>' for key, label in PIPELINE_STEPS)
+    state_opts = "".join(f'<option value="{st}">{e(name)}</option>' for st, name in TABLE_STATES)
     updated = datetime.datetime.fromisoformat(data["generated"]).strftime("%Y-%m-%d %H:%M UTC")
     html_ = f'''<header class="page">
   <h1>Pipeline</h1>
@@ -1098,20 +1163,23 @@ def page_pipeline(data: dict) -> str:
   The page is rebuilt whenever main changes.</p>
 </header>
 <main>{chart}
-<p style="margin-top:16px"><label class="small"><input type="checkbox" id="only-waiting"> Only targets waiting on a
-person</label></p>
+<div class="listbar pipeline-tools" style="margin-top:16px" hidden>
+  <input id="pq" type="search" placeholder="Search datasets and names" aria-label="Search datasets and names">
+  <select class="ghost" id="pstep" aria-label="Step"><option value="">Any step</option>{step_opts}</select>
+  <select class="ghost" id="pstate" aria-label="State"><option value="">Any state</option>{state_opts}</select>
+  <strong id="pcount" aria-live="polite"></strong>
+</div>
 <div class="panel pipeline-wrap"><table class="pipeline">
-<thead><tr><th>Dataset</th><th>Name</th>{head}<th>Next</th></tr></thead>
-<tbody>{body}</tbody></table></div></main>
+<thead><tr><th>{sort_button("Dataset")}</th><th>{sort_button("Name")}</th>{head}<th>{sort_button("Next")}</th></tr></thead>
+<tbody>{body}</tbody></table></div>
+<nav class="pager" id="ppager" aria-label="Pages"></nav></main>
 <script>
 (function(){{var t=document.getElementById("updated");if(!t)return;
 var m=Math.round((Date.now()-new Date(t.getAttribute("datetime")))/60000);if(isNaN(m)||m<0)return;
 var ago=m<1?"just now":m<60?m+" minute"+(m==1?"":"s")+" ago":m<2880?Math.round(m/60)+" hours ago":Math.round(m/1440)+" days ago";
 t.textContent+=" ("+ago+")";}})();
-(function(){{var box=document.getElementById("only-waiting");if(!box)return;
-box.addEventListener("change",function(){{document.querySelectorAll("table.pipeline tbody tr").forEach(function(tr){{
-tr.hidden=box.checked&&tr.dataset.waiting!=="1";}});}});}})();
-</script>'''
+</script>
+<script>{PIPELINE_TABLE_JS}</script>'''
     return shell(data, "Pipeline", root, "pipeline", html_, path="pipeline/",
                  description="Where every target of the reproduction registry stands in its pipeline.")
 
