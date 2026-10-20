@@ -977,25 +977,35 @@ ABOUT_STEPS = [
 ]
 
 
-PIPELINE_STATES = [("done", "Done"), ("waiting", "Waiting on a person"), ("deprecated", "To redo"),
-                   ("todo", "To do")]
+PIPELINE_STATES = [("done", "Done"), ("older", "Made before the step existed"), ("waiting", "Waiting on a person"),
+                   ("deprecated", "To redo"), ("todo", "To do")]
+# Questions arise only during an attempt, so they are in the table, not the chart.
+CHART_STEPS = [(k, label) for k, label in PIPELINE_STEPS if k != "questions"]
+
+
+def chart_state(key: str, state: str, note: str) -> str:
+    """A cell's state as the chart counts it: a step not reached yet is still to do."""
+    if key == "check" and state == "none" and note == "before checks":
+        return "older"
+    return "todo" if state == "none" else state
 
 
 def pipeline_chart(counts: dict, total: int) -> str:
-    """One bar per step, out of every target: how many are done, waiting on a person, to redo, or to do."""
+    """One bar per step, out of every target: done, made before the step, waiting on a person, to redo, to do."""
     rows = ""
-    for key, label in PIPELINE_STEPS:
+    for key, label in CHART_STEPS:
         c = counts[key]
-        segs = "".join(f'<span class="seg {st}" style="width:{100 * c[st] / total:.2f}%" '
+        segs = "".join(f'<span class="seg st-{st}" style="width:{100 * c[st] / total:.2f}%" '
                        f'title="{e(name)}: {c[st]:,}"></span>' for st, name in PIPELINE_STATES if c.get(st))
         parts = ", ".join(f"{c[st]:,} {name.lower()}" for st, name in PIPELINE_STATES[1:] if c.get(st))
+        done = c.get("done", 0) + c.get("older", 0)
         rows += (f'<div class="frow"><span class="flabel">{e(label)}</span>'
                  f'<span class="fbar" role="img" aria-label="{e(label)}: {c.get("done", 0):,} of {total:,} done'
                  f'{", " + parts if parts else ""}">{segs}</span>'
-                 f'<span class="fcount"><strong>{c.get("done", 0):,}</strong> of {total:,}</span></div>')
-    legend = "".join(f'<span><i class="seg {st}"></i>{e(name)}</span>' for st, name in PIPELINE_STATES)
+                 f'<span class="fcount"><strong>{done:,}</strong> of {total:,}</span></div>')
+    legend = "".join(f'<span><i class="seg st-{st}"></i>{e(name)}</span>' for st, name in PIPELINE_STATES)
     return (f'<div class="panel"><h2>Targets at each step</h2><div class="funnel">{rows}</div>'
-            f'<p class="flegend small">{legend}<span><i class="seg"></i>Not needed</span></p></div>')
+            f'<p class="flegend small">{legend}</p></div>')
 
 
 def page_pipeline(data: dict) -> str:
@@ -1007,7 +1017,9 @@ def page_pipeline(data: dict) -> str:
         for key, _ in PIPELINE_STEPS:
             st = r["state"][key][0]
             counts[key][st] = counts[key].get(st, 0) + 1
-    head = "".join(f'<th>{e(label)}<div class="small muted">{counts[key].get("done", 0):,} done'
+    # Claims files made before the check existed count as checked, as in the chart.
+    older = {key: sum(1 for r in rows if chart_state(key, *r["state"][key]) == "older") for key, _ in PIPELINE_STEPS}
+    head = "".join(f'<th>{e(label)}<div class="small muted">{counts[key].get("done", 0) + older[key]:,} done'
                    + (f', {counts[key]["waiting"]:,} waiting' if counts[key].get("waiting") else "")
                    + "</div></th>" for key, label in PIPELINE_STEPS)
     body = ""
@@ -1019,7 +1031,12 @@ def page_pipeline(data: dict) -> str:
                  f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}</td></tr>')
     waiting = [r for r in rows if r["waiting"]]
     papers_missing = sum(len(r["missing"]) for r in waiting)
-    chart = pipeline_chart(counts, len(rows))
+    charted = {key: {} for key, _ in PIPELINE_STEPS}
+    for r in rows:
+        for key, _ in PIPELINE_STEPS:
+            st = chart_state(key, *r["state"][key])
+            charted[key][st] = charted[key].get(st, 0) + 1
+    chart = pipeline_chart(charted, len(rows))
     html_ = f'''<header class="page">
   <h1>Pipeline</h1>
   <p class="lede">Every target, and where it stands in the
