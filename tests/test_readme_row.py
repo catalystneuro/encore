@@ -17,8 +17,12 @@ def test_the_row_matches_the_readme():
     # 001933's one claim with outside data is its link to the paper's source data, which the table leaves out.
     assert "(+" not in tool.row("001933")
     assert "| 6 (+1) |" not in tool.row("000004") and "| 8 (+1) |" in tool.row("000004")
-    # 000005's attempt is deprecated: its row has no counts.
-    assert "| – | – | – | – |" in tool.row("000005") and tool.row("000005").endswith("(deprecated) |")
+
+
+def test_a_deprecated_attempts_row_has_no_counts(monkeypatch):
+    record, entry_dir = tool.attempt_of("001933")
+    monkeypatch.setattr(tool, "attempt_of", lambda _: (dict(record, deprecated=True), entry_dir))
+    assert "| – | – | – | – |" in tool.row("001933") and tool.row("001933").endswith("(deprecated) |")
 
 
 def test_writing_replaces_a_dandisets_row_or_adds_one(tmp_path):
