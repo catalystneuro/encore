@@ -4,7 +4,7 @@ Target: dataset {dataset}, paper doi:{paper}, "{title}". A reader has written th
 
 Do steps 1 to 5 of the Author section of the protocol, then run `python tools/entry.py handover entries/<name>` (step 6). Do not verify your own work. Lock, check and run the entry with `python tools/entry.py lock|all entries/<name>`; `uv` is installed. Do not commit or push: the workflow commits your changes.
 
-Provenance: kind agent; accountable name "CatalystNeuro"; harness "Claude Code (GitHub Actions)"; model "{model}"; protocol: the version stated in docs/protocol.md. Date {date}.
+Provenance: kind agent; accountable name "CatalystNeuro"; harness "Claude Code (GitHub Actions)"; model "{model}"; protocol: the version stated in docs/protocol.md; runner: platform "{runner}"{runner_url}. Date {date}.
 
 Write prose plainly: no em dashes, never the word "rather", no bold except the "**Result: ...**" openers the protocol requires. YAML plain scalars must not contain ": " (colon space). If something in the protocol is ambiguous or does not fit this dataset, make a reasonable choice and record it; but never choose a claim's method: when the claims file does not give it, ask, as step 1.6 says, citing the passage of the paper if you found one.
 

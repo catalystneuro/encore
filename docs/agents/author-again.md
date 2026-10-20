@@ -9,7 +9,7 @@ Paper: doi:{paper}, "{title}". The paper's full text is under `paper/`: read it 
 3. Re-run every check of the data and every claim. For each finding of `{earlier}`, say in the notebook's data check and in the new record whether it is fixed, partly fixed or still present, with the output that shows it. Record new findings too.
 4. Lock, check and run the entry, make every conclusion match the new numbers, and write the new record `attempts/{next_attempt}.yaml`. Its outcomes are this attempt's own; where one differs from `{earlier}`, say why in its notes. Then run `python tools/entry.py handover entries/{entry}`. Do not verify your own work, and do not commit or push: the workflow commits your changes.
 
-Provenance: kind agent; accountable name "CatalystNeuro"; harness "Claude Code (GitHub Actions)"; model "{model}"; protocol: the version stated in docs/protocol.md. Date {date}.
+Provenance: kind agent; accountable name "CatalystNeuro"; harness "Claude Code (GitHub Actions)"; model "{model}"; protocol: the version stated in docs/protocol.md; runner: platform "{runner}"{runner_url}. Date {date}.
 
 Write prose plainly: no em dashes, never the word "rather", no bold except the "**Result: ...**" openers. YAML plain scalars must not contain ": ".
 

@@ -27,6 +27,7 @@ from __future__ import annotations
 import argparse
 import datetime
 import json
+import os
 import shutil
 import sys
 from pathlib import Path
@@ -76,6 +77,15 @@ def attempt_of(dandiset: str) -> tuple[dict, Path] | None:
     return record, ROOT / "entries" / record["entry"]
 
 
+def runner() -> dict:
+    """Where this run is going on, for the record's provenance: the platform, and a link to the run."""
+    env = os.environ
+    if env.get("GITHUB_ACTIONS") == "true" and env.get("GITHUB_RUN_ID"):
+        url = f'{env.get("GITHUB_SERVER_URL", "https://github.com")}/{env["GITHUB_REPOSITORY"]}/actions/runs/{env["GITHUB_RUN_ID"]}'
+        return {"runner": "GitHub Actions", "runner_url": f', url "{url}"'}
+    return {"runner": "local", "runner_url": ""}
+
+
 def protocol_version() -> str:
     """The protocol version stated at the top of docs/protocol.md."""
     text = (ROOT / "docs" / "protocol.md").read_text()
@@ -87,7 +97,7 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
     # `dandiset` and `folder` name the dataset's folder in the repository; `dataset` is how it is shown.
     details = {"dandiset": dandiset, "folder": dandiset, "dataset": datasets.label(key),
                "archive": datasets.archive_name(key), "access": datasets.access(key),
-               "model": model, "date": datetime.date.today().isoformat(), **target(dandiset)}
+               "model": model, "date": datetime.date.today().isoformat(), **target(dandiset), **runner()}
     if version:
         details["version_rule"] = (f"Use version {version} of the dataset"
                                    + (" (the draft: say in the notebook header when it was last modified, since a "
