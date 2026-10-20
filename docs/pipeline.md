@@ -21,6 +21,14 @@ dandiset per step, and the dashboard's Pipeline page shows them.
 | 10 | Report | no | script, sent by a person | issues to the dandiset's owners |
 | 11 | Upkeep | depends | runner | deprecation; repeat attempts |
 
+New targets come from the [Track DANDI](../.github/workflows/targets.yml)
+workflow. Every day it rebuilds `targets/dandisets.json` from the archive. When
+the list has changed, it opens or updates a pull request that says what
+changed: new dandisets that name a paper, papers added to existing targets
+(an attempted one needs claims for each new paper), and new published versions
+of attempted dandisets, which are candidates for a repeat attempt. Merging the
+pull request puts the new targets in the runner's queue.
+
 Steps 3 and 4 fix every claim and its method from the paper before anyone
 analyses the data: the claims agent never sees the dandiset's contents. The
 author reads the paper to understand the claims, but cannot change a claim's
