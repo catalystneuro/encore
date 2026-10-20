@@ -41,6 +41,11 @@
 # for are added (the trace in Rat 2's FD4 window on both files, the maps with cell_number -1 and a
 # variant without them, every Rat 3 FD4 map's best unit and every unit's best map). No other
 # outcome or number changed.
+#
+# Revised after round 2 of verification (transcripts/001754/verifier-2-report.md), which agreed with
+# every outcome. Text is corrected where the printed numbers did not support it, and the outputs
+# behind it are added (unrounded p of the M-b variant, position-like names in the NASA zip files).
+# No outcome or number changed and nothing is proposed.
 schema_version: 2
 id: 001754-knierim-2000-03
 dataset:
@@ -89,7 +94,7 @@ outcomes:
     and 1.284 above 1.20), so the rule gives partially reproduced. The FD9 count (17) is within 16 +/-
     1.6 and the preflight counts (21, 25) are not within 19 +/- 1.9. Reading M-b gives 2.965 +/- 0.224
     over 25 active FD9 units but cannot be computed preflight; tested against the M-a preflight
-    values it differs (p below 1e-6), a variant, not judged. Leaving out the maps with cell_number -1 (a
+    values it differs (p 6.2e-07 and 2.5e-07), a variant, not judged. Leaving out the maps with cell_number -1 (a
     variant) the test finds no difference either (p 0.87 and 0.56). The FD9 ES window is one in
     which the trace behaves as Rat 2's position (data check). In 001754-knierim-2000-02 this claim,
     then from the dandiset's description and judged on Rats 1 and 2 pooled by medians, was reproduced
@@ -176,8 +181,9 @@ outcomes:
     by reading (a) (same-cell correlations -0.024 to 0.366, 95th percentile of 240 different-cell
     pairs 0.094) and 1 of 16 by reading (b), neither more than half (8), so the rule gives not
     reproduced. M-a is not run, as the criterion says when its pairing condition fails. Each
-    distinct deposited map of session 2 (19) and session 3 (23) was tied to the unit of its tetrode
-    whose spike-count map it best matches. In session 2 no unit is tied to two maps (two maps are each
+    distinct deposited map with a unit on its tetrode, 17 of 19 in session 2 (all 11 active maps
+    among them) and 23 of 23 in session 3, was tied to the unit of its tetrode whose spike-count map
+    it best matches. In session 2 no unit is tied to two maps (two maps are each
     the best map of two units, the second unit matching at r 0.009 and 0.059); in session 3
     four are (TT10 cluster 6, TT4 cluster 3, TT5 cluster 2, TT8 cluster 5), three of them units of
     active session 2 maps. Session 2 has 16 active units and 11 active deposited maps (mean rates
@@ -205,8 +211,9 @@ outcomes:
     dandiset gives position only at spike times (7.6 to 35.7 samples per second in the ES epochs,
     gaps up to 12.7 s) and one occupancy map per epoch with no direction, and nothing gives the
     track's layout in the image from which the direction along the circuit could be read. The
-    claims file names no outside data; the names of the files in the NASA record (OSD-968) show no
-    continuous position, though its zip files were read only to their directories. The answer of
+    claims file names no outside data. No entry of the zip files of the NASA record (OSD-968) has a
+    position-like name, but its spike files (.cel) and the archives nested in its processed files
+    were not opened, so whether it holds continuous position is not known. The answer of
     2026-10-20 says the paper gives no method, no time base by direction and no track layout and
     allows no reading without them, and the criterion now blocks the claim as
     methods_underspecified in that case; before the answer the attempt blocked it as data_missing.
@@ -410,3 +417,93 @@ verifications:
       becomes not_reproduced.
     response: Changed to not_reproduced, as fig3-stability-across-sessions is now not reproduced and the
       criterion then gives not reproduced whatever part (ii) gives. Added a cell that applies the rule.
+- date: '2026-10-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the round 1 revision, with its conclusion cells and
+    summary, the attempt record, the README, the helper module and the claims file, with the paper. The
+    verifier agreed with all 10 outcomes, found no misreading of the paper in the claims file, and
+    listed four sentences the printed numbers did not support.
+  results:
+  - claim: flight-spatial-code
+    agrees: true
+    outcome: blocked
+    reason: The dependencies are partial, blocked and reproduced, so the rule could give not_reproduced or
+      partially_reproduced.
+    response: No change needed.
+  - claim: si-comparable-to-preflight
+    agrees: true
+    outcome: partially_reproduced
+    reason: p is 0.88 and 0.66, and no reading puts both means within tolerance. Separately, "p < 1e-6" for
+      the M-b variant is not supported, as p is printed only to four decimals, as 0.0000; this is a variant
+      and decides nothing.
+    response: Outcome kept. The cell now prints every p unrounded (the M-b variant gives 6.2e-07 and
+      2.5e-07), and the conclusion and the notes give those values.
+  - claim: si-rat1-fd9-vs-preflight
+    agrees: true
+    outcome: blocked
+    reason: p is 0.50 against preflight ES and 0.0055 against preflight MC.
+    response: No change needed.
+  - claim: si-rat3-fd4-vs-preflight
+    agrees: true
+    outcome: reproduced
+    reason: p is 0.28 and 0.77, and both means are within tolerance under the ES reading. The counts are
+      off (11 against 7, 38 against 24), but the rule does not use counts, so this outcome comes from a
+      cell set that is not the paper's.
+    response: Outcome kept. The count difference is already stated in the notes, the conclusion and the
+      selection_undocumented finding.
+  - claim: fd4-abnormal-selectivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Yes, by the criterion. The drop holds for rat 2 under both readings (p 0.0006 and 0.0015) and for
+      rat 1 under neither. The outcome rests entirely on Rat 2's low FD4 information, and whether the
+      position trace in that window is Rat 2's is still unknown (0 of 17 units selective, against 12 of 28
+      on FD9); the criterion sets no condition on tracking, so the outcome stands by its rule, but its only
+      support may come from tracking and not firing.
+    response: Outcome kept. The caveat is stated in the conclusion, the notes and the finding. The data
+      check's list of findings (cell 23) said the trace does not behave as Rat 2's position in that window;
+      it now says the trace could not be attributed to either rat there (0 of 17 and 1 of 16), as the
+      outputs show.
+  - claim: fig3-stability-across-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: Tying each map to the unit it best matches leaves four units tied to two session 3 maps, three of
+      them units of active session 2 maps, so the condition fails and M-a is not run; under M-b (a) 6 of 16
+      and (b) 1 of 16 cells keep their field. The outcome rests on M-b alone, with unsmoothed 4-px maps and
+      few spikes per bin, on which reading (b) almost never passes (2, 1, 0 and 0 cells at thresholds 0.1 to
+      0.5), and "more than half" is taken of 16 units against the paper's 7, with nothing identifying the
+      paper's 7. This follows the criterion and is not an error, but the outcome comes from a reading that
+      is weak by construction. The text says every distinct session 2 map (19) was tied to a unit, while
+      the output shows 17 of 19 with a unit of their tetrode; all 11 active maps are tied, so the outcome
+      is unaffected.
+    response: Outcome kept, as the criterion gives it. The notes and the method cell now say that 17 of the 19
+      session 2 maps, all 11 active ones among them, and 23 of 23 session 3 maps have a unit on their
+      tetrode and were tied. The weakness of M-b and the count difference are stated in the deviations and
+      the conclusion.
+  - claim: direction-selectivity
+    agrees: true
+    outcome: blocked
+    reason: Position exists only at spike times, there is no occupancy by direction and no track layout, and
+      the criterion fixes the label. The statement that the NASA record lists no continuous position is
+      not supported, as the cell prints only file names and counts of EEG-like names and does not search
+      for position; no outcome depends on it.
+    response: Outcome kept. The cell now counts, in each zip file, the entries with a position-like name
+      (none) and prints their extensions; the conclusion and the notes now say that no entry has a
+      position-like name but the .cel spike files and the nested archives were not opened, so whether the
+      record holds continuous position is not known.
+  - claim: theta-normal
+    agrees: true
+    outcome: blocked
+    reason: There is no ElectricalSeries or LFP.
+    response: No change needed.
+  - claim: ripples-normal
+    agrees: true
+    outcome: blocked
+    reason: As for theta-normal.
+    response: No change needed.
+  - claim: three-orthogonal-surfaces
+    agrees: true
+    outcome: not_reproduced
+    reason: fig3 is not reproduced, and the criterion then gives not_reproduced whatever part (ii) gives. Like
+      fig3, it rests on M-b alone, a reading that is weak by construction.
+    response: Outcome kept, as the criterion gives it.
