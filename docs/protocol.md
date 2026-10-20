@@ -145,11 +145,21 @@ Do this before any analysis.
      claim is reproduced if the result matches under any of them. The
      notebook shows every reading, the notes say which ones match, and the
      ambiguity is recorded as a deviation.
-   - Method choices the paper leaves open and that can change the outcome
+   - Methods come from the paper, never from the author. Every part of a
+     criterion's method (the selection, the measure, the test, windows,
+     bins, thresholds, what a measure is compared with) is taken from the
+     Methods, the figure legends, the supplement, or the code the paper
+     links, and the criterion says which. Search all of them before
+     treating a detail as open.
+   - A detail none of them fixes is recorded as a deviation that says so.
+     If it cannot change the outcome (a plotting bin, a random seed), use a
+     standard choice and say that it is one. If it could change the outcome
      (how folds are formed, what a measure is compared with, how a penalty
-     is chosen) are fixed in the criterion before the analysis. The outcome
-     is judged on that choice; other choices are shown as variants and do not
-     change it.
+     is chosen), the criterion names the readings the paper's text allows,
+     before the analysis, and the notebook runs each of them. The outcome is
+     the one they all give; when they give different outcomes, the claim is
+     blocked as `methods_underspecified`, with every result shown. A choice
+     the author makes is never the basis of an outcome.
    - For a claim of absence ("no difference", "did not change"), the
      criterion names the test and threshold the paper used. The claim is
      reproduced when that test does not find the effect and not reproduced
@@ -214,8 +224,8 @@ module.
   so that adding a cell earlier does not change its numbers.
 - **Put loading and reusable measures in a helper module**, so later notebooks
   on the dandiset can import it. Say in its docstring where a parameter comes
-  from: the paper's methods, or a common choice when the methods were not
-  available.
+  from: the paper's Methods, legends or supplement, or its code (say which),
+  or a standard choice for a detail that cannot change a result (say so).
 - **Keep it fast.** Reduce the data to what the analysis needs as it loads.
   Aim for under ten minutes; CI fails a notebook over thirty. If the analysis
   runs many small model fits, limit linear-algebra threads to one.
@@ -359,7 +369,8 @@ Be skeptical. Do not assume the analysis is right.
 
 1. Read the notebook, the helper module and the relevant parts of the paper.
 2. Check the code: that every number derives from the loaded data; that
-   selection, conditions and analysis windows follow the paper; units; leakage
+   every method choice is taken from the paper or its code, as the criterion
+   says, and none is the author's own; that selection, conditions and analysis windows follow the paper; units; leakage
    between training and test data; the statistics; anything assumed and never
    checked. Test helper functions on synthetic inputs where that is cheap.
 3. For each tested claim, decide your own outcome from the notebook's outputs.

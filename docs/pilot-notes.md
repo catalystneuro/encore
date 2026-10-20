@@ -4695,3 +4695,14 @@ Step 1 of the protocol now requires the full text, with the Methods and
 any supplement the results rest on. An author who cannot read it stops
 before writing claims and reports what is missing, so that the paper can be
 supplied. Claims are never written from the abstract.
+
+The same review showed where the guessed methods came from: step 7 let an
+author fix a method choice the paper leaves open and judge the claim on it.
+With only an abstract, nearly every choice was open, so the outcomes rested
+on the author's choices. Step 7 now says that methods come from the paper,
+never from the author: every part of a criterion's method is taken from the
+Methods, legends, supplement or the paper's code, and the criterion says
+which. A detail none of them fixes is recorded as such; if it could change
+the outcome, every reading the paper allows is run, and the claim is
+blocked as `methods_underspecified` when they disagree. The verifier now
+checks that no method choice is the author's own.
