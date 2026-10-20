@@ -120,7 +120,10 @@ paper's abstract, and are queued to be run again from the full text.
 ## Agent runs
 
 Attempts by agents are made in GitHub Actions, one role at a time, on the
-subscription token in the `CLAUDE_CODE_OAUTH_TOKEN` secret:
+subscription token in the `CLAUDE_CODE_OAUTH_TOKEN` secret. With
+`-f account=unverified` they use `CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED`
+instead; the runner tries that account first and moves a run it flags to the
+verified one ([docs/pipeline.md](docs/pipeline.md#accounts)):
 
 ```bash
 gh workflow run attempt.yml -f dandiset=000147 -f role=author

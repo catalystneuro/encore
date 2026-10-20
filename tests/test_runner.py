@@ -22,3 +22,11 @@ def test_the_newest_run_of_a_role_is_found():
             {"databaseId": 2, "displayTitle": "Agent run: 001933 recorder", "status": "completed"},
             {"databaseId": 1, "displayTitle": "Agent run: 001636 recorder", "status": "completed"}]
     assert describe.newest_run(runs, "001636", "recorder") == "3 in_progress"
+
+
+def test_a_run_on_either_account_is_found():
+    runs = [{"databaseId": 5, "displayTitle": "Paper run: 001636 claims", "status": "queued"},
+            {"databaseId": 4, "displayTitle": "Paper run: 001636 claims (unverified)", "status": "completed"}]
+    assert describe.newest_run(runs, "001636", "claims") == "5 queued"
+    assert describe.newest_run(runs[1:], "001636", "claims") == "4 completed"
+    assert describe.newest_run(runs, "001636", "claims-check") == ""

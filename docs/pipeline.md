@@ -41,6 +41,21 @@ copies the dandiset's papers to `paper/` and deletes the key before the agent
 starts. Only steps 3, 4 and 7 may change the claims file; `paper/` is never
 committed, and every transcript leaves out everything under it. Claims files quote the paper only in short passages.
 
+## Accounts
+
+Agent runs use one of two subscription accounts: one verified for sensitive
+life-science work (`CLAUDE_CODE_OAUTH_TOKEN`) and one that is not
+(`CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED`). The workflows take an `account` input,
+`verified` by default. The runner tries each role on the unverified account
+first. On that account, `tools/flagged.py` reads the run's output after the
+agent stops: a refusal, a switch away from the model asked for, or an error
+naming the usage policy means the run was flagged. A flagged run commits
+nothing and fails with `FLAGGED`. The runner then puts the branch back and
+runs the role again on the verified account, along with the dandiset's
+remaining roles. A missing unverified token (`UNVERIFIED-UNAVAILABLE`) is
+treated the same way. The recorder always runs on the verified account. Each
+run's commit records its account.
+
 ## The paper store
 
 `catalystneuro/registry-papers` holds, per dandiset:

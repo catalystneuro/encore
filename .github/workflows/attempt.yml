@@ -1,5 +1,5 @@
 name: Agent run
-run-name: "Agent run: ${{ inputs.dandiset }} ${{ inputs.role }}"
+run-name: "Agent run: ${{ inputs.dandiset }} ${{ inputs.role }}${{ inputs.account == 'unverified' && ' (unverified)' || '' }}"
 
 # One agent run on a target, in a clean environment: the author's attempt, a
 # verification round, or the author's revision after one (docs/protocol.md).
@@ -40,6 +40,11 @@ on:
       version:
         description: "Dandiset version for the author (empty: a published version it chooses)"
         default: ""
+      account:
+        description: "Account: verified, or unverified (a run it flags fails, for the runner to repeat on verified)"
+        type: choice
+        options: [verified, unverified]
+        default: verified
   # Called by attempt-sequence.yml, which runs the five roles of one attempt in order.
   workflow_call:
     inputs:
@@ -55,9 +60,14 @@ on:
       version:
         type: string
         default: ""
+      account:
+        type: string
+        default: verified
     secrets:
       CLAUDE_CODE_OAUTH_TOKEN:
         required: true
+      CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED:
+        required: false
 
 permissions:
   contents: read
@@ -70,6 +80,7 @@ env:
   DANDISET: ${{ inputs.dandiset }}
   ROLE: ${{ inputs.role }}
   MODEL: ${{ inputs.model }}
+  ACCOUNT: ${{ inputs.account || 'verified' }}
   VERSION: ${{ inputs.version }}
   BRANCH: attempt/${{ inputs.dandiset }}
   CLAUDE_CODE_VERSION: 2.1.284
@@ -88,6 +99,7 @@ jobs:
     timeout-minutes: 340
     outputs:
       started: ${{ steps.agent.outputs.started }}
+      flagged: ${{ steps.flag.outputs.flagged }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -126,7 +138,7 @@ jobs:
         run: |
           python tools/agent_run.py prompt "$ROLE" "$DANDISET" --model "$MODEL" ${VERSION:+--version "$VERSION"} > "$RUNNER_TEMP/prompt.md"
           # The workflow's own tools, copied before the agent can change the checkout.
-          cp tools/transcript.py tools/progress.py tools/get_papers.sh "$RUNNER_TEMP/"
+          cp tools/transcript.py tools/progress.py tools/flagged.py tools/get_papers.sh "$RUNNER_TEMP/"
 
       - name: Prepare the verifier's materials, and remove the repository
         if: startsWith(inputs.role, 'verifier')
@@ -147,9 +159,17 @@ jobs:
           if [[ "$ROLE" == verifier* ]]; then dest="$RUNNER_TEMP/work/paper"; else dest=paper; fi
           "$RUNNER_TEMP/get_papers.sh" "$DANDISET" "$dest"
 
+      - name: Check that the unverified account has a token
+        if: ${{ inputs.account == 'unverified' }}
+        env:
+          HAS_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED != '' }}
+        run: |
+          # The runner reads this message and repeats the run on the verified account.
+          [ "$HAS_TOKEN" = true ] || { echo "::error::UNVERIFIED-UNAVAILABLE: no CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED secret"; exit 1; }
+
       - name: Check the token, the permission mode and the agent's shell
         env:
-          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ inputs.account == 'unverified' && secrets.CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED || secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'
           DISABLE_AUTOUPDATER: '1'
           DISABLE_TELEMETRY: '1'
@@ -178,7 +198,7 @@ jobs:
         # Shorter than the job's limit, so that the transcript is still exported when it is reached.
         timeout-minutes: 300
         env:
-          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ inputs.account == 'unverified' && secrets.CLAUDE_CODE_OAUTH_TOKEN_UNVERIFIED || secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'
           CLAUDE_CODE_DISABLE_AUTO_MEMORY: '1'
           DISABLE_AUTOUPDATER: '1'
@@ -201,8 +221,23 @@ jobs:
           tail -c 2000 "$RUNNER_TEMP/stderr.txt" || true
           exit $status
 
+      - name: Check whether the account flagged the run
+        id: flag
+        if: always() && steps.agent.outputs.started == 'true' && inputs.account == 'unverified'
+        run: |
+          # On the unverified account, a run its safety checks flagged (a refusal, or a switch to another
+          # model) is not kept: the job fails with FLAGGED, and the runner repeats it on the verified account.
+          if reason=$(python "$RUNNER_TEMP/flagged.py" "$RUNNER_TEMP/run.jsonl" "$RUNNER_TEMP/stderr.txt" --model "$MODEL"); then
+            echo "not flagged"
+          else
+            echo "flagged=true" >> "$GITHUB_OUTPUT"
+            echo "::error::FLAGGED on the unverified account: $reason"
+            echo "Flagged on the unverified account: $reason. Not committed; repeat on the verified account." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
       - name: Export the transcript and collect the changes
-        if: always() && steps.agent.outputs.started == 'true'
+        if: always() && steps.agent.outputs.started == 'true' && steps.flag.outputs.flagged != 'true'
         run: |
           set -euo pipefail
           out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$DANDISET"
@@ -239,7 +274,7 @@ jobs:
     needs: run
     # Whenever the agent was started, also when the run was cancelled or failed, so that its
     # transcript and partial work are kept; the commit message says how the run ended.
-    if: always() && needs.run.outputs.started == 'true'
+    if: always() && needs.run.outputs.started == 'true' && needs.run.outputs.flagged != 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -287,5 +322,6 @@ jobs:
           if git diff --cached --quiet; then echo "Nothing to commit"; exit 0; fi
           git -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' \
             commit -m "Agent run on $DANDISET: $ROLE (${{ needs.run.result }})" \
-            -m "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+            -m "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
+            -m "Account: $ACCOUNT"
           git push origin "$BRANCH"

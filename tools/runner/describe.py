@@ -5,7 +5,8 @@
     python tools/runner/describe.py next [SKIP ...]    # the next dandiset in the queue
     python tools/runner/describe.py deprecated DANDISET  # "true" when its latest attempt is deprecated
     gh run list ... --json databaseId,displayTitle,status | python tools/runner/describe.py run DANDISET ROLE
-                                                       # "<id> <status>" of the newest run of a role, if any
+                                                       # "<id> <status>" of the newest run of a role, if any,
+                                                       # on either account
 
 `title` and `body` read the latest attempt in the working tree. `next` reads main (origin/main), so
 it can run from any checkout: the first target with no attempt on main, no branch of its own and not
@@ -60,7 +61,8 @@ def next_target(skip: set[str]) -> str | None:
 
 def newest_run(runs: list[dict], dandiset: str, role: str) -> str:
     """The id and status of the newest run of a role on a dandiset, or "" when there is none."""
-    mine = [r for r in runs if r["displayTitle"] in (f"Agent run: {dandiset} {role}", f"Paper run: {dandiset} {role}")]
+    names = {f"{kind}: {dandiset} {role}{account}" for kind in ("Agent run", "Paper run") for account in ("", " (unverified)")}
+    mine = [r for r in runs if r["displayTitle"] in names]
     return f'{mine[0]["databaseId"]} {mine[0]["status"]}' if mine else ""
 
 
