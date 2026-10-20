@@ -1,27 +1,64 @@
 # Claims for Knierim, McNaughton & Poe (2000) on dandiset 001754.
-# Source: the paper is not open access. Only its abstract (the first paragraph shown on the
-# publisher's page) and the titles of its three figures were available.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20, as
+# the reader of docs/protocol.md (version pilot-10, Reader, steps 1 to 4). The reader has not
+# seen the dandiset's data; it read only its title and description on the archive.
 #
-# When these criteria were written, the author had seen the data check only: the file list and
-# metadata, the epochs, units, positions and rate maps of every file; that the Rat1 and Rat2 files
-# of the same flight day share one position trace; that each labelled ES or MC epoch's position
-# histogram matches its own occupancy map best; that rate maps use -999 for unvisited bins and that
-# the tracker's missing-position value (0, 255) falls in occupancy bin [63, 0]; and the correlation
-# between unit spike-count maps and rate maps used to test the rate-map identifiers. No spatial
-# information, shuffle or stability analysis had been run.
+# Text read. The version of record (Nature Neuroscience 3(3), 211-212), from a PDF supplied by a
+# person, as extracted to paper/10.1038-72910.txt. It is a two-page brief communication. It has
+# no separate Methods section and no supplement; its methods are stated in the main text and the
+# figure legends, and the spatial information measure is cited to Skaggs et al. 1996 (its ref.
+# 13). The paper links no code. Its acknowledgements credit analysis software written by
+# W. Skaggs and M. Wilson, which is not published with the paper and was not read. The
+# dandiset's conversion code (catalystneuro/mcnaughton2000-to-nwb) is not the paper's code and
+# fixes no method here. The paper has no section headings, so sources name a body paragraph by
+# its opening words; the unheaded first paragraph is called the standfirst.
 #
-# Method choices fixed here, as no Methods were available. Position is the dandiset's video
-# pixel position (0 to 255), binned as the rate maps are (4 pixels per bin, 64 x 64), then merged
-# 2 x 2 into 32 x 32 bins. Samples at (0, 255) are missing tracking and are dropped, and the
-# occupancy bin [63, 0] is left out. Occupancy is the rate-map occupancy map of the epoch (the
-# dandiset holds position only at spike times); bins with fewer than 5 counts are left out.
-# Spatial information is Skaggs' bits per spike. A unit is a tetrode and cluster id within one
-# epoch, with at least 50 spikes at a known position.
-# Quotes from the abstract and the figure titles added 2026-10-19. Four claims taken from the
-# dandiset's description (si-comparable-to-preflight, fd4-abnormal-selectivity, theta-normal,
-# ripples-normal) were dropped the same day: the paper's open text does not state them, so they
-# could not be shown to be findings of the paper. Their sections remain in the notebook.
-# Quotes and statistics added 2026-10-20 from the full text (PDF of the version of record).
+# Data the paper used, as it reports them. Three rats (rats 1, 2 and 3) implanted with a
+# multi-electrode recording array (refs. 11, 12), recorded during the Neurolab Space Shuttle
+# mission (STS-90, April 1998). In flight the rats ran a three-dimensional track, the Escher
+# staircase (three 90 degree yaw turns interleaved with three 90 degree pitch turns), for medial
+# forebrain bundle stimulation as reward, mostly clockwise with short counterclockwise runs.
+# Preflight, rats ran clockwise on a flat rectangular track (for rat 2, 4 days before launch).
+# Flight day 4 (FD4) was the first in-flight exposure to the staircase; rat 3's first session
+# that day was lost, and its sessions 2 and 3 followed one another. Flight day 9 (FD9) was the
+# second day on the staircase; rats 1 and 2 were recorded. Measured variables are the spikes of
+# isolated units, the rat's tracked position (including positions where the head moved off the
+# track, which all statistical analyses kept), and hippocampal EEG during baseline sessions in a
+# sleeping pouch and during behaviour on FD4 and FD9. Active cells have a mean rate above 0.05 Hz
+# on the track. Cell counts are 19 (rat 2), 28 (rat 1) and 24 (rat 3) preflight; 16 (rat 2) and
+# 21 (rat 1) on FD9; 7 (rat 3) on FD4. The dandiset's description says it holds preflight and
+# FD4 and FD9 recordings, divided into Escher staircase (ES) and Magic Carpet (MC) epochs with
+# rate maps, and that the EEG is not included. All claims use the paper's own recordings
+# (`data` dataset); none relies on outside data.
+#
+# What changed from the deprecated file, and why. That file was written from the abstract and
+# figure titles only, and its method choices were the agent's. This one is written from the full
+# text. flight-spatial-code keeps its id and finding, but is now judged as the paper judges it,
+# by comparing spatial information per spike of active cells in flight with the same rat's
+# preflight cells (Mann-Whitney), and no longer by a shuffle test the paper does not use. The
+# four claims the earlier file dropped are stated in the paper and are restored with their ids
+# (si-comparable-to-preflight, fd4-abnormal-selectivity, theta-normal, ripples-normal).
+# fig3-stability-across-sessions and three-orthogonal-surfaces keep their ids and findings, with
+# criteria rewritten from the paper. New claims are si-rat1-fd9-vs-preflight,
+# si-rat3-fd4-vs-preflight and direction-selectivity. The deprecated file's own choices (32 x 32
+# bins, 50 spikes, 5 occupancy counts) are not kept, as no source fixes them.
+#
+# Details the paper leaves open, for the spatial information claims. The measure is Skaggs'
+# information per spike (ref. 13), I = sum over bins of p_i (r_i / r) log2(r_i / r), with p_i the
+# occupancy probability of bin i, r_i its rate and r the mean rate. The paper gives no bin size,
+# smoothing, minimum occupancy, speed filter or minimum spike count, and does not say which
+# preflight session gave the preflight values of each rat, or which FD9 session when there was
+# more than one. These can change the outcome, so the criteria name readings, and every reading
+# is run. Readings of the map (M): (M-a) the rate and occupancy maps the dandiset deposits for
+# each epoch, when they are the authors' maps; (M-b) maps recomputed from spikes and position on
+# the grid of those deposited maps, without smoothing, with every visited bin kept. Off-track
+# positions are kept in both, as the Fig. 1 legend says. Readings of the session (S): (S-a) each
+# candidate session on its own; (S-b) for preflight, the rectangular-track session closest
+# before launch (for rat 2, the session of Fig. 2b, 4 days before launch). The test's level is
+# not printed; the Mann-Whitney test is read as two-sided at p < 0.05, the conventional level,
+# and this is named as open. The paper reports means with standard errors but no p-values, so
+# its tests are recorded in the criteria and no `statistics` entry is given (the schema needs a
+# p-value or an interval).
 schema_version: 2
 dataset:
   archive: dandi
@@ -29,44 +66,228 @@ dataset:
 paper: doi:10.1038/72910
 claims:
 - id: flight-spatial-code
-  statement: Hippocampal neurons recorded on the space shuttle form a robust spatial code on the
-    three-dimensional Escher staircase track in weightlessness.
-  source: Abstract; shown in Figure 2a,c (flight day 9, rats 2 and 1) and main text, paragraph 3
-    (the paper has no section headings; body paragraphs are counted after the opening summary)
-  quote: Nonetheless, neural recordings on the space shuttle demonstrated that the hippocampus can
-    create a robust spatial code for three orthogonal surfaces in the weightless environment of
-    space flight.
-  criterion: For each in-flight Escher staircase (ES) epoch, each unit's spatial information is
-    compared with 500 shuffles in which the spike train is shifted circularly within the epoch by
-    20 s or more and each shifted spike takes the position of the nearest position sample within
-    0.25 s (spikes without one are dropped). A unit is significant when its spatial information
-    exceeds the 95th percentile of its shuffles. Judged on the two flight day 9 sessions (Rat1 and
-    Rat2), as the claim is that the code can form. Reproduced when in both the fraction of
-    significant units is at least 0.5; partially reproduced when it is above chance (one-sided
-    binomial test against 0.05, p < 0.01) in both but below 0.5 in one or both, or reproduced in
-    one only; not reproduced otherwise. The flight day 4 sessions (Rats 1 to 3) are reported, as
-    are other thresholds.
-- id: three-orthogonal-surfaces
-  statement: The spatial code covers each of the three orthogonal surfaces of the Escher
-    staircase.
-  source: Main text, paragraph 6 (the paper has no section headings; body paragraphs are counted
-    after the opening summary); also the Abstract
-  quote: Thus hippocampal cells can form unique, reliable representations of position on three
-    orthogonal surfaces in microgravity
-  criterion: Would need each position assigned to one of the track's three surfaces, and the
-    place fields counted per surface.
+  statement: In flight, after an initial period, hippocampal place cells on the Escher staircase
+    showed normal, spatially specific firing, with spatial information per spike not different
+    from the same rats' preflight cells.
+  source: Main text, paragraph beginning "During the Neurolab Space Shuttle mission", last
+    sentence; supported by the paragraph beginning "Spatial firing patterns of 16 active place
+    cells" and Figures 2a, 2c and 3a; also the standfirst
+  quote: Nonetheless, place cells eventually demonstrated normal, spatially specific firing
+    properties.
+  depends_on:
+  - si-comparable-to-preflight
+  - si-rat1-fd9-vs-preflight
+  - si-rat3-fd4-vs-preflight
+  criterion: The paper supports this finding by its three comparisons of spatial information per
+    spike in flight with the same rat's preflight cells (main text, paragraph beginning "Spatial
+    firing patterns of 16 active place cells"), which are the claims this one depends on.
+    Reproduced when all three are reproduced; partially reproduced when the two FD9 comparisons
+    (rats 1 and 2, the sessions the word "eventually" points to) are reproduced and the FD4
+    comparison is not; not reproduced when either FD9 comparison is not reproduced. When a
+    dependency is blocked as methods_underspecified, so is this claim, unless the others already
+    decide it.
+- id: si-comparable-to-preflight
+  statement: For rat 2, the spatial information per spike of the 16 active cells recorded on the
+    Escher staircase on flight day 9 (1.13 +/- 0.09 bits) did not differ significantly from that
+    of its 19 active preflight cells (1.12 +/- 0.08 bits), by Mann-Whitney test.
+  source: Main text, paragraph beginning "Spatial firing patterns of 16 active place cells",
+    sentences 1 and 3; Figure 2a,b
+  quote: An index of spatial tuning specificity ... did not significantly differ between cells
+    recorded preflight and those recorded on FD9 (for active cells, defined as having a mean
+    firing rate > 0.05 Hz on the track; mean information per spike ± s.e. preflight, 1.12 ± 0.08
+    bits, n = 19; FD9, 1.13 ± 0.09 bits, n = 16; not significant by Mann-Whitney)
+  expected:
+  - quantity: rat 2 FD9 mean spatial information per spike, active cells
+    value: 1.13
+    tolerance: 0.09
+    unit: bits/spike
+  - quantity: rat 2 preflight mean spatial information per spike, active cells
+    value: 1.12
+    tolerance: 0.08
+    unit: bits/spike
+  - quantity: rat 2 FD9 active cells
+    value: 16
+    tolerance: 1.6
+  - quantity: rat 2 preflight active cells
+    value: 19
+    tolerance: 1.9
+  criterion: From the paper's text. Cells are the active cells of each session, mean firing rate
+    above 0.05 Hz over the session on the track (main text), the FD9 cells from the Escher
+    staircase session and the preflight cells from the rectangular track. The measure is Skaggs'
+    information per spike (ref. 13), computed with off-track positions kept (Fig. 1 legend). The
+    test is the paper's, a Mann-Whitney test of FD9 against preflight values; the level is not
+    printed and is read as two-sided p < 0.05. Tolerances are the paper's standard errors, and
+    10% for the counts. Bin size, smoothing, minimum occupancy and which sessions are open; the
+    readings M-a and M-b and S-a and S-b of the opening comment are each run. A claim of absence,
+    judged on the paper's test. Reproduced when, under every reading, the test does not find a
+    difference and, under at least one reading, both means fall within tolerance; partially
+    reproduced when the test finds no difference under every reading but no reading puts both
+    means within tolerance; not reproduced when the test finds a difference under every reading;
+    blocked as methods_underspecified when the readings disagree on the test. The difference of
+    the means and the test's p-value are given under every reading.
+- id: si-rat1-fd9-vs-preflight
+  statement: For rat 1, the mean spatial information of its 21 active cells on flight day 9
+    (1.19 +/- 0.09 bits) did not differ significantly from its preflight cells (1.37 +/- 0.10
+    bits, n = 28).
+  source: Main text, paragraph beginning "Spatial firing patterns of 16 active place cells",
+    sentences 4 and 5; Figure 2c
+  quote: We also determined the spatial tuning of 21 active cells from rat 1 on FD9 (Fig. 2c).
+    ... did not significantly differ from that rat's preflight data (1.37 ± 0.10; n = 28).
+  expected:
+  - quantity: rat 1 FD9 mean spatial information per spike, active cells
+    value: 1.19
+    tolerance: 0.09
+    unit: bits/spike
+  - quantity: rat 1 preflight mean spatial information per spike, active cells
+    value: 1.37
+    tolerance: 0.10
+    unit: bits/spike
+  - quantity: rat 1 FD9 active cells
+    value: 21
+    tolerance: 2.1
+  - quantity: rat 1 preflight active cells
+    value: 28
+    tolerance: 2.8
+  criterion: As for si-comparable-to-preflight, for rat 1. The sentence names no test; it is read
+    as the Mann-Whitney test named for rat 2 in the sentence before, the only test the paper
+    names. Units are not printed for these means; they are read as bits per spike, as for rat 2.
+    The same readings are run and the same rule decides the outcome.
+- id: si-rat3-fd4-vs-preflight
+  statement: For rat 3, the mean spatial information of all 7 active place cells on flight day 4
+    (1.12 +/- 0.27 bits, session 2) was not different from its preflight cells (1.48 +/- 0.11
+    bits, n = 24).
+  source: Main text, paragraph beginning "Spatial firing patterns of 16 active place cells",
+    sentence 6; Figure 3a
+  quote: The mean spatial-information content for all 7 active place cells from rat 3 on the
+    fourth day of flight (FD4) was 1.12 ± 0.27 bits (Fig. 3a), which was not different from the
+    information content measured for this rat's place cells before the flight (1.48 ± 0.11 bits;
+    n = 24).
+  expected:
+  - quantity: rat 3 FD4 mean spatial information per spike, active cells
+    value: 1.12
+    tolerance: 0.27
+    unit: bits/spike
+  - quantity: rat 3 preflight mean spatial information per spike, active cells
+    value: 1.48
+    tolerance: 0.11
+    unit: bits/spike
+  - quantity: rat 3 FD4 active cells
+    value: 7
+    tolerance: 0.7
+  - quantity: rat 3 preflight active cells
+    value: 24
+    tolerance: 2.4
+  criterion: As for si-comparable-to-preflight, for rat 3. The FD4 cells are from the session of
+    Fig. 3a, the second exposure to the staircase that day (the first was lost, Fig. 3 legend).
+    The sentence names no test; it is read as the Mann-Whitney test named for rat 2, the only
+    test the paper names. The same readings are run and the same rule decides the outcome.
 - id: fig3-stability-across-sessions
-  statement: Place fields are stable across sessions.
-  source: Figure 3a,b (rat 3, flight day 4, sessions 2 and 3); main text, paragraph 4
+  statement: For rat 3 on flight day 4, most of the 7 cells kept the same firing fields in a third
+    session that followed the second immediately; the fourth cell lost its field, and a few other
+    cells gained a field in session 3.
+  source: Main text, paragraph beginning "Spatial firing patterns of 16 active place cells", last
+    sentence; Figure 3a,b and legend
   quote: Another recording session followed immediately, and most cells maintained the same firing
     fields in both sessions (Fig. 3b), demonstrating that the spatial tuning was stable across
     different exposures to the track.
-  criterion: Tested on the only pair of sessions on the same track and day with known position,
-    the two ES epochs of Rat3 on flight day 4. A unit is the same tetrode and cluster id in both
-    epochs, with at least 50 spikes at a known position in each. Rate maps on 32 x 32 bins, spike
-    counts and occupancy each smoothed with a Gaussian of 1 bin; Pearson correlation over bins with
-    at least 5 occupancy counts in both epochs. The median same-unit correlation is compared with
-    the medians of 1000 random re-pairings of units between the epochs. Reproduced when it exceeds
-    the 95th percentile of the re-paired medians and is above 0.5; partially reproduced when it
-    exceeds the 95th percentile but is 0.5 or below; not reproduced otherwise. The correlation of
-    the dandiset's rate maps for the two epochs is shown as a variant.
+  expected:
+  - quantity: cells compared across sessions 2 and 3
+    value: 7
+    tolerance: 0.7
+  criterion: The cells are the 7 active cells of session 2 (si-rat3-fd4-vs-preflight), followed
+    into session 3 on the same track. The paper judges "the same firing fields" from the maps of
+    Fig. 3 and gives no measure, so the measure is open; "most" is read as at least 4 of the 7.
+    Readings of keeping a field, each run on the maps of reading M-a and of M-b (opening comment)
+    (a) the Pearson correlation of a cell's session 2 and session 3 rate maps, over bins visited
+    in both, exceeds the 95th percentile of the correlations between different cells across the
+    two sessions; (b) the bin of peak rate in session 3 lies in the session 2 field, taken as the
+    bins with at least 20% of the session 2 peak rate (a common field definition, not the
+    paper's). Reproduced when at least 4 of the 7 cells keep their field under every reading;
+    not reproduced when 3 or fewer do under every reading; blocked as methods_underspecified
+    when the readings disagree. Which cell lost its field, and the cells silent in session 2
+    that gained a field in session 3, are reported but not judged, as the figure's cell order is
+    not given in the text.
+  depends_on:
+  - si-rat3-fd4-vs-preflight
+- id: direction-selectivity
+  statement: Some cells had place fields only when the rat moved counterclockwise through a
+    location, showing the direction selectivity seen on such tracks on Earth.
+  source: Main text, paragraph beginning "The rats occasionally turned around on the track",
+    sentences 1 and 2
+  quote: Some cells demonstrated place fields when the rat was moving only counterclockwise
+    through a single location, thus demonstrating the direction selectivity that is seen on such
+    tracks under normal terrestrial conditions
+  criterion: The paper names no session, cells or measure. Sessions are the in-flight Escher
+    staircase sessions with position (FD4 and FD9), active cells as in si-comparable-to-preflight.
+    Direction of travel is open; it is read as the sign of the rat's movement along the track's
+    circuit, from successive positions, clockwise being the trained direction (main text).
+    For each cell and position bin of the maps of reading M-b, rates are computed separately for
+    clockwise and counterclockwise samples. A cell has a counterclockwise-only field when, at
+    some bin with counterclockwise occupancy, its counterclockwise rate is at least 1 Hz and
+    its clockwise spike count there is lower than expected from the counterclockwise rate by a
+    one-sided Poisson test at p < 0.05 (the thresholds are standard choices, not the paper's).
+    "Some cells" is read as at least two cells over all sessions. Reproduced when at least two
+    cells have such a field; partially reproduced when one does; not reproduced when none does.
+- id: theta-normal
+  statement: Hippocampal EEG showed normal theta rhythm during active locomotion, in all rats on
+    flight days 4 and 9.
+  source: Main text, paragraph beginning "The rats occasionally turned around on the track",
+    sentences 3 and 4
+  quote: Hippocampal EEG activity was also ... recorded during baseline and behavioral sessions in
+    all rats on FD4 and FD9. Although the small number of subjects precluded a statistical
+    analysis, they showed normal theta rhythm during active locomotion
+  criterion: Needs the hippocampal EEG of the FD4 and FD9 behavioral sessions. The paper reports
+    no statistical analysis and no measure of "normal". Read as a peak in the EEG power spectrum
+    within the theta band during locomotion (speed above the session median) that is absent or
+    smaller during immobility; the band is open, read as 6 to 10 Hz (the usual rat theta band,
+    not given in the paper). Reproduced when every rat and flight day with EEG shows this;
+    partially reproduced when some do; not reproduced when none does.
+- id: ripples-normal
+  statement: Hippocampal EEG showed normal sharp waves and ripples during quiet inactivity in the
+    sleeping pouch, on both flight days.
+  source: Main text, paragraph beginning "The rats occasionally turned around on the track",
+    sentence 4
+  quote: they showed normal theta rhythm during active locomotion and normal sharp waves and
+    ripples15 during quiet inactivity in the sleeping pouch on both flight days.
+  criterion: Needs the hippocampal EEG of the sleeping pouch baseline sessions on FD4 and FD9. The
+    paper reports no statistical analysis and no detection method; it cites Buzsaki 1986 (ref. 15)
+    for the events. Read as ripple events in the 100 to 250 Hz band (the band of ref. 15's era,
+    not given in the paper), detected where the band envelope exceeds its mean by 3 standard
+    deviations during immobility, coinciding with a large negative sharp wave in the filtered
+    0.5 to 30 Hz signal. Reproduced when every rat and flight day with pouch EEG shows such
+    events; partially reproduced when some do; not reproduced when none does.
+- id: fd4-abnormal-selectivity
+  statement: On the first experience of the Escher staircase on flight day 4, place cells of rats
+    1 and 2 showed abnormal patterns of spatial selectivity, which differed between the two rats.
+  source: Main text, paragraph beginning "It is interesting to note", sentence 1 (given as
+    unpublished observations)
+  quote: on the first experience on the Escher staircase on FD4, firing of place cells showed
+    abnormal patterns of spatial selectivity that differed between rats 1 and 2
+  criterion: The paper gives no measure or test for "abnormal"; its only measure of normal
+    spatial selectivity is spatial information per spike compared with the same rat's preflight
+    cells by Mann-Whitney. Read so (one reading for the comparison, with the map and session
+    readings of the opening comment) abnormal is a spatial information of active cells on FD4
+    significantly lower than preflight for that rat (two-sided p < 0.05), in each of rats 1 and
+    2. Reproduced when this holds for both rats under every reading; partially reproduced when it
+    holds for one rat; not reproduced when it holds for neither; blocked as
+    methods_underspecified when readings disagree. That the patterns differed between the rats
+    has no measure in the paper and is reported, not judged.
+- id: three-orthogonal-surfaces
+  statement: Hippocampal cells formed distinct, reliable representations of position on the
+    three orthogonal surfaces of the Escher staircase in microgravity.
+  source: Main text, paragraph beginning "It is interesting to note", sentence 2; also the
+    standfirst
+  quote: Thus hippocampal cells can form unique, reliable representations of position on three
+    orthogonal surfaces in microgravity
+  depends_on:
+  - flight-spatial-code
+  - fig3-stability-across-sessions
+  criterion: The paper reports no analysis per surface; the finding rests on the spatial
+    information and stability results. Read as (i) flight-spatial-code and
+    fig3-stability-across-sessions reproduced, and (ii) in each FD9 session (rats 1 and 2), the
+    peak-rate bins of the active cells, on maps of readings M-a and M-b, fall on each of the
+    track's three surfaces (at least one cell per surface), the surfaces drawn from the track
+    outline in the position frame. Reproduced when both hold under every reading; partially
+    reproduced when (i) holds and (ii) fails for one rat or one reading; not reproduced when (i)
+    fails. Whether the code is one three-dimensional map or separate two-dimensional maps is
+    left open by the paper and is not judged.
