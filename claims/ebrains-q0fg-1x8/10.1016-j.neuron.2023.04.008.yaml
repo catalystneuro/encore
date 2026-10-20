@@ -1,0 +1,1321 @@
+# Claims for Nagelhus, Andersson, Gonzalo Cogno, Moser & Moser (2023), "Object-centered population
+# coding in CA1 of the hippocampus", Neuron 111, 2091-2104, on EBRAINS dataset 10.25493/Q0FG-1X8.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20, protocol
+# as stated in docs/protocol.md (pilot-10).
+#
+# Text read: the version of record (open access, CC BY), from the PDF supplied by a person, as
+# extracted to paper/10.1016-j.neuron.2023.04.008.txt: main text, figure legends, STAR Methods and
+# the Supplemental information (Supplementary Figures 1 to 8 and Supplementary Table 1). The legend
+# of Supplementary Figure 7 is an image in the PDF and is missing from the text; it was read from
+# PDF page 46. The CA3 p-values of Supplementary Figure 3F were read from PDF page 35. Supplementary
+# Table 1 is garbled in the text (exponents of some p-values are lost); its values were read from PDF
+# page 49.
+#
+# Code read: the paper's code on Zenodo (doi:10.5281/zenodo.7797252, "v1.0"), a snapshot of GitHub
+# sebasoa/Object-centered-population-coding at tag v1.0, commit 4e4f5ac. It holds MATLAB functions
+# for the object-tuning score (objectTuningScore.m, templateMatchingScore.m,
+# shuffledTemplateMatchingScore.m, rateMapData.m, compareThreshold.m) and for the distance decoder
+# (distanceDecoder.m, divideTrainingTesting.m, binningSpikeMatrix.m, equalDistanceEdges.m,
+# calculateDistanceMap.m, calculateDecodingAccuracy.m), with a rate-map function (calculateRateMap.m,
+# from the Behavioural Neurology Toolbox). Two functions they call are not in the repository:
+# objectScore (the template and its correlation with a rate map) and PoissonDecoder_distance (the
+# Poisson likelihood). Those steps are taken from the Methods. No code is given for the single-cell
+# change analyses, object traces, words and counts, mutual information, KL divergence, behavioural
+# decoders or population vector correlations.
+#
+# Data the paper used (as it reports them). 10 male Long-Evans rats; 7 implanted with tetrodes
+# (CA1/CA3) and 3 with Neuropixels 2.0 probes (CA1/CA3 and MEC; MEC data not used). Each session had
+# four trials of free foraging in a 150 cm x 150 cm open field, each typically 20 to 30 min (the
+# Methods assume 1800 s): No Object (NO), Object (O, a 52 x 10 x 10 cm Duplo tower at or near the
+# middle), Object Moved (OM, the tower moved towards a corner, 35 to 55 cm from it), and No Object'
+# (NO', omitted in some sessions, 8.5% of cells). Control sessions had four trials without an object
+# (CON1 to CON4). Position from two LEDs at 25 Hz (tetrodes) or OptiTrack at about 120 Hz
+# (Neuropixels). Cells were kept when no more than 1% of inter-spike intervals were under 2 ms and
+# the mean rate over the session was 0.05 to 10 Hz; cells in cortex or dentate gyrus were excluded.
+# Samples: 1,189 unique CA1 principal cells from 9 rats in object sessions; 219 CA1 cells from 3
+# rats in control sessions; 313 CA3 cells and 59 CA3 control cells from 2 rats. Population analyses
+# use the sessions with at least 25 simultaneously recorded cells: the Methods say 15 tetrode
+# sessions (25 to 39 cells) and 2 Neuropixels sessions (620 cells from two probes in rat 27207, and
+# 135 cells from one probe), 4 rats in all; the figure legends count 16 sessions, and the Figure 5B
+# and Supplementary Figure 8A legends say 14 tetrode sessions (2 rats). Measured variables: spike
+# times, position, head direction, object position per trial, cell identity across days (tetrodes),
+# recording region (CA1 or CA3) and the proximodistal implant site.
+#
+# The dataset is described on EBRAINS as "Extracellular unit recordings from CA1/CA3 pyramidal cells
+# in rats exploring an open arena with object landmarks" (v1, MATLAB files). Whether it holds the
+# control sessions, the CA3 cells, cell identities across days and the implant sites is the
+# author's to find.
+#
+# Methods shared by many claims, with their sources.
+#
+# Rate maps for single cells (Fig 1 to 2, 7, S2 to S4). Methods, Firing rate maps: 2.5 cm bins,
+# spikes over time per bin, Gaussian smoothing with SD 2 bins, only epochs with speed above 2.5 cm/s.
+# Spatial correlation (Methods, Spatial correlation and rate overlap): Pearson correlation over bins
+# with a value in both maps. Rate overlap: mean rate in the less active trial over that in the more
+# active trial. Firing fields (Methods): contours from the peak down to 3 x MAD of all bins, fields
+# at least 225 cm2 with a rate of at least 1 Hz. Open: whether the mean rate for rate overlap uses
+# all of the trial or only the speed-filtered epochs; readings (a) speed-filtered, (b) whole trial.
+#
+# Template matching (object-tuning score). Methods, Template matching procedure, and the code
+# (rateMapData.m, templateMatchingScore.m, shuffledTemplateMatchingScore.m, compareThreshold.m):
+# rate maps of the O and OM trials with 3 cm bins over 0 to 150 cm (50 x 50), smoothing 2 bins,
+# unvisited bins not blanked (code); Gaussian templates centred at the object or offset by 5, 10,
+# 15, 20, 30, 40, 50 or 60 cm in 8 directions (0 to 7 pi/4), 8 widths, 520 scores per cell; score =
+# minimum over O and OM of the Pearson correlation of template and rate map; per width, 500
+# shuffles drawing one location uniformly in the arena (0 to 150 cm in x and y) used in both trials
+# (code), threshold the 99th percentile of the shuffled minimum; a cell is object-tuned when any
+# score exceeds its width's threshold. A cell's single object-tuning score (Fig 7) is the score with
+# the largest margin over its threshold (compareThreshold.m). Open, could change the outcome: the
+# template width. Readings (a) the code's, standard deviations of 5, 10, 25, 50, 75, 100, 150 and
+# 200 cm; (b) the Methods', variances of those values (standard deviation the square root, in cm).
+# Open: the template's form and the bins correlated (objectScore is not in the repository); the
+# reading used is an isotropic Gaussian evaluated at bin centres, correlated with all 2,500 bins.
+# Open: the speed filter, applied to these maps per the Methods (the code takes the positions it
+# is given).
+#
+# Distance decoder. Methods, Bayesian decoding algorithm and Calculation of decoding accuracy, and
+# the code distanceDecoder.m with its helpers. Trials NO and O. Each trial is split at the midpoint
+# of its position time span; one iteration tests on the first half and trains on the second, the
+# other the reverse (divideTrainingTesting.m). Rate maps and occupancy from the training half with
+# 3 cm bins, smoothing 2 bins, unvisited bins not blanked (distanceDecoder.m). Testing samples are
+# spike counts in consecutive 1 s bins from the start of the testing half (binningSpikeMatrix.m).
+# A sample's distance is that of the position sample nearest in time to the bin centre from the
+# object (equalDistanceEdges.m). Within each trial and iteration, testing samples are sorted by
+# distance and split into 5 equal groups, the remainder going to bin 5; the bin edges are 0 and each
+# group's largest distance (equalDistanceEdges.m). For a sample in distance bin b, the likelihood
+# under each trial is the product over cells of Poisson probabilities with mean the training rate in
+# a spatial bin (Methods), times a prior equal to that trial's training occupancy restricted to the
+# spatial bins whose centre lies strictly between bin b's edges of that trial and normalised, summed
+# over those spatial bins (distanceDecoder.m). The sample is assigned to NO when the ratio exceeds 1.
+# Accuracy per distance bin is correct over correct plus wrong, pooled over both trials and both
+# iterations, ties left out (calculateDecodingAccuracy.m). The whole-arena decoder (Fig 3) is the
+# same without distance bins: all spatial bins and the full occupancy prior (Methods). Open, could
+# change the outcome: the speed filter. Readings (a) the Methods' rule, rate maps and occupancy from
+# epochs above 2.5 cm/s, all testing samples kept; (b) the code as written, no speed filter.
+#
+# Decoding sessions. Methods: tetrode sessions with at least 25 simultaneously recorded CA1 cells
+# and the two Neuropixels CA1 sessions. The text gives 15 tetrode sessions (17 in all), the legends
+# 16 sessions (14 tetrode). Readings (S-methods) every session meeting the Methods' rule;
+# (S-legends) when that rule gives one session more than 16, the claim is also run on each set of 16
+# that drops one tetrode session, and the outcome is the one all of them give. The session count
+# found is reported. Statistics over sessions (Methods, Statistical tests): Kruskal-Wallis across
+# distance bins, Wilcoxon signed-rank for paired comparisons, rank-sum for unpaired, Pearson for
+# correlations, two-sided, alpha 0.05.
+#
+# Unique cells. The paper counts 1,189 unique CA1 cells; tetrode cells recorded on several days are
+# counted once. The paper does not say which day's session stands for such a cell in the single-cell
+# analyses. Readings (a) the first day the cell was recorded (Fig 1H calls it day 0); (b) every
+# session, counting cell-sessions. Each count-based claim is judged under both.
+#
+# Inconsistencies in the paper noted for the attempt: 13 (text) against 11 (Fig 1H legend) of 35
+# cells stable on more than one day, with 31.4% printed for both (11/35 = 31.4%); identical statistics
+# for OM-NO' and NO-NO' spatial correlation (z = 11.85, p = 2.11e-32); 12.2% (text) against 12.3%
+# (Fig S5L legend) of cells with positive distance tuning; three different lists of subset sizes for
+# Figure 6C; the Figure 3D legend pools four datasets while the Methods use the 620-cell session; the
+# Figure 6A legend gives 1,189 cells from the 17 decoding sessions, while 1,189 is the count over
+# all 9 rats; the Figure 1H legend counts 35 cells while its y axis runs to 62; the Methods refer to a section "Region-of-interest analysis for object responses" that
+# is not in the paper.
+schema_version: 2
+dataset:
+  archive: ebrains
+  id: Q0FG-1X8
+  doi: 10.25493/Q0FG-1X8
+paper: doi:10.1016/j.neuron.2023.04.008
+claims:
+- id: cell-counts
+  statement: The object sessions yielded 1,189 unique CA1 principal cells from 9 rats, the control
+    sessions 219 CA1 principal cells from 3 rats, and up to 620 CA1 cells were recorded simultaneously.
+  source: Figure 2D legend; Introduction, paragraph 3; Results, Decoding the presence of an object, paragraph 1
+  quote: "n = 1,189 principal cells recorded from 9 rats) and the corresponding pair of control trials
+    (as in Figure 2B; brown lines; n = 219 principal cells recorded from 3 rats)"
+  expected:
+  - quantity: unique CA1 cells in object sessions
+    value: 1189
+    tolerance: 118.9
+    unit: cells
+  - quantity: CA1 cells in control sessions
+    value: 219
+    tolerance: 21.9
+    unit: cells
+  - quantity: largest number of CA1 cells recorded simultaneously
+    value: 620
+    tolerance: 62
+    unit: cells
+  criterion: Cells are counted after the paper's inclusion rules (Methods, Spike sorting and
+    cell-inclusion criteria, and Histology), CA1 only. Unique cells under both readings of the opening
+    comment. Reproduced when the three counts are within tolerance.
+- id: fig1c-object-tuned-fraction
+  statement: 19.9% of CA1 cells (237 of 1,189) were object-tuned by the template matching
+    procedure, significantly more than the 5.03% (11 of 219) found by the same procedure in control
+    trials without objects.
+  source: Results, Object cells and object-vector cells in the hippocampus, paragraph 3; Figure 1C
+  quote: "Using the template matching procedure, 19.9% of CA1 cells were classified as object-tuned
+    (237/1,189 cells) ... This fraction was significantly higher than a chance level determined by
+    running the same template matching procedure on control trials without objects (11/219 cells,
+    5.03%"
+  statistics:
+  - test: binomial test
+    p: 5.73e-141
+    p_relation: "<"
+    n: 1,189 CA1 cells against a chance level from 219 control cells
+  expected:
+  - quantity: fraction of CA1 cells object-tuned
+    value: 0.199
+    tolerance: 0.0199
+  - quantity: fraction of control cells object-tuned (chance level)
+    value: 0.0503
+    tolerance: 0.00503
+  criterion: Template matching as in the opening comment, under each template-width reading, on the
+    O and OM trials of every CA1 cell. Chance level as in the Methods (Template matching, Chance level),
+    on the 219 control cells with the object placed at (75, 75) cm in the trial standing for O and at
+    (35, 120) cm in the trial standing for OM. The paper does not say which control trials stand for
+    O and OM; readings (a) CON2 and CON3, the trials in the same place in the session; (b) CON1 and
+    CON2. Reproduced when, under one reading, both fractions are within tolerance and a binomial test
+    of the object-tuned count against the chance fraction gives p < 0.05 (two-sided, as all the
+    paper's tests are; Methods, Statistical tests).
+- id: fig1d-field-distances
+  statement: Firing fields of object-tuned cells lay at a wide range of distances from the object
+    (4.8 to 80.7 cm, mean 37.7 cm, SD 16.0 cm) and covered all directions around it.
+  source: Results, Object cells and object-vector cells in the hippocampus, paragraph 3; Figure 1D
+  quote: "The firing fields of the object-tuned cells covered a wide range of distances from the
+    object (range: 4.8–80.7 cm; mean ± SD: 37.7 ± 16.0 cm) and the entire azimuthal range"
+  depends_on:
+  - fig1c-object-tuned-fraction
+  expected:
+  - quantity: mean distance of object-tuned cells' fields from the object
+    value: 37.7
+    tolerance: 3.77
+    unit: cm
+  - quantity: smallest field distance
+    value: 4.8
+    tolerance: 0.48
+    unit: cm
+  - quantity: largest field distance
+    value: 80.7
+    tolerance: 8.07
+    unit: cm
+  criterion: The tolerance on the mean is 10% of it, as the SD of 16.0 cm is the spread over cells,
+    not an uncertainty of the mean. Fields detected as in the opening comment. The paper does not say
+    which point of a field gives its distance, in which trial, or which field of a cell with several.
+    Readings (a) the centroid of the field (the point Supplementary Figure 5G plots) in the O trial,
+    nearest field; (b) as (a) averaged over the O and OM trials; (c) the field's peak bin in the O
+    trial. Reproduced when, under one reading, the mean is within tolerance, the range lies within
+    4.8 to 80.7 cm widened by 10% of each bound, and every 45 degree sector around the object holds
+    at least one field.
+- id: fig1e-object-cells-and-object-vector-cells
+  statement: About 4.1% of all recorded CA1 cells (49 of 1,189) were object cells, object-tuned with
+    fields under 15 cm from the object, and 13.3% (158) were object-vector cells, with fields 15 cm or
+    more away; 30 object-tuned cells had no detectable field.
+  source: Results, Object cells and object-vector cells in the hippocampus, paragraph 4; Figure 1E;
+    Methods, Template matching procedure
+  quote: "we estimated that 4.1% of all recorded cells were object cells (49/1,189 cells, object-tuned
+    cells with firing fields <15 cm from the object ... and 13.3% were object-vector cells (158/1,189
+    cells"
+  depends_on:
+  - fig1c-object-tuned-fraction
+  expected:
+  - quantity: fraction of cells that are object cells
+    value: 0.041
+    tolerance: 0.0041
+  - quantity: fraction of cells that are object-vector cells
+    value: 0.133
+    tolerance: 0.0133
+  - quantity: object-tuned cells without a detectable field
+    value: 30
+    tolerance: 3
+    unit: cells
+  criterion: Field distance under the readings of fig1d-field-distances. Reproduced when, under one
+    reading, the three values are within tolerance.
+- id: fig1f-orientation-coverage
+  statement: The nearer an object-tuned cell's firing field is to the object, the larger the range of
+    orientations around the object that its fields cover.
+  source: Figure 1F legend
+  quote: "The nearer the cell’s firing field is to the object, the larger is the orientation coverage."
+  depends_on:
+  - fig1c-object-tuned-fraction
+  criterion: Orientation coverage is the fraction of 0 to 360 degrees around the object covered by the
+    cell's firing fields (Supplementary Figure 3C legend), taken as the angular span, seen from the
+    object centre, of the field bins; distance as in fig1d-field-distances. The paper reports no test;
+    its stated test for correlations is Pearson's (Methods, Statistical tests). Reproduced when, under
+    one distance reading, the Pearson correlation of coverage with distance over object-tuned cells
+    is negative with p < 0.05.
+- id: fig1g-no-experience-effect
+  statement: The object-tuning score did not change with the number of days the animal had been
+    exposed to the object (r = -0.080, p = 0.574, 62 cells).
+  source: Results, Object cells and object-vector cells in the hippocampus, paragraph 4; Figure 1G
+  quote: "We observed no significant effect of day of exposure to the object on the object-tuning
+    score (Figure 1G)"
+  statistics:
+  - test: Pearson correlation
+    statistic: r = -0.080
+    p: 0.57369
+    n: 62 cells recorded on several days and object-tuned on at least one
+  depends_on:
+  - fig1c-object-tuned-fraction
+  criterion: A claim of absence, judged on the paper's test, a Pearson correlation at alpha 0.05 of the
+    object-tuning score (opening comment) against the number of days the rat had been exposed to the
+    object, over the cells recorded on more than one day and object-tuned on at least one. The legend
+    says each dot is a cell (n = 62) and does not say which day's score stands for a cell; readings
+    (a) the score on the first day the cell passed as object-tuned; (b) the cell's highest score;
+    (c) every cell-day, in case the dots are cell-days. Reproduced when p >= 0.05; not reproduced when
+    p < 0.05. The r and the number of cells are given either way. Needs cell identities across days.
+- id: fig1h-cross-day-stability
+  statement: Of 35 object-tuned cells recorded on more than one day, few passed the object-tuning
+    criteria on more than one day, yet object-tuned cells passed again on later days more often than
+    other cells (13/35 against 36/370, p = 3.35e-4).
+  source: Results, Object cells and object-vector cells in the hippocampus, paragraph 5; Figure 1H
+  quote: "Only 13 of these cells (31.4%) had significant object-tuning scores on more than 1 day
+    (Figure 1H). However, object-tuned cells were more stable than expected by chance, with higher
+    probability of passing the classification on later days compared to other cells (13/35
+    object-tuned cells vs. 36/370 other cells"
+  statistics:
+  - test: binomial test
+    p: 3.35e-4
+    n: 35 object-tuned cells and 370 other cells recorded on more than one day
+  depends_on:
+  - fig1c-object-tuned-fraction
+  expected:
+  - quantity: object-tuned cells recorded on more than one day
+    value: 35
+    tolerance: 3.5
+    unit: cells
+  - quantity: other cells recorded on more than one day that passed on a later day
+    value: 36
+    tolerance: 3.6
+    unit: cells
+  criterion: The paper gives 13 in the text and 11 in the Figure 1H legend, with 31.4% for both;
+    the readings are 13 (text) and 11 (legend, which matches 31.4%). Day 0 is the first day a cell
+    was recorded (Figure 1H legend). Reproduced when the counts are within tolerance, the number of
+    object-tuned cells passing on more than one day is within 10% of 13 or of 11, and a two-sided
+    binomial test (Methods, Statistical tests) of that count among the 35 against the fraction of
+    other cells passing on a later day gives p < 0.05. The y axis of Figure 1H runs to 62 cells while
+    its legend says 35; the count found is reported. Needs cell identities across days.
+- id: figs2e-within-trial-stability
+  statement: Within a single trial, object-tuned cells with larger object-tuning scores were more
+    stable (r = 0.45 between within-trial stability and score).
+  source: Results, Object cells and object-vector cells in the hippocampus, paragraph 5; Supplementary
+    Figure 2E
+  quote: "cells with larger object-tuning scores tended to be more stable than cells with lower scores
+    (Figure S2E) (Pearson correlation between within-trial stability and object-tuning score, r = 0.45"
+  statistics:
+  - test: Pearson correlation
+    statistic: r = 0.45
+    p: 3.65e-13
+    n: 237 object-tuned cells
+  depends_on:
+  - fig1c-object-tuned-fraction
+  expected:
+    quantity: Pearson r, within-trial stability against object-tuning score
+    value: 0.45
+    tolerance: 0.045
+  criterion: Within-trial stability is the Pearson correlation of rate maps from the first and second
+    halves of the O trial (Supplementary Figure 2E legend), rate maps as in the opening comment.
+    Reproduced when r is within tolerance and p < 0.05.
+- id: figs2c-no-proximodistal-effect
+  statement: The percentage of object-tuned cells did not depend on the proximodistal location of the
+    recording site (r = 0.42, p = 0.22).
+  source: Results, Object cells and object-vector cells in the hippocampus, paragraph 3; Supplementary
+    Figure 2C
+  quote: "There was no significant linear correlation between the proximodistal site and the percentage
+    of object related cells (r = 0.42, p = 0.2216"
+  statistics:
+  - test: Pearson correlation
+    statistic: r = 0.42
+    p: 0.2216
+    n: 10 implants (9 rats, two Neuropixels probes in rat 27207)
+  depends_on:
+  - fig1c-object-tuned-fraction
+  criterion: A claim of absence, judged on the paper's test. Per implant (rat, with the two probes of
+    rat 27207 apart), the percentage of object-tuned cells against the proximodistal order of the
+    implant site; Pearson correlation. Reproduced when p >= 0.05, not reproduced when p < 0.05; r is
+    given either way. Needs the implant sites, which the paper shows in Supplementary Figure 1.
+- id: figs3a-ca3-object-tuned
+  statement: Object-related activity was present also in CA3, where 23% of cells (72 of 313) were
+    object-tuned.
+  source: Supplementary Figure 3A
+  quote: "In CA3, 23% of the cells were object tuned (72/313 cells; 7 object cells and 58 object vector
+    cells)"
+  expected:
+    quantity: fraction of CA3 cells object-tuned
+    value: 0.23
+    tolerance: 0.023
+  criterion: Template matching as for CA1 (opening comment), on the CA3 cells. Reproduced when, under
+    one template-width reading, the fraction is within tolerance.
+- id: fig2d-spatial-change-no-o
+  statement: Introducing the object changed spatial firing more than the passage of time did, with
+    lower NO-O rate-map correlations than CON1-CON2 correlations in control sessions.
+  source: Results, The majority of hippocampal cells change spatial firing patterns, paragraph 1;
+    Figure 2D, top left
+  quote: "introducing the object led to larger changes in spatial firing patterns (i.e., smaller
+    Pearson correlations of rate maps) than in pairs of control trials with no object"
+  statistics:
+  - test: Wilcoxon rank-sum test
+    statistic: z = 12.17
+    p: 4.75e-34
+    n: 1,189 CA1 cells against 219 control CA1 cells
+  criterion: Spatial correlation as in the opening comment. Reproduced when the NO-O correlations are
+    lower than the CON1-CON2 correlations (lower median) with a two-sided rank-sum p < 0.05.
+- id: fig2d-rate-overlap-no-o-unchanged
+  statement: The overall rate change between NO and O, measured by rate overlap, did not differ from
+    that between control trials.
+  source: Results, The majority of hippocampal cells change spatial firing patterns, paragraph 1;
+    Figure 2D, top right
+  quote: "the overall rate change, estimated as the mean firing rate in the less active trial divided
+    by mean firing rate in the more active trial (rate overlap), was not different between trial pairs
+    with objects (NO-O) and control trials (CON1-CON2)"
+  statistics:
+  - test: Wilcoxon rank-sum test
+    statistic: z = 0.57
+    p: 0.57
+    n: 1,189 CA1 cells against 219 control CA1 cells
+  criterion: A claim of absence, judged on the paper's test, a two-sided Wilcoxon rank-sum test of NO-O
+    against CON1-CON2 rate overlaps at alpha 0.05. Reproduced when p >= 0.05, not reproduced when
+    p < 0.05; the difference in medians is given either way, under both rate-overlap readings of the
+    opening comment.
+- id: fig2-fraction-changed-no-o
+  statement: About two thirds of CA1 cells (67.5%, 803 of 1,189) changed their spatial firing, their
+    rate, or both between NO and O.
+  source: Results, The majority of hippocampal cells change spatial firing patterns, paragraph 1
+  quote: "we estimated that 67.5% of the cells (n = 803/1,189 cells) expressed either spatial change,
+    rate change, or both between NO and O"
+  expected:
+    quantity: fraction of CA1 cells changing between NO and O
+    value: 0.675
+    tolerance: 0.0675
+  criterion: The Methods' classification (Spatial correlation and rate overlap). Within-trial
+    distributions from the NO trial, split 500 times at random into two groups of 1 s bins; between-
+    trial distributions from a random half of each trial's 1 s bins, 500 times. A cell changes on a
+    measure when the mean between-trial value is below the 1st percentile of the within-trial
+    distribution and a Wilcoxon signed-rank test of the two distributions gives p < 0.05 (alpha from
+    Methods, Statistical tests; the 500 values are paired by repetition, as the signed-rank test needs
+    pairs and the paper does not say how they are paired). A cell counts when it changes on spatial
+    correlation, rate overlap or both. Reproduced when the fraction is within tolerance.
+- id: fig2d-o-om-change
+  statement: Moving the object also changed spatial firing and rate more than in control trials, and
+    69.7% of cells (829 of 1,189) changed between O and OM.
+  source: Results, The majority of hippocampal cells change spatial firing patterns, paragraph 1;
+    Figure 2D, second row
+  quote: "Considerable change was also observed between the O and OM trials ... In these trials, 69.7%
+    of the cells changed their spatial firing pattern, firing rate, or both when the object was moved
+    (n = 829/1,189 cells)"
+  statistics:
+  - about: spatial correlation, O-OM against CON2-CON3
+    test: Wilcoxon rank-sum test
+    statistic: z = 13.23
+    p: 5.87e-40
+  - about: rate overlap, O-OM against CON2-CON3
+    test: Wilcoxon rank-sum test
+    statistic: z = 3.43
+    p: 0.001
+  expected:
+    quantity: fraction of CA1 cells changing between O and OM
+    value: 0.697
+    tolerance: 0.0697
+  criterion: As fig2d-spatial-change-no-o and fig2-fraction-changed-no-o, for O-OM against CON2-CON3.
+    Reproduced when both rank-sum tests give p < 0.05 with lower O-OM medians, and the fraction is
+    within tolerance; partially reproduced when one of the three holds.
+- id: fig2d-om-no-prime-change
+  statement: Removing the object changed spatial firing more than in control trials (OM-NO' against
+    CON3-CON4), without a significant difference in rate overlap, and many cells kept fields from the
+    preceding trial.
+  source: Results, The majority of hippocampal cells change spatial firing patterns, paragraph 1;
+    Figure 2D, third row
+  quote: "Major changes were evoked also when we removed the object ... Upon removal of the object,
+    many cells retained firing fields from the preceding trial"
+  statistics:
+  - about: spatial correlation, OM-NO' against CON3-CON4
+    test: Wilcoxon rank-sum test
+    statistic: z = 11.85
+    p: 2.11e-32
+  - about: rate overlap, OM-NO' against CON3-CON4
+    test: Wilcoxon rank-sum test
+    statistic: z = 1.79
+    p: 0.074
+  criterion: Reproduced when the spatial correlations are lower for OM-NO' with rank-sum p < 0.05, and
+    the rate-overlap rank-sum test gives p >= 0.05 (the absence part, judged on the paper's test).
+    Sessions without a NO' trial are left out.
+- id: fig2d-no-no-prime-change
+  statement: Spatial firing in NO' differed from that in NO more than CON4 differed from CON1.
+  source: Results, The majority of hippocampal cells change spatial firing patterns, paragraph 1;
+    Figure 2D, fourth row
+  quote: "major changes in spatial firing were also observed between NO and NO0 (Figure 2D, fourth
+    row"
+  statistics:
+  - test: Wilcoxon rank-sum test
+    statistic: z = 11.85
+    p: 2.11e-32
+  criterion: Reproduced when NO-NO' spatial correlations are lower than CON1-CON4 correlations with
+    rank-sum p < 0.05. The paper prints the same z and p as for OM-NO'; that is noted, not tested.
+- id: figs3f-ca3-changes
+  statement: In CA3 too, spatial correlations between trials differed between object and control
+    sessions for every trial pair, while rate overlaps did not.
+  source: Supplementary Figure 3F
+  quote: "As for CA1, we found that spatial correlation values between pairs of trials was always
+    significantly different between Object sessions and control sessions, whereas rate overlap was not
+    significantly different between the two types of sessions."
+  statistics:
+  - about: spatial correlation, NO-O against CON1-CON2
+    test: Wilcoxon rank-sum test
+    p: 5.13e-8
+  - about: rate overlap, NO-O against CON1-CON2
+    test: Wilcoxon rank-sum test
+    statistic: z = 1.43
+    p: 0.154
+  - about: spatial correlation, O-OM against CON2-CON3
+    test: Wilcoxon rank-sum test
+    p: 2.87e-8
+  - about: rate overlap, O-OM against CON2-CON3
+    test: Wilcoxon rank-sum test
+    p: 0.727
+  - about: spatial correlation, OM-NO' against CON3-CON4
+    test: Wilcoxon rank-sum test
+    p: 6.64e-7
+  - about: rate overlap, OM-NO' against CON3-CON4
+    test: Wilcoxon rank-sum test
+    p: 0.159
+  - about: spatial correlation, NO-NO' against CON1-CON4
+    test: Wilcoxon rank-sum test
+    p: 1.52e-6
+  - about: rate overlap, NO-NO' against CON1-CON4
+    test: Wilcoxon rank-sum test
+    p: 0.325
+  criterion: 313 CA3 cells against the 59 CA3 control cells, measures as for CA1. Reproduced when all
+    four spatial-correlation tests give p < 0.05 and all four rate-overlap tests give p >= 0.05 (the
+    absence part judged on the paper's test); partially reproduced when the spatial part holds and one
+    or more rate-overlap tests is significant.
+- id: figs4-object-traces
+  statement: 18.3% of CA1 cells (218 of 1,189) had object-trace fields, firing in NO' where they had
+    fired in OM, well above the 1% chance level.
+  source: Supplementary Figure 4B to 4D legend; Methods, Region-of-interest analysis for object traces
+  quote: "We found that 18.3% of CA1 cells had trace responses ... (n = 218/1189 cells in total,
+    significantly above chance level of 1%"
+  statistics:
+  - test: binomial test
+    p: 5.73e-141
+    p_relation: "<"
+    n: 1,189 CA1 cells
+  expected:
+  - quantity: fraction of CA1 cells with trace fields
+    value: 0.183
+    tolerance: 0.0183
+  - quantity: cells changing between NO and NO'
+    value: 919
+    tolerance: 91.9
+    unit: cells
+  criterion: The Methods' procedure. Cells changing between NO and NO' as in
+    fig2-fraction-changed-no-o; fields in NO' (opening comment); a circular ROI per field moved to the
+    same place in OM; rate overlap between the NO' ROI and the OM ROI against 1,000 shuffles placing
+    the ROI at random in OM with wrap-around; a trace field above the 99th percentile. The ROI's size
+    is open, as the Methods refer to a section that is not in the paper. Readings (a) a circle of the
+    field's area centred on its centroid; (b) the smallest circle centred on the centroid containing
+    the field. A cell counts when any of its fields passes (the Supplementary Figure 4A legend tests each field).
+    Reproduced when, under one reading, both values are within tolerance and a two-sided
+    binomial test (Methods, Statistical tests) against 1% gives p < 0.05.
+- id: figs2d-traces-no-interference
+  statement: Removing object traces from the OM trial did not significantly change the number of
+    object-tuned cells (256 of 1,189 after removal, against the expected 19.9%).
+  source: Supplementary Figure 2D
+  quote: "The number object tuned cells was not significantly different after removing traces (using
+    expected percentage 19.9% from Fig. 1c and observed count of 256/1189"
+  statistics:
+  - test: binomial test
+    p: 0.0905
+    n: 1,189 CA1 cells
+  depends_on:
+  - fig1c-object-tuned-fraction
+  - figs4-object-traces
+  criterion: A claim of absence, judged on the paper's test, a two-sided binomial test of the count of
+    object-tuned cells after removal against 19.9% at alpha 0.05. The paper does not say how traces
+    were removed; readings (a) leave the OM rate-map bins inside the trace ROIs of
+    figs4-object-traces out of the template correlations; (b) set the rate in those bins to zero. Reproduced when p >= 0.05, not
+    reproduced when p < 0.05; the count is given either way.
+- id: ovs-method-extra-cells
+  statement: The object-vector score method of earlier studies classified 40 cells (3.4%) that the
+    template matching did not, mostly false positives on inspection.
+  source: Methods, Object-vector score and object-vector cell criteria, last paragraph
+  quote: "40 out of 1189 cells (3.4%) were classified by this method but not by the template matching
+    procedure."
+  depends_on:
+  - fig1c-object-tuned-fraction
+  expected:
+    quantity: cells classified by the object-vector criteria and not by template matching
+    value: 40
+    tolerance: 4
+    unit: cells
+  criterion: The Methods' four criteria, after excluding cells whose fields would fall outside the
+    arena in OM. The vector map's distance and direction bins and its smoothing are not given; the
+    paper directs to the method of its references 11 and 12 (Hoydal et al. 2019; Andersson et al.
+    2021), and those papers' bins and smoothing are used. Reproduced when the count is within tolerance. The manual
+    inspection is not repeated.
+- id: fig3b-decode-presence
+  statement: A Bayesian decoder using 1 s population spike counts told the NO trial from the O trial
+    above chance (50%) in every session.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 1;
+    Figure 3B
+  quote: "The decoding accuracy was above chance (50%) in all experimental sessions (Figure 3B)"
+  criterion: The whole-arena decoder (opening comment), on each decoding session. The paper reports no
+    test per session; it gives chance as 50%, and its chance level comes from the label-shuffling
+    procedure (Methods, Shuffling trial labels; 50 shuffles per session, Supplementary Figure 5E).
+    Reproduced when, under both speed readings, every session's accuracy exceeds 0.5 and the mean
+    accuracy of that session's 50 label shuffles.
+- id: fig3c-bin-size
+  statement: Decoding accuracy grew roughly logarithmically with the testing bin size, rising quickly
+    up to 1 s and saturating beyond.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 1;
+    Figure 3C; Methods, Performance of decoder
+  quote: "The decoder’s performance increased approximately logarithmically with the bin size of the
+    testing data vector (Figure 3C)"
+  criterion: The whole-arena decoder with testing bins of 10, 50, 100, 500, 1000, 5000 and 10000 ms
+    (Methods). The paper gives no test. Reproduced when the median accuracy over sessions rises from
+    10 to 1000 ms at each step, and its gain from 1000 to 10000 ms is smaller than its gain from 100
+    to 1000 ms.
+- id: fig3d-number-of-cells
+  statement: Decoding accuracy increased with the number of cells used.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 1;
+    Figure 3D; Methods, Effect of number of cells
+  quote: "the success of decoding increased with the number of cells included (Figure 3D)"
+  criterion: Random subsets of k cells, 100 per k, whole-arena decoder (Methods). The data are open;
+    readings (a) the Methods', the 620-cell Neuropixels session, k = 1, 5, 10, 20, 30, 50, 100, 200,
+    300, 400 and 500; (b) the legend's, the four datasets pooled (two tetrode, two Neuropixels), k up
+    to each dataset's size. The paper gives no test; its stated test for correlations is Pearson's
+    (Methods, Statistical tests). Reproduced when, under one reading, mean accuracy is higher at the
+    largest k than at k = 1 and the Pearson correlation of accuracy with k over all subsets is
+    positive with p < 0.05.
+- id: fig4b-distance-decline
+  statement: Decoding accuracy fell gradually with the animal's distance from the object, over 5
+    equal-sample distance bins, with significant steps between bins 1 and 2, 2 and 3, and 4 and 5.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 2;
+    Figure 4B
+  quote: "we found that decoding performance decreased gradually with increasing distance from the
+    object (Figure 4B)"
+  statistics:
+  - about: accuracy across the 5 distance bins
+    test: Kruskal-Wallis test
+    statistic: H = 44.559
+    p: 4.91e-9
+    n: 16 sessions
+  - about: bins 1 vs 2, 2 vs 3 and 4 vs 5, each (printed as W >= 111, p <= 0.0049)
+    test: Wilcoxon signed-rank tests
+    statistic: W >= 111
+    p: 0.0049
+    p_relation: "<"
+    n: 16 sessions
+  criterion: The distance decoder (opening comment), on the decoding sessions. Reproduced when, under
+    every reading of speed and sessions, the Kruskal-Wallis test across the 5 bins gives p < 0.05 with
+    median accuracy falling from bin 1 to bin 5, and signed-rank tests of bins 1 vs 2, 2 vs 3 and
+    4 vs 5 each give p < 0.05 with the nearer bin higher. Partially reproduced when the Kruskal-Wallis
+    part holds and one or two of the pairs do not. The population mean of bin 1 minus bin 5 (0.19 in
+    the paper, Results, Distance-specific reorganization, paragraph 2) is reported.
+- id: fig4c-each-session-decreasing
+  statement: Every session showed decoding accuracy decreasing with distance from the object.
+  source: Figure 4C legend
+  quote: "Note that all experimental sessions have decreasing curves."
+  depends_on:
+  - fig4b-distance-decline
+  criterion: The paper's two measures of the decrease (Methods, Measuring strength of distance-specific
+    reorganization) give the readings (a) the least-squares slope of accuracy on distance-bin index is
+    negative; (b) accuracy in bin 1 minus bin 5 is positive. Reproduced when, under one reading,
+    every session meets it; partially reproduced when more than half do; not reproduced otherwise.
+- id: fig4e-angle-flat
+  statement: Decoding accuracy did not differ between 5 angular sectors around the object, so the
+    distance effect is not specific to compass directions.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 3;
+    Figure 4E and 4F
+  quote: "The decoding accuracy was the same in different angular bins (Figures 4E and 4F)"
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: H = 3.75
+    p: 0.4416
+    n: 16 sessions
+  criterion: A claim of absence, judged on the paper's test, a Kruskal-Wallis test across the 5 angular
+    bins at alpha 0.05. Distance decoder with 72 degree sectors of allocentric angle from the object in
+    place of distance rings (Figure 4D legend, Methods). The sectors' starting angle is not given;
+    readings (a) sectors starting at 0 degrees (the positive x axis, the code's angle origin in
+    templateMatchingScore.m); (b) sectors starting at 36 degrees. Reproduced when p >= 0.05 under the
+    readings, not reproduced when p < 0.05; H is given either way.
+- id: fig4h-population-vector-correlation
+  statement: Correlations between NO and O population vectors were lowest near the object and rose
+    stepwise with distance before saturating, with significant steps between bins 1 and 2, 2 and 3,
+    and 3 and 4.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 5;
+    Figure 4G and 4H
+  quote: "This showed a stepwise linear increase in correlation values as a function of distance from
+    object, with saturation at larger distances (Figure 4H)"
+  statistics:
+  - about: correlation across the 5 distance bins
+    test: Kruskal-Wallis test
+    statistic: H = 30.1
+    p: 4.67e-6
+    n: 16 sessions
+  - about: bins 1 vs 2, 2 vs 3 and 3 vs 4, each (printed as W <= 19, p <= 0.0113)
+    test: Wilcoxon signed-rank tests
+    statistic: W <= 19
+    p: 0.0113
+    p_relation: "<"
+    n: 16 sessions
+  criterion: Methods, Population vector correlation. Per session, rate maps of the whole NO and O
+    trials (3 cm bins, 50 x 50, as the Methods give m = n = 50), the Pearson correlation across cells
+    at each spatial bin, and the mean correlation in each of 5 distance bins. The bins are open;
+    readings (a) the Methods' fixed 20 cm rings (0 to 100 cm); (b) 5 bins with equal numbers of
+    spatial bins, which the reported 489 values per bin implies. Reproduced when, under one reading,
+    the Kruskal-Wallis test gives p < 0.05 with correlation rising from bin 1 to bin 5 and the three
+    signed-rank tests give p < 0.05 with the farther bin higher.
+- id: figs5a-decode-no-from-no-prime
+  statement: The NO trial could also be decoded from the NO' trial, above chance, consistent with
+    trace fields.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 1;
+    Supplementary Figure 5A
+  quote: "we were also able to decode the NO trial from the NO0 trial using population activity
+    (Figure S5A)"
+  criterion: As fig3b-decode-presence, with NO' in place of O, on sessions with a NO' trial.
+    Reproduced when the accuracy exceeds 0.5 and the mean of the session's label shuffles in every
+    session; partially reproduced when in more than half.
+- id: figs5b-fixed-distance-bins
+  statement: With fixed distance bins (0-20 to 80-100 cm) decoding accuracy still fell with distance.
+  source: Supplementary Figure 5B; Methods, Fixed distance bins
+  quote: "Decoding accuracy as a function of distance from object when using fixed distance bins ...
+    Decoding accuracy decreases as a function of distance from object"
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: H = 39.69
+    p: 5.02e-8
+    n: 16 sessions
+  criterion: The distance decoder with bin edges 0, 20, 40, 60, 80 and 100 cm (Methods). Samples
+    beyond 100 cm are left out, as the Methods' bins stop there. Reproduced when the Kruskal-Wallis
+    test gives p < 0.05 with median accuracy highest in bin 1 and lowest in bin 4 or 5.
+- id: figs5c-half-trial-control
+  statement: Decoding the first from the second half of the NO trial showed no decrease of accuracy
+    with distance.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 4;
+    Supplementary Figure 5C
+  quote: "we observed no decrease in decoding accuracy across the same distance bins when attempting
+    to decode the first half of the NO trial from the second half of the NO trial (Figure S5C)"
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: H = 1.46
+    p: 0.834
+    n: 16 sessions
+  criterion: A claim of absence, judged on the paper's test. The NO trial is split at its midpoint and
+    each half split again into training and testing quarters (Methods, Decoding 1st half vs. 2nd half);
+    distances from the O trial's object position (the Methods give no other). Reproduced when the
+    Kruskal-Wallis test across the 5 bins gives p >= 0.05, not reproduced when p < 0.05.
+- id: figs5d-control-sessions
+  statement: In control sessions without an object (CON1 against CON2), decoding accuracy did not fall
+    with distance.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 4;
+    Supplementary Figure 5D
+  quote: "attempting to perform the decoding in control experiments without the object (Control trial
+    1 vs. Control trial 2). We observed no decrease in accuracy as a function of distance"
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: H = 6.32
+    p: 0.1768
+  criterion: A claim of absence, judged on the paper's test. Distance decoder on CON1 against CON2.
+    The object position used for distances in control sessions is not given for this analysis;
+    readings (a) the arena centre (75, 75) cm, the pseudo-object position the Methods use for the
+    control chance level; (b) (35, 120) cm, the other one. The control sessions used are not stated;
+    those with at least 25 simultaneously recorded cells are used (the rule for population analyses).
+    Reproduced when p >= 0.05 under the readings, not reproduced when p < 0.05.
+- id: figs5e-shuffled-labels
+  statement: With shuffled trial labels the decoder performed at 50% in every distance bin.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 4;
+    Supplementary Figure 5E
+  quote: "On the shuffled data, the decoder performed with a mean accuracy of 50% in all distance bins
+    (Figure S5E)"
+  statistics:
+  - about: each bin's accuracy against 0.5 (printed as t <= 2.1254, p >= 0.0518)
+    test: t tests
+    p: 0.0518
+    p_relation: ">"
+    n: 16 sessions, each the mean of 50 shuffles
+  expected:
+  - quantity: mean accuracy, distance bin 1
+    value: 0.498
+    tolerance: 0.01
+  - quantity: mean accuracy, distance bin 5
+    value: 0.502
+    tolerance: 0.01
+  criterion: Labels of the testing samples shuffled 50 times per session (Methods, Shuffling trial
+    labels); session values are the means over shuffles. Tolerances are the SDs the legend gives.
+    Reproduced when every bin's mean is within 0.49 to 0.51 and no one-sample t test against 0.5 gives
+    p < 0.05.
+- id: figs5f-random-partition
+  statement: Partitioning training and testing samples at random gave the same decline of accuracy
+    with distance.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 4;
+    Supplementary Figure 5F
+  quote: "The results from this decoder showed the same decline in decoding accuracy as a function of
+    distance from the object (Figure S5F)"
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: H = 39.71
+    p: 4.98e-8
+    n: 16 sessions
+  criterion: The distance decoder with training and testing timepoints drawn by a random permutation
+    (Methods, Random partitioning). Which timepoints are permuted is open; readings (a) 1 s bins;
+    (b) position samples. Reproduced when, under one reading, the Kruskal-Wallis test gives p < 0.05
+    with accuracy highest in bin 1 and lowest in bin 5.
+- id: figs5ghi-fields-and-rates
+  statement: Firing fields were spread across the arena, not concentrated at the object, and firing
+    rates were similar between NO and O and highest at middle distances (bin 3).
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 4;
+    Supplementary Figure 5G to 5I
+  quote: "across all cells, firing fields were widely distributed across the environment and not
+    concentrated at the object location (Figures S5G and S5H), whereas firing rates were similar
+    between trials, being largest at middle distances from the object (peaking in distance bin 3;
+    Figure S5I)"
+  criterion: The paper gives no test. Field centroids in NO and O relative to the object (Supplementary
+    Figure 5G); per session, the mean firing rate of each cell in each of the 5 equal-sample distance
+    bins of the whole trial, averaged over cells, then over sessions. Reproduced when (i) the
+    proportion of fields per unit area within 20 cm of the object is not higher in O than in NO by a
+    two-sided rank-sum test over sessions at p < 0.05 (the paper's test for unpaired data);
+    (ii) the mean rate peaks in bin 2, 3 or 4 in both trials, and in bin 3 in at least one; (iii) no
+    bin shows a NO against O difference by signed-rank test at p < 0.05. Partially reproduced when
+    two of the three hold.
+- id: figs6-behaviour-decoders-flat
+  statement: Decoders of trial type based on speed, head direction or occupancy performed only slightly
+    above 50% and their accuracy did not depend on distance from the object.
+  source: Results, Behavioral analyses, paragraph 1; Supplementary Figure 6A, 6C and 6E
+  quote: "Decoders for speed, head direction, and occupancy performed only slightly above 50% correct,
+    with accuracies independent of object distance (Figures S6A, S6C, and S6E)"
+  statistics:
+  - about: speed decoder across distance bins
+    test: Kruskal-Wallis test
+    statistic: H = 6.85
+    p: 0.1441
+  - about: head direction decoder across distance bins
+    test: Kruskal-Wallis test
+    statistic: H = 2.13
+    p: 0.711
+  - about: occupancy decoder across distance bins
+    test: Kruskal-Wallis test
+    statistic: H = 3.53
+    p: 0.4735
+  criterion: A claim of absence, judged on the paper's tests. Behavioural decoders as in the Methods
+    (Behavioral analyses I), with gamma likelihoods for speed (Lowess-smoothed, 25 Hz, all speeds),
+    two-Gaussian mixtures for head direction, and occupancy ratios, 50 x 50 spatial bins, same
+    training and testing split and distance bins. The Lowess span is not given; it cannot change the
+    absence much, and a span of 0.5 s is used as a standard choice. Reproduced when all three
+    Kruskal-Wallis tests give p >= 0.05; not reproduced when any test gives p < 0.05. The paper gives
+    no number for "slightly above 50%", so the median accuracy of each decoder is reported, not judged.
+- id: figs6hij-behaviour-matched
+  statement: After matching the distributions of speed, head direction or occupancy between NO and O
+    within each distance bin, decoding accuracy on neural data still fell with distance.
+  source: Results, Behavioral analyses, paragraph 2; Supplementary Figure 6H to 6J
+  quote: "We still observed a graded decrease in decoding accuracy for the neural activity decoder
+    after matching distributions for speed (Figure S6H), head direction (Figure S6I) and occupancy
+    (Figure S6J)"
+  statistics:
+  - about: speed matched
+    test: Kruskal-Wallis test
+    statistic: H = 45.4
+    p: 3.28e-9
+  - about: head direction matched
+    test: Kruskal-Wallis test
+    statistic: H = 38.23
+    p: 1.01e-7
+  - about: occupancy matched
+    test: Kruskal-Wallis test
+    statistic: H = 45.8
+    p: 2.71e-9
+  criterion: Matching as in the Methods (Behavioral analyses II), speed bins of 5 cm/s to 100 cm/s,
+    head direction bins of pi/10, occupancy bins of 30 cm, random removal of the excess samples from
+    the trial with more. The samples matched are the 1 s testing samples (the decoder's samples),
+    with the behaviour averaged over the second; the Methods do not say, so a second reading matches
+    25 Hz position samples and keeps the 1 s bins whose samples all survive. Reproduced when, under
+    one reading, each of the three Kruskal-Wallis tests gives p < 0.05 with bin 1 highest.
+- id: figs6k-uniform-prior
+  statement: Replacing the occupancy prior by a uniform prior did not change the decline of decoding
+    accuracy with distance.
+  source: Results, Behavioral analyses, paragraph 2; Supplementary Figure 6K
+  quote: "removal of this prior had no effect on our results (Figure S6K)"
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: H = 42.92
+    p: 1.07e-8
+  criterion: Distance decoder with a uniform prior over the spatial bins of each distance bin (Methods,
+    Removing effects of prior). Reproduced when the Kruskal-Wallis test gives p < 0.05 with bin 1
+    highest.
+- id: figs6l-sampling-thresholds
+  statement: Using only spatial bins visited for at least 100, 500, 1000 or 2000 ms in both trials, the
+    decline of accuracy with distance remained.
+  source: Results, Behavioral analyses, paragraph 3; Supplementary Figure 6L
+  quote: "Regardless of the threshold value, the result was the same as before, with accuracy declining
+    along with object distance (Figure S6L"
+  statistics:
+  - about: each of the four thresholds (printed as H >= 34.08, p <= 7.18e-7)
+    test: Kruskal-Wallis test
+    statistic: H >= 34.08
+    p: 7.18e-7
+    p_relation: "<"
+  criterion: Distance decoder with rate-map bins of 10 cm (the Methods' "10 cm2" read as 10 cm sides,
+    as 3 cm2 is used for the 3 cm bins), spatial bins below the threshold in either trial left out
+    of both. Reproduced when all four Kruskal-Wallis tests give p < 0.05 with bin 1 highest.
+- id: tables1-without-bin-1
+  statement: The effect of distance on decoding accuracy held when the bin nearest the object was left
+    out.
+  source: Supplementary Figure 6L legend, last sentence; Supplementary Table 1, first row
+  quote: "all the main statistics hold even after excluding distance bin 1"
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: H = 25.06
+    p: 1.50e-5
+  expected:
+    quantity: Kruskal-Wallis H across distance bins 2 to 5
+    value: 25.06
+    tolerance: 2.506
+  criterion: The distance decoder results of fig4b-distance-decline, bins 2 to 5 only. The table's
+    p-value has lost its exponent in the text; it was read from PDF page 49. Reproduced when the Kruskal-Wallis test gives p < 0.05
+    with bin 2 highest; H is compared with the expected value.
+  depends_on:
+  - fig4b-distance-decline
+- id: fig5b-words-more-informative
+  statement: Population words (patterns of spiking and silence in 10 ms bins) carried much more
+    information about the trial than population spike counts.
+  source: Results, Objects are encoded by distinct patterns of joint activity, paragraph 1; Figure 5B
+  quote: "Words were much more informative than counts (Figure 5B)"
+  statistics:
+  - about: words against counts (printed as U >= 439, p <= 1.19e-6)
+    test: Wilcoxon rank-sum tests
+    statistic: U >= 439
+    p: 1.19e-6
+    p_relation: "<"
+  criterion: Methods, Definition of words and counts, and Mutual information. Spike counts in 10 ms
+    bins; tetrode sessions with all cells, Neuropixels sessions subsampled to 30 cells; the all-zero
+    word and zero count left out; mutual information with trial, from frequency distributions, minus
+    the mean over 50 label shuffles. Distance bins as in Figure 4B (Figure 5B legend), each 10 ms bin
+    taking the distance of the nearest position sample, 5 equal-sample bins per trial. Open readings
+    (a) one random subset of 30 Neuropixels cells; (b) the mean over 20 subsets (the number the
+    Methods use for subsampling the decoder). Which samples are compared is open; readings (c) per
+    distance bin, 16 against 16 sessions; (d) all bins pooled. Reproduced when, under one
+    combination, every rank-sum test gives p < 0.05 with words higher.
+- id: fig5bc-words-information-falls-with-distance
+  statement: The information from words decreased with distance from the object, as decoding did.
+  source: Results, Objects are encoded by distinct patterns of joint activity, paragraph 1; Figures 5B
+    and 5C
+  quote: "Importantly, the amount of information gained from words decreased as a function of distance
+    from the object (Figures 5B and 5C)"
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: H = 24.29
+    p: 6.98e-5
+    n: 16 sessions
+  criterion: Mutual information of words as in fig5b-words-more-informative, under its subset readings.
+    Reproduced when, under one reading, the Kruskal-Wallis test across the 5 bins gives p < 0.05 with
+    bin 1 highest.
+- id: fig5b-counts-uninformative
+  statement: The information from counts did not depend on distance and was not significantly above
+    zero.
+  source: Results, Objects are encoded by distinct patterns of joint activity, paragraph 1; Figure 5B
+  quote: "In contrast, the amount of information from counts did not depend on object distance ...
+    and was not significantly above zero"
+  statistics:
+  - about: counts across distance bins
+    test: Kruskal-Wallis test
+    statistic: H = 4.08
+    p: 0.3947
+  - about: counts against zero, each bin (printed as t <= 1.46, p >= 0.1636)
+    test: t tests
+    statistic: t <= 1.46
+    p: 0.1636
+    p_relation: ">"
+  criterion: A claim of absence, judged on the paper's tests. Bias-subtracted mutual information of
+    counts as in fig5b-words-more-informative. Reproduced when the Kruskal-Wallis test gives
+    p >= 0.05 and no per-bin two-sided one-sample t test against zero gives p < 0.05; not reproduced
+    otherwise. Values given either way.
+- id: fig5e-kl-divergence
+  statement: The KL divergence between the word distributions of NO and O fell with distance from the
+    object, from bin 1 to bin 5, while shuffled data showed no decrease.
+  source: Results, Objects are encoded by distinct patterns of joint activity, paragraph 3; Figure 5E
+  quote: "divergence between the NO and O distributions became smaller with increasing object distance
+    (Figure 5E, blue curve) ... No decrease in the KL divergence was present in shuffled data"
+  statistics:
+  - about: across the 5 distance bins
+    test: Kruskal-Wallis test
+    statistic: H = 16.22
+    p: 0.0027
+  - about: bin 1 against bin 5
+    test: Wilcoxon signed-rank test
+    statistic: W = 102
+    p: 6.10e-4
+  criterion: Methods, Kullback-Leibler divergence, words and distance bins as in
+    fig5b-words-more-informative, D(NO||O) over all words, probabilities as counts over all
+    timepoints. Words seen in NO and never in O make the sum infinite, and the paper does not say how
+    that was handled; the one finite reading its text allows is to sum over words seen in both
+    trials, recorded as a deviation. Shuffled data assign trial labels to words at random (Figure 5E
+    legend). Reproduced when the Kruskal-Wallis test and the bin 1 against bin 5 signed-rank test give
+    p < 0.05 with bin 1 higher, and the shuffled divergences show no Kruskal-Wallis effect at 0.05.
+- id: fig5-entropy
+  statement: The entropy of words was higher than that of counts (1.65 against 0.84 bits).
+  source: Results, Objects are encoded by distinct patterns of joint activity, paragraph 4
+  quote: "the entropy was higher for words than counts (entropy of words: 1.65 bits ± 0.06; entropy of
+    counts: 0.84 bits ± 0.02; mean ± SEM)"
+  expected:
+  - quantity: entropy of words
+    value: 1.65
+    tolerance: 0.165
+    unit: bits
+  - quantity: entropy of counts
+    value: 0.84
+    tolerance: 0.084
+    unit: bits
+  criterion: Entropy as in the Methods, words and counts as in fig5b-words-more-informative. The SEM is
+    over an unstated unit, so the tolerance is 10%. The unit and whether the all-zero word is in are
+    open; readings (a) per session and trial over the whole trial, all-zero word left out (as in the
+    mutual information); (b) as (a) with it included; (c) per session, trial and distance bin.
+    Reproduced when, under one reading, both means are within tolerance.
+- id: figs7cd-number-of-words
+  statement: The number of distinct words did not differ between trial types or across distance bins.
+  source: Results, Objects are encoded by distinct patterns of joint activity, paragraph 3;
+    Supplementary Figure 7C and 7D
+  quote: "In contrast to the identity of words, the number of words was independent of trial type and
+    distance from the object (Figures S7C and S7D)"
+  statistics:
+  - about: across distance bins, NO trial
+    test: Kruskal-Wallis test
+    statistic: H = 1.58
+    p: 0.8117
+  - about: across distance bins, O trial
+    test: Kruskal-Wallis test
+    statistic: H = 2.62
+    p: 0.6227
+  - about: NO against O
+    test: Wilcoxon rank-sum test
+    statistic: z = 0.221
+    p: 0.8252
+    n: 16 sessions
+  criterion: A claim of absence, judged on the paper's tests (from the Supplementary Figure 7 legend,
+    an image on PDF page 46, not in the text). Distinct words per session, trial and distance bin as in
+    fig5b-words-more-informative. Reproduced when all three tests give p >= 0.05, not reproduced when
+    any gives p < 0.05.
+- id: figs7e-downsampled-words
+  statement: After downsampling words to as many states as counts, words still carried more information
+    than counts.
+  source: Results, Objects are encoded by distinct patterns of joint activity, paragraph 4;
+    Supplementary Figure 7E
+  quote: "after downsampling the number of states to be equal for words and counts, words were still
+    much more informative (Figure S7E)"
+  statistics:
+  - test: Wilcoxon signed-rank test
+    statistic: W = 2480
+    p: 4.42e-13
+    n: 16 sessions x 5 distance bins (80 pairs)
+  criterion: Methods, Downsampling words. Per session and distance bin, keep the c most frequent words,
+    c the number of distinct counts, and renormalise. Whether the bias subtraction is applied is not
+    said; readings (a) with, (b) without. Reproduced when, under one reading, a signed-rank test over
+    the 80 pairs gives p < 0.05 with words higher.
+- id: fig6ab-single-cell-distance-tuning
+  statement: Single cells decoded with almost flat accuracy across distance; their distance tuning
+    (bin 1 minus bin 5 accuracy) averaged 0.02, 98.7% lay between -0.2 and 0.2, 12.2% (145) had
+    significant positive and 3.8% (45) significant negative tuning.
+  source: Results, Distance-specific reorganization of the hippocampal map is widely distributed,
+    paragraph 2; Figure 6A and 6B
+  quote: "CA1 cells had a slight positive bias in distance tuning (mean: 0.02; for reference, the same
+    mean calculated from populations is 0.19; Figure 4C) and nearly all cells were contained between
+    the bounds ... and 0.2 (98.7% of cells) ... some cells had significant positive distance tuning
+    (12.2%, n = 145/1,189 cells) ... and some cells had significant negative distance tuning (3.8%,
+    n = 45/1,189 cells)"
+  expected:
+  - quantity: mean distance tuning of single cells
+    value: 0.02
+    tolerance: 0.005
+  - quantity: fraction of cells with distance tuning within -0.2 to 0.2
+    value: 0.987
+    tolerance: 0.0987
+  - quantity: fraction with significant positive tuning
+    value: 0.122
+    tolerance: 0.0122
+  - quantity: fraction with significant negative tuning
+    value: 0.038
+    tolerance: 0.0038
+  criterion: The distance decoder run with one cell at a time; distance tuning is accuracy in bin 1
+    minus bin 5 (Equation 1). Significance from 100 circular shifts of the spike train by 20 s to the
+    trial length less 20 s, above the 99th or below the 1st percentile (Methods). The tolerance on the
+    within-bounds fraction is 10% and stops at 1. The mean of 0.02 is printed to one significant figure, so the
+    tolerance on it is 0.005 (half the last digit) in place of 10%. Which cells are open; readings (a)
+    all 1,189 unique cells, each in its session; (b) the cells of the decoding sessions (Figure 6A
+    legend). Reproduced when, under one reading, all four values are within tolerance; partially
+    reproduced when the mean and within-bounds fraction are and a significant fraction is not.
+- id: figs5l-without-positively-tuned
+  statement: After removing the cells with significant positive distance tuning, decoding accuracy
+    still fell gradually with distance.
+  source: Results, Distance-specific reorganization of the hippocampal map is widely distributed,
+    paragraph 2; Supplementary Figure 5L
+  quote: "after removing cells with significant positive distance tuning (12.2%), we still observed a
+    gradual drop in decoding accuracy ... obtained with population data as a function of object
+    distance (Figure S5L)"
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: H = 28.88
+    p: 8.27e-6
+  depends_on:
+  - fig6ab-single-cell-distance-tuning
+  criterion: Distance decoder on the decoding sessions without the cells found in
+    fig6ab-single-cell-distance-tuning. Reproduced when the Kruskal-Wallis test gives p < 0.05 with
+    bin 1 highest.
+- id: figs5m-without-object-tuned
+  statement: After removing all object-tuned cells, decoding accuracy still fell gradually with distance.
+  source: Results, Distance-specific reorganization of the hippocampal map is widely distributed,
+    paragraph 5; Supplementary Figure 5M
+  quote: "After removing all object-tuned cells (19.9%) from the data and re-running the decoder, we
+    observed the same gradual fall in decoding accuracy as a function of distance (Figure S5M)"
+  statistics:
+  - test: Kruskal-Wallis test
+    statistic: H = 38.89
+    p: 7.34e-8
+  depends_on:
+  - fig1c-object-tuned-fraction
+  criterion: Distance decoder on the decoding sessions without the object-tuned cells of
+    fig1c-object-tuned-fraction (each template-width reading). Reproduced when, under one reading, the
+    Kruskal-Wallis test gives p < 0.05 with bin 1 highest.
+- id: fig6c-subsets-decline
+  statement: In the 620-cell session, random subsets of every size except a single cell showed decoding
+    accuracy falling with distance.
+  source: Results, Distance-specific reorganization of the hippocampal map is widely distributed,
+    paragraph 3; Figure 6C
+  quote: "All curves showed reduced decoding accuracy as a function of distance, except the curve
+    constructed using only a single cell (Figure 6C)"
+  statistics:
+  - about: n = 1 curve
+    test: Wilcoxon signed-rank test
+    statistic: W = 2.48
+    p: 0.6489
+  - about: all other curves (printed as W >= 11.89, p <= 0.0182)
+    test: Wilcoxon signed-rank tests
+    statistic: W >= 11.89
+    p: 0.0182
+    p_relation: "<"
+  criterion: Distance decoder on 20 random subsets per size of the 620 cells (Methods, Subsampling for
+    decoder). The sizes are open, as three lists are given; readings (a) Results, 1, 5, 10, 30, 50,
+    100, 200, 300, 400, 500; (b) legend, 1, 5, 20, 30, 50 to 500; (c) Methods, 1, 5, 10, 30, 100 to
+    500. The test is open, as the printed W values are not integers; readings (d) signed-rank of bin 1
+    against bin 5 over the 20 subsets; (e) Kruskal-Wallis across the 5 bins over the 20 subsets.
+    Reproduced when, under one reading of the test, the single-cell curve gives p >= 0.05 and every
+    other size gives p < 0.05 with bin 1 higher.
+- id: fig6d-reorganization-grows-with-cells
+  statement: The difference between bins 1 and 5 grew, and the slope of accuracy over distance became
+    more negative, as more cells were used, both reaching their extremes at 500 cells.
+  source: Results, Distance-specific reorganization of the hippocampal map is widely distributed,
+    paragraph 3; Figure 6D
+  quote: "The difference between bins #1 and #5 grew systematically with the number of cells (Figure
+    6D; left y axis, blue)"
+  statistics:
+  - about: distance difference across subset sizes
+    test: Kruskal-Wallis test
+    statistic: H = 174.57
+    p: 3.14e-32
+  - about: slope across subset sizes
+    test: Kruskal-Wallis test
+    statistic: H = 157.6
+    p: 1.011e-28
+  depends_on:
+  - fig6c-subsets-decline
+  criterion: The 20 subsets per size of fig6c-subsets-decline; per subset, accuracy in bin 1 minus bin 5
+    and the least-squares slope over bin indices 1 to 5 (Methods, Measuring strength). Reproduced when,
+    under one size reading, both Kruskal-Wallis tests across sizes give p < 0.05 and the largest mean
+    difference and most negative mean slope are at 500 cells, as the Results say.
+- id: figs8-smaller-datasets
+  statement: The growth of distance reorganization with the number of cells held in the tetrode
+    sessions and in the 135-cell Neuropixels session.
+  source: Results, Distance-specific reorganization of the hippocampal map is widely distributed,
+    paragraph 3; Supplementary Figure 8A to 8D
+  quote: "The finding was upheld in data from animals with smaller numbers of cells (135 cells in a
+    Neuropixels recording; 25–39 cells in tetrode recordings)"
+  statistics:
+  - about: tetrode sessions, distance difference
+    test: Kruskal-Wallis test
+    statistic: H = 349.13
+    p: 2.70e-74
+    n: 14 sessions x 20 subsets
+  - about: tetrode sessions, slope
+    test: Kruskal-Wallis test
+    statistic: H = 352.35
+    p: 5.46e-75
+  - about: 135-cell session, distance difference
+    test: Kruskal-Wallis test
+    statistic: H = 62.87
+    p: 4.03e-11
+  - about: 135-cell session, slope
+    test: Kruskal-Wallis test
+    statistic: H = 55.76
+    p: 1.06e-9
+  criterion: As fig6d-reorganization-grows-with-cells, on the tetrode decoding sessions pooled (sizes up
+    to each session's count) and on the 135-cell session. Subset sizes for the tetrode sessions are not
+    given beyond n = max (29 to 35 cells); sizes from reading (a) of fig6c-subsets-decline up to each
+    session's count, then the session's full count, are used. Reproduced when all four Kruskal-Wallis
+    tests give p < 0.05 with the difference rising and the slope falling with size.
+- id: fig6ef-least-tuned-cells
+  statement: Even the 20% of cells with the lowest distance tuning showed distance reorganization, with
+    a bin 1 minus bin 5 difference of 0.121 and a slope of -0.0267.
+  source: Results, Distance-specific reorganization of the hippocampal map is widely distributed,
+    paragraph 4; Figure 6E and 6F
+  quote: "even the 20% of cells with lowest tuning was sufficient to demonstrate the distance
+    modulation, in the form of positive distance tuning as well as a negative slope (Figures 6E and
+    6F; rightmost point on blue curve: 0.121; on orange curve"
+  depends_on:
+  - fig6ab-single-cell-distance-tuning
+  expected:
+  - quantity: bin 1 minus bin 5 accuracy, 20% least-tuned cells of the 620-cell session
+    value: 0.121
+    tolerance: 0.0121
+  - quantity: slope of accuracy on distance bin, same cells
+    value: -0.0267
+    tolerance: 0.00267
+  criterion: Cells of the 620-cell session sorted by single-cell distance tuning
+    (fig6ab-single-cell-distance-tuning), the lowest 100, 80, 60, 40 and 20% kept, distance decoder
+    run on each. Reproduced when both 20% values are within tolerance; partially reproduced when the
+    difference is positive and the slope negative but outside tolerance.
+- id: fig7-single-cell-properties
+  statement: Single-cell properties barely predicted distance tuning; correlations with object-tuning
+    score (r = 0.12), spatial information (r = -0.13), spatial correlation (r = -0.08) and rate overlap
+    (r = -0.18) were significant but weak.
+  source: Results, Distance-specific reorganization of the hippocampal map is widely distributed,
+    paragraph 5; Figure 7A to 7D
+  quote: "The object-tuning score had a significant positive correlation with distance tuning, but very
+    weakly so (r = 0.12 ... Spatial information had a significant negative correlation, but also this
+    was very weak ... spatial correlation and rate overlap were also negatively but weakly correlated
+    with distance tuning"
+  statistics:
+  - about: object-tuning score
+    test: Pearson correlation
+    statistic: r = 0.12
+    p: 1.95e-5
+    n: 1,189 cells
+  - about: spatial information
+    test: Pearson correlation
+    statistic: r = -0.13
+    p: 3.70e-7
+  - about: spatial correlation
+    test: Pearson correlation
+    statistic: r = -0.08
+    p: 7.61e-4
+  - about: rate overlap
+    test: Pearson correlation
+    statistic: r = -0.18
+    p: 1.57e-9
+  depends_on:
+  - fig1c-object-tuned-fraction
+  - fig6ab-single-cell-distance-tuning
+  expected:
+  - quantity: r, object-tuning score
+    value: 0.12
+    tolerance: 0.05
+  - quantity: r, spatial information
+    value: -0.13
+    tolerance: 0.05
+  - quantity: r, spatial correlation
+    value: -0.08
+    tolerance: 0.05
+  - quantity: r, rate overlap
+    value: -0.18
+    tolerance: 0.05
+  criterion: Pearson correlations over cells of distance tuning with the object-tuning score (opening
+    comment), spatial information in bits per spike in the O trial (Methods), and NO-O spatial
+    correlation and rate overlap. The r values are printed to two digits, so a tolerance of 0.05 is
+    used in place of 10%, being half a unit in the first digit at the scale the claim calls weak.
+    Reproduced when, under one cell reading of fig6ab-single-cell-distance-tuning, all four r are
+    within 0.05 of the printed values with the same sign and p < 0.05, and each |r| is below 0.3.
+- id: fig7-slope-variant
+  statement: Using the slope of accuracy against distance in place of distance tuning gave similar weak
+    correlations with the same four properties.
+  source: Results, Distance-specific reorganization of the hippocampal map is widely distributed,
+    paragraph 5
+  quote: "We obtained similar results when, instead of distance tuning, we used the slope of the
+    regression line fitted to decoding accuracy vs. distance as a measure of reorganization"
+  statistics:
+  - about: object-tuning score
+    test: Pearson correlation
+    statistic: r = -0.12
+    p: 3.05e-5
+  - about: spatial information
+    test: Pearson correlation
+    statistic: r = 0.10
+    p: 3.58e-5
+  - about: spatial correlation
+    test: Pearson correlation
+    statistic: r = -0.08
+    p: 7.98e-4
+  - about: rate overlap
+    test: Pearson correlation
+    statistic: r = 0.19
+    p: 1.13e-12
+  depends_on:
+  - fig7-single-cell-properties
+  criterion: As fig7-single-cell-properties with the single-cell least-squares slope. Reproduced when
+    all four r are within 0.05 of the printed values with the same sign. The printed sign for spatial
+    correlation (negative for both measures, while the others flip) is noted.
+- id: figs5jk-walls-no-pivot
+  statement: The arena walls did not act as a pivot as the object did; position decoding error and
+    population vector correlations were comparable near (under 15 cm) and far from the walls.
+  source: Results, Decoding the presence of an object from neural-population activity, paragraph 5;
+    Supplementary Figure 5J and 5K
+  quote: "The internal walls of the recording environment did not play a similar role as the
+    free-standing object, since position decoding accuracy and population vector correlations were
+    comparable near and far away from the walls (Figures S5J and S5K)"
+  criterion: A claim of absence. The paper reports no test; its test for paired data is the Wilcoxon
+    signed-rank test (Methods, Statistical tests), applied here over the decoding sessions, near
+    against far, at alpha 0.05. Near is under 15 cm from a wall, far more than 15 cm (Supplementary
+    Figure 5J legend). (J) Position decoding error in the NO trial, the Euclidean distance between the
+    animal's position and the decoded position. The position decoder is not described in the Methods;
+    the reading allowed is the paper's Bayesian decoder (Methods, Bayesian decoding algorithm) with
+    the posterior over the 50 x 50 spatial bins of the NO trial, 1 s samples, the same training and
+    testing halves, and the decoded position the bin of maximum posterior. Open, could change the
+    outcome; reading (b) takes the posterior mean. (K) The population vector correlation (Methods,
+    Population vector correlation) between rate maps of the first and second halves of the NO trial,
+    mean over the near and over the far spatial bins. Reproduced when neither signed-rank test gives
+    p < 0.05 under any reading; not reproduced when one does. Differences are given either way.
+- id: figs8eh-least-tuned-smaller-datasets
+  statement: In the tetrode sessions and the 135-cell Neuropixels session too, keeping only the cells
+    with the lowest distance tuning weakened but did not at first remove the distance reorganization;
+    the slope reached zero when 60% (tetrode) or 50% (135-cell session) of the least-tuned cells were
+    kept.
+  source: Results, Distance-specific reorganization of the hippocampal map is widely distributed,
+    paragraph 4; Supplementary Figure 8E to 8H
+  quote: "As before, the finding also held in smaller-sized tetrode and Neuropixels data (Figures
+    S8E–S8H)"
+  depends_on:
+  - fig6ab-single-cell-distance-tuning
+  - fig6ef-least-tuned-cells
+  expected:
+  - quantity: fraction of least-tuned cells kept at which the slope reaches zero, tetrode sessions
+    value: 0.6
+    tolerance: 0.2
+  - quantity: fraction of least-tuned cells kept at which the slope reaches zero, 135-cell session
+    value: 0.5
+    tolerance: 0.2
+  criterion: As fig6ef-least-tuned-cells (100, 80, 60, 40 and 20% of cells with the lowest
+    single-cell distance tuning kept), on the tetrode decoding sessions pooled (Supplementary Figure
+    8E, 14 sessions) and on the 135-cell session. The tolerance is one step of the kept fraction (the
+    paper's grid is in steps of 20%), not 10%. Reproduced when, for both datasets, the 100% curve
+    has a positive bin 1 minus bin 5 difference and a negative slope, both shrink as fewer cells are
+    kept, and the largest kept fraction with a mean slope of zero or above is within tolerance.
+    The Results say the 20% finding "held", while the legends say the slope reached zero at 0.6 and
+    0.5; the 20% values are reported.
+checks:
+- date: 2026-10-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Checker. The 29 values flagged as not found (28 before this check, plus the Supplementary Table 1 p-value added here) are all printed in the paper with "x 10^" garbled to "3 10" in the text; 25 were confirmed in the text, the table value on PDF page 49, and the three of figs7cd-number-of-words (and those of figs7e-downsampled-words) on PDF page 46, rendered for this check.
+  - fig1c-object-tuned-fraction. The binomial test was one-sided; the Methods (Statistical tests) say all tests were two-sided. Made two-sided.
+  - fig1h-cross-day-stability. Same change to a two-sided binomial test. Noted that the Figure 1H y axis runs to 62 cells while its legend says 35.
+  - figs4-object-traces. Same change to a two-sided binomial test. Added that a cell counts when any field passes, since the Supplementary Figure 4A legend tests each field.
+  - fig1g-no-experience-effect. The criterion pooled all cell-days; the legend says each of the 62 dots is a cell and does not say which day's score is used. Named this open, with three readings.
+  - figs2d-traces-no-interference. The criterion said only one reading of trace removal was possible; the paper does not say how traces were removed. Added the reading that sets the trace bins to zero.
+  - fig3b-decode-presence and figs5a-decode-no-from-no-prime. The 99th percentile of label shuffles was not in the paper, which gives chance as 50% from the shuffling procedure. Now judged against 0.5 and the mean of the session's shuffles.
+  - fig3d-number-of-cells. The SD-based rule was not in the paper. Replaced with the paper's test for correlations (Pearson) of accuracy with the number of cells.
+  - fig4c-each-session-decreasing. Made explicit that every session is judged under the same reading.
+  - figs6-behaviour-decoders-flat. Removed the 0.6 bound on accuracy, which is not in the paper; the medians are reported.
+  - tables1-without-bin-1. Added the Kruskal-Wallis statistic with p = 1.50e-5, read from Supplementary Table 1 on PDF page 49 (the exponent is lost in the text).
+  - fig6ab-single-cell-distance-tuning. The tolerance of 0.013 on the 98.7% fraction had no reason given; set to the protocol's 10%.
+  - fig6d-reorganization-grows-with-cells. The criterion allowed extremes at 400 or 500 cells; the Results say both reached them at n = 500. Set to 500.
+  - fig7-single-cell-properties. The statement says the correlations were significant; added p < 0.05 to the criterion.
+  - Opening comment. Supplementary Table 1 values are now read from PDF page 49; added the Figure 1H 35 against 62 inconsistency.
+  - figs5jk-walls-no-pivot. New claim, a finding of the Results (walls do not act like the object) that had no claim.
+  - figs8eh-least-tuned-smaller-datasets. New claim, the Supplementary Figure 8E to 8H finding that had no claim.
+  - Open. figs5ghi-fields-and-rates. Its tests (a rank-sum on fields within 20 cm, per-bin signed-rank tests) are not in the paper, which shows only figures. They use the paper's test types but are the claim writer's choices. A better reading could not be fixed from the paper.
+  - Open. fig1d-field-distances. The test for "the entire azimuthal range" (a field in every 45 degree sector) is not from the paper.
+  - Open. fig2-fraction-changed-no-o. The signed-rank pairing of the 500 within-trial and between-trial values is not given in the paper; pairing by repetition is assumed.
+  - Open. figs5jk-walls-no-pivot. The Methods do not describe the position decoder; readings are named.
+  - Open. fig5b-words-more-informative. The printed U >= 439 cannot come from a rank-sum of 16 against 16 sessions (largest rank sum 392), so which samples were compared stays uncertain; both readings remain.
