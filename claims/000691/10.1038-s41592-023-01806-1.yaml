@@ -255,8 +255,9 @@ claims:
     times each axis's width. Radial distance is from the code's centre (row 273, column 400), and
     beads are grouped to the nearest of 0, 100, ..., 500 um; centre is the 0 um group and edge the
     500 um group. Which width is "resolution" is open. The readings are (a) the median major-axis
-    FWHM, (b) the median minor-axis FWHM, (c) the mean of the two axes' means (the code's error bar
-    plot). Reproduced when both values are within tolerance under a reading.
+    FWHM, (b) the median minor-axis FWHM (the box plots of Fig. 1e), (c) the mean major-axis FWHM,
+    (d) the mean minor-axis FWHM (the code's error bar plot, one curve per axis). Reproduced when
+    both values are within tolerance under a reading.
 - id: fig1f-kiloscope-psf
   statement: The Kiloscope's resolution (FWHM of the bead PSF) is about 4 um at the centre of
     the field of view and about 5 um at the edges.
@@ -277,7 +278,7 @@ claims:
     unit: um
   criterion: As for fig1e-featherscope-psf, with f2+sf4/wf_analysis_secondorder.m (5.35 um per
     pixel, centre at row 259, column 420, groups 0, 250, ..., 1500 um; edge is the 1500 um group),
-    and the same three readings.
+    and the same four readings.
 - id: ed1cf-field-curvature
   statement: Both microscopes have field curvature small enough for typical imaging depths.
   source: Main text, page 547, paragraph 1; Extended Data Fig. 1c and 1f
@@ -382,16 +383,20 @@ claims:
     n: 1,000 shuffled datasets
   criterion: Eight classes, the four quadrants by two directions (Fig. 2i), and the common method
     above with lambda 3.2e-7. The decoding matrix is the average of 200 fits
-    (quadrant_direction_decoding.m). The null is 1,000 decoders, each trained once on its own
-    shuffle (Methods, paragraph 5), each giving a median accuracy; p is the fraction of null
-    values at or above the real median accuracy. Chance is 1/8 (the code sets white at
-    1/Nclass). Which accuracy must reach three times chance is open. The readings are (a) the
+    (quadrant_direction_decoding.m). The null is 1,000 decoders trained on their own shuffles
+    (Methods, paragraph 5), each giving a median accuracy; p is the fraction of null values at or
+    above the real median accuracy. The code holds no null for this panel, so how many fits make
+    one null decoder is open. The readings are (n1) one fit per shuffle, (n2) the average matrix of
+    200 fits per shuffle, as for the real matrix (subset_sweep.m averages its shuffled decoders
+    over the same number of fits as its real ones). The p-value is judged under both; when they
+    disagree on p < 0.001, the claim is methods_underspecified. Chance is 1/8 (the code sets white
+    at 1/Nclass). Which accuracy must reach three times chance is open. The readings are (a) the
     median of the diagonal at least 0.375, (b) every diagonal element at least 0.375. Reproduced
     when p < 0.001 and the accuracy holds under a reading; partially reproduced when p < 0.001
     and the median of the diagonal exceeds 1/8 but neither reading holds.
 - id: fig2k-decoder-size
-  statement: Decoding accuracy depends on the number of footprints used, and decoders of every
-    size from 2 to 2,048 footprints differ from decoders trained on shuffled activity.
+  statement: Decoding accuracy depends on the number of footprints used, with P at or below 2.7 x
+    10^-4 (Mann-Whitney U) for every decoder size from 2 to 2,048 footprints.
   source: Main text, page 549, paragraph 1; Fig. 2k; Methods, Data analysis, paragraph 5
   quote: The accuracy of the decoder depended on the number of footprints used (Fig. 2k, P ≤ 2.7 ×
     10−4 for all decoder sizes, Mann–Whitney U).
@@ -420,19 +425,24 @@ claims:
   depends_on:
   - fig2-quadrant-direction-decoding
   criterion: Map points every 5 image pixels over rows 1 to 608 and columns 140 to 700 (the code's
-    grid, subregion_map_quaddir.m); a point is used when at least 32 footprint centroids lie within
-    270 um (Methods). At each point, the 32 footprints nearest to it; its value is the median
-    accuracy of the average matrix of 10 fits (code), with quadrant and direction labels and lambda
-    6.75e-8 (code). The null is 1,000 decoders trained on shuffled data from 32 randomly chosen
-    footprints (Methods). Points are significant at Benjamini-Hochberg 5% over all used points.
-    Open details and their readings. Pixel size for the 270 um radius, 5.94 um (45 pixels) or 5.35
-    um (50 pixels, the code's radius); random footprints drawn anew for each null decoder, or one
-    draw for all; p as the fraction of null values at or above the point's value, or that count
-    plus one over 1,001. "Substantially different" is read as (i) significant and non-significant
-    used points both present, and (ii) the values of the used points spanning at least 0.108 (the
-    0.18 to 0.30 range of the Fig. 2l colour bar, less 10%). Reproduced when at least one point is
-    significant and (i) and (ii) hold under every combination of readings. The code's choice of 64
-    footprints within 50 pixels is shown as a variant.
+    grid, subregion_map_quaddir.m); a point is used when at least 32 footprints lie within 270 um
+    (Methods). A footprint's position is not given in the Methods; the code takes the first pixel
+    (in column order) at which the footprint's spatial weight equals 1, its peak, and that is
+    used, with the centroid shown as a variant. At each point, the 32 footprints nearest to it;
+    its value is the median accuracy of the average matrix of 10 fits (code), with quadrant and
+    direction labels and lambda 6.75e-8 (code). The null is 1,000 decoders trained on shuffled
+    data from 32 randomly chosen footprints (Methods). Points are significant at
+    Benjamini-Hochberg 5% over all used points. Open details and their readings. Pixel size for
+    the 270 um radius, 5.94 um (45 pixels) or 5.35 um (50 pixels, the code's radius); random
+    footprints drawn anew for each null decoder, or one draw for all; each null decoder one fit,
+    or the average matrix of 10 fits as at the points; p as the fraction of null values at or
+    above the point's value, or that count plus one over 1,001. "Substantially different" is read
+    as (i) significant and non-significant used points both present, and (ii) the values of the
+    used points spanning at least 0.108 (the 0.18 to 0.30 range of the Fig. 2l colour bar, less
+    10%). Reproduced when at least one point is significant and (i) and (ii) hold under every
+    combination of readings; not reproduced when they fail under every combination; otherwise
+    methods_underspecified, with every result shown. The code's choice of 64 footprints within 50
+    pixels is shown as a variant.
 - id: ed8-coactive-distributed
   statement: The correlated activity in each NMF component is driven by footprints spread across
     the field of view.
@@ -449,12 +459,13 @@ claims:
     (820, 770, 990, 700, 400, 420, 1000 and 410 s) for components whose numbering a new NMF run
     does not reproduce. The readings are (a) the time of each component's largest temporal weight,
     (b) the code's eight times, each assigned one to one to the component with the largest
-    temporal weights at those times. "From across the FOV" has no measure in the paper. The
-    readings are (i) active footprints in all four quarters of the field of view (split at the
-    midlines of the extent of all centroids), (ii) the root-mean-square distance of the active
-    footprints' centroids from their mean not below the 5th percentile of that of 1,000 random sets
-    of the same size from all footprints. Reproduced when every component's event meets (i) and
-    (ii) under both event readings; partially reproduced when at least four do.
+    temporal weights at those times. "From across the FOV" has no measure in the paper, and none
+    is in the code. The plain reading used is that each event's active footprints lie in all four
+    quarters of the field of view (split at the midlines of the extent of all footprint
+    positions, taken as for fig2l-local-decoding-map). Reproduced when every component's event
+    meets it under both event readings; not reproduced when some event fails it under both;
+    otherwise methods_underspecified. The maps of active footprints (the code's Extended Data
+    Fig. 8b, footprints thresholded at 10% of their maximum) and their counts are shown.
 - id: ed9b-octant-decoding
   statement: Position within the maze can be decoded with octant resolution from the activity,
     above decoders trained on shuffled data.
@@ -471,8 +482,9 @@ claims:
   criterion: Eight classes, the eight octants (each side of the loop halved, direction not coded;
     Extended Data Fig. 9a), with the common method above and lambda 6.75e-8. The decoding matrix is
     the average of 200 fits (octant_decoding.m). The null is as in fig2-quadrant-direction-decoding,
-    1,000 decoders each trained once on its own shuffle. Reproduced when the real median accuracy
-    exceeds every null value (p < 0.001) and exceeds chance (1/8).
+    1,000 decoders on their own shuffles, with the same two readings (n1) and (n2). Reproduced when
+    the real median accuracy exceeds every null value (p < 0.001) and exceeds chance (1/8) under
+    both; not reproduced when it fails under both; otherwise methods_underspecified.
 - id: ed9c-local-decoding-map
   statement: Decoders built from the 32 footprints closest to a point decode octant position
     significantly in parts of the field of view, with accuracy that varies across it.
@@ -485,10 +497,12 @@ claims:
   depends_on:
   - ed9b-octant-decoding
   criterion: As fig2l-local-decoding-map, with octant labels, the average matrix of 40 fits per
-    point (subregion_map_octant.m) and the same open details and readings, except that (ii) is read
-    as the values of significant points spanning at least 0.05, since the paper gives no colour bar
-    for this map in its text. Reproduced when at least one point is significant and (i) and (ii)
-    hold under every combination of readings.
+    point (subregion_map_octant.m; a null decoder is one fit or the average of 40) and the same
+    open details and readings, except (ii). The paper gives no colour bar for this map in its
+    text and no measure of how much the accuracy varies, so no span threshold is set; the claim is
+    judged on (i) and the span of the used points' values is reported. Reproduced when at least
+    one point is significant and (i) holds under every combination of readings; not reproduced
+    when it fails under every combination; otherwise methods_underspecified.
 - id: ed10-localized-activity
   statement: Some footprints have activity localized to subregions of the maze.
   source: Main text, page 549, paragraph 1; Extended Data Fig. 10
@@ -500,10 +514,57 @@ claims:
     when its trace exceeds 1% of its maximum; the plotted value is the fraction of time active at
     each location, smoothed with a Gaussian of 10 video pixels. The code also computes, per
     footprint, the entropy of its mean activity over 100 bins of linear position between the 1st
-    and 99th percentiles. The code sets no threshold, so "localized" is open. The readings are (a)
-    entropy below all of 100 values from circular shifts of position against activity (shifts
-    uniform over all offsets), (b) the peak of the smoothed map above all of 100 such shifted
-    values. Reproduced when, under both, the number of localized footprints exceeds the count
-    expected at 1/101 with binomial p < 0.001. The code's 12 selected footprints (ifig in
-    place_cells.m, indices into the curated set) are shown as a variant when the data's footprint
-    order can be matched to the curated set.
+    and 99th percentiles, and sorts footprints by the peak of the smoothed map. Neither the paper
+    nor the code sets a threshold or a test for "localized", and the paper's selection by eye
+    cannot be redone, so the claim cannot be judged by a method the paper fixes
+    (methods_underspecified). The maps and the entropy and peak of every footprint are reported,
+    with the code's 12 selected footprints (ifig in place_cells.m, indices into the curated set)
+    when the data's footprint order can be matched to the curated set.
+checks:
+- date: "2026-10-20"
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1e-featherscope-psf, fig1f-kiloscope-psf. Reading (c), "the mean of the two axes' means", is
+    not what the code computes; its error bar plot shows the mean of each axis separately. Replaced
+    by (c) the mean major-axis FWHM and (d) the mean minor-axis FWHM.
+  - fig2-quadrant-direction-decoding. The Methods say a thousand decoders on different shuffles but
+    not how many fits make one null decoder, and the code holds no null for this panel. The file
+    fixed one fit as if the Methods said so. Both readings (one fit, or 200 fits as for the real
+    matrix) are now named, with methods_underspecified when they disagree.
+  - ed9b-octant-decoding. The same open detail of the null, named the same way.
+  - fig2k-decoder-size. The statement said decoders of every size differ from shuffled ones, which
+    is reading (a) of the criterion; the paper says only that accuracy depended on size, P at or
+    below 2.7e-4 for all sizes. The statement now says that, and the criterion keeps both readings.
+  - fig2l-local-decoding-map. Footprint positions were called centroids; the Methods do not say,
+    and the code (subregion_map_quaddir.m) uses the first pixel where the spatial weight equals 1.
+    The code's choice is now used and the centroid is a variant. The number of fits per null
+    decoder (one, or 10 as at the points) is added as an open detail, and the outcome when the
+    readings disagree (methods_underspecified) is now stated.
+  - ed9c-local-decoding-map. The span threshold of 0.05 was the earlier author's choice, with no
+    source in the paper or the code. Removed; the claim is judged on (i) and the span is reported.
+    The null's number of fits is added as an open detail, as for fig2l.
+  - ed8-coactive-distributed. Reading (ii), a percentile test against 1,000 random sets of
+    footprints, and the "at least four" rule for partial reproduction are not in the paper or the
+    code. Removed. The four-quarter reading is kept as the plain reading of "from across the FOV",
+    with outcomes for both event readings stated.
+  - ed10-localized-activity. The shuffle tests (100 circular shifts, a binomial count at 1/101 with
+    p < 0.001) are not in the paper or the code, which select footprints by eye. The claim is now
+    methods_underspecified, as for fig2d-lman-sparse-bursting, with the code's maps, entropy and
+    peaks reported.
+  - Checked against the code at commit d596646b16a505907203828d8026feb7736ca69c (position
+    tracking, decoders, map scripts, NMF grouping, coactive raster, place maps, PSF and
+    illumination scripts); the other code details cited in the file match it.
+  - Open. The decoding scripts load extract_curated.mat and then position_tracking.mat, which
+    position tracking builds from all EXTRACT footprints, so which set the code decoded from
+    cannot be settled without the supporting data; the file follows the Fig. 2 legend (2,382
+    curated) and names all 2,948 as a variant.
+  - Open. The NoRMCorre settings behind ed7-motion-small are not given; the file's rigid default is
+    a choice that could move the value, and the paper gives nothing to settle it.
+  - Open. The sidedness of the Mann-Whitney tests of fig2k-decoder-size is not stated; the file
+    uses two-sided tests.
+  - Not added as claims. The reporting summary's statement that decoding was replicated in a
+    session a month earlier, and minor design numbers in the Methods (about 20% light loss from the
+    prism, SNR gain of about 3 from the heatsink, sample irradiance), are not main findings and are
+    left out.
