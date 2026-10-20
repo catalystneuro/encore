@@ -20,7 +20,8 @@ paper's MATLAB code, Ephys.zip of the Figshare record doi:10.25378/janelia.70078
   a boundary, so both give the same bins.
 - `GOOD_QUALITY`, `MIN_CORRECT`, `MIN_SPIKES_PER_TRIAL`, `MIN_PERFORMANCE` and `EDGE_TRIALS`: the
   code's per-unit inclusion rule and trial range (loadAndProcessData.m), reading (a) of the
-  claims file's unit inclusion. `session_rule` is reading (b), the Methods' session rule.
+  claims file's unit inclusion and of the trial range, which the claims file settles as the ones
+  the claims use. `session_rule` is reading (b), the Methods' session rule, a variant.
 - `DT` and `SMOOTH`: 5 ms bins and a causal 50 ms boxcar (Methods; MySmooth with sm = 19 keeps
   the current bin and the nine before). `TIME` is the bin grid of the paper's processed data
   files, which the code reads (bin centres from -3.3975 to 2.9975 s around the go cue); it is a
@@ -913,16 +914,19 @@ def compare_with_processed(session: dict, mat: dict, index: int = 0) -> tuple[pd
     return pd.DataFrame(rows), spans
 
 
-def read_processed(sessions: list[dict]) -> tuple[list[dict], pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame]:
+def read_processed(sessions: list[dict]) -> tuple[list[dict], pd.DataFrame, pd.DataFrame, pd.DataFrame, pd.DataFrame, dict]:
     """Read every processed file. Returns the tagged units of every processed session (as
     `build_unit`, go-cue aligned only); per unit of every session also in the dandiset, whether
     the file's spike times equal trial start + go cue + the processed time in stored order; per
     such session, the start of the processed spike windows relative to the pole coming in, for
     the first ten trials and for the others; per such session, the last lick after the go cue
     from the files (`last_licks`) against the processed trial properties; and the count of
-    unidentified good-quality units per processed session."""
+    unidentified good-quality units per processed session; and, per session also in the
+    dandiset, for every trial whether the last lick rebuilt from the files equals the processed
+    one within 5 ms (False where either is missing)."""
     by_key = {(s["subject"], s["session"]): s for s in sessions}
     records, storage, shifts, licks, unidentified = [], [], [], [], []
+    lick_agree = {}
     for member in processed_members():
         # a fresh signed URL for each file, as the archive's links expire
         data = figshare_zip(FIGSHARE_EPHYS_ZIP).read(member)
@@ -957,6 +961,7 @@ def read_processed(sessions: list[dict]) -> tuple[list[dict], pd.DataFrame, pd.D
                            "others: first - pole_in": offset.iloc[EDGE_TRIALS:].median()})
             mine = last_licks(s) - s["trials"].cue_abs.to_numpy()
             corr = correct_trials(s["trials"])
+            lick_agree[(subject, session)] = np.abs(mine - spans["processed last lick"].to_numpy()) < 5e-3
             diff = (mine - spans["processed last lick"].to_numpy())[corr]
             licks.append({"subject": subject, "session": session, "correct trials": int(corr.sum()),
                           "equal (within 5 ms)": int(np.sum(np.abs(diff) < 5e-3)),
@@ -964,7 +969,7 @@ def read_processed(sessions: list[dict]) -> tuple[list[dict], pd.DataFrame, pd.D
                           "max |difference| (s)": float(np.nanmax(np.abs(diff))) if np.isfinite(diff).any() else np.nan})
         del mat
     return (records, pd.concat(storage, ignore_index=True), pd.DataFrame(shifts), pd.DataFrame(licks),
-            pd.DataFrame(unidentified))
+            pd.DataFrame(unidentified), lick_agree)
 
 
 def isi_burst_fraction(times: np.ndarray, boundary: np.ndarray) -> float:
@@ -993,14 +998,15 @@ def read_seq() -> dict:
     return {"anno": anno, "sc": sc, "bulk": bulk, "key": key, "cluster_metadata": meta}
 
 
-def bulk_vs_sc(seq: dict, bulk_scale: str = "counts", n_genes: int = 100) -> dict:
+def bulk_vs_sc(seq: dict, bulk_scale: str = "cpm", n_genes: int = 100) -> dict:
     """bulkVsSC.m: fold change (mean log2(1 + x), PTupper minus PTlower) of the genes in both
     data sets, in single cells (Npsr1 and Hpgd clusters against Slco2a1, by the annotation's
     primary cluster label) and in bulk samples (columns 1, 6, 8, 9, 11, 13 thalamus and 2, 4, 7,
     10, 12, 14 medulla, as the code); genes ranked by how well detection (> 0) in single cells
     classifies the two groups, the `n_genes` at each end kept; Pearson's r of the fold changes
-    over those genes. `bulk_scale` 'counts' uses the bulk values as stored, as the code; 'cpm'
-    scales each sample to counts per million, as the Extended Data Fig. 4i legend says."""
+    over those genes. `bulk_scale` 'cpm' scales each bulk sample to counts per million, as the
+    Extended Data Fig. 4i legend says and the claims file's criterion follows; 'counts' uses the
+    bulk values as stored, as the code (a variant). The single-cell values are stored as CPM."""
     anno, sc, bulk = seq["anno"], seq["sc"], seq["bulk"]
     lab = anno.set_index("sample_id").primary_cluster_label.astype(str)
     lab = lab.reindex(sc.columns)
@@ -1008,9 +1014,10 @@ def bulk_vs_sc(seq: dict, bulk_scale: str = "counts", n_genes: int = 100) -> dic
     med = lab.str.contains("Slco2a1")
     # gene names repeat in the tables; MATLAB's ismember takes the first row of each name
     sc = sc[~sc.index.duplicated()]
-    b = bulk[~bulk.index.duplicated()].astype(float)
+    b = bulk.astype(float)
     if bulk_scale == "cpm":
-        b = b / b.sum(axis=0) * 1e6
+        b = b / b.sum(axis=0) * 1e6         # over all of the sample's counts
+    b = b[~b.index.duplicated()]
     thal_cols = [1, 6, 8, 9, 11, 13]
     med_cols = [2, 4, 7, 10, 12, 14]
     genes = sc.index.intersection(b.index)
@@ -1045,10 +1052,17 @@ def read_axons() -> list:
     return list(np.atleast_1d(m["Session"].Neurons))
 
 
-# AxonReconstructions.m: the 12 fully reconstructed neurons and their groups (1 medulla, 2 thalamus)
+# AxonReconstructions.m: the 12 fully reconstructed neurons and their groups (1 medulla, 2 thalamus),
+# the same as Supplementary data table 1 as the claims file gives it
 AXON_GROUPS = {"AA0180": "medulla", "AA0179": "medulla", "AA0133": "medulla", "AA0012": "medulla",
                "AA0181": "thalamus", "AA0182": "thalamus", "AA0245": "thalamus", "AA0011": "thalamus",
                "AA0261": "thalamus", "AA0122": "thalamus", "AA0115": "thalamus", "AA0114": "thalamus"}
+
+
+# Supplementary data table 1, as the claims file gives it (pt-types-account-for-all-pt): the six
+# partially reconstructed PT neurons that, with the 12 above, make the paper's 18
+AXON_PARTIAL = {"AA0132": "thalamus", "AA0135": "thalamus", "AA0250": "thalamus",
+                "AA0131": "medulla", "AA0134": "medulla", "AA0169": "medulla"}
 
 
 def axon_targets(neurons: list, structures: list[str]) -> pd.DataFrame:

@@ -12,28 +12,30 @@ paper's Figshare record (doi:10.25378/janelia.7007846), which the claims file na
 
 | Claims | Outcome |
 |---|---|
-| Data elsewhere: transcriptomic clusters, cluster mapping of projection types, bulk against single-cell fold changes, shared targets | Reproduced |
+| Data elsewhere: transcriptomic clusters, thalamus and medulla projections of the reconstructions, cluster mapping of projection types, bulk against single-cell fold changes | Reproduced |
 | Data elsewhere: all PT neurons in the two types | Partially reproduced |
-| Data elsewhere: thalamus and medulla projections of the reconstructions, retrograde co-labelling | Blocked: methods underspecified |
-| Data elsewhere: smFISH markers | Blocked: data not public |
-| Unit counts (61 and 69), selective units in any epoch (122 of 130) | Not reproduced: the dandiset lacks 11 sessions |
-| Depth, PTlower early selectivity decay, coding direction stability, PTlower late activity and CDgo motor command | Reproduced |
+| Data elsewhere: shared targets (the bulk labelling part has no method of analysis), retrograde co-labelling | Blocked: methods underspecified |
+| smFISH markers | Blocked: data not public |
+| Unit counts (61 and 69), selective units in any epoch (122 of 130), spike rates similar | Not reproduced |
+| Depth, rate heterogeneity, variance explained, PTlower early selectivity decay, coding direction stability, single-neuron early selectivity, PTlower late activity and CDgo motor command | Reproduced |
 | Late delay selective counts, bursting, single-unit decoding (two claims), CDgo onsets | Partially reproduced |
-| Spike rates, rate heterogeneity, variance explained, PTupper early and persistent activity, single-neuron early selectivity, coding direction change at the go cue, movement termination, cohort control, the summary of the two types' timing | Blocked: methods underspecified |
+| PTupper early and persistent activity, coding direction change at the go cue, movement termination, cohort control, the summary of the two types' timing | Blocked: methods underspecified |
 | Reaction time | Blocked: no video |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
 The unit selection, epochs, smoothing, coding directions and hierarchical bootstrap follow the claims
-file, which cites the Methods and the analysis code on the Figshare record. Neither of the claims
-file's readings of the unit selection gives the paper's 61 and 69 units on the dandiset (44 and 56, or
-42 and 63), because 11 sessions are missing from it, so every electrophysiology claim is run under
-both, with the other readings the claims file names. Where readings give different outcomes, the claim
-is blocked and a question is in `questions/000006.yaml`. The same code run on the paper's units from
-its processed data gives most of the paper's numbers; those runs are variants, and no outcome rests on
-them. The spike and lick times in the files are not sorted, and consecutive trials overlap on the
-files' clock; the notebook shows this and rebuilds the trials from the stored order.
+file, which cites the Methods and the analysis code on the Figshare record. A reader answered this
+attempt's questions (`questions/000006.yaml`), and the claims file now settles the unit selection
+(the code's per-unit rule) and the trial range (each unit's range in the code); the outcomes are
+decided under those, with the Methods' session rule and all trials shown as variants. On the
+dandiset the code's rule keeps 44 PTupper and 56 PTlower units, not the paper's 61 and 69, because
+11 sessions are missing from it. Where the remaining open readings give different outcomes, the
+claim is blocked. The same code run on the paper's units from its processed data gives most of the
+paper's numbers; those runs are variants, and no outcome rests on them. The spike and lick times in
+the files are not sorted, and consecutive trials overlap on the files' clock; the notebook shows
+this and rebuilds the trials from the stored order.
 
 - `reproduce_economo_2018.ipynb`: the analysis. It takes about twelve minutes, most of it streaming
   the files and the processed data and running the bootstraps.
