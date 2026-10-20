@@ -21,9 +21,10 @@ photoinhibition.
 | Unmodulated VM/VAL neurons less selective; localization to VM/VAL | Partially reproduced (2 claims) |
 | SNr response to ALM photoinhibition | Partially reproduced |
 | Onsets after ALM photoinhibition (Fig. 6e) | Not reproduced |
-| Selectivity time course in ALM and VM/VAL | Partially reproduced |
+| Selectivity time course in ALM and VM/VAL | Reproduced |
 | ALM Vm 12.7 mV below threshold | Not reproduced |
-| Whole-cell Vm changes under thalamus, M1 and contralateral ALM photoinhibition (4 claims) | Blocked: metadata insufficient |
+| ALM Vm hyperpolarized by 18.7 mV under thalamus photoinhibition; small effect of M1 photoinhibition | Partially reproduced (2 claims) |
+| Small Vm effect of contralateral ALM photoinhibition; thalamus drives ALM more strongly than cortex | Reproduced (2 claims) |
 | Equal inhibition across selectivity types; all cortical layers (3 claims) | Blocked: methods underspecified |
 | vM1 photoinhibition | Blocked: metadata insufficient |
 | Gad2 optrode reduction | Blocked: metadata insufficient |
@@ -35,14 +36,16 @@ and the differences from the paper's method.
 
 The dandiset holds 966 of the paper's 1214 ALM units, nearly all its thalamic units and its 181
 putative GABAergic SNr units. Its mean waveforms are too short to measure the spike widths the
-Methods classify by, so unit classes are run both by computed width and by the files' own labels.
+Methods classify by, so unit classes are run both by computed width and by the files' own labels (and, for the
+thalamic claims of Fig. 2 and 6, with all units).
 Spikes are stored only in the first 5 s or so of each trial, and most units hold spikes over only
-part of their session. The whole-cell files record no photostimulus time, and the effect of
-photoinhibition starts about 0.19 s after the onset their trial times imply. The attempt record,
+part of their session. The whole-cell files record no photostimulus time; the effect of photoinhibition
+starts about 0.19 s after one onset their trial times allow (E) and just before the other (M), and
+the whole-cell claims hold under M only. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/000009-guo-2017-01.yaml`](../../attempts/000009-guo-2017-01.yaml).
 
-- `reproduce_guo_2017.ipynb`: the analysis. It takes about six minutes, most of it streaming the
+- `reproduce_guo_2017.ipynb`: the analysis. It takes about ten minutes, most of it streaming the
   whole-cell files (12.7 GB).
 - `loop.py`: loading the extracellular sessions and whole-cell recordings, the epoch and
   photostimulus conventions of the claims file, per-unit selectivity and photoinhibition measures,
