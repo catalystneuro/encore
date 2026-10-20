@@ -12,7 +12,7 @@ under its folder name: the identifier alone for DANDI, which the registry began 
 docs/archives.md.
 
 Targets come from each archive's list in targets/: targets/dandisets.json is DANDI's, built by
-tools/build_targets.py; targets/crcns.json is CRCNS's, written by hand.
+tools/build_targets.py; targets/crcns.json and targets/ebrains.json are written by hand.
 """
 
 from __future__ import annotations
@@ -41,6 +41,13 @@ ARCHIVES = {
                    "\"CRCNS\": stream them, opening a zip in place with fsspec and zipfile; do not download them "
                    "to disk."),
         "list": "crcns.json",
+    },
+    "ebrains": {
+        "label": "EBRAINS", "name": "EBRAINS", "url": "https://search.kg.ebrains.eu/instances/{id}",
+        "access": ("Read the files anonymously through the EBRAINS data proxy "
+                   "(https://data-proxy.ebrains.eu/api/v1/public/datasets/<id>/<file>), as docs/archives.md says "
+                   "under \"EBRAINS\": stream each file into memory with fsspec; do not download them to disk."),
+        "list": "ebrains.json",
     },
 }
 

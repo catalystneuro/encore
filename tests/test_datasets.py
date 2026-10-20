@@ -46,3 +46,11 @@ def test_a_crcns_dataset_is_a_target_with_its_own_page():
     assert ret["folder"] == "crcns-ret-1" and datasets.label(ret["key"]) == "CRCNS:ret-1"
     assert datasets.url(ret["key"]) == "https://crcns.org/data-sets/retina/ret-1"
     assert "crcnsarchive" in datasets.access(ret["key"])
+
+
+def test_an_ebrains_dataset_is_a_target_named_by_its_version_id():
+    key = "ebrains:0162668e-bef0-4754-8562-40440db5bc0c"
+    found = next(t for t in datasets.targets() if t["key"] == key)
+    assert found["folder"] == "ebrains-0162668e-bef0-4754-8562-40440db5bc0c"
+    assert datasets.key_of_folder(found["folder"]) == key and datasets.label(key).startswith("EBRAINS:")
+    assert "data-proxy.ebrains.eu" in datasets.access(key)
