@@ -77,7 +77,11 @@
 #   the summed across-trial variances; NaN set to 0; the vector over the population normalised
 #   by its L1 norm. Windows CDearly -2.5 to -2.1 s, CDlate -0.4 to 0 s, CDgo 0 to 0.4 s (the code
 #   takes time >= start and < end); CDgo orthogonalised to CDlate by Gram-Schmidt. Separate CDs
-#   per population.
+#   per population. The code also sets to 0 the weight of a neuron whose rank-sum p between the
+#   two trial types in the window is 1 (DirectionVector, cv.*(pval<1)).
+# - Epoch means (code, loadAndProcessData.m, getData and trialAverage): the per-trial epoch means
+#   used for the Mann-Whitney counts, the decoding and the baseline take time > start and <= end,
+#   unlike the CD windows; the difference is one 5 ms bin at each edge.
 # - Projection and selectivity (Methods, equations 3 to 5; code, projectOntoVector): the
 #   trial-averaged rates of each trial type times the CD; selectivity is the right projection
 #   minus the left. For go-cue-aligned rates the code subtracts the selectivity's mean in the
@@ -105,8 +109,8 @@ paper: doi:10.1038/s41586-018-0642-9
 claims:
 - id: pt-types-transcriptomic
   statement: In ALM scRNA-seq, glutamatergic neurons form 27 clusters and PT neurons map to three of them (Slco2a1,
-    and the closely related Npsr1 and Hpgd), and with axonal reconstructions this divides PT neurons
-    into two cell types.
+    and the closely related Npsr1 and Hpgd), and with axonal reconstructions this suggests that PT
+    neurons can be divided into two cell types.
   source: Results, Two types of PT neuron in layer 5, paragraphs 1 and 5; Fig. 1
   quote: ALM PT neurons mapped to three transcriptomic clusters ... Axonal reconstructions and scRNA-seq
     data suggest that PT neurons can be divided into two distinct cell types.
@@ -174,7 +178,7 @@ claims:
 - id: pt-projection-cluster-mapping
   statement: All 62 medulla-projecting PT neurons map to the Slco2a1 cluster, and 91 of 94
     thalamus-projecting PT neurons map to the Npsr1 and Hpgd clusters.
-  source: Results, Two types of PT neuron in layer 5, paragraphs 4 and 5; Fig. 2e, f
+  source: Results, Two types of PT neuron in layer 5, paragraph 4; Fig. 2e, f
   quote: projecting PT neurons mapped to the Slco2a1 taxonomic cluster. ... Similarly, thalamus-projecting
     PT neurons mapped to the Npsr1 and Hpgd clusters (91 out of 94
   expected:
@@ -189,8 +193,8 @@ claims:
     doi:10.25378/janelia.7007846 version 1, Seq.zip
 - id: pt-types-account-for-all-pt
   statement: All 18 partially and fully reconstructed PT neurons project to the superior colliculus and
-    none lacks projections to both thalamus and medulla, so most if not all PT neurons belong to the two
-    types.
+    none lacks projections to both thalamus and medulla, suggesting that most if not all PT neurons
+    belong to the two types.
   source: Results, Two types of PT neuron in layer 5, paragraph 5; Supplementary Table 1 (not in the
     text read)
   quote: All (18 out of 18) partially and fully reconstructed PT neurons projected to the superior colliculus
@@ -247,8 +251,10 @@ claims:
     with retrograde labelling experiments
   depends_on:
   - pt-tagged-units
-  criterion: Depth is the micromanipulator reading, uncorrected (Fig. 4e legend, Methods). The paper
-    reports no test; Fig. 4e shows mean +/- s.d. Reproduced when the mean depth of included PTupper
+  criterion: Depth is the micromanipulator reading, uncorrected (Fig. 4e legend, Methods). The code
+    (simplePlots.m, plotDepth) plots each unit's own depth field (meta.depth) and also stores the
+    session's manipulator depth (manipulatorDepth); both are run, and the outcome is the one they give.
+    The paper reports no test; Fig. 4e shows mean +/- s.d. Reproduced when the mean depth of included PTupper
     units is smaller than that of PTlower units. Shown both with all units, as the code's error bars,
     and without the right-hemisphere PTlower recordings (animals 29.5 and 30.5), which the code leaves
     out of the plotted points (simplePlots.m, plotDepth).
@@ -306,12 +312,12 @@ claims:
     p: 3.0e-04
   depends_on:
   - pt-spike-rates-similar
-  criterion: Rates as in pt-spike-rates-similar. The paper names a chi-squared test; the code compares
-    variances with MATLAB's vartest2, a two-sample F test (simplePlots.m). The Methods come first, and
-    the two-sample variance test with a chi-squared statistic is Bartlett's test, so Bartlett's test is
-    the main reading and the F test of the code is a variant. Reproduced when, for both baseline and
-    peak, the PTlower variance is larger and the test has p < 0.05; partially reproduced when that
-    holds for one. The F test result is shown.
+  criterion: Rates as in pt-spike-rates-similar. The Results name a "χ2 test" without saying which; the
+    Methods name no variance test. The code compares variances with MATLAB's vartest2, a two-sided
+    two-sample F test (simplePlots.m, plotFiringRates). Readings, (a) Bartlett's test, the two-sample
+    variance test with a chi-squared statistic, (b) the code's F test; both are run and the outcome is
+    the one they give. Reproduced when, for both baseline and peak, the PTlower variance is larger and
+    the test has p < 0.05; partially reproduced when that holds for one.
 - id: pt-lower-bursting
   statement: A substantial proportion of PTlower neurons fire bursts (18.8%), which are rare among PTupper
     cells (3.3%).
@@ -376,7 +382,9 @@ claims:
     to 1.3 (the code's ylim). Reproduced when, for both populations, the median ratio is at most 1.3 at
     every number of components. Variants that do not change the outcome are the code's own choices,
     which differ from the Methods text (a 100 ms smoothing, sm = 39; baseline subtraction and division
-    by s.d. in place of z-scoring; the first 1,000 time bins). The asterisks of the figure (ratio
+    by s.d. in place of z-scoring; the first 1,000 time bins; per iteration, 50 trials of each type
+    resampled with replacement for every neuron, PT and unidentified alike; the variance explained
+    taken per neuron and averaged). The asterisks of the figure (ratio
     above 1, z > 1.645 of the bootstrap) are reported.
 - id: pt-preparatory-activity
   statement: Along the late delay coding direction (CDlate) selectivity is substantial in both PT types,
@@ -411,10 +419,11 @@ claims:
   - pt-tagged-units
   criterion: CDearly and selectivity with the shared bootstrap. The paper reports no test or window for
     "larger". Readings for the window over which bootstrap selectivity is averaged, (a) -2.5 to -2.1
-    s, the CDearly window, (b) the sample epoch -2.5 to -1.5 s. Larger holds when the bootstrap median
-    of the PTupper mean exceeds that of PTlower and the PTupper 5th percentile exceeds the PTlower
-    median. "More consistent across trials" is read as a smaller spread of the bootstrap (which
-    resamples trials) relative to its median, the s.d. over median. Reproduced when both hold,
+    s, the CDearly window, (b) the sample epoch -2.5 to -1.5 s. The paper gives no rule for
+    "larger"; readings fixed here, (i) the bootstrap median of the PTupper mean exceeds that of
+    PTlower, (ii) in addition the PTupper 5th percentile exceeds the PTlower median. "More consistent
+    across trials" is read as a smaller spread of the bootstrap (which resamples trials) relative to
+    its median, the s.d. over median; the paper names no measure. Reproduced when both hold,
     partially reproduced when larger holds alone, not reproduced when larger does not hold.
 - id: pt-upper-persistent
   statement: In the PTupper population, selectivity along CDearly remains constant through the sample
@@ -491,9 +500,12 @@ claims:
     at the accuracy-maximising threshold that decodingAccuracy.m computes (acc.dprime, from doROC.m),
     as an absolute value. Readings of the test, (i) two-sided Student's t-test (Methods - all
     two-sample t-tests were Student's), (ii) two-sided Mann-Whitney test (used for the same window in
-    Extended Data Fig. 9). Reproduced when, under one reading of the measure, both means are within
-    tolerance and PTupper is higher with p < 0.01 under one of the tests; partially reproduced when
-    PTupper is higher with p < 0.01 but a mean is out of tolerance under every reading.
+    Extended Data Fig. 9; decodingAccuracy.m computes both). The measure is a reading of the reported
+    numbers, so a match under either reading counts; the test is an open method detail, so both
+    tests are run on that measure and the outcome is the one they give (methods_underspecified when
+    they differ). Reproduced when, under one reading of the measure, both means are within tolerance
+    and PTupper is higher with p < 0.01 under both tests; partially reproduced when PTupper is higher
+    with p < 0.01 under both tests but a mean is out of tolerance under every reading.
 - id: pt-upper-decoding
   statement: Single PTupper neurons decode trial type better than PTlower neurons in the first 400 ms of
     the sample epoch; 24.6% (15 of 61) of PTupper and 4.4% (3 of 69) of PTlower neurons reach 70%
@@ -506,7 +518,6 @@ claims:
     The ten most discriminative neurons all belonged to the PTupper population."
   statistics:
   - test: two-sided Mann–Whitney test
-    statistic: 64.4 ± 1.0% against 58.9 ± 0.6% (mean ± s.e.m.)
     p: 1.0e-04
     n: 61 PTupper and 69 PTlower neurons
   depends_on:
@@ -529,7 +540,10 @@ claims:
   criterion: Methods (single-cell decoding) and the code (decodingAccuracy.m, doROC.m). Per unit, the
     mean rate of each correct trial in -2.5 to -2.1 s; every observed rate is a threshold, with the
     polarity set by the side of the ROC area; accuracy is the maximum over thresholds of the fraction
-    of trials classified correctly. Mean tolerances are the reported s.e.m. Reproduced when all four
+    of trials classified correctly. "At least 70% accuracy" has two readings, (a) accuracy >= 0.70,
+    (b) the code's cut (decodingAccuracy.m, calcTail), accuracy above the mean + 1 s.d. of the
+    accuracies of all PT units of both types, which the text reports as 70%; the counts hold if they
+    match under one. Mean tolerances are the reported s.e.m. Reproduced when all four
     numbers are within tolerance, the two-sided Mann-Whitney test has p < 0.05 with PTupper higher,
     and the ten most accurate units are all PTupper; partially reproduced when the test holds and some
     of the rest do not.
@@ -544,7 +558,6 @@ claims:
     two-sided Mann–Whitney test)."
   statistics:
   - test: two-sided Mann–Whitney test
-    statistic: 62.7 ± 1.1% against 56.7 ± 0.4% (mean ± s.e.m.)
     p: 9.0e-07
     n: 61 PTupper and 69 PTlower neurons
   depends_on:
@@ -569,7 +582,8 @@ claims:
     unit: percent
   criterion: As pt-upper-decoding, after subtracting from each trial's rate the unit's baseline (the
     mean over the two trial types of their mean rate in -3.1 to -2.7 s) and setting negative values to
-    zero (decodingAccuracy.m, signConstraint 1). Reproduced when all numbers are within tolerance and
+    zero (decodingAccuracy.m, signConstraint 1). Under reading (b) of the 70% cut, the code recomputes
+    the mean + 1 s.d. from the rectified accuracies. Reproduced when all numbers are within tolerance and
     the Mann-Whitney test has p < 0.05 with PTupper higher; partially reproduced when the test holds
     and a number is out of tolerance.
 - id: pt-lower-late-and-motor
@@ -577,7 +591,7 @@ claims:
     command; along the go cue coding direction (CDgo) selectivity is larger, emerges faster and persists
     longer in PTlower than in PTupper.
   source: Results, Movement commands, paragraph 2; Fig. 6b, c; Extended Data Fig. 7b; Discussion,
-    paragraph 2
+    paragraphs 1 and 3
   quote: Along CDgo, selectivity was larger, emerged faster, and persisted longer in the PTlower than in the
     PTupper population (Fig. 6b, c).
   depends_on:
@@ -593,7 +607,7 @@ claims:
     reproduced when some do.
 - id: pt-cdgo-onset
   statement: Along CDgo, significant selectivity emerges 24 ms after the go cue in PTlower neurons,
-    faster than in PTupper neurons (48 ms), before the first detectable movement.
+    faster than in PTupper neurons (48 ms), consistent with a role in movement initiation.
   source: Results, Movement commands, paragraph 2; Fig. 6c legend
   quote: In the PTlower population, significant selectivity emerged 24 ms after the go cue, faster than in
     the PTupper population (48 ms) (Fig. 6c).
@@ -632,15 +646,16 @@ claims:
   expected:
   - quantity: reaction time
     value: 50
-    tolerance: 5
+    tolerance: 6
     unit: ms
   criterion: Methods, Videography - reaction time from the luminance change in a region of interest just
     below the jaw in 400 Hz side-view video, averaged over all trials of a session; confidence interval
     by bootstrapping session means across mice (3) and sessions (14). The Methods say 95% and the
     Results 99%; both are computed. The region is placed by hand and the onset rule for the luminance
-    trace is not given, so the test needs the video. Reproduced when the bootstrap mean is within
-    tolerance (10% of 50 ms) and the interval overlaps 38 to 56 ms. Not testable if the dandiset holds
-    no video.
+    trace is not given, so the test needs the video. The tolerance is the paper's own uncertainty, the
+    99% interval of 38 to 56 ms; the expected entry carries its upper side (6 ms), and the claim is
+    judged on the whole interval. Reproduced when the bootstrap mean lies within 38 to 56 ms and the
+    computed interval overlaps it. Not testable if the dandiset holds no video.
 - id: pt-cd-change-at-go-cue
   statement: The coding direction changes rapidly at the go cue in the PTlower population, and more slowly,
     over several hundred milliseconds, in the PTupper population.
@@ -701,7 +716,10 @@ claims:
   criterion: Unidentified single units of each cohort, with the inclusion rule of the opening comment
     (the code applies it to untagged units, groups 3 and 4; whether the reported counts are before or
     after it is open, and both are given); depth matching by keeping the PTlower cohort's left ALM
-    recordings only (Methods). Selectivity along CDearly and CDgo computed for each unidentified
+    recordings only (Methods; the Extended Data Fig. 8 legend says the removed units were from the
+    "contralateral hemisphere" and recorded at a lower depth, which fits the Methods' right ALM only
+    if contralateral is taken relative to the PTupper recordings, so the Methods are followed).
+    Selectivity along CDearly and CDgo computed for each unidentified
     population as for the PT populations. The paper gives no test for "similar". Reproduced when, for
     the depth-matched populations, the difference that separates the PT types is absent - the
     PTlower-cohort population's mean CDearly selectivity over -2.5 to -2.1 s lies inside the
@@ -712,7 +730,7 @@ claims:
   statement: The two PT types have different roles in time; PTupper populations carry early preparatory
     activity that persists until movement, while PTlower populations mainly carry late preparatory
     activity and movement commands.
-  source: Abstract; Discussion, paragraphs 1 and 2
+  source: Abstract; Discussion, paragraphs 1 and 3
   quote: Preparatory activity appeared early and remained persistent in PTupper neurons, whereas movement
     commands were observed in PTlower neurons.
   depends_on:
@@ -725,3 +743,46 @@ claims:
   criterion: The summary of the claims it depends on, with no measure of its own. Reproduced when all six
     are reproduced; partially reproduced when at least one claim on each side (PTupper early and
     persistent; PTlower late and motor) is reproduced; not reproduced otherwise.
+checks:
+- date: "2026-10-20"
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment. Added two code details read in Ephys.zip Code/ (Figshare doi:10.25378/janelia.7007846 v1),
+    the zero weight of a neuron with rank-sum p of 1 in DirectionVector, and the epoch means taking time > start
+    and <= end, unlike the CD windows.
+  - pt-types-transcriptomic. Statement said the data divide PT neurons into two types; the paper says they suggest
+    it.
+  - pt-projection-cluster-mapping. Source was paragraphs 4 and 5; both counts are in paragraph 4.
+  - pt-types-account-for-all-pt. Statement made the paper's "suggest" a conclusion; reworded to "suggesting".
+  - pt-depth. The code plots each unit's depth field (meta.depth), not the session manipulator depth it also stores;
+    both are named as readings.
+  - pt-lower-heterogeneous-rates. Bartlett's test was made the main reading from the words "χ2 test", which do not
+    name a two-sample test, and the code's F test only a variant; both are now readings, and the outcome is the one
+    they give.
+  - pt-upper-early-preparatory. The rule for "larger" (PTupper 5th percentile above the PTlower median) is not in the
+    paper; it is now named as one of two readings fixed here, with the plain comparison of medians.
+  - pt-single-neuron-early-selectivity. The criterion accepted p < 0.01 under either test; the test is an open method
+    detail, so both are run and the outcome is the one they give (protocol, Reader, step 3).
+  - pt-upper-decoding and pt-upper-decoding-rectified. The code does not cut at a fixed 70%; calcTail counts units
+    above the mean + 1 s.d. of all PT accuracies, recomputed for the rectified rates. Added as a reading of the
+    counts. Removed the statistic field, which held group means and s.e.m., not a test statistic; the means are in
+    expected.
+  - pt-variance-explained. Added to the code's variants the trial resampling of every neuron per iteration and the
+    variance explained per neuron, averaged.
+  - pt-cdgo-onset. Statement added "before the first detectable movement", which the paper does not say of these
+    onsets; replaced with the legend's "consistent with a role in movement initiation".
+  - reaction-time. Tolerance was 10% of 50 ms although the paper gives its own uncertainty, the 99% interval 38 to
+    56 ms; the claim is now judged on that interval and the tolerance is its upper side, 6 ms.
+  - pt-cohort-control. Noted that the Extended Data Fig. 8 legend calls the removed units "contralateral", which fits
+    the Methods' right ALM only relative to the PTupper recordings; the Methods are followed.
+  - pt-lower-late-and-motor and pt-types-differ-in-timing. Source cited Discussion paragraph 2; the sentences are in
+    paragraphs 1 and 3.
+  - Open, not settled. Several judging rules are fixed by the reader because the paper gives none, and are named as
+    readings. They are the ratio bound of 1.3 in pt-variance-explained (the figure's axis range), the levels 0.5 and
+    0.75 and the 0.2 s bound in pt-cd-change-at-go-cue, the windows in pt-lower-movement-termination, the "similar"
+    rule in pt-cohort-control, and "more consistent across trials" in pt-upper-early-preparatory. An attempt can
+    judge them only as stated.
+  - Open, not settled. Paragraph numbers in the Cell-type-specific recordings section could not be checked against the
+    PDF layout (no renderer here); the quotes locate each finding.
