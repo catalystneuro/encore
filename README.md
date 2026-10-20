@@ -48,36 +48,36 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 
 | Dandiset | Paper | Reproduced | Partially | Not reproduced | Blocked | Entry |
 |---|---|---|---|---|---|---|
-| [000582](https://dandiarchive.org/dandiset/000582) | [Sargolini et al. 2006](https://doi.org/10.1126/science.1125572) | 2 | 1 | 0 | 0 | [`000582-sargolini-2006`](entries/000582-sargolini-2006) |
+| [000582](https://dandiarchive.org/dandiset/000582) | [Sargolini et al. 2006](https://doi.org/10.1126/science.1125572) | – | – | – | – | [`000582-sargolini-2006`](entries/000582-sargolini-2006) (deprecated) |
 | [000127](https://dandiarchive.org/dandiset/000127) | [Chowdhury et al. 2020](https://doi.org/10.7554/eLife.48198) | 4 | 2 | 0 | 4 | [`000127-chowdhury-2020`](entries/000127-chowdhury-2020) |
 | [000207](https://dandiarchive.org/dandiset/000207) | [Zheng et al. 2022](https://doi.org/10.1038/s41593-022-01020-w) | 5 | 1 | 0 | 14 | [`000207-zheng-2022`](entries/000207-zheng-2022) |
 | [000147](https://dandiarchive.org/dandiset/000147) | [Guan et al. 2022](https://doi.org/10.7554/eLife.74478) | 9 (+3) | 0 | 1 | 4 (+3) | [`000147-guan-2022`](entries/000147-guan-2022) |
 | [001097](https://dandiarchive.org/dandiset/001097) | [Liu et al. 2024](https://doi.org/10.1038/s41586-024-07916-w) | 7 | 2 | 3 | 12 | [`001097-liu-2024`](entries/001097-liu-2024) |
 | [000625](https://dandiarchive.org/dandiset/000625) | [Geiller et al. 2020](https://doi.org/10.1016/j.neuron.2020.09.013) | 4 | 4 | 6 | 12 | [`000625-geiller-2020`](entries/000625-geiller-2020) |
-| [000035](https://dandiarchive.org/dandiset/000035) | [Scala et al. 2021](https://doi.org/10.1038/s41586-020-2907-3) | 3 (+2) | 1 (+1) | 0 | 9 (+1) | [`000035-scala-2021`](entries/000035-scala-2021) |
-| [001453](https://dandiarchive.org/dandiset/001453) | [Fouke et al. 2025](https://doi.org/10.1016/j.cub.2025.04.027) | 7 | 1 | 2 | 10 | [`001453-fouke-2025`](entries/001453-fouke-2025) |
-| [000006](https://dandiarchive.org/dandiset/000006) | [Economo et al. 2018](https://doi.org/10.1038/s41586-018-0642-9) | 3 | 1 | 1 | 4 | [`000006-economo-2018`](entries/000006-economo-2018) |
-| [001754](https://dandiarchive.org/dandiset/001754) | [Knierim et al. 2000](https://doi.org/10.1038/72910) | 3 | 0 | 1 | 3 | [`001754-knierim-2000`](entries/001754-knierim-2000) |
+| [000035](https://dandiarchive.org/dandiset/000035) | [Scala et al. 2021](https://doi.org/10.1038/s41586-020-2907-3) | 3 (+1) | 1 | 0 | 9 (+1) | [`000035-scala-2021`](entries/000035-scala-2021) |
+| [001453](https://dandiarchive.org/dandiset/001453) | [Fouke et al. 2025](https://doi.org/10.1016/j.cub.2025.04.027) | 6 | 1 | 2 | 10 | [`001453-fouke-2025`](entries/001453-fouke-2025) |
+| [000006](https://dandiarchive.org/dandiset/000006) | [Economo et al. 2018](https://doi.org/10.1038/s41586-018-0642-9) | – | – | – | – | [`000006-economo-2018`](entries/000006-economo-2018) (deprecated) |
+| [001754](https://dandiarchive.org/dandiset/001754) | [Knierim et al. 2000](https://doi.org/10.1038/72910) | – | – | – | – | [`001754-knierim-2000`](entries/001754-knierim-2000) (deprecated) |
 | [000130](https://dandiarchive.org/dandiset/000130) | [Sohn et al. 2019](https://doi.org/10.1016/j.neuron.2019.06.012) | 9 | 4 | 7 | 3 | [`000130-sohn-2019`](entries/000130-sohn-2019) |
 | [001616](https://dandiarchive.org/dandiset/001616) | [Gerken et al. 2025](https://doi.org/10.7554/elife.106758.1) | 6 | 5 | 0 | 9 | [`001616-gerken-2025`](entries/001616-gerken-2025) |
 | [002014](https://dandiarchive.org/dandiset/002014) | [Choi et al. 2025](https://doi.org/10.1016/j.jneumeth.2025.110467) | 4 | 1 | 0 | 8 | [`002014-choi-2025`](entries/002014-choi-2025) |
-| [001933](https://dandiarchive.org/dandiset/001933) | [Chen et al. 2026](https://doi.org/10.1038/s41467-026-75194-3) | 6 | 2 | 1 (+1) | 0 | [`001933-chen-2026`](entries/001933-chen-2026) |
-| [000004](https://dandiarchive.org/dandiset/000004) | [Chandravadia et al. 2020](https://doi.org/10.1038/s41597-020-0415-9) | 10 | 8 (+2) | 4 | 1 | [`000004-chandravadia-2020`](entries/000004-chandravadia-2020) |
-| [002013](https://dandiarchive.org/dandiset/002013) | [Amjad et al. 2025](https://doi.org/10.1021/acschemneuro.5c00071) | 7 (+1) | 1 | 0 | 5 | [`002013-amjad-2025`](entries/002013-amjad-2025) |
+| [001933](https://dandiarchive.org/dandiset/001933) | [Chen et al. 2026](https://doi.org/10.1038/s41467-026-75194-3) | 6 | 2 | 1 | 0 | [`001933-chen-2026`](entries/001933-chen-2026) |
+| [000004](https://dandiarchive.org/dandiset/000004) | [Chandravadia et al. 2020](https://doi.org/10.1038/s41597-020-0415-9) | 10 | 8 (+1) | 4 | 1 | [`000004-chandravadia-2020`](entries/000004-chandravadia-2020) |
+| [002013](https://dandiarchive.org/dandiset/002013) | [Amjad et al. 2025](https://doi.org/10.1021/acschemneuro.5c00071) | 7 | 1 | 0 | 5 | [`002013-amjad-2025`](entries/002013-amjad-2025) |
 | [001636](https://dandiarchive.org/dandiset/001636) | [Pasquereau et al. 2013](https://doi.org/10.3389/fnsys.2013.00098) | 4 | 3 | 3 | 18 | [`001636-pasquereau-2013`](entries/001636-pasquereau-2013) |
 | [000041](https://dandiarchive.org/dandiset/000041) | [Watson et al. 2016](https://doi.org/10.1016/j.neuron.2016.03.036) | 8 | 9 | 15 | 7 | [`000041-watson-2016`](entries/000041-watson-2016) |
 | [000003](https://dandiarchive.org/dandiset/000003) | [Senzai et al. 2017](https://doi.org/10.1016/j.neuron.2016.12.011) | 15 | 11 | 3 | 2 | [`000003-senzai-2017`](entries/000003-senzai-2017) |
 | [000044](https://dandiarchive.org/dandiset/000044) | [Grosmark et al. 2016](https://doi.org/10.1126/science.aad1935) | 3 | 3 | 6 | 8 | [`000044-grosmark-2016`](entries/000044-grosmark-2016) |
 | [000056](https://dandiarchive.org/dandiset/000056) | [Peyrache et al. 2015](https://doi.org/10.1038/nn.3968) | 6 | 2 | 0 | 13 | [`000056-peyrache-2015`](entries/000056-peyrache-2015) |
 | [000059](https://dandiarchive.org/dandiset/000059) | [Petersen et al. 2020](https://doi.org/10.1016/j.neuron.2020.05.023) | 12 | 15 | 10 | 1 | [`000059-petersen-2020`](entries/000059-petersen-2020) |
-| [000061](https://dandiarchive.org/dandiset/000061) | [Girardeau et al. 2017](https://doi.org/10.1038/nn.4637) | 4 | 0 | 1 | 1 | [`000061-girardeau-2017`](entries/000061-girardeau-2017) |
-| [000067](https://dandiarchive.org/dandiset/000067) | [Fujisawa et al. 2008](https://doi.org/10.1038/nn.2134) | 0 | 5 | 7 | 4 | [`000067-fujisawa-2008`](entries/000067-fujisawa-2008) |
+| [000061](https://dandiarchive.org/dandiset/000061) | [Girardeau et al. 2017](https://doi.org/10.1038/nn.4637) | – | – | – | – | [`000061-girardeau-2017`](entries/000061-girardeau-2017) (deprecated) |
+| [000067](https://dandiarchive.org/dandiset/000067) | [Fujisawa et al. 2008](https://doi.org/10.1038/nn.2134) | 0 | 4 | 7 | 4 | [`000067-fujisawa-2008`](entries/000067-fujisawa-2008) |
 | [000070](https://dandiarchive.org/dandiset/000070) | [Churchland et al. 2012](https://doi.org/10.1038/nature11129) | 5 | 7 | 4 | 6 | [`000070-churchland-2012`](entries/000070-churchland-2012) |
 | [000121](https://dandiarchive.org/dandiset/000121) | [Even-Chen et al. 2019](https://doi.org/10.1371/journal.pcbi.1006808) | 6 | 7 | 6 | 1 | [`000121-even-chen-2019`](entries/000121-even-chen-2019) |
-| [000114](https://dandiarchive.org/dandiset/000114) | [Carcea et al. 2021](https://doi.org/10.1038/s41586-021-03814-7) | 1 | 3 | 3 | 12 | [`000114-carcea-2021`](entries/000114-carcea-2021) |
+| [000114](https://dandiarchive.org/dandiset/000114) | [Carcea et al. 2021](https://doi.org/10.1038/s41586-021-03814-7) | 0 | 3 | 3 | 12 | [`000114-carcea-2021`](entries/000114-carcea-2021) |
 | [000213](https://dandiarchive.org/dandiset/000213) | [Tingley et al. 2018](https://doi.org/10.1016/j.neuron.2018.04.028) | 3 | 8 | 9 | 5 | [`000213-tingley-2018`](entries/000213-tingley-2018) |
 | [000218](https://dandiarchive.org/dandiset/000218) | [Tingley et al. 2019](https://doi.org/10.1016/j.neuron.2019.10.012) | 4 | 7 | 10 | 10 | [`000218-tingley-2019`](entries/000218-tingley-2019) |
-| [000226](https://dandiarchive.org/dandiset/000226) | [Severson et al. 2017](https://doi.org/10.1016/j.neuron.2017.03.045) | 12 (+2) | 2 (+1) | 0 | 11 | [`000226-severson-2017`](entries/000226-severson-2017) |
+| [000226](https://dandiarchive.org/dandiset/000226) | [Severson et al. 2017](https://doi.org/10.1016/j.neuron.2017.03.045) | 11 (+2) | 2 (+1) | 0 | 11 | [`000226-severson-2017`](entries/000226-severson-2017) |
 | [000232](https://dandiarchive.org/dandiset/000232) | [Chang et al. 2023](https://doi.org/10.1101/2023.08.21.554194) | 19 | 7 | 2 | 1 | [`000232-chang-2023`](entries/000232-chang-2023) |
 | [000239](https://dandiarchive.org/dandiset/000239) | [Xu et al. 2022](https://doi.org/10.1038/s41586-022-04478-7) | 20 | 5 | 3 | 11 | [`000239-xu-2022`](entries/000239-xu-2022) |
 | [000350](https://dandiarchive.org/dandiset/000350) | [Mu et al. 2019](https://doi.org/10.1016/j.cell.2019.05.050) | 2 | 3 | 4 | 10 | [`000350-mu-2019`](entries/000350-mu-2019) |
@@ -85,31 +85,37 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000552](https://dandiarchive.org/dandiset/000552) | [Huszar et al. 2022](https://doi.org/10.1038/s41593-022-01138-x) | 5 | 4 | 3 | 23 | [`000552-huszar-2022`](entries/000552-huszar-2022) |
 | [000568](https://dandiarchive.org/dandiset/000568) | [Valero et al. 2022](https://doi.org/10.1126/science.abm1891) | 4 | 6 | 6 | 6 | [`000568-valero-2022`](entries/000568-valero-2022) |
 | [000559](https://dandiarchive.org/dandiset/000559) | [Markowitz et al. 2023](https://doi.org/10.1038/s41586-022-05611-2) | 7 | 3 | 2 | 12 | [`000559-markowitz-2023`](entries/000559-markowitz-2023) |
-| [000718](https://dandiarchive.org/dandiset/000718) | [Zaki et al. 2024](https://doi.org/10.1038/s41586-024-08168-4) | 2 (+1) | 0 | 2 | 21 | [`000718-zaki-2024`](entries/000718-zaki-2024) |
-| [000691](https://dandiarchive.org/dandiset/000691) | [Scherrer et al. 2023](https://doi.org/10.1038/s41592-023-01806-1) | 6 | 0 | 0 | 7 | [`000691-scherrer-2023`](entries/000691-scherrer-2023) |
+| [000718](https://dandiarchive.org/dandiset/000718) | [Zaki et al. 2024](https://doi.org/10.1038/s41586-024-08168-4) | 2 | 0 | 2 | 21 | [`000718-zaki-2024`](entries/000718-zaki-2024) |
+| [000691](https://dandiarchive.org/dandiset/000691) | [Scherrer et al. 2023](https://doi.org/10.1038/s41592-023-01806-1) | – | – | – | – | [`000691-scherrer-2023`](entries/000691-scherrer-2023) (deprecated) |
 | [000727](https://dandiarchive.org/dandiset/000727) | [Brezovec et al. 2022](https://doi.org/10.1101/2022.03.20.485047) | 8 | 5 | 1 | 6 | [`000727-brezovec-2022`](entries/000727-brezovec-2022) |
-| [000947](https://dandiarchive.org/dandiset/000947) | [Schwab et al. 2020](https://doi.org/10.1371/journal.pbio.3000829) | 6 (+1) | 4 | 7 | 1 | [`000947-schwab-2020`](entries/000947-schwab-2020) |
+| [000947](https://dandiarchive.org/dandiset/000947) | [Schwab et al. 2020](https://doi.org/10.1371/journal.pbio.3000829) | 6 | 4 | 7 | 1 | [`000947-schwab-2020`](entries/000947-schwab-2020) |
 | [000971](https://dandiarchive.org/dandiset/000971) | [Seiler et al. 2022](https://doi.org/10.1016/j.cub.2022.01.055) | 17 | 9 | 6 | 5 | [`000971-seiler-2022`](entries/000971-seiler-2022) |
 | [001038](https://dandiarchive.org/dandiset/001038) | [Azcorra et al. 2023](https://doi.org/10.1038/s41593-023-01401-9) | 16 | 7 | 1 | 0 | [`001038-azcorra-2023`](entries/001038-azcorra-2023) |
-| [001075](https://dandiarchive.org/dandiset/001075) | [Randi et al. 2023](https://doi.org/10.1038/s41586-023-06683-4) | 4 | 4 (+1) | 0 (+1) | 7 | [`001075-randi-2023`](entries/001075-randi-2023) |
-| [001084](https://dandiarchive.org/dandiset/001084) | [Vu et al. 2024](https://doi.org/10.1016/j.neuron.2023.12.011) | 10 (+1) | 10 | 0 | 1 | [`001084-vu-2024`](entries/001084-vu-2024) |
-| [001170](https://dandiarchive.org/dandiset/001170) | [Ling et al. 2023](https://doi.org/10.1101/2023.04.24.538157) | 2 (+1) | 4 | 4 | 3 | [`001170-ling-2023`](entries/001170-ling-2023) |
-| [001172](https://dandiarchive.org/dandiset/001172) | [Lohani et al. 2022](https://doi.org/10.1038/s41593-022-01202-6) | 13 | 7 | 1 | 5 | [`001172-lohani-2022`](entries/001172-lohani-2022) |
+| [001075](https://dandiarchive.org/dandiset/001075) | [Randi et al. 2023](https://doi.org/10.1038/s41586-023-06683-4) | 4 | 3 | 0 (+1) | 7 | [`001075-randi-2023`](entries/001075-randi-2023) |
+| [001084](https://dandiarchive.org/dandiset/001084) | [Vu et al. 2024](https://doi.org/10.1016/j.neuron.2023.12.011) | 10 | 10 | 0 | 1 | [`001084-vu-2024`](entries/001084-vu-2024) |
+| [001170](https://dandiarchive.org/dandiset/001170) | [Ling et al. 2023](https://doi.org/10.1101/2023.04.24.538157) | 2 | 4 | 4 | 3 | [`001170-ling-2023`](entries/001170-ling-2023) |
+| [001172](https://dandiarchive.org/dandiset/001172) | [Lohani et al. 2022](https://doi.org/10.1038/s41593-022-01202-6) | 13 | 6 | 1 | 5 | [`001172-lohani-2022`](entries/001172-lohani-2022) |
 | [001528](https://dandiarchive.org/dandiset/001528) | [Hadjas et al. 2025](https://doi.org/10.1101/2025.06.03.657460) | 12 | 5 | 3 | 5 | [`001528-hadjas-2025`](entries/001528-hadjas-2025) |
-| [001538](https://dandiarchive.org/dandiset/001538) | [Zhai et al. 2025](https://doi.org/10.1126/sciadv.adv8224) | 15 (+1) | 0 (+2) | 3 (+1) | 15 | [`001538-zhai-2025`](entries/001538-zhai-2025) |
-| [001550](https://dandiarchive.org/dandiset/001550) | [Pagan et al. 2025](https://doi.org/10.1038/s41586-024-08433-6) | 11 (+2) | 2 | 0 (+1) | 0 | [`001550-pagan-2025`](entries/001550-pagan-2025) |
+| [001538](https://dandiarchive.org/dandiset/001538) | [Zhai et al. 2025](https://doi.org/10.1126/sciadv.adv8224) | 15 | 0 | 2 | 15 | [`001538-zhai-2025`](entries/001538-zhai-2025) |
+| [001550](https://dandiarchive.org/dandiset/001550) | [Pagan et al. 2025](https://doi.org/10.1038/s41586-024-08433-6) | 11 (+1) | 2 | 0 | 0 | [`001550-pagan-2025`](entries/001550-pagan-2025) |
 | [001692](https://dandiarchive.org/dandiset/001692) | [Bouabid et al. 2026](https://doi.org/10.64898/2026.01.20.700614) | 18 | 8 | 3 | 0 | [`001692-bouabid-2026`](entries/001692-bouabid-2026) |
 | [001699](https://dandiarchive.org/dandiset/001699) | [Moore et al. 2025](https://doi.org/10.1101/2025.01.09.632139) | 14 | 7 | 5 | 1 | [`001699-moore-2025`](entries/001699-moore-2025) |
-| [001878](https://dandiarchive.org/dandiset/001878) | [Sun et al. 2021](https://doi.org/10.22002/d1.1991) | 4 (+1) | 2 (+1) | 0 | 0 | [`001878-sun-2021`](entries/001878-sun-2021) |
+| [001878](https://dandiarchive.org/dandiset/001878) | [Sun et al. 2021](https://doi.org/10.22002/d1.1991) | 4 | 2 (+1) | 0 | 0 | [`001878-sun-2021`](entries/001878-sun-2021) |
 | [001712](https://dandiarchive.org/dandiset/001712) | [Davatolhagh et al. 2025](https://doi.org/10.1101/2025.09.12.675910) | 3 | 2 | 2 | 11 | [`001712-davatolhagh-2025`](entries/001712-davatolhagh-2025) |
 | [001888](https://dandiarchive.org/dandiset/001888) | [Hristova et al. 2025](https://doi.org/10.1111/epi.18606) | 13 | 9 | 2 | 10 | [`001888-hristova-2025`](entries/001888-hristova-2025) |
-| [000005](https://dandiarchive.org/dandiset/000005) | [Yu et al. 2016](https://doi.org/10.1038/nn.4412) | 5 | 0 | 2 | 1 | [`000005-yu-2016`](entries/000005-yu-2016) |
+| [000005](https://dandiarchive.org/dandiset/000005) | [Yu et al. 2016](https://doi.org/10.1038/nn.4412) | – | – | – | – | [`000005-yu-2016`](entries/000005-yu-2016) (deprecated) |
 
-Counts are of claims that rest on the dandiset, including those that take
-names for its own codes from elsewhere. Claims that also use data from
-outside the dandiset are counted apart, in brackets. Claims on data the
-paper deposited in other archives are not in this table; the dashboard
-shows them on each dandiset's page.
+Counts are of the paper's findings that rest on the dandiset, including
+those that take names for its own codes from elsewhere. Findings that also
+use data from outside the dandiset are counted apart, in brackets. Findings
+on data the paper deposited in other archives, and the registry's checks
+that the dandiset is the data behind the paper (link claims, which are not
+findings of the paper), are not in this table; the dashboard shows them on
+each dandiset's page.
+
+A row marked deprecated is an attempt that no longer stands, with the reason
+in its record: the six marked on 2026-10-20 had claims written from the
+paper's abstract, and are queued to be run again from the full text.
 
 ## Agent runs
 

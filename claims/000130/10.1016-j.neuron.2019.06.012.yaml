@@ -35,6 +35,8 @@
 # - Speed of a production trajectory: the mean Euclidean distance between successive 20 ms states
 #   in the production PC space, from Set to the shortest tp of that ts. The Methods' "divided by
 #   the duration separating Set and the time of Go" is shown as a variant.
+# Quotes and statistics added 2026-10-19 from the full text (PMC6805134, the author manuscript, as
+# NCBI efetch JATS XML).
 schema_version: 1
 dandiset: "000130"
 paper: doi:10.1016/j.neuron.2019.06.012
@@ -42,7 +44,10 @@ claims:
 - id: beh-slopes
   statement: Regression slopes of tp on ts are positive and less than one in every condition,
     so the animals estimated ts and their responses were biased toward the mean of the prior.
-  source: Results, Task and behavior; Figure 1E and S1; Table S1
+  source: Results, Task and behavior, paragraph 3; Figure 1E and S1; Table S1
+  quote: The regression slopes were positive, indicating that animals were able to estimate ts, and
+    were less than unity, indicating that responses were biased toward to the mean of the prior
+    (Figure 1E and S1, Table S1).
   criterion: For each prior, effector and direction (8 conditions), a weighted linear regression
     of tp on ts with each trial weighted by 1 over the variance of tp at its ts. Reproduced when
     all 8 slopes lie between 0 and 1 with 95% confidence intervals that exclude 0 and 1;
@@ -51,7 +56,18 @@ claims:
 - id: beh-overlap-prior
   statement: At the overlapping ts of 800 ms, biases were in opposite directions for the two
     priors (rank-sum test, p < 1e-43 in animal H over 17 sessions).
-  source: Results, Task and behavior; Figure 1E; Table S2
+  source: Results, Task and behavior, paragraph 3; Figure 1E; Table S2
+  quote: The effect of the prior was most conspicuous at the overlapping ts for which biases were in
+    opposite directions for the two prior conditions
+  statistics:
+  - about: animal H
+    test: rank-sum test
+    p: 1.0e-43
+    p_relation: "<"
+  - about: animal G
+    test: rank-sum test
+    p: 1.0e-75
+    p_relation: "<"
   criterion: Trials with ts = 800 ms, pooled over effector and direction. Reproduced when the
     median of tp - 800 is negative for the Short prior and positive for the Long prior and a
     two-sided rank-sum test of tp between priors has p < 0.05. The paper's p value pools 17
@@ -61,7 +77,18 @@ claims:
   statement: Increments of tp between neighbouring ts are smaller at the extremes of the prior
     than near its mean, as the sigmoidal Bayesian estimator predicts (signed-rank test,
     p < 1e-11 in animal H).
-  source: Results, Task and behavior; Figure 2E and 2F
+  source: Results, Task and behavior, paragraph 4; Figure 2E and 2F
+  quote: Consistent with this prediction, tp increments at the extrema of the prior were smaller
+    than increments near the mean
+  statistics:
+  - about: animal H
+    test: signed-rank test
+    p: 1.0e-11
+    p_relation: "<"
+  - about: animal G
+    test: signed-rank test
+    p: 1.0e-12
+    p_relation: "<"
   criterion: For each of the 8 conditions, the mean tp at each of the 5 ts; the four increments
     between neighbours; increment at the extremes = mean of the first and last, in the middle =
     mean of the second and third. Reproduced when the middle increment exceeds the extreme one
@@ -70,7 +97,9 @@ claims:
 - id: beh-long-more-bias
   statement: Biases are larger for the Long prior than for the Short prior, as scalar
     variability predicts; regression slopes are smaller for Long.
-  source: Results, Task and behavior; Figure 2G and 2H
+  source: Results, Task and behavior, paragraph 4; Figure 2G and 2H
+  quote: Third, due to scalar variability, biases for the Long prior should be larger than the Short
+    prior condition (Figure 2G), which we confirmed empirically (Figure 2H, Table S1).
   depends_on:
   - beh-slopes
   criterion: With the slopes of beh-slopes, reproduced when the Long slope is below the Short
@@ -79,7 +108,9 @@ claims:
 - id: beh-bayes-model
   statement: A Bayesian observer model with scalar measurement and production noise fit to the
     behaviour captures the bias and the variance of tp in all conditions.
-  source: Results, Task and behavior; Figure 2C and 2D; Table S3
+  source: Results, Task and behavior, paragraph 4; Figure 2C and 2D; Table S3
+  quote: Accordingly, fits of the model to behavior captured the bias and variance (Figure 2C,D) for
+    both animals and across all experimental conditions (Figure S1, Table S3).
   criterion: The model fit per dataset (4 parameters). Across the 10 prior and ts conditions of a
     dataset, the R2 of the observed mean bias (tp - ts) by the model's predicted bias, and the
     Pearson correlation of the observed and predicted SD of tp. Reproduced when the bias R2 is
@@ -90,7 +121,11 @@ claims:
   statement: About 30% of neurons were modulated by elapsed time (27% in monkey H) and more than
     60% were sensitive to the prior (65% in monkey H), by a Poisson GLM of spike counts before
     Set compared by BIC.
-  source: Results, Single-neuron response profiles; Figure 3E; Methods, Generalized linear model
+  source: Results, Single-neuron response profiles, paragraph 3; Figure 3E; Methods, Generalized
+    linear model
+  quote: Results indicated that approximately 30% of neurons were modulated by elapsed time (27%
+    Monkey H, 31% Monkey G), and more than 60% were sensitive to the prior condition (65% Monkey H,
+    62% Monkey G).
   expected:
   - quantity: Fraction of units sensitive to the prior, monkey H
     value: 65
@@ -112,7 +147,11 @@ claims:
 - id: dfr-overlap-support
   statement: At the overlapping ts of 800 ms, firing rates differ between priors, with the
     largest difference during the support of the prior, between 480 and 800 ms after Ready.
-  source: Results, Single-neuron response profiles; Figure 3C and 3D
+  source: Results, Single-neuron response profiles, paragraph 3; Figure 3C and 3D
+  quote: The influence of prior was most evident at the overlap ts of 800 ms (Figure 3C) ... many
+    neurons had highly distinct firing rate patterns depending on the prior condition, with a
+    maximum difference in firing rate during the support of the prior between 480 and 800 ms (Figure
+    3D).
   criterion: Per dataset, units as selected above, ts = 800 trials; per unit the difference of
     mean rates between priors in 160 ms bins from 320 ms before Ready to 640 ms after Set; the
     root mean square over units, averaged over the 4 datasets. Reproduced when the largest value
@@ -122,7 +161,10 @@ claims:
 - id: pca-dimensionality
   statement: Population activity is low dimensional; 3 to 4 principal components in the
     estimation epoch and 5 to 10 in the production epoch explain about 75% of the variance.
-  source: Results, Geometry and dynamics of population activity; Figure S3
+  source: Results, Geometry and dynamics of population activity, paragraph 2; Figure S3
+  quote: "For all datasets, the population activity in each epoch was relatively low dimensional:
+    3–4 principal components (PC) in the estimation epoch and 5–10 PCs in the production epoch
+    explained nearly 75% of total variance (Figure S3)."
   criterion: The number of components needed to reach 75% of the variance, per dataset and epoch.
     The ranges widened by 10% of each bound are 2.7 to 4.4 (3 or 4 components) in the estimation
     epoch and 4.5 to 11 (5 to 11) in the production epoch. Reproduced when all 8 values fall in
@@ -131,7 +173,9 @@ claims:
   statement: Projections of estimation-epoch neural states onto the encoding axis match the
     Bayesian estimates from the model fitted to the behaviour (R2 = 0.993 for the Short prior,
     0.996 for the Long prior, monkey H, Hand Left).
-  source: Results, Encoding Bayesian estimate along curved trajectory; Figure 4C
+  source: Results, Encoding Bayesian estimate along curved trajectory, paragraph 1; Figure 4C
+  quote: Neural projections onto u exhibited biases that matched the Bayesian model fitted to the
+    behavior (R2 = 0.993 for the Short prior, 0.996 for the Long prior; Figure 4C)
   depends_on:
   - beh-bayes-model
   expected:
@@ -151,7 +195,17 @@ claims:
   statement: Neural projections are better explained by the Bayesian model than by a linear
     function of ts with the same number of parameters, for both priors (signed-rank test on
     RMSE, p = 0.008 for each prior).
-  source: Results, Encoding Bayesian estimate along curved trajectory; Figure 4D top
+  source: Results, Encoding Bayesian estimate along curved trajectory, paragraph 1; Figure 4D top
+  quote: Indeed, the neural projections were better explained by the Bayesian model than a linear
+    model for both priors (signed-rank test for RMSE, p=0.008 for the Short prior, p=0.008 for the
+    Long prior; Figure 4D).
+  statistics:
+  - about: Short prior
+    test: signed-rank test for RMSE
+    p: 0.008
+  - about: Long prior
+    test: signed-rank test for RMSE
+    p: 0.008
   depends_on:
   - encoding-r2
   criterion: RMSE of the weighted fits Xu = a + b te and Xu = a + b ts, per dataset and prior.
@@ -163,7 +217,19 @@ claims:
   statement: In the Long prior during the period matched to the support of the Short prior
     ("Short In Long"), there is no sigmoidal representation; the Bayesian model is not better
     than the linear one (signed-rank test, p = 0.74).
-  source: Results, Encoding Bayesian estimate along curved trajectory; Figure 4D top
+  source: Results, Encoding Bayesian estimate along curved trajectory, paragraph 1; Figure 4D top
+  quote: As a negative control, we also analyzed neural data in the Long prior condition during a
+    period temporally matched to support of the Short prior (“Short In Long” in Figure 4D) and found
+    no evidence of sigmoidal representations
+  statistics:
+  - about: interaction of prior condition and model on RMSE
+    test: two-way repeated-measures ANOVA
+    statistic: F1,7 = 161.43
+    p: 1.0e-5
+    p_relation: "<"
+  - about: Bayesian against linear model for Short In Long
+    test: post-hoc signed-rank test
+    p: 0.74
   depends_on:
   - encoding-r2
   criterion: A claim of absence, judged on the paper's test. Long prior states from 480 to 800 ms
@@ -174,7 +240,12 @@ claims:
 - id: neural-long-more-bias
   statement: Neural projections show more bias for the Long prior than for the Short prior, as a
     smaller regression slope of Xu on ts (signed-rank test, p = 0.008).
-  source: Results, Encoding Bayesian estimate along curved trajectory; Figure 4D bottom
+  source: Results, Encoding Bayesian estimate along curved trajectory, paragraph 2; Figure 4D bottom
+  quote: the Long prior exhibited more bias than the Short prior as measured by slope of a
+    regression line relating projections to ts (signed-rank test, p=0.008; Figure 4D).
+  statistics:
+  - test: signed-rank test
+    p: 0.008
   depends_on:
   - encoding-r2
   criterion: The slope of the weighted regression of Xu (spikes/s, in the shared PC space of the
@@ -184,7 +255,20 @@ claims:
   statement: Larger projections on the encoding axis at Set are followed by slower neural
     trajectories in the production epoch (Pearson correlation, rho Short = -0.74, rho Long =
     -0.51).
-  source: Results, Controlling speed based on Bayesian estimate; Figure 4E
+  source: Results, Controlling speed based on Bayesian estimate, paragraph 1; Figure 4E
+  quote: For both conditions, larger projections along the encoding axis were associated with slower
+    speeds across all conditions (Figure 4E; Pearson correlation, ρShort=−0.74 ... ρLong=−0.51
+  statistics:
+  - about: Short prior
+    test: Pearson correlation
+    statistic: ρShort = −0.74
+    p: 1.0e-7
+    p_relation: "<"
+  - about: Long prior
+    test: Pearson correlation
+    statistic: ρLong = −0.51
+    p: 0.001
+    p_relation: "<"
   depends_on:
   - encoding-r2
   expected:
@@ -203,7 +287,14 @@ claims:
   statement: The initial speed of production trajectories (Set to Set + 400 ms) is biased toward
     the middle of the prior; its dependence on ts is shallower than the unbiased profile
     proportional to 1/ts (signed-rank test, p < 1e-3 over conditions and animals).
-  source: Results, Controlling speed based on Bayesian estimate; Figure 4F
+  source: Results, Controlling speed based on Bayesian estimate, paragraph 1; Figure 4F
+  quote: "The speed profile for each prior condition, however, demonstrated systematic biases with a
+    central tendency: trajectories associated with shorter ts were slower than expected from an
+    unbiased speed profile, and vice versa (Figure 4F"
+  statistics:
+  - test: Wilcoxon sign-rank test on measured versus unbiased regression slopes relating speed to ts
+    p: 0.001
+    p_relation: "<"
   criterion: Per dataset and prior, the mean step distance between Set and Set + 400 ms (trials
     with tp of at least 400 ms), the slope of its regression on ts, and the slope of the
     unbiased profile speed(middle ts) x middle ts / ts. Reproduced when the measured slope is
@@ -212,7 +303,21 @@ claims:
 - id: speed-predicts-tp
   statement: The speed of neural trajectories in the production epoch predicts the mean tp
     (Pearson correlation, rho Short = -0.58, rho Long = -0.52).
-  source: Results, Controlling speed based on Bayesian estimate; Figure 4G
+  source: Results, Controlling speed based on Bayesian estimate, paragraph 1; Figure 4G
+  quote: we verified that the overall speed of dynamics throughout the production epoch was
+    predictive of the resulting tp across both priors and across all experimental conditions (Figure
+    4G; Pearson correlation, ρShort=−0.58 ... ρLong=−0.52
+  statistics:
+  - about: Short prior
+    test: Pearson correlation
+    statistic: ρShort = −0.58
+    p: 0.0001
+    p_relation: "<"
+  - about: Long prior
+    test: Pearson correlation
+    statistic: ρLong = −0.52
+    p: 0.001
+    p_relation: "<"
   expected:
   - quantity: Pearson correlation of speed and mean tp, Short prior
     value: -0.58
@@ -229,6 +334,16 @@ claims:
     during the support of each prior (signed-rank test for zero regression slopes, p = 0.64 for
     Short, p = 0.08 for Long).
   source: Results, Alternative mechanisms (speed hypothesis); Figure 5B
+  quote: for both prior conditions, speed remained unmodulated throughout the support of each prior
+    (Figure 5b; signed-rank test for zero regression slopes during the support, p=0.64 for Short,
+    p=0.08 for Long).
+  statistics:
+  - about: Short prior
+    test: signed-rank test for zero regression slopes
+    p: 0.64
+  - about: Long prior
+    test: signed-rank test for zero regression slopes
+    p: 0.08
   criterion: A claim of absence, judged on the paper's test. Per dataset and prior, the distance
     between successive 20 ms states of the smoothed rates of all selected units, over the
     support of the prior (with attrition), regressed on time. Reproduced when a two-sided
@@ -240,6 +355,16 @@ claims:
     distance to the middle ts trajectory does not change (signed-rank test for zero slopes,
     p = 0.92 for the shortest ts, p = 0.13 for the longest).
   source: Results, Alternative mechanisms (transient hypothesis); Figure 5D
+  quote: Results indicated that neural trajectories for different ts in each prior evolved parallel
+    to one another (signed-rank test for zero regression slopes relating the distance to time after
+    Set, p=0.92 for the shortest ts, p=0.13 for the longest ts
+  statistics:
+  - about: shortest ts
+    test: signed-rank test for zero regression slopes
+    p: 0.92
+  - about: longest ts
+    test: signed-rank test for zero regression slopes
+    p: 0.13
   criterion: A claim of absence, judged on the paper's test. PCA per dataset on Set to Set + 200
     ms, both priors, at least 75% of variance; per dataset and prior the distance from the
     shortest and the longest ts trajectory to the middle ts trajectory at each 20 ms bin,
@@ -250,6 +375,13 @@ claims:
     steadily up to movement initiation, without the converging then diverging pattern a
     ts-dependent threshold would produce.
   source: Results, Alternative mechanisms (threshold hypothesis); Figure 5F
+  quote: However, the distance profile of neural trajectories did not show this converging-diverging
+    pattern; instead, the distance between trajectories appeared to drop steadily throughout the
+    production epoch, even near the time of motor initiation (Figure 5F
+  statistics:
+  - test: one-tailed sign-rank test for time of minimum distance occurring strictly before movement
+      initiation
+    p: 0.00015
   criterion: PCA per dataset on Go - 800 ms to Go, both priors, keeping the components that
     explain 60% of the variance (the figure legend's value). Per dataset, prior and non-middle ts
     (32 curves), the distance to the middle ts trajectory at each 20 ms bin and the time of its
@@ -260,7 +392,13 @@ claims:
   statement: The variance across single trials of the GPFA neural state at Set projected on the
     encoding axis has an inverted-U profile over ts, lower at the extremes of each prior
     (one-tailed signed-rank test on quadratic coefficients, p = 0.0273, monkey H).
-  source: Results, The curved manifold hypothesis captures the variance; Figure 6C
+  source: Results, The curved manifold hypothesis captures the variance, paragraph 3; Figure 6C
+  quote: The resulting variance profile of single-trial projections resembled an inverted U-shape on
+    average, with a tendency for lower variances at the extrema of each prior (one-tailed
+    signed-rank test on coefficients for quadratic term in polynomial fitting, p=0.0273
+  statistics:
+  - test: one-tailed signed-rank test on coefficients for quadratic term in polynomial fitting
+    p: 0.0273
   criterion: GPFA (20 ms bins) per dataset on single trials from Ready to Set, both priors, units
     as selected above; the latent dimensionality chosen by 3-fold cross-validated log-likelihood
     from 4 and 8; orthonormalised latents. Per prior, u from the trial-averaged latents with
@@ -272,7 +410,17 @@ claims:
   statement: The mean of the single-trial GPFA projections is sigmoidal (signed-rank test on
     increments, p = 0.0078) and has a higher slope for the Short prior (one-tailed signed-rank,
     p = 0.0625).
-  source: Results, The curved manifold hypothesis captures the variance; Figure 6D
+  source: Results, The curved manifold hypothesis captures the variance, paragraph 3; Figure 6D
+  quote: the mean of the single-trial projections inferred from GPFA had a sigmoidal shape ... and
+    higher slope for the Short prior
+  statistics:
+  - about: sigmoidal shape
+    test: signed-rank test between increments of mean Xu around extreme ts versus those near middle
+      ts
+    p: 0.0078
+  - about: higher slope for the Short prior
+    test: one-tailed signed-rank test for regression slope between Short and Long
+    p: 0.0625
   depends_on:
   - gpfa-variance-inverted-u
   criterion: With the GPFA projections of gpfa-variance-inverted-u, not z-scored. The mean Xu at
@@ -284,11 +432,19 @@ claims:
   statement: Recurrent neural networks trained on the two-prior task with scalar measurement
     noise behave like a Bayesian observer and show curved trajectories during the support of the
     prior, like DMFC.
-  source: Results, Recurrent network models; Figure 7A to 7C and S7
+  source: Results, Recurrent network models, paragraphs 1 and 2; Figure 7A to 7C and S7
+  quote: we were able to build RNNs whose behavior was captured by a Bayesian observer model (Figure
+    7B) ... For instance, the network trajectories also exhibited curvature during the support of
+    the prior (Figure 7C and S7).
 - id: rnn-perturbation
   statement: In trained networks, compressing states along the encoding axis increases the
     regression to the mean of tp, and translating them shifts tp.
-  source: Results, Recurrent network models; Figure 7D and 7E
+  source: Results, Recurrent network models, paragraph 4; Figure 7D and 7E
+  quote: tp values exhibited progressively larger regression to the mean for larger compressive
+    perturbations (Figure 7D), and underwent an overall upward or downward shift as a result of
+    translation (Figure 7E).
 - id: monkey-g
   statement: The behavioural and neural results hold in monkey G as in monkey H.
   source: Results throughout; Figures 1 to 6 and S1 to S6
+  inferred: Summarises results reported for monkey G throughout the Results and Figures 1 to 6 and
+    S1 to S6; no single sentence states it.

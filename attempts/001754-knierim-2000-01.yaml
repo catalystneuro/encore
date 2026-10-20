@@ -5,6 +5,12 @@ dandiset_version: 0.260728.1352
 paper: doi:10.1038/72910
 date: 2026-10-14
 entry: 001754-knierim-2000
+deprecated:
+  date: 2026-10-20
+  reason: Its claims were written from the abstract and figure titles only. Read against the full
+    text on 2026-10-20, flight-spatial-code was judged with a shuffle test the paper does not use
+    (the paper compares spatial information with preflight), and four dropped claims are stated in
+    the paper.
 provenance:
   kind: agent
   accountable:
@@ -56,53 +62,6 @@ outcomes:
     notebook), so pixels cannot be assigned to the three surfaces. The NASA record of the study
     (OSD-968) says position was recorded with two synchronised cameras (printed in the notebook); a
     second view is not in the dandiset.
-- claim: si-comparable-to-preflight
-  outcome: reproduced
-  notebook: reproduce_knierim_2000.ipynb
-  output: claim:si-comparable-to-preflight
-  notes: Flight day 9 ES rate maps (64, Rats 1 and 2) have a median spatial information of 1.385
-    bits/spike against 1.448 for preflight ES maps (53); two-sided Mann-Whitney p = 0.45, difference
-    -0.064 bits/spike, ratio 0.96. Per rat, CEL-named maps only, maps with a peak of 1 Hz or more,
-    MC maps, all flight maps, bins with 5 or more occupancy counts (p = 0.44) and information
-    adjusted for rate x occupancy (p = 0.45), all give p of 0.20 or more. Rate x occupancy is
-    proportional to the spike count in the flight maps (about 22 per spike) and is assumed to be so
-    in the preflight maps, where it cannot be checked. Information falls with the spike count
-    (Spearman rho -0.252 over all ES maps). Rat1's compared sessions have similar counts and Rat2's
-    do not (median unit spikes 359 and 352 preflight, 437 and 205 on FD9; median rate x occupancy
-    7862 and 7628 against 9105 and 5226), so Rat2's FD9 maps rest on fewer spikes, which by sampling
-    bias raises their spatial information. The rate maps are smoothed with an unstated kernel, so no shuffle-corrected value
-    could be computed. The dandiset description says preflight was recorded on a flat rectangular
-    track, so this may compare different apparatus. Rat2's FD9 ES maps have a median of 1.343
-    bits/spike although only 3 of its 28 units are significant against shuffles, so the rate maps'
-    spatial information does not show that Rat2's cells were selective.
-  deviations:
-  - The source is the dandiset's description of the paper's findings, not the paper's text.
-  - The paper's test is unknown; a two-sided Mann-Whitney U test at 0.05 was fixed in advance.
-  - Spatial information comes from the original rate maps, without correction for the number of
-    spikes, as the preflight files hold no position.
-  - The -999 bins and the lost-position bin [63, 0] are left out of each map.
-  - The preflight epochs labelled ES may have been recorded on a flat rectangular track, as the
-    dandiset description says.
-- claim: fd4-abnormal-selectivity
-  outcome: not_reproduced
-  notebook: reproduce_knierim_2000.ipynb
-  output: claim:fd4-abnormal-selectivity
-  notes: Flight day 4 ES rate maps (107, Rats 1 to 3) have a median of 1.214 bits/spike against
-    1.441 preflight (98); one-sided Mann-Whitney p = 0.055, above the criterion's 0.05 (ratio
-    0.84). The FD4 median is lower in each rat (ratios 0.65 to 0.88), significantly only for Rat1
-    (p = 0.032); with maps of peak rate 1 Hz or more p = 0.0095, with information adjusted for rate
-    x occupancy p = 0.0025, over bins with 5 or more occupancy counts p = 0.053. Rat1's and Rat2's
-    FD4 maps have fewer spikes than preflight, so sampling bias works against the claim. FD4
-    against FD9 for Rats 1 and 2 gives 1.148 against 1.385 (p = 0.21); spike-based information minus
-    the shuffle mean is lower on FD4 for Rats 1 and 2 (p = 0.015) and not with Rat3 included (p =
-    0.13). The spike-based fraction of significant units is 21 of 71 on FD4 and 15 of 53 on FD9 (p =
-    0.64). The direction agrees with the claim and the criterion's test falls just short.
-  deviations:
-  - The source is the dandiset's description of the paper's findings, not the paper's text.
-  - Abnormal is read as lower spatial information; the description does not say what was abnormal.
-  - The paper's test is unknown; a one-sided Mann-Whitney U test at 0.05 was fixed in advance.
-  - The preflight epochs labelled ES may have been recorded on a flat rectangular track, as the
-    dandiset description says.
 - claim: fig3-stability-across-sessions
   outcome: reproduced
   notebook: reproduce_knierim_2000.ipynb
@@ -124,19 +83,6 @@ outcomes:
     the only pair of same-track sessions with position on one day.
   - Assumes that a tetrode and cluster id names the same neuron in both epochs; the dandiset does
     not say so and holds no waveforms to check it.
-- claim: theta-normal
-  outcome: blocked
-  blocked_by: data_missing
-  notes: No file holds EEG or any continuous voltage. The unfiltered listing of every file shows an
-    empty acquisition group and no ElectricalSeries or LFP; the files hold units, epochs, position
-    and rate maps. The NASA record OSD-968 describes its files as spike files, rate-map files, legacy
-    metadata and NWB copies, and its metadata does not mention EEG, theta, ripples or LFP (printed in
-    the notebook). Its archives, including the 272 MB processed archive, were not opened, so an EEG
-    file inside one cannot be ruled out.
-- claim: ripples-normal
-  outcome: blocked
-  blocked_by: data_missing
-  notes: No EEG in the dandiset, nor listed in OSD-968 (see theta-normal).
 findings:
 - kind: metadata_error
   statement: The Rat1 and Rat2 files of each flight day hold the same position trace (98.6 to 98.8%
@@ -225,40 +171,6 @@ verifications:
       metadata describes track geometry or camera view. No part can be tested beyond the whole-track
       result of flight-spatial-code.
     response: No change.
-  - claim: si-comparable-to-preflight
-    agrees: true
-    outcome: reproduced
-    reason: FD9 ES 1.385 against preflight 1.448 bits/spike (n 64 and 53), two-sided Mann-Whitney U
-      p = 0.45, and the variants agree (p 0.20 to 0.98). The measure cannot tell real tuning apart
-      from sampling bias - Skaggs information without minimum occupancy or spike-count correction is
-      dominated by sampling bias, preflight ES epochs are much shorter than FD9, and every session,
-      including Rat2 with 0 of 16 significant units, has all units above 0.5 bits. The dandiset
-      description says preflight was on a flat rectangular track, while the files label it ES, and
-      the comparison never mentions it.
-    response: Added the duration and unit spike counts of every ES epoch, the rate maps' total
-      occupancy and rate x occupancy (shown on flight units to be about 22 per spike), the
-      correlation of information with that count, and two variants - bins with 5 or more occupancy
-      counts (p = 0.44) and count-adjusted information (p = 0.45). Rat1's compared sessions have
-      similar spike counts and Rat2's do not (unit medians 359 and 352 preflight, 437 and 205 on
-      FD9). Showed that the rate maps
-      are smoothed, so no shuffle-corrected value can be computed for them, and that the 277.8 Hz peak
-      lies in a bin with 55 occupancy counts. Added a data check of the
-      preflight apparatus with the description's sentence and the occupancy footprints, a finding,
-      and a deviation; the conclusion now says the comparison may be across apparatus. Outcome
-      unchanged.
-  - claim: fd4-abnormal-selectivity
-    agrees: true
-    outcome: not_reproduced
-    reason: The FD4 median (1.214) is below preflight (1.441), but one-sided p = 0.055 misses p <
-      0.05. The variants split (peak of 1 Hz or more p = 0.0095, Rat1 alone p = 0.032). The
-      spike-based fraction is not lower on FD4 (21 of 71 against 16 of 53, Fisher p 0.55). The same
-      sampling-bias and preflight-apparatus problems apply as for si-comparable-to-preflight.
-    response: Added the same bias variants (count-adjusted p = 0.0025, bins with 5 or more counts p =
-      0.053) and spike-based information minus the shuffle mean, FD4 against FD9 (Rats 1 and 2 p =
-      0.015, with Rat3 p = 0.13). With the lookup fix the FD9 spike-based count is 15 of 53 (p =
-      0.64). The notes say that FD4 maps have fewer spikes than preflight, so the bias works against
-      the claim, and that preflight may be another apparatus. Outcome unchanged, as the criterion's
-      test gives p = 0.055.
   - claim: fig3-stability-across-sessions
     agrees: true
     outcome: reproduced
@@ -273,21 +185,6 @@ verifications:
       in either ES epoch, 18 fire in both. With the lookup fix the median r is 0.537 and the epochs
       have 10 of 16 and 1 of 19 significant units; the epochs have similar occupancy and drops, the
       second more spikes per tested unit, and the difference remains unexplained, as the conclusion now says. Outcome unchanged.
-  - claim: theta-normal
-    agrees: true
-    outcome: blocked
-    reason: Confirmed in the archive - asset variableMeasured lists only Units, ProcessingModule,
-      ElectrodeGroup, SpatialSeries and Position, with no ElectricalSeries or LFP, and the files are
-      2.5 to 8.9 MB. The notebook's listing cited for it was filtered by prefix and hid acquisition/
-      and other processing modules.
-    response: The data check now prints every group, with its neurodata type, and every dataset of
-      every file, unfiltered; acquisition/ is empty and no file holds an ElectricalSeries or LFP. The
-      notes cite it. Outcome unchanged.
-  - claim: ripples-normal
-    agrees: true
-    outcome: blocked
-    reason: Same as theta-normal.
-    response: As for theta-normal.
 - date: '2026-10-14'
   kind: agent
   by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
@@ -322,27 +219,6 @@ verifications:
       coordinates or waveforms; the code calls the ES track a three-dimensional track with 90 degree
       yaw and pitch turns and the position video tracker pixel coordinates, and the notes now say
       so. Outcome unchanged.
-  - claim: si-comparable-to-preflight
-    agrees: true
-    outcome: reproduced
-    reason: Agrees under the criterion, with p = 0.45 and every variant at p 0.20 or more; it is an
-      absence claim and carries the caveats about the preflight apparatus and Rat2's position trace.
-      The statement that the compared sessions have similar spike counts is not supported for Rat2
-      (FD9 median 205 spikes against 352 preflight, rate x occupancy 5226 against 7628). Rate x
-      occupancy is said to be proportional to the spike count without a qualifier, though this was
-      shown only for flight maps and the count-adjusted variant relies on it for the preflight maps.
-    response: The conclusion, the notes and the round-1 response now say that Rat1's compared
-      sessions have similar spike counts and Rat2's do not, and that Rat2's FD9 maps rest on fewer
-      spikes, which by sampling bias raises their information. The proportionality is now stated as
-      shown for the flight maps (about 22 per spike) and assumed for the preflight maps, where it
-      cannot be checked. The preflight apparatus cannot be settled from the files and stays a
-      caveat. Outcome unchanged.
-  - claim: fd4-abnormal-selectivity
-    agrees: true
-    outcome: not_reproduced
-    reason: Agrees. The one-sided p is 0.055, so the call is borderline and the variants split (peak
-      of 1 Hz or more and count-adjusted variants give p < 0.01).
-    response: No change; the conclusion already reports the borderline p and the variants.
   - claim: fig3-stability-across-sessions
     agrees: true
     outcome: reproduced
@@ -357,20 +233,6 @@ verifications:
       waveform amplitudes of the original spike files in OSD-968 (printed from the conversion notes)
       as a way to test the identity assumption; that analysis was not run here and would need a new
       attempt. The smoothing dependence was already reported. Outcome unchanged.
-  - claim: theta-normal
-    agrees: true
-    outcome: blocked
-    reason: Agrees; the unfiltered listing now supports it. That OSD-968 lists no EEG is not
-      checkable from the printed outputs.
-    response: The new cell prints the OSD-968 file listing and its description of the files, and
-      shows that its metadata does not mention EEG, theta, ripples or LFP. The notes now say this,
-      and that its archives were not opened, so an EEG file inside one cannot be ruled out. Outcome
-      unchanged.
-  - claim: ripples-normal
-    agrees: true
-    outcome: blocked
-    reason: Agrees.
-    response: As for theta-normal.
 - date: '2026-10-14'
   kind: agent
   by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)

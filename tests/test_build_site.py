@@ -89,7 +89,7 @@ def test_every_page_is_built(built):
 def test_rows_match_the_attempts(built):
     data, out = built
     current = site.current_attempts(data)
-    attempts = [a for atts in current.values() for a in atts]
+    attempts = [a for atts in current.values() for a in atts if not a.get("deprecated")]
     rows = {kind: json.loads((out / "data" / f"{kind}.json").read_text()) for kind in site.LISTS}
     assert len(rows["dandisets"]) == data["queue_counts"]["with_a_paper"]
     assert sum(r["claims"] or 0 for r in rows["dandisets"]) == sum(len(a["outcomes"]) for a in attempts)
@@ -182,10 +182,27 @@ def test_findings_are_reached_from_the_dandisets_list(built):
     rows = json.loads((out / "data" / "dandisets.json").read_text())
     for dandiset, attempts in site.current_attempts(data).items():
         row = next(r for r in rows if r["id"] == dandiset)
+        attempts = [a for a in attempts if not a.get("deprecated")]
         assert row["findings"] == sum(len(a["findings"]) for a in attempts)
         assert row["found"] == sorted({f["kind"] for a in attempts for f in a["findings"]})
         assert 'id="findings"' in (out / row["page"] / "index.html").read_text()
     assert "#findings" in (REPO / "tools" / "site_assets" / "list.js").read_text()
+
+
+def test_a_deprecated_attempt_counts_for_nothing():
+    kept = {"outcomes": [{"claim": "a", "outcome": "reproduced"}]}
+    dropped = {"deprecated": "Claims written from the abstract only.",
+               "outcomes": [{"claim": "b", "outcome": "not_reproduced"}]}
+    counts = site.outcome_counts([kept, dropped])
+    assert counts["reproduced"] == 1 and counts["not_reproduced"] == 0
+    assert site.outcome_counts(dropped) == {k: 0 for k in site.OUTCOMES}
+
+
+def test_a_deprecated_attempt_is_marked_on_its_page(built):
+    data, out = built
+    for dandiset, attempts in site.current_attempts(data).items():
+        if any(a.get("deprecated") for a in attempts):
+            assert "Deprecated:" in (out / "dandisets" / dandiset / "index.html").read_text()
 
 
 def test_claims_using_outside_data_are_counted_apart():
@@ -306,3 +323,65 @@ def test_the_about_page_explains_the_roles_and_is_in_the_nav(built):
     assert 'aria-current="page">About' in about
     assert 'href="about/">About' in (out / "index.html").read_text()
     assert f"<loc>{site.SITE_URL}about/</loc>" in (out / "sitemap.xml").read_text()
+
+
+def test_a_claim_shows_the_papers_own_words_when_quoted():
+    claim = {"claim": "fig2", "statement": "Rates rise.", "source": "Figure 2B", "quote": "Firing rates rose <sharply>.",
+             "outcome": "reproduced", "blocked_by": None, "notes": "It rose.", "deviations": [], "disagreed": False}
+    html = site.claim_item(claim, "../")
+    assert '<blockquote class="quote"><p>Firing rates rose &lt;sharply&gt;.</p><cite>Figure 2B</cite>' in html
+    assert html.index("blockquote") < html.index("It rose.")
+    assert "blockquote" not in site.claim_item({**claim, "quote": None}, "../")
+
+
+def test_small_p_values_are_written_as_powers_of_ten():
+    assert site.p_text(0.002) == "0.002"
+    assert site.p_text(0) == "0"
+    assert site.p_text(2.4e-5) == "2.4 × 10⁻⁵"
+    assert site.p_text(4.9e-4) == "4.9 × 10⁻⁴"
+    assert site.p_text(4e-66) == "4 × 10⁻⁶⁶"
+    assert site.p_text(1e-10) == "10⁻¹⁰"
+
+
+def test_a_claim_lists_the_statistics_the_paper_reports():
+    stats = [{"about": "Onsets", "test": "Wilcoxon rank-sum", "p": 2.4e-5, "n": "206 and 179 units"},
+             {"test": "t-test", "p": 0.05, "p_relation": "<", "corrected": "Bonferroni"},
+             {"ci": {"level": 0.95, "low": 0.1, "high": 0.4, "unit": "Hz"}}]
+    lines = [site.statistic_text(s) for s in stats]
+    assert lines == ["Onsets: Wilcoxon rank-sum, p = 2.4 × 10⁻⁵ (n = 206 and 179 units)",
+                     "t-test, p < 0.05, Bonferroni-corrected", "95% CI 0.1 to 0.4 Hz"]
+    claim = {"claim": "a", "statement": "S.", "source": None, "statistics": stats, "outcome": "reproduced",
+             "blocked_by": None, "notes": "N.", "deviations": [], "disagreed": False}
+    html = site.claim_item(claim, "../")
+    assert '<ul class="stats"><li>Onsets: Wilcoxon rank-sum' in html and html.index("stats") < html.index("N.")
+
+
+def test_link_claims_are_counted_apart_from_the_papers_findings():
+    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dandiset"},
+                            {"claim": "l", "outcome": "reproduced", "data": "with_inputs", "kind": "link"},
+                            {"claim": "w", "outcome": "blocked", "data": "with_inputs"}]}
+    assert sum(site.outcome_counts(attempt).values()) == 1
+    assert sum(site.outcome_counts(attempt, "with_inputs").values()) == 1
+    assert site.outcome_counts(attempt, "link")["reproduced"] == 1
+    assert "1 check that the dandiset is the data behind the paper" in site.outside_note([attempt])
+
+
+def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
+    claim = {"claim": "t", "statement": "Few respond.", "source": "Table S1", "inferred": "Numbers from Table S1.",
+             "outcome": "reproduced", "blocked_by": None, "notes": "N.", "deviations": [], "disagreed": False}
+    html = site.claim_item(claim, "../")
+    assert '<p class="inferred"><strong>Not quoted:</strong> Numbers from Table S1.</p>' in html
+    link = site.claim_item({**claim, "inferred": None, "kind": "link"}, "../")
+    assert "checks the link to the paper’s data" in link
+
+
+def test_the_schema_keeps_quotes_inferences_and_links_apart():
+    from jsonschema import Draft202012Validator
+    schema = Draft202012Validator(json.loads((REPO / "schemas" / "claims.schema.json").read_text()))
+    base = {"schema_version": 1, "dandiset": "000001", "paper": "doi:10.1000/x"}
+    claim = {"id": "a", "statement": "S.", "source": "Figure 1"}
+    assert schema.is_valid({**base, "claims": [{**claim, "quote": "Q."}]})
+    assert schema.is_valid({**base, "claims": [{**claim, "inferred": "From Table 1."}]})
+    assert not schema.is_valid({**base, "claims": [{**claim, "quote": "Q.", "inferred": "From Table 1."}]})
+    assert not schema.is_valid({**base, "claims": [{**claim, "kind": "link", "inferred": "From code."}]})
+    assert schema.is_valid({**base, "claims": [{**claim, "statistics": [{"p": 0}]}]})

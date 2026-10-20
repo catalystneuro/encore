@@ -1,6 +1,6 @@
 You are the verifier for a reproduction attempt, round 1 (docs/protocol.md, "Verifier", "Round 1"). Your job is to check an analysis that someone else wrote, skeptically. Do not assume it is right.
 
-Paper: doi:{paper}, "{title}". Read its full text if it is open access (the publisher's site or PubMed Central), otherwise its abstract. Save any text of the paper you download under `paper/` in the current directory and read it from there. Do not copy figures.
+Paper: doi:{paper}, "{title}". Read its full text: use `paper/` when the workflow provided it, otherwise an open copy (PubMed Central, the preprint server or the publisher's site). If you cannot read the full text, say so at the top of your report. Save any text of the paper you download under `paper/` in the current directory and read it from there. Do not copy figures.
 
 Data: DANDI dandiset {dandiset}, version {version}. You may query the DANDI REST API (https://api.dandiarchive.org/api/dandisets/{dandiset}/versions/{version}/ and its assets/ endpoint) for the file list and metadata. Do not download the dandiset or re-run the notebook.
 

@@ -39,6 +39,8 @@
 # cooling and recovery that the paper does not name) are left out of state comparisons; the
 # variants count them as cooling or as recovery. Control in Figure 5 is pre and post combined,
 # as in the paper. All tests are two-sided unless stated.
+# Quotes and statistics added 2026-10-19 from the full text (PubMed Central author manuscript
+# PMC7442698, NCBI E-utilities XML).
 schema_version: 1
 dandiset: "000059"
 paper: doi:10.1016/j.neuron.2020.05.023
@@ -46,7 +48,11 @@ claims:
 - id: session-structure
   statement: A session holds about 40 control trials, 20 to 60 cooling trials and 20 to 80
     recovery trials, 80 to 200 trials in all with a mean of 150.
-  source: Results, first section; STAR Methods, Electrophysiological Recordings
+  source: Results, MS cooling decreases hippocampal theta frequency and power, paragraph 2; STAR
+    Methods, Electrophysiological Recordings
+  quote: "After a block of control trials (~ 40 trials) ... about 20 to 60 ‘cooling’ trials),
+    followed by recovery trials (20 to 80) ... a total number of trials ranging from 80 to 200
+    (mean: 150 trials)."
   expected:
   - quantity: mean number of trials per session
     value: 150
@@ -59,6 +65,8 @@ claims:
 - id: cooling-time-course
   statement: MS cooling peaked about 60 s after its onset and lasted about 10 to 12 minutes.
   source: STAR Methods, Electrophysiological Recordings
+  quote: The cooling typically peaked after about 60 sec after the cooling onset (suppl. fig. 1G)
+    and lasted for about 10–12 minutes
   expected:
   - quantity: time from cooling onset to the minimum MS temperature
     value: 60
@@ -73,7 +81,12 @@ claims:
     duration is within 9 to 13.2 minutes. Partially reproduced when one of the two holds.
 - id: fig2g-theta-freq-temperature
   statement: Theta frequency decreased linearly with MS temperature (R = 0.81, P = 5.4e-48).
-  source: Results, first section; Figure 2G
+  source: Results, MS cooling decreases hippocampal theta frequency and power, paragraph 2;
+    Figure 2G
+  quote: Theta frequency decreased linearly with MS temperature (Figure 2g; down to 20° C; R = 0.81
+  statistics:
+  - statistic: R = 0.81
+    p: 5.4e-48
   expected:
   - quantity: Pearson R of theta frequency and MS temperature
     value: 0.81
@@ -90,7 +103,13 @@ claims:
 - id: fig2h-theta-power-temperature
   statement: Theta power also decreased with MS temperature, less tightly than frequency
     (R = 0.54, P = 1.2e-16).
-  source: Results, first section; Figure 2H
+  source: Results, MS cooling decreases hippocampal theta frequency and power, paragraph 2;
+    Figure 2H
+  quote: this relationship was more consistent across animals than the effect on theta power
+    (R = 0.54
+  statistics:
+  - statistic: R = 0.54
+    p: 1.2e-16
   expected:
   - quantity: Pearson R of theta power and MS temperature
     value: 0.54
@@ -104,14 +123,20 @@ claims:
 - id: fig2j-frequency-consistent-across-animals
   statement: The relationship of theta frequency with MS temperature was more consistent
     across animals than that of theta power.
-  source: Results, first section; Figure 2J
+  source: Results, MS cooling decreases hippocampal theta frequency and power, paragraph 2;
+    Figure 2J
+  quote: Theta frequency decreased linearly with MS temperature ... and this relationship was more
+    consistent across animals than the effect on theta power
   criterion: Per animal, the R of the aligned series of fig2g and fig2h computed over that
     animal's TEMP sessions. Reproduced when every animal has a positive frequency R with
     P < 0.05, and the range (largest minus smallest) of the frequency R over animals is
     smaller than that of the power R. Partially reproduced when only one of the two holds.
 - id: fig2i-theta-pre-cooling-post
   statement: Theta frequency and power were lower during MS cooling than before and after it.
-  source: Figure 2I; Results, first section
+  source: Figure 2I; Results, MS cooling decreases hippocampal theta frequency and power, paragraph
+    2
+  quote: MS cooling induced fast and reversible change in the frequency and power of hippocampal
+    theta oscillations (Figure 2d, e, f, i).
   criterion: Per BEH session, the mean over trials of theta frequency and of theta power in
     each state. Wilcoxon signed-rank tests over sessions of cooling against pre and cooling
     against post, for frequency and for power. Reproduced when all four show cooling lower
@@ -119,7 +144,8 @@ claims:
     not.
 - id: disc-theta-frequency-12-percent
   statement: During MS cooling LFP theta frequency decreased by 12%.
-  source: Discussion, Theta phase organization of hippocampal cell assemblies
+  source: Discussion, Theta phase organization of hippocampal cell assemblies, paragraph 5
+  quote: During MS cooling, LFP theta frequency decreased by 12 %
   expected:
   - quantity: decrease of theta frequency during cooling
     value: 12
@@ -134,7 +160,15 @@ claims:
 - id: fig6d-errors-increase
   statement: MS cooling increased choice errors about 3-fold, within each rat (P < 0.05 for
     all animals) and across all animals (P = 1e-6).
-  source: Results, MS cooling increases behavioral errors; Figure 6D and 6E
+  source: Results, MS cooling increases behavioral errors, paragraph 1; Figure 6D and 6E
+  quote: Overall, the number of memory errors increased approximately 3-fold, assessed either within
+    rats (P < 0.05 for all animals) or across all animals
+  statistics:
+  - about: within each rat
+    p: 0.05
+    p_relation: "<"
+  - about: across all animals
+    p: 1.0e-6
   expected:
   - quantity: ratio of the error rate during cooling to the control error rate
     value: 3.0
@@ -151,6 +185,7 @@ claims:
 - id: fig6e-errors-recover
   statement: The error rate after cooling did not differ from the error rate before it.
   source: Figure 6E (marked ns)
+  quote: Choice errors shown as boxplots constructed from all sessions. ... ns = nonsignificant.
   criterion: A claim of absence. The figure marks one comparison as not significant; it is
     read as pre against post. Wilcoxon signed-rank test over BEH sessions of the post and
     pre error rates. Reproduced when P >= 0.05, not reproduced when P < 0.05; the median
@@ -158,7 +193,9 @@ claims:
 - id: fig6c-worst-trials-4-to-8
   statement: The worst memory performance occurred between trials 4 and 8 after the onset of
     cooling, when MS temperature reached its minimum.
-  source: Results, MS cooling increases behavioral errors; Figure 6C
+  source: Results, MS cooling increases behavioral errors, paragraph 1; Figure 6C
+  quote: The worst memory performance occurred between trials 4 and 8 after MS cooling, when the MS
+    temperature reached its minimum
   criterion: The smoothed error series of the code (11-point Gaussian window) averaged over
     BEH sessions at each aligned position. The first cooling trial is trial 1 after onset.
     Reproduced when the maximum of the mean error series over trials 1 to 40 after onset
@@ -167,7 +204,13 @@ claims:
 - id: fig6f-errors-temperature
   statement: The incidence of errors correlated negatively with MS temperature (R = -0.35,
     P < 0.01).
-  source: Results, MS cooling increases behavioral errors; Figure 6F
+  source: Results, MS cooling increases behavioral errors, paragraph 1; Figure 6F
+  quote: The incidence of errors negatively and significantly correlated with temperature change
+    (R = − 0.35; P < 0.01; all animals)
+  statistics:
+  - statistic: R = − 0.35
+    p: 0.01
+    p_relation: "<"
   expected:
   - quantity: Pearson R of the error rate and MS temperature
     value: -0.35
@@ -182,7 +225,13 @@ claims:
 - id: fig6g-errors-theta-frequency
   statement: The incidence of errors correlated negatively with theta frequency (R = -0.35,
     P < 0.01).
-  source: Results, MS cooling increases behavioral errors; Figure 6G
+  source: Results, MS cooling increases behavioral errors, paragraph 1; Figure 6G
+  quote: The incidence of errors negatively and significantly correlated with ... theta frequency
+    (R = − 0.35; P < 0.01; all animals)
+  statistics:
+  - statistic: R = − 0.35
+    p: 0.01
+    p_relation: "<"
   expected:
   - quantity: Pearson R of the error rate and theta frequency
     value: -0.35
@@ -192,7 +241,9 @@ claims:
 - id: fig6h-errors-theta-power
   statement: The incidence of errors correlated less with theta power; only 2 of 5 animals
     had a significant correlation (R beyond -0.3, P < 0.01).
-  source: Results, MS cooling increases behavioral errors; Figure 6H and 6J
+  source: Results, MS cooling increases behavioral errors, paragraph 1; Figure 6H and 6J
+  quote: The incidence of errors negatively and significantly correlated with ... and less so with
+    theta power (only 2 of 5 animals had significant R > − 0.3; P < 0.01)
   expected:
   - quantity: animals with a significant negative correlation of errors and theta power
     value: 2
@@ -204,14 +255,23 @@ claims:
 - id: fig6i-errors-not-speed
   statement: The incidence of errors did not correlate with the running speed of the rat
     (R about 0.1, P > 0.05 for all animals).
-  source: Results, MS cooling increases behavioral errors; Figure 6I and 6J
+  source: Results, MS cooling increases behavioral errors, paragraph 1; Figure 6I and 6J
+  quote: The incidence of errors negatively and significantly correlated with ... and not with the
+    running speed of the rat (R ~ 0.1; P > 0.05 for all animals
+  statistics:
+  - statistic: R ~ 0.1
+    p: 0.05
+    p_relation: ">"
+    n: all animals
   criterion: A claim of absence, judged on the paper's per-animal correlations. Per animal,
     the Pearson R of the smoothed error series and the trial speed series, averaged over that
     animal's BEH sessions at each aligned position. Reproduced when no animal has P < 0.05;
     not reproduced when any does. R and P are given for every animal.
 - id: fig4e-speed-decreases-within-session
   statement: Running speed decreased relatively monotonically within a session.
-  source: Results, Effects of MS cooling on single neuron properties; Figure 4E and 6C
+  source: Results, Effects of MS cooling on single neuron properties, paragraph 3; Figure 4E and 6C
+  quote: Running speed decreased relatively monotonically within session (Fig. 4e; see also
+    Fig. 5c).
   criterion: Per BEH session, the Spearman correlation of trial mean speed with trial number.
     Reproduced when it is negative in at least 75% of sessions and the median over sessions
     is negative by a Wilcoxon signed-rank test at P < 0.05; partially reproduced when it is
@@ -219,7 +279,10 @@ claims:
 - id: fig5-speed-control-cooling
   statement: Mean running speed was 87.3 +- 8.0 cm/s in control trials and 86.2 +- 9.9 cm/s
     during MS cooling.
-  source: Results, MS temperature effects on theta time/phase compression
+  source: Results, MS temperature effects on theta time/phase compression of place cells sequences,
+    paragraph 2
+  quote: we combined trials before and after cooling into a single control group (mean running
+    speed = 87.3±8.0). During MS cooling (mean running speed = 86.2±9.9)
   expected:
   - quantity: mean running speed, control (pre and post)
     value: 87.3
@@ -236,7 +299,17 @@ claims:
 - id: suppl2-place-cell-rates-decrease
   statement: Within-field and peak firing rates of place cells decreased moderately during MS
     cooling (11% and 12%; P < 1e-9 and P < 1e-11).
-  source: Results, Effects of MS cooling on single neuron properties (Supplementary Figure 2)
+  source: Results, Effects of MS cooling on single neuron properties, paragraph 2 (Supplementary
+    Figure 2)
+  quote: Both within-field and peak firing rates of place cells decreased moderately during MS
+    cooling (Suppl. Fig. 2; 11% and 12%
+  statistics:
+  - about: within-field firing rate
+    p: 1.0e-9
+    p_relation: "<"
+  - about: peak firing rate
+    p: 1.0e-11
+    p_relation: "<"
   expected:
   - quantity: decrease of within-field firing rate
     value: 11
@@ -256,7 +329,10 @@ claims:
     no reading puts both within tolerance.
 - id: disc-interneuron-rates-decrease
   statement: Firing rates of interneurons decreased during MS cooling by about 14%.
-  source: Discussion; Results, Effects of MS cooling on single neuron properties
+  source: Discussion, Theta phase organization of hippocampal cell assemblies, paragraph 5; Results,
+    Effects of MS cooling on single neuron properties, paragraph 2
+  quote: During MS cooling, LFP theta frequency decreased by 12 % and within-field firing rates of
+    place cells decreased by a similar proportion (12%; interneurons 14%).
   expected:
   - quantity: decrease of interneuron firing rate
     value: 14
@@ -271,7 +347,12 @@ claims:
   statement: MS cooling decreased both the oscillation frequency of place cells (fp) and the
     LFP theta frequency in their fields (fLFP) by about the same degree, and both recovered
     (fLFP 8.4, 7.7, 8.5 Hz; fp 10.6, 9.5, 10.4 Hz before, during and after; n = 365).
-  source: Results, Effects of MS cooling on single neuron properties; Figure 4B
+  source: Results, Effects of MS cooling on single neuron properties, paragraph 2; Figure 4B
+  quote: MS cooling decreased both fp and fLFP, measured within the place fields of neurons, by
+    approximately the same degree ... Both values recovered after cooling.
+  statistics:
+  - p: 5.9e-8
+    p_relation: "<"
   expected:
   - quantity: fLFP pre
     value: 8.4
@@ -308,6 +389,21 @@ claims:
   statement: fp and fLFP were correlated across place fields before, during and after cooling
     (R = 0.61, 0.59 and 0.36; P < 1e-6 each).
   source: Figure 4C
+  quote: Correlation between LFP theta frequency (fLFP) and place cell oscillation frequency (fp;
+    Rpre = 0.61; Rcooling = 0.59; Rpost = 036
+  statistics:
+  - about: before cooling
+    statistic: Rpre = 0.61
+    p: 1.0e-6
+    p_relation: "<"
+  - about: during cooling
+    statistic: Rcooling = 0.59
+    p: 1.0e-6
+    p_relation: "<"
+  - about: after cooling
+    statistic: Rpost = 036
+    p: 1.0e-6
+    p_relation: "<"
   expected:
   - quantity: R pre
     value: 0.61
@@ -326,7 +422,10 @@ claims:
 - id: fig4ac-fp-flfp-difference-preserved
   statement: During MS cooling fp and fLFP decreased in parallel, so the difference fp - fLFP
     remained constant.
-  source: Results, Effects of MS cooling on single neuron properties; Discussion
+  source: Results, Effects of MS cooling on single neuron properties, paragraph 2; Discussion, Theta
+    phase organization of hippocampal cell assemblies, paragraph 3
+  quote: during MS cooling fp and fLFP decreased proportionally (i.e., fp–fLFP difference remained
+    constant)
   depends_on:
   - fig4b-fp-flfp-decrease
   criterion: A claim of absence. The paper names no test; its default paired test is used, a
@@ -335,7 +434,10 @@ claims:
 - id: fig4a-frequency-temperature-slopes
   statement: fLFP and fp measured within place fields decreased linearly with MS temperature
     (fLFP R = 0.66, slope 0.071 Hz per C; fp R = 0.38, slope 0.09 Hz per C).
-  source: Results, Effects of MS cooling on single neuron properties; Figure 4A
+  source: Results, Effects of MS cooling on single neuron properties, paragraph 1; Figure 4A
+  quote: "The theta oscillation frequency of pyramidal neurons decreased linearly and paralleled the
+    downward frequency shift of LFP theta oscillation (Fig. 4a; fLFP: R = 0.66, Slope = 0.071. fp:
+    R = 0.38, slope = 0.09)."
   expected:
   - quantity: R of fLFP and temperature
     value: 0.66
@@ -359,7 +461,8 @@ claims:
     value is outside tolerance.
 - id: fig3c-field-size-correlated
   statement: Place field size was highly correlated before and during MS cooling (R = 0.91).
-  source: Results, Effect of MS cooling on place field features; Figure 3C
+  source: Results, Effect of MS cooling on place field features, paragraph 1; Figure 3C
+  quote: Place field size does not change with MS cooling (R = 0.91).
   expected:
   - quantity: R of field size before and during cooling
     value: 0.91
@@ -372,6 +475,21 @@ claims:
   statement: Place field size and fp were negatively correlated before, during and after
     cooling (R = -0.49, -0.40, -0.40; P < 1e-9).
   source: Figure 3D
+  quote: Place field size continues to be inversely correlated with fp after MS cooling
+    (Rpre = − 0.49; Rcooling = − 0.40; Rpost = − 0.40
+  statistics:
+  - about: before cooling
+    statistic: Rpre = − 0.49
+    p: 1.0e-9
+    p_relation: "<"
+  - about: during cooling
+    statistic: Rcooling = − 0.40
+    p: 1.0e-9
+    p_relation: "<"
+  - about: after cooling
+    statistic: Rpost = − 0.40
+    p: 1.0e-9
+    p_relation: "<"
   expected:
   - quantity: R pre
     value: -0.49
@@ -390,7 +508,10 @@ claims:
 - id: fig3e-model-field-size
   statement: Measured place field size correlated with the size predicted by SPF = v / (fp -
     fLFP) before (R = 0.55) and during (R = 0.54) cooling, and weakly after (R = 0.11).
-  source: Results, Effect of MS cooling on place field features; Figure 3E
+  source: Results, Effect of MS cooling on place field features, paragraph 2; Figure 3E
+  quote: We found a reliable and similar relationships between measured place field sizes and
+    model-predicted sizes for trials before (R = 0.55), during (R = 0.54) and after (R = 0.11) MS
+    cooling (Fig. 3e).
   expected:
   - quantity: R pre
     value: 0.55
@@ -409,7 +530,12 @@ claims:
 - id: fig3f-information-unchanged
   statement: The information content of place cell spikes was not altered by MS cooling
     (P > 0.26).
-  source: Figure 3F
+  source: Figure 3F; Results, Effect of MS cooling on place field features, paragraph 2
+  quote: Information content of place cell spikes was also left unaltered by MS cooling (P > 0.26;
+    Fig. 3f).
+  statistics:
+  - p: 0.26
+    p_relation: ">"
   criterion: A claim of absence. Bits per spike (PlaceCellInfo.m) of each place cell's map in
     each state; the paper's default paired test, Wilcoxon signed-rank over cells, for pre
     against cooling, cooling against post and pre against post. Reproduced when all three
@@ -417,7 +543,9 @@ claims:
 - id: fig3hi-population-vector-unchanged
   statement: The spatial scale of the population vector correlation of pyramidal cells was not
     affected by MS cooling.
-  source: Results, Effect of MS cooling on place field features; Figure 3H and 3I
+  source: Results, Effect of MS cooling on place field features, paragraph 3; Figure 3H and 3I
+  quote: Population vector correlation of pyramidal cells was not affected by MS cooling (Fig. 3g,
+    h).
   criterion: A claim of absence. Per UNIT session and state, population vectors of the
     pyramidal cells' rate maps in each bin; the decorrelation curve is the mean correlation of
     vectors at bins d apart within a segment, and the scale is the first distance at which
@@ -426,7 +554,17 @@ claims:
 - id: fig4d-precession-slope-decrease
   statement: The phase precession slope decreased slightly but significantly during MS
     cooling (P < 0.007 and P < 0.0003).
-  source: Results, Effects of MS cooling on single neuron properties; Figure 4D
+  source: Results, Effects of MS cooling on single neuron properties, paragraph 2; Figure 4D
+  quote: The slope of the relationship between travel distance across the place field and phase
+    advancement of spikes ... decreased slightly, but nevertheless significantly, during MS cooling
+    (Fig. 4d).
+  statistics:
+  - about: comparison marked ** in Figure 4D
+    p: 0.007
+    p_relation: "<"
+  - about: comparison marked *** in Figure 4D
+    p: 0.0003
+    p_relation: "<"
   depends_on:
   - fig4b-fp-flfp-decrease
   criterion: Per field and state, circular-linear regression of spike phase on position in
@@ -437,7 +575,9 @@ claims:
 - id: fig4gh-fp-speed
   statement: fp depended on running speed more strongly than fLFP, and fp during cooling was
     lower at all velocities.
-  source: Results, Effects of MS cooling on single neuron properties; Figure 4G and 4H
+  source: Results, Effects of MS cooling on single neuron properties, paragraph 3; Figure 4G and 4H
+  quote: fp values during cooling were lower at all velocities (Fig. 4g) ... while speed exerted a
+    relatively linear effect on fp, it had no or little effect on the frequency of fLFP
   depends_on:
   - fig4b-fp-flfp-decrease
   criterion: For each field and state, fp and fLFP from in-field spikes in speed bins of 20
@@ -452,6 +592,15 @@ claims:
     85 ms before cooling, which lengthened during MS cooling (P = 0.002), while the period of
     the phase cross-correlograms was unaffected (P = 0.32).
   source: Figure 5D, 5E and 5F
+  quote: Duration of the theta-repeated spike cross-correlograms (as in d), calculated for each
+    session, significantly increased during MS cooling ... whereas the spike phase-lag correlations
+    remained unaffected (n.s., P = 0.32).
+  statistics:
+  - about: period of the time cross-correlograms, cooling against control
+    test: two-sided signed rank test
+    p: 0.002
+  - about: period of the phase cross-correlograms, cooling against control
+    p: 0.32
   expected:
   - quantity: period of the summed pair cross-correlogram, control
     value: 85
@@ -473,7 +622,16 @@ claims:
   statement: Distance-time compression of place cell pairs (0.54 cm/ms before cooling)
     decreased during MS cooling (P = 0.02), while distance-phase compression was unchanged
     (P = 0.92).
-  source: Figure 5C and 5G; Results
+  source: Figure 5C and 5G; Results, MS temperature effects on theta time/phase compression of place
+    cells sequences, paragraph 2
+  quote: Compression index, c (cm/ms; i.e., the slope in c), significantly decreased during MS
+    cooling (* P = 0.02) but the distance/phase lag compression (cm/radian) remained unaffected
+    (P = 0.92).
+  statistics:
+  - about: distance-time compression, cooling against control
+    p: 0.02
+  - about: distance-phase compression, cooling against control
+    p: 0.92
   expected:
   - quantity: distance-time compression before cooling
     value: 0.54
@@ -495,7 +653,21 @@ claims:
   statement: During MS cooling the theta time lags between place cell pairs increased
     compared with before and after cooling (P = 8e-5 and P = 0.00032), and did not differ
     between before and after (P = 0.79).
-  source: Results; Figure 5H
+  source: Results, MS temperature effects on theta time/phase compression of place cells sequences,
+    paragraph 3; Figure 5H
+  quote: During MS cooling, the time lags increased significantly ... whereas they were not
+    different from each other during precooling and post-cooling sessions (P = 0.79)
+  statistics:
+  - about: pre against cooling
+    test: sign rank test
+    p: 8.0e-5
+    n: 10 sessions, 4 rats
+  - about: post against cooling
+    test: sign rank test
+    p: 0.00032
+    n: 10 sessions, 4 rats
+  - about: pre against post
+    p: 0.79
   depends_on:
   - fig5d-ccg-period
   criterion: The absolute time lag of each pair (as fig5cg-compression) in each state.
@@ -506,7 +678,14 @@ claims:
 - id: fig5i-phase-lags-unchanged
   statement: Theta phase lags between place cell pairs were not affected by MS cooling
     (P > 0.24 between all conditions).
-  source: Results; Figure 5I
+  source: Results, MS temperature effects on theta time/phase compression of place cells sequences,
+    paragraph 3; Figure 5I
+  quote: In contrast, phase lags between spikes of place cell pairs were not affected by MS cooling
+    (Fig. 5i; P > 0.24 between all conditions).
+  statistics:
+  - test: Wilcoxon signed rank test
+    p: 0.24
+    p_relation: ">"
   depends_on:
   - fig5d-ccg-period
   criterion: A claim of absence, on the paper's sign-rank test. Wilcoxon signed-rank tests over
@@ -516,7 +695,12 @@ claims:
 - id: fig5j-fraction-active-unchanged
   statement: The fraction of place cells active in a theta cycle was not significantly
     affected by MS cooling (P = 0.2).
-  source: Results; Figure 5J
+  source: Results, MS temperature effects on theta time/phase compression of place cells sequences,
+    paragraph 4; Figure 5J
+  quote: we found that the fraction of place cells active in a given theta cycle was not
+    significantly affected by MS cooling (Fig. 5j; P = 0.2).
+  statistics:
+  - p: 0.2
   criterion: A claim of absence, judged on pre against cooling, the comparison the text
     reports. Theta cycles (between upward zero crossings of the theta phase) during forward
     runs above 10 cm/s in trials of FIG5 sessions; per cycle, the fraction of the session's
@@ -527,14 +711,23 @@ claims:
 - id: fig5k-spikes-per-cycle-unchanged
   statement: The number of spikes emitted by all neurons per theta cycle was preserved during
     MS cooling (P > 0.058 between all conditions).
-  source: Results; Figure 5K
+  source: Results, MS temperature effects on theta time/phase compression of place cells sequences,
+    paragraph 4; Figure 5K
+  quote: The number of spikes emitted by all neurons per theta cycle was also preserved after MS
+    cooling (Fig. 5k)
+  statistics:
+  - p: 0.058
+    p_relation: ">"
   criterion: A claim of absence. Cycles as fig5j-fraction-active-unchanged; spikes of all good
     units per cycle. Wilcoxon rank-sum tests over cycles pooled across sessions for pre
     against cooling, cooling against post and pre against post. Reproduced when all give
     P >= 0.05, not reproduced when any gives P < 0.05.
 - id: suppl1g-waveforms-unchanged
   statement: The waveforms of hippocampal action potentials were not affected by MS cooling.
-  source: Results, first section (Supplementary Figure 1G)
+  source: Results, MS cooling decreases hippocampal theta frequency and power, paragraph 3
+    (Supplementary Figure 1G)
+  quote: Finally, the waveforms of action potentials in the hippocampus ... were not affected by MS
+    cooling (Suppl. Fig. 1g).
   criterion: A claim of absence. For units of UNIT sessions with at least 30 spikes in each
     window, the mean waveform in 120 s of pre-cooling trials and in the 120 s around the
     coldest cooling trial; trough-to-peak time and peak-to-peak amplitude on the channel of
@@ -543,12 +736,19 @@ claims:
 - id: suppl2d-interneuron-oscillation-slows
   statement: The theta oscillation frequency of putative fast-spiking interneurons decreased
     during MS cooling, commensurate with the LFP theta.
-  source: Results, Effects of MS cooling on single neuron properties (Supplementary Figure 2D)
+  source: Results, Effects of MS cooling on single neuron properties, paragraph 1 (Supplementary
+    Figure 2D)
+  quote: Theta frequency oscillation of putative fast spiking interneurons also decelerated (Suppl.
+    Fig. 2d), commensurate with the downward frequency shift of LFP theta oscillation.
   criterion: Putative interneurons of UNIT sessions; oscillation frequency of spikes in
     frames of trials above 10 cm/s, per state. Reproduced when it is lower during cooling
     than pre by a Wilcoxon signed-rank test over units at P < 0.05.
 - id: suppl1-hippocampal-temperature
   statement: Hippocampal temperature fell by less than 1.5 C at the time of the largest MS
     temperature decrease, and later than the MS cooling.
-  source: Results, first section (Supplementary Figure 1H to 1K)
+  source: Results, MS cooling decreases hippocampal theta frequency and power, paragraph 3
+    (Supplementary Figure 1H to 1K)
+  quote: we measured temperature simultaneously in the MS and hippocampus, and found < 1.5° C
+    decrease in the hippocampus at the time of the largest MS temperature decrease ... the mild
+    temperature decrease in the hippocampus was considerably delayed
   criterion: Needs the hippocampal temperature recordings of the control experiment.

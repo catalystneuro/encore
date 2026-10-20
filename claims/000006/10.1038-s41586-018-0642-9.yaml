@@ -35,6 +35,9 @@
 # Chance for a fraction of selective units is a null built by shuffling the lick-left and
 # lick-right labels of each unit's trials (1000 shuffles); a fraction is above chance when
 # fewer than 1% of shuffles reach it.
+# Quotes from the abstract added 2026-10-19 where it states the finding; the rest are marked
+# inferred (no open full text).
+# Quotes and statistics added 2026-10-20 from the full text (PDF of the version of record).
 schema_version: 1
 dandiset: "000006"
 paper: doi:10.1038/s41586-018-0642-9
@@ -42,36 +45,55 @@ claims:
 - id: pt-types-transcriptomic
   statement: Single-cell transcriptional profiling and axonal reconstructions identify two types
     of pyramidal tract (PT) neuron in motor cortex.
-  source: Abstract
+  source: Results, Two types of PT neuron in layer 5, paragraph 5; Figs. 1, 2
+  quote: Axonal reconstructions and scRNA-seq data suggest that PT neurons can be divided into two
+    distinct cell types.
 - id: pt-types-shared-targets
   statement: Both types of PT neuron project to several targets in the basal ganglia and
     brainstem.
-  source: Abstract
+  source: Extended Data Fig. 2e
+  quote: Both cell types extended axon collaterals to motor-related superior colliculus, but to
+    different parts. ... Both cell types extended axon collaterals locally within the same
+    sublamina as their somata, the subthalamic nucleus, zona incerta, and the midbrain reticular
+    nucleus.
 - id: pt-upper-thalamus-projection
   statement: One type of PT neuron projects to thalamic regions that connect back to motor
     cortex.
-  source: Abstract
+  source: Results, Two types of PT neuron in layer 5, paragraph 2; Fig. 2a, b; Extended Data Fig. 2
+  quote: "Patterns of axonal collaterals revealed two neuron types: one group innervated the
+    thalamus (n = 8; Fig. 2a, b; green hues and Extended Data Fig. 2)"
 - id: pt-lower-medulla-projection
   statement: The second type of PT neuron projects to motor centres in the medulla.
-  source: Abstract
+  source: Results, Two types of PT neuron in layer 5, paragraph 2; Fig. 2a, b; Extended Data Fig. 2
+  quote: the other group bypassed the thalamus and branched in the medulla, including the reticular
+    nuclei containing premotor neurons for orofacial movements
 - id: pt-preparatory-activity
   statement: Descending PT neurons in layer 5 of motor cortex carry preparatory activity, which
     predicts the upcoming movement before it is initiated.
-  source: Abstract (stated as background to the study)
+  source: Results, Preparatory activity, paragraph 2; Extended Data Fig. 7a, b; Abstract (stated as
+    background to the study)
+  quote: along a different direction in activity space, which maximized selectivity at the end of
+    the delay epoch, CDlate, selectivity was substantial in both cell types
   criterion: Over all included tagged units of both types, the fraction selective in the delay
     epoch (-1.3 to 0 s before the go cue) is above chance by the label-shuffle null (p < 0.01).
     Reproduced when it is; not reproduced otherwise. The result is also given per type and per
     animal, and the depths of the units are reported.
 - id: pt-upper-early-preparatory
   statement: The thalamus-projecting PT type produces early preparatory activity.
-  source: Abstract
+  source: Results, Preparatory activity, paragraph 2; Fig. 5a, b
+  quote: In this projection, selectivity was larger and more consistent across trials in the PTupper
+    population compared to the PTlower population (Fig. 5b).
   criterion: Among included PTupper units, the fraction selective in the sample epoch (-2.5 to
     -2.1 s) is above chance by the label-shuffle null (p < 0.01). Reproduced when it is; not
     reproduced otherwise.
 - id: pt-upper-persistent
   statement: The early preparatory activity of the thalamus-projecting PT type persists until
     the movement is initiated.
-  source: Abstract
+  source: Results, Preparatory activity, paragraph 2; Fig. 5b; Extended Data Fig. 7c, d
+  quote: Furthermore, selectivity in the PTupper population remained constant throughout the sample
+    and delay epochs until the go cue, implying retention of decision-related information. ... For
+    the PTupper population, the CD remained more similar across the sample and delay epochs
+    compared to the PTlower population
   criterion: Two parts, on included PTupper units. (a) The fraction selective in the late delay
     epoch (-0.4 to 0 s) is above chance by the label-shuffle null (p < 0.01). (b) The coding
     direction of the sample epoch is similar to that of the late delay, as in the code's
@@ -82,7 +104,15 @@ claims:
 - id: pt-lower-late-and-motor
   statement: The medulla-projecting PT type mainly produces late preparatory activity and motor
     commands.
-  source: Abstract
+  source: Results, Preparatory activity, paragraph 2, and Movement commands, paragraph 2; Fig. 5b;
+    Extended Data Fig. 7a, b; Fig. 6b, c
+  quote: By contrast, selectivity in the PTlower population decayed rapidly along CDearly (no
+    significant selectivity in 400 ms preceding go cue; P = 0.34, bootstrap). This decay did not
+    reflect a lack of selectivity in the PTlower population ... In the PTlower population,
+    significant selectivity emerged 24 ms after the go cue
+  statistics:
+  - test: bootstrap
+    p: 0.34
   criterion: Among included PTlower units, (a) the fraction selective in the late delay epoch
     and (b) the fraction selective in the response epoch (0 to 0.4 s after the go cue) are
     each larger than the fraction selective in the sample epoch, each by an exact one-sided
@@ -93,7 +123,28 @@ claims:
   statement: The two PT types differ in when they carry information about the movement; the
     thalamus-projecting type carries early preparatory activity, the medulla-projecting type
     mainly late preparatory activity and motor commands.
-  source: Abstract
+  source: Results, Preparatory activity, paragraph 2; Extended Data Fig. 9a, c; Movement commands,
+    paragraph 2; Fig. 6b, c
+  quote: "individual PTupper neurons displayed persistent selectivity throughout the sample and
+    delay epochs (Fig. 5c), exhibited higher early selectivity (PTupper: 0.41 ± 0.04; mean ± s.e.m.;
+    PTlower: 0.25 ± 0.02; P < 0.01) ... Along CDgo, selectivity was larger, emerged faster, and
+    persisted longer in the PTlower than in the PTupper population"
+  statistics:
+  - about: Early selectivity of single neurons, PTupper against PTlower
+    statistic: 0.41 ± 0.04 against 0.25 ± 0.02 (mean ± s.e.m.)
+    p: 0.01
+    p_relation: "<"
+  - about: Mean single-neuron decoding accuracy in the first 400 ms of the sample epoch, PTupper
+      against PTlower
+    test: two-sided Mann–Whitney test
+    statistic: 64.4 ± 1.0% against 58.9 ± 0.6% (mean ± s.e.m.)
+    p: 1.0e-04
+    n: 61 PTupper and 69 PTlower neurons
+  - about: The same decoding with spike rates rectified at baseline
+    test: two-sided Mann–Whitney test
+    statistic: 62.7 ± 1.1% against 56.7 ± 0.4% (mean ± s.e.m.)
+    p: 9.0e-07
+    n: 61 PTupper and 69 PTlower neurons
   criterion: Two parts. (a) The fraction of included units selective in the sample epoch is
     larger for PTupper than for PTlower (one-sided Fisher exact test, p < 0.05). (b) The fraction
     selective in the response epoch is larger for PTlower than for PTupper (one-sided Fisher

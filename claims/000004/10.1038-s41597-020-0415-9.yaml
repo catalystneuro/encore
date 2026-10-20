@@ -34,6 +34,7 @@
 # trapezoid rule with (0,0) and (1,1) added, and "±" read as the standard deviation over sessions
 # (calcMeanSEOfSample). CS sessions are those of subjects labelled H or C, TWH those labelled T,
 # as the Figure 5 legend defines.
+# Quotes and statistics added 2026-10-19 from the full text (Europe PMC PMC7055261).
 schema_version: 1
 dandiset: "000004"
 paper: doi:10.1038/s41597-020-0415-9
@@ -41,7 +42,9 @@ claims:
 - id: counts-neurons-subjects
   statement: The dataset holds 1863 single neurons recorded from the medial temporal lobes of 59
     subjects.
-  source: Abstract; Technical Validation, proportion of selective cells
+  source: Abstract; Technical Validation, proportion of selective cells, paragraph 3
+  quote: we present a NWB-formatted dataset of 1863 single neurons recorded from the medial temporal
+    lobes of 59 human subjects
   expected:
   - quantity: neurons
     value: 1863
@@ -57,7 +60,9 @@ claims:
 - id: counts-sessions
   statement: The patients performed 87 sessions, listed by subject and session id in Online-only
     Table 1 (the Methods give 89).
-  source: Methods, Subjects; Online-only Table 1
+  source: Methods, Subjects, paragraph 1; Online-only Table 1
+  quote: "In total, we recorded from patients across 89 sessions (see Online-only Table 1) ... Total
+    Sessions: 87"
   expected:
     quantity: sessions
     value: 87
@@ -70,6 +75,7 @@ claims:
   statement: Online-only Table 1 gives the age and sex of every subject; there are 25 female and 34
     male subjects.
   source: Online-only Table 1
+  quote: "Total Female: 25 ... Total Male: 34"
   expected:
   - quantity: female subjects
     value: 25
@@ -84,8 +90,11 @@ claims:
 - id: task-structure
   statement: Each session has 100 encoding trials showing 100 novel images and 100 recognition
     trials, of which 50 show new and 50 old images, and the images come from 5 visual categories.
-  source: Methods, Task; Data Records, stimuli group; Technical Validation, proportion of
-    selective cells
+  source: Methods, Task, paragraph 1; Data Records, stimuli group, paragraph 1; Technical
+    Validation, proportion of selective cells, paragraph 2
+  quote: In the encoding phase, subjects were presented with 100 novel images ... in the recognition
+    phase, subjects were presented with 50 “novel” images and 50 “old” images ... (there are 5
+    different categories in each experiment)
   criterion: Per session, counted from the trials table and the stimulus images. Reproduced when
     every session has 100 encoding trials with 100 distinct image files, 100 recognition trials
     with 50 of each label, and 5 categories; partially reproduced when each part holds in more
@@ -93,7 +102,9 @@ claims:
 - id: new-old-label-coding
   statement: In the trials table, new_old_labels_recog is 0 for old stimuli (seen during encoding)
     and 1 for new stimuli.
-  source: Data Records, interval group
+  source: Data Records, interval group, paragraph 1
+  quote: New_old_labels_recog provides the ground truth label of whether the trial showed a new or
+    old stimulus during the recognition phase (0 is old, 1 is new).
   criterion: Two tests per session. (1) Under the stated coding, old trials (label 0) should
     show image files from the session's encoding block and new trials (label 1) should not.
     (2) Old trials should receive "old" responses (4 to 6) more often than new trials. Reproduced
@@ -103,7 +114,11 @@ claims:
   statement: The events stream holds the TTL markers 55, 1, 2, 3, 20 or 21, 31 to 36, 6 and 66
     with the meanings of Table 1, and the events and experiment_ids streams have one entry each,
     in the same order.
-  source: Data Records, acquisition group; Table 1
+  source: Data Records, acquisition group, paragraphs 1 and 2; Table 1
+  quote: "Both streams include the same number of entries in the same order. ... The following TTL
+    values are used: Start of Experiment (55), Stimulus Onset (1), Stimulus Offset (2), Question
+    Screen Onset (3), New/Old Response (20 or 21), Confidence of Response (31–36), End of Trial (6),
+    End of Experiment (66)."
   criterion: Reproduced when, in every file, events and experiment_ids have the same length and
     timestamps, the events hold only the listed codes, and every trial shows stimulus onset (1),
     offset (2), question (3), a response of the phase's kind and end of trial (6) in this order;
@@ -111,20 +126,27 @@ claims:
 - id: experiment-ids
   statement: The learning block is labelled with one of 80, 83 or 88 and the recognition block with
     one of 81, 84 or 89.
-  source: Data Records, acquisition group; Table 2
+  source: Data Records, acquisition group, paragraph 3; Table 2
+  quote: "The learning block is labeled with only one of the following: 80, 83, or 88, while the
+    recognition block is labeled with only one of the following: 81, 84, or 89"
   criterion: Reproduced when the two experiment ids of every file fall in these sets; partially
     reproduced when they do in most files.
 - id: session-dates
   statement: To protect patient information, session_start_time keeps only the year and month of
     the experiment, with the day set to the first of the month for all sessions.
-  source: Data Records, structure of the NWB file
+  source: Data Records, structure of the NWB file, paragraph 2
+  quote: in the field session_start_time, we set only the year and month of the experiment but
+    defaulted the actual day of the experiment to the first of the month for all sessions.
   criterion: Reproduced when every file's session_start_time falls on the first of a month;
     partially reproduced when some do not. Years outside the span of the recordings are reported.
 - id: units-table
   statement: The units table holds spike_times, waveform_mean_encoding, waveform_mean_recognition
     (sampled at 100 kHz), origClusterID, SNR, IsolDist and electrodes, with one electrode per
     neuron.
-  source: Data Records, units group
+  source: Data Records, units group, paragraph 1
+  quote: "We use the following columns: spike_times_index, spike_times, waveform_mean_encoding,
+    waveform_mean_recognition, origClusterID, SNR, IsolDist, and electrodes. ... (sampled at 100
+    kHz) ... here this link is 1:1 since each neuron is only visible on one channel."
   expected:
     quantity: waveform sampling rate
     value: 100000
@@ -137,14 +159,20 @@ claims:
 - id: electrodes-table
   statement: The electrodes table gives each electrode's brain area, MNI coordinates, impedance,
     the filter applied before spike sorting (300 to 3000 Hz) and the original hardware channel.
-  source: Data Records, general group; Methods, data acquisition
+  source: Data Records, general group, paragraph 1; Methods, data acquisition, paragraph 1
+  quote: General/extracellular_ephys contains information about the electrodes recorded from,
+    including their location (brain area and coordinates), impedance, and filters used ... The
+    origChannel (a custom column) refers to the hardware channel that was used to record from this
+    electrode.
   criterion: Reproduced when every file has these columns and every electrode has a value for
     each; partially reproduced when the columns are there but some are empty for some
     electrodes; not reproduced when a column is empty for every electrode.
 - id: isi-criterion
   statement: Clusters were accepted as units only when fewer than 3% of their interspike intervals
     were shorter than 3 ms.
-  source: Methods, data acquisition
+  source: Methods, data acquisition, paragraph 2
+  quote: "To classify the detected clusters as putative units, we assessed the following criteria:
+    ... (3) violation of the refractory period (<3% of the spikes have an ISI of less than 3 ms)"
   criterion: For each unit, the fraction of interspike intervals below 3 ms, from its spike times
     sorted in time. Reproduced when every unit is below 3%; partially reproduced when at least
     95% of units are; not reproduced otherwise. The count with the spike times as stored is a
@@ -153,12 +181,17 @@ claims:
   statement: All neurons were recorded from the medial temporal lobe, in the amygdala and the
     hippocampus.
   source: Abstract; Figure 5a
+  quote: "1863 single neurons recorded from the medial temporal lobes of 59 human subjects ...
+    Summary of recording locations. ... (Pink: Amygdala, Yellow: Hippocampus)."
   criterion: Reproduced when the electrode location of every unit names the amygdala or the
     hippocampus.
 - id: fig5c-auc-all
   statement: Subjects distinguished new from old images; the behavioural AUC averaged over all
     sessions is 0.74 ± 0.10.
-  source: Technical Validation, behaviour; Figure 5b and 5c
+  source: Technical Validation, behaviour, paragraph 1; Figure 5b and 5c
+  quote: We used the area under the curve (AUC) of the ROC to quantify the ability of subjects to
+    successfully differentiate between new and old stimuli (Fig. 5b). The average AUC across all
+    sessions was 0.74 ± 0.10
   expected:
   - quantity: mean AUC over sessions
     value: 0.74
@@ -172,7 +205,9 @@ claims:
 - id: fig5c-auc-sites
   statement: Performance was similar at the two study sites, with an average AUC of 0.74 ± 0.09 for
     CS sessions and 0.69 ± 0.13 for TWH sessions.
-  source: Technical Validation, behaviour; Figure 5c
+  source: Technical Validation, behaviour, paragraph 1; Figure 5c
+  quote: performance was similar across the two study sites, with an average AUC for CS and TWH
+    sessions of 0.74 ± 0.09 and 0.69 ± 0.13, respectively
   depends_on:
   - fig5c-auc-all
   expected:
@@ -193,7 +228,12 @@ claims:
     reported.
 - id: fig5b-roc-asymmetric
   statement: The ROC curve is asymmetric (p < 0.05), as expected for declarative memory.
-  source: Technical Validation, behaviour; Figure 5b
+  source: Technical Validation, behaviour, paragraph 1; Figure 5b
+  quote: Also, the shape of the ROC curve was asymmetric (Fig. 5b, p < 0.05), as expected for
+    declarative memories
+  statistics:
+  - p: 0.05
+    p_relation: "<"
   criterion: The paper does not name the measure or the test. Asymmetry is measured, as in the
     paper's code (calcZROCSlope), by the slope of the z-ROC, the regression of z(hit rate) on
     z(false alarm rate) over the five interior points of each session. Reproduced when the mean
@@ -202,7 +242,13 @@ claims:
 - id: fig5d-confidence-accuracy
   statement: Accuracy is significantly higher in high than in low confidence trials (P < 0.001,
     paired t test) across all sessions.
-  source: Technical Validation, behaviour; Figure 5d
+  source: Technical Validation, behaviour, paragraph 1; Figure 5d
+  quote: Accuracy was significantly larger in high compared to low confidence trials (P < 0.001)
+    (Fig. 5d) across all sessions.
+  statistics:
+  - test: paired t test
+    p: 0.001
+    p_relation: "<"
   criterion: Per session, the percentage of correct responses among high and among low confidence
     responses. The readings of the split are (a) the fixed split of the paper's MATLAB code
     (high is 1 or 6, low is 2 to 5) and (b) the dynamic split of its Python code. Sessions
@@ -212,7 +258,9 @@ claims:
   statement: 343 of the 1863 cells (18.4%) are visually selective, by a one-way ANOVA (P < 0.05) of
     the firing rate in recognition trials, in a 1 s window starting 200 ms after stimulus onset,
     across the 5 visual categories.
-  source: Technical Validation, proportion of selective cells; Figure 5f
+  source: Technical Validation, proportion of selective cells, paragraphs 2 and 3; Figure 5f
+  quote: To select for VS cells, we performed a 1 × 5 ANOVA (one way, P < 0.05) ... Out of these
+    1863 cells (Fig. 5e), 343 cells qualified as VS cells (18.4%)
   expected:
   - quantity: VS cells
     value: 343
@@ -228,7 +276,9 @@ claims:
   statement: 146 of the 1863 cells (7.8%) are memory selective, by a two-tailed bootstrap comparison
     of mean firing rates (1,000 runs, P < 0.05) between the 50 novel and 50 familiar recognition
     trials in a 1 s window starting 200 ms after stimulus onset.
-  source: Technical Validation, proportion of selective cells; Figure 5f
+  source: Technical Validation, proportion of selective cells, paragraphs 2 and 3; Figure 5f
+  quote: To select for an MS cell, we compared the firing rate between the 50 novel and 50 familiar
+    trials during the retrieval period ... 146 cells qualified as MS cells (7.8%)
   expected:
   - quantity: MS cells
     value: 146
@@ -244,7 +294,8 @@ claims:
     within each session are variants.
 - id: dual-cells-proportion
   statement: 26 cells (1.4%) are both visually and memory selective.
-  source: Technical Validation, proportion of selective cells; Figure 5f
+  source: Technical Validation, proportion of selective cells, paragraph 3; Figure 5f
+  quote: 26 cells qualified as both VS and MS cells (1.4%) (Fig. 5f).
   depends_on:
   - vs-cells-proportion
   - ms-cells-proportion
@@ -260,8 +311,10 @@ claims:
 - id: fig5f-site-proportions
   statement: The percentages of VS, MS and dual cells are comparable between CS sessions (18.4%,
     7.7% and 1.4%) and the new TWH sessions (19.4%, 10.4% and 1.3%).
-  source: Technical Validation, proportion of selective cells; Figure 5f (the values as written
-    into plotFigure5.ipynb at commit 1d95162)
+  source: Technical Validation, proportion of selective cells, paragraph 3; Figure 5f (the values as
+    written into plotFigure5.ipynb at commit 1d95162)
+  quote: We found that the percentages of VS, MS, and dual VS/MS cells were comparable to previously
+    reported percentages in our locally recorded dataset (Fig. 5f)
   depends_on:
   - vs-cells-proportion
   - ms-cells-proportion
@@ -297,7 +350,9 @@ claims:
     of these holds.
 - id: twh-sessions
   statement: The dataset includes 9 sessions from a new institution, Toronto Western Hospital.
-  source: Technical Validation, proportion of selective cells; Online-only Table 1
+  source: Technical Validation, proportion of selective cells, paragraph 3; Online-only Table 1
+  quote: this dataset includes recordings from 23 new sessions, including 9 sessions from a new
+    institution (Toronto Western Hospital, TWH)
   expected:
     quantity: TWH sessions
     value: 9
@@ -305,6 +360,7 @@ claims:
   criterion: Sessions whose subject label starts with T. Reproduced when the count is within
     tolerance.
 - id: previous-release-link
+  kind: link
   statement: The sessions of the earlier release (Faraut et al. 2018) are found in this dandiset
     under the same subject, session id and task variant.
   source: Faraut et al. 2018, Scientific Data 5, 180010 (doi:10.1038/sdata.2018.10), Table 1
@@ -318,7 +374,10 @@ claims:
 - id: previous-release-additions
   statement: Relative to the earlier release of this task's data (Faraut et al. 2018), this
     release adds 23 sessions, 17 subjects and 288 neurons.
-  source: Background and Summary; Technical Validation
+  source: Background & Summary, paragraph 3; Technical Validation, proportion of selective cells,
+    paragraph 3
+  quote: we added 17 subjects and 288 neurons, including from a new study site, relative to our
+    previously released dataset ... this dataset includes recordings from 23 new sessions
   data: with_inputs
   depends_on:
   - previous-release-link
@@ -343,6 +402,9 @@ claims:
   statement: Neuron 132-177-4-RA (session 132, channel 177, cell 4, right amygdala) is visually
     selective, responding most to images of animals.
   source: Figure 4
+  quote: "An example VS neuron selective for the visual category of animals is shown at the bottom
+    (The ID of this neuron 132-177-4-RA corresponds to: session ID – channel number – cell number –
+    brain area)."
   criterion: The unit on channel 177 of session 132 with electrode row 4, in the right amygdala.
     Reproduced when the one-way ANOVA across the 5 categories of recognition trials, Methods'
     window, has p < 0.05 and the animal category has the highest mean rate. The code's window is
@@ -351,4 +413,7 @@ claims:
   statement: Neuron 144-140-3-RH (session 144, channel 140, cell 3, right hippocampus) is visually
     selective for phones.
   source: Figure 3
+  quote: "An example VS neuron selective for the visual category of phones is shown at the bottom
+    (The ID of this neuron 144-140-3-RH corresponds to: session ID – channel number – cell number –
+    brain area)."
   criterion: As for fig4-example-vs-neuron, with phones as the preferred category.

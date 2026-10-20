@@ -26,6 +26,9 @@
 # mab-e-baselines) did not answer from here, and no copy of it was found in Software Heritage or on
 # GitHub; the web archive holds its landing page only. The task programming code (GitHub
 # neuroethology/TREBA) is public. The code of the challenge's top entries is not linked.
+# Quotes added 2026-10-19 from the full text (arXiv:2104.02710v4, ar5iv HTML rendering; figure and
+# table numbers as in the v4 PDF). The paper reports no statistical tests or confidence intervals
+# for these claims.
 schema_version: 1
 dandiset: "001878"
 paper: doi:10.22002/d1.1991
@@ -35,7 +38,10 @@ claims:
     right hip, tail base) for each of two mice, the resident (mouse 0) and the intruder (mouse 1),
     in pixel coordinates of a 1024 x 570 image, at 30 Hz, with a confidence score from 0 to 1 for
     each keypoint.
-  source: Section 3 and Figure 3; Appendix C (data format); Appendix D.1
+  source: Section 3 and Figure 3; Appendix C (data format), paragraph 4; Appendix D.1
+  quote: mouse 0 is the resident and mouse 1 is the intruder), image (x,y) coordinates in pixels,
+    and keypoint ID. For keypoint ID, there are seven tracked body parts, ordered (nose, left ear,
+    right ear, neck, left hip, right hip, tail base).
   criterion: Judged on the dandiset's CalMS21 file. Reproduced when it holds 14 keypoint series
     named for these seven parts on the resident and the intruder, in pixels, sampled at 30 Hz,
     with every coordinate within 0 to 1024 (x) and 0 to 570 (y), and a confidence value for each
@@ -45,6 +51,9 @@ claims:
   statement: Mouse 0, the resident, is the black C57Bl/6J mouse, and mouse 1, the intruder, is
     the white BALB/c mouse.
   source: Appendix C; Appendix B (Collection Process); Appendix D.1
+  quote: In this assay, a black (C57Bl/6J) male "resident" mouse is filmed in its home cage, and a
+    white (BALB/c) male or female "intruder" mouse is manually introduced to the cage ... mouse 0 is
+    the resident and mouse 1 is the intruder
   criterion: On the dandiset's video and pose. Every 30th frame, the mean grey level of the video
     in a patch of 12 x 12 pixels centred on each mouse's body centre (the mean of its neck and two
     hip keypoints), using frames where the two body centres are at least 60 pixels apart.
@@ -54,6 +63,9 @@ claims:
   statement: Task 1 frames are annotated by one annotator (annotator id 0) with exactly one label
     per frame from the vocabulary attack 0, investigation 1, mount 2 and other 3.
   source: Section 3; Appendix C (metadata and vocab)
+  quote: "In Tasks 1 and 2, each frame is assigned one label ... In Task 1, GROUPNAME is
+    annotator_id-0 ... and there is only one GROUP in the file. ... For example, in Task 1 vocab is
+    attack: 0, investigation: 1, mount: 2, other: 3."
   criterion: On the dandiset's CalMS21 file. Reproduced when its catalogue of behaviors holds
     these four names with these integer codes, the annotator is given as 0, and the bouts give
     exactly one label to every frame of the session (no frame uncovered, none covered twice).
@@ -61,7 +73,9 @@ claims:
     does not. Not reproduced when the names or codes differ.
 - id: task1-video
   statement: The source videos of Task 1 are released, recorded at 30 Hz and 1024 x 570 pixels.
-  source: Section 3.1; Appendix D.1
+  source: Section 3.1, paragraph 3; Appendix D.1
+  quote: In addition to pose data, we also release all source videos for Task 1 ... Videos are
+    acquired at 30 fps and 1024x570 pixel resolution
   criterion: On the dandiset's video of mouse071. Reproduced when it is 1024 x 570 pixels at 30
     frames per second and has as many frames as the pose. Partially reproduced when it is
     present but one of the three differs; not reproduced when it is absent or unreadable.
@@ -69,6 +83,9 @@ claims:
   statement: Close investigation, attack and mount are behaviors in which the resident is in
     close contact with the intruder; other frames include the animals apart.
   source: Appendix D.2 (behavior definitions)
+  quote: "Close investigation: resident (black) mouse is in close contact with the intruder (white)
+    and is actively sniffing the intruder anywhere on its body or tail. ... animals may be apart
+    from each other exploring other parts of the arena"
   criterion: On the dandiset's pose and bouts. Per frame, the distance from the resident's nose
     to the nearest intruder keypoint. Reproduced when, for each social label present in the
     session, the median distance in its frames is below the median in "other" frames, with a 95%
@@ -79,6 +96,8 @@ claims:
   statement: Errors in pose estimation are most common on frames when the two animals are in
     close contact or moving very quickly.
   source: Appendix B (Composition, errors and noise)
+  quote: some errors in pose estimation and noise in keypoint placement still occur. These are most
+    common on frames when the two animals are in close contact or moving very quickly.
   criterion: On the dandiset's pose alone, as it holds no usable confidence values. A frame is
     counted as a pose error when any of four body lengths of either mouse (nose to neck, neck to
     tail base, left to right ear, left to right hip) lies outside the session's quartiles widened
@@ -90,6 +109,7 @@ claims:
     Partially reproduced when this holds for one of the two. Thresholds of 5% and 20%, and a
     factor of 1.5, are shown as variants.
 - id: link-mouse071
+  kind: link
   statement: The dandiset's CalMS21 sequence is the CalMS21 Task 1 test sequence mouse071, with
     the same keypoints, confidence scores and frame annotations.
   source: Appendix C; CaltechDATA record 10.22002/D1.1991, file task1_classic_classification.zip
@@ -106,6 +126,8 @@ claims:
   statement: Errors in pose estimation are most common on frames when the two animals are in
     close contact or moving very quickly, as shown by the MARS confidence scores.
   source: Appendix B (Composition, errors and noise)
+  quote: some errors in pose estimation and noise in keypoint placement still occur. These are most
+    common on frames when the two animals are in close contact or moving very quickly.
   data: with_inputs
   depends_on:
   - link-mouse071
@@ -119,6 +141,8 @@ claims:
   statement: Task 1 has 70 training sequences with 507,738 frames and 19 test sequences with
     262,107 frames.
   source: Table 5; Section 3.1; Figure 4A
+  quote: There are 70 videos in the public training set ... Training and test set instances counts
+    for each task and category.
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
   expected:
@@ -143,6 +167,8 @@ claims:
     107,420, 108,325 and 92,383 frames, and 13, 6, 4, 4 and 20 test sequences with 286,810,
     150,919, 77,079, 76,174 and 364,007 frames.
   source: Table 5; Section 3.2
+  quote: we provide six 10-minute training videos for each of five annotators unseen in Task 1 ...
+    Training and test set instances counts for each task and category.
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
   expected:
@@ -173,6 +199,8 @@ claims:
     19,200, 46,847, 19,244 and 36,181 frames, and 25, 1, 13, 10, 12, 47 and 1 test sequences with
     126,468, 19,088, 156,664, 55,218, 85,836, 251,793 and 17,939 frames.
   source: Table 5; Section 3.3; Figure 4A
+  quote: This task contains annotations on seven behaviors not labeled in Tasks 1 & 2, where some
+    behaviors are very rare ... Training and test set instances counts for each task and category.
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
   expected:
@@ -209,6 +237,8 @@ claims:
   statement: In the Task 1 training set, 2.76% of frames are labelled attack, 28.9%
     investigation, 5.64% mount and 62.7% other.
   source: Table 6; Figure 4B
+  quote: The percentage of frames labeled as attack, investigation, mount, and other in the Task 1
+    training set.
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
   expected:
@@ -227,6 +257,8 @@ claims:
     25.8, 3.4 and 5.3%; annotator 3 68.9, 13.5, 9.5 and 8.1%; annotator 4 75.2, 11.6, 4.5 and
     8.7%; annotator 5 69.5, 26.4, 1.0 and 3.0%).
   source: Figure 4B
+  quote: Annot 1, 2, 3, 4, 5 are different domain experts, whose annotations for attack, mount, and
+    investigation are used in Task 2.
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
   expected:
@@ -262,6 +294,8 @@ claims:
     (groom), 19.3% (intromission), 0.90% (mount attempt), 4.74% (sniff face) and 9.29% (white
     rearing) of frames.
   source: Table 7; Figure 4B
+  quote: This task contains annotations on seven behaviors not labeled in Tasks 1 & 2, where some
+    behaviors are very rare
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
   expected:
@@ -280,7 +314,11 @@ claims:
   statement: The unlabeled set has 282 videos and about 6 million frames; the dataset holds over
     1 million annotated frames, over 70 hours of tracked poses and over 10 hours of frame-by-frame
     annotation.
-  source: Abstract; Section 3; Figure 4A; Section 5 (Discussion)
+  source: Abstract; Section 3; Figure 4A; Section 5 (Discussion), paragraphs 1 and 3
+  quote: The dataset consists of 6 million frames of unlabeled tracked poses of interacting mice, as
+    well as over 1 million frames with tracked poses ... The released data include over 70 hours of
+    tracked poses from pairs of mice, and over 10 hours of manual, frame-by-frame annotation ...
+    unlabeled trajectory data from 282 videos
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
   expected:
@@ -296,7 +334,10 @@ claims:
   statement: On Task 3, classifier performance depends on the percentage of frames in which a
     behavior is observed and on its average bout duration, with shorter bouts giving lower
     performance.
-  source: Section 4.4; Tables 7 and 10
+  source: Section 4.4, paragraph 2; Tables 7 and 10
+  quote: We found classifier performance to depend both on the percentage of frames during which a
+    behavior was observed, and on the average duration of a behavior bout, with shorter bouts having
+    lower classifier performance.
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
   criterion: Across the seven behaviors, Spearman correlations of the baseline model's F1 score
@@ -310,37 +351,47 @@ claims:
   statement: Among baseline architectures trained on Task 1, the 1D convolutional network
     performs best (F1 0.793, MAP 0.856), ahead of fully connected (0.659), LSTM (0.675) and
     self-attention (0.610) models.
-  source: Table 1; Section 4.1
+  source: Table 1; Section 4.1, paragraph 2
+  quote: Among the explored architectures, we obtained the highest performance using the 1D
+    convolutional neural network (Table 1).
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
 - id: table2-task-programming
   statement: Adding task programming features learned from the unlabeled set raises Task 1 F1
     from 0.793 to 0.829, and the challenge's top entry reaches 0.864.
-  source: Table 2 and Table 8; Section 4.2
+  source: Table 2 and Table 8; Section 4.2, paragraph 1
+  quote: We found that including task programming features improved model performance.
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
 - id: table3-task2-style-transfer
   statement: On Task 2 the fine-tuned baseline reaches an annotator-averaged F1 of 0.754, 0.774
     with task programming features and 0.809 for the top entry, and all models do better on
     annotators 1 and 2 than on 3, 4 and 5.
-  source: Table 3 and Table 9; Section 4.3 and Appendix G.2
+  source: Table 3 and Table 9; Section 4.3 and Appendix G.2, paragraph 1
+  quote: We observe that all classifiers generally performs better on annotators 1 and 2, while
+    performing worse on annotators 3, 4, and 5.
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
 - id: table4-task3-new-behaviors
   statement: On Task 3 the baseline reaches a behavior-averaged F1 of 0.338 (0.328 with task
     programming features, 0.319 for the top entry), far below Tasks 1 and 2.
-  source: Table 4 and Table 10; Section 4.4
+  source: Table 4 and Table 10; Section 4.4; Appendix G.3, paragraph 1
+  quote: Based on performance metrics, Task 3 is more difficult than the other two Tasks
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
 - id: fig7-errors-at-transitions
   statement: Many prediction errors of the baseline models fall around the boundaries between
     behaviors.
-  source: Figure 7; Section 4.2
+  source: Figure 7; Section 4.2, paragraph 1
+  quote: Many prediction errors of the baseline models were localized around behavior transition
+    boundaries (Figure 7).
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)
 - id: fig11-annotator-similarity
   statement: The annotator embedding learned by the top Task 2 entry places annotators 3 and 4
     close to each other and apart from annotators 1, 2 and 5.
-  source: Figure 11; Section 4.3 and Appendix G.2
+  source: Figure 11; Section 4.3, paragraph 2, and Appendix G.2
+  quote: Annotators 3 and 4 were found to be similar to each other, and different from annotators 1,
+    2, and 5.
   data: elsewhere
   where: CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)

@@ -164,6 +164,7 @@ def collect(executed: Path | None = None) -> dict:
             "accountable": a["provenance"]["accountable"]["name"],
             "agent": a["provenance"].get("agent"),
             "tier": tier_of(a),
+            "deprecated": squash((a.get("deprecated") or {}).get("reason")),
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
             "description": squash(entry.get("description")) if entry else None,
@@ -172,6 +173,10 @@ def collect(executed: Path | None = None) -> dict:
                 "claim": o["claim"],
                 "statement": squash(known.get(o["claim"], {}).get("statement", o["claim"])),
                 "source": known.get(o["claim"], {}).get("source"),
+                "quote": squash(known.get(o["claim"], {}).get("quote")),
+                "statistics": known.get(o["claim"], {}).get("statistics") or [],
+                "kind": known.get(o["claim"], {}).get("kind", "finding"),
+                "inferred": squash(known.get(o["claim"], {}).get("inferred")),
                 "outcome": o["outcome"],
                 "blocked_by": o.get("blocked_by"),
                 "notebook": o.get("notebook"),
@@ -243,6 +248,7 @@ def finish(data: dict) -> dict:
     data["outcome_counts"] = outcome_counts(data["attempts"])
     data["outcome_counts_with_outside_data"] = outcome_counts(data["attempts"], "with_inputs")
     data["outcome_counts_elsewhere"] = outcome_counts(data["attempts"], "elsewhere")
+    data["outcome_counts_links"] = outcome_counts(data["attempts"], "link")
     attempted = {a["dandiset"] for a in data["attempts"]}
     for t in data["targets"]:
         if t["dandiset"] in attempted:
@@ -323,16 +329,22 @@ def current_attempts(data: dict) -> dict[str, list[dict]]:
 def outcome_counts(attempts, group: str = "dandiset") -> dict:
     """Outcome totals over one attempt or a list of them, for one group of claims.
 
-    The groups are the claims that rest on the dandiset ("dandiset"), those that also use data from
-    elsewhere ("with_inputs"), and those on data the paper deposited in another archive ("elsewhere").
-    They are never added together, so that an outcome that may reflect outside data does not count as
-    a judgement of the dandiset.
+    The groups are the paper's findings that rest on the dandiset ("dandiset"), those that also use
+    data from elsewhere ("with_inputs"), those on data the paper deposited in another archive
+    ("elsewhere"), and the registry's checks that the dandiset is the paper's data ("link"), which are
+    not findings of the paper. They are never added together, so that an outcome that may reflect
+    outside data, or a link, does not count as a judgement of the paper's findings on the dandiset.
     """
     attempts = [attempts] if isinstance(attempts, dict) else attempts
+    # A deprecated attempt stays on its page but counts for nothing.
+    attempts = [a for a in attempts if not a.get("deprecated")]
     # Names for the dandiset's own codes taken from elsewhere (`with_labels`) count as the dandiset.
     groups = {"with_labels": "dandiset", None: "dandiset"}
+
+    def group_of(o):
+        return "link" if o.get("kind") == "link" else groups.get(o.get("data"), o.get("data"))
     return {k: sum(1 for a in attempts for o in a["outcomes"]
-                   if o["outcome"] == k and groups.get(o.get("data"), o.get("data")) == group) for k in OUTCOMES}
+                   if o["outcome"] == k and group_of(o) == group) for k in OUTCOMES}
 
 
 def outside_note(attempts, root: str = "") -> str:
@@ -342,7 +354,9 @@ def outside_note(attempts, root: str = "") -> str:
             ("with_inputs", "1 claim that also uses data from outside the dandiset",
              "claims that also use data from outside the dandiset", "claims using outside data"),
             ("elsewhere", "1 claim on data the paper deposited in another archive",
-             "claims on data the paper deposited in other archives", "claims on data in other archives")):
+             "claims on data the paper deposited in other archives", "claims on data in other archives"),
+            ("link", "1 check that the dandiset is the data behind the paper",
+             "checks that the dandiset is the data behind the paper", "checks of the link to the paper")):
         counts = outcome_counts(attempts, group)
         m = sum(counts.values())
         if not m:
@@ -374,7 +388,7 @@ def rows(data: dict) -> dict[str, list]:
     dandisets, claims, findings = [], [], []
     for t in data["targets"]:
         atts = current.get(t["dandiset"])
-        outcomes = [o for a in atts or [] for o in a["outcomes"]]
+        outcomes = [o for a in atts or [] if not a.get("deprecated") for o in a["outcomes"]]
         dandisets.append({
             "id": t["dandiset"], "name": t["name"], "paper": t["paper"], "paper_title": t["paper_title"],
             "technique": t["technique"], "species": t["species"], "size_gb": t["size_gb"], "files": t["files"],
@@ -387,12 +401,15 @@ def rows(data: dict) -> dict[str, list]:
             "blocked_by": sorted({o["blocked_by"] for o in outcomes if o["blocked_by"]}),
             "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["dandiset"])),
             "page": f'dandisets/{t["dandiset"]}/' if atts else None,
-            "findings": sum(len(a["findings"]) for a in atts) if atts else None,
-            "found": sorted({f["kind"] for a in atts or [] for f in a["findings"]}),
+            "findings": sum(len(a["findings"]) for a in atts if not a.get("deprecated")) if atts else None,
+            "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]}),
+            "deprecated": any(a.get("deprecated") for a in atts or []),
             "converted": "catalystneuro" if t["catalystneuro"] else "other",
         })
     for atts in current.values():
         for a in atts:
+            if a.get("deprecated"):
+                continue
             t = by_id.get(a["dandiset"], {})
             common = {"dandiset": a["dandiset"], "page": f'dandisets/{a["dandiset"]}/', "tier": a["tier"],
                       "technique": t.get("technique", []), "species": t.get("species", []),
@@ -401,6 +418,7 @@ def rows(data: dict) -> dict[str, list]:
             for o in a["outcomes"]:
                 nb = notebook_of(a, o.get("notebook"))
                 claims.append({**common, "claim": o["claim"], "statement": o["statement"], "source": o["source"],
+                               "quote": o.get("quote"), "statistics": o.get("statistics"),
                                "outcome": o["outcome"], "blocked_by": o["blocked_by"], "notes": o["notes"],
                                "deviations": o["deviations"], "disagreed": o["disagreed"],
                                "verifier": "disagreed" if o["disagreed"] else None,
@@ -450,11 +468,45 @@ def legend(counts: dict, compact: bool = False, href=None) -> str:
     return f'<ul class="legend{" compact" if compact else ""}">{"".join(items)}</ul>'
 
 
+def deprecated_badge() -> str:
+    return '<span class="tier pending">Deprecated</span>'
+
+
 def tier_badge(tier: str, href: str | None = None) -> str:
     verified = tier != "runs"
     text = ("✓ " if verified else "") + (TIERS[tier] if verified else "Not yet verified")
     css = "tier" + ("" if verified else " pending")
     return f'<a class="{css}" href="{e(href)}">{e(text)}</a>' if href else f'<span class="{css}">{e(text)}</span>'
+
+
+SUPERSCRIPT = str.maketrans("-0123456789", "⁻⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+
+def p_text(p: float) -> str:
+    """0.002 stays as it is; 2.4e-05 becomes 2.4 × 10⁻⁵."""
+    if p == 0 or p >= 0.001:
+        return f"{p:g}"
+    mantissa, exponent = f"{p:.1e}".split("e")
+    mantissa, exponent = mantissa.removesuffix(".0"), str(int(exponent)).translate(SUPERSCRIPT)
+    return f"10{exponent}" if mantissa == "1" else f"{mantissa} × 10{exponent}"
+
+
+def statistic_text(s: dict) -> str:
+    """One reported test or interval in a line, e.g. 'Onsets: Wilcoxon rank-sum, p = 2.4 × 10⁻⁵ (n = 385 units)'."""
+    parts = [x for x in (s.get("test"), s.get("statistic")) if x]
+    if "p" in s:
+        parts.append(f'p {s.get("p_relation", "=")} {p_text(s["p"])}')
+    if s.get("corrected"):
+        parts.append(f'{s["corrected"]}-corrected')
+    if "ci" in s:
+        ci = s["ci"]
+        level = f'{ci["level"] * 100:g}% CI' if "level" in ci else "CI"
+        unit = f' {ci["unit"]}' if ci.get("unit") else ""
+        parts.append(f'{level} {ci["low"]:g} to {ci["high"]:g}{unit}')
+    text = ", ".join(parts)
+    if s.get("about"):
+        text = f'{s["about"]}: {text}'
+    return text + (f' (n = {s["n"]})' if s.get("n") else "")
 
 
 def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
@@ -463,7 +515,9 @@ def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
         if o["blocked_by"] else ""
     source = f'<span class="source">{e(o["source"])}</span>' if o["source"] else ""
     tags = '<span class="tag">verifier disagreed at first</span>' if o["disagreed"] else ""
-    if o.get("data") == "with_inputs":
+    if o.get("kind") == "link":
+        tags += '<span class="tag">checks the link to the paper’s data</span>'
+    elif o.get("data") == "with_inputs":
         tags += '<span class="tag">uses data from outside the dandiset</span>'
     elif o.get("data") == "elsewhere":
         tags += f'<span class="tag">data in {e(o.get("where") or "another archive")}</span>'
@@ -482,6 +536,14 @@ def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
                  f'<ul class="deviations">{items}</ul>')
     if not body:
         body = '<p class="notes muted">No explanation recorded.</p>'
+    if o.get("statistics"):
+        items = "".join(f"<li>{e(statistic_text(s))}</li>" for s in o["statistics"])
+        body = f'<p class="deviations-title">What the paper reports</p><ul class="stats">{items}</ul>' + body
+    if o.get("inferred"):
+        body = f'<p class="inferred"><strong>Not quoted:</strong> {e(o["inferred"])}</p>' + body
+    if o.get("quote"):
+        cite = f'<cite>{e(o["source"])}</cite>' if o["source"] else ""
+        body = f'<blockquote class="quote"><p>{e(o["quote"])}</p>{cite}</blockquote>' + body
     # The chip is not a link here: inside the summary a click should open the claim.
     return (f'<li class="claim" id="claim-{e(o["claim"])}" data-outcome="{e(o["outcome"])}"><details><summary>'
             f'<div class="claim-head">{chip(o["outcome"])}{source}{blocked}{tags}</div>'
@@ -625,7 +687,8 @@ def attempt_row(a: dict, root: str) -> str:
     return (f'<div class="row drow"><div class="id"><a href="{page}">{e(a["dandiset"])}</a></div>'
             f'<div><p class="title"><a href="{page}">{e(a["entry_title"] or a["id"])}</a></p>'
             f'<div class="meta">{bar(counts, "Outcomes", "bar mini")}{legend(counts, compact=True)}</div></div>'
-            f'<div class="right">{tier_badge(a["tier"])}<span class="small muted">{e(a["date"])}</span></div></div>')
+            f'<div class="right">{deprecated_badge() if a.get("deprecated") else tier_badge(a["tier"])}'
+            f'<span class="small muted">{e(a["date"])}</span></div></div>')
 
 
 PROGRESS_METRICS = {
@@ -667,7 +730,7 @@ def progress_data(data: dict) -> dict:
         for day in first_paper.values():
             new[day]["papers"] += 1
         for a in current:
-            if not keep(a["dandiset"]):
+            if not keep(a["dandiset"]) or a.get("deprecated"):
                 continue
             counts = outcome_counts(a)
             for k, n in counts.items():
@@ -1058,6 +1121,9 @@ def page_dandiset(data: dict, dandiset: str) -> str:
         paper = a.get("paper_title") or a["paper"]
         claims_html += (f'<p class="sub small" style="margin:14px 0 0">From the paper '
                         f'<a href="https://doi.org/{e(a["paper"])}">{e(paper)}</a></p>')
+        if a.get("deprecated"):
+            claims_html += (f'<p class="deprecated"><strong>Deprecated:</strong> {e(a["deprecated"])} '
+                            f'Its outcomes are shown but not counted.</p>')
         # One group per notebook, in the entry's order, then the claims no notebook tests.
         rank = {**order, "blocked": 3}
         for nb in a["notebooks"]:
@@ -1260,7 +1326,8 @@ def build(data: dict, output: Path) -> None:
             "caution": CAUTION + " It may be a failure of the attempt.",
             "outcome_counts": outcome_counts(attempts),
             "outcome_counts_with_outside_data": outcome_counts(attempts, "with_inputs"),
-            "outcome_counts_elsewhere": outcome_counts(attempts, "elsewhere"), "attempts": attempts,
+            "outcome_counts_elsewhere": outcome_counts(attempts, "elsewhere"),
+            "outcome_counts_links": outcome_counts(attempts, "link"), "attempts": attempts,
             "entries": entries_for(data, dandiset),
         }, indent=1) + "\n")
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")

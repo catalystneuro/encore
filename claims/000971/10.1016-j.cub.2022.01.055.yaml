@@ -37,6 +37,7 @@
 #   late sessions are those after it.
 # - Where the paper states a mixed-effects analysis, a linear mixed model with a random intercept per
 #   mouse is used, and effects are tested by likelihood ratio. Tukey tests use statsmodels.
+# Quotes and statistics added 2026-10-19 from the full text (PMC8930615, NCBI PMC JATS XML).
 schema_version: 1
 dandiset: "000971"
 paper: doi:10.1016/j.cub.2022.01.055
@@ -45,7 +46,28 @@ claims:
   statement: Mice trained on RI60 accept more shocks in the shock probes than mice trained on RR20
     (main effect of schedule, F1,43 = 6.37, p < 0.05; schedule by time interaction, F1,43 = 4.54,
     p < 0.05), and RI60 mice accept more shocks on the late probe than on the early one (p < 0.01).
-  source: Results, first section; Figure 1D
+  source: Results, A random interval schedule of reinforcement promotes punishment-resistant
+    reward-seeking, paragraph 2; Figure 1D
+  quote: We observed a significant main effect of schedule (RI60 vs RR20) on the number of shocks
+    mice were willing to receive on the shock probes ... after extended RI60 training, mice
+    increased the number of shocks they were willing to receive
+  statistics:
+  - about: main effect of schedule
+    test: two-way ANOVA
+    statistic: F1,43 = 6.37
+    p: 0.05
+    p_relation: "<"
+    n: 36 RI60 and 9 RR20 mice
+  - about: interaction of schedule and training time
+    test: two-way ANOVA
+    statistic: F1,43 = 4.54
+    p: 0.05
+    p_relation: "<"
+  - about: RI60 late against early probe
+    test: Bonferroni
+    p: 0.01
+    p_relation: "<"
+    corrected: Bonferroni
   criterion: Mice of the fiber photometry experiment with both probes. A two-way mixed ANOVA
     (schedule between mice, probe within) on shock counts. Reproduced when the schedule main effect
     and the interaction both have p < 0.05 with RI60 higher, and a paired t-test of late against early
@@ -54,21 +76,34 @@ claims:
 - id: fig1e-omission-ri60-longer
   statement: RI60-trained mice take longer to complete the omission probe than RR20-trained mice
     (unpaired t-test, p < 0.05; n = 20 and 7).
-  source: Results, first section; Figure 1E
+  source: Results, A random interval schedule of reinforcement promotes punishment-resistant
+    reward-seeking, paragraph 3; Figure 1E
+  quote: RI60-trained mice took longer to complete the omission probe than RR20-trained mice
+  statistics:
+  - test: unpaired t-test
+    p: 0.05
+    p_relation: "<"
+    n: 20 RI60 and 7 RR20 mice
   criterion: Omission completion time per mouse (the 50th reward, or 60 min). Reproduced when the
     RI60 mean exceeds the RR20 mean with an unpaired t-test p < 0.05; partially when the direction
     holds with p >= 0.05; not reproduced when RR20 is longer.
 - id: fig1f-omission-shock-no-correlation
   statement: Among RI60 mice, shocks received on the late probe and omission completion time are not
     significantly correlated (r = 0.42, ns).
-  source: Results, first section; Figure 1F
+  source: Results, A random interval schedule of reinforcement promotes punishment-resistant
+    reward-seeking, paragraph 5; Figure 1F
+  quote: We found that these two measures were not significantly correlated
   criterion: Absence claim. Pearson correlation over RI60 mice with both measures. Reproduced when
     p >= 0.05, not reproduced when p < 0.05; r is reported either way.
 - id: fig2a-phenotype-rule
   statement: RI60 mice are split by their shock probe counts into 9 punishment resistant (PR), 9
     delayed punishment resistant (DPR) and 18 punishment sensitive (PS) mice, by the rule in the
     Methods (DPR when the count rises by more than 85%; otherwise PR when the early count exceeds 13).
-  source: Figure 2A; STAR Methods, Behavioral Analysis
+  source: Figure 2A; STAR Methods, Behavioral Analysis, paragraph 3
+  quote: Mice in the top quartile of changers (who increased the number of shocks received by
+    greater than 85%) were classified as delayed punishment resistant (DPR; n=9) ... with mice
+    receiving more than 13 shocks on the first probe classified as punishment resistant (PR; n=9)
+    and those earning fewer as punishment sensitive
   expected:
   - quantity: PR mice
     value: 9
@@ -86,7 +121,18 @@ claims:
 - id: fig2b-only-dpr-increase
   statement: There is an interaction of phenotype and probe on shocks received (p < 0.0001), and only
     DPR mice receive significantly more shocks on the late probe than the early one.
-  source: Results, second section; Figure 2B
+  source: Results, Three punishment-related phenotypes emerge with extended RI60 training,
+    paragraph 1; Figure 2B
+  quote: There was a significant interaction of phenotype and training time ... only DPR mice showed
+    a significant increase in shocks received across the probes
+  statistics:
+  - about: interaction of phenotype and training time
+    statistic: F3, 40 = 24.18
+    p: 0.0001
+    p_relation: "<"
+  - about: DPR increase across the probes
+    p: 0.0001
+    p_relation: "<"
   criterion: RI60 mice with both probes, stored labels. Two-way mixed ANOVA (phenotype between, probe
     within). Reproduced when the interaction has p < 0.05, the DPR paired t-test late against early
     has Bonferroni-corrected (x3) p < 0.05, and neither PR nor PS does. Partially reproduced when the
@@ -94,7 +140,14 @@ claims:
 - id: fig2c-nosepoke-rate
   statement: During RI60 training PR and DPR mice nosepoke at higher rates than PS mice (main effect
     of phenotype, p < 0.0001).
-  source: Results, second section; Figure 2C
+  source: Results, Three punishment-related phenotypes emerge with extended RI60 training,
+    paragraph 3; Figure 2C
+  quote: PR and DPR mice had higher rates of nosepoking than PS mice
+  statistics:
+  - test: mixed-effects analysis, main effect of phenotype
+    statistic: F2,33 = 18.59
+    p: 0.0001
+    p_relation: "<"
   criterion: Per mouse, the mean over RI60 training sessions of active nosepokes per minute. A
     one-way ANOVA across phenotypes with Tukey's test. Reproduced when the ANOVA has p < 0.05 and both
     PR > PS and DPR > PS have Tukey p < 0.05. Partially reproduced when only one of the two pairs
@@ -102,7 +155,21 @@ claims:
 - id: fig2d-omission-pr-vs-ps
   statement: PR mice take longer than PS mice to complete the omission probe (PR 51.50 +- 17, PS
     27.92 +- 13.65; one-way ANOVA F2,18 = 4.36, p < 0.05; Tukey PR vs PS p < 0.05).
-  source: Results, second section; Figure 2D
+  source: Results, Three punishment-related phenotypes emerge with extended RI60 training,
+    paragraph 3; Figure 2D
+  quote: PR mice took significantly longer than PS mice to complete the omission probe
+  statistics:
+  - about: phenotype
+    test: one-way ANOVA
+    statistic: F2,18 = 4.36
+    p: 0.05
+    p_relation: "<"
+    n: 4 PR, 5 DPR and 11 PS mice
+  - about: PR against PS
+    test: Tukey's multiple comparison
+    p: 0.05
+    p_relation: "<"
+    corrected: Tukey
   expected:
   - quantity: PR mean omission completion time
     value: 51.5
@@ -119,7 +186,25 @@ claims:
 - id: fig2k-ps-wait-longer
   statement: After a reward PS mice wait longer before nosepoking again (38 +- 15 s) than PR (21 +- 5
     s) and DPR (22 +- 4 s) mice (one-way ANOVA p < 0.01; Tukey p < 0.01 for each).
-  source: Results, second section; Figure 2K
+  source: Results, Three punishment-related phenotypes emerge with extended RI60 training,
+    paragraph 4; Figure 2K
+  quote: PS mice waited an average of 38 ± 15 seconds, significantly longer than the other groups
+  statistics:
+  - about: phenotype
+    test: one-way ANOVA
+    statistic: F2,33 = 8.57
+    p: 0.01
+    p_relation: "<"
+  - about: PS against PR
+    test: Tukey's multiple comparison
+    p: 0.01
+    p_relation: "<"
+    corrected: Tukey
+  - about: PS against DPR
+    test: Tukey's multiple comparison
+    p: 0.01
+    p_relation: "<"
+    corrected: Tukey
   expected:
   - quantity: PS mean time from rewarded port entry to next nosepoke
     value: 38
@@ -141,7 +226,20 @@ claims:
 - id: fig2l-extra-nosepokes
   statement: PS mice make fewer extra nosepokes between a rewarded nosepoke and the rewarded port
     entry than PR mice (PS 1.28 +- 0.85, PR 3.23 +- 1.65, DPR 2.1 +- 2.63; Tukey PS vs PR p < 0.05).
-  source: Results, second section; Figure 2L
+  source: Results, Three punishment-related phenotypes emerge with extended RI60 training,
+    paragraph 4; Figure 2L
+  quote: PS mice made significantly fewer extra nosepokes than PR mice
+  statistics:
+  - about: phenotype
+    test: one-way ANOVA
+    statistic: F2,33 = 4.24
+    p: 0.05
+    p_relation: "<"
+  - about: PS against PR
+    test: Tukey's multiple comparison
+    p: 0.05
+    p_relation: "<"
+    corrected: Tukey
   expected:
   - quantity: PS mean extra nosepokes per reward
     value: 1.28
@@ -159,7 +257,20 @@ claims:
 - id: fig2m-inter-reward-interval
   statement: PS mice have longer inter-reward intervals (79.77 +- 26.54 s) than PR (71.2 +- 32.3 s)
     and DPR (69.58 +- 35.18 s) mice (Kolmogorov-Smirnov, p < 0.0001 for each).
-  source: Results, second section; Figure 2M
+  source: Results, Three punishment-related phenotypes emerge with extended RI60 training,
+    paragraph 5; Figure 2M
+  quote: PS mice pay for their efficiency with longer inter-reward intervals (Fig. 2M). The average
+    inter-reward interval for PS mice is 79.77 ± 26.54s compared to 71.2 ± 32.3s for PR and 69.58 ±
+    35.18s for DPR
+  statistics:
+  - about: PR against PS
+    test: K-S Test
+    p: 0.0001
+    p_relation: "<"
+  - about: DPR against PS
+    test: K-S Test
+    p: 0.0001
+    p_relation: "<"
   expected:
   - quantity: PS mean inter-reward interval
     value: 79.77
@@ -180,7 +291,21 @@ claims:
 - id: fig2n-rewards-per-session
   statement: Averaged over RI60 training, PS mice earn fewer rewards per session (39.91 +- 7.39) than
     DPR mice (46.56 +- 4.49; PR 45.33 +- 4.33); one-way ANOVA p < 0.05, Tukey PS vs DPR p < 0.05.
-  source: Results, second section; Figure 2N
+  source: Results, Three punishment-related phenotypes emerge with extended RI60 training,
+    paragraph 5; Figure 2N
+  quote: when the number of rewards per session was averaged over all days, PS mice received
+    significantly fewer rewards
+  statistics:
+  - about: phenotype
+    test: one-way ANOVA
+    statistic: F2,33 = 4.45
+    p: 0.05
+    p_relation: "<"
+  - about: PS against DPR
+    test: Tukey's multiple comparison
+    p: 0.05
+    p_relation: "<"
+    corrected: Tukey
   expected:
   - quantity: PS mean rewards per RI60 session
     value: 39.91
@@ -197,7 +322,10 @@ claims:
 - id: fig2o-escalation-timing
   statement: PR mice escalate their nosepoking as soon as they enter RI30, while DPR mice escalate
     later, during RI60.
-  source: Results, second section; Figure 2O
+  source: Results, Three punishment-related phenotypes emerge with extended RI60 training,
+    paragraph 6; Figure 2O
+  quote: PR mice escalate their nosepoking as soon as they enter RI30 (Fig. 2O). DPR mice escalate
+    their nosepoking later in RI60
   criterion: Per mouse, the mean active nosepokes per minute over its RI30 sessions, and the slope
     of active nosepokes per minute against RI60 day (training sessions up to the late probe). (i) PR
     exceed both DPR and PS in RI30 rate (Mann-Whitney, p < 0.05 for each); (ii) the median RI60 slope
@@ -205,25 +333,56 @@ claims:
 - id: figs1i-ri60-more-rewards
   statement: RI60-trained mice earn more rewards per training session than RR20-trained mice
     (unpaired t-test, p < 0.0001).
-  source: Results, first section; Figure S1I (legend not available)
+  source: Results, A random interval schedule of reinforcement promotes punishment-resistant
+    reward-seeking, paragraph 4; Figure S1I (legend not available)
+  quote: RI60-trained mice ... earned significantly more rewards per training session than
+    RR20-trained mice
+  statistics:
+  - test: unpaired t-test
+    p: 0.0001
+    p_relation: "<"
   criterion: Per mouse the mean rewards per training session (RI60 or RR20, up to the late probe).
     Reproduced when RI60 is higher with an unpaired t-test p < 0.05; notes say whether p < 0.0001.
 - id: figs2b-males-more-shocks
   statement: Male mice accept more shocks than female mice in the shock probes (main effect of sex,
     F1,35 = 26.19, p < 0.0001).
-  source: Results, second section; Figure S2B (legend not available)
+  source: Results, Three punishment-related phenotypes emerge with extended RI60 training,
+    paragraph 2; Figure S2B (legend not available)
+  quote: Male mice tolerated more shocks than females
+  statistics:
+  - test: two-way ANOVA, main effect of sex
+    statistic: F1,35 = 26.19
+    p: 0.0001
+    p_relation: "<"
   criterion: RI60 fiber photometry mice with both probes. Two-way mixed ANOVA (sex between, probe
     within). Reproduced when the sex main effect has p < 0.05 with males higher; notes say whether
     p < 0.0001.
 - id: fig3e-ri30-dms-peaks
   statement: Peaks in DMS dopamine axon activity at rewarded nosepokes emerge during RI30 in PR mice,
     and more slowly across RI60 in DPR mice.
-  source: Results, third section; Figure 3E
+  source: Results, Dopamine axon signals in the DMS predict punishment-resistant reward-seeking,
+    paragraph 2; Figure 3E
+  quote: Peaks in response to rewarded nosepokes emerged during RI30 in PR mice, whereas peaks
+    emerged more slowly across RI60 training in DPR mice
   criterion: Needs photometry recorded during RI30.
 - id: fig3f-dms-score-phenotype
   statement: The DMS rewarded-unrewarded peak score differs by phenotype (F2,33 = 8.16, p < 0.01) and
     changes across training (p < 0.001).
-  source: Results, third section; Figure 3F
+  source: Results, Dopamine axon signals in the DMS predict punishment-resistant reward-seeking,
+    paragraph 2; Figure 3F
+  quote: The rewarded-unrewarded peak score changed across training ... and was significantly
+    different by phenotype
+  statistics:
+  - about: phenotype
+    test: mixed-effects analysis
+    statistic: F2, 33 = 8.16
+    p: 0.01
+    p_relation: "<"
+  - about: training
+    test: mixed-effects analysis
+    statistic: F1.61,29.8 = 13.83
+    p: 0.001
+    p_relation: "<"
   criterion: Early and late RI60 sessions only (no RI30 photometry is in the dandiset). Linear mixed
     model score ~ phenotype * stage with a random intercept per mouse. Reproduced when the phenotype
     main effect (likelihood ratio, model without phenotype terms) has p < 0.05 and the PR and DPR
@@ -232,7 +391,14 @@ claims:
 - id: fig3g-dms-score-shock-correlation
   statement: The DMS rewarded-unrewarded peak score correlates with the shocks a mouse receives in
     the shock probes (r = 0.53, p < 0.0001).
-  source: Results, third section; Figure 3G
+  source: Results, Dopamine axon signals in the DMS predict punishment-resistant reward-seeking,
+    paragraph 3; Figure 3G
+  quote: the shocks received were significantly correlated with DMS rewarded-unrewarded peak score
+    on a mouse-by-mouse basis
+  statistics:
+  - statistic: r = 0.53
+    p: 0.0001
+    p_relation: "<"
   expected:
     quantity: Pearson r between DMS peak score and shocks received
     value: 0.53
@@ -244,31 +410,45 @@ claims:
 - id: fig3h-dms-score-omission-no-correlation
   statement: The DMS rewarded-unrewarded peak score does not correlate with omission completion time
     (r = 0.1, ns).
-  source: Results, third section; Figure 3H
+  source: Results, Dopamine axon signals in the DMS predict punishment-resistant reward-seeking,
+    paragraph 3; Figure 3H
+  quote: Performance on the omission probe was not correlated with this score
   criterion: Absence claim. Pearson correlation of each mouse's late RI60 score with its omission
     completion time. Reproduced when p >= 0.05, not reproduced when p < 0.05. Pooled early and late
     scores are a variant.
 - id: fig4f-dls-score-no-phenotype
   statement: The DLS rewarded-unrewarded peak score has no significant effect of phenotype.
-  source: Results, fourth section; Figure 4F
+  source: Results, Dopamine signals in the DLS do not predict punishment-resistant reward-seeking,
+    paragraph 1; Figure 4F
+  quote: There was a significant effect of training stage ... but no significant effect of group
   criterion: Absence claim. The model of fig3f-dms-score-phenotype on DLS scores. Reproduced when the
     phenotype effect has p >= 0.05, not reproduced when p < 0.05.
 - id: fig4g-dls-score-shock-no-correlation
   statement: The DLS rewarded-unrewarded peak score does not correlate with shocks received (r =
     -0.01, ns).
-  source: Results, fourth section; Figure 4G
+  source: Results, Dopamine signals in the DLS do not predict punishment-resistant reward-seeking,
+    paragraph 1; Figure 4G
+  quote: We also looked at whether these signals correlated with shock or omission probe performance
+    on an individual basis and found no correlations
   criterion: Absence claim. Pearson correlation on the pooled pairs of reading (a) of
     fig3g-dms-score-shock-correlation. Reproduced when p >= 0.05.
 - id: fig4h-dls-score-omission-no-correlation
   statement: The DLS rewarded-unrewarded peak score does not correlate with omission completion time
     (r = -0.21, ns).
-  source: Results, fourth section; Figure 4H
+  source: Results, Dopamine signals in the DLS do not predict punishment-resistant reward-seeking,
+    paragraph 1; Figure 4H
+  quote: We also looked at whether these signals correlated with shock or omission probe performance
+    on an individual basis and found no correlations
   criterion: Absence claim, as fig3h-dms-score-omission-no-correlation on DLS scores. Reproduced when
     p >= 0.05.
 - id: fig5f-dms-chr2-escalation
   statement: Mice receiving DMS dopamine terminal stimulation on rewarded nosepokes (ChR2) escalate
     their nosepoking faster than EYFP and ChR2 Scrambled controls during FR1 and RI30.
-  source: Results, fifth section; Figure 5F
+  source: Results, Optogenetic excitation of DMS dopamine terminals at the time of a rewarded
+    nosepoke accelerates the development of punishment-resistant reward-seeking, paragraph 3;
+    Figure 5F
+  quote: ChR2 mice escalated their nosepoking much faster than the control groups during FR1 and
+    RI30
   criterion: Per stage (FR1, RI30), an ordinary least squares fit of active nosepokes per minute on
     the session's index within the stage, with a group by index interaction, over the sessions of all
     mice of the three DMS excitatory groups. Reproduced when the ChR2 slope exceeds both control slopes
@@ -278,21 +458,44 @@ claims:
   statement: On the first shock probe ChR2 mice accept more shocks than EYFP mice (interaction of
     time and manipulation, F2,35 = 3.65, p < 0.05; Tukey p < 0.05); the difference fades by the
     second probe.
-  source: Results, fifth section; Figure 5G
+  source: Results, Optogenetic excitation of DMS dopamine terminals at the time of a rewarded
+    nosepoke accelerates the development of punishment-resistant reward-seeking, paragraph 3;
+    Figure 5G
+  quote: On the first shock probe, ChR2 mice were significantly more resistant to punishment than
+    EYFP mice ... This difference faded by the second probe
+  statistics:
+  - about: interaction of time and manipulation
+    test: two-way ANOVA
+    statistic: F2,35 = 3.65
+    p: 0.05
+    p_relation: "<"
+  - about: ChR2 against EYFP on the first probe
+    test: Tukey's multiple comparison
+    p: 0.05
+    p_relation: "<"
+    corrected: Tukey
   criterion: DMS excitatory mice with both probes. Two-way mixed ANOVA (group between, probe within).
     Reproduced when the interaction has p < 0.05 and Tukey ChR2 vs EYFP on the first probe has p <
     0.05 with ChR2 higher. Partially reproduced when only one of the two holds.
 - id: fig5h-dms-chr2-mostly-pr
   statement: ChR2 mice are very likely to be classified PR, while EYFP and ChR2 Scrambled mice are
     distributed across phenotypes as expected.
-  source: Results, fifth section; Figure 5H
+  source: Results, Optogenetic excitation of DMS dopamine terminals at the time of a rewarded
+    nosepoke accelerates the development of punishment-resistant reward-seeking, paragraph 3;
+    Figure 5H
+  quote: ChR2 mice were extremely likely to be categorized as PR, whereas EYFP and ChR2 Scrambled
+    mice were distributed as expected across groups
   criterion: Phenotypes by the Methods rule. Reproduced when more than half of ChR2 mice are PR, the
     PR fraction is higher in ChR2 than in EYFP and in Scrambled, and a Fisher exact test of PR against
     not PR, ChR2 against both controls pooled, has p < 0.05. Partially reproduced when the fractions
     are ordered so but the test has p >= 0.05.
 - id: figs5f-chr2-pr-by-sex
   statement: Under DMS ChR2 stimulation 100% of male mice and about 71% of female mice are PR.
-  source: Results, fifth section; Figure S5F (legend not available)
+  source: Results, Optogenetic excitation of DMS dopamine terminals at the time of a rewarded
+    nosepoke accelerates the development of punishment-resistant reward-seeking, paragraph 3;
+    Figure S5F (legend not available)
+  quote: Notably, under ChR2 stimulation, 100% of male mice were PR mice (Fig. S5F). A large
+    majority of female mice (~71%) were also PR
   expected:
   - quantity: Percent of male ChR2 mice classified PR
     value: 100
@@ -306,13 +509,21 @@ claims:
     reproduced when one is.
 - id: fig5i-dms-stim-no-omission-effect
   statement: DMS dopamine terminal stimulation does not change omission probe performance.
-  source: Results, fifth section; Figure 5I
+  source: Results, Optogenetic excitation of DMS dopamine terminals at the time of a rewarded
+    nosepoke accelerates the development of punishment-resistant reward-seeking, paragraph 3;
+    Figure 5I
+  quote: We also looked to see whether DMS dopamine terminal stimulation influenced performance on
+    the omission probe. It did not
   criterion: Absence claim. One-way ANOVA of omission completion time across the three DMS excitatory
     groups. Reproduced when p >= 0.05.
 - id: fig6-nphr-learning-dropout
   statement: DMS dopamine terminal inhibition impairs initial learning; 25% of NpHR and 22% of NpHR
     Scrambled mice in group 1 failed FR1, and 29% of NpHR mice in group 2 failed RI30, and were dropped.
-  source: Results, sixth section; Figure 6F
+  source: Results, Optogenetic inhibition of dopamine terminals in DMS delays the development of
+    punishment-resistant reward-seeking, paragraph 2; Figure 6F
+  quote: 25% of NpHR mice and 22% of NpHR Scrambled mice were dropped from the study after >14 days
+    (mean+2SD) of unsuccessful FR1 training ... In this case, 29% of NpHR mice were dropped from the
+    study because they could not learn RI30
   criterion: The dandiset marks mice that did not learn in its notes. Reproduced when the marked mice
     (or mice without any RI60 session) number 4 NpHR (2 of 8 and 2 of 7), 2 NpHR Scrambled and 0
     EYFP. Partially reproduced when the marked mice are only NpHR or Scrambled but the counts differ.
@@ -321,46 +532,76 @@ claims:
 - id: fig6g-nphr-fewer-shocks-late
   statement: DMS dopamine terminal inhibition on rewarded nosepokes delays punishment resistance; NpHR
     mice accept fewer shocks than EYFP mice on the second probe (Tukey p < 0.01).
-  source: Results, sixth section; Figure 6G
+  source: Results, Optogenetic inhibition of dopamine terminals in DMS delays the development of
+    punishment-resistant reward-seeking, paragraph 3; Figure 6G
+  quote: NpHR inhibition of DMS dopamine terminals during RI60 training delayed the development of
+    punishment-resistant reward-seeking, with a significant effect on the second shock probe
+  statistics:
+  - test: Tukey's multiple comparisons
+    p: 0.01
+    p_relation: "<"
+    corrected: Tukey
   criterion: DMS inhibitory mice with both probes. Tukey's test on second probe counts across the three
     groups. Reproduced when NpHR < EYFP with p < 0.05 (notes say whether p < 0.01). Partially
     reproduced when NpHR < EYFP with p >= 0.05. A two-way mixed ANOVA is shown as a variant.
 - id: fig6h-nphr-more-ps
   statement: The NpHR group has more PS mice, and the NpHR Scrambled group more PR mice, than the
     EYFP group.
-  source: Results, sixth section; Figure 6H
+  source: Results, Optogenetic inhibition of dopamine terminals in DMS delays the development of
+    punishment-resistant reward-seeking, paragraph 3; Figure 6H
+  quote: the NpHR group had an increased incidence of PS mice, while the NpHR Scrambled group had an
+    increased incidence of PR mice
   criterion: Phenotypes by the Methods rule. Reproduced when the PS fraction of NpHR exceeds that of
     EYFP and the PR fraction of Scrambled exceeds that of EYFP. Partially reproduced when one holds.
     A Fisher exact test of each is reported.
 - id: fig6i-nphr-no-omission-effect
   statement: DMS dopamine terminal inhibition does not change omission completion time.
-  source: Results, sixth section; Figure 6I
+  source: Results, Optogenetic inhibition of dopamine terminals in DMS delays the development of
+    punishment-resistant reward-seeking, paragraph 3; Figure 6I
+  quote: No significant differences in omission time were observed
   criterion: Absence claim. One-way ANOVA across the three DMS inhibitory groups. Reproduced when
     p >= 0.05.
 - id: fig7f-dls-escalation-similar
   statement: Mice receiving DLS dopamine terminal stimulation (ChR2, EYFP, ChR2 Scrambled) escalate
     their nosepoking at the same rates.
-  source: Results, seventh section; Figure 7F
+  source: Results, Optogenetic excitation of dopamine terminals in DLS at the time of a rewarded
+    nosepoke does not influence instrumental learning or behavioral flexibility, paragraph 2;
+    Figure 7F
+  quote: All groups of mice (ChR2, EYFP, and ChR2 Scrambled) behaved similarly, escalating their
+    nosepoking at the same rates
   criterion: Absence claim. The fit of fig5f-dms-chr2-escalation on DLS excitatory mice. Reproduced
     when no group by index interaction has p < 0.05 in FR1 or RI30. No test is given in the paper.
 - id: fig7g-dls-stim-no-shock-effect
   statement: DLS dopamine terminal stimulation does not change the number of shocks received.
-  source: Results, seventh section; Figure 7G
+  source: Results, Optogenetic excitation of dopamine terminals in DLS at the time of a rewarded
+    nosepoke does not influence instrumental learning or behavioral flexibility, paragraph 2;
+    Figure 7G
+  quote: All groups of mice (ChR2, EYFP, and ChR2 Scrambled) behaved similarly ... and receiving
+    similar numbers of shocks
   criterion: Absence claim. Two-way mixed ANOVA (group between, probe within) on DLS excitatory mice
     with both probes. Reproduced when neither the group main effect nor the interaction has p < 0.05.
 - id: fig7h-dls-similar-phenotypes
   statement: DLS ChR2, EYFP and ChR2 Scrambled mice have similar distributions of PR, DPR and PS.
-  source: Results, seventh section; Figure 7H
+  source: Results, Optogenetic excitation of dopamine terminals in DLS at the time of a rewarded
+    nosepoke does not influence instrumental learning or behavioral flexibility, paragraph 2;
+    Figure 7H
+  quote: All groups had similar distributions of PR, DPR, and PS mice
   criterion: Absence claim; the paper gives no test. Chi-square test of the 3 x 3 table of group by
     phenotype (Methods rule). Reproduced when p >= 0.05.
 - id: fig7i-dls-no-omission-effect
   statement: DLS dopamine terminal stimulation does not change omission completion time.
-  source: Results, seventh section; Figure 7I
+  source: Results, Optogenetic excitation of dopamine terminals in DLS at the time of a rewarded
+    nosepoke does not influence instrumental learning or behavioral flexibility, paragraph 2;
+    Figure 7I
+  quote: No significant differences were observed in omission completion time
   criterion: Absence claim. One-way ANOVA across the three DLS groups. Reproduced when p >= 0.05.
 - id: figs3ab-dat-protein-not-reduced
   statement: Heterozygous DAT-IRES-cre mice do not have reduced DAT protein in DMS or DLS compared with
     wild-type mice.
-  source: Results, third section; Figure S3A-B (legend not available)
+  source: Results, Dopamine axon signals in the DMS predict punishment-resistant reward-seeking,
+    paragraph 1; Figure S3A-B (legend not available)
+  quote: heterozygous mice in our colony do not have a significant reduction in DAT protein levels
+    in DMS or DLS
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.11266654 (Densitometry.xlsx)
   criterion: Absence claim. The paper's test is in the unavailable legend; an unpaired t-test of
@@ -368,14 +609,40 @@ claims:
     in both DMS and DLS.
 - id: figs1a-shock-aversive
   statement: The 0.2 mA shock is aversive in a fear conditioning test, in males and females.
-  source: Results, first section; Figure S1A
+  source: Results, A random interval schedule of reinforcement promotes punishment-resistant
+    reward-seeking, paragraph 1; Figure S1A
+  quote: The shock intensity was chosen based on previous studies of punishment-resistant
+    reward-seeking ... and was aversive to male and female mice in a fear conditioning paradigm with
+    12 tone-shock pairings
+  statistics:
+  - about: shock
+    test: two-way ANOVA
+    statistic: F1,50 = 16.46
+    p: 0.001
+    p_relation: "<"
+  - about: males, shock paired against no shock
+    test: Sidak's multiple comparison
+    p: 0.01
+    p_relation: "<"
+    corrected: Sidak
+  - about: females, shock paired against no shock
+    test: Sidak's multiple comparison
+    p: 0.05
+    p_relation: "<"
+    corrected: Sidak
   criterion: Needs the fear conditioning freezing scores.
 - id: figs3cd-open-field
   statement: Heterozygous DAT-IRES-cre mice are not hyperactive in a novel open field.
-  source: Results, third section; Figure S3C-D
+  source: Results, Dopamine axon signals in the DMS predict punishment-resistant reward-seeking,
+    paragraph 1; Figure S3C-D
+  quote: heterozygous mice in our colony ... are not hyperactive in a novel open field
   criterion: Needs the open field tracking.
 - id: fig3c-gcamp-in-dopamine-neurons
   statement: GCaMP7b is expressed in TH-positive dopamine neurons of medial SNc (n = 572 cells) and
     of medial and lateral SNc (89.56% of GCaMP neurons TH-positive).
-  source: Figures 3C and 4C
+  source: Figures 3C and 4C; Results, Dopamine axon signals in the DMS predict punishment-resistant
+    reward-seeking, paragraph 2; Dopamine signals in the DLS do not predict punishment-resistant
+    reward-seeking, paragraph 1
+  quote: We verified GCaMP was expressed in dopaminergic (TH+) neurons in medial SNc ... 89.56% of
+    GCaMP neurons also expressed TH
   criterion: Needs the histology images or cell counts.

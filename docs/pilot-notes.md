@@ -4604,3 +4604,105 @@ sources; a criterion's test that fails its own null control; a clock check for
 single-cell sessions, where decoding a task variable does not fit; undocumented
 optogenetics, tested where the data support the assumption and blocked
 elsewhere; and runtime advice that was not enough to keep loading short.
+
+## Protocol pilot-8 (2026-10-19): the paper's own words
+
+A reviewer reading claims to check them found the statements hard to hold
+against the paper: a statement is the author's paraphrase, and `source`
+often named only a section ("Results, active/passive section"), so checking
+a claim meant searching the paper for it. pilot-8 adds `quote`, the
+sentence at `source` that states the finding, copied word for word, and asks
+that `source` name a figure panel or a section and paragraph. The quote is
+written only when the full text was read. The dashboard shows it, with its
+source, at the top of each claim's explanation.
+
+pilot-8 also adds `statistics`, the tests and intervals the paper reports
+for each finding: the test, its statistic, the p-value as a number with
+its relation when it is a bound, any correction, a confidence interval and
+the sample. Only tests whose result is the finding are recorded; the
+threshold used to count significant units or pairs is left out. The
+pipeline finds claims by their p-values, and until now the p-value lived
+only in the statement's wording, when at all, so it could not be listed or
+compared. Stored as a number it also no longer has to be quoted: a p-value
+written as a power of ten does not survive copying from the paper's text.
+The dashboard lists them under the quote.
+
+The claims of every attempt recorded so far were then brought up to
+pilot-8 from each paper's full text (Europe PMC or PMC, bioRxiv, or the
+publisher's open-access page), and every quote and recorded value was
+checked against that text. Of 1,280 claims in 56 files, 465 have
+statistics (958 entries), and the tightened sources replaced ordinal ones
+("Results, first section") that often did not match the paper's own
+sections. Six papers whose full text is not open (000005, 000006, 000061,
+000582, 000691, 001754) were quoted from the abstract, figure titles and
+public Extended Data legends where those state the finding. Three files
+were left as they were because their full text could not be downloaded at
+the time (000350, 000727, 001699). Thresholds used to count significant
+units, cells, pairs or sessions were left out throughout, and a paper that
+prints "P = 0" is recorded as 0.
+
+The backfill showed two kinds of claim mixed together. Twenty-four were
+not findings of the paper but the registry's own checks that the dandiset
+is the data behind the paper's tables, source data, code or deposits (the
+link claims of step 6). They now say `kind: link` and are counted apart:
+the README table and the dashboard's totals are of the paper's findings
+only, and the links have a line of their own. And a finding with no quote
+gave no sign of whether the paper states it at all. Every finding now has
+either a quote or an `inferred` note saying why the statement is the
+author's reading, such as numbers that appear only in a supplementary
+table. Abstract-only papers are quoted from the abstract where it states the
+finding. Every claim must come from and pertain to its paper, so five
+claims that the paper's open text does not state were dropped, with their
+outcomes: four of 001754 taken from the dandiset's description, and one of
+000691 read from the paper's code (its method is now written out in the
+claim that referred to it).
+
+The full texts of the nine remaining papers were obtained on 2026-10-20 as
+PDFs (the six abstract-only papers with their supplements where they have
+one, the Cell paper of 000350, and version 1 of the two preprints), and
+their claims were quoted from them; the manuscript quotes of 000067 were
+also checked against the publisher's PDF. Of the 1,280 claims, 24 are
+links, 1,248 findings are quoted and 8 are inferred; 509 have statistics
+(1,040 entries). The six papers first written from the abstract had their
+method choices fixed by the author without the paper's Methods; reviewing
+them against the full text found several criteria that test a different
+measure from the paper's, which is taken up separately.
+
+## Protocol pilot-9 (2026-10-20): the full text or nothing
+
+Six attempts had their claims written from the paper's abstract, because
+the full text was not open: 000005, 000006, 000061, 000582, 000691 and
+001754 (both of its attempts). With no Methods to read, their authors chose
+the measures themselves. Once the full texts were obtained, a review of
+each file against them found that the statements mostly held, but that
+several criteria tested a measure the paper does not use, and that each
+paper had findings on the dandiset with no claim. Four of the five outcomes
+of not reproduced among these attempts rested on such a measure: 001754's
+flight-spatial-code (a shuffle test, where the paper compares spatial
+information with preflight), 000006's pt-types-differ-in-timing, and
+000005's exc-mainly-touch and fs-enhance-touch-selectivity. The fifth,
+000061's aversive-direction-stronger, agrees with the paper's own result on
+the units the attempt used, as its supplement shows.
+
+These attempts are now marked `deprecated`, with the reason, in their
+records. The records and entries stay as they were; the dashboard shows
+them with the reason and counts none of their outcomes, and their README
+rows have no counts. Each is queued to be run again: the new attempt
+writes the claims file again from the full text, keeping a claim's id where
+its finding is the same so that the outcomes can be compared.
+
+Step 1 of the protocol now requires the full text, with the Methods and
+any supplement the results rest on. An author who cannot read it stops
+before writing claims and reports what is missing, so that the paper can be
+supplied. Claims are never written from the abstract.
+
+The same review showed where the guessed methods came from: step 7 let an
+author fix a method choice the paper leaves open and judge the claim on it.
+With only an abstract, nearly every choice was open, so the outcomes rested
+on the author's choices. Step 7 now says that methods come from the paper,
+never from the author: every part of a criterion's method is taken from the
+Methods, legends, supplement or the paper's code, and the criterion says
+which. A detail none of them fixes is recorded as such; if it could change
+the outcome, every reading the paper allows is run, and the claim is
+blocked as `methods_underspecified` when they disagree. The verifier now
+checks that no method choice is the author's own.

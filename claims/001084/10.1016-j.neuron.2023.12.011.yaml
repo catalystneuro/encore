@@ -31,6 +31,7 @@
 # - DL18 has 44 tone presentations in the files where the paper used its 14 tones of 12 kHz; the
 #   files do not give tone frequency, so the dandiset analysis uses all 44, and the 14 are
 #   identified from the paper's published results as a variant (fig4-link-published-results).
+# Quotes and statistics added 2026-10-19 from the full text (NCBI PMC PMC10957316, author manuscript).
 schema_version: 1
 dandiset: "001084"
 paper: doi:10.1016/j.neuron.2023.12.011
@@ -39,7 +40,11 @@ claims:
   statement: In a D1-cre mouse expressing GCaMP7f in D1 spiny projection neurons, fluorescence
     under 470 nm excitation shows Ca2+ transients across fibers that are absent under 405 nm
     (isosbestic) excitation.
-  source: Figure 1C; Results, second section
+  source: Figure 1C; Results, Chronic measurements of large-scale calcium and neuromodulator signals
+    in head-fixed mice, paragraph 1
+  quote: 470 nm excitation light (green trace) was alternated with 405nm light (black) at 18hz to
+    provide a quasi-simultaneous isosbestic control. Significant transients are absent with 405
+    illumination
   criterion: Mouse 842, session 2022-11-23 (the session the paper's Fig01/C code reads), the 61
     fibers flagged included. For each fiber, the standard deviation of DF/F under 470 nm divided
     by that under 405 nm. Reproduced when the ratio exceeds 1 in at least 90% of fibers and its
@@ -48,7 +53,10 @@ claims:
 - id: figs2d-correlation-distance
   statement: Pairwise correlations of D1 SPN Ca2+ signals are generally low but variable, and drop
     off significantly with the distance between fiber tips.
-  source: Results, second section; Figure S2D; code SuppFig02/DEF/surface_brain_dist.m
+  source: Results, Chronic measurements of large-scale calcium and neuromodulator signals in
+    head-fixed mice, paragraph 1; Figure S2D; code SuppFig02/DEF/surface_brain_dist.m
+  quote: Pairwise correlations of SPN Ca2+ signals were generally low, but were highly variable and
+    dropped off significantly with distance between fibers (Figure S2D)
   criterion: Mouse 842, session 2022-11-23, 470 nm DF/F of the included fibers. As the code does,
     the Pearson correlation of each pair of fibers over the session, and the Pearson correlation
     across pairs between these coefficients and the Euclidean distance between fiber tips.
@@ -58,7 +66,11 @@ claims:
 - id: figs2ef-no-bundle-crosstalk
   statement: After accounting for distance in the brain, signal correlations do not depend on the
     distance between fibers on the bundle surface, so nearby fibers in the bundle do not cross-talk.
-  source: Results, second section; Figure S2E-F; code SuppFig02/DEF/surface_brain_dist.m
+  source: Results, Chronic measurements of large-scale calcium and neuromodulator signals in
+    head-fixed mice, paragraph 1; Figure S2E-F; code SuppFig02/DEF/surface_brain_dist.m
+  quote: No relationship was observed between signal correlations and distance on the bundle surface
+    after accounting for brain distance, indicating no cross-talk between nearby fibers in the
+    bundle (Figure S2E–F)
   criterion: A claim of absence, judged on the paper's test as its code runs it, a linear model of
     the pairwise correlation coefficient on Euclidean, AP, ML and DV tip distances and the
     distance between the fibers' ROI centroids on the bundle image (ROICentroids). Reproduced when
@@ -68,7 +80,10 @@ claims:
 - id: fig1d-chronic-reward-stability
   statement: Dopamine release to unpredicted water reward is reliable and of comparable amplitude
     over at least 12 weeks after implantation (median over 44 fibers, normalized to week 5).
-  source: Figure 1D; Results, second section; code Fig01/D
+  source: Figure 1D; Results, Chronic measurements of large-scale calcium and neuromodulator signals
+    in head-fixed mice, paragraph 1; code Fig01/D
+  quote: DA release at a single location to unpredicted water reward delivery was highly reliable
+    and comparable in amplitude over at least 12 weeks following stable expression of dLight1.3b
   criterion: Mouse DL15, the 44 included fibers. As the code does, DF/F aligned to the first lick
     after each reward (consumption), the weekly mean response over 0 to 4 s, its peak over the
     first 1 s, divided by the fiber's peak in the first week; the median over fibers per week.
@@ -81,6 +96,7 @@ claims:
     end before week 12; not reproduced when any week falls outside it. All rewards of all sessions
     are shown as a variant.
 - id: fig4-link-published-results
+  kind: link
   statement: The dandiset's DF/F traces, fibers and stimulus times are those behind the paper's
     salient-stimulus analysis, so that its per-fiber responses can be linked to the paper's.
   source: Figure 4E-F; the paper's intermediate file glm_spline_results.mat (Zenodo, Fig04)
@@ -98,7 +114,9 @@ claims:
 - id: fig4e-light-increases-widespread
   statement: The light evokes transient increases in dopamine release across many striatal
     locations.
-  source: Figure 4B, 4E; Results, fourth section
+  source: Figure 4B, 4E; Results, Spatial topography of modality specific dopamine release
+    magnitudes over large-scale 3-dimensional volumes, paragraph 1
+  quote: The light evoked transient increases in DA release across many locations
   criterion: Over the 280 fibers, by the GLM and null test fixed above. Reproduced when at least
     half of the fibers have a significant increase to light and significant increases outnumber
     significant decreases; partially reproduced when increases outnumber decreases but fewer than
@@ -106,7 +124,11 @@ claims:
 - id: fig4e-light-anterior-posterior-gradient
   statement: Light-evoked dopamine increases follow an amplitude gradient from the anterior
     striatum into the posterior tail, where increases are less prevalent and smaller.
-  source: Figure 4E; Figure S4A; Results, fourth section
+  source: Figure 4E; Figure S4A; Results, Spatial topography of modality specific dopamine release
+    magnitudes over large-scale 3-dimensional volumes, paragraph 1
+  quote: The light evoked transient increases in DA release across many locations with an amplitude
+    gradient extending from the anterior striatum into the posterior tail, where increases were less
+    prevalent and smaller amplitude
   criterion: Over the 280 fibers, the light value (signed largest point of the spline estimate).
     (a) Spearman correlation of AP and the light value positive with p < 0.05; (b) the fraction of
     fibers with a significant light increase lower in the tail (AP <= -1.0 mm) than elsewhere
@@ -116,7 +138,10 @@ claims:
 - id: fig4f-tone-tail-increase-anterior-decrease
   statement: The tone evokes the strongest dopamine increases at sites in the posterior tail,
     while anterior to the tail it evokes primarily decreases.
-  source: Figure 4D, 4F; Figure S4C; Results, fourth section
+  source: Figure 4D, 4F; Figure S4C; Results, Spatial topography of modality specific dopamine
+    release magnitudes over large-scale 3-dimensional volumes, paragraph 1
+  quote: the tone evoked the strongest increases in DA release at sites in the posterior tail, while
+    anterior to the tail, the tone evoked primarily decreases in DA release
   criterion: Over the 280 fibers, the tone value. (a) The tail's tone values higher than
     elsewhere (Mann-Whitney, one-sided, p < 0.05) and their median positive, and at least 6 of the
     10 fibers with the largest tone values in the tail; (b) among fibers anterior to the tail with
@@ -126,7 +151,10 @@ claims:
 - id: fig4f-decreases-lateral-ventral
   statement: Tone-evoked decreases are slightly more prevalent in the anterior lateral and ventral
     striatum, with many sites showing both increases to the light and decreases to the tone.
-  source: Figure 4F; Results, fourth section
+  source: Figure 4F; Results, Spatial topography of modality specific dopamine release magnitudes
+    over large-scale 3-dimensional volumes, paragraph 1
+  quote: Decreases were slightly more prevalent in the anterior lateral and ventral striatum, with
+    many sites exhibiting both increases to the light and decreases to the tone (Figure 4F)
   criterion: Fibers anterior to the tail. Fibers whose tone value is a significant decrease have
     larger ML (more lateral) and larger DV (more ventral) coordinates than the other fibers
     (Mann-Whitney, one-sided, p < 0.05 each). Reproduced when both hold; partially reproduced when
@@ -135,7 +163,9 @@ claims:
     20% of the anterior fibers.
 - id: figs4ac-patterns-consistent-across-mice
   statement: The modality-specific release patterns are consistent within and across mice.
-  source: Results, fourth section (Figure S4A, C)
+  source: Results, Spatial topography of modality specific dopamine release magnitudes over
+    large-scale 3-dimensional volumes, paragraph 1 (Figure S4A, C)
+  quote: These distinct release patterns were consistent within and across mice (Figure S4A, C)
   criterion: Per mouse, the Spearman correlation of AP with the light value and with the tone
     value. Reproduced when the light correlation is positive in at least 5 of the 7 mice and the
     tone correlation is negative in at least 5 of the 7; partially reproduced when one of the two
@@ -144,7 +174,12 @@ claims:
   statement: Locomotor changes to the stimuli are variable and bi-directional, while the
     dopamine release patterns to light and tone are consistent, so the patterns are stimulus and
     not movement driven.
-  source: Results, fourth section (Figure S4); Methods; code SuppFig04/EFGH/sal_stim_bubbles_loco.m
+  source: Results, Spatial topography of modality specific dopamine release magnitudes over
+    large-scale 3-dimensional volumes, paragraph 1 (Figure S4); Methods; code
+    SuppFig04/EFGH/sal_stim_bubbles_loco.m
+  quote: Locomotor changes to stimuli were variable, bi-directional, and differed across mice and
+    individual stimulus presentations, while DA release patterns to light and tone were consistent,
+    indicating that modality-specific patterns were stimulus, not movement driven
   criterion: As the code does, presentations are split by the sign of the largest-magnitude
     overall acceleration in the 1 s after onset; per fiber and split, the signed largest point of
     the mean raw DF/F over 0 to 1 s. Reproduced when, for both light and tone, the values of the
@@ -155,7 +190,11 @@ claims:
 - id: figs5-isosbestic-no-pattern
   statement: With isosbestic (415 nm) excitation, large fluorescence changes and spatial patterns
     to light and tone are not observed, ruling out a hemodynamic origin of the release patterns.
-  source: Results, fourth section (Figure S5E-H); code SuppFig05/EFGH
+  source: Results, Spatial topography of modality specific dopamine release magnitudes over
+    large-scale 3-dimensional volumes, paragraph 1 (Figure S5E-H); code SuppFig05/EFGH
+  quote: Large fluorescence changes and spatial patterns were not observed with 405nm or 415mn
+    (dLight1.3 isosbestic point) illumination, ruling out a significant impact of hemodynamic
+    changes on the spatial DA release patterns
   criterion: Mice DL31 and DL32 (18 Hz, interleaved 470 and 415 nm), included fibers, the GLM of
     the code at 18 Hz (window -1 to 2 s, tone shift of 6 frames, lags within 9 frames) with 10000
     null refits for each channel. Reproduced when, for both light and tone, the median absolute
@@ -166,7 +205,11 @@ claims:
   statement: Latencies to half-maximum are shorter for dopamine increases to light than to tone,
     and shorter for increases than decreases to tone (light increase 221.6 ms, SD 42.5; tone
     increase 305.4 ms, SD 100.0; tone decrease 428.3 ms, SD 197.1).
-  source: Figure 5A-B; Results, fifth section
+  source: Figure 5A-B; Results, Modality specific gradients of dopamine release timing across the
+    striatum, paragraph 1
+  quote: Response latencies (from stimulus onset to the half-max or half-min amplitude) were
+    shorter, on average, for DA increases to light, and shorter for DA increases than for decreases
+    to the tone
   expected:
   - quantity: mean latency of significant light increases
     value: 221.6
@@ -191,7 +234,11 @@ claims:
 - id: fig5g-light-latency-gradient
   statement: Dopamine release latencies to light follow an anterior-posterior gradient, with
     faster increases in the anterior striatum, consistent with wave-like dynamics.
-  source: Figure 5C, E, G; Results, fifth section; code Fig05/general_functions
+  source: Figure 5C, E, G; Results, Modality specific gradients of dopamine release timing across
+    the striatum, paragraph 1; code Fig05/general_functions
+  quote: DA release latencies (time to half-max) for light presentations followed a spatial gradient
+    along the anterior-posterior axis, with relatively faster latencies to increase in the anterior
+    striatum than in the posterior striatum, consistent with wave-like dynamics
   criterion: As the code does, per presentation and fiber, the half-maximum latency of the trial
     activity with locomotion regressed out, for fibers with a significant mean increase whose
     trial activity exceeds the null band for 3 consecutive frames; latency relative to the fastest
@@ -203,7 +250,10 @@ claims:
 - id: fig5h-tone-latency-gradient
   statement: Dopamine release latencies to tone follow a different gradient, faster in the
     posterior striatum than in the anterior striatum.
-  source: Figure 5D, F, H; Figure S6A-B; Results, fifth section
+  source: Figure 5D, F, H; Figure S6A-B; Results, Modality specific gradients of dopamine release
+    timing across the striatum, paragraph 1
+  quote: DA release latencies to tone presentations followed a different spatial gradient with
+    faster latencies in the posterior striatum relative to the anterior striatum (Figure 5D, F, H)
   criterion: As for fig5g-light-latency-gradient, with the earlier of the increase and decrease
     latencies of each trial ("either" in the code). Reproduced when the Spearman correlation of AP
     with the mean relative latency is positive with p < 0.05.
@@ -211,7 +261,9 @@ claims:
   - fig4f-tone-tail-increase-anterior-decrease
 - id: figs6cd-gradients-individual-mice
   statement: The spatial latency gradients are also present in individual mice.
-  source: Results, fifth section (Figure S6C-D)
+  source: Results, Modality specific gradients of dopamine release timing across the striatum,
+    paragraph 1 (Figure S6C-D)
+  quote: Spatial gradients were also present at the level of individual mice (Figure S6C–D)
   criterion: Per mouse, the Spearman correlations of fig5g and fig5h, for mice with at least 5
     fibers with a latency. Reproduced when the light correlation is negative in at least 5 of
     the 7 mice and the tone correlation is positive in at least 5 of the 7; partially reproduced
@@ -224,7 +276,9 @@ claims:
     locations lie within or on the border of the striatum; 18 of the 24 stimulated locations evoke a
     significant response at another location, and 22 of the 24 recording locations respond to at
     least one stimulation.
-  source: Methods, "DA release to optogenetic stimulation"; Figure 6G legend
+  source: Methods, "DA release to optogenetic stimulation", paragraph 4; Figure 6G legend
+  quote: the position of the fiber tip had to be within, or on the border of, the striatum ... (24
+    recording locations) ... (18 out of 24 included locations) ... (22 out of 24 included locations)
   expected:
   - quantity: recording locations in or bordering the striatum
     value: 24
@@ -246,7 +300,11 @@ claims:
 - id: fig6gh-release-decays-with-distance
   statement: Stimulating dopamine axons through one fiber evokes release at neighbouring
     non-stimulated sites that drops off sharply with distance in all three dimensions.
-  source: Figure 6E-H; Results, seventh section
+  source: Figure 6E-H; Results, Local control of striatal dopamine release through micro-fiber
+    arrays, paragraph 1
+  quote: Significant transient increases in stimulation-evoked DA release were detected at sites
+    neighboring the targeted fiber which dropped off sharply with distance in all 3 dimensions
+    (Figure 6E–H)
   depends_on:
   - fig6-inclusion-counts
   criterion: Mouse Opto2, included stimulated and recording locations as in fig6-inclusion-counts,
@@ -258,7 +316,11 @@ claims:
 - id: fig6g-dorsal-spread
   statement: Evoked release drops off less with distance dorsal to the stimulated fiber than
     ventral to it, consistent with dorsally extending dopamine axon branches.
-  source: Figure 6G (D/V distance); Results, seventh section
+  source: Figure 6G (D/V distance); Results, Local control of striatal dopamine release through
+    micro-fiber arrays, paragraph 1
+  quote: activation dorsal to the stimulation location dropped off less with distance than ventral
+    (Figure 6G, D/V Distance, right) ... consistent with the dorsally extending axon morphology of
+    branching DA axons
   depends_on:
   - fig6-inclusion-counts
   criterion: Recording sites dorsal (DV smaller) and ventral (DV larger) to the stimulated fiber,
@@ -271,7 +333,11 @@ claims:
   statement: In control mice expressing tdTomato in place of rDAm3.0, single-fiber stimulation
     evokes no significant fluorescence increase at non-stimulated sites (0 of 48 sites, 26
     stimulations in 2 mice), so the release is not a hemodynamic effect.
-  source: Results, seventh section; Figure 6G controls
+  source: Results, Local control of striatal dopamine release through micro-fiber arrays, paragraph
+    1; Figure 6G controls
+  quote: there were no significant stimulation-evoked fluorescent increases in control mice which
+    were injected with tdTomato instead of rDAm3.0 (0/48 non-stimulated sites for 26 single-site
+    stimulations across 2 mice
   criterion: A claim of absence, judged on the paper's test (the bootstrap of fig6-inclusion-counts)
     in mice Opto4 and Opto9 (tdTomato, 13 sessions each). The laser epochs are found from the fiber
     with the largest laser artefact, which is taken as the stimulated fiber. Reproduced when no
@@ -282,7 +348,10 @@ claims:
   statement: In mice expressing rDAm3.0 without opsin, light through one fiber raises fluorescence
     at the stimulated site by photoswitching, but at no other site (0 of 22 non-stimulated sites
     for 3 stimulations).
-  source: Results, seventh section; Figure 6E, Figure S7A
+  source: Results, Local control of striatal dopamine release through micro-fiber arrays, paragraph
+    1; Figure 6E, Figure S7A
+  quote: Photoswitching in controls, but not opsin expressing mice, was entirely confined to the
+    stimulated site (0/22 non-stimulated sites for 3 single-site stimulations
   criterion: Mouse UG21 (3 sessions, 22 included fibers), the test of fig6-inclusion-counts.
     Reproduced when the stimulated fiber has a significant increase in each session and no other
     included fiber does in any session; partially reproduced when the non-stimulated sites show
@@ -291,25 +360,47 @@ claims:
 - id: figs1-no-tissue-damage
   statement: Neuronal density is not reduced under 50 um fiber tips or between neighbouring fibers
     relative to unimplanted tissue.
-  source: Results, first section; Figure S1
+  source: Results, Microfiber array design, paragraph 1; Figure S1
+  quote: there was no significant reduction in neuronal density under 50μm fiber tips or between
+    neighboring fibers, relative to unimplanted tissue (Figure S1)
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.10272874 (SuppFig01.zip, NeuN and DAPI images and densities)
 - id: figs3-targeting-errors
   statement: The magnitude and type of targeting errors (fiber tip relative to its intended target)
     vary across mice and fibers.
-  source: Results, third section; Figure S3
+  source: Results, Micro-CT based method for precise fiber localization and atlas alignment,
+    paragraph 1; Figure S3
+  quote: found that the magnitudes and types of targeting errors varied across mice and fibers
+    (Figure S3)
 - id: fig3-freely-moving-signals
   statement: Fiber arrays imaged with a miniscope in freely moving mice show robust D1 SPN Ca2+
     signals during locomotion, and dopamine transients associated with the approach to food
     rewards.
-  source: Figure 3; Results, fourth section
+  source: Figure 3; Results, Chronic measurements of large-scale calcium and neuromodulator signals
+    in freely moving mice, paragraph 1
+  quote: This revealed robust, high-SNR signals from GCaMP7f expressed in D1 spiny projection
+    neurons that varied dynamically during locomotion (Figure 3B) ... large transients that appeared
+    to be reliably associated with the initial approach toward food rewards
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.10272874 (Fig03.zip)
 - id: fig7d-ventral-not-dorsal-jaw
   statement: Stimulating D1 SPNs through a group of ventral striatum fibers, but not dorsal ones,
     increases jaw movement, an effect absent in a control mouse (interaction p = 7.4e-7; ventral
     p = 0.0002, dorsal p = 0.45).
-  source: Figure 7D; Results, eighth section
+  source: Figure 7D; Results, Targeted optogenetic manipulations can localize region-specific
+    behavioral effects in the striatum at multiple scales, paragraph 1
+  quote: We found that stimulating regions in the ventral, but not the dorsal striatum led to rapid
+    increases in jaw movement, which were not present in the non-opsin expressing control mouse
+  statistics:
+  - about: interaction between region and optogenetic stimulation group
+    test: 2-way ANOVA
+    p: 7.4e-07
+  - about: optogenetic stimulation against control, ventral
+    test: two-sample t-test
+    p: 0.0002
+  - about: optogenetic stimulation against control, dorsal
+    test: two-sample t-test
+    p: 0.45
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.10272874 (Fig07.zip, DeepLabCut outputs and stimulation files)
   criterion: Jaw velocity change index per stimulation as the code barJawMov.m computes it; the
@@ -319,7 +410,11 @@ claims:
 - id: fig7ef-single-ventral-fiber
   statement: Of the eight ventral fibers stimulated singly in each mouse, only one per mouse has a
     significant effect on jaw movement (3 mice), located in the posterior medial striatum.
-  source: Figure 7E-F, Figure S7B; Results, eighth section
+  source: Figure 7E-F, Figure S7B; Results, Targeted optogenetic manipulations can localize
+    region-specific behavioral effects in the striatum at multiple scales, paragraph 2
+  quote: We found that only one of the eight ventral fibers from each mouse produced a significant
+    effect on jaw movements ... Post-hoc CT scanning (Figure 7F) localized these fibers to the
+    posterior medial striatum
   data: elsewhere
   where: Zenodo doi:10.5281/zenodo.10272874 (Fig07.zip and SuppFig07.zip)
   criterion: The change index per fiber with the code's bootstrap (barJawMov_singleFib.m).

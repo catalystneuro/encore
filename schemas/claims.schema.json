@@ -45,8 +45,25 @@
             "minLength": 1
           },
           "source": {
-            "description": "Where the paper shows it, e.g. 'Figure 2B' or 'Results, paragraph 3'.",
+            "description": "Where the paper shows it, precise enough to find without searching: a figure panel, e.g. 'Figure 2B', or a section and paragraph, e.g. 'Results, Place fields, paragraph 3'.",
             "type": "string"
+          },
+          "kind": {
+            "description": "A finding the paper reports (`finding`, the default), or a check the registry adds that the dandiset is the data the paper's outside material describes (`link`: the paper's tables, source data, code or deposits). Links are not findings of the paper and are counted apart from them.",
+            "enum": [
+              "finding",
+              "link"
+            ]
+          },
+          "quote": {
+            "description": "The sentence of the paper that states the finding, word for word, from the place `source` names, so a reader can check the statement against the paper. Cut with '...' where it runs long. From the full text.",
+            "type": "string",
+            "minLength": 1
+          },
+          "inferred": {
+            "description": "For a finding with no quote: why the statement is the author's reading and not a sentence of the paper, e.g. 'Numbers from Supplementary Table 1; no sentence states them.'",
+            "type": "string",
+            "minLength": 1
           },
           "expected": {
             "description": "The reported numbers the claim rests on, each with a tolerance: one, or a list.",
@@ -62,6 +79,14 @@
                 }
               }
             ]
+          },
+          "statistics": {
+            "description": "The statistical support the paper reports for the finding: one entry per test or interval, as the paper gives it. A record of the paper, not a target with a tolerance (that is `expected`).",
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "$ref": "#/$defs/statistic"
+            }
           },
           "criterion": {
             "description": "For a claim without a number, how it will be judged. Written before the analysis is run.",
@@ -91,6 +116,33 @@
           }
         },
         "allOf": [
+          {
+            "not": {
+              "required": [
+                "quote",
+                "inferred"
+              ]
+            }
+          },
+          {
+            "if": {
+              "properties": {
+                "kind": {
+                  "const": "link"
+                }
+              },
+              "required": [
+                "kind"
+              ]
+            },
+            "then": {
+              "not": {
+                "required": [
+                  "inferred"
+                ]
+              }
+            }
+          },
           {
             "if": {
               "properties": {
@@ -132,6 +184,83 @@
           "minimum": 0
         },
         "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "statistic": {
+      "type": "object",
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "required": [
+            "p"
+          ]
+        },
+        {
+          "required": [
+            "ci"
+          ]
+        }
+      ],
+      "properties": {
+        "about": {
+          "description": "What the test compares or the interval bounds, when the claim has more than one, e.g. 'GPi against VLa onset times'.",
+          "type": "string"
+        },
+        "test": {
+          "description": "The test as the paper names it, e.g. 'Wilcoxon rank-sum', 'two-tailed t-test'.",
+          "type": "string"
+        },
+        "statistic": {
+          "description": "The test statistic as reported, e.g. 't(14) = 3.2', 'F(2, 40) = 5.1', 'r = 0.38'.",
+          "type": "string"
+        },
+        "p": {
+          "description": "The reported p-value as printed, or its bound when the paper gives one ('p < 0.05' is p 0.05 with p_relation '<'). A paper that prints 'P = 0' (below the precision it reports) is recorded as 0.",
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1
+        },
+        "p_relation": {
+          "description": "How p was reported: exactly (the default) or as a bound.",
+          "enum": [
+            "=",
+            "<",
+            ">"
+          ]
+        },
+        "corrected": {
+          "description": "The correction for multiple comparisons the paper applied, e.g. 'Bonferroni', 'FDR'.",
+          "type": "string"
+        },
+        "ci": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "low",
+            "high"
+          ],
+          "properties": {
+            "level": {
+              "description": "The confidence level, e.g. 0.95.",
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "exclusiveMaximum": 1
+            },
+            "low": {
+              "type": "number"
+            },
+            "high": {
+              "type": "number"
+            },
+            "unit": {
+              "type": "string"
+            }
+          }
+        },
+        "n": {
+          "description": "The sample the test was run on, in words, e.g. '206 GPi and 179 VLa units'.",
           "type": "string"
         }
       }
