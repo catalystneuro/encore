@@ -31,11 +31,14 @@ from pathlib import Path
 import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
-TEMPLATES = {"author": "author", "verifier-1": "verifier-1", "author-revise-1": "author-revise",
+TEMPLATES = {"claims": "claims", "claims-check": "claims-check", "answer": "answer",
+             "author": "author", "author-answers": "author-answers",
+             "verifier-1": "verifier-1", "author-revise-1": "author-revise",
              "verifier-2": "verifier-2", "author-revise-2": "author-revise",
              "verifier-3": "verifier-3", "author-revise-3": "author-revise-3",
              "recorder": "recorder"}   # role -> docs/agents/<name>.md
 ROLES = tuple(TEMPLATES)
+READER_ROLES = ("claims", "claims-check", "answer")   # the runs that read the paper (papers.yml)
 
 
 def target(dandiset: str) -> dict:
@@ -83,10 +86,8 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
         earlier_protocol = record["provenance"]["agent"]["protocol"]
         if record.get("deprecated"):
             why = (f"That attempt is deprecated: {' '.join(record['deprecated']['reason'].split())} This attempt "
-                   f"replaces it. Step 1 below does not apply: write the claims file again from the paper's full "
-                   f"text, as steps 1 and 7 of the protocol say. Keep a claim's id where its finding stays the "
-                   f"same, so its outcome can be compared with the earlier one, and say in the file's opening "
-                   f"comment what changed and why.")
+                   f"replaces it. A reader has since written the claims file again from the full text; test it "
+                   f"as it now is. Where a claim keeps its id, compare its outcome with the earlier one.")
         elif version in (None, record.get("dandiset_version")) and earlier_protocol != protocol_version():
             why = (f"The dandiset is unchanged; the protocol has changed since, and this attempt applies "
                    f"{protocol_version()} to it. Read what changed in docs/pilot-notes.md, under the headings "
@@ -98,6 +99,23 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
                        earlier_protocol=earlier_protocol, why=why,
                        next_attempt=f'{record["id"].rsplit("-", 1)[0]}-{n:02d}')
         return (ROOT / "docs" / "agents" / "author-again.md").read_text().format(**details)
+    if role in READER_ROLES:
+        existing = sorted((ROOT / "claims" / dandiset).glob("*.yaml"))
+        found = attempt_of(dandiset)
+        if role != "claims":
+            note = ""
+        elif found and found[0].get("deprecated"):
+            note = (f"A claims file exists, `{existing[0].relative_to(ROOT)}`, from an attempt that is now "
+                    f"deprecated: {' '.join(found[0]['deprecated']['reason'].split())} Write it again from the full "
+                    f"text. Keep a claim's id where its finding is the same, so the outcomes can be compared, and "
+                    f"say in the opening comment what changed and why." if existing else "")
+        elif existing:
+            note = (f"A claims file exists, `{existing[0].relative_to(ROOT)}`. Bring it up to the current protocol "
+                    f"from the full text, keeping ids where a finding is the same, and say what changed.")
+        else:
+            note = ""
+        details.update(existing=note)
+        return (ROOT / "docs" / "agents" / f"{TEMPLATES[role]}.md").read_text().format(**details)
     if role != "author":
         found = attempt_of(dandiset)
         if found is None:

@@ -1,62 +1,198 @@
 # Protocol for an attempt
 
-Version: `pilot-9`. Record this version in the attempt's provenance.
+Version: `pilot-10`. Record this version in the attempt's provenance.
 
-This is what an agent, or a person, does to attempt a target and deposit the
-result. It is written from the eight pilot attempts
+This is what agents, or people, do to attempt a target and deposit the
+result. It is written from the pilot attempts
 ([pilot notes](pilot-notes.md)); the reasons for the rules are there.
 
-There are two roles. The **author** makes the attempt. The **verifier** checks
-it and must not be the author: for agents, a separate run with a separate
-context that has not seen the author's reasoning.
+An attempt has three roles, each a separate run with a separate context:
 
-Agent runs are made with the [Agent run](../.github/workflows/attempt.yml)
-workflow, one role at a time: `author`, `verifier-1`, `author-revise-1`,
-`verifier-2`, `author-revise-2`, and, when the last of these proposes changes
-of outcome, `verifier-3` and `author-revise-3`. Each run's transcript and final report are
-kept in [`transcripts/<dandiset>/`](../transcripts).
+- The **reader** reads the paper and writes the claims file: every finding,
+  and how each is to be tested, taken from the paper. A second reader checks
+  it against the paper. Readers never see the dandiset's data.
+- The **author** tests the claims on the dandiset. The author never sees the
+  paper: the claims file is its only account of it.
+- The **verifier** checks the author's work and must not be the author.
+
+So every claim and its method are fixed from the paper before anyone analyses
+the data, and no method can come from the agent that runs the analysis.
+
+Reader runs are made with the [Paper run](../.github/workflows/papers.yml)
+workflow (roles `claims`, `claims-check` and `answer`), the only runs that can
+read the paper store. The other runs are made with the
+[Agent run](../.github/workflows/attempt.yml) workflow, one role at a time:
+`author`, `author-answers` when questions were answered, `verifier-1`,
+`author-revise-1`, `verifier-2`, `author-revise-2`, and, when the last of these
+proposes changes of outcome, `verifier-3` and `author-revise-3`. Each run's
+transcript and final report are kept in
+[`transcripts/<dandiset>/`](../transcripts). The pipeline is described in
+[pipeline.md](pipeline.md).
+
+## Reader
+
+### 1. Get the paper
+
+The workflow puts the paper's full text, and its PDF where there is one, under
+`paper/`: the main text, the Methods, and the supplement. Read the text; open
+the PDF only to read a figure or a table the text garbles. If the full text is
+not there, or lacks the Methods or a supplement the results rest on, stop:
+write no claims, and end with a report that names what is missing, so that it
+can be supplied. Never write claims from the abstract. Do not copy figures.
+Do not look at the dandiset's data: its title and description on the archive
+are enough to know which paper and which experiments it is meant to hold.
+
+### 2. Read the paper's code
+
+Read the code the paper links to before writing criteria. Say what it holds,
+and record the repository and commit read. Where the Methods leave a choice
+open and the code settles it, follow the code and say so. Where they disagree,
+follow the Methods for the main result and name the code's choice as a
+variant. When more sources disagree (the Methods, the analysis code, the
+stimulus software), the Methods come first, then the paper's analysis code,
+then other software.
+
+### 3. Write the claims file
+
+Write `claims/<dandiset>/<doi with / replaced by ->.yaml`. Its opening comment
+says which text was read (the version of record or a preprint version, and the
+supplement), and describes the data the paper used: the subjects, sessions,
+conditions and measured variables, as the paper reports them, so that the
+author can find them in the dandiset.
+
+   - One claim per finding, at the level of a figure panel or a reported
+     number when the full text is available. Cover the paper's main findings,
+     including those the dandiset cannot test.
+   - `statement`: the finding in words. `source`: where the paper shows it,
+     precise enough to find without searching: a figure panel, or a section
+     and paragraph ("Results, Place fields, paragraph 3").
+   - `quote`: the sentence at `source` that states the finding, copied word
+     for word from the full text, cut with "..." where it runs long. It lets a
+     reader check the statement against the paper without opening it. For a
+     finding shown only in a figure, quote the legend or the sentence of the
+     Results that cites the panel.
+   - `inferred`: every finding has a quote or, when no sentence of the paper
+     states it (numbers only in a table, a result spread over several
+     legends), a short note under `inferred` saying so. The statement is
+     then a reading of the paper, and the note says what it was
+     read from.
+   - `statistics`: the statistical support the paper reports for the
+     finding, one entry per test or interval: what it compares (`about`,
+     when there is more than one), the `test` and `statistic` as named, the
+     `p`-value as a number (a bound such as "p < 0.05" is `p: 0.05` with
+     `p_relation: "<"`; a printed "P = 0" is recorded as 0), any `corrected`
+     for multiple comparisons, a confidence interval (`ci`), and `n` in
+     words. It records the paper; the
+     numbers the attempt must match, with tolerances, stay in `expected`.
+     Record only tests whose result is the finding. A significance threshold
+     used to select or count units, cells or pairs ("238 of 288 neurons were
+     better fit, p < 0.05") is a method, not a result, and is left out.
+     Leave the field out when the paper reports no test or interval for the
+     finding.
+   - `expected`: each reported number the claim rests on, with a tolerance.
+     Use the paper's own uncertainty when it gives one (a confidence
+     interval, or the stated spread); otherwise 10% of the reported value.
+     For a reported range ("2 to 13%"), the claim holds inside the range
+     widened by 10% of each bound. Give the reason for any other tolerance.
+   - `criterion`: how the claim will be judged, for any claim that is not
+     settled by its expected values alone ("similar", "many", "tended to").
+     It is written from the paper alone, before anyone analyses the data.
+   - When a reported number can be read in more than one way (which trials
+     form the denominator, which subset is meant), list in the criterion the
+     readings the paper's text plausibly allows, before the analysis. The
+     claim is reproduced if the result matches under any of them. The
+     notebook shows every reading, the notes say which ones match, and the
+     ambiguity is recorded as a deviation.
+   - Methods come from the paper, never from the author. Every part of a
+     criterion's method (the selection, the measure, the test, windows,
+     bins, thresholds, what a measure is compared with) is taken from the
+     Methods, the figure legends, the supplement, or the code the paper
+     links, and the criterion says which. Search all of them before
+     treating a detail as open.
+   - A detail none of them fixes is recorded as a deviation that says so.
+     If it cannot change the outcome (a plotting bin, a random seed), use a
+     standard choice and say that it is one. If it could change the outcome
+     (how folds are formed, what a measure is compared with, how a penalty
+     is chosen), the criterion names the readings the paper's text allows,
+     before the analysis, and the notebook runs each of them. The outcome is
+     the one they all give; when they give different outcomes, the claim is
+     blocked as `methods_underspecified`, with every result shown. A choice
+     made by an agent is never the basis of an outcome.
+   - For a claim of absence ("no difference", "did not change"), the
+     criterion names the test and threshold the paper used. The claim is
+     reproduced when that test does not find the effect and not reproduced
+     when it does; give the size of the effect either way. The rule for
+     several readings does not apply: absence is judged on the paper's test
+     alone, as written, even when the test mixes in a condition that does
+     not belong (show the cleaner test as a variant).
+   - If a criterion turns out unable to decide (two candidates tied), break
+     the tie as the paper's methods or code imply, record it as a deviation,
+     and show the other result.
+   - `data`: what the paper's test of the finding uses, from the paper:
+     `dandiset` (the default: the data the paper describes recording),
+     `with_labels`, `with_inputs` or `elsewhere` (step 4, and author, step
+     4). Whether the dandiset holds those data is the author's to find.
+   - `depends_on`: the claims whose result this one uses, such as the cells
+     another claim selects.
+
+### 4. Data from outside the paper's own recordings
+
+Say, for each claim, what data the paper's test uses (`data`, above). When the
+paper relies on outside data (a model, a reference dataset, measurements of
+the same cells made by another method), or deposited part of its data in
+another archive, name it and where it is, as the paper gives it. The author
+pins it and decides whether it can be used (author, step 4).
+
+### 5. Check
+
+A second reader, in a separate run, checks the claims file against the paper:
+that each statement says what the paper says, no more and no less; that each
+quote is word for word (the quote checker, `tools/claims_check.py`, does this
+mechanically); that each source points at the place; that the statistics are
+the paper's and are results, not thresholds; that every part of every
+criterion's method is taken from the paper or its code, as cited; and that the
+paper's main findings each have a claim. The checker corrects what it can
+show is wrong, and records each change, with its reason, under `checks` at
+the end of the file. A claims file is ready for an attempt when its last check
+says so.
+
+### 6. Answer questions
+
+When an attempt needs something the claims file does not give, the author asks
+(author, step 6). A reader answers each question from the paper, in the claims
+file, and marks it answered in `questions/<dandiset>.yaml`. An answer
+the paper does not give is said to be that: the claim stays as it is, and the
+author treats the detail as open (step 3, on details none of the sources fix).
 
 ## Author
+
+You do not have the paper. The claims file is your account of it: its
+statements, quotes, sources, statistics and criteria. Do not change a claim's
+statement, expected values or criterion, and do not look the paper up.
 
 ### 1. Establish what can be tested
 
 Do this before any analysis.
 
-1. Get the paper's full text: the main text, the Methods, and any
-   supplement the results rest on. Read it from `paper/` when it is already
-   there; otherwise download an open copy (Europe PMC or PubMed Central, the
-   preprint server, or the publisher's open-access page). If the full text
-   cannot be read, stop here: write no claims and no entry, and end with a
-   report that names what is missing, so that the paper can be supplied.
-   Never write claims from the abstract. Keep any text you download under
-   `paper/`, which is not committed. Do not copy figures.
-2. List the dandiset's files and read its metadata from the archive. Open a
+1. List the dandiset's files and read its metadata from the archive. Open a
    file and list everything it holds, including every column of every table.
-3. Work out which of the paper's subjects, sessions, conditions and measured
-   variables are in the dandiset. A dandiset that names a paper may hold only
-   part of its data. Check for recordings deposited more than once (identical
-   traces, frame counts or annotations), report each pair, and count each
-   recording once. Where the analysis treats a unit as the same across
-   sessions, show that it is, or state it as an assumption and also give
-   results per session.
-4. Choose the version to pin. Pin the version the paper cites. If it cites
-   none, pin the most recent published version, unless an earlier one matches
-   the paper better. Say why in the notebook's header. If versions differ in
-   content the analysis uses, show the difference.
-5. Read the code the paper or the dandiset links to, before writing criteria.
-   Say what it holds, and record the repository and commit read. Where the
-   Methods leave a choice open and the code settles it, follow the code and
-   say so. Where they disagree, follow the Methods for the main result and
-   show the code's choice as a variant. Record both as deviations or
-   findings. When more sources disagree (the Methods, the analysis code, the
-   stimulus software), the Methods come first, then the paper's analysis
-   code, then other software; show each other choice as a variant.
-6. Decide what comes from outside the dandiset. Data from elsewhere may be
-   used only when the paper itself relies on it (a model, a reference
-   dataset, measurements of the same cells made by another method), it is
-   public, and it is pinned: a DOI, or a repository at a commit. Record each
-   under `inputs` in the attempt. A claim whose outside input is not public
-   is blocked with `data_missing`, and its notes say where you looked.
+2. Work out which of the subjects, sessions, conditions and measured
+   variables that the claims file describes are in the dandiset. A dandiset
+   that names a paper may hold only part of its data. Check for recordings
+   deposited more than once (identical traces, frame counts or annotations),
+   report each pair, and count each recording once. Where the analysis treats
+   a unit as the same across sessions, show that it is, or state it as an
+   assumption and also give results per session.
+3. Choose the version to pin. Pin the version the paper cites, as the claims
+   file gives it. If it cites none, pin the most recent published version,
+   unless an earlier one matches the claims file's description better. Say
+   why in the notebook's header. If versions differ in content the analysis
+   uses, show the difference.
+4. Decide what comes from outside the dandiset. Data from elsewhere may be
+   used only when the claims file says the paper relies on it, it is public,
+   and it is pinned: a DOI, or a repository at a commit. Record each under
+   `inputs` in the attempt. A claim whose outside input is not public is
+   blocked with `data_missing`, and its notes say where you looked.
 
    The registry judges the dandiset, so claims that use outside data are
    kept apart:
@@ -69,7 +205,10 @@ Do this before any analysis.
      They bring in no measurements. A link claim must confirm the names, and
      the missing names are recorded as a finding (`metadata_insufficient`).
    - When outside data has to be matched to the dandiset's cells, sessions
-     or subjects, a claim of its own (`kind: link`) tests the link: how
+     or subjects, a claim of its own (`kind: link`) tests the link. Link
+     claims are the registry's checks, not findings of the paper, so the
+     author adds them to the claims file; they are the only claims the
+     author writes. A link claim says how
      records are matched (an identifier, or, where there is none, summary
      values the paper or its code published, such as per-condition medians),
      what fraction match, and whether the matched records agree on what both
@@ -96,90 +235,14 @@ Do this before any analysis.
      from as far as the outputs show: whether the dandiset's measures match
      the paper's per-cell values where those are published, and whether the
      outside labels match the paper's counts.
-7. Write the claims file, `claims/<dandiset>/<doi with / replaced by ->.yaml`.
-   - One claim per finding, at the level of a figure panel or a reported
-     number when the full text is available. Cover the paper's main findings,
-     including those the dandiset cannot test.
-   - `statement`: the finding in words. `source`: where the paper shows it,
-     precise enough to find without searching: a figure panel, or a section
-     and paragraph ("Results, Place fields, paragraph 3").
-   - `kind`: a claim that only checks the link between the dandiset and
-     the paper's outside material (step 6) is `kind: link`. It is not a
-     finding of the paper and is counted apart from the findings.
-   - `quote`: the sentence at `source` that states the finding, copied word
-     for word from the full text, cut with "..." where it runs long. It lets a
-     reader check the statement against the paper without opening it. For a
-     finding shown only in a figure, quote the legend or the sentence of the
-     Results that cites the panel.
-   - `inferred`: every finding has a quote or, when no sentence of the paper
-     states it (numbers only in a table, a result spread over several
-     legends), a short note under `inferred` saying so. The statement is
-     then the author's reading of the paper, and the note says what it was
-     read from.
-   - `statistics`: the statistical support the paper reports for the
-     finding, one entry per test or interval: what it compares (`about`,
-     when there is more than one), the `test` and `statistic` as named, the
-     `p`-value as a number (a bound such as "p < 0.05" is `p: 0.05` with
-     `p_relation: "<"`; a printed "P = 0" is recorded as 0), any `corrected`
-     for multiple comparisons, a confidence interval (`ci`), and `n` in
-     words. It records the paper; the
-     numbers the attempt must match, with tolerances, stay in `expected`.
-     Record only tests whose result is the finding. A significance threshold
-     used to select or count units, cells or pairs ("238 of 288 neurons were
-     better fit, p < 0.05") is a method, not a result, and is left out.
-     Leave the field out when the paper reports no test or interval for the
-     finding.
-   - `expected`: each reported number the claim rests on, with a tolerance.
-     Use the paper's own uncertainty when it gives one (a confidence
-     interval, or the stated spread); otherwise 10% of the reported value.
-     For a reported range ("2 to 13%"), the claim holds inside the range
-     widened by 10% of each bound. Give the reason for any other tolerance.
-   - `criterion`: how the claim will be judged, for any claim that is not
-     settled by its expected values alone ("similar", "many", "tended to").
-     Write it before running the analysis of that claim. The data check may
-     come first; say in the file's opening comment what results you had seen
-     when you wrote the criteria.
-   - When a reported number can be read in more than one way (which trials
-     form the denominator, which subset is meant), list in the criterion the
-     readings the paper's text plausibly allows, before the analysis. The
-     claim is reproduced if the result matches under any of them. The
-     notebook shows every reading, the notes say which ones match, and the
-     ambiguity is recorded as a deviation.
-   - Methods come from the paper, never from the author. Every part of a
-     criterion's method (the selection, the measure, the test, windows,
-     bins, thresholds, what a measure is compared with) is taken from the
-     Methods, the figure legends, the supplement, or the code the paper
-     links, and the criterion says which. Search all of them before
-     treating a detail as open.
-   - A detail none of them fixes is recorded as a deviation that says so.
-     If it cannot change the outcome (a plotting bin, a random seed), use a
-     standard choice and say that it is one. If it could change the outcome
-     (how folds are formed, what a measure is compared with, how a penalty
-     is chosen), the criterion names the readings the paper's text allows,
-     before the analysis, and the notebook runs each of them. The outcome is
-     the one they all give; when they give different outcomes, the claim is
-     blocked as `methods_underspecified`, with every result shown. A choice
-     the author makes is never the basis of an outcome.
-   - For a claim of absence ("no difference", "did not change"), the
-     criterion names the test and threshold the paper used. The claim is
-     reproduced when that test does not find the effect and not reproduced
-     when it does; give the size of the effect either way. The rule for
-     several readings does not apply: absence is judged on the paper's test
-     alone, as written, even when the test mixes in a condition that does
-     not belong (show the cleaner test as a variant).
-   - If a criterion turns out unable to decide (two candidates tied), break
-     the tie as the paper's methods or code imply, record it as a deviation,
-     and show the other result.
-   - `depends_on`: the claims whose result this one uses, such as the cells
-     another claim selects.
-8. Decide now which claims are blocked, and why; a block that depends on a
+5. Decide now which claims are blocked, and why; a block that depends on a
    selection (too few units under the claim's own rule) is decided once the
    selection is made. Give the main reason under
    `blocked_by` and any others in the notes:
    - `data_missing`: something the claim needs is not in the dandiset and
      not public anywhere else, or for an outside input, not public. When the
      paper deposited it in another public archive, the claim is
-     `data: elsewhere` instead (step 6).
+     `data: elsewhere` instead (step 4).
    - `metadata_insufficient`: the data are there but cannot be interpreted or
      linked, for lack of a description, label, identifier or mapping.
    - `methods_underspecified`: neither the paper nor its code fixes the
@@ -194,6 +257,15 @@ Do this before any analysis.
    - `other`: say what, for example too few units under the claim's own rule.
 
    A claim that depends on a blocked claim is blocked for the same reason.
+
+6. Ask when the claims file does not say. When a claim needs something the
+   claims file does not give (which trials, which subset, a window, a
+   threshold, what a measure is compared with), do not choose it. Add a
+   question to `questions/<dandiset>.yaml` (`claim`, `question`, and
+   why the answer could change the outcome), and test the claim under each
+   reading you can see, or block it as `methods_underspecified` until the
+   question is answered. A reader answers from the paper (reader, step 6), and
+   a later run, `author-answers`, takes up the answers.
 
 ### 2. Check the data against its description
 
@@ -224,16 +296,16 @@ module.
   so that adding a cell earlier does not change its numbers.
 - **Put loading and reusable measures in a helper module**, so later notebooks
   on the dandiset can import it. Say in its docstring where a parameter comes
-  from: the paper's Methods, legends or supplement, or its code (say which),
-  or a standard choice for a detail that cannot change a result (say so).
+  from: the claim's criterion (which cites the paper or its code), or a
+  standard choice for a detail that cannot change a result (say so).
 - **Keep it fast.** Reduce the data to what the analysis needs as it loads.
   Aim for under ten minutes; CI fails a notebook over thirty. If the analysis
   runs many small model fits, limit linear-algebra threads to one.
 
 The notebook has these parts, in this order:
 
-1. **Header.** The paper, the dandiset and version, whether the full text was
-   used, and a table of the claims saying which are tested and which blocked.
+1. **Header.** The paper, the dandiset and version, the text the claims file
+   was written from, and a table of the claims saying which are tested and which blocked.
 2. **Data check.** A cell tagged `sanity` that prints what was loaded: counts
    by subject, session and condition, and the ranges and units of every
    variable used. State each check of the metadata against the data.
@@ -325,8 +397,9 @@ Do not verify your own attempt. Give the verifier:
 - the claims file.
 
 `python tools/entry.py handover entries/<name>` builds these in
-`executed/<name>/handover/` from the executed copy. The verifier gets the
-paper itself, from its DOI.
+`executed/<name>/handover/` from the executed copy. The verifier, like the
+author, does not get the paper: it checks the analysis against the claims
+file, which a reader has already checked against the paper.
 
 After the first round, fix what it found, re-run, and hand over the full
 executed notebook for the second round. Record each round under
@@ -367,10 +440,12 @@ Be skeptical. Do not assume the analysis is right.
 
 ### Round 1: without the author's conclusions
 
-1. Read the notebook, the helper module and the relevant parts of the paper.
+1. Read the notebook, the helper module and the claims file. You do not
+   have the paper; the claims file is its account.
 2. Check the code: that every number derives from the loaded data; that
-   every method choice is taken from the paper or its code, as the criterion
-   says, and none is the author's own; that selection, conditions and analysis windows follow the paper; units; leakage
+   every method choice is the one the claim's criterion gives, and none is
+   the author's own; that selection, conditions and analysis windows follow
+   the claims file; units; leakage
    between training and test data; the statistics; anything assumed and never
    checked. Test helper functions on synthetic inputs where that is cheap.
 3. For each tested claim, decide your own outcome from the notebook's outputs.

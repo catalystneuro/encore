@@ -126,10 +126,21 @@ subscription token in the `CLAUDE_CODE_OAUTH_TOKEN` secret:
 gh workflow run attempt.yml -f dandiset=000147 -f role=author
 ```
 
-The roles, in order, are `author`, `verifier-1`, `author-revise-1`,
-`verifier-2` and `author-revise-2`, then `verifier-3` and `author-revise-3`
-when the final revision proposed a change of outcome. To run whole attempts on several dandisets at once,
-each going through all five roles in order:
+An attempt starts with the reader's runs, the only ones that read the paper,
+in the [Paper run](.github/workflows/papers.yml) workflow:
+
+```bash
+gh workflow run papers.yml -f dandiset=000147 -f role=claims
+```
+
+The roles, in order, are `claims` and `claims-check` (Paper run), then
+`author`, `answer` (Paper run) and `author-answers` when the author asked
+questions, `verifier-1`, `author-revise-1`, `verifier-2` and
+`author-revise-2`, then `verifier-3` and `author-revise-3` when the final
+revision proposed a change of outcome. The papers are kept in a private
+repository that only the Paper run can read ([docs/pipeline.md](docs/pipeline.md)).
+To run whole attempts on several dandisets at once, each going through the
+roles in order:
 
 ```bash
 gh workflow run pipeline.yml -f dandisets="000628 000939 001075" -f max_parallel=3

@@ -3,6 +3,7 @@
     python tools/runner/describe.py title DANDISET     # the pull request's title
     python tools/runner/describe.py body DANDISET      # the pull request's description
     python tools/runner/describe.py next [SKIP ...]    # the next dandiset in the queue
+    python tools/runner/describe.py deprecated DANDISET  # "true" when its latest attempt is deprecated
     gh run list ... --json databaseId,displayTitle,status | python tools/runner/describe.py run DANDISET ROLE
                                                        # "<id> <status>" of the newest run of a role, if any
 
@@ -59,7 +60,7 @@ def next_target(skip: set[str]) -> str | None:
 
 def newest_run(runs: list[dict], dandiset: str, role: str) -> str:
     """The id and status of the newest run of a role on a dandiset, or "" when there is none."""
-    mine = [r for r in runs if r["displayTitle"] == f"Agent run: {dandiset} {role}"]
+    mine = [r for r in runs if r["displayTitle"] in (f"Agent run: {dandiset} {role}", f"Paper run: {dandiset} {role}")]
     return f'{mine[0]["databaseId"]} {mine[0]["status"]}' if mine else ""
 
 
@@ -71,6 +72,10 @@ def main() -> int:
         print(body(rest[0]))
     elif command == "run":
         print(newest_run(json.load(sys.stdin), *rest))
+    elif command == "deprecated":
+        from agent_run import attempt_of
+        found = attempt_of(rest[0])
+        print("true" if found and found[0].get("deprecated") else "false")
     elif command == "next":
         found = next_target(set(rest))
         if found is None:

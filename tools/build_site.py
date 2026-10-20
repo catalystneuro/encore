@@ -232,6 +232,7 @@ def collect(executed: Path | None = None) -> dict:
     transcripts = {d.name: sorted(p.name for p in d.glob("*.md"))
                    for d in sorted((ROOT / "transcripts").glob("*")) if d.is_dir()}
     return finish({
+        "pipeline": pipeline_inputs(),
         "transcripts": transcripts,
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
@@ -241,6 +242,22 @@ def collect(executed: Path | None = None) -> dict:
         "targets": targets,
         "demo": False,
     })
+
+
+def pipeline_inputs() -> dict:
+    """What the Pipeline page reads besides the attempts: which papers are in the paper store
+    (papers/manifest.yaml), each claims file's last check, and each attempt's open questions."""
+    manifest = ROOT / "papers" / "manifest.yaml"
+    papers = (load_yaml(manifest) or {}).get("targets", {}) if manifest.is_file() else {}
+    checks, questions = {}, {}
+    for path in sorted((ROOT / "claims").glob("*/*.yaml")):
+        last = ((load_yaml(path) or {}).get("checks") or [None])[-1]
+        checks[path.parent.name] = None if last is None else bool(last.get("ready"))
+    for path in sorted((ROOT / "questions").glob("*.yaml")):
+        q = load_yaml(path) or []
+        q = q.get("questions", []) if isinstance(q, dict) else q
+        questions[path.stem] = sum(1 for x in q if not x.get("answered"))
+    return {"papers": {str(k): v for k, v in papers.items()}, "checks": checks, "questions": questions}
 
 
 def finish(data: dict) -> dict:
@@ -371,6 +388,48 @@ def outside_note(attempts, root: str = "") -> str:
 def weakest_tier(attempts: list[dict]) -> str:
     """A dandiset is only as verified as its least verified attempt."""
     return min((a["tier"] for a in attempts), key=TIER_ORDER.index)
+
+
+PIPELINE_STEPS = [("paper", "Paper"), ("claims", "Claims"), ("check", "Claims check"),
+                  ("attempt", "Attempt"), ("questions", "Questions"), ("verified", "Verified")]
+
+
+def pipeline_rows(data: dict) -> list[dict]:
+    """One row per target: the state of each step of docs/pipeline.md, read from the repository.
+
+    A state is "done", "waiting" (on a person: a paper to supply, a claims file its check did not
+    pass), "todo", "deprecated", or "none" (a step that does not apply)."""
+    inputs = data.get("pipeline") or {"papers": {}, "checks": {}, "questions": {}}
+    current = current_attempts(data)
+    out = []
+    for t in data["targets"]:
+        d = t["dandiset"]
+        papers = inputs["papers"].get(d, [])
+        missing = [p["doi"] for p in papers if p["status"] == "missing"]
+        stored = sum(1 for p in papers if p["status"] == "stored")
+        check = inputs["checks"].get(d, "absent")
+        atts = current.get(d, [])
+        open_q = inputs["questions"].get(d, 0)
+        # A deprecated attempt's claims are to be read again from the paper.
+        rerun = any(a.get("deprecated") for a in atts)
+        state = {
+            "paper": ("done", f"{stored} of {len(papers)}") if papers and not missing
+            else ("waiting", f"{len(missing)} not in store") if papers else ("waiting", "no paper named"),
+            "claims": ("todo", "to read again") if rerun else ("done", "") if check != "absent" else ("todo", ""),
+            "check": ("todo", "") if rerun else ("done", "ready") if check is True
+            else ("waiting", "not ready") if check is False
+            else ("none", "before checks") if check is None else ("todo", ""),
+            "attempt": ("deprecated", "rerun due") if rerun
+            else ("done", atts[-1]["date"]) if atts else ("todo", ""),
+            "questions": ("todo", f"{open_q} open") if open_q else ("none", ""),
+            "verified": ("done", "") if atts and all(a["tier"] != "runs" for a in atts)
+            else ("todo", "") if atts else ("none", ""),
+        }
+        nxt = next((label for key, label in PIPELINE_STEPS if state[key][0] in ("todo", "waiting", "deprecated")), "")
+        out.append({"dandiset": d, "name": t["name"], "state": state, "next": nxt,
+                    "waiting": [label for key, label in PIPELINE_STEPS if state[key][0] == "waiting"],
+                    "missing": missing, "page": f"dandisets/{d}/" if atts else None})
+    return out
 
 
 def entries_for(data: dict, dandiset: str) -> list[dict]:
@@ -600,6 +659,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
     r = rows_cache(data)
     tabs = [("overview", "Overview", root or "./", None),
             ("dandisets", "Dandisets", f"{root}dandisets/", len({a["dandiset"] for a in data["attempts"]})),
+            ("pipeline", "Pipeline", f"{root}pipeline/", None),
             ("about", "About", f"{root}about/", None)]
     nav = ""
     for key, label, href, n in tabs:
@@ -909,6 +969,48 @@ ABOUT_STEPS = [
      "The attempt is added to the registry's records. The notebook runs again in a clean environment, "
      "and once the checks pass the attempt is merged and appears here."),
 ]
+
+
+def page_pipeline(data: dict) -> str:
+    """Where every target stands in the pipeline, and what is waiting on a person."""
+    root = "../"
+    rows = pipeline_rows(data)
+    counts = {key: {} for key, _ in PIPELINE_STEPS}
+    for r in rows:
+        for key, _ in PIPELINE_STEPS:
+            st = r["state"][key][0]
+            counts[key][st] = counts[key].get(st, 0) + 1
+    head = "".join(f'<th>{e(label)}<div class="small muted">{counts[key].get("done", 0):,} done'
+                   + (f', {counts[key]["waiting"]:,} waiting' if counts[key].get("waiting") else "")
+                   + "</div></th>" for key, label in PIPELINE_STEPS)
+    body = ""
+    for r in rows:
+        name = (f'<a href="{root}{e(r["page"])}">{e(r["dandiset"])}</a>' if r["page"] else e(r["dandiset"]))
+        cells = "".join(f'<td class="ps {e(r["state"][key][0])}" title="{e(r["state"][key][0])}">'
+                        f'{e(r["state"][key][1])}</td>' for key, _ in PIPELINE_STEPS)
+        body += (f'<tr data-waiting="{"1" if r["waiting"] else "0"}"><td>{name}</td>'
+                 f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}</td></tr>')
+    waiting = [r for r in rows if r["waiting"]]
+    papers_missing = sum(len(r["missing"]) for r in waiting)
+    html_ = f'''<header class="page">
+  <h1>Pipeline</h1>
+  <p class="lede">Every target, and where it stands in the
+  <a href="{REPO_URL}/blob/main/docs/pipeline.md">pipeline</a>: its paper, the claims read from it and their
+  check, the attempt, the questions it raised, and verification. {len(waiting):,} targets are waiting on a person,
+  with {papers_missing:,} papers to supply; the list of missing papers is in
+  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.</p>
+  <p><label class="small"><input type="checkbox" id="only-waiting"> Only targets waiting on a person</label></p>
+</header>
+<main><div class="panel pipeline-wrap"><table class="pipeline">
+<thead><tr><th>Dandiset</th><th>Name</th>{head}<th>Next</th></tr></thead>
+<tbody>{body}</tbody></table></div></main>
+<script>
+(function(){{var box=document.getElementById("only-waiting");if(!box)return;
+box.addEventListener("change",function(){{document.querySelectorAll("table.pipeline tbody tr").forEach(function(tr){{
+tr.hidden=box.checked&&tr.dataset.waiting!=="1";}});}});}})();
+</script>'''
+    return shell(data, "Pipeline", root, "pipeline", html_, path="pipeline/",
+                 description="Where every target of the reproduction registry stands in its pipeline.")
 
 
 def page_about(data: dict) -> str:
@@ -1314,6 +1416,9 @@ def build(data: dict, output: Path) -> None:
     (output / "index.html").write_text(page_overview(data))
     (output / "about").mkdir(exist_ok=True)
     (output / "about" / "index.html").write_text(page_about(data))
+    (output / "pipeline").mkdir(exist_ok=True)
+    (output / "pipeline" / "index.html").write_text(page_pipeline(data))
+    (output / "data" / "pipeline.json").write_text(json.dumps(pipeline_rows(data), separators=(",", ":")) + "\n")
     for kind in LISTS:
         (output / kind / "index.html").write_text(page_list(data, kind))
         (output / "data" / f"{kind}.json").write_text(json.dumps(r[kind], separators=(",", ":")) + "\n")
@@ -1336,7 +1441,7 @@ def build(data: dict, output: Path) -> None:
 
 def sitemap(data: dict) -> str:
     """Every page of the site, for search engines; each dandiset page dated by its latest attempt."""
-    pages = [("", data["generated"][:10]), ("about/", data["generated"][:10])]
+    pages = [("", data["generated"][:10]), ("about/", data["generated"][:10]), ("pipeline/", data["generated"][:10])]
     pages += [(f"{kind}/", data["generated"][:10]) for kind in LISTS]
     pages += [(f"dandisets/{d}/", max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)

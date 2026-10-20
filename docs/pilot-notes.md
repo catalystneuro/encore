@@ -4706,3 +4706,32 @@ which. A detail none of them fixes is recorded as such; if it could change
 the outcome, every reading the paper allows is run, and the claim is
 blocked as `methods_underspecified` when they disagree. The verifier now
 checks that no method choice is the author's own.
+
+## Protocol pilot-10 (2026-10-20): the reader and the author
+
+An attempt is now made by two kinds of agent that see different things. A
+reader reads the paper and writes the claims file, with every claim's method
+taken from the paper and cited; a second reader checks it against the paper
+and records the check in the file. Readers never see the dandiset's data. The
+author then tests the claims on the dandiset without the paper: the claims
+file is its only account of it, and it may not change a claim's statement,
+expected values or criterion. When it needs something the claims file does
+not give, it asks, in `questions/<dandiset>.yaml`, and a reader answers from
+the paper. The verifiers, like the author, check the analysis against the
+claims file.
+
+This does three things. The criteria are fixed from the paper by an agent that
+has not seen the data, which is close to registering them in advance. No
+method can come from the agent that runs the analysis, which is the failure
+pilot-9 was written against. And only the reader's runs need the paper, so
+papers that are not open access can be used without putting them where every
+run can read them: they are kept in a private repository,
+catalystneuro/registry-papers, that only jobs in the `papers` environment can
+read, from main, with a read-only key. The steps from a target to a merged
+attempt, and the Pipeline page that shows where each target stands, are in
+[pipeline.md](pipeline.md).
+
+The paper store started with 181 papers: 151 fetched (Europe PMC, PubMed
+Central, bioRxiv, eLife), 2 from arXiv, and 28 supplied by hand as PDFs,
+with supplements where the results rest on them. Which papers it holds, and which are missing, is in
+`papers/manifest.yaml`, without their text.
