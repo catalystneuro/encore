@@ -2,7 +2,7 @@ schema_version: 2
 id: 000005-yu-2016-02
 dataset:
   archive: dandi
-  id: "000005"
+  id: '000005'
   version: 0.220126.1853
   doi: 10.48324/dandi.000005/0.220126.1853
 paper: doi:10.1038/nn.4412
@@ -17,269 +17,316 @@ provenance:
     model: claude-opus-5-5
     protocol: pilot-10
 inputs:
-- what: Supplementary Table 1 of the paper (the mouse line of each mouse), read at run time from the
-    supplement PDF on the publisher's site, used to name the mouse lines the files leave blank and to
-    compare the cells per line with Supplementary Table 2
+- what: Supplementary Table 1 of the paper (the mouse line of each mouse), read at run time from the supplement
+    PDF on the publisher's site, used to name the mouse lines the files leave blank and to compare the
+    cells per line with Supplementary Table 2
   source: doi:10.1038/nn.4412
 outcomes:
 - claim: behavior-touches
   outcome: partially_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:behavior-touches
-  measured: [6.04, 0.85, 0.703, 0.585]
+  measured:
+  - 6.04
+  - 0.85
+  - 0.681
+  - 0.585
   notes: Under light reading (x), every trial, with all sessions (b) and principal-whisker touches (i),
-    mice touch the pole 6.04 times per lick trial (9,794 trials) and 0.85 times per no-lick trial
-    (8,223 trials), both within tolerance; no other reading puts both counts within tolerance. Under
-    light reading (y), trials without light only, the same recordings give 5.74 and 0.80 (8,220 and
-    6,717 trials), and the no-lick count is outside tolerance, so no (y) reading matches.
-    Performance averages 0.703 under (x) and 0.718 under (y) over 109 cortical cells (flagged mice
-    left out; 0.695 over all 122 cells), within tolerance, and 0.585 over the 29 VPM units under
-    both (the VPM sessions have no light), outside 0.71 +- 0.071. The trial counts match 4,147 and
-    4,173 under no reading; the nearest are 4,759 and 4,748 (reading a, every trial). What the
-    answer changed. The answer of 2026-10-20 says the paper does not state whether light trials
-    count, and the criterion now runs (x) and (y). This attempt had counted every trial, which is
-    reading (x), and had flagged the (y) result as a deviation; (y) is now run as a reading and does
-    not match, and the outcome stays partially reproduced under (x). New claim.
+    mice touch the pole 6.04 times per lick trial (9,794 trials) and 0.85 times per no-lick trial (8,223
+    trials), both within tolerance; no other reading puts both counts within tolerance. Under light reading
+    (y), trials without light only, the same recordings give 5.74 and 0.80 (8,219 and 6,713 trials), and
+    the no-lick count is outside tolerance. The matching trial counts are more than twice the paper's
+    4,147 and 4,173, and no reading gives the paper's counts (the nearest, 5,212 and 5,149, come from
+    reading a with every trial). Performance averages 0.681 under (x) and 0.694 under (y) over all 122
+    cortical cells, within tolerance (0.703 and 0.718 without the flagged mice, a variant that no longer
+    decides), and 0.585 over the 29 VPM units under both (the VPM sessions have no light), outside 0.71
+    +- 0.071. New claim.
   deviations:
-  - The 111 control cortical cells of reading (a) cannot be identified, as the files do not mark the
-    ION-cut mice; the cells of the 4 flagged mice are left out for reading (a).
+  - The 111 control cortical cells of reading (a) cannot be identified, as the files do not mark the ION-cut
+    mice; every cortical cell counts, as in every other group, and leaving out the cells of the 4 flagged
+    mice is a variant.
 - claim: vpm-touch
   outcome: not_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:vpm-touch
-  measured: [0.403, 0.268, 6.14, 2.5]
-  notes: Over the 29 VPM units, spikes per touch (0 to 25 ms after minus 0 to 25 ms before onset,
-    principal-whisker touches with ITI of at least 25 ms) average 0.403, median 0.268, outside 0.6
-    +- 0.093 and 0.4 +- 0.04. 25 units pass the latency exclusion; the latency has mean 5.64 ms and
-    median 2.0 ms with the bin's left edge (O9 a) and 6.14 and 2.5 ms with its centre (O9 b), one
-    unit at 71.5 ms. What the answer changed. The answer of 2026-10-20 says the paper does not fix
-    the bin position, and the criterion now runs both; this attempt already showed both, the spikes
-    per touch fail under either, and the outcome is unchanged. The measured latencies are those of
-    O9 b, the reading under which the median matches. The earlier attempt found this claim
-    reproduced under its own criterion (a fraction of units with a one-sided test at p < 0.01,
-    0.83); the new criterion tests the paper's spikes per touch and latency, and the files' one
-    principal whisker per file lowers the spikes per touch (11 of 20 units in files with several
-    whiskers respond most to another whisker; each unit's best whisker gives a mean of 0.485, a
-    selection biased upward that the criterion does not make).
+  measured:
+  - 0.403
+  - 0.268
+  - 6.14
+  - 2.5
+  notes: Over the 29 VPM units, spikes per touch (0 to 25 ms after minus 0 to 25 ms before onset, principal-whisker
+    touches with ITI of at least 25 ms) average 0.403, median 0.268, outside 0.6 +- 0.093 and 0.4 +- 0.04.
+    25 units pass the latency exclusion; the latency has mean 5.64 ms and median 2.0 ms with the bin's
+    left edge (O9 a) and 6.14 and 2.5 ms with its centre (O9 b), one unit at 71.5 ms. What the answer
+    changed. The answer of 2026-10-20 says the paper does not fix the bin position, and the criterion
+    now runs both; this attempt already showed both, the spikes per touch fail under either, and the outcome
+    is unchanged. The measured latencies are those of O9 b, the reading under which the median matches.
+    The earlier attempt found this claim reproduced under its own criterion (a fraction of units with
+    a one-sided test at p < 0.01, 0.83); the new criterion tests the paper's spikes per touch and latency,
+    and the files' one principal whisker per file lowers the spikes per touch (11 of 20 units in files
+    with several whiskers respond most to another whisker; each unit's best whisker gives a mean of 0.485,
+    a selection biased upward that the criterion does not make).
   deviations:
-  - The files give one principal whisker per VPM file, though the session description says each unit
-    has its own; the file's principal whisker is used for every unit.
+  - The files give one principal whisker per VPM file, though the session description says each unit has
+    its own; the file's principal whisker is used for every unit.
 - claim: vpm-whisking
   outcome: partially_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:vpm-whisking
-  measured: [24, 3.76, 1.71, 11.54]
-  notes: The whisking rate exceeds the nonwhisking rate over the 29 units (signed-rank p = 5.2e-08
-    zero-phase, 7.1e-08 forward; higher in 28). Significant increases number 24 and 25 (zero-phase,
-    per-epoch and per-trial samples), 21 and 24 (forward); 21 is outside 25 +- 2.5. Mean nonwhisking
-    rate 3.76 and 3.93 spikes/s and median 1.71 and 1.72, outside tolerance; mean whisking rate 11.54
-    (within) and 11.01 (outside). The earlier attempt found this reproduced under its own criterion (a
-    phase-modulation test, 0.88 of units); the new criterion asks for the paper's rates, which are
-    lower here.
+  measured:
+  - 24
+  - 3.76
+  - 1.71
+  - 11.54
+  notes: The whisking rate exceeds the nonwhisking rate over the 29 units under every filter (O1), sample
+    (O2) and touch reading (O11) (signed-rank p = 5.2e-08 zero-phase and 7.1e-08 forward for the main
+    epochs; higher in 28). Significant increases number 21 to 25 over the 16 readings, outside 25 +- 2.5
+    under some. Mean nonwhisking rate 3.74 to 3.96 spikes/s and median 1.71 to 1.86, outside tolerance
+    under every reading; mean whisking rate 11.01 to 12.09, within 13.5 +- 2.36 under some readings only.
+    The earlier attempt found this reproduced under its own criterion (a phase-modulation test, 0.88 of
+    units); the new criterion asks for the paper's rates, which are lower here.
 - claim: vpm-whisking-phase
   outcome: reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:vpm-whisking-phase
   measured: 25
-  notes: 25 (zero-phase) and 27 (forward) of 29 units have r2 > 0.25 for a sinusoid fit of rate in 12
-    phase bins. With spikes moved to the next trial, 16 of 29 units also pass, so the r2 threshold
-    marks more than half of the units on a null; the criterion does not ask for a null. New claim.
+  notes: 25 to 27 of 29 units have r2 > 0.25 for a sinusoid fit of rate in 12 phase bins under both filters
+    and every O11 reading (25 zero-phase and 27 forward for the main epochs). With spikes moved to the
+    next trial, 16 of 29 units also pass, so the r2 threshold marks more than half of the units on a null;
+    the criterion does not ask for a null, and the units' own spikes give a higher r2 (p = 0.0015). New
+    claim.
 - claim: exc-vm-touch-whisking
   outcome: partially_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:exc-vm-touch-whisking
-  measured: [-61.61, 7.68, 4.77, 0.86]
-  notes: 51 whole-cell excitatory cells (the paper has 37 control cells); 48 have at least 5 touches, and
-    all 48 have a positive touch PSP and a latency. Resting Vm mean -61.61 mV (O4 a; -61.88 O4 b) is
-    within tolerance under every reading. The touch amplitude (4.77 mV) and the latency (7.68 ms
-    with dVm/dt at the sampling rate, median 4.90) are outside tolerance and do not depend on the
-    whisking readings. Under the 16 combinations of O10, O11 and the two filters, the whisking
-    change with the onset windows (reading a) ranges from 0.65 to 0.86 mV and is within 1.2 +- 0.35
-    in 2 (zero-phase, O10 a, O11 b-i 0.86 mV and b-ii 0.85 mV; the measured value is O10 a, O11
-    b-i), and with the epochs (reading b) it is 1.07 to 1.13 mV, within tolerance in all 16. Without
-    the 8 cells of the flagged mice the amplitude is 5.53 mV and the latency 4.97 ms, both within;
-    that variant does not decide. What the answers changed. The answer on the derivative fixed it at
-    the sampling rate, the reading this attempt had used, so the latency is unchanged and the 1 ms
-    bins (mean 14.85 to 15.35 ms) are no longer a reading. The answer on whisking onsets made the
-    windows (O10) and the touches bounding epochs and onsets (O11) readings; they move the whisking
-    change by at most 0.2 mV and the resting Vm by 0.02 mV, and the outcome is unchanged. New claim.
+  measured:
+  - -61.69
+  - 7.68
+  - 4.78
+  - 0.87
+  notes: 51 whole-cell excitatory cells (the paper has 37 control cells); 48 have at least 5 touches,
+    and all 48 have a positive touch PSP and a latency. Resting Vm mean -61.69 mV (O4 a; -61.89 O4 b)
+    is within tolerance under every reading. The touch amplitude (4.78 mV) and the latency (7.68 ms with
+    dVm/dt at the sampling rate, median 4.90) are outside tolerance and do not depend on the whisking
+    readings. A diagnostic shows that the latency rule picks single-sample excursions of dVm/dt in 5 cells
+    (under 1 ms) and late crossings in others (up to 101 ms); subtracting the baseline's mean dVm/dt,
+    which decides nothing, gives 7.48 ms. Under the 16 combinations of O10, O11 and the two filters, the
+    whisking change with the onset windows (reading a) ranges from 0.65 to 0.87 mV and is within 1.2 +-
+    0.35 in 2 (zero-phase, O10 a, O11 b-i 0.87 mV and b-ii 0.86 mV; the measured value is O10 a, O11 b-i),
+    and with the epochs (reading b) it is 1.08 to 1.14 mV, within tolerance in all 16. Without the 8 cells
+    of the flagged mice the amplitude is 5.54 mV and the latency 4.97 ms, both within; that variant does
+    not decide. Amplitudes go down to 0.01 mV, so that every neuron depolarizes is a weak test. Trials
+    of the PV-ChR2 cell held near 0 mV are now left out, which moves its resting Vm from -34.9 to -38.8
+    mV and the group mean from -61.61 to -61.69 mV. New claim.
   deviations:
-  - The group includes the whole-cell cells of ION-cut mice, which the files do not mark, and 4 more
-    PV-IRES-Cre whole-cell cells than Supplementary Table 2 counts.
-  - Under O11 the 250 ms touch-free rule of whisking onsets uses the touches of the whiskers the
-    reading names; the earlier rule of this attempt (every tracked whisker bounding the epochs,
-    principal-whisker touches in the 250 ms rule, 0.86 mV) is shown beside them and is the rule
-    every other claim uses.
+  - The group includes the whole-cell cells of ION-cut mice, which the files do not mark, and 4 more PV-IRES-Cre
+    whole-cell cells than Supplementary Table 2 counts.
+  - Under O11 the 250 ms touch-free rule of whisking onsets uses the touches of the whiskers the reading
+    names; the main rule (every tracked whisker bounding the epochs, principal-whisker touches in the
+    250 ms rule) is shown beside them.
+  - Trials whose median Vm is above -20 mV (13 trials of the PV-ChR2 cell, held near 0 mV by current)
+    are left out at rest, a standard choice.
 - claim: exc-threshold-touch-vs-whisking
   outcome: partially_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:exc-threshold-touch-vs-whisking
-  measured: [0.74, 4.36]
-  notes: Over 50 whole-cell excitatory cells the touch shift exceeds the whisking shift in 43
-    (signed-rank p = 1.9e-09 zero-phase, 1.3e-10 forward). Means, whisking 0.74 mV (zero-phase,
-    outside 1.1 +- 0.33) or 0.90 mV (forward, within), touch 4.36 or 4.42 mV (outside 6.1 +- 0.61).
-    The two threshold readings O3 give the same values. 17 cells have no spikes and take the default
-    threshold of -42 mV. New claim.
+  measured:
+  - 0.84
+  - 4.62
+  notes: Over 50 whole-cell excitatory cells the touch shift exceeds the whisking shift in 43 or 44 under
+    every filter and O11 reading (signed-rank p = 9e-11 to 1.3e-10). Means, whisking 0.84 to 1.16 mV (within
+    1.1 +- 0.33 under every reading), touch 4.60 to 4.67 mV (outside 6.1 +- 0.61). The two threshold readings
+    O3 give the same values (a cell's median threshold differs by at most 0.0089 mV and 8 of 41,620 spikes
+    change threshold). 17 cells have no spikes and take the default threshold of -42 mV. With the held
+    trials of the PV-ChR2 cell left out, the main whisking shift moves from 0.74 to 0.84 mV, now within
+    tolerance, and the touch shift from 4.36 to 4.62 mV, still outside. New claim.
 - claim: exc-effective-reversal
   outcome: reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:exc-effective-reversal
-  notes: Per neuron (48 with both fits) the touch reversal (median -50.0 mV) lies above the whisking
-    reversal (median -58.5 zero-phase, -59.8 forward) in 39 and 38 neurons and above the median
-    resting Vm (-63.9 mV). Pooled fits give -31.25 mV for touch and -54.98 or -56.05 mV for whisking.
-    New claim.
+  notes: Per neuron (47 or 48 with both fits) the touch reversal (median -50.0 mV, the mean of the middle
+    two, -50.23 and -49.77 mV) lies above the whisking reversal (median -57.4 to -60.9 mV over the filters
+    and the O10 and O11 readings) in 38 to 40 neurons and above the median resting Vm (-63.9 mV). Pooled
+    fits give -31.90 mV for touch and -51.6 to -56.3 mV for whisking. New claim.
 - claim: exc-inhibition-timing
   outcome: blocked
   blocked_by: data_missing
-  notes: Only one whole-cell file has trials held near 0 mV (13 trials of the PV-ChR2 cell, which
-    Supplementary Table 2 counts as FS). The 6 excitatory neurons recorded at rest and with steady
-    depolarizing current are not in the dandiset. New claim.
+  notes: 'Only one whole-cell file has trials held near 0 mV (13 trials of the PV-ChR2 cell, which Supplementary
+    Table 2 counts as FS). No other file pairs a whole-cell trace with a depolarizing current: the 17
+    cell-attached files of VGAT-ChR2 mice that carry a stored current of about 1.9 in every trial have
+    traces near 0 mV with a 1 to 100 Hz s.d. of at most 0.33 mV (whole-cell median 1.95 mV), and only
+    one cell-attached file has a trial-median trace below -20 mV. The 6 excitatory neurons recorded at
+    rest and with steady depolarizing current are not in the dandiset. New claim.'
 - claim: exc-inhibition-whisking
   outcome: blocked
   blocked_by: data_missing
   notes: Depends on exc-inhibition-timing; the same 6 depolarized recordings are missing. New claim.
 - claim: fs-touch-response
-  outcome: partially_reproduced
+  outcome: blocked
   notebook: reproduce_yu_2016.ipynb
   output: claim:fs-touch-response
-  measured: [8.53, 1.5, 5.23]
-  notes: No FS reading puts all three values within tolerance. Under (a)(i), driven at p < 0.001 and
-    inside the boundary, 17 FS cells have a principal whisker (paper 26); the nonwhisking rate 8.53
-    spikes/s and the latency 5.23 ms (bin edge, O9 a) or 5.73 ms (centre, O9 b) over 13 cells are
-    within tolerance, and spikes per touch 1.50 is outside 1.9 +- 0.2. (b)(i) gives the same cells.
-    Without the boundary, (a)(ii) has 25 cells (8.73 spikes/s, 1.48 spikes per touch, latency 6.16
-    or 6.66 ms) and (b)(ii) 28 (8.71, 1.39, 10.64 or 11.14 ms), with only the nonwhisking rate
-    within tolerance. The counts against Supplementary Table 2 are 4 VGAT-ChR2 whole-cell FS cells
-    under every reading (paper 5) and 12, 20, 12 and 23 cell-attached ones under (a)(i), (a)(ii),
-    (b)(i) and (b)(ii) (paper 24, 14 control and 10 ION-cut), so the readings without the boundary
-    come closer to the paper's count. What the answer changed. The answer of 2026-10-20 says the
-    paper gives no test, baseline or threshold for a driven cell and defines peak and trough only in
-    a figure inset; the criterion now runs both thresholds with and without the boundary and gives
-    the paper's counts as the check. The two readings without the boundary are new here; neither
-    matches, and the outcome is unchanged. The answer on the bin position (O9) made edge and centre
-    readings; the latency is within tolerance under both. New claim.
+  notes: The four FS readings of the criterion give different outcomes. Under (a)(i), driven at p < 0.001
+    and inside the boundary, 17 FS cells have a principal whisker (paper 26); the nonwhisking rate 8.53
+    spikes/s (8.52 to 8.72 over the O11 readings and filters) and the latency 5.23 ms (bin edge, O9 a)
+    or 5.73 ms (centre, O9 b) over 13 cells are within tolerance, and spikes per touch 1.50 is outside
+    1.9 +- 0.2, so two of three values match (partially reproduced); (b)(i) gives the same cells. Without
+    the boundary, (a)(ii) has 25 cells (8.73 spikes/s, 1.48 spikes per touch, latency 6.16 or 6.66 ms)
+    and (b)(ii) 28 (8.71, 1.39, 10.64 or 11.14 ms), with only the nonwhisking rate within tolerance (not
+    reproduced). The counts against Supplementary Table 2 are 4 VGAT-ChR2 whole-cell FS cells under every
+    reading (paper 5) and 12, 20, 12 and 23 cell-attached ones under (a)(i), (a)(ii), (b)(i) and (b)(ii)
+    (paper 24, 14 control and 10 ION-cut), so the readings without the boundary come closer to the paper's
+    count. The tag test now counts every pulse of the 5 and 10 Hz trains; it drives the same 24 VGAT-ChR2
+    cells as the earlier rule of isolated pulses. Changed after verification round 1 from partially reproduced,
+    as the criterion's rule for readings that disagree requires. New claim.
   deviations:
-  - The light-driven test (one-sided binomial test of a spike 0 to 5 ms after isolated pulses
-    against the same 5 ms 50 ms earlier) and the waveform measures (peak-to-trough time and peak to
-    trough ratio of the 300 Hz high-passed mean spike, larger deflection made positive) are this
-    attempt's, as the paper gives neither; every FS group includes FS cells of ION-cut mice, which
-    the files do not mark.
+  - The light-driven test (one-sided binomial test of a spike 0 to 5 ms after each pulse of the 5 and
+    10 Hz trains, previous pulse more than 60 ms earlier, against the same 5 ms 50 ms earlier) and the
+    waveform measures (peak-to-trough time and peak to trough ratio of the 300 Hz high-passed mean spike,
+    larger deflection made positive) are this attempt's, as the paper gives neither; every FS group includes
+    FS cells of ION-cut mice, which the files do not mark.
+  - 26 VGAT-ChR2 cells have fewer than 10 short pulses at any cortical site, so no tag test can be run,
+    and they count as excitatory.
+  blocked_by: methods_underspecified
 - claim: fs-vm-touch-whisking
   outcome: not_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:fs-vm-touch-whisking
-  measured: [5.56, 1.88, 2.54]
+  measured:
+  - 5.56
+  - 1.88
+  - 2.54
   notes: 5 whole-cell FS cells (paper 7). Touch amplitude 5.56 mV and whisking depolarization 2.54 mV
-    (onset windows; 2.24 forward filter) are within tolerance; the threshold-distance reading gives
-    1.01 mV, outside. The touch latency with dVm/dt at the sampling rate averages 1.88 ms (median
-    1.35), outside 4.0 +- 0.4, with two cells at 0.0 and 0.3 ms, so the touch values are not all
-    within tolerance. What the answer changed. The answer of 2026-10-20 fixed the derivative at the
-    recording's sampling rate, the reading this attempt had used, so the outcome is unchanged; the 1
-    ms bins, under which the mean over 3 cells is 3.67 to 4.17 ms and the claim would have been
-    reproduced, are no longer a reading. New claim.
+    (onset windows; 2.24 forward filter; 1.47 to 2.55 over the O10 and O11 readings, within tolerance
+    in 12 of 16) are within tolerance; the threshold-distance reading gives 1.01 mV, outside. The touch
+    latency with dVm/dt at the sampling rate averages 1.88 ms (median 1.35), outside 4.0 +- 0.4. In the
+    two cells at 0.00 and 0.30 ms the first crossing is a single sample of dVm/dt just above the threshold
+    (0.96 against 0.71 and 3.05 against 1.85 mV/ms), in averages whose Vm lies 0.26 to 0.46 mV above the
+    pre-touch mean at onset; subtracting the baseline's mean dVm/dt, which decides nothing, gives 1.76
+    ms. So the touch values are not all within tolerance. New claim.
   deviations:
-  - The PV-ChR2 cell, FS in Supplementary Table 2, has spikes 0.44 ms wide here and falls outside
-    the 0.35 ms rule for lines without a tag; adding it is shown as a variant.
+  - The PV-ChR2 cell, FS in Supplementary Table 2, has spikes 0.44 ms wide here and falls outside the
+    0.35 ms rule for lines without a tag; adding it is shown as a variant.
 - claim: fs-whisking-rate
   outcome: partially_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:fs-whisking-rate
-  measured: [13, 2, 19.02]
-  notes: Over 17 FS cells the whisking rate exceeds the nonwhisking rate (signed-rank p = 0.00029
-    zero-phase, 0.0005 forward). 13 cells increase and 1 or 2 decrease (rank-sum p < 0.05), outside 23
-    +- 2.3 and 3 +- 0.3. Mean whisking rate 19.02 spikes/s (within 21.1 +- 3.1) or 17.77 (forward,
-    outside). New claim.
+  measured:
+  - 13
+  - 2
+  - 19.02
+  notes: Over 17 FS cells the whisking rate exceeds the nonwhisking rate under every filter, sample and
+    O11 reading (signed-rank p = 0.0002 to 0.0005). 13 or 14 cells increase and 1 to 3 decrease (rank-sum
+    p < 0.05), so the increase count is outside 23 +- 2.3 under every reading. Mean whisking rate 19.02
+    to 19.17 spikes/s with the zero-phase filter (within 21.1 +- 3.1) and 17.77 to 17.91 with the forward
+    filter (outside). New claim.
 - claim: fs-whisking-phase
   outcome: reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:fs-whisking-phase
   measured: 16
-  notes: 16 of 17 FS cells have r2 > 0.25 under both filters (5 and 3 with the double fit). With
-    spikes moved to the next trial 9 of 17 also pass, which the criterion does not ask for. New claim.
+  notes: 15 or 16 of 17 FS cells have r2 > 0.25 under both filters and every O11 reading (16 for the main
+    epochs; 5 and 3 with the double fit). With spikes moved to the next trial 9 of 17 also pass, which
+    the criterion does not ask for. New claim.
 - claim: fs-touch-and-whisking
   outcome: reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:fs-touch-and-whisking
-  notes: 11 or 12 of 17 FS cells (0.65 to 0.71) have spikes per touch with a 95% interval above zero
-    and a whisking rate that differs from the nonwhisking rate, under every filter and sample reading;
-    VPM units give 0.62 to 0.76. The earlier attempt also found it reproduced (13 of 20 tagged cells
-    touch-responsive and 16 modulated by phase, by its own measures); the outcome is the same under
-    the paper's measures and the claims file's FS rule.
+  notes: 11 or 12 of 17 FS cells (0.65 to 0.71) have spikes per touch with a 95% interval above zero and
+    a whisking rate that differs from the nonwhisking rate, under every filter, sample and O11 reading;
+    VPM units give 18 to 22 of 29 (0.62 to 0.76). The earlier attempt also found it reproduced (13 of
+    20 tagged cells touch-responsive and 16 modulated by phase, by its own measures); the outcome is the
+    same under the paper's measures and the claims file's FS rule.
 - claim: exc-mainly-touch
   outcome: not_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:exc-mainly-touch
-  measured: [0.319, 1.527, 3.549]
-  notes: The 97 excitatory cells fire more during whisking than without it (signed-rank p = 9.1e-07
-    zero-phase, 7.4e-06 forward; higher in 55 and 51), so the paper's test finds a difference where
-    the paper found none (P = 0.20). Spikes per touch 0.319 is within tolerance; the nonwhisking (1.53)
-    and whisking (3.55 spikes/s) rates are above 0.4 and 0.6. Cell-attached cells fire more than
-    whole-cell ones (2.45 against 0.70 spikes/s without whisking). The earlier attempt also found it
-    not reproduced, under a touch-selectivity index the paper does not use (one-sided p = 0.074 and
-    0.090); the same outcome now comes from the paper's own test of whisking against nonwhisking rate.
+  measured:
+  - 0.32
+  - 1.529
+  - 3.551
+  notes: The 97 excitatory cells fire more during whisking than without it under every filter and O11
+    reading (signed-rank p = 9.1e-07 zero-phase and 8.7e-06 forward for the main epochs, at most 8.7e-06
+    over all; higher in 50 to 58), so the paper's test finds a difference where the paper found none (P
+    = 0.20). Spikes per touch 0.320 is within tolerance; the nonwhisking (1.53 to 1.59) and whisking (3.38
+    to 3.64 spikes/s) rates are above 0.4 and 0.6. Cell-attached cells fire more than whole-cell ones
+    (2.45 against 0.70 spikes/s without whisking). The cell-attached detection has 5.0% of interspike
+    intervals under 1.5 ms in the median cell, but a 2 ms dead time removes only 8.1% of the cell-attached
+    E spikes (mean rate 6.20 to 5.70 spikes/s over all time), so double detection does not explain the
+    high rates. The earlier attempt also found it not reproduced, under a touch-selectivity index the
+    paper does not use (one-sided p = 0.074 and 0.090); the same outcome now comes from the paper's own
+    test of whisking against nonwhisking rate.
   deviations:
-  - The group holds 97 cells against 85, with the excitatory cells of ION-cut mice and the VGAT-ChR2
-    cells never tested with isolated pulses; FS cells that the rules cannot find (the fourth PV cell,
-    and 5 of the 29 VGAT-ChR2 FS cells of Supplementary Table 2 that no test here finds driven) may be
-    among them.
+  - The group holds 97 cells against 85, with the excitatory cells of ION-cut mice and 26 VGAT-ChR2 cells
+    that have too few cortical pulses to be tagged; FS cells that the rules cannot find (the fourth PV
+    cell, and 5 of the 29 VGAT-ChR2 FS cells of Supplementary Table 2 that no test here finds driven)
+    may be among them.
 - claim: vpm-photoinhibition
   outcome: blocked
   blocked_by: data_missing
-  notes: The 17 thalamic multiunit recordings made by pipette during photoinhibition are not in the
-    dandiset. All 130 single-cell files are in barrel cortex layer 4, and the 18 VPM silicon probe
-    files hold no photostimulation series. New claim.
+  notes: The 17 thalamic multiunit recordings made by pipette during photoinhibition are not in the dandiset.
+    All 130 single-cell files are in barrel cortex layer 4, and the 18 VPM silicon probe files hold no
+    photostimulation series. New claim.
 - claim: exc-thalamus-photoinhibition
   outcome: partially_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:exc-thalamus-photoinhibition
-  measured: [0.1, 0.1]
-  notes: 13 whole-cell excitatory cells with thalamic light (paper 12). Vm is lower with light in 12
-    (median -4.02 mV, signed-rank p = 0.00049) and Vm variance above 10 Hz lower in 10 (median ratio
-    0.55), under both window readings. With dVm/dt at the sampling rate the onset latency of the
-    grand average is 0.10 ms for both the thalamic and the direct cortical light (7 cells), against
-    4.2 and 2.8 ms, so neither latency is within tolerance and the thalamic one is not longer. What
-    the answer changed. The answer of 2026-10-20 fixed the derivative at the sampling rate, the
-    reading this attempt had used, so the outcome is unchanged; in 1 ms bins, no longer a reading,
-    the latencies are 5.0 and 2.0 ms. New claim.
+  measured:
+  - 0.1
+  - 0.1
+  notes: 13 whole-cell excitatory cells with thalamic light (paper 12). Vm is lower with light in 12 (median
+    -4.02 mV, signed-rank p = 0.00049) and Vm variance above 10 Hz lower in 10 (median ratio 0.55), under
+    both window readings. With dVm/dt at the sampling rate the onset latency of the grand average is 0.10
+    ms for both the thalamic light (13 cells) and the cortical tag pulses (14 cells, now that every pulse
+    of a train counts), against 4.2 and 2.8 ms, so neither latency is within tolerance and the thalamic
+    one is not longer. The crossing at 0.1 ms is one sample that drops by 0.061 mV (thalamic) and 0.064
+    mV (cortical) and returns at the next sample, a transient at light onset; the first crossing 2 ms
+    or more after onset, which decides nothing, is at 4.9 ms (thalamic) and 5.2 ms (cortical), still not
+    longer for the thalamus. New claim.
   deviations:
-  - The latency rule for laser onset is the touch rule turned downward, an assumption the claims
-    file states. The crossing at 0.1 ms comes with a step in the average at light onset.
+  - The latency rule for laser onset is the touch rule turned downward, an assumption the claims file
+    states. The crossing at 0.1 ms is a one-sample transient at light onset.
+  - 20 kHz averages are brought to 10 kHz by the mean of each pair of samples (standard).
 - claim: thalamus-drives-fs
   outcome: blocked
   blocked_by: other
   notebook: reproduce_yu_2016.ipynb
   output: claim:thalamus-drives-fs
-  measured: [0.204, 0.273, 0.41]
-  notes: Too few cells under the claim's own rule. Only 5 FS cells by the claims file's rule were
-    recorded with thalamic light, all from anm260070, and a two-sided signed-rank test of 5 cells
-    cannot go below p = 0.0625. The rates fall with the light in 5 of 5 cells without whisking and 4
-    of 5 with it, to 0.204 and 0.273 of control and spikes per touch to 0.410 (population means, all
-    powers, control in the same span); at the highest power only the nonwhisking rate falls to
-    0.022. The one-sided variant gives p = 0.031 for the nonwhisking rate and spikes per touch and
-    0.062 for the whisking rate, so it would not pass either. Without the waveform boundary (9
-    cells, a variant) all three two-sided tests pass (p = 0.012, 0.0078 and 0.0039) and the
-    fractions are 0.199, 0.292 and 0.462, outside tolerance. What the answer changed. The answer of
-    2026-10-20 says the tests are two-sided, as this attempt had assumed, and that with 5 cells the
-    claim cannot pass at 0.05 for reasons of sample size, not of the test; the one-sided p is now
-    reported as a variant and the outcome is unchanged. The earlier attempt found this reproduced
-    from 9 tagged cells and their overall rate (median ratio 0.40); the new criterion applies the
-    waveform boundary, which leaves 5 cells.
+  measured:
+  - 0.204
+  - 0.273
+  - 0.41
+  notes: Too few cells under the claim's own rule. Only 5 FS cells by the claims file's rule were recorded
+    with thalamic light, all from anm260070, and a two-sided signed-rank test of 5 cells cannot go below
+    p = 0.0625 (0.062 to 0.12 over every reading). The rates fall with the light in 5 of 5 cells without
+    whisking and 4 of 5 with it, to 0.204 and 0.273 of control and spikes per touch to 0.410 (population
+    means, all powers, control in the same span, main epochs); over the 32 combinations of filter, window,
+    power and O11 reading the fractions are 0 to 0.32 without whisking and 0.15 to 0.29 with it. The one-sided
+    variant gives p = 0.031 for the nonwhisking rate and spikes per touch and 0.062 for the whisking rate,
+    so it would not pass either. Without the waveform boundary (9 cells, a reading of fs-touch-response
+    only) all three two-sided tests pass (p = 0.012, 0.0078 and 0.0039) and the fractions are 0.199, 0.292
+    and 0.462, outside tolerance, so the best outcome it could give is partially reproduced. The earlier
+    attempt found this reproduced from 9 tagged cells and their overall rate (median ratio 0.40); the
+    new criterion applies the waveform boundary, which leaves 5 cells.
 - claim: rabies-vpm-input
   outcome: blocked
   blocked_by: data_missing
-  notes: The dandiset holds no histology or image data; the rabies tracing sections are not in it.
-    New claim.
+  notes: The dandiset holds no histology or image data; the rabies tracing sections are not in it. New
+    claim.
 - claim: ion-cut-exc-no-touch
   outcome: blocked
   blocked_by: metadata_insufficient
   notes: No file marks the ION-cut mice. 4 VGAT-ChR2 mice flagged here (no touch input or performance
-    below 0.5) hold 8 whole-cell excitatory cells whose touch PSPs average 0.35 mV against 5.53 mV in
-    the others, but they were found by that property, so they cannot test the claim. New claim.
+    below 0.5) hold 8 whole-cell excitatory cells whose touch PSPs average 0.35 mV against 5.54 mV in
+    the others, but they were found by that property, so they cannot test the claim. Supplementary Table
+    2 suggests the ION-cut mice had no fibre in VPM; the 4 flagged mice are among the 15 VGAT-ChR2 mice
+    without a VPM light site (none of the 12 with one is flagged), and only 3 more of those 15 lack a
+    clear touch response, 7 candidates for 9 ION-cut mice, so the files cannot confirm the cut mice. New
+    claim.
 - claim: ion-cut-exc-whisking
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: As for ion-cut-exc-no-touch. The flagged mice's whole-cell cells have a whisking change of
-    0.39 mV on average (epochs reading), shown as not a test. New claim.
+  notes: As for ion-cut-exc-no-touch. The flagged mice's whole-cell cells have a whisking change of 0.39
+    mV on average (epochs reading), shown as not a test. New claim.
 - claim: ion-cut-exc-phase
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -288,15 +335,14 @@ outcomes:
 - claim: ion-cut-fs-no-touch
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: No file marks the ION-cut mice. The 2 FS cells (by the claims file's rule) of the flagged
-    mice average 0.09 spikes per touch, shown as not a test. New claim.
+  notes: No file marks the ION-cut mice. The 2 FS cells (by the claims file's rule) of the flagged mice
+    average 0.09 spikes per touch, shown as not a test. New claim.
 - claim: sensory-input-drives-fs
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: No file marks the ION-cut mice (no ION, nerve, transection, lesion, cut, surgery or sham in
-    any metadata text). The 2 FS cells of the flagged mice fire 8.37 spikes/s without whisking and
-    9.98 with it, shown as not a test. The earlier attempt was blocked for the same reason; the
-    outcome is unchanged.
+  notes: No file marks the ION-cut mice (no ION, nerve, transection, lesion, cut, surgery or sham in any
+    metadata text). The 2 FS cells of the flagged mice fire 8.37 spikes/s without whisking and 9.98 with
+    it, shown as not a test. The earlier attempt was blocked for the same reason; the outcome is unchanged.
 - claim: ion-cut-fs-phase
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -304,102 +350,129 @@ outcomes:
 - claim: ion-cut-behavior
   outcome: blocked
   blocked_by: metadata_insufficient
-  notes: The ION-cut sessions cannot be identified. Two of the flagged mice were flagged by
-    performance below 0.5, so their performance cannot test the claim. New claim.
+  notes: The ION-cut sessions cannot be identified. Two of the flagged mice were flagged by performance
+    below 0.5, so their performance cannot test the claim. New claim.
 - claim: pv-enphr-suppression
   outcome: partially_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:pv-enphr-suppression
   measured: 3
-  notes: 3 PV cells are identified by their inactivation (the paper has 4), and all 3 are strongly
-    inhibited (light rate below the lower bound of the control 95% interval in nonwhisking and
-    whisking periods); the fourth PV cell cannot be found, and the count is partly circular since
-    the cells are found by their inactivation. In the grand average PSTH aligned to laser onset the
-    dPSTH/dt rule finds no fall for the 3 PV cells and a rise at 48.0 ms (bin edge, O9 a) or 48.5 ms
-    (centre, O9 b) for the 42 excitatory cells, so neither latency is within tolerance under either
-    bin position. What the answer changed. The answer of 2026-10-20 made the bin edge and centre
-    readings of the criterion; this attempt already showed both, and the outcome is unchanged. New
-    claim.
+  notes: '3 PV cells are identified by their inactivation (the paper has 4), and all 3 are strongly inhibited
+    (light rate below the lower bound of the control 95% interval in nonwhisking and whisking periods).
+    The count cannot fail, since the cells are found by their inactivation, and a fourth PV cell that
+    the light did not inhibit would be classed excitatory. The parts that can fail fail: in the grand
+    average PSTH aligned to laser onset the dPSTH/dt rule finds no fall for the 3 PV cells and a rise
+    at 48.0 ms (bin edge, O9 a) or 48.5 ms (centre, O9 b) for the 42 excitatory cells, so neither latency
+    is within tolerance under either bin position. New claim.'
   deviations:
-  - The latency rule for laser onset is the Methods' spike-latency rule, an assumption the claims
-    file states. The PV grand average rises in the first 3 ms after onset (66.5 spikes/s at 1 ms)
-    before falling to 0, possibly an onset artifact.
+  - The latency rule for laser onset is the Methods' spike-latency rule, an assumption the claims file
+    states. The PV grand average rises in the first 3 ms after onset (66.5 spikes/s at 1 ms) before falling
+    to 0, possibly an onset artifact.
 - claim: fs-suppress-movement-spiking
   outcome: partially_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:fs-suppress-movement-spiking
-  measured: [1.256, 2.263, 3.953, 6.135]
-  notes: In the 42 excitatory cells of PV-IRES-Cre mice (paper 40) the light raises the nonwhisking
-    rate (33 cells, p = 6.2e-05) and the whisking rate (33 cells, p = 7.4e-05), with the same result
-    under every window and filter reading (Kruskal-Wallis p = 0.00011, reported only). The rates are
-    higher than the paper's (from 1.26 to 2.26 and from 3.95 to 6.14 spikes/s, zero-phase filter and
-    control in the light span, against 0.6 to 1.6 and 0.8 to 2.7), outside tolerance. The earlier attempt found this reproduced from 7 whole-cell cells inside
-    the light (6 of 7 rising, p = 0.016); the new criterion uses all excitatory cells and also tests
-    the paper's rates, which are not matched.
+  measured:
+  - 1.256
+  - 2.263
+  - 3.953
+  - 6.135
+  notes: In the 42 excitatory cells of PV-IRES-Cre mice (paper 40) the light raises the nonwhisking rate
+    (32 to 36 cells, p at most 7.4e-05) and the whisking rate (31 to 34 cells, p at most 0.0003) under
+    every filter, window and O11 reading (Kruskal-Wallis p = 2.7e-05 to 0.00035, reported only). The rates
+    are higher than the paper's (control 1.18 to 1.32 rising to 2.26 to 2.55 spikes/s without whisking,
+    3.36 to 4.31 rising to 5.69 to 6.63 with it, against 0.6 to 1.6 and 0.8 to 2.7), outside tolerance;
+    34 of the 42 cells are cell-attached, whose rates are high throughout the dandiset. The measured values
+    are zero-phase, control in the light span, main epochs. The earlier attempt found this reproduced
+    from 7 whole-cell cells inside the light (6 of 7 rising, p = 0.016); the new criterion uses all excitatory
+    cells and also tests the paper's rates, which are not matched.
 - claim: fs-enhance-touch-selectivity
   outcome: partially_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:fs-enhance-touch-selectivity
-  notes: With the light, whisking rates exceed nonwhisking rates (33 of 42 cells, p = 2.2e-06), as the
-    paper reports (P = 0.02), but in control trials they do too (31 of 42, p = 3.3e-05), where the
-    paper found none (P = 0.55); same under every reading. The earlier attempt found it not reproduced
-    by a touch-selectivity index the paper does not use; the new criterion is the paper's test of
-    whisking against nonwhisking rate, whose first part holds.
+  notes: With the light, whisking rates exceed nonwhisking rates (31 to 33 of 42 cells, p = 1.7e-06 to
+    3.7e-05 over the filter, window and O11 readings), as the paper reports (P = 0.02), but in control
+    trials they do too (27 to 35 of 42, p = 6.7e-06 to 0.00013), where the paper found none (P = 0.55).
+    The earlier attempt found it not reproduced by a touch-selectivity index the paper does not use; the
+    new criterion is the paper's test of whisking against nonwhisking rate, whose first part holds.
 - claim: exc-touch-spikes-enphr
   outcome: not_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:exc-touch-spikes-enphr
-  measured: [0.339, 0.448]
+  measured:
+  - 0.339
+  - 0.448
   notes: Spikes per touch (4 to 20 ms after minus 0 to 16 ms before, ITI of at least 10 ms) rise with
     the light from 0.339 to 0.448 (40 cells, signed-rank p = 0.044, control in the light span) or from
-    0.304 to 0.442 (41 cells, p = 0.0091, control anywhere), so the test finds a change. Cells below
-    the median control response rise by 0.123 on average, cells above it by 0.095. New claim.
+    0.304 to 0.442 (41 cells, p = 0.0091, control anywhere), so the test finds a change. Cells below the
+    median control response rise by 0.123 on average, cells above it by 0.095. New claim.
 - claim: auc-weak-strong
-  outcome: reproduced
+  outcome: not_reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:auc-weak-strong
-  notes: Cells whose AUC rises with the light have a lower control touch-evoked rate than cells whose
-    AUC falls, 5.93 against 10.87 spikes/s (reading a, 23 and 12 cells) and 8.14 against 8.18 (reading
-    b, 17 and 16). The difference under (b) is small and no rank-sum test separates the groups (p =
-    0.37 and 1, reported only). New claim.
+  notes: With the fixed seeds (29 and 31), cells whose AUC rises with the light have a lower control touch-evoked
+    rate than cells whose AUC falls, 5.93 against 10.87 spikes/s (reading a, 23 and 12 cells) and 8.14
+    against 8.18 (reading b, 17 and 16). Over 20 further seeds, reading (a) holds in 19 and reading (b)
+    in 8 (rising group 8.14 to 8.53 against falling group 7.86 to 8.18 spikes/s), so under (b) the sign
+    of a 0.04 spikes/s difference is set by the resampling and the reading does not match; the criterion
+    needs both readings. No rank-sum test separates the groups with the fixed seeds (p = 0.37 and 1, reported
+    only). Changed after verification round 1 from reproduced, on the seed check the verifier asked for.
+    New claim.
+  deviations:
+  - Where an outcome depends on the random seed, a reading counts as matching only when it matches under
+    most of 20 seeds, a rule of this attempt.
 - claim: auc-groups
-  outcome: blocked
-  blocked_by: methods_underspecified
-  notes: The two readings of the no-touch windows that the criterion names give different outcomes.
-    Under (a) the increased-AUC group's response rises (9.99 to 15.16 spikes/s, p = 4.9e-05), the
-    reduced-AUC group's does not change (15.98 to 17.85, p = 0.11) and its baseline rises (5.11 to
-    12.08, p = 0.0049), with group sizes 23 and 12 and rates outside tolerance (partially reproduced).
-    Under (b) the reduced-AUC group's response changes (12.37 to 14.95, p = 0.021), so it is not
-    reproduced. New claim.
+  outcome: not_reproduced
+  notes: With the fixed seeds the readings differ. Under (a) the increased-AUC group's response rises
+    (9.99 to 15.16 spikes/s, p = 4.9e-05), the reduced-AUC group's does not change (15.98 to 17.85, p
+    = 0.11) and its baseline rises (5.11 to 12.08, p = 0.0049), with group sizes 23 and 12 and rates outside
+    tolerance; under (b) the reduced-AUC group's response changes (12.37 to 14.95, p = 0.021). Over 20
+    further seeds the three tests hold in 9 seeds under (a) and in none under (b), where the reduced-AUC
+    group's response changes in every seed (p = 0.015 to 0.045), so neither reading matches under most
+    seeds and the claim is not reproduced. Group sizes range from 15 to 22 (increased) and 11 to 19 (reduced)
+    over seeds. Changed after verification round 1 from blocked (methods underspecified), on the seed
+    check. New claim.
+  notebook: reproduce_yu_2016.ipynb
+  output: claim:auc-groups
+  measured:
+  - 9.991
+  - 15.157
+  - 15.982
+  - 17.854
+  - 5.108
+  - 12.076
+  - 23
+  - 12
+  deviations:
+  - Where an outcome depends on the random seed, a reading counts as matching only when it matches under
+    most of 20 seeds, a rule of this attempt.
 - claim: behavior-false-alarms
   outcome: reproduced
   notebook: reproduce_yu_2016.ipynb
   output: claim:behavior-false-alarms
   measured: 6
-  notes: Of 9 PV-IRES-Cre mice with the light (the paper tested 8), 6 show a significant decrease of
-    no-lick performance under reading (b)(i), per session (a mouse counting when any session is
-    significant) and without the continuity correction, which meets 6 of 8. The other readings give
-    5 ((a)(i), trials pooled, no correction), 4 ((a)(ii), pooled, Yates) and 5 ((b)(ii), per
-    session, Yates); pooled, no mouse shows a significant increase under either test. Mice have 1 to
-    11 sessions, so reading (b) gives more chances to a mouse with many sessions, and one session of
-    anm244024 shows a significant rise (p = 0.042) while another shows a fall. What the answer
-    changed. The answer of 2026-10-20 says the paper does not state a continuity correction, and the
-    criterion now runs the test without it (what Matlab's crosstab returns) and with Yates's
-    correction. The claim had been blocked as methods underspecified because the two disagreed;
-    under the updated criterion the reading without the correction matches, so it is reproduced. New
-    claim.
+  notes: Of 9 PV-IRES-Cre mice with the light (the paper tested 8), 6 show a significant decrease of no-lick
+    performance under reading (b)(i), per session (a mouse counting when any session is significant) and
+    without the continuity correction, which meets 6 of 8. The other readings give 5 ((a)(i), trials pooled,
+    no correction), 4 ((a)(ii), pooled, Yates) and 5 ((b)(ii), per session, Yates); pooled, no mouse shows
+    a significant increase under either test. Mice have 1 to 11 sessions, so reading (b) gives more chances
+    to a mouse with many sessions, and one session of anm244024 shows a significant rise (p = 0.042) while
+    another shows a fall. What the answer changed. The answer of 2026-10-20 says the paper does not state
+    a continuity correction, and the criterion now runs the test without it (what Matlab's crosstab returns)
+    and with Yates's correction. The claim had been blocked as methods underspecified because the two
+    disagreed; under the updated criterion the reading without the correction matches, so it is reproduced.
+    New claim.
   deviations:
-  - The dandiset holds 9 PV-IRES-Cre mice with the eNpHR light where the paper tested 8; which mouse
-    the paper left out is not stated, and all 9 are counted.
+  - The dandiset holds 9 PV-IRES-Cre mice with the eNpHR light where the paper tested 8; which mouse the
+    paper left out is not stated, and all 9 are counted.
 findings:
 - kind: metadata_insufficient
-  statement: Still present from 000005-yu-2016-01. No L4 file names the cell type of its neuron; the
-    cell types the paper compares can only be inferred from light tagging, waveforms and light
-    inactivation.
+  statement: Still present from 000005-yu-2016-01. No L4 file names the cell type of its neuron; the cell
+    types the paper compares can only be inferred from light tagging, waveforms and light inactivation.
 - kind: metadata_insufficient
-  statement: Still present from 000005-yu-2016-01. No file marks the 9 ION-transected mice, and the
-    files hold no surgery or notes field; the ION-cut claims cannot be tested and their cells sit in
-    every control group.
+  statement: Still present from 000005-yu-2016-01. No file marks the 9 ION-transected mice, and the files
+    hold no surgery or notes field; the ION-cut claims cannot be tested and their cells sit in every control
+    group.
 - kind: metadata_error
   statement: Still present from 000005-yu-2016-01. The genotype is missing for the 6 VPM mice and 3 L4
     mice (anm260074, anm223517, anm250509), and the 5 SOM-IRES-Cre x Ai32 mice are given as Ai32.
@@ -407,18 +480,17 @@ findings:
   statement: Still present from 000005-yu-2016-01. Every L4 file gives cortical layer 4 (depth 0.42 to
     0.62 mm), so the layer of each cell cannot be checked.
 - kind: metadata_insufficient
-  statement: Still present from 000005-yu-2016-01. The optogenetic conditions are not described.
-    photo_stim_mode and type have empty descriptions and the mode labels do not map to one kind of
-    light, photo_stim_power is NaN in every L4 file, and no file names the opsin (eNpHR3.0 in the
-    PV-IRES-Cre mice).
+  statement: Still present from 000005-yu-2016-01. The optogenetic conditions are not described. photo_stim_mode
+    and type have empty descriptions and the mode labels do not map to one kind of light, photo_stim_power
+    is NaN in every L4 file, and no file names the opsin (eNpHR3.0 in the PV-IRES-Cre mice).
 - kind: metadata_error
-  statement: Still present from 000005-yu-2016-01. The session description gives the wrong recording
-    mode for 24 of 130 L4 files, all from PV-IRES-Cre mice; by the trace PV-IRES-Cre has 9 whole-cell
-    and 39 cell-attached cells where Supplementary Table 2 has 5 and 42.
+  statement: Still present from 000005-yu-2016-01. The session description gives the wrong recording mode
+    for 24 of 130 L4 files, all from PV-IRES-Cre mice; by the trace PV-IRES-Cre has 9 whole-cell and 39
+    cell-attached cells where Supplementary Table 2 has 5 and 42.
 - kind: metadata_error
   statement: Still present from 000005-yu-2016-01. In the L4 files the trial table's first_touch_time
-    is the trial start plus the first-touch latency divided by 1000 (it matches the touch series in
-    0.956 of trials once multiplied by 1000); in the VPM files it is correct.
+    is the trial start plus the first-touch latency divided by 1000 (it matches the touch series in 0.956
+    of trials once multiplied by 1000); in the VPM files it is correct.
 - kind: metadata_insufficient
   statement: Still present from 000005-yu-2016-01. The L4 trace is sampled at 10 kHz (92 files) or 20
     kHz (38 files), which only the timestamps state.
@@ -431,21 +503,337 @@ findings:
     is given as 594 nm, and isolated pulses at the site labelled vS1 (594 nm) drive 13 VGAT-ChR2 cells
     at 1.6 to 4.6 ms; ChR2 needs blue light, so the wavelengths look wrong.
 - kind: methods_unavailable
-  statement: Still present from 000005-yu-2016-01. Neither the paper nor the dandiset links analysis
-    code. This attempt read the full text, supplied to it, which gives the windows and rules the earlier
-    attempt lacked; the claims file found no code at CRCNS ssc-7.
+  statement: Still present from 000005-yu-2016-01. Neither the paper nor the dandiset links analysis code.
+    This attempt read the full text, supplied to it, which gives the windows and rules the earlier attempt
+    lacked; the claims file found no code at CRCNS ssc-7.
 - kind: metadata_error
-  statement: New. The injected current (CurrentClampStimulus) has unit amperes and conversion 1e-6,
-    but the end-of-trial test pulse, -0.1 nA in the Methods, is stored as about -0.1, so the stored
-    values are in nA and the conversion is wrong by a factor of 1,000.
+  statement: New. The injected current (CurrentClampStimulus) has unit amperes and conversion 1e-6, but
+    the end-of-trial test pulse, -0.1 nA in the Methods, is stored as about -0.1 (in 14 of 57 whole-cell
+    files), so the stored values are in nA and the conversion is wrong by a factor of 1,000. 17 cell-attached
+    files of VGAT-ChR2 mice carry a constant stored current of about 1.9 in every trial, which no description
+    explains.
 - kind: data_missing
-  statement: New. The dandiset lacks data the paper reports from these experiments, namely the 6 L4
-    excitatory neurons recorded with depolarizing current (Fig. 3; only one whole-cell file, of the
-    PV-ChR2 cell, has trials held near 0 mV), the 17 thalamic multiunit recordings during
-    photoinhibition (Fig. 6b,c), and the rabies tracing histology (Supplementary Fig. 10).
+  statement: New. The dandiset lacks data the paper reports from these experiments, namely the 6 L4 excitatory
+    neurons recorded with depolarizing current (Fig. 3; only one whole-cell file, of the PV-ChR2 cell,
+    has trials held near 0 mV), the 17 thalamic multiunit recordings during photoinhibition (Fig. 6b,c),
+    and the rabies tracing histology (Supplementary Fig. 10).
 - kind: other
   statement: New. The pulse trains at the site labelled VPM run at 50 Hz in 12 of 33 files, where the
     Methods give 100 Hz.
 - kind: metadata_insufficient
   statement: New. The no-lick trial type is spelled Nogo in some files and NoGo in others, and the type
     and response columns have empty descriptions.
+verifications:
+- date: '2026-10-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The handover of the run recorded in this attempt before this revision, the executed
+    notebook with the conclusions and summary removed, the helper module and the claims file; the verifier
+    also read the paper under paper/ and checked the archive metadata for the blocked claims.
+  results:
+  - claim: behavior-touches
+    agrees: true
+    outcome: partially_reproduced
+    reason: Both touch counts are within tolerance only under reading (b), principal whisker, every trial
+      (6.04 and 0.85), but over 9,794 and 8,223 trials against the paper's 4,147 and 4,173. Cortical performance
+      0.718 is within tolerance; VPM performance 0.585 is not (needs 0.71 +- 0.071). Cortical performance
+      uses the post-hoc flagged exclusion as control, though the notebook says no_flagged never decides
+      an outcome; including the flagged mice gives 0.695, still within tolerance.
+    response: Cortical performance is now averaged over all 122 cortical cells (0.681 every trial, 0.694
+      without light, within tolerance), and the flagged-mice exclusion is a variant; the touch-count reading
+      (a) also uses every cortical cell. The notes and conclusion say the matching trial counts are more
+      than twice the paper's. Outcome unchanged.
+  - claim: vpm-touch
+    agrees: true
+    outcome: not_reproduced
+    reason: Spikes per touch, mean 0.403 and median 0.268, are both out of tolerance (0.6 +- 0.093, 0.4
+      +- 0.04). Latency median 2.5 ms is within; the mean 6.14 ms is out, inflated by one 71.5 ms unit.
+      The best-whisker variant also fails (mean 0.485). In the VPM files the principal whisker is given
+      once per file and 11 of 20 units respond most to another whisker; this lowers spikes per touch,
+      and the outcome holds even with the best-whisker variant.
+    response: No change; the per-file principal whisker stays a deviation and a finding.
+  - claim: vpm-whisking
+    agrees: true
+    outcome: partially_reproduced
+    reason: The signed-rank test gives p = 5e-8 with whisking higher. Nonwhisking mean 3.76 and median
+      1.71 are out of tolerance under every reading; the increase count (21 to 25) and whisking mean (11.0
+      to 11.5) are out under some readings.
+    response: 'The O11 readings are now run: 21 to 25 increases, whisking mean 11.01 to 12.09, nonwhisking
+      mean 3.74 to 3.96 and median 1.71 to 1.86 over the 16 readings. Outcome unchanged.'
+  - claim: vpm-whisking-phase
+    agrees: true
+    outcome: reproduced
+    reason: 25 of 29 (filtfilt) and 27 of 29 (lfilter) units have r2 > 0.25, clearly above the shifted-spike
+      control (16 of 29; own > shifted, p = 0.0015). The more than half above r2 0.25 rule is close to
+      chance (shifted spikes pass for 16 of 29; synthetic phase-independent Poisson spikes give r2 > 0.25
+      in 26 to 30% of cells); a weakness of the claims file to report, not to correct.
+    response: The O11 readings give 25 to 27 of 29. The notes report the null and the own-against-shifted
+      comparison; the claims file is not changed. Outcome unchanged.
+  - claim: exc-vm-touch-whisking
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 48 measurable cells have a positive PSP and a latency. Latency mean 7.68 ms and amplitude
+      4.77 mV are out of tolerance; resting Vm and whisking change (b) are within. The latency rule at
+      the full sampling rate returns impossible values (a minimum of 0.00 ms in E cells), which the notebook
+      does not investigate. The PSP amplitude is biased upward, so every neuron depolarizes is nearly
+      guaranteed (amplitudes down to 0.01 mV). Every control group includes the ION-cut cells; the flagged
+      variant moves the latency to 4.97 ms. The PV-ChR2 cell enters the E group with a resting Vm of -34.9
+      mV.
+    response: 'Added a latency diagnostic (the touch-aligned average and its dVm/dt -2 to +2 ms with the
+      threshold, for every cell under 2 ms): the near-zero latencies are single-sample excursions of dVm/dt
+      before any rise, under the rule the criterion fixes. Held trials of the PV-ChR2 cell are left out
+      at rest. The amplitude bias and the ION-cut contamination are stated in the conclusion and notes.
+      Numbers now 4.78 mV, 7.68 ms, -61.69 mV. Outcome unchanged.'
+  - claim: exc-threshold-touch-vs-whisking
+    agrees: true
+    outcome: partially_reproduced
+    reason: Touch > whisking holds (p <= 1.9e-9). Touch shift 4.36 to 4.42 mV is out of tolerance (6.1
+      +- 0.61) under every reading. Threshold readings O3 (a) and (b) give identical outputs, which is
+      plausible since a trial's mean dVm/dt is close to 0, but the reading does no work.
+    response: The O3 difference is now printed (at most 0.0089 mV per cell, 8 of 41,620 spikes), and O11
+      readings are run. With the held trials left out the touch shift is 4.60 to 4.67 mV, still outside,
+      and the whisking shift 0.84 to 1.16 mV, now within. Outcome unchanged.
+  - claim: exc-effective-reversal
+    agrees: true
+    outcome: reproduced
+    reason: Per neuron the touch median -50.0 mV is above the whisking median -58.5 mV in 39 of 48 neurons
+      and above rest (-63.9 mV); the pooled fit agrees (-31 against -55 mV) under both filters. The touch-reversal
+      median is exactly -50.00 mV under both filters, which could not be checked.
+    response: 'The per-neuron touch reversals are printed: the median is the mean of the two middle values,
+      -50.231 and -49.769 mV. The whisking reversal is run under every O10 and O11 reading (median -57.4
+      to -60.9 mV, touch above in 38 to 40 neurons). Outcome unchanged.'
+  - claim: exc-inhibition-timing
+    agrees: true
+    outcome: blocked
+    reason: Only one whole-cell file has trials near 0 mV, and it is the PV-ChR2 cell that the paper counts
+      as FS. The verdict rests on per-trial median Vm checked in whole-cell files only; a file held near
+      0 mV for the whole session would be classed cell-attached, and the injected current per trial is
+      never shown. Supplementary Table 2 assigns Fig. 3 to the VGAT and PV-IRES-Cre x Ai32 lines, so the
+      verdict is probably right.
+    response: Added the median injected current per trial of every file and the trial-median trace of
+      the cell-attached files. 17 cell-attached VGAT-ChR2 files carry a stored current of about 1.9, but
+      their traces sit near 0 mV with a 1 to 100 Hz s.d. of at most 0.33 mV against 1.95 mV in whole-cell
+      files, so none is a whole-cell cell held depolarized. The block stands; the constant current is
+      added to the finding on the current.
+  - claim: exc-inhibition-whisking
+    agrees: true
+    outcome: blocked
+    reason: Same recordings as exc-inhibition-timing.
+    response: No change, beyond the added current check.
+  - claim: fs-touch-response
+    agrees: false
+    outcome: blocked
+    reason: The FS readings disagree. With the waveform boundary, 2 of 3 values are within tolerance (partial);
+      without it, 1 of 3 (not reproduced). Spikes per touch is 1.39 to 1.50 in every reading (needs 1.9
+      +- 0.2). Only 17 FS cells against the paper's 26. The tag rule (isolated pulses, gap 0.1 s both
+      sides) is the author's own and throws away the 10 Hz tagging trains, leaving 29 of 67 VGAT cells
+      untested; ca_waveform drops 8 of 20 light-driven cells, with ratios up to 19 and durations up to
+      0.9 ms, which suggests the measure does not match the axes of Supplementary Fig. 6.
+    response: 'Changed to blocked (methods underspecified), as the rule for readings that disagree requires.
+      The tag test now counts every pulse of the 5 and 10 Hz trains (previous pulse more than 60 ms earlier),
+      with the first pulse of each train and the earlier rule shown for every cell: it drives the same
+      24 cells, and the 26 cells still untested have fewer than 10 short pulses at any cortical site.
+      The waveform measure follows the inset of Supplementary Fig. 6, now read from the figure; 4 driven
+      cells have ratios of 12 to 19, beyond the figure''s axis, which is reported and not corrected.'
+  - claim: fs-vm-touch-whisking
+    agrees: true
+    outcome: not_reproduced
+    reason: Touch latency mean 1.88 ms is out of tolerance (4.0 +- 0.4); two of the five cells give 0.00
+      and 0.30 ms. Amplitude 5.56 mV and whisking change (a) 2.24 to 2.54 mV are within. 5 cells against
+      the paper's 7.
+    response: The latency diagnostic shows that the 0.00 and 0.30 ms crossings are single samples of dVm/dt
+      just above the threshold; subtracting the baseline mean (a diagnostic) gives 1.76 ms. The whisking
+      change is now run under O10 and O11 (1.47 to 2.55 mV). Outcome unchanged.
+  - claim: fs-whisking-rate
+    agrees: true
+    outcome: partially_reproduced
+    reason: Signed-rank p <= 0.0012 with whisking higher. 13 of 17 cells increase and 1 to 2 decrease,
+      both out of tolerance. Whisking mean 19.0 is within (filtfilt); 17.8 is out (lfilter).
+    response: O11 readings added (13 or 14 increases, 1 to 3 decreases, whisking mean 17.77 to 19.17).
+      Outcome unchanged.
+  - claim: fs-whisking-phase
+    agrees: true
+    outcome: reproduced
+    reason: 16 of 17 cells are coupled under both filters (14 to 15 of 15 in no_flagged). The shifted-spike
+      control gives 9 of 17.
+    response: O11 readings give 15 or 16 of 17. Outcome unchanged.
+  - claim: fs-touch-and-whisking
+    agrees: true
+    outcome: reproduced
+    reason: 11 to 12 of 17 cells (0.65 to 0.71) multiplex under every reading.
+    response: O11 readings give 11 to 12 of 17. Outcome unchanged.
+  - claim: exc-mainly-touch
+    agrees: true
+    outcome: not_reproduced
+    reason: The signed-rank test finds a difference (p = 9e-7 and 7e-6). Spikes per touch 0.319 is within
+      tolerance; rates are 1.53 and 3.55 spikes/s against 0.4 and 0.6. Spike detection is never validated
+      (no refractory-violation or signal-to-noise output); E rates are 2 to 6 times the paper's, which
+      drives the value failures.
+    response: 'Added spike detection quality to the data check: interspike intervals under 1.5 ms, spike
+      size in mV or robust s.d., rates by mode and class, and a 2 ms dead time, which removes only 8.1%
+      of the cell-attached E spikes. O11 readings added (p at most 8.7e-06). Outcome unchanged.'
+  - claim: vpm-photoinhibition
+    agrees: true
+    outcome: blocked
+    reason: No VPM file has light, and every L4 file is in barrel cortex. The archive confirms this.
+    response: No change.
+  - claim: exc-thalamus-photoinhibition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Vm is lower with light in 12 of 13 cells and variance lower in 10 of 13. Both latencies come
+      out at 0.10 ms by the criterion's rule (needs 4.2 and 2.8 ms), so the thalamic latency is not longer.
+      The 0.5 ms-step grand averages show onsets near 4.5 to 5 ms (thalamic) and 2.5 to 3 ms (cortical).
+      resample decimates 20 kHz averages with [::2] and no anti-alias filter.
+    response: 'Added the averages -2 to +2 ms with their first difference and the threshold: the 0.1 ms
+      crossing is a one-sample drop of about 0.06 mV at light onset in both averages. The first crossing
+      2 ms or more after onset (a diagnostic) is 4.9 ms thalamic and 5.2 ms cortical. resample now averages
+      pairs of samples. The cortical average now holds 14 cells, as every train pulse counts. Outcome
+      unchanged.'
+  - claim: thalamus-drives-fs
+    agrees: true
+    outcome: blocked
+    reason: Only 5 FS cells, all from one mouse (anm260070). The smallest possible two-sided exact p is
+      0.0625, so no test can reach 0.05. Fractions are out of tolerance in every reading except one. The
+      tag-only variant (9 cells) gives p <= 0.012 with the fractions still out, so the best possible outcome
+      is partial.
+    response: The notes now say the best outcome of the tag-only variant is partial, and the O11 readings
+      are run (p 0.062 to 0.12). Outcome unchanged.
+  - claim: rabies-vpm-input
+    agrees: true
+    outcome: blocked
+    reason: The archive holds no histology or images.
+    response: No change.
+  - claim: ion-cut-exc-no-touch
+    agrees: true
+    outcome: blocked
+    reason: Neither the files, the DANDI metadata nor Supplementary Tables 1 and 2 identify the ION-cut
+      mice; no ION, infraorbital, nerve, transection, cut, lesion or rabies term appears in the dandiset
+      metadata or any of the 148 asset metadata records. A test on the flagged mice would be circular,
+      since the flags were chosen on touch response.
+    response: 'The descriptive values of the flagged mice stay shown as not a test. The cross-tab asked
+      for (VGAT-ChR2 mice by a VPM light site against the flag) is added: the 4 flagged mice are among
+      the 15 without a VPM site, and with 3 more unclear mice that gives 7 candidates for 9 ION-cut mice,
+      so the cut mice still cannot be identified. Outcome unchanged.'
+  - claim: ion-cut-exc-whisking
+    agrees: true
+    outcome: blocked
+    reason: Neither the files, the DANDI metadata nor Supplementary Tables 1 and 2 identify the ION-cut
+      mice; no ION, infraorbital, nerve, transection, cut, lesion or rabies term appears in the dandiset
+      metadata or any of the 148 asset metadata records. Could get an exploratory, non-deciding test on
+      the flagged mice, since the flags were not chosen on this measure; mouse identity is unconfirmed.
+    response: 'The descriptive values of the flagged mice stay shown as not a test. The cross-tab asked
+      for (VGAT-ChR2 mice by a VPM light site against the flag) is added: the 4 flagged mice are among
+      the 15 without a VPM site, and with 3 more unclear mice that gives 7 candidates for 9 ION-cut mice,
+      so the cut mice still cannot be identified. Outcome unchanged.'
+  - claim: ion-cut-exc-phase
+    agrees: true
+    outcome: blocked
+    reason: Neither the files, the DANDI metadata nor Supplementary Tables 1 and 2 identify the ION-cut
+      mice; no ION, infraorbital, nerve, transection, cut, lesion or rabies term appears in the dandiset
+      metadata or any of the 148 asset metadata records. Could get an exploratory, non-deciding test on
+      the flagged mice, since the flags were not chosen on this measure; mouse identity is unconfirmed.
+    response: 'The descriptive values of the flagged mice stay shown as not a test. The cross-tab asked
+      for (VGAT-ChR2 mice by a VPM light site against the flag) is added: the 4 flagged mice are among
+      the 15 without a VPM site, and with 3 more unclear mice that gives 7 candidates for 9 ION-cut mice,
+      so the cut mice still cannot be identified. Outcome unchanged.'
+  - claim: ion-cut-fs-no-touch
+    agrees: true
+    outcome: blocked
+    reason: Neither the files, the DANDI metadata nor Supplementary Tables 1 and 2 identify the ION-cut
+      mice; no ION, infraorbital, nerve, transection, cut, lesion or rabies term appears in the dandiset
+      metadata or any of the 148 asset metadata records. A test on the flagged mice would be circular,
+      since the flags were chosen on touch response.
+    response: 'The descriptive values of the flagged mice stay shown as not a test. The cross-tab asked
+      for (VGAT-ChR2 mice by a VPM light site against the flag) is added: the 4 flagged mice are among
+      the 15 without a VPM site, and with 3 more unclear mice that gives 7 candidates for 9 ION-cut mice,
+      so the cut mice still cannot be identified. Outcome unchanged.'
+  - claim: sensory-input-drives-fs
+    agrees: true
+    outcome: blocked
+    reason: Neither the files, the DANDI metadata nor Supplementary Tables 1 and 2 identify the ION-cut
+      mice; no ION, infraorbital, nerve, transection, cut, lesion or rabies term appears in the dandiset
+      metadata or any of the 148 asset metadata records. Could get an exploratory, non-deciding test on
+      the flagged mice; the FS part has only 2 cells.
+    response: 'The descriptive values of the flagged mice stay shown as not a test. The cross-tab asked
+      for (VGAT-ChR2 mice by a VPM light site against the flag) is added: the 4 flagged mice are among
+      the 15 without a VPM site, and with 3 more unclear mice that gives 7 candidates for 9 ION-cut mice,
+      so the cut mice still cannot be identified. Outcome unchanged.'
+  - claim: ion-cut-fs-phase
+    agrees: true
+    outcome: blocked
+    reason: Neither the files, the DANDI metadata nor Supplementary Tables 1 and 2 identify the ION-cut
+      mice; no ION, infraorbital, nerve, transection, cut, lesion or rabies term appears in the dandiset
+      metadata or any of the 148 asset metadata records. Could get an exploratory, non-deciding test on
+      the flagged mice; the FS part has only 2 cells.
+    response: 'The descriptive values of the flagged mice stay shown as not a test. The cross-tab asked
+      for (VGAT-ChR2 mice by a VPM light site against the flag) is added: the 4 flagged mice are among
+      the 15 without a VPM site, and with 3 more unclear mice that gives 7 candidates for 9 ION-cut mice,
+      so the cut mice still cannot be identified. Outcome unchanged.'
+  - claim: ion-cut-behavior
+    agrees: true
+    outcome: blocked
+    reason: Neither the files, the DANDI metadata nor Supplementary Tables 1 and 2 identify the ION-cut
+      mice; no ION, infraorbital, nerve, transection, cut, lesion or rabies term appears in the dandiset
+      metadata or any of the 148 asset metadata records. A test on the flagged mice would be circular,
+      since the flags were chosen on performance.
+    response: 'The descriptive values of the flagged mice stay shown as not a test. The cross-tab asked
+      for (VGAT-ChR2 mice by a VPM light site against the flag) is added: the 4 flagged mice are among
+      the 15 without a VPM site, and with 3 more unclear mice that gives 7 candidates for 9 ION-cut mice,
+      so the cut mice still cannot be identified. Outcome unchanged.'
+  - claim: pv-enphr-suppression
+    agrees: true
+    outcome: partially_reproduced
+    reason: All 3 identified PV cells are strongly inhibited. The PV latency was not found (NaN). The
+      E-cell rise comes at 48 ms against an expected 2 ms further delay. PV cells are identified by being
+      inhibited, so 3 of 3 inhibited cannot fail; the paper's fourth, non-inhibited PV cell would be classed
+      as E. The only independent parts, the latencies, fail.
+    response: The conclusion and notes now say the count cannot fail and that the parts that can fail
+      do. Outcome kept as the verifier gave it.
+  - claim: fs-suppress-movement-spiking
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Both paired tests give p < 1e-4 with light higher. All four rates are out of tolerance: control
+      1.26 and 3.95, light 2.26 and 6.14 spikes/s, against 0.6, 0.8, 1.6 and 2.7.'
+    response: O11 readings added (p at most 7.4e-05 and 0.0003; rates outside under every reading); the
+      spike detection check is cited. Outcome unchanged.
+  - claim: fs-enhance-touch-selectivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: In light trials p = 2e-6 with whisking higher, but control trials also differ (p <= 1.3e-4;
+      paper P = 0.55).
+    response: O11 readings added (control p 6.7e-06 to 0.00013). Outcome unchanged.
+  - claim: exc-touch-spikes-enphr
+    agrees: true
+    outcome: not_reproduced
+    reason: The signed-rank test finds a change (p = 0.044 and 0.0091). The control mean 0.339 is just
+      out of tolerance (0.27 +- 0.06).
+    response: No change.
+  - claim: auc-weak-strong
+    agrees: true
+    outcome: reproduced
+    reason: 'Neurons whose AUC rises have a lower control touch response under both readings: (a) 5.93
+      against 10.87, (b) 8.14 against 8.18 spikes/s. Reading (b) passes on a 0.04 spikes/s difference
+      (rank-sum p = 1). The AUC uses 5,000 random resamples with one seed and reading (a) random windows
+      with one seed; there is no seed-stability check, and the reading (b) result could flip.'
+    response: 'Added the seed check asked for: over 20 further seeds reading (a) holds in 19 and reading
+      (b) in 8. Changed to not reproduced, since reading (b) does not match under most seeds and the criterion
+      needs both readings; the rule for seed-dependent outcomes is recorded as a deviation. This departs
+      from the verifier''s outcome, for round 2 to review.'
+  - claim: auc-groups
+    agrees: true
+    outcome: blocked
+    reason: Reading (a) has all three tests holding but the means and group sizes out of tolerance (partial).
+      Under reading (b) the reduced-AUC group's touch response changes (p = 0.021), so it is not reproduced.
+      The pole times that reading (a) uses may share the first_touch_time scaling bug, which the notebook
+      never checks.
+    response: 'The pole times are now checked: pole_in_time lies 0.832 s after the trial start in the
+      median L4 trial and the first touch follows it in every trial, so they are not scaled like first_touch_time.
+      The seed check gives the three tests in 9 of 20 seeds under (a) and none under (b). Changed to not
+      reproduced, since neither reading matches under most seeds; this departs from the verifier''s outcome,
+      for round 2 to review.'
+  - claim: behavior-false-alarms
+    agrees: true
+    outcome: reproduced
+    reason: Reading (b)(i) (per session, no correction) gives 6 mice. The other readings give 4 to 5 (partial).
+      The paper has 8 mice; the data have 9.
+    response: No change.

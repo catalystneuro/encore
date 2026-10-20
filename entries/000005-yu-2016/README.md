@@ -18,7 +18,7 @@ were written from the abstract.
 | `exc-threshold-touch-vs-whisking` | Partially reproduced |
 | `exc-effective-reversal` | Reproduced |
 | `exc-inhibition-timing`, `exc-inhibition-whisking` | Blocked: data missing |
-| `fs-touch-response` | Partially reproduced |
+| `fs-touch-response` | Blocked: methods underspecified |
 | `fs-vm-touch-whisking` | Not reproduced |
 | `fs-whisking-rate` | Partially reproduced |
 | `fs-whisking-phase` | Reproduced |
@@ -33,8 +33,8 @@ were written from the abstract.
 | `fs-suppress-movement-spiking` | Partially reproduced |
 | `fs-enhance-touch-selectivity` | Partially reproduced |
 | `exc-touch-spikes-enphr` | Not reproduced |
-| `auc-weak-strong` | Reproduced |
-| `auc-groups` | Blocked: methods underspecified |
+| `auc-weak-strong` | Not reproduced |
+| `auc-groups` | Not reproduced |
 | `behavior-false-alarms` | Reproduced |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
@@ -48,10 +48,17 @@ variant leaves out four mice flagged as lacking touch input. Open method details
 claims they bear on were re-run under the updated criteria, which moved `behavior-false-alarms`
 from blocked to reproduced and left the other outcomes as they were.
 
-- `reproduce_yu_2016.ipynb`: the analysis. The recorded run took 302 s from a clean environment,
+After the first verification round the tag test counts every pulse of the 5 and 10 Hz trains, every
+claim on whisking epochs or onsets runs the touch and onset readings O10 and O11, and the data check
+shows spike detection quality, tagging coverage, the injected current of every file, the pole times
+and the ION-cut candidates. Three outcomes changed: `fs-touch-response` is blocked because its FS
+readings disagree, and `auc-weak-strong` and `auc-groups` are not reproduced because their readings
+do not match under most of 20 random seeds.
+
+- `reproduce_yu_2016.ipynb`: the analysis. The recorded run took about 6 minutes from a clean environment,
   most of it streaming the files.
 - `yu2016.py`: loading the files with range requests and reducing them as they load (spikes, the
-  whisking epochs of the principal whisker under both filter readings and, for whole-cell cells,
-  under each whisking-onset and touch reading (O10, O11), touches, licks, light
-  epochs, spike-removed membrane potential and event-aligned averages), and the paper's measures as
+  whisking epochs of the principal whisker under both filter readings and under each whisking-onset
+  and touch reading (O10, O11), touches, licks, light epochs and tag pulses,
+  spike-removed membrane potential and event-aligned averages), and the paper's measures as
   the claims file gives them. Other notebooks on this dandiset can import it.

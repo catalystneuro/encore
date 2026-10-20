@@ -33,17 +33,17 @@ that the notebook either shows cannot change a result or runs under each reading
   outside touches and the same lick and touch windows. The touch window and the whiskers whose
   touches count are readings O11 of the claims file: whiskers (a) every tracked whisker or (b) the
   principal whisker, from 10 ms before a touch onset to 100 ms after (i) its offset or (ii) its
-  onset. The epochs used by every claim except exc-vm-touch-whisking are those of O11 (a)(i).
+  onset. The main epochs are those of O11 (a)(i); every claim on whisking epochs is also run
+  under the other three O11 readings (`beh_o11`).
   Lick times are the rising edges of the lick trace (standard).
 - Whisking onsets (claims, Measures): the end of a nonwhisking period, when the mean amplitude
   rises by at least 2 degrees and no touch starts within 250 ms; data after a touch starting later
   are removed. The windows of the rise are readings O10: (a) 100 to 300 ms after against 0 to 200
   ms before (the whisking-onset windows of the Supplementary Fig. 4 legend), (b) 0 to 250 ms after
-  against the whole nonwhisking period. The onsets used by every claim except
-  exc-vm-touch-whisking are those of O10 (a), with every tracked whisker bounding the nonwhisking
-  periods and the principal whisker's touch onsets in the 250 ms rule (the earlier rule of this
-  attempt); exc-vm-touch-whisking runs every O10 and O11 reading, with the 250 ms rule taken on
-  the touches of the whiskers O11 names.
+  against the whole nonwhisking period. The main onsets are those of O10 (a), with every tracked
+  whisker bounding the nonwhisking periods and the principal whisker's touch onsets in the 250 ms
+  rule (the earlier rule of this attempt); the claims on whisking onsets also run every O10 and
+  O11 reading, with the 250 ms rule taken on the touches of the whiskers O11 names.
 - Touches (claims): onsets of the principal whisker; intertouch interval (offset of the previous
   touch to this onset) at least 25 ms (Figs. 1 to 7) or 10 ms (Fig. 8e); the first touch of a
   trial counts as isolated.
@@ -79,12 +79,18 @@ that the notebook either shows cannot change a result or runs under each reading
   "extracellular ... spike peak to trough duration, 0.21 ms"). The FS boundary (claims header, an
   approximate reading of the figure) is duration below 0.27 ms and ratio below 2.8.
 - Light (standard): light epochs are read from the photostimulation series (contiguous samples
-  above zero); isolated 5 ms pulses are pulses shorter than 7.5 ms with no other pulse within
-  100 ms. A cell is driven by light (claims header: "driven by 5 ms light pulses within 5 ms of
-  onset") when the probability of a spike 0 to 5 ms after an isolated pulse exceeds that in the
-  5 ms starting 50 ms before by a one-sided binomial test with at least 10 pulses. The paper
-  gives no test, baseline or threshold; the claims file (fs-touch-response) names p < 0.001 and
-  p < 0.01, each with and without the waveform boundary, as readings.
+  above zero). Tag pulses are pulses shorter than 7.5 ms whose previous pulse began more than
+  60 ms earlier, so that the 5 or 10 Hz tagging trains of the Methods count pulse by pulse and the
+  baseline window holds no light (`tag_pulses`, rule "train"). A cell is driven by light (claims
+  header: "driven by 5 ms light pulses within 5 ms of onset") when the probability of a spike 0
+  to 5 ms after a tag pulse exceeds that in the 5 ms starting 50 ms before by a one-sided binomial
+  test with at least 10 pulses. The paper gives no test, baseline or threshold; the claims file
+  (fs-touch-response) names p < 0.001 and p < 0.01, each with and without the waveform boundary,
+  as readings. The earlier rule of this attempt, isolated pulses with no other pulse within 100
+  ms (rule "isolated"), dropped every pulse of a 10 Hz train and is kept for comparison, with the
+  first pulse of each train (rule "first", no pulse in the 300 ms before).
+- Held trials (standard): trials of a whole-cell recording whose median Vm is above -20 mV (the
+  cell held near 0 mV by current, Fig. 3) are left out of every measure at rest.
 """
 
 from __future__ import annotations
@@ -516,6 +522,15 @@ def _behaviour(f, trials, readings=False):
     return out
 
 
+def beh_o11(beh, o11):
+    """A copy of `beh` whose whisking epochs and onsets under both filters are those of touch
+    reading O11 `o11` (onset windows O10 a). 'a-i' gives the same epochs as the main ones."""
+    b = beh
+    for filt in FILTERS:
+        b = beh_reading(b, filt, "a", o11)
+    return b
+
+
 def beh_reading(beh, filt, o10, o11):
     """A copy of `beh` whose epochs and onsets under filter `filt` are those of readings O10 `o10`
     and O11 `o11` (needs a record loaded with the readings)."""
@@ -595,6 +610,21 @@ def isolated_pulses(light, site, max_dur=0.0075, gap=0.1):
     return on[(dur < max_dur) & (prev > gap) & (nxt > gap)]
 
 
+def tag_pulses(light, site, rule="train", max_dur=0.0075):
+    """Onsets of the short light pulses at a site used for the tag test. 'train': every pulse
+    shorter than `max_dur` whose previous pulse began more than 60 ms earlier (the pulses of 5 and
+    10 Hz trains); 'first': the first pulse of each train (no pulse in the 300 ms before);
+    'isolated': no other pulse within 100 ms (the earlier rule of this attempt)."""
+    if rule == "isolated":
+        return isolated_pulses(light, site, max_dur)
+    pulses = light.get(site, {}).get("pulses", np.zeros((0, 2)))
+    if len(pulses) == 0:
+        return np.zeros(0)
+    on, dur = pulses[:, 0], pulses[:, 1] - pulses[:, 0]
+    prev = np.r_[np.inf, np.diff(on)]
+    return on[(dur < max_dur) & (prev > (0.06 if rule == "train" else 0.3))]
+
+
 def _event_average(v, vt, tri, fs, events, pre=EVENT_PRE_S, post=EVENT_POST_S):
     """Mean of the trace around each event (full rate), events whose window stays in one trial."""
     a, b = int(pre * fs), int(post * fs)
@@ -637,11 +667,16 @@ def load_icephys(asset):
         rec["current_end_of_trial_median"] = float(np.median(c[test])) if test.any() else np.nan
         rec["current_trial_min"] = float(np.percentile(c[tri >= 0], 0.5))
         rec["current_trial_median"] = float(np.median(c[(tri >= 0) & (rel < 5.0)]))
+        ok_c = (tri >= 0) & (rel < 5.0)
+        rec["trial_current_median"] = np.array([np.median(c[ok_c & (tri == k)]) if np.any(ok_c & (tri == k)) else np.nan
+                                                for k in range(len(trials))], np.float32)
     # mode from the trace: whole-cell when the median trace is below -20 mV
     trial_med = np.array([np.median(v[tri == k]) if np.any(tri == k) else np.nan for k in range(len(trials))])
     rec["trial_vm_median"] = trial_med.astype(np.float32)
     mode = "whole-cell" if rec["vm_median"] < -20 else "cell-attached"
     rec["mode"] = mode
+    # trials of a whole-cell recording held near 0 mV by current (left out at rest; standard)
+    rec["held_trials"] = (trial_med > -20) if mode == "whole-cell" else np.zeros(len(trials), bool)
     b, a = signal.butter(2, [1 / (fs / 2), 100 / (fs / 2)], "band")
     los = []
     for k in range(0, len(trials), max(1, len(trials) // 10)):
@@ -650,7 +685,7 @@ def load_icephys(asset):
             los.append(np.std(signal.filtfilt(b, a, x)))
     rec["lowfreq_sd_mv"] = float(np.median(los)) if los else np.nan
     keep = (tri >= 0) & (rel < ANALYSIS_END_S)
-    spikes, thr_a, thr_b, waves, ca_waves, pols = [], [], [], [], [], []
+    spikes, thr_a, thr_b, waves, ca_waves, pols, snr = [], [], [], [], [], [], []
     vclean = v.copy()
     pre, post = int(0.0015 * fs), int(0.003 * fs)
     for kk in np.unique(tri[keep]):
@@ -658,6 +693,8 @@ def load_icephys(asset):
         x = v[idx]
         if mode == "whole-cell":
             p = detect_spikes_whole_cell(x, fs)
+            if len(p):
+                snr.append(signal.peak_prominences(x, p)[0])
             dv = np.gradient(x) * fs / 1000.0
             thr_a.append(spike_thresholds(x, dv, p, fs, dv.mean() + 3 * dv.std()))
             thr_b.append(spike_thresholds(x, dv, p, fs, 3 * dv.std()))
@@ -666,9 +703,15 @@ def load_icephys(asset):
         else:
             p, pol, hp = detect_spikes_juxta(x, fs)
             pols.append((pol, len(p)))
+            if len(p):
+                xs = pol * hp
+                snr.append(xs[p] / (np.median(np.abs(xs - np.median(xs))) / 0.6745))
             ca_waves.append((hp, p, pol))
         spikes.append(vt[idx[p]])
     rec["spikes"] = np.concatenate(spikes) if spikes else np.zeros(0)
+    # spike size: whole-cell, median prominence (mV); cell-attached, median peak in robust s.d. of the
+    # high-passed trace (a signal-to-noise ratio; detection needs at least JX_THRESHOLD_SD)
+    rec["spike_size"] = float(np.median(np.concatenate(snr))) if snr else np.nan
     if mode == "whole-cell":
         rec["spike_thr"] = {"a": np.concatenate(thr_a) if thr_a else np.zeros(0),
                             "b": np.concatenate(thr_b) if thr_b else np.zeros(0)}
@@ -689,7 +732,7 @@ def load_icephys(asset):
         else:
             rec["ca_duration_ms"], rec["ca_ratio"] = np.nan, np.nan
         rec["polarity"] = polarity
-    beh = _behaviour(f, trials, readings=mode == "whole-cell")
+    beh = _behaviour(f, trials, readings=True)
     rec["beh"] = beh
     lit = lit_trials(rec["light"], trials)
     if mode == "whole-cell" and beh["principal"] is not None:
@@ -704,7 +747,7 @@ def load_icephys(asset):
         on_t = t[beh["touch_on"]]
         ttri = beh["trial"][beh["touch_on"]]
         good = (beh["touch_iti"] >= 0.025) & (ttri >= 0)
-        good &= ~lit[np.clip(ttri, 0, None)]
+        good &= ~lit[np.clip(ttri, 0, None)] & ~rec["held_trials"][np.clip(ttri, 0, None)]
         rec["touch_avg"], rec["touch_avg_n"] = _event_average(vclean, vt, tri, fs, on_t[good])
         # around light: the first light sample of each lit trial, and isolated 5 ms pulses
         rec["light_avg"] = {}
@@ -713,7 +756,7 @@ def load_icephys(asset):
             if len(w) == 0:
                 continue
             first = trials["start"].to_numpy()[w.trial.to_numpy(int)] + w.rel_start.to_numpy()
-            iso = isolated_pulses(rec["light"], site)
+            iso = tag_pulses(rec["light"], site)
             rec["light_avg"][site] = {"first": _event_average(vclean, vt, tri, fs, first),
                                       "isolated": _event_average(vclean, vt, tri, fs, iso)}
     rec["general_fields"] = sorted(f["general"].keys())
@@ -748,7 +791,7 @@ def load_vpm(asset):
            "location": [f["general/extracellular_ephys"][k].attrs.get("location", "")
                         for k in f["general/extracellular_ephys"] if k != "electrodes"],
            "session_description": texts[0], "has_light": any(k.startswith("photostimulation") for k in f["stimulus/presentation"]),
-           "beh": _behaviour(f, trials)}
+           "beh": _behaviour(f, trials, readings=True)}
     return rec
 
 
@@ -935,10 +978,11 @@ def fs_phase_fit(values):
     return {**s, "kind": "single"}
 
 
-def light_pulse_response(light, spikes, site):
-    """Spike probability 0 to 5 ms after each isolated pulse at a site against the same 5 ms
-    starting 50 ms before, one-sided binomial (McNemar-type) test, median first-spike latency."""
-    on = isolated_pulses(light, site)
+def light_pulse_response(light, spikes, site, rule="train"):
+    """Spike probability 0 to 5 ms after each tag pulse (`tag_pulses` rule) at a site against the
+    same 5 ms starting 50 ms before, one-sided binomial (McNemar-type) test, median first-spike
+    latency."""
+    on = tag_pulses(light, site, rule)
     if len(on) == 0:
         return {"n_pulses": 0}
     sp = np.sort(spikes)
@@ -1076,19 +1120,22 @@ def supplement_mouse_lines():
 
 # --------------------------------------------------------------------------- per-cell summaries
 
-def spike_measures(spikes, beh, trial_mask, definition, rng, fs_fit=False, filters=FILTERS):
+def spike_measures(spikes, beh, trial_mask, definition, rng, fs_fit=False, filters=FILTERS, touch=True):
     """Every spike measure of one unit or cell over the trials of `trial_mask` (claims, Measures):
-    spikes per touch with its bootstrap interval, the PSTH latency, nonwhisking and whisking rates
-    with the per-cell rank-sum tests (O2 a, b) and the phase fit, under each filter (O1)."""
+    spikes per touch with its bootstrap interval, the PSTH latency (left out when `touch` is
+    False), nonwhisking and whisking rates with the per-cell rank-sum tests (O2 a, b) and the phase
+    fit, under each filter (O1)."""
     count = counts_1k(spikes, beh)
     tri = beh["trial"]
     use = (tri >= 0) & np.asarray(trial_mask)[np.clip(tri, 0, None)]
     count = np.where(use, count, 0)
-    on = touches(beh, trial_mask, 0.025)
-    s = spikes_per_touch(count, tri, on, definition, rng)
-    lat_edge, lat_centre, why, _ = psth_latency(count, tri, on)
-    out = {"n_spikes": int(count.sum()), "n_touches": s["n_touches"], "spt": s["spt"], "spt_lo": s["ci"][0],
-           "spt_hi": s["ci"][1], "lat_edge": lat_edge, "lat_centre": lat_centre, "lat_excluded": why}
+    out = {"n_spikes": int(count.sum())}
+    if touch:
+        on = touches(beh, trial_mask, 0.025)
+        s = spikes_per_touch(count, tri, on, definition, rng)
+        lat_edge, lat_centre, why, _ = psth_latency(count, tri, on)
+        out.update({"n_touches": s["n_touches"], "spt": s["spt"], "spt_lo": s["ci"][0], "spt_hi": s["ci"][1],
+                    "lat_edge": lat_edge, "lat_centre": lat_centre, "lat_excluded": why})
     for filt in filters:
         r = epoch_rates(count, beh, filt, use)
         rs = ranksum_change(r)
