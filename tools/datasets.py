@@ -55,7 +55,8 @@ ARCHIVES = {
 
 
 def key_of(archive: str, id_: str) -> str:
-    return f"{archive}:{id_}"
+    # An archive whose identifiers ignore case is keyed in lower case, as its folders are.
+    return f"{archive}:{id_.lower() if ARCHIVES.get(archive, {}).get('case') else id_}"
 
 
 def split_key(key: str) -> tuple[str, str]:
@@ -90,8 +91,7 @@ def parse(text: str) -> str:
         archive = next((a for a, v in ARCHIVES.items() if v["label"].lower() == archive.lower()), archive.lower())
         if not re.fullmatch(r"[a-z][a-z0-9]*", archive) or not re.fullmatch(r"[A-Za-z0-9._-]+", id_):
             raise ValueError(f"not a dataset: {text!r}")
-        # An archive whose identifiers ignore case is keyed in lower case, as its folders are.
-        return key_of(archive, id_.lower() if ARCHIVES.get(archive, {}).get("case") else id_)
+        return key_of(archive, id_)
     if re.fullmatch(r"[a-z][a-z0-9]*-[A-Za-z0-9._-]+", text):
         return key_of_folder(text)
     raise ValueError(f"not a dataset: {text!r}")
