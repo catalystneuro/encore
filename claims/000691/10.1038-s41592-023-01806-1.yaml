@@ -1,41 +1,93 @@
 # Claims for Scherrer, Lynch, Zhang & Fee (2023) on dandiset 000691.
-# Source: the version of record in Nature Methods is not open access. The claims are written from
-# its abstract and from the parts of its article page that are public: the figure titles, the
-# Extended Data legends, and the data and code availability statements. The Extended Data figure
-# numbers below are those of the version of record. The main text and the legends of Figures 1
-# and 2 were not available. The bioRxiv preprint (10.1101/2021.09.03.458947, version 2) was read
-# for its Methods only, to fill in procedures the code leaves open; no expected value is taken
-# from it.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20,
+# protocol as stated in docs/protocol.md (version pilot-10).
 #
-# When these criteria were written, the author had seen the data check (file list, metadata, every
-# dataset of the NWB file, timestamps of both streams, the behaviour video and a first tracking of
-# the mouse in it) and one prototype of the quadrant and direction decoder: three fits with
-# median per-class accuracies of 0.44 to 0.58, and three fits with shifted labels at 0.04 to 0.12.
-# No other claim's analysis had been run.
+# Text read: the version of record (Nature Methods 20, 546-549), from a PDF supplied by a person,
+# as extracted text in paper/10.1038-s41592-023-01806-1.txt. It holds the main text, the figure
+# legends, the Methods, the Extended Data legends (Extended Data Figs. 1 to 10) and the reporting
+# summary. The supplementary information is two videos (Supplementary Videos 1 and 2), which no
+# result rests on. The PDF was not opened; the numbers needed were in the text. In the extracted
+# text, the sentence on the Featherscope's resolution (page 547) is split by figure labels, its
+# second half placed before its first; the quote of fig1e-featherscope-psf is that second half, and
+# its first half reads "The Featherscope has a resolution of approximately 4 μm at the".
 #
-# The dandiset holds one session of one mouse imaged with the large-FOV microscope (the
-# Kiloscope): the raw imaging video, 2948 EXTRACT footprints with their traces and centroids, and
-# a behaviour video of the mouse in a looped corridor maze. It holds no position, no curation of
-# the footprints, no pixel size, and no data from the other mice, the birds, or the optical tests.
+# Rewritten 2026-10-20 from the full text. The earlier file was written from the abstract and the
+# public figure legends, and its criteria were written after its author had seen the data check
+# and a prototype decoder. This file is written from the paper and its code alone, by a reader
+# who has not seen the dandiset's data. What changed, and why:
+# - ed9c-local-decoding-map: the null is now the paper's (Methods, Data analysis, paragraph 5),
+#   a thousand decoders trained on shuffled data from 32 randomly chosen footprints, where each
+#   footprint's trace is circularly shifted by its own random offset. The earlier null shifted the
+#   labels against the local footprints and used a z-score. The same correction applies to
+#   ed9b-octant-decoding, whose null shifted the labels by 10% to 90% of the frames.
+# - abstract-kiloscope-fov: the expected value was 4.0 mm for the longer side; the paper states
+#   4.8 x 3.6 mm (main text, paragraph 3). The "~4 mm" of the abstract is a rounding.
+# - fig2-quadrant-direction-decoding, dropped as not stated, is restored: the main text states it
+#   (main text, page 549, paragraph 1), with its test.
+# - Added from the full text: fig1e-featherscope-psf, fig1f-kiloscope-psf, ed1cf-field-curvature,
+#   ed7-motion-small, fig2k-decoder-size, fig2l-local-decoding-map, birds-singing-rate and
+#   fig2d-lman-sparse-bursting.
+# - Criteria that rested on thresholds of the earlier author's choosing (duplicate merging in
+#   abstract-thousands-of-neurons, the 0.8 level in ed2b and ed2c, the spread ratio in ed8) are
+#   replaced by the paper's numbers, or by readings named as such where the paper fixes none.
+# Ids are kept where the finding is the same.
 #
-# Method choices fixed here follow the paper's code (GitHub FeeLab/Feescope-Paper-Code at commit
-# d596646): the mouse is the largest dark blob in the arena, from video frame 1920 on (the code
-# starts at 64 s of the video's nominal 30 frames/s); position is interpolated to the imaging
-# times; linear position runs around the loop and is unwrapped; speed is its absolute change per
-# imaging frame averaged over 30 frames; "running" is speed above its median; direction is the
-# sign of the change of linear position averaged over 30 frames; activity is the trace's moving
-# maximum over 30 frames. Decoders are one-against-all linear SVMs with a ridge penalty (lambda
-# 3.2e-7 for quadrant and direction, 6.75e-8 for octant), trained on a contiguous half of the
-# running frames after a random circular shift, tested on the other half, with 1% of frames
-# dropped at the end of each half. The accuracy of a class is the fraction of its test frames
-# predicted correctly. All 2948 footprints are used, as the curated set is not in the dandiset.
-# Quotes from the abstract and the public Extended Data legends added 2026-10-19 where they state
-# the finding; the rest are marked inferred (no open full text).
-# Dropped 2026-10-19: fig2-quadrant-direction-decoding, whose finding the paper's open text
-# (abstract, figure titles, Extended Data legends) does not state; it was read from the paper's
-# code. Its method is written out in ed9b-octant-decoding's criterion, which referred to it. Its
-# section remains in the notebook.
-# Quotes and statistics added 2026-10-20 from the full text (PDF of the version of record).
+# Data the paper used. Four mice (C57/B6, 8 to 12 weeks old) with jGCaMP7f injected at about 20
+# sites across a 4 mm craniotomy over V1 and regions anterior and lateral to it, imaged with the
+# Kiloscope while freely exploring a circular (square loop) maze for several minutes. EXTRACT gave
+# 2,948, 401, 1,029 and 112 footprints; the mouse with 2,948 has a 4 mm window and 2,382 footprints
+# after manual curation, and all analyses of neural activity (Fig. 2e to 2l, Extended Data Figs. 7
+# to 10) use this one session. Imaging is at 30 frames/s (the code converts seconds to frames by
+# 30). Position comes from an overhead behaviour video with its own timestamps. Three juvenile
+# male zebra finches (50 to 70 days post hatch), GCaMP6f in LMAN, imaged with the Featherscope
+# during song (46, 177 and 225 curated footprints). Optical tests use a USAF 1951 target, 1 um
+# beads (155 for the Featherscope, 118 for the Kiloscope), a thin layer of fluorescent dye, and
+# test tones on the onboard ADC. The paper deposited its imaging data at Academic Torrents
+# (aa2a3d2f5ff0b3974871db47db57bc3dabf3c192). The dandiset's description names the mouse
+# experiment (4 mm window, circular maze), although it calls the microscope the one "optimized
+# for weight"; the paper made that experiment with the Kiloscope.
+#
+# Code read: GitHub FeeLab/Feescope-Paper-Code at commit
+# d596646b16a505907203828d8026feb7736ca69c (MATLAB). It holds position tracking
+# (f3+sf8/mouse_position_tracking.m), the decoders (quadrant_direction_decoding.m,
+# octant_decoding.m, subset_sweep.m, subregion_map_quaddir.m, subregion_map_octant.m), the NMF
+# grouping and ridgeline plot (ridgeline_nmf_grouping.m, ridgeline_plot.m), the coactive footprint
+# maps (sf10/single_component_raster.m), the receptive fields (sf9/place_cells.m), the bead PSF fits
+# with their images and ROI lists (f2+sf4), the illumination profiles with their images (sf3), and
+# Zemax files (sf1). It does not hold the shuffle tests of Fig. 2j and Extended Data Fig. 9, the
+# pixel-wise significance and Benjamini-Hochberg step of the maps, the Mann-Whitney test of
+# Fig. 2k, the motion correction, the USAF images or the ADC recordings. Its folder names follow
+# the preprint's figure numbers (f3 is Fig. 2 of the version of record, sf8 is Extended Data
+# Fig. 9, sf9 is Extended Data Fig. 10, sf10 is Extended Data Fig. 8).
+#
+# Common method of the mouse decoding claims (Methods, Data analysis, paragraphs 4 and 5, and the
+# code where the Methods are silent, as cited):
+# - Position (mouse_position_tracking.m). The behaviour video is read from 64 s on, each frame is
+#   rotated by 86.79 degrees and cropped to rows 229 to 560 and columns 101 to 378; the mouse is
+#   the largest connected region of pixels whose squared RGB distance from (0, 3, 4) is below 1600.
+#   Its centroid is interpolated to the imaging timestamps. The quadrant is the nearest of the four
+#   sides of the track rectangle (x 44 to 228, y 34 to 270 in the cropped frame); linear position
+#   runs around the loop (0.508 m per 290 pixels) and is unwrapped. The octant halves each
+#   quadrant at the rectangle's midline.
+# - Running and direction (all decoding scripts). Speed is the absolute change of unwrapped
+#   position per frame, moving mean over 30 frames; frames with speed above its median are used.
+#   Direction is the sign of the change of unwrapped position, moving mean over 30 frames. The
+#   eight quadrant and direction classes are quadrant q and direction d coded as 2q-1 (d < 0)
+#   or 2q (d > 0).
+# - Activity. The moving maximum over 30 frames of each footprint's trace (code). The footprints
+#   are those of Fig. 2h, the 2,382 curated ones (Fig. 2 legend, panels f, h and j). The code
+#   loads extract_curated.mat and then position_tracking.mat, whose activity matrix, if present,
+#   holds all 2,948 footprints; using all 2,948 is a variant.
+# - Decoder (Methods; code). One-versus-all linear SVMs (fitcecoc, templateLinear, ridge penalty;
+#   lambda 3.2e-7 in quadrant_direction_decoding.m, 6.75e-8 in octant_decoding.m, subset_sweep.m
+#   and both map scripts). Each fit circularly shifts frames and labels together by a random
+#   offset, trains on the first half less 1% of the frames at its end, and tests on the second
+#   half less 1% at its end. The decoding matrix of a fit is the confusion matrix normalized by
+#   the count of each actual class; matrices are averaged over fits (per class, over fits where
+#   the class occurs). The median accuracy is the median of the diagonal (Methods, paragraph 5).
+# - Shuffle (Methods, paragraph 5; the commented block in each decoding script and the shuffle in
+#   subset_sweep.m). Each footprint's activity is circularly shifted by its own offset, drawn
+#   uniformly over all offsets; labels are not shifted.
 schema_version: 2
 dataset:
   archive: dandi
@@ -43,21 +95,27 @@ dataset:
 paper: doi:10.1038/s41592-023-01806-1
 claims:
 - id: abstract-thousands-of-neurons
-  statement: The large-FOV microscope images thousands of neurons at once in a freely behaving
-    mouse.
-  source: Abstract; main text, paragraph 3; Fig. 2f; Extended Data Fig. 6a
+  statement: The Kiloscope records thousands of neurons at once in a freely behaving mouse; in
+    the mouse with the best expression EXTRACT gave 2,948 footprints.
+  source: Main text, page 546, paragraph 3; Methods, Data analysis, paragraph 1
   quote: The second design, the Kiloscope, provides cellular resolution imaging across a 4.8 × 3.6
     mm FOV in a device weighing only 1.4 g, allowing us to simultaneously record from thousands of
-    neurons in a freely behaving mouse.
-  criterion: Counted on the dandiset's footprints. Reproduced when at least 2000 footprints have
-    a trace that is not zero throughout and remain after near-duplicates are merged (pairs whose
-    traces correlate above 0.9 and whose centroids are within 10 pixels count once), and the
-    mouse moves through the whole maze during the recording (all four arms of the loop visited).
-    Partially reproduced for 1000 to 1999 footprints.
+    neurons in a freely behaving mouse ... For the mouse with the best calcium indicator
+    expression, this extraction yielded 2,948 footprints
+  expected:
+  - quantity: EXTRACT footprints in one session of the mouse with the most footprints
+    value: 2948
+    tolerance: 295
+    unit: footprints
+  criterion: The count is the number of footprints EXTRACT returned for the one session, as the
+    Methods report it (NoRMCorre, then EXTRACT with a minimum cell-finding SNR of 2). Reproduced
+    when the count is within tolerance and the footprints were recorded together in a session of
+    free exploration of the maze.
 - id: ed6a-curated-footprints
-  statement: In the mouse with the 4 mm cranial window shown in the main figure, 2382 footprints
-    remain after curation.
-  source: Main text, paragraph 9; Methods, Data analysis, paragraph 1; Extended Data Fig. 6a
+  statement: In the mouse with the most footprints, manual curation leaves 2,382 putative
+    neurons.
+  source: Main text, page 548, paragraph 2; Methods, Data analysis, paragraph 1; Extended Data
+    Fig. 6a
   quote: In the data from the mouse with the most footprints, manual curation using the same
     criteria described above yielded 2,382 footprints.
   expected:
@@ -65,33 +123,173 @@ claims:
     value: 2382
     tolerance: 238
     unit: footprints
+  depends_on:
+  - abstract-thousands-of-neurons
+  criterion: The curation was made by eye (Methods, Data analysis, paragraph 1) and cannot be
+    redone from the paper. The claim is tested by counting the footprints marked as curated, if
+    the data mark them; otherwise it cannot be tested.
 - id: ed6bcd-other-mice
-  statement: Three other mice (3 mm and 4 mm windows) gave 1029, 401 and 112 footprints.
-  source: Extended Data Fig. 6b to 6d
-  quote: 3 mm cranial window, 1029 footprints ... 4 mm cranial window, 401 footprints ... 3 mm
-    cranial window, 112 footprints.
+  statement: The Kiloscope was used in four mice, and more than a thousand neurons were recorded
+    at once in more than one of them; EXTRACT gave 2,948, 401, 1,029 and 112 footprints.
+  source: Main text, page 548, paragraph 2; Extended Data Fig. 6b to 6d
+  quote: we used the microscope to record in four freely moving mice and were able to
+    simultaneously record more than a thousand neurons in cortex in multiple mice ... We then
+    analyzed the data using EXTRACT and extracted 2,948, 401, 1,029 and 112 footprints in these
+    mice.
+  expected:
+  - quantity: footprints, mouse of Extended Data Fig. 6b (3 mm window)
+    value: 1029
+    tolerance: 103
+    unit: footprints
+  - quantity: footprints, mouse of Extended Data Fig. 6c (4 mm window)
+    value: 401
+    tolerance: 40
+    unit: footprints
+  - quantity: footprints, mouse of Extended Data Fig. 6d (3 mm window)
+    value: 112
+    tolerance: 11
+    unit: footprints
 - id: ed5-songbirds
-  statement: The weight-optimized microscope images hundreds of neurons in juvenile songbirds (46,
-    177 and 225 curated footprints in three birds).
-  source: Abstract; Extended Data Fig. 5
-  quote: enables imaging, during free behavior, of thousands of neurons in mice and hundreds of
-    neurons in juvenile songbirds ... 46 footprints after curation ... 177 footprints after curation
-    ... 225 footprints after curation.
+  statement: The Featherscope recorded hundreds of neurons in juvenile songbirds; curation gave
+    177, 46 and 225 footprints in three birds.
+  source: Main text, page 548, paragraph 1 (continuing from page 547); Extended Data Fig. 5
+  quote: and extracted 177, 46 and 225 manually curated footprints that exhibited the spatial
+    profile and temporal fluctuations characteristic of neuronal calcium signals in cortex
+  expected:
+  - quantity: curated footprints, bird of Fig. 2b and Extended Data Fig. 5b
+    value: 177
+    tolerance: 18
+    unit: footprints
+  - quantity: curated footprints, bird of Extended Data Fig. 5a
+    value: 46
+    tolerance: 5
+    unit: footprints
+  - quantity: curated footprints, bird of Extended Data Fig. 5c
+    value: 225
+    tolerance: 23
+    unit: footprints
+- id: birds-singing-rate
+  statement: Birds carrying the Featherscope sang 3,861 to 23,545 syllables per day, within the
+    normal range.
+  source: Main text, page 547, paragraph 2; Methods, Data analysis, paragraph 3
+  quote: Implanted birds sang between 3,861 and 23,545 syllables per day, within the normal range
+    and far exceeding the minimum amount needed for analysis of neural activity
+  expected:
+  - quantity: maximum syllables per day, lower bound of the range over the three birds
+    value: 3861
+    tolerance: 386
+    unit: syllables per day
+  - quantity: maximum syllables per day, upper bound of the range over the three birds
+    value: 23545
+    tolerance: 2355
+    unit: syllables per day
+  criterion: Per bird, the maximum over days of the number of syllables sung in a day (Methods,
+    Data analysis, paragraph 3). A reported range, so reproduced when the three values lie in the
+    range widened by 10% of each bound (3475 to 25900).
+- id: fig2d-lman-sparse-bursting
+  statement: The activity of almost all LMAN footprints during song shows the sparse random
+    bursting seen in earlier recordings of LMAN.
+  source: Main text, page 548, paragraph 1; Fig. 2c and 2d
+  quote: The activity patterns of almost all footprints recapitulate the sparse random bursting
+    seen in previous observations of LMAN activity during song (Fig. 2c,d)
+  criterion: The paper gives no measure of sparse bursting and no count of the footprints that
+    show it; the claim cannot be judged by a method the paper fixes (methods_underspecified).
 - id: abstract-kiloscope-fov
-  statement: The microscope optimized for field of view has a field of view of about 4 mm.
-  source: Abstract; main text, paragraph 3
-  quote: one optimized for FOV (~4 mm FOV; 1.4 g) ... The second design, the Kiloscope, provides
-    cellular resolution imaging across a 4.8 × 3.6 mm FOV in a device weighing only 1.4 g
+  statement: The Kiloscope's field of view is 4.8 x 3.6 mm (about 4 mm in the abstract).
+  source: Abstract; main text, page 546, paragraph 3
+  quote: The second design, the Kiloscope, provides cellular resolution imaging across a 4.8 × 3.6
+    mm FOV
   expected:
   - quantity: field of view, longer side
-    value: 4.0
-    tolerance: 0.4
+    value: 4.8
+    tolerance: 0.48
     unit: mm
+  - quantity: field of view, shorter side
+    value: 3.6
+    tolerance: 0.36
+    unit: mm
+  criterion: The field of view is the imaging frame's width and height in pixels times the
+    object-plane pixel size. The paper does not state the pixel size. The code uses 5.94 um per
+    pixel for the Kiloscope (sf3/widefield/analysis.m, on 808 x 608 pixel frames) and 5.35 um per
+    pixel for the Kiloscope bead images (f2+sf4/wf_analysis_secondorder.m); the main text's
+    0.13 pixels = 0.7 um implies about 5.4 um. A pixel size stored with the data is used when
+    there is one; otherwise both code values are readings, and the claim is reproduced when both
+    sides are within tolerance under a reading.
 - id: abstract-weights
-  statement: The two microscopes weigh 1.4 g (large FOV) and 1.0 g (weight-optimized, 1.0 mm FOV).
-  source: Abstract
+  statement: The two microscopes weigh 1.4 g (Kiloscope, large field of view) and 1.0 g
+    (Featherscope, 1.0 mm field of view).
+  source: Abstract; main text, page 546, paragraph 3; Methods, Optics and construction,
+    paragraph 9
   quote: "Using this light path, we designed two microscopes: one optimized for FOV (~4 mm FOV; 1.4
     g), and the other optimized for weight (1.0 mm FOV; 1.0 g)."
+  expected:
+  - quantity: Kiloscope weight
+    value: 1.4
+    tolerance: 0.14
+    unit: g
+  - quantity: Featherscope weight
+    value: 1.0
+    tolerance: 0.1
+    unit: g
+- id: fig1e-featherscope-psf
+  statement: The Featherscope's resolution (FWHM of the bead PSF) is about 4 um at the centre of
+    the field of view and 7 um at the edges.
+  source: Main text, page 547, paragraph 1 (continuing from page 546); Fig. 1e
+  quote: center of its FOV, which decreases to 7 μm at the edges and is limited by the astigmatism
+    of the GRIN lenses (Fig. 1e and Extended Data Fig. 1a,b)
+  data: elsewhere
+  where: GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c,
+    f2+sf4/feather (bead image stack) and f2+sf4/feather_roi.csv (155 bead regions)
+  expected:
+  - quantity: FWHM at the centre
+    value: 4
+    tolerance: 0.4
+    unit: um
+  - quantity: FWHM at the edge
+    value: 7
+    tolerance: 0.7
+    unit: um
+  criterion: As in f2+sf4/feather_analysis_secondorder.m, each bead region at its listed slice
+    (the most focused, Methods, Imaging performance characterization) is fitted with a rotated 2D
+    Gaussian with the code's second-order pixel correction at 1.68 um per pixel, and FWHM is 2.355
+    times each axis's width. Radial distance is from the code's centre (row 273, column 400), and
+    beads are grouped to the nearest of 0, 100, ..., 500 um; centre is the 0 um group and edge the
+    500 um group. Which width is "resolution" is open. The readings are (a) the median major-axis
+    FWHM, (b) the median minor-axis FWHM, (c) the mean of the two axes' means (the code's error bar
+    plot). Reproduced when both values are within tolerance under a reading.
+- id: fig1f-kiloscope-psf
+  statement: The Kiloscope's resolution (FWHM of the bead PSF) is about 4 um at the centre of
+    the field of view and about 5 um at the edges.
+  source: Main text, page 547, paragraph 1; Fig. 1f
+  quote: The Kiloscope has a resolution of approximately 4 μm at the center of its FOV, which
+    decreases to about 5 μm at the edges and is limited by the sensor pixel size
+  data: elsewhere
+  where: GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c,
+    f2+sf4/wf/beads (bead image stack) and f2+sf4/wf_roi.csv (118 bead regions)
+  expected:
+  - quantity: FWHM at the centre
+    value: 4
+    tolerance: 0.4
+    unit: um
+  - quantity: FWHM at the edge
+    value: 5
+    tolerance: 0.5
+    unit: um
+  criterion: As for fig1e-featherscope-psf, with f2+sf4/wf_analysis_secondorder.m (5.35 um per
+    pixel, centre at row 259, column 420, groups 0, 250, ..., 1500 um; edge is the 1500 um group),
+    and the same three readings.
+- id: ed1cf-field-curvature
+  statement: Both microscopes have field curvature small enough for typical imaging depths.
+  source: Main text, page 547, paragraph 1; Extended Data Fig. 1c and 1f
+  quote: Both microscope designs have sufficiently small field curvature for typical imaging
+    depths (Extended Data Fig. 1c,f).
+  data: elsewhere
+  where: GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c,
+    f2+sf4 (slice of best focus per bead in feather_roi.csv and wf_roi.csv)
+  criterion: The paper gives no bound on field curvature and no typical imaging depth, so no
+    method it fixes decides the claim (methods_underspecified). The height of best focus against
+    radius (the Slice column, over the 100 um stack of the Methods) is reported for both
+    microscopes.
 - id: ed1-ed4-resolution
   statement: Images of a USAF 1951 target resolve elements of 2.19 um line width with the
     Featherscope and 4.38 um with the Kiloscope, and 2.2 um with Kiloscope optics on a sensor with
@@ -102,100 +300,210 @@ claims:
     inset are 6.96 μm and 4.38 μm, respectively ... The smallest element in group 7 is resolvable
     and has a linewidth of 2.2 μm.
 - id: ed2b-featherscope-flat-illumination
-  statement: For the Featherscope, the axicon correction optics give a flat signal intensity
-    profile across the field of view, where total vignetting (optical vignetting with Gaussian
+  statement: For the Featherscope, the axicon correction optics give a flat signal profile
+    across the field of view, where total vignetting (optical vignetting with Gaussian
     illumination) makes the signal fall toward the edges.
-  source: Extended Data Fig. 2b
-  quote: Radial profile of the signal collected with the Featherscope ... Total vignetting (yellow)
-    illustrates the decrease in fluorescent signal caused by the combination of optical vignetting
-    and a Gaussian-shaped excitation light profile. The curve with correction optics (blue)
-    illustrates the flat signal intensity profile that can be achieved with an axicon pair that
-    increases the excitation intensity at the edges of the field of view.
+  source: Extended Data Fig. 2b; Methods, Coupling optics, paragraph 3
+  quote: Total vignetting (yellow) illustrates the decrease in fluorescent signal caused by the
+    combination of optical vignetting and a Gaussian-shaped excitation light profile. The curve
+    with correction optics (blue) illustrates the flat signal intensity profile that can be
+    achieved with an axicon pair that increases the excitation intensity at the edges of the
+    field of view.
   data: elsewhere
   where: GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c,
-    folder sf3/feather (images of a thin layer of fluorescent dye)
-  criterion: Radial profiles as the code sf3/feather/analysis.m computes them (1.68 um per pixel,
-    centred on the intensity-weighted centre, moving median of 3 um, normalized to the 99th
-    percentile). Reproduced when the corrected profile stays at or above 0.8 out to a radius of
-    0.4 mm and is higher there than the total-vignetting profile; partially reproduced when only
-    the second holds.
+    sf3/feather (images of a thin layer of fluorescent dye; axicons, led and reference folders)
+  criterion: Radial profiles as sf3/feather/analysis.m computes them (1.68 um per pixel, centred
+    on the intensity-weighted centre, 1 um radial bins, moving median of 3 bins, normalized to the
+    99th percentile); the corrected profile is the axicons image, total vignetting the reference
+    image, optical vignetting the led image. The paper gives no measure of flatness. The edge
+    radius is open; the readings are 0.5 mm (half the 1.0 mm field of view) and 0.45 mm.
+    Reproduced when, under both, the corrected profile at the edge radius is higher than the total
+    vignetting profile and its fall from the centre is smaller. The profiles are shown.
 - id: ed2c-kiloscope-flat-illumination
-  statement: For the Kiloscope, the axicon correction optics give a flat signal intensity profile
-    across the field of view, where total vignetting makes the signal fall toward the edges.
+  statement: For the Kiloscope, the axicon correction optics give a flat signal profile across
+    the field of view, where total vignetting makes the signal fall toward the edges.
   source: Extended Data Fig. 2c
-  quote: The curve with correction optics (blue) illustrates the flat signal intensity profile that
-    can be achieved with an axicon pair that increases the excitation intensity at the edges of the
-    field of view ... same as in (b) but for the Kiloscope.
+  quote: c, same as in (b) but for the Kiloscope.
   data: elsewhere
   where: GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c,
-    folder sf3/widefield
-  criterion: As for ed2b-featherscope-flat-illumination, with the code's 5.94 um per pixel, a
-    moving median of 10 um, and a radius of 1.5 mm.
+    sf3/widefield
+  criterion: As for ed2b-featherscope-flat-illumination, with sf3/widefield/analysis.m (5.94 um
+    per pixel, moving median of 10 bins). The edge radius readings are 1.8 mm (half the 3.6 mm
+    side) and 2.0 mm (the code's plotted range).
 - id: ed3-adc
   statement: The onboard analog-to-digital converter records test tones with a root-mean-square
     residual of 0.2% of full scale.
   source: Extended Data Fig. 3
   quote: The time series deviates from a pure tone with a root-mean-square residual of 0.2% of the
-    full scale
+    full scale, calculated using the full bandwidth of the recorded signal.
+  expected:
+  - quantity: root-mean-square residual from a pure tone
+    value: 0.2
+    tolerance: 0.02
+    unit: percent of full scale
+- id: ed7-motion-small
+  statement: Lateral shifts of the image due to the mouse's movement are small, with a
+    root-mean-square displacement of 0.13 pixels (0.7 um).
+  source: Main text, page 548, paragraph 2; Extended Data Fig. 7
+  quote: Lateral shifts of the image due to mouse motion were small (root-mean-square displacement
+    of 0.13 pixels or 0.7 μm (Extended Data Fig. 7).
+  expected:
+  - quantity: root-mean-square displacement
+    value: 0.13
+    tolerance: 0.013
+    unit: pixels
+  - quantity: root-mean-square displacement
+    value: 0.7
+    tolerance: 0.07
+    unit: um
+  criterion: Displacements are those NoRMCorre estimates on the raw imaging video of the session
+    (Methods, Data analysis, paragraph 1; Extended Data Fig. 7 plots horizontal and vertical
+    displacement of the field of view over time). The NoRMCorre settings are not given; rigid
+    registration (one shift per frame, as plotted) with NoRMCorre's defaults is a standard choice.
+    How the root mean square is formed is open. The readings are (a) the root mean square of the
+    2D shift's length about the mean shift, (b) the same about zero shift, (c) the root mean
+    square over both axes' shifts about their means. Microns use the pixel sizes of
+    abstract-kiloscope-fov. Reproduced when the value in pixels is within tolerance under a
+    reading.
+- id: fig2-quadrant-direction-decoding
+  statement: Linear SVM decoders trained on half of the data decode the mouse's combined quadrant
+    and movement direction on the other half at an accuracy at least three times chance, above
+    that of decoders trained on shuffled data.
+  source: Main text, page 549, paragraph 1; Fig. 2i and 2j; Methods, Data analysis, paragraphs 4
+    and 5
+  quote: We trained a support vector machine (SVM) model on half of the data and used the other
+    half to decode the mouse's combined position and movement direction, with the resulting
+    accuracy at least three times chance level (Fig. 2j, P < 0.001, Monte Carlo sampling of n =
+    1,000 shuffled datasets).
+  statistics:
+  - test: Monte Carlo sampling of shuffled datasets
+    p: 0.001
+    p_relation: "<"
+    n: 1,000 shuffled datasets
+  criterion: Eight classes, the four quadrants by two directions (Fig. 2i), and the common method
+    above with lambda 3.2e-7. The decoding matrix is the average of 200 fits
+    (quadrant_direction_decoding.m). The null is 1,000 decoders, each trained once on its own
+    shuffle (Methods, paragraph 5), each giving a median accuracy; p is the fraction of null
+    values at or above the real median accuracy. Chance is 1/8 (the code sets white at
+    1/Nclass). Which accuracy must reach three times chance is open. The readings are (a) the
+    median of the diagonal at least 0.375, (b) every diagonal element at least 0.375. Reproduced
+    when p < 0.001 and the accuracy holds under a reading; partially reproduced when p < 0.001
+    and the median of the diagonal exceeds 1/8 but neither reading holds.
+- id: fig2k-decoder-size
+  statement: Decoding accuracy depends on the number of footprints used, and decoders of every
+    size from 2 to 2,048 footprints differ from decoders trained on shuffled activity.
+  source: Main text, page 549, paragraph 1; Fig. 2k; Methods, Data analysis, paragraph 5
+  quote: The accuracy of the decoder depended on the number of footprints used (Fig. 2k, P ≤ 2.7 ×
+    10−4 for all decoder sizes, Mann–Whitney U).
+  statistics:
+  - about: printed as P ≤ 2.7 × 10−4 for all decoder sizes; the schema has no "at or below"
+    test: Mann-Whitney U
+    p: 2.7e-4
+    p_relation: "<"
+    n: 64 decoders per size, sizes 2, 4, ..., 2,048 footprints
+  depends_on:
+  - fig2-quadrant-direction-decoding
+  criterion: As subset_sweep.m does it, with the common method above (quadrant and direction
+    labels, lambda 6.75e-8 as in the code). For each size 2^1 to 2^11, 64 random subsets of
+    footprints; for each subset, the average decoding matrix of 100 fits and its median accuracy,
+    then the same subset after the shuffle, again 100 fits. What the Mann-Whitney U compares is
+    open. The readings are (a) original against shuffled at each size, (b) original at each size
+    against original at the next size. Reproduced when, under a reading, every two-sided test has
+    p at or below 2.7e-4 and the median of the original accuracies at 2,048 footprints exceeds that
+    at 2; partially reproduced when every test has p < 0.05 and the medians rise.
+- id: fig2l-local-decoding-map
+  statement: Decoders built from the 32 footprints closest to a point decode quadrant and
+    direction with accuracies that differ substantially across the field of view.
+  source: Main text, page 549, paragraph 1; Fig. 2l; Methods, Data analysis, paragraph 5
+  quote: Notably, footprints in different regions of the FOV yielded substantially different
+    decoding accuracies (Fig. 2l).
+  depends_on:
+  - fig2-quadrant-direction-decoding
+  criterion: Map points every 5 image pixels over rows 1 to 608 and columns 140 to 700 (the code's
+    grid, subregion_map_quaddir.m); a point is used when at least 32 footprint centroids lie within
+    270 um (Methods). At each point, the 32 footprints nearest to it; its value is the median
+    accuracy of the average matrix of 10 fits (code), with quadrant and direction labels and lambda
+    6.75e-8 (code). The null is 1,000 decoders trained on shuffled data from 32 randomly chosen
+    footprints (Methods). Points are significant at Benjamini-Hochberg 5% over all used points.
+    Open details and their readings. Pixel size for the 270 um radius, 5.94 um (45 pixels) or 5.35
+    um (50 pixels, the code's radius); random footprints drawn anew for each null decoder, or one
+    draw for all; p as the fraction of null values at or above the point's value, or that count
+    plus one over 1,001. "Substantially different" is read as (i) significant and non-significant
+    used points both present, and (ii) the values of the used points spanning at least 0.108 (the
+    0.18 to 0.30 range of the Fig. 2l colour bar, less 10%). Reproduced when at least one point is
+    significant and (i) and (ii) hold under every combination of readings. The code's choice of 64
+    footprints within 50 pixels is shown as a variant.
 - id: ed8-coactive-distributed
-  statement: The footprints that take part in a large correlated event of each NMF component are
-    spread across the field of view.
-  source: Main text, paragraph 10; Extended Data Fig. 8
+  statement: The correlated activity in each NMF component is driven by footprints spread across
+    the field of view.
+  source: Main text, page 549, paragraph 1; Extended Data Fig. 8; Methods, Data analysis,
+    paragraph 1
   quote: Note that the correlated activity visible in each component is driven by footprints from
     across the FOV (Extended Data Fig. 8).
-  criterion: As in the code (ridgeline_nmf_grouping.m and single_component_raster.m), the traces
-    of all 2948 footprints over the recording are factored by NMF into 8 components
-    (multiplicative updates, 4 replicates, the best kept), and each footprint is assigned to the
-    component in which its weight ranks highest. The code picks each component's event time by
-    hand; here it is the time of the component's largest temporal weight. Footprints of the
-    component whose maximum within 25 s of that time exceeds half their maximum over the
-    recording are active. The spread of a set is the root-mean-square distance of its centroids
-    from their mean. Reproduced when, for at least 6 of the 8 components, the event has at least
-    10 active footprints and their spread is at least half the spread of all 2948 footprints;
-    partially reproduced for 3 to 5 components.
+  criterion: The traces of the curated footprints (Fig. 2h; extract_curated.mat in the code) are
+    factored by NMF into eight components (Methods), with multiplicative updates, 4 replicates and
+    tolerances 1e-7 (ridgeline_nmf_grouping.m); each footprint goes to the component in which its
+    weight ranks highest among footprints (same script). Footprints of a component are active in
+    its event when their maximum within 25 s of the event time exceeds half their maximum over the
+    recording (single_component_raster.m). The event times are open. The code lists eight times
+    (820, 770, 990, 700, 400, 420, 1000 and 410 s) for components whose numbering a new NMF run
+    does not reproduce. The readings are (a) the time of each component's largest temporal weight,
+    (b) the code's eight times, each assigned one to one to the component with the largest
+    temporal weights at those times. "From across the FOV" has no measure in the paper. The
+    readings are (i) active footprints in all four quarters of the field of view (split at the
+    midlines of the extent of all centroids), (ii) the root-mean-square distance of the active
+    footprints' centroids from their mean not below the 5th percentile of that of 1,000 random sets
+    of the same size from all footprints. Reproduced when every component's event meets (i) and
+    (ii) under both event readings; partially reproduced when at least four do.
 - id: ed9b-octant-decoding
-  statement: Position within the maze can be decoded with octant resolution from the activity.
-  source: Main text, paragraph 10; Extended Data Fig. 9a and 9b
+  statement: Position within the maze can be decoded with octant resolution from the activity,
+    above decoders trained on shuffled data.
+  source: Main text, page 549, paragraph 1; Extended Data Fig. 9a and 9b
   quote: We used the same approach to decode even more fine-grained position information (Extended
-    Data Fig. 9, P < 0.001, Monte Carlo sampling as in Fig. 2j) ... Decoding position within the
-    maze with octant resolution.
+    Data Fig. 9, P < 0.001, Monte Carlo sampling as in Fig. 2j).
   statistics:
   - test: Monte Carlo sampling of shuffled datasets
     p: 0.001
     p_relation: "<"
     n: 1,000 shuffled datasets (as in Fig. 2j)
-  criterion: Eight classes, the eight octants (each arm halved, direction not coded). 50 decoders
-    with the procedure above and lambda 6.75e-8, as in octant_decoding.m, and 50 null decoders with
-    the labels circularly shifted against the activity by a random offset between 10% and 90% of
-    the frames. Per decoder, the median of the 8 class accuracies. Reproduced when the median over
-    the 50 decoders exceeds both chance (1/8) and the 95th percentile of the null decoders.
+  depends_on:
+  - fig2-quadrant-direction-decoding
+  criterion: Eight classes, the eight octants (each side of the loop halved, direction not coded;
+    Extended Data Fig. 9a), with the common method above and lambda 6.75e-8. The decoding matrix is
+    the average of 200 fits (octant_decoding.m). The null is as in fig2-quadrant-direction-decoding,
+    1,000 decoders each trained once on its own shuffle. Reproduced when the real median accuracy
+    exceeds every null value (p < 0.001) and exceeds chance (1/8).
 - id: ed9c-local-decoding-map
-  statement: Decoders that use the 32 footprints closest to a point, within 270 um, decode octant
-    position significantly (Benjamini-Hochberg false discovery rate 5%) in parts of the field of
-    view, and accuracy differs across the field of view.
-  source: Extended Data Fig. 9c
+  statement: Decoders built from the 32 footprints closest to a point decode octant position
+    significantly in parts of the field of view, with accuracy that varies across it.
+  source: Extended Data Fig. 9c; Methods, Data analysis, paragraph 5
   inferred: The Extended Data Fig. 9c legend and the Methods give the method only. The main text
-    says accuracy differs across the field of view for the quadrant and direction map (Fig. 2l) and
-    that octant position was decoded with the same approach, but states no result for the octant
-    map; that its accuracy is significant in parts of the field of view and varies across it is
-    read from the map.
-  criterion: Grid points every 30 pixels over the extent of the centroids; a point is used when
-    at least 32 centroids lie within 270 um, at the code's 5.94 um per pixel (45 pixels). At each
-    point, 10 octant decoders on its 32 nearest footprints and 10 null decoders with shifted labels
-    (as above); the score is the mean over decoders of the median class accuracy. The p-value is
-    one-sided, from the z-score of the real mean against the null mean and standard deviation;
-    points are significant at Benjamini-Hochberg 5% over all used points. Reproduced when at least
-    one point is significant and the scores of significant points range over at least 0.05.
-    The code's choice (64 footprints within 50 pixels) is shown as a variant on a 40 pixel grid.
+    states that accuracy differs across the field of view for the quadrant and direction map
+    (Fig. 2l) and that octant position was decoded with the same approach, but states no result
+    for the octant map. That it is significant in parts of the field of view and varies across it
+    is read from the legend (non-significant pixels plotted in black) and the main text.
+  depends_on:
+  - ed9b-octant-decoding
+  criterion: As fig2l-local-decoding-map, with octant labels, the average matrix of 40 fits per
+    point (subregion_map_octant.m) and the same open details and readings, except that (ii) is read
+    as the values of significant points spanning at least 0.05, since the paper gives no colour bar
+    for this map in its text. Reproduced when at least one point is significant and (i) and (ii)
+    hold under every combination of readings.
 - id: ed10-localized-activity
   statement: Some footprints have activity localized to subregions of the maze.
-  source: Main text, paragraph 10; Extended Data Fig. 10
+  source: Main text, page 549, paragraph 1; Extended Data Fig. 10
   quote: An examination of individual neural firing rate maps yielded footprints whose activity was
     localized to subregions of the maze (Extended Data Fig. 10).
-  criterion: The paper selected its examples by eye. Here, as in place_cells.m, frames where speed
-    is above its 80th percentile, linear position in 100 bins between its 1st and 99th
-    percentiles, and per footprint the entropy of its mean activity over bins (normalized to sum
-    to one). A footprint is localized when its entropy is below all of 100 null values from
-    circular shifts of position against activity (shifts between 10% and 90% of frames); the
-    false-positive rate is about 1%. Reproduced when the number of localized footprints exceeds the
-    count expected at 1/101 with binomial p < 0.001.
+  criterion: The paper selected footprints by eye "for large-scale structure in their receptive
+    fields" (Extended Data Fig. 10 legend), a rule that cannot be redone. The maps are as in
+    place_cells.m. Frames with speed above its 80th percentile; a footprint is active in a frame
+    when its trace exceeds 1% of its maximum; the plotted value is the fraction of time active at
+    each location, smoothed with a Gaussian of 10 video pixels. The code also computes, per
+    footprint, the entropy of its mean activity over 100 bins of linear position between the 1st
+    and 99th percentiles. The code sets no threshold, so "localized" is open. The readings are (a)
+    entropy below all of 100 values from circular shifts of position against activity (shifts
+    uniform over all offsets), (b) the peak of the smoothed map above all of 100 such shifted
+    values. Reproduced when, under both, the number of localized footprints exceeds the count
+    expected at 1/101 with binomial p < 0.001. The code's 12 selected footprints (ifig in
+    place_cells.m, indices into the curated set) are shown as a variant when the data's footprint
+    order can be matched to the curated set.
