@@ -1,6 +1,6 @@
 # Protocol for an attempt
 
-Version: `pilot-8`. Record this version in the attempt's provenance.
+Version: `pilot-9`. Record this version in the attempt's provenance.
 
 This is what an agent, or a person, does to attempt a target and deposit the
 result. It is written from the eight pilot attempts
@@ -22,9 +22,14 @@ kept in [`transcripts/<dandiset>/`](../transcripts).
 
 Do this before any analysis.
 
-1. Get the paper. Use the full text when it is open access; otherwise the
-   abstract, and say so. Keep any text you download under `paper/`, which is
-   not committed. Do not copy figures.
+1. Get the paper's full text: the main text, the Methods, and any
+   supplement the results rest on. Read it from `paper/` when it is already
+   there; otherwise download an open copy (Europe PMC or PubMed Central, the
+   preprint server, or the publisher's open-access page). If the full text
+   cannot be read, stop here: write no claims and no entry, and end with a
+   report that names what is missing, so that the paper can be supplied.
+   Never write claims from the abstract. Keep any text you download under
+   `paper/`, which is not committed. Do not copy figures.
 2. List the dandiset's files and read its metadata from the archive. Open a
    file and list everything it holds, including every column of every table.
 3. Work out which of the paper's subjects, sessions, conditions and measured
@@ -102,15 +107,13 @@ Do this before any analysis.
      the paper's outside material (step 6) is `kind: link`. It is not a
      finding of the paper and is counted apart from the findings.
    - `quote`: the sentence at `source` that states the finding, copied word
-     for word from the full text (or from the abstract when only the
-     abstract could be read), cut with "..." where it runs long. It lets a
+     for word from the full text, cut with "..." where it runs long. It lets a
      reader check the statement against the paper without opening it. For a
      finding shown only in a figure, quote the legend or the sentence of the
      Results that cites the panel.
    - `inferred`: every finding has a quote or, when no sentence of the paper
      states it (numbers only in a table, a result spread over several
-     legends, a claim at the level of the abstract that the abstract does
-     not state), a short note under `inferred` saying so. The statement is
+     legends), a short note under `inferred` saying so. The statement is
      then the author's reading of the paper, and the note says what it was
      read from.
    - `statistics`: the statistical support the paper reports for the

@@ -81,7 +81,13 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
         record, entry_dir = attempt_of(dandiset)
         n = int(record["id"].rsplit("-", 1)[1]) + 1
         earlier_protocol = record["provenance"]["agent"]["protocol"]
-        if version in (None, record.get("dandiset_version")) and earlier_protocol != protocol_version():
+        if record.get("deprecated"):
+            why = (f"That attempt is deprecated: {' '.join(record['deprecated']['reason'].split())} This attempt "
+                   f"replaces it. Step 1 below does not apply: write the claims file again from the paper's full "
+                   f"text, as steps 1 and 7 of the protocol say. Keep a claim's id where its finding stays the "
+                   f"same, so its outcome can be compared with the earlier one, and say in the file's opening "
+                   f"comment what changed and why.")
+        elif version in (None, record.get("dandiset_version")) and earlier_protocol != protocol_version():
             why = (f"The dandiset is unchanged; the protocol has changed since, and this attempt applies "
                    f"{protocol_version()} to it. Read what changed in docs/pilot-notes.md, under the headings "
                    f"for the protocol versions after {earlier_protocol} (read only those sections), and say in "

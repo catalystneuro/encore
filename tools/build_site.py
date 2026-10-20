@@ -164,6 +164,7 @@ def collect(executed: Path | None = None) -> dict:
             "accountable": a["provenance"]["accountable"]["name"],
             "agent": a["provenance"].get("agent"),
             "tier": tier_of(a),
+            "deprecated": squash((a.get("deprecated") or {}).get("reason")),
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
             "description": squash(entry.get("description")) if entry else None,
@@ -335,6 +336,8 @@ def outcome_counts(attempts, group: str = "dandiset") -> dict:
     outside data, or a link, does not count as a judgement of the paper's findings on the dandiset.
     """
     attempts = [attempts] if isinstance(attempts, dict) else attempts
+    # A deprecated attempt stays on its page but counts for nothing.
+    attempts = [a for a in attempts if not a.get("deprecated")]
     # Names for the dandiset's own codes taken from elsewhere (`with_labels`) count as the dandiset.
     groups = {"with_labels": "dandiset", None: "dandiset"}
 
@@ -385,7 +388,7 @@ def rows(data: dict) -> dict[str, list]:
     dandisets, claims, findings = [], [], []
     for t in data["targets"]:
         atts = current.get(t["dandiset"])
-        outcomes = [o for a in atts or [] for o in a["outcomes"]]
+        outcomes = [o for a in atts or [] if not a.get("deprecated") for o in a["outcomes"]]
         dandisets.append({
             "id": t["dandiset"], "name": t["name"], "paper": t["paper"], "paper_title": t["paper_title"],
             "technique": t["technique"], "species": t["species"], "size_gb": t["size_gb"], "files": t["files"],
@@ -398,12 +401,15 @@ def rows(data: dict) -> dict[str, list]:
             "blocked_by": sorted({o["blocked_by"] for o in outcomes if o["blocked_by"]}),
             "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["dandiset"])),
             "page": f'dandisets/{t["dandiset"]}/' if atts else None,
-            "findings": sum(len(a["findings"]) for a in atts) if atts else None,
-            "found": sorted({f["kind"] for a in atts or [] for f in a["findings"]}),
+            "findings": sum(len(a["findings"]) for a in atts if not a.get("deprecated")) if atts else None,
+            "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]}),
+            "deprecated": any(a.get("deprecated") for a in atts or []),
             "converted": "catalystneuro" if t["catalystneuro"] else "other",
         })
     for atts in current.values():
         for a in atts:
+            if a.get("deprecated"):
+                continue
             t = by_id.get(a["dandiset"], {})
             common = {"dandiset": a["dandiset"], "page": f'dandisets/{a["dandiset"]}/', "tier": a["tier"],
                       "technique": t.get("technique", []), "species": t.get("species", []),
@@ -460,6 +466,10 @@ def legend(counts: dict, compact: bool = False, href=None) -> str:
             text = f'<a href="{e(href(key))}">{text}</a>'
         items.append(f'<li><span class="swatch {css}" aria-hidden="true">{icon}</span>{text}</li>')
     return f'<ul class="legend{" compact" if compact else ""}">{"".join(items)}</ul>'
+
+
+def deprecated_badge() -> str:
+    return '<span class="tier pending">Deprecated</span>'
 
 
 def tier_badge(tier: str, href: str | None = None) -> str:
@@ -677,7 +687,8 @@ def attempt_row(a: dict, root: str) -> str:
     return (f'<div class="row drow"><div class="id"><a href="{page}">{e(a["dandiset"])}</a></div>'
             f'<div><p class="title"><a href="{page}">{e(a["entry_title"] or a["id"])}</a></p>'
             f'<div class="meta">{bar(counts, "Outcomes", "bar mini")}{legend(counts, compact=True)}</div></div>'
-            f'<div class="right">{tier_badge(a["tier"])}<span class="small muted">{e(a["date"])}</span></div></div>')
+            f'<div class="right">{deprecated_badge() if a.get("deprecated") else tier_badge(a["tier"])}'
+            f'<span class="small muted">{e(a["date"])}</span></div></div>')
 
 
 PROGRESS_METRICS = {
@@ -719,7 +730,7 @@ def progress_data(data: dict) -> dict:
         for day in first_paper.values():
             new[day]["papers"] += 1
         for a in current:
-            if not keep(a["dandiset"]):
+            if not keep(a["dandiset"]) or a.get("deprecated"):
                 continue
             counts = outcome_counts(a)
             for k, n in counts.items():
@@ -1110,6 +1121,9 @@ def page_dandiset(data: dict, dandiset: str) -> str:
         paper = a.get("paper_title") or a["paper"]
         claims_html += (f'<p class="sub small" style="margin:14px 0 0">From the paper '
                         f'<a href="https://doi.org/{e(a["paper"])}">{e(paper)}</a></p>')
+        if a.get("deprecated"):
+            claims_html += (f'<p class="deprecated"><strong>Deprecated:</strong> {e(a["deprecated"])} '
+                            f'Its outcomes are shown but not counted.</p>')
         # One group per notebook, in the entry's order, then the claims no notebook tests.
         rank = {**order, "blocked": 3}
         for nb in a["notebooks"]:

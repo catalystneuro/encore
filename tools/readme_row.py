@@ -6,7 +6,7 @@
 Counts are of the paper's findings on the dandiset, including those that name its codes from
 elsewhere (`with_labels`); findings that also use outside data (`with_inputs`) are shown in brackets;
 findings on data in other archives (`elsewhere`) and the registry's link checks (`kind: link`) are
-left out, as the README says.
+left out, as the README says. A deprecated attempt's row has no counts.
 """
 
 from __future__ import annotations
@@ -46,11 +46,14 @@ def row(dandiset: str) -> str:
         n = sum(1 for o in mine if kinds.get(o["claim"], "dandiset") in ("dandiset", "with_labels"))
         m = sum(1 for o in mine if kinds.get(o["claim"]) == "with_inputs")
         cells.append(f"{n} (+{m})" if m else str(n))
+    if record.get("deprecated"):
+        cells = ["–"] * len(COLUMNS)
     _, surname, year = entry_dir.name.split("-", 2)
     doi = record["paper"].removeprefix("doi:")
+    note = " (deprecated)" if record.get("deprecated") else ""
     return (f"| [{dandiset}](https://dandiarchive.org/dandiset/{dandiset}) "
             f"| [{surname.capitalize()} et al. {year}](https://doi.org/{doi}) | " + " | ".join(cells)
-            + f" | [`{entry_dir.name}`](entries/{entry_dir.name}) |")
+            + f" | [`{entry_dir.name}`](entries/{entry_dir.name}){note} |")
 
 
 def write(dandiset: str, readme: Path = ROOT / "README.md") -> None:

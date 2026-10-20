@@ -4667,3 +4667,31 @@ links, 1,248 findings are quoted and 8 are inferred; 509 have statistics
 method choices fixed by the author without the paper's Methods; reviewing
 them against the full text found several criteria that test a different
 measure from the paper's, which is taken up separately.
+
+## Protocol pilot-9 (2026-10-20): the full text or nothing
+
+Six attempts had their claims written from the paper's abstract, because
+the full text was not open: 000005, 000006, 000061, 000582, 000691 and
+001754 (both of its attempts). With no Methods to read, their authors chose
+the measures themselves. Once the full texts were obtained, a review of
+each file against them found that the statements mostly held, but that
+several criteria tested a measure the paper does not use, and that each
+paper had findings on the dandiset with no claim. Four of the five outcomes
+of not reproduced among these attempts rested on such a measure: 001754's
+flight-spatial-code (a shuffle test, where the paper compares spatial
+information with preflight), 000006's pt-types-differ-in-timing, and
+000005's exc-mainly-touch and fs-enhance-touch-selectivity. The fifth,
+000061's aversive-direction-stronger, agrees with the paper's own result on
+the units the attempt used, as its supplement shows.
+
+These attempts are now marked `deprecated`, with the reason, in their
+records. The records and entries stay as they were; the dashboard shows
+them with the reason and counts none of their outcomes, and their README
+rows have no counts. Each is queued to be run again: the new attempt
+writes the claims file again from the full text, keeping a claim's id where
+its finding is the same so that the outcomes can be compared.
+
+Step 1 of the protocol now requires the full text, with the Methods and
+any supplement the results rest on. An author who cannot read it stops
+before writing claims and reports what is missing, so that the paper can be
+supplied. Claims are never written from the abstract.

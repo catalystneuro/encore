@@ -89,7 +89,7 @@ def test_every_page_is_built(built):
 def test_rows_match_the_attempts(built):
     data, out = built
     current = site.current_attempts(data)
-    attempts = [a for atts in current.values() for a in atts]
+    attempts = [a for atts in current.values() for a in atts if not a.get("deprecated")]
     rows = {kind: json.loads((out / "data" / f"{kind}.json").read_text()) for kind in site.LISTS}
     assert len(rows["dandisets"]) == data["queue_counts"]["with_a_paper"]
     assert sum(r["claims"] or 0 for r in rows["dandisets"]) == sum(len(a["outcomes"]) for a in attempts)
@@ -182,10 +182,27 @@ def test_findings_are_reached_from_the_dandisets_list(built):
     rows = json.loads((out / "data" / "dandisets.json").read_text())
     for dandiset, attempts in site.current_attempts(data).items():
         row = next(r for r in rows if r["id"] == dandiset)
+        attempts = [a for a in attempts if not a.get("deprecated")]
         assert row["findings"] == sum(len(a["findings"]) for a in attempts)
         assert row["found"] == sorted({f["kind"] for a in attempts for f in a["findings"]})
         assert 'id="findings"' in (out / row["page"] / "index.html").read_text()
     assert "#findings" in (REPO / "tools" / "site_assets" / "list.js").read_text()
+
+
+def test_a_deprecated_attempt_counts_for_nothing():
+    kept = {"outcomes": [{"claim": "a", "outcome": "reproduced"}]}
+    dropped = {"deprecated": "Claims written from the abstract only.",
+               "outcomes": [{"claim": "b", "outcome": "not_reproduced"}]}
+    counts = site.outcome_counts([kept, dropped])
+    assert counts["reproduced"] == 1 and counts["not_reproduced"] == 0
+    assert site.outcome_counts(dropped) == {k: 0 for k in site.OUTCOMES}
+
+
+def test_a_deprecated_attempt_is_marked_on_its_page(built):
+    data, out = built
+    for dandiset, attempts in site.current_attempts(data).items():
+        if any(a.get("deprecated") for a in attempts):
+            assert "Deprecated:" in (out / "dandisets" / dandiset / "index.html").read_text()
 
 
 def test_claims_using_outside_data_are_counted_apart():
