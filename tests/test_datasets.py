@@ -54,3 +54,8 @@ def test_an_ebrains_dataset_is_named_by_its_doi_and_read_by_its_kg_id():
     assert key == "ebrains:q0fg-1x8" and found["folder"] == "ebrains-q0fg-1x8"
     assert datasets.label(key) == "EBRAINS:Q0FG-1X8" and datasets.parse("ebrains-q0fg-1x8") == key
     assert f'/public/datasets/{found["kg_id"]}/' in datasets.access(key)
+
+
+def test_a_key_ignores_the_case_of_an_identifier_that_ignores_case():
+    assert datasets.key_of("ebrains", "Q0FG-1X8") == datasets.key_of("ebrains", "q0fg-1x8") == "ebrains:q0fg-1x8"
+    assert datasets.key_of("crcns", "ret-1") == "crcns:ret-1"
