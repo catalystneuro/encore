@@ -57,9 +57,11 @@
 # representation": the 17 features standardized over all cells with all 17 defined (1,320
 # cells, excluded and unassigned cells included, as the code does), turned into all 17
 # principal components, all scaled by the standard deviation of PC1 (Methods, t-SNE
-# visualization; code phenotype-tsne.ipynb). "Excluded cells": the 7 cells with an exclusion
-# reason (6 with excitatory RNA but inhibitory phenotype, 1 outside MOp; Methods, t-type
-# assignment). "Layer": from normalized soma depth with the boundaries above, the targeted layer
+# visualization; code phenotype-tsne.ipynb). "Excluded cells": the 5 cells with a t-type that
+# the Methods exclude (4 with excitatory RNA but inhibitory phenotype, 1 outside MOp; Methods,
+# t-type assignment). The code's metadata table lists 7 cells with an exclusion reason; 2 of the
+# 6 RNA/phenotype mismatches there already failed transcriptomic quality control and have no
+# t-type, so both sources give the same 5. "Layer": from normalized soma depth with the boundaries above, the targeted layer
 # where depth is missing (Methods, Cortical thickness normalization; code).
 schema_version: 2
 dataset:
@@ -116,10 +118,10 @@ claims:
     tolerance: 0
     unit: days
   criterion: Ages are records in days, so the extremes take a tolerance of zero and the median
-    and quartiles one day, for the rounding of quartiles between neighbouring values. The text
-    gives the statistics over the n = 266 mice (one age per mouse); over cells is a second
-    reading, the one the Extended Data Fig. 2a legend leaves open. Reproduced when every value
-    is within tolerance under one reading.
+    and quartiles one day, for the rounding of quartiles between neighbouring values. The
+    statistics are over the n = 266 mice, one age per mouse (Methods, Animals; the Extended
+    Data Fig. 2a legend also says "Age distribution of the mice"). Reproduced when every value
+    is within tolerance.
 - id: cohort-genotypes
   statement: The 266 mice were wild-type C57Bl/6 (27), Viaat-Cre/Ai9 (24), Sst-Cre/Ai9 (75),
     Vip-Cre/Ai9 (46), Pvalb-Cre/Ai9 (76), Npy-Cre/Ai9 (2), Vipr2-Cre/Ai9 (7), Slc17a8-Cre/Ai9
@@ -181,8 +183,10 @@ claims:
     between pulses is taken as onset to onset, the reading the code's 0.1 s to 0.7 s stimulus
     window within each sweep allows, or as offset to onset; both are reported, and an interval
     conforms when it is 1.3 or 1.4 s (to within 0.05 s) under either. "Most" neurons repeated
-    is read as more than half of cells with a second series starting again at -200 pA.
-    Reproduced when at least 95% of cells conform on steps and intervals and more than half
+    is read as more than half of cells with a second series starting again at -200 pA. The
+    paper gives no margins; the 1 ms and 0.05 s timing margins and the 95% and 80% shares of
+    cells are standard choices for "each neuron" under recording jitter, not the paper's, and
+    are named as such. Reproduced when at least 95% of cells conform on steps and intervals and more than half
     have repeats; partially reproduced when at least 80% conform; not reproduced otherwise.
 - id: soma-depth-count
   statement: Soma depth was measured for 1,284 of the 1,329 neurons; 45 neurons were recorded
@@ -337,11 +341,12 @@ claims:
     the maximum number of APs in the 600 ms window (Methods); sag is the sag ratio and rebound
     the rebound (mV). "High" is compared with the other families, under two readings, (a)
     the family median is the highest of the seven families of Fig. 3d (Lamp5, Vip, Sst, Pvalb,
-    IT, ET, CT), or (b) of the four interneuron families of Fig. 2 (Pvalb, Sst, Vip, Lamp5).
-    For each comparison a two-sided Mann-Whitney test of the family against all other cells of
-    the reading's families is reported. Reproduced when, under one reading, Pvalb has the
-    highest median maximum AP count and Sst the highest median sag ratio and rebound, each with
-    p < 0.05; partially reproduced when two of the three hold.
+    IT, ET, CT), or (b) the highest of the five groups Fig. 2 separates (Pvalb, Sst, Vip, Lamp5,
+    and the excitatory class pooled; Results, paragraph after the Fig. 2 legend). The paper
+    gives no test; a two-sided Mann-Whitney test of the group against the other cells is
+    reported for information only and does not decide the outcome. Reproduced when, under one
+    reading, Pvalb has the highest median maximum AP count and Sst the highest median sag
+    ratio and rebound; partially reproduced when two of the three hold.
 - id: fig3d-families-ephys
   statement: In a k-nearest-neighbour classification of cells into seven transcriptomic families
     from electrophysiological features, the confusion matrix is mostly diagonal, with only the
@@ -353,15 +358,21 @@ claims:
   criterion: As the Methods (kNN classification) and the code (get_family_confusion in
     phenotype-tsne.ipynb) do it. The ephys representation (see the opening comment); k = 10
     nearest neighbours by Euclidean distance, the cell itself left out; neighbours drawn from
-    all 1,320 cells with features, including those with no t-type or excluded, whose label
-    counts as no family; each cell's predicted family is the most common label among its
-    neighbours (ties to the label first in alphabetical order, as numpy's unique and argmax
-    do), and a cell whose prediction is not one of the seven families is not counted. Rows are
-    Lamp5, Vip, Sst, Pvalb, IT, ET, CT (Sncg and NP not used). The paper's own threshold for
+    all 1,320 cells with features, those with no t-type labelled as no family; each cell's
+    predicted family is the most common label among its neighbours (ties to the label first
+    in numpy's sort order, code-point order with the no-family label "low quality" last, as
+    numpy's unique and argmax do), and a cell whose prediction is not one of the seven
+    families is not counted. Rows are Lamp5, Vip, Sst, Pvalb, IT, ET, CT (Sncg and NP not
+    used). The excluded cells are handled in two ways, both run, (a) the Methods', as if they
+    had no t-type (no family as neighbours, not counted in rows), and (b) the code's, which
+    keeps each excluded cell's RNA family (4 IT, 1 Sst) both as a row and as a neighbour
+    label. The paper's own threshold for
     "classified into wrong families" is 25% (Fig. 5a legend). Reproduced when the ET row puts
     at least 25% into IT or the IT row at least 25% into ET, and every other off-diagonal entry
     is below 25%; partially reproduced when ET and IT overlap so and one or two other
-    off-diagonal entries reach 25%; not reproduced otherwise. The 34 degree follow-up of the
+    off-diagonal entries reach 25%; not reproduced otherwise. The outcome is the one both
+    handlings of the excluded cells give; if they differ, the claim is blocked as
+    methods_underspecified. The 34 degree follow-up of the
     same overlap is in dandiset 000035 and not tested here.
 - id: ed6-it-et-room-features
   statement: At room temperature, the features that differ most between layer 5 IT and ET
@@ -380,6 +391,21 @@ claims:
     each of the 29 features except rebound number of APs, ranked by p. Reproduced when, after
     leaving out UDR, sag time and sag area, the four smallest p are those four features in any
     order; partially reproduced when three of them are.
+- id: ed6-physiological-temperature
+  statement: Follow-up experiments at 34 degrees C confirmed the electrophysiological overlap
+    between IT and ET neurons and the continuous variation of rebound across neighbouring
+    layer 5 Sst t-types.
+  source: Results, Distinct phenotypes of major families, paragraph 3, and Continuous phenotypic
+    variation, paragraph 2; Methods, Experiments at physiological temperature; Extended Data
+    Figure 6
+  quote: We confirmed the electrophysiological overlap between IT and ET neurons in follow-up
+    experiments at 34 °C (Extended Data Fig. 6 ).
+  data: elsewhere
+  where: DANDI dandiset 000035 (physiological temperature recordings); features and metadata in
+    mini-atlas data/m1_patchseq_phys_temp_* at commit 3bf98a524b8e48aa8647e1b9ae8f2351d9c712c9
+  criterion: Recorded for coverage. The 34 degree recordings (185 neurons from 8 mice; Methods)
+    are not in this dandiset, and the paper gives no measure of the IT/ET overlap at 34 degrees
+    (Extended Data Fig. 6f, g show it in two-dimensional plots only). Not tested here.
 # --- Transcriptomic coverage ----------------------------------------------------------------
 - id: fig1a-ttype-coverage
   statement: After quality control 1,227 neurons had a t-type (817 inhibitory, 410 excitatory),
@@ -428,9 +454,12 @@ claims:
     between L2/3 and L5 and probably corresponds to the quasi-L4 neurons described previously in
     motor cortex 31 .
   criterion: Normalized soma depths of L4/5 IT_1 cells (excluded cells left out). The paper's
-    L2/3 to L5 boundary is 0.29 (Fig. 1b legend). "On the boundary" is read as the t-type's
-    median depth lying closer to 0.29 than to the middle of either neighbouring layer (0.18 for
-    L2/3, 0.51 for L5), that is between 0.235 and 0.40. Reproduced when it does. The
+    L2/3 to L5 boundary is 0.29 (Fig. 1b legend). The paper gives no measure of "on the
+    boundary"; two readings, both run, (a) the t-type's median depth lies closer to 0.29 than
+    to the middle of either neighbouring layer (0.18 for L2/3, 0.51 for L5), that is between
+    0.235 and 0.40, and (b) the interquartile range of the t-type's depths contains 0.29.
+    Reproduced when both hold, not reproduced when neither does; when they differ,
+    methods_underspecified. The
     correspondence to quasi-L4 neurons is an interpretation and is not tested.
 # --- Within-family structure (needs the reference transcriptomes) --------------------------
 - id: fig4c-distance-correlation
@@ -476,10 +505,12 @@ claims:
     at least 5 cells, Sst Chodl and Pvalb Vipr2_2 left out; transcriptomic distance over the 500
     most variable genes of that family's transcriptomic group in the reference 10x v2 data
     (MGE for Pvalb and Sst, CGE for Vip and Lamp5, excitatory for IT and CT); distances as in
-    fig4c-distance-correlation; Pearson r over the family's pairs, and for each feature alone.
-    The paper gives no p or threshold. "Multiple families" is read as (a) at least two or (b)
-    a majority (at least four) of the six families with r > 0; "many features" as at least
-    half of the 17 features having r > 0 pooled over the six families' pairs. Reproduced when
+    fig4c-distance-correlation; Pearson r over the family's pairs, and, as the code does, for
+    each feature alone within each family. The paper gives no p or threshold. "Multiple
+    families" is read as (a) at least two or (b) a majority (at least four) of the six families
+    with r > 0. "Many features" is read as at least half of the 17 features having r > 0 in at
+    least half of the counted families; the code computes per-family feature correlations and
+    no pooled one, so this count is the reader's reading, not the paper's. Reproduced when
     the feature part holds and the family part holds under reading (b); partially reproduced
     when it holds only under reading (a). Families with fewer than three t-types are reported
     and not counted.
@@ -577,7 +608,11 @@ claims:
     dandiset's electrophysiology for the 628 cells with both. Separability is the mean of the
     diagonal of the confusion matrix, over the four inhibitory families for the first part and
     over all seven for the second (the paper names no summary; the mean diagonal is read from
-    "mostly diagonal"). Reproduced when the inhibitory mean is lower for morphology than for
+    "mostly diagonal"). The Methods call the electrophysiological block of the combined
+    representation "16-dimensional", while they build 17 PCs and the code stacks all 17; both
+    are run, (a) the first 16 PCs and (b) all 17, and if they give different outcomes the
+    claim is blocked as methods_underspecified. Excluded cells are left out (Methods); the
+    code's handling, as in fig3d-families-ephys, is shown as a variant. Reproduced when the inhibitory mean is lower for morphology than for
     electrophysiology and the seven-family mean is highest for the combined representation.
 # --- Variability of individual t-types ------------------------------------------------------
 - id: fig5a-ttypes-between-families
@@ -599,7 +634,8 @@ claims:
     the t-type read as (a) any of the Vip Mybpc1 t-types with at least 10 cells or (b) all
     Vip Mybpc1 t-types pooled. Reproduced when all four hold (iv under one reading); partially
     reproduced when (i) and at least two others hold. A t-type below 10 cells is reported and
-    its part not judged.
+    its part not judged. Excluded cells are left out (Methods); the code's get_type_confusion
+    keeps the 5 excluded cells in their t-types and as labelled neighbours, shown as a variant.
 - id: fig5b-ttype-variability
   statement: Many t-types have a normalized total variance of electrophysiological features well
     above that of k-means clusters; some, such as Pvalb Vipr2_2 (chandelier cells), appear
@@ -617,7 +653,8 @@ claims:
     "Many" is read as (a) at least a quarter or (b) at least a third of the t-types. Reproduced
     when "many" holds under one reading, Pvalb Vipr2_2 is not above the band (if it has at
     least 10 cells), and Vip Mybpc1_2 is above it; partially reproduced when two of the three
-    hold.
+    hold. T-type members are cells with a t-type and no exclusion (Methods); the code's
+    get_type_variability keeps the 5 excluded cells in their t-types, shown as a variant.
 - id: ed8-leiden-entropy
   statement: An alternative analysis using the entropy of Leiden cluster assignments within each
     t-type often highlights the same t-types as variable.
@@ -625,12 +662,14 @@ claims:
   quote: an alternative analysis using entropies of Leiden clustering 35 often highlighted the same
     t-types as variable (Extended Data Fig. 8 ).
   criterion: As the Methods and the code (phenotype-tsne.ipynb, Leiden section) do it. kNN graph
-    with k = 10 on the ephys representation, Leiden (leidenalg, RBConfigurationVertexPartition)
-    at the resolution the code sets, 100 repetitions with different seeds, each t-type with at
-    least 10 cells subsampled to 10 cells, entropy of its cluster labels; median entropy per
-    t-type. Compared with the normalized variance of fig5b-ttype-variability by Spearman
-    correlation across t-types. "Often the same" is read as a positive correlation with
-    one-sided p < 0.05. Reproduced when it holds.
+    with k = 10 on the ephys representation (directed, scikit-learn kneighbors_graph), Leiden
+    (leidenalg, RBConfigurationVertexPartition) at resolution 2, the code's "fine" setting for
+    electrophysiology, 100 repetitions, repetition i with Leiden seed i and numpy seed i for
+    the subsampling, each t-type with at least 10 cells subsampled to 10 cells, natural-log
+    entropy of its cluster labels (scipy.stats.entropy); median entropy per t-type. The paper
+    gives no measure of agreement with Fig. 5b; the reader's reading is a Spearman correlation
+    across t-types between median entropy and the normalized variance of
+    fig5b-ttype-variability, positive with one-sided p < 0.05. Reproduced when it holds.
   depends_on:
   - fig5b-ttype-variability
 - id: fig5c-vip-mybpc1-rebound
@@ -687,6 +726,10 @@ claims:
   - quantity: mean detected genes
     value: 9100
     tolerance: 910
+  criterion: Over the 1,329 sequenced cells; medians of exonic and intronic read counts per
+    cell, and the mean number of detected genes, a detected gene being one with a non-zero
+    exonic or intronic count (Methods, RNA sequencing of patched cells). Default 10%
+    tolerances. Reproduced when all three values are within tolerance.
 - id: ttype-qc-counts
   statement: In the first round of mapping, 78 cells had a highest correlation below 0.4, 14
     mapped to non-neural types and 5 were ambiguous between large groups, leaving 1,232 cells;
@@ -716,8 +759,9 @@ claims:
     tolerance: 123.2
   criterion: Default 10% tolerances, as the counts depend on the mapping. The code's metadata
     table lists 7 cells with exclusion reasons (6 mismatches between RNA and phenotype, 1
-    outside MOp), while the Methods name four contaminated cells and one outside MOp; both are
-    reported, and the final 1,227 is tested in fig1a-ttype-coverage.
+    outside MOp); 2 of the 6 already failed quality control, which leaves the Methods' four
+    contaminated cells and one outside MOp, so 1,232 less 5 gives 1,227. The final 1,227 is
+    tested in fig1a-ttype-coverage.
 - id: ed2-smartseq-similarity
   statement: Patch-seq expression profiles are most similar to the single-nucleus Smart-seq2
     reference, and t-type assignments based on Smart-seq2 and 10x references agree well.
@@ -836,3 +880,25 @@ claims:
     of about 1,300 cells, so the tolerance is 0.05, about one standard error (1 over the
     square root of n). A claim of absence; the paper gives no test, so it is judged on the
     value. Reproduced when the correlation is within tolerance.
+checks:
+- date: 2026-10-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, excluded cells. Said the 7 cells with an exclusion reason are excluded; 2 of them already failed quality control (code metadata table), so the excluded cells with a t-type are the Methods' 5 (4 contaminated, 1 outside MOp).
+  - cohort-ages. Removed the per-cell reading; the Methods give the statistics over n = 266 mice and the Extended Data Fig. 2a legend is the age distribution of the mice, so the paper allows no per-cell reading.
+  - stimulus-protocol. Named the 1 ms and 0.05 s margins and the 95% and 80% shares as standard choices not taken from the paper.
+  - fig2-family-features. Reading (b) said the four interneuron families of Fig. 2; Fig. 2 separates five groups (Pvalb, Sst, Vip, Lamp5 and the excitatory class), so (b) now uses those. Removed the Mann-Whitney p < 0.05 requirement from the outcome, a test the paper does not report; it stays as information.
+  - fig3d-families-ephys. The criterion said the code labels excluded cells as no family; the code (get_family_confusion with ttype-assignment.ipynb) keeps their RNA family as rows and neighbour labels. Now runs the Methods' handling (as if no t-type) and the code's, blocked if they differ. Tie-breaking corrected from alphabetical to numpy code-point order ("low quality" sorts last).
+  - l45-it1-boundary. The single depth window was the reader's own reading of "on the boundary"; added a second reading (interquartile range contains 0.29), with the rule for differing readings.
+  - ed7-within-families. The "many features" test pooled pairs over the six families, which neither the paper nor the code does (the code correlates each feature within each family); replaced with a per-family count and named it as the reader's reading.
+  - fig3d-morph-combined. Added the Methods' "16-dimensional" electrophysiological block against the 17 PCs the Methods build and the code stacks, both run; named the code's handling of excluded cells as a variant.
+  - fig5a-ttypes-between-families, fig5b-ttype-variability. Named as a variant that the code keeps the 5 excluded cells in their t-types (m1consensus_ass is set for them); the Methods exclude them.
+  - ed8-leiden-entropy. Filled in from the code the resolution (2), seeds, graph and entropy base; named the Spearman comparison as the reader's reading, since the paper gives no measure.
+  - ttype-qc-counts. Corrected the note on 7 against 5 excluded cells (2 of the 7 already failed quality control).
+  - rnaseq-depth. Added a criterion with the Methods' definition of a detected gene.
+  - Added claim ed6-physiological-temperature for coverage of the 34 degree follow-up findings (Results, two places; data in dandiset 000035), not tested here.
+  - Open. Several criteria rest on readings of vague words the paper gives no measure for (fig1b-depth-layers, fig2-family-features, fig4a-vip-tau, fig5b "many", fig5c, fig5d, ed2-smartseq-similarity, ed7, ed8); they are named as readings, but the thresholds are the reader's.
+  - Open. Minor qualitative findings have no claim (Lamp5 Lhx6 deep neurogliaform cells of CGE and MGE origin, chandelier cells in Pvalb Vipr2 types, L5 Pvalb and Martinotti morphological types matching t-types, RRR on morphology); they rest on morphology or Extended Data Tables not in the text, and none is a main finding.
+  - Open. ed6-it-et-room-features ranks by the code's scipy mannwhitneyu, whose handling of cells with an undefined feature (NaN) the paper does not state; dropping such cells per feature is the natural reading.
