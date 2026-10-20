@@ -17,6 +17,12 @@ questions:
   why: pt-spike-rates-similar, pt-variance-explained and pt-single-neuron-early-selectivity give
     different outcomes under the two selections, and are blocked until it is fixed. On the paper's
     processed data the code's rule gives 61 and 69.
+  answered: 2026-10-20
+  answer: Use the code's per-unit rule. The Methods report the selection's outcome ("13 units were
+    rejected; 130 were kept"), and on the paper's processed data the code's rule (loadAndProcessData.m)
+    is the one that gives it, with 61 and 69, as the attempt reports. The Methods' session rule is a
+    variant. Missing sessions on the dandiset do not change which rule is the paper's. Recorded in the
+    opening comment (Unit inclusion) and the pt-tagged-units criterion.
 - claim: pt-single-neuron-early-selectivity
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -28,6 +34,14 @@ questions:
     the precomputed psth; ObjToLickPSTH builds the lick-aligned rates over the unit's range).
   why: With the code's selection, reading (a) of the measure is reproduced with the unit's range and not
     reproduced with all trials (Mann-Whitney p 0.0041 against 0.026), so the claim is blocked.
+  answered: 2026-10-20
+  answer: Yes. The premise holds for that session but not for the files as
+    a whole. In the processed files (Ephys.zip, Code/ProcessedData, variable psth, which getData reads),
+    the go-cue rates of units in one session often start and end on different trials (WR29.5 session 2
+    starts at trial 12 for one unit and 41 for another; WR33 session 2 ends at 110, 159 and 188 for
+    different units). Every range starts at trial 11 or later and ends 10 or more trials before the
+    session's last correct trial. That fits the unit's range of ObjToLickPSTH, reading (a); all trials
+    is a variant. The claim's criterion and the opening comment (Trial range per unit) now say so.
 - claim: pt-upper-early-preparatory
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -39,6 +53,12 @@ questions:
     trials in the PTupper population"); Fig. 5b.
   why: The two rules give different outcomes, so the claim is blocked, and with it pt-upper-persistent,
     pt-cohort-control and pt-types-differ-in-timing, which depend on it.
+  answered: 2026-10-20
+  answer: The paper does not give it. The Results say "selectivity was larger
+    and more consistent across trials in the PTupper population" with no number or test. Fig. 5b and its
+    legend give only the bootstrap median and 5-95% band, and Projections.m makes no comparison between
+    the populations. Both rules stay, and the claim is methods_underspecified while they differ. Noted in
+    the criterion.
 - claim: pt-cd-change-at-go-cue
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -48,6 +68,13 @@ questions:
     fast the coding direction changes?
   passage: Results, Movement commands, paragraph 2; Extended Data Fig. 7c, e legends; CDCorrelation.m.
   why: The claim is blocked until one reading decides.
+  answered: 2026-10-20
+  answer: The paper does not give it. The Extended Data Fig. 7c legend says the
+    change is abrupt "immediately after the go cue onset" in PTlower and, in PTupper, "more slowly (over
+    several hundred milliseconds), largely after initiation of movement". The 7e legend gives no level,
+    and CDCorrelation.m only plots the normalised correlation, with a dotted line at 0.05 s, and computes
+    no crossing time. Both levels stay, and the claim is methods_underspecified while they differ. Noted
+    in the criterion.
 - claim: pt-lower-movement-termination
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -57,6 +84,13 @@ questions:
     from the stored order (98.1% agreement with the processed data). Is that acceptable for this claim?
   passage: Results, Movement commands, paragraph 3; Extended Data Fig. 10a, b legends.
   why: The claim is blocked until one reading decides.
+  answered: 2026-10-20
+  answer: The paper gives no windows. The Extended Data Fig. 10a, b legends
+    give only the 5-95% band, and Projections.m plots the lick-aligned selectivity with no window or
+    test, so both readings stay. The last lick is the code's (getLickInfo), the latest left or right lick
+    after the go cue in the trial. The paper says nothing about rebuilding it when licks are not assigned
+    to trials. A rebuilt last lick is a deviation, acceptable if the outcome is the same when the trials
+    where it disagrees with the processed data are left out; show that. Noted in the criterion.
 - claim: pt-depth
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -66,6 +100,10 @@ questions:
   passage: Fig. 4e legend; Methods, Electrophysiology data analysis; simplePlots.m, plotDepth.
   why: The attempt judged it on the unit depth (reproduced) and showed the manipulator depth from the
     processed data as a variant.
+  answered: 2026-10-20
+  answer: Yes. Fig. 4e is the plot of the unit depth field (simplePlots.m, plotDepth, meta.depth),
+    and the Methods say "Unit depths (Fig. 4e) were inferred from manipulator readings only". The unit
+    depth decides, and the session manipulator depth is a variant. The criterion now says so.
 - claim: pt-lower-heterogeneous-rates
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -74,6 +112,10 @@ questions:
     claim too. Should the dependency be on pt-tagged-units instead?
   passage: The claims file, depends_on of pt-lower-heterogeneous-rates.
   why: With the dependency it is blocked; without it, it would be reproduced under every reading.
+  answered: 2026-10-20
+  answer: Yes. The claim uses only the rate definitions of
+    pt-spike-rates-similar, not its outcome, so depends_on is now pt-tagged-units. The criterion notes
+    the change. This changes no statement or expected value.
 - claim: pt-types-transcriptomic
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -85,6 +127,12 @@ questions:
     cluster corresponding to Cajal-Retzius cells was excluded here"); Methods, scRNA-seq analysis.
   why: The attempt took the count as a reading of a reported number (reproduced under the matching
     reading); a rule from a reader would decide it.
+  answered: 2026-10-20
+  answer: The paper settles it. Fig. 1a names 26 glutamatergic clusters, and its
+    legend says "The transcriptomic cluster corresponding to Cajal–Retzius cells was excluded here". The
+    Methods give "27 glutamatergic" ALM types. So the 27 are the clusters of Fig. 1a plus the
+    Cajal-Retzius cluster, which is the attempt's count of clusters not named for VISp with
+    Cajal-Retzius included. The other counts are variants. Recorded in the criterion.
 - claim: pt-projection-cluster-mapping
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -97,6 +145,13 @@ questions:
     injection; n = 94 thalamus; n = 100 pons; n = 97 superior colliculus).
   why: Under both fields all medulla-labelled cells are Slco2a1 and 91 of 94 thalamus-labelled cells are
     Npsr1 or Hpgd; the medulla count of 62 holds under one.
+  answered: 2026-10-20
+  answer: The paper does not say which field defines the Fig. 2f groups. Its
+    notebook for the same cells (Seq/SC_correlations_across_clusters.ipynb, Extended Data Fig. 4a-c)
+    groups by inj_roi_label, matching "IRN" (medulla), "VAL" (thalamus), "PG" (pons) and "SC|SCm"
+    (superior colliculus). The criterion now names that grouping and inj_primary_label with the Allen
+    ontology as readings. The counts are reported numbers, so the claim holds when both match under one
+    reading.
 - claim: pt-bulk-sc-fold-change-correlation
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -105,6 +160,12 @@ questions:
     method the one to use?
   passage: Extended Data Fig. 4i legend; Seq/bulkVsSC.m.
   why: Both give r within tolerance (0.867 and 0.874), so the outcome does not depend on it.
+  answered: 2026-10-20
+  answer: Partly. The legend fixes the measure, fold change "measured as
+    log2(CPM + 1)". The code (bulkVsSC.m) applies log2(x + 1) to bulk_data.txt as stored, which holds
+    counts, not CPM (columns sum to about 1e7). Where they differ the legend is followed. The genes,
+    cells and replicates are taken from the code, and the code's bulk values are a variant. Recorded in
+    the criterion.
 - claim: pt-upper-thalamus-projection
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -116,6 +177,13 @@ questions:
   passage: Results, Two types of PT neuron in layer 5, paragraph 2; Extended Data Fig. 2a-d legends;
     Axons/AxonReconstructions.m.
   why: The readings give different counts, so both claims are blocked.
+  answered: 2026-10-20
+  answer: The paper gives no rule. Supplementary data table 1 (read in the
+    publisher's Supplementary Information PDF) assigns the 12 complete neurons to the two types, the same
+    as the hand grouping in AxonReconstructions.m. Extended Data Fig. 2a, c plot thalamic lengths and
+    termini for both groups. The criteria of both claims now name three readings (any terminus, any
+    length, more termini in the thalamus than in the medulla, and the converse for "bypassed"). The 8
+    and the 4 are reported counts, so each holds if it matches under one reading.
 - claim: pt-types-account-for-all-pt
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -125,6 +193,11 @@ questions:
   passage: Results, Two types of PT neuron in layer 5, paragraph 5.
   why: Under both readings one neuron (AA0134) does not reach the superior colliculus, so the outcome is
     partially reproduced either way.
+  answered: 2026-10-20
+  answer: The 18 are listed in Supplementary data table 1 (Supplementary
+    Information PDF from the publisher). They are the 12 complete neurons and 6 partial ones,
+    thalamus-projecting AA0132, AA0135 and AA0250 and medulla-projecting AA0131, AA0134 and AA0169.
+    AA0134 is one of the 18. Recorded in the source and criterion.
 - claim: pt-marker-genes
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -134,6 +207,11 @@ questions:
     as data missing?
   passage: Methods, In situ hybridization; Data availability.
   why: The checker forbids data_missing for an elsewhere claim, so the attempt blocked it as other.
+  answered: 2026-10-20
+  answer: Yes, data dataset. The Data availability statement names archives for the bulk
+    RNA-seq (GEO) and the electrophysiology (CRCNS.org, Figshare) only, and Anatomy.zip holds no smFISH
+    images. The where entry naming Anatomy.zip was wrong about the paper. data is now dataset and where
+    is removed, so the claim can be blocked as data missing.
 - claim: pt-retrograde-sublaminae
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -141,6 +219,11 @@ questions:
     counts. Does the paper or its code say how labelled and co-labelled cells were counted?
   passage: Results, Two types of PT neuron in layer 5, paragraph 3; Methods, Histology and imaging.
   why: Without a counting method the claim is blocked as methods underspecified.
+  answered: 2026-10-20
+  answer: No. The Methods (Histology and imaging) describe sectioning,
+    immunolabelling and imaging only, and the Figshare record holds no anatomy code. The counting method
+    is open, and the claim stays methods_underspecified. Also, the folder names in Anatomy.zip name no
+    superior colliculus labelling, which the 77.1% needs. Recorded in the criterion.
 - claim: pt-types-shared-targets
   attempt: 000006-economo-2018-02
   asked: 2026-10-20
@@ -150,3 +233,9 @@ questions:
   passage: Extended Data Fig. 2e legend.
   why: The reconstructions support it (both groups reach all three structures); the images were not
     analysed.
+  answered: 2026-10-20
+  answer: No. The second part is stated in the Extended Data Fig. 2e legend, from
+    the bulk labelling ("Bulk projections of PTupper and PTlower populations"), with no measure or count.
+    Its intended test is those images, for which the paper gives no method of analysis. The test on the
+    reconstructions is a variant. The first part, on the superior colliculus, is stated of the
+    reconstructions and is tested on them. Recorded in the criterion.

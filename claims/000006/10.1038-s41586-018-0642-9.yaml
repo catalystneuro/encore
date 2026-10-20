@@ -22,6 +22,9 @@
 # Tables 1 to 4: reconstructed neurons, mice, viruses and coordinates) is not in the text. No
 # claim on these data rests on it; the reconstruction counts of pt-types-account-for-all-pt are
 # quoted from the main text, which cites Supplementary Table 1.
+# Added 2026-10-20, to answer questions: the Supplementary Information PDF from the publisher
+# (static-content.springer.com, 41586_2018_642_MOESM1_ESM.pdf), Supplementary data tables 1 to 4,
+# was read. Table 1 lists the 18 reconstructed PT neurons by id and type.
 #
 # Code read: the paper links "https://github.com/SvobodaJanelia" (an organisation, no repository
 # named) and deposits its electrophysiology at Figshare doi:10.25378/janelia.7007846 version 1,
@@ -60,8 +63,13 @@
 # - Trial range per unit: the code keeps, for the last-lick-aligned rates, trials from 10 after
 #   the unit's first trial with a spike to 10 before the earlier of its last trial with a spike
 #   and the session's last correct trial (loadAndProcessData.m, ObjToLickPSTH). The go-cue-aligned
-#   rates come precomputed in the data files, so their range is open: readings (a) the same range,
-#   (b) all trials of the session.
+#   rates come precomputed in the data files. Settled 2026-10-20 (question on
+#   pt-single-neuron-early-selectivity): in the processed files of Ephys.zip (Code/ProcessedData,
+#   variable psth, read by getData) the trials with rates differ from unit to unit within a session
+#   (for example WR29.5 session 2 starts at trial 12 for one unit and 41 for another), and each ends
+#   at or before 10 trials before the session's last correct trial. That fits the unit's range, as
+#   for the lick-aligned rates, and not a session range. The go-cue rates use reading (a), the
+#   unit's range; (b), all trials, is a variant.
 # - Unit inclusion. Methods: units from sessions where performance was not greater than 65% for
 #   both trial types, or with less than 50 correct trials of each type, were excluded (13 of 143
 #   rejected, 130 kept). The code (loadAndProcessData.m) counts per unit over the trials in its
@@ -70,6 +78,10 @@
 #   name this rule, the code settles it), more than 65% correct for each type, and unit quality
 #   Excellent, Good or single. Readings: (a) the code's per-unit rule, (b) the Methods' session
 #   rule with at least 50 trials. The selection is checked by pt-tagged-units (61 and 69).
+#   Settled 2026-10-20 (question on pt-tagged-units): the other claims use (a), the code's per-unit
+#   rule, which the attempt reports gives 61 and 69 (130 kept, the Methods' count) on the paper's
+#   processed data; (b) is a variant. This holds when the dandiset lacks sessions and neither reading gives 61
+#   and 69 there.
 # - Rates: 5 ms bins, causal 50 ms boxcar (Methods; the code's MySmooth with 19 gives 10 bins,
 #   the current and the nine before).
 # - Coding direction (Methods, equations 1 and 2; code, Projections.m DirectionVector): per
@@ -122,7 +134,11 @@ claims:
   where: scRNA-seq data of Tasic et al. 2018, doi:10.1038/s41586-018-0654-5 (Allen Institute); Figshare
     doi:10.25378/janelia.7007846 version 1, Seq.zip
   criterion: Not testable on this dandiset, which holds electrophysiology only. The cluster count is
-    an exact count (tolerance 0).
+    an exact count (tolerance 0). Counting rule (answer of 2026-10-20) - Fig. 1a names 26 glutamatergic
+    clusters and its legend says "The transcriptomic cluster corresponding to Cajal–Retzius cells was
+    excluded here"; the Methods give "27 glutamatergic" ALM types. So the 27 are the clusters of Fig.
+    1a plus the Cajal-Retzius cluster. The count is of ALM glutamatergic clusters not named for VISp,
+    the Cajal-Retzius cluster included; the other counts are variants.
 - id: pt-upper-thalamus-projection
   statement: Of 12 reconstructed PT neurons, 8 innervate the thalamus.
   source: Results, Two types of PT neuron in layer 5, paragraph 2; Fig. 2a, b; Extended Data Fig. 2
@@ -134,6 +150,14 @@ claims:
     tolerance: 0
   data: elsewhere
   where: Figshare doi:10.25378/janelia.7007846 version 1, Axons.zip (MouseLight reconstructions)
+  criterion: Answer of 2026-10-20. The 12 neurons and their groups are those of Supplementary data
+    table 1 (complete reconstructions; thalamus-projecting AA0011, AA0114, AA0115, AA0122, AA0181, AA0182,
+    AA0245, AA0261; medulla-projecting AA0012, AA0133, AA0179, AA0180), the same as the hand grouping of
+    Axons/AxonReconstructions.m (in.grnum). The paper gives no rule for "innervated the thalamus";
+    Extended Data Fig. 2a, c plot thalamic lengths and termini for both groups. Readings, (a) any axon
+    terminus in the thalamus, (b) any axon length in the thalamus, (c) more termini in the thalamus than
+    in the medulla. The 8 is a reported count, so it holds if it matches under one reading; the counts
+    under every reading are shown.
 - id: pt-lower-medulla-projection
   statement: The other 4 of 12 reconstructed PT neurons bypass the thalamus and branch in the medulla,
     including the reticular nuclei with premotor neurons for orofacial movements.
@@ -146,6 +170,11 @@ claims:
     tolerance: 0
   data: elsewhere
   where: Figshare doi:10.25378/janelia.7007846 version 1, Axons.zip (MouseLight reconstructions)
+  criterion: Answer of 2026-10-20. Neurons and groups as in pt-upper-thalamus-projection (Supplementary
+    data table 1). The paper gives no rule for "bypassed the thalamus". Readings, (a) no axon terminus in
+    the thalamus, (b) no axon length in the thalamus, (c) more termini in the medulla than in the
+    thalamus. The 4 is a reported count, so it holds if it matches under one reading; the counts under
+    every reading are shown.
 - id: pt-types-shared-targets
   statement: Both PT types project to several shared targets; all reconstructed cells innervate the
     superior colliculus, and both types send collaterals to the subthalamic nucleus, zona incerta and
@@ -156,7 +185,13 @@ claims:
     subthalamic nucleus, zona incerta, and the midbrain reticular nucleus.
   data: elsewhere
   where: Figshare doi:10.25378/janelia.7007846 version 1, Axons.zip and Anatomy.zip
-- id: pt-retrograde-sublaminae
+  criterion: Answer of 2026-10-20. The first part ("All cells innervated the superior colliculus") is
+    stated of the reconstructions (Results, paragraph 2) and is tested on Axons.zip. The second part
+    (collaterals to the subthalamic nucleus, zona incerta and midbrain reticular nucleus) is stated in the
+    Extended Data Fig. 2e legend of the bulk labelling ("Bulk projections of PTupper and PTlower
+    populations"), and the paper reports it from annotated images, with no measure or count. Its
+    intended test is the bulk labelling images; the paper gives no method to analyse them. A test on the
+    reconstructions (both groups reach all three structures) is a variant, reported as such.
   statement: Thalamus-projecting PT neurons lie in upper L5b and medulla-projecting PT neurons in lower
     L5b; few neurons are co-labelled from thalamus and medulla (2.2%, 22 of 984) while many are
     co-labelled from thalamus and superior colliculus (77.1%, 687 of 890).
@@ -175,7 +210,14 @@ claims:
     unit: percent
   data: elsewhere
   where: Figshare doi:10.25378/janelia.7007846 version 1, Anatomy.zip
-- id: pt-projection-cluster-mapping
+  criterion: Answer of 2026-10-20. Neither the paper nor its code says how labelled and co-labelled cells
+    were counted. The Methods (Histology and imaging) describe sectioning, immunolabelling and imaging
+    only, and the Figshare record holds no anatomy code; Anatomy.zip holds image stacks (folders
+    BL648_Thal_Med_H2b_Ch01 and Ch02, BL772_ThalMed_anterograde_Ch01 and Ch02, BL777_Medulla_ChR2-YFP_Ch01,
+    BL780_Thalamus_ChR2-YFP_Ch01) and no counts. The counting method (cell detection, the area and
+    sections counted, what makes a cell co-labelled) is open; the claim stays methods_underspecified
+    unless the counts can be shown not to depend on it. The folder names name no superior colliculus
+    labelling, which the 77.1% needs.
   statement: All 62 medulla-projecting PT neurons map to the Slco2a1 cluster, and 91 of 94
     thalamus-projecting PT neurons map to the Npsr1 and Hpgd clusters.
   source: Results, Two types of PT neuron in layer 5, paragraph 4; Fig. 2e, f
@@ -191,24 +233,38 @@ claims:
   data: elsewhere
   where: scRNA-seq data of Tasic et al. 2018, doi:10.1038/s41586-018-0654-5; Figshare
     doi:10.25378/janelia.7007846 version 1, Seq.zip
-- id: pt-types-account-for-all-pt
+  criterion: Answer of 2026-10-20. The paper does not say which annotation field defines the injection
+    groups of Fig. 2f. Its code for the same cells (Seq/SC_correlations_across_clusters.ipynb, Extended
+    Data Fig. 4a-c) groups them by inj_roi_label, matching "IRN" for medulla, "VAL" for thalamus, "PG"
+    for pons and "SC|SCm" for superior colliculus. Readings, (a) that grouping of the code, (b)
+    inj_primary_label grouped with the Allen ontology (medulla IRN, GRN, PARN; thalamus VAL, PF, MD; pons
+    PG, PRNc). Both counts are reported numbers, so the claim holds when both match under one reading;
+    the counts, and the group sizes against the Methods' n (62, 94, 100, 97), are shown under each.
   statement: All 18 partially and fully reconstructed PT neurons project to the superior colliculus and
     none lacks projections to both thalamus and medulla, suggesting that most if not all PT neurons
     belong to the two types.
-  source: Results, Two types of PT neuron in layer 5, paragraph 5; Supplementary Table 1 (not in the
-    text read)
+  source: Results, Two types of PT neuron in layer 5, paragraph 5; Supplementary Table 1 (read
+    2026-10-20 in the Supplementary Information PDF)
   quote: All (18 out of 18) partially and fully reconstructed PT neurons projected to the superior colliculus
     and no (0 out of 18) PT neurons lacked projections to both the thalamus and medulla
   data: elsewhere
   where: Figshare doi:10.25378/janelia.7007846 version 1, Axons.zip
-- id: pt-marker-genes
+  criterion: Answer of 2026-10-20. The 18 neurons are those listed in Supplementary data table 1 - the
+    12 complete reconstructions of pt-upper-thalamus-projection and 6 partial ones, thalamus-projecting
+    AA0132, AA0135, AA0250 and medulla-projecting AA0131, AA0134, AA0169. The other neurons of Axons.zip
+    are not among them. The paper gives no rule for projecting to a structure; readings, (a) any axon
+    terminus there, (b) any axon length there, both shown.
   statement: smFISH confirms Slco2a1 as a PTlower marker and Npnt as a PTupper marker (Slco2a1 puncta
     IQR 1-2.5 in PTupper against 6-22 in PTlower; Npnt IQR 16-40 in PTupper against 1-9 in PTlower).
   source: Results, Two types of PT neuron in layer 5, paragraph 6; Fig. 3c legend
   quote: "Slco2a1, PTupper: interquartile range (IQR) = 1–2.5 puncta, n = 60; Slco2a1, PTlower: IQR = 6–22,
     n = 95; Npnt, PTupper: IQR = 16–40, n = 145; Npnt, PTlower: IQR = 1–9, n = 69"
-  data: elsewhere
-  where: Figshare doi:10.25378/janelia.7007846 version 1, Anatomy.zip
+  data: dataset
+  criterion: Answer of 2026-10-20. data was elsewhere, with Anatomy.zip as the place; that was wrong
+    about the paper. The Data availability statement names archives for the bulk RNA-seq (GEO GSE119182)
+    and the electrophysiology (CRCNS.org and Figshare) only, and Anatomy.zip holds no smFISH images or
+    puncta counts. The smFISH data are the paper's own recording, deposited in no archive it names, so
+    data is dataset; whether any data the attempt can reach hold them is the author's to find.
 - id: pt-bulk-sc-fold-change-correlation
   statement: Fold changes between PTupper and PTlower of the 200 most discriminative genes correlate
     between scRNA-seq and bulk RNA-seq (Pearson's r = 0.87).
@@ -221,6 +277,13 @@ claims:
     tolerance: 0.087
   data: elsewhere
   where: GEO GSE119182 (bulk RNA-seq); scRNA-seq of Tasic et al. 2018, doi:10.1038/s41586-018-0654-5
+  criterion: Answer of 2026-10-20. From the Extended Data Fig. 4i legend, fold change is the mean
+    log2(CPM + 1) of the Npsr1-Hpgd cells minus that of the Slco2a1 cells, for scRNA-seq and bulk
+    RNA-seq; the 200 genes and the cell and replicate groups are those of the code (Seq/bulkVsSC.m on
+    Seq.zip - the 100 genes at each end of the binary detection accuracy, bulk replicates 1, 6, 8, 9, 11,
+    13 against 2, 4, 7, 10, 12, 14). The code applies log2(x + 1) to the bulk values as stored in
+    bulk_data.txt, which are not CPM (columns sum to about 1e7); where legend and code differ the legend
+    is followed, and the code's version is a variant. Reproduced when r is within tolerance.
 - id: pt-tagged-units
   statement: The recordings yield 61 identified PTupper cells from 8 mice and 69 identified PTlower
     neurons from 4 mice after exclusions (130 of 143 tagged units kept).
@@ -243,7 +306,12 @@ claims:
     rule; Methods' session rule), applied to the tagged units of the dandiset. Reproduced when one
     reading gives both unit counts within tolerance and the mouse counts exactly. The counts under
     every reading are shown, with the 143 tagged units before exclusion. The reading that matches is
-    the selection the other electrophysiology claims use; when both match, both are carried.
+    the selection the other electrophysiology claims use; when both match, both are carried. Answer of
+    2026-10-20 - when neither matches (the dandiset lacks sessions the paper used), the other claims use
+    the code's per-unit rule. The Methods report the outcome of the selection ("13 units were rejected;
+    130 were kept"), and the code's rule is the one that, as the attempt reports, gives it, with 61
+    and 69, on the paper's processed data (loadAndProcessData.m on Ephys.zip); the Methods' session
+    rule is a variant.
 - id: pt-depth
   statement: Identified PTupper cells are at more superficial recording depths than PTlower neurons.
   source: Results, Cell-type-specific recordings, paragraph 2; Fig. 4e
@@ -253,7 +321,10 @@ claims:
   - pt-tagged-units
   criterion: Depth is the micromanipulator reading, uncorrected (Fig. 4e legend, Methods). The code
     (simplePlots.m, plotDepth) plots each unit's own depth field (meta.depth) and also stores the
-    session's manipulator depth (manipulatorDepth); both are run, and the outcome is the one they give.
+    session's manipulator depth (manipulatorDepth). Answer of 2026-10-20 - Fig. 4e is the plot of the
+    unit depth field, and the Methods say "Unit depths (Fig. 4e) were inferred from manipulator readings
+    only", so the claim is judged on the unit depth; the session manipulator depth is a variant, shown
+    where available.
     The paper reports no test; Fig. 4e shows mean +/- s.d. Reproduced when the mean depth of included PTupper
     units is smaller than that of PTlower units. Shown both with all units, as the code's error bars,
     and without the right-hemisphere PTlower recordings (animals 29.5 and 30.5), which the code leaves
@@ -311,8 +382,10 @@ claims:
     test: χ2 test
     p: 3.0e-04
   depends_on:
-  - pt-spike-rates-similar
-  criterion: Rates as in pt-spike-rates-similar. The Results name a "χ2 test" without saying which; the
+  - pt-tagged-units
+  criterion: Rates as defined in pt-spike-rates-similar (the definitions only, not that claim's outcome;
+    the dependency was moved to pt-tagged-units on 2026-10-20, as this claim uses no result of
+    pt-spike-rates-similar). The Results name a "χ2 test" without saying which; the
     Methods name no variance test. The code compares variances with MATLAB's vartest2, a two-sided
     two-sample F test (simplePlots.m, plotFiringRates). Readings, (a) Bartlett's test, the two-sample
     variance test with a chi-squared statistic, (b) the code's F test; both are run and the outcome is
@@ -424,7 +497,11 @@ claims:
     PTlower, (ii) in addition the PTupper 5th percentile exceeds the PTlower median. "More consistent
     across trials" is read as a smaller spread of the bootstrap (which resamples trials) relative to
     its median, the s.d. over median; the paper names no measure. Reproduced when both hold,
-    partially reproduced when larger holds alone, not reproduced when larger does not hold.
+    partially reproduced when larger holds alone, not reproduced when larger does not hold. Answer of
+    2026-10-20 - the paper does not say which rule decides. The Results give "larger" with no number or
+    test, Fig. 5b and its legend show only the bootstrap median and 5-95% band, and Projections.m draws
+    the curves with no comparison between populations. Both rules stay; when they give different
+    outcomes the claim is methods_underspecified.
 - id: pt-upper-persistent
   statement: In the PTupper population, selectivity along CDearly remains constant through the sample
     and delay epochs until the go cue.
@@ -501,7 +578,9 @@ claims:
     as an absolute value. Readings of the test, (i) two-sided Student's t-test (Methods - all
     two-sample t-tests were Student's), (ii) two-sided Mann-Whitney test (used for the same window in
     Extended Data Fig. 9; decodingAccuracy.m computes both). The measure is a reading of the reported
-    numbers, so a match under either reading counts; the test is an open method detail, so both
+    numbers, so a match under either reading counts. Trials are those of the unit's range (opening
+    comment, settled 2026-10-20 from the processed files); all trials is a variant. The test is an
+    open method detail, so both
     tests are run on that measure and the outcome is the one they give (methods_underspecified when
     they differ). Reproduced when, under one reading of the measure, both means are within tolerance
     and PTupper is higher with p < 0.01 under both tests; partially reproduced when PTupper is higher
@@ -672,7 +751,12 @@ claims:
     reading fixed here is the time after the go cue at which the bootstrap median of the normalised
     correlation first falls below a level, with levels (a) 0.5 and (b) 0.75. Reproduced when PTlower's
     time is shorter than PTupper's and PTupper's is at least 0.2 s ("several hundred milliseconds");
-    partially reproduced when PTlower's is shorter only.
+    partially reproduced when PTlower's is shorter only. Answer of 2026-10-20 - neither the paper nor the
+    code fixes a level or a measure of speed. The Extended Data Fig. 7c legend says the change is "abrupt"
+    and "immediately after the go cue onset" in PTlower and, in PTupper, "more slowly (over several
+    hundred milliseconds), largely after initiation of movement"; CDCorrelation.m plots the normalised
+    correlation with a dotted line at 0.05 s (movement onset) and computes no crossing time. Both levels
+    stay; when they give different outcomes the claim is methods_underspecified.
 - id: pt-lower-movement-termination
   statement: In PTlower neurons, selectivity along both CDlate and CDgo ceases with the offset of movement
     (the last lick), together with an abrupt change in the coding direction; this transition is not seen
@@ -691,7 +775,14 @@ claims:
     after it; (b) the same with 400 ms windows before and from 0.1 to 0.5 s after. Reproduced when this
     holds for PTlower along both CDs; partially reproduced for one CD. The PTupper result along both
     CDs and the CD correlation matrix after the go cue (Extended Data Fig. 10c, from CDCorrelation.m with
-    lick-aligned rates) are reported, as the paper gives no measure for the abrupt change.
+    lick-aligned rates) are reported, as the paper gives no measure for the abrupt change. Answer of
+    2026-10-20 - the paper gives no windows. The Extended Data Fig. 10a, b legends give only the 5-95%
+    band, and Projections.m (showProjection) plots the lick-aligned selectivity with no window or test;
+    both window readings stay, and when they differ the claim is methods_underspecified. The last lick is
+    defined by the code (loadAndProcessData.m, getLickInfo) as, per trial, the latest left or right lick
+    after the go cue among the trial's licks. The paper says nothing of rebuilding it when licks are not
+    assigned to trials; a rebuilt last lick is a deviation, acceptable when the outcome is the same with
+    the trials whose rebuilt last lick disagrees with the processed data left out, which is shown.
 - id: pt-cohort-control
   statement: Differences in coding between PTupper and PTlower neurons are not explained by the animal
     cohorts; unidentified neurons recorded in the two cohorts give similar coding direction projections,
