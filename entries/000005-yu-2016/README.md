@@ -35,7 +35,7 @@ were written from the abstract.
 | `exc-touch-spikes-enphr` | Not reproduced |
 | `auc-weak-strong` | Reproduced |
 | `auc-groups` | Blocked: methods underspecified |
-| `behavior-false-alarms` | Blocked: methods underspecified |
+| `behavior-false-alarms` | Reproduced |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -43,12 +43,15 @@ reasoning and the differences from the paper's method.
 The files give no cell type for the L4 neurons and do not mark the mice whose infraorbital nerve was
 cut. Cell classes are built by the claims file's rules (light tag, the waveform boundary of
 Supplementary Fig. 6, PV inactivation, spike width), and every group holds the cells of all mice; a
-variant leaves out four mice flagged as lacking touch input. Open method details are asked in
-[`questions/000005.yaml`](../../questions/000005.yaml).
+variant leaves out four mice flagged as lacking touch input. Open method details were asked in
+[`questions/000005.yaml`](../../questions/000005.yaml) and answered by a reader on 2026-10-20; the
+claims they bear on were re-run under the updated criteria, which moved `behavior-false-alarms`
+from blocked to reproduced and left the other outcomes as they were.
 
-- `reproduce_yu_2016.ipynb`: the analysis. The recorded run took 281 s from a clean environment,
+- `reproduce_yu_2016.ipynb`: the analysis. The recorded run took 302 s from a clean environment,
   most of it streaming the files.
 - `yu2016.py`: loading the files with range requests and reducing them as they load (spikes, the
-  whisking epochs of the principal whisker under both filter readings, touches, licks, light
+  whisking epochs of the principal whisker under both filter readings and, for whole-cell cells,
+  under each whisking-onset and touch reading (O10, O11), touches, licks, light
   epochs, spike-removed membrane potential and event-aligned averages), and the paper's measures as
   the claims file gives them. Other notebooks on this dandiset can import it.

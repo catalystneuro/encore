@@ -30,14 +30,20 @@ that the notebook either shows cannot change a result or runs under each reading
   most-retracted point, phase wrapping from +pi to -pi, to the next) whose amplitude where the
   phase crosses 0 exceeds 2.5 degrees, leaving out 100 ms around licks and 10 ms before to 100 ms
   after touches. Nonwhisking periods are runs of at least 100 ms with amplitude below 1.25 degrees,
-  outside touches and the same lick and touch windows. Standard: the touch window runs from 10 ms
-  before a touch onset to 100 ms after its offset, and touches of every tracked whisker count;
-  lick times are the rising edges of the lick trace.
+  outside touches and the same lick and touch windows. The touch window and the whiskers whose
+  touches count are readings O11 of the claims file: whiskers (a) every tracked whisker or (b) the
+  principal whisker, from 10 ms before a touch onset to 100 ms after (i) its offset or (ii) its
+  onset. The epochs used by every claim except exc-vm-touch-whisking are those of O11 (a)(i).
+  Lick times are the rising edges of the lick trace (standard).
 - Whisking onsets (claims, Measures): the end of a nonwhisking period, when the mean amplitude
-  100 to 300 ms after it exceeds the mean 0 to 200 ms before it by at least 2 degrees and no touch
-  starts within 250 ms; data after a touch starting later are removed. Standard: the two windows
-  over which the amplitude rise is judged are the paper's whisking-onset windows (Supplementary
-  Fig. 4 legend), since the Methods give no window for "average whisking amplitude increased".
+  rises by at least 2 degrees and no touch starts within 250 ms; data after a touch starting later
+  are removed. The windows of the rise are readings O10: (a) 100 to 300 ms after against 0 to 200
+  ms before (the whisking-onset windows of the Supplementary Fig. 4 legend), (b) 0 to 250 ms after
+  against the whole nonwhisking period. The onsets used by every claim except
+  exc-vm-touch-whisking are those of O10 (a), with every tracked whisker bounding the nonwhisking
+  periods and the principal whisker's touch onsets in the 250 ms rule (the earlier rule of this
+  attempt); exc-vm-touch-whisking runs every O10 and O11 reading, with the 250 ms rule taken on
+  the touches of the whiskers O11 names.
 - Touches (claims): onsets of the principal whisker; intertouch interval (offset of the previous
   touch to this onset) at least 25 ms (Figs. 1 to 7) or 10 ms (Fig. 8e); the first touch of a
   trial counts as isolated.
@@ -48,8 +54,9 @@ that the notebook either shows cannot change a result or runs under each reading
 - Spike latency (claims): touch PSTH in 1 ms bins, first difference (O8), first bin after onset
   where it exceeds 3 x its s.d. 0 to 25 ms before onset; cells without a 1 ms bin of at least 10
   spikes/s 0 to 100 ms after onset, or without a crossing, are left out. The time given to the
-  crossing bin is either its left edge or its centre; both are returned (standard: the claims file
-  does not say, see the notebook).
+  crossing bin is (O9 a) its left edge or (O9 b) its centre; both are returned.
+- Vm latency (claims, O8): the same rule on the touch-aligned average Vm, with the first
+  difference at the recording's sampling rate (10 or 20 kHz).
 - Phase coupling (claims): 12 phase bins over -pi to pi, rate = spikes / time spent in each bin
   during whisking epochs (or mean Vm per bin); least-squares fit of a + b cos + c sin, r2 = 1 -
   SSres / SStot; coupling strength = half the peak-to-trough of the fit; for FS cells a fit with
@@ -75,8 +82,9 @@ that the notebook either shows cannot change a result or runs under each reading
   above zero); isolated 5 ms pulses are pulses shorter than 7.5 ms with no other pulse within
   100 ms. A cell is driven by light (claims header: "driven by 5 ms light pulses within 5 ms of
   onset") when the probability of a spike 0 to 5 ms after an isolated pulse exceeds that in the
-  5 ms starting 50 ms before by a one-sided binomial test at p < 0.001 (standard) with at least
-  10 pulses.
+  5 ms starting 50 ms before by a one-sided binomial test with at least 10 pulses. The paper
+  gives no test, baseline or threshold; the claims file (fs-touch-response) names p < 0.001 and
+  p < 0.01, each with and without the waveform boundary, as readings.
 """
 
 from __future__ import annotations
@@ -221,16 +229,14 @@ def _runs(mask):
     return np.flatnonzero(d == 1), np.flatnonzero(d == -1)
 
 
-def whisking_epochs(angle, tri, excl, filt="filtfilt"):
-    """Amplitude, phase, whisking-epoch mask and nonwhisking-period mask, trial by trial.
-
-    angle: whisker angle (deg) at 1 kHz; tri: trial of each sample; excl: True where licks or
-    touches exclude a sample (see `exclusion_mask`); filt: 'filtfilt' (O1 a) or 'lfilter' (O1 b)."""
+def _amp_phase_cycles(angle, tri, filt):
+    """Hilbert amplitude and phase of the band-passed angle, and the whisking cycles whose amplitude
+    at phase 0 exceeds 2.5 degrees, trial by trial (before any lick or touch exclusion)."""
     b, a = signal.butter(WHISK_ORDER, np.array(WHISK_BAND_HZ) / (WHISK_HZ / 2), btype="band")
     n = len(angle)
     amp = np.full(n, np.nan, np.float32)
     phase = np.full(n, np.nan, np.float32)
-    whisk = np.zeros(n, bool)
+    cyc = np.zeros(n, bool)
     for k in np.unique(tri[tri >= 0]):
         idx = np.flatnonzero(tri == k)
         x = angle[idx]
@@ -250,8 +256,14 @@ def whisking_epochs(angle, tri, excl, filt="filtfilt"):
             seg = ph[c0:c1]
             z = int(np.argmin(np.abs(seg)))
             if np.isfinite(am[c0 + z]) and am[c0 + z] > WHISK_AMP_DEG:
-                whisk[idx[c0:c1]] = True
-    whisk &= ~excl
+                cyc[idx[c0:c1]] = True
+    return amp, phase, cyc
+
+
+def _epochs(amp, cyc, tri, excl):
+    """Whisking-epoch and nonwhisking-period masks from the cycles, outside the excluded samples."""
+    n = len(amp)
+    whisk = cyc & ~excl
     quiet = (amp < NONWHISK_AMP_DEG) & ~excl & (tri >= 0)
     nonwhisk = np.zeros(n, bool)
     s0, s1 = _runs(quiet)
@@ -263,19 +275,32 @@ def whisking_epochs(angle, tri, excl, filt="filtfilt"):
         for e0, e1 in zip(edges[:-1], edges[1:]):
             if e1 - e0 >= int(NONWHISK_MIN_S * WHISK_HZ):
                 nonwhisk[a0 + e0:a0 + e1] = True
+    return whisk, nonwhisk
+
+
+def whisking_epochs(angle, tri, excl, filt="filtfilt"):
+    """Amplitude, phase, whisking-epoch mask and nonwhisking-period mask, trial by trial.
+
+    angle: whisker angle (deg) at 1 kHz; tri: trial of each sample; excl: True where licks or
+    touches exclude a sample (see `exclusion_mask`); filt: 'filtfilt' (O1 a) or 'lfilter' (O1 b)."""
+    amp, phase, cyc = _amp_phase_cycles(angle, tri, filt)
+    whisk, nonwhisk = _epochs(amp, cyc, tri, excl)
     return amp, phase, whisk, nonwhisk
 
 
-def exclusion_mask(n, whiskers, lick_idx):
-    """True within 10 ms before to 100 ms after any touch of any tracked whisker (onset to offset
-    included), and within 100 ms of any lick."""
+def exclusion_mask(n, whiskers, lick_idx, which="all", span="offset"):
+    """True within 10 ms before to 100 ms after the touches (onset to offset included), and within
+    100 ms of any lick. which: 'all' tracked whiskers (O11 a) or 'principal' (O11 b); span: from
+    10 ms before onset to 100 ms after 'offset' (O11 i) or after 'onset' (O11 ii)."""
     m = np.zeros(n, bool)
     pre, post = int(TOUCH_GUARD_PRE_S * WHISK_HZ), int(TOUCH_GUARD_POST_S * WHISK_HZ)
     for w in whiskers.values():
+        if which == "principal" and not w["principal"]:
+            continue
         on, off = w["touch_on"], w["touch_off"]
         for i in on:
             j = off[off >= i]
-            end = j[0] if len(j) else i
+            end = (j[0] if len(j) else i) if span == "offset" else i
             m[max(0, i - pre): min(n, end + post + 1)] = True
     g = int(LICK_GUARD_S * WHISK_HZ)
     for i in lick_idx:
@@ -283,26 +308,33 @@ def exclusion_mask(n, whiskers, lick_idx):
     return m
 
 
-def whisking_onsets(amp, nonwhisk, tri, touch_on_idx):
-    """Whisking onsets: ends of nonwhisking periods where the mean amplitude 100 to 300 ms after
-    exceeds the mean 0 to 200 ms before by at least 2 degrees, with no touch onset within 250 ms.
-    Returns the sample index of each onset and, for each, the first touch onset after it (or -1),
-    after which data are removed."""
+def whisking_onsets(amp, nonwhisk, tri, touch_on_idx, windows="a"):
+    """Whisking onsets: ends of nonwhisking periods where the mean amplitude rises by at least 2
+    degrees, with no touch onset (of `touch_on_idx`) within 250 ms. The rise is judged (O10 a)
+    100 to 300 ms after against 0 to 200 ms before the end, or (O10 b) 0 to 250 ms after against
+    the whole nonwhisking period. Under both, the end must lie at least 200 ms after the trial
+    start and 300 ms before its end, so that the Vm windows of the whisking change stay in the
+    trial. Returns the sample index of each onset and, for each, the first touch onset after it
+    (or -1), after which data are removed."""
     s0, s1 = _runs(nonwhisk)
     on_sorted = np.sort(touch_on_idx)
     out, cut = [], []
     a0, a1 = int(PRE_ONSET_S[0] * WHISK_HZ), int(POST_ONSET_S[1] * WHISK_HZ)
-    for e in s1:
+    for b0, e in zip(s0, s1):
         if e + a1 >= len(amp) or e + a0 < 0 or tri[e + a1 - 1] != tri[e - 1] or tri[e + a0] != tri[e - 1]:
             continue
         nxt = on_sorted[np.searchsorted(on_sorted, e):]
         nt = nxt[0] if len(nxt) and tri[nxt[0]] == tri[e - 1] else -1
         if nt >= 0 and nt - e < int(ONSET_NO_TOUCH_S * WHISK_HZ):
             continue
-        pre = np.nanmean(amp[e + a0:e])
-        post_seg = amp[e + int(POST_ONSET_S[0] * WHISK_HZ):e + a1].astype(float)
-        if nt >= 0:
-            post_seg[max(0, nt - e - int(POST_ONSET_S[0] * WHISK_HZ)):] = np.nan
+        if windows == "a":
+            pre = np.nanmean(amp[e + a0:e])
+            post_seg = amp[e + int(POST_ONSET_S[0] * WHISK_HZ):e + a1].astype(float)
+            if nt >= 0:
+                post_seg[max(0, nt - e - int(POST_ONSET_S[0] * WHISK_HZ)):] = np.nan
+        else:
+            pre = np.nanmean(amp[b0:e])
+            post_seg = amp[e:e + int(ONSET_NO_TOUCH_S * WHISK_HZ)].astype(float)
         if np.all(np.isnan(post_seg)):
             continue
         if np.nanmean(post_seg) - pre >= ONSET_RISE_DEG:
@@ -428,8 +460,17 @@ def _licks(f):
     return t[np.flatnonzero(np.diff(np.r_[0, d]) == 1)]
 
 
-def _behaviour(f, trials):
-    """The principal whisker reduced to its epochs under both filters, touches and licks."""
+O10 = ("a", "b")                                  # whisking-onset windows (claims header O10)
+O11 = {"a-i": ("all", "offset"), "a-ii": ("all", "onset"),         # touches bounding epochs and
+       "b-i": ("principal", "offset"), "b-ii": ("principal", "onset")}  # onsets (claims header O11)
+
+
+def _behaviour(f, trials, readings=False):
+    """The principal whisker reduced to its epochs under both filters, touches and licks. With
+    `readings`, also the epochs and onsets under each whisking-onset reading O10 and touch reading
+    O11 (masks bit-packed), in `out[filt]["readings"][(o10, o11)]`; the touch onsets of the 250 ms
+    rule are those of the whiskers O11 names (the main epochs above use every tracked whisker for
+    the exclusion and the principal whisker for the 250 ms rule)."""
     whiskers = _whiskers(f)
     licks = _licks(f)
     pname = next((k for k, w in whiskers.items() if w["principal"]), None)
@@ -454,12 +495,36 @@ def _behaviour(f, trials):
                angle_range=(float(np.nanmin(w["angle"])), float(np.nanmax(w["angle"]))),
                angle_nan=float(np.isnan(w["angle"]).mean()), dt_median=float(np.median(np.diff(t))),
                excl=excl)
+    if readings:
+        excls = {k: exclusion_mask(len(t), whiskers, li, which, span) for k, (which, span) in O11.items()}
+        all_on = np.unique(np.concatenate([ww["touch_on"] for ww in whiskers.values()]))
     for filt in FILTERS:
-        amp, phase, whisk, nonwhisk = whisking_epochs(w["angle"], tri, excl, filt)
+        amp, phase, cyc = _amp_phase_cycles(w["angle"], tri, filt)
+        whisk, nonwhisk = _epochs(amp, cyc, tri, excl)
         ons, cut = whisking_onsets(amp, nonwhisk, tri, on)
         out[filt] = {"amp": amp.astype(np.float16), "phase": phase.astype(np.float16), "whisk": whisk,
                      "nonwhisk": nonwhisk, "onsets": ons, "onset_cut": cut}
+        if readings:
+            rd = {}
+            for k, (which, span) in O11.items():
+                wk, nw = _epochs(amp, cyc, tri, excls[k])
+                for o10 in O10:
+                    o, c = whisking_onsets(amp, nw, tri, all_on if which == "all" else on, o10)
+                    rd[(o10, k)] = {"whisk": np.packbits(wk), "nonwhisk": np.packbits(nw), "n": len(wk),
+                                    "onsets": o, "onset_cut": c}
+            out[filt]["readings"] = rd
     return out
+
+
+def beh_reading(beh, filt, o10, o11):
+    """A copy of `beh` whose epochs and onsets under filter `filt` are those of readings O10 `o10`
+    and O11 `o11` (needs a record loaded with the readings)."""
+    r = beh[filt]["readings"][(o10, o11)]
+    b = dict(beh)
+    b[filt] = {**beh[filt], "whisk": np.unpackbits(r["whisk"], count=r["n"]).astype(bool),
+               "nonwhisk": np.unpackbits(r["nonwhisk"], count=r["n"]).astype(bool),
+               "onsets": r["onsets"], "onset_cut": r["onset_cut"]}
+    return b
 
 
 def _light(f):
@@ -624,7 +689,7 @@ def load_icephys(asset):
         else:
             rec["ca_duration_ms"], rec["ca_ratio"] = np.nan, np.nan
         rec["polarity"] = polarity
-    beh = _behaviour(f, trials)
+    beh = _behaviour(f, trials, readings=mode == "whole-cell")
     rec["beh"] = beh
     lit = lit_trials(rec["light"], trials)
     if mode == "whole-cell" and beh["principal"] is not None:
@@ -913,9 +978,10 @@ def psp_measures(avg, n, fs):
     """Touch-aligned average Vm (full rate, starting EVENT_PRE_S before onset): amplitude (peak 0 to
     50 ms after minus the mean 0 to 5 ms before), the peak time, and the latency by the dVm/dt rule:
     the first point after onset where the unsmoothed first difference (reading O8) exceeds 3 s.d. of
-    its values 0 to 25 ms before onset. The claims file does not fix the resolution of the
-    derivative, so it is taken at the full sampling rate (`latency_ms`) and on the average in 1 ms
-    bins (`latency_1ms_edge`, `latency_1ms_centre`, the bin's left edge or centre)."""
+    its values 0 to 25 ms before onset. The derivative is taken at the recording's sampling rate
+    (`latency_ms`; claims, O8, answer of 2026-10-20). The same rule on the average in 1 ms bins
+    (`latency_1ms_edge`, `latency_1ms_centre`) is kept as a comparison that the criterion no longer
+    names."""
     nan = {"latency_ms": np.nan, "latency_1ms_edge": np.nan, "latency_1ms_centre": np.nan, "amp_mv": np.nan, "peak_ms": np.nan}
     if avg is None or n < 5:
         return nan
@@ -942,8 +1008,9 @@ def psp_measures(avg, n, fs):
 def neg_onset_latency(avg, n, fs, binned=False):
     """Onset latency (ms) of a hyperpolarization in an event-aligned average (starting EVENT_PRE_S
     before the event): the touch-latency rule turned downward, the first point after the event
-    where the first difference falls below -3 s.d. of its values 0 to 25 ms before. With
-    `binned`, on the average in 1 ms bins (latency = the bin's left edge)."""
+    where the first difference falls below -3 s.d. of its values 0 to 25 ms before, at the
+    sampling rate (claims, O8). With `binned`, on the average in 1 ms bins (latency = the bin's
+    left edge), a comparison the criterion no longer names."""
     if avg is None or n < 3:
         return np.nan
     a = avg.astype(float)
@@ -1037,18 +1104,12 @@ def spike_measures(spikes, beh, trial_mask, definition, rng, fs_fit=False, filte
     return out
 
 
-def vm_measures(rec, trial_mask, filt, reading):
-    """Membrane-potential measures of one whole-cell cell (claims, Measures; spikes removed):
-    resting Vm (mean and median in nonwhisking periods, O4), the whisking change (a: 100 to 300 ms
-    after whisking onsets minus 0 to 200 ms before; b: whisking-epoch minus nonwhisking mean), the
-    10th percentile of distance to threshold in nonwhisking, whisking and touch (4 to 50 ms) epochs
-    with threshold reading O3 `reading`, Vm phase coupling, and the per-event values of the
-    effective reversal (Supplementary Fig. 4)."""
-    beh = rec["beh"]
-    vm = rec["vm1k"].astype(float)
-    tri = beh["trial"]
-    use = (tri >= 0) & np.asarray(trial_mask)[np.clip(tri, 0, None)] & np.isfinite(vm)
-    e = beh[filt]
+def vm_epoch_measures(vm, use, e):
+    """Resting Vm (mean and median in nonwhisking periods, O4 a and b) and the whisking change (a:
+    mean 100 to 300 ms after each whisking onset minus 0 to 200 ms before, averaged over onsets; b:
+    whisking-epoch minus nonwhisking mean) of a spike-removed Vm at 1 kHz, for the epochs and
+    onsets `e` of one filter (and one reading O10, O11). Returns the measures and the per-onset
+    pre-onset Vm and change."""
     nw, wh = e["nonwhisk"] & use, e["whisk"] & use
     out = {"rest_mean": float(np.mean(vm[nw])) if nw.any() else np.nan,
            "rest_median": float(np.median(vm[nw])) if nw.any() else np.nan,
@@ -1067,6 +1128,23 @@ def vm_measures(rec, trial_mask, filt, reading):
         d_w.append(np.nanmean(post) - np.nanmean(pre))
     out["n_onsets"] = len(d_w)
     out["whisk_onset_change"] = float(np.mean(d_w)) if d_w else np.nan
+    return out, pre_w, d_w
+
+
+def vm_measures(rec, trial_mask, filt, reading):
+    """Membrane-potential measures of one whole-cell cell (claims, Measures; spikes removed):
+    resting Vm (mean and median in nonwhisking periods, O4), the whisking change (a: 100 to 300 ms
+    after whisking onsets minus 0 to 200 ms before; b: whisking-epoch minus nonwhisking mean), the
+    10th percentile of distance to threshold in nonwhisking, whisking and touch (4 to 50 ms) epochs
+    with threshold reading O3 `reading`, Vm phase coupling, and the per-event values of the
+    effective reversal (Supplementary Fig. 4)."""
+    beh = rec["beh"]
+    vm = rec["vm1k"].astype(float)
+    tri = beh["trial"]
+    use = (tri >= 0) & np.asarray(trial_mask)[np.clip(tri, 0, None)] & np.isfinite(vm)
+    e = beh[filt]
+    nw, wh = e["nonwhisk"] & use, e["whisk"] & use
+    out, pre_w, d_w = vm_epoch_measures(vm, use, e)
     out["whisk_pre"], out["whisk_dvm"] = np.array(pre_w), np.array(d_w)
     # distance to threshold
     thr = trial_thresholds(rec, reading)
