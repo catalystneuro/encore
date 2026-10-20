@@ -221,6 +221,21 @@ def test_a_deprecated_attempt_is_marked_on_its_page(built):
             assert "Deprecated:" in (out / "dandisets" / dandiset / "index.html").read_text()
 
 
+
+def test_an_earlier_attempt_has_its_own_page_linked_from_the_dandiset(built):
+    data, out = built
+    pages = 0
+    for dandiset in site.current_attempts(data):
+        for a in site.earlier_attempts(data, dandiset):
+            pages += 1
+            current = (out / "dandisets" / dandiset / "index.html").read_text()
+            assert f'href="../../dandisets/{dandiset}/{a["id"]}/"' in current
+            page = (out / "dandisets" / dandiset / a["id"] / "index.html").read_text()
+            assert "An earlier attempt." in page and f'href="../../../dandisets/{dandiset}/"' in page
+            for o in a["outcomes"]:
+                assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"' in page
+    assert pages
+
 def test_claims_using_outside_data_are_counted_apart():
     attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dandiset"},
                             {"claim": "b", "outcome": "not_reproduced", "data": "with_inputs"},
