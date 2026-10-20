@@ -7,8 +7,9 @@ Reads targets/dandisets.json, targets/pilot.yaml, claims/, attempts/,
 entries/ and transcripts/, and writes:
 
     index.html                    overview: numbers, breakdowns, latest attempts
-    dandisets/index.html          every target, filterable and paginated
-    dandisets/<id>/index.html     one static page per attempted dandiset
+    datasets/index.html           every target, filterable and paginated
+    datasets/<archive>/<id>/      one static page per attempted dataset, and one per earlier attempt
+    dandisets/<id>/               redirects to the dataset's page, for links made before
     data/dandisets.json           rows for the list page
     api/dandiset/<id>.json        one dandiset's results, for other sites
     registry.json                 everything, as before
@@ -19,7 +20,7 @@ CI keeps on the `executed` branch), pages link to it.
 
 The list pages are rendered in the browser by assets/list.js from the JSON
 rows; filters, search, sort and page are kept in the URL, so every view is a
-link. Dandiset pages are complete HTML and need no JavaScript.
+link. Dataset pages are complete HTML and need no JavaScript.
 
 The trust tier of an attempt is derived from its verifications: the latest
 verification decides, and it counts only if it agrees with every outcome.
@@ -37,6 +38,7 @@ import datetime
 import html
 import json
 import random
+import re
 import shutil
 from pathlib import Path
 
@@ -49,6 +51,54 @@ SITE_URL = "https://catalystneuro.github.io/reproduction-registry/"
 SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of neuroscience papers from their open data on the "
                     "DANDI Archive, and record every outcome and what they find about the data.")
 
+# The archives the registry reads from. A dataset is keyed as "<archive>:<id>" (dandi:000003), shown as
+# "<label>:<id>" (DANDI:000003), and has its page at datasets/<archive>/<id>/. Its files in the repository
+# (claims/, questions/, transcripts/, the paper store) are under the id for DANDI and "<archive>-<id>" otherwise.
+ARCHIVES = {
+    "dandi": {"label": "DANDI", "name": "the DANDI Archive", "url": "https://dandiarchive.org/dandiset/{id}"},
+}
+
+
+def key_of(archive: str, id_: str) -> str:
+    return f"{archive}:{id_}"
+
+
+def split_key(key: str) -> tuple[str, str]:
+    archive, _, id_ = key.partition(":")
+    return archive, id_
+
+
+def dataset_label(key: str) -> str:
+    """How a dataset is named on the site: DANDI:000003."""
+    archive, id_ = split_key(key)
+    return f'{ARCHIVES.get(archive, {}).get("label", archive.upper())}:{id_}'
+
+
+def page_of(key: str) -> str:
+    archive, id_ = split_key(key)
+    return f"datasets/{archive}/{id_}/"
+
+
+def archive_url(key: str) -> str:
+    archive, id_ = split_key(key)
+    return ARCHIVES[archive]["url"].format(id=id_) if archive in ARCHIVES else ""
+
+
+def archive_name(key: str) -> str:
+    archive, _ = split_key(key)
+    return ARCHIVES.get(archive, {}).get("name", archive)
+
+
+def dir_of(key: str) -> str:
+    """The directory name a dataset's files have in the repository."""
+    archive, id_ = split_key(key)
+    return id_ if archive == "dandi" else f"{archive}-{id_}"
+
+
+def key_of_dir(name: str) -> str:
+    return key_of("dandi", name) if re.fullmatch(r"[0-9]{6}", name) else key_of(*name.split("-", 1))
+
+
 OUTCOMES = {  # key: (label, css class, icon)
     "reproduced": ("Reproduced", "good", "✓"),
     "partially_reproduced": ("Partially reproduced", "warning", "◐"),
@@ -56,7 +106,7 @@ OUTCOMES = {  # key: (label, css class, icon)
     "blocked": ("Blocked", "blocked", "⊘"),
 }
 BLOCKED_BY = {
-    "data_missing": "Data missing from the dandiset",
+    "data_missing": "Data missing from the dataset",
     "metadata_insufficient": "Metadata insufficient",
     "methods_underspecified": "Methods underspecified",
     "data_unreadable": "Data unreadable",
@@ -126,11 +176,11 @@ def short_species(name: str) -> str:
 
 def collect(executed: Path | None = None) -> dict:
     queue = json.loads((ROOT / "targets" / "dandisets.json").read_text())
-    pilot = {t["dandiset"] for t in load_yaml(ROOT / "targets" / "pilot.yaml")["targets"]}
+    pilot = {key_of("dandi", t["dandiset"]) for t in load_yaml(ROOT / "targets" / "pilot.yaml")["targets"]}
     claims = {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         data = load_yaml(path)
-        claims[(data["dataset"]["id"], data["paper"])] = {c["id"]: c for c in data["claims"]}
+        claims[(key_of(data["dataset"]["archive"], data["dataset"]["id"]), data["paper"])] = {c["id"]: c for c in data["claims"]}
     entries = {}
     for path in sorted((ROOT / "entries").glob("*/entry.yaml")):
         data = load_yaml(path)
@@ -149,15 +199,16 @@ def collect(executed: Path | None = None) -> dict:
     attempts = []
     for path in sorted((ROOT / "attempts").glob("*.yaml")):
         a = load_yaml(path)
-        known = claims.get((a["dataset"]["id"], a["paper"]), {})
+        key = key_of(a["dataset"]["archive"], a["dataset"]["id"])
+        known = claims.get((key, a["paper"]), {})
         entry = entries.get(a.get("entry"))
         verifications = a.get("verifications") or []
         disagreed = {r["claim"] for v in verifications for r in v["results"] if not r.get("agrees")}
         attempts.append({
             "id": a["id"],
             "dataset": {k: str(v) for k, v in a["dataset"].items()},
-            "dandiset": a["dataset"]["id"],
-            "dandiset_version": a["dataset"].get("version"),
+            "key": key, "label": dataset_label(key),
+            "dataset_version": a["dataset"].get("version"),
             "paper": a["paper"].removeprefix("doi:"),
             "paper_title": titles.get(a["paper"].removeprefix("doi:").lower()),
             "date": str(a["date"]),
@@ -201,13 +252,14 @@ def collect(executed: Path | None = None) -> dict:
             } for v in verifications],
         })
 
-    attempted = {a["dandiset"] for a in attempts}
+    attempted = {a["key"] for a in attempts}
     targets = []
     for t in queue["targets"]:
         papers = [p for p in t["papers"] if not p["preprint"]] or t["papers"]
-        status = "attempted" if t["dandiset"] in attempted else "pilot" if t["dandiset"] in pilot else "open"
+        key = key_of("dandi", t["dandiset"])
+        status = "attempted" if key in attempted else "pilot" if key in pilot else "open"
         targets.append({
-            "dandiset": t["dandiset"], "name": t["name"], "size_gb": t["size_gb"],
+            "key": key, "label": dataset_label(key), "name": t["name"], "size_gb": t["size_gb"],
             "files": t["asset_count"], "status": status,
             "paper": papers[0]["doi"], "paper_title": papers[0]["title"] or t["name"],
             "papers": [p["doi"] for p in t["papers"]],
@@ -223,17 +275,17 @@ def collect(executed: Path | None = None) -> dict:
         entry_list.append({
             "name": entry["name"], "type": entry["type"], "title": entry["title"],
             "description": squash(entry.get("description")),
-            "dandisets": sorted({r["id"].split(":", 1)[1].split("/")[0] for r in related
-                                 if r["id"].startswith("dandi:")}),
+            "datasets": sorted({r["id"].split("/")[0] for r in related
+                                if not r["id"].startswith(("doi:", "entry:"))}),
             "papers": [r["id"].split(":", 1)[1] for r in related if r["id"].startswith("doi:")],
             "derived_from": [r["id"].split(":", 1)[1] for r in related
                              if r["id"].startswith("entry:") and r["relation"] == "derived_from"],
             "notebooks": notebooks_of(entry),
         })
-    transcripts = {d.name: sorted(p.name for p in d.glob("*.md"))
+    transcripts = {key_of_dir(d.name): sorted(p.name for p in d.glob("*.md"))
                    for d in sorted((ROOT / "transcripts").glob("*")) if d.is_dir()}
     # An earlier attempt's transcripts, moved aside by tools/archive_transcripts.sh.
-    archived = {f"{d.name}/{a.name}": sorted(p.name for p in a.glob("*.md"))
+    archived = {f"{key_of_dir(d.name)}/{a.name}": sorted(p.name for p in a.glob("*.md"))
                 for d in sorted((ROOT / "transcripts").glob("*")) if d.is_dir()
                 for a in sorted(d.glob("attempt-*")) if a.is_dir()}
     return finish({
@@ -257,12 +309,12 @@ def pipeline_inputs() -> dict:
     checks, questions = {}, {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         last = ((load_yaml(path) or {}).get("checks") or [None])[-1]
-        checks[path.parent.name] = None if last is None else bool(last.get("ready"))
+        checks[key_of_dir(path.parent.name)] = None if last is None else bool(last.get("ready"))
     for path in sorted((ROOT / "questions").glob("*.yaml")):
         q = load_yaml(path) or []
         q = q.get("questions", []) if isinstance(q, dict) else q
-        questions[path.stem] = sum(1 for x in q if not x.get("answered"))
-    return {"papers": {str(k): v for k, v in papers.items()}, "checks": checks, "questions": questions}
+        questions[key_of_dir(path.stem)] = sum(1 for x in q if not x.get("answered"))
+    return {"papers": {key_of_dir(str(k)): v for k, v in papers.items()}, "checks": checks, "questions": questions}
 
 
 def finish(data: dict) -> dict:
@@ -271,9 +323,9 @@ def finish(data: dict) -> dict:
     data["outcome_counts_with_outside_data"] = outcome_counts(data["attempts"], "with_inputs")
     data["outcome_counts_elsewhere"] = outcome_counts(data["attempts"], "elsewhere")
     data["outcome_counts_links"] = outcome_counts(data["attempts"], "link")
-    attempted = {a["dandiset"] for a in data["attempts"]}
+    attempted = {a["key"] for a in data["attempts"]}
     for t in data["targets"]:
-        if t["dandiset"] in attempted:
+        if t["key"] in attempted:
             t["status"] = "attempted"
     return data
 
@@ -309,12 +361,12 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
         tier = rng.choices(list(TIERS), (3, 6, 2, 1))[0]
         date = (datetime.date(2026, 10, 13) + datetime.timedelta(days=rng.randint(0, 200))).isoformat()
         attempts.append({
-            "id": f"{t['dandiset']}-demo-01", "dataset": {"archive": "dandi", "id": t["dandiset"], "version": "draft"},
-            "dandiset": t["dandiset"], "dandiset_version": "draft",
+            "id": f"{split_key(t['key'])[1]}-demo-01", "dataset": {"archive": "dandi", "id": split_key(t["key"])[1], "version": "draft"},
+            "key": t["key"], "label": t["label"], "dataset_version": "draft",
             "paper": t["paper"], "paper_title": t["paper_title"], "date": date, "kind": "agent",
             "accountable": "Demo",
             "agent": {"harness": "demo", "model": "demo", "protocol": "demo"}, "tier": tier,
-            "entry": f"{t['dandiset']}-demo", "entry_title": t["paper_title"],
+            "entry": f"{split_key(t['key'])[1]}-demo", "entry_title": t["paper_title"],
             "description": sentence(30),
             "notebooks": [{"path": "figures.ipynb", "title": "Figures", "executed": None},
                           {"path": "behaviour.ipynb", "title": "Behaviour", "executed": None}],
@@ -326,7 +378,7 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
                 "agreed": n_claims, "of": n_claims, "disagreements": []}],
         })
     entries = [{"name": a["entry"], "type": "reproduction", "title": a["entry_title"],
-                "description": a["description"], "dandisets": [a["dandiset"]], "papers": [a["paper"]],
+                "description": a["description"], "datasets": [a["key"]], "papers": [a["paper"]],
                 "derived_from": [], "notebooks": a["notebooks"]} for a in attempts]
     out = dict(data, attempts=attempts, entries=entries, demo=True,
                targets=[dict(t, status="pilot" if t["status"] == "pilot" else "open") for t in data["targets"]])
@@ -342,10 +394,10 @@ def current_attempts(data: dict) -> dict[str, list[dict]]:
     """For each dandiset, the latest attempt on each of its papers, oldest first."""
     latest: dict = {}
     for a in sorted(data["attempts"], key=lambda a: (a["date"], a["id"])):
-        latest[(a["dandiset"], a["paper"])] = a
+        latest[(a["key"], a["paper"])] = a
     out: dict = {}
     for a in sorted(latest.values(), key=lambda a: (a["date"], a["id"])):
-        out.setdefault(a["dandiset"], []).append(a)
+        out.setdefault(a["key"], []).append(a)
     return out
 
 
@@ -354,7 +406,7 @@ def outcome_counts(attempts, group: str = "dataset") -> dict:
 
     The groups are the paper's findings that rest on the dataset ("dataset"), those that also use
     data from elsewhere ("with_inputs"), those on data the paper deposited in another archive
-    ("elsewhere"), and the registry's checks that the dandiset is the paper's data ("link"), which are
+    ("elsewhere"), and the registry's checks that the dataset is the paper's data ("link"), which are
     not findings of the paper. They are never added together, so that an outcome that may reflect
     outside data, or a link, does not count as a judgement of the paper's findings on the dandiset.
     """
@@ -374,12 +426,12 @@ def outside_note(attempts, root: str = "") -> str:
     """Lines with the outcomes of the claims that use outside data or other archives, when there are any."""
     out = ""
     for group, one, many, label in (
-            ("with_inputs", "1 claim that also uses data from outside the dandiset",
-             "claims that also use data from outside the dandiset", "claims using outside data"),
+            ("with_inputs", "1 claim that also uses data from outside the dataset",
+             "claims that also use data from outside the dataset", "claims using outside data"),
             ("elsewhere", "1 claim on data the paper deposited in another archive",
              "claims on data the paper deposited in other archives", "claims on data in other archives"),
-            ("link", "1 check that the dandiset is the data behind the paper",
-             "checks that the dandiset is the data behind the paper", "checks of the link to the paper")):
+            ("link", "1 check that the dataset is the data behind the paper",
+             "checks that the dataset is the data behind the paper", "checks of the link to the paper")):
         counts = outcome_counts(attempts, group)
         m = sum(counts.values())
         if not m:
@@ -409,7 +461,7 @@ def pipeline_rows(data: dict) -> list[dict]:
     current = current_attempts(data)
     out = []
     for t in data["targets"]:
-        d = t["dandiset"]
+        d = t["key"]
         papers = inputs["papers"].get(d, [])
         missing = [p["doi"] for p in papers if p["status"] == "missing"]
         stored = sum(1 for p in papers if p["status"] == "stored")
@@ -432,15 +484,15 @@ def pipeline_rows(data: dict) -> list[dict]:
             else ("todo", "") if atts else ("none", ""),
         }
         nxt = next((label for key, label in PIPELINE_STEPS if state[key][0] in ("todo", "waiting", "deprecated")), "")
-        out.append({"dandiset": d, "name": t["name"], "state": state, "next": nxt,
+        out.append({"dataset": t["label"], "key": d, "name": t["name"], "state": state, "next": nxt,
                     "waiting": [label for key, label in PIPELINE_STEPS if state[key][0] == "waiting"],
-                    "missing": missing, "page": f"dandisets/{d}/" if atts else None})
+                    "missing": missing, "page": page_of(d) if atts else None})
     return out
 
 
 def entries_for(data: dict, dandiset: str) -> list[dict]:
-    """Every entry whose metadata says it uses this dandiset."""
-    return [en for en in data["entries"] if dandiset in en["dandisets"]]
+    """Every entry whose metadata says it uses this dataset."""
+    return [en for en in data["entries"] if dandiset in en["datasets"]]
 
 
 def notebook_of(attempt: dict, path: str | None) -> dict | None:
@@ -449,13 +501,13 @@ def notebook_of(attempt: dict, path: str | None) -> dict | None:
 
 def rows(data: dict) -> dict[str, list]:
     current = current_attempts(data)
-    by_id = {t["dandiset"]: t for t in data["targets"]}
+    by_id = {t["key"]: t for t in data["targets"]}
     dandisets, claims, findings = [], [], []
     for t in data["targets"]:
-        atts = current.get(t["dandiset"])
+        atts = current.get(t["key"])
         outcomes = [o for a in atts or [] if not a.get("deprecated") for o in a["outcomes"]]
         dandisets.append({
-            "id": t["dandiset"], "name": t["name"], "paper": t["paper"], "paper_title": t["paper_title"],
+            "id": t["key"], "label": t["label"], "name": t["name"], "paper": t["paper"], "paper_title": t["paper_title"],
             "technique": t["technique"], "species": t["species"], "size_gb": t["size_gb"], "files": t["files"],
             "status": t["status"], "tier": weakest_tier(atts) if atts else None,
             "date": max(a["date"] for a in atts) if atts else None,
@@ -464,8 +516,8 @@ def rows(data: dict) -> dict[str, list]:
             "failures": sum(1 for o in outcomes if o["outcome"] == "not_reproduced") if atts else None,
             "has": sorted({o["outcome"] for o in outcomes}),
             "blocked_by": sorted({o["blocked_by"] for o in outcomes if o["blocked_by"]}),
-            "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["dandiset"])),
-            "page": f'dandisets/{t["dandiset"]}/' if atts else None,
+            "notebooks": sum(len(en["notebooks"]) for en in entries_for(data, t["key"])),
+            "page": page_of(t["key"]) if atts else None, "url": archive_url(t["key"]),
             "findings": sum(len(a["findings"]) for a in atts if not a.get("deprecated")) if atts else None,
             "found": sorted({f["kind"] for a in atts or [] if not a.get("deprecated") for f in a["findings"]}),
             "deprecated": any(a.get("deprecated") for a in atts or []),
@@ -475,8 +527,8 @@ def rows(data: dict) -> dict[str, list]:
         for a in atts:
             if a.get("deprecated"):
                 continue
-            t = by_id.get(a["dandiset"], {})
-            common = {"dandiset": a["dandiset"], "page": f'dandisets/{a["dandiset"]}/', "tier": a["tier"],
+            t = by_id.get(a["key"], {})
+            common = {"dataset": a["label"], "key": a["key"], "page": page_of(a["key"]), "tier": a["tier"],
                       "technique": t.get("technique", []), "species": t.get("species", []),
                       "paper_title": a.get("paper_title") or t.get("paper_title") or a["entry_title"],
                       "date": a["date"]}
@@ -491,7 +543,7 @@ def rows(data: dict) -> dict[str, list]:
                                "notebook_title": nb["title"] if nb else None})
             for f in a["findings"]:
                 findings.append({**common, "kind": f["kind"], "statement": f["statement"]})
-    return {"dandisets": dandisets, "claims": claims, "findings": findings}
+    return {"datasets": dandisets, "claims": claims, "findings": findings}
 
 
 # --- html pieces ---------------------------------------------------------------
@@ -583,11 +635,11 @@ def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
     if o.get("kind") == "link":
         tags += '<span class="tag">checks the link to the paper’s data</span>'
     elif o.get("data") == "with_inputs":
-        tags += '<span class="tag">uses data from outside the dandiset</span>'
+        tags += '<span class="tag">uses data from outside the dataset</span>'
     elif o.get("data") == "elsewhere":
         tags += f'<span class="tag">data in {e(o.get("where") or "another archive")}</span>'
     elif o.get("data") == "with_labels":
-        tags += '<span class="tag">names its codes from outside the dandiset</span>'
+        tags += '<span class="tag">names its codes from outside the dataset</span>'
     if o.get("proposed"):
         tags += (f'<span class="tag">change to {e(OUTCOMES[o["proposed"]["outcome"]][0].lower())} '
                  f'proposed</span>')
@@ -664,7 +716,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
           description: str = SITE_DESCRIPTION, structured: dict | None = None) -> str:
     r = rows_cache(data)
     tabs = [("overview", "Overview", root or "./", None),
-            ("dandisets", "Dandisets", f"{root}dandisets/", len({a["dandiset"] for a in data["attempts"]})),
+            ("datasets", "Datasets", f"{root}datasets/", len({a["key"] for a in data["attempts"]})),
             ("pipeline", "Pipeline", f"{root}pipeline/", None),
             ("about", "About", f"{root}about/", None)]
     nav = ""
@@ -695,7 +747,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <footer>Generated {e(data["generated"][:10])} from the registry's files ·
 <a href="{root}registry.json">Data as JSON</a> · <a href="{REPO_URL}">Repository</a> ·
 <a href="{REPO_URL}/blob/main/docs/design.md">How it works</a>. Outcomes describe what one attempt could reproduce from
-the data in the dandiset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
+the data in the dataset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
 a judgement of the paper.</footer>
 </div>
 {THEME_JS}
@@ -720,9 +772,9 @@ def caution_block() -> str:
     return f'''<div class="caution" id="caution">
   <p class="lead"><strong>{CAUTION}</strong> It may be a failure of the attempt.</p>
   <div class="body">
-    <p>An outcome says what one attempt could recover from the data in a dandiset, with the methods available to it. A
+    <p>An outcome says what one attempt could recover from the data in a dataset, with the methods available to it. A
     “not reproduced” or “partially reproduced” outcome can come from a mistake or a limitation in the agent’s analysis,
-    from methods the paper does not describe fully, from data that is not in the dandiset, or from a dandiset that
+    from methods the paper does not describe fully, from data that is not in the dataset, or from a dataset that
     differs from what the paper analysed. “Blocked” means the claim could not be tested at all.</p>
     <p>Most attempts are made by AI agents. Where a page says so, the attempt has been checked by a second, independent
     agent, but neither is infallible. Every attempt links to its code, its reasoning and the ways its analysis differs
@@ -749,8 +801,8 @@ def breakdown(title: str, items: list[tuple[str, int, str]], more: str | None = 
 
 def attempt_row(a: dict, root: str) -> str:
     counts = outcome_counts(a)
-    page = f'{root}dandisets/{e(a["dandiset"])}/'
-    return (f'<div class="row drow"><div class="id"><a href="{page}">{e(a["dandiset"])}</a></div>'
+    page = f'{root}{page_of(a["key"])}'
+    return (f'<div class="row drow"><div class="id"><a href="{page}">{e(a["label"])}</a></div>'
             f'<div><p class="title"><a href="{page}">{e(a["entry_title"] or a["id"])}</a></p>'
             f'<div class="meta">{bar(counts, "Outcomes", "bar mini")}{legend(counts, compact=True)}</div></div>'
             f'<div class="right">{deprecated_badge() if a.get("deprecated") else tier_badge(a["tier"])}'
@@ -758,7 +810,7 @@ def attempt_row(a: dict, root: str) -> str:
 
 
 PROGRESS_METRICS = {
-    "dandisets": "Dandisets attempted",
+    "datasets": "Datasets attempted",
     "papers": "Papers",
     "attempts": "Attempts",
     "claims": "Claims tested",
@@ -767,13 +819,13 @@ PROGRESS_METRICS = {
 
 
 def progress_data(data: dict) -> dict:
-    """Daily counts for the overview's dashboard, for all dandisets and for CatalystNeuro conversions.
+    """Daily counts for the overview's dashboard, for all datasets and for CatalystNeuro conversions.
 
     Each series is a list over the days of what was new that day: dandisets and papers on the date of their first attempt, attempts
     on their own date, and the claims (those resting on the dandiset) and findings of each dandiset's
     current attempts on the date of those attempts.
     """
-    ours = {t["dandiset"] for t in data["targets"] if t["catalystneuro"]}
+    ours = {t["key"] for t in data["targets"] if t["catalystneuro"]}
     current = [a for atts in current_attempts(data).values() for a in atts]
     if not data["attempts"]:
         return {"days": [], "series": {}}
@@ -786,17 +838,17 @@ def progress_data(data: dict) -> dict:
         first_dandiset: dict = {}
         first_paper: dict = {}
         for a in data["attempts"]:
-            if not keep(a["dandiset"]):
+            if not keep(a["key"]):
                 continue
             new[a["date"]]["attempts"] += 1
-            first_dandiset[a["dandiset"]] = min(first_dandiset.get(a["dandiset"], a["date"]), a["date"])
+            first_dandiset[a["key"]] = min(first_dandiset.get(a["key"], a["date"]), a["date"])
             first_paper[a["paper"]] = min(first_paper.get(a["paper"], a["date"]), a["date"])
         for day in first_dandiset.values():
-            new[day]["dandisets"] += 1
+            new[day]["datasets"] += 1
         for day in first_paper.values():
             new[day]["papers"] += 1
         for a in current:
-            if not keep(a["dandiset"]) or a.get("deprecated"):
+            if not keep(a["key"]) or a.get("deprecated"):
                 continue
             counts = outcome_counts(a)
             for k, n in counts.items():
@@ -819,7 +871,7 @@ def progress_panel(data: dict) -> str:
         return ""
     totals = {m: sum(p["series"]["all"][m]) for m in PROGRESS_METRICS}
     tiles = "".join(
-        f'<button class="tile metric" type="button" data-metric="{m}" aria-pressed="{str(m == "dandisets").lower()}">'
+        f'<button class="tile metric" type="button" data-metric="{m}" aria-pressed="{str(m == "datasets").lower()}">'
         f'<div class="n">{totals[m]:,}</div><div class="l">{e(label)}</div><div class="delta"></div></button>'
         for m, label in PROGRESS_METRICS.items())
     rows = "".join(
@@ -828,22 +880,22 @@ def progress_panel(data: dict) -> str:
     head = "".join(f"<th>{e(label)}</th>" for label in PROGRESS_METRICS.values())
     return f'''<section class="progress" aria-label="Progress over time">
   <div class="progress-bar">
-    <div class="segmented" role="group" aria-label="Which dandisets">
-      <button type="button" data-subset="all" aria-pressed="true">All dandisets</button>
+    <div class="segmented" role="group" aria-label="Which datasets">
+      <button type="button" data-subset="all" aria-pressed="true">All datasets</button>
       <button type="button" data-subset="catalystneuro" aria-pressed="false">Converted by CatalystNeuro</button>
     </div>
     <span class="muted small">Totals so far; the small line is the last 7 days.</span>
   </div>
   <div class="tiles metrics">{tiles}</div>
   <div class="grid2" style="margin-top:16px">
-    <div class="panel"><h2 id="progress-title">Dandisets attempted over time</h2>
+    <div class="panel"><h2 id="progress-title">Datasets attempted over time</h2>
       <p class="small muted" style="margin:0">Running total, by day.</p>
       <div class="chart" id="progress-line"></div></div>
     <div class="panel"><h2>Outcomes of claims tested, by day</h2>
-      <p class="small muted" style="margin:0">Claims that rest on the dandiset, on the date of their attempt.</p>
+      <p class="small muted" style="margin:0">Claims that rest on the dataset, on the date of their attempt.</p>
       <div class="chart" id="progress-outcomes"></div><div id="progress-legend"></div></div>
   </div>
-  <details class="table-view panel"><summary>Table: new each day, all dandisets</summary>
+  <details class="table-view panel"><summary>Table: new each day, all datasets</summary>
     <div class="scroll"><table><thead><tr><th>Date</th>{head}</tr></thead><tbody>{rows}</tbody></table></div>
   </details>
   <script type="application/json" id="progress-data">{json.dumps(p, separators=(",", ":"))}</script>
@@ -859,18 +911,18 @@ def page_overview(data: dict) -> str:
     in_queue = data["queue_counts"]["with_a_paper"]
     verified = sum(1 for atts in current.values() if weakest_tier(atts) != "runs")
     tiles = [
-        (f'{len(current):,} <span class="of">of {in_queue}</span>', "dandisets attempted", "dandisets/?status=attempted"),
-        (f"{n_claims:,}", "claims attempted", "dandisets/?status=attempted"),
-        (f"{verified:,}", "dandisets independently verified",
-         "dandisets/?tier=agent_verified,human_verified,author_endorsed"),
-        (f'{len(r["findings"]):,}', "findings about the data", "dandisets/?status=attempted"),
+        (f'{len(current):,} <span class="of">of {in_queue}</span>', "datasets attempted", "datasets/?status=attempted"),
+        (f"{n_claims:,}", "claims attempted", "datasets/?status=attempted"),
+        (f"{verified:,}", "datasets independently verified",
+         "datasets/?tier=agent_verified,human_verified,author_endorsed"),
+        (f'{len(r["findings"]):,}', "findings about the data", "datasets/?status=attempted"),
     ]
     tile_html = "".join(f'<a class="tile" href="{href}"><div class="n">{n}</div><div class="l">{e(label)}</div></a>'
                         for n, label, href in tiles)
 
     if n_claims:
-        outcomes = (bar(counts, f"Outcomes of {n_claims} claims", href=lambda k: f"dandisets/?has={k}")
-                    + legend(counts, href=lambda k: f"dandisets/?has={k}"))
+        outcomes = (bar(counts, f"Outcomes of {n_claims} claims", href=lambda k: f"datasets/?has={k}")
+                    + legend(counts, href=lambda k: f"datasets/?has={k}"))
     else:
         outcomes = '<p class="muted">No claims attempted yet.</p>'
 
@@ -882,8 +934,8 @@ def page_overview(data: dict) -> str:
     for t, c in sorted(by_technique.items(), key=lambda kv: -sum(kv[1].values()))[:8]:
         label = "Not stated" if t == "(none)" else t
         technique_rows += (
-            f'<a class="label" href="dandisets/?status=attempted&technique={e(t)}">{e(label)}</a>'
-            + bar(c, f"{label}: {sum(c.values())} claims", href=lambda k, t=t: f"dandisets/?technique={t}&has={k}")
+            f'<a class="label" href="datasets/?status=attempted&technique={e(t)}">{e(label)}</a>'
+            + bar(c, f"{label}: {sum(c.values())} claims", href=lambda k, t=t: f"datasets/?technique={t}&has={k}")
             + f'<span class="num">{sum(c.values()):,}</span>')
     technique_panel = (f'<div class="panel"><h2>Outcomes by technique</h2><div class="rows">{technique_rows}</div></div>'
                        if technique_rows else "")
@@ -906,20 +958,20 @@ def page_overview(data: dict) -> str:
     panels = "".join([
         technique_panel,
         breakdown("Why claims could not be tested",
-                  ordered(blocked, BLOCKED_BY, lambda k: f"dandisets/?blocked_by={k}"),
-                  "dandisets/?has=blocked"),
-        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"dandisets/?found={k}"),
-                  "dandisets/?status=attempted"),
-        breakdown("Verification of attempted dandisets",
-                  ordered(tiers, TIERS, lambda k: f"dandisets/?status=attempted&tier={k}"),
-                  "dandisets/?status=attempted"),
+                  ordered(blocked, BLOCKED_BY, lambda k: f"datasets/?blocked_by={k}"),
+                  "datasets/?has=blocked"),
+        breakdown("Findings about the data", ordered(kinds, FINDING_KINDS, lambda k: f"datasets/?found={k}"),
+                  "datasets/?status=attempted"),
+        breakdown("Verification of attempted datasets",
+                  ordered(tiers, TIERS, lambda k: f"datasets/?status=attempted&tier={k}"),
+                  "datasets/?status=attempted"),
     ])
 
-    recent = sorted(attempts, key=lambda a: (a["date"], a["dandiset"]), reverse=True)[:6]
+    recent = sorted(attempts, key=lambda a: (a["date"], a["key"]), reverse=True)[:6]
     recent_html = "".join(attempt_row(a, "") for a in recent) or '<p class="empty">No attempts yet.</p>'
 
     dashboard = progress_panel(data)
-    redirect = json.dumps({a["id"]: a["dandiset"] for a in data["attempts"]})
+    redirect = json.dumps({a["id"]: a["key"] for a in data["attempts"]})
     body = f'''<header class="page" id="top">
   <h1>Can the findings of a paper be reproduced from its open data?</h1>
   <p class="lede">AI agents try to reproduce the key findings of papers from their open data on the
@@ -930,18 +982,18 @@ def page_overview(data: dict) -> str:
 <main>
   {dashboard}
   <div class="panel">
-    <h2>Outcomes of the {n_claims:,} claims that rest on the dandiset alone</h2>
+    <h2>Outcomes of the {n_claims:,} claims that rest on the dataset alone</h2>
     {outcomes}{outside_note(attempts)}
     {caution_block()}
   </div>
   <div class="grid2" style="margin-top:16px">{panels}</div>
   <div class="panel" style="padding:0">
-    <h2 style="padding:18px 20px 0"><a class="more" href="dandisets/?status=attempted">See all</a>Latest attempts</h2>
+    <h2 style="padding:18px 20px 0"><a class="more" href="datasets/?status=attempted">See all</a>Latest attempts</h2>
     <div class="results" style="border:0;border-radius:0 0 10px 10px">{recent_html}</div>
   </div>
 </main>'''
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
-               'if(h&&m[h[1]])location.replace("dandisets/"+m[h[1]]+"/");})();</script>'
+               'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
                + ('<script src="assets/progress.js"></script>' if dashboard else ""))
     structured = {
         "@context": "https://schema.org", "@type": "WebSite", "name": "Reproduction registry",
@@ -954,13 +1006,13 @@ def page_overview(data: dict) -> str:
 
 ABOUT_STEPS = [
     ("Choose a target",
-     "The queue holds every public dandiset on the DANDI Archive whose metadata names a paper. Dandisets converted "
+     "The queue holds every public dataset whose metadata names a paper; so far all come from the DANDI Archive, the only archive the registry reads yet. Datasets converted "
      "by CatalystNeuro go first."),
     ("Write down the claims",
      "An author agent reads the paper and records its key findings as claims, each with the numbers it rests on, a "
      "tolerance, and the test that will decide it. The claims are written before any analysis is run."),
     ("Check the data and test each claim",
-     "The author checks the dandiset against its own description, then writes a notebook that streams the data from "
+     "The author checks the dataset against its own description, then writes a notebook that streams the data from "
      "the archive and tests each claim. Every claim gets an outcome: reproduced, partially reproduced, not reproduced, "
      "or blocked, with the reason. What the author learns about the data along the way is recorded as findings."),
     ("First verification",
@@ -1024,7 +1076,7 @@ def page_pipeline(data: dict) -> str:
                    + "</div></th>" for key, label in PIPELINE_STEPS)
     body = ""
     for r in rows:
-        name = (f'<a href="{root}{e(r["page"])}">{e(r["dandiset"])}</a>' if r["page"] else e(r["dandiset"]))
+        name = (f'<a href="{root}{e(r["page"])}">{e(r["dataset"])}</a>' if r["page"] else e(r["dataset"]))
         cells = "".join(f'<td class="ps {e(r["state"][key][0])}" title="{e(r["state"][key][0])}">'
                         f'{e(r["state"][key][1])}</td>' for key, _ in PIPELINE_STEPS)
         body += (f'<tr data-waiting="{"1" if r["waiting"] else "0"}"><td>{name}</td>'
@@ -1049,7 +1101,7 @@ def page_pipeline(data: dict) -> str:
 <p style="margin-top:16px"><label class="small"><input type="checkbox" id="only-waiting"> Only targets waiting on a
 person</label></p>
 <div class="panel pipeline-wrap"><table class="pipeline">
-<thead><tr><th>Dandiset</th><th>Name</th>{head}<th>Next</th></tr></thead>
+<thead><tr><th>Dataset</th><th>Name</th>{head}<th>Next</th></tr></thead>
 <tbody>{body}</tbody></table></div></main>
 <script>
 (function(){{var box=document.getElementById("only-waiting");if(!box)return;
@@ -1080,12 +1132,12 @@ def page_about(data: dict) -> str:
       be read afterwards in the <a href="{REPO_URL}/tree/main/transcripts">transcripts</a> and the
       <a href="{REPO_URL}/actions">agent runs</a>.</p></div>
     <div class="panel"><h2>Reading an outcome</h2>
-      <p>An outcome says what one attempt could recover from the data in a dandiset, with the methods available to it.
+      <p>An outcome says what one attempt could recover from the data in a dataset, with the methods available to it.
       A failure to reproduce may be a failure of the attempt, and is not a finding that the paper is wrong. Claims that
-      also use data from outside the dandiset, or that rest on data the paper deposited in another archive, are counted
+      also use data from outside the dataset, or that rest on data the paper deposited in another archive, are counted
       apart. <a href="{root}#caution">More on reading outcomes</a></p></div>
     <div class="panel"><h2>Repeat attempts</h2>
-      <p>When a dandiset changes, for example after its data are corrected, or when the protocol changes, a new attempt
+      <p>When a dataset changes, for example after its data are corrected, or when the protocol changes, a new attempt
       can be made on the same paper. The author agent then reports, for each earlier finding, whether it is fixed,
       partly fixed or still present. Earlier attempts stay in the record.</p></div>
     <div class="panel"><h2>Disagreeing with an attempt</h2>
@@ -1100,15 +1152,15 @@ def page_about(data: dict) -> str:
 
 
 LISTS = {
-    "dandisets": {
-        "title": "Dandisets", "noun": "dandisets", "data": "data/dandisets.json",
-        "intro": "Every public dandiset on DANDI whose metadata names a paper. Attempted ones open a page with the "
+    "datasets": {
+        "title": "Datasets", "noun": "datasets", "data": "data/datasets.json",
+        "intro": "Every public dataset whose metadata names a paper, so far all on the DANDI Archive. Attempted ones open a page with the "
                  "claims tested, what was found about the data, and the executed notebook.",
         "facets": [("status", "Status"), ("has", "Has a claim that is"), ("blocked_by", "Has a claim blocked by"),
                    ("tier", "Verification"), ("found", "Findings about the data"),
                    ("converted", "Converted by"), ("technique", "Technique"), ("species", "Species")],
-        "sorts": [("-date", "Most recently attempted"), ("id", "Dandiset number"),
-                  ("-id", "Dandiset number, newest first"), ("-failures", "Most claims not reproduced"),
+        "sorts": [("-date", "Most recently attempted"), ("id", "Identifier"),
+                  ("-id", "Identifier, newest first"), ("-failures", "Most claims not reproduced"),
                   ("size_gb", "Smallest"), ("-size_gb", "Largest"), ("paper_title", "Paper title")],
         "csv": None,
     },
@@ -1214,7 +1266,7 @@ def notebooks_panel(data: dict, dandiset: str, root: str) -> tuple[str, int]:
     entries = entries_for(data, dandiset)
     count = sum(len(en["notebooks"]) for en in entries)
     if not entries:
-        return '<p class="muted" style="margin-top:14px">No notebooks use this dandiset yet.</p>', 0
+        return '<p class="muted" style="margin-top:14px">No notebooks use this dataset yet.</p>', 0
     out = ""
     for en in entries:
         items = ""
@@ -1227,8 +1279,8 @@ def notebooks_panel(data: dict, dandiset: str, root: str) -> tuple[str, int]:
             items += (f'<li style="grid-template-columns:1fr max-content"><span><strong>{e(nb["title"])}</strong><br>'
                       f'<span class="muted small">{e(nb["path"])}</span></span>'
                       f'<span>{" · ".join(links) or "Not yet executed"}</span></li>')
-        others = [d for d in en["dandisets"] if d != dandiset]
-        also = (" Also uses " + ", ".join(f"dandiset {e(d)}" for d in others) + ".") if others else ""
+        others = [d for d in en["datasets"] if d != dandiset]
+        also = (" Also uses " + ", ".join(e(dataset_label(d)) for d in others) + ".") if others else ""
         built_on = (" Builds on " + ", ".join(e(x) for x in en["derived_from"]) + ".") if en["derived_from"] else ""
         code = ("" if data["demo"] else
                 f' <a href="{REPO_URL}/tree/main/entries/{e(en["name"])}">All files</a>')
@@ -1243,7 +1295,7 @@ def dandiset_title(dandiset: str, atts: list[dict]) -> str:
     """The page title: the paper when there is one, then the dandiset."""
     titles = {a["paper_title"] for a in atts if a.get("paper_title")}
     paper = titles.pop() if len(titles) == 1 else None
-    return f"{paper} (DANDI:{dandiset}) · Reproduction registry" if paper else f"DANDI:{dandiset} · Reproduction registry"
+    return f"{paper} ({dataset_label(dandiset)}) · Reproduction registry" if paper else f"{dataset_label(dandiset)} · Reproduction registry"
 
 
 def dandiset_description(dandiset: str, atts: list[dict]) -> str:
@@ -1251,24 +1303,24 @@ def dandiset_description(dandiset: str, atts: list[dict]) -> str:
     counts = outcome_counts(atts)
     n, findings = sum(counts.values()), sum(len(a["findings"]) for a in atts)
     parts = [f"{counts[k]:,} {OUTCOMES[k][0].lower()}" for k in OUTCOMES if counts[k]]
-    return (f"An attempt to reproduce the findings of a paper from dandiset {dandiset} on the DANDI Archive: "
+    return (f"An attempt to reproduce the findings of a paper from dataset {dataset_label(dandiset)} on {archive_name(dandiset)}: "
             f"{n:,} claims tested ({', '.join(parts)}) and {findings:,} findings about the data.")
 
 
 def earlier_attempts(data: dict, dandiset: str) -> list[dict]:
     """The dandiset's attempts that a later attempt on the same paper replaced, oldest first."""
     current = current_attempts(data).get(dandiset, [])
-    return sorted((a for a in data["attempts"] if a["dandiset"] == dandiset and a not in current),
+    return sorted((a for a in data["attempts"] if a["key"] == dandiset and a not in current),
                   key=lambda a: (a["date"], a["id"]))
 
 
 def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str:
     """The dandiset's page, from its current attempts; or, given an earlier attempt, that attempt's page."""
-    root = "../../../" if attempt else "../../"
+    root = "../../../../" if attempt else "../../../"
     current_atts = current_attempts(data)[dandiset]
     atts = [attempt] if attempt else current_atts
     earlier = [a for a in earlier_attempts(data, dandiset) if a is not attempt]
-    target = next((t for t in data["targets"] if t["dandiset"] == dandiset), None)
+    target = next((t for t in data["targets"] if t["key"] == dandiset), None)
     counts = outcome_counts(atts)
     n = sum(counts.values())
     order = {"not_reproduced": 0, "partially_reproduced": 1, "reproduced": 2}
@@ -1309,7 +1361,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
 
     all_findings = [f for a in atts for f in a["findings"]]
     findings_html = "".join(
-        f'<li><span><a class="kind" href="{root}dandisets/?found={e(f["kind"])}">'
+        f'<li><span><a class="kind" href="{root}datasets/?found={e(f["kind"])}">'
         f'{e(FINDING_KINDS.get(f["kind"], f["kind"]))}</a></span><span>{e(f["statement"])}</span></li>'
         for f in all_findings) or '<li><span></span><span class="muted">None recorded.</span></li>'
 
@@ -1360,7 +1412,11 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                                                      f'{e(a.get("paper_title") or a["paper"])}</a>'),
                  ("Date", e(a["date"])),
                  ("Made by", ("An agent" if a["kind"] == "agent" else "A person") + f', run by {e(a["accountable"])}'),
-                 ("Dandiset version", e(a["dandiset_version"] or "not recorded"))]
+                 ("Dataset", f'<a href="{e(archive_url(a["key"]))}">{e(a["label"])}</a>'),
+                 ("Version", e(a["dataset_version"] or "not recorded")
+                  + (f' (<a href="https://doi.org/{e(a["dataset"]["doi"])}">doi:{e(a["dataset"]["doi"])}</a>)'
+                     if a["dataset"].get("doi") else "")
+                  + (f', modified {e(a["dataset"]["modified"])}' if a["dataset"].get("modified") else ""))]
         if a["kind"] == "agent":
             rows_ += [("Harness", e(agent.get("harness", "not recorded"))),
                       ("Model", e(agent.get("model", "not recorded"))),
@@ -1368,9 +1424,10 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
         provenance_html += ('<dl class="kv" style="margin-top:14px">'
                             + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows_) + "</dl>")
     folder = f'{dandiset}/attempt-{attempt["id"].rsplit("-", 1)[1]}' if attempt else dandiset
+    repo_folder = f'{dir_of(dandiset)}/attempt-{attempt["id"].rsplit("-", 1)[1]}' if attempt else dir_of(dandiset)
     runs = data.get("transcripts", {}).get(folder, [])
     if runs and not data["demo"]:
-        items = "".join(f'<li><a href="{REPO_URL}/blob/main/transcripts/{e(folder)}/{e(name)}">{e(name)}</a></li>'
+        items = "".join(f'<li><a href="{REPO_URL}/blob/main/transcripts/{e(repo_folder)}/{e(name)}">{e(name)}</a></li>'
                         for name in runs)
         provenance_html += ('<h3 style="margin-top:18px">Transcripts of the agent runs</h3>'
                             '<p class="sub small">Each run’s prompt, messages and tool calls, with long output cut '
@@ -1379,50 +1436,51 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
     if earlier:
         provenance_html += ('<p class="sub small" style="margin-top:14px">'
                             + ("Other earlier attempts: " if attempt else "Earlier attempts: ") + ", ".join(
-            f'<a href="{root}dandisets/{e(dandiset)}/{e(x["id"])}/">{e(x["id"])}</a> ({e(x["date"])})'
+            f'<a href="{root}{page_of(dandiset)}{e(x["id"])}/">{e(x["id"])}</a> ({e(x["date"])})'
             for x in earlier) + "</p>")
 
-    actions = [f'<a href="https://dandiarchive.org/dandiset/{e(dandiset)}" target="_blank" rel="noopener">View on DANDI</a>']
+    actions = [f'<a href="{e(archive_url(dandiset))}" target="_blank" rel="noopener">View on '
+               f'{e(ARCHIVES.get(split_key(dandiset)[0], {}).get("label", split_key(dandiset)[0]))}</a>']
     actions += [f'<a href="https://doi.org/{e(a["paper"])}">Paper</a>' for a in atts] if len(atts) == 1 else []
-    actions += [f'<a href="{root}api/dandiset/{e(dandiset)}.json">JSON</a>',
+    actions += [f'<a href="{root}api/{page_of(dandiset).rstrip("/")}.json">JSON</a>',
                 f'<a href="{root}#caution">How to read outcomes</a>']
 
     tags = ""
     if target:
         tags = " ".join(
-            [f'<a class="tag" href="{root}dandisets/?technique={e(t)}">{e(t)}</a>' for t in target["technique"]]
-            + [f'<a class="tag" href="{root}dandisets/?species={e(s)}">{e(s)}</a>' for s in target["species"]]
-            + ([f'<a class="tag" href="{root}dandisets/?converted=catalystneuro" '
+            [f'<a class="tag" href="{root}datasets/?technique={e(t)}">{e(t)}</a>' for t in target["technique"]]
+            + [f'<a class="tag" href="{root}datasets/?species={e(s)}">{e(s)}</a>' for s in target["species"]]
+            + ([f'<a class="tag" href="{root}datasets/?converted=catalystneuro" '
                 f'title="{e("; ".join(target["catalystneuro"]))}">Converted by CatalystNeuro</a>']
                if target["catalystneuro"] else [])
             + [f'<span class="tag" title="{target["size_gb"]:,.1f} GB">{human_size(target["size_gb"])}</span>',
                f'<span class="tag" title="{target["files"]:,} files">{human_count(target["files"], "file")}</span>'])
 
     current = current_attempts(data)
-    same_paper = [t for t in data["targets"] if target and t["dandiset"] != dandiset
+    same_paper = [t for t in data["targets"] if target and t["key"] != dandiset
                   and set(t["papers"]) & set(target["papers"])]
     related = ""
     if same_paper:
         links = ""
         for t in same_paper:
-            if t["dandiset"] in current:
-                links += f'<a href="{root}dandisets/{e(t["dandiset"])}/">Dandiset {e(t["dandiset"])}</a> '
+            if t["key"] in current:
+                links += f'<a href="{root}{page_of(t["key"])}">{e(t["label"])}</a> '
             else:
-                links += (f'<span><a href="https://dandiarchive.org/dandiset/{e(t["dandiset"])}">Dandiset '
-                          f'{e(t["dandiset"])}</a> <span class="muted">(not attempted)</span></span> ')
-        related = (f'<div class="panel" style="margin-top:28px"><h2>Other dandisets that name the same paper</h2>'
+                links += (f'<span><a href="{e(archive_url(t["key"]))}">{e(t["label"])}</a> '
+                          f'<span class="muted">(not attempted)</span></span> ')
+        related = (f'<div class="panel" style="margin-top:28px"><h2>Other datasets that name the same paper</h2>'
                    f'<div class="related">{links}</div></div>')
     ids = sorted(current)
     i = ids.index(dandiset)
-    prev_link = f'<a href="{root}dandisets/{ids[i - 1]}/">← Dandiset {ids[i - 1]}</a>' if i > 0 else "<span></span>"
-    next_link = (f'<a href="{root}dandisets/{ids[i + 1]}/">Dandiset {ids[i + 1]} →</a>' if i < len(ids) - 1
+    prev_link = f'<a href="{root}{page_of(ids[i - 1])}">← {dataset_label(ids[i - 1])}</a>' if i > 0 else "<span></span>"
+    next_link = (f'<a href="{root}{page_of(ids[i + 1])}">{dataset_label(ids[i + 1])} →</a>' if i < len(ids) - 1
                  else "<span></span>")
     superseded = ""
     if attempt:
         later = next(a["id"] for a in current_atts if a["paper"] == attempt["paper"])
         same_entry = any(a["entry"] == attempt["entry"] for a in current_atts)
         superseded = (f'<p class="deprecated"><strong>An earlier attempt.</strong> Attempt {e(later)} replaced it; '
-                      f'<a href="{root}dandisets/{e(dandiset)}/">the dandiset’s page</a> shows the current '
+                      f'<a href="{root}{page_of(dandiset)}">the dataset’s page</a> shows the current '
                       f'outcomes.' + (" Its notebooks link to the entry as it is now, which the later attempt "
                                       "updated; the attempt record is as it was." if same_entry else "") + "</p>")
 
@@ -1436,12 +1494,12 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
 
     name = (target or {}).get("name") or atts[-1]["entry_title"] or dandiset
     tier = weakest_tier(atts)
-    tier_link = f'{root}dandisets/?status=attempted&tier={tier}'
-    crumb = (f'<a href="{root}dandisets/{e(dandiset)}/">{e(dandiset)}</a> / {e(attempt["id"])}' if attempt
-             else e(dandiset))
+    tier_link = f'{root}datasets/?status=attempted&tier={tier}'
+    crumb = (f'<a href="{root}{page_of(dandiset)}">{e(dataset_label(dandiset))}</a> / {e(attempt["id"])}' if attempt
+             else e(dataset_label(dandiset)))
     body = f'''<header class="page">
-  <p class="crumbs"><a href="{root}dandisets/">Dandisets</a> / {crumb}</p>
-  <div class="dhead"><h1>Dandiset {e(dandiset)}</h1>{tier_badge(tier, tier_link)}</div>
+  <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {crumb}</p>
+  <div class="dhead"><h1>{e(dataset_label(dandiset))}</h1>{tier_badge(tier, tier_link)}</div>
   <p class="sub">{e(name)}</p>
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
@@ -1456,12 +1514,12 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
     {claims_html}
     <nav class="pager" id="claim-pager" aria-label="Pages of claims"></nav></section>
   <section class="tabpanel" id="findings"><h2>Findings about the data</h2>
-    <p class="sub small" style="margin-top:12px">What attempts found about the dandiset itself, for its owner and the
+    <p class="sub small" style="margin-top:12px">What attempts found about the dataset itself, for its owner and the
     archive.</p>
     <ul class="findings">{findings_html}</ul></section>
   <section class="tabpanel" id="notebooks"><h2>Notebooks</h2>
-    <p class="sub small" style="margin-top:12px">Every registered entry that uses this dandiset. An entry can hold
-    several notebooks, and can use more than one dandiset.</p>
+    <p class="sub small" style="margin-top:12px">Every registered entry that uses this dataset. An entry can hold
+    several notebooks, and can use more than one dataset.</p>
     {notebooks_html}</section>
   <section class="tabpanel" id="verification"><h2>Verification</h2>{verification_html}</section>
   <section class="tabpanel" id="differences"><h2>Method differences</h2>
@@ -1472,9 +1530,9 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
   {related}
   <div class="prevnext">{prev_link}{next_link}</div>
 </main>'''
-    path = f"dandisets/{dandiset}/{attempt['id']}/" if attempt else f"dandisets/{dandiset}/"
+    path = f"{page_of(dandiset)}{attempt['id']}/" if attempt else page_of(dandiset)
     title = dandiset_title(dandiset, atts)
-    return shell(data, f"{attempt['id']} (earlier attempt) · {title}" if attempt else title, root, "dandisets",
+    return shell(data, f"{attempt['id']} (earlier attempt) · {title}" if attempt else title, root, "datasets",
                  body, CLAIMS_JS + TABS_JS, path=path, description=dandiset_description(dandiset, atts))
 
 
@@ -1484,7 +1542,7 @@ def build(data: dict, output: Path) -> None:
     r = rows_cache(data)
     output.mkdir(parents=True, exist_ok=True)
     shutil.copytree(ASSETS, output / "assets", dirs_exist_ok=True)
-    for sub in ("dandisets", "data", "api/dandiset"):
+    for sub in ("datasets", "dandisets", "data", "api/dandiset"):
         (output / sub).mkdir(parents=True, exist_ok=True)
     (output / "index.html").write_text(page_overview(data))
     (output / "about").mkdir(exist_ok=True)
@@ -1495,31 +1553,54 @@ def build(data: dict, output: Path) -> None:
     for kind in LISTS:
         (output / kind / "index.html").write_text(page_list(data, kind))
         (output / "data" / f"{kind}.json").write_text(json.dumps(r[kind], separators=(",", ":")) + "\n")
-    for dandiset, attempts in current_attempts(data).items():
-        page = output / "dandisets" / dandiset
-        page.mkdir(exist_ok=True)
-        (page / "index.html").write_text(page_dandiset(data, dandiset))
-        for a in earlier_attempts(data, dandiset):
+    for key, attempts in current_attempts(data).items():
+        page = output / page_of(key)
+        page.mkdir(parents=True, exist_ok=True)
+        (page / "index.html").write_text(page_dandiset(data, key))
+        for a in earlier_attempts(data, key):
             (page / a["id"]).mkdir(exist_ok=True)
-            (page / a["id"] / "index.html").write_text(page_dandiset(data, dandiset, a))
-        (output / "api" / "dandiset" / f"{dandiset}.json").write_text(json.dumps({
-            "dandiset": dandiset, "page": f"dandisets/{dandiset}/", "generated": data["generated"],
+            (page / a["id"] / "index.html").write_text(page_dandiset(data, key, a))
+        api = json.dumps({
+            "dataset": {"archive": split_key(key)[0], "id": split_key(key)[1], "label": dataset_label(key)},
+            "page": page_of(key), "generated": data["generated"],
             "caution": CAUTION + " It may be a failure of the attempt.",
             "outcome_counts": outcome_counts(attempts),
             "outcome_counts_with_outside_data": outcome_counts(attempts, "with_inputs"),
             "outcome_counts_elsewhere": outcome_counts(attempts, "elsewhere"),
             "outcome_counts_links": outcome_counts(attempts, "link"), "attempts": attempts,
-            "entries": entries_for(data, dandiset),
-        }, indent=1) + "\n")
+            "entries": entries_for(data, key),
+        }, indent=1) + "\n"
+        (output / "api" / page_of(key).rstrip("/")).parent.mkdir(parents=True, exist_ok=True)
+        (output / "api" / f'{page_of(key).rstrip("/")}.json').write_text(api)
+        # The DANDI pages and API files were at dandisets/<id>/ before; links to them are kept working.
+        if split_key(key)[0] == "dandi":
+            old = output / "dandisets" / split_key(key)[1]
+            for sub, target in [("", page_of(key))] + [(a["id"] + "/", page_of(key) + a["id"] + "/")
+                                                       for a in earlier_attempts(data, key)]:
+                (old / sub).mkdir(parents=True, exist_ok=True)
+                (old / sub / "index.html").write_text(redirect_page(target, "../../" + ("../" if sub else "")))
+            (output / "api" / "dandiset" / f"{split_key(key)[1]}.json").write_text(api)
+    (output / "dandisets" / "index.html").write_text(redirect_page("datasets/", "../"))
+    (output / "data" / "dandisets.json").write_text((output / "data" / "datasets.json").read_text())
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
     (output / "sitemap.xml").write_text(sitemap(data))
 
 
+def redirect_page(target: str, root: str) -> str:
+    """A page that sends the reader on to where its content moved, keeping the query and the anchor."""
+    url = e(root + target)
+    return (f'<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Moved</title>'
+            f'<link rel="canonical" href="{e(SITE_URL + target)}"><meta name="robots" content="noindex">'
+            f'<meta http-equiv="refresh" content="0; url={url}">'
+            f'<script>location.replace("{url}"+location.search+location.hash)</script></head>'
+            f'<body><p>This page moved to <a href="{url}">{e(target)}</a>.</p></body></html>\n')
+
+
 def sitemap(data: dict) -> str:
-    """Every page of the site, for search engines; each dandiset page dated by its latest attempt."""
+    """Every page of the site, for search engines; each dataset page dated by its latest attempt."""
     pages = [("", data["generated"][:10]), ("about/", data["generated"][:10]), ("pipeline/", data["generated"][:10])]
     pages += [(f"{kind}/", data["generated"][:10]) for kind in LISTS]
-    pages += [(f"dandisets/{d}/", max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
+    pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
     urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
             f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')

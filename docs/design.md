@@ -163,16 +163,20 @@ The public site is static and is built from the files above by
 - **Overview:** headline numbers, outcomes overall and by technique, why claims
   were blocked, findings by kind, and verification. Every number and bar links
   to the matching filtered list.
-- **Dandisets:** a list of every target, with filters (status, outcomes of
+- **Datasets:** a list of every target, with filters (status, outcomes of
   its claims, why claims were blocked, verification, kinds of finding,
   technique, species), search, sorting and pagination. The view is kept in the
-  URL, so any filtered list can be linked. Each attempted dandiset links to
-  its findings.
-- **A page per attempted dandiset** at `dandisets/<id>/`, with tabs for claims,
-  findings, verification, method differences and provenance. It is complete
-  HTML and is the page an archive would link to. Each claim has its own anchor.
-- **`api/dandiset/<id>.json`:** the same results for one dandiset, for other
-  sites to fetch.
+  URL, so any filtered list can be linked. Each attempted dataset links to
+  its findings. A dataset is named by its archive and identifier, as
+  `DANDI:000003`.
+- **A page per attempted dataset** at `datasets/<archive>/<id>/`, with tabs
+  for claims, findings, verification, method differences and provenance. It is
+  complete HTML and is the page an archive would link to. Each claim has its
+  own anchor. The DANDI pages used to be at `dandisets/<id>/`, which now
+  redirects.
+- **`api/datasets/<archive>/<id>.json`:** the same results for one dataset,
+  for other sites to fetch (also at `api/dandiset/<id>.json` for DANDI, as
+  before).
 - **Executed notebooks** under `notebooks/`, from CI.
 
 ## Repository layout

@@ -1,4 +1,4 @@
-// One list component for the Dandisets, Claims and Findings pages.
+// One list component for the Datasets, Claims and Findings pages.
 //
 // The page embeds its configuration as JSON in #list-config:
 //   { kind, root, data, facets: [{key, label}], sorts: [{key, label}],
@@ -109,13 +109,13 @@
   const tags = (list) => (list || []).map((t) => `<span class="tag">${esc(t)}</span>`).join(' ');
 
   const render = {
-    dandisets(r) {
-      const href = r.page ? root + r.page : `https://dandiarchive.org/dandiset/${r.id}`;
+    datasets(r) {
+      const href = r.page ? root + r.page : r.url;
       const right = r.status === 'attempted'
         ? `${tier(r)}<span class="small muted">${esc(r.date)}</span>`
         : `<span class="tag">${esc(label('status', r.status))}</span>`;
       return `<div class="row drow">
-        <div class="id"><a href="${href}">${esc(r.id)}</a></div>
+        <div class="id"><a href="${href}">${esc(r.label)}</a></div>
         <div><p class="title"><a href="${href}">${esc(r.paper_title || r.name)}</a></p>
           <div class="meta">${tags(r.technique)} ${tags(r.species)}
             ${size(r.size_gb)} ${files(r.files)}
