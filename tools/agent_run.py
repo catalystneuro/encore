@@ -38,7 +38,7 @@ TEMPLATES = {"claims": "claims", "claims-check": "claims-check", "answer": "answ
              "verifier-3": "verifier-3", "author-revise-3": "author-revise-3",
              "recorder": "recorder"}   # role -> docs/agents/<name>.md
 ROLES = tuple(TEMPLATES)
-READER_ROLES = ("claims", "claims-check", "answer")   # the runs that read the paper (papers.yml)
+READER_ROLES = ("claims", "claims-check", "answer")   # the runs that write the claims file (papers.yml)
 
 
 def target(dandiset: str) -> dict:

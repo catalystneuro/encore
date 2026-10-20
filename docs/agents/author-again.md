@@ -1,6 +1,6 @@
 You are the author of a new attempt on dandiset {dandiset} in the reproduction registry, checked out in the current directory. Follow docs/protocol.md exactly; read it first. The dandiset already has an attempt, `{earlier}` (entry `entries/{entry}`, claims in `claims/{dandiset}/`), made on version {earlier_version} under protocol {earlier_protocol}. {why}
 
-Paper: doi:{paper}, "{title}". You do not have the paper and must not look it up: the claims file, which a reader wrote from the paper and a second reader checked, is its account. Stream the NWB files from the DANDI API; do not download them to disk.
+Paper: doi:{paper}, "{title}". The paper's full text is under `paper/`: read it to understand the claims. The claims file, which a reader wrote from the paper and a second reader checked, decides what is tested and how: do not change a claim's statement, expected values or criterion, and do not apply a method detail it lacks, even one the paper gives; ask, as step 1.6 of the Author section says. Stream the NWB files from the DANDI API; do not download them to disk.
 
 {version_rule}
 

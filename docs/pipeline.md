@@ -13,8 +13,8 @@ dandiset per step, and the dashboard's Pipeline page shows them.
 | 2 | Paper text | yes | script, and a person for closed papers | the paper store (below); `papers/manifest.yaml` |
 | 3 | Claims | yes | agent, `papers` environment | `claims/<dandiset>/<doi>.yaml` |
 | 4 | Claims check | yes | a second agent, `papers` environment | `checks` at the end of the claims file |
-| 5 | Attempt | no | agent (author) | the entry, the attempt record |
-| 6 | Verification | no | agents (verifier rounds, revisions) | the record's verifications |
+| 5 | Attempt | yes | agent (author), `papers` environment | the entry, the attempt record |
+| 6 | Verification | yes | agents (verifier rounds, revisions), `papers` environment | the record's verifications |
 | 7 | Questions | yes | a reader, `papers` environment | answers in `questions/<dandiset>.yaml`, and in the claims |
 | 8 | Confirmation | no | CI | executed notebooks, passing checks |
 | 9 | Record | no | agent (recorder) | README row, pilot notes; merged |
@@ -22,10 +22,11 @@ dandiset per step, and the dashboard's Pipeline page shows them.
 | 11 | Upkeep | depends | runner | deprecation; repeat attempts |
 
 Steps 3 and 4 fix every claim and its method from the paper before anyone
-analyses the data: the claims agent never sees the dandiset's contents, and the
-author never sees the paper. The author cannot change a claim's statement or
-method. When the claims file does not say something the attempt needs, the
-author does not choose it: it writes the question in
+analyses the data: the claims agent never sees the dandiset's contents. The
+author reads the paper to understand the claims, but cannot change a claim's
+statement or method. When the claims file does not say something the attempt
+needs, the author does not choose it, even when the paper gives it: it writes
+the question, citing the passage, in
 `questions/<dandiset>.yaml` and leaves the claim blocked as `methods_underspecified` or runs
 the readings the claim names. The question goes to step 7; once it is answered,
 the attempt resumes from the claims file.
@@ -35,10 +36,10 @@ the attempt resumes from the claims file.
 The papers are kept in a private repository, `catalystneuro/registry-papers`.
 Only jobs that declare the GitHub environment `papers` can read it: the
 environment holds a read-only deploy key for it and may be used only by
-workflows on `main`. Steps 3, 4 and 7 declare it; the attempt, verification and
-recorder jobs do not, and cannot read a paper. A paper job may commit only
-`claims/<dandiset>/` and `questions/<dandiset>.yaml`, and its transcript leaves out everything under `paper/`,
-as all transcripts do. Claims files quote the paper only in short passages.
+workflows on `main`. Every agent job declares it, and `tools/get_papers.sh`
+copies the dandiset's papers to `paper/` and deletes the key before the agent
+starts. Only steps 3, 4 and 7 may change the claims file; `paper/` is never
+committed, and every transcript leaves out everything under it. Claims files quote the paper only in short passages.
 
 ## The paper store
 

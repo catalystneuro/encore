@@ -6,12 +6,12 @@ run-name: "Paper run: ${{ inputs.dandiset }} ${{ inputs.role }}"
 # questions (`answer`). Started by hand from the Actions tab or with
 #   gh workflow run papers.yml -f dandiset=000147 -f role=claims
 #
-# These are the only runs that read the papers. The job runs in the `papers` environment, whose
-# deploy key reads the private paper store (catalystneuro/registry-papers); the environment can
-# be used only from main. Before the agent starts, the dandiset's papers are copied to paper/
-# and the key and the store's checkout are deleted. A run commits only claims/<dandiset>/, and
-# its transcript leaves out everything under paper/ (tools/transcript.py). The attempt's other
-# runs (attempt.yml) have no access to the papers.
+# These are the only runs that write the claims file. The job runs in the `papers` environment,
+# whose deploy key reads the private paper store (catalystneuro/registry-papers); the environment
+# can be used only from main. Before the agent starts, tools/get_papers.sh copies the dandiset's
+# papers to paper/ and deletes the key and the store's checkout. A run commits only
+# claims/<dandiset>/ and questions/<dandiset>.yaml, and its transcript leaves out everything under
+# paper/ (tools/transcript.py). The attempt's other runs (attempt.yml) read the papers the same way.
 #
 # Otherwise the same as attempt.yml: a fresh runner, the subscription token, credentials
 # stripped from the agent's commands, and a second job that commits to attempt/<dandiset>.
@@ -120,24 +120,8 @@ jobs:
 
       - name: Put the papers under paper/
         env:
-          KEY: ${{ secrets.PAPERS_DEPLOY_KEY }}
-          GIT_LFS_SKIP_SMUDGE: '1'
-        run: |
-          set -euo pipefail
-          key="$RUNNER_TEMP/papers_key"; store="$RUNNER_TEMP/store"
-          printf '%s\n' "$KEY" > "$key"; chmod 600 "$key"
-          export GIT_SSH_COMMAND="ssh -i $key -o IdentitiesOnly=yes -o StrictHostKeyChecking=accept-new"
-          git clone -q --depth 1 --filter=blob:none --sparse git@github.com:catalystneuro/registry-papers.git "$store"
-          git -C "$store" sparse-checkout set "$DANDISET"
-          git -C "$store" lfs pull --include "$DANDISET/*" || true
-          rm -f "$key"
-          if ! ls "$store/$DANDISET"/*.txt >/dev/null 2>&1; then
-            rm -rf "$store"
-            echo "::error::No full text for $DANDISET in the paper store: supply the paper (docs/pipeline.md)"; exit 1
-          fi
-          mkdir -p paper && cp "$store/$DANDISET"/* paper/ && rm -rf "$store"
-          ls -la paper
-          head -n 6 paper/*.txt
+          PAPERS_DEPLOY_KEY: ${{ secrets.PAPERS_DEPLOY_KEY }}
+        run: tools/get_papers.sh "$DANDISET" paper
 
       - name: Check the token, the permission mode and the agent's shell
         if: ${{ !inputs.papers_only }}

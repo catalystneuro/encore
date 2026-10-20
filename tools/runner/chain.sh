@@ -4,7 +4,7 @@
 #   tools/runner/chain.sh DANDISET [VERSION]
 #
 # Runs the roles of the attempt in GitHub Actions, one after another: the reader's claims and their
-# check (papers.yml, the only runs that read the paper), the author, the reader's answers to the
+# check (papers.yml, the only runs that write the claims file), the author, the reader's answers to the
 # author's questions and the author's run on them when there are questions, two verification rounds
 # and their revisions, and a third round when the last revision proposed changes. Then it records
 # and merges the attempt. A claims file whose check says it is not ready stops the chain, for a

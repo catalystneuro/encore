@@ -11,16 +11,17 @@ An attempt has three roles, each a separate run with a separate context:
 - The **reader** reads the paper and writes the claims file: every finding,
   and how each is to be tested, taken from the paper. A second reader checks
   it against the paper. Readers never see the dandiset's data.
-- The **author** tests the claims on the dandiset. The author never sees the
-  paper: the claims file is its only account of it.
+- The **author** tests the claims on the dandiset. It reads the paper to
+  understand the claims, but the claims file binds it: it cannot change a
+  claim, and it asks a reader for any method detail the file lacks.
 - The **verifier** checks the author's work and must not be the author.
 
 So every claim and its method are fixed from the paper before anyone analyses
-the data, and no method can come from the agent that runs the analysis.
+the data, and no method is chosen by the agent that runs the analysis.
 
 Reader runs are made with the [Paper run](../.github/workflows/papers.yml)
-workflow (roles `claims`, `claims-check` and `answer`), the only runs that can
-read the paper store. The other runs are made with the
+workflow (roles `claims`, `claims-check` and `answer`), the only runs that
+write the claims file. The other runs are made with the
 [Agent run](../.github/workflows/attempt.yml) workflow, one role at a time:
 `author`, `author-answers` when questions were answered, `verifier-1`,
 `author-revise-1`, `verifier-2`, `author-revise-2`, and, when the last of these
@@ -166,9 +167,11 @@ author treats the detail as open (step 3, on details none of the sources fix).
 
 ## Author
 
-You do not have the paper. The claims file is your account of it: its
-statements, quotes, sources, statistics and criteria. Do not change a claim's
-statement, expected values or criterion, and do not look the paper up.
+The workflow puts the paper under `paper/`, as for the reader. Read it to
+understand the claims, their data and their figures. The claims file still
+decides what is tested and how: do not change a claim's statement, expected
+values or criterion, and do not apply a method detail the claims file lacks,
+even one the paper gives. Ask for it (step 6).
 
 ### 1. Establish what can be tested
 
@@ -260,11 +263,12 @@ Do this before any analysis.
 
 6. Ask when the claims file does not say. When a claim needs something the
    claims file does not give (which trials, which subset, a window, a
-   threshold, what a measure is compared with), do not choose it. Add a
-   question to `questions/<dandiset>.yaml` (`claim`, `question`, and
-   why the answer could change the outcome), and test the claim under each
-   reading you can see, or block it as `methods_underspecified` until the
-   question is answered. A reader answers from the paper (reader, step 6), and
+   threshold, what a measure is compared with), do not choose it, even when
+   you find it in the paper. Add a question to `questions/<dandiset>.yaml`
+   (`claim`, `question`, the passage of the paper that bears on it if you
+   found one, and why the answer could change the outcome), and test the claim
+   under each reading you can see, the passage's among them, or block it as
+   `methods_underspecified` until the question is answered. A reader answers from the paper (reader, step 6), and
    a later run, `author-answers`, takes up the answers.
 
 ### 2. Check the data against its description
@@ -397,9 +401,10 @@ Do not verify your own attempt. Give the verifier:
 - the claims file.
 
 `python tools/entry.py handover entries/<name>` builds these in
-`executed/<name>/handover/` from the executed copy. The verifier, like the
-author, does not get the paper: it checks the analysis against the claims
-file, which a reader has already checked against the paper.
+`executed/<name>/handover/` from the executed copy. The verifier also gets the
+paper, under `paper/`, but checks the analysis against the claims file. A place
+where the claims file misreads the paper is reported, as a question for a
+reader; the author does not change the claim.
 
 After the first round, fix what it found, re-run, and hand over the full
 executed notebook for the second round. Record each round under
@@ -440,8 +445,9 @@ Be skeptical. Do not assume the analysis is right.
 
 ### Round 1: without the author's conclusions
 
-1. Read the notebook, the helper module and the claims file. You do not
-   have the paper; the claims file is its account.
+1. Read the notebook, the helper module and the claims file. The paper is
+   under `paper/`; the claims file decides what is tested and how, and a place
+   where it misreads the paper is reported, not corrected.
 2. Check the code: that every number derives from the loaded data; that
    every method choice is the one the claim's criterion gives, and none is
    the author's own; that selection, conditions and analysis windows follow

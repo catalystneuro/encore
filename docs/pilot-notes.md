@@ -4735,3 +4735,16 @@ The paper store started with 181 papers: 151 fetched (Europe PMC, PubMed
 Central, bioRxiv, eLife), 2 from arXiv, and 28 supplied by hand as PDFs,
 with supplements where the results rest on them. Which papers it holds, and which are missing, is in
 `papers/manifest.yaml`, without their text.
+
+The same day, before any attempt ran under it, the author and the verifiers
+were given the paper again. Hiding it was meant to let them run on a model
+without verified status, and to stop the author from trying readings of a
+method until one reproduced. The second is already covered by running every
+reading the paper allows; the first is untried, and the author's work is the
+part that most needs the strongest model. Without the paper, everything the
+claims file left out (a figure, the reason for a step) would have become a
+question and two more runs. The claims file still binds the author: it may not
+change a claim, and a method detail the file lacks, even one it finds in the
+paper, goes to a reader as a question, with the passage, while the attempt runs
+every reading, that one among them. The verifiers check the analysis against
+the claims file, and report where it misreads the paper.

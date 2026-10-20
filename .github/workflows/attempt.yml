@@ -13,6 +13,10 @@ run-name: "Agent run: ${{ inputs.dandiset }} ${{ inputs.role }}"
 # and strips credentials from the commands the agent runs. A verifier sees only
 # its materials: the checkout is deleted before it starts.
 #
+# The job runs in the `papers` environment (docs/pipeline.md): the author and the
+# verifiers get the dandiset's papers under paper/, which is never committed and
+# which their transcripts leave out. The claims file still decides what is tested.
+#
 # The second job, which runs no agent, commits what the run produced to the
 # branch attempt/<dandiset>: the author's changes, and the run's transcript and
 # final report under transcripts/<dandiset>/, cleaned by tools/transcript.py.
@@ -80,6 +84,7 @@ env:
 jobs:
   run:
     runs-on: ubuntu-latest
+    environment: papers
     timeout-minutes: 340
     outputs:
       started: ${{ steps.agent.outputs.started }}
@@ -121,7 +126,7 @@ jobs:
         run: |
           python tools/agent_run.py prompt "$ROLE" "$DANDISET" --model "$MODEL" ${VERSION:+--version "$VERSION"} > "$RUNNER_TEMP/prompt.md"
           # The workflow's own tools, copied before the agent can change the checkout.
-          cp tools/transcript.py tools/progress.py "$RUNNER_TEMP/"
+          cp tools/transcript.py tools/progress.py tools/get_papers.sh "$RUNNER_TEMP/"
 
       - name: Prepare the verifier's materials, and remove the repository
         if: startsWith(inputs.role, 'verifier')
@@ -133,6 +138,14 @@ jobs:
           python tools/agent_run.py package "$ROLE" "$DANDISET" "$RUNNER_TEMP/work"
           cd "$RUNNER_TEMP" && find "$GITHUB_WORKSPACE" -mindepth 1 -delete
           ls -la "$RUNNER_TEMP/work"
+
+      - name: Put the papers under paper/
+        if: inputs.role != 'recorder'
+        env:
+          PAPERS_DEPLOY_KEY: ${{ secrets.PAPERS_DEPLOY_KEY }}
+        run: |
+          if [[ "$ROLE" == verifier* ]]; then dest="$RUNNER_TEMP/work/paper"; else dest=paper; fi
+          "$RUNNER_TEMP/get_papers.sh" "$DANDISET" "$dest"
 
       - name: Check the token, the permission mode and the agent's shell
         env:
@@ -206,7 +219,7 @@ jobs:
             git add -A -- README.md docs/pilot-notes.md && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
           fi
-          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" \
+          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" --omit paper/ \
             --report "$out/transcripts/$DANDISET/$ROLE-report.md" --title "$name"
           rm -f "$RUNNER_TEMP/run.jsonl"
           cat "$out/transcripts/$DANDISET/$ROLE-report.md" >> "$GITHUB_STEP_SUMMARY"
