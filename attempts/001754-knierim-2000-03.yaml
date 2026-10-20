@@ -31,6 +31,16 @@
 # criteria now say. Outcomes: direction-selectivity stays blocked, now as methods_underspecified
 # (was data_missing); fig3-stability-across-sessions stays blocked as methods_underspecified, for
 # a different reason; the other outcomes and every number are unchanged.
+#
+# Revised after round 1 of verification (transcripts/001754/verifier-1-report.md). The M-a pairing
+# check of fig3-stability-across-sessions did not test the criterion's condition; tested as the
+# criterion states it (each deposited map tied to the unit it best matches, no unit tied to two
+# maps), it fails in session 3, so M-a is not run. fig3-stability-across-sessions moves from blocked
+# to not_reproduced, and three-orthogonal-surfaces, which its criterion makes not reproduced when
+# that dependency is not reproduced, from blocked to not_reproduced. The outputs the verifier asked
+# for are added (the trace in Rat 2's FD4 window on both files, the maps with cell_number -1 and a
+# variant without them, every Rat 3 FD4 map's best unit and every unit's best map). No other
+# outcome or number changed.
 schema_version: 2
 id: 001754-knierim-2000-03
 dataset:
@@ -79,7 +89,8 @@ outcomes:
     and 1.284 above 1.20), so the rule gives partially reproduced. The FD9 count (17) is within 16 +/-
     1.6 and the preflight counts (21, 25) are not within 19 +/- 1.9. Reading M-b gives 2.965 +/- 0.224
     over 25 active FD9 units but cannot be computed preflight; tested against the M-a preflight
-    values it differs (p below 1e-6), a variant, not judged. The FD9 ES window is one in
+    values it differs (p below 1e-6), a variant, not judged. Leaving out the maps with cell_number -1 (a
+    variant) the test finds no difference either (p 0.87 and 0.56). The FD9 ES window is one in
     which the trace behaves as Rat 2's position (data check). In 001754-knierim-2000-02 this claim,
     then from the dandiset's description and judged on Rats 1 and 2 pooled by medians, was reproduced
     (later removed from that record); the outcome differs because the claim is now rat 2's, with the
@@ -105,7 +116,8 @@ outcomes:
     0.461); the paper does not say on which track or in which epoch rat 1's preflight cells were
     recorded. No mean is within tolerance (1.19 +/- 0.09, 1.37 +/- 0.10) and no count within 10% (24
     against 21; 25 and 24 against 28). Reading M-b gives 3.331 +/- 0.268 over 24 units, flight only,
-    and is not judged. What the answers of 2026-10-20 changed. The criterion now runs each preflight
+    and is not judged. Leaving out the maps with cell_number -1 (a variant) the readings disagree in
+    the same way (p 0.40 against ES, 0.020 against MC), with 21 FD9 maps, the paper's count. What the answers of 2026-10-20 changed. The criterion now runs each preflight
     epoch on its own under S-a and S-b, prefers neither, and keeps the claim blocked when they
     disagree, so the block that the attempt had applied pending the answer is now the criterion's
     own; the outcome is blocked before and after. New claim; 001754-knierim-2000-02 had none like it.
@@ -140,8 +152,13 @@ outcomes:
     +/- 0.192) are lower than its preflight ES maps without significance (1.804, p = 0.077) and
     higher than its MC maps (1.127, p = 0.36). Rat 2's FD4 maps are also lower than its FD9 maps
     (1.377, p = 0.00033); Rat 1's are not (1.588, p = 0.38). In Rat 2's FD4 ES window the trace could
-    not be shown to be Rat 2's position (data check), and that file holds five identical copies of
-    maps, counted once. That the patterns differed between the rats is not judged. In
+    not be shown to be Rat 2's position (data check). The Rat1 and Rat2 files hold one trace there
+    (4 of 707 shared valid positions more than 2 px apart), and Rat 2's FD4 units carry more
+    information than every time shift on neither file's copy (0 of 17 and 1 of 16, against 12 of 28
+    and 16 of 28 on FD9), so whether the low FD4 information comes from firing or from tracking is
+    not known; the criterion sets no condition on this. That file holds five identical copies of
+    maps, counted once. Leaving out the maps with cell_number -1 (a variant) gives the same pattern
+    (Rat 2 p 0.0002 and 0.0017; Rat 1 p 0.24 and 0.42). That the patterns differed between the rats is not judged. In
     001754-knierim-2000-02 this claim, then from the dandiset's description and judged on Rats 1 to
     3 pooled by a one-sided test, was reproduced (later removed from that record); it now requires
     each of rats 1 and 2 with a two-sided test, and holds for one. The answers of 2026-10-20 (one map
@@ -151,31 +168,34 @@ outcomes:
   deviations:
   - As for si-comparable-to-preflight.
 - claim: fig3-stability-across-sessions
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: not_reproduced
   notebook: reproduce_knierim_2000.ipynb
   output: claim:fig3-stability-across-sessions
   measured: 16
-  notes: The readings disagree. Session 2 has 16 active units under reading M-b (the number
-    recorded) and 11 deposited maps under M-a, not 7. The pairing of deposited maps to units by best
-    match is one to one (11 maps tied to 11 distinct units, and 11 distinct session 3 maps), so M-a
-    is judged. Under M-a, 6 of 11 cells keep their field by reading (a), more than half, and 5 of 11
-    by reading (b), not more than half (95th percentile of 110 different-cell pairs 0.253). Under
-    M-b, 6 of 16 by (a) (same-cell correlations -0.024 to 0.366, 95th percentile of 240 pairs 0.094)
-    and 1 of 16 by (b), neither more than half. One reading of four passes, so the rule blocks the
-    claim. Reading (b) under M-b gives 2, 1, 0 and 0 cells at field thresholds of 0.1, 0.2, 0.3 and
-    0.5. Four units below 0.05 Hz in session 2 are active in session 3. What the answers of
-    2026-10-20 changed. "Most" is now more than half of the active cells of session 2, not a count
-    of 4, so M-b fails under both (a) and (b), where before (a) passed as a count; and the
-    best-match pairing is now allowed for M-a when one to one, so M-a, a variant before, is judged
-    and its reading (a) keeps the claim blocked. Blocked before and after, for a different reason;
-    without M-a it would be not reproduced. The outcome differs from
-    001754-knierim-2000-02 (reproduced), which used a median correlation of smoothed maps that the
-    paper does not give; the claims file now gives a per-cell rule for 7 cells.
+  notes: Under M-b, the one reading that can be run, 6 of 16 active session 2 units keep their field
+    by reading (a) (same-cell correlations -0.024 to 0.366, 95th percentile of 240 different-cell
+    pairs 0.094) and 1 of 16 by reading (b), neither more than half (8), so the rule gives not
+    reproduced. M-a is not run, as the criterion says when its pairing condition fails. Each
+    distinct deposited map of session 2 (19) and session 3 (23) was tied to the unit of its tetrode
+    whose spike-count map it best matches. In session 2 no unit is tied to two maps (two maps are each
+    the best map of two units, the second unit matching at r 0.009 and 0.059); in session 3
+    four are (TT10 cluster 6, TT4 cluster 3, TT5 cluster 2, TT8 cluster 5), three of them units of
+    active session 2 maps. Session 2 has 16 active units and 11 active deposited maps (mean rates
+    0.061 to 2.500 Hz), not 7, and nothing in the files marks which 7 the paper showed. Reading (b)
+    under M-b gives 2, 1, 0 and 0 cells at field thresholds of 0.1, 0.2, 0.3 and 0.5. Four units
+    below 0.05 Hz in session 2 are active in session 3, which fits the legend's cells that gained a
+    field; which cell lost its field is not judged. What changed. Before round 1 of verification the
+    check tied each unit to its best map and silently kept the better match when two units chose
+    one map, so it did not test the criterion's condition; it passed, M-a was judged, and its reading
+    (a) kept the claim blocked. The answers of 2026-10-20 had made "most" more than half of the
+    active cells, not a count of 4. The outcome differs from 001754-knierim-2000-02 (reproduced),
+    which used a median correlation of smoothed maps that the paper does not give; the claims file
+    now gives a per-cell rule for 7 cells.
   deviations:
   - Session 2 and session 3 are read as the file's ES1 and ES2.
-  - Reading M-a pairs each deposited map with the unit whose spike-count map it best matches, as the
-    criterion allows when the pairing is one to one; the dandiset gives no link.
+  - Reading M-a is not run, as the pairing of deposited maps to units by best match, which the
+    criterion allows only when one to one, is not one to one; the dandiset gives no link. The claim
+    rests on unsmoothed recomputed maps with few spikes per 4-pixel bin.
   - Takes the same tetrode and cluster id in both epochs to be the same cell.
 - claim: direction-selectivity
   outcome: blocked
@@ -206,18 +226,21 @@ outcomes:
   notes: No EEG in the dandiset, nor among the names of the OSD-968 files (see theta-normal). Same
     outcome as in 001754-knierim-2000-02 (later removed from that record).
 - claim: three-orthogonal-surfaces
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: not_reproduced
   notebook: reproduce_knierim_2000.ipynb
-  notes: Part (i) needs flight-spatial-code and fig3-stability-across-sessions, both blocked as
-    methods_underspecified, so this claim is blocked for the same reason. Part (ii) could not be
-    tested in any case (metadata_insufficient), as it needs the three surfaces drawn in the
-    position frame and the dandiset holds one two-dimensional pixel position with no camera view,
-    track layout or pixel scale; the NASA record says two synchronised cameras recorded position,
-    and the conversion code at b538d9e describes the track only as three-dimensional with 90
-    degree turns. The outcome is blocked as in 001754-knierim-2000-02, for a different main reason
-    (there metadata_insufficient), as the claim now depends on two blocked claims. The answers of
-    2026-10-20 leave both dependencies blocked, so this claim is blocked before and after.
+  output: claim:three-orthogonal-surfaces
+  notes: Part (i) fails, as fig3-stability-across-sessions is not reproduced, and the criterion gives
+    not reproduced when either dependency is not reproduced, whatever part (ii) gives.
+    flight-spatial-code is blocked as methods_underspecified, which does not change this. Part (ii)
+    could not be tested in any case, as it needs the three surfaces drawn in the position frame and
+    the dandiset holds one two-dimensional pixel position with no camera view, track layout or
+    pixel scale; the NASA record says two synchronised cameras recorded position, and the
+    conversion code at b538d9e describes the track only as three-dimensional with 90 degree turns.
+    Before round 1 of verification both dependencies were blocked, and so was this claim; it moved
+    with fig3-stability-across-sessions. In 001754-knierim-2000-02 it was blocked as
+    metadata_insufficient.
+  deviations:
+  - Inherits the deviations of fig3-stability-across-sessions (judged on M-b alone).
 findings:
 - kind: metadata_error
   statement: Still present (partly fixed in the unpublished draft). The Rat1 and Rat2 files of each
@@ -226,7 +249,8 @@ findings:
     animal tracked. With real against time-shifted spikes, the trace behaves as Rat2's position in
     Rat2's flight day 9 ES window (12 of 28 Rat2 units, 0 of 36 Rat1 units), and in Rat2's flight
     day 4 ES window neither rat's units are selective (0 of 17 and 1 of 17), so whose position it
-    is there is not established.
+    is there is not established; there the two files hold the same trace (4 of 707 shared valid
+    positions more than 2 pixels apart), so neither file's copy settles it.
 - kind: data_missing
   statement: Still present. Position is given only at spike times, so occupancy time cannot be
     computed from it, and the preflight files have no position at all.
@@ -245,7 +269,10 @@ findings:
     cluster id on the same tetrode, but the stated link exists for 98 of 211 flight unit-epochs and
     names the best-matching map for 84. Every one of Rat3's 42 flight day 4 ES maps has cell_number
     -1 ("not a per-cell map") though their names are per-cell short names, so Rat3's session 2 and
-    session 3 maps cannot be paired by cell.
+    session 3 maps cannot be paired by cell; tying each to the unit it best matches is not one to
+    one in session 3. Elsewhere 2 to 10 active maps per file and epoch have cell_number -1, and in
+    flight these match one unit about as well as the numbered maps (median correlation 0.555
+    against 0.595), so they appear to be per-cell maps without their cell number.
 - kind: metadata_insufficient
   statement: Still present (partly fixed in the draft). The rate maps are smoothed (91% of the
     positive-rate bins of a well-matched map hold no spike of the unit), and neither that nor the
@@ -284,3 +311,102 @@ findings:
     (Rat3 preflight 38 active ES maps against the paper's 24; Rat3 flight day 4 session 2, 11 maps
     and 16 units against 7; Rat1 flight day 9, 24 against 21), and the selection behind the
     paper's counts is not recorded.
+verifications:
+- date: '2026-10-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier checked the archive's asset metadata for the
+    blocked claims and tested the pairing logic on a synthetic case. Its report had no attempt record and
+    gave its own outcome for each claim; all 10 agree with the record as it then stood, and for
+    fig3-stability-across-sessions it added that the outcome may be not_reproduced.
+  results:
+  - claim: si-comparable-to-preflight
+    agrees: true
+    outcome: partially_reproduced
+    reason: Under M-a neither preflight epoch shows a difference (p 0.88 and 0.66). The flight mean is
+      1.377 against 1.13 +/- 0.09 and the preflight means are 1.320 and 1.284 against 1.12 +/- 0.08, so no
+      reading puts both means within tolerance. M-b cannot be run on both sides, as there is no preflight
+      position, so as the criterion says it is not judged.
+    response: Outcome kept. Added the list of every active M-a map with its cell_number, a check that maps
+      with cell_number -1 behave as one cell's maps in flight, and a variant without them (p 0.87 and 0.56),
+      which changes no result (problem B3).
+  - claim: si-rat1-fd9-vs-preflight
+    agrees: true
+    outcome: blocked
+    reason: The readings disagree. Against preflight ES1 p = 0.50; against preflight MC1 p = 0.0055, with
+      flight higher. Under S-a both preflight epochs are candidates, so the criterion blocks the claim.
+    response: Outcome kept. The variant without the maps with cell_number -1 disagrees in the same way (p
+      0.40 and 0.020) and has 21 FD9 maps, the paper's count.
+  - claim: si-rat3-fd4-vs-preflight
+    agrees: true
+    outcome: reproduced
+    reason: No difference under either reading (p 0.28 and 0.77). With the ES1 preflight reading both means
+      are within tolerance (1.231 against 1.12 +/- 0.27; 1.518 against 1.48 +/- 0.11). Cell counts are well
+      off (11 flight against 7; 38 against 24), but the criterion's rule does not use counts.
+    response: Outcome kept. Every Rat 3 FD4 ES map has cell_number -1, so the variant without them cannot be
+      run for the flight side; its preflight counts become 29 (ES) and 23 (MC) against 24. The 11 active
+      session 2 maps are now listed with their mean rate, information and best-matching unit; nothing in
+      the files marks which 7 the paper showed.
+  - claim: flight-spatial-code
+    agrees: true
+    outcome: blocked
+    reason: The dependencies are partial, blocked and reproduced. If rat 1 were reproduced or partial the
+      outcome would be partial; if not reproduced, not_reproduced. The others do not decide it, so the
+      criterion blocks it.
+    response: No change needed.
+  - claim: fd4-abnormal-selectivity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Rat 2's FD4 information is significantly lower than preflight under both readings (p 0.0006 and
+      0.0015) and Rat 1's under neither (p 0.077 and 0.36), so the rule gives holds for one rat. This rests
+      entirely on Rat 2's FD4 maps; the notebook's time-shift check finds no sign that the position trace
+      in Rat 2's FD4 ES window is Rat 2's (0 of 17 units; 1 of 17 for Rat 1), the deposited maps came from
+      the same shared tracker, so the low information may come from tracking and not firing (B2).
+    response: Outcome kept, as the verifier gives it and the criterion sets no condition on the tracking.
+      Added the output it asked for. In Rat 2's FD4 ES window the two files hold one trace (4 of 707 shared
+      valid positions more than 2 px apart), and Rat 2's units beat every shift on neither file's copy (0
+      of 17 and 1 of 16; on FD9 12 of 28 and 16 of 28), so the question stays open and is stated in the
+      conclusion, the notes and the finding. The variant without maps of cell_number -1 gives the same
+      pattern.
+  - claim: fig3-stability-across-sessions
+    agrees: true
+    outcome: blocked
+    reason: Under M-b (a) 6 of 16 and (b) 1 of 16 cells keep their field; under M-a (a) 6 of 11 and (b) 5 of
+      11. The readings disagree only because M-a was admitted, and the check that admits M-a does not test
+      the criterion's condition (B1). It pairs each unit with its best-matching map and, when two units
+      pick the same map, silently keeps the higher match, which is the conflict the condition is meant to
+      catch, and it is never applied to the session 3 maps across all units. If the condition fails, M-a
+      is not run and the outcome is not_reproduced.
+    response: Changed to not_reproduced. The check now ties every distinct map of session 2 and session 3 to
+      the unit it best matches and prints every map's best unit and every unit's best map, with conflicts
+      flagged both ways. In session 3 four units are each tied to two maps, three of them units of active
+      session 2 maps, so the condition fails and M-a is not run; M-b fails under (a) and (b).
+  - claim: direction-selectivity
+    agrees: true
+    outcome: blocked
+    reason: Position exists only at spike times (gaps up to 12.7 s), there is one occupancy map per epoch
+      with no direction, and no file gives the track layout. The criterion blocks the claim when these are
+      missing. In substance this is missing data, but the criterion fixes the label.
+    response: No change needed.
+  - claim: theta-normal
+    agrees: true
+    outcome: blocked
+    reason: No ElectricalSeries or LFP in any file. Confirmed on the archive, where every asset's
+      variableMeasured is Units, ElectrodeGroup, SpatialSeries, ProcessingModule and Position, and the
+      dandiset totals 32 MB in 8 files. No part can be tested.
+    response: No change needed.
+  - claim: ripples-normal
+    agrees: true
+    outcome: blocked
+    reason: As for theta-normal, there is no pouch or baseline EEG in the archive. No part can be tested.
+    response: No change needed.
+  - claim: three-orthogonal-surfaces
+    agrees: true
+    outcome: blocked
+    reason: Part (i) depends on two blocked claims and the possible outcomes are not_reproduced or
+      partially_reproduced, so the claim is undecided. Part (ii) cannot be tested at all, as the position
+      is one 2-D pixel frame with no track outline. If fig3 turns out not_reproduced (B1), this claim
+      becomes not_reproduced.
+    response: Changed to not_reproduced, as fig3-stability-across-sessions is now not reproduced and the
+      criterion then gives not reproduced whatever part (ii) gives. Added a cell that applies the rule.
