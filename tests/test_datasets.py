@@ -19,9 +19,9 @@ def test_every_way_of_writing_a_dandi_dataset_gives_one_key(text):
 
 
 def test_another_archive_is_filed_under_archive_and_id():
-    key = datasets.parse("ebrains:abc-123")
-    assert key == "ebrains:abc-123" and datasets.folder(key) == "ebrains-abc-123"
-    assert datasets.parse("ebrains-abc-123") == key and datasets.label(key) == "EBRAINS:abc-123"
+    key = datasets.parse("example:abc-123")
+    assert key == "example:abc-123" and datasets.folder(key) == "example-abc-123"
+    assert datasets.parse("example-abc-123") == key and datasets.label(key) == "EXAMPLE:abc-123"
 
 
 def test_dandi_keeps_its_bare_folders_and_links():
@@ -48,9 +48,9 @@ def test_a_crcns_dataset_is_a_target_with_its_own_page():
     assert "crcnsarchive" in datasets.access(ret["key"])
 
 
-def test_an_ebrains_dataset_is_a_target_named_by_its_version_id():
-    key = "ebrains:0162668e-bef0-4754-8562-40440db5bc0c"
+def test_an_ebrains_dataset_is_named_by_its_doi_and_read_by_its_kg_id():
+    key = datasets.parse("EBRAINS:Q0FG-1X8")
     found = next(t for t in datasets.targets() if t["key"] == key)
-    assert found["folder"] == "ebrains-0162668e-bef0-4754-8562-40440db5bc0c"
-    assert datasets.key_of_folder(found["folder"]) == key and datasets.label(key).startswith("EBRAINS:")
-    assert "data-proxy.ebrains.eu" in datasets.access(key)
+    assert key == "ebrains:q0fg-1x8" and found["folder"] == "ebrains-q0fg-1x8"
+    assert datasets.label(key) == "EBRAINS:Q0FG-1X8" and datasets.parse("ebrains-q0fg-1x8") == key
+    assert f'/public/datasets/{found["kg_id"]}/' in datasets.access(key)

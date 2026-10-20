@@ -37,15 +37,17 @@ ARCHIVES = {
     "crcns": {
         "label": "CRCNS", "name": "CRCNS.org", "url": "https://crcns.org/data-sets",
         "access": ("Read the files anonymously from the public S3 bucket crcnsarchive "
-                   "(https://crcnsarchive.s3-us-west-2.amazonaws.com/<id>/), as docs/archives.md says under "
+                   "(https://crcnsarchive.s3-us-west-2.amazonaws.com/{id}/), as docs/archives.md says under "
                    "\"CRCNS\": stream them, opening a zip in place with fsspec and zipfile; do not download them "
                    "to disk."),
         "list": "crcns.json",
     },
     "ebrains": {
-        "label": "EBRAINS", "name": "EBRAINS", "url": "https://search.kg.ebrains.eu/instances/{id}",
+        # A dataset is named by its DOI's suffix (10.25493/Q0FG-1X8 is q0fg-1x8, shown Q0FG-1X8); the data proxy
+        # needs its Knowledge Graph id, which the target list gives as kg_id.
+        "label": "EBRAINS", "name": "EBRAINS", "url": "https://doi.org/10.25493/{id}", "case": "upper",
         "access": ("Read the files anonymously through the EBRAINS data proxy "
-                   "(https://data-proxy.ebrains.eu/api/v1/public/datasets/<id>/<file>), as docs/archives.md says "
+                   "(https://data-proxy.ebrains.eu/api/v1/public/datasets/{kg_id}/<file>), as docs/archives.md says "
                    "under \"EBRAINS\": stream each file into memory with fsspec; do not download them to disk."),
         "list": "ebrains.json",
     },
@@ -62,9 +64,10 @@ def split_key(key: str) -> tuple[str, str]:
 
 
 def label(key: str) -> str:
-    """How a dataset is named to people: DANDI:000003."""
+    """How a dataset is named to people: DANDI:000003, EBRAINS:Q0FG-1X8."""
     archive, id_ = split_key(key)
-    return f'{ARCHIVES.get(archive, {}).get("label", archive.upper())}:{id_}'
+    spec = ARCHIVES.get(archive, {})
+    return f'{spec.get("label", archive.upper())}:{id_.upper() if spec.get("case") == "upper" else id_}'
 
 
 def folder(key: str) -> str:
@@ -87,7 +90,8 @@ def parse(text: str) -> str:
         archive = next((a for a, v in ARCHIVES.items() if v["label"].lower() == archive.lower()), archive.lower())
         if not re.fullmatch(r"[a-z][a-z0-9]*", archive) or not re.fullmatch(r"[A-Za-z0-9._-]+", id_):
             raise ValueError(f"not a dataset: {text!r}")
-        return key_of(archive, id_)
+        # An archive whose identifiers ignore case is keyed in lower case, as its folders are.
+        return key_of(archive, id_.lower() if ARCHIVES.get(archive, {}).get("case") else id_)
     if re.fullmatch(r"[a-z][a-z0-9]*-[A-Za-z0-9._-]+", text):
         return key_of_folder(text)
     raise ValueError(f"not a dataset: {text!r}")
@@ -112,9 +116,11 @@ def archive_name(key: str) -> str:
 
 
 def access(key: str) -> str:
-    """What an agent is told about reading this dataset's archive."""
+    """What an agent is told about reading this dataset's archive, with the target's own fields filled in."""
     archive = split_key(key)[0]
-    return ARCHIVES.get(archive, {}).get("access", f'Read the data as docs/archives.md says under "{archive}".')
+    text = ARCHIVES.get(archive, {}).get("access", f'Read the data as docs/archives.md says under "{archive}".')
+    target = next((t for t in targets() if t["key"] == key), {})
+    return text.format(**{k: v for k, v in target.items() if isinstance(v, str)})
 
 
 def targets() -> list[dict]:

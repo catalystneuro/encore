@@ -56,25 +56,27 @@ take a dataset in any of these forms.
 
 ## EBRAINS
 
-- **Datasets.** A dataset version in the EBRAINS Knowledge Graph, identified by
-  its id (a UUID, `0162668e-bef0-4754-8562-40440db5bc0c`), with a DOI of its own
-  (`10.25493/...`). Its record is at `https://search.kg.ebrains.eu/instances/<id>`.
-  The registry's list is `targets/ebrains.json`, written by hand; for now it
-  holds one dataset, to test the pipeline beyond DANDI. Only datasets marked
-  "free access" can be read without an account.
-- **Versions.** Each version has its own id, so the id pins it. Record the
+- **Datasets.** A dataset version in the EBRAINS Knowledge Graph. The registry
+  names it by its DOI's suffix: `10.25493/Q0FG-1X8` is `EBRAINS:Q0FG-1X8`, in
+  folders `ebrains-q0fg-1x8` (EBRAINS DOIs ignore case). The version's
+  Knowledge Graph id, a UUID, is `kg_id` in the registry's list,
+  `targets/ebrains.json` (written by hand; for now it holds one dataset, to
+  test the pipeline beyond DANDI); its record is at
+  `https://search.kg.ebrains.eu/instances/<kg_id>`. Only datasets marked "free
+  access" can be read without an account.
+- **Versions.** Each version has its own DOI and Knowledge Graph id, so either pins it. Record the
   version's name (`v1`) under `dataset: version` and its DOI under
   `dataset: doi`.
 - **Reading.** List the files with
-  `https://data-proxy.ebrains.eu/api/v1/public/datasets/<id>?limit=500` (JSON,
+  `https://data-proxy.ebrains.eu/api/v1/public/datasets/<kg_id>?limit=500` (JSON,
   under `objects`). Read a file at
-  `https://data-proxy.ebrains.eu/api/v1/public/datasets/<id>/<file>`, which
+  `https://data-proxy.ebrains.eu/api/v1/public/datasets/<kg_id>/<file>`, which
   redirects to the object at CSCS; open it with `fsspec` and read it into memory
   (`scipy.io.loadmat` for MATLAB files, `h5py` for MATLAB 7.3 or HDF5). The
   data proxy answers no HEAD requests, so open files for reading only. Do not
   download whole files to disk. The dataset's data descriptor (a PDF among its
   files) describes them.
-- **In an entry.** The entry names the dataset as `ebrains:<id>/<version>`
+- **In an entry.** The entry names the dataset as `ebrains:<doi suffix>/<version>`
   under `related`.
 
 ## Adding an archive
