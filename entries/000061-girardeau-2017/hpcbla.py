@@ -2,27 +2,36 @@
 
 Girardeau, Inema & Buzsaki (2017), Nature Neuroscience, doi:10.1038/nn.4637.
 
-Each NWB file is one day of one rat: sorted units with a brain-region label, sleep states
-(Awake, Non-REM, REM), an epochs table (pre-run, pre-sleep, run, post-sleep, post-run), and
-annotation series for hippocampal ripples (`rip`: start, peak and stop of each ripple), air
-puffs (`puf`) and rewards at the left and right ends of the track (`lrw`, `rrw`). Some files
-also hold raw voltage, LFP and video, which are not read here. Files are streamed from the
-archive at the pinned version; nothing is written to disk.
+Each NWB file is one day of one rat: sorted units with a brain-region label (and, in five Rat08
+files, a `cell_type` column), sleep states (Awake, Non-REM, REM), an epochs table (pre-run,
+pre-sleep, run, post-sleep, post-run), and annotation series for hippocampal ripples (`rip`:
+start, peak and stop of each ripple), air puffs (`puf`) and rewards at the left and right ends
+of the track (`lrw`, `rrw`). Some files also hold raw voltage, LFP and video, which are not read
+here except for their shapes. Files are streamed from the archive at the pinned version; nothing
+is written to disk.
 
-Where the parameters come from: the paper's full text is not open access, so its Methods were
-not available, and neither the paper's abstract nor the dandiset links analysis code. Every
-parameter below is a common choice made here, fixed in the claims file before the analysis:
+Where the parameters come from. The claims file (claims/000061/10.1038-nn.4637.yaml) fixes the
+methods from the paper's Online Methods, legends and code; its shared methods are M1 to M8 and
+its open details O1 to O7, cited below.
 
 - `EPOCH_TIME_SCALE`: the epochs table is stored in milliseconds although its column says
-  seconds; the data check shows this (its last stop time is 1000 times the last spike time).
-- Region labels: `HPC_LABELS` and `BLA_LABELS` (case is ignored). `BLA_COMPLEX_LABELS` adds the
-  undescribed labels that look like basolateral subdivisions (blv, bmp, ladl), for a variant.
-- `BIN_S` (50 ms), `MIN_RATE_HZ` (0.1 Hz in the run epoch), `MIN_UNITS` (5 per region),
-  `N_SURROGATES` (200 circular shifts) and `SIGNIFICANCE_PERCENTILE` (95) for the joint
-  patterns, which are the singular vectors of the hippocampus by BLA cross-correlation matrix of
-  the run.
-- Ripple modulation: `RIPPLE_SHIFTS` (500 shifts of 0.5 to 5 s), `RIPPLE_ALPHA` (0.01, one
-  sided), `CHANCE_SHIFT_S` (7 s), at `RIPPLE_RES_S` (5 ms) resolution.
+  seconds; the data check shows this (its last stop time is 1000 times the LFP duration).
+- Region labels (M1): hippocampus `HPC_LABELS`, BLA `BLA_LABELS`, central nuclei `CEN_LABELS`,
+  piriform cortex `PIR_LABELS` (case is ignored). `BLA_COMPLEX_LABELS` adds the labels the
+  paper's Supplementary Fig. 3 names as other amygdala nuclei (BLV, LaDL, BMP), for a variant.
+- `CELL_TYPES`: the dandiset's `cell_type` values "excitatory" and "inhibitory" are read as the
+  paper's monosynaptically identified pyramidal cells and interneurons (O4 reading a); the data
+  check gives the reasons this reading is consistent with the data.
+- `BIN_S` (50 ms, M3, M4, M7), `MIN_CELLS` (6 in each structure, M4, M7), `MIN_REM_S` (180 s of
+  REM in each sleep epoch, M4), `PERIOD_BINS` (24,000 bins of 20 min, reactivation-decay).
+- `RIPPLE_GUARD_S` (100 ms either side of a ripple left out of the baseline, M6) and
+  `RIPPLE_P` (0.0005 per tail, M6).
+- `PERI_RIPPLE_S`, `PERI_BINS`, `PERI_SMOOTH_BINS`, `PEAK_WINDOW_S` (M7: 100 bins over -2 to
+  +2 s, Gaussian smoothing of SD 2 bins, mean over bin centres strictly inside +-0.25 s).
+- Bin times are bin centres (O3, a standard choice that cannot change an outcome at this
+  resolution), and a 50 ms bin belongs to a set of intervals when its centre does (a standard
+  choice). A ripple is in NREM when its peak is (M5; a standard choice for "inside").
+- Laps (O1 reading c): the intervals between consecutive rewards at opposite ends of the track.
 """
 
 from __future__ import annotations
@@ -33,6 +42,8 @@ import h5py
 import numpy as np
 import remfile
 from dandi.dandiapi import DandiAPIClient
+from scipy import stats
+from scipy.ndimage import gaussian_filter1d
 
 DANDISET_ID = "000061"
 DANDISET_VERSION = "0.250624.0426"
@@ -41,30 +52,34 @@ EPOCH_TIME_SCALE = 1e-3
 HPC_LABELS = {"hpc", "hip"}
 BLA_LABELS = {"bla"}
 BLA_COMPLEX_LABELS = {"bla", "blv", "bmp", "ladl"}
-KEEP_LABELS = HPC_LABELS | BLA_COMPLEX_LABELS
+CEN_LABELS = {"cen"}
+PIR_LABELS = {"pir"}
+KEEP_LABELS = HPC_LABELS | BLA_COMPLEX_LABELS | CEN_LABELS
+CELL_TYPES = {"excitatory": "pyramidal", "inhibitory": "interneuron"}
 
 BIN_S = 0.05
-MIN_RATE_HZ = 0.1
-MIN_UNITS = 5
-N_SURROGATES = 200
-SIGNIFICANCE_PERCENTILE = 95.0
+MIN_CELLS = 6
+MIN_REM_S = 180.0
+PERIOD_BINS = 24000
 
-RIPPLE_SHIFTS = 500
-RIPPLE_SHIFT_RANGE_S = (0.5, 5.0)
-RIPPLE_ALPHA = 0.01
-CHANCE_SHIFT_S = 7.0
-RIPPLE_RES_S = 0.005
+RIPPLE_GUARD_S = 0.1
+RIPPLE_P = 0.0005
+
+PERI_RIPPLE_S = 2.0
+PERI_BINS = 100
+PERI_SMOOTH_BINS = 2
+PEAK_WINDOW_S = 0.25
 
 MIXED_UNITS_NOTE = (
     "In some files the spike times of unit 1 fall back once, after 65536 times k spikes, and "
     "unit 0 stops part way through the session where unit 1 starts: the first part of unit 1 "
-    "is the end of unit 0. Units 0 and 1 of those files are left out.")
+    "is the end of unit 0. Units 0 and 1 of those files are left out of the analyses.")
 
 
-def asset_urls() -> list[tuple[str, str]]:
-    """(path, streaming URL) of every NWB file at the pinned version."""
+def asset_urls(version: str = DANDISET_VERSION) -> list[tuple[str, str]]:
+    """(path, streaming URL) of every NWB file at a version."""
     with DandiAPIClient() as client:
-        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
+        dandiset = client.get_dandiset(DANDISET_ID, version)
         return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))
                       for a in dandiset.get_assets() if a.path.endswith(".nwb"))
 
@@ -81,10 +96,11 @@ def _strings(dataset) -> np.ndarray:
 
 
 def load_session(path: str, url: str) -> dict:
-    """One file: metadata, tables and events, and the spike trains of hippocampal and BLA units.
+    """One file: metadata, tables and events, and the spike trains of the units analysed.
 
-    Units of other regions keep only their spike count and first spike time (for the check of
-    duplicated recordings). Epoch times are converted to seconds with `EPOCH_TIME_SCALE`.
+    Spike trains are kept for units labelled hippocampus, BLA (and the wider amygdala labels) or
+    central nuclei; every unit keeps its label, type, spike count and first spike. Epoch times
+    are converted to seconds with `EPOCH_TIME_SCALE`.
     """
     for attempt in range(3):
         try:
@@ -100,7 +116,6 @@ def load_session(path: str, url: str) -> dict:
              "age": _text(f["general/subject/age"]), "sex": _text(f["general/subject/sex"]),
              "session_start": _text(f["session_start_time"])}
         ep = f["intervals/epochs"]
-        s["epoch_columns"] = list(ep.attrs["colnames"])
         s["epoch_unit_stated"] = ep["start_time"].attrs.get("description")
         s["epochs_raw"] = list(zip(_strings(ep["tags"]), ep["start_time"][()], ep["stop_time"][()]))
         s["epochs"] = [(t, a * EPOCH_TIME_SCALE, b * EPOCH_TIME_SCALE) for t, a, b in s["epochs_raw"]]
@@ -125,7 +140,8 @@ def load_session(path: str, url: str) -> dict:
         if lfp in f:
             s["lfp"] = (f[f"{lfp}/data"].shape, float(f[f"{lfp}/starting_time"].attrs["rate"]),
                         f[f"{lfp}/data"].attrs.get("unit"))
-        s["raw"] = f["acquisition/ElectricalSeries/data"].shape if "acquisition/ElectricalSeries" in f else None
+        raw = "acquisition/ElectricalSeries/data"
+        s["raw"] = (f[raw].shape, f[raw].chunks) if raw in f else None
         s["videos"] = {k: (f[f"acquisition/{k}/data"].shape[0], *f[f"acquisition/{k}/timestamps"][[0, -1]],
                            f[f"acquisition/{k}/timestamps"].attrs.get("unit"))
                        for k in f["acquisition"] if k.startswith("Video")}
@@ -136,20 +152,25 @@ def load_session(path: str, url: str) -> dict:
         s["units"] = None
         if "units" in f:
             u = f["units"]
-            loc = _strings(u["location"]) if "location" in u else np.array(["(none)"] * len(u["id"]))
+            n = len(u["id"])
+            loc = _strings(u["location"]) if "location" in u else np.array(["(none)"] * n)
+            ctype = _strings(u["cell_type"]) if "cell_type" in u else np.array([""] * n)
             index = u["spike_times_index"][()]
             spikes = u["spike_times"][()]
             trains = np.split(spikes, index[:-1])
             unsorted = [i for i, t in enumerate(trains) if np.any(np.diff(t) < 0)]
             # A unit whose times fall back once holds the end of the unit before it (see
-            # `MIXED_UNITS_NOTE`); both are left out.
+            # `MIXED_UNITS_NOTE`); both are left out of the analyses.
             mixed = sorted({j for i in unsorted for j in (i - 1, i) if j >= 0})
             s["units"] = {
-                "label": loc, "region": np.char.lower(loc), "shank": u["shank_id"][()],
+                "columns": list(u.attrs["colnames"]),
+                "cell_type_description": u["cell_type"].attrs.get("description") if "cell_type" in u else None,
+                "label": loc, "region": np.char.lower(loc), "cell_type": ctype,
+                "shank": u["shank_id"][()],
                 "group": np.array([f[r].name.split("/")[-1] for r in u["electrode_group"][()]]),
                 "n_spikes": np.diff(np.concatenate([[0], index])),
                 "first_spike": np.array([t[0] if len(t) else np.nan for t in trains]),
-                "sorted": not unsorted, "unsorted": unsorted, "mixed": mixed,
+                "unsorted": unsorted, "mixed": mixed,
                 "unsorted_at": {i: np.flatnonzero(np.diff(trains[i]) < 0).tolist() for i in unsorted},
                 "unit0_last": float(trains[0][-1]) if len(trains) and len(trains[0]) else np.nan,
                 "unit1_first": float(trains[1][0]) if len(trains) > 1 and len(trains[1]) else np.nan,
@@ -161,9 +182,9 @@ def load_session(path: str, url: str) -> dict:
     return s
 
 
-def load_all(workers: int = 12) -> list[dict]:
+def load_all(workers: int = 12, version: str = DANDISET_VERSION) -> list[dict]:
     """Every file of the dandiset, loaded in parallel."""
-    urls = asset_urls()
+    urls = asset_urls(version)
     with ThreadPoolExecutor(workers) as pool:
         return list(pool.map(lambda pu: load_session(*pu), urls))
 
@@ -188,17 +209,17 @@ def parse_ripples(labels: np.ndarray, times: np.ndarray) -> dict:
 # --- intervals -------------------------------------------------------------------------------
 
 def intervals_of(session: dict, label: str) -> np.ndarray:
-    """(n, 2) state intervals with the given label, in seconds."""
+    """(n, 2) state intervals with the given label, in seconds, sorted."""
     if session["states"] is None:
         return np.zeros((0, 2))
-    return np.array([(a, b) for lab, a, b in session["states"] if lab == label]).reshape(-1, 2)
+    return np.array(sorted((a, b) for lab, a, b in session["states"] if lab == label)).reshape(-1, 2)
 
 
 def sleep_epochs(session: dict) -> tuple[np.ndarray, np.ndarray, tuple[float, float] | None]:
-    """Pre-sleep intervals, post-sleep intervals and the (first) run epoch, in seconds.
+    """Pre-sleep intervals, post-sleep intervals and the (first) run epoch, in seconds (M2).
 
-    Tags presleep and postsleep are used where present. Files that tag sleep only as "sleep"
-    take the sleep epochs before and after the first run.
+    Tags presleep and postsleep are used where present (a file may have two of either). Files
+    that tag sleep only as "sleep" take the sleep epochs before and after the first run.
     """
     eps = session["epochs"]
     runs = [(a, b) for t, a, b in eps if t == "run"]
@@ -208,7 +229,7 @@ def sleep_epochs(session: dict) -> tuple[np.ndarray, np.ndarray, tuple[float, fl
     if not pre and not post and run is not None:
         pre = [(a, b) for t, a, b in eps if t == "sleep" and b <= run[0]]
         post = [(a, b) for t, a, b in eps if t == "sleep" and a >= run[1]]
-    return np.array(pre).reshape(-1, 2), np.array(post).reshape(-1, 2), run
+    return np.array(sorted(pre)).reshape(-1, 2), np.array(sorted(post)).reshape(-1, 2), run
 
 
 def intersect(a: np.ndarray, b: np.ndarray) -> np.ndarray:
@@ -233,6 +254,13 @@ def in_intervals(t: np.ndarray, iv: np.ndarray) -> np.ndarray:
     return out
 
 
+def state_in(session: dict, label: str, epochs: np.ndarray) -> np.ndarray:
+    """Intervals of a sleep state inside a set of epochs, e.g. pre-NREM (M2)."""
+    return intersect(intervals_of(session, label), epochs)
+
+
+# --- laps (O1 reading c) ----------------------------------------------------------------------
+
 def laps(session: dict) -> list[tuple[float, float, str]]:
     """Laps from a reward at one end of the track to the next reward at the other end.
 
@@ -245,28 +273,17 @@ def laps(session: dict) -> list[tuple[float, float, str]]:
 
 
 def run_laps(session: dict) -> list[tuple[float, float, str]]:
-    """Laps clipped to the run epoch.
-
-    A lap that starts before the run (the last reward of the pre-run) and ends inside it keeps
-    its direction for the part inside the run, so the time before the first reward of the run
-    counts as a lap toward that reward.
-    """
+    """Laps whose both rewards fall inside the run epoch."""
     _, _, run = sleep_epochs(session)
     if run is None:
         return []
-    out = []
-    for a, b, d in laps(session):
-        a, b = max(a, run[0]), min(b, run[1])
-        if b > a:
-            out.append((a, b, d))
-    return out
+    return [(a, b, d) for a, b, d in laps(session) if a >= run[0] and b <= run[1]]
 
 
 def puff_direction(session: dict) -> tuple[str | None, dict]:
     """The lap direction in the run epoch that holds most air puffs, and the counts."""
-    _, _, run = sleep_epochs(session)
     counts = {"LR": 0, "RL": 0, "none": 0}
-    if "puf" not in session["events"] or run is None:
+    if "puf" not in session["events"] or sleep_epochs(session)[2] is None:
         return None, counts
     run_laps_ = run_laps(session)
     for t in session["events"]["puf"][1]:
@@ -277,33 +294,42 @@ def puff_direction(session: dict) -> tuple[str | None, dict]:
     return ("LR" if counts["LR"] > counts["RL"] else "RL"), counts
 
 
-# --- binning and patterns --------------------------------------------------------------------
+def lap_intervals(session: dict, kind: str) -> np.ndarray:
+    """Run laps of the air puff direction ("puff") or of the other one ("safe")."""
+    direction, _ = puff_direction(session)
+    if direction is None:
+        return np.zeros((0, 2))
+    keep = [(a, b) for a, b, d in run_laps(session) if (d == direction) == (kind == "puff")]
+    return np.array(keep).reshape(-1, 2)
 
-def unit_sets(session: dict, bla_labels=BLA_LABELS) -> tuple[list[int], list[int]]:
-    """Hippocampal and BLA units that fire at `MIN_RATE_HZ` or more in the run epoch."""
-    _, _, run = sleep_epochs(session)
+
+# --- units and binning -----------------------------------------------------------------------
+
+def units_of(session: dict, labels: set, cell_type: str | None = None) -> list[int]:
+    """Units with one of the region labels (and, if given, the dandiset's cell type)."""
     u = session["units"]
-    if u is None or run is None:
-        return [], []
-    dur = run[1] - run[0]
-
-    def ok(i):
-        t = u["trains"][i]
-        return np.count_nonzero((t >= run[0]) & (t < run[1])) / dur >= MIN_RATE_HZ
-    hpc = [i for i in u["trains"] if u["region"][i] in HPC_LABELS and ok(i)]
-    bla = [i for i in u["trains"] if u["region"][i] in bla_labels and ok(i)]
-    return hpc, bla
+    if u is None:
+        return []
+    return [i for i in u["trains"] if u["region"][i] in labels
+            and (cell_type is None or u["cell_type"][i] == cell_type)]
 
 
-def grid_size(session: dict, bin_s: float) -> int:
-    """Number of bins of width bin_s from 0 to the end of the last epoch."""
-    return int(np.ceil(max(b for _, _, b in session["epochs"]) / bin_s)) + 1
+def grid_size(session: dict, bin_s: float = BIN_S) -> int:
+    """Number of bins of width bin_s from 0 to the end of the last epoch or spike."""
+    end = max(max(b for _, _, b in session["epochs"]), session["units"]["last_spike"])
+    return int(np.ceil(end / bin_s)) + 1
 
 
-def binned(session: dict, units: list[int], bin_s: float, rows: np.ndarray) -> np.ndarray:
+def rows_in(session: dict, iv: np.ndarray, bin_s: float = BIN_S) -> np.ndarray:
+    """Indices of the bins whose centre lies in the intervals."""
+    centers = (np.arange(grid_size(session, bin_s)) + 0.5) * bin_s
+    return np.flatnonzero(in_intervals(centers, iv))
+
+
+def binned(session: dict, units: list[int], rows: np.ndarray, bin_s: float = BIN_S) -> np.ndarray:
     """(len(rows), n_units) spike counts in the bins `rows` of the grid of width bin_s."""
     n = grid_size(session, bin_s)
-    out = np.zeros((len(rows), len(units)), np.float32)
+    out = np.zeros((len(rows), len(units)), np.float64)
     for j, i in enumerate(units):
         idx = (session["units"]["trains"][i] / bin_s).astype(np.int64)
         out[:, j] = np.bincount(idx[(idx >= 0) & (idx < n)], minlength=n)[rows]
@@ -311,173 +337,233 @@ def binned(session: dict, units: list[int], bin_s: float, rows: np.ndarray) -> n
 
 
 def zscore(x: np.ndarray) -> np.ndarray:
-    """Z-score each column; a column without variance becomes zero."""
+    """Z-score each column; a column without variance becomes NaN."""
     sd = x.std(0)
-    return np.where(sd > 0, (x - x.mean(0)) / np.where(sd > 0, sd, 1), 0).astype(np.float32)
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return (x - x.mean(0)) / np.where(sd > 0, sd, np.nan)
 
 
-def joint_patterns(zh: np.ndarray, zb: np.ndarray, rng: np.random.Generator,
-                   n_surrogates: int = N_SURROGATES) -> dict:
-    """Singular vectors of the hippocampus by BLA cross-correlation matrix, and their threshold.
+# --- EV and REV (M4) ---------------------------------------------------------------------------
 
-    zh and zb are z-scored counts of the template bins. The threshold is the
-    `SIGNIFICANCE_PERCENTILE` percentile of the largest singular value over surrogates in which
-    each BLA column is circularly shifted by its own random offset.
+def pair_correlations(counts: np.ndarray, a: np.ndarray, b: np.ndarray | None = None) -> np.ndarray:
+    """Pearson correlations of binned counts between columns a and b, as one vector of pairs.
+
+    With b None, the distinct pairs within a (upper triangle). A silent column gives NaN.
     """
-    T = len(zh)
-    c = zh.T @ zb / T
-    u, sv, vt = np.linalg.svd(c, full_matrices=False)
-    null = np.empty(n_surrogates)
-    for k in range(n_surrogates):
-        zs = np.empty_like(zb)
-        for j, shift in enumerate(rng.integers(1, T, zb.shape[1])):
-            zs[:, j] = np.roll(zb[:, j], shift)
-        null[k] = np.linalg.svd(zh.T @ zs / T, compute_uv=False)[0]
-    threshold = float(np.percentile(null, SIGNIFICANCE_PERCENTILE))
-    return {"u": u, "s": sv, "v": vt.T, "threshold": threshold, "significant": sv > threshold,
-            "n_bins": T}
+    z = zscore(counts)
+    if b is None:
+        c = z[:, a].T @ z[:, a] / len(z)
+        return c[np.triu_indices(len(a), 1)]
+    return (z[:, a].T @ z[:, b] / len(z)).ravel()
 
 
-def strength(zh: np.ndarray, zb: np.ndarray, u: np.ndarray, v: np.ndarray) -> np.ndarray:
-    """Reactivation strength (zh . u)(zb . v) per bin, one column per pattern."""
-    return (zh @ u) * (zb @ v)
+def ev_rev(pre: np.ndarray, run: np.ndarray, post: np.ndarray) -> tuple[float, float, int]:
+    """EV and REV (percent) from three vectors of pair correlations, and the pairs used.
 
-
-def ripple_modulation(train: np.ndarray, windows: list[tuple[np.ndarray, np.ndarray]], end_s: float,
-                      rng: np.random.Generator) -> list[dict]:
-    """A unit's spikes in sets of ripple windows, each against the same windows shifted at random.
-
-    For each (start, stop) set: the observed count, the mean surrogate count, and one-sided p
-    values for an increase and a decrease (the fraction of `RIPPLE_SHIFTS` surrogates at or
-    above, or at or below, the observed count, counting the observed one). All windows of a set
-    are shifted together by one offset of `RIPPLE_SHIFT_RANGE_S`, either sign. Times are handled
-    on a `RIPPLE_RES_S` grid.
+    Pairs with an undefined correlation in any epoch are left out (corrcoef 'rows','complete').
     """
-    n = int(np.ceil(end_s / RIPPLE_RES_S)) + 2
-    idx = (train / RIPPLE_RES_S).astype(np.int64)
-    cs = np.concatenate([[0], np.cumsum(np.bincount(idx[(idx >= 0) & (idx < n)], minlength=n))])
-    lo, hi = (int(x / RIPPLE_RES_S) for x in RIPPLE_SHIFT_RANGE_S)
-    out = []
-    for start, stop in windows:
-        a = (start / RIPPLE_RES_S).astype(np.int64)
-        b = (stop / RIPPLE_RES_S).astype(np.int64) + 1
-        observed = int((cs[np.clip(b, 0, n)] - cs[np.clip(a, 0, n)]).sum())
-        offsets = rng.integers(lo, hi + 1, RIPPLE_SHIFTS) * rng.choice([-1, 1], RIPPLE_SHIFTS)
-        null = (cs[np.clip(b[None, :] + offsets[:, None], 0, n)]
-                - cs[np.clip(a[None, :] + offsets[:, None], 0, n)]).sum(1)
-        out.append({"observed": observed, "null_mean": float(null.mean()),
-                    "p_up": (1 + np.count_nonzero(null >= observed)) / (1 + RIPPLE_SHIFTS),
-                    "p_down": (1 + np.count_nonzero(null <= observed)) / (1 + RIPPLE_SHIFTS)})
+    ok = np.isfinite(pre) & np.isfinite(run) & np.isfinite(post)
+    if ok.sum() < 3:
+        return np.nan, np.nan, int(ok.sum())
+    r = np.corrcoef(np.vstack([pre[ok], run[ok], post[ok]]))
+    r_pre_run, r_pre_post, r_run_post = r[0, 1], r[0, 2], r[1, 2]
+    ev = ((r_run_post - r_pre_run * r_pre_post) / np.sqrt((1 - r_pre_run ** 2) * (1 - r_pre_post ** 2))) ** 2
+    rev = ((r_pre_run - r_run_post * r_pre_post) / np.sqrt((1 - r_run_post ** 2) * (1 - r_pre_post ** 2))) ** 2
+    return 100 * ev, 100 * rev, int(ok.sum())
+
+
+def session_epoch_rows(session: dict, state: str = "Non-REM") -> dict:
+    """Bins of the run epoch and of a state inside pre- and post-sleep, with their durations."""
+    pre, post, run = sleep_epochs(session)
+    pre_iv, post_iv = state_in(session, state, pre), state_in(session, state, post)
+    return {"pre": rows_in(session, pre_iv), "post": rows_in(session, post_iv),
+            "run": rows_in(session, np.array([run])),
+            "pre_s": float(np.diff(pre_iv).sum()), "post_s": float(np.diff(post_iv).sum())}
+
+
+def ev_session(session: dict, a_units: list[int], b_units: list[int] | None, rows: dict,
+               post_periods: bool = False) -> dict:
+    """EV and REV of one session between two sets of units (or within one set, b None).
+
+    With `post_periods`, also for the successive `PERIOD_BINS` blocks of post-sleep bins (the
+    first three, the third being what remains when shorter), each with the whole pre-sleep and run.
+    """
+    units = a_units + (b_units or [])
+    a = np.arange(len(a_units))
+    b = None if b_units is None else np.arange(len(a_units), len(units))
+    corr = {k: pair_correlations(binned(session, units, rows[k]), a, b) for k in ("pre", "run", "post")}
+    ev, rev, n_pairs = ev_rev(corr["pre"], corr["run"], corr["post"])
+    out = {"ev": ev, "rev": rev, "pairs": n_pairs}
+    if post_periods:
+        post_rows = rows["post"]
+        for k in range(3):
+            block = post_rows[k * PERIOD_BINS:(k + 1) * PERIOD_BINS]
+            if len(block) < 2:
+                out[f"ev_{k}"], out[f"rev_{k}"] = np.nan, np.nan
+                continue
+            c = pair_correlations(binned(session, units, block), a, b)
+            out[f"ev_{k}"], out[f"rev_{k}"], _ = ev_rev(corr["pre"], corr["run"], c)
+            out[f"bins_{k}"] = len(block)
     return out
 
 
-def usable(session: dict, bla_labels=BLA_LABELS) -> bool:
-    """Whether a session meets the claims file's rule for the reactivation analysis."""
-    pre, post, run = sleep_epochs(session)
-    if session["states"] is None or session["ripples"] is None or run is None:
-        return False
-    if len(pre) == 0 or len(post) == 0:
-        return False
-    hpc, bla = unit_sets(session, bla_labels)
-    return len(hpc) >= MIN_UNITS and len(bla) >= MIN_UNITS
+# --- ripple modulation (M6) ---------------------------------------------------------------------
 
-
-def ripple_bins(session: dict, bin_s: float) -> np.ndarray:
-    """Boolean grid of the bins that overlap a ripple (start to stop)."""
-    n = grid_size(session, bin_s)
+def nrem_ripples(session: dict, nrem: np.ndarray | None = None) -> dict:
+    """Ripples whose peak lies in NREM (all NREM of the session unless given)."""
+    if nrem is None:
+        nrem = intervals_of(session, "Non-REM")
     r = session["ripples"]
-    a = np.clip((r["start"] / bin_s).astype(np.int64), 0, n - 1)
-    b = np.clip((r["stop"] / bin_s).astype(np.int64), 0, n - 1)
-    d = np.zeros(n + 1, np.int64)
-    np.add.at(d, a, 1)
-    np.add.at(d, b + 1, -1)
-    return np.cumsum(d[:-1]) > 0
+    keep = in_intervals(r["peak"], nrem)
+    return {k: r[k][keep] for k in ("start", "peak", "stop")}
 
 
-def reactivation(session: dict, rng: np.random.Generator, bin_s: float = BIN_S,
-                 bla_labels=BLA_LABELS, templates=("run",), equal_bins: bool = False,
-                 lap_tail_s: float | None = None, lags: int = 20, keep_traces: bool = True) -> dict:
-    """Joint patterns of the run and their reactivation in pre- and post-sleep Non-REM.
+def merge(iv: np.ndarray) -> np.ndarray:
+    """Union of possibly overlapping intervals, sorted."""
+    if len(iv) == 0:
+        return iv.reshape(0, 2)
+    iv = iv[np.argsort(iv[:, 0])]
+    out = [list(iv[0])]
+    for a, b in iv[1:]:
+        if a <= out[-1][1]:
+            out[-1][1] = max(out[-1][1], b)
+        else:
+            out.append([a, b])
+    return np.array(out)
 
-    `templates` names the run bins a template is built from: "run" (the whole run epoch),
-    "puff" or "safe" (bins inside laps of the air-puff or the safe direction). With
-    `equal_bins` the two directional templates use the same number of bins (a random subset of
-    the longer one, drawn with `rng`, is kept). With `lap_tail_s` only the last `lap_tail_s`
-    seconds of each lap, before the reward that ends it, enter the directional templates; this
-    leaves out the time spent waiting at the end where the lap starts. Returns one row per pattern, and for significant patterns the
-    ripple-peak-triggered mean strength in post-sleep (lags of `lags` bins either side) and the
-    mean strength in ripple and non-ripple bins of pre- and post-sleep. The same triggered mean
-    in pre-sleep is kept as a reference.
+
+def subtract(a: np.ndarray, b: np.ndarray) -> np.ndarray:
+    """Intervals a minus the (merged) intervals b."""
+    b = merge(b)
+    out = []
+    for s, e in a:
+        cur = s
+        for bs, be in b[(b[:, 1] > s) & (b[:, 0] < e)]:
+            if bs > cur:
+                out.append((cur, bs))
+            cur = max(cur, be)
+        if cur < e:
+            out.append((cur, e))
+    return np.array(out).reshape(-1, 2)
+
+
+def count_in(train: np.ndarray, iv: np.ndarray) -> int:
+    """Spikes of a sorted train inside the intervals (intervals may overlap; each counts)."""
+    return int((np.searchsorted(train, iv[:, 1]) - np.searchsorted(train, iv[:, 0])).sum())
+
+
+def ripple_modulation(session: dict, units: list[int]) -> list[dict]:
+    """Poisson test of each unit's spikes in NREM ripples against its NREM baseline (M6, O2).
+
+    Baseline: all NREM of the session minus every ripple widened by `RIPPLE_GUARD_S` either
+    side. Expected count: baseline rate times the total ripple time (start to stop). Reading a
+    of O2 takes the tails P(X >= n) and P(X <= n), reading b P(X > n) and P(X < n). A unit with
+    no spike in ripples or in the baseline is untested.
     """
-    hpc, bla = unit_sets(session, bla_labels)
+    nrem = intervals_of(session, "Non-REM")
+    rip = nrem_ripples(session, nrem)
+    rip_iv = np.column_stack([rip["start"], rip["stop"]])
+    base = subtract(nrem, rip_iv + np.array([-RIPPLE_GUARD_S, RIPPLE_GUARD_S]))
+    base_s = float(np.diff(base).sum())
+    rip_s = float(np.diff(rip_iv).sum())
+    out = []
+    for i in units:
+        t = session["units"]["trains"][i]
+        n_rip, n_base = count_in(t, rip_iv), count_in(t, base)
+        mu = n_base / base_s * rip_s
+        row = {"unit": i, "n_ripple": n_rip, "n_base": n_base, "expected": mu,
+               "tested": n_rip > 0 and n_base > 0}
+        row["p_up_a"] = stats.poisson.sf(n_rip - 1, mu)
+        row["p_down_a"] = stats.poisson.cdf(n_rip, mu)
+        row["p_up_b"] = stats.poisson.sf(n_rip, mu)
+        row["p_down_b"] = stats.poisson.cdf(n_rip - 1, mu) if n_rip > 0 else 0.0
+        for r in ("a", "b"):
+            row[f"up_{r}"] = row["tested"] and row[f"p_up_{r}"] < RIPPLE_P
+            row[f"down_{r}"] = row["tested"] and row[f"p_down_{r}"] < RIPPLE_P
+        out.append(row)
+    return out
+
+
+# --- reactivation strength R (M7) ------------------------------------------------------------------
+
+def peri_ripple_mean(times: np.ndarray, values: np.ndarray, peaks: np.ndarray) -> np.ndarray:
+    """Mean of `values` (sampled at sorted `times`) in `PERI_BINS` bins over +-`PERI_RIPPLE_S`
+    around each peak, all peaks pooled (FMAToolbox SyncHist, mode mean), smoothed with a
+    Gaussian of SD `PERI_SMOOTH_BINS` bins."""
+    width = 2 * PERI_RIPPLE_S / PERI_BINS
+    total = np.zeros(PERI_BINS)
+    count = np.zeros(PERI_BINS)
+    lo = np.searchsorted(times, peaks - PERI_RIPPLE_S)
+    hi = np.searchsorted(times, peaks + PERI_RIPPLE_S)
+    for p, a, b in zip(peaks, lo, hi):
+        k = np.floor((times[a:b] - p + PERI_RIPPLE_S) / width).astype(int)
+        ok = (k >= 0) & (k < PERI_BINS)
+        np.add.at(total, k[ok], values[a:b][ok])
+        np.add.at(count, k[ok], 1)
+    with np.errstate(invalid="ignore"):
+        curve = total / count
+    curve = np.where(np.isfinite(curve), curve, np.nanmean(curve))
+    return gaussian_filter1d(curve, PERI_SMOOTH_BINS, mode="nearest")
+
+
+def peri_centres() -> np.ndarray:
+    width = 2 * PERI_RIPPLE_S / PERI_BINS
+    return -PERI_RIPPLE_S + width * (np.arange(PERI_BINS) + 0.5)
+
+
+def reactivation_strength(session: dict, hpc: list[int], bla: list[int], template_iv: np.ndarray) -> dict:
+    """Peri-ripple reactivation strength in pre- and post-NREM for one template (M7).
+
+    Counts are z-scored per cell within the template bins and within the NREM bins of each sleep
+    epoch; a cell silent in either is left out (it has no z-score). C = Z_hpc' Z_bla / nBins;
+    R(t) = z_hpc(t) C z_bla(t)'; R is z-scored over the NREM bins of each epoch.
+    """
+    rows = session_epoch_rows(session)
+    template = rows_in(session, template_iv)
     units = hpc + bla
     nh = len(hpc)
-    n = grid_size(session, bin_s)
-    centers = (np.arange(n) + 0.5) * bin_s
-    pre_iv, post_iv, run = sleep_epochs(session)
-    nrem = intervals_of(session, "Non-REM")
-    pre_rows = np.flatnonzero(in_intervals(centers, intersect(nrem, pre_iv)))
-    post_rows = np.flatnonzero(in_intervals(centers, intersect(nrem, post_iv)))
-    rip = ripple_bins(session, bin_s)
+    counts = {k: binned(session, units, r) for k, r in (("run", template), ("pre", rows["pre"]), ("post", rows["post"]))}
+    z = {k: zscore(c) for k, c in counts.items()}
+    ok = np.all([np.isfinite(v).all(0) for v in z.values()], axis=0)
+    h, b = np.flatnonzero(ok[:nh]), nh + np.flatnonzero(ok[nh:])
+    c = z["run"][:, h].T @ z["run"][:, b] / len(template)
+    out = {"template_bins": len(template), "hpc_used": len(h), "bla_used": len(b)}
+    pre_iv, post_iv, _ = sleep_epochs(session)
+    for k, iv in (("pre", pre_iv), ("post", post_iv)):
+        r = np.einsum("ti,ij,tj->t", z[k][:, h], c, z[k][:, b])
+        r = (r - r.mean()) / r.std()
+        times = (rows[k] + 0.5) * BIN_S
+        peaks = nrem_ripples(session, state_in(session, "Non-REM", iv))["peak"]
+        curve = peri_ripple_mean(times, r, peaks)
+        centres = peri_centres()
+        out[f"{k}_curve"] = curve
+        out[f"{k}_peak"] = float(curve[np.abs(centres) < PEAK_WINDOW_S].mean())
+        out[f"{k}_ripples"] = len(peaks)
+    return out
 
-    in_run = (centers >= run[0]) & (centers < run[1])
-    direction, _ = puff_direction(session)
-    template_rows = {"run": np.flatnonzero(in_run)}
-    if direction is not None:
-        lap_iv = {d: np.array([(a if lap_tail_s is None else max(a, b - lap_tail_s), b)
-                               for a, b, dd in run_laps(session) if dd == d]).reshape(-1, 2)
-                  for d in ("LR", "RL")}
-        safe = "RL" if direction == "LR" else "LR"
-        template_rows["puff"] = np.flatnonzero(in_run & in_intervals(centers, lap_iv[direction]))
-        template_rows["safe"] = np.flatnonzero(in_run & in_intervals(centers, lap_iv[safe]))
-        if equal_bins:
-            m = min(len(template_rows["puff"]), len(template_rows["safe"]))
-            for key in ("puff", "safe"):
-                template_rows[key] = np.sort(rng.choice(template_rows[key], m, replace=False))
 
-    def z(rows):
-        c = binned(session, units, bin_s, rows)
-        return zscore(c[:, :nh]), zscore(c[:, nh:])
-    zpre, zpost = z(pre_rows), z(post_rows)
+# --- firing by state, and ripple rate ------------------------------------------------------------
 
-    peaks = session["ripples"]["peak"]
-    post_peak_bins = (peaks[in_intervals(peaks, intersect(nrem, post_iv))] / bin_s).astype(np.int64)
-    pre_peak_bins = (peaks[in_intervals(peaks, intersect(nrem, pre_iv))] / bin_s).astype(np.int64)
+def state_rates(session: dict, units: list[int]) -> list[dict]:
+    """Firing rate of each unit over all REM, all NREM and all wake intervals of the session."""
+    ivs = {k: intervals_of(session, lab) for k, lab in (("rem", "REM"), ("nrem", "Non-REM"), ("wake", "Awake"))}
+    out = []
+    for i in units:
+        t = session["units"]["trains"][i]
+        out.append({"unit": i, **{k: count_in(t, iv) / np.diff(iv).sum() for k, iv in ivs.items()}})
+    return out
 
-    rows, traces = [], []
-    for name in templates:
-        if name not in template_rows or len(template_rows[name]) < 100:
-            continue
-        zh, zb = z(template_rows[name])
-        p = joint_patterns(zh, zb, rng)
-        r_pre = strength(*zpre, p["u"], p["v"])
-        r_post = strength(*zpost, p["u"], p["v"])
-        for k in range(len(p["s"])):
-            rows.append({"session": session["session"], "rat": session["rat"], "template": name,
-                         "pattern": k, "singular": float(p["s"][k]), "threshold": p["threshold"],
-                         "significant": bool(p["significant"][k]), "n_template_bins": p["n_bins"],
-                         "n_hpc": nh, "n_bla": len(bla),
-                         "pre": float(r_pre[:, k].mean()), "post": float(r_post[:, k].mean()),
-                         "bla_units": bla, "bla_weights": p["v"][:, k].copy()})
-            if keep_traces and p["significant"][k]:
-                curves = {}
-                for label, rows_, r_, peak_bins in (("post", post_rows, r_post, post_peak_bins),
-                                                    ("pre", pre_rows, r_pre, pre_peak_bins)):
-                    full = np.full(n, np.nan, np.float32)
-                    full[rows_] = r_[:, k]
-                    lag_idx = peak_bins[:, None] + np.arange(-lags, lags + 1)[None, :]
-                    ok = np.all((lag_idx >= 0) & (lag_idx < n), axis=1)
-                    curves[label] = (np.nanmean(full[lag_idx[ok]], axis=0), int(ok.sum()))
-                traces.append({"session": session["session"], "rat": session["rat"], "template": name,
-                               "pattern": k, "curve": curves["post"][0], "n_ripples": curves["post"][1],
-                               "curve_pre": curves["pre"][0], "n_ripples_pre": curves["pre"][1],
-                               "pre_rip": float(r_pre[rip[pre_rows], k].mean()),
-                               "pre_out": float(r_pre[~rip[pre_rows], k].mean()),
-                               "post_rip": float(r_post[rip[post_rows], k].mean()),
-                               "post_out": float(r_post[~rip[post_rows], k].mean())})
-    return {"rows": rows, "traces": traces, "direction": direction,
-            "n_pre_bins": len(pre_rows), "n_post_bins": len(post_rows),
-            "template_bins": {k: len(v) for k, v in template_rows.items()}}
+
+def ripple_rates(session: dict) -> dict:
+    """Ripple peaks per second of pre-NREM and of post-NREM."""
+    pre, post, _ = sleep_epochs(session)
+    out = {}
+    for k, iv in (("pre", pre), ("post", post)):
+        nrem = state_in(session, "Non-REM", iv)
+        out[f"{k}_nrem_s"] = float(np.diff(nrem).sum())
+        out[f"{k}_ripples"] = int(in_intervals(session["ripples"]["peak"], nrem).sum())
+        out[f"{k}_rate"] = out[f"{k}_ripples"] / out[f"{k}_nrem_s"] if out[f"{k}_nrem_s"] > 0 else np.nan
+    return out
 
 
 def time_frame_reads(url: str, video: str, n_frames: int = 20) -> tuple[float, int]:
