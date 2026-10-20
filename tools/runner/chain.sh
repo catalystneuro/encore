@@ -120,6 +120,8 @@ if [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
   fetch
   ready=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=(yaml.safe_load(sys.stdin) or {}).get('checks') or [{}]; print(str(c[-1].get('ready', False)).lower())")
   [ "$ready" = true ] || { echo "$d STOPPED: the claims check says the claims file is not ready"; exit 1; }
+  # The checkpoint: the checked claims go into main now, ahead of the attempt. A failure here does not stop it.
+  "$here/merge_claims.sh" "$d" 2>&1 | while read -r line; do log "$line"; done || true
 fi
 step author
 fetch

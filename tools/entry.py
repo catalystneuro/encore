@@ -213,6 +213,10 @@ def check(entry_dir: Path) -> Report:
         # The entry streams the version of its latest attempt; earlier attempts keep the version they used.
         if pinned and path == mine[-1] and version != pinned:
             report.error(where, f"dataset version {version!r} differs from {pinned!r} in entry.yaml")
+        # A deprecated attempt no longer stands: its claims are being read again, and the claims file it was
+        # tested on may already have been replaced (docs/pipeline.md), so it is not held to the current one.
+        if attempt.get("deprecated"):
+            continue
         known = claims_by_target.get((dataset_id(attempt), attempt.get("paper")))
         if labels_used.get((dataset_id(attempt), attempt.get("paper"))):
             kinds = {f.get("kind") for f in attempt.get("findings") or []}
