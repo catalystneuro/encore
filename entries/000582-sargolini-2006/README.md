@@ -16,7 +16,7 @@ earlier attempt, `000582-sargolini-2006-01`, was based; that attempt is deprecat
 | `grid-stable` | Blocked: methods underspecified | |
 | `spacing-dorsoventral` | Blocked: data missing | |
 | `fieldsize-dorsoventral` | Blocked: data missing | |
-| `grid-phase-orientation` | Blocked: methods underspecified | |
+| `grid-phase-orientation` | Partially reproduced | |
 | `hd-layers` | Not reproduced | |
 | `hd-with-grid-colocalized` | Blocked: methods underspecified | |
 | `hd-tuning-breadth-layers` | Blocked: methods underspecified | |
@@ -37,9 +37,12 @@ reasoning and the differences from the paper's method.
 
 The attempt record, with the reasons, is
 [`attempts/000582-sargolini-2006-02.yaml`](../../attempts/000582-sargolini-2006-02.yaml); the
-questions it asked about the claims file are in [`questions/000582.yaml`](../../questions/000582.yaml).
+questions it asked about the claims file are in [`questions/000582.yaml`](../../questions/000582.yaml). A reader
+answered all five on 2026-10-20, and the claims file carries the answers; the notebook follows the
+updated criteria. The answers changed one outcome, `grid-phase-orientation`, from blocked to
+partially reproduced.
 
-- `reproduce_sargolini_2006.ipynb`: the analysis. It streams all 118 files and takes about seven
+- `reproduce_sargolini_2006.ipynb`: the analysis. It streams all 118 files and takes about five
   minutes on four cores.
 - `sargolini.py`: loading the dandiset, and the rate maps, autocorrelograms, gridness,
   head-direction tests and speed regressions of the paper's Supporting Online Material, under every

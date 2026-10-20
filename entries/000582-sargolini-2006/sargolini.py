@@ -24,15 +24,20 @@ claims file lists for details the paper leaves open.
   (SOM). The circle around the outermost of the six peaks closest to the
   centre has a radius to that peak's centre plus its radius (O3a) or to its
   centre (O3b); the central peak is removed as its pixels (O3a) or as a disc
-  (O3b) (claims file). Gridness = min(r60, r120) - max(r30, r90, r150) (SOM).
-- Where "a peak's centre" is the location of its maximum or its centroid is
-  not fixed by the claims file; both are computed (`PEAK_LOCATIONS`). "A
-  peak's radius" is taken as the radius of a disc of the same area, a
-  standard choice. Contiguity is 4-connected, the default of
-  scipy.ndimage.label, a standard choice.
+  of its radius around its centre (O3b) (claims file). Gridness =
+  min(r60, r120) - max(r30, r90, r150) (SOM).
+- A peak's centre is its pixel of highest correlation or the centroid of its
+  pixels (`PEAK_CENTRES`), and its radius that of a disc of the same area or
+  the largest distance from its centre to one of its pixels (`PEAK_RADII`):
+  the readings the claims file names under O3. Both apply to the central peak
+  as to the others. When the circle runs to the outer peak's centre and the
+  central peak is removed as its pixels, no radius is used, so the radius
+  readings give the same gridness and only one is kept (`GRID_READINGS`).
+  Contiguity is 4-connected, the default of scipy.ndimage.label, a standard
+  choice.
 - Spacing: median distance from the centre to the (up to) six inner peaks;
   orientation: the smallest counterclockwise angle from the x axis to one of
-  them (SOM).
+  them (SOM), each with the peak centre of the reading (claims file, O3).
 - Head direction from the two LEDs; tuning in 60 bins of 6 degrees,
   unsmoothed; peak rate is the highest bin (SOM). Watson's two-sample U2 of
   head direction at spikes against all tracked samples (SOM; claims file, O4),
@@ -78,12 +83,14 @@ SPEED_BIN_S = 1.0          # speed bins (SOM)
 LOW_SPEED = 3.0            # cm/s, the paper's lowest velocity bin (main text)
 
 BINS = {"3cm": 3.0, "1.5cm": 1.5}                 # O2
-RADII = ("enclose", "centre")                       # O3, circle radius
+CIRCLES = ("enclose", "centre")                     # O3, circle radius
 CENTRAL = ("blob", "disc")                          # O3, central peak removal
-PEAK_LOCATIONS = ("max", "centroid")                # where a peak's centre is
+PEAK_CENTRES = ("max", "centroid")                  # O3, a peak's centre
+PEAK_RADII = ("area", "farthest")                   # O3, a peak's radius
 TRIALS = ("pooled", "first")                        # O1
-GRID_READINGS = [f"{b}|{r}|{c}|{p}" for b in BINS for r in RADII for c in CENTRAL
-                 for p in PEAK_LOCATIONS]
+GRID_KEYS = [f"{c}|{m}|{p}|{r}" for c in CIRCLES for m in CENTRAL for p in PEAK_CENTRES for r in PEAK_RADII
+             if not (c == "centre" and m == "blob" and r == "farthest")]   # the radius is unused there
+GRID_READINGS = [f"{b}|{k}" for b in BINS for k in GRID_KEYS]
 SPEED_READINGS = [f"{s}|{p}" for s in ("path", "displacement") for p in ("smoothed", "raw")]
 
 
@@ -310,29 +317,43 @@ def correlogram(a: np.ndarray, b: np.ndarray | None = None) -> np.ndarray:
 def peaks(corr: np.ndarray, bin_cm: float) -> dict:
     """Fields of a correlogram above r = 0.10 with at least 225 cm2 (SOM).
 
-    Returns the central peak's mask and radius, and for every other peak its
-    maximum and centroid (in bins, relative to the centre) and radius.
+    Returns the central peak's mask, and for the central peak and every other
+    peak, under each centre reading, its centre (in bins, relative to the
+    correlogram's centre) and its radius under each radius reading.
     """
     centre = np.array([(s - 1) / 2 for s in corr.shape])
-    labels, n = ndimage.label(np.nan_to_num(corr, nan=-1.0) > PEAK_R)
+    filled = np.nan_to_num(corr, nan=-1.0)
+    labels, n = ndimage.label(filled > PEAK_R)
     min_area = PEAK_AREA_CM2 / bin_cm ** 2
     index = np.arange(1, n + 1)
     areas = ndimage.sum(np.ones_like(corr), labels, index)
-    centroids = np.array(ndimage.center_of_mass(np.ones_like(corr), labels, index)).reshape(-1, 2)
-    maxima = np.array(ndimage.maximum_position(np.nan_to_num(corr, nan=-1.0), labels, index),
-                      dtype=float).reshape(-1, 2)
+    locs = {"centroid": np.array(ndimage.center_of_mass(np.ones_like(corr), labels, index)).reshape(-1, 2),
+            "max": np.array(ndimage.maximum_position(filled, labels, index), dtype=float).reshape(-1, 2)}
+    objects = ndimage.find_objects(labels)
+
+    def describe(k):
+        sl = objects[k]
+        ii, jj = np.nonzero(labels[sl] == k + 1)
+        pixels = np.column_stack([ii + sl[0].start, jj + sl[1].start]).astype(float)
+        return {p: (locs[p][k] - centre,
+                    {"area": np.sqrt(areas[k] / np.pi), "farthest": np.hypot(*(pixels - locs[p][k]).T).max()})
+                for p in PEAK_CENTRES}
+
     central_label = labels[tuple(centre.astype(int))]
     out = dict(central=labels == central_label if central_label else np.zeros(corr.shape, bool),
-               central_radius=np.sqrt(areas[central_label - 1] / np.pi) if central_label else 0.0,
-               max=[], centroid=[], radius=[])
+               central_peak=describe(central_label - 1) if central_label else None,
+               loc={p: [] for p in PEAK_CENTRES},
+               radius={(p, r): [] for p in PEAK_CENTRES for r in PEAK_RADII})
     for k in range(n):
         if k + 1 == central_label or areas[k] < min_area:
             continue
-        out["max"].append(maxima[k] - centre)
-        out["centroid"].append(centroids[k] - centre)
-        out["radius"].append(np.sqrt(areas[k] / np.pi))
-    for key in ("max", "centroid", "radius"):
-        out[key] = np.array(out[key])
+        for p, (loc, radii) in describe(k).items():
+            out["loc"][p].append(loc)
+            for r, v in radii.items():
+                out["radius"][(p, r)].append(v)
+    out["count"] = len(out["loc"]["max"])
+    out["loc"] = {p: np.array(v).reshape(-1, 2) for p, v in out["loc"].items()}
+    out["radius"] = {k: np.array(v) for k, v in out["radius"].items()}
     return out
 
 
@@ -343,62 +364,62 @@ def _rotations(corr: np.ndarray) -> dict:
                 ndimage.rotate(valid, a, reshape=False, order=1) > 0.99) for a in ANGLES}
 
 
-def grid_measures(corr: np.ndarray, bin_cm: float) -> dict:
-    """Gridness under every O3 and peak-location reading, with spacing and orientation.
+def _area(found: dict, corr: np.ndarray, circle: str, central: str, p: str, r: str) -> np.ndarray:
+    """The pixels gridness is computed on under one O3 reading: inside the circle around the
+    outermost of the six peaks closest to the centre, outside the central peak."""
+    centre = np.array([(s - 1) / 2 for s in corr.shape])
+    ii, jj = np.indices(corr.shape)
+    d = np.hypot(*found["loc"][p].T)
+    nearest = np.argsort(d)[:6]
+    outer = nearest[np.argmax(d[nearest])]
+    radius = d[outer] + (found["radius"][(p, r)][outer] if circle == "enclose" else 0.0)
+    if central == "blob" or found["central_peak"] is None:
+        removed = found["central"]
+    else:
+        loc, radii = found["central_peak"][p]
+        removed = np.hypot(ii - centre[0] - loc[0], jj - centre[1] - loc[1]) <= radii[r]
+    return (np.hypot(ii - centre[0], jj - centre[1]) <= radius) & ~removed & ~np.isnan(corr)
 
-    Keys are "radius|central|location" for gridness and "spacing|location",
-    "orientation|location" (cm and degrees). NaN when no peak besides the
-    central one is found.
+
+def grid_measures(corr: np.ndarray, bin_cm: float) -> dict:
+    """Gridness under every O3 reading, with spacing and orientation.
+
+    Keys are "circle|central|centre|radius" (GRID_KEYS) for gridness and
+    "spacing|centre", "orientation|centre" (cm and degrees). NaN when no peak
+    besides the central one is found.
     """
     found = peaks(corr, bin_cm)
     out = {}
-    names = [f"{r}|{c}|{p}" for r in RADII for c in CENTRAL for p in PEAK_LOCATIONS]
-    if len(found["radius"]) == 0:
-        out.update({k: np.nan for k in names})
-        for p in PEAK_LOCATIONS:
+    if found["count"] == 0:
+        out.update({k: np.nan for k in GRID_KEYS})
+        for p in PEAK_CENTRES:
             out[f"spacing|{p}"] = out[f"orientation|{p}"] = np.nan
         return out
     rotated = _rotations(corr)
-    centre = np.array([(s - 1) / 2 for s in corr.shape])
-    ii, jj = np.indices(corr.shape)
-    distance = np.hypot(ii - centre[0], jj - centre[1])
-    valid = ~np.isnan(corr)
-    for p in PEAK_LOCATIONS:
-        d = np.hypot(*found[p].T)
+    for p in PEAK_CENTRES:
+        d = np.hypot(*found["loc"][p].T)
         nearest = np.argsort(d)[:6]
-        outer = nearest[np.argmax(d[nearest])]
-        angles = np.degrees(np.arctan2(found[p][nearest, 1], found[p][nearest, 0])) % 360
+        angles = np.degrees(np.arctan2(found["loc"][p][nearest, 1], found["loc"][p][nearest, 0])) % 360
         out[f"spacing|{p}"] = float(np.median(d[nearest]) * bin_cm)
         out[f"orientation|{p}"] = float(angles.min())
-        for r in RADII:
-            radius = d[outer] + (found["radius"][outer] if r == "enclose" else 0.0)
-            for c in CENTRAL:
-                central = found["central"] if c == "blob" else distance <= found["central_radius"]
-                area = (distance <= radius) & ~central & valid
-                corrs = {}
-                for a, (values, ok) in rotated.items():
-                    use = area & ok
-                    corrs[a] = (np.corrcoef(corr[use], values[use])[0, 1]
-                                if use.sum() > 2 else np.nan)
-                out[f"{r}|{c}|{p}"] = float(min(corrs[60], corrs[120])
-                                            - max(corrs[30], corrs[90], corrs[150]))
+    for key in GRID_KEYS:
+        area = _area(found, corr, *key.split("|"))
+        corrs = {}
+        for a, (values, ok) in rotated.items():
+            use = area & ok
+            corrs[a] = np.corrcoef(corr[use], values[use])[0, 1] if use.sum() > 2 else np.nan
+        out[key] = float(min(corrs[60], corrs[120]) - max(corrs[30], corrs[90], corrs[150]))
     return out
 
 
 def rotation_curve(corr: np.ndarray, bin_cm: float, step: int = 6) -> tuple[np.ndarray, np.ndarray]:
     """Correlation of the autocorrelogram with itself rotated in 6-degree steps (for figures),
-    within the circle of reading O3a (enclose, blob, maximum)."""
+    within the area of the first O3 reading (GRID_KEYS[0])."""
     found = peaks(corr, bin_cm)
     angles = np.arange(0, 181, step)
-    if len(found["radius"]) == 0:
+    if found["count"] == 0:
         return angles, np.full(len(angles), np.nan)
-    centre = np.array([(s - 1) / 2 for s in corr.shape])
-    ii, jj = np.indices(corr.shape)
-    distance = np.hypot(ii - centre[0], jj - centre[1])
-    d = np.hypot(*found["max"].T)
-    nearest = np.argsort(d)[:6]
-    outer = nearest[np.argmax(d[nearest])]
-    area = (distance <= d[outer] + found["radius"][outer]) & ~found["central"] & ~np.isnan(corr)
+    area = _area(found, corr, *GRID_KEYS[0].split("|"))
     values = []
     for a in angles:
         rot = ndimage.rotate(np.nan_to_num(corr), a, reshape=False, order=1)
@@ -556,8 +577,8 @@ def cell_measures(session: Session, unit: Unit, speed_cache: dict | None = None,
                   maps: dict | None = None) -> dict:
     """Every measure of one cell under every reading.
 
-    Keys: "grid|T|bin|radius|central|location" (gridness), "spacing|T|bin|location",
-    "orientation|T|bin|location"; head direction "u2|T", "u2_p|T", "block_r|T",
+    Keys: "grid|T|bin|circle|central|centre|radius" (gridness), "spacing|T|bin|centre",
+    "orientation|T|bin|centre"; head direction "u2|T", "u2_p|T", "block_r|T",
     "block_p|T", "peak_rate|T", "peak_dir|T", "mv_dir|T", "mv_r|T", "ang_dev|T",
     "circ_sd|T", "bg_min|T", "bg_far|T"; speed "slope|T|how|positions" and so on;
     stability "within|trial|split|bin|..." and "between|...". T is the O1 reading.
@@ -665,7 +686,7 @@ def cell_measures(session: Session, unit: Unit, speed_cache: dict | None = None,
 def pair_measures(session: Session, maps: dict) -> list[dict]:
     """For every pair of cells of a file: the displacement from the centre of the peak of
     their rate-map crosscorrelogram nearest the centre, in cm, per trial reading, bin size
-    and peak location. Peaks as for gridness (r > 0.10, 225 cm2), the central field included."""
+    and peak centre. Peaks as for gridness (r > 0.10, 225 cm2), the central field included."""
     rows = []
     for (i, a), (j, b) in combinations(enumerate(session.units), 2):
         row = dict(path=session.path, subject=session.subject, unit_a=a.name, unit_b=b.name)
@@ -675,7 +696,7 @@ def pair_measures(session: Session, maps: dict) -> list[dict]:
                 centre = np.array([(s - 1) / 2 for s in corr.shape])
                 labels, n = ndimage.label(np.nan_to_num(corr, nan=-1.0) > PEAK_R)
                 if n == 0:
-                    for p in PEAK_LOCATIONS:
+                    for p in PEAK_CENTRES:
                         row[f"offset|{T}|{bname}|{p}"] = np.nan
                     continue
                 index = np.arange(1, n + 1)
@@ -760,7 +781,7 @@ def classify(cells, trial: str, grid_reading: str, level: float):
 
 
 def readings(with_grid: bool = True, with_level: bool = True) -> list[tuple]:
-    """Every combination of the trial (O1), gridness (O2, O3, peak location) and
+    """Every combination of the trial (O1), gridness (O2, O3) and
     significance (O4) readings."""
     out = []
     for trial in TRIALS:
