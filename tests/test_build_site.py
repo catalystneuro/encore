@@ -470,10 +470,14 @@ def test_stylesheets_and_scripts_are_named_by_their_contents(built):
 def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
     data, out = built
     for key in site.current_attempts(data):
-        old = (out / "dandisets" / site.split_key(key)[1] / "index.html").read_text()
+        archive, ident = site.split_key(key)
+        if archive != "dandi":   # only DANDI datasets had pages under dandisets/
+            assert not (out / "dandisets" / ident).exists()
+            continue
+        old = (out / "dandisets" / ident / "index.html").read_text()
         assert f'url=../../{site.page_of(key)}"' in old
         for a in site.earlier_attempts(data, key):
-            moved = (out / "dandisets" / site.split_key(key)[1] / a["id"] / "index.html").read_text()
+            moved = (out / "dandisets" / ident / a["id"] / "index.html").read_text()
             assert f'url=../../../{site.page_of(key)}{a["id"]}/"' in moved
     assert 'url=../datasets/"' in (out / "dandisets" / "index.html").read_text()
 
