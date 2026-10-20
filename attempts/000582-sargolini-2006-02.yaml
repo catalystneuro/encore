@@ -1,0 +1,347 @@
+schema_version: 2
+id: 000582-sargolini-2006-02
+dataset:
+  archive: dandi
+  id: "000582"
+  version: 0.251111.2151
+  doi: 10.48324/dandi.000582/0.251111.2151
+paper: doi:10.1126/science.1125572
+date: 2026-10-20
+entry: 000582-sargolini-2006
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+outcomes:
+- claim: layer2-grid
+  outcome: partially_reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:layer2-grid
+  measured: [0.634, 0.559, 0.314, 0.359]
+  notes: >-
+    Under all 32 readings (O1 to O3, and the peak centre as maximum or centroid) layer II has the
+    largest fraction of grid cells, 0.620 to 0.718, above 0.5 and above layers III (0.542 to
+    0.604), V (0.305 to 0.415) and VI (0.359 to 0.485). Layer II is within tolerance under 13 of
+    32 readings; no deeper layer is within tolerance under any, each being well above the paper's
+    fraction. Gridness above 0 makes 280 to 329 of 614 cells grid cells, against 203 of 627 in the
+    paper. Per rat, layer II fractions are 0.41 to 0.90 and deeper ones 0 to 0.67; counting each
+    (rat, depth, hemisphere, name) once keeps the order (0.680, 0.511, 0.356, 0.329). Same outcome
+    as 000582-sargolini-2006-01, for another reason. That attempt used its own grid score with a
+    shuffled-data threshold, under which about a third of layer II cells were grid cells, so the
+    majority part was in doubt; with the paper's criterion, gridness above 0, the majority and the
+    order hold and the deeper layers' fractions are what falls short.
+  deviations:
+  - Each cell-session counts as a cell; no identifier links cells across files.
+  - The dandiset holds 71 layer II cell-sessions against the paper's 108, and 15 rats against 17.
+  - A peak's centre is run as its maximum and as its centroid, and a peak's radius is that of a disc of the same area; the claims file does not fix either (asked).
+  - Positions are rescaled in the files; rate maps use them as deposited.
+- claim: grid-all-layers
+  outcome: reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:grid-all-layers
+  notes: >-
+    Every layer has grid cells under all 32 readings, at least 44 in layer II, 123 in III, 36 in V
+    and 71 in VI, from 5, 6, 3 and 3 rats under the first reading. The earlier attempt had no such
+    claim.
+  deviations:
+  - As for layer2-grid.
+- claim: gridness-range-similar
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:gridness-range-similar
+  notes: >-
+    The analysis ran; the criterion's two tests disagree. The Mann-Whitney test of layer II against
+    layers III to VI finds a difference under 2 of 32 readings (p 0.013 to 0.993); the
+    Kruskal-Wallis test across the four layers finds one under all 32 (p 0.0001 to 0.047). The
+    Kruskal-Wallis difference lies among the deeper layers (median gridness of grid cells 0.46 to
+    0.76 in layer III, 0.21 to 0.43 in layer V, 0.28 to 0.57 in layer II). The ranges are alike,
+    from about 0 to between 1.14 and 1.49 in every layer. The earlier attempt had no such claim.
+- claim: grid-stable
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:grid-stable
+  measured: 280
+  notes: >-
+    The analysis ran. No combination of readings has every grid cell stable, and the 256
+    combinations split between partially reproduced (51, at least 90% stable) and not reproduced
+    (205). With map correlations within trials (odd and even minutes) and between trials, 91.8% to
+    96.3% of grid cells are stable; with gridness above 0 required in both parts of each trial,
+    54% to 65%. Between trials, 87% to 95% of the 72 to 85 grid cells in two-trial files have a
+    significant positive map correlation and 55% to 70% have gridness above 0 in both trials. The
+    number of grid cells, 280 to 329, is outside 203 +/- 20. The earlier attempt had no such claim.
+  deviations:
+  - Only the 23 twenty-minute files hold two trials; between-trial stability is tested on their 72 to 85 grid cells.
+- claim: spacing-dorsoventral
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The claim needs each recording site's distance from the postrhinal border, from the histology.
+    The units table has only `depth` (the depth the electrodes were lowered to, in m), layer and
+    hemisphere; no column or file gives the distance. Checked in the file listing and the units
+    table of every file (notebook, data check). The earlier attempt had no such claim.
+- claim: fieldsize-dorsoventral
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    As spacing-dorsoventral, the distance of the recording sites from the postrhinal border is not
+    in the dandiset. The earlier attempt had no such claim.
+- claim: grid-phase-orientation
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:grid-phase-orientation
+  notes: >-
+    The analysis ran. The phase part holds in every layer under every reading (75% to 96.5% of
+    simultaneous pairs displaced by more than a fifth of the spacing, 93% to 100% by more than 3
+    cm). Orientation is more alike within files than between rats in layers II and III under every
+    reading (p below 0.001) but not under every reading in layers V (p up to 0.23, holds under 75%
+    of readings) and VI (p up to 0.38, 59%), each from three rats. Both parts hold in every layer
+    under 14 of 32 readings (12 when other rats' pairs are drawn from all layers). The earlier
+    attempt had no such claim.
+  deviations:
+  - Whether other rats' pairs are taken within the layer or from all layers is not fixed by the claims file; both are run (asked).
+- claim: hd-layers
+  outcome: not_reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:hd-layers
+  measured: [9, 0.733, 0.599, 0.937, 0.790]
+  notes: >-
+    Layer II has cells passing both head-direction criteria under all four readings (9, 7, 4 and 2
+    of 43), all from rat 11265 in its two 20-minute files, with U2 0.36 to 9.8 against a median of
+    13.1 in deeper head-direction cells. Watson's U2 alone is significant for 39 to 41 of the 43
+    layer II cells, so the block correlation decides. The deeper fraction, 0.671 to 0.733, and layer
+    V (0.924 to 0.937) are within tolerance; layer III (0.527 to 0.599) is below its range under
+    every reading and layer VI (0.713 to 0.790) above it under two of four. The claim needs no
+    layer II cell to pass, even for a partial reproduction. The earlier attempt had no such claim;
+    its deep-hd-conjunctive found 12% of layer II cells tuned with its own measure.
+  deviations:
+  - Two-LED files, not two-LED rats; rat 11084 has files of both kinds.
+  - The block correlation passes when r > 0 with a two-sided p below the level, a standard choice.
+- claim: hd-with-grid-colocalized
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:hd-with-grid-colocalized
+  notes: >-
+    The analysis ran; the two units of colocalization disagree under all 64 readings. By file, 79%
+    to 91% of the 49 to 56 files with a pure head-direction cell in layers III to VI also hold a grid
+    or conjunctive cell; by tetrode, 39% to 48% of 107 to 126 tetrodes do. The earlier attempt had
+    no such claim.
+  deviations:
+  - Head-direction cells are the pure head-direction cells of table S1B, and the grid or conjunctive cell must be another cell; the claims file does not say (asked).
+- claim: hd-tuning-breadth-layers
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:hd-tuning-breadth-layers
+  notes: >-
+    The analysis ran; the readings disagree. On U2 no ANOVA and 7 of 68 Kruskal-Wallis tests find a
+    difference between layers III, V and VI; on the angular standard deviation many do (angular
+    deviation, ANOVA 28 and Kruskal-Wallis 36 of 68; circular standard deviation, 45 and 36 of 68),
+    layer V being more sharply tuned (46 to 47 degrees against 53 to 55, with conjunctive cells).
+    Means are within tolerance in 2 of 204 rows. The earlier attempt had no such claim.
+  deviations:
+  - The angular standard deviation is run both as Batschelet's angular deviation and as his circular standard deviation (asked); the outcome does not depend on the answer.
+- claim: hd-full-range
+  outcome: reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:hd-full-range
+  notes: >-
+    Under all four readings the preferred directions fill all twelve 30-degree sectors, and so all
+    60- and 90-degree sectors, in layers III (96 to 109 cells), V (73 to 74) and VI (102 to 113).
+    The earlier attempt had no such claim.
+  deviations:
+  - Sectors start at 0 degrees of the camera frame, a standard choice.
+- claim: hd-colocalized-distributed
+  outcome: reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:hd-colocalized-distributed
+  notes: >-
+    Under every reading fewer than half of the ensembles of five or more simultaneous
+    head-direction cells are clustered by Watson's one-sample U2 test, 0 to 2 of 9 to 16 ensembles
+    of pure head-direction cells and 2 to 4 of 26 to 28 with conjunctive cells. The counts differ
+    from the paper's 4 of 12; the clustered count is within 4 +/- 0.4 under one reading only (4 of
+    26, with conjunctive cells). Most ensembles are from rats 11207 (18 of 28) and 11265 (6). The
+    earlier attempt had no such claim.
+  deviations:
+  - Critical values of the one-sample U2 test by Stephens' small-sample form, which gives the paper's 0.177 to 0.182.
+- claim: hd-stable-trials
+  outcome: reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:hd-stable-trials
+  measured: 0.781
+  notes: >-
+    For 88 to 96 head-direction and conjunctive cells in the 19 or 20 two-trial files of 3 rats, the
+    circular correlation of preferred direction between trials is 0.78 to 0.85 and the mean
+    correlation of the trials' tuning curves 0.77 to 0.81, all p below 0.001 and within
+    0.84 +/- 0.084 under both readings and all four classifications. The statement's "always"
+    holds less well, as 7 to 14 cells have tuning curves correlated below 0.5 between trials; two
+    cells silent in one trial are left out. The earlier attempt had no such claim.
+  deviations:
+  - Only the 23 twenty-minute files hold two trials, all from 3 rats (11025, 11138, 11207 among the head-direction cells).
+  - Circular correlation by Jammalamadaka and SenGupta, a standard choice.
+- claim: hd-rates
+  outcome: not_reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:hd-rates
+  notes: >-
+    The median background rate is 0 Hz (lowest bin) or 0.33 to 0.50 Hz (beyond 90 degrees),
+    below 0.55 Hz under every reading, but only 66% to 71% of head-direction cells peak between
+    4.5 and 44 Hz where the criterion needs 90%; the median peak is 5.9 to 6.9 Hz. The earlier
+    attempt had no such claim.
+- claim: deep-hd-conjunctive
+  outcome: not_reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:deep-hd-conjunctive
+  measured: [0.30, 0.55, 0.93, 0.70]
+  notes: >-
+    Layer II has conjunctive cells under all 64 readings (1 to 8, all from rat 11265); the claim
+    needs none even for a partial reproduction. The conjunctive fraction of grid cells is 0.87 to
+    0.95 in layer V (within tolerance), 0.46 to 0.57 in layer III (paper 0.66) and 0.55 to 0.73 in
+    layer VI (paper 0.28). Four-layer chi-square p 1.9e-11 to 0.09, three-layer p 1.6e-05 to 0.78.
+    The earlier attempt called this claim reproduced. Its claim was the abstract's sentence, that
+    grid, head-direction and conjunctive cells occur together in the deeper layers, which the data
+    still show (table S1B, first reading, conjunctive cells 58, 25 and 30 in layers III, V and VI).
+    The claim now carries the paper's per-layer fractions and requires no conjunctive cell in layer
+    II, and with the paper's criteria neither holds.
+- claim: gridness-hd-continuous
+  outcome: reproduced
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:gridness-hd-continuous
+  notes: >-
+    Under all 64 readings there are 103 to 141 conjunctive cells, and among the 372 to 395 cells
+    passing either criterion the largest gap is at most 0.135 of the gridness range and 0.110 of
+    the log U2 range. The earlier attempt had no such claim.
+  deviations:
+  - No separate clusters is read as no gap wider than a quarter of an axis's range, the claims file's standard choice.
+- claim: conj-tuning-similar
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:conj-tuning-similar
+  notes: >-
+    The analysis ran; the tests disagree. The t-test finds a difference in U2 between conjunctive
+    and pure head-direction cells under 49 of 64 readings (means 12.6 to 19.4 against 18.2 to
+    25.4), the Mann-Whitney test under 14 of 64 (medians 9.4 to 15.5 against 10.5 to 17.1). Means
+    are within tolerance under 3 of 64 readings. The earlier attempt had no such claim.
+- claim: cue-rotation-coherent
+  outcome: blocked
+  blocked_by: data_missing
+  notes: >-
+    The claim needs the cue-rotation trials of five rats in the small circular box and the card's
+    position in each. No file names its enclosure, a condition or a cue rotation, there is no trial
+    table, and every description says the same 1 x 1 m enclosure. Checked in the file listing, the
+    file metadata and every table of the files. The earlier attempt had no such claim.
+- claim: speed
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:speed
+  notes: >-
+    The analysis ran. Counted as cells with a positive slope at P < 0.001, 13% to 44% of grid
+    cells, 11% to 28% of head-direction cells and 9% to 41% of conjunctive cells pass, far below
+    the paper under every combination. Counted by a positive slope, 82% to 89%, 62% to 71% and 69%
+    to 82% pass; all three are within tolerance under 54 combinations (reproduced) and the order
+    alone holds under 200 (partially reproduced). The criterion calls disagreement between these
+    outcomes methods_underspecified, and also says reproduced under a combination; how to read it
+    was asked. The sign test against half has p at most 2.1e-17, 0.0015 and 4.5e-05 for the three
+    classes. The earlier attempt called this claim reproduced; its claim was the abstract's "all
+    cell types were modulated by running speed", tested as the correlation of rate with speed over
+    5 cm/s bins against shuffled spike trains, at the level of each cell type. The claim now
+    carries the paper's per-cell counts and regression method, whose readings disagree.
+  deviations:
+  - Speeds rest on positions rescaled in the files; in the 19 circular files spanning 200 cm they are about 11% too large.
+- claim: speed-slope-steeper
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:speed-slope-steeper
+  notes: >-
+    Blocked because it depends on speed, which is blocked. The analysis ran. Under all 256
+    combinations the ANOVA is significant (F 4.5 to 13.4, p at most 0.012) and grid cells have
+    steeper slopes than head-direction cells (Tukey p at most 0.0084), but conjunctive cells do not
+    differ from head-direction cells (Tukey p 0.09 to 0.94), which on its own would be partially
+    reproduced under every reading; conjunctive against grid p 0.0021 to 0.29. Degrees of freedom
+    F(2,448) to F(2,488). The earlier attempt had no such claim.
+- claim: speed-intercept
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_sargolini_2006.ipynb
+  output: claim:speed-intercept
+  notes: >-
+    Blocked because it depends on speed, which is blocked. The analysis ran. The intercept is
+    positive in 98.3% to 99.8% of cells (1 to 8 negative), within tolerance, but mean rates at 0 to
+    3 cm/s are 1.2 to 1.9 Hz (grid), 1.1 to 1.7 Hz (head-direction) and 1.0 to 1.6 Hz
+    (conjunctive), more than 10% below 2.26, 2.50 and 2.39 Hz under every reading, which on its
+    own would be not reproduced. The earlier attempt had no such claim.
+  deviations:
+  - The 0 to 3 cm/s bin rests on rescaled positions.
+findings:
+- kind: metadata_error
+  statement: >-
+    Still present from 000582-sargolini-2006-01. Every file says the enclosure was 1 x 1 m, but on
+    the larger axis the positions span 150 cm in 2 files and 200 cm in 20, 19 of which look
+    circular (under 1% of samples outside the inscribed circle).
+- kind: metadata_error
+  statement: >-
+    Still present from 000582-sargolini-2006-01. Every file says position is given for two LEDs, but
+    47 of 118 files have one, so head direction cannot be computed for 167 of 620 cell-sessions.
+    Rat 11084 has files of both kinds, while the paper says each rat had one or two LEDs.
+- kind: identifier_missing
+  statement: >-
+    Still present from 000582-sargolini-2006-01. No identifier links a cell across files. Of 584
+    cell-sessions with a depth, there are 425 distinct (rat, depth, hemisphere, name), 99 of which
+    appear in 2 to 7 files.
+- kind: selection_undocumented
+  statement: >-
+    Still present from 000582-sargolini-2006-01. The dandiset is described as a sample of the
+    paper's data without saying how it was selected. It holds 620 cell-sessions from 15 rats
+    against the paper's 627 cells from 17; layer II has 71 against 108, while layers III, V and VI
+    hold slightly more than table S1A (227, 118 and 198 against 223, 110 and 186).
+- kind: methods_unavailable
+  statement: >-
+    Partly fixed since 000582-sargolini-2006-01. This attempt read the methods in the paper's
+    Supporting Online Material, supplied by a person; the paper is still not open access, the
+    dandiset states no analysis parameter, and no analysis code is public.
+- kind: metadata_error
+  statement: >-
+    New. The positions are rescaled without saying so. In all 118 files they span exactly 100, 150
+    or 200 cm on the larger axis and the first trial is centred on zero; the 19 circular files
+    spanning 200 cm are most likely the paper's 180 cm circle, about 11% too large. The distance
+    between the two LEDs (median 5.2 cm per file, 2.6 to 36 cm, against 7 cm in the paper) is too
+    variable to fix the scale.
+- kind: metadata_insufficient
+  statement: >-
+    New. The 23 twenty-minute files hold two 10-minute trials joined near 600 s (in all 23 the
+    position jumps between 599.9 and 600.1 s by more than 99.9% of the file's 0.2-s steps, and only
+    the first trial is centred). There is no trial table, and nothing says which 10-minute files,
+    if any, are the two trials of one recording.
+- kind: data_missing
+  statement: >-
+    New. No file gives the recording sites' distance from the postrhinal border, which the paper's
+    dorsoventral analyses (fig. S3) use; `depth` is the depth the electrodes were lowered to.
+- kind: data_missing
+  statement: >-
+    New. No file names its enclosure, condition or the position of the cue card, so the
+    cue-rotation trials of five rats cannot be found.
+- kind: metadata_insufficient
+  statement: >-
+    New. Six cells have no layer (one in rat 11084, five in 11207), 36 no depth and 230 no
+    hemisphere.
+- kind: metadata_error
+  statement: >-
+    New. The descriptions disagree with the files. The experiment description says the sample holds
+    conjunctive and head-direction cells from layers III and V, and the dandiset description that it
+    holds spike times for recorded grid cells; the files hold cells of layers II, III, V and VI and
+    of every class.
+- kind: metadata_insufficient
+  statement: >-
+    New. The files do not say which LED is the red one, whose positions the paper uses. LED1 is the
+    only LED in single-LED files, where the paper says rats carried a red LED, so it is taken as
+    red.
