@@ -9,10 +9,11 @@
 # and their revisions, and a third round when the last revision proposed changes. Then it records
 # and merges the attempt. A claims file whose check says it is not ready stops the chain, for a
 # person to look at. A repeat attempt on a new version of the dataset (VERSION given) keeps the
-# claims file, unless the earlier attempt is deprecated. Picks up where an earlier chain stopped: roles already committed to the branch
-# attempt/<dataset> are skipped, and a run of the next role that is still going is waited for. A
-# branch already merged into main belongs to an earlier attempt and is deleted first, so a repeat
-# attempt starts from main. A run that fails on the subscription's session limit is retried after
+# claims file, unless the earlier attempt is deprecated. Picks up where an earlier chain stopped: roles
+# committed since the attempt began ($RUNNER_STATE/attempt-<dataset>), on its branch or already on main,
+# are skipped, and a run of the next role that is still going is waited for. When a new attempt starts, a
+# branch already merged into main belongs to an earlier attempt and is deleted first, so the attempt
+# starts from main; a branch merged while its attempt is going is kept. A run that fails on the subscription's session limit is retried after
 # 30 minutes from where it started; any other failure stops the chain.
 #
 # Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
@@ -43,8 +44,13 @@ log(){ echo "$(date -u +%Y-%m-%dT%H:%MZ) $d $*"; }
 remote_branch(){ git ls-remote --heads origin "attempt/$d" | cut -f1; }
 fetch(){ git fetch -q origin main 2>/dev/null || true; git fetch -q origin "attempt/$d" 2>/dev/null || true; }
 # Roles committed on the branch since it left main, most recent last.
-done_roles(){ git log --reverse --format=%s origin/main..origin/attempt/"$d" 2>/dev/null \
-  | sed -nE "s/^Agent run on $d: ([a-z0-9-]+) \(success\)$/\1/p"; }
+# The attempt in progress began at the time in $STATE/attempt-<folder>, written when it started and removed
+# when it is merged. Its roles are the runs committed since then, on its branch or already on main (a
+# branch merged early, or the claims checkpoint): an earlier attempt's runs are older and do not count.
+mark="$STATE/attempt-$d"
+done_roles(){ { git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" --format='%ct %s' origin/main 2>/dev/null
+                git log --since="$(cat "$mark" 2>/dev/null || echo 2000-01-01)" --format='%ct %s' origin/attempt/"$d" 2>/dev/null; } \
+  | sort -n -u | sed -nE "s/^[0-9]+ Agent run on $d: ([a-z0-9-]+) \(success\)$/\1/p"; }
 is_done(){ done_roles | grep -qx "$1"; }
 workflow_of(){ case "$1" in claims|claims-check|answer) echo papers.yml;; *) echo attempt.yml;; esac; }
 run_of(){ gh run list --workflow "$(workflow_of "$1")" --limit 100 --json databaseId,displayTitle,status \
@@ -104,9 +110,13 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
   done; }
 
 fetch
-if [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/attempt/"$d" origin/main; then
-  git push -q origin --delete "attempt/$d" && log "deleted attempt/$d, merged with an earlier attempt"
-  fetch
+if [ ! -e "$mark" ]; then
+  # A new attempt. A branch already merged into main belongs to an earlier one; start from main.
+  if [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/attempt/"$d" origin/main; then
+    git push -q origin --delete "attempt/$d" && log "deleted attempt/$d, merged with an earlier attempt"
+    fetch
+  fi
+  date -u +%Y-%m-%dT%H:%M:%SZ > "$mark"
 fi
 step(){ is_done "$1" || run_role "$1" || { echo "$d STOPPED at $1"; exit 1; }; }
 # On the branch: python reads a file of the attempt's branch from stdin.
@@ -164,7 +174,7 @@ while true; do
   sleep 60
 done
 if echo "$s" | jq -e 'all(.bucket=="pass" or .bucket=="skipping")' >/dev/null; then
-  gh pr merge "$pr" --merge >/dev/null && { echo "$d MERGED $pr"; exit 0; }
+  gh pr merge "$pr" --merge >/dev/null && { rm -f "$mark"; echo "$d MERGED $pr"; exit 0; }
   echo "$d STOPPED: merging $pr failed"; exit 1
 fi
 echo "$d CHECKS FAILED $pr"; exit 1
