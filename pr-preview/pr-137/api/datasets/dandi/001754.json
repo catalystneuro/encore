@@ -1,0 +1,211 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001754",
+  "label": "DANDI:001754"
+ },
+ "page": "datasets/dandi/001754/",
+ "generated": "2026-10-20T18:54:44+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001754-knierim-2000-02",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001754",
+    "version": "draft",
+    "modified": "2026-10-14 21:55:09+00:00"
+   },
+   "key": "dandi:001754",
+   "label": "DANDI:001754",
+   "dataset_version": "draft",
+   "paper": "10.1038/72910",
+   "paper_title": "Three-dimensional spatial selectivity of hippocampal neurons during space flight",
+   "date": "2026-10-15",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-6"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/38734241190"
+   },
+   "tier": "agent_verified",
+   "deprecated": "Its claims were written from the abstract and figure titles only. Read against the full text on 2026-10-20, flight-spatial-code was judged with a shuffle test the paper does not use (the paper compares spatial information with preflight), and four dropped claims are stated in the paper.",
+   "deprecated_on": "2026-10-20",
+   "entry": "001754-knierim-2000",
+   "entry_title": "Place cells during space flight on the Neurolab mission (Knierim et al. 2000)",
+   "description": "Tests the findings of Knierim, McNaughton and Poe (2000) that can be tested on dandiset 001754, which holds sorted units, task epochs, rate maps and spike-time positions of three rats recorded before and during the Neurolab shuttle mission. It tests spatial selectivity on the Escher staircase in flight, spatial information in flight against preflight, and the stability of place fields across two sessions. The paper is not open access; claims come from its abstract, its figure titles and the dandiset's description. There is no EEG in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_knierim_2000.ipynb",
+     "title": "Reproducing Knierim et al. (2000) from dandiset 001754",
+     "executed": "notebooks/001754-knierim-2000/reproduce_knierim_2000.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "flight-spatial-code",
+     "statement": "In flight, after an initial period, hippocampal place cells on the Escher staircase showed normal, spatially specific firing, with spatial information per spike not different from the same rats' preflight cells.",
+     "source": "Main text, paragraph beginning \"During the Neurolab Space Shuttle mission\", last sentence; supported by the paragraphs beginning \"Spatial firing patterns of 16 active place cells\" and \"The mean spatial-information content for all 7\" and Figures 2a, 2c and 3a; also the standfirst",
+     "quote": "Nonetheless, place cells eventually demonstrated normal, spatially specific firing properties.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_knierim_2000.ipynb",
+     "notes": "On flight day 9, 10 of 25 Rat1 units (0.40) have spatial information above the 95th percentile of 500 circular-shift shuffles on the Escher staircase (binomial p = 1.6e-7 against 0.05), and 2 of 28 Rat2 units (0.071, p = 0.41). By the criterion Rat1 is above chance but below 0.5 and Rat2 is not above chance, so neither the reproduced nor the partially reproduced rule is met. Repeats with 2000 shuffles and five other seeds give 10 or 11 of 25 for Rat1 and 2 of 28 for Rat2, and the run of 200 shuffles in the data check gives 10 and 2; 5 Rat1 units have p between 0.01 and 0.1. The outcome is the same as in 001754-knierim-2000-01, which recorded 12 of 25 for Rat1 (11 to 13 over seven runs); on the earlier version's files the notebook gives 11 or 12 of 25 for Rat1 and 2 or 3 of 28 for Rat2 over five seeds. Every real spike has a sample at its own time in both versions; the draft's trace adds samples at the other rat's spike times in each window, so shifted spikes find a sample more often and the shuffles change. Shifted spikes are now dropped about as often in Rat2's FD9 ES epoch (median 0.058) as in Rat1's (0.060), against 0.306 to 0.307 and 0.074 to 0.075 on the earlier version's files, and a count-matched variant gives 12 of 25 (0.48) for Rat1 and 2 of 28 for Rat2. With each unit's spikes replaced by a Poisson train of the same mean count, 9 of 122 flight ES units are significant (0.074, binomial p = 0.16 against 0.05), and 12 of 125 (0.096, p = 0.023) when each spike is moved to its nearest position sample, which reproduces the real drop rates; per session the false-positive fraction is 0 to 0.21, and in the judged sessions 0.160 and 0.154 for Rat1 and 0.037 and 0.214 for Rat2. Against these fractions Rat1's 10 of 25 is still above chance (p = 0.0035 and 0.0026) and Rat2's 2 of 28 is not (p = 0.28 and 0.99), so the outcome is the same, though the criterion's 0.05 is below the false-positive fraction of some sessions. With each unit's real train reversed in time within its epoch, which keeps its bursts and changes in rate and breaks its relation to the position, 2 of 122 flight ES units are significant (1 of 25 in Rat1's FD9 session, 0 of 27 in Rat2's), and Rat3's ES1 trains against the ES2 trace and the reverse give 0 of 16 and 0 of 19, so with real temporal structure the test is conservative. A unit's 95th percentile of the shuffles is nearly the same for its reversed train (Spearman rho 0.995), 1.7 to 2.3 times that of a Poisson train of the same count per session, and higher the fewer 10 s periods hold its spikes (rho -0.874 with the effective fraction of 10 s bins filled) and the fewer spikes it has (rho -0.601); the two explain 80% of its variance on a log scale. Rat2's FD9 units are the most clumped (median 0.145 of the bins, against 0.190 to 0.358 in the other sessions) and have the highest median 95th percentile (3.572). The test has less power for such units, and its power was not measured, so a low fraction, Rat2's especially, is weak evidence against a spatial code; the criterion's rule decides the outcome. The trace moves as a tracked animal would in Rat2's windows (median step 0.50 pixels and path length 33.0 pixels per second in its FD9 ES window), and units of neither rat are selective in any MC window (0 to 2 of 11 to 32), so neither settles whose position it is. Rat2's units are not selective with the trace in any window (1 of 16 and 2 of 28 in their own ES epochs, 0 of 15 and 0 of 41 in Rat1's), and Rat1's units are selective in Rat2's FD4 ES epoch (10 of 15), so the trace in Rat2's epochs may not be Rat2's position; the files say it is taken to be, and that the source does not name the animal tracked. On flight day 4, 11 of 20 Rat1 units, 1 of 16 Rat2 units, and 11 of 16 and 1 of 19 Rat3 units in its ES1 and ES2 epochs are significant. In MC epochs 0 to 2 units per session are significant. The \"three orthogonal surfaces\" part of the abstract is tested apart, and blocked.",
+     "deviations": [
+      "The paper's Methods were not available; the selection (50 spikes at a known position), the 32 x 32 binning, the shuffle and the thresholds are common choices fixed in the claims file.",
+      "Occupancy is the original analysis's occupancy map for the epoch, and shuffled spikes take the nearest position sample within 0.25 s, as the dandiset gives position only at spike times. A spike whose nearest sample is the lost position is dropped.",
+      "Robust is read as at least half of the units significant in each flight day 9 session.",
+      "Rat2's flight day 9 session is judged although whose position the trace holds in it could not be established."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "three-orthogonal-surfaces",
+     "statement": "Hippocampal cells formed distinct, reliable representations of position on the three orthogonal surfaces of the Escher staircase in microgravity.",
+     "source": "Main text, paragraph beginning \"It is interesting to note\", sentence 2; also the standfirst",
+     "quote": "Thus hippocampal cells can form unique, reliable representations of position on three orthogonal surfaces in microgravity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "The dandiset holds one two-dimensional pixel position per time from one camera. The draft's position reference frame says the camera view and the pixel size on the apparatus are not recorded in the source files, nothing in the files or the dandiset metadata describes the track layout in the image, and the conversion code at the new commit describes the ES track only as a three-dimensional track with 90 degree yaw and pitch turns (its lines are printed in the notebook), so pixels cannot be assigned to the three surfaces. The NASA record of the study (OSD-968) says position was recorded with two synchronised cameras (printed in the notebook); a second view is not in the dandiset. Same outcome as in 001754-knierim-2000-01.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-stability-across-sessions",
+     "statement": "For rat 3 on flight day 4, most of the 7 cells kept the same firing fields in a third session that followed the second immediately; the fourth cell lost its field, and a few other cells gained a field in session 3.",
+     "source": "Main text, paragraph beginning \"The mean spatial-information content for all 7\", sentence 2; Figure 3a,b and legend",
+     "quote": "Another recording session followed immediately, and most cells maintained the same firing fields in both sessions (Fig. 3b), demonstrating that the spatial tuning was stable across different exposures to the track.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_knierim_2000.ipynb",
+     "notes": "In Rat3's two flight day 4 ES epochs, the 15 units with 50 or more spikes in each have a median rate-map correlation of 0.537 (range -0.107 to 0.849), above the 95th percentile of 1000 re-paired medians (0.102, p = 0.001) and above 0.5; 8 of 15 exceed 0.5. These numbers and the outcome are the same as in 001754-knierim-2000-01. With smoothing of 0.5 to 2 bins and 50 or 100 spikes the median is 0.315 to 0.707, always above its null (p = 0.001); at 0.5 bins it is below 0.5. The dandiset's ES1 and ES2 rate maps, now linked to the same unit, give a median of 0.340 over 18 units (0.157 in the first attempt, when maps were paired by short names). A unit is the same sorted cluster in both epochs, as the units' description now states; mean rates are related across the epochs (Spearman rho 0.598, re-paired 95th percentile 0.339). In the first epoch 11 of 16 units are significant against shuffles and in the second 1 of 19, with similar occupancy and shuffle drops and more spikes per tested unit in the second (median 455 against 301). For several stable units the 95th percentile of the shuffles rises more than their information in the second epoch (TT4 cluster 1, information against 95th percentile, 2.449 against 1.326 and then 3.592 against 4.305; TT5 cluster 1, 0.910 against 0.504 and then 1.472 against 2.393); the epochs use 348 and 299 bins with 5 or more occupancy counts. Poisson trains give 0 to 2 false positives in either epoch. These units fire fewer spikes in fewer 10 s periods in the second epoch (TT4 cluster 1, 1582 spikes filling an effective 0.267 of the 10 s bins and then 423 filling 0.096; TT5 cluster 1, 8844 at 0.575 and then 2221 at 0.307), which raises the shuffles' 95th percentile (see flight-spatial-code); the stability measure does not use the shuffle test.",
+     "deviations": [
+      "Only the title of Figure 3 was available; which sessions it compares is unknown. The test uses the only pair of same-track sessions with position on one day.",
+      "Takes the same sorted cluster in both epochs to be the same neuron; the files hold no waveforms to check it."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "Partly fixed since 001754-knierim-2000-01. Each flight file now holds the shared tracker's trace only within its own rat's ES and MC epochs and says the trace there is taken to be that rat's position, and that the source does not name the animal tracked. Rat2's units are not spatially selective with the trace in any window (1 of 16 and 2 of 28 in Rat2's ES epochs, 0 of 15 and 0 of 41 in Rat1's), and Rat1's units are selective in Rat2's flight day 4 ES epoch (10 of 15), when Rat1 is labelled as on baseline. The trace moves as a continuous track in Rat2's windows, and units of neither rat are selective in any MC window, so neither settles it. Whose position the trace is during Rat2's task epochs is still not established."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Still present. Position is given only at spike times (taken from the spike files), so occupancy cannot be computed from the files' position, and the preflight files have no position at all. The draft's position description now states this."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Still present. The dandiset description says the preflight recordings were made on a flat rectangular track, but the preflight files label their epochs ES (Escher staircase) and MC (Magic Carpet) and hold ES and MC rate maps, as the flight files do. Which apparatus the preflight epochs were recorded on is not stated in the files."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Partly fixed. The rate-map description now says the maps are smoothed, but the kernel is not recorded (in the median well-matched map, 91% of the bins with a positive rate hold no spike of the unit)."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Partly fixed. The files' experiment description now says no EEG was archived, but the dandiset's description still reports normal theta and sharp waves and ripples in the hippocampal EEG, and no EEG is in the dandiset."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Partly fixed. The age is still \"/\" for every subject, now with a subject description saying it is not recorded, and the position's reference frame now says the camera view and pixel size are not recorded; the map geometry is given in pixels. The age, pixel scale and camera view themselves are missing."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "New. Rat2's preflight units are on tetrodes TT0 to TT10 and its flight units on TT12 to TT22, with no tetrode in common, while Rat1's and Rat3's preflight and flight tetrodes overlap. The conversion notes list whether the preflight folders are assigned to the right rats as an open question, and nothing in the files settles it, so per-rat comparisons with preflight rest on an unconfirmed assignment."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-15",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The executed notebook of the draft with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's abstract and figure titles (the paper is not open access). The verifier queried the archive's asset metadata for the blocked claims and ran a synthetic calibration of the shuffle test and checks of skaggs_info, merge_bins and the PositionLookup test.",
+     "agreed": 3,
+     "of": 3,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-15",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the first revision of the draft, with its conclusions and summary, the helper module, the claims file, the README and this attempt record, with the paper's abstract and figure titles.",
+     "agreed": 3,
+     "of": 3,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001754-knierim-2000",
+   "type": "reproduction",
+   "title": "Place cells during space flight on the Neurolab mission (Knierim et al. 2000)",
+   "description": "Tests the findings of Knierim, McNaughton and Poe (2000) that can be tested on dandiset 001754, which holds sorted units, task epochs, rate maps and spike-time positions of three rats recorded before and during the Neurolab shuttle mission. It tests spatial selectivity on the Escher staircase in flight, spatial information in flight against preflight, and the stability of place fields across two sessions. The paper is not open access; claims come from its abstract, its figure titles and the dandiset's description. There is no EEG in the dandiset.",
+   "datasets": [
+    "dandi:001754"
+   ],
+   "papers": [
+    "10.1038/72910"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_knierim_2000.ipynb",
+     "title": "Reproducing Knierim et al. (2000) from dandiset 001754",
+     "executed": "notebooks/001754-knierim-2000/reproduce_knierim_2000.html"
+    }
+   ]
+  }
+ ]
+}
