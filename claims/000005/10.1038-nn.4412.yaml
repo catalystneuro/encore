@@ -21,7 +21,8 @@
 # fs-whisking-rate, fs-whisking-phase, vpm-photoinhibition, exc-thalamus-photoinhibition,
 # rabies-vpm-input, ion-cut-exc-no-touch, ion-cut-exc-whisking, ion-cut-exc-phase,
 # ion-cut-fs-no-touch, ion-cut-fs-phase, pv-enphr-suppression, exc-touch-spikes-enphr,
-# auc-weak-strong, auc-groups, behavior-false-alarms and behavior-touches.
+# auc-weak-strong, auc-groups, behavior-false-alarms and behavior-touches. The check of
+# 2026-10-20 added exc-inhibition-whisking and ion-cut-behavior (see checks, at the end).
 # This reader did not see the dandiset's data. It did read the deprecated file, whose opening
 # comment reports some outputs of the earlier attempt's first run under its own proxy measures;
 # no criterion below was set from them.
@@ -166,12 +167,18 @@ claims:
     value: 0.71
     tolerance: 0.071
   criterion: >-
-    Touches of the principal whisker counted per trial (Online Methods, Behavior), over the
-    trials of the 111 control cortical cells (85 E and 26 FS, Fig. 5) and, separately for
-    performance, the 29 VPM sessions; the touch counts pool the cortical recordings, which is
-    where the trial counts (4,147 and 4,173) come from, with the VPM sessions as a variant.
-    Reproduced when every expected value is within tolerance; partially reproduced when the
-    touch counts are and a performance value is not, or the reverse.
+    Touches counted per trial and split by pole position (Online Methods, Behavior).
+    Performance is the proportion of correct trials per recording, averaged over the 111
+    control cortical cells (85 E and 26 FS, Fig. 5) and separately over the 29 VPM units. The
+    paper does not say which recordings the touch counts and their trial counts (4,147 and
+    4,173) come from, nor whether they count touches of the principal whisker only (the
+    Methods restrict touch responses to it, not touch counts). Readings, each run: recordings
+    (a) the trials of the 111 control cortical cells, (b) all behavioral sessions of the
+    dandiset (cortical, VPM, ION-cut and eNpHR control trials); whiskers (i) principal whisker
+    only, (ii) any tracked whisker. The trial counts under each reading are reported against
+    4,147 and 4,173. Reproduced when every expected value is within tolerance under a reading;
+    partially reproduced when the touch counts are and a performance value is not, or the
+    reverse.
 - id: vpm-touch
   statement: VPM neurons respond to active touch with a sharp, short-latency increase in spike
     rate (0.6 +- 0.5 spikes per touch, median 0.4; latency 3.2 +- 1.0 ms, median 2.5 ms).
@@ -244,6 +251,9 @@ claims:
     against nonwhisking rate gives p < 0.05 with the whisking rate higher (Results, the test
     named for the 25 of 29), under samples O2 (a) and (b) and filters O1 (a) and (b). The
     population test is a Wilcoxon signed-rank test of per-unit nonwhisking against whisking rate.
+    The text gives the 13.5 spikes/s as the rate "after onset of whisker movement"; it is read
+    as the whisking-epoch rate, the quantity Fig. 5d plots for these units, since the paper
+    defines no spike-rate window after whisking onset.
     Reproduced when the signed-rank test gives p < 0.05 with whisking higher and the expected
     values are within tolerance; partially reproduced when the test holds and a value is not
     within tolerance; not reproduced when the test fails.
@@ -294,9 +304,12 @@ claims:
     The 37 whole-cell L4 E neurons of control mice. Touch-aligned average Vm (spikes removed)
     over principal-whisker touches with intertouch interval at least 25 ms; latency by the
     dVm/dt rule (reading O8); amplitude is the peak of the average minus the mean 0 to 5 ms
-    before onset (Supplementary Fig. 4 legend). Whisking change is the mean Vm 100 to 300 ms
-    after whisking onset minus the mean 0 to 200 ms before, averaged over onsets (Supplementary
-    Fig. 4 legend). Resting Vm by O4 (a) and (b). Reproduced when a touch latency is found in
+    before onset (Supplementary Fig. 4 legend). The paper does not say how the whisking change
+    (1.2 +- 2.1 mV) is measured. Readings, each run: (a) the mean Vm 100 to 300 ms after
+    whisking onset minus the mean 0 to 200 ms before, averaged over onsets (Supplementary Fig.
+    4 legend windows; Fig. 2f shows whisking-onset-aligned averages); (b) the mean Vm in
+    whisking epochs minus the mean Vm in nonwhisking periods (Online Methods epochs), spikes
+    removed. Resting Vm by O4 (a) and (b). Reproduced when a touch latency is found in
     every neuron with a positive amplitude and the four values are within tolerance; partially
     reproduced when every neuron depolarizes and a value is out of tolerance.
 - id: exc-threshold-touch-vs-whisking
@@ -366,8 +379,8 @@ claims:
     normalized to its peak (Fig. 3d); the time at which each first reaches half its peak after
     onset; the delay is inhibition minus excitation. Trials at depolarized potential are those
     with injected current (or a Vm baseline near 0 mV, as the dandiset marks them). Reproduced
-    when the mean delay is within tolerance and positive in most of the neurons; not reproduced
-    otherwise.
+    when the mean delay is within tolerance; not reproduced otherwise. The range over neurons
+    is reported against the paper's -0.8 to 1.6 ms (Discussion, paragraph 3).
 - id: fs-touch-response
   statement: L4 FS interneurons fire at 9.3 +- 8.5 spikes/s without whisker movement and fire
     1.9 +- 1.0 spikes per touch, with a spike latency of 5.3 +- 2.1 ms.
@@ -567,9 +580,11 @@ claims:
     The 12 whole-cell L4 E neurons with VPM light (Supplementary Fig. 9c) and the 7 with direct
     cortical light in VGAT-ChR2 mice (Supplementary Fig. 9f). Resting Vm and Vm variance
     (high-pass 10 Hz) from Vm outside touch, light against control (Supplementary Fig. 9d,e),
-    windows O5. The latency rule is not given; readings (a) the dVm/dt rule of the touch latency
-    applied to the laser-onset-aligned average (3 x s.d. of dVm/dt before onset; Online
-    Methods); (b) the first time the grand average Vm falls 3 s.d. below its pre-onset mean.
+    windows O5. The latency rule for laser onset is not given; the only onset rule the paper
+    gives is the touch-latency rule (Online Methods), so it is applied to the laser-onset-aligned
+    grand average (Supplementary Fig. 9c,f): dVm/dt crossing 3 x the s.d. of dVm/dt 0 to 25 ms
+    before laser onset, with the crossing taken in the negative direction (reading O8 for the
+    derivative). That this rule is the one used is an assumption, recorded as a deviation.
     The paper reports no test for 9d,e. Reproduced when Vm is lower and variance lower with
     light in most of the 12 neurons and both latencies are within tolerance with the thalamic
     one longer; partially reproduced when the Vm and variance parts hold and a latency does not.
@@ -629,9 +644,13 @@ claims:
   quote: As expected, L4 excitatory neurons did not depolarize after touch (Fig. 7b).
   criterion: >-
     The L4 E neurons recorded whole-cell in ION-cut mice (8 in Fig. 7b). The paper reports no
-    test; the claim is one of absence. Touch PSP amplitude as in exc-vm-touch-whisking, per
-    neuron, tested against zero by the Methods' paired test (Wilcoxon signed-rank on per-neuron
-    mean post-touch against pre-touch Vm) at 0.05. Reproduced when the test finds no
+    test; the claim is one of absence. The post-touch Vm of exc-vm-touch-whisking (Vm at the
+    peak of the neuron's average PSP) is not defined without a PSP: the maximum of a flat
+    average is biased upward. The test therefore uses the paper's touch epoch (4 to 50 ms after
+    onset; Online Methods, distance to threshold): per neuron, the mean Vm 4 to 50 ms after
+    touch onset against the mean 0 to 5 ms before (Supplementary Fig. 4 pre-touch window),
+    compared over neurons by the Methods' paired test (Wilcoxon signed-rank) at 0.05; the
+    peak-based amplitude is shown as a variant. Reproduced when the test finds no
     depolarization; not reproduced when it finds one. Touch counts per neuron and the mean
     amplitude are reported, with the 15 matched control neurons as comparison.
 - id: ion-cut-exc-whisking
@@ -659,7 +678,8 @@ claims:
   depends_on:
   - exc-vm-touch-whisking
   criterion: >-
-    Whisking depolarization as in exc-vm-touch-whisking (Supplementary Fig. 4 windows). The
+    Whisking depolarization as in exc-vm-touch-whisking, both of its readings (Supplementary
+    Fig. 4 windows; whisking-epoch minus nonwhisking mean Vm). The
     matching rule for the 15 controls is not given; readings (a) the control whole-cell E neurons
     whose resting Vm (O4) lies within the range of the 9 ION-cut neurons; (b) the 15 control
     neurons nearest in resting Vm to the ION-cut median. Reproduced when a Wilcoxon rank-sum
@@ -763,8 +783,10 @@ claims:
     whisking periods with and without light (Supplementary Fig. 13a, 95% intervals). "Strongly
     inhibited" is not defined; read as the light-trial rate below the lower bound of the
     control 95% bootstrap interval in both periods. Grand averages aligned to laser onset
-    (Supplementary Fig. 13c); the latency rule is not given, readings as in
-    exc-thalamus-photoinhibition, applied to the PSTH (1 ms bins). Reproduced when 3 of 4 PV
+    (Supplementary Fig. 13c); the latency rule for laser onset is not given, so the Methods'
+    spike-latency rule is applied to the laser-onset-aligned PSTH (1 ms bins; dPSTH/dt crossing
+    3 x its s.d. 0 to 25 ms before laser onset, downward for PV cells and upward for
+    excitatory cells; reading O8), an assumption recorded as a deviation. Reproduced when 3 of 4 PV
     cells are inhibited and the latencies are within tolerance (1 ms bins limit them to whole
     ms); partially reproduced when only the PV count holds.
 - id: fs-suppress-movement-spiking
@@ -809,7 +831,8 @@ claims:
     The putative excitatory L4 neurons of PV-IRES-Cre eNpHR mice with light trials (40 in the
     paper; the selection beyond the count is not given). Nonwhisking and whisking rates in light
     trials inside the light against control, windows O5, filters O1. Kruskal-Wallis over the
-    four groups (nonwhisking and whisking, control and light; Fig. 8b-e), and Wilcoxon
+    four groups (nonwhisking and whisking, control and light; Fig. 8b-e; the paper does not
+    name the groups, so this test is reported and does not enter the outcome), and Wilcoxon
     signed-rank tests per period (paired; not named in the Results). Reproduced when both
     paired tests give p < 0.05 with light higher and the four rates are within tolerance;
     partially reproduced when the tests hold and a rate is not within tolerance; not reproduced
@@ -889,8 +912,10 @@ claims:
     the mean rate 0 to 250 ms after minus 0 to 250 ms before touch, control trials (Fig. 8g
     legend). The paper gives no test; it groups neurons by the sign of the AUC change (Fig. 8h,
     19 increased, 21 reduced). Reproduced when the neurons whose AUC rises have a lower mean
-    control touch-evoked rate than those whose AUC falls (as Fig. 8h, 3.4 against 7.3
-    spikes/s) under both readings; not reproduced otherwise.
+    control touch-evoked rate (the Fig. 8g measure, after minus before) than those whose AUC
+    falls, under both readings; not reproduced otherwise. The 3.4 and 7.3 spikes/s of Fig. 8h
+    are rates 0 to 250 ms after touch without the baseline subtracted (auc-groups), a
+    different measure, and are not the comparison here.
 - id: auc-groups
   statement: Neurons whose AUC rose with PV suppression gained touch-evoked spiking (3.4 to 8.7
     spikes/s); neurons whose AUC fell kept their touch-evoked response (7.3 to 7.0 spikes/s) but
@@ -937,6 +962,14 @@ claims:
     value: 2.6
     tolerance: 0.6
     unit: spikes/s
+  - quantity: neurons whose AUC increased with eNpHR (Fig. 8h)
+    value: 19
+    tolerance: 1.9
+    unit: of 40 neurons
+  - quantity: neurons whose AUC was reduced with eNpHR (Fig. 8h)
+    value: 21
+    tolerance: 2.1
+    unit: of 40 neurons
   depends_on:
   - auc-weak-strong
   criterion: >-
@@ -945,8 +978,9 @@ claims:
     is the mean rate 0 to 250 ms before onset (Fig. 8g legend). Paired tests are Wilcoxon
     signed-rank (Online Methods). Reproduced when the increased-AUC group's rise and the
     reduced-AUC group's baseline rise give p < 0.05, the reduced-AUC group's touch response
-    shows no change at 0.05, and the means are within tolerance; partially reproduced when the
-    three tests hold and a mean is not within tolerance; not reproduced otherwise.
+    shows no change at 0.05, and the means and group sizes are within tolerance; partially
+    reproduced when the three tests hold and a mean or a group size is not within tolerance;
+    not reproduced otherwise.
 - id: behavior-false-alarms
   statement: With PV interneurons suppressed, most mice (6 of 8) are more likely to report touch
     with the pole out of reach (false alarms on no-lick trials).
@@ -966,3 +1000,73 @@ claims:
     mouse's trials pooled; (b) per session, a mouse counting when any session is significant.
     Reproduced when 6 of 8 mice show a significant decrease under a reading (5 to 7 partially
     reproduced); not reproduced when fewer than 5 do.
+- id: exc-inhibition-whisking
+  statement: In L4 excitatory neurons held near 0 mV, inhibitory inputs occur spontaneously but
+    are more prevalent at the onset of whisker movement; after whisking onset, excitation and
+    inhibition increase gradually, with indistinguishable time courses, over about 100 ms.
+  source: Results, Membrane-potential dynamics of L4 excitatory neurons, paragraph 3; Figure
+    3e-g
+  quote: In the absence of touch, inhibitory inputs occurred spontaneously but were more prevalent
+    at onset of whisker movement (Fig. 3e,f). ... After the onset of whisker movement, excitation
+    and inhibition increased gradually, with indistinguishable time courses, over approximately
+    100 ms (Fig. 3g).
+  depends_on:
+  - exc-inhibition-timing
+  criterion: >-
+    The 6 L4 E neurons of exc-inhibition-timing. Whisking-onset-aligned average Vm at rest
+    (excitation) and with current (inhibition, sign inverted), over the transitions of the
+    Online Methods (Fig. 3e-g legend, "same as b-d" for whisking onset), each normalized to its
+    peak after onset (Fig. 3g). The paper gives no test and no window for "more prevalent at
+    onset"; it is read with the paper's whisking-onset windows (Supplementary Fig. 4 legend):
+    with current, the mean Vm 100 to 300 ms after onset below the mean 0 to 200 ms before, in
+    the grand average (Fig. 3f) and by a Wilcoxon signed-rank test over the 6 neurons at 0.05
+    (the Methods' paired test). "Indistinguishable time courses" is a claim of absence with no
+    test in the paper; it is judged by a Wilcoxon signed-rank test at 0.05 of the per-neuron
+    times at which the normalized excitation and inhibition averages first reach half their
+    peak. Reproduced when the inhibition increase holds and the half-maximum times do not
+    differ; partially reproduced when only one part holds. The times to half and full peak of
+    the normalized grand averages are reported against the paper's "approximately 100 ms". With
+    6 neurons the smallest two-sided signed-rank p is 0.03, so the test has little power; this
+    is reported.
+- id: ion-cut-behavior
+  statement: After infraorbital nerve transection, mice still search for the pole by whisking but,
+    unable to sense it, perform the task at chance (48% correct).
+  source: Results, Inhibition is driven by sensory input, paragraph 2
+  quote: however, as they were unable to sense the object, ... they performed at chance level (48%
+    correct).
+  expected:
+    quantity: proportion of correct trials in ION-cut mice
+    value: 0.48
+    tolerance: 0.048
+  criterion: >-
+    Trial outcomes of the behavioral sessions of the ION-cut mice (9 mice; Online Methods,
+    Infraorbital nerve transection). The paper does not say how the 48% is averaged. Readings,
+    each run: (a) all ION-cut trials pooled; (b) the mean over recorded cells of the proportion
+    correct during each recording, as the Methods average control performance (Online Methods,
+    Behavior). Reproduced when the proportion is within tolerance under a reading; not
+    reproduced otherwise. The whisking part ("similar whisking amplitudes", data not shown) is
+    not tested; whisking amplitudes in ION-cut and control sessions are reported.
+checks:
+- date: 2026-10-20
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - behavior-touches. The criterion stated that the touch and trial counts come from the 111 cortical cells and from principal-whisker touches; the paper says neither. Named both as open, with readings for the recordings and for the whiskers counted.
+  - vpm-whisking. Added that the 13.5 spikes/s "after onset of whisker movement" is read as the whisking-epoch rate of Fig. 5d, since the paper defines no spike window after whisking onset.
+  - exc-vm-touch-whisking. The criterion gave the Supplementary Fig. 4 windows as the measure of the 1.2 mV whisking change; the paper does not say how it is measured. Named it open, with readings (a) those windows and (b) whisking-epoch minus nonwhisking mean Vm.
+  - ion-cut-exc-whisking. Uses both readings of the whisking change, as exc-vm-touch-whisking now does.
+  - exc-inhibition-timing. Removed the requirement that the delay be positive in most neurons, which the paper does not state (its Discussion gives a range of -0.8 to 1.6 ms); the range is now reported against that.
+  - exc-thalamus-photoinhibition. Removed latency reading (b), a 3 s.d. threshold on Vm that appears nowhere in the paper. The Methods' touch-latency rule is applied to laser onset, and the criterion says this is an assumption.
+  - pv-enphr-suppression. Same change for its latencies; the Methods' dPSTH/dt rule is applied to the laser-onset PSTH, as an assumption.
+  - ion-cut-exc-no-touch. The post-touch Vm (Vm at the peak of the average PSP) is undefined without a PSP and biased upward on a flat average. The test now uses the paper's touch epoch (4 to 50 ms) against the 0 to 5 ms pre-touch mean, with the peak-based amplitude as a variant.
+  - fs-suppress-movement-spiking. The paper does not name the groups of its Kruskal-Wallis test; the criterion now says the test is reported and does not enter the outcome.
+  - auc-weak-strong. The criterion compared groups on the Fig. 8g measure (after minus before) but cited Fig. 8h's 3.4 and 7.3 spikes/s, which are post-touch rates without the baseline subtracted. Separated the two.
+  - auc-groups. Added the Fig. 8h group sizes (19 and 21 of 40) as expected values with 10% tolerance, and included them in the criterion.
+  - Added claim exc-inhibition-whisking (Fig. 3e-g), a main-text finding with no claim. The paper gives no test or window, so the criterion names the readings and the tests it uses.
+  - Added claim ion-cut-behavior (chance performance, 48% correct, after ION cut), a main-text result with no claim.
+  - Header. Noted the two added claims.
+  - Open, not settled. Figure readings in the header and criteria (the waveform boundary of Supplementary Fig. 6 near 0.27 ms and 2.8, 12 phase bins in Supplementary Fig. 2d, about 23 to 26 VPM units above r2 0.25 in Supplementary Fig. 2e) could not be checked; no PDF renderer was available in this run.
+  - Open, not settled. vpm-whisking-phase and fs-whisking-phase judge coupling by "more than half of the cells above r2 0.25". The paper gives no count or test, and its r2 threshold is stated for VPM (Supplementary Fig. 2e) and for the ION-cut double fits (Supplementary Fig. 12a), not for control FS cells. The threshold and the majority rule are the file's reading.
+  - Open, not settled. Tolerances for mean +- s.d. use the larger of 10% and s.d./sqrt(n), not the s.d. itself. The header gives the reason; the protocol's "stated spread" could also be read as the s.d.
+  - Open, not settled. Secondary findings without claims, each with no test and no frequency band in the paper. They are the Vm fluctuations above 10 Hz in L4 E neurons during whisking (Supplementary Fig. 5), the absence of a spectral difference after ION cut (Supplementary Fig. 11), FS Vm fluctuations in some cells (Supplementary Fig. 8), and the VPM touch-response duration (2.9 +- 1.7 ms).
