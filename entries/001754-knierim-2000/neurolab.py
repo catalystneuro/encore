@@ -23,7 +23,8 @@ Where the parameters come from.
   spikes and position on the grid of the deposited maps, without smoothing, every visited bin kept
   (the claims file's opening comment). The dandiset has no occupancy time, as position is given
   only at spike times, so M-b divides spike counts by the deposited occupancy map of the epoch.
-  This is the attempt's own completion of M-b, asked about in `questions/001754.yaml`.
+  The claims file's opening comment now gives this (answer of 2026-10-20 in
+  `questions/001754.yaml`).
 - `FIELD_FRACTION = 0.2`: the field of reading (b) of the stability claim is the bins with at
   least 20% of the peak rate (the claims file, which calls it a common choice).
 - `PX_PER_BIN = 4`: the maps are 64 x 64 over the 256-pixel video range, x to columns and y to
