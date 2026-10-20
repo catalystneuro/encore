@@ -72,6 +72,11 @@ class Report:
         self.errors.append(f"{where}: {message}")
 
 
+
+def dataset_id(record: dict) -> str | None:
+    """The identifier of the dataset a claims file or attempt record is about (a dandiset's id on DANDI)."""
+    return (record.get("dataset") or {}).get("id")
+
 def schema(name: str) -> Draft202012Validator:
     return Draft202012Validator(json.loads((ROOT / "schemas" / f"{name}.schema.json").read_text()))
 
@@ -183,10 +188,10 @@ def check(entry_dir: Path) -> Report:
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         data = validate(report, path, "claims") or {}
         ids = {c["id"] for c in data.get("claims", [])}
-        claims_by_target[(data.get("dandiset"), data.get("paper"))] = ids
-        kinds_by_target[(data.get("dandiset"), data.get("paper"))] = {
-            c["id"]: c.get("data", "dandiset") for c in data.get("claims", [])}
-        labels_used[(data.get("dandiset"), data.get("paper"))] = any(
+        claims_by_target[(dataset_id(data), data.get("paper"))] = ids
+        kinds_by_target[(dataset_id(data), data.get("paper"))] = {
+            c["id"]: c.get("data", "dataset") for c in data.get("claims", [])}
+        labels_used[(dataset_id(data), data.get("paper"))] = any(
             c.get("data") == "with_labels" for c in data.get("claims", []))
         for c in data.get("claims", []):
             for other in c.get("depends_on", []):
@@ -200,13 +205,13 @@ def check(entry_dir: Path) -> Report:
             continue
         validate(report, path, "attempt")
         where = path.relative_to(ROOT)
-        pinned = versions.get(attempt.get("dandiset"))
+        pinned = versions.get(dataset_id(attempt))
+        version = (attempt.get("dataset") or {}).get("version")
         # The entry streams the version of its latest attempt; earlier attempts keep the version they used.
-        if pinned and path == mine[-1] and attempt.get("dandiset_version") != pinned:
-            report.error(where, f"dandiset_version {attempt.get('dandiset_version')!r} differs from "
-                                f"{pinned!r} in entry.yaml")
-        known = claims_by_target.get((attempt.get("dandiset"), attempt.get("paper")))
-        if labels_used.get((attempt.get("dandiset"), attempt.get("paper"))):
+        if pinned and path == mine[-1] and version != pinned:
+            report.error(where, f"dataset version {version!r} differs from {pinned!r} in entry.yaml")
+        known = claims_by_target.get((dataset_id(attempt), attempt.get("paper")))
+        if labels_used.get((dataset_id(attempt), attempt.get("paper"))):
             kinds = {f.get("kind") for f in attempt.get("findings") or []}
             if not attempt.get("inputs") or not kinds & {"metadata_insufficient", "identifier_missing"}:
                 report.error(where, "claims take names for the dandiset's codes from elsewhere (`with_labels`), so "
@@ -226,7 +231,7 @@ def check(entry_dir: Path) -> Report:
         for rnd in (attempt.get("verifications") or [])[1:]:
             for r in rnd["results"]:
                 agreed[r["claim"]] = r.get("outcome") if r.get("agrees") else None
-        kinds = kinds_by_target.get((attempt.get("dandiset"), attempt.get("paper")), {})
+        kinds = kinds_by_target.get((dataset_id(attempt), attempt.get("paper")), {})
         for outcome in attempt.get("outcomes", []):
             # A claim on data in another archive names where they are, so it is never blocked for missing data,
             # and when it is tested the archive is an input. Only the latest attempt is held to this: the
@@ -356,7 +361,7 @@ def handover(entry_dir: Path, output_dir: Path) -> int:
                  for r in entry.get("related", []) if r["id"].startswith("dandi:")}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         claims = yaml.safe_load(path.read_text()) or {}
-        if claims.get("dandiset") in dandisets and claims.get("paper") in papers:
+        if dataset_id(claims) in dandisets and claims.get("paper") in papers:
             shutil.copy(path, target / path.name)
     print(f"wrote {target}")
     return 0

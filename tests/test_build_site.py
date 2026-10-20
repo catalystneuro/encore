@@ -237,7 +237,7 @@ def test_an_earlier_attempt_has_its_own_page_linked_from_the_dandiset(built):
     assert pages
 
 def test_claims_using_outside_data_are_counted_apart():
-    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dandiset"},
+    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dataset"},
                             {"claim": "b", "outcome": "not_reproduced", "data": "with_inputs"},
                             {"claim": "c", "outcome": "blocked"}]}
     alone, outside = site.outcome_counts(attempt), site.outcome_counts(attempt, "with_inputs")
@@ -267,7 +267,7 @@ def test_claims_with_outside_names_count_as_the_dandiset():
 
 
 def test_claims_on_data_in_other_archives_are_counted_on_their_own():
-    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dandiset"},
+    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dataset"},
                             {"claim": "b", "outcome": "blocked", "data": "elsewhere"},
                             {"claim": "c", "outcome": "reproduced", "data": "with_inputs"}]}
     assert sum(site.outcome_counts(attempt).values()) == 1
@@ -287,7 +287,7 @@ def test_dandisets_converted_by_catalystneuro_can_be_filtered(built):
 
 
 def test_the_dashboard_counts_each_dandiset_from_its_first_attempt():
-    claims = [{"claim": "a", "outcome": "reproduced", "data": "dandiset"}]
+    claims = [{"claim": "a", "outcome": "reproduced", "data": "dataset"}]
     data = {"targets": [{"dandiset": "000001", "catalystneuro": ["repo"]}, {"dandiset": "000002", "catalystneuro": []}],
             "attempts": [
                 {"id": "x-01", "dandiset": "000001", "paper": "p1", "date": "2026-10-13", "outcomes": claims, "findings": []},
@@ -388,7 +388,7 @@ def test_a_claim_lists_the_statistics_the_paper_reports():
 
 
 def test_link_claims_are_counted_apart_from_the_papers_findings():
-    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dandiset"},
+    attempt = {"outcomes": [{"claim": "a", "outcome": "reproduced", "data": "dataset"},
                             {"claim": "l", "outcome": "reproduced", "data": "with_inputs", "kind": "link"},
                             {"claim": "w", "outcome": "blocked", "data": "with_inputs"}]}
     assert sum(site.outcome_counts(attempt).values()) == 1
@@ -409,7 +409,7 @@ def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
 def test_the_schema_keeps_quotes_inferences_and_links_apart():
     from jsonschema import Draft202012Validator
     schema = Draft202012Validator(json.loads((REPO / "schemas" / "claims.schema.json").read_text()))
-    base = {"schema_version": 1, "dandiset": "000001", "paper": "doi:10.1000/x"}
+    base = {"schema_version": 2, "dataset": {"archive": "dandi", "id": "000001"}, "paper": "doi:10.1000/x"}
     claim = {"id": "a", "statement": "S.", "source": "Figure 1"}
     assert schema.is_valid({**base, "claims": [{**claim, "quote": "Q."}]})
     assert schema.is_valid({**base, "claims": [{**claim, "inferred": "From Table 1."}]})

@@ -7,7 +7,7 @@
   "required": [
     "schema_version",
     "id",
-    "dandiset",
+    "dataset",
     "paper",
     "date",
     "provenance",
@@ -15,19 +15,62 @@
   ],
   "properties": {
     "schema_version": {
-      "const": 1
+      "const": 2
     },
     "id": {
       "type": "string",
       "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$"
     },
-    "dandiset": {
-      "type": "string",
-      "pattern": "^[0-9]{6}$"
-    },
-    "dandiset_version": {
-      "description": "The version the attempt read, e.g. 0.220127.0436 or draft.",
-      "type": "string"
+    "dataset": {
+      "description": "The dataset the attempt tested: the archive and the dataset's identifier there.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "archive",
+        "id",
+        "version"
+      ],
+      "properties": {
+        "archive": {
+          "description": "The archive that holds the dataset, in lower case: dandi, ebrains, openneuro, dryad, zenodo, figshare and so on.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "id": {
+          "description": "The dataset's identifier in that archive, e.g. 000003 on DANDI.",
+          "type": "string",
+          "minLength": 1
+        },
+        "version": {
+          "description": "The version the attempt read, e.g. 0.220127.0436, or draft.",
+          "type": "string",
+          "minLength": 1
+        },
+        "modified": {
+          "description": "For a version that can still change, such as a draft, when the archive says it was last modified. A published version is fixed and needs none; it usually has a DOI instead.",
+          "type": "string",
+          "format": "date-time"
+        },
+        "doi": {
+          "description": "The DOI of the version read, when it has one: an identifier that holds across archives.",
+          "type": "string",
+          "pattern": "^10\\.[0-9]{4,9}/.+$"
+        }
+      },
+      "if": {
+        "properties": {
+          "archive": {
+            "const": "dandi"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "id": {
+            "pattern": "^[0-9]{6}$"
+          }
+        }
+      }
     },
     "paper": {
       "type": "string",
@@ -307,7 +350,7 @@
       }
     },
     "findings": {
-      "description": "What the attempt found about the dandiset itself, whatever the outcomes. These roll up into the per-dandiset report.",
+      "description": "What the attempt found about the dataset itself, whatever the outcomes. These roll up into the per-dataset report.",
       "type": "array",
       "items": {
         "type": "object",
@@ -339,7 +382,7 @@
       }
     },
     "inputs": {
-      "description": "Everything the attempt used that is not in the dandiset.",
+      "description": "Everything the attempt used that is not in the dataset.",
       "type": "array",
       "items": {
         "type": "object",
