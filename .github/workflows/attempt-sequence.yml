@@ -1,16 +1,16 @@
 name: Attempt sequence
 
-# A whole attempt on one dandiset: the reader's claims and their check (papers.yml), the author,
+# A whole attempt on one dataset, given by its folder name (000147, or <archive>-<id>): the reader's claims and their check (papers.yml), the author,
 # the first verification round,
 # the author's revision, the second round and the final revision, each an Agent
 # run (attempt.yml), and a third round when the final revision proposed changes. Each step starts when the one before has succeeded, so a
-# failure stops this dandiset's attempt and leaves its branch as the last good
-# step left it. Called by pipeline.yml, once per dandiset.
+# failure stops this dataset's attempt and leaves its branch as the last good
+# step left it. Called by pipeline.yml, once per dataset.
 
 on:
   workflow_call:
     inputs:
-      dandiset:
+      dataset:
         type: string
         required: true
       model:
@@ -26,12 +26,12 @@ permissions:
 jobs:
   claims:
     uses: ./.github/workflows/papers.yml
-    with: {dandiset: "${{ inputs.dandiset }}", role: claims, model: "${{ inputs.model }}"}
+    with: {dataset: "${{ inputs.dataset }}", role: claims, model: "${{ inputs.model }}"}
     secrets: inherit
   claims-check:
     needs: claims
     uses: ./.github/workflows/papers.yml
-    with: {dandiset: "${{ inputs.dandiset }}", role: claims-check, model: "${{ inputs.model }}"}
+    with: {dataset: "${{ inputs.dataset }}", role: claims-check, model: "${{ inputs.model }}"}
     secrets: inherit
   claims-ready:
     # The attempt starts only on a claims file whose last check says it is ready. Questions the
@@ -40,12 +40,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with: {ref: "attempt/${{ inputs.dandiset }}", persist-credentials: false}
+        with: {ref: "attempt/${{ inputs.dataset }}", persist-credentials: false}
       - run: |
           pip install -q pyyaml
           python - <<'PY'
           import glob, sys, yaml
-          files = glob.glob("claims/${{ inputs.dandiset }}/*.yaml")
+          files = glob.glob("claims/${{ inputs.dataset }}/*.yaml")
           last = ((yaml.safe_load(open(files[0])) or {}).get("checks") or [{}])[-1] if files else {}
           if not last.get("ready"):
               sys.exit("::error::The claims check says the claims file is not ready")
@@ -53,27 +53,27 @@ jobs:
   author:
     needs: claims-ready
     uses: ./.github/workflows/attempt.yml
-    with: {dandiset: "${{ inputs.dandiset }}", role: author, model: "${{ inputs.model }}"}
+    with: {dataset: "${{ inputs.dataset }}", role: author, model: "${{ inputs.model }}"}
     secrets: inherit
   verifier-1:
     needs: author
     uses: ./.github/workflows/attempt.yml
-    with: {dandiset: "${{ inputs.dandiset }}", role: verifier-1, model: "${{ inputs.model }}"}
+    with: {dataset: "${{ inputs.dataset }}", role: verifier-1, model: "${{ inputs.model }}"}
     secrets: inherit
   author-revise-1:
     needs: verifier-1
     uses: ./.github/workflows/attempt.yml
-    with: {dandiset: "${{ inputs.dandiset }}", role: author-revise-1, model: "${{ inputs.model }}"}
+    with: {dataset: "${{ inputs.dataset }}", role: author-revise-1, model: "${{ inputs.model }}"}
     secrets: inherit
   verifier-2:
     needs: author-revise-1
     uses: ./.github/workflows/attempt.yml
-    with: {dandiset: "${{ inputs.dandiset }}", role: verifier-2, model: "${{ inputs.model }}"}
+    with: {dataset: "${{ inputs.dataset }}", role: verifier-2, model: "${{ inputs.model }}"}
     secrets: inherit
   author-revise-2:
     needs: verifier-2
     uses: ./.github/workflows/attempt.yml
-    with: {dandiset: "${{ inputs.dandiset }}", role: author-revise-2, model: "${{ inputs.model }}"}
+    with: {dataset: "${{ inputs.dataset }}", role: author-revise-2, model: "${{ inputs.model }}"}
     secrets: inherit
   proposals:
     # Whether the final revision proposed changes of outcome, which a third round settles.
@@ -84,25 +84,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: attempt/${{ inputs.dandiset }}
+          ref: attempt/${{ inputs.dataset }}
           persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
       - id: look
         env:
-          DANDISET: ${{ inputs.dandiset }}
+          DATASET: ${{ inputs.dataset }}
         run: |
           pip install --no-cache-dir pyyaml
-          echo "found=$(python tools/agent_run.py proposals author "$DANDISET")" >> "$GITHUB_OUTPUT"
+          echo "found=$(python tools/agent_run.py proposals author "$DATASET")" >> "$GITHUB_OUTPUT"
   verifier-3:
     needs: proposals
     if: needs.proposals.outputs.found == 'true'
     uses: ./.github/workflows/attempt.yml
-    with: {dandiset: "${{ inputs.dandiset }}", role: verifier-3, model: "${{ inputs.model }}"}
+    with: {dataset: "${{ inputs.dataset }}", role: verifier-3, model: "${{ inputs.model }}"}
     secrets: inherit
   author-revise-3:
     needs: verifier-3
     uses: ./.github/workflows/attempt.yml
-    with: {dandiset: "${{ inputs.dandiset }}", role: author-revise-3, model: "${{ inputs.model }}"}
+    with: {dataset: "${{ inputs.dataset }}", role: author-revise-3, model: "${{ inputs.model }}"}
     secrets: inherit

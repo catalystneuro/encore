@@ -1,16 +1,18 @@
 """Text and choices for the queue runner (tools/runner).
 
-    python tools/runner/describe.py title DANDISET     # the pull request's title
-    python tools/runner/describe.py body DANDISET      # the pull request's description
-    python tools/runner/describe.py next [SKIP ...]    # the next dandiset in the queue
-    python tools/runner/describe.py deprecated DANDISET  # "true" when its latest attempt is deprecated
-    gh run list ... --json databaseId,displayTitle,status | python tools/runner/describe.py run DANDISET ROLE
+    python tools/runner/describe.py title FOLDER       # the pull request's title
+    python tools/runner/describe.py body FOLDER        # the pull request's description
+    python tools/runner/describe.py next [SKIP ...]    # the next dataset in the queue, by folder name
+    python tools/runner/describe.py folder DATASET     # a dataset's folder name (tools/datasets.py)
+    python tools/runner/describe.py deprecated FOLDER  # "true" when its latest attempt is deprecated
+    gh run list ... --json databaseId,displayTitle,status | python tools/runner/describe.py run FOLDER ROLE
                                                        # "<id> <status>" of the newest run of a role, if any,
                                                        # on either account
 
 `title` and `body` read the latest attempt in the working tree. `next` reads main (origin/main), so
 it can run from any checkout: the first target with no attempt on main, no branch of its own and not
-in SKIP, taking dandisets converted by CatalystNeuro first and otherwise the queue's own order.
+in SKIP, from every archive's list, taking datasets converted by CatalystNeuro first and otherwise the
+lists' own order.
 """
 
 from __future__ import annotations
@@ -33,7 +35,7 @@ def git(*args: str) -> str:
 def title(dandiset: str) -> str:
     from agent_run import attempt_of
     record, entry_dir = attempt_of(dandiset)
-    _, surname, year = entry_dir.name.split("-", 2)
+    _, surname, year = entry_dir.name.rsplit("-", 2)
     repeat = "" if record["id"].endswith("-01") else " (repeat attempt)"
     return f"{dandiset}: {surname.capitalize()} et al. {year}{repeat}"
 
@@ -48,15 +50,23 @@ def body(dandiset: str) -> str:
 
 
 def next_target(skip: set[str]) -> str | None:
-    targets = json.loads(git("show", "origin/main:targets/dandisets.json"))["targets"]
-    attempted = {Path(p).name.split("-", 1)[0] for p in git("ls-tree", "--name-only", "origin/main",
-                                                             "attempts/").split()}
-    branches = {line.rsplit("/", 1)[1] for line in git("ls-remote", "--heads", "origin", "attempt/*").split("\n")
-                if line}
-    open_ = [t["dandiset"] for t in targets
-             if t["dandiset"] not in attempted | branches | skip]
-    ours = [d for d in open_ if next(t for t in targets if t["dandiset"] == d).get("catalystneuro")]
-    return (ours or open_ or [None])[0]
+    import datasets
+    targets = []
+    for archive, spec in datasets.ARCHIVES.items():
+        try:
+            listed = json.loads(git("show", f"origin/main:targets/{spec['list']}"))["targets"]
+        except subprocess.CalledProcessError:
+            continue
+        targets += [{**t, "folder": datasets.folder(datasets.key_of(archive, t.get("id") or t["dandiset"]))}
+                    for t in listed]
+    records = [Path(p).name for p in git("ls-tree", "--name-only", "origin/main", "attempts/").split()]
+    branches = {line.split("refs/heads/attempt/", 1)[1] for line in git("ls-remote", "--heads", "origin",
+                                                                          "attempt/*").split("\n") if line}
+    # An attempt record is named <folder>-<first author>-<year>-<nn>.yaml.
+    attempted = {t["folder"] for t in targets if any(r.startswith(t["folder"] + "-") for r in records)}
+    open_ = [t for t in targets if t["folder"] not in attempted | branches | skip]
+    ours = [t for t in open_ if t.get("catalystneuro")]
+    return (ours or open_ or [{"folder": None}])[0]["folder"]
 
 
 def newest_run(runs: list[dict], dandiset: str, role: str) -> str:
@@ -74,6 +84,12 @@ def main() -> int:
         print(body(rest[0]))
     elif command == "run":
         print(newest_run(json.load(sys.stdin), *rest))
+    elif command == "folder":
+        import datasets
+        try:
+            print(datasets.folder(datasets.parse(rest[0])))
+        except ValueError as err:
+            raise SystemExit(f"error: {err}")
     elif command == "deprecated":
         from agent_run import attempt_of
         found = attempt_of(rest[0])

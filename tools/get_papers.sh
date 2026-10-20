@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Copy a dandiset's papers from the private paper store into a directory.
+# Copy a dataset's papers from the private paper store into a directory.
 #
-#   PAPERS_DEPLOY_KEY=... tools/get_papers.sh DANDISET DEST
+#   PAPERS_DEPLOY_KEY=... tools/get_papers.sh FOLDER DEST     (000147, or <archive>-<id>)
 #
 # Used by the workflows that run in the `papers` environment (docs/pipeline.md). The key and the
 # store's checkout are deleted before it returns. Fails when the store has no full text for the
-# dandiset: the paper must be supplied first.
+# dataset: the paper must be supplied first.
 set -euo pipefail
 dandiset=$1; dest=$2
 tmp=$(mktemp -d); key="$tmp/key"; store="$tmp/store"

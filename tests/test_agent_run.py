@@ -20,7 +20,7 @@ def test_every_role_has_a_prompt(role):
 
 def test_the_author_prompt_names_the_target():
     text = tool.fill("author", "000147", "claude-opus-5-5")
-    assert "dandiset 000147" in text and "doi:10.7554/elife.74478" in text and "claude-opus-5-5" in text
+    assert "dataset DANDI:000147" in text and "doi:10.7554/elife.74478" in text and "claude-opus-5-5" in text
     assert "{" not in text
 
 
@@ -59,7 +59,7 @@ def test_a_repeat_attempt_on_the_same_version_says_the_protocol_changed(monkeypa
     text = tool.fill("author", "001933", "m", version=record["dataset"]["version"])
     assert "applies pilot-99" in text and "has changed, and this attempt tests" not in text
     text = tool.fill("author", "001933", "m", version="draft")
-    assert "the dandiset has changed" in text
+    assert "the dataset has changed" in text
 
 
 def test_a_repeat_attempt_keeps_the_earlier_transcripts(tmp_path):

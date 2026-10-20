@@ -5,7 +5,7 @@ After round 2 the author proposed changes of outcome for some claims. Each is un
 1. Find the analysis behind it in the re-executed notebook and check it as you would in round 1: that the numbers derive from the data, that the choice it rests on was not made to reach the result, and that the criterion in the claims file is applied as written.
 2. Say whether you agree with the proposed outcome, and give your reason with the cell index. If you would give a different outcome, say which.
 
-Paper: doi:{paper}, "{title}". The paper's full text is under `paper/`. The claims file, which a reader wrote from the paper and a second reader checked, decides what is tested and how: check the analysis against it, and report, do not correct, any place where it misreads the paper. Data: DANDI dandiset {dandiset}, version {version}; do not download the dandiset or re-run the notebook. Your materials, in the current directory, are the re-executed notebook, the helper module, the entry README, the claims file, the attempt record, and the paper under `paper/`.
+Paper: doi:{paper}, "{title}". The paper's full text is under `paper/`. The claims file, which a reader wrote from the paper and a second reader checked, decides what is tested and how: check the analysis against it, and report, do not correct, any place where it misreads the paper. Data: dataset {dataset} on {archive}, version {version}; do not download the dataset or re-run the notebook. Your materials, in the current directory, are the re-executed notebook, the helper module, the entry README, the claims file, the attempt record, and the paper under `paper/`.
 
 Take counts of claims and outcomes from the claims file and the attempt record, never from a summary table or a report.
 
