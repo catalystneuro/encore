@@ -18,7 +18,9 @@
 # Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
 # account's safety checks flag (FLAGGED), or that has no token for it (UNVERIFIED-UNAVAILABLE), is
 # not committed; the branch is put back and the role runs again on the verified account, as do the
-# rest of the dandiset's roles: a paper that was flagged once will be again.
+# rest of the dandiset's roles: a paper that was flagged once will be again. With RUNNER_FALLBACK=none
+# the chain stops there instead, leaving $RUNNER_STATE/flagged-<dandiset>, and the lane goes on to the
+# next dandiset: for when the verified account has no budget left.
 #
 # Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time is rebased on
 # main, recorded (the recorder role adds the README row and the pilot notes) and merged once its
@@ -81,7 +83,12 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
     if echo "$runlog" | grep -qE "FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE"; then
       # Put the branch back where the run started, and run the role, and the rest, on the verified account.
       reset_branch "$start" || { log "STOPPED: could not reset attempt/$d after the flag"; return 1; }
-      log "$role: $(echo "$runlog" | grep -oE "(FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE)[^\"]*" | head -n 1 | cut -c1-200); on the verified account from here"
+      why=$(echo "$runlog" | grep -oE "(FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE)[^\"]*" | head -n 1 | cut -c1-200)
+      if [ "${RUNNER_FALLBACK:-verified}" = none ]; then
+        # The verified account is not to be used (out of budget, say): leave the dataset for later.
+        touch "$STATE/flagged-$d"; log "STOPPED at $role: $why; no fallback to the verified account"; return 1
+      fi
+      log "$role: $why; on the verified account from here"
       account=verified; touch "$STATE/verified-$d"
       continue
     fi
