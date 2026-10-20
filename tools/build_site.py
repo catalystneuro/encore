@@ -130,7 +130,7 @@ def collect(executed: Path | None = None) -> dict:
     claims = {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         data = load_yaml(path)
-        claims[(data["dandiset"], data["paper"])] = {c["id"]: c for c in data["claims"]}
+        claims[(data["dataset"]["id"], data["paper"])] = {c["id"]: c for c in data["claims"]}
     entries = {}
     for path in sorted((ROOT / "entries").glob("*/entry.yaml")):
         data = load_yaml(path)
@@ -149,14 +149,15 @@ def collect(executed: Path | None = None) -> dict:
     attempts = []
     for path in sorted((ROOT / "attempts").glob("*.yaml")):
         a = load_yaml(path)
-        known = claims.get((a["dandiset"], a["paper"]), {})
+        known = claims.get((a["dataset"]["id"], a["paper"]), {})
         entry = entries.get(a.get("entry"))
         verifications = a.get("verifications") or []
         disagreed = {r["claim"] for v in verifications for r in v["results"] if not r.get("agrees")}
         attempts.append({
             "id": a["id"],
-            "dandiset": a["dandiset"],
-            "dandiset_version": a.get("dandiset_version"),
+            "dataset": {k: str(v) for k, v in a["dataset"].items()},
+            "dandiset": a["dataset"]["id"],
+            "dandiset_version": a["dataset"].get("version"),
             "paper": a["paper"].removeprefix("doi:"),
             "paper_title": titles.get(a["paper"].removeprefix("doi:").lower()),
             "date": str(a["date"]),
@@ -183,7 +184,7 @@ def collect(executed: Path | None = None) -> dict:
                 "notes": squash(o.get("notes")),
                 "deviations": [squash(d) for d in o.get("deviations") or []],
                 "disagreed": o["claim"] in disagreed,
-                "data": known.get(o["claim"], {}).get("data", "dandiset"),
+                "data": known.get(o["claim"], {}).get("data", "dataset"),
                 "where": known.get(o["claim"], {}).get("where"),
                 "proposed": o.get("proposed"),
             } for o in a["outcomes"]],
@@ -308,7 +309,8 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
         tier = rng.choices(list(TIERS), (3, 6, 2, 1))[0]
         date = (datetime.date(2026, 10, 13) + datetime.timedelta(days=rng.randint(0, 200))).isoformat()
         attempts.append({
-            "id": f"{t['dandiset']}-demo-01", "dandiset": t["dandiset"], "dandiset_version": "draft",
+            "id": f"{t['dandiset']}-demo-01", "dataset": {"archive": "dandi", "id": t["dandiset"], "version": "draft"},
+            "dandiset": t["dandiset"], "dandiset_version": "draft",
             "paper": t["paper"], "paper_title": t["paper_title"], "date": date, "kind": "agent",
             "accountable": "Demo",
             "agent": {"harness": "demo", "model": "demo", "protocol": "demo"}, "tier": tier,
@@ -347,10 +349,10 @@ def current_attempts(data: dict) -> dict[str, list[dict]]:
     return out
 
 
-def outcome_counts(attempts, group: str = "dandiset") -> dict:
+def outcome_counts(attempts, group: str = "dataset") -> dict:
     """Outcome totals over one attempt or a list of them, for one group of claims.
 
-    The groups are the paper's findings that rest on the dandiset ("dandiset"), those that also use
+    The groups are the paper's findings that rest on the dataset ("dataset"), those that also use
     data from elsewhere ("with_inputs"), those on data the paper deposited in another archive
     ("elsewhere"), and the registry's checks that the dandiset is the paper's data ("link"), which are
     not findings of the paper. They are never added together, so that an outcome that may reflect
@@ -360,7 +362,7 @@ def outcome_counts(attempts, group: str = "dandiset") -> dict:
     # A deprecated attempt stays on its page but counts for nothing.
     attempts = [a for a in attempts if not a.get("deprecated")]
     # Names for the dandiset's own codes taken from elsewhere (`with_labels`) count as the dandiset.
-    groups = {"with_labels": "dandiset", None: "dandiset"}
+    groups = {"with_labels": "dataset", None: "dataset"}
 
     def group_of(o):
         return "link" if o.get("kind") == "link" else groups.get(o.get("data"), o.get("data"))

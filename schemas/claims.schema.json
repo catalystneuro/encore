@@ -1,22 +1,58 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "title": "Claims proposed for one target (a dandiset and one of its papers)",
+  "title": "Claims proposed for one target (a dataset and one of its papers)",
   "description": "Draft. To be revised after the pilot.",
   "type": "object",
   "additionalProperties": false,
   "required": [
     "schema_version",
-    "dandiset",
+    "dataset",
     "paper",
     "claims"
   ],
   "properties": {
     "schema_version": {
-      "const": 1
+      "const": 2
     },
-    "dandiset": {
-      "type": "string",
-      "pattern": "^[0-9]{6}$"
+    "dataset": {
+      "description": "The dataset the claims are tested on: the archive and the dataset's identifier there.",
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "archive",
+        "id"
+      ],
+      "properties": {
+        "archive": {
+          "description": "The archive that holds the dataset, in lower case: dandi, ebrains, openneuro, dryad, zenodo, figshare and so on.",
+          "type": "string",
+          "pattern": "^[a-z][a-z0-9-]*$"
+        },
+        "id": {
+          "description": "The dataset's identifier in that archive, e.g. 000003 on DANDI.",
+          "type": "string",
+          "minLength": 1
+        },
+        "doi": {
+          "description": "The dataset's DOI, when it has one: an identifier that holds across archives.",
+          "type": "string",
+          "pattern": "^10\\.[0-9]{4,9}/.+$"
+        }
+      },
+      "if": {
+        "properties": {
+          "archive": {
+            "const": "dandi"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "id": {
+            "pattern": "^[0-9]{6}$"
+          }
+        }
+      }
     },
     "paper": {
       "type": "string",
@@ -49,7 +85,7 @@
             "type": "string"
           },
           "kind": {
-            "description": "A finding the paper reports (`finding`, the default), or a check the registry adds that the dandiset is the data the paper's outside material describes (`link`: the paper's tables, source data, code or deposits). Links are not findings of the paper and are counted apart from them.",
+            "description": "A finding the paper reports (`finding`, the default), or a check the registry adds that the dataset is the data the paper's outside material describes (`link`: the paper's tables, source data, code or deposits). Links are not findings of the paper and are counted apart from them.",
             "enum": [
               "finding",
               "link"
@@ -101,9 +137,9 @@
             }
           },
           "data": {
-            "description": "What the claim's test uses: the dandiset alone (the default); the dandiset with names for its own codes taken from elsewhere (`with_labels`), which counts as the dandiset; the dandiset with other data from elsewhere (`with_inputs`), which is counted apart; or data the paper deposited in another public archive, which the dandiset does not hold (`elsewhere`), counted apart from both. Outside sources that a test uses are listed under `inputs` in the attempt.",
+            "description": "What the claim's test uses: the dataset alone (`dataset`, the default); the dataset with names for its own codes taken from elsewhere (`with_labels`), which counts as the dataset; the dataset with other data from elsewhere (`with_inputs`), which is counted apart; or data the paper deposited in another public archive, which the dataset does not hold (`elsewhere`), counted apart from both. Outside sources that a test uses are listed under `inputs` in the attempt.",
             "enum": [
-              "dandiset",
+              "dataset",
               "with_labels",
               "with_inputs",
               "elsewhere"

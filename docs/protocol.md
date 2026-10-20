@@ -130,7 +130,7 @@ author can find them in the dandiset.
      the tie as the paper's methods or code imply, record it as a deviation,
      and show the other result.
    - `data`: what the paper's test of the finding uses, from the paper:
-     `dandiset` (the default: the data the paper describes recording),
+     `dataset` (the default: the data the paper describes recording),
      `with_labels`, `with_inputs` or `elsewhere` (step 4, and author, step
      4). Whether the dandiset holds those data is the author's to find.
    - `depends_on`: the claims whose result this one uses, such as the cells
@@ -199,7 +199,7 @@ Do this before any analysis.
 
    The registry judges the dandiset, so claims that use outside data are
    kept apart:
-   - Each claim says what its test uses: `data: dandiset` (the default),
+   - Each claim says what its test uses: `data: dataset` (the default),
      `data: with_labels`, `data: with_inputs` or `data: elsewhere`. The
      `with_inputs` and `elsewhere` claims are counted apart, each group on
      its own; the others count towards what is said about the dandiset.
@@ -233,7 +233,7 @@ Do this before any analysis.
      other claim. If it cannot be tested here, block it for the reason that
      applies (`too_large`, `not_runnable`, `data_unreadable` and so on),
      never `data_missing`. Data the paper names but that are not public
-     anywhere stay `data: dandiset`, blocked with `data_missing`.
+     anywhere stay `data: dataset`, blocked with `data_missing`.
    - The notes of a `with_inputs` claim say which side a difference comes
      from as far as the outputs show: whether the dandiset's measures match
      the paper's per-cell values where those are published, and whether the
@@ -435,7 +435,7 @@ check and claim, and says for each finding of the earlier attempt whether it
 is fixed. Its record is the next number (`-02`), with its own outcomes and
 verification rounds; the earlier record stays as it was. A draft can be
 used when the fixes are not yet published, with its modification time
-recorded, since a draft can change. The author is started with
+recorded under `dataset: modified`, since a draft can change. The author is started with
 `-f version=draft` (or a version number), and `docs/agents/author-again.md`
 is its prompt.
 

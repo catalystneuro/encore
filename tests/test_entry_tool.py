@@ -23,10 +23,11 @@ ENTRY = {
     "related": [{"id": "dandi:000001/0.240101.0000", "relation": "uses_data"},
                 {"id": "doi:10.1000/demo", "relation": "reproduces"}],
 }
-CLAIMS = {"schema_version": 1, "dandiset": "000001", "paper": "doi:10.1000/demo",
+CLAIMS = {"schema_version": 2, "dataset": {"archive": "dandi", "id": "000001"}, "paper": "doi:10.1000/demo",
           "claims": [{"id": "fig1", "statement": "Something rises.", "source": "Figure 1"}]}
 ATTEMPT = {
-    "schema_version": 1, "id": "demo-01", "dandiset": "000001", "dandiset_version": "0.240101.0000",
+    "schema_version": 2, "id": "demo-01",
+    "dataset": {"archive": "dandi", "id": "000001", "version": "0.240101.0000"},
     "paper": "doi:10.1000/demo", "date": "2026-10-13", "entry": "demo",
     "provenance": {"kind": "agent", "accountable": {"name": "Someone"},
                    "agent": {"harness": "h", "model": "m", "protocol": "p"}},
@@ -154,10 +155,10 @@ def test_the_dandiset_version_must_be_pinned(repo):
 
 
 def test_the_dandiset_version_must_agree_across_files(repo):
-    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump({**ATTEMPT, "dandiset_version": "draft"}))
+    (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump({**ATTEMPT, "dataset": {**ATTEMPT["dataset"], "version": "draft"}}))
     nbformat.write(notebook('"000001"'), repo / "entries" / "demo" / "analysis.ipynb")
     found = errors(repo)
-    assert any("dandiset_version 'draft' differs" in e for e in found)
+    assert any("dataset version 'draft' differs" in e for e in found)
     assert any(f"names version {VERSION}" in e for e in found)
 
 
@@ -315,10 +316,9 @@ def test_names_from_outside_need_a_source_and_a_finding(repo):
 
 
 def test_only_the_latest_attempt_must_match_the_entrys_version(repo):
-    earlier = {**ATTEMPT, "dandiset_version": "0.230101.0000"}
+    earlier = {**ATTEMPT, "dataset": {**ATTEMPT["dataset"], "version": "0.230101.0000"}}
     (repo / "attempts" / "demo-01.yaml").write_text(yaml.safe_dump(earlier))
     (repo / "attempts" / "demo-02.yaml").write_text(yaml.safe_dump({**ATTEMPT, "id": "demo-02"}))
     assert errors(repo) == []
-    (repo / "attempts" / "demo-02.yaml").write_text(yaml.safe_dump({**ATTEMPT, "id": "demo-02",
-                                                                   "dandiset_version": "0.230101.0000"}))
+    (repo / "attempts" / "demo-02.yaml").write_text(yaml.safe_dump({**earlier, "id": "demo-02"}))
     assert any("differs from" in e for e in errors(repo))

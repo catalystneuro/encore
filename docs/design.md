@@ -189,6 +189,24 @@ tools/                            queue builder, checks, harness
 
 Where an entry sits carries no meaning; relations are in its metadata.
 
+Claims files and attempt records name their dataset in a form that does not
+depend on DANDI (schema version 2):
+
+```yaml
+dataset:
+  archive: dandi          # dandi, ebrains, openneuro, dryad, zenodo, ...
+  id: "001754"            # the dataset's identifier in that archive
+  version: 0.260728.1352  # attempts only: the version read, or draft
+  doi: 10.48324/dandi.001754/0.260728.1352   # when the version has one
+  modified: 2026-10-14T21:55:09Z             # for a draft, which can change
+```
+
+A published version is fixed and usually has a DOI; a draft has neither, so
+it is pinned by its modification time. The archive and identifier are what
+the registry keys on, so a dataset without a DOI can still be recorded. The
+tools, the workflows and the site still work only on DANDI, and directories
+are named by the DANDI identifier.
+
 ## What is reused from the example-notebooks registry
 
 That work (in the CatalystNeuro fork of `dandi/example-notebooks`) stays as it

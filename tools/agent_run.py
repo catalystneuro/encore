@@ -55,7 +55,7 @@ def target(dandiset: str) -> dict:
 def attempt_of(dandiset: str) -> tuple[dict, Path] | None:
     """The latest attempt record on the dandiset, and its entry directory."""
     found = sorted(p for p in (ROOT / "attempts").glob("*.yaml")
-                   if (yaml.safe_load(p.read_text()) or {}).get("dandiset") == dandiset)
+                   if ((yaml.safe_load(p.read_text()) or {}).get("dataset") or {}).get("id") == dandiset)
     if not found:
         return None
     record = yaml.safe_load(found[-1].read_text())
@@ -88,14 +88,14 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
             why = (f"That attempt is deprecated: {' '.join(record['deprecated']['reason'].split())} This attempt "
                    f"replaces it. A reader has since written the claims file again from the full text; test it "
                    f"as it now is. Where a claim keeps its id, compare its outcome with the earlier one.")
-        elif version in (None, record.get("dandiset_version")) and earlier_protocol != protocol_version():
+        elif version in (None, record["dataset"].get("version")) and earlier_protocol != protocol_version():
             why = (f"The dandiset is unchanged; the protocol has changed since, and this attempt applies "
                    f"{protocol_version()} to it. Read what changed in docs/pilot-notes.md, under the headings "
                    f"for the protocol versions after {earlier_protocol} (read only those sections), and say in "
                    f"the new record what the changes did.")
         else:
             why = "Since then the dandiset has changed, and this attempt tests what it holds now."
-        details.update(earlier=record["id"], earlier_version=record.get("dandiset_version"), entry=entry_dir.name,
+        details.update(earlier=record["id"], earlier_version=record["dataset"].get("version"), entry=entry_dir.name,
                        earlier_protocol=earlier_protocol, why=why,
                        next_attempt=f'{record["id"].rsplit("-", 1)[0]}-{n:02d}')
         return (ROOT / "docs" / "agents" / "author-again.md").read_text().format(**details)
@@ -121,7 +121,7 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
         if found is None:
             raise SystemExit(f"error: no attempt on dandiset {dandiset} yet; run the author first")
         record, entry_dir = found
-        details.update(attempt=record["id"], entry=entry_dir.name, version=record.get("dandiset_version"))
+        details.update(attempt=record["id"], entry=entry_dir.name, version=record["dataset"].get("version"))
     if role.startswith("author-revise"):
         n = role.rsplit("-", 1)[1]
         report = Path("transcripts") / dandiset / f"verifier-{n}-report.md"

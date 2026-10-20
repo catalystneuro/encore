@@ -26,7 +26,7 @@ def issue(dandiset: str) -> str:
     if found is None:
         raise SystemExit(f"error: no attempt on dandiset {dandiset}")
     record, entry_dir = found
-    version = record["dandiset_version"]
+    version = record["dataset"]["version"]
     dandi = (f"https://dandiarchive.org/dandiset/{dandiset}/{version}" if version != "draft"
              else f"https://dandiarchive.org/dandiset/{dandiset}/draft")
     findings = record.get("findings") or []

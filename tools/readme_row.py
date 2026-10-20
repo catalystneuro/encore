@@ -29,7 +29,7 @@ def claim_kinds(dandiset: str, paper: str) -> dict[str, str]:
     for path in sorted((ROOT / "claims" / dandiset).glob("*.yaml")):
         data = yaml.safe_load(path.read_text())
         if data.get("paper") == paper:
-            return {c["id"]: "link" if c.get("kind") == "link" else c.get("data", "dandiset")
+            return {c["id"]: "link" if c.get("kind") == "link" else c.get("data", "dataset")
                     for c in data["claims"]}
     raise SystemExit(f"error: no claims file for {dandiset} and {paper}")
 
@@ -43,7 +43,7 @@ def row(dandiset: str) -> str:
     cells = []
     for outcome in COLUMNS:
         mine = [o for o in record["outcomes"] if o["outcome"] == outcome]
-        n = sum(1 for o in mine if kinds.get(o["claim"], "dandiset") in ("dandiset", "with_labels"))
+        n = sum(1 for o in mine if kinds.get(o["claim"], "dataset") in ("dataset", "with_labels"))
         m = sum(1 for o in mine if kinds.get(o["claim"]) == "with_inputs")
         cells.append(f"{n} (+{m})" if m else str(n))
     if record.get("deprecated"):

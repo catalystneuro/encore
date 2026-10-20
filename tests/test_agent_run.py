@@ -56,7 +56,7 @@ def test_a_first_author_without_a_version_picks_a_published_one(monkeypatch):
 def test_a_repeat_attempt_on_the_same_version_says_the_protocol_changed(monkeypatch):
     record, entry_dir = tool.attempt_of("001933")
     monkeypatch.setattr(tool, "protocol_version", lambda: "pilot-99")
-    text = tool.fill("author", "001933", "m", version=record["dandiset_version"])
+    text = tool.fill("author", "001933", "m", version=record["dataset"]["version"])
     assert "applies pilot-99" in text and "has changed, and this attempt tests" not in text
     text = tool.fill("author", "001933", "m", version="draft")
     assert "the dandiset has changed" in text
