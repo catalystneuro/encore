@@ -196,6 +196,7 @@ def collect(executed: Path | None = None) -> dict:
             "kind": a["provenance"]["kind"],
             "accountable": a["provenance"]["accountable"]["name"],
             "agent": a["provenance"].get("agent"),
+            "runner": a["provenance"].get("runner"),
             "tier": tier_of(a),
             "deprecated": squash((a.get("deprecated") or {}).get("reason")),
             "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
@@ -1406,6 +1407,9 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                      if a["dataset"].get("doi") else "")
                   + (f', modified {e(a["dataset"]["modified"])}' if a["dataset"].get("modified") else ""))]
         if a["kind"] == "agent":
+            runner = a.get("runner") or {}
+            rows_ += [("Run on", (f'<a href="{e(runner["url"]) }">{e(runner.get("platform"))}</a>' if runner.get("url")
+                                  else e(runner.get("platform", "not recorded"))))]
             rows_ += [("Harness", e(agent.get("harness", "not recorded"))),
                       ("Model", e(agent.get("model", "not recorded"))),
                       ("Protocol", e(agent.get("protocol", "not recorded")))]
