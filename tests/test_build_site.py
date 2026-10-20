@@ -75,14 +75,14 @@ def built(tmp_path_factory):
 
 def test_every_page_is_built(built):
     data, out = built
-    for page in ("index.html", "dandisets/index.html",
+    for page in ("index.html", "datasets/index.html",
                  "assets/app.css", "assets/list.js", "assets/favicon.svg", "assets/favicon-32.png",
                  "assets/favicon-180.png", "registry.json"):
         assert (out / page).is_file(), page
-    for dandiset in {a["dandiset"] for a in data["attempts"]}:
-        assert (out / "dandisets" / dandiset / "index.html").is_file()
-        api = json.loads((out / "api" / "dandiset" / f"{dandiset}.json").read_text())
-        assert api["dandiset"] == dandiset and "caution" in api
+    for dandiset in {a["key"] for a in data["attempts"]}:
+        assert (out / site.page_of(dandiset) / "index.html").is_file()
+        api = json.loads((out / "api" / f"{site.page_of(dandiset).rstrip('/')}.json").read_text())
+        assert site.key_of(api["dataset"]["archive"], api["dataset"]["id"]) == dandiset and "caution" in api
         assert api["attempts"] and "entries" in api
 
 
@@ -91,10 +91,10 @@ def test_rows_match_the_attempts(built):
     current = site.current_attempts(data)
     attempts = [a for atts in current.values() for a in atts if not a.get("deprecated")]
     rows = {kind: json.loads((out / "data" / f"{kind}.json").read_text()) for kind in site.LISTS}
-    assert len(rows["dandisets"]) == data["queue_counts"]["with_a_paper"]
-    assert sum(r["claims"] or 0 for r in rows["dandisets"]) == sum(len(a["outcomes"]) for a in attempts)
-    assert sum(r["findings"] or 0 for r in rows["dandisets"]) == sum(len(a["findings"]) for a in attempts)
-    assert sum(1 for r in rows["dandisets"] if r["status"] == "attempted") == len(current)
+    assert len(rows["datasets"]) == data["queue_counts"]["with_a_paper"]
+    assert sum(r["claims"] or 0 for r in rows["datasets"]) == sum(len(a["outcomes"]) for a in attempts)
+    assert sum(r["findings"] or 0 for r in rows["datasets"]) == sum(len(a["findings"]) for a in attempts)
+    assert sum(1 for r in rows["datasets"] if r["status"] == "attempted") == len(current)
 
 
 def test_no_internal_link_is_broken(built):
@@ -112,7 +112,7 @@ def test_pages_load_nothing_from_other_sites(built):
 def test_every_claim_has_an_anchor_on_its_dandiset_page(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
-        page = (out / "dandisets" / dandiset / "index.html").read_text()
+        page = (out / site.page_of(dandiset) / "index.html").read_text()
         for attempt in attempts:
             for outcome in attempt["outcomes"]:
                 assert f'id="claim-{outcome["claim"]}"' in page
@@ -122,13 +122,13 @@ def test_the_caution_is_on_the_overview_and_not_on_dandiset_pages(built):
     data, out = built
     assert site.CAUTION in (out / "index.html").read_text()
     for dandiset in site.current_attempts(data):
-        assert site.CAUTION not in (out / "dandisets" / dandiset / "index.html").read_text()
+        assert site.CAUTION not in (out / site.page_of(dandiset) / "index.html").read_text()
 
 
 def test_a_dandiset_page_lists_every_notebook_of_every_entry_that_uses_it(built):
     data, out = built
     for dandiset in site.current_attempts(data):
-        page = (out / "dandisets" / dandiset / "index.html").read_text()
+        page = (out / site.page_of(dandiset) / "index.html").read_text()
         entries = site.entries_for(data, dandiset)
         assert entries, dandiset
         for entry in entries:
@@ -139,11 +139,11 @@ def test_a_dandiset_page_lists_every_notebook_of_every_entry_that_uses_it(built)
 
 def test_a_dandiset_can_have_attempts_on_several_papers():
     def attempt(i, paper, date):
-        return {"id": f"x-{i}", "dandiset": "000001", "paper": paper, "date": date, "tier": "runs",
+        return {"id": f"x-{i}", "key": "dandi:000001", "paper": paper, "date": date, "tier": "runs",
                 "outcomes": [{"claim": f"c{i}", "outcome": "reproduced"}], "findings": []}
     data = {"attempts": [attempt(1, "10.1/a", "2026-01-01"), attempt(2, "10.1/b", "2026-01-02"),
                          attempt(3, "10.1/a", "2026-01-03")]}
-    current = site.current_attempts(data)["000001"]
+    current = site.current_attempts(data)["dandi:000001"]
     assert [a["id"] for a in current] == ["x-2", "x-3"]          # the latest per paper
     assert site.outcome_counts(current)["reproduced"] == 2
 
@@ -151,7 +151,7 @@ def test_a_dandiset_can_have_attempts_on_several_papers():
 def test_the_overview_stays_small_at_scale(tmp_path):
     data = site.demo(site.collect(), 150)
     site.build(data, tmp_path)
-    assert len(list((tmp_path / "dandisets").glob("*/index.html"))) == 150
+    assert len(list((tmp_path / "datasets" / "dandi").glob("*/index.html"))) == 150
     assert (tmp_path / "index.html").stat().st_size < 100_000
     assert "Demo data" in (tmp_path / "index.html").read_text()
     assert broken_links(tmp_path) == []
@@ -171,8 +171,11 @@ def test_file_counts_are_shortened_when_large(n, text):
 
 def test_every_page_declares_the_favicon(built):
     _, out = built
-    for page in list(out.glob("*.html")) + list(out.glob("*/index.html")) + list(out.glob("dandisets/*/index.html")):
-        href = re.search(r'<link rel="icon" href="([^"]+)"', page.read_text()).group(1)
+    for page in list(out.glob("*.html")) + list(out.glob("*/index.html")) + list(out.glob("datasets/*/*/index.html")):
+        text = page.read_text()
+        if 'http-equiv="refresh"' in text:      # a redirect from where a page used to be
+            continue
+        href = re.search(r'<link rel="icon" href="([^"]+)"', text).group(1)
         assert (page.parent / href).resolve().is_file(), page
 
 
@@ -207,12 +210,12 @@ def test_the_chart_counts_a_step_not_reached_as_to_do_and_old_claims_as_made_bef
 def test_the_pipeline_has_a_row_per_target(built):
     data, out = built
     rows = json.loads((out / "data" / "pipeline.json").read_text())
-    assert [r["dandiset"] for r in rows] == [t["dandiset"] for t in data["targets"]]
+    assert [r["key"] for r in rows] == [t["key"] for t in data["targets"]]
     steps = [key for key, _ in site.PIPELINE_STEPS]
     states = {"done", "waiting", "todo", "deprecated", "none"}
     assert all(set(r["state"]) == set(steps) and {v[0] for v in r["state"].values()} <= states for r in rows)
     for dandiset, attempts in site.current_attempts(data).items():
-        row = next(r for r in rows if r["dandiset"] == dandiset)
+        row = next(r for r in rows if r["key"] == dandiset)
         if any(a.get("deprecated") for a in attempts):
             assert row["state"]["attempt"][0] == "deprecated" and row["state"]["claims"][0] == "todo"
         else:
@@ -233,7 +236,7 @@ def test_a_deprecated_attempt_is_marked_on_its_page(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
         if any(a.get("deprecated") for a in attempts):
-            assert "Deprecated:" in (out / "dandisets" / dandiset / "index.html").read_text()
+            assert "Deprecated:" in (out / site.page_of(dandiset) / "index.html").read_text()
 
 
 
@@ -243,10 +246,10 @@ def test_an_earlier_attempt_has_its_own_page_linked_from_the_dandiset(built):
     for dandiset in site.current_attempts(data):
         for a in site.earlier_attempts(data, dandiset):
             pages += 1
-            current = (out / "dandisets" / dandiset / "index.html").read_text()
-            assert f'href="../../dandisets/{dandiset}/{a["id"]}/"' in current
-            page = (out / "dandisets" / dandiset / a["id"] / "index.html").read_text()
-            assert "An earlier attempt." in page and f'href="../../../dandisets/{dandiset}/"' in page
+            current = (out / site.page_of(dandiset) / "index.html").read_text()
+            assert f'href="../../../{site.page_of(dandiset)}{a["id"]}/"' in current
+            page = (out / site.page_of(dandiset) / a["id"] / "index.html").read_text()
+            assert "An earlier attempt." in page and f'href="../../../../{site.page_of(dandiset)}"' in page
             for o in a["outcomes"]:
                 assert f'id="claim-{o["claim"]}" data-outcome="{o["outcome"]}"' in page
     assert pages
@@ -264,7 +267,7 @@ def test_claims_using_outside_data_are_counted_apart():
 def test_claims_are_accordions_grouped_by_notebook_with_a_filter(built):
     data, out = built
     for dandiset, attempts in site.current_attempts(data).items():
-        page = (out / "dandisets" / dandiset / "index.html").read_text()
+        page = (out / site.page_of(dandiset) / "index.html").read_text()
         assert 'id="claim-filter"' in page and 'id="claim-pager"' in page
         for attempt in attempts:
             for o in attempt["outcomes"]:
@@ -290,33 +293,33 @@ def test_claims_on_data_in_other_archives_are_counted_on_their_own():
     assert sum(site.outcome_counts(attempt, "with_inputs").values()) == 1
     note = site.outside_note([attempt])
     assert "1 claim on data the paper deposited in another archive" in note
-    assert "1 claim that also uses data from outside the dandiset" in note
+    assert "1 claim that also uses data from outside the dataset" in note
 
 
 def test_dandisets_converted_by_catalystneuro_can_be_filtered(built):
     data, out = built
     rows = json.loads((out / "data" / "dandisets.json").read_text())
-    ours = {t["dandiset"] for t in data["targets"] if t["catalystneuro"]}
+    ours = {t["key"] for t in data["targets"] if t["catalystneuro"]}
     assert ours and {r["id"] for r in rows if r["converted"] == "catalystneuro"} == ours
-    assert ("converted", "Converted by") in site.LISTS["dandisets"]["facets"]
+    assert ("converted", "Converted by") in site.LISTS["datasets"]["facets"]
 
 
 def test_the_dashboard_counts_each_dandiset_from_its_first_attempt():
     claims = [{"claim": "a", "outcome": "reproduced", "data": "dataset"}]
-    data = {"targets": [{"dandiset": "000001", "catalystneuro": ["repo"]}, {"dandiset": "000002", "catalystneuro": []}],
+    data = {"targets": [{"key": "dandi:000001", "catalystneuro": ["repo"]}, {"key": "dandi:000002", "catalystneuro": []}],
             "attempts": [
-                {"id": "x-01", "dandiset": "000001", "paper": "p1", "date": "2026-10-13", "outcomes": claims, "findings": []},
-                {"id": "y-01", "dandiset": "000002", "paper": "p2", "date": "2026-10-13", "outcomes": claims,
+                {"id": "x-01", "key": "dandi:000001", "paper": "p1", "date": "2026-10-13", "outcomes": claims, "findings": []},
+                {"id": "y-01", "key": "dandi:000002", "paper": "p2", "date": "2026-10-13", "outcomes": claims,
                  "findings": [{"kind": "other"}]},
-                {"id": "x-02", "dandiset": "000001", "paper": "p1", "date": "2026-10-15", "outcomes": claims * 2,
+                {"id": "x-02", "key": "dandi:000001", "paper": "p1", "date": "2026-10-15", "outcomes": claims * 2,
                  "findings": []}]}
     p = site.progress_data(data)
     assert p["days"] == ["2026-10-13", "2026-10-14", "2026-10-15"]
     every = p["series"]["all"]
-    assert every["dandisets"] == [2, 0, 0] and every["attempts"] == [2, 0, 1]
+    assert every["datasets"] == [2, 0, 0] and every["attempts"] == [2, 0, 1]
     # Claims and findings come from each dandiset's current attempt, on its date.
     assert every["claims"] == [1, 0, 2] and every["findings"] == [1, 0, 0]
-    assert p["series"]["catalystneuro"]["dandisets"] == [1, 0, 0]
+    assert p["series"]["catalystneuro"]["datasets"] == [1, 0, 0]
     assert 'data-metric="findings"' in site.progress_panel(data)
 
 
@@ -331,9 +334,9 @@ def test_the_overview_shows_the_dashboard(built):
 def test_view_on_dandi_opens_a_new_window(built):
     data, out = built
     dandiset = next(iter(site.current_attempts(data)))
-    page = (out / "dandisets" / dandiset / "index.html").read_text()
-    assert (f'<a href="https://dandiarchive.org/dandiset/{dandiset}" target="_blank" rel="noopener">View on DANDI</a>'
-            in page)
+    page = (out / site.page_of(dandiset) / "index.html").read_text()
+    assert (f'<a href="https://dandiarchive.org/dandiset/{site.split_key(dandiset)[1]}" target="_blank" '
+            f'rel="noopener">View on DANDI</a>' in page)
 
 
 def test_pages_carry_a_description_canonical_link_and_social_card(built):
@@ -344,15 +347,15 @@ def test_pages_carry_a_description_canonical_link_and_social_card(built):
     assert '"@type": "WebSite"' in home and 'name="robots"' not in home
     assert (out / "assets" / "social-card.png").is_file()
     dandiset = next(iter(site.current_attempts(data)))
-    page = (out / "dandisets" / dandiset / "index.html").read_text()
-    assert f'href="{site.SITE_URL}dandisets/{dandiset}/"' in page and "claims tested" in page
+    page = (out / site.page_of(dandiset) / "index.html").read_text()
+    assert f'href="{site.SITE_URL}{site.page_of(dandiset)}"' in page and "claims tested" in page
 
 
 def test_the_sitemap_lists_every_dandiset_page(built):
     data, out = built
     sitemap = (out / "sitemap.xml").read_text()
     for dandiset in site.current_attempts(data):
-        assert f"<loc>{site.SITE_URL}dandisets/{dandiset}/</loc>" in sitemap
+        assert f"<loc>{site.SITE_URL}{site.page_of(dandiset)}</loc>" in sitemap
 
 
 def test_a_preview_is_kept_out_of_search_results(tmp_path):
@@ -409,7 +412,7 @@ def test_link_claims_are_counted_apart_from_the_papers_findings():
     assert sum(site.outcome_counts(attempt).values()) == 1
     assert sum(site.outcome_counts(attempt, "with_inputs").values()) == 1
     assert site.outcome_counts(attempt, "link")["reproduced"] == 1
-    assert "1 check that the dandiset is the data behind the paper" in site.outside_note([attempt])
+    assert "1 check that the dataset is the data behind the paper" in site.outside_note([attempt])
 
 
 def test_a_claim_not_stated_in_the_paper_says_it_is_inferred():
@@ -438,3 +441,21 @@ def test_stylesheets_and_scripts_are_named_by_their_contents(built):
     page = (out / "pipeline" / "index.html").read_text()
     assert re.search(r'href="\.\./assets/app\.css\?v=[0-9a-f]{10}"', page)
     assert re.search(r'src="assets/progress\.js\?v=[0-9a-f]{10}"', (out / "index.html").read_text())
+
+
+def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
+    data, out = built
+    for key in site.current_attempts(data):
+        old = (out / "dandisets" / site.split_key(key)[1] / "index.html").read_text()
+        assert f'url=../../{site.page_of(key)}"' in old
+        for a in site.earlier_attempts(data, key):
+            moved = (out / "dandisets" / site.split_key(key)[1] / a["id"] / "index.html").read_text()
+            assert f'url=../../../{site.page_of(key)}{a["id"]}/"' in moved
+    assert 'url=../datasets/"' in (out / "dandisets" / "index.html").read_text()
+
+
+def test_datasets_are_named_by_archive_and_id():
+    assert site.dataset_label("dandi:000003") == "DANDI:000003"
+    assert site.page_of("dandi:000003") == "datasets/dandi/000003/"
+    assert site.dir_of("dandi:000003") == "000003" and site.dir_of("ebrains:abc") == "ebrains-abc"
+    assert site.key_of_dir("000003") == "dandi:000003" and site.key_of_dir("ebrains-abc") == "ebrains:abc"
