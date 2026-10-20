@@ -1,49 +1,50 @@
 # Knierim, McNaughton & Poe (2000) from dandiset 001754
 
-Tests the findings of [Knierim et al. (2000)](https://doi.org/10.1038/72910) that can be tested on
-[DANDI:001754](https://dandiarchive.org/dandiset/001754/draft), which holds sorted units, task
-epochs, the original rate maps and the position at spike times of three rats recorded before and
-during the Neurolab shuttle mission (STS-90). The paper is not open access: the claims come from
-its abstract, the titles of its figures, and the dandiset's description of its findings.
+Tests the findings of [Knierim et al. (2000)](https://doi.org/10.1038/72910) on
+[DANDI:001754](https://dandiarchive.org/dandiset/001754/0.260728.1352), version 0.260728.1352,
+which holds sorted units, task epochs, the original rate and occupancy maps and the position at
+spike times of three rats recorded before and during the Neurolab shuttle mission (STS-90). The
+claims (`claims/001754/10.1038-72910.yaml`) were written from the paper's full text.
 
-The entry streams the draft of the dandiset, as last modified on 2026-10-14 at 21:55 UTC. The draft
-was asked for: it holds a new conversion that addresses the findings of the first attempt, which
-read version 0.260728.1352, and it is not yet published. A draft can change; the notebook prints
-the time the draft was last modified when it runs.
+The entry streams version 0.260728.1352, the most recent published version; the paper cites none.
+The draft holds a new conversion that fixes several findings of the earlier attempts, but it is
+not published and has changed since the second attempt read it, so it is not used.
 
 | Claim | Outcome |
 |---|---|
-| A robust spatial code on the Escher staircase in flight | Not reproduced |
-| The code covers each of the three orthogonal surfaces | Blocked: metadata insufficient |
-| Spatial information in flight comparable to preflight | Reproduced |
-| Abnormal spatial selectivity on flight day 4 | Reproduced |
-| Place fields stable across sessions | Reproduced |
-| Normal theta in flight | Blocked: data missing |
-| Normal sharp waves and ripples in flight | Blocked: data missing |
+| Normal spatially specific firing in flight (`flight-spatial-code`) | Blocked: methods underspecified |
+| Rat 2, FD9 spatial information as preflight (`si-comparable-to-preflight`) | Partially reproduced |
+| Rat 1, FD9 spatial information as preflight (`si-rat1-fd9-vs-preflight`) | Blocked: methods underspecified |
+| Rat 3, FD4 spatial information as preflight (`si-rat3-fd4-vs-preflight`) | Reproduced |
+| Abnormal selectivity on FD4 in rats 1 and 2 (`fd4-abnormal-selectivity`) | Partially reproduced |
+| Fields kept from session 2 to session 3 (`fig3-stability-across-sessions`) | Blocked: methods underspecified |
+| Counterclockwise-only fields (`direction-selectivity`) | Blocked: data missing |
+| Normal theta (`theta-normal`) | Blocked: data missing |
+| Normal sharp waves and ripples (`ripples-normal`) | Blocked: data missing |
+| Representations on three surfaces (`three-orthogonal-surfaces`) | Blocked: methods underspecified |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-On the draft, the rate maps are linked to their units, and the units, epochs, unvisited bins, lost
-positions and spike-time resolution are documented. The flight-day-4 result changed from the first
-attempt because the draft leaves out three rate maps that were identical copies of others; with
-them the test gives p = 0.055, without them 0.024; without Rat2 it gives 0.035 on either version.
-The shuffle test, calibrated with Poisson spike trains moved to position sample times, gives 0.096
-false positives over all flight ES epochs and up to 0.214 in one session (0.074 and 0.160 with
-plain Poisson trains), and the flight-day-9 outcome is the same against those rates. Real spike
-trains reversed in time give 2 of 122, so with real temporal structure the test is conservative,
-and it has less power for units whose spikes fall in a few periods, such as most of Rat2's.
-Rat2's units are still not spatially selective
-with the position trace in any window, and whose position the trace is in Rat2's task epochs is
-not established. The description still places the preflight recordings on a flat rectangular
-track and reports EEG, which no file holds. The attempt records, with the reasons and the
-differences from the paper's method, are
-[`attempts/001754-knierim-2000-02.yaml`](../../attempts/001754-knierim-2000-02.yaml) (the draft) and
-[`attempts/001754-knierim-2000-01.yaml`](../../attempts/001754-knierim-2000-01.yaml) (version
+Rat 2's flight day 9 cells do not differ from its preflight cells, but their mean spatial
+information on the deposited maps (1.377 bits per spike) is above the paper's 1.13 +/- 0.09. For
+rat 1 the outcome depends on which preflight epoch is compared (p = 0.50 against ES, 0.0055
+against MC), which the paper does not say. On flight day 4 rat 2's cells carry less information
+than preflight and rat 1's do not. Rat 3's session 2 has 16 active cells, not the paper's 7, so
+the stability rule's "4 of the 7" has two readings that disagree. The open questions are in
+[`questions/001754.yaml`](../../questions/001754.yaml).
+
+On this version the rate maps cannot be linked to units, the Rat1 and Rat2 files share one
+position trace, position is given only at spike times and none preflight, and no file holds EEG.
+The attempt records are
+[`attempts/001754-knierim-2000-03.yaml`](../../attempts/001754-knierim-2000-03.yaml) (this one),
+and the deprecated
+[`attempts/001754-knierim-2000-02.yaml`](../../attempts/001754-knierim-2000-02.yaml) (the draft)
+and [`attempts/001754-knierim-2000-01.yaml`](../../attempts/001754-knierim-2000-01.yaml) (version
 0.260728.1352).
 
-- `reproduce_knierim_2000.ipynb`: the analysis. It takes about seven minutes; its last code cell
+- `reproduce_knierim_2000.ipynb`: the analysis. It takes about two minutes; its last code cell
   prints the run time.
-- `neurolab.py`: loading the files, the original rate maps and their spatial information, and the
-  spike-based spatial information with its shuffle test. Other notebooks on this dandiset can import
-  it.
+- `neurolab.py`: loading the files, the deposited maps and their spatial information (reading
+  M-a), maps recomputed from spikes (reading M-b), and the tests. Other notebooks on this dandiset
+  can import it.
