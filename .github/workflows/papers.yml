@@ -27,6 +27,10 @@ on:
         required: true
         type: choice
         options: [claims, claims-check, answer]
+      papers_only:
+        description: "Only check that the papers reach the job; run no agent"
+        type: boolean
+        default: false
       model:
         description: "Model"
         default: claude-opus-5-5
@@ -136,6 +140,7 @@ jobs:
           head -n 6 paper/*.txt
 
       - name: Check the token, the permission mode and the agent's shell
+        if: ${{ !inputs.papers_only }}
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'
@@ -162,6 +167,7 @@ jobs:
           [ "$mode" = default ] || { echo "::error::Claude Code started in permission mode $mode, not default"; exit 1; }
 
       - name: Run the agent
+        if: ${{ !inputs.papers_only }}
         id: agent
         # Shorter than the job's limit, so that the transcript is still exported when it is reached.
         timeout-minutes: 300
