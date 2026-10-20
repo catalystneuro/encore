@@ -1,10 +1,12 @@
 name: Preview the dashboard
+run-name: "${{ github.event.action == 'closed' && 'Remove the preview' || 'Preview' }} of PR #${{ github.event.pull_request.number }}"
 
 # Builds the dashboard from a pull request's branch and publishes it under
 # pr-preview/pr-<number>/ on the gh-pages branch, which GitHub Pages serves,
 # then comments the link on the pull request. The preview is removed when the
-# pull request is closed. Pull requests from forks cannot push here and get
-# no preview.
+# pull request is closed or merged, and closing it cancels any build of it still
+# running or waiting. Pull requests from forks cannot push here and get no
+# preview.
 
 on:
   pull_request:
@@ -14,10 +16,13 @@ permissions:
   contents: write
   pull-requests: write
 
-# Shared with site.yml: both push to gh-pages.
+# One run per pull request: a newer push, or closing the pull request, cancels the
+# run before it. Not shared with site.yml: in a shared group a queued preview
+# would replace a queued publish. Pushes to gh-pages that collide are retried by
+# the deploy action.
 concurrency:
-  group: gh-pages
-  cancel-in-progress: false
+  group: preview-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
 
 jobs:
   preview:
