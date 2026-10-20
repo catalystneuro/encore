@@ -189,6 +189,15 @@ def test_findings_are_reached_from_the_dandisets_list(built):
     assert "#findings" in (REPO / "tools" / "site_assets" / "list.js").read_text()
 
 
+
+def test_the_pipeline_chart_has_a_bar_per_step_whose_segments_sum_to_the_targets():
+    counts = {key: {"done": 3, "waiting": 1} if key == "paper" else {"todo": 2, "none": 2}
+              for key, _ in site.PIPELINE_STEPS}
+    chart = site.pipeline_chart(counts, 4)
+    assert chart.count('class="frow"') == len(site.PIPELINE_STEPS)
+    assert 'class="seg done" style="width:75.00%"' in chart and 'class="seg waiting" style="width:25.00%"' in chart
+    assert 'aria-label="Paper: 3 of 4 done, 1 waiting on a person"' in chart
+
 def test_the_pipeline_has_a_row_per_target(built):
     data, out = built
     rows = json.loads((out / "data" / "pipeline.json").read_text())

@@ -977,6 +977,27 @@ ABOUT_STEPS = [
 ]
 
 
+PIPELINE_STATES = [("done", "Done"), ("waiting", "Waiting on a person"), ("deprecated", "To redo"),
+                   ("todo", "To do")]
+
+
+def pipeline_chart(counts: dict, total: int) -> str:
+    """One bar per step, out of every target: how many are done, waiting on a person, to redo, or to do."""
+    rows = ""
+    for key, label in PIPELINE_STEPS:
+        c = counts[key]
+        segs = "".join(f'<span class="seg {st}" style="width:{100 * c[st] / total:.2f}%" '
+                       f'title="{e(name)}: {c[st]:,}"></span>' for st, name in PIPELINE_STATES if c.get(st))
+        parts = ", ".join(f"{c[st]:,} {name.lower()}" for st, name in PIPELINE_STATES[1:] if c.get(st))
+        rows += (f'<div class="frow"><span class="flabel">{e(label)}</span>'
+                 f'<span class="fbar" role="img" aria-label="{e(label)}: {c.get("done", 0):,} of {total:,} done'
+                 f'{", " + parts if parts else ""}">{segs}</span>'
+                 f'<span class="fcount"><strong>{c.get("done", 0):,}</strong> of {total:,}</span></div>')
+    legend = "".join(f'<span><i class="seg {st}"></i>{e(name)}</span>' for st, name in PIPELINE_STATES)
+    return (f'<div class="panel"><h2>Targets at each step</h2><div class="funnel">{rows}</div>'
+            f'<p class="flegend small">{legend}<span><i class="seg"></i>Not needed</span></p></div>')
+
+
 def page_pipeline(data: dict) -> str:
     """Where every target stands in the pipeline, and what is waiting on a person."""
     root = "../"
@@ -998,6 +1019,7 @@ def page_pipeline(data: dict) -> str:
                  f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}</td></tr>')
     waiting = [r for r in rows if r["waiting"]]
     papers_missing = sum(len(r["missing"]) for r in waiting)
+    chart = pipeline_chart(counts, len(rows))
     html_ = f'''<header class="page">
   <h1>Pipeline</h1>
   <p class="lede">Every target, and where it stands in the
@@ -1005,9 +1027,11 @@ def page_pipeline(data: dict) -> str:
   check, the attempt, the questions it raised, and verification. {len(waiting):,} targets are waiting on a person,
   with {papers_missing:,} papers to supply; the list of missing papers is in
   <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.</p>
-  <p><label class="small"><input type="checkbox" id="only-waiting"> Only targets waiting on a person</label></p>
 </header>
-<main><div class="panel pipeline-wrap"><table class="pipeline">
+<main>{chart}
+<p style="margin-top:16px"><label class="small"><input type="checkbox" id="only-waiting"> Only targets waiting on a
+person</label></p>
+<div class="panel pipeline-wrap"><table class="pipeline">
 <thead><tr><th>Dandiset</th><th>Name</th>{head}<th>Next</th></tr></thead>
 <tbody>{body}</tbody></table></div></main>
 <script>
