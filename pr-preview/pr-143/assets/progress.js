@@ -17,6 +17,13 @@
   var root = document.querySelector(".progress");
   var line = document.getElementById("progress-line"), cols = document.getElementById("progress-outcomes");
   var outcomeKeys = Object.keys(P.outcomes);
+  var DAY_NOTES = {
+    datasets: "Each dataset on the date of its first attempt.",
+    papers: "Each paper on the date of its first attempt.",
+    attempts: "Each attempt on its own date.",
+    claims: "Claims that rest on the dataset, on the date of their attempt.",
+    findings: "Findings of the current attempts, on the date of their attempt."
+  };
 
   function el(name, attrs, parent) {
     var n = document.createElementNS(NS, name);
@@ -140,16 +147,20 @@
     document.getElementById("progress-title").textContent = P.metrics[m] + " over time";
   }
 
+  // What is new each day in the chosen measure; claims are stacked by outcome.
   function drawColumns() {
-    var rows = P.series[state.subset], n = rows.length, f = frame(cols, 230);
-    var sums = rows.map(function (r) { return outcomeKeys.reduce(function (s, k) { return s + r[k]; }, 0); });
+    var rows = P.series[state.subset], n = rows.length, f = frame(cols, 230), m = state.metric;
+    var stacked = m === "claims", keys = stacked ? outcomeKeys : [m];
+    var css = function (k) { return stacked ? "seg-" + P.outcomes[k].css : "seg-bar"; };
+    var label = function (k) { return stacked ? P.outcomes[k].label.toLowerCase() : P.metrics[m].toLowerCase(); };
+    var sums = rows.map(function (r) { return keys.reduce(function (s, k) { return s + r[k]; }, 0); });
     var top = Math.max.apply(null, sums.concat([1])), step = niceStep(top, 4), yMax = Math.ceil(top / step) * step;
     var band = (f.w - f.left - f.right) / n, bw = Math.min(24, band * 0.7);
     var x = function (i) { return f.left + band * (i + 0.5); };
     var y = function (v) { return f.top + (f.h - f.top - f.bottom) * (1 - v / yMax); };
     axes(f, yMax, step, n, x);
     rows.forEach(function (r, i) {
-      var base = 0, g = el("g", {}, f.svg), drawn = outcomeKeys.filter(function (k) { return r[k]; });
+      var base = 0, g = el("g", {}, f.svg), drawn = keys.filter(function (k) { return r[k]; });
       drawn.forEach(function (k, j) {
         var y0 = y(base), y1 = y(base + r[k]), hgt = Math.max(y0 - y1 - (j < drawn.length - 1 ? 2 : 0), 1);
         var isTop = j === drawn.length - 1, rx = Math.min(4, bw / 2, hgt / 2);
@@ -157,23 +168,27 @@
           ? "M" + (x(i) - bw / 2) + "," + y0 + "V" + (y0 - hgt + rx) + "Q" + (x(i) - bw / 2) + "," + (y0 - hgt) + " " + (x(i) - bw / 2 + rx) + "," + (y0 - hgt) +
             "H" + (x(i) + bw / 2 - rx) + "Q" + (x(i) + bw / 2) + "," + (y0 - hgt) + " " + (x(i) + bw / 2) + "," + (y0 - hgt + rx) + "V" + y0 + "Z"
           : "M" + (x(i) - bw / 2) + "," + y0 + "V" + (y0 - hgt) + "H" + (x(i) + bw / 2) + "V" + y0 + "Z";
-        el("path", { "class": "seg-" + P.outcomes[k].css, d: d }, g);
+        el("path", { "class": css(k), d: d }, g);
         base += r[k];
       });
       var hit = el("rect", { "class": "hit", x: f.left + band * i, y: f.top, width: band, height: f.h - f.top - f.bottom }, f.svg);
       var show = function () {
-        var parts = outcomeKeys.filter(function (k) { return r[k]; })
-          .map(function (k) { return r[k] + " " + P.outcomes[k].label.toLowerCase(); });
-        place(f, x(i), y(sums[i]), day(P.days[i], true) + ": " + (parts.length ? parts.join(", ") : "no claims"));
+        var parts = keys.filter(function (k) { return r[k]; })
+          .map(function (k) { return r[k].toLocaleString() + " " + label(k); });
+        place(f, x(i), y(sums[i]), day(P.days[i], true) + ": " + (parts.length ? parts.join(", ") : "none") +
+          (stacked || !parts.length ? "" : " new"));
       };
       hit.addEventListener("mouseenter", show); hit.addEventListener("touchstart", show, { passive: true });
     });
     f.svg.addEventListener("mouseleave", function () { f.tip.hidden = true; });
     f.svg.setAttribute("role", "img");
-    f.svg.setAttribute("aria-label", "Outcomes of claims tested, by day");
+    var title = stacked ? "Outcomes of claims tested, by day" : P.metrics[m] + ", new each day";
+    f.svg.setAttribute("aria-label", title);
+    document.getElementById("progress-day-title").textContent = title;
+    document.getElementById("progress-day-note").textContent = DAY_NOTES[m] || "";
     var totals = {};
     outcomeKeys.forEach(function (k) { totals[k] = rows.reduce(function (s, r) { return s + r[k]; }, 0); });
-    document.getElementById("progress-legend").innerHTML = '<ul class="legend compact" style="margin-top:8px">' +
+    document.getElementById("progress-legend").innerHTML = !stacked ? "" : '<ul class="legend compact" style="margin-top:8px">' +
       outcomeKeys.map(function (k) {
         return '<li><span class="swatch ' + P.outcomes[k].css + '" aria-hidden="true"></span><strong>' +
           totals[k].toLocaleString() + "</strong> " + P.outcomes[k].label.toLowerCase() + "</li>";
