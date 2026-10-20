@@ -11,8 +11,8 @@ replaces [`000061-girardeau-2017-01`](../../attempts/000061-girardeau-2017-01.ya
 were written from the abstract alone.
 
 Of 32 claims, 10 are tested: 6 reproduced, 1 partially reproduced, 3 not reproduced. The other
-22 are blocked: 18 because the dandiset has no putative cell types (pyramidal cell or interneuron),
-on which most of the paper's reactivation analyses rest, and 4 because it has no position tracking.
+22 are blocked: 17 because the dandiset has no putative cell types (pyramidal cell or interneuron),
+on which most of the paper's reactivation analyses rest, and 5 because it has no position tracking.
 Two claims with a pyramidal test and an all-cell test are judged on the all-cell test alone, as
 their criteria allow when the pyramidal test cannot be run.
 
@@ -28,17 +28,23 @@ their criteria allow when the pyramidal test cannot be run.
 | `reactivation-peaks-at-ripples` | Partially reproduced (all-cell test alone, p = 0.0042) |
 | `direction-all-cell-pairs` | Reproduced (laps from reward times) |
 | `ripple-modulated-cells-larger-reactivation` | Not reproduced (all-cell test alone, p = 0.27) |
-| 18 claims on putative pyramidal cells or interneurons | Blocked: metadata insufficient |
+| 17 claims on putative pyramidal cells or interneurons | Blocked: metadata insufficient |
 | `rats-learn-puff-location` and the three behaviour claims that depend on it | Blocked: too large (position only in raw video frames) |
+| `bla-rate-same-across-directions` | Blocked: too large (one reading of the rate needs position; the readings that run find a difference) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
+The two claims of absence judged on smaller samples than the paper's (`cen-no-reactivation`, 9 and
+8 sessions against 19; `ripple-rate-unchanged`, 23 against 41) are reproduced on the paper's test;
+the notebook gives their power and bounds, and the central nuclei result is weak evidence of
+absence.
+
 Position could only come from tracking the raw video frames stored in the files, which would take
-about 234 hours to stream at the rate measured in the final run (the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks
+about 216 hours to stream at the rate measured in the final run (the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks
 only cells identified as excitatory or inhibitory.
 
-- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 8 minutes (7.6 in the final run), six of
+- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 10 minutes (10.0 in the final run), six of
   them streaming the files; the notebook prints its run time at the end.
 - `hpcbla.py`: loading the files, sleep epochs, laps, EV and REV, ripple modulation, reactivation
   strength around ripples, firing rates by state. Other notebooks on this dandiset can import it.

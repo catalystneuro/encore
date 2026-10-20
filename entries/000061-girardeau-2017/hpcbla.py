@@ -32,6 +32,17 @@ its open details O1 to O7, cited below.
   resolution), and a 50 ms bin belongs to a set of intervals when its centre does (a standard
   choice). A ripple is in NREM when its peak is (M5; a standard choice for "inside").
 - Laps (O1 reading c): the intervals between consecutive rewards at opposite ends of the track.
+  A lap so includes the time spent on the starting platform after its reward, which the M8 laps
+  (position inside a 150-cm window) leave out.
+- M3 drops spikes after the end of the last run epoch. It is not applied: the last run epoch
+  (post-run) follows post-sleep, and every analysis here reads only bins of the run and of the
+  sleep epochs and z-scores within those bins, so the dropped spikes could not enter any of them.
+- `MONO_*` (data check only, decides no claim): short-latency cross-correlogram test of whether
+  a unit drives or inhibits another, used to check what the `cell_type` column marks. The
+  windows are a standard choice for monosynaptic connections (1 to 4 ms after the reference
+  spike against a 10 to 25 ms flank baseline); the p-value thresholds are shown at three values.
+- Absence context (`signed_rank_power`, `min_detectable_shift`, `median_ci`): resampling of the
+  session values, a standard choice; it gives power and bounds and decides no claim.
 """
 
 from __future__ import annotations
@@ -69,6 +80,9 @@ PERI_RIPPLE_S = 2.0
 PERI_BINS = 100
 PERI_SMOOTH_BINS = 2
 PEAK_WINDOW_S = 0.25
+
+MONO_EDGES = np.array([-0.025, -0.01, -0.004, -0.001, 0.001, 0.004, 0.01, 0.025])
+MONO_P = (1e-3, 1e-6, 1e-10)
 
 MIXED_UNITS_NOTE = (
     "In some files the spike times of unit 1 fall back once, after 65536 times k spikes, and "
@@ -148,6 +162,17 @@ def load_session(path: str, url: str) -> dict:
         s["video_storage"] = {k: (f[f"acquisition/{k}/data"].shape, str(f[f"acquisition/{k}/data"].dtype),
                                   f[f"acquisition/{k}/data"].compression)
                               for k in f["acquisition"] if k.startswith("Video")}
+        # The groups under acquisition, processing (two levels), stimulus and intervals, with
+        # their NWB type, to show what each file holds beyond the paths read here (video series
+        # are left out; the video check lists them).
+        s["groups"] = []
+        parents = [p for p in ("acquisition", "processing", "stimulus", "stimulus/presentation", "intervals") if p in f]
+        parents += [f"processing/{m}" for m in (f["processing"] if "processing" in f else [])]
+        for parent in parents:
+            for k in f[parent]:
+                if not k.startswith("Video") and f[parent].get(k, getclass=True) is h5py.Group:
+                    kind = f[f"{parent}/{k}"].attrs.get("neurodata_type")
+                    s["groups"].append((f"{parent}/{k}", kind.decode() if isinstance(kind, bytes) else kind))
         s["electrode_locations"] = sorted(set(_strings(f["general/extracellular_ephys/electrodes/location"])))
         s["units"] = None
         if "units" in f:
@@ -180,6 +205,14 @@ def load_session(path: str, url: str) -> dict:
                 "has_location_column": "location" in u,
             }
     return s
+
+
+def asset_variables(version: str = DANDISET_VERSION) -> dict[str, list[str]]:
+    """The variables the archive's asset metadata lists for each NWB file (variableMeasured)."""
+    with DandiAPIClient() as client:
+        dandiset = client.get_dandiset(DANDISET_ID, version)
+        return {a.path: [v.get("value") for v in a.get_raw_metadata().get("variableMeasured", [])]
+                for a in dandiset.get_assets() if a.path.endswith(".nwb")}
 
 
 def load_all(workers: int = 12, version: str = DANDISET_VERSION) -> list[dict]:
@@ -564,6 +597,82 @@ def ripple_rates(session: dict) -> dict:
         out[f"{k}_ripples"] = int(in_intervals(session["ripples"]["peak"], nrem).sum())
         out[f"{k}_rate"] = out[f"{k}_ripples"] / out[f"{k}_nrem_s"] if out[f"{k}_nrem_s"] > 0 else np.nan
     return out
+
+
+# --- data check: short-latency connections ----------------------------------------------------
+
+def mono_counts(trains: dict, ref: int, targets: list[int]) -> np.ndarray:
+    """(len(targets), 7) counts of target spikes at the lags of `MONO_EDGES` from each spike of ref."""
+    ids = np.concatenate([np.full(len(trains[j]), k) for k, j in enumerate(targets)])
+    t = np.concatenate([trains[j] for j in targets])
+    order = np.argsort(t, kind="stable")
+    t, ids = t[order], ids[order]
+    r = trains[ref]
+    lo = np.searchsorted(t, r + MONO_EDGES[0])
+    n = np.searchsorted(t, r + MONO_EDGES[-1]) - lo
+    idx = np.repeat(lo - np.cumsum(np.concatenate([[0], n[:-1]])), n) + np.arange(n.sum())
+    b = np.searchsorted(MONO_EDGES, t[idx] - np.repeat(r, n), side="right") - 1
+    ok = (b >= 0) & (b < len(MONO_EDGES) - 1)
+    k = len(MONO_EDGES) - 1
+    return np.bincount(ids[idx][ok] * k + b[ok], minlength=len(targets) * k).reshape(len(targets), k)
+
+
+def mono_connections(session: dict, ref: int) -> dict:
+    """Number of loaded units that ref excites or inhibits at short latency, at each `MONO_P`.
+
+    Count of target spikes 1 to 4 ms after ref's spikes against a Poisson of mean the 10 to 25 ms
+    flanks' count scaled to 3 ms; excitation needs the upper tail below the threshold and more
+    spikes after than 1 to 4 ms before (to set aside common input), inhibition the lower tail and
+    fewer after than before.
+    """
+    trains = session["units"]["trains"]
+    c = mono_counts(trains, ref, [j for j in trains if j != ref])
+    flank = (MONO_EDGES[1] - MONO_EDGES[0]) + (MONO_EDGES[-1] - MONO_EDGES[-2])
+    mu = c[:, [0, 6]].sum(1) * (MONO_EDGES[5] - MONO_EDGES[4]) / flank
+    after, before = c[:, 4], c[:, 2]
+    out = {}
+    for p in MONO_P:
+        out[f"excites_{p:g}"] = int(((stats.poisson.sf(after - 1, mu) < p) & (after > before) & (mu > 0)).sum())
+        out[f"inhibits_{p:g}"] = int(((stats.poisson.cdf(after, mu) < p) & (after < before) & (mu > 0)).sum())
+    return out
+
+
+# --- context for claims of absence -----------------------------------------------------------
+
+def signed_rank_power(diffs: np.ndarray, n: int, shift: float, rng: np.random.Generator,
+                      n_sim: int = 2000) -> float:
+    """Share of samples of n values, drawn with replacement from `diffs` centred on a median of
+    zero and moved by `shift`, in which the two-sided Wilcoxon signed rank test has p < 0.05."""
+    centred = np.asarray(diffs) - np.median(diffs)
+    x = rng.choice(centred, size=(n_sim, n), replace=True) + shift
+    return float((stats.wilcoxon(x, axis=1).pvalue < 0.05).mean())
+
+
+def min_detectable_shift(diffs: np.ndarray, n: int, rng: np.random.Generator, power: float = 0.8,
+                         n_sim: int = 2000) -> float:
+    """Smallest positive shift of the median that `signed_rank_power` detects with `power`
+    (bisection to 2% of the spread of `diffs`)."""
+    hi = 4 * (np.std(diffs) + 1e-12)
+    lo = 0.0
+    while hi - lo > 0.02 * np.std(diffs):
+        mid = (lo + hi) / 2
+        if signed_rank_power(diffs, n, mid, rng, n_sim) >= power:
+            hi = mid
+        else:
+            lo = mid
+    return hi
+
+
+def median_ci(x: np.ndarray, rng: np.random.Generator, n_boot: int = 5000) -> tuple[float, float]:
+    """Percentile bootstrap 95% interval of the median."""
+    x = np.asarray(x)
+    m = np.median(rng.choice(x, size=(n_boot, len(x)), replace=True), axis=1)
+    return float(np.percentile(m, 2.5)), float(np.percentile(m, 97.5))
+
+
+def effect_r(p: float, n: int, sign: float) -> float:
+    """Effect size r = z / sqrt(n) of a two-sided test, z from its p-value and the sign given."""
+    return float(np.sign(sign) * stats.norm.isf(p / 2) / np.sqrt(n))
 
 
 def time_frame_reads(url: str, video: str, n_frames: int = 20) -> tuple[float, int]:
