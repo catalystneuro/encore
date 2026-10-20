@@ -35,6 +35,7 @@ from __future__ import annotations
 
 import argparse
 import datetime
+import hashlib
 import html
 import json
 import random
@@ -171,6 +172,13 @@ def human_count(n: int, noun: str) -> str:
 def short_species(name: str) -> str:
     return (name or "").split(" - ")[-1].strip()
 
+
+
+def asset(name: str) -> str:
+    """An asset's path with a hash of its contents, so that a browser never pairs a new page with a cached old
+    stylesheet or script (GitHub Pages lets them be cached for ten minutes)."""
+    digest = hashlib.sha256((ASSETS / name).read_bytes()).hexdigest()[:10]
+    return f"assets/{name}?v={digest}"
 
 # --- collecting ---------------------------------------------------------------
 
@@ -735,7 +743,7 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="icon" href="{root}assets/favicon.svg" type="image/svg+xml">
 <link rel="alternate icon" href="{root}assets/favicon-32.png" type="image/png" sizes="32x32">
 <link rel="apple-touch-icon" href="{root}assets/favicon-180.png">
-<link rel="stylesheet" href="{root}assets/app.css"></head><body>
+<link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
   <a class="brand" href="{home}">Reproduction registry</a>{nav}
   <a class="tab ext" href="{REPO_URL}">GitHub</a>
@@ -994,7 +1002,7 @@ def page_overview(data: dict) -> str:
 </main>'''
     scripts = ('<script>(function(){var m=' + redirect + ',h=location.hash.match(/^#attempt-(.+)$/);'
                'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
-               + ('<script src="assets/progress.js"></script>' if dashboard else ""))
+               + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
     structured = {
         "@context": "https://schema.org", "@type": "WebSite", "name": "Reproduction registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
@@ -1209,7 +1217,7 @@ def page_list(data: dict, kind: str) -> str:
   </div>
 </main>'''
     scripts = (f'<script type="application/json" id="list-config">{json.dumps(config)}</script>'
-               f'<script src="../assets/list.js"></script>')
+               f'<script src="../{asset("list.js")}"></script>')
     return shell(data, f'{spec["title"]} · Reproduction registry', "../", kind, body, scripts, path=f"{kind}/",
                  description=spec["intro"])
 

@@ -436,6 +436,13 @@ def test_the_schema_keeps_quotes_inferences_and_links_apart():
     assert schema.is_valid({**base, "claims": [{**claim, "statistics": [{"p": 0}]}]})
 
 
+def test_stylesheets_and_scripts_are_named_by_their_contents(built):
+    data, out = built
+    page = (out / "pipeline" / "index.html").read_text()
+    assert re.search(r'href="\.\./assets/app\.css\?v=[0-9a-f]{10}"', page)
+    assert re.search(r'src="assets/progress\.js\?v=[0-9a-f]{10}"', (out / "index.html").read_text())
+
+
 def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
     data, out = built
     for key in site.current_attempts(data):
