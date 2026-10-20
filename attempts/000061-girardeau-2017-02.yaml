@@ -69,12 +69,15 @@ outcomes:
     left-to-right laps. The correlation is positive in all four rats for each count, with p < 0.05
     in Rat08, Rat09 and Rat10 and not in Rat11 (rho 0.32 to 0.33). Both readings of "gradually
     diminished" hold for all three counts, so the outcome holds under every reading the dandiset
-    allows. No outcome in the earlier attempt.
+    allows. The answer to this attempt's question (questions/000061.yaml) confirmed that the claim
+    is judged on O1 reading c alone when the dataset holds neither lap intervals nor position, and
+    the criterion now says so; the outcome, reproduced before the answer, is unchanged. No outcome in
+    the earlier attempt.
   deviations:
   - Laps are O1 reading c, the intervals between consecutive rewards at opposite ends with both
     rewards inside the run. Reading a has no lap intervals in the dandiset (its trials table is not
-    laps) and reading b needs position, which it lacks; a question asks whether reading c alone
-    decides the claim (questions/000061.yaml).
+    laps) and reading b needs position, which it lacks. As answered, the claim is judged on reading
+    c alone; the hand-picked 150-cm window of ClassifyLaps.m is not reproduced by any reading.
   - The air puff direction of a day is the lap direction holding most puffs (1153 of 1197 puffs
     fall in run laps of that direction); the dandiset gives no direction. Rat08-20130709 has no
     puff inside a run lap and has no air puff count.
@@ -88,13 +91,16 @@ outcomes:
     a median of 0.39 (positive in 120, p = 7.0e-15) and the NREM/wake ratio a median of 0.18
     (positive in 108, p = 7.2e-12); both are positive and the REM median exceeds the NREM median. By
     session the REM ratio reaches p < 0.05 in four of five sessions and the NREM ratio in three
-    (Rat08-20130713, 22 cells, reaches neither). The paper had 675 cells from four rats. No outcome
-    in the earlier attempt.
+    (Rat08-20130713, 22 cells, reaches neither). The paper had 675 cells from four rats; these 152
+    come from one rat, a smaller sample. The answer to this attempt's question
+    (questions/000061.yaml) confirmed that the claim is judged on O4 reading a alone, the identified
+    cells of the Fig. 2c legend, and O4 now says so; the outcome, reproduced before the answer, is
+    unchanged. No outcome in the earlier attempt.
   deviations:
   - Cells are the units the dandiset's cell_type column marks excitatory, read as the paper's
     monosynaptically identified pyramidal cells (O4 reading a). The column exists in five Rat08
     files only, so the test uses one rat and about a fifth of the paper's cells. Reading b (all
-    putative pyramidal cells) cannot be run; a question asks whether reading a alone decides.
+    putative pyramidal cells) cannot be formed; as answered, it is not needed for the outcome.
   - Units 0 and 1 of files with a wrong spike index are left out (Rat08-20130710 and 20130711).
 - claim: bla-int-sleep-firing
   outcome: not_reproduced
@@ -106,10 +112,13 @@ outcomes:
     in 16) with p = 0.26, so the decrease is not significant. Neither part holds, which the criterion
     calls not reproduced. By session only Rat08-20130711 (12 cells) has a REM ratio with p < 0.05.
     The paper had 175 interneurons from four rats; the REM effect here is small (median 0.029) and
-    rests on one rat. No outcome in the earlier attempt.
+    rests on one rat. The answer to this attempt's question (questions/000061.yaml) confirmed that
+    the claim is judged on O4 reading a alone; the outcome, not reproduced before the answer, is
+    unchanged. No outcome in the earlier attempt.
   deviations:
   - Cells are the units marked inhibitory in the five typed Rat08 files, read as the paper's
-    identified interneurons (O4 reading a); reading b cannot be run.
+    identified interneurons (O4 reading a, which as answered decides alone); reading b cannot be
+    formed.
 - claim: hpc-bla-reactivation-post-sleep
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -185,12 +194,24 @@ outcomes:
     85 of 822 BLA units (10.3%) are downmodulated under O2 reading a. No outcome in the earlier
     attempt.
 - claim: ripple-modulated-cells-larger-reactivation
-  outcome: blocked
-  blocked_by: metadata_insufficient
-  notes: Depends on bla-ripple-up-subgroup, which is blocked, and its second test uses pyramidal
-    pairs. Its all-cell test is shown as a description, EV - REV larger with the modulated BLA units
-    in 7 of 12 sessions (means 4.18 and 1.68%), rank sum p = 0.27 (O2 reading a) and 0.3 (b). A
-    question asks whether the all-cell part could be judged alone. No outcome in the earlier attempt.
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:ripple-modulated-cells-larger-reactivation
+  notes: With all cells over 12 sessions (the paper had 19), EV - REV is larger with the modulated
+    BLA units in 7, mean 4.18% against 1.68% for the non-modulated units, two-sided rank sum p =
+    0.27 under O2 reading a and 0.3 under reading b, so the all-cell test does not hold. The
+    non-modulated mean is within the expected 1.76 +/- 0.56%; the modulated mean is below the
+    expected 6.07 +/- 1.3%. By rat the modulated units give the larger value in 4 of 7 Rat08, 0 of
+    2 Rat10 and 3 of 3 Rat11 sessions; 12 of the 23 sessions with sleep and ripples have more than 5
+    hippocampal and 5 modulated BLA units. The pyramidal test cannot be run (no putative types). Before the answer
+    to this attempt's question (questions/000061.yaml) the claim was blocked as
+    metadata_insufficient through bla-ripple-up-subgroup; the answer removed that dependency, M6
+    needing no cell type, and the criterion now judges the all-cell test alone when the pyramidal
+    test cannot be run, not reproduced when it does not hold. No outcome in the earlier attempt.
+  deviations:
+  - Only the all-cell test is run; the pyramidal-pair test needs putative types the dandiset lacks.
+  - BLA is the bla label (case ignored); units 0 and 1 of the files with a wrong spike index are
+    left out.
 - claim: run-correlated-pair-fractions
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -220,15 +241,24 @@ outcomes:
   notes: Uses the pooled pyramidal pairs of run-correlated-pair-fractions. No outcome in the earlier
     attempt.
 - claim: reactivation-peaks-at-ripples
-  outcome: blocked
-  blocked_by: metadata_insufficient
-  notes: Depends on hpc-bla-reactivation-post-sleep, which is blocked, and its first test uses
-    pyramidal cells. Its all-cell test is shown as a description, the ripple-peak strength of the
-    whole-run template higher in post-NREM than in pre-NREM in 11 of 15 sessions (median 0.0224,
-    one-tailed p = 0.0042, the paper 0.00189 over 27 sessions). The earlier attempt reproduced this
-    id with singular-vector patterns and two readings of the abstract; the claim now uses the
-    paper's reactivation strength R on pyramidal cells and all cells. A question asks whether the
-    all-cell part could be judged alone, which could make it partially reproduced.
+  outcome: partially_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:reactivation-peaks-at-ripples
+  notes: With all cells, the ripple-peak strength of the whole-run template is higher in post-NREM
+    than in pre-NREM in 11 of 15 sessions (median difference 0.0224, one-tailed p = 0.0042; the
+    paper 0.00189 over 27 sessions); post exceeds pre in 7 of 9 Rat08, 2 of 3 Rat10 and 2 of 3 Rat11
+    sessions. The pyramidal test cannot be run, so the pyramidal part of the
+    statement is not tested. Before the answer to this attempt's question (questions/000061.yaml)
+    the claim was blocked as metadata_insufficient through hpc-bla-reactivation-post-sleep; the
+    answer removed that dependency, sessions entering by the M7 cell minimum alone, and the
+    criterion now judges the all-cell test alone when the pyramidal test cannot be run, partially
+    reproduced when it has p < 0.05. The earlier attempt reproduced this id with singular-vector
+    patterns and two readings of the abstract; the claim now uses the paper's reactivation strength
+    R.
+  deviations:
+  - Only the all-cell test is run; the pyramidal test needs putative types the dandiset lacks.
+  - BLA is the bla label (case ignored); units 0 and 1 of the files with a wrong spike index are
+    left out.
 - claim: airpuff-trajectory-ripple-reactivation
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -249,13 +279,23 @@ outcomes:
     on pyramidal cells, which the dandiset cannot select. As a description, with all cells the air
     puff change does not exceed the safe one (8 of 14 sessions, one-tailed p = 0.48).
 - claim: direction-all-cell-pairs
-  outcome: blocked
-  blocked_by: metadata_insufficient
-  notes: Depends on aversive-direction-stronger, which is blocked. Its three tests are shown as a
-    description with laps per O1 reading c, over 14 sessions, air puff post above pre p = 0.01, safe
-    p = 0.0043, air puff change above safe p = 0.48; this is the pattern the claim states. A question
-    asks whether the claim could be judged alone, which would make it reproduced on reading c. No
-    outcome in the earlier attempt.
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:direction-all-cell-pairs
+  notes: With all cells over 14 sessions (the paper had 27), the air puff template is more
+    reactivated around post-NREM than pre-NREM ripples in 10 (one-tailed p = 0.01), the safe
+    template in 12 (p = 0.0043), and the air puff change exceeds the safe change in 8 (one-tailed p =
+    0.48), so both within-trajectory tests have p < 0.05 and the between-trajectory test has p >=
+    0.05. By rat the air puff template rises in 7 of 8 Rat08, 2 of 3 Rat10 and 1 of 3 Rat11
+    sessions, so its result rests mostly on Rat08. Before the answers to this attempt's questions (questions/000061.yaml) the claim was
+    blocked as metadata_insufficient through aversive-direction-stronger; the answers removed that
+    dependency, the claim using that claim's procedure but not its result, and confirmed that laps
+    are judged on O1 reading c alone here. No outcome in the earlier attempt.
+  deviations:
+  - Laps are O1 reading c (between rewards at opposite ends); the dandiset has no lap intervals or
+    position. The air puff direction of a day is the lap direction holding most puffs.
+  - BLA is the bla label (case ignored); units 0 and 1 of the files with a wrong spike index are
+    left out.
 - claim: bla-rate-same-across-directions
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -294,7 +334,7 @@ findings:
     unclassified, described only as "Type of cell this has been classified as."; it marks 152
     excitatory and 36 inhibitory BLA units and 9 excitatory hippocampal units, consistent with the
     paper's monosynaptic identification alone. Most of the paper's reactivation analyses cannot be
-    repeated (21 claims blocked). The earlier attempt did not read this column.
+    repeated (18 claims blocked). The earlier attempt did not read this column.
 - kind: data_missing
   statement: New in this attempt. The dandiset holds 40 recording days with 4702 units, where the
     paper reports 61 sessions with 7,390 units; per rat it holds 2317, 515, 440 and 1430 units
