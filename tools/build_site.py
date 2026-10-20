@@ -888,8 +888,8 @@ def progress_panel(data: dict) -> str:
     <div class="panel"><h2 id="progress-title">Datasets attempted over time</h2>
       <p class="small muted" style="margin:0">Running total, by day.</p>
       <div class="chart" id="progress-line"></div></div>
-    <div class="panel"><h2>Outcomes of claims tested, by day</h2>
-      <p class="small muted" style="margin:0">Claims that rest on the dataset, on the date of their attempt.</p>
+    <div class="panel"><h2 id="progress-day-title">Datasets attempted, new each day</h2>
+      <p class="small muted" style="margin:0" id="progress-day-note">Each dataset on the date of its first attempt.</p>
       <div class="chart" id="progress-outcomes"></div><div id="progress-legend"></div></div>
   </div>
   <details class="table-view panel"><summary>Table: new each day, all datasets</summary>
