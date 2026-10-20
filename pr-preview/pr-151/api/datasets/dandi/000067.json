@@ -1,0 +1,507 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000067",
+  "label": "DANDI:000067"
+ },
+ "page": "datasets/dandi/000067/",
+ "generated": "2026-10-20T23:25:25+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 4,
+  "not_reproduced": 7,
+  "blocked": 4
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000067-fujisawa-2008-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000067",
+    "version": "0.250624.0419",
+    "doi": "10.48324/dandi.000067/0.250624.0419"
+   },
+   "key": "dandi:000067",
+   "label": "DANDI:000067",
+   "dataset_version": "0.250624.0419",
+   "paper": "10.1038/nn.2134",
+   "paper_title": "Behavior-dependent short-term assembly dynamics in the medial prefrontal cortex",
+   "date": "2026-10-16",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/38917959176"
+   },
+   "tier": "runs",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000067-fujisawa-2008",
+   "entry_title": "Prefrontal assemblies and monosynaptic dynamics in a working memory task (Fujisawa et al. 2008)",
+   "description": "Tests the findings of Fujisawa, Amarasingham, Harrison and Buzsaki (2008) on dandiset 000067, which holds recordings of three rats from a 64-site prefrontal probe and a CA1 probe during an odor-place matching task. Units are placed on the probes from their waveforms in the wideband signal. It tests the population activity, field sizes and trajectory selectivity of prefrontal neurons, monosynaptic connections found with a jitter test, the cell classes and distances they imply, and the task dependence, short-term plasticity and summation of the connections. The paper's example session and fourth rat are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_fujisawa_2008.ipynb",
+     "title": "Reproducing Fujisawa et al. (2008) from dandiset 000067",
+     "executed": "notebooks/000067-fujisawa-2008/reproduce_fujisawa_2008.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "channel-region-link",
+     "statement": "The dandiset's recording channels can be assigned to the prefrontal probe, the CA1 probe and the nose-poke sensors by the channel map of the CRCNS pfc-2 description of the same recordings (channels 1 to 64 prefrontal, 65 to 96 CA1, 97 right and 98 left nose-poke sensors), and the data agree with that map.",
+     "source": "Methods (8-shank, 64-site probe in mPFC); CRCNS pfc-2 data description, version 0.7",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Records are matched by channel number. In rats EE and FF the CRCNS map holds in every session; the CA1 channels have a theta ratio 1.9 to 2.7 times that of channels 1 to 64, and the more active sensor during the nose poke is the trial's side in 0.97 to 1.00 of trials. In rat GG channels 97 and 98 are not sensors (agreement 0.35 to 0.42); the sensors are on 65 and 66 and the CA1 probe on 70 to 101, and with that correction both checks hold in every session (agreement 1.00). The sensor on 66 is active on trials labelled Right, so in GG the order of the sensors, or the side labels, is reversed relative to EE and FF. Channels 1 to 64 have a lower theta ratio than the CA1 channels in every session (0.16 to 0.27 against 0.37 to 0.54), so the prefrontal probe is placed as the description says in all three rats; every claim that uses PFC units depends on that part, which holds.",
+     "deviations": [
+      "The map is used with the per-rat correction found in the data, not as published.",
+      "The sensor check of EE.088 uses its LFP only; it has no wideband signal for the theta check."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rats-and-units",
+     "statement": "633 well-isolated units were recorded from the mPFC of four rats.",
+     "source": "Results, paragraph 1",
+     "quote": "We recorded a total of 633 well-isolated units from the anterior cingulate area (area 24) and dorsal prelimbic area (area 32) of the medial prefrontal cortex (mPFC)... in four rats.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "The dandiset holds three rats (EE, FF, GG), against four. The eight analysed sessions hold 417 PFC single units under reading (a), 346 under (b) and 491 under (c), all outside 633 plus or minus 63. The 350 units of EE.088 cannot be placed on a probe, and EE.152, EE.165 and EE.188, working memory sessions in the CRCNS table, are not in the dandiset; the paper does not say which sessions its 633 units come from, nor whether units recorded on several days were counted once. Variants; leaving out also the first unit of each shank block gives 416. Placing EE.088's units by the conversion's block order (a block starts at each multi-unit cluster; blocks 1 to 8 taken as prefrontal), a rule that matches the waveform placement in EE.049 and EE.196 (agreement 1.000) but not in FF and GG (0.360 to 0.956), adds 214 PFC single units and gives 631, within tolerance; the count of rats still fails.",
+     "deviations": [
+      "Units are counted per session; the paper's way of counting is not stated.",
+      "Well-isolated units are selected by a refractory rule chosen here."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "task-performance",
+     "statement": "Rats performed the odor-place matching task at 92% correct (91.9% in the recording sessions).",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 1; Methods, Behavioral task",
+     "quote": "All rats performed the task at high proficiency (mean performance, 92% correct) at the time of neurophysiological data collection... In the recording sessions, the mean correct performance was 91.9%.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The trial table lists correct trials only (the CRCNS description of SessionNP, from which the conversion built the table), so the fraction of correct trials cannot be computed. The position has no y coordinate, so the choice on other trials cannot be recovered from the path. Error trials are not in the dandiset, and the CRCNS data need an account. Every listed run holds one lap found from x1, and the nine sessions hold 100 laps and 147 nose-poke bouts outside the 335 listed trials; if every lap outside a listed run were an error trial, performance would be 77.0%, and if every unlisted nose-poke bout were one, 69.5%. The files do not say which were errors, nor whether every error trial produced a lap or a bout, so these are not bounds in one direction and not a test.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2c-active-fraction",
+     "statement": "About 10% (layer 2/3) and 20% (layer 5) of the recorded neurons fire at least one spike in any 100 ms window, a fraction that is relatively constant along the maze.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 3; Figure 2c; Discussion",
+     "quote": "the population firing rates (Fig. 2b) and the fraction of simultaneously active neurons (10% and 20% in 100-ms windows, layers 2/3 and 5, respectively; Fig. 2c) were relatively constant in all segments of the maze",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Per-rat medians of the session means are 10.2% (EE), 19.7% (FF) and 6.2% (GG); EE fits the layer 2/3 value and FF the layer 5 value, GG fits neither. The ratio of the largest to the smallest position-bin mean is 1.16 to 1.88 in seven sessions and 2.57 in GG.149. Neither part of the criterion holds for every rat; both hold for EE and FF. GG's sessions have 18 or 19 PFC single units each.",
+     "deviations": [
+      "The layer of each rat is not known; values are matched rat by rat under the layer readings.",
+      "The threshold for \"relatively constant\" (a factor of 2) is chosen here."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-field-size",
+     "statement": "Neurons are active over similar standardized distances of the maze, 0.27 (62 cm) plus or minus 0.17 (39 cm) (mean and s.d.), from the 50% boundaries of the peak firing rate.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 3; Figure 2a",
+     "quote": "most neurons were generically active for similar standardized distances of 0.27 (62 cm) \u00b1 0.17 (39 cm) (mean \u00b1 s.d.) in the maze (as determined by the 50% firing boundaries of the peak firing rate",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Reading (a), 346 units, mean 0.270 and s.d. 0.196; (b) 0.281 and 0.206; (c) 0.331 and 0.220. The mean is within tolerance under every reading and the s.d. under none (0.17 plus or minus 0.017). No side without spikes entered reading (b); with only sides whose own peak is at least 1 Hz it gives 0.292 and 0.214. With peak thresholds from 0 to 5 Hz the mean of (a) is 0.254 to 0.330 and the s.d. 0.189 to 0.243. Per rat the means are 0.221 (EE), 0.322 (FF) and 0.272 (GG).",
+     "deviations": [
+      "The mean's tolerance is the paper's stated s.d. of the neurons, as the protocol asks, which accepts a wide range of means; the s.d. carries the test.",
+      "The 1 Hz peak rule is the CRCNS \"Cells\" rule, not the paper's.",
+      "The paper does not say how the 50% boundaries are taken or which trajectory is used; three readings are shown."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2b-trajectory-selective",
+     "statement": "The fraction of neurons with significantly different firing on left and right trials is 16% (layer 2/3) and 18% (layer 5) in the central arm (positions 0 to 0.3), where the trajectories overlap, and 22% (layer 2/3) and 40% (layer 5) in the side arms (0.5 to 1).",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 4; Figure 2b; Methods, permutation tests and global bands",
+     "quote": "The fraction of trajectory-selective neurons in the side arms (positions 0.5\u20131) was almost twice as large in deep (layer 5, 40%) than in superficial (layer 2/3, 22%) neurons... a sizable but smaller fraction of neurons in both layer 2/3 and layer 5 (16% and 18%, respectively; Fig. 2b) was also differentially active in the central arm",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Central arm, 22.9% (EE), 24.5% (FF) and 26.2% (GG) of units with a peak of at least 1 Hz (24.0% of 346 pooled), against 0.9% with relabelled trials (Fisher p = 7.3e-24; a McNemar test on the same units, 82 against 2 discordant units, p = 1.9e-22); every rat is above the 14.4 to 19.8% range. Side arms, 51.6%, 59.9% and 52.4%, above both layer values. Per session the central-arm fraction is 1.9% to 69.2%. With the s.d. band, 24.3% and 59.8% pooled. The procedure's chance rate (0.9% for each segment) is below the global 5%, as expected for a segment of the track. The selective fractions are higher than the paper's in every rat, so units selective by this test are more common here.",
+     "deviations": [
+      "The number of permutations (1000) and the 101-point grid are chosen here.",
+      "Layers are matched rat by rat, as the layer of each rat is not known.",
+      "In rat GG the side labels may be swapped (see channel-region-link); this does not change a left-right test."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "traj-diverge",
+     "statement": "Left and right trajectories overlap in the central arm and begin to differ significantly at position 0.3.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 4; Supplementary Figure 3",
+     "quote": "Left and right lap trajectories in segments 0 to 0.3 of the central arm overlapped; they began to differ significantly at position 0.3 (P < 0.01 with respect to differences in means; Supplementary Fig. 3 online).",
+     "statistics": [
+      {
+       "p": 0.01,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "The claim is about where left and right trajectories separate laterally, which would show along the y coordinate; the second LED series is zero throughout (cell 33), so the dandiset has no y coordinate. x1, the x coordinate of the first head LED, runs along the maze (about 570 px at the start, 190 px near position 0.5, back up towards the reward) on both sides. Under the criterion written in the first revision it differs between sides somewhere in 0.5 to 1 in all 9 sessions, by at most 7 to 57 px, with a median divergence point of 0.49 (8 of 9 sessions have one), which the written criterion would rate as partially reproduced. The divergence point lies within 0.08 of the position where x1 reaches its minimum (0.47 to 0.53) in the seven sessions other than GG.149 (median -0.01 over eight, cell 35), and at position 0.3 the sides differ by a median 2.8 px while x1 falls by a median 244 px from 0 to 0.3. x1 thus begins to differ where the path turns back in x and does not locate a lateral separation, and the criterion's partial rating would follow from any x1 divergence past the turn. Changed to blocked in round 3, with the verifier's agreement. The overlap of the paths in the central arm cannot be judged either; the 5 to 17 px x1 differences there in five sessions do not stand in for a two-dimensional comparison.",
+     "deviations": [
+      "Only the x coordinate is available; the paper used the two-dimensional position.",
+      "The test (Welch t-test per bin of 0.02, p < 0.01, divergence from the first bin of a run up to 0.6) is chosen here; the paper's is in a supplementary figure that was not available.",
+      "The criterion was written in the first revision, after the verifier's report."
+     ],
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "odor-nosepoke",
+     "statement": "About one quarter of the neurons fire at significantly different rates (P < 0.05 per cell) during nose poking for the two odors.",
+     "source": "Results, Medial prefrontal cortical units predict behavioral choice, paragraph 4; Supplementary Figure 6",
+     "quote": "Approximately one-quarter of the neurons showed significantly different (P < 0.05 per cell) firing rates in response to one of the two odorants",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "37.8% of 397 units (Mann-Whitney P < 0.05) against 4.0% with relabelled trials (Fisher p = 5.5e-35; McNemar on the same units, 142 against 8, p = 3.9e-33); outside 20 to 30%. A t-test gives 28.5%, which would be within, but the test was fixed beforehand. Per rat 34.9% (EE), 50.3% (FF), 11.1% (GG). Odor and side are the same variable here, as only correct trials are listed, so the difference can come from the odor or from the coming choice; the paper's Supplementary Figure 6 analysis of that point was not available.",
+     "deviations": [
+      "The paper names no test; a Mann-Whitney test of per-trial rates was chosen.",
+      "The nose-poke period is from the start of the first nose poke to the end of the last (median 4.66 s), as the trial table gives; the paper's window is not stated in the main text."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-connection-rates",
+     "statement": "Of all ordered pairs of simultaneously recorded neurons, 0.79% had short-latency, narrow peaks or troughs in their cross-correlograms (0.55% excitatory, 0.24% inhibitory), found with a jitter test.",
+     "source": "Results, Characterization of mPFC neurons and their connections, paragraph 5; Figure 3a and 3e; Methods, identifying monosynaptic interactions",
+     "quote": "Of the 62,408 cell pairs (counting each literal pair twice, corresponding to the two directions), 495 (0.79%) had short latency (< 5 ms onset) and narrow significant peaks (\u2264 2 ms) or troughs in their cross-correlograms... 0.55% excitatory connections and 0.24% inhibitory connections (single directions)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "31754 ordered pairs; connections 1.131%, excitatory 0.898%, inhibitory 0.233%. Only the inhibitory rate is within tolerance. Excitatory connections are 4.01% of same-shank pairs and 0.35% of pairs across shanks; per rat the excitatory rate is 0.84% (EE), 1.05% (FF), 0.94% (GG). The Poisson screen passed 857 unordered pairs to the Monte Carlo test, and none of the 800 unscreened pairs tested anyway was significant. 40 unordered pairs (0.252%) are connected both ways (paper 0.17%). Counting peaks of any width gives 0.938% excitatory. The excess of same-shank peaks may include pairs of clusters split from one neuron, which the paper's curated units may not contain. The inhibitory match is fragile; 34 of the 74 inhibitory connections are troughs in the reverse direction of a pair with a peak, which jittering both trains can produce (on 30 synthetic excitatory pairs with no inhibition, the criterion's rule finds such a trough in 21, and none once they are excluded). Without them the rates are 1.023%, 0.898% and 0.126%, none within tolerance, and 10 pairs (0.063%) are reciprocal.",
+     "deviations": [
+      "Bins of 1 ms (not stated in the main text) and a Poisson screen before the Monte Carlo test.",
+      "A trough beside a peak in the same direction is not counted as inhibition (chosen here). Troughs that mirror a peak in the other direction are counted, as the criterion was written; the rates without them are shown as a variant.",
+      "The set of well-isolated units is selected here, not by the paper."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-cell-classes",
+     "statement": "By their connections, 32.5% of units are putative pyramidal cells and 12.5% putative interneurons, a ratio of 2.82 plus or minus 0.51 (s.d.), and 50.7% of the postsynaptic targets of putative excitatory cells themselves inhibit other neurons.",
+     "source": "Results, Characterization of mPFC neurons and their connections, paragraph 5",
+     "quote": "a sizable fraction of the recorded units could be classified as putative pyramidal cells (32.5%) or inhibitory interneurons (12.5%). A large percentage of the postsynaptic targets of the putative excitatory cells (50.7%) were suppressing other neurons... The ratio of putative principal cells to inhibitory interneurons... was 2.82 \u00b1 0.51 (s.d.).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Of 417 units, 37.9% putative pyramidal and 3.1% putative interneurons, and 21 units have outgoing connections of both kinds. The ratio is 11.92 plus or minus 7.46 over the five sessions with an interneuron (pooled 12.15, mean of rats 12.96), against 2.82 plus or minus 0.51. Of 124 targets of excitatory connections 7.3% are putative interneurons (20.2% have any inhibitory connection), against 50.7%. 54 of the 74 inhibitory connections come from units that also excite others. No value is within tolerance under any reading; the shortfall of interneurons drives the ratio and the targets. Without the troughs that mirror a peak (fig3-connection-rates), 38.6% pyramidal and 2.4% (10 units) interneurons, pooled ratio 16.10, and 4.8% of targets are interneurons, further from the paper.",
+     "deviations": [
+      "Units with both kinds of connection are counted in neither class (chosen here)."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3f-distance",
+     "statement": "Most connected pairs were recorded on the same shank, and the probability of a connection falls with the distance between the neurons, though connections were found up to 1200 micrometres apart.",
+     "source": "Results, Characterization of mPFC neurons and their connections, paragraph 6; Figure 3f",
+     "quote": "most functionally connected pairs were detected locally and recorded by the same probe shank. The probability of putative connections decreased rapidly as a function of distance between the somata of the recorded pair (Fig. 3f), but connections were detected between neurons up to 1,200 \u03bcm apart.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Same shank 4.60% against 0.52% across shanks (Fisher p = 1.1e-89), 61.0% of connections on the same shank, and 8 connections at 1000 micrometres or more (largest 1400). The Spearman correlation over 0 to 1400 micrometres is -0.619, p = 0.102, so the second condition fails and the criterion gives not reproduced. The probability falls from 4.60% at 0 to 0.24% at 600 micrometres and is 0.17 to 0.19% from 800 to 1200; the 1400 bin (2 of 310 pairs, 0.645%) breaks the rank order. Over 0 to 1200 micrometres rho = -0.964, p = 0.00045, and over pairs connected pairs are closer than unconnected ones (Mann-Whitney p = 2.3e-87). The fall with distance is present; the outcome comes from the test fixed beforehand on eight points. The distance assumes that the channel groups are in shank order; a unit's second-largest shank is a neighbour of its largest for 47.7% of 407 units, against 25.0% for a random order, which is consistent with it.",
+     "deviations": [
+      "Distance is the shank separation only; positions within a shank were not estimated."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-position-dependence",
+     "statement": "Out of 343 excitatory monosynaptic pairs, 67 showed position dependence of their short-latency coincidences in the maze (P < 0.01), beyond what the firing rates explain.",
+     "source": "Results, Behavioral modulation of monosynaptic interactions, paragraph 1; Figure 4; Methods, identifying position dependence",
+     "quote": "Across all sessions, out of 343 pairs with significant excitatory monosynaptic connections in all sessions, 67 pairs showed identifiable position dependence in monosynaptic interactions by this measure (P < 0.01).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Changed from not_reproduced in the first revision. Reading (a) 10 of 285 excitatory pairs (3.5%); reading (b) 5 (1.8%); rank band 1.4% and 2.1%. The criterion's test compares coincidences with jittered trains, so it finds any excess of coincidences somewhere on the track, not a change of efficacy along it; on synthetic pairs with a constant efficacy driven by real presynaptic trains it flags 30.0% (efficacy 0.05) and 75.0% (efficacy 0.2), against the paper's P < 0.01. By the protocol's rule on stated false-positive rates the procedure is not the paper's, whose thinning step and null are defined in the supplement, which was not available. As a variant, a null of constant efficacy flags 0 of 285 real pairs, none of the constant-efficacy synthetic pairs and 6.7% of synthetic pairs driven only on 0.5 to 0.8 of the track (25.0% of those with at least 50 coincidences), so it has little power at these counts. The median pair has 7 coincidences during runs (range 0 to 442). The rank band cannot reach 0.01 in 183 of 285 pairs.",
+     "deviations": [
+      "The band is mean plus c times s.d. of the surrogates, not the Methods' rank band, because the rank band cannot reach a one-sided 0.01 with 1000 surrogates on 101 points (it is empty when more than 1% of data sets reach the extreme rank somewhere). This was found after a first run of the rank version gave 1.0% and a synthetic test showed that it could not detect a strong position-limited coupling; the rank result is shown as a variant.",
+      "Event positions are kept at the original presynaptic spike in the surrogates."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-facilitation-depression",
+     "statement": "About equal fractions of connected pairs show firing pattern-dependent depression (12.7%) and facilitation (10.7%), comparing the transmission of the first spike of a train with that of later spikes.",
+     "source": "Results, Behavioral modulation of monosynaptic interactions, paragraph 3; Figure 6c",
+     "quote": "we found that approximately equal percentages of neuron pairs showed firing pattern\u2013dependent depressing (12.7%) and facilitating (10.7%) effects (Fig. 6c).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "Of 284 excitatory pairs with enough spikes, 14 (4.9%) depressing and 44 (15.5%) facilitating. Facilitation is above chance (binomial p = 3.5e-11), depression is not (p = 0.56). Overall later spikes transmit more than first spikes (median 0.0099 against 0.0068, Wilcoxon p = 6.1e-08). With at least 50 or 200 spikes of each kind, 5.0 to 5.3% depressing and 15.4 to 15.9% facilitating. The paper's measure (rate-normalized peak height) was not available, and a measure that normalizes by the postsynaptic rate in each condition could give a different balance.",
+     "deviations": [
+      "Transmission measured as excess spikes from 1 to 4 ms over the jitter expectation, chosen here in place of the paper's rate-normalized peak height.",
+      "Later spikes are any spike within 40 ms of the previous one (the Figure 6 legend), not only spikes inside trains that began after 200 ms of silence."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-supralinear",
+     "statement": "Coincident firing of two or more presynaptic neurons within 5 ms on a common target is more effective than the sum of their separate effects (supralinear), while spikes spread over windows longer than 10 ms add linearly.",
+     "source": "Results, Behavioral modulation of monosynaptic interactions, paragraph 4; Figure 7",
+     "quote": "Coincident discharge of two presynaptic neurons within 5 ms was more effective than the sum of the effects of nonsynchronous spikes (Fig. 7a)... In contrast, spike occurrences of more than one neuron in time windows >10 ms showed only a linear additive effect",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "41 satellites, 40 with at least 20 two-partner events; 15 (38%) supralinear; median excess 0.0145 for one partner and 0.0197 for two; Wilcoxon p = 0.993. Two coincident partners transmit more than one, but less than twice as much. With 20 ms events, 29% supralinear (p = 0.998). The criterion's measure is biased towards sublinear (on synthetic satellites with linear summation it gives -0.0278, s.d. 0.0030). A variant against a linear prediction from each partner's one-spike events, with the response window from the first spike to the last, is unbiased there (0.0016, s.d. 0.0046) and detects supralinear input (0.198); on the data 4 of 40 satellites (10%) are above the linear prediction (median 0.0015 against 0.0239, p = 1), and 12 of 40 (30%) with 20 ms events. That variant's local baseline is biased on the data, as the post rate in the flanks is higher around two-partner events than one-partner events (median 9.44 against 7.26 Hz, 28 of 40 satellites, Wilcoxon p = 0.00022). With the post unit's mean rate as baseline (unbiased on synthetic satellites, -0.0021, s.d. 0.0068), the two-partner response is 0.0135 against a prediction of 0.0337, above it in 9 of 40 (22%), below it by Wilcoxon p = 0.00058; that baseline leaves in more background for two-partner events (median 0.0125 against 0.0074), which favours a supralinear result. No measure finds supralinear summation, and with both baselines the two-partner response is below the one-partner response (0.0135 against 0.0180 with the global one), which these measures do not explain. The paper had 14 satellites converging on interneurons; here any target with two excitatory partners is used, and its definitions of satellite and transmission probability are in the supplementary information, which was not available.",
+     "deviations": [
+      "Satellites, events and the excess measure are defined here."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-trajectory-by-class",
+     "statement": "Large fractions of putative pyramidal cells (72.2% in layer 2/3, 84.7% in layer 5) and of interneurons (58.3% and 83%) are trajectory specific.",
+     "source": "Results, Characterization of mPFC neurons and their connections, paragraph 7",
+     "quote": "In addition to a large fraction of putative pyramidal cells (72.2% and 84.7% in layers 2/3 and 5, respectively), many interneurons (58.3% and 83% in layers 2/3 and 5, respectively) were also trajectory specific.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_fujisawa_2008.ipynb",
+     "notes": "EE, 58.5% of 94 putative pyramidal cells and 60.0% of 5 interneurons are trajectory specific; FF, 66.7% of 57 and 62.5% of 8; GG, 14.3% of 7 and no interneuron. Chance is 0.0 to 2.5%. FF matches the layer 2/3 values within 10%, EE matches neither layer, and GG cannot meet the criterion without interneurons. Large fractions of both classes are trajectory specific in EE and FF, which is the qualitative part of the claim; the interneuron counts are small, as fig3-cell-classes found few interneurons. With the classes without mirrored troughs, EE has 4 interneurons (50.0% specific) and FF 6 (66.7%); GG still has none.",
+     "deviations": [
+      "Layers are matched rat by rat; trajectory specificity is the test of fig2b-trajectory-selective over the whole track."
+     ],
+     "disagreed": false,
+     "data": "with_labels",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ee188-example-session",
+     "statement": "In the example layer 2/3 session, 117 neurons gave 1172 pairs with 48 excitatory and 30 inhibitory connections, 39 of the 117 cells formed one connected hub, 15 of 36 excitatory connections were active in particular maze segments, and the example pairs (156-136, 197-201, 49-52, 186-201, 197 and 186 onto one interneuron, a satellite on cell 135) show position-dependent, depressing, facilitating and supralinear transmission.",
+     "source": "Figures 2a, 3b to 3d, 4, 5, 6b and 7a; Results, Characterization of mPFC neurons and their connections, paragraphs 6 and 7",
+     "quote": "Figure 3b illustrates significant peaks and troughs of cross-correlograms of 1172 pairs of layer 2/3 cells (13,572 matrix points) simultaneously recorded in a single session... a large portion of the active neurons (39 of the 117) belonged to a single interconnected circuit",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The CRCNS description names EE.188 (day EE0708) as the session of Figures 2a and 3d, and Figure 5 uses the same session; the dandiset has no file of that day, nor of EE.152 and EE.165. The CRCNS copy needs an account. The example cell numbers cannot be matched to the dandiset's units in any case, as its units carry no original cluster numbers.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds three rats (EE, FF, GG); the paper recorded four. Of the 13 working memory sessions in the CRCNS session table, EE.152, EE.165 and EE.188 are not in the dandiset, and EE.210 has no trial table or position. EE.188 is the paper's example session (Figures 2a, 3b to 3d, 4 and 5)."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The units table holds spike times only. It has no channel, shank, brain region, cell type or quality label, and mixes prefrontal units, CA1 units, multi-unit clusters (cluster 1 of each shank, kept by the conversion) and clusters of the sensor signals. Units can be placed only from their waveforms in the wideband signal, which EE.042 and the ten sessions of 2008-06-27 (EE.080 to EE.089, among them the working memory session EE.088) do not have."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Electrode locations are \"unknown\", coordinates are missing and impedances are -1. The electrode groups \"shank1\" to \"shank13\" are cuts of eight consecutive channels, whatever the probe, so they do not identify the prefrontal shanks, the CA1 shanks or the sensor channels. The layer recorded in each rat is not stated."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In rat GG the channel order differs from the CRCNS description. The nose-poke sensors are on channels 65 and 66 (1-based) and the CA1 probe on 70 to 101, where the description gives 97 and 98 and 65 to 96. The sensor on 66 is active on trials labelled Right, the reverse of the order in rats EE and FF, so either the sensors or the trial side labels of rat GG are swapped."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The trial table's stop_time is the end of the last nose poke, the paper's trial start, and reward_time is the paper's trial end; the column left_or_right carries the description of reward_time (\"Time when subject began consuming reward.\"). Only correct trials are listed, which the files do not say."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The two \"(x,y) coordinates\" series SpatialSeries1 and SpatialSeries2 are the x coordinates of the two head LEDs, in pixels although stated in metres, and the second is zero in every file; untracked frames are -1. The y coordinates are not in the dandiset. The linearized position is stated in metres but runs from 1 (trial start) to 2 (reward), with 0 outside trials."
+    },
+    {
+     "kind": "format_error",
+     "statement": "In six files (EE.049, EE.088, EE.196, FF.103, FF.130, GG.069) the spike times of unit 1 are not in ascending order. In EE.049 and FF.103, examined in detail, they are two sorted runs one after the other; in the five analysed files the unit is a multi-unit cluster."
+    },
+    {
+     "kind": "other",
+     "statement": "GG.063, a spontaneous alternation session in the CRCNS table, has a trial table with left and right trials like the working memory sessions; the files do not say which task a session is."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The session description of every file is the paper's abstract, and session start times are dates at midnight; the files do not say which sessions are sleep, test, spontaneous alternation or working memory sessions."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-16",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The executed notebook of the first run with the conclusion cells and the summary removed, the helper module and the claims file. The verifier could not fetch the full text and read the abstract and the Methods as the claims file quotes them; it checked the blocked claims against the archive's asset list and tested the helper functions on synthetic inputs. Report in transcripts/000067/verifier-1-report.md.",
+     "agreed": 16,
+     "of": 16,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-16",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the second run, the helper module, the claims file and the attempt record. The verifier could not fetch the full text (Europe PMC, BioC and PMC refused) and read the abstract only, so it could not check points that rest on the Methods or the supplement. Report in transcripts/000067/verifier-2-report.md. Points not tied to one claim were also answered; in the Summary the rank band sentence now gives 102 of 285 pairs, the sessions are called sessions of the dandiset, and the repeated \"Only correct trials are listed\" was removed.",
+     "agreed": 15,
+     "of": 16,
+     "disagreements": [
+      {
+       "claim": "traj-diverge",
+       "outcome": "blocked",
+       "reason": "It should stay blocked (data_missing). The x1 divergence point of 0.49 does not measure the paper's 0.3; cell 34 shows x1 falling roughly linearly to its minimum near 0.5 on both sides, so the x1 difference appears where the path turns back in x, not where it separates laterally. The first half of the claim fails by x1 in 5 of 9 sessions, and the criterion's rule rates any x1 result above 0.33 as partial support, whatever the paths do in y."
+      }
+     ]
+    },
+    {
+     "date": "2026-10-16",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The proposed change of outcome for traj-diverge only, with the full executed notebook of the final revision (cells 33 to 36), the claims file and the attempt record. No paper text was downloaded this round. Report in transcripts/000067/verifier-3-report.md.",
+     "agreed": 1,
+     "of": 1,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000067-fujisawa-2008",
+   "type": "reproduction",
+   "title": "Prefrontal assemblies and monosynaptic dynamics in a working memory task (Fujisawa et al. 2008)",
+   "description": "Tests the findings of Fujisawa, Amarasingham, Harrison and Buzsaki (2008) on dandiset 000067, which holds recordings of three rats from a 64-site prefrontal probe and a CA1 probe during an odor-place matching task. Units are placed on the probes from their waveforms in the wideband signal. It tests the population activity, field sizes and trajectory selectivity of prefrontal neurons, monosynaptic connections found with a jitter test, the cell classes and distances they imply, and the task dependence, short-term plasticity and summation of the connections. The paper's example session and fourth rat are not in the dandiset.",
+   "datasets": [
+    "dandi:000067"
+   ],
+   "papers": [
+    "10.1038/nn.2134"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_fujisawa_2008.ipynb",
+     "title": "Reproducing Fujisawa et al. (2008) from dandiset 000067",
+     "executed": "notebooks/000067-fujisawa-2008/reproduce_fujisawa_2008.html"
+    }
+   ]
+  }
+ ]
+}
