@@ -189,6 +189,7 @@ def collect(executed: Path | None = None) -> dict:
             "agent": a["provenance"].get("agent"),
             "tier": tier_of(a),
             "deprecated": squash((a.get("deprecated") or {}).get("reason")),
+            "deprecated_on": str((a.get("deprecated") or {}).get("date") or "") or None,
             "entry": a.get("entry"),
             "entry_title": entry["title"] if entry else None,
             "description": squash(entry.get("description")) if entry else None,
@@ -281,7 +282,8 @@ def pipeline_inputs() -> dict:
     checks, questions = {}, {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         last = ((load_yaml(path) or {}).get("checks") or [None])[-1]
-        checks[key_of_dir(path.parent.name)] = None if last is None else bool(last.get("ready"))
+        checks[key_of_dir(path.parent.name)] = {"ready": None if last is None else bool(last.get("ready")),
+                                                "date": None if last is None else str(last.get("date"))}
     for path in sorted((ROOT / "questions").glob("*.yaml")):
         q = load_yaml(path) or []
         q = q.get("questions", []) if isinstance(q, dict) else q
@@ -437,19 +439,24 @@ def pipeline_rows(data: dict) -> list[dict]:
         papers = inputs["papers"].get(d, [])
         missing = [p["doi"] for p in papers if p["status"] == "missing"]
         stored = sum(1 for p in papers if p["status"] == "stored")
-        check = inputs["checks"].get(d, "absent")
+        found = inputs["checks"].get(d)
+        check = "absent" if found is None else found["ready"]
         atts = current.get(d, [])
         open_q = inputs["questions"].get(d, 0)
-        # A deprecated attempt's claims are to be read again from the paper.
-        rerun = any(a.get("deprecated") for a in atts)
+        # A deprecated attempt's claims are to be read again from the paper, unless a claims file checked
+        # since it was deprecated has been merged (the checkpoint in docs/pipeline.md).
+        deprecated_on = max((a["deprecated_on"] or "" for a in atts if a.get("deprecated")), default="")
+        reread = bool(deprecated_on) and found is not None and (found["date"] or "") >= deprecated_on
+        rerun = bool(deprecated_on) and not reread
         state = {
             "paper": ("done", f"{stored} of {len(papers)}") if papers and not missing
             else ("waiting", f"{len(missing)} not in store") if papers else ("waiting", "no paper named"),
-            "claims": ("todo", "to read again") if rerun else ("done", "") if check != "absent" else ("todo", ""),
+            "claims": ("todo", "to read again") if rerun else ("done", "read again" if reread else "")
+            if check != "absent" else ("todo", ""),
             "check": ("todo", "") if rerun else ("done", "ready") if check is True
             else ("waiting", "not ready") if check is False
             else ("none", "before checks") if check is None else ("todo", ""),
-            "attempt": ("deprecated", "rerun due") if rerun
+            "attempt": ("deprecated", "rerun due") if deprecated_on
             else ("done", atts[-1]["date"]) if atts else ("todo", ""),
             "questions": ("todo", f"{open_q} open") if open_q else ("none", ""),
             "verified": ("done", "") if atts and all(a["tier"] != "runs" for a in atts)

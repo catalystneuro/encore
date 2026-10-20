@@ -16,7 +16,7 @@ set -uo pipefail
 STATE=${RUNNER_STATE:?set RUNNER_STATE}; LANES=${1:-1}; STOP_AT=${2:-}
 export RUNNER_STATE=$STATE REGISTRY_ROOT=$PWD
 mkdir -p "$STATE/logs" "$STATE/bin"; touch "$STATE/queue.txt" "$STATE/started.txt"
-cp tools/runner/chain.sh tools/runner/describe.py "$STATE/bin/"
+cp tools/runner/chain.sh tools/runner/describe.py tools/runner/merge_claims.sh "$STATE/bin/"
 rmdir "$STATE/finalize.lock" "$STATE/pick.lock" 2>/dev/null
 log(){ echo "$(date -u +%Y-%m-%dT%H:%MZ) $*" >> "$STATE/runner.log"; }
 

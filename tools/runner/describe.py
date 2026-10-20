@@ -4,6 +4,7 @@
     python tools/runner/describe.py body FOLDER        # the pull request's description
     python tools/runner/describe.py next [SKIP ...]    # the next dataset in the queue, by folder name
     python tools/runner/describe.py folder DATASET     # a dataset's folder name (tools/datasets.py)
+    python tools/runner/describe.py label FOLDER       # how the dataset is shown: DANDI:000003
     python tools/runner/describe.py deprecated FOLDER  # "true" when its latest attempt is deprecated
     gh run list ... --json databaseId,displayTitle,status | python tools/runner/describe.py run FOLDER ROLE
                                                        # "<id> <status>" of the newest run of a role, if any,
@@ -90,6 +91,9 @@ def main() -> int:
             print(datasets.folder(datasets.parse(rest[0])))
         except ValueError as err:
             raise SystemExit(f"error: {err}")
+    elif command == "label":
+        import datasets
+        print(datasets.label(datasets.key_of_folder(rest[0])))
     elif command == "deprecated":
         from agent_run import attempt_of
         found = attempt_of(rest[0])
