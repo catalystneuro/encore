@@ -103,7 +103,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [001878](https://dandiarchive.org/dandiset/001878) | [Sun et al. 2021](https://doi.org/10.22002/d1.1991) | 4 | 2 (+1) | 0 | 0 | [`001878-sun-2021`](entries/001878-sun-2021) |
 | [001712](https://dandiarchive.org/dandiset/001712) | [Davatolhagh et al. 2025](https://doi.org/10.1101/2025.09.12.675910) | 3 | 2 | 2 | 11 | [`001712-davatolhagh-2025`](entries/001712-davatolhagh-2025) |
 | [001888](https://dandiarchive.org/dandiset/001888) | [Hristova et al. 2025](https://doi.org/10.1111/epi.18606) | 13 | 9 | 2 | 10 | [`001888-hristova-2025`](entries/001888-hristova-2025) |
-| [000005](https://dandiarchive.org/dandiset/000005) | [Yu et al. 2016](https://doi.org/10.1038/nn.4412) | – | – | – | – | [`000005-yu-2016`](entries/000005-yu-2016) (deprecated) |
+| [000005](https://dandiarchive.org/dandiset/000005) | [Yu et al. 2016](https://doi.org/10.1038/nn.4412) | 5 | 9 | 6 | 13 | [`000005-yu-2016`](entries/000005-yu-2016) |
 | [CRCNS:ret-1](https://crcns.org/data-sets/retina/ret-1) | [Lefebvre et al. 2008](https://doi.org/10.1242/dev.027912) | 3 | 0 | 2 | 21 | [`crcns-ret-1-lefebvre-2008`](entries/crcns-ret-1-lefebvre-2008) |
 
 Counts are of the paper's findings that rest on the dandiset, including
