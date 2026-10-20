@@ -60,7 +60,51 @@
     f.tip.style.top = Math.max(y - f.tip.offsetHeight - 12, 0) + "px";
   }
 
+  // Claims tested: the running total stacked by outcome, reproduced at the bottom and blocked on top.
+  function drawStacked() {
+    var rows = P.series[state.subset], n = rows.length, run = {}, f = frame(line, 230);
+    outcomeKeys.forEach(function (k) { run[k] = 0; });
+    var cum = rows.map(function (r) {
+      var c = {}; outcomeKeys.forEach(function (k) { run[k] += r[k]; c[k] = run[k]; }); return c;
+    });
+    var totals = cum.map(function (c) { return outcomeKeys.reduce(function (s, k) { return s + c[k]; }, 0); });
+    var top = Math.max(totals[n - 1], 1), step = niceStep(top, 4), yMax = Math.ceil(top / step) * step;
+    var x = function (i) { return f.left + i * (f.w - f.left - f.right) / (n - 1); };
+    var y = function (v) { return f.top + (f.h - f.top - f.bottom) * (1 - v / yMax); };
+    axes(f, yMax, step, n, x);
+    var below = cum.map(function () { return 0; });
+    outcomeKeys.forEach(function (k) {
+      var upper = cum.map(function (c, i) { return below[i] + c[k]; });
+      var pts = upper.map(function (v, i) { return x(i).toFixed(1) + "," + y(v).toFixed(1); });
+      for (var i = n - 1; i >= 0; i--) pts.push(x(i).toFixed(1) + "," + y(below[i]).toFixed(1));
+      el("polygon", { "class": "seg-" + P.outcomes[k].css, points: pts.join(" ") }, f.svg);
+      below = upper;
+    });
+    el("text", { "class": "end-label", x: x(n - 1) - 8, y: y(totals[n - 1]) - 9, "text-anchor": "end" }, f.svg)
+      .textContent = totals[n - 1].toLocaleString();
+    var cross = el("line", { "class": "cross", y1: f.top, y2: f.h - f.bottom, visibility: "hidden" }, f.svg);
+    var half = (f.w - f.left - f.right) / (n - 1) / 2;
+    cum.forEach(function (c, i) {
+      var x0 = Math.max(f.left, x(i) - half), x1 = Math.min(f.w - f.right, x(i) + half);
+      var hit = el("rect", { "class": "hit", x: x0, y: f.top, width: x1 - x0, height: f.h - f.top - f.bottom }, f.svg);
+      var show = function () {
+        cross.setAttribute("x1", x(i)); cross.setAttribute("x2", x(i)); cross.setAttribute("visibility", "visible");
+        var parts = outcomeKeys.filter(function (k) { return c[k]; })
+          .map(function (k) { return c[k].toLocaleString() + " " + P.outcomes[k].label.toLowerCase(); });
+        place(f, x(i), y(totals[i]), day(P.days[i], true) + ": " + totals[i].toLocaleString() + " in all" +
+          (parts.length ? " (" + parts.join(", ") + ")" : ""));
+      };
+      hit.addEventListener("mouseenter", show); hit.addEventListener("touchstart", show, { passive: true });
+    });
+    f.svg.addEventListener("mouseleave", function () { cross.setAttribute("visibility", "hidden"); f.tip.hidden = true; });
+    f.svg.setAttribute("role", "img");
+    f.svg.setAttribute("aria-label", P.metrics.claims + ": " + totals[n - 1] + " by " + day(P.days[n - 1], true) + ", " +
+      outcomeKeys.map(function (k) { return cum[n - 1][k] + " " + P.outcomes[k].label.toLowerCase(); }).join(", "));
+    document.getElementById("progress-title").textContent = P.metrics.claims + " over time";
+  }
+
   function drawLine() {
+    if (state.metric === "claims") return drawStacked();
     var rows = P.series[state.subset], m = state.metric, total = 0;
     var values = rows.map(function (r) { total += r[m]; return total; });
     var f = frame(line, 230), n = values.length, top = Math.max(values[n - 1], 1);
