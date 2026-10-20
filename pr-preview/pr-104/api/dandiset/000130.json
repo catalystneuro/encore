@@ -1,0 +1,737 @@
+{
+ "dandiset": "000130",
+ "page": "dandisets/000130/",
+ "generated": "2026-10-20T16:36:22+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 9,
+  "partially_reproduced": 4,
+  "not_reproduced": 7,
+  "blocked": 3
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000130-sohn-2019-01",
+   "dandiset": "000130",
+   "dandiset_version": "0.241017.1448",
+   "paper": "10.1016/j.neuron.2019.06.012",
+   "paper_title": "Bayesian computation through cortical latent dynamics",
+   "date": "2026-10-14",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-6"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "entry": "000130-sohn-2019",
+   "entry_title": "Bayesian computation through cortical latent dynamics (Sohn et al. 2019)",
+   "description": "Tests the findings of Sohn, Narain, Meirhaeghe and Jazayeri (2019) on dandiset 000130, the Neural Latents Benchmark's DMFC_RSG set, which holds one session of monkey H performing the Ready-Set-Go task with 54 units from dorsomedial frontal cortex. It tests the behaviour and the Bayesian observer model, single-unit sensitivity to the prior and elapsed time, the geometry and speed of population trajectories, the alternative mechanisms, and single-trial GPFA trajectories. Monkey G and the recurrent network models are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_sohn_2019.ipynb",
+     "title": "Reproducing Sohn et al. (2019) from dandiset 000130",
+     "executed": "notebooks/000130-sohn-2019/reproduce_sohn_2019.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "beh-slopes",
+     "statement": "Regression slopes of tp on ts are positive and less than one in every condition, so the animals estimated ts and their responses were biased toward the mean of the prior.",
+     "source": "Results, Task and behavior, paragraph 3; Figure 1E and S1; Table S1",
+     "quote": "The regression slopes were positive, indicating that animals were able to estimate ts, and were less than unity, indicating that responses were biased toward to the mean of the prior (Figure 1E and S1, Table S1).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "Six of 8 weighted slopes of tp on ts lie between 0 and 1 (0.50 to 0.90) and 5 of 8 have 95% intervals excluding 0 and 1. The Short prior slopes with the eye are 1.11 (Eye Right, interval 1.01 to 1.21) and 1.01 (Eye Left). All 8 are positive, so the animal estimated ts; the part of the statement about bias toward the mean fails in the two eye Short conditions.",
+     "deviations": [
+      "One session of monkey H; the paper's slopes come from 17 sessions of H and 12 of G.",
+      "Outliers removed with the file's `is_outlier` flag, which a refit of the Methods' mixture model does not reproduce (see findings)."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "beh-overlap-prior",
+     "statement": "At the overlapping ts of 800 ms, biases were in opposite directions for the two priors (rank-sum test, p < 1e-43 in animal H over 17 sessions).",
+     "source": "Results, Task and behavior, paragraph 3; Figure 1E; Table S2",
+     "quote": "The effect of the prior was most conspicuous at the overlapping ts for which biases were in opposite directions for the two prior conditions",
+     "statistics": [
+      {
+       "about": "animal H",
+       "test": "rank-sum test",
+       "p": 1e-43,
+       "p_relation": "<"
+      },
+      {
+       "about": "animal G",
+       "test": "rank-sum test",
+       "p": 1e-75,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "At ts = 800 ms the median bias is +28.3 ms for Short (93 trials) and +47.6 ms for Long (107 trials), both positive; rank-sum p = 0.073. The Long tp is the longer in 2 of 4 datasets (Hand Right p = 0.00099, Hand Left p = 0.069, where the Short bias is -61.6 ms); in the eye datasets the Short tp is the longer (Eye Left +79.1 against +18.6 ms, p = 0.051).",
+     "deviations": [
+      "One session; the paper's p < 1e-43 pools 17 sessions of monkey H."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "beh-sigmoid-increments",
+     "statement": "Increments of tp between neighbouring ts are smaller at the extremes of the prior than near its mean, as the sigmoidal Bayesian estimator predicts (signed-rank test, p < 1e-11 in animal H).",
+     "source": "Results, Task and behavior, paragraph 4; Figure 2E and 2F",
+     "quote": "Consistent with this prediction, tp increments at the extrema of the prior were smaller than increments near the mean",
+     "statistics": [
+      {
+       "about": "animal H",
+       "test": "signed-rank test",
+       "p": 1e-11,
+       "p_relation": "<"
+      },
+      {
+       "about": "animal G",
+       "test": "signed-rank test",
+       "p": 1e-12,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "The middle increment of mean tp exceeds the extreme one in 7 of 8 conditions (median difference 31.3 ms), two-sided signed-rank p = 0.0156. Hand Left, Short is the exception (-10.7 ms).",
+     "deviations": [
+      "The test is over the 8 conditions of one session; the paper's is over sessions and conditions of both animals."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "beh-long-more-bias",
+     "statement": "Biases are larger for the Long prior than for the Short prior, as scalar variability predicts; regression slopes are smaller for Long.",
+     "source": "Results, Task and behavior, paragraph 4; Figure 2G and 2H",
+     "quote": "Third, due to scalar variability, biases for the Long prior should be larger than the Short prior condition (Figure 2G), which we confirmed empirically (Figure 2H, Table S1).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "The Long slope is below the Short slope in all 4 datasets (mean 0.716 against 0.898), weighted or unweighted.",
+     "deviations": [
+      "One session."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "beh-bayes-model",
+     "statement": "A Bayesian observer model with scalar measurement and production noise fit to the behaviour captures the bias and the variance of tp in all conditions.",
+     "source": "Results, Task and behavior, paragraph 4; Figure 2C and 2D; Table S3",
+     "quote": "Accordingly, fits of the model to behavior captured the bias and variance (Figure 2C,D) for both animals and across all experimental conditions (Figure S1, Table S3).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "The predicted SD of tp correlates positively with the observed one in all 4 datasets (r = 0.28 to 0.91), but the bias R2 reaches 0.8 in 2 of 4 (0.12, 0.67, 0.87, 0.98). The poorly fit datasets are the eye ones, whose Short slopes exceed 1, with wm = 0.013 and 0.025. All fits converged. Table S3 was not available, so the fitted wm (0.013 to 0.117) and wp (0.090 to 0.106) are not compared.",
+     "deviations": [
+      "Fit to one session per effector and direction; the paper pools sessions.",
+      "The prior is taken as continuous uniform over each range, as the Results describe; the task used 5 discrete values.",
+      "The bias R2 threshold of 0.8 is a choice made here; the paper shows the fit graphically."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "glm-prior-ts",
+     "statement": "About 30% of neurons were modulated by elapsed time (27% in monkey H) and more than 60% were sensitive to the prior (65% in monkey H), by a Poisson GLM of spike counts before Set compared by BIC.",
+     "source": "Results, Single-neuron response profiles, paragraph 3; Figure 3E; Methods, Generalized linear model",
+     "quote": "Results indicated that approximately 30% of neurons were modulated by elapsed time (27% Monkey H, 31% Monkey G), and more than 60% were sensitive to the prior condition (65% Monkey H, 62% Monkey G).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "36 of 48 units are prior-dependent (75.0%, 95% interval 61.2 to 85.1%) and 22 of 48 are ts-dependent (45.8%, interval 32.6 to 59.7%), against 65% and 27% for monkey H. Both are outside tolerance and higher; the interval of the prior fraction includes 65%, that of the ts fraction excludes 27%. A likelihood-ratio test gives higher fractions still (prior 77.1 to 87.5%, ts 66.7 to 77.1% at p < 0.01 and 0.05). Chance levels by the same BIC rule are far lower; prior labels shuffled within effector and direction give 0 to 8.3% and labels shifted along the session by 50 to 200 trials, which keeps the prior blocks, 2.1 to 14.6%; time points shuffled within trials give 0 to 2.1% ts-dependent. The ts test in the Short prior alone gives 31.2% and in the Long prior alone 33.3%, both above 27 +/- 2.7%.",
+     "deviations": [
+      "48 units from one session, where the paper's fractions use 536 units of monkey H over 17 sessions.",
+      "The GLM design with attrition (rows for every trial whose Set comes after each time point) is read from the Methods; the paper's code was not available.",
+      "The Long prior's ts test uses the Long ts as time points (800 to 1200 ms after Ready); Eq. 3 of the paper does not say which time points were used, and a unit counts as ts-dependent when either prior's test finds it."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "dfr-overlap-support",
+     "statement": "At the overlapping ts of 800 ms, firing rates differ between priors, with the largest difference during the support of the prior, between 480 and 800 ms after Ready.",
+     "source": "Results, Single-neuron response profiles, paragraph 3; Figure 3C and 3D",
+     "quote": "The influence of prior was most evident at the overlap ts of 800 ms (Figure 3C) ... many neurons had highly distinct firing rate patterns depending on the prior condition, with a maximum difference in firing rate during the support of the prior between 480 and 800 ms (Figure 3D).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "The mean RMS rate difference at ts = 800 ms is largest at 480 to 640 ms after Ready (6.86 spikes/s), above the 95th percentile of the shuffled maximum (3.11). Before Ready it is at the shuffle level. Per dataset the largest bin is 480-640 (2 datasets), 640-800 and 800-960 ms, and the mean is also high just after Set (6.07 at 800 to 960 ms). Over 200 bootstrap samples of trials the peak is in 480 to 640 ms in 192 and in 800 to 960 ms in 8 (96% within 480 to 800 ms).",
+     "deviations": [
+      "The time range (320 ms before Ready to 640 ms after Set) and the shuffle reference are chosen here."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pca-dimensionality",
+     "statement": "Population activity is low dimensional; 3 to 4 principal components in the estimation epoch and 5 to 10 in the production epoch explain about 75% of the variance.",
+     "source": "Results, Geometry and dynamics of population activity, paragraph 2; Figure S3",
+     "quote": "For all datasets, the population activity in each epoch was relatively low dimensional: 3\u20134 principal components (PC) in the estimation epoch and 5\u201310 PCs in the production epoch explained nearly 75% of total variance (Figure S3).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "Two components reach 75% of the variance in the estimation epoch in all 4 datasets (3 explain 86 to 90%), and 2, 2, 5 and 4 in the production epoch; 1 of 8 values is in range. The count depends on normalisation, which the Methods do not mention; with rates z-scored per unit (a variant) the counts are 3 or 4 and 6 to 10, all 8 in range, and with soft normalisation (range plus 5 spikes/s) 6 of 8 are in range. The outcome is judged on unnormalised rates, as the claims file fixed.",
+     "deviations": [
+      "48 simultaneously recorded units, where the paper's trial-averaged PCA pools units over 17 sessions; more units can add dimensions.",
+      "Rates not normalised before PCA; the Methods do not say."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "encoding-r2",
+     "statement": "Projections of estimation-epoch neural states onto the encoding axis match the Bayesian estimates from the model fitted to the behaviour (R2 = 0.993 for the Short prior, 0.996 for the Long prior, monkey H, Hand Left).",
+     "source": "Results, Encoding Bayesian estimate along curved trajectory, paragraph 1; Figure 4C",
+     "quote": "Neural projections onto u exhibited biases that matched the Bayesian model fitted to the behavior (R2 = 0.993 for the Short prior, 0.996 for the Long prior; Figure 4C)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "Both readings match. (a) Hand Left R2 = 0.998 (Short) and 0.996 (Long), given as measured; (b) the mean of 4 datasets 0.959 and 0.989. With only 2 PCs in the estimation epoch, random unit axes also fit te well (median R2 0.73 to 0.98); the R2 on u exceeds 95% of random axes in 3 of 8 dataset-priors (Hand Right Long and both Hand Left), so the paper's statement that the match is specific to u (Figure S5) holds only for those. With normalised rates (3 or 4 PCs) R2 stays above 0.94 in every dataset-prior, and u beats 95% of random axes in 2 of 8 (soft normalisation) and 0 of 8 (z-scored).",
+     "deviations": [
+      "te comes from the observer model fitted to this session.",
+      "The encoding axis averages difference vectors up to the middle of the support, a choice made here."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "encoding-bayes-beats-linear",
+     "statement": "Neural projections are better explained by the Bayesian model than by a linear function of ts with the same number of parameters, for both priors (signed-rank test on RMSE, p = 0.008 for each prior).",
+     "source": "Results, Encoding Bayesian estimate along curved trajectory, paragraph 1; Figure 4D top",
+     "quote": "Indeed, the neural projections were better explained by the Bayesian model than a linear model for both priors (signed-rank test for RMSE, p=0.008 for the Short prior, p=0.008 for the Long prior; Figure 4D).",
+     "statistics": [
+      {
+       "about": "Short prior",
+       "test": "signed-rank test for RMSE",
+       "p": 0.008
+      },
+      {
+       "about": "Long prior",
+       "test": "signed-rank test for RMSE",
+       "p": 0.008
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "The Bayesian RMSE is lower in 4 of 4 datasets for Long and 3 of 4 for Short (Hand Right Short 0.99 against 0.80). Where the Bayesian model wins it is better by 0.045 to 0.573 spikes/s; in Hand Right Short it is worse by 0.186. With the RMSE weighted by trial counts, as in the fit, the counts are the same. In the matched control period of the Long prior (short-in-long-control) the Bayesian model is also better in 3 of 4 datasets, so in this session the advantage is not specific to the support of the prior.",
+     "deviations": [
+      "4 datasets, where the paper had 8; a signed-rank test over 4 cannot reach p < 0.05, so the criterion counts datasets."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "short-in-long-control",
+     "statement": "In the Long prior during the period matched to the support of the Short prior (\"Short In Long\"), there is no sigmoidal representation; the Bayesian model is not better than the linear one (signed-rank test, p = 0.74).",
+     "source": "Results, Encoding Bayesian estimate along curved trajectory, paragraph 1; Figure 4D top",
+     "quote": "As a negative control, we also analyzed neural data in the Long prior condition during a period temporally matched to support of the Short prior (\u201cShort In Long\u201d in Figure 4D) and found no evidence of sigmoidal representations",
+     "statistics": [
+      {
+       "about": "interaction of prior condition and model on RMSE",
+       "test": "two-way repeated-measures ANOVA",
+       "statistic": "F1,7 = 161.43",
+       "p": 1e-05,
+       "p_relation": "<"
+      },
+      {
+       "about": "Bayesian against linear model for Short In Long",
+       "test": "post-hoc signed-rank test",
+       "p": 0.74
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "Judged on the paper's test as the claims file fixes; signed-rank p = 0.25 over 4 datasets, where the smallest attainable p is 0.125, so the test could not have found an effect. The effect sizes do not show the control's contrast; the Bayesian model is better in 3 of 4 datasets with a median relative RMSE difference of -0.089, at least as large as in the Short prior (-0.060). This outcome carries no evidence for the absence the paper reports.",
+     "deviations": [
+      "4 datasets, where the paper had 8."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "neural-long-more-bias",
+     "statement": "Neural projections show more bias for the Long prior than for the Short prior, as a smaller regression slope of Xu on ts (signed-rank test, p = 0.008).",
+     "source": "Results, Encoding Bayesian estimate along curved trajectory, paragraph 2; Figure 4D bottom",
+     "quote": "the Long prior exhibited more bias than the Short prior as measured by slope of a regression line relating projections to ts (signed-rank test, p=0.008; Figure 4D).",
+     "statistics": [
+      {
+       "test": "signed-rank test",
+       "p": 0.008
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "The Long slope of Xu on ts is below the Short slope in 4 of 4 datasets (ratios 0.55, 0.63, 0.34, 0.97).",
+     "deviations": [
+      "4 datasets, where the paper had 8."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "speed-vs-projection",
+     "statement": "Larger projections on the encoding axis at Set are followed by slower neural trajectories in the production epoch (Pearson correlation, rho Short = -0.74, rho Long = -0.51).",
+     "source": "Results, Controlling speed based on Bayesian estimate, paragraph 1; Figure 4E",
+     "quote": "For both conditions, larger projections along the encoding axis were associated with slower speeds across all conditions (Figure 4E; Pearson correlation, \u03c1Short=\u22120.74 ... \u03c1Long=\u22120.51",
+     "statistics": [
+      {
+       "about": "Short prior",
+       "test": "Pearson correlation",
+       "statistic": "\u03c1Short = \u22120.74",
+       "p": 1e-07,
+       "p_relation": "<"
+      },
+      {
+       "about": "Long prior",
+       "test": "Pearson correlation",
+       "statistic": "\u03c1Long = \u22120.51",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "Both correlations are negative and significant (Short p = 6.2e-10, Long p = 3.7e-07) and stronger than reported, outside tolerance. Within datasets -0.75 to -1.00; with Xu z-scored per dataset -0.759 and -0.779, and the speed divided by mean tp gives -0.917 and -0.923. Both quantities change with ts; with the residuals of each on ts within dataset and prior the correlation is -0.195 (Short) and +0.069 (Long), so the pooled relation is carried by the common dependence on ts. The paper's control (z-scoring within ts) is on single-trial GPFA states of the production epoch, not computed here.",
+     "deviations": [
+      "20 points per prior (4 datasets), where the paper had 40.",
+      "Speed is the mean step between 20 ms states up to the shortest tp; the Methods' division by the Set to Go duration is shown as a variant."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "initial-speed-biased",
+     "statement": "The initial speed of production trajectories (Set to Set + 400 ms) is biased toward the middle of the prior; its dependence on ts is shallower than the unbiased profile proportional to 1/ts (signed-rank test, p < 1e-3 over conditions and animals).",
+     "source": "Results, Controlling speed based on Bayesian estimate, paragraph 1; Figure 4F",
+     "quote": "The speed profile for each prior condition, however, demonstrated systematic biases with a central tendency: trajectories associated with shorter ts were slower than expected from an unbiased speed profile, and vice versa (Figure 4F",
+     "statistics": [
+      {
+       "test": "Wilcoxon sign-rank test on measured versus unbiased regression slopes relating speed to ts",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "The initial speed falls with ts in 8 of 8 dataset-priors and is shallower than the 1/ts profile in 7 of 8 (Eye Right Long is the exception), two-sided signed-rank p = 0.039. No trial had tp below 400 ms.",
+     "deviations": [
+      "8 dataset-priors of one animal, where the paper's test combines 16 over two animals."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "speed-predicts-tp",
+     "statement": "The speed of neural trajectories in the production epoch predicts the mean tp (Pearson correlation, rho Short = -0.58, rho Long = -0.52).",
+     "source": "Results, Controlling speed based on Bayesian estimate, paragraph 1; Figure 4G",
+     "quote": "we verified that the overall speed of dynamics throughout the production epoch was predictive of the resulting tp across both priors and across all experimental conditions (Figure 4G; Pearson correlation, \u03c1Short=\u22120.58 ... \u03c1Long=\u22120.52",
+     "statistics": [
+      {
+       "about": "Short prior",
+       "test": "Pearson correlation",
+       "statistic": "\u03c1Short = \u22120.58",
+       "p": 0.0001,
+       "p_relation": "<"
+      },
+      {
+       "about": "Long prior",
+       "test": "Pearson correlation",
+       "statistic": "\u03c1Long = \u22120.52",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "Faster trajectories go with shorter mean tp in both priors (Short p = 0.00024, Long p = 0.00017), more strongly than reported and outside tolerance. Within datasets -0.80 to -0.99. The Neural Latents Benchmark's trial-by-trial variant gives r = -0.195 to -0.740 (mean -0.519), 7 of 8 conditions with p < 0.05. With speed and tp z-scored within each ts trial by trial, as in the paper's control, r = -0.317 (Short, 481 trials, p = 1.1e-12) and -0.201 (Long, 502 trials, p = 5.5e-06), negative in 8 of 8 dataset-priors and p < 0.05 in 6. A Poisson null at constant rates with each trial's own duration gives mean null r of -0.071 (Short) and -0.033 (Long) over 20 simulations, and the observed values are below every null value, so the shorter averaging of short trials accounts for a small part. Residuals on ts of the 20 condition means give +0.084 and -0.283.",
+     "deviations": [
+      "20 points per prior, where the paper had 40."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "alt-speed-unmodulated",
+     "statement": "Instantaneous speed of neural trajectories in the full neural space is not modulated during the support of each prior (signed-rank test for zero regression slopes, p = 0.64 for Short, p = 0.08 for Long).",
+     "source": "Results, Alternative mechanisms (speed hypothesis); Figure 5B",
+     "quote": "for both prior conditions, speed remained unmodulated throughout the support of each prior (Figure 5b; signed-rank test for zero regression slopes during the support, p=0.64 for Short, p=0.08 for Long).",
+     "statistics": [
+      {
+       "about": "Short prior",
+       "test": "signed-rank test for zero regression slopes",
+       "p": 0.64
+      },
+      {
+       "about": "Long prior",
+       "test": "signed-rank test for zero regression slopes",
+       "p": 0.08
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "Judged on the paper's test as the claims file fixes; signed-rank p = 0.125 for each prior, the smallest a test over 4 datasets can give, so the outcome carries no evidence for the absence of modulation. All 8 slopes are positive, but noise produces slopes of this size, as later bins average fewer trials. For Poisson units at constant rates with the same trials and Set times, the mean null slope is above the observed one in 8 of 8 and no observed slope exceeds the null's 95th percentile. With only the trials of the longest ts, which last the whole support, slopes are -0.106 to +0.529 per 100 ms and outside the null's 95% range in 1 of 8 (below it). The bootstrap intervals over trials are biased upward (the point estimate is below the interval in 2 of 8) and are not used. The observed slopes are below the null mean in 8 of 8 with all trials and in 8 of 8 with fixed trials, while the null's mean speed over the support is below the observed one in 7 of 8 (null / observed 0.65 to 1.18), so the null is not noisier than the data. This points to a speed that falls during the support, if the units' noise is no larger than Poisson; it was not tested further. The session shows no speed increase beyond what noise produces.",
+     "deviations": [
+      "4 datasets, where the paper had 8.",
+      "Speed from smoothed trial-averaged rates with attrition in 20 ms bins of 48 units; the paper's smoothing for this measure is not stated."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "alt-transient-parallel",
+     "statement": "In the first 200 ms after Set, trajectories for different ts run parallel; their distance to the middle ts trajectory does not change (signed-rank test for zero slopes, p = 0.92 for the shortest ts, p = 0.13 for the longest).",
+     "source": "Results, Alternative mechanisms (transient hypothesis); Figure 5D",
+     "quote": "Results indicated that neural trajectories for different ts in each prior evolved parallel to one another (signed-rank test for zero regression slopes relating the distance to time after Set, p=0.92 for the shortest ts, p=0.13 for the longest ts",
+     "statistics": [
+      {
+       "about": "shortest ts",
+       "test": "signed-rank test for zero regression slopes",
+       "p": 0.92
+      },
+      {
+       "about": "longest ts",
+       "test": "signed-rank test for zero regression slopes",
+       "p": 0.13
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "For the longest ts the distance to the middle trajectory falls in the first 200 ms after Set in 6 of 8 dataset-priors (median -15.3% of the mean distance per 100 ms), signed-rank p = 0.039; for the shortest ts p = 0.078 (6 of 8 rising, median +26.7%). The PCA kept 1 to 4 components, one in Eye Left. For the longest ts p = 0.016 with 60% of the variance, 0.039 with 90%, 0.023 in the full space and 0.039 with z-scored rates; with soft-normalised rates 0.055.",
+     "deviations": [
+      "8 dataset-priors of one animal, where the paper's test used 16.",
+      "Rates smoothed over 100 ms before to 300 ms after Set and cut to the first 200 ms, a choice made here."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "alt-threshold-monotonic",
+     "statement": "Aligned to the response, distances between trajectories for different ts decrease steadily up to movement initiation, without the converging then diverging pattern a ts-dependent threshold would produce.",
+     "source": "Results, Alternative mechanisms (threshold hypothesis); Figure 5F",
+     "quote": "However, the distance profile of neural trajectories did not show this converging-diverging pattern; instead, the distance between trajectories appeared to drop steadily throughout the production epoch, even near the time of motor initiation (Figure 5F",
+     "statistics": [
+      {
+       "test": "one-tailed sign-rank test for time of minimum distance occurring strictly before movement initiation",
+       "p": 0.00015
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "With the components reaching 60% of the variance (1 to 3), the median time of the minimum distance is 210 ms before Go; 6 of 32 curves have their minimum in the last 40 ms and 14 in the last 200 ms. Distances do fall overall (the distance at Go is below that 800 ms earlier in 26 of 32). With 75% of the variance the median minimum is 80 ms before Go and in the full space 40 ms, which would meet the criterion, so the outcome depends on the number of components. With one component (eye datasets, 16 curves) the signed difference changes sign at the minimum in 12, so those minima are crossings; 4 have the minimum at Go (3 of them not crossings), and the distance at Go is more than 10 times the minimum in 5. With at least 2 components the median minimum is 230 ms before Go, with at least 3 it is 70 ms before Go.",
+     "deviations": [
+      "The paper's test (one-tailed signed-rank, p = 1.5e-4) cannot be read unambiguously; the criterion on the median time of the minimum was fixed before the analysis.",
+      "The 60% of variance follows the figure legend; the 75% of the Methods is shown as a variant."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "gpfa-variance-inverted-u",
+     "statement": "The variance across single trials of the GPFA neural state at Set projected on the encoding axis has an inverted-U profile over ts, lower at the extremes of each prior (one-tailed signed-rank test on quadratic coefficients, p = 0.0273, monkey H).",
+     "source": "Results, The curved manifold hypothesis captures the variance, paragraph 3; Figure 6C",
+     "quote": "The resulting variance profile of single-trial projections resembled an inverted U-shape on average, with a tendency for lower variances at the extrema of each prior (one-tailed signed-rank test on coefficients for quadratic term in polynomial fitting, p=0.0273",
+     "statistics": [
+      {
+       "test": "one-tailed signed-rank test on coefficients for quadratic term in polynomial fitting",
+       "p": 0.0273
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "The quadratic coefficient is negative in 5 of 8 dataset-priors; one-tailed signed-rank p = 0.125 (paper 0.0273). Cross-validation chose 8 latent dimensions in all 4 datasets, the larger candidate. 12 latents, scored on the same folds as a variant, beat 8 in all 4 datasets; with them the coefficient is negative in 5 of 8, p = 0.125. After 100 EM iterations the training log-likelihood still rose by 0.064 to 0.085% over the last 25 iterations.",
+     "deviations": [
+      "Latent dimensionality chosen only from 4 and 8, with 100 EM iterations, to keep the run short; the paper's cross-validation range is not stated.",
+      "One GPFA per effector and direction with both priors; the paper does not say how trials were grouped."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "gpfa-mean-sigmoid",
+     "statement": "The mean of the single-trial GPFA projections is sigmoidal (signed-rank test on increments, p = 0.0078) and has a higher slope for the Short prior (one-tailed signed-rank, p = 0.0625).",
+     "source": "Results, The curved manifold hypothesis captures the variance, paragraph 3; Figure 6D",
+     "quote": "the mean of the single-trial projections inferred from GPFA had a sigmoidal shape ... and higher slope for the Short prior",
+     "statistics": [
+      {
+       "about": "sigmoidal shape",
+       "test": "signed-rank test between increments of mean Xu around extreme ts versus those near middle ts",
+       "p": 0.0078
+      },
+      {
+       "about": "higher slope for the Short prior",
+       "test": "one-tailed signed-rank test for regression slope between Short and Long",
+       "p": 0.0625
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sohn_2019.ipynb",
+     "notes": "Middle increments of the mean projection exceed the extreme ones in 8 of 8 (two-sided signed-rank p = 0.0078) and the Short slope is the higher in 4 of 4 datasets (one-tailed p = 0.0625), the paper's values; the mean rises with ts in 8 of 8. With 12 latents, 8 of 8 (p = 0.0078) and 4 of 4.",
+     "deviations": [
+      "As for gpfa-variance-inverted-u."
+     ],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rnn-curved-manifold",
+     "statement": "Recurrent neural networks trained on the two-prior task with scalar measurement noise behave like a Bayesian observer and show curved trajectories during the support of the prior, like DMFC.",
+     "source": "Results, Recurrent network models, paragraphs 1 and 2; Figure 7A to 7C and S7",
+     "quote": "we were able to build RNNs whose behavior was captured by a Bayesian observer model (Figure 7B) ... For instance, the network trajectories also exhibited curvature during the support of the prior (Figure 7C and S7).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The claim is about recurrent networks trained in silico. The dandiset holds only the two NWB files of spikes and trials, and the trained networks and the training code are not public (the code is available from the corresponding author on request). Training new networks from the Methods would be a new study, not a test against this data.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rnn-perturbation",
+     "statement": "In trained networks, compressing states along the encoding axis increases the regression to the mean of tp, and translating them shifts tp.",
+     "source": "Results, Recurrent network models, paragraph 4; Figure 7D and 7E",
+     "quote": "tp values exhibited progressively larger regression to the mean for larger compressive perturbations (Figure 7D), and underwent an overall upward or downward shift as a result of translation (Figure 7E).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "As for rnn-curved-manifold; the perturbation experiments are on the trained networks.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "monkey-g",
+     "statement": "The behavioural and neural results hold in monkey G as in monkey H.",
+     "source": "Results throughout; Figures 1 to 6 and S1 to S6",
+     "quote": "",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "Summarises results reported for monkey G throughout the Results and Figures 1 to 6 and S1 to S6; no single sentence states it.",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The dandiset holds one session of monkey H. A search of the DANDI archive for Jazayeri, Sohn, DMFC and Ready-Set-Go finds no other dandiset with these recordings (only 000620, 000897 and 001275 of the same lab, on other tasks). The paper says the data are in the article and the code is available on request.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dandiset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds one recording session (2016-12-11) of monkey H, with 54 units, where the paper analyses 17 sessions of H and 12 of monkey G (617 and 741 units recorded, 536 and 636 kept for analysis). The dandiset's description does not say that it holds one session of the paper's 29 or which one. The 48 units that pass the paper's rate rule match its count for the single session of H used for GPFA."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Following the Neural Latents Benchmark design, 283 trials of the session are in the test file without ts, tp, prior, effector or direction and without 14 of the 54 units, on a separate clock. These trials cannot be used for any analysis of the paper."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The description of the `iti` column says 500 ms after Short prior trials and 1220 ms after Long ones; the values are the reverse (Short 1220, Long 500), as the paper states."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "`tp` is described as the time between Set and Go, but is a median 17.9 ms longer than go_time minus set_time (5th to 95th percentile 1.1 to 29.8 ms, up to 200.6 ms in used trials). `ts` is the nominal interval, within 23.5 ms of ready_time minus set_time. Neither difference is documented."
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The `is_outlier` flag is described only as a probabilistic mixture model. It flags 46 completed trials (4.47%); a refit of the Methods' Gaussian and uniform mixture per prior, ts, effector and direction flags 10 of these and no others, and the other 36 have tp from 0.53 to 1.60 times ts."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Units carry no single-unit or multi-unit label and no electrode or probe; the electrode table has no positions or impedances and gives the filtering as unknown. The paper distinguishes 456 single units from 902 multi-units."
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The paper's analysis code is available only on request. The code the dandiset links (nlb_tools) loads the data and scores benchmark models, and holds none of the paper's analyses."
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "For the single high-yield session of each monkey used for GPFA, the Results give the number of neurons as N = 48 for monkey H and N = 107 for monkey G, the Methods as N = 48 in H and 96 in G."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's accepted manuscript (PMC6805134). The verifier checked the archive's asset list and metadata for the blocked claims and ran synthetic checks of weighted_slope, PCA, encoding_axis, increments, BayesObserver and attrition_rates.",
+     "agreed": 23,
+     "of": 23,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-14",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The second executed notebook in full, with its conclusion cells and summary, the README and this attempt record. The verifier could not get the paper's text (PMC's BioC service returned 429 and Europe PMC 500), so the figures taken from the paper were not checked against it.",
+     "agreed": 23,
+     "of": 23,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000130-sohn-2019",
+   "type": "reproduction",
+   "title": "Bayesian computation through cortical latent dynamics (Sohn et al. 2019)",
+   "description": "Tests the findings of Sohn, Narain, Meirhaeghe and Jazayeri (2019) on dandiset 000130, the Neural Latents Benchmark's DMFC_RSG set, which holds one session of monkey H performing the Ready-Set-Go task with 54 units from dorsomedial frontal cortex. It tests the behaviour and the Bayesian observer model, single-unit sensitivity to the prior and elapsed time, the geometry and speed of population trajectories, the alternative mechanisms, and single-trial GPFA trajectories. Monkey G and the recurrent network models are not in the dandiset.",
+   "dandisets": [
+    "000130"
+   ],
+   "papers": [
+    "10.1016/j.neuron.2019.06.012"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_sohn_2019.ipynb",
+     "title": "Reproducing Sohn et al. (2019) from dandiset 000130",
+     "executed": "notebooks/000130-sohn-2019/reproduce_sohn_2019.html"
+    }
+   ]
+  }
+ ]
+}
