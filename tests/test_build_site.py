@@ -232,7 +232,9 @@ def test_the_pipeline_has_a_row_per_target(built):
     for dandiset, attempts in site.current_attempts(data).items():
         row = next(r for r in rows if r["key"] == dandiset)
         if any(a.get("deprecated") for a in attempts):
-            assert row["state"]["attempt"][0] == "deprecated" and row["state"]["claims"][0] == "todo"
+            # Its claims are to be read again, until a claims file checked since then is merged.
+            assert row["state"]["attempt"][0] == "deprecated"
+            assert tuple(row["state"]["claims"]) in (("todo", "to read again"), ("done", "read again"))
         else:
             assert row["state"]["attempt"][0] == "done"
     assert "Pipeline" in (out / "pipeline" / "index.html").read_text()
