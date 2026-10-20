@@ -41,8 +41,9 @@ the question, citing the passage, in
 the readings the claim names. The question goes to step 7; once it is answered,
 the attempt resumes from the claims file.
 
-When the claims check says the file is ready, the runner merges the claims
-file into `main` on its own (`tools/runner/merge_claims.sh`), ahead of the
+When the claims check says the file is ready, the runner commits the claims
+file straight to `main`, with no pull request, once it validates against its
+schema (`tools/runner/merge_claims.sh`), ahead of the
 attempt: a checkpoint that fixes the claims, and their methods, in the record
 before any analysis of the data is merged. The Pipeline page shows them as
 done from then on. The attempt goes on in its branch; when it is merged, git
