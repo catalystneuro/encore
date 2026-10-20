@@ -15,6 +15,11 @@
 # attempt starts from main. A run that fails on the subscription's session limit is retried after
 # 30 minutes from where it started; any other failure stops the chain.
 #
+# Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
+# account's safety checks flag (FLAGGED), or that has no token for it (UNVERIFIED-UNAVAILABLE), is
+# not committed; the branch is put back and the role runs again on the verified account, as do the
+# rest of the dandiset's roles: a paper that was flagged once will be again.
+#
 # Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time is rebased on
 # main, recorded (the recorder role adds the README row and the pilot notes) and merged once its
 # checks pass; each lands on a main that has the ones before it.
@@ -24,6 +29,9 @@
 set -uo pipefail
 d=$1; VERSION=${2:-}
 STATE=${RUNNER_STATE:-/tmp}
+# The account the next run uses; verified for the rest of the dandiset once a run is flagged.
+account=${RUNNER_ACCOUNT:-unverified}
+[ -e "$STATE/verified-$d" ] && account=verified
 here=$(cd "$(dirname "$0")" && pwd)
 export REGISTRY_ROOT=$PWD
 log(){ echo "$(date -u +%Y-%m-%dT%H:%MZ) $d $*"; }
@@ -41,7 +49,13 @@ wait_run(){ local st; while true; do
   st=$(gh run view "$1" --json status,conclusion --jq '"\(.status) \(.conclusion)"' 2>/dev/null) || { sleep 60; continue; }
   case "$st" in completed*) echo "${st#completed }"; return;; esac; sleep 60; done; }
 
-run_role(){ local role=$1 tries=0 start before id st
+# Put the branch back where a run started, and check that it took.
+reset_branch(){ local start=$1
+  if [ -n "$start" ]; then git push -q --force origin "$start:refs/heads/attempt/$d"
+  else git push -q origin --delete "attempt/$d" 2>/dev/null || true; fi
+  [ "$(remote_branch)" = "$start" ]; }
+
+run_role(){ local role=$1 tries=0 start before id st runlog acct
   while true; do
     fetch; start=$(remote_branch)
     read -r id st <<<"$(run_of "$role")"
@@ -49,10 +63,12 @@ run_role(){ local role=$1 tries=0 start before id st
       log "$role: waiting for run $id, already going"
     else
       before=${id:-}
+      # The recorder reads no paper and writes only the README row and the pilot notes.
+      acct=$account; [ "$role" = recorder ] && acct=verified
       if [ "$role" = author ] && [ -n "$VERSION" ]; then
-        gh workflow run attempt.yml -f dandiset="$d" -f role="$role" -f version="$VERSION" || { sleep 60; continue; }
+        gh workflow run attempt.yml -f dandiset="$d" -f role="$role" -f version="$VERSION" -f account="$acct" || { sleep 60; continue; }
       else
-        gh workflow run "$(workflow_of "$role")" -f dandiset="$d" -f role="$role" || { sleep 60; continue; }
+        gh workflow run "$(workflow_of "$role")" -f dandiset="$d" -f role="$role" -f account="$acct" || { sleep 60; continue; }
       fi
       id=""
       for _ in $(seq 1 60); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
@@ -61,12 +77,17 @@ run_role(){ local role=$1 tries=0 start before id st
     fi
     st=$(wait_run "$id"); log "$role $st (run $id)"
     [ "$st" = success ] && return 0
-    if gh run view "$id" --log 2>/dev/null | grep -q "session limit" && [ $tries -lt 100 ]; then
+    runlog=$(gh run view "$id" --log-failed 2>/dev/null || gh run view "$id" --log 2>/dev/null)
+    if echo "$runlog" | grep -qE "FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE"; then
+      # Put the branch back where the run started, and run the role, and the rest, on the verified account.
+      reset_branch "$start" || { log "STOPPED: could not reset attempt/$d after the flag"; return 1; }
+      log "$role: $(echo "$runlog" | grep -oE "(FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE)[^\"]*" | head -n 1 | cut -c1-200); on the verified account from here"
+      account=verified; touch "$STATE/verified-$d"
+      continue
+    fi
+    if echo "$runlog" | grep -q "session limit" && [ $tries -lt 100 ]; then
       tries=$((tries+1))
-      # Put the branch back where the run started, and check that it took.
-      if [ -n "$start" ]; then git push -q --force origin "$start:refs/heads/attempt/$d"
-      else git push -q origin --delete "attempt/$d" 2>/dev/null || true; fi
-      [ "$(remote_branch)" = "$start" ] || { log "STOPPED: could not reset attempt/$d after the session limit"; return 1; }
+      reset_branch "$start" || { log "STOPPED: could not reset attempt/$d after the session limit"; return 1; }
       log "$role hit the session limit; branch reset, retry $tries in 30 minutes"
       sleep 1800; continue
     fi
