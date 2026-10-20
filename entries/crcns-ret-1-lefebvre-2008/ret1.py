@@ -38,7 +38,8 @@ Where the parameters come from:
   ("printed") or B + G (y - theta) ("continuous") above; least squares against the rate in bins of
   one frame ("frame") or against the mean rate in 20 bins of y of equal count ("binned"). Theta is
   searched on a grid of quantiles of y (a standard choice of resolution); a fit whose theta is
-  the first or last value of its grid is flagged (`theta_edge_*`).
+  the first or last value of its grid is flagged (`theta_edge_*`), and one at the last value also
+  as `theta_edge_top_*`.
 - The 95% bands of the cumulative histograms have the three readings of the claims file's header:
   "binomial" (pointwise, normal approximation), "dkw" (Dvoretzky-Kiefer-Wolfowitz) and
   "bootstrap" (pointwise percentile bootstrap over cells, 1000 resamples, a standard number).
@@ -316,7 +317,7 @@ def fit_ln(y: np.ndarray, rate: np.ndarray, fit: str, form: str) -> dict:
     y, r = y[ok], rate[ok]
     sd = y.std()
     if not np.isfinite(sd) or sd == 0:
-        return {"B": np.nan, "G": np.nan, "theta": np.nan, "sse": np.nan, "edge": False}
+        return {"B": np.nan, "G": np.nan, "theta": np.nan, "sse": np.nan, "edge": False, "edge_top": False}
     y = y / sd
     order = np.argsort(y, kind="stable")
     y, r = y[order], r[order].astype(float)
@@ -354,7 +355,7 @@ def fit_ln(y: np.ndarray, rate: np.ndarray, fit: str, form: str) -> dict:
     sse = np.where(np.abs(det) > 1e-12 * max(1.0, n * n), sse, np.inf)
     i = int(np.argmin(sse))
     return {"B": float(B[i]), "G": float(G[i]), "theta": float(grid[i]), "sse": float(sse[i]),
-            "edge": bool(i == 0 or i == len(grid) - 1)}
+            "edge": bool(i == 0 or i == len(grid) - 1), "edge_top": bool(i == len(grid) - 1)}
 
 
 # --- recordings and per-cell measures --------------------------------------------
@@ -455,9 +456,10 @@ def measure_retina(retina: dict, recs: list[dict], bits: np.ndarray, ln: bool = 
             r = np.concatenate([C[:, c] / rec["frame"] for (_, C), rec in zip(data, recs)])
             for fit in ("frame", "binned"):
                 for form in ("printed", "continuous"):
-                    p = fit_ln(y, r, fit, form) if n[c] else {"B": np.nan, "G": np.nan, "theta": np.nan, "edge": False}
+                    p = fit_ln(y, r, fit, form) if n[c] else {"B": np.nan, "G": np.nan, "theta": np.nan, "edge": False, "edge_top": False}
                     d[f"theta_{fit}_{form}"] = p["theta"]
                     d[f"theta_edge_{fit}_{form}"] = p["edge"]
+                    d[f"theta_edge_top_{fit}_{form}"] = p["edge_top"]
                     d[f"gain_{fit}_{form}"] = p["G"]
                     d[f"base_{fit}_{form}"] = p["B"]
         out.append(d)

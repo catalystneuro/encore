@@ -22,13 +22,16 @@ A failure to reproduce here may be a failure of this attempt, not of the paper: 
 reasoning and the differences from the paper's method.
 
 The data set's unit counts and control genotypes differ from the paper's, many mutant units have
-weak or no receptive fields, the spike trains of four retinas hold a misplaced last minute, and
-the frame length stated for the bar stimulus of two retinas is wrong (the notebook rebuilds it with
-the frame of the other recordings). The attempt record, with
+weak or no receptive fields, the spike trains of four retinas hold a segment out of time order
+(consistent with a misplaced last minute, which is not proven), and the frame length stated for
+the bar stimulus of two retinas is wrong (the notebook rebuilds it with the frame of the other
+recordings). The outcomes for firing rate and LN threshold hold on all units, as the claims file
+reads the groups; among units with clear STAs both would be blocked. The blocked outcome for
+centre size rests on one borderline combination and on the frame correction. The attempt record, with
 the reasons and the differences from the paper's method, is
 [`attempts/crcns-ret-1-lefebvre-2008-01.yaml`](../../attempts/crcns-ret-1-lefebvre-2008-01.yaml).
 
-- `reproduce_lefebvre_2008.ipynb`: the analysis. It takes about eight minutes, streaming the
+- `reproduce_lefebvre_2008.ipynb`: the analysis. It takes about eight minutes (the last code cell prints the run time), streaming the
   data set's zip from the CRCNS S3 bucket.
 - `ret1.py`: loading the zip in place, rebuilding the white-noise stimulus from `ran1.bin`, and
   the spike-triggered average, its separation, the LN fit and the 95% bands of the cumulative
