@@ -1,29 +1,41 @@
 """Loading and spatial measures for the Neurolab (STS-90) place cell data of dandiset 001754.
 
-Knierim, McNaughton & Poe (2000), Nature Neuroscience 3:209-210, doi:10.1038/72910.
+Knierim, McNaughton & Poe (2000), Nature Neuroscience 3(3):211-212, doi:10.1038/72910.
 
-Each NWB file holds one rat on one day (preflight, flight day 4 or flight day 9): sorted units
-(spike times in seconds, tetrode and Xclust cluster id, the original spike files merged into
-each unit and their windows), task epochs (BL baseline, ES Escher staircase, MC Magic Carpet, each
-with its original epoch name such as ES1), and a table of 64 x 64 rate and occupancy maps from the
-original analysis (.rmap files), each linked to its unit and epoch name. The flight files also hold
-the video position in pixels (0 to 255), but only at spike times and only within the rat's own ES
-and MC epochs: the conversion took it from the position columns of both rats' spike files. Files
-are streamed from the archive at the pinned version; nothing is written to disk.
+Each NWB file of the pinned version holds one rat on one day (preflight, flight day 4 or flight
+day 9): sorted units (spike times in seconds, tetrode and Xclust cluster id), task epochs (BL
+baseline, ES Escher staircase, MC Magic Carpet), and a table of 64 x 64 rate and occupancy maps
+from the original analysis (one row per .RMA file, with its task type, tetrode, 8.3 short file
+name and a `cell_number` read from that name). The flight files also hold the video position in
+pixels (0 to 255), but only at the spike times of the file's units. Files are streamed from the
+archive at the pinned version; nothing is written to disk.
 
-Where the parameters come from. The paper's Methods were not available (it is not open access),
-so every parameter below is a common choice, fixed in the claims file before the analysis:
+Where the parameters come from.
 
-- `PX_PER_RMA_BIN = 4`: the rate maps are 64 x 64 over the 256-pixel video range; spike-count
-  maps binned this way match them best (shown in the notebook's data check).
-- `MERGE = 2`: spatial information and stability use 32 x 32 bins (2 x 2 rate-map bins).
-- The tracker's lost position, (0, 255) in the source, is NaN in the files; the original
-  occupancy counts it in rate-map bin `SENTINEL_BIN = (63, 0)`, which is left out of every
-  occupancy. Unvisited rate-map bins are NaN (-999 in the source).
-- `MIN_OCC = 5` occupancy counts per bin, `MIN_SPIKES = 50` spikes at a known position per unit.
-- Shuffles shift spikes circularly by at least `MIN_SHIFT_S = 20` s and take the position of the
-  nearest position sample within `MAX_LOOKUP_S = 0.25` s. A spike, real or shifted, whose nearest
-  sample is the lost position is dropped.
+- `ACTIVE_HZ = 0.05`: active cells have a mean firing rate above 0.05 Hz on the track (the
+  paper's main text, as the claims file's criteria give it).
+- `ALPHA = 0.05`, two-sided: the level of the Mann-Whitney tests, which the paper does not print;
+  the claims file reads it as two-sided p < 0.05.
+- Spatial information is Skaggs' information per spike, I = sum_i p_i (r_i / r) log2(r_i / r)
+  (the claims file, after the paper's ref. 13), over every visited bin, off-track positions kept
+  (the claims file, after the Fig. 1 legend).
+- Reading M-a uses the deposited rate and occupancy maps; reading M-b recomputes rate maps from
+  spikes and position on the grid of the deposited maps, without smoothing, every visited bin kept
+  (the claims file's opening comment). The dandiset has no occupancy time, as position is given
+  only at spike times, so M-b divides spike counts by the deposited occupancy map of the epoch.
+  The claims file's opening comment now gives this (answer of 2026-10-20 in
+  `questions/001754.yaml`).
+- `FIELD_FRACTION = 0.2`: the field of reading (b) of the stability claim is the bins with at
+  least 20% of the peak rate (the claims file, which calls it a common choice).
+- `PX_PER_BIN = 4`: the maps are 64 x 64 over the 256-pixel video range, x to columns and y to
+  rows; the data check shows the deposited occupancy maps match the position this way.
+- `MISSING_XY = (0, 255)` is the tracker's lost position and `SENTINEL_BIN = (63, 0)` the bin in
+  which the original occupancy counts it; it is not a position, so it is left out of every map.
+  `UNVISITED = -999` is the rate maps' value for bins without occupancy. Both are read from the
+  values in the data check.
+- `LOOKUP_S = 0.001`: a spike takes the position of the sample at its own time, within 1 ms; the
+  data check shows every spike of a task epoch has one. A standard tolerance that cannot change a
+  result.
 """
 
 from __future__ import annotations
@@ -35,23 +47,23 @@ import numpy as np
 import pandas as pd
 import remfile
 from dandi.dandiapi import DandiAPIClient
-from scipy.ndimage import gaussian_filter
+from scipy import stats
 
 DANDISET_ID = "001754"
-DANDISET_VERSION = "draft"
+DANDISET_VERSION = "0.260728.1352"
 
-PX_PER_RMA_BIN = 4
-MERGE = 2
+ACTIVE_HZ = 0.05
+ALPHA = 0.05
+FIELD_FRACTION = 0.2
+PX_PER_BIN = 4
+MISSING_XY = (0.0, 255.0)
 SENTINEL_BIN = (63, 0)
-MIN_OCC = 5
-MIN_SPIKES = 50
-MIN_SHIFT_S = 20.0
-MAX_LOOKUP_S = 0.25
-N_SHUFFLES = 500
+UNVISITED = -999.0
+LOOKUP_S = 0.001
 
 
 def asset_urls(version: str = DANDISET_VERSION) -> list[tuple[str, str]]:
-    """(path, streaming URL) of every NWB file at the pinned version."""
+    """(path, streaming URL) of every NWB file at a version (default the pinned one)."""
     with DandiAPIClient() as client:
         dandiset = client.get_dandiset(DANDISET_ID, version)
         return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))
@@ -64,17 +76,6 @@ def _text(value) -> str:
 
 def _column(group, name):
     return [_text(v) for v in group[name][:]]
-
-
-def _ragged(group, name) -> list:
-    data, index = group[name][:], group[f"{name}_index"][:]
-    starts = np.concatenate([[0], index[:-1]])
-    return [data[a:b] for a, b in zip(starts, index)]
-
-
-def epoch_type(epoch_name: str) -> str:
-    """The task type of an original epoch name (ES1 -> ES)."""
-    return epoch_name.rstrip("0123456789")
 
 
 def h5_tree(path_url: tuple[str, str]) -> list[str]:
@@ -105,62 +106,110 @@ def load_session(path_url: tuple[str, str]) -> dict:
         s["day"] = ("preflight" if "Preflight" in s["description"]
                     else "FD4" if "Flight Day 4" in s["description"] else "FD9")
         ep = f["intervals/epochs"]
-        s["epochs"] = pd.DataFrame({"start": ep["start_time"][:], "stop": ep["stop_time"][:],
-                                    "type": _column(ep, "session_type"),
-                                    "name": _column(ep, "epoch_name")})
+        epochs = pd.DataFrame({"start": ep["start_time"][:], "stop": ep["stop_time"][:],
+                               "type": _column(ep, "session_type")}).sort_values("start")
+        epochs["name"] = epochs["type"] + (epochs.groupby("type").cumcount() + 1).astype(str)
+        s["epochs"] = epochs.reset_index(drop=True)
         u = f["units"]
-        s["units"] = pd.DataFrame({"tetrode": _column(u, "tetrode"),
-                                   "cluster": u["cluster_id"][:],
-                                   "spikes": _ragged(u, "spike_times"),
-                                   "source_files": [[_text(v) for v in x] for x in _ragged(u, "source_files")],
-                                   "obs_intervals": _ragged(u, "obs_intervals")})
+        index = u["spike_times_index"][:]
+        times = u["spike_times"][:]
+        starts = np.concatenate([[0], index[:-1]])
+        s["units"] = pd.DataFrame({"tetrode": _column(u, "tetrode"), "cluster": u["cluster_id"][:],
+                                   "spikes": [times[a:b] for a, b in zip(starts, index)]})
         if "processing/behavior" in f:
             ss = f["processing/behavior/position/spatial_series"]
             s["t"] = ss["timestamps"][:]
-            s["xy"] = ss["data"][:]
+            s["xy"] = ss["data"][:].astype(float)
             s["xy_unit"] = _text(ss["data"].attrs["unit"])
             s["xy_description"] = _text(ss.attrs.get("description", ""))
         rm = f["processing/ecephys/rate_maps"]
-        names = _column(rm, "epoch_name")
-        s["maps"] = pd.DataFrame({"tetrode": _column(rm, "tetrode"),
-                                  "source_file": _column(rm, "source_file"),
-                                  "archived_file_name": _column(rm, "archived_file_name"),
-                                  "epoch_name": names, "type": [epoch_type(n) for n in names],
-                                  "cluster": rm["cluster_id"][:], "unit": rm["unit"][:]})
+        s["maps"] = pd.DataFrame({"tetrode": _column(rm, "tetrode"), "source_file": _column(rm, "source_file"),
+                                  "type": _column(rm, "session_type"), "cell_number": rm["cell_number"][:]})
         s["rate_maps"] = rm["rate_map"][:].astype(float)
         s["occupancy_maps"] = rm["occupancy_map"][:].astype(float)
     if "xy" in s:
-        s["valid"] = ~np.isnan(s["xy"]).any(axis=1)
+        s["valid"] = ~((s["xy"][:, 0] == MISSING_XY[0]) & (s["xy"][:, 1] == MISSING_XY[1]))
+    s["maps"]["epoch"] = assign_map_epochs(s)
+    s["maps"]["duplicate"] = duplicate_rows(s["rate_maps"])
     return s
 
 
-def load_all() -> list[dict]:
+def load_all(version: str = DANDISET_VERSION) -> list[dict]:
     with ThreadPoolExecutor(8) as pool:
-        return list(pool.map(load_session, asset_urls()))
+        return list(pool.map(load_session, asset_urls(version)))
 
 
 def label(s: dict) -> str:
     return f"{s['subject']} {s['day']}"
 
 
-# ---------------------------------------------------------------- rate maps of the dandiset
-
-def map_occupancy_groups(s: dict) -> list[tuple[str, np.ndarray, np.ndarray]]:
-    """Distinct occupancy maps of a file: (epoch name, occupancy, row indices using it)."""
-    groups = {}
-    for i, (name, occ) in enumerate(zip(s["maps"]["epoch_name"], s["occupancy_maps"])):
-        groups.setdefault((name, occ.tobytes()), (name, occ, []))[2].append(i)
-    return [(name, occ, np.array(rows)) for name, occ, rows in groups.values()]
-
+# ---------------------------------------------------------------- maps and epochs
 
 def clean_occupancy(occ: np.ndarray) -> np.ndarray:
+    """The occupancy map without the lost position's bin."""
     occ = occ.astype(float).copy()
     occ[SENTINEL_BIN] = 0.0
     return occ
 
 
+def bin_xy(xy: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """(row, column) of each position on the 64 x 64 grid: row from y, column from x."""
+    col = np.clip((xy[:, 0] // PX_PER_BIN).astype(int), 0, 63)
+    row = np.clip((xy[:, 1] // PX_PER_BIN).astype(int), 0, 63)
+    return row, col
+
+
+def count_map(rows: np.ndarray, cols: np.ndarray) -> np.ndarray:
+    counts = np.zeros((64, 64))
+    np.add.at(counts, (rows, cols), 1)
+    return counts
+
+
+def occupancy_groups(s: dict) -> list[tuple[str, bytes, np.ndarray]]:
+    """Distinct occupancy maps of a file: (task type, key, row indices using it)."""
+    groups = {}
+    for i, (typ, occ) in enumerate(zip(s["maps"]["type"], s["occupancy_maps"])):
+        groups.setdefault((typ, occ.tobytes()), []).append(i)
+    return [(typ, key, np.array(rows)) for (typ, key), rows in groups.items()]
+
+
+def occupancy_match(s: dict, occ: np.ndarray, start: float, stop: float) -> float:
+    """Correlation of a binary occupancy map with the binary histogram of the valid position
+    samples in [start, stop]."""
+    m = (s["t"] >= start) & (s["t"] <= stop) & s["valid"]
+    hist = count_map(*bin_xy(s["xy"][m])) > 0
+    return float(np.corrcoef((clean_occupancy(occ) > 0).ravel(), hist.ravel())[0, 1])
+
+
+def assign_map_epochs(s: dict) -> list[str]:
+    """The epoch name (ES1, ES2, MC1, ...) of each map row. Where a file has one epoch of a type,
+    its maps are that epoch's. Where it has more (Rat3 flight day 4 has two ES epochs), each
+    distinct occupancy map goes to the epoch whose position samples it matches best."""
+    names = [""] * len(s["maps"])
+    for typ, key, rows in occupancy_groups(s):
+        cands = s["epochs"][s["epochs"].type == typ]
+        if len(cands) == 1:
+            name = cands.name.iloc[0]
+        else:
+            occ = s["occupancy_maps"][rows[0]]
+            scores = {n: occupancy_match(s, occ, a, b) for a, b, n in cands[["start", "stop", "name"]].itertuples(index=False)}
+            name = max(scores, key=scores.get)
+        for i in rows:
+            names[i] = name
+    return names
+
+
+def duplicate_rows(rate_maps: np.ndarray) -> list[bool]:
+    """True for a map identical to an earlier map of the same file (each is counted once)."""
+    seen, out = set(), []
+    for r in rate_maps:
+        out.append(r.tobytes() in seen)
+        seen.add(r.tobytes())
+    return out
+
+
 def skaggs_info(rate: np.ndarray, occ: np.ndarray) -> float:
-    """Skaggs et al. (1993) spatial information in bits per spike, over bins with occ > 0."""
+    """Skaggs' spatial information in bits per spike, over bins with occ > 0."""
     keep = occ > 0
     p = occ[keep] / occ[keep].sum()
     r = rate[keep]
@@ -171,155 +220,110 @@ def skaggs_info(rate: np.ndarray, occ: np.ndarray) -> float:
     return float((p[nz] * (r[nz] / mean) * np.log2(r[nz] / mean)).sum())
 
 
-def rma_info(rate_map: np.ndarray, occ_map: np.ndarray, min_occ: float = 1) -> tuple[float, float, float]:
-    """(bits per spike, mean rate, peak rate) of one of the dandiset's rate maps, over bins with
-    at least `min_occ` occupancy counts."""
+def map_measures(rate_map: np.ndarray, occ_map: np.ndarray) -> tuple[float, float, float]:
+    """(bits per spike, occupancy-weighted mean rate in Hz, peak rate) of a deposited map, over
+    its visited bins."""
     occ = clean_occupancy(occ_map)
-    occ[np.isnan(rate_map) | (occ < min_occ)] = 0
+    occ[rate_map == UNVISITED] = 0
     rate = np.where(occ > 0, rate_map, 0.0)
     keep = occ > 0
     mean = float((rate[keep] * occ[keep]).sum() / occ[keep].sum())
     return skaggs_info(rate, occ), mean, float(rate[keep].max())
 
 
-def rma_table(sessions: list[dict]) -> pd.DataFrame:
-    """Spatial information of every distinct rate map; identical maps in a file count once."""
+def epoch_occupancy(s: dict, epoch: str) -> np.ndarray:
+    """The deposited occupancy map of an epoch (one distinct map per epoch, checked in the
+    notebook's data check)."""
+    rows = s["maps"].index[s["maps"].epoch == epoch]
+    occs = {s["occupancy_maps"][i].tobytes(): s["occupancy_maps"][i] for i in rows}
+    assert len(occs) == 1, (s["path"], epoch, len(occs))
+    return next(iter(occs.values()))
+
+
+def ma_table(sessions: list[dict]) -> pd.DataFrame:
+    """Reading M-a: every deposited map, with its spatial information and mean rate. Identical
+    copies within a file are marked and counted once."""
     rows = []
     for s in sessions:
-        seen = set()
         for i, m in s["maps"].iterrows():
-            key = s["rate_maps"][i].tobytes()
-            duplicate = key in seen
-            seen.add(key)
-            info, mean, peak = rma_info(s["rate_maps"][i], s["occupancy_maps"][i])
-            occ = clean_occupancy(s["occupancy_maps"][i])
-            rows.append({"rat": s["subject"], "day": s["day"], "type": m["type"],
-                         "epoch_name": m["epoch_name"], "tetrode": m["tetrode"],
-                         "cluster": m["cluster"], "unit": m["unit"], "source_file": m["source_file"],
-                         "cel_name": "CEL" in m["archived_file_name"].upper(),
-                         "duplicate": duplicate, "info": info, "mean_rate": mean,
-                         "peak_rate": peak,
-                         "info_occ5": rma_info(s["rate_maps"][i], s["occupancy_maps"][i], MIN_OCC)[0],
-                         "occupancy_total": occ.sum(),
-                         "rate_x_occupancy": float((np.nan_to_num(s["rate_maps"][i]) * occ).sum())})
+            info, mean, peak = map_measures(s["rate_maps"][i], s["occupancy_maps"][i])
+            rows.append({"rat": s["subject"], "day": s["day"], "type": m["type"], "epoch": m["epoch"],
+                         "tetrode": m["tetrode"], "source_file": m["source_file"], "cell_number": int(m["cell_number"]),
+                         "row": i, "duplicate": bool(m["duplicate"]), "info": info, "mean_rate": mean, "peak_rate": peak,
+                         "active": (mean > ACTIVE_HZ) and not m["duplicate"]})
     return pd.DataFrame(rows)
 
 
-# ---------------------------------------------------------------- spikes and positions
+# ---------------------------------------------------------------- spikes and position (M-b)
 
-def bin_xy(xy: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
-    """(row, column) of each position on the 64 x 64 rate-map grid: row from y, column from x.
-    A lost position (NaN) is given bin (0, 0); callers drop it."""
-    xy = np.nan_to_num(xy)
-    col = np.clip((xy[:, 0] // PX_PER_RMA_BIN).astype(int), 0, 63)
-    row = np.clip((xy[:, 1] // PX_PER_RMA_BIN).astype(int), 0, 63)
-    return row, col
-
-
-def merge_bins(a: np.ndarray, k: int = MERGE) -> np.ndarray:
-    n = a.shape[0] // k
-    return a.reshape(n, k, n, k).sum(axis=(1, 3))
+def spike_positions(s: dict, spikes: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """(has a valid position, row, column) for each spike: the sample at the spike's own time
+    (within LOOKUP_S), dropped when there is none or it is the lost position."""
+    t = s["t"]
+    i = np.clip(np.searchsorted(t, spikes), 1, len(t) - 1)
+    j = np.where(np.abs(t[i - 1] - spikes) <= np.abs(t[i] - spikes), i - 1, i)
+    has = np.abs(t[j] - spikes) <= LOOKUP_S
+    ok = has & s["valid"][j]
+    row, col = bin_xy(s["xy"][j[ok]])
+    return ok, row, col
 
 
-class PositionLookup:
-    """Positions of the pooled trace at arbitrary times."""
-
-    def __init__(self, s: dict):
-        self.t = s["t"]
-        self.valid = s["valid"]
-        self.row, self.col = bin_xy(s["xy"])
-
-    def __call__(self, times: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-        """(found, row, column): found marks times whose nearest sample is within MAX_LOOKUP_S
-        and is not the lost position, so a spike at a lost position is dropped."""
-        i = np.clip(np.searchsorted(self.t, times), 1, len(self.t) - 1)
-        left_closer = np.abs(self.t[i - 1] - times) <= np.abs(self.t[i] - times)
-        j = np.where(left_closer, i - 1, i)
-        found = (np.abs(self.t[j] - times) <= MAX_LOOKUP_S) & self.valid[j]
-        return found, self.row[j[found]], self.col[j[found]]
-
-
-def count_map(rows: np.ndarray, cols: np.ndarray) -> np.ndarray:
-    counts = np.zeros((64, 64))
-    np.add.at(counts, (rows, cols), 1)
-    return counts
-
-
-def epoch_occupancy(s: dict, name: str) -> np.ndarray:
-    """The rate-map occupancy map of an epoch, from the maps with its epoch name (one distinct
-    map per epoch name, checked in the notebook's data check)."""
-    groups = [occ for n, occ, _ in map_occupancy_groups(s) if n == name]
-    assert len(groups) == 1, (s["path"], name, len(groups))
-    return groups[0]
-
-
-def occupancy_match(s: dict, start: float, stop: float) -> dict:
-    """For each distinct occupancy map of a file, the correlation of the binary map with the
-    binary histogram of the position samples in [start, stop]; keyed by the map's epoch name."""
-    m = (s["t"] >= start) & (s["t"] <= stop) & s["valid"]
-    hist = count_map(*bin_xy(s["xy"][m])) > 0
-    return {name: float(np.corrcoef((clean_occupancy(occ) > 0).ravel(), hist.ravel())[0, 1])
-            for name, occ, _ in map_occupancy_groups(s)}
-
-
-def spatial_info_spikes(rows: np.ndarray, cols: np.ndarray, occ32: np.ndarray) -> float:
-    counts = merge_bins(count_map(rows, cols))
-    keep = occ32 >= MIN_OCC
-    rate = np.where(keep, counts / np.where(keep, occ32, 1), 0.0)
-    return skaggs_info(rate, np.where(keep, occ32, 0))
-
-
-def epoch_units(s: dict, start: float, stop: float, occ: np.ndarray, rng: np.random.Generator,
-                n_shuffles: int = N_SHUFFLES, match_counts: bool = False,
-                position: dict | None = None) -> pd.DataFrame:
-    """Spatial information of every unit of `s` in one epoch with its shuffle distribution, with
-    the epoch's 64 x 64 occupancy map `occ` and the position trace of `position` (default `s`).
-
-    Shifted spikes without a position are dropped, so a shuffle can hold fewer spikes than the
-    unit. With `match_counts`, each shuffle is compared with the unit's information on a random
-    subsample of its own spikes of the same size (a variant; the main test compares all spikes)."""
-    occ32 = merge_bins(clean_occupancy(occ))
-    lookup = PositionLookup(s if position is None else position)
-    duration = stop - start
+def mb_maps(s: dict, epoch: str) -> pd.DataFrame:
+    """Reading M-b for every unit of a flight file in one epoch: spike-count map over the
+    deposited occupancy (unsmoothed), spatial information over every visited bin, and the unit's
+    mean rate over the epoch."""
+    a, b = s["epochs"].set_index("name").loc[epoch, ["start", "stop"]]
+    occ = clean_occupancy(epoch_occupancy(s, epoch))
     out = []
-    for _, u in s["units"].iterrows():
-        sp = u["spikes"][(u["spikes"] >= start) & (u["spikes"] <= stop)]
-        found, r, c = lookup(sp)
-        keep = occ32[r // MERGE, c // MERGE] >= MIN_OCC
-        n = int(keep.sum())
-        row = {"rat": s["subject"], "day": s["day"], "epoch_start": start, "tetrode": u["tetrode"],
-               "cluster": int(u["cluster"]), "spikes_in_epoch": len(sp), "spikes_used": n}
-        if n < MIN_SPIKES:
-            out.append(row | {"info": np.nan, "p": np.nan, "null95": np.nan, "null_mean": np.nan,
-                              "null_spikes_used": np.nan, "empty_shuffles": np.nan})
-            continue
-        info = spatial_info_spikes(r[keep], c[keep], occ32)
-        null = np.empty(n_shuffles)
-        used = np.empty(n_shuffles)
-        observed = np.full(n_shuffles, info)
-        shifts = rng.uniform(MIN_SHIFT_S, duration - MIN_SHIFT_S, n_shuffles)
-        for k, shift in enumerate(shifts):
-            shifted = start + (sp - start + shift) % duration
-            f2, r2, c2 = lookup(shifted)
-            k2 = occ32[r2 // MERGE, c2 // MERGE] >= MIN_OCC
-            null[k] = spatial_info_spikes(r2[k2], c2[k2], occ32)
-            used[k] = k2.sum()
-            if match_counts and used[k] < n:
-                pick = rng.choice(n, int(used[k]), replace=False)
-                observed[k] = spatial_info_spikes(r[keep][pick], c[keep][pick], occ32)
-        ok = np.isfinite(null)  # a shuffle in which no spike has a position has no value
-        out.append(row | {"info": info, "p": float((null[ok] >= observed[ok]).mean()),
-                          "null95": float(np.percentile(null[ok], 95)), "null_mean": float(null[ok].mean()),
-                          "null_spikes_used": float(used.mean()), "empty_shuffles": int((~ok).sum())})
+    for ui, u in s["units"].iterrows():
+        sp = u.spikes[(u.spikes >= a) & (u.spikes <= b)]
+        ok, r, c = spike_positions(s, sp)
+        counts = count_map(r, c)
+        unvisited = int(counts[occ == 0].sum())
+        rate = np.where(occ > 0, counts / np.where(occ > 0, occ, 1), 0.0)
+        out.append({"rat": s["subject"], "day": s["day"], "epoch": epoch, "unit": ui, "tetrode": u.tetrode,
+                    "cluster": int(u.cluster), "spikes": len(sp), "spikes_lost_position": int((~ok).sum()),
+                    "spikes_unvisited_bin": unvisited, "mean_rate": len(sp) / (b - a),
+                    "active": len(sp) / (b - a) > ACTIVE_HZ,
+                    "info": skaggs_info(rate, occ) if counts[occ > 0].sum() > 0 else np.nan,
+                    "rate_map": np.where(occ > 0, rate, np.nan)})
     return pd.DataFrame(out)
 
 
-def smoothed_rate_map(rows, cols, occ64: np.ndarray, sigma: float = 1.0) -> tuple[np.ndarray, np.ndarray]:
-    """32 x 32 rate map with spike counts and occupancy each smoothed by a Gaussian (in bins);
-    returns (rate, smoothed occupancy)."""
-    occ32 = merge_bins(clean_occupancy(occ64))
-    counts = merge_bins(count_map(rows, cols))
-    sc = gaussian_filter(counts, sigma)
-    so = gaussian_filter(occ32, sigma)
-    rate = np.where(occ32 >= MIN_OCC, sc / np.maximum(so, 1e-9), np.nan)
-    return rate, occ32
+# ---------------------------------------------------------------- tests
+
+def mean_sem(x) -> tuple[float, float]:
+    x = np.asarray(x, float)
+    return float(x.mean()), float(x.std(ddof=1) / np.sqrt(len(x)))
+
+
+def compare(flight, pre) -> dict:
+    """Means with standard errors, and the two-sided Mann-Whitney test of flight against
+    preflight values."""
+    flight, pre = np.asarray(flight, float), np.asarray(pre, float)
+    m1, e1 = mean_sem(flight)
+    m0, e0 = mean_sem(pre)
+    u = stats.mannwhitneyu(flight, pre, alternative="two-sided")
+    return {"n_flight": len(flight), "n_pre": len(pre), "mean_flight": round(m1, 3), "sem_flight": round(e1, 3),
+            "mean_pre": round(m0, 3), "sem_pre": round(e0, 3), "difference": round(m1 - m0, 3),
+            "U": float(u.statistic), "p": float(u.pvalue), "significant": bool(u.pvalue < ALPHA)}
+
+
+def map_correlation(m1: np.ndarray, m2: np.ndarray, both: np.ndarray) -> float:
+    """Pearson correlation of two rate maps over the bins visited in both sessions."""
+    ok = both & np.isfinite(m1) & np.isfinite(m2)
+    x, y = m1[ok], m2[ok]
+    if x.std() == 0 or y.std() == 0:
+        return np.nan
+    return float(np.corrcoef(x, y)[0, 1])
+
+
+def peak_in_field(m1: np.ndarray, m2: np.ndarray, both: np.ndarray, fraction: float = FIELD_FRACTION) -> bool:
+    """Reading (b) of the stability claim: the peak bin of the session 3 map m2 lies in the field
+    of the session 2 map m1, the bins with at least `fraction` of m1's peak rate, over bins
+    visited in both sessions."""
+    a = np.where(both & np.isfinite(m1), m1, -np.inf)
+    b = np.where(both & np.isfinite(m2), m2, -np.inf)
+    if a.max() <= 0 or b.max() <= 0:
+        return False
+    return bool(a[np.unravel_index(b.argmax(), b.shape)] >= fraction * a.max())
