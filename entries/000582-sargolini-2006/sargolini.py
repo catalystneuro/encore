@@ -51,6 +51,9 @@ claims file lists for details the paper leaves open.
   means (questions/000582.yaml).
 - Speed in 1-s bins, unsmoothed (SOM); readings from the speed claim: path
   length or displacement over the bin, smoothed or raw positions.
+- `shifted_gridness`: a control, not a method of the paper. Each spike train is shifted
+  circularly in time by 20 s or more and the gridness of the first reading recomputed; the
+  shift's bounds and the number of shifts are standard choices.
 - Trials (O1): the 20-minute files hold two 10-minute trials joined near 600 s
   (shown in the notebook); the split is placed at the jump in position within
   0.5 s of 600 s. "pooled" uses the whole file, "first" the first trial.
@@ -117,6 +120,7 @@ class Session:
     green: np.ndarray | None       # LED2, cm, or None
     units: list[Unit] = field(default_factory=list)
     description: str = ""
+    electrodes: dict = field(default_factory=dict)   # every column of the electrodes table, as text
 
     @property
     def dt(self) -> float:
@@ -190,9 +194,11 @@ def _session_from_h5(path: str, f) -> Session:
         for n, h, d, s, st in zip(units_group["unit_name"][:], units_group["histology"][:],
                                   units_group["depth"][:], units_group["hemisphere"][:], spikes)
     ]
+    table = f["general/extracellular_ephys/electrodes"]
+    electrodes = {k: [_text(v) for v in table[k][:]] for k in table if k != "group"}
     return Session(path=path, subject=_text(f["general/subject/subject_id"][()]),
                    session_id=_text(f["general/session_id"][()]), t=t, red=red, green=green,
-                   units=units, description=_text(f["session_description"][()]))
+                   units=units, description=_text(f["session_description"][()]), electrodes=electrodes)
 
 
 def asset_urls(version: str = VERSION) -> list[tuple[str, str]]:
@@ -721,6 +727,30 @@ def session_measures(session: Session) -> tuple[list[dict], list[dict]]:
         cells.append(cell_measures(session, unit, speed_cache, m))
         maps.append(m)
     return cells, pair_measures(session, maps)
+
+
+def shifted_gridness(session: Session, seed: int, n_shifts: int = 5, min_shift_s: float = 20.0) -> list[dict]:
+    """Gridness of each cell's spike train shifted in time, as a control for gridness above 0.
+
+    Each spike train is shifted circularly within the file by a random amount between 20 s and
+    the file's length minus 20 s, n_shifts times, and the gridness of the pooled 3 cm map is
+    computed under the first reading (GRID_READINGS[0]). The shift, its bounds and the number of
+    shifts are standard choices; the SOM uses no such control.
+    """
+    rng = np.random.default_rng(seed)
+    t0, t1 = session.t[0], session.t[-1] + session.dt
+    mask = np.ones(len(session.t), bool)
+    bname, key = GRID_READINGS[0].split("|", 1)
+    rows = []
+    for unit in session.units:
+        spikes = in_window(unit.spike_times, (t0, t1))
+        for k in range(n_shifts):
+            shift = rng.uniform(min_shift_s, (t1 - t0) - min_shift_s)
+            moved = np.sort(t0 + (spikes - t0 + shift) % (t1 - t0))
+            m = rate_map(session, mask, moved, BINS[bname])
+            rows.append(dict(path=session.path, unit=unit.name, shift=k,
+                             gridness=grid_measures(correlogram(m), BINS[bname])[key]))
+    return rows
 
 
 def lagged_u2(session: Session, unit: Unit, lags_s: np.ndarray) -> np.ndarray:

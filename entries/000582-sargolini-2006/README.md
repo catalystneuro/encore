@@ -16,7 +16,7 @@ earlier attempt, `000582-sargolini-2006-01`, was based; that attempt is deprecat
 | `grid-stable` | Blocked: methods underspecified | |
 | `spacing-dorsoventral` | Blocked: data missing | |
 | `fieldsize-dorsoventral` | Blocked: data missing | |
-| `grid-phase-orientation` | Partially reproduced | |
+| `grid-phase-orientation` | Blocked: methods underspecified | |
 | `hd-layers` | Not reproduced | |
 | `hd-with-grid-colocalized` | Blocked: methods underspecified | |
 | `hd-tuning-breadth-layers` | Blocked: methods underspecified | |
@@ -39,10 +39,17 @@ The attempt record, with the reasons, is
 [`attempts/000582-sargolini-2006-02.yaml`](../../attempts/000582-sargolini-2006-02.yaml); the
 questions it asked about the claims file are in [`questions/000582.yaml`](../../questions/000582.yaml). A reader
 answered all five on 2026-10-20, and the claims file carries the answers; the notebook follows the
-updated criteria. The answers changed one outcome, `grid-phase-orientation`, from blocked to
-partially reproduced.
+updated criteria. After the answers `grid-phase-orientation` was called partially reproduced, an
+outcome its criterion does not name; following the verifier's first round
+([report](../../transcripts/000582/verifier-1-report.md)) it is again blocked as methods
+underspecified, as its readings disagree. That revision also added the outputs the verifier asked
+for: a time-shifted control for gridness above 0, every grid and head-direction claim with each
+cell counted once, the tracking of the files that hold the layer II head-direction cells, the LED
+geometry of every two-LED file, the speed sign test in the outcome and the electrodes table. The
+verifier would call `speed-slope-steeper` partially reproduced and `speed-intercept` not
+reproduced; both stay blocked because they depend on `speed`, and the disagreement is recorded.
 
-- `reproduce_sargolini_2006.ipynb`: the analysis. It streams all 118 files and takes about five
+- `reproduce_sargolini_2006.ipynb`: the analysis. It streams all 118 files and takes about eight
   minutes on four cores.
 - `sargolini.py`: loading the dandiset, and the rate maps, autocorrelograms, gridness,
   head-direction tests and speed regressions of the paper's Supporting Online Material, under every
@@ -65,7 +72,10 @@ New:
 
 - The positions are rescaled to span exactly 100, 150 or 200 cm, without saying so.
 - The 20-minute files hold two trials joined near 600 s, with no trial table.
-- The distance of the recording sites from the postrhinal border is not given.
+- The distance of the recording sites from the postrhinal border is not given; the electrodes
+  table gives only the location "MEC".
+- In two two-LED files the LEDs are more than 15 cm apart in most samples, so head direction there
+  is doubtful.
 - No file names its enclosure, condition or cue-card position.
 - Six cells have no layer, 36 no depth and 230 no hemisphere.
 - The descriptions say the files hold grid cells, or conjunctive and head-direction cells of
