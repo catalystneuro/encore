@@ -1,0 +1,579 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000070",
+  "label": "DANDI:000070"
+ },
+ "page": "datasets/dandi/000070/",
+ "generated": "2026-10-20T18:25:55+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 5,
+  "partially_reproduced": 7,
+  "not_reproduced": 4,
+  "blocked": 6
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000070-churchland-2012-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000070",
+    "version": "0.260528.0919",
+    "doi": "10.48324/dandi.000070/0.260528.0919"
+   },
+   "key": "dandi:000070",
+   "label": "DANDI:000070",
+   "dataset_version": "0.260528.0919",
+   "paper": "10.1038/nature11129",
+   "paper_title": "Neural population dynamics during reaching",
+   "date": "2026-10-16",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000070-churchland-2012",
+   "entry_title": "Rotational dynamics of motor cortex during reaching (Churchland et al. 2012)",
+   "description": "Tests the findings of Churchland, Cunningham, Kaufman, Foster, Nuyujukian, Ryu and Shenoy (2012) that can be tested on dandiset 000070, which holds the paper's two Utah array datasets (monkeys J and N, 108 maze conditions each) and eight further array sessions. It runs jPCA on condition-averaged rates around movement onset and tests the consistency of rotations across conditions, the variance the jPCA planes capture, the fit of rotational dynamics, the shuffle controls, the separate PMd and M1 arrays, and simulated kinematic populations. The single-electrode datasets, EMG, leech and walking-monkey data are not in the dandiset.",
+   "notebooks": [
+    {
+     "path": "reproduce_churchland_2012.ipynb",
+     "title": "Reproducing Churchland et al. (2012) from dandiset 000070",
+     "executed": "notebooks/000070-churchland-2012/reproduce_churchland_2012.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "array-dataset-composition",
+     "statement": "The two array datasets, monkey J-array recorded 2009-09-18 and monkey N-array recorded 2010-09-23, each present 108 reach conditions and comprise 146 and 218 isolations (a mix of single and multi-unit isolations).",
+     "source": "Methods, Recordings and task design, paragraphs 2 and 3; Figure 3e and 3f legend",
+     "quote": "For the monkey J-array and N-array datasets, 108 conditions were presented in the same recording session ... These array-based datasets involved, respectively, 146 and 218 single isolations (each a mix of single and multi-unit isolations)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "Both sessions are in the dandiset (sub-Jenkins ses-20090918 and sub-Nitschke ses-20100923) with 108 conditions each among the selected trials. Each holds 192 units, one per electrode of the two arrays, with rates over trial time of 13.5 to 178 spikes/s, against the paper's 146 and 218 isolations. The sorted isolations are not in the dandiset.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3ef-same-direction",
+     "statement": "In the first jPCA plane the neural state rotates in the same direction for all conditions of the J-array and N-array datasets, including reaches in opposite directions.",
+     "source": "Results, Quasi-rhythmic responses during reaching, paragraph 4; Figure 3e and 3f",
+     "quote": "Second, the neural state rotates in the same direction across conditions (different traces) ... Yet for each dataset the neural state rotates in the same direction across conditions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "102 of 108 conditions (0.944) rotate counter-clockwise in J-array and 108 of 108 in N-array; median net rotation 70.2 and 114.6 degrees over the 200 ms. Under the variants (24 ms smoothing, two other windows, 10 PCs, all successful trials) the fraction is 0.944 to 0.981 and 0.972 to 1.000. jPCA orients the plane so that the net rotation is counter-clockwise, so the fraction is also 0.963 to 0.991 after shuffles 2 and 3 and 0.926 and 0.972 for the velocity model with no lead; it shows that the conditions turn the same way, not on its own that the rotation is specific to the data.",
+     "deviations": [
+      "Tested on the 192 per-electrode units, not the paper's sorted isolations.",
+      "No PC smoothing of single-unit rates; the supplement reports it has essentially no effect.",
+      "The analysis window is -50 to +150 ms from movement onset for both datasets, from the codepack's example; the paper chose a start per dataset, just before the rapid change in activity."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-independent-of-curvature",
+     "statement": "The rotations do not relate directly to reach curvature; the neural state rotates the same way for clockwise-curving, counter-clockwise-curving and straight reaches.",
+     "source": "Results, Quasi-rhythmic responses during reaching, paragraph 4; Figure 3e and 3f",
+     "quote": "Finally, state-space rotations do not relate directly to reach curvature ... Yet for each dataset the neural state rotates in the same direction across conditions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "In N-array all conditions rotate counter-clockwise in each class (44 clockwise, 53 counter-clockwise, 11 straight reaches). In J-array 0.984 of 63 counter-clockwise and 7 of 7 straight reaches do, but 0.868 (33 of 38) of clockwise reaches, under the 0.9 of the criterion and above 0.75. Spearman correlation of heading change with net neural rotation is 0.227 (p 0.018) in J-array and -0.214 (p 0.026) in N-array; the J-array logistic slope is 0.0101 per degree. The hand paths drawn by class match the classes; the five clockwise-class conditions of J-array that turn clockwise in the plane are loops of 162 to 180 degrees. With the heading taken over the unbroken run around peak speed, or thresholds of 10 or 30 degrees, the J-array clockwise class has 38 or 41 conditions, of which 0.868 to 0.878 rotate counter-clockwise.",
+     "deviations": [
+      "The paper shows this by eye in Figure 3; the classes of curvature and the thresholds were fixed here before the analysis."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3-phase-from-prep-state",
+     "statement": "The rotation phase follows from the preparatory state; knowing the initial state in the jPC plane, the subsequent states are reasonably predictable.",
+     "source": "Results, Quasi-rhythmic responses during reaching, paragraphs 4 and 5; Figure 3",
+     "quote": "Third, the rotation phase follows naturally from the preparatory state ... If one knows the initial population-level preparatory state (fig. 3, circles) subsequent states are reasonably predictable",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "Leave-one-condition-out R2 of the +150 ms state from the -50 ms state is 0.632 in J-array and 0.748 in N-array, both above 0.5. Shuffle 3 gives 0.633 to 0.718 (median 0.671) in J-array and 0.611 to 0.689 (median 0.656) in N-array, so the data exceed the control in N-array only. Shuffle 1, which has no rotation, scores 0.82 to 0.91 in every run, so this R2 rewards any consistent map from the first state to the last and is a weak test of the claim. With jPCA refitted leaving each condition out, the R2 is 0.615 and 0.727 against shuffle 3 medians of 0.628 and 0.649, reached by 8 of 10 shuffle 3 runs in J-array and none in N-array; several runs lie within 0.02 of the J-array value, and the round-2 verifier's copy printed 0.614 and 6 of 10, so this count moves with small numerical differences between runs. A phase score (the last phase predicted as the first plus the other conditions' mean advance) is 0.763 and 0.894 for the data, against 0.236 and -0.356 for no advance; shuffle 1 scores the same with and without an advance, and shuffle 3 keeps an advance of 65 and 99 degrees and scores a median 0.811 and 0.797, so this score also separates the data from shuffle 3 in N-array only (9 of 10 shuffle 3 runs reach the data's phase score in J-array, none in N-array).",
+     "deviations": [
+      "The paper gives no measure of predictability; the complex-gain prediction and its thresholds were fixed here before the analysis."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "var-captured-jpc-plane",
+     "statement": "The first jPCA plane captures an average of 28% of the total data variance (typically 20 to 35%).",
+     "source": "Results, Controls regarding rotational structure, paragraph 1; Supplementary Figure 5 legend",
+     "quote": "Those projections captured an average of 28% of the total data variance ... This was typically 20-35%",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "The first jPCA plane captures 20.0% (J-array) and 23.1% (N-array), both within 18 to 38.5% (reading b, which matches). The mean, 21.6%, is outside 28 +- 2.8% (reading a). The sub-Nitschke ses-20090910 session gives 18.8%.",
+     "deviations": [
+      "The paper's 28% averages nine datasets, of which the dandiset holds two; the reading of the typical range was used, as listed in the criterion.",
+      "Tested on per-electrode units, not sorted isolations."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pc23-variance",
+     "statement": "The plane of PC2 and PC3 captures 29% of the total variance on average, about as much as the first jPCA plane, so the jPCA plane captures patterns already present in the top PCs.",
+     "source": "Results, Controls regarding rotational structure, paragraph 2",
+     "quote": "As a comparison, the dimensions defined by PC2 and PC3 (which by definition capture the second- and third-most data variance possible) together capture 29% of the total variance. Thus, the jPCA projection simply captures response patterns that were always present in the top PCs",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "PC2 and PC3 capture 21.6% (J-array) and 27.0% (N-array), mean 24.3%, outside 29 +- 2.9% under reading (a) and under reading (b) for J-array. The jPCA plane captures 0.93 and 0.86 times the variance of PC2 and PC3, so the comparison the claim makes holds.",
+     "deviations": [
+      "Two datasets in place of the paper's nine.",
+      "Tested on per-electrode units, not sorted isolations."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig4-j-array-planes",
+     "statement": "In J-array the first three jPCA planes found within the top 10 PCs capture 22%, 19% and 12% of the variance (54% together), against 64% for the top six PCs, and each plane holds rotations coherent across conditions.",
+     "source": "Supplementary Figure 4",
+     "quote": "All three planes contained rotational structure that was coherent (in the same direction and at a similar angular velocity) across conditions ... The top three jPCA planes (spanning six dimensions) captured 60% (monkey B) and 54% ... the top six PCs ... captured 72% and 64% of the variance",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "In J-array the three jPCA planes from the top 10 PCs capture 12.3%, 14.8% and 12.8% (40.0% together) against 22%, 19% and 12% (54%); only plane 3 is within tolerance. The top six PCs capture 60.5%, within 64 +- 6.4%. The planes rotate consistently (0.926 to 0.991 of conditions counter-clockwise). The lower variance may come from the per-electrode units, which carry more noise than sorted isolations, and from the missing PC smoothing; this was not tested.",
+     "deviations": [
+      "Per-electrode units in place of the paper's 146 isolations; no PC smoothing."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig4-planes-range",
+     "statement": "Every dataset contains two, and usually three, planes with rotations, together capturing 50 to 70% of the variance.",
+     "source": "Supplementary Figure 4 legend; Results, Controls regarding rotational structure, paragraph 2",
+     "quote": "Together these captured 50\u201370% of the total data variance ... all datasets contained two, and usually three, planes that captured rotations",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "The three planes capture 50.1% in N-array (within 45 to 77%) and 40.0% in J-array (below it). The first two planes have 0.954 or more of conditions rotating in their direction in both datasets. ses-20090910 gives 40.9%.",
+     "deviations": [
+      "Two datasets in place of the paper's nine; per-electrode units."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6a-angle-peak",
+     "statement": "The distribution of the angle between the neural state and its derivative in the first jPCA plane, over all conditions and times, peaks near pi/2 (rotation), not near 0.",
+     "source": "Figure 6a",
+     "quote": "The neural data and the generator model have distributions with peaks near \u03c0/2",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "The angle between the state and its derivative peaks at 0.528 pi (J-array) and 0.639 pi (N-array), medians 0.511 and 0.603 pi. Under the variants the peak lies between 0.528 and 0.639 pi, and with 24 or 48 bins between 0.542 and 0.646 pi.",
+     "deviations": [
+      "The thresholds come from reading Figure 6a; the paper gives no number."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6b-skew-fit",
+     "statement": "For the neural data the rotational (skew-symmetric) dynamics matrix fits the data nearly as well as the best unconstrained linear dynamics matrix, both in the 6-D space and in the first jPCA plane.",
+     "source": "Results, Population-level quantification, paragraph 2; Figure 6b",
+     "quote": "For the neural data and generator model, the fit provided by Mskew was nearly as good as the fit provided by the best unconstrained M (fig. 6b) ... Results were similar whether we considered all six dimensions or just the plane with the strongest rotations",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "R2(M_skew)/R2(M) is 0.905 and 0.845 in 6-D and 0.957 and 0.881 in the first plane (J-array, N-array). Under the variants the 6-D ratio is 0.819 or more and the plane ratio 0.879 or more. Absolute R2 of M_skew is 0.343 and 0.517.",
+     "deviations": [
+      "The thresholds come from reading Figure 6b; the paper gives no number.",
+      "M_skew is solved in closed form as in the Supplementary Derivation, where the codepack uses a gradient method for the same unique optimum."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rotation-frequency",
+     "statement": "The rotations are brief and fast, up to about 2.5 Hz; the largest eigenvalues of M_skew in the monkey A and B datasets are 8.8 to 13.5 radians/s.",
+     "source": "Results, Quasi-rhythmic responses during reaching, paragraph 5, and Population-level quantification, paragraph 3",
+     "quote": "Their brevity and high frequency (up to ~2.5 Hz) makes them easy to miss ... the largest eigenvalues of Mskew were actually slightly smaller for fast reaches (8.8 versus 9.8 radians/s for monkey A, 12.2 versus 13.5 radians/s for monkey B)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "The first plane rotates at 1.38 Hz (8.65 radians/s) in N-array, within 1.26 to 2.75 Hz, and 1.03 Hz (6.49 radians/s) in J-array, below it; the larger value is given as measured. No variant exceeds 1.68 Hz, so the upper bound holds. J-array reaches the range with the -100 to +100 ms window (1.45 Hz) or 10 PCs (1.68 Hz), variants that do not decide the outcome. The low J-array value is not the effect of a window starting before the rotation does (a synthetic 2 Hz rotation starting at movement onset reads 1.49 Hz from -50 ms), since windows starting at 0 and +50 ms give 1.04 and 1.13 Hz. The J-array plane's mean angular speed is about 1.3 Hz from -60 to +20 ms and 0.7 to 0.9 Hz by +100 ms, and windows starting at -150 or -100 ms give 1.31 and 1.45 Hz, so J-array rotates faster before movement onset than over the window used, which the paper chose per dataset.",
+     "deviations": [
+      "The lower bound of the range comes from the eigenvalues the paper reports for monkeys A and B, whose data are not in the dandiset."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig3-shuffle-controls",
+     "statement": "Three shuffle controls that keep preparatory activity and invert or reassign the peri-movement activity largely remove the rotational structure found by jPCA, so jPCA does not find rotations that are not there.",
+     "source": "Supplementary Figures 2 and 3; Results, Controls regarding rotational structure, paragraph 1",
+     "quote": "Multiple \u2018shuffle\u2019 controls demonstrate that jPCA does not find rotational structure when such structure is not present ... largely lost following shuffling",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "Shuffle 1 removes the rotations (median R2(M_skew) 1.0% and 0.8% of the original; fraction counter-clockwise 0.565 and 0.602). Shuffle 2 leaves 71% (J-array) and 94% (N-array) of the original R2(M_skew), shuffle 3 leaves 81% and 94%, and one shuffle 3 run in N-array exceeds the original; after both the median fraction rotating counter-clockwise is 0.963 to 0.991. Only shuffle 1 meets the criterion in N-array, and shuffles 1 and 2 in J-array. The paper expected shuffles 2 and 3 to leave part of the rotational structure and to disrupt its relation to the preparatory state, which R2(M_skew) does not measure; the criterion's choice of measure, fixed before the analysis, may not capture what the paper judged by eye.",
+     "deviations": [
+      "The dividing point is one time per dataset (median go cue plus 50 ms, -301 and -320 ms from movement onset) on movement-aligned rates; the paper split each condition 50 ms after its go cue on rates aligned separately to target, go cue and movement.",
+      "The paper judged the shuffles from projections (Supplementary Figure 3); R2(M_skew) and its thresholds were fixed here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig5-areas-variance",
+     "statement": "Analysed separately, the PMd and M1 arrays each show clear rotations; the jPCA plane captures 29% (PMd) and 29% (M1) in J-array and 32% and 28% in N-array.",
+     "source": "Supplementary Figure 5",
+     "quote": "Both PMd and M1 exhibited clear rotations of the neural state",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "PMd and M1 capture 23.7% and 22.8% (J-array) and 18.1% and 25.0% (N-array) against 29, 29, 32 and 28%; none within 10% (N-array M1 misses 25.2% by 0.2 points). All lie within 18 to 38.5%, with 0.917 to 0.991 of conditions rotating counter-clockwise. ses-20090910 gives 15.4% (PMd) and 21.6% (M1) against 26% and 24% for N-9-10-2010.",
+     "deviations": [
+      "96 per-electrode units per array in place of the paper's isolations."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "suppfig5-m1-faster",
+     "statement": "The angular velocity of the rotations is slightly higher for M1 than for PMd in each dataset.",
+     "source": "Supplementary Figure 5 legend",
+     "quote": "Second, the angular velocity of the rotations was in each case slightly higher for M1",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "M1 rotates faster than PMd in J-array (1.82 against 0.83 Hz) and N-array (1.54 against 1.02 Hz), and in ses-20090910 (1.70 against 0.89 Hz), under every variant shown. The paper calls the difference slight; here M1 is 1.5 to 2.4 times faster across the sessions and variants.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-velocity-model",
+     "statement": "A simulated population of units tuned to hand velocity and speed, with preparatory activity tuned to reach endpoint, matched to the recorded data, shows no robust or consistent rotations; M_skew fits it poorly and its angle distribution peaks slightly above zero.",
+     "source": "Results, Rotations, kinematics and EMG, paragraph 1; Results, Population-level quantification, paragraphs 1 and 2; Figure 4d and 4h; Figure 6a and 6b",
+     "quote": "For velocity-model populations, jPCA found no robust or consistent rotations (fig. 4a,d,h) ... the velocity-tuned model, the complex-kinematic model, and EMG all had distributions that peaked slightly above zero ... For the velocity-tuned and complex kinematic models, Mskew performed poorly",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "The velocity model's 6-D R2 ratio is 0.361 (J-array) and 0.255 (N-array), against 0.905 and 0.845 for the data, and 0.630 and 0.778 of its conditions rotate counter-clockwise. Its angle distribution peaks at 0.806 pi and 0.361 pi, not below pi/4, so the criterion fails in both datasets. With no lead the peaks are 0.194 pi and 0.417 pi and the ratios 0.362 and 0.337. The part of the claim about the poor fit of M_skew holds under every variant (6-D ratio 0.08 to 0.55). The angle peak depends on the model's open choices. A decay toward the origin peaks near pi (0.972 pi on a synthetic decay), and the preparatory tuning decays from movement onset. With the 100 ms lead the peak lies at 0.36 to 0.86 pi over five seeds and with the preparatory tuning decaying, held or absent; with no lead and preparatory tuning it lies at 0.19 to 0.42 pi; with no lead and no preparatory tuning it is 0.028 pi in both datasets, near zero as the paper reports. The outcome follows the model fixed in the criterion.",
+     "deviations": [
+      "The model is simulated here from the dandiset's condition-mean hand kinematics; its lead of 100 ms, the time course of preparatory tuning and the modulation depths are choices made here, as the Methods do not give them."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6-complex-kinematic-model",
+     "statement": "A simulated population tuned to hand position, velocity, acceleration and jerk (with the Methods' sensitivities) produces multiphasic responses but no consistent rotations; M_skew fits it poorly.",
+     "source": "Results, Rotations, kinematics and EMG, paragraph 1; Results, Population-level quantification, paragraph 2; Figure 4e and 4i; Figure 6a and 6b",
+     "quote": "This model produced multiphasic responses but not consistent rotations (fig. 4b,e,i) ... For the velocity-tuned and complex kinematic models, Mskew performed poorly",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_churchland_2012.ipynb",
+     "notes": "The complex kinematic model's 6-D R2 ratio is 0.082 (J-array) and 0.132 (N-array), 0.289 and 0.207 with no lead, and 0.565 and 0.528 of its conditions rotate counter-clockwise. Its angle peaks are 0.861 pi and 0.750 pi (0.806 and 0.917 pi with no lead), not below pi/4, so the criterion fails in both datasets. The poor fit of M_skew holds as the paper reports (6-D ratio 0.06 to 0.61 across variants). With the preparatory tuning held or absent, no lead, and four more seeds, the peak lies within pi/4 of zero only in J-array with no preparatory tuning and no lead (-0.083 pi) and in one N-array seed with no lead (0.194 pi); elsewhere it lies at 0.19 to 0.97 pi or near -pi.",
+     "deviations": [
+      "Simulated here with the Methods' sensitivities; the lead, the preparatory time course and hand positions read as mm are choices made here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1-leech-and-walking",
+     "statement": "The population responses of the swimming leech and of premotor cortex in a walking monkey rotate in the jPCA plane, as expected for rhythmic movement.",
+     "source": "Results, Rhythmic responses in different systems, paragraph 1; Figure 1a, 1b, 1d and 1e",
+     "quote": "We projected the population response onto a two-dimensional state space and found rotations of the neural state for both the swimming leech (fig. 1d; projection of 164 simultaneously recorded neurons) and the walking monkey",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The leech imaging and the walking-monkey recording are not in the dandiset, whose ten files are all maze-task array sessions, and the paper names no other archive for them.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-single-neuron-responses",
+     "statement": "Single neurons recorded with single electrodes show multiphasic, quasi-oscillatory responses lasting about 1 to 1.5 cycles, from 469 isolations in four monkeys averaging 810 trials per neuron.",
+     "source": "Results, Quasi-rhythmic responses during reaching, paragraphs 1 and 2; Figure 1c and Figure 2",
+     "quote": "We analyzed 469 single-neuron recordings from motor and premotor cortex of four monkeys (A,B,J,N) ... Yet there appear to be oscillations in many single-neuron responses, beginning just before movement onset and lasting for ~1\u20131.5 cycles",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The 469 single-electrode isolations of monkeys A, B, J and N are not in the dandiset, and the paper names no other archive for them.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3abcd-single-electrode-datasets",
+     "statement": "The rotations are seen in the seven single-electrode datasets (monkeys A, B, J1 to J4 and N), for example monkey B, A, J3 and N in Figure 3a to 3d.",
+     "source": "Figure 3a to 3d; Results, Quasi-rhythmic responses during reaching, paragraph 4",
+     "quote": "The resulting projections (fig. 3a-f) show four striking features. First, rotations of the neural state are prevalent during reaching",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The seven single-electrode datasets (A, B, J1 to J4, N) are not in the dandiset.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4-emg-no-rotation",
+     "statement": "The recorded muscle populations (6 to 12 EMG recordings per dataset) show weak, inconsistent rotations, also when the neural population is down-sampled to their size.",
+     "source": "Results, Rotations, kinematics and EMG, paragraph 1; Figure 4c, 4f and 4j; Figure 6a and 6b; Supplementary Figure 6",
+     "quote": "Although EMG is strongly multiphasic, the population of muscles did not show consistent rotations (fig. 4c,f,j, summary data below). This was not due to the smaller size of the muscle population (supplementary fig. 6)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "EMG was not recorded for the array datasets (Methods), and the EMG of the single-electrode datasets is not in the dandiset.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-generator-model",
+     "statement": "A generator model of two rotations of fixed frequency fits deltoid EMG with correlations of 0.97 to 0.99, and its simulated units resemble real neurons.",
+     "source": "Results, Rotations, kinematics and EMG, paragraphs 3 and 5; Figure 5; Supplementary Figures 7 to 9",
+     "quote": "This \u2018generator model\u2019 provided excellent EMG fits (fig. 5b,c; supplementary fig. 7,8). The fit/EMG correlation ranged from 0.97\u20130.99 across datasets ... Simulated units displayed multiphasic response patterns resembling those of real neurons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The generator model is fitted to deltoid EMG of the single-electrode datasets (J2, J3), which is not in the dandiset.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6cd-speed-independent-frequency",
+     "statement": "Rotations have similar angular velocity for instructed fast and slow reaches; the largest M_skew eigenvalues are 8.8 against 9.8 radians/s (monkey A) and 12.2 against 13.5 (monkey B), with larger amplitude for fast reaches.",
+     "source": "Results, Population-level quantification, paragraph 3; Figure 6c and 6d",
+     "quote": "the neural data exhibited rotations that were of similar angular velocity for fast and slow reaches (fig. 6c,d) ... the largest eigenvalues of Mskew were actually slightly smaller for fast reaches (8.8 versus 9.8 radians/s for monkey A, 12.2 versus 13.5 radians/s for monkey B). Rotation amplitude, rather than frequency, differed between speeds",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "The speed task of monkeys A and B is not in the dandiset, which holds sessions of monkeys J and N only.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The dandiset holds the paper's two array datasets but not the sorted isolations the paper analysed (146 for J-array, 218 for N-array). Its Units table has 192 units per file, one per electrode. The seven single-electrode datasets, the EMG, the leech and the walking-monkey data are not in it either, so six of the paper's main findings cannot be tested."
+    },
+    {
+     "kind": "format_error",
+     "statement": "In nine of the ten files (all written by the first conversion) the first entry of units/spike_times_index is the true end of unit 0 modulo 65536. Unit 0 is cut short (in J-array 61030 of its 257638 spikes) and its remaining spikes open unit 1, whose times then jump from the end of the session back to its start."
+    },
+    {
+     "kind": "format_error",
+     "statement": "In five Nitschke files (ses-20090812, 20090819, 20090910, 20090920 and 20100923) the clock restarts at recording segments after the first, as the conversion offsets only one segment. Trials overlap in time (2094 overlapping pairs in N-array), and every unit's spike times go backwards at each restart, so spikes cannot be placed in trials by time; they can be placed by their storage order, which the notebook shows decodes reach direction in every segment."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Hand position is stated in metres (with conversion NaN); its values span about -220 to +165 on the scale of the target positions (up to 145) and the median speed peaks at 600 to 730 per second during a reach, so they are in mm."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The hand position ends a median 35 mm (Jenkins) and 52 to 53 mm (Nitschke) below the reached target in y, while the cursor lands on the target; the offset between hand and screen coordinates is not described in the files."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The Units table carries only the default description (\"Autogenerated by NWBFile\") and does not say whether its units are sorted neurons, multi-unit activity or threshold crossings. Their number (one per electrode) and rates (8.8 to 300 spikes/s over trial time in the three sessions analysed) are consistent with channel-level activity."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The dandiset does not say which of its ten sessions are the paper's datasets. Two match the J-array and N-array dates; the other eight (27-condition and two-condition maze sessions, and one 108-condition session) are not described."
+    },
+    {
+     "kind": "other",
+     "statement": "The first conversion's code sets the year of every session date to 2009. The file sub-Nitschke ses-20090910 has 108 conditions with the same reached target as N-array (2010) for all of them, and is consistent with the N-9-10-2010 dataset of Supplementary Figure 5; if so, its date is a year early. The other 2009 Nitschke dates may be affected in the same way."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-16",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the PMC author manuscript and the publisher's Supplementary Information. The verifier tested helper functions on synthetic inputs and read the archive's asset metadata and one file for the blocked claims. Its report had no attempt record and gave its own outcome for each claim; all 22 agree with the record.",
+     "agreed": 22,
+     "of": 22,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-16",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook after the first revision, with its conclusions and summary, the README, the helper module, the claims file and the attempt record. The verifier did not download the paper this round and relied on its round-1 reading for what the paper says. All 22 outcomes agree with the record. It also noted that the README gave a run time of about 13 minutes against 14.4 minutes printed; the README now says 10 to 15 minutes (this re-run took 9.6).",
+     "agreed": 22,
+     "of": 22,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000070-churchland-2012",
+   "type": "reproduction",
+   "title": "Rotational dynamics of motor cortex during reaching (Churchland et al. 2012)",
+   "description": "Tests the findings of Churchland, Cunningham, Kaufman, Foster, Nuyujukian, Ryu and Shenoy (2012) that can be tested on dandiset 000070, which holds the paper's two Utah array datasets (monkeys J and N, 108 maze conditions each) and eight further array sessions. It runs jPCA on condition-averaged rates around movement onset and tests the consistency of rotations across conditions, the variance the jPCA planes capture, the fit of rotational dynamics, the shuffle controls, the separate PMd and M1 arrays, and simulated kinematic populations. The single-electrode datasets, EMG, leech and walking-monkey data are not in the dandiset.",
+   "datasets": [
+    "dandi:000070"
+   ],
+   "papers": [
+    "10.1038/nature11129"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_churchland_2012.ipynb",
+     "title": "Reproducing Churchland et al. (2012) from dandiset 000070",
+     "executed": "notebooks/000070-churchland-2012/reproduce_churchland_2012.html"
+    }
+   ]
+  }
+ ]
+}
