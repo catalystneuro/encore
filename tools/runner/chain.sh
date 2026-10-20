@@ -3,9 +3,13 @@
 #
 #   tools/runner/chain.sh DANDISET [VERSION]
 #
-# Runs the roles of the attempt (author, two verification rounds and their revisions, a third round
-# when the last revision proposed changes) in GitHub Actions, one after another, then records and
-# merges it. Picks up where an earlier chain stopped: roles already committed to the branch
+# Runs the roles of the attempt in GitHub Actions, one after another: the reader's claims and their
+# check (papers.yml, the only runs that write the claims file), the author, the reader's answers to the
+# author's questions and the author's run on them when there are questions, two verification rounds
+# and their revisions, and a third round when the last revision proposed changes. Then it records
+# and merges the attempt. A claims file whose check says it is not ready stops the chain, for a
+# person to look at. A repeat attempt on a new version of the dandiset (VERSION given) keeps the
+# claims file, unless the earlier attempt is deprecated. Picks up where an earlier chain stopped: roles already committed to the branch
 # attempt/<dandiset> are skipped, and a run of the next role that is still going is waited for. A
 # branch already merged into main belongs to an earlier attempt and is deleted first, so a repeat
 # attempt starts from main. A run that fails on the subscription's session limit is retried after
@@ -30,7 +34,8 @@ fetch(){ git fetch -q origin main 2>/dev/null || true; git fetch -q origin "atte
 done_roles(){ git log --reverse --format=%s origin/main..origin/attempt/"$d" 2>/dev/null \
   | sed -nE "s/^Agent run on $d: ([a-z0-9-]+) \(success\)$/\1/p"; }
 is_done(){ done_roles | grep -qx "$1"; }
-run_of(){ gh run list --workflow attempt.yml --limit 100 --json databaseId,displayTitle,status \
+workflow_of(){ case "$1" in claims|claims-check|answer) echo papers.yml;; *) echo attempt.yml;; esac; }
+run_of(){ gh run list --workflow "$(workflow_of "$1")" --limit 100 --json databaseId,displayTitle,status \
   | python "$here/describe.py" run "$d" "$1"; }
 wait_run(){ local st; while true; do
   st=$(gh run view "$1" --json status,conclusion --jq '"\(.status) \(.conclusion)"' 2>/dev/null) || { sleep 60; continue; }
@@ -47,7 +52,7 @@ run_role(){ local role=$1 tries=0 start before id st
       if [ "$role" = author ] && [ -n "$VERSION" ]; then
         gh workflow run attempt.yml -f dandiset="$d" -f role="$role" -f version="$VERSION" || { sleep 60; continue; }
       else
-        gh workflow run attempt.yml -f dandiset="$d" -f role="$role" || { sleep 60; continue; }
+        gh workflow run "$(workflow_of "$role")" -f dandiset="$d" -f role="$role" || { sleep 60; continue; }
       fi
       id=""
       for _ in $(seq 1 60); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
@@ -73,18 +78,33 @@ if [ -n "$(remote_branch)" ] && git merge-base --is-ancestor origin/attempt/"$d"
   git push -q origin --delete "attempt/$d" && log "deleted attempt/$d, merged with an earlier attempt"
   fetch
 fi
-for role in author verifier-1 author-revise-1 verifier-2 author-revise-2; do
-  is_done "$role" && continue
-  run_role "$role" || { echo "$d STOPPED at $role"; exit 1; }
-done
+step(){ is_done "$1" || run_role "$1" || { echo "$d STOPPED at $1"; exit 1; }; }
+# On the branch: python reads a file of the attempt's branch from stdin.
+on_branch(){ git show "origin/attempt/$d:$1" 2>/dev/null; }
+claims_file(){ git ls-tree -r --name-only origin/attempt/"$d" "claims/$d" | grep '\.yaml$' | head -n 1; }
+
+deprecated=$(python "$here/describe.py" deprecated "$d")
+if [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
+  step claims
+  step claims-check
+  fetch
+  ready=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=(yaml.safe_load(sys.stdin) or {}).get('checks') or [{}]; print(str(c[-1].get('ready', False)).lower())")
+  [ "$ready" = true ] || { echo "$d STOPPED: the claims check says the claims file is not ready"; exit 1; }
+fi
+step author
+fetch
+open_questions=$(on_branch "questions/$d.yaml" | python -c "import yaml,sys; q=yaml.safe_load(sys.stdin) or []; q=q.get('questions', []) if isinstance(q, dict) else q; print(sum(1 for x in q if not x.get('answered')))" 2>/dev/null || echo 0)
+if [ "${open_questions:-0}" != 0 ] || is_done answer; then
+  log "$open_questions open questions"
+  step answer
+  step author-answers
+fi
+for role in verifier-1 author-revise-1 verifier-2 author-revise-2; do step "$role"; done
 fetch
 latest=$(git ls-tree -r --name-only origin/attempt/"$d" attempts | grep "^attempts/$d-" | sort | tail -n 1)
 if git show "origin/attempt/$d:$latest" | python -c "import yaml,sys; sys.exit(0 if any(o.get('proposed') for o in yaml.safe_load(sys.stdin)['outcomes']) else 1)"; then
   log "has proposed changes: third round"
-  for role in verifier-3 author-revise-3; do
-    is_done "$role" && continue
-    run_role "$role" || { echo "$d STOPPED at $role"; exit 1; }
-  done
+  for role in verifier-3 author-revise-3; do step "$role"; done
 fi
 
 # Finish, one dandiset at a time.

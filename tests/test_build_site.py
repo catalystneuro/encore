@@ -189,6 +189,22 @@ def test_findings_are_reached_from_the_dandisets_list(built):
     assert "#findings" in (REPO / "tools" / "site_assets" / "list.js").read_text()
 
 
+def test_the_pipeline_has_a_row_per_target(built):
+    data, out = built
+    rows = json.loads((out / "data" / "pipeline.json").read_text())
+    assert [r["dandiset"] for r in rows] == [t["dandiset"] for t in data["targets"]]
+    steps = [key for key, _ in site.PIPELINE_STEPS]
+    states = {"done", "waiting", "todo", "deprecated", "none"}
+    assert all(set(r["state"]) == set(steps) and {v[0] for v in r["state"].values()} <= states for r in rows)
+    for dandiset, attempts in site.current_attempts(data).items():
+        row = next(r for r in rows if r["dandiset"] == dandiset)
+        if any(a.get("deprecated") for a in attempts):
+            assert row["state"]["attempt"][0] == "deprecated" and row["state"]["claims"][0] == "todo"
+        else:
+            assert row["state"]["attempt"][0] == "done"
+    assert "Pipeline" in (out / "pipeline" / "index.html").read_text()
+
+
 def test_a_deprecated_attempt_counts_for_nothing():
     kept = {"outcomes": [{"claim": "a", "outcome": "reproduced"}]}
     dropped = {"deprecated": "Claims written from the abstract only.",

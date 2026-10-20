@@ -1,6 +1,7 @@
 name: Attempt sequence
 
-# A whole attempt on one dandiset: the author, the first verification round,
+# A whole attempt on one dandiset: the reader's claims and their check (papers.yml), the author,
+# the first verification round,
 # the author's revision, the second round and the final revision, each an Agent
 # run (attempt.yml), and a third round when the final revision proposed changes. Each step starts when the one before has succeeded, so a
 # failure stops this dandiset's attempt and leaves its branch as the last good
@@ -23,7 +24,34 @@ permissions:
   contents: write
 
 jobs:
+  claims:
+    uses: ./.github/workflows/papers.yml
+    with: {dandiset: "${{ inputs.dandiset }}", role: claims, model: "${{ inputs.model }}"}
+    secrets: inherit
+  claims-check:
+    needs: claims
+    uses: ./.github/workflows/papers.yml
+    with: {dandiset: "${{ inputs.dandiset }}", role: claims-check, model: "${{ inputs.model }}"}
+    secrets: inherit
+  claims-ready:
+    # The attempt starts only on a claims file whose last check says it is ready. Questions the
+    # author raises are taken up by the queue runner (tools/runner/chain.sh), not here.
+    needs: claims-check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: {ref: "attempt/${{ inputs.dandiset }}", persist-credentials: false}
+      - run: |
+          pip install -q pyyaml
+          python - <<'PY'
+          import glob, sys, yaml
+          files = glob.glob("claims/${{ inputs.dandiset }}/*.yaml")
+          last = ((yaml.safe_load(open(files[0])) or {}).get("checks") or [{}])[-1] if files else {}
+          if not last.get("ready"):
+              sys.exit("::error::The claims check says the claims file is not ready")
+          PY
   author:
+    needs: claims-ready
     uses: ./.github/workflows/attempt.yml
     with: {dandiset: "${{ inputs.dandiset }}", role: author, model: "${{ inputs.model }}"}
     secrets: inherit

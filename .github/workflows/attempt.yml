@@ -13,6 +13,10 @@ run-name: "Agent run: ${{ inputs.dandiset }} ${{ inputs.role }}"
 # and strips credentials from the commands the agent runs. A verifier sees only
 # its materials: the checkout is deleted before it starts.
 #
+# The job runs in the `papers` environment (docs/pipeline.md): the author and the
+# verifiers get the dandiset's papers under paper/, which is never committed and
+# which their transcripts leave out. The claims file still decides what is tested.
+#
 # The second job, which runs no agent, commits what the run produced to the
 # branch attempt/<dandiset>: the author's changes, and the run's transcript and
 # final report under transcripts/<dandiset>/, cleaned by tools/transcript.py.
@@ -29,7 +33,7 @@ on:
         description: "Which run"
         required: true
         type: choice
-        options: [author, verifier-1, author-revise-1, verifier-2, author-revise-2, verifier-3, author-revise-3, recorder]
+        options: [author, author-answers, verifier-1, author-revise-1, verifier-2, author-revise-2, verifier-3, author-revise-3, recorder]
       model:
         description: "Model"
         default: claude-opus-5-5
@@ -80,6 +84,7 @@ env:
 jobs:
   run:
     runs-on: ubuntu-latest
+    environment: papers
     timeout-minutes: 340
     outputs:
       started: ${{ steps.agent.outputs.started }}
@@ -121,7 +126,7 @@ jobs:
         run: |
           python tools/agent_run.py prompt "$ROLE" "$DANDISET" --model "$MODEL" ${VERSION:+--version "$VERSION"} > "$RUNNER_TEMP/prompt.md"
           # The workflow's own tools, copied before the agent can change the checkout.
-          cp tools/transcript.py tools/progress.py "$RUNNER_TEMP/"
+          cp tools/transcript.py tools/progress.py tools/get_papers.sh "$RUNNER_TEMP/"
 
       - name: Prepare the verifier's materials, and remove the repository
         if: startsWith(inputs.role, 'verifier')
@@ -133,6 +138,14 @@ jobs:
           python tools/agent_run.py package "$ROLE" "$DANDISET" "$RUNNER_TEMP/work"
           cd "$RUNNER_TEMP" && find "$GITHUB_WORKSPACE" -mindepth 1 -delete
           ls -la "$RUNNER_TEMP/work"
+
+      - name: Put the papers under paper/
+        if: inputs.role != 'recorder'
+        env:
+          PAPERS_DEPLOY_KEY: ${{ secrets.PAPERS_DEPLOY_KEY }}
+        run: |
+          if [[ "$ROLE" == verifier* ]]; then dest="$RUNNER_TEMP/work/paper"; else dest=paper; fi
+          "$RUNNER_TEMP/get_papers.sh" "$DANDISET" "$dest"
 
       - name: Check the token, the permission mode and the agent's shell
         env:
@@ -199,13 +212,14 @@ jobs:
           if [[ "$ROLE" == author* ]]; then
             # Only the registry's own files: the sandbox leaves placeholder files for the paths it
             # protects (.bashrc, .gitconfig, ...) in the working directory.
-            git add -A -- attempts claims entries README.md && git diff --cached --binary > "$out/changes.patch"
+            paths=(attempts claims entries README.md); [ ! -d questions ] || paths+=(questions)
+            git add -A -- "${paths[@]}" && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
           elif [ "$ROLE" = recorder ]; then
             git add -A -- README.md docs/pilot-notes.md && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
           fi
-          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" \
+          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" --omit paper/ \
             --report "$out/transcripts/$DANDISET/$ROLE-report.md" --title "$name"
           rm -f "$RUNNER_TEMP/run.jsonl"
           cat "$out/transcripts/$DANDISET/$ROLE-report.md" >> "$GITHUB_STEP_SUMMARY"
@@ -255,10 +269,13 @@ jobs:
           # Refuse anything that is not this dandiset's: a guard against results being mixed up.
           others=$(ls out/transcripts | grep -vx "$DANDISET" || true)
           [ -z "$others" ] || { echo "::error::Transcripts for other dandisets: $others"; exit 1; }
-          # A repeat attempt's first run moves the earlier attempt's transcripts aside before this one's land.
-          if [ "$ROLE" = author ]; then "$RUNNER_TEMP/archive_transcripts.sh" "$DANDISET"; fi
+          # An attempt's first run moves the earlier attempt's transcripts aside before this one's land.
+          # That is the claims run (papers.yml) when there was one: then its transcripts stay.
+          if [ "$ROLE" = author ] && [ ! -e "transcripts/$DANDISET/claims.md" ]; then
+            "$RUNNER_TEMP/archive_transcripts.sh" "$DANDISET"
+          fi
           if [ -s out/changes.patch ]; then
-            allowed="^((attempts|claims|entries)/.*$DANDISET|README\.md$)"
+            allowed="^((attempts|claims|entries|questions)/.*$DANDISET|README\.md$)"
             [ "$ROLE" != recorder ] || allowed="^(README\.md|docs/pilot-notes\.md)$"
             stray=$(git apply --numstat out/changes.patch | cut -f3 | grep -vE "$allowed" || true)
             [ -z "$stray" ] || { echo "::error::Changes outside dandiset $DANDISET: $stray"; exit 1; }
