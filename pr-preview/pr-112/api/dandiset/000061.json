@@ -1,0 +1,367 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000061",
+  "label": "DANDI:000061"
+ },
+ "page": "datasets/dandi/000061/",
+ "generated": "2026-10-20T17:24:48+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000061-girardeau-2017-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000061",
+    "version": "0.250624.0426",
+    "doi": "10.48324/dandi.000061/0.250624.0426"
+   },
+   "key": "dandi:000061",
+   "label": "DANDI:000061",
+   "dataset_version": "0.250624.0426",
+   "paper": "10.1038/nn.4637",
+   "paper_title": "Reactivations of emotional memory in the hippocampus\u2013amygdala system during sleep",
+   "date": "2026-10-16",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "tier": "agent_verified",
+   "deprecated": "Its claims were written from the abstract only. Read against the full text and supplement on 2026-10-20, aversive-direction-stronger and reactivation-involves-ripple-up-cells are tested with measures the paper does not use, and several of the paper's findings on this data have no claim.",
+   "entry": "000061-girardeau-2017",
+   "entry_title": "Hippocampus and amygdala reactivation during sleep (Girardeau et al. 2017)",
+   "description": "Tests the findings stated in the abstract of Girardeau, Inema and Buzsaki (2017) on dandiset 000061, which holds sorted units of the hippocampus and the amygdala, sleep states, ripple, air-puff and reward events from four rats on an air-puff linear track task. It tests the reactivation of joint hippocampus and BLA patterns in sleep after the run, its peak at ripples, the BLA cells modulated by ripples and their weight in the patterns, and the difference between the air-puff and the safe run direction. The paper's full text was not available, so the methods are common choices fixed before the analysis.",
+   "notebooks": [
+    {
+     "path": "reproduce_girardeau_2017.ipynb",
+     "title": "Reproducing Girardeau et al. (2017) from dandiset 000061",
+     "executed": "notebooks/000061-girardeau-2017/reproduce_girardeau_2017.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "hpc-bla-reactivation-post-sleep",
+     "statement": "Coordinated hippocampus and BLA activity patterns of the training run are reactivated during non-REM sleep after training, more than during non-REM sleep before it.",
+     "source": "Results, BLA\u2013hippocampus coordinated reactivations during NREM sleep, paragraph 1; Figure 3c",
+     "quote": "The EV and REV, calculated using hippocampus\u2013BLA pyramidal cell pairs, showed significant reactivations between the hippocampus and BLA during post-NREM (Fig. 3c).",
+     "statistics": [
+      {
+       "about": "hippocampus\u2013BLA pyramidal cell pairs, EV against REV in post-NREM",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 3.72",
+       "p": 0.00019,
+       "n": "25 sessions in 3 rats"
+      },
+      {
+       "about": "all hippocampus\u2013BLA cell pairs (pyramidal cells and interneurons), EV against REV in NREM (Supplementary Fig. 5a)",
+       "test": "Wilcoxon signed rank test",
+       "statistic": "z = 3.79",
+       "p": 0.00014,
+       "n": "27 sessions in 3 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_girardeau_2017.ipynb",
+     "notes": "15 sessions (9 Rat08, 3 Rat10, 3 Rat11) with 341 hippocampal and 483 BLA units; every session has at least one significant joint pattern, 36 in all. Post-sleep minus pre-sleep Non-REM strength has a median of 0.0119, positive in 28 of 36, Wilcoxon p = 3.6e-05. The median is above zero in each rat (Rat08 0.0170, 18 of 21, p = 0.00013; Rat10 0.0024, 5 of 8, p = 0.74; Rat11 0.0190, 5 of 7, p = 0.11). Non-significant patterns change by a median of 0.0001. The variants (25 and 100 ms bins, the wider BLA labels over 21 sessions, the first pattern of each session) all give positive medians with p of 0.0084 or less. The comparison does not separate reactivation from slow drift of the recording, since post-sleep is next to the run in time.",
+     "deviations": [
+      "The paper's methods were not available; the joint-pattern method (singular vectors of the run's hippocampus by BLA cross-correlation matrix, shuffle threshold, product of projections), the 50 ms bins and the unit criteria are common choices fixed in the claims file.",
+      "BLA is taken as the units labelled bla or BLA; other undescribed labels that may be parts of the basolateral complex are a variant only.",
+      "Sessions without sleep states or ripples, and Rat09 (no hippocampal units), are left out; which sessions and rats the paper used is not known here.",
+      "Units 0 and 1 of ten files are left out because their spike times are mixed (see findings)."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "reactivation-peaks-at-ripples",
+     "statement": "The hippocampus and BLA reactivations peak during hippocampal sharp wave-ripples.",
+     "source": "Supplementary Fig. 11a; Figure 6a; Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1",
+     "quote": "Mean z-scored peri-ripple reactivation strength of the whole training session ... reactivation strength in a 500ms window around ripple peaks (grey bar in a) was significantly higher in post-NREM compared to pre-NREM",
+     "statistics": [
+      {
+       "about": "post-NREM against pre-NREM reactivation strength around ripple peaks, whole training session, pyramidal cell pairs",
+       "test": "Wilcoxon one-tailed signed rank test",
+       "statistic": "z = -3.175",
+       "p": 0.000749,
+       "n": "25 sessions in 3 rats"
+      },
+      {
+       "about": "the same, all cell pairs",
+       "test": "Wilcoxon one-tailed signed rank test",
+       "statistic": "z = -2.895",
+       "p": 0.00189,
+       "n": "27 sessions in 3 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_girardeau_2017.ipynb",
+     "notes": "Reading (a) holds. The mean ripple-triggered strength in post-sleep Non-REM is highest in the bin of the ripple peak, 4.36 times its mean at 0.5 to 1 s; the peak bin exceeds the flanks in 30 of 36 patterns (median 0.103, p = 6e-06), with a positive median in each rat. 22 of 36 patterns have their own maximum within 100 ms of the ripple. The pre-sleep curve also peaks at ripples (0.136 against 0.223 post), and the peak over flanks is larger post than pre (23 of 36, p = 0.022). Reading (b) also holds; the post minus pre change in ripple bins exceeds that outside ripples (median difference 0.0537, 25 of 36, p = 0.0033). Much of the reading (a) peak is already present in pre-sleep, so reading (a) alone does not separate reactivation of the run from co-activation at ripples in general; the post minus pre contrasts do. At session level (15 sessions) the peak over flanks is positive in 13 (p = 0.00031), its post minus pre increase in 10 (p = 0.03), and the reading (b) difference in 10 (p = 0.03).",
+     "deviations": [
+      "The abstract's \"peaked during SPW-Rs\" can be read in two ways; both readings were fixed in the criterion and both match.",
+      "Ripples are the dandiset's `rip` annotations, not a detection run here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "bla-ripple-up-subgroup",
+     "statement": "A subgroup of BLA cells is positively modulated during hippocampal sharp wave-ripples.",
+     "source": "Results, A subset of BLA cells are modulated during hippocampal SPW-Rs, paragraph 1; Figure 4a",
+     "quote": "A fraction of BLA neurons were significantly and positively modulated (\u2018upmodulation\u2019; 42 of 163 interneurons (25.8%), 137 of 1,233 pyramidal cells (11.1%)) ... during hippocampal SPW-Rs (Fig. 4).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_girardeau_2017.ipynb",
+     "notes": "103 of 822 BLA units in 17 sessions (12.5%) are positively modulated in Non-REM ripple windows, against a chance level of 0.7% (6 units) from the same procedure on windows shifted by 7 s; binomial p = 9.8e-90. Above chance in each rat (Rat08 51 of 496, Rat10 4 of 84, Rat11 48 of 242), also against each rat's own chance level (Rat10 has 0 chance units; p = 0.018 against one unit). 104 units (12.7%) are negatively modulated. At p of 0.05 or less the fraction is 16.3% against 5.6% chance, at 0.002 or less 10.8% against 0.2%. The shifted windows stay mostly in Non-REM (a median of 0.9% of randomly shifted and 1.4% of 7 s shifted ripple peaks fall outside it).",
+     "deviations": [
+      "The test of modulation (spike count in ripple windows against windows shifted together by 0.5 to 5 s, one-sided p of 0.01 or less) is a common choice; the paper's test is not known here.",
+      "Units are counted once per session; a cell recorded on several days may be counted more than once, as the dandiset does not match units across days."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "reactivation-involves-ripple-up-cells",
+     "statement": "The hippocampus and BLA reactivations involve the subgroup of BLA cells that are positively modulated during sharp wave-ripples.",
+     "source": "Results, Ripple-modulated BLA cells are preferentially involved in reactivations, paragraph 1; Figure 5a",
+     "quote": "Hippocampus\u2013BLA pairs with significant, positive run correlations and SPW-R upmodulation of the BLA partner showed the largest pre-NREM to post-NREM change",
+     "statistics": [
+      {
+       "about": "the nine groups of pairs by run correlation and BLA ripple modulation",
+       "test": "one-way ANOVA",
+       "statistic": "F = 29.09, d.f. = 8",
+       "p": 1.1e-45,
+       "n": "37,660 pairs in 3 rats"
+      },
+      {
+       "about": "the upmodulated, positively correlated group against the other groups",
+       "test": "post hoc comparisons",
+       "p": 0.001,
+       "p_relation": "<",
+       "corrected": "Tukey\u2013Kramer (Fig. 5a legend; the Online Methods say Bonferroni)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_girardeau_2017.ipynb",
+     "notes": "In 31 significant patterns with both kinds of BLA unit, the mean squared BLA weight of the ripple-up units exceeds that of the other BLA units (medians 0.0505 and 0.0181; difference positive in 24 of 31, Wilcoxon p = 0.0013). The ripple-up units are a median 20% of a pattern's BLA units and carry 34% of its BLA weight. It holds in Rat08 (17 of 21) and Rat11 (6 of 7) and not in Rat10 (1 of 3). In patterns whose post minus pre reactivation is positive, p = 0.0018. Firing rate accounts for part of the effect; up units fire faster in the run (median 1.66 against 0.41 Hz) and squared weight rises with rate within a pattern (median Spearman 0.46). Against other BLA units of the nearest rate, up units still carry more weight (24 of 31 patterns, p = 0.012). At session level (13 sessions) the difference holds (10 of 13, p = 0.027), the rate-matched difference does not (9 of 13, p = 0.22). The criterion is the pooled per-pattern test, which holds.",
+     "deviations": [
+      "The abstract does not say how involvement was measured; the pattern weights were chosen here before the analysis."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "aversive-direction-stronger",
+     "statement": "Reactivation is stronger for the hippocampus and BLA correlation patterns of the run direction that held the air puff than for those of the safe direction.",
+     "source": "Figure 6a,b; Supplementary Fig. 11b,c; Results, The aversive trajectory is reactivated during SPW-Rs, paragraph 1",
+     "quote": "We found that the reinstatement of the joint hippocampus\u2013BLA neuron representation was significantly enhanced during post-NREM SPW-R compared to pre-NREM SPW-Rs for the air puff direction but not for the safe direction",
+     "statistics": [
+      {
+       "about": "post-NREM minus pre-NREM reactivation strength at the ripple peak, air puff against safe trajectory",
+       "test": "Wilcoxon one-tail signed rank test",
+       "statistic": "z = \u22122.798",
+       "p": 0.00257,
+       "n": "25 sessions"
+      },
+      {
+       "about": "post-NREM against pre-NREM reactivation strength around ripple peaks, air puff trajectory",
+       "test": "Wilcoxon one-tail signed rank test",
+       "statistic": "z = \u22123.793",
+       "p": 7.42e-05,
+       "n": "25 sessions in 3 rats"
+      },
+      {
+       "about": "post-NREM against pre-NREM reactivation strength around ripple peaks, safe trajectory",
+       "test": "Wilcoxon one-tail signed rank test",
+       "statistic": "z = \u22120.780",
+       "p": 0.217,
+       "n": "25 sessions in 3 rats"
+      },
+      {
+       "about": "post-NREM minus pre-NREM peak difference, air puff against safe trajectory, all cell pairs (Supplementary Fig. 11c)",
+       "test": "Wilcoxon one-tailed signed rank test",
+       "statistic": "z = -1.333",
+       "p": 0.0912,
+       "n": "27 sessions in 3 rats"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_girardeau_2017.ipynb",
+     "notes": "Over 15 sessions, post minus pre reactivation of the air-puff templates exceeds that of the safe templates by a median of 0.0133, in 9 of 15 sessions, Wilcoxon p = 0.11; the criterion needs p < 0.05, and p < 0.1 for a partial outcome. Positive in 6 of 9 Rat08, 2 of 3 Rat10 and 1 of 3 Rat11 sessions. Variants lean the same way with mixed strength; the first pattern of each direction gives p = 0.048 (10 of 15), the pooled per-pattern Mann-Whitney test p = 0.083, equal numbers of template bins (a random subset) p = 0.33, post-sleep strength alone p = 0.45, leaving out the two sessions with fewer than 5 puffs p = 0.15, and templates from the travel part of each lap only (its last part, as long as the session's 10th-percentile lap) p = 0.19. Laps from reward times include the time spent at the end where a lap starts; a median of 33% of the air-puff and 43% of the safe template time is in the travel part, and in the early Rat08 sessions laps last up to 2310 s, so the safe templates of some sessions rest on few bins (5610 against 66804 in Rat08-20130709).",
+     "deviations": [
+      "Laps, and so run direction, come from the reward times, as the dandiset holds no position; the paper presumably used the position on the track.",
+      "The air-puff direction is the lap direction of the run holding most puffs; in the 15 sessions tested, 295 of their 304 puffs fall in laps of that direction (927 of 957 over the 31 files with units and at least 5 puffs). No minimum number of puffs was set; two sessions with 2 and 3 puffs enter the test.",
+      "Laps include the time spent at the starting end, not only running; templates from the travel part of laps are a variant.",
+      "The measure (mean over significant patterns of post minus pre strength, compared across sessions) was chosen here before the analysis; the paper's is not known here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "rats-learn-puff-location",
+     "statement": "Rats learned the location of an aversive air puff on a linear track.",
+     "source": "Results, Rats learn the daily location of an aversive air puff on a linear track, paragraph 1; Figure 1b",
+     "quote": "Therefore, the systematic reversal in the speed ratio (previous/current danger zone) between pre- and ... post-run indicates learning of the new air puff location (Fig. 1b and Supplementary Fig. 1b).",
+     "statistics": [
+      {
+       "about": "speed ratio over pre-run, run and post-run",
+       "test": "one-way repeated measure ANOVA",
+       "statistic": "F = 40.48, d.f. = 2",
+       "p": 1.31e-13,
+       "n": "55 sessions in 4 animals"
+      },
+      {
+       "about": "speed ratio, pre-run against post-run",
+       "test": "post hoc t-test",
+       "statistic": "t(51) = \u22125.08",
+       "p": 5.3e-06,
+       "corrected": "Bonferroni (on the significance thresholds; the P shown is uncorrected)"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "too_large",
+     "notebook": null,
+     "notes": "Learning the location of the puff is behaviour along the track, which needs the rat's position. The dandiset holds no position tracking. The files hold the raw video frames (360 by 640 pixels, gzip), so position could in principle be tracked, but the 40 run videos have 1920573 frames (1328 GB uncompressed) and streaming 20 frames took 7.2 s in the final run, about 190 hours for the run frames alone (the rate varies between runs); the video timestamps are also not on the session clock. No public copy of the tracking linked to the paper or the dandiset was found. As a description only, laps toward the air-puff end take longer than the other way in the run (median ratio 1.18 over 38 sessions, p = 0.0063) and about as long in the pre-run (0.95) and the post-run (1.00); lap times give no location on the track, and slower laps where puffs are given do not separate learning from the puffs themselves. No criterion was written, so this decides nothing.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The epochs table is stored in milliseconds although its columns say seconds; in all 40 files its last stop time is exactly 1000 times the LFP duration and the last spike time."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Video timestamps are stated in seconds but are in milliseconds and are not on the session clock. The first timestamp matches the start of the video's epoch in 1 of 114 videos, while the spans match the epoch durations in 93 of 114."
+    },
+    {
+     "kind": "format_error",
+     "statement": "In ten files the spike_times_index is wrong at the first units. Unit 1's spike times fall back once, after 65536 times k spikes, and unit 0 stops part way through the session at the time unit 1 starts, so the first part of unit 1 is the end of unit 0. Units 0 and 1 of these files were left out."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Seven files have no units table (Rat08-20130722, five Rat09 files and Rat11-20150403), sixteen have no sleep states and fourteen have no ripple events. The Rat09 files have no hippocampal units and no ripples, so Rat09 cannot enter a hippocampus and BLA analysis."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "There is no position tracking, only the raw video frames, so behaviour on the track, including the learning of the puff location, cannot be measured without tracking about 1.9 million frames; run direction can only be inferred from reward times."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Unit region labels are undescribed short codes (bla, blv, bmp, ladl, cen, den, ven, pir, plc01, PLCo1, cpu, hpc, HIP, no label), some in two cases for the same region, and Rat09-20140328 has no location column; the electrode table gives every channel as unknown. Which labels make up the paper's BLA cannot be told from the dandiset."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The `trials` table of the Rat08 and Rat09 files is described only as \"experimental trials\"; its intervals of 3 to 5 s fall partly outside the run and are not laps."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The ripple annotations carry a number in each label (for example \"Ripple peak 156\"), presumably the detection channel, with no description; ripples, puffs and rewards are stored as annotation series under stimulus presentation."
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The paper is not open access and neither it (as far as the abstract shows) nor the dandiset links analysis code, so the reactivation method, unit selection and statistics had to be chosen here."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-16",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's abstract (the full text is not open access). The verifier tested helper functions on synthetic inputs and read the archive's asset metadata for the blocked claim. Its report had no attempt record and gave its own outcome for each claim; all six agree with the record on the outcome, and it gave a different reason for the block.",
+     "agreed": 6,
+     "of": 6,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-16",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full executed notebook after the round-1 revision, with its conclusions and summary, the helper module, the claims file, the attempt record and the README. The verifier agreed with all six outcomes and recomputed the three session-level Wilcoxon tests of cell 35. It found five passages the printed outputs did not support. The video streaming time in the record did not match cell 11; this is corrected from the final run (7.2 s, about 192 hours). The pre-run and post-run were said to have no puffs without a count; cell 51 now prints the puffs by epoch (1195 of 1197 in the run, 2 in the pre-sleep, none in the pre-run or post-run). The 927 of 957 puffs covered only the 31 files of cell 19; cell 20 and the deviation now say so, and cell 48 prints the count for the 15 tested sessions (295 of 304). Cell 40 gave the negatively modulated units as the reason the up units are a subgroup; it now rests that on the fraction being below 1. The README run time was not printed; the notebook now prints its run time (13.9 min in the final run) and the README gives it. All round-1 points were resolved. No outcome changed, and none is proposed to change.",
+     "agreed": 6,
+     "of": 6,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000061-girardeau-2017",
+   "type": "reproduction",
+   "title": "Hippocampus and amygdala reactivation during sleep (Girardeau et al. 2017)",
+   "description": "Tests the findings stated in the abstract of Girardeau, Inema and Buzsaki (2017) on dandiset 000061, which holds sorted units of the hippocampus and the amygdala, sleep states, ripple, air-puff and reward events from four rats on an air-puff linear track task. It tests the reactivation of joint hippocampus and BLA patterns in sleep after the run, its peak at ripples, the BLA cells modulated by ripples and their weight in the patterns, and the difference between the air-puff and the safe run direction. The paper's full text was not available, so the methods are common choices fixed before the analysis.",
+   "datasets": [
+    "dandi:000061"
+   ],
+   "papers": [
+    "10.1038/nn.4637"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_girardeau_2017.ipynb",
+     "title": "Reproducing Girardeau et al. (2017) from dandiset 000061",
+     "executed": "notebooks/000061-girardeau-2017/reproduce_girardeau_2017.html"
+    }
+   ]
+  }
+ ]
+}
