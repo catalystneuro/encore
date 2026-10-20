@@ -37,4 +37,12 @@ def test_anything_else_is_refused(text):
 
 def test_targets_carry_their_key_and_folder():
     found = datasets.targets()
-    assert found and all(t["key"] == f"dandi:{t['id']}" and t["folder"] == t["id"] for t in found)
+    assert found and all(t["key"] == f"{t['archive']}:{t['id']}" and t["folder"] == datasets.folder(t["key"])
+                         for t in found)
+
+
+def test_a_crcns_dataset_is_a_target_with_its_own_page():
+    ret = next(t for t in datasets.targets() if t["key"] == "crcns:ret-1")
+    assert ret["folder"] == "crcns-ret-1" and datasets.label(ret["key"]) == "CRCNS:ret-1"
+    assert datasets.url(ret["key"]) == "https://crcns.org/data-sets/retina/ret-1"
+    assert "crcnsarchive" in datasets.access(ret["key"])
