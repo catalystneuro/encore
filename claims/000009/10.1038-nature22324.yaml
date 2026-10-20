@@ -1,0 +1,916 @@
+# Claims for Guo, Inagaki, Daie, Druckmann, Gerfen & Svoboda (2017) on dandiset 000009.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20, protocol
+# as stated in docs/protocol.md (pilot-10), Reader steps 1 to 4.
+#
+# Text read: the HHMI author manuscript in PubMed Central (PMC6431254, NIHMS865428), as served by
+# Europe PMC (paper/10.1038-nature22324.txt): main text, Methods, the legends of Figures 1 to 6 and
+# of Extended Data Figures 1 to 10. It is the accepted manuscript, not the version of record. No PDF
+# was supplied, so no figure could be read. Not in the text: the Supplementary Information
+# (supp_info: further whole-cell methods, the model of the latency T3 and the network models of
+# Extended Data Fig. 7c-e, lick-early, no-response and lick-latency rates under photoinhibition) and
+# Supplementary Tables 1 and 2 (animals, coordinates, photostimulus powers, viruses). The claims
+# latency-model-t3 and network-models rest on the Supplementary Information and are written from
+# the main text and Extended Data legends only; no other claim needs it.
+#
+# Code read: none. The paper links no analysis code. It names the data deposit "CRCNS.ORG in the NWB
+# format (https://doi.org/10.6080/K03F4MH2)". The dandiset's archive title is the paper's title, and
+# its description (the abstract) says it holds spikes from ALM and thalamus during the task with
+# photoinhibition; its metadata list Units, BehavioralTimeSeries, CurrentClampStimulusSeries and
+# OptogeneticSeries, 31 subjects. Which of the experiments below it holds is for the author to find.
+#
+# The data the paper used, as it reports them (Methods). 71 mice, adult (> P60), male and female.
+# Lines: PV-IRES-Cre x Ai32 (ALM photoinhibition, Fig. 1c, 6, Extended Data Figs 8, 10), VGAT-ChR2-EYFP
+# (thalamus photoinhibition during ALM and thalamic recordings, Fig. 3, 4, 5), Gad2-IRES-Cre with
+# AAV2/10 CAG-flex-ChR2 injected in TRN (thalamus photoinhibition in behaviour, Fig. 1d, and in
+# Extended Data Figs 2c, 5c-h), Olig3-cre x Ai32 (thalamus photoactivation, Extended Data Fig. 6c).
+# Task: a pole in one of two positions (8.58 mm apart, anterior-posterior); sample epoch 1.3 s from
+# the onset of pole movement to 0.1 s after the pole starts to retract; delay epoch 1.2 or 1.3 s; a
+# go cue (3.4 kHz, 0.1 s); then the mouse licks left or right. Trials with licks before the go cue
+# ('lick early') and with no lick within 1.5 s of the go cue ('no response') are excluded from all
+# analyses (Methods, Behavior). Recordings are from the left hemisphere, so 'contra' trials are
+# those whose instructed (correct) lick is to the right, and 'ipsi' trials to the left; for
+# behaviour, contra and ipsi are relative to the manipulated side (Fig. 1a legend; Methods,
+# Behavioral data analysis). Photoinhibition: on 25% of trials (Fig. 1, 3a-f, 6) or 25-50%
+# (Fig. 3g, 4); in cortex 40 Hz sinusoid, 1.5 mW average, 1.3 s including a 100 ms ramp from the
+# start of the delay epoch; in thalamus continuous light through a 200 um fibre, 1.2 to 1.3 s from
+# the start of the delay epoch, 10 mW (Extended Data Fig. 2), or 0.5 mW for the weak photoinhibition
+# of Fig. 5. Units: ALM 1214 units in 57 sessions (10 mice in Results), split by trough-to-peak
+# spike width into putative fast-spiking (< 0.4 ms, 166), putative pyramidal (> 0.6 ms, 1006) and
+# unclassified (42); thalamus 790 units in 73 sessions (11 mice), putative thalamic neurons with
+# width > 0.5 ms (672), VM/VAL units within 0.4 mm of the VM/VAL centre (313 of 790; 295 in the
+# Results); SNr 227 units in 23 sessions, putative GABAergic with width < 0.45 ms (181). Whole-cell
+# recordings in ALM (and M1), Vm sampled at 20 kHz, 350 to 850 um below the pia. Measured
+# variables: spike times, unit position, spike waveform, trial type, licks and outcome,
+# photostimulus timing, membrane potential.
+#
+# Conventions used by the criteria below (all from the Methods unless marked open).
+# E (epochs). Sample: 1.3 s from the onset of pole movement. Delay: from the end of the sample
+#   epoch to the go cue. Response: from the go cue; its length is not given. Open, with readings
+#   (R1) 1.3 s after the go cue, the length of the other epochs, (R2) 1.5 s after the go cue, the
+#   response window that defines 'no response'.
+# S (selectivity, Methods, Electrophysiology data analysis). A unit is selective in an epoch when
+#   its spike counts in the epoch differ between correct contra and correct ipsi trials (two-sided
+#   t-test, P < 0.05); 'selective' means selective in any of the three epochs; 'preparatory
+#   activity' means selective in the sample or delay epoch; 'peri-movement selectivity' means
+#   selective in the response epoch. Contra- or ipsi-preferring is decided by the total spike count
+#   over the three epochs. Selectivity is contra minus ipsi firing rate, correct trials only.
+#   Whether the t-test assumes equal variances is not stated (Student's in the behavioural
+#   analysis); open, readings (a) Student's, (b) Welch's.
+# P (photoinhibition effect). Units with at least 5 photoinhibition trials (Fig. 3, 6) or 25
+#   (Fig. 5). Rate in the window 20 to 120 ms after photostimulus onset (the delay onset), in
+#   photoinhibition trials against control trials in the same window, contra and ipsi trials
+#   pooled. Which outcomes enter is open: the Methods include correct and incorrect trials for
+#   PSTHs "as photoinhibition reduced neural activity irrespective of the response outcomes" and
+#   say nothing for the scatter plots; readings (T1) correct and incorrect, (T2) correct only. A
+#   unit is inhibited or activated by the sign of the change, and significantly so by a two-sided
+#   t-test, P < 0.05, on single-trial rates. "To X% of control" has readings (Q1) mean over units
+#   of the photoinhibition rate over mean over units of the control rate, (Q2) mean over units of
+#   each unit's ratio, (Q3) median of each unit's ratio.
+# O (onset of inhibition in spikes; Methods, last paragraph of Electrophysiology data analysis).
+#   Population PSTH in 1 ms bins; onset is the time after photostimulus onset when the
+#   photoinhibition PSTH falls more than 3 standard deviations below control, the standard
+#   deviation taken from the control condition during the delay epoch; SEM by resampling units with
+#   replacement, 1000 times. Open: the level the 3 SD are counted from, readings (O1) the control
+#   PSTH in the same bin, (O2) the mean of the control PSTH over the delay epoch. The Methods'
+#   wording ("the membrane potential passed") is read as the PSTH, as the paragraph is about
+#   extracellular units.
+# V (membrane potential; Methods, In vivo whole-cell recording). Spikes clipped by the 'kink'
+#   rule (derivative above 3 SD of its value 2.5 to 1.5 ms before the spike peak; -0.5 to 5 ms
+#   around the kink interpolated). Onset of a Vm change is when Vm changes by more than 3 SD from
+#   the baseline, mean and SD taken from 20 ms before to 2 ms after photostimulus onset in
+#   photoinhibition trials; SEM of means and onsets by bootstrapping. Open: onset of the cell-mean
+#   trace with bootstrap SEM over cells (V1), or the mean of per-cell onsets (V2).
+# L (location). VM/VAL units are those within 0.4 mm of the VM/VAL centre, "determined from
+#   retrograde labeling experiments". The text gives no coordinate for the centre. Open, readings
+#   (L1) the dataset's own location label for VM/VAL, if it has one; (L2) within 0.4 mm of AP
+#   -1.5, ML 0.85, DV 4.0 mm, the thalALM injection site "mainly in VM" (Extended Data Fig. 9
+#   legend). The count 295 (VM/VAL putative thalamic units) checks the reading.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000009"
+paper: doi:10.1038/nature22324
+claims:
+- id: task-performance
+  statement: Mice performed the delayed-response task at 77.6% correct on average, with 10.3% lick-early
+    trials and 1.1% no-response trials.
+  source: Results, Thalamus is required for motor preparation, paragraph 1
+  quote: mean percent correct 77.6%; lick-early before ‘go’ cue 10.3%, no response 1.1%
+  expected:
+  - quantity: mean percent correct
+    value: 77.6
+    tolerance: 7.76
+    unit: percent
+  - quantity: lick-early trials
+    value: 10.3
+    tolerance: 1.03
+    unit: percent
+  - quantity: no-response trials
+    value: 1.1
+    tolerance: 0.11
+    unit: percent
+  criterion: The paper does not say over which trials or sessions these are taken. Readings (a) all
+    trials of all sessions pooled; (b) mean over sessions; (c) control (non-photoinhibition) trials
+    only, pooled and per session. Percent correct excludes lick-early and no-response trials
+    (Methods, Behavioral data analysis); lick-early and no-response are fractions of all trials.
+    Reproduced when all three values are within tolerance under one reading.
+- id: fig1c-alm-photoinhibition-bias
+  statement: Unilateral photoinhibition of ALM during the delay epoch biased responses to the
+    ipsilateral side, lowering performance on contra trials and raising it on ipsi trials.
+  source: Results, Thalamus is required for motor preparation, paragraph 1; Figure 1c
+  quote: Unilateral photoinhibition of ALM during the delay epoch produced an ipsilateral response bias
+    ... reducing performance for contralateral trials and increasing performance for ipsilateral trials
+    ( P < 0.001; paired t -test, Fig. 1c )
+  statistics:
+  - test: paired t-test
+    p: 0.001
+    p_relation: "<"
+    n: 84 behavioural sessions, 11 mice
+  criterion: Per session, fraction correct (lick-early and no-response excluded) on contra and on ipsi
+    trials, in control and in ALM photoinhibition trials (PV-IRES-Cre x Ai32 mice, left ALM; Methods,
+    Photoinhibition). Two-sided paired t-test over sessions of photoinhibition against control,
+    separately for contra and ipsi trials. Reproduced when contra performance is lower and ipsi
+    performance higher under photoinhibition, both at p < 0.001; partially reproduced when the
+    contra decrease holds at p < 0.001 and the ipsi increase does not.
+- id: fig1d-thalamus-photoinhibition-bias
+  statement: Unilateral photoinhibition of thalALM during the delay epoch lowered performance on contra
+    trials and caused a small, non-significant improvement on ipsi trials.
+  source: Results, Thalamus is required for motor preparation, paragraph 3; Figure 1d
+  quote: Similar to ALM, unilateral photoinhibition of thal ALM during the delay epoch reduced
+    performance for contralateral trials and caused a small improvement in performance for ipsilateral
+    trials ( P < 0.001 for contralateral trials, not significant for ipsilateral trials, paired t -test
+  statistics:
+  - about: contra trials, photoinhibition against control
+    test: paired t-test
+    p: 0.001
+    p_relation: "<"
+    n: 9 sessions, 4 mice
+  criterion: As fig1c-alm-photoinhibition-bias, for thalamus photoinhibition through an optical fibre
+    over VM/VAL in Gad2-IRES-Cre mice with ChR2 in TRN (Methods, Photoinhibition). Reproduced when
+    contra performance is lower under photoinhibition at p < 0.001 (paired t-test over sessions);
+    the ipsi change and its p-value are reported (the paper finds it not significant, p >= 0.05).
+- id: gad2-thalamus-reduction
+  statement: Photostimulating TRN axons in thalamus of Gad2-IRES-Cre mice reduced thalALM spike rates,
+    recorded near VM/VAL, to 67.8% of control during the delay epoch.
+  source: Results, Thalamus is required for motor preparation, paragraph 3; Extended Data Figure 2c
+  quote: Photostimulating axonal terminals of TRN GABAergic neurons in thalamus reduced spike rates in
+    thal ALM (recorded near VM/VAL, to 67.8% during the delay epoch
+  expected:
+    quantity: photoinhibition rate as a percentage of control
+    value: 67.8
+    tolerance: 6.78
+    unit: percent
+  criterion: Putative thalamic units recorded with the optrode in Gad2-IRES-Cre mice (Extended Data Fig.
+    2c, n = 26, 41 and 17 at 0.6, 0.8 and 1.0 mm from the fibre). The legend gives the measure as "mean
+    spike rate during photoinhibition divided by mean spike rate during control". The window is open,
+    readings (W1) the whole photostimulus (delay onset to delay end, as "during the delay epoch"
+    says), (W2) 20 to 120 ms after photostimulus onset (convention P). Ratio readings Q1 to Q3 and
+    trial readings T1, T2 of convention P. Reproduced when the value is within tolerance under one
+    reading; the value per distance group is reported.
+- id: vgat-thalamus-reduction
+  statement: In VGAT-ChR2-EYFP mice, thalamus photoinhibition reduced activity 0.5 to 1.1 mm from the
+    fibre tip to 15.9% of control.
+  source: Methods, Photoinhibition, paragraph 3; Extended Data Figure 2d
+  quote: Photoinhibition reduced activity (0.5-1.1 mm from the tip of the optical fiber) to 15.9 ± 9.3%
+  expected:
+    quantity: photoinhibition rate as a percentage of control
+    value: 15.9
+    tolerance: 9.3
+    unit: percent
+  criterion: Tolerance is the paper's stated spread (called SEM in the Methods; the legend of Extended
+    Data Fig. 2d calls its error bars standard deviations). Putative thalamic units recorded with the
+    optrode in VGAT-ChR2-EYFP mice, 0.5 to 1.1 mm from the fibre (Extended Data Fig. 2d, n = 34, 42,
+    38). Measure, windows W1 and W2, and readings as gad2-thalamus-reduction. Reproduced when within
+    tolerance under one reading.
+- id: muscimol-vmval-bias
+  statement: Small doses of muscimol infused near VM/VAL produced an ipsilateral bias in licking
+    responses, while infusions 0.3 to 0.8 mm anterior or 0.2 to 0.5 mm dorsal, even at ten-fold
+    higher doses, did not.
+  source: Results, Thalamus is required for motor preparation, paragraph 3; Extended Data Figure 3
+  quote: Inhibition near VM/VAL produced ipsilateral bias in the licking response ( Extended Data Fig.
+    3a, b ). Inhibition outside of thal ALM (1.1 - 1.6 mm anterior or 1.6-1.9 dorsal to VM/VAL) did not
+    cause ipsilateral bias, even at 10-fold higher doses
+  statistics:
+  - about: performance change near VM/VAL against control
+    test: Student's t-test
+    p: 0.05
+    p_relation: "<"
+    n: 6 infusion sites
+  criterion: Performance change is fraction correct over the 100 trials after infusion relative to the
+    100 trials before, separately for contra and ipsi trials, compared with the control condition
+    (buffer, or the pause without infusion) by Student's t-test (Methods, Behavioral data analysis;
+    Extended Data Fig. 3b). The legend does not say which side carries the star; reproduced when the
+    contra change near VM/VAL is lower than control at p < 0.05, and neither anterior (n = 4 sites) nor
+    dorsal (n = 4 sites) infusions lower contra performance against control at p < 0.05. Open, which
+    control, readings (a) buffer infusions, (b) pauses without infusion, (c) both pooled. The doses
+    differ between Results (1.8 to 5.9 ng) and the legend (1.5 to 5 ng); and the distances outside
+    VM/VAL differ between Results (1.1 to 1.6 mm anterior, 1.6 to 1.9 mm dorsal) and the legends (0.3
+    to 0.8 mm anterior, 0.2 to 0.5 mm dorsal of MD); sites are taken as the dataset labels them.
+- id: alm-unit-classes
+  statement: Of 1214 ALM units, 1006 were putative pyramidal neurons (spike width > 0.6 ms), 166 putative
+    fast-spiking (< 0.4 ms) and 42 unclassified; the spike-width distribution was bimodal.
+  source: Methods, Electrophysiology data analysis, paragraph 2; Extended Data Figure 4b
+  quote: In ALM, 1214 single units were recorded across 57 behavioral sessions. ... units with width <
+    0.4 ms were defined as putative fast-spiking (FS) neurons (166/1214) and units with width > 0.6 ms
+    as putative pyramidal neurons (1006/1214)
+  expected:
+  - quantity: ALM units
+    value: 1214
+    tolerance: 121
+  - quantity: putative pyramidal ALM units
+    value: 1006
+    tolerance: 101
+  - quantity: putative fast-spiking ALM units
+    value: 166
+    tolerance: 17
+  criterion: Spike width is the trough-to-peak interval of the mean waveform (Methods). Bimodality is
+    judged from the histogram, with the counts below 0.4 ms, between 0.4 and 0.6 ms, and above 0.6 ms
+    reported. Reproduced when the three counts are within tolerance.
+- id: fig2e-alm-selectivity
+  statement: Most ALM putative pyramidal neurons (70%, 704/1006) distinguished trial types; 145 had
+    preparatory activity only, 272 peri-movement selectivity only and 287 both.
+  source: Results, Preparatory activity in thalamus, paragraph 1; Figure 2e
+  quote: For a majority of neurons, activity differed across trial types (70%, 704/1006; P < 0.05, t
+    -test; Methods). ... subsets of neurons showed selective preparatory activity ( Fig. 2b , left
+    column; Fig. 2e , 145/1006), selective peri-movement activity during the response epoch ( Fig. 2b ,
+    right column; Fig. 2e , 272/1006), or both ( Fig. 2b , middle column; Fig. 2e , 287/1006)
+  depends_on:
+  - alm-unit-classes
+  expected:
+  - quantity: selective ALM pyramidal neurons
+    value: 704
+    tolerance: 70
+  - quantity: preparatory activity only
+    value: 145
+    tolerance: 15
+  - quantity: peri-movement selectivity only
+    value: 272
+    tolerance: 27
+  - quantity: both
+    value: 287
+    tolerance: 29
+  criterion: Putative pyramidal ALM units. Whether photoinhibition trials enter is not said; readings
+    (a) control trials only, (b) all trials. Selectivity by convention
+    S, under response-epoch readings R1 and R2 and t-test readings (a) and (b). Reproduced when all four
+    counts are within tolerance under one reading.
+- id: fig2e-alm-contra-ipsi-balance
+  statement: Approximately equal numbers of selective ALM neurons preferred contra and ipsi movements.
+  source: Results, Preparatory activity in thalamus, paragraph 1; Figure 2e
+  quote: Approximately equal numbers of neurons preferred contra- or ipsi-lateral movements ( Fig. 2e )
+  depends_on:
+  - fig2e-alm-selectivity
+  criterion: Preference by total spike count over the three epochs (convention S), among the selective
+    neurons of fig2e-alm-selectivity. The paper gives no test or number; "approximately equal" is
+    read as no detectable imbalance, by a two-sided binomial test of the contra count against one
+    half, the only reading the text suggests. Reproduced when it does not reject at p < 0.05, not
+    reproduced when it does. The counts and the contra fraction are reported, under each reading of
+    fig2e-alm-selectivity.
+- id: thalamus-unit-classes
+  statement: Of 790 thalamic units, 672 were putative thalamic neurons (spike width > 0.5 ms) and 313
+    lay within 0.4 mm of the VM/VAL centre; 295 VM/VAL units were analysed.
+  source: Methods, Electrophysiology data analysis, paragraph 3; Results, Preparatory activity in
+    thalamus, paragraph 2; Extended Data Figure 4e
+  quote: In thalamus, 790 single units were recorded across 73 behavioral sessions. ... Units with spike
+    width > 0.5 ms were selected as putative thalamic neurons (672/790) ... units within 0.4 mm from the
+    VM/VAL center ... were scored as VM/VAL neurons (313/790)
+  expected:
+  - quantity: thalamic units
+    value: 790
+    tolerance: 79
+  - quantity: putative thalamic neurons
+    value: 672
+    tolerance: 67
+  - quantity: units within 0.4 mm of the VM/VAL centre
+    value: 313
+    tolerance: 31
+  - quantity: VM/VAL putative thalamic neurons
+    value: 295
+    tolerance: 30
+  criterion: Width as for alm-unit-classes; location under readings L1 and L2. The 295 of the Results
+    are read as the units that pass both the width and the location rule (the paper does not say; a
+    reading, since 295 is below both 313 and 672). Reproduced when all four counts are within
+    tolerance under one location reading.
+- id: fig2f-vmval-selectivity
+  statement: A majority of VM/VAL neurons (69%, 204/295) distinguished trial types, a fraction
+    indistinguishable from ALM; 43 had preparatory activity only, 82 peri-movement selectivity only
+    and 79 both, a distribution similar to ALM.
+  source: Results, Preparatory activity in thalamus, paragraph 2; Figure 2f
+  quote: A majority of VM/VAL neurons discriminated trial types (69%, 204/295; indistinguishable from
+    ALM, chi-squared test, P = 0.79). ... VM/VAL neurons exhibited similar selectivity and time-course
+    to ALM (chi-squared test, P > 0.5)
+  statistics:
+  - about: fraction selective, VM/VAL against ALM
+    test: chi-squared test
+    p: 0.79
+    n: 295 VM/VAL and 1006 ALM neurons
+  - about: selectivity types, VM/VAL against ALM
+    test: chi-squared test
+    p: 0.5
+    p_relation: ">"
+  depends_on:
+  - thalamus-unit-classes
+  - fig2e-alm-selectivity
+  expected:
+  - quantity: selective VM/VAL neurons
+    value: 204
+    tolerance: 20
+  - quantity: preparatory activity only
+    value: 43
+    tolerance: 4.3
+  - quantity: peri-movement selectivity only
+    value: 82
+    tolerance: 8.2
+  - quantity: both
+    value: 79
+    tolerance: 7.9
+  criterion: VM/VAL units of thalamus-unit-classes, selectivity as in fig2e-alm-selectivity, same
+    readings. Chi-squared tests (2 x 2 for selective against not; for the types, readings (i) 2 x 4
+    with non-selective as a class, (ii) 2 x 3 among selective neurons). Reproduced when the counts are
+    within tolerance under one reading and neither chi-squared test finds a difference at p < 0.05.
+- id: fig3-alm-collapse
+  statement: Strong photoinhibition of thalALM (VGAT-ChR2-EYFP) decreased ALM activity to 6% of control,
+    inhibiting 309 of 314 neurons (155 significantly) and significantly activating none.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 1; Figure 3c
+  quote: Thal ALM photoinhibition decreased ALM activity to 6% of control, reducing activity in nearly
+    all neurons ( Fig. 3c , 309/314 inhibited, 3/314 activated, 155/314 significantly inhibited, 0/314
+    significantly activated, t -test, P < 0.05)
+  depends_on:
+  - alm-unit-classes
+  expected:
+  - quantity: ALM activity during photoinhibition as a percentage of control
+    value: 6
+    tolerance: 0.6
+    unit: percent
+  - quantity: neurons analysed
+    value: 314
+    tolerance: 31
+  - quantity: neurons inhibited
+    value: 309
+    tolerance: 31
+  - quantity: neurons activated
+    value: 3
+    tolerance: 0.3
+  - quantity: neurons significantly inhibited
+    value: 155
+    tolerance: 16
+  - quantity: neurons significantly activated
+    value: 0
+    tolerance: 0
+  criterion: ALM putative pyramidal units recorded during ipsilateral thalamus photoinhibition in
+    VGAT-ChR2-EYFP mice, at least 5 photoinhibition trials; window, pooling and tests by convention P,
+    under readings T1, T2 and Q1 to Q3. Reproduced when all values are within tolerance under one
+    reading; partially reproduced when, under every reading, activity falls, inhibited neurons
+    outnumber activated ones and none is significantly activated, but some value is out of tolerance.
+- id: fig3d-all-layers
+  statement: Thalamus photoinhibition reduced ALM activity across all cortical layers.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 1; Figure 3d
+  quote: across all cortical layers ( Fig. 3d )
+  depends_on:
+  - fig3-alm-collapse
+  criterion: Unit depth as recorded (manipulator reading, Methods). The figure plots the number of
+    modulated neurons by depth; its bins are not given in the text, readings (a) 100 um, (b) 200 um.
+    Reproduced when, under both readings, every depth bin with at least 5 neurons from 0 to the
+    deepest recorded depth has a population rate in the window of convention P below control and holds
+    significantly inhibited neurons. The minimum of 5 neurons is a standard choice for a plotting bin.
+- id: fig3b-selectivity-types-equally-inhibited
+  statement: ALM neurons with preparatory activity, peri-movement selectivity or both were equally
+    inhibited by thalamus photoinhibition.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 1; Figure 3b
+  quote: neurons showing preparatory activity, peri-movement selectivity or both were equally inhibited;
+    Fig. 3b , P > 0.2, t -test
+  statistics:
+  - test: t-test
+    p: 0.2
+    p_relation: ">"
+  depends_on:
+  - fig2e-alm-selectivity
+  - fig3-alm-collapse
+  criterion: A claim of absence, judged on the paper's test, two-sided t-tests between each pair of the
+    three groups (preparatory only, peri-movement only, both; convention S) of the neurons of
+    fig3-alm-collapse. The measure of inhibition is not named; readings (a) each neuron's rate under
+    photoinhibition over control, (b) the difference of rates, both in the window of convention P.
+    Reproduced when no pair differs at p < 0.05 under both measures; not reproduced when a pair does
+    under both; methods_underspecified when the measures disagree. Group means and the p-values are
+    reported, and whether they exceed 0.2.
+- id: fig3f-thalamus-silenced
+  statement: Strong photoinhibition in VGAT-ChR2-EYFP mice abolished thalALM activity nearly
+    completely, to 2% of control.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 1; Figure 3f
+  quote: Photoinhibition abolished thal ALM activity nearly completely (to 2 % of control without
+    photoinhibition) ( Fig. 3f )
+  expected:
+  - quantity: thalamic activity during photoinhibition as a percentage of control
+    value: 2
+    tolerance: 0.2
+    unit: percent
+  - quantity: thalamic neurons
+    value: 148
+    tolerance: 15
+  criterion: Thalamic units recorded during thalamus photoinhibition in VGAT-ChR2-EYFP mice (Fig. 3f,
+    n = 148). Which units are meant is open, readings (a) all putative thalamic units of those
+    recordings, (b) those in VM/VAL (convention L). Window and readings by convention P (the Methods
+    use 20 to 120 ms for Fig. 3). Reproduced when both values are within tolerance under one reading.
+- id: fig3-onset-latencies
+  statement: Photoinhibition reduced thalALM activity 2.5 ms after photostimulus onset, and ALM spike
+    rates were reduced 8.2 ms after onset, a latency difference consistent with direct thalamocortical
+    drive.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 3; Figure 3e, f
+  quote: Photoinhibition reduced thal ALM activity 2.5 ± 0.8 ms after photostimulus onset (mean ± SEM,
+    activity reduction onset detected by 3 × std, Fig. 3f ). Hyperpolarization of ALM neurons and
+    reduction of ALM spike rates were detected 7.9 ± 1.7 ms and 8.2 ± 1.5ms after photostimulus onset
+  depends_on:
+  - fig3-alm-collapse
+  - fig3f-thalamus-silenced
+  expected:
+  - quantity: onset of thalamic inhibition
+    value: 2.5
+    tolerance: 0.8
+    unit: ms
+  - quantity: onset of ALM spike-rate reduction
+    value: 8.2
+    tolerance: 1.5
+    unit: ms
+  criterion: Onsets by convention O (readings O1, O2) on the populations of fig3f-thalamus-silenced
+    (148) and fig3-alm-collapse (314), trial readings T1 and T2. Tolerances are the paper's SEMs.
+    Reproduced when both onsets are within tolerance under one reading and the ALM onset is later than
+    the thalamic one. The Vm onset (7.9 ms) is tested in wc-thalamus-hyperpolarization.
+- id: wc-near-threshold
+  statement: During the delay epoch the mean membrane potential of ALM neurons was close to spike
+    threshold, 12.7 mV below it on average.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 2
+  quote: the average membrane potential of ALM neurons was close to the spike threshold during the delay
+    epoch (action potential threshold - mean basal membrane potential = 12.7 ± 0.7 mV; mean ± SEM, n =
+    60 cells)
+  expected:
+  - quantity: threshold minus basal membrane potential
+    value: 12.7
+    tolerance: 0.7
+    unit: mV
+  - quantity: cells
+    value: 60
+    tolerance: 6
+  criterion: Whole-cell ALM recordings with more than 20 behavioural trials (Methods). Threshold is the
+    Vm at the kink of convention V; per cell, mean threshold minus mean basal Vm, then the mean over
+    cells. The basal Vm window differs between Results ("during the delay epoch") and Methods (0 to
+    0.5 s before trial onset); readings (a) the Methods window, (b) the delay epoch of control trials,
+    spikes clipped. Reproduced when the value is within tolerance under one reading. Tolerance is the
+    paper's SEM.
+- id: wc-thalamus-hyperpolarization
+  statement: Thalamus photoinhibition hyperpolarized ALM neurons by 18.7 mV, preventing spiking, with
+    an onset 7.9 ms after photostimulus onset.
+  source: Results, Thalamus drives ALM preparatory activity, paragraphs 2 and 3; Figure 3g, 4b, c
+  quote: Thal ALM photoinhibition caused hyperpolarization (Membrane potential, control trials
+    –photoinhibition trials, -18.7 ± 1.1 mV; measured for 100 ms, starting 20 ms after photostimulus
+    onset; mean ± SEM, n = 16 cells), preventing ALM neurons from spiking
+  expected:
+  - quantity: Vm change, photoinhibition minus control
+    value: -18.7
+    tolerance: 1.1
+    unit: mV
+  - quantity: onset of hyperpolarization
+    value: 7.9
+    tolerance: 1.7
+    unit: ms
+  criterion: Whole-cell ALM recordings during thalamus photoinhibition in behaving VGAT-ChR2-EYFP mice
+    (n = 16). Mean Vm (spikes clipped, convention V) 20 to 120 ms after photostimulus onset,
+    photoinhibition trials minus control trials, mean over cells. The text writes "control trials
+    -photoinhibition trials" with a negative value; the sign is read as hyperpolarization. Onset by
+    convention V, readings V1 and V2. Reproduced when both values are within tolerance (the paper's
+    SEMs) under one reading.
+- id: wc-loss-of-excitation
+  statement: The hyperpolarization of ALM neurons during thalamus photoinhibition was caused mainly by a
+    loss of excitation, not by an increase in inhibition; it was larger with negative current
+    injection.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 2; Extended Data Figure 5c-h
+  quote: Manipulating the membrane potential during recording revealed that hyperpolarization was mainly
+    caused by a reduction in excitation, not an increase in inhibition
+  statistics:
+  - about: slope of the regression of the Vm change on baseline Vm
+    test: bootstrap
+    p: 0.0001
+    p_relation: "<"
+  criterion: Non-behaving Gad2-IRES-Cre mice with ChR2 in TRN (Extended Data Fig. 5c-h; n = 14 cells
+    without, 9 with negative and 6 with positive current injection). Per cell and current condition,
+    Vm in control and Vm change under photoinhibition, both 100 to 120 ms after light onset; cells
+    with positive and negative injection pooled (cells without injection left out, as the legend
+    does). Linear regression of the change on control Vm; p from a bootstrap of the slope. Resampling
+    unit is open, readings (a) cells, (b) cell-condition points; iterations 1000 or 10000 (Methods,
+    Statistics), a standard choice. Reproduced when the slope is positive with p < 0.0001 under one
+    reading, partially reproduced when positive with p < 0.05.
+- id: wc-m1-small-effect
+  statement: Photoinhibition of M1 during the delay epoch caused only a slight hyperpolarization (3.3
+    mV) and a small drop in spike rate (1.4 spikes per s) in ALM neurons.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 3; Figure 4d-f
+  quote: direct photoinhibition of M1 during the delay epoch ... caused only a slight hyperpolarization
+    of the membrane potential and spike rates of ALM neurons (-3.3 ± 1.0 mV; -1.4 ± 0.6 spikes per s;
+    mean ± SEM, n = 11 cells)
+  expected:
+  - quantity: Vm change
+    value: -3.3
+    tolerance: 1.0
+    unit: mV
+  - quantity: spike-rate change
+    value: -1.4
+    tolerance: 0.6
+    unit: spikes/s
+  criterion: Whole-cell ALM recordings during M1 photoinhibition (n = 11), as wc-thalamus-hyperpolarization,
+    window 20 to 120 ms after photostimulus onset (Fig. 4c legend, same format for f). Spike rate from
+    the spikes detected in the whole-cell trace. Reproduced when both values are within tolerance (the
+    paper's SEMs).
+- id: wc-contra-alm-small-effect
+  statement: Photoinhibition of contralateral ALM barely changed the membrane potential of ALM neurons
+    (1.4 mV).
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 4; Figure 4g-i
+  quote: photoinhibiting contralateral ALM, the anatomically strongest input to ALM, barely changed
+    membrane potential (-1.4 ± 0.5 mV; mean ± SEM, n = 9 cells)
+  expected:
+    quantity: Vm change
+    value: -1.4
+    tolerance: 0.5
+    unit: mV
+  criterion: As wc-m1-small-effect, for contralateral ALM photoinhibition (n = 9).
+- id: thalamus-stronger-than-cortex
+  statement: thalALM drives ALM more strongly than M1 or contralateral ALM, the other reciprocally
+    connected structures tested.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 4; Figure 4b vs 4e, h
+  quote: Altogether thal ALM drives ALM directly and more strongly than other reciprocally connected
+    structures (cf. Fig. 4b vs Fig. 4e,h )
+  depends_on:
+  - wc-thalamus-hyperpolarization
+  - wc-m1-small-effect
+  - wc-contra-alm-small-effect
+  criterion: The paper reports no test for this comparison ("cf." the figure panels). Readings (a)
+    the mean Vm change (20 to 120 ms) under thalamus photoinhibition is more negative than under M1
+    and under contralateral ALM photoinhibition; (b) as (a), with each difference significant by a
+    two-sided t-test over cells at p < 0.05, the test the paper uses elsewhere. Reproduced when both
+    readings hold, not reproduced when neither does, methods_underspecified when they differ.
+- id: indirect-pathway-too-slow
+  statement: The latency of ALM hyperpolarization is too short for the thalamus to M1 to ALM pathway;
+    thalamus photoinhibition hyperpolarized M1 neurons after 11.0 ms and M1 photoinhibition
+    hyperpolarized ALM neurons after 13.9 ms, so that pathway would give a latency difference above 14.3
+    ms against the 5.4 ms observed.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 3; Extended Data Figure 6e-g
+  quote: The thalamus → M1 → ALM pathway would produce a latency difference of > 14.3 ms, too slow by >
+    9 ms to explain the hyperpolarization in ALM
+  depends_on:
+  - wc-thalamus-hyperpolarization
+  - fig3-onset-latencies
+  - fig6e-onset-latencies
+  expected:
+  - quantity: onset of M1 hyperpolarization after thalamus photoinhibition
+    value: 11.0
+    tolerance: 2.4
+    unit: ms
+  - quantity: onset of ALM hyperpolarization after M1 photoinhibition
+    value: 13.9
+    tolerance: 3.2
+    unit: ms
+  criterion: Onsets by convention V (readings V1, V2) for whole-cell M1 neurons during thalamus
+    photoinhibition (n = 9) and ALM neurons during M1 photoinhibition (n = 11), Extended Data Fig. 6e,
+    f; tolerances are the paper's SEMs. The pathway latency difference is (M1 onset minus thalamic
+    silencing onset) plus (ALM onset after M1 photoinhibition minus cortical silencing onset), as
+    Extended Data Fig. 6e, f compute it (8.5 + 5.8 = 14.3 ms). Reproduced when both onsets are within
+    tolerance under one reading and the pathway difference exceeds the direct one (ALM Vm onset minus
+    thalamic silencing onset).
+- id: conduction-delay
+  statement: Photoactivating thalamus in Olig3-cre x Ai32 mice depolarized ALM neurons after 3.6 ms, an
+    estimate of the thalamocortical conduction delay.
+  source: Extended Data Figure 6c
+  quote: The time between photostimulation onset and depolarization onset was 3.6 ± 1.1 ms ( n = 9
+    cells)
+  expected:
+    quantity: depolarization onset
+    value: 3.6
+    tolerance: 1.1
+    unit: ms
+  criterion: Whole-cell ALM recordings in non-behaving Olig3-cre x Ai32 mice during thalamus
+    photoactivation (10 mW), onset of depolarization by convention V (readings V1, V2) as the Methods
+    say ("a similar procedure"). Reproduced when within tolerance (the paper's SEM) under one reading.
+- id: latency-model-t3
+  statement: A model ALM neuron with 200 thalamic inputs predicts at least 1.8 ms between full loss of
+    thalamic input and a detectable change in membrane potential.
+  source: Results, Thalamus drives ALM preparatory activity, paragraph 3; Extended Data Figure 6d;
+    Supplementary information
+  quote: Even when 100% of the input neurons were inhibited, we expect to observe latency of 1.8 ± 0.7
+    ms
+  expected:
+    quantity: model latency, all inputs inhibited
+    value: 1.8
+    tolerance: 0.7
+    unit: ms
+  criterion: A simulation, not a test on recorded data; its parameters are in the Supplementary
+    information, which is not in the text read. Cannot be specified from the text; recorded so the
+    finding is covered.
+- id: fig5-weak-photoinhibition-rates
+  statement: Weak thalamus photoinhibition (20-fold weaker, 0.5 mW) significantly changed the spike rate
+    of 83 of 160 ALM neurons, with a mean reduction of 1.2 spikes per s; 39% of the changed neurons
+    (32/83) increased their rate.
+  source: Results, Thalamus contributes to selectivity in ALM, paragraph 1; Figure 5b
+  quote: 83 /160 of ALM neurons showed statistically significant changes in mean spike rate during
+    photoinhibition ( t -test; average reduction of spike rate, 1.2 ± 0.2 spikes per s, mean ± SEM, n =
+    160; Fig. 5a, b ). A substantial fraction of these neurons (39%, 32/83) showed increases in spike
+    rate
+  depends_on:
+  - alm-unit-classes
+  expected:
+  - quantity: neurons analysed
+    value: 160
+    tolerance: 16
+  - quantity: neurons with a significant change
+    value: 83
+    tolerance: 8.3
+  - quantity: mean reduction in spike rate
+    value: 1.2
+    tolerance: 0.2
+    unit: spikes/s
+  - quantity: significantly changed neurons that increased
+    value: 32
+    tolerance: 3.2
+  criterion: ALM putative pyramidal units recorded during weak thalamus photoinhibition (VGAT-ChR2-EYFP,
+    0.5 mW) with at least 25 photoinhibition trials. Rates over 1300 ms from photostimulus onset
+    (Fig. 5b legend), contra and ipsi trials pooled; trial readings T1, T2; significance by two-sided
+    t-test at P < 0.05 (convention P, t-test readings of convention S). Reproduced when all values are
+    within tolerance under one reading (the reduction's tolerance is the paper's SEM).
+- id: fig5c-selectivity-reduced
+  statement: Weak thalamus photoinhibition reduced the selectivity of ALM neurons, both contra- and
+    ipsi-preferring; the change in selectivity was anti-correlated with selectivity (slope -0.33,
+    r = -0.75), even in neurons without a change in mean rate.
+  source: Results, Thalamus contributes to selectivity in ALM, paragraph 1; Figure 5c; Extended Data
+    Figure 7a, b
+  quote: This unequal spike rate change reduced the selectivity of ALM neurons in both contra- and ipsi-
+    preferring neurons ( Fig. 5c, d and Extended Data Fig. 7a, b )
+  depends_on:
+  - fig5-weak-photoinhibition-rates
+  expected:
+  - quantity: regression slope of selectivity change on selectivity
+    value: -0.33
+    tolerance: 0.033
+  - quantity: Pearson correlation
+    value: -0.75
+    tolerance: 0.075
+  - quantity: neurons above 2 spikes per s in both conditions
+    value: 73
+    tolerance: 7.3
+  criterion: The neurons of fig5-weak-photoinhibition-rates with rates above 2 spikes per s in control
+    and in photoinhibition (Methods, n = 73). Selectivity is contra minus ipsi rate (convention S) over
+    the 1300 ms window, in control; its change is photoinhibition selectivity minus control
+    selectivity; ordinary least squares of change on control selectivity. Trials, open, readings (a)
+    correct only in both conditions (Methods, selectivity), (b) correct only in control and all
+    outcomes under photoinhibition. Reproduced when slope and r are within tolerance under one reading.
+    The paper gives no p-value for this regression. For Extended Data Fig. 7a, b (contra- and
+    ipsi-preferring defined by a delay-epoch t-test, P < 0.05), the mean absolute selectivity under
+    photoinhibition is lower than in control in each group; reported, and required for reproduced.
+- id: network-models
+  statement: The data are inconsistent with linear network models with specific or non-specific
+    thalamocortical connectivity, but do not exclude non-linear models of either kind.
+  source: Results, Thalamus contributes to selectivity in ALM, paragraph 2; Extended Data Figure 7c-e;
+    Supplementary information
+  quote: Our data are inconsistent with linear models with either specific (like-to-like) or
+    non-specific (all-to-all) thalamocortical connectivity. However, our data do not exclude non-linear
+    models
+  criterion: A modelling result; its equations and parameters are in the Supplementary information,
+    which is not in the text read. Cannot be specified from the text; recorded so the finding is
+    covered.
+- id: fig6c-vmval-reduced
+  statement: ALM photoinhibition decreased the activity of VM/VAL neurons to 25% of control, inhibiting
+    190 of 201 neurons (139 significantly) and significantly activating none.
+  source: Results, ALM drives thalamic preparatory activity, paragraph 1; Figure 6c
+  quote: ALM photoinhibition decreased activity in a majority of VM/VAL neurons (to 25% of control;
+    190/201 inhibited, 11/201 activated, 139/201 significantly inhibited, 0/201 significantly
+    activated, P < 0.05, t -test, Fig. 6c )
+  depends_on:
+  - thalamus-unit-classes
+  expected:
+  - quantity: VM/VAL activity during photoinhibition as a percentage of control
+    value: 25
+    tolerance: 2.5
+    unit: percent
+  - quantity: neurons analysed
+    value: 201
+    tolerance: 20
+  - quantity: neurons inhibited
+    value: 190
+    tolerance: 19
+  - quantity: neurons activated
+    value: 11
+    tolerance: 1.1
+  - quantity: neurons significantly inhibited
+    value: 139
+    tolerance: 14
+  - quantity: neurons significantly activated
+    value: 0
+    tolerance: 0
+  criterion: VM/VAL putative thalamic units (convention L) recorded during ipsilateral ALM
+    photoinhibition (PV-IRES-Cre x Ai32), at least 5 photoinhibition trials; window, pooling and tests
+    by convention P, readings T1, T2, Q1 to Q3 and L1, L2. Reproduced when all values are within
+    tolerance under one reading; partially reproduced when, under every reading, activity falls,
+    inhibited neurons outnumber activated ones and none is significantly activated, but some value is
+    out of tolerance.
+- id: fig6b-selectivity-types-equally-inhibited
+  statement: VM/VAL neurons selective during the sample, delay or response epochs were equally inhibited
+    by ALM photoinhibition.
+  source: Results, ALM drives thalamic preparatory activity, paragraph 1; Figure 6b
+  quote: VM/VAL neurons selective during sample, delay or response epochs were equally inhibited ( Fig.
+    6b , P > 0.2, t -test)
+  statistics:
+  - test: t-test
+    p: 0.2
+    p_relation: ">"
+  depends_on:
+  - fig6c-vmval-reduced
+  criterion: As fig3b-selectivity-types-equally-inhibited, on the neurons of fig6c-vmval-reduced. The
+    groups are open, readings (a) preparatory only, peri-movement only and both (convention S, as for
+    ALM); (b) selective in the sample, in the delay and in the response epoch (overlapping groups), as
+    the sentence reads. A claim of absence; reproduced when no pair differs at p < 0.05 under every
+    reading, not reproduced when a pair does under every reading, methods_underspecified otherwise.
+- id: fig6c-unmodulated-less-selective
+  statement: The few VM/VAL neurons not changed by ALM photoinhibition were significantly less selective
+    in the delay epoch, while neurons strongly reduced by it carried trial-type information.
+  source: Results, ALM drives thalamic preparatory activity, paragraph 1; Figure 6c bottom
+  quote: A small fraction of neurons in VM/VAL was not changed by ALM photoinhibition. These neurons also
+    showed significantly less selectivity ( Fig. 6c , P = 0.002, t -test)
+  statistics:
+  - about: delay selectivity, significantly against non-significantly modulated neurons
+    test: t-test
+    p: 0.002
+  depends_on:
+  - fig6c-vmval-reduced
+  expected:
+  - quantity: regression slope
+    value: -0.73
+    tolerance: 0.073
+  - quantity: Pearson correlation
+    value: -0.33
+    tolerance: 0.033
+  criterion: Neurons of fig6c-vmval-reduced, split by the significance of their change (convention P).
+    Delay-epoch selectivity on correct control trials; its form is open, readings (a) absolute
+    contra minus ipsi rate, (b) preferred minus non-preferred rate, preference by total count over the
+    three epochs (convention S). Two-sided t-test of delay selectivity, significantly against not
+    significantly modulated. Regression of selectivity on rate change (photoinhibition minus control,
+    convention P window); the axis order is open, readings (i) selectivity on change, (ii) change on
+    selectivity. Reproduced when, under one reading, the unmodulated group is less selective at p <
+    0.05 and the correlation is negative; the slope and r are compared with tolerance and reported.
+    The paper gives no p-value for the regression.
+- id: fig6d-localized
+  statement: The reduction of thalamic activity by ALM photoinhibition was mainly limited to VM/VAL;
+    neurons within 1.0 mm of the VM/VAL centre were inhibited to 36% of control, and neurons farther
+    away less.
+  source: Results, ALM drives thalamic preparatory activity, paragraph 1; Methods, Electrophysiology
+    data analysis, paragraph 3; Figure 6d; Extended Data Figure 8b, c
+  quote: neurons within 1.0 mm from VM/VAL center showed robust inhibition (to 36% of control activity
+    during the first 100 ms inhibition
+  depends_on:
+  - thalamus-unit-classes
+  expected:
+  - quantity: activity within 1.0 mm of the VM/VAL centre as a percentage of control
+    value: 36
+    tolerance: 3.6
+    unit: percent
+  - quantity: neurons below 0.5 mm
+    value: 250
+    tolerance: 25
+  - quantity: neurons 0.5 to 1.0 mm
+    value: 160
+    tolerance: 16
+  - quantity: neurons at 1.0 mm or more
+    value: 46
+    tolerance: 4.6
+  criterion: Putative thalamic units recorded during ALM photoinhibition, at least 5 photoinhibition
+    trials, grouped by distance from the VM/VAL centre (Extended Data Fig. 8b; convention L, reading L2,
+    or the dataset's coordinates with any centre it documents). Ratio and trials by convention P.
+    Reproduced when the within-1.0 mm value and the group counts are within tolerance under one
+    reading and the ratio is lower below 0.5 mm than at 1.0 mm or more.
+- id: vm1-photoinhibition-no-effect
+  statement: Photoinhibiting vibrissal M1 did not reduce thalALM activity, unlike ALM photoinhibition in
+    the same neurons.
+  source: Results, ALM drives thalamic preparatory activity, paragraph 2; Extended Data Figure 8f, g
+  quote: photoinhibiting the nearby vibrissal primary motor cortex (vM1), which projects to parts of
+    VA/VL, did not cause a reduction in thal ALM activity ( Extended Data Fig. 8d-g )
+  criterion: VM/VAL units recorded with interleaved ALM and vM1 photoinhibition (Extended Data Fig. 8f,
+    g; n = 46 cells, 3 mice). A claim of absence. The paper names no test for it; the test it uses for
+    every photoinhibition effect is the two-sided t-test (convention P), applied here to the
+    population, paired over neurons, rates under vM1 photoinhibition against control in the window
+    of convention P. Reproduced when it finds no reduction at p < 0.05, not reproduced when it does.
+    The ratios under vM1 and ALM photoinhibition (Q1 to Q3) are reported either way.
+- id: fig6e-onset-latencies
+  statement: After ALM photoinhibition onset, ALM pyramidal neurons were silenced after 8.1 ms and VM/VAL
+    activity reduced after 10.9 ms; SNr neurons changed later, after 15.2 ms.
+  source: Figure 6e; Extended Data Figure 6f; Extended Data Figure 10d
+  quote: SNr neurons were affected by ALM photoinhibition with a relatively long latency difference
+    (15.2 ± 4.6 ms, mean ± SEM, P < 0.05, t -test), longer than for reducing thal ALM activity (10.9 ±
+    2.9 ms; Fig. 6e )
+  statistics:
+  - about: SNr against VM/VAL latency
+    test: t-test
+    p: 0.05
+    p_relation: "<"
+  depends_on:
+  - fig6c-vmval-reduced
+  - snr-photoinhibition
+  expected:
+  - quantity: ALM silencing onset
+    value: 8.1
+    tolerance: 1.2
+    unit: ms
+  - quantity: VM/VAL reduction onset
+    value: 10.9
+    tolerance: 2.9
+    unit: ms
+  - quantity: SNr change onset
+    value: 15.2
+    tolerance: 4.6
+    unit: ms
+  criterion: Onsets by convention O (O1, O2) for ALM putative pyramidal neurons during ALM
+    photoinhibition (n = 256), VM/VAL neurons (n = 201) and the significantly modulated SNr neurons
+    (Extended Data Fig. 10d, 48 inhibited; whether the 23 activated enter, with sign flipped, is open,
+    readings (a) inhibited only, (b) both). Tolerances are the paper's SEMs. The paper does not say
+    what its t-test of SNr against VM/VAL onsets compares; the onsets and their bootstrap SEMs are
+    reported and the outcome does not rest on that test. Reproduced when the three onsets are within tolerance under one reading and SNr is latest.
+- id: snr-photoinhibition
+  statement: ALM photoinhibition changed only a small fraction of SNr GABAergic neurons (48/181
+    significantly inhibited, 23/181 activated), more decreasing than increasing, and reduced SNr
+    activity overall by 3.6 spikes per s (8.3%), which argues against SNr mediating the thalamic
+    reduction.
+  source: Results, ALM drives thalamic preparatory activity, paragraph 2; Extended Data Figure 10c
+  quote: Photoinhibition of ALM changed only a relatively small fraction of SNr neurons (48/181
+    significantly inhibited; 23/181 significantly activated, P < 0.05, t -test,). Moreover, neurons that
+    decreased their activity were more numerous than neurons that increased their activity
+    (bootstrapping over neurons, P < 0.01, Methods). Overall, inhibiting ALM reduced SNr activity by 3.6
+    spikes per second (8.3% of control activity
+  statistics:
+  - about: more down-modulated than up-modulated neurons
+    test: bootstrapping over neurons
+    p: 0.01
+    p_relation: "<"
+    n: 181 putative GABAergic SNr neurons
+  expected:
+  - quantity: SNr units
+    value: 227
+    tolerance: 23
+  - quantity: putative GABAergic SNr neurons
+    value: 181
+    tolerance: 18
+  - quantity: significantly inhibited
+    value: 48
+    tolerance: 4.8
+  - quantity: significantly activated
+    value: 23
+    tolerance: 2.3
+  - quantity: reduction of SNr activity
+    value: 3.6
+    tolerance: 0.36
+    unit: spikes/s
+  - quantity: reduction as a percentage of control
+    value: 8.3
+    tolerance: 0.83
+    unit: percent
+  criterion: SNr units with trough-to-peak width below 0.45 ms (Methods); window and tests by convention
+    P (readings T1, T2), all such units (n = 181; the minimum of 5 photoinhibition trials is not stated
+    for SNr, readings (a) none, (b) 5). Bootstrap as the Methods describe, resampling neurons with
+    replacement, 1000 or 10000 rounds, p the fraction of rounds with up-modulated at least as many as
+    down-modulated. Reproduced when the values are within tolerance under one reading and p < 0.01.
+- id: snr-unit-properties
+  statement: Putative GABAergic SNr neurons had high spike rates (40.9 spikes per s) compared with the
+    other SNr units (23.4), and most of them (152/181) were selective for trial type, like ALM and
+    VM/VAL.
+  source: Methods, Electrophysiology data analysis, paragraph 4; Extended Data Figure 4j, 10b
+  quote: These units have high spike rates (40.9 ± 21.5, mean ± SD, n = 181). For comparison, neurons
+    with longer spike widths have lower spikes rates (23.4 ± 17.0, mean ± SD, n = 46)
+  depends_on:
+  - snr-photoinhibition
+  expected:
+  - quantity: mean rate of putative GABAergic SNr neurons
+    value: 40.9
+    tolerance: 4.09
+    unit: spikes/s
+  - quantity: mean rate of other SNr units
+    value: 23.4
+    tolerance: 2.34
+    unit: spikes/s
+  - quantity: selective putative GABAergic SNr neurons
+    value: 152
+    tolerance: 15
+  criterion: Mean rate per unit over the session (the window is not given; readings (a) whole session,
+    (b) all trials from trial start to end), then mean over units. Selectivity by convention S
+    (readings R1, R2). Tolerances are 10% of the values, as the stated SDs describe spread over units,
+    not uncertainty of the mean. Reproduced when all values are within tolerance under one reading.
+- id: anatomy-reciprocal-thalamus
+  statement: ALM is reciprocally connected with ipsilateral thalamic nuclei, most consistently the
+    VM/VAL complex; a retrograde injection into ALM labelled 17375 thalamic neurons, against 38062 in
+    contralateral ALM and 26599 in M1.
+  source: Results, Thalamus is required for motor preparation, paragraph 2; Extended Data Figure 1d, f
+  quote: Within thal ALM , the VM/VAL complex was most extensively and consistently labeled in
+    experiments involving injections of multiple types of anterograde and retrograde tracers into ALM
+  expected:
+  - quantity: retrogradely labelled thalamic neurons
+    value: 17375
+    tolerance: 1738
+  - quantity: retrogradely labelled contralateral ALM neurons
+    value: 38062
+    tolerance: 3806
+  - quantity: retrogradely labelled M1 neurons
+    value: 26599
+    tolerance: 2660
+  criterion: Histology (tracer injections, cell counts registered to the Allen CCF). The dataset is
+    described as electrophysiology, behaviour and optogenetics; whether it holds these images is for
+    the author to find.
