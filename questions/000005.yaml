@@ -14,6 +14,16 @@ questions:
     0.3 ms and the mean latency is 1.88 ms (not reproduced); in 1 ms bins the mean over three cells
     is 3.67 to 4.17 ms (within 4.0 +- 0.4). For the thalamic and cortical light the full rate gives
     0.1 ms for both, the 1 ms bins 5.0 and 2.0 ms.
+  answer: >-
+    The recording's sampling rate, not 1 ms bins. The Methods give 1 ms bins for spike PSTHs
+    only ("All touch-spike PSTHs were constructed with a bin size of 1 ms"), and the paper's Vm
+    latencies are not on a 1 ms grid. The FS onset has "median, 4.2 ms, n = 7 neurons" and the E
+    latency "median, 4.7 ms" over 37; with an odd n each median is one cell's value. The laser
+    latencies are 4.2 and 2.8 ms. The paper gives no smoothing and does not say whether a
+    crossing was interpolated. Criteria of fs-vm-touch-whisking, exc-vm-touch-whisking and
+    exc-thalamus-photoinhibition, and header O8, now say dVm/dt is taken at the sampling rate.
+    Claims and expected values unchanged.
+  answered: 2026-10-20
 - claim: fs-touch-response
   asked: 2026-10-20
   question: The dPSTH/dt latency is found in 1 ms bins. Is the latency the bin's left edge or its
@@ -23,6 +33,14 @@ questions:
     (2.5 ms for VPM, 4.5 ms for FS) fall on half milliseconds.
   why: The two differ by 0.5 ms, more than the 0.32 ms tolerance of vpm-touch. No outcome of this
     attempt changes with it, but a later attempt could.
+  answer: >-
+    The paper does not say. The Methods define the latency as "the latency from touch onset to
+    the time when dPSTH/dt crossed a threshold" with no bin time. The half-millisecond medians
+    do not settle it: 4.5 ms is the median of 24 cells, an even n, so it can be the mean of two
+    whole-millisecond values; the VPM latency n is not printed. Header O9 names (a) the left
+    edge and (b) the centre of the crossing bin, and vpm-touch, fs-touch-response and
+    pv-enphr-suppression now run both.
+  answered: 2026-10-20
 - claim: fs-touch-response
   asked: 2026-10-20
   question: The claims file defines FS cells as cells "driven by 5 ms light pulses within 5 ms of
@@ -39,6 +57,19 @@ questions:
     and duration is peak-to-trough time on the 300 Hz high-passed mean spike. With these, 8 of 20
     driven cell-attached cells fall outside the boundary, leaving 12 where Supplementary Table 2 has
     24, and the outcome of thalamus-drives-fs turns on it (5 cells inside, 9 without the boundary).
+  answer: >-
+    The paper does not give the test, the baseline or the threshold. It says only "We recorded
+    from neurons that were directly driven by light within 5 ms after photostimulus onset",
+    with "Light pulses (5 ms) were delivered at either 5 or 10 Hz" (Online Methods). Peak and
+    trough are defined only graphically in the Supplementary Fig. 6 inset, which this run
+    could not render; the text calls the duration "spike peak to trough duration" (Online
+    Methods), so duration is peak-to-trough time. Polarity and baseline are not stated. The
+    fs-touch-response criterion now names readings: driven at p < 0.001 and at p < 0.01, each
+    with and without the approximate boundary. The check is the paper's counts: 19
+    ChR2-tagged control FS cells (5 whole-cell, 14 cell-attached), and 14 control plus 10
+    ION-cut cell-attached FS cells in VGAT-ChR2-EYFP mice (Supplementary Table 2). The 24 of
+    Supplementary Table 2 includes the 10 ION-cut cells.
+  answered: 2026-10-20
 - claim: behavior-false-alarms
   asked: 2026-10-20
   question: Is the chi-squared test of no-lick performance with and without light corrected for
@@ -48,6 +79,13 @@ questions:
   why: With the correction, 4 mice (trials pooled) or 5 (any session) show a significant decrease;
     without it, 5 or 6, which moves the outcome between not reproduced, partially reproduced and
     reproduced.
+  answer: >-
+    The paper does not say. It gives only "(p < 0.05, Chi-squared test, solid lines)"
+    (Supplementary Fig. 14c legend) and "All statistical analyses were performed in Matlab"
+    (Online Methods). Matlab's crosstab returns the uncorrected Pearson chi-squared, but the
+    paper does not name the function and no code was available. The behavior-false-alarms
+    criterion now names (i) no correction and (ii) Yates's correction, each run.
+  answered: 2026-10-20
 - claim: thalamus-drives-fs
   asked: 2026-10-20
   question: Are the paired tests of light against control one-sided (light lower) or two-sided?
@@ -55,6 +93,16 @@ questions:
     control ... (Results, Inhibition is driven by thalamus, paragraph 2)
   why: Only 5 FS cells by the claims file's rule have thalamic light; a two-sided signed-rank test
     with 5 cells cannot go below p = 0.0625, a one-sided one can reach 0.031.
+  answer: >-
+    Two-sided. The text does not state the sides, but the printed values fit exact two-sided
+    signed-rank tests at the printed n: "to 4% of control, P = 5 × 10−4, n = 13 neurons" is
+    the two-sided exact P when the cell with the smallest change goes up (4.9 x 10^-4), and no
+    one-sided exact P at n = 13 rounds to 5 x 10^-4 (2.4, 3.7 and 6.1 x 10^-4). The P values
+    for n = 15 and 14 (6 x 10^-5 and 1 x 10^-4) are the two-sided minima. The analyses were
+    run in Matlab, whose signrank is two-sided by default. The thalamus-drives-fs criterion
+    now says two-sided; the one-sided P is a reported variant. With 5 cells the claim cannot
+    pass at 0.05, which is a matter of sample size, not of the test.
+  answered: 2026-10-20
 - claim: behavior-touches
   asked: 2026-10-20
   question: Do the touch counts and the performance include the trials with light?
@@ -63,6 +111,13 @@ questions:
   why: With every trial (all sessions, principal whisker) the counts are 6.04 and 0.85, both within
     tolerance; without the light trials they are 5.74 and 0.80, and the no-lick count falls outside,
     which moves the outcome from partially reproduced to not reproduced.
+  answer: >-
+    The paper does not say. The Behavior paragraph gives "5.7 ± 5.3, mean ± s.d., 4,147
+    trials" and performance "during the recordings of 111 cells" with no mention of light
+    trials. The behavior-touches criterion now names light readings (x) every trial and (y)
+    trials without light only, each run with its recording and whisker readings. The trial
+    counts under each are reported against 4,147 and 4,173.
+  answered: 2026-10-20
 - claim: exc-vm-touch-whisking
   asked: 2026-10-20
   question: For whisking onsets, over which windows is "the average whisking amplitude increased by
@@ -75,3 +130,15 @@ questions:
     200 ms before it, and touches of every tracked whisker are excluded from 10 ms before onset to
     100 ms after offset. These set the onsets and epochs behind every whisking measure; the attempt
     did not run other readings of them.
+  answer: >-
+    The paper gives neither. The rule names no windows ("the average whisking amplitude
+    increased by least 2°"), and the epoch rule says only "excluding ... −10 to 100 ms
+    surrounding touches". The Behavior paragraph says "Touches by the principal and surround
+    whiskers were treated independently", which does not say which touches bound whisking
+    epochs. The only whisking-onset windows the paper gives are those of the Supplementary
+    Fig. 4 legend (0 to 200 ms before, 100 to 300 ms after). Header O10 and O11 name the
+    readings, now cited in exc-vm-touch-whisking: windows (a) the Supplementary Fig. 4 windows
+    (this attempt's) and (b) 0 to 250 ms after against the whole nonwhisking period; touches
+    of (a) every tracked whisker or (b) the principal whisker, spanning (i) 10 ms before onset
+    to 100 ms after offset or (ii) 10 ms before to 100 ms after onset.
+  answered: 2026-10-20

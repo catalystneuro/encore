@@ -87,7 +87,8 @@
 #   licks and -10 to 100 ms around touches. Nonwhisking periods are periods of at least 100 ms
 #   with amplitude below 1.25 degrees and no touch or lick. Whisking onsets (transitions) are ends
 #   of nonwhisking periods followed by a rise of mean amplitude of at least 2 degrees with no touch
-#   within 250 ms (Online Methods, Data analysis).
+#   within 250 ms (Online Methods, Data analysis). The windows of that rise and the touches that
+#   bound epochs and onsets are open (O10, O11).
 # - Rates. Spike rate in nonwhisking and in whisking periods from the extracted epochs, with a
 #   1,000-iteration bootstrap interval (Online Methods; Fig. 5d legend).
 # - Phase coupling. Spike rate (or Vm) in phase bins during whisking epochs, fitted by a sinusoid;
@@ -132,8 +133,21 @@
 #   (b) the median over cells of each cell's ratio.
 # - O7 Laser powers of the thalamic photoinhibition (dose-dependent, Supplementary Fig. 9i,j).
 #   (a) all powers pooled; (b) the highest power only.
-# - O8 Phase of the derivative-based latencies. The text fixes the 1 ms bins and gives no
-#   smoothing; read as the first difference of the unsmoothed PSTH (or Vm average).
+# - O8 Phase of the derivative-based latencies. The text fixes 1 ms bins for spike PSTHs only and
+#   gives no smoothing; dPSTH/dt is the first difference of the unsmoothed 1 ms PSTH. dVm/dt is
+#   the first difference of the unsmoothed Vm average at the recording's sampling rate, not in
+#   1 ms bins: the paper's Vm latencies (median 4.7 ms of 37 cells and 4.2 ms of 7 cells, each
+#   one cell's value; laser-onset latencies 4.2 and 2.8 ms) are not on a 1 ms grid (answer of
+#   2026-10-20).
+# - O9 Time given to a crossing found in 1 ms PSTH bins (not stated). (a) the left edge of the
+#   bin; (b) its centre, 0.5 ms later.
+# - O10 Whisking onsets, the windows over which the rise of mean amplitude by 2 degrees is judged
+#   (not stated). (a) 100 to 300 ms after the end of the nonwhisking period against 0 to 200 ms
+#   before it (the whisking-onset windows of the Supplementary Fig. 4 legend); (b) 0 to 250 ms
+#   after it (the touch-free span of the same rule) against the whole nonwhisking period.
+# - O11 Touches that bound whisking epochs and onsets (not stated). Whiskers (a) every tracked
+#   whisker, (b) the principal whisker; span (i) 10 ms before touch onset to 100 ms after touch
+#   offset, (ii) 10 ms before to 100 ms after touch onset.
 # Which cells enter each n (40 of the 43 E cells in PV-IRES-Cre mice; 13 to 15 FS cells in the
 # thalamic experiment) the paper does not say beyond the counts; cells enter a comparison when
 # they have epochs of each kind compared, and the counts are reported against the paper's.
@@ -175,8 +189,10 @@ claims:
     Methods restrict touch responses to it, not touch counts). Readings, each run: recordings
     (a) the trials of the 111 control cortical cells, (b) all behavioral sessions of the
     dandiset (cortical, VPM, ION-cut and eNpHR control trials); whiskers (i) principal whisker
-    only, (ii) any tracked whisker. The trial counts under each reading are reported against
-    4,147 and 4,173. Reproduced when every expected value is within tolerance under a reading;
+    only, (ii) any tracked whisker. Nor does it say whether trials with light (thalamic or
+    eNpHR) enter the touch counts or the performance (answer of 2026-10-20); light readings,
+    each run with the others: (x) every trial, (y) trials without light only. The trial counts
+    under each reading are reported against 4,147 and 4,173. Reproduced when every expected value is within tolerance under a reading;
     partially reproduced when the touch counts are and a performance value is not, or the
     reverse.
 - id: vpm-touch
@@ -208,7 +224,8 @@ claims:
     25 ms before onset) and spike latency by the dPSTH/dt rule, on principal-whisker touches with
     intertouch interval at least 25 ms (Online Methods, Data analysis; header, Measures). The
     latency n is the units that pass the Methods' exclusion; the paper does not print it. Filter
-    readings O1 do not enter (no whisking measure); latency reading O8. Reproduced when all four
+    readings O1 do not enter (no whisking measure); latency readings O8 and O9 (a) left edge and
+    (b) centre of the crossing bin, which the paper does not fix. Reproduced when all four
     values are within tolerance; partially reproduced when the spikes-per-touch values are and a
     latency value is not.
 - id: vpm-whisking
@@ -303,13 +320,16 @@ claims:
   criterion: >-
     The 37 whole-cell L4 E neurons of control mice. Touch-aligned average Vm (spikes removed)
     over principal-whisker touches with intertouch interval at least 25 ms; latency by the
-    dVm/dt rule (reading O8); amplitude is the peak of the average minus the mean 0 to 5 ms
+    dVm/dt rule, with dVm/dt at the recording's sampling rate (10 or 20 kHz), not in 1 ms bins
+    (reading O8; the paper's median latency, 4.7 ms over 37 cells, is one cell's value and not a
+    whole millisecond; answer of 2026-10-20); amplitude is the peak of the average minus the mean 0 to 5 ms
     before onset (Supplementary Fig. 4 legend). The paper does not say how the whisking change
     (1.2 +- 2.1 mV) is measured. Readings, each run: (a) the mean Vm 100 to 300 ms after
     whisking onset minus the mean 0 to 200 ms before, averaged over onsets (Supplementary Fig.
     4 legend windows; Fig. 2f shows whisking-onset-aligned averages); (b) the mean Vm in
     whisking epochs minus the mean Vm in nonwhisking periods (Online Methods epochs), spikes
-    removed. Resting Vm by O4 (a) and (b). Reproduced when a touch latency is found in
+    removed. Resting Vm by O4 (a) and (b). Whisking onsets and epochs by readings O10 and O11,
+    which the paper leaves open (answer of 2026-10-20). Reproduced when a touch latency is found in
     every neuron with a positive amplitude and the four values are within tolerance; partially
     reproduced when every neuron depolarizes and a value is out of tolerance.
 - id: exc-threshold-touch-vs-whisking
@@ -405,7 +425,18 @@ claims:
   criterion: >-
     Over the control L4 FS cells (26 in the text, 25 in Supplementary Fig. 7; both sets
     reported), the nonwhisking rate, spikes per touch by the cortical Fig. 5 definition and
-    spike latency by the dPSTH/dt rule with its exclusion (header, Measures; reading O8).
+    spike latency by the dPSTH/dt rule with its exclusion (header, Measures; readings O8 and O9).
+    FS identification (answer of 2026-10-20). The paper names no test, baseline or threshold for
+    "directly driven by light within 5 ms after photostimulus onset" (5 ms pulses at 5 or 10 Hz;
+    Online Methods), and defines peak and trough of Supplementary Fig. 6 only in the figure's
+    inset; the text gives duration as "spike peak to trough duration" (Online Methods, Barrel
+    cortex recordings) and nothing on polarity or baseline. The author states its test and its
+    waveform measures; readings, each run: driven at (a) p < 0.001 and (b) p < 0.01, each (i)
+    with and (ii) without the approximate boundary of the header. The paper's counts are the
+    check: 19 ChR2-tagged control FS cells (5 whole-cell, 14 cell-attached), and 14 control
+    plus 10 ION-cut cell-attached FS cells in VGAT-ChR2-EYFP mice (Supplementary Table 2); the
+    count of each reading is reported against them, and dandiset cell-type labels, where
+    present, take precedence (header, Cell types).
     Reproduced when the three values are within tolerance; partially reproduced when two are.
 - id: fs-vm-touch-whisking
   statement: In whole-cell L4 FS interneurons (n = 7), touch depolarizes the membrane by 7.0 +-
@@ -431,7 +462,9 @@ claims:
     tolerance: 0.79
     unit: mV
   criterion: >-
-    The 7 whole-cell L4 FS cells. Touch amplitude and latency as in exc-vm-touch-whisking;
+    The 7 whole-cell L4 FS cells. Touch amplitude and latency as in exc-vm-touch-whisking, with
+    dVm/dt at the sampling rate, not in 1 ms bins (the paper's median, 4.2 ms over 7 cells, is
+    one cell's value; answer of 2026-10-20);
     whisking depolarization as the post-onset (100 to 300 ms) minus pre-onset (0 to 200 ms) mean
     Vm (Supplementary Fig. 4 legend, the paper's whisking-onset measure), with the nonwhisking
     minus whisking 10th percentile of distance to threshold (Fig. 4h) as reading (b). Reproduced
@@ -583,8 +616,9 @@ claims:
     windows O5. The latency rule for laser onset is not given; the only onset rule the paper
     gives is the touch-latency rule (Online Methods), so it is applied to the laser-onset-aligned
     grand average (Supplementary Fig. 9c,f): dVm/dt crossing 3 x the s.d. of dVm/dt 0 to 25 ms
-    before laser onset, with the crossing taken in the negative direction (reading O8 for the
-    derivative). That this rule is the one used is an assumption, recorded as a deviation.
+    before laser onset, with the crossing taken in the negative direction, dVm/dt at the
+    sampling rate (reading O8; the paper's 4.2 and 2.8 ms are not whole milliseconds, so not
+    1 ms bins; answer of 2026-10-20). That this rule is the one used is an assumption, recorded as a deviation.
     The paper reports no test for 9d,e. Reproduced when Vm is lower and variance lower with
     light in most of the 12 neurons and both latencies are within tolerance with the thalamic
     one longer; partially reproduced when the Vm and variance parts hold and a latency does not.
@@ -622,7 +656,13 @@ claims:
     Nonwhisking and whisking rates, and spikes per touch (Fig. 6e axis; Fig. 5 definition), in
     light trials inside the light against control, windows O5, fractions O6 (Fig. 6e plots
     population means, which favours O6 a), laser powers O7. Tests are Wilcoxon signed-rank
-    (paired; not named in the Results). Reproduced when all three tests give p < 0.05 with
+    (paired; not named in the Results), two-sided: the paper does not state the sides, but its
+    printed P values match exact two-sided tests at the printed n (n = 13, P = 5 x 10^-4 is
+    the two-sided exact P with one cell of smallest change going up; no one-sided exact P at n
+    = 13 rounds to it; n = 14 and 15 give the two-sided minima 1.2 x 10^-4 and 6.1 x 10^-5),
+    and the analyses were run in Matlab, whose signrank is two-sided by default (answer of
+    2026-10-20). The one-sided P is reported as a variant and does not enter the outcome.
+    Reproduced when all three tests give p < 0.05 with
     light lower and the fractions are within tolerance under a reading; partially reproduced
     when the three tests hold and a fraction is not within tolerance; not reproduced when a
     test fails.
@@ -786,7 +826,7 @@ claims:
     (Supplementary Fig. 13c); the latency rule for laser onset is not given, so the Methods'
     spike-latency rule is applied to the laser-onset-aligned PSTH (1 ms bins; dPSTH/dt crossing
     3 x its s.d. 0 to 25 ms before laser onset, downward for PV cells and upward for
-    excitatory cells; reading O8), an assumption recorded as a deviation. Reproduced when 3 of 4 PV
+    excitatory cells; readings O8 and O9), an assumption recorded as a deviation. Reproduced when 3 of 4 PV
     cells are inhibited and the latencies are within tolerance (1 ms bins limit them to whole
     ms); partially reproduced when only the PV count holds.
 - id: fs-suppress-movement-spiking
@@ -998,6 +1038,9 @@ claims:
     trials with and without light, compared by a chi-squared test at p < 0.05 (Supplementary
     Fig. 14c). Whether sessions of a mouse are pooled is not stated; readings (a) all of a
     mouse's trials pooled; (b) per session, a mouse counting when any session is significant.
+    Nor is a continuity correction stated (answer of 2026-10-20); readings, each run with the
+    others: (i) the Pearson chi-squared test without correction (what Matlab's crosstab, the
+    paper's stated software, returns); (ii) with Yates's correction.
     Reproduced when 6 of 8 mice show a significant decrease under a reading (5 to 7 partially
     reproduced); not reproduced when fewer than 5 do.
 - id: exc-inhibition-whisking
