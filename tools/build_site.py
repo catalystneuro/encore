@@ -231,9 +231,13 @@ def collect(executed: Path | None = None) -> dict:
         })
     transcripts = {d.name: sorted(p.name for p in d.glob("*.md"))
                    for d in sorted((ROOT / "transcripts").glob("*")) if d.is_dir()}
+    # An earlier attempt's transcripts, moved aside by tools/archive_transcripts.sh.
+    archived = {f"{d.name}/{a.name}": sorted(p.name for p in a.glob("*.md"))
+                for d in sorted((ROOT / "transcripts").glob("*")) if d.is_dir()
+                for a in sorted(d.glob("attempt-*")) if a.is_dir()}
     return finish({
         "pipeline": pipeline_inputs(),
-        "transcripts": transcripts,
+        "transcripts": {**transcripts, **archived},
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
         "queue_counts": queue["counts"],
@@ -1208,10 +1212,19 @@ def dandiset_description(dandiset: str, atts: list[dict]) -> str:
             f"{n:,} claims tested ({', '.join(parts)}) and {findings:,} findings about the data.")
 
 
-def page_dandiset(data: dict, dandiset: str) -> str:
-    root = "../../"
-    atts = current_attempts(data)[dandiset]
-    earlier = [a for a in data["attempts"] if a["dandiset"] == dandiset and a not in atts]
+def earlier_attempts(data: dict, dandiset: str) -> list[dict]:
+    """The dandiset's attempts that a later attempt on the same paper replaced, oldest first."""
+    current = current_attempts(data).get(dandiset, [])
+    return sorted((a for a in data["attempts"] if a["dandiset"] == dandiset and a not in current),
+                  key=lambda a: (a["date"], a["id"]))
+
+
+def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str:
+    """The dandiset's page, from its current attempts; or, given an earlier attempt, that attempt's page."""
+    root = "../../../" if attempt else "../../"
+    current_atts = current_attempts(data)[dandiset]
+    atts = [attempt] if attempt else current_atts
+    earlier = [a for a in earlier_attempts(data, dandiset) if a is not attempt]
     target = next((t for t in data["targets"] if t["dandiset"] == dandiset), None)
     counts = outcome_counts(atts)
     n = sum(counts.values())
@@ -1311,17 +1324,20 @@ def page_dandiset(data: dict, dandiset: str) -> str:
                       ("Protocol", e(agent.get("protocol", "not recorded")))]
         provenance_html += ('<dl class="kv" style="margin-top:14px">'
                             + "".join(f"<dt>{k}</dt><dd>{v}</dd>" for k, v in rows_) + "</dl>")
-    runs = data.get("transcripts", {}).get(dandiset, [])
+    folder = f'{dandiset}/attempt-{attempt["id"].rsplit("-", 1)[1]}' if attempt else dandiset
+    runs = data.get("transcripts", {}).get(folder, [])
     if runs and not data["demo"]:
-        items = "".join(f'<li><a href="{REPO_URL}/blob/main/transcripts/{e(dandiset)}/{e(name)}">{e(name)}</a></li>'
+        items = "".join(f'<li><a href="{REPO_URL}/blob/main/transcripts/{e(folder)}/{e(name)}">{e(name)}</a></li>'
                         for name in runs)
         provenance_html += ('<h3 style="margin-top:18px">Transcripts of the agent runs</h3>'
                             '<p class="sub small">Each run’s prompt, messages and tool calls, with long output cut '
                             'and the text of the paper left out, and its final report.</p>'
                             f'<ul style="margin:6px 0 0;padding-left:20px">{items}</ul>')
     if earlier:
-        provenance_html += ('<p class="sub small" style="margin-top:14px">Earlier attempts: ' + ", ".join(
-            f'{e(x["id"])} ({e(x["date"])})' for x in earlier) + "</p>")
+        provenance_html += ('<p class="sub small" style="margin-top:14px">'
+                            + ("Other earlier attempts: " if attempt else "Earlier attempts: ") + ", ".join(
+            f'<a href="{root}dandisets/{e(dandiset)}/{e(x["id"])}/">{e(x["id"])}</a> ({e(x["date"])})'
+            for x in earlier) + "</p>")
 
     actions = [f'<a href="https://dandiarchive.org/dandiset/{e(dandiset)}" target="_blank" rel="noopener">View on DANDI</a>']
     actions += [f'<a href="https://doi.org/{e(a["paper"])}">Paper</a>' for a in atts] if len(atts) == 1 else []
@@ -1347,7 +1363,7 @@ def page_dandiset(data: dict, dandiset: str) -> str:
         links = ""
         for t in same_paper:
             if t["dandiset"] in current:
-                links += f'<a href="../{e(t["dandiset"])}/">Dandiset {e(t["dandiset"])}</a> '
+                links += f'<a href="{root}dandisets/{e(t["dandiset"])}/">Dandiset {e(t["dandiset"])}</a> '
             else:
                 links += (f'<span><a href="https://dandiarchive.org/dandiset/{e(t["dandiset"])}">Dandiset '
                           f'{e(t["dandiset"])}</a> <span class="muted">(not attempted)</span></span> ')
@@ -1355,8 +1371,17 @@ def page_dandiset(data: dict, dandiset: str) -> str:
                    f'<div class="related">{links}</div></div>')
     ids = sorted(current)
     i = ids.index(dandiset)
-    prev_link = f'<a href="../{ids[i - 1]}/">← Dandiset {ids[i - 1]}</a>' if i > 0 else "<span></span>"
-    next_link = f'<a href="../{ids[i + 1]}/">Dandiset {ids[i + 1]} →</a>' if i < len(ids) - 1 else "<span></span>"
+    prev_link = f'<a href="{root}dandisets/{ids[i - 1]}/">← Dandiset {ids[i - 1]}</a>' if i > 0 else "<span></span>"
+    next_link = (f'<a href="{root}dandisets/{ids[i + 1]}/">Dandiset {ids[i + 1]} →</a>' if i < len(ids) - 1
+                 else "<span></span>")
+    superseded = ""
+    if attempt:
+        later = next(a["id"] for a in current_atts if a["paper"] == attempt["paper"])
+        same_entry = any(a["entry"] == attempt["entry"] for a in current_atts)
+        superseded = (f'<p class="deprecated"><strong>An earlier attempt.</strong> Attempt {e(later)} replaced it; '
+                      f'<a href="{root}dandisets/{e(dandiset)}/">the dandiset’s page</a> shows the current '
+                      f'outcomes.' + (" Its notebooks link to the entry as it is now, which the later attempt "
+                                      "updated; the attempt record is as it was." if same_entry else "") + "</p>")
 
     tab_defs = [("claims", "Claims", n), ("findings", "Findings about the data", len(all_findings)),
                 ("notebooks", "Notebooks", n_notebooks), ("verification", "Verification", n_rounds),
@@ -1369,13 +1394,16 @@ def page_dandiset(data: dict, dandiset: str) -> str:
     name = (target or {}).get("name") or atts[-1]["entry_title"] or dandiset
     tier = weakest_tier(atts)
     tier_link = f'{root}dandisets/?status=attempted&tier={tier}'
+    crumb = (f'<a href="{root}dandisets/{e(dandiset)}/">{e(dandiset)}</a> / {e(attempt["id"])}' if attempt
+             else e(dandiset))
     body = f'''<header class="page">
-  <p class="crumbs"><a href="{root}dandisets/">Dandisets</a> / {e(dandiset)}</p>
+  <p class="crumbs"><a href="{root}dandisets/">Dandisets</a> / {crumb}</p>
   <div class="dhead"><h1>Dandiset {e(dandiset)}</h1>{tier_badge(tier, tier_link)}</div>
   <p class="sub">{e(name)}</p>
   <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
   <div class="summary">{bar(counts, f"Outcomes of {n} claims", "bar mini")}{legend(counts, compact=True)}</div>
   {outside_note(atts)}
+  {superseded}
   <p class="actions">{" ".join(actions)}</p>
 </header>
 <main>
@@ -1401,8 +1429,10 @@ def page_dandiset(data: dict, dandiset: str) -> str:
   {related}
   <div class="prevnext">{prev_link}{next_link}</div>
 </main>'''
-    return shell(data, dandiset_title(dandiset, atts), root, "dandisets", body, CLAIMS_JS + TABS_JS,
-                 path=f"dandisets/{dandiset}/", description=dandiset_description(dandiset, atts))
+    path = f"dandisets/{dandiset}/{attempt['id']}/" if attempt else f"dandisets/{dandiset}/"
+    title = dandiset_title(dandiset, atts)
+    return shell(data, f"{attempt['id']} (earlier attempt) · {title}" if attempt else title, root, "dandisets",
+                 body, CLAIMS_JS + TABS_JS, path=path, description=dandiset_description(dandiset, atts))
 
 
 # --- writing -------------------------------------------------------------------
@@ -1426,6 +1456,9 @@ def build(data: dict, output: Path) -> None:
         page = output / "dandisets" / dandiset
         page.mkdir(exist_ok=True)
         (page / "index.html").write_text(page_dandiset(data, dandiset))
+        for a in earlier_attempts(data, dandiset):
+            (page / a["id"]).mkdir(exist_ok=True)
+            (page / a["id"] / "index.html").write_text(page_dandiset(data, dandiset, a))
         (output / "api" / "dandiset" / f"{dandiset}.json").write_text(json.dumps({
             "dandiset": dandiset, "page": f"dandisets/{dandiset}/", "generated": data["generated"],
             "caution": CAUTION + " It may be a failure of the attempt.",
