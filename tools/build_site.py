@@ -41,6 +41,7 @@ import json
 import random
 import re
 import shutil
+import sys
 from pathlib import Path
 
 import yaml
@@ -52,52 +53,15 @@ SITE_URL = "https://catalystneuro.github.io/reproduction-registry/"
 SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of neuroscience papers from their open data on the "
                     "DANDI Archive, and record every outcome and what they find about the data.")
 
-# The archives the registry reads from. A dataset is keyed as "<archive>:<id>" (dandi:000003), shown as
-# "<label>:<id>" (DANDI:000003), and has its page at datasets/<archive>/<id>/. Its files in the repository
-# (claims/, questions/, transcripts/, the paper store) are under the id for DANDI and "<archive>-<id>" otherwise.
-ARCHIVES = {
-    "dandi": {"label": "DANDI", "name": "the DANDI Archive", "url": "https://dandiarchive.org/dandiset/{id}"},
-}
-
-
-def key_of(archive: str, id_: str) -> str:
-    return f"{archive}:{id_}"
-
-
-def split_key(key: str) -> tuple[str, str]:
-    archive, _, id_ = key.partition(":")
-    return archive, id_
-
-
-def dataset_label(key: str) -> str:
-    """How a dataset is named on the site: DANDI:000003."""
-    archive, id_ = split_key(key)
-    return f'{ARCHIVES.get(archive, {}).get("label", archive.upper())}:{id_}'
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
+from datasets import folder as dir_of, key_of_folder as key_of_dir, label as dataset_label, url as archive_url  # noqa: E402,F401
 
 
 def page_of(key: str) -> str:
+    """A dataset's page on the site: datasets/<archive>/<id>/."""
     archive, id_ = split_key(key)
     return f"datasets/{archive}/{id_}/"
-
-
-def archive_url(key: str) -> str:
-    archive, id_ = split_key(key)
-    return ARCHIVES[archive]["url"].format(id=id_) if archive in ARCHIVES else ""
-
-
-def archive_name(key: str) -> str:
-    archive, _ = split_key(key)
-    return ARCHIVES.get(archive, {}).get("name", archive)
-
-
-def dir_of(key: str) -> str:
-    """The directory name a dataset's files have in the repository."""
-    archive, id_ = split_key(key)
-    return id_ if archive == "dandi" else f"{archive}-{id_}"
-
-
-def key_of_dir(name: str) -> str:
-    return key_of("dandi", name) if re.fullmatch(r"[0-9]{6}", name) else key_of(*name.split("-", 1))
 
 
 OUTCOMES = {  # key: (label, css class, icon)
@@ -262,9 +226,9 @@ def collect(executed: Path | None = None) -> dict:
 
     attempted = {a["key"] for a in attempts}
     targets = []
-    for t in queue["targets"]:
+    for t in all_targets():
         papers = [p for p in t["papers"] if not p["preprint"]] or t["papers"]
-        key = key_of("dandi", t["dandiset"])
+        key = t["key"]
         status = "attempted" if key in attempted else "pilot" if key in pilot else "open"
         targets.append({
             "key": key, "label": dataset_label(key), "name": t["name"], "size_gb": t["size_gb"],

@@ -1,27 +1,30 @@
 name: Paper run
-run-name: "Paper run: ${{ inputs.dandiset }} ${{ inputs.role }}${{ inputs.account == 'unverified' && ' (unverified)' || '' }}"
+run-name: "Paper run: ${{ inputs.dataset || inputs.dandiset }} ${{ inputs.role }}${{ inputs.account == 'unverified' && ' (unverified)' || '' }}"
 
 # One reader run on a target (docs/protocol.md, "Reader"): writing the claims file from the
 # paper (`claims`), checking it against the paper (`claims-check`), or answering an attempt's
 # questions (`answer`). Started by hand from the Actions tab or with
-#   gh workflow run papers.yml -f dandiset=000147 -f role=claims
+#   gh workflow run papers.yml -f dataset=000147 -f role=claims
 #
 # These are the only runs that write the claims file. The job runs in the `papers` environment,
 # whose deploy key reads the private paper store (catalystneuro/registry-papers); the environment
-# can be used only from main. Before the agent starts, tools/get_papers.sh copies the dandiset's
+# can be used only from main. Before the agent starts, tools/get_papers.sh copies the dataset's
 # papers to paper/ and deletes the key and the store's checkout. A run commits only
-# claims/<dandiset>/ and questions/<dandiset>.yaml, and its transcript leaves out everything under
+# claims/<folder>/ and questions/<folder>.yaml, and its transcript leaves out everything under
 # paper/ (tools/transcript.py). The attempt's other runs (attempt.yml) read the papers the same way.
 #
 # Otherwise the same as attempt.yml: a fresh runner, the subscription token, credentials
-# stripped from the agent's commands, and a second job that commits to attempt/<dandiset>.
+# stripped from the agent's commands, and a second job that commits to attempt/<folder>.
 
 on:
   workflow_dispatch:
     inputs:
+      dataset:
+        description: "Dataset: 000147, DANDI:000147 or <archive>:<id>"
+        required: false
       dandiset:
-        description: "Dandiset id, e.g. 000147"
-        required: true
+        description: "The same, under its old name (runners started before the rename use it)"
+        required: false
       role:
         description: "Which run"
         required: true
@@ -42,9 +45,12 @@ on:
   # Called by attempt-sequence.yml, before the author.
   workflow_call:
     inputs:
-      dandiset:
+      dataset:
         type: string
         required: true
+      dandiset:
+        type: string
+        default: ""
       role:
         type: string
         required: true
@@ -64,15 +70,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: attempt-${{ inputs.dandiset }}
+  group: attempt-${{ inputs.dataset || inputs.dandiset }}
   cancel-in-progress: false
 
 env:
-  DANDISET: ${{ inputs.dandiset }}
+  DATASET: ${{ inputs.dataset || inputs.dandiset }}
   ROLE: ${{ inputs.role }}
   MODEL: ${{ inputs.model }}
   ACCOUNT: ${{ inputs.account || 'verified' }}
-  BRANCH: attempt/${{ inputs.dandiset }}
   CLAUDE_CODE_VERSION: 2.1.284
   # The tools the agent may use without asking. With CLAUDE_CODE_SUBPROCESS_ENV_SCRUB set, Claude
   # Code forces permission mode `default`, so this list and --permission-prompts none decide what
@@ -89,6 +94,7 @@ jobs:
     timeout-minutes: 180
     outputs:
       started: ${{ steps.agent.outputs.started }}
+      folder: ${{ steps.start.outputs.folder }}
       flagged: ${{ steps.flag.outputs.flagged }}
     steps:
       - uses: actions/checkout@v4
@@ -97,8 +103,13 @@ jobs:
           fetch-depth: 0
 
       - name: Start from the attempt's branch if it exists
+        id: start
         run: |
-          [[ "$DANDISET" =~ ^[0-9]{6}$ ]] || { echo "::error::Not a dandiset id: $DANDISET"; exit 1; }
+          # The dataset's folder name (000147 for DANDI, <archive>-<id> otherwise) names its files and branch.
+          FOLDER=$(python3 tools/datasets.py folder "$DATASET") || { echo "::error::Not a dataset: $DATASET"; exit 1; }
+          BRANCH="attempt/$FOLDER"
+          { echo "FOLDER=$FOLDER"; echo "BRANCH=$BRANCH"; } >> "$GITHUB_ENV"
+          echo "folder=$FOLDER" >> "$GITHUB_OUTPUT"
           if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null; then
             git fetch origin "$BRANCH" && git checkout -B "$BRANCH" FETCH_HEAD
           elif [ "$ROLE" != claims ]; then
@@ -126,14 +137,14 @@ jobs:
 
       - name: Write the prompt
         run: |
-          python tools/agent_run.py prompt "$ROLE" "$DANDISET" --model "$MODEL" > "$RUNNER_TEMP/prompt.md"
+          python tools/agent_run.py prompt "$ROLE" "$FOLDER" --model "$MODEL" > "$RUNNER_TEMP/prompt.md"
           # The workflow's own tools, copied before the agent can change the checkout.
-          cp tools/transcript.py tools/progress.py tools/flagged.py "$RUNNER_TEMP/"
+          cp tools/transcript.py tools/progress.py tools/datasets.py tools/flagged.py "$RUNNER_TEMP/"
 
       - name: Put the papers under paper/
         env:
           PAPERS_DEPLOY_KEY: ${{ secrets.PAPERS_DEPLOY_KEY }}
-        run: tools/get_papers.sh "$DANDISET" paper
+        run: tools/get_papers.sh "$FOLDER" paper
 
       - name: Check that the unverified account has a token
         if: ${{ inputs.account == 'unverified' }}
@@ -217,26 +228,26 @@ jobs:
         if: always() && steps.agent.outputs.started == 'true' && steps.flag.outputs.flagged != 'true'
         run: |
           set -euo pipefail
-          out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$DANDISET"
+          out="$RUNNER_TEMP/out"; mkdir -p "$out/transcripts/$FOLDER"
           tool="$RUNNER_TEMP/transcript.py"
-          name="$DANDISET · $ROLE · run ${{ github.run_id }}"
+          name="$FOLDER · $ROLE · run ${{ github.run_id }}"
           # The reader's changes first, so that nothing in the transcript can lose them. Only the
-          # dandiset's claims: never paper/.
-          paths=("claims/$DANDISET"); [ ! -e "questions/$DANDISET.yaml" ] || paths+=("questions/$DANDISET.yaml")
+          # dataset's claims: never paper/.
+          paths=("claims/$FOLDER"); [ ! -e "questions/$FOLDER.yaml" ] || paths+=("questions/$FOLDER.yaml")
           git add -A -- "${paths[@]}" && git diff --cached --binary > "$out/changes.patch"
           git diff --cached --stat
-          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$DANDISET/$ROLE.md" --omit paper/ \
-            --report "$out/transcripts/$DANDISET/$ROLE-report.md" --title "$name"
+          python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$FOLDER/$ROLE.md" --omit paper/ \
+            --report "$out/transcripts/$FOLDER/$ROLE-report.md" --title "$name"
           rm -f "$RUNNER_TEMP/run.jsonl"
-          cat "$out/transcripts/$DANDISET/$ROLE-report.md" >> "$GITHUB_STEP_SUMMARY"
+          cat "$out/transcripts/$FOLDER/$ROLE-report.md" >> "$GITHUB_STEP_SUMMARY"
 
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          # Named for the dandiset and role: in a pipeline, several dandisets run inside one
+          # Named for the dataset and role: in a pipeline, several datasets run inside one
           # workflow run, and an artifact name shared between them made a commit job pick up
-          # another dandiset's results.
-          name: agent-run-${{ inputs.dandiset }}-${{ inputs.role }}
+          # another dataset's results.
+          name: agent-run-${{ env.FOLDER }}-${{ inputs.role }}
           path: ${{ runner.temp }}/out
           retention-days: 14
           if-no-files-found: ignore
@@ -249,6 +260,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    env:
+      FOLDER: ${{ needs.run.outputs.folder }}
+      BRANCH: attempt/${{ needs.run.outputs.folder }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -256,10 +270,10 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          # Named for the dandiset and role: in a pipeline, several dandisets run inside one
+          # Named for the dataset and role: in a pipeline, several datasets run inside one
           # workflow run, and an artifact name shared between them made a commit job pick up
-          # another dandiset's results.
-          name: agent-run-${{ inputs.dandiset }}-${{ inputs.role }}
+          # another dataset's results.
+          name: agent-run-${{ needs.run.outputs.folder }}-${{ inputs.role }}
           path: out
 
       - name: Commit to the attempt's branch
@@ -272,15 +286,15 @@ jobs:
           else
             git checkout -b "$BRANCH"
           fi
-          # Refuse anything that is not this dandiset's: a guard against results being mixed up.
-          others=$(ls out/transcripts | grep -vx "$DANDISET" || true)
-          [ -z "$others" ] || { echo "::error::Transcripts for other dandisets: $others"; exit 1; }
+          # Refuse anything that is not this dataset's: a guard against results being mixed up.
+          others=$(ls out/transcripts | grep -vx "$FOLDER" || true)
+          [ -z "$others" ] || { echo "::error::Transcripts for other datasets: $others"; exit 1; }
           # The claims run starts an attempt: it moves an earlier attempt's transcripts aside first.
-          if [ "$ROLE" = claims ]; then "$RUNNER_TEMP/archive_transcripts.sh" "$DANDISET"; fi
+          if [ "$ROLE" = claims ]; then "$RUNNER_TEMP/archive_transcripts.sh" "$FOLDER"; fi
           if [ -s out/changes.patch ]; then
-            allowed="^(claims/$DANDISET/|questions/$DANDISET\.yaml$)"
+            allowed="^(claims/$FOLDER/|questions/$FOLDER\.yaml$)"
             stray=$(git apply --numstat out/changes.patch | cut -f3 | grep -vE "$allowed" || true)
-            [ -z "$stray" ] || { echo "::error::Changes outside dandiset $DANDISET: $stray"; exit 1; }
+            [ -z "$stray" ] || { echo "::error::Changes outside dataset $FOLDER: $stray"; exit 1; }
             git apply --index out/changes.patch
           fi
           # A transcript with nothing but its title means the agent never started; keep it out.
@@ -288,7 +302,7 @@ jobs:
           cp -r out/transcripts . && git add transcripts
           if git diff --cached --quiet; then echo "Nothing to commit"; exit 0; fi
           git -c user.name='github-actions[bot]' -c user.email='github-actions[bot]@users.noreply.github.com' \
-            commit -m "Agent run on $DANDISET: $ROLE (${{ needs.run.result }})" \
+            commit -m "Agent run on $FOLDER: $ROLE (${{ needs.run.result }})" \
             -m "Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}" \
             -m "Account: $ACCOUNT"
           git push origin "$BRANCH"

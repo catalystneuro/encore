@@ -1,23 +1,23 @@
 name: Attempt pipeline
 
-# Whole attempts on several dandisets at once:
-#   gh workflow run pipeline.yml -f dandisets="000628 000939 001075" -f max_parallel=3
-# Each dandiset goes through attempt-sequence.yml (author, two verification
-# rounds, two revisions), and at most max_parallel dandisets run at the same
-# time. A dandiset that fails stops on its own; the others go on. Every agent
+# Whole attempts on several datasets at once:
+#   gh workflow run pipeline.yml -f datasets="000628 000939 DANDI:001075" -f max_parallel=3
+# Each dataset goes through attempt-sequence.yml (author, two verification
+# rounds, two revisions), and at most max_parallel datasets run at the same
+# time. A dataset that fails stops on its own; the others go on. Every agent
 # run uses the same subscription token, so its usage limits are shared: the
-# more in parallel, the sooner they are reached. When a dandiset's sequence is
-# done, its branch attempt/<dandiset> is ready for a person to read and open
+# more in parallel, the sooner they are reached. When a dataset's sequence is
+# done, its branch attempt/<folder> is ready for a person to read and open
 # as a pull request.
 
 on:
   workflow_dispatch:
     inputs:
-      dandisets:
-        description: "Dandiset ids, separated by spaces or commas"
+      datasets:
+        description: "Datasets (000147, DANDI:000147 or <archive>:<id>), separated by spaces or commas"
         required: true
       max_parallel:
-        description: "How many dandisets to run at the same time"
+        description: "How many datasets to run at the same time"
         default: "3"
       model:
         description: "Model"
@@ -30,25 +30,35 @@ jobs:
   plan:
     runs-on: ubuntu-latest
     outputs:
-      dandisets: ${{ steps.list.outputs.dandisets }}
+      folders: ${{ steps.list.outputs.folders }}
     steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - id: list
         env:
-          DANDISETS: ${{ inputs.dandisets }}
+          DATASETS: ${{ inputs.datasets }}
           MAX_PARALLEL: ${{ inputs.max_parallel }}
         run: |
           python3 - <<'PY'
           import json, os, re, sys
-          ids = [d for d in re.split(r"[\s,]+", os.environ["DANDISETS"]) if d]
-          bad = [d for d in ids if not re.fullmatch(r"[0-9]{6}", d)]
-          if bad or not ids:
-              sys.exit(f"::error::Not dandiset ids: {bad or 'none given'}")
+          sys.path.insert(0, "tools")
+          import datasets
+          given = [d for d in re.split(r"[\s,]+", os.environ["DATASETS"]) if d]
+          folders, bad = [], []
+          for d in given:
+              try:
+                  folders.append(datasets.folder(datasets.parse(d)))
+              except ValueError:
+                  bad.append(d)
+          if bad or not folders:
+              sys.exit(f"::error::Not datasets: {bad or 'none given'}")
           if not re.fullmatch(r"[1-9][0-9]?", os.environ["MAX_PARALLEL"]):
               sys.exit("::error::max_parallel must be a number from 1 to 99")
-          ids = list(dict.fromkeys(ids))
-          print("Dandisets:", ", ".join(ids))
+          folders = list(dict.fromkeys(folders))
+          print("Datasets:", ", ".join(folders))
           with open(os.environ["GITHUB_OUTPUT"], "a") as out:
-              out.write(f"dandisets={json.dumps(ids)}\n")
+              out.write(f"folders={json.dumps(folders)}\n")
           PY
 
   attempt:
@@ -57,9 +67,9 @@ jobs:
       fail-fast: false
       max-parallel: ${{ fromJSON(inputs.max_parallel) }}
       matrix:
-        dandiset: ${{ fromJSON(needs.plan.outputs.dandisets) }}
+        dataset: ${{ fromJSON(needs.plan.outputs.folders) }}
     uses: ./.github/workflows/attempt-sequence.yml
     with:
-      dandiset: ${{ matrix.dandiset }}
+      dataset: ${{ matrix.dataset }}
       model: ${{ inputs.model }}
     secrets: inherit
