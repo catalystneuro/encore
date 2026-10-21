@@ -47,7 +47,9 @@
 #   trial, F0 the mean over the 0.5 s before trial start. Time bins are open: Figure 3B gives 66.7
 #   ms bins while imaging was at 14 Hz (71.4 ms frames); readings (T1) the frames as acquired,
 #   (T2) traces resampled to 66.7 ms bins. Trials with no lick after the go cue fit none of the
-#   four types and are left out.
+#   four types and are left out. The Methods give dF/F with no exception for F0 <= 0 (after
+#   neuropil subtraction F0 can be zero or negative); readings (V1) dF/F as computed, the Methods'
+#   formula, which decides; (V2) ROIs with F0 <= 0 on any trial left out, reported as a check.
 # M (selectivity model). Per neuron and time bin, dF/F of single trials on three binary factors,
 #   object location (posterior CR, ER against anterior CL, EL), lick direction (right CR, EL
 #   against left CL, ER) and outcome (correct CR, CL against error ER, EL), by a 3-way ANOVA with
@@ -74,6 +76,11 @@
 # O (onset). "time when selectivity rose to >6 SD above baseline" (Results, Projection-Specific
 #   Coding). The baseline period is open, readings (O1) the bins before trial start in the
 #   extracted window (from 0.8 s before trial start), (O2) the 0.5 s F0 window before trial start.
+#   The threshold is the baseline mean plus 6 baseline SD (the plain reading of ">6 SD above
+#   baseline"; the paper defines no other). Whether one bin suffices is open, readings (S1) the
+#   first bin after trial start above the threshold; (S2) the first bin after trial start from which
+#   the measure stays above the threshold up to the go cue. In each bootstrap resample the onset is
+#   found again by the same rule.
 schema_version: 2
 dataset:
   archive: dandi
@@ -202,8 +209,9 @@ claims:
     selective in at least two consecutive bins; and for the window (W1) the task period 4.6 s
     before to 2.5 s after the go cue (the window of Figure 8F); (W2) the whole extracted window,
     5 s before to 5 s after the go cue; (W3) trial start to the go cue plus 2.5 s. Each with time
-    bins T1 and T2 and area readings A1 and A2. Reproduced when both counts and both fractions are
-    within tolerance under one reading, and ALM has the higher fraction.
+    bins T1 and T2 and area readings A1 and A2. dF/F by reading V1 (convention T); V2 is reported.
+    Reproduced when both counts and both fractions are within tolerance under one reading, and ALM
+    has the higher fraction.
 - id: figs5-single-coefficient
   statement: The selectivity of most neurons can be attributed to one of the three coefficients,
     especially early in the trial, so most neurons mainly encode one behavioural variable at a
@@ -310,7 +318,8 @@ claims:
     Reproduced when (a) in ALM both measures reach their maximum after the go cue; (b) the
     superficial ALM fraction at its maximum is above its value in the first half of the delay;
     (c) the MM fraction at its maximum is above its value in the delay epoch and below the ALM
-    maximum.
+    maximum. The paper does not say whether the MM value in the delay epoch is its mean over the
+    delay bins or its maximum there; both are read, and (c) holds when it holds under one.
 - id: fig6-outcome-response-uniform
   statement: Outcome-selective neurons were seen only during the response epoch, scattered roughly
     uniformly through ALM and MM; mixed neurons were also seen mainly in the response epoch in both
@@ -394,7 +403,10 @@ claims:
   criterion: Figure S4 was not read. Mean dF/F over all neurons and trials of the four types, per
     bin, in ALM and in MM; peak time of each. Reproduced when the MM mean peaks earlier than the
     ALM mean and the ALM mean is above its sample-epoch level at the end of the delay. The measure
-    is fixed here.
+    is fixed here. The paper defines neither term; readings for the sample-epoch level (L1) the
+    mean over the sample-epoch bins, (L2) their maximum; for the end of the delay (E1) the last bin
+    before the go cue, (E2) the mean over the last 0.5 s before it. Reproduced under one
+    combination; all are reported. dF/F by reading V1 (convention T); V2 is reported.
 - id: fig8c-pt-deep-only
   statement: IT neurons were found in both superficial and deep layers, PT neurons only in deep
     layers; 719 PT and 2,631 IT neurons were imaged in three mice.
@@ -437,7 +449,8 @@ claims:
   criterion: Mean beta (signed, non-significant set to 0) of ALM PT neurons per bin over the delay
     epoch, with bootstrap SD (convention B); contra is lick right (beta > 0, convention M).
     Reproduced when the mean over the delay epoch is above zero by more than 2 bootstrap SD. The
-    paper reports no test; the 2 SD bound is fixed here from the shading Figure 8D shows.
+    paper reports no test; the 2 SD bound is fixed here from the shading Figure 8D shows. dF/F by
+    reading V1 (convention T); V2 is reported.
 - id: fig8d-pt-earlier-than-it
   statement: In ALM, lick direction selectivity (|beta|) was stronger and earlier in PT than in IT
     neurons, with an onset difference of 1.4 +- 0.6 s (p < 0.01, bootstrap).
@@ -459,7 +472,8 @@ claims:
     tolerance: 0.6
     unit: s
   criterion: Mean |beta| (non-significant set to 0) over ALM PT and over ALM IT neurons per bin;
-    onset by convention O (baselines O1 and O2). The IT group is open, readings (I1) deep ALM IT,
+    onset by convention O (baselines O1 and O2, onset rules S1 and S2, threshold from the baseline
+    mean). The IT group is open, readings (I1) deep ALM IT,
     the neurons intermingled with PT; (I2) all ALM IT. The bootstrap is open, readings (H1)
     hierarchical over animals, planes and cells (convention B, as for Figure 8D); (H2) over cells.
     The +- is read as the bootstrap SD of the difference, and p as the fraction of resamples in which
@@ -479,8 +493,21 @@ claims:
   criterion: The data are those of Li et al. (2015, Nature 519, 51-56), tagged PT and IT units in
     ALM; the paper does not say where they are deposited. A claim of absence with no test named in
     the text; the test of fig8d-pt-earlier-than-it (onset of mean |beta| by convention O, bootstrap
-    over units, p < 0.01) is applied to it. Reproduced when that test does not find PT earlier at
-    p < 0.01; the onset difference is reported either way.
+    over units, p < 0.01) is applied to it. The paper gives no method for these data beyond "the
+    same analyses as imaging data" with "spike counts within 400 ms windows (in 100 ms steps)"
+    (Methods, Electrophysiology data analysis, for its own units), so the details are readings.
+    (1) Counts in 400 ms windows in 100 ms steps, as the paper's own spiking data. (2) Trials of the
+    four types without photostimulation (the imaging trials had none, and photoinhibition changes
+    selectivity), early-lick trials excluded by the early-lick record whatever the outcome record
+    says (convention T); trial start is the onset of pole movement (sample-epoch onset), as in this
+    paper's Methods, and time is taken from it, the go cue falling where the Li et al. task puts it.
+    (3) Onset by convention O from trial start to the go cue, rules S1 and S2; baseline (O1) the
+    windows wholly before trial start, (O2) the windows wholly within 0.5 s before trial start; a
+    window is placed at its centre. (4) Units of all sessions pooled, as neurons are pooled for
+    Figure 8D; bootstrap (H2) over units, as stated above, and (H1) hierarchical over animals,
+    sessions and units, as convention B. Reproduced when no combination finds PT earlier at p <
+    0.01; partially reproduced when some do and some do not; the onset difference is reported
+    either way.
 - id: li2015-tagged-units-link
   kind: link
   statement: The tagged units of dandiset 000010 (Li et al. 2015) are the 45 PT and 27 IT cells of the
@@ -532,7 +559,8 @@ claims:
     whiskers, than in the anterior location, when the pole was out of reach (Figure 8D
   criterion: Mean alpha (signed, non-significant set to 0) of MM neurons per bin over the sample
     epoch, with bootstrap SD (convention B); alpha > 0 is posterior preferring. Reproduced when the
-    mean over the sample epoch is above zero by more than 2 bootstrap SD (bound fixed here).
+    mean over the sample epoch is above zero by more than 2 bootstrap SD (bound fixed here). dF/F
+    by reading V1 (convention T); V2 is reported.
 - id: fig8d-error-outnumber-correct
   statement: Overall, neurons preferring error trials outnumbered those preferring correct trials.
   source: Discussion, paragraph beginning 'We also observed neurons representing trial outcome';
@@ -545,7 +573,7 @@ claims:
     preferring) against positive, error preferring more numerous by a two-sided binomial test at p <
     0.05 (test fixed here); (b) mean signed gamma over all neurons, averaged over the same window,
     below zero by more than 2 bootstrap SD (convention B; bound fixed here). Reproduced when both
-    readings find error preference.
+    readings find error preference. dF/F by reading V1 (convention T); V2 is reported.
 - id: fig8ef-area-explains-variance
   statement: Coding is mainly determined by cortical location; cortical area (ALM against MM) and
     cell depth explain most of the variance of selectivity, more than projection type.
