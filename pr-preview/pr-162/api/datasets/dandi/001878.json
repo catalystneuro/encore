@@ -1,0 +1,585 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001878",
+  "label": "DANDI:001878"
+ },
+ "page": "datasets/dandi/001878/",
+ "generated": "2026-10-21T04:03:00+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 4,
+  "partially_reproduced": 2,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 1,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 5,
+  "partially_reproduced": 3,
+  "not_reproduced": 0,
+  "blocked": 6
+ },
+ "outcome_counts_links": {
+  "reproduced": 1,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001878-sun-2021-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001878",
+    "version": "draft"
+   },
+   "key": "dandi:001878",
+   "label": "DANDI:001878",
+   "dataset_version": "draft",
+   "paper": "10.22002/d1.1991",
+   "paper_title": "CalMS21 - Caltech Mouse Social Interactions (Sun et al., 2021)",
+   "date": "2026-10-19",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39216993021"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001878-sun-2021",
+   "entry_title": "CalMS21 mouse social behavior dataset (Sun et al. 2021)",
+   "description": "Tests the claims of Sun et al. (2021), the paper describing the CalMS21 dataset of resident-intruder pose and behavior annotations, on dandiset 001878, which holds one CalMS21 sequence (Task 1 test sequence mouse071) with its video, and on the full dataset deposited on CaltechDATA. It checks the format, identities and annotations of the dandiset's sequence, links it to the deposit, and tests the dataset's counts and label fractions. The model benchmarks are not run.",
+   "notebooks": [
+    {
+     "path": "reproduce_sun_2021.ipynb",
+     "title": "Reproducing Sun et al. (2021) from dandiset 001878 and the CalMS21 deposit",
+     "executed": "notebooks/001878-sun-2021/reproduce_sun_2021.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "format-keypoints",
+     "statement": "Each frame holds seven MARS keypoints (nose, left ear, right ear, neck, left hip, right hip, tail base) for each of two mice, the resident (mouse 0) and the intruder (mouse 1), in pixel coordinates of a 1024 x 570 image, at 30 Hz, with a confidence score from 0 to 1 for each keypoint.",
+     "source": "Section 3 and Figure 3; Appendix C (data format), paragraph 4; Appendix D.1",
+     "quote": "mouse 0 is the resident and mouse 1 is the intruder), image (x,y) coordinates in pixels, and keypoint ID. For keypoint ID, there are seven tracked body parts, ordered (nose, left ear, right ear, neck, left hip, right hip, tail base).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "The file holds 14 keypoint series named for the seven parts of the resident and the intruder, in pixels, at 30 Hz, with every coordinate inside the 1024 x 570 image (x 5.0 to 991.2, y 9.0 to 563.3). The confidence field is present for every keypoint but all 333,340 values are NaN, so the confidence part of the claim fails.",
+     "deviations": [
+      "Judged on the one CalMS21 sequence in the dandiset."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "resident-is-black",
+     "statement": "Mouse 0, the resident, is the black C57Bl/6J mouse, and mouse 1, the intruder, is the white BALB/c mouse.",
+     "source": "Appendix C; Appendix B (Collection Process); Appendix D.1",
+     "quote": "In this assay, a black (C57Bl/6J) male \"resident\" mouse is filmed in its home cage, and a white (BALB/c) male or female \"intruder\" mouse is manually introduced to the cage ... mouse 0 is the resident and mouse 1 is the intruder",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "In 746 of 794 sampled frames (every 30th) the body centres are at least 60 px apart; in all of them the 12 px patch on the resident is darker than the one on the intruder (median grey level 46.4 against 250.9). With 8 and 24 px patches the fractions are 0.997 and 1.000, with separations of 30 and 120 px 0.999 and 1.000, and 1.0 in every minute.",
+     "deviations": [
+      "The coat colour test (grey level of the video at the body centre) was chosen here; the paper states the identities without a test."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "task1-vocab",
+     "statement": "Task 1 frames are annotated by one annotator (annotator id 0) with exactly one label per frame from the vocabulary attack 0, investigation 1, mount 2 and other 3.",
+     "source": "Section 3; Appendix C (metadata and vocab)",
+     "quote": "In Tasks 1 and 2, each frame is assigned one label ... In Task 1, GROUPNAME is annotator_id-0 ... and there is only one GROUP in the file. ... For example, in Task 1 vocab is attack: 0, investigation: 1, mount: 2, other: 3.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "The catalogue holds attack 0, investigation 1, mount 2 and other 3; the bouts give the annotator as \"CalMS21 annotator 0\"; the 170 bouts tile the session from 0 to 793.67 s with no gaps, so all 23,810 frames have exactly one label. The session has no attack bouts.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "task1-video",
+     "statement": "The source videos of Task 1 are released, recorded at 30 Hz and 1024 x 570 pixels.",
+     "source": "Section 3.1, paragraph 3; Appendix D.1",
+     "quote": "In addition to pose data, we also release all source videos for Task 1 ... Videos are acquired at 30 fps and 1024x570 pixel resolution",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "The video is 1024 x 570, h264, at 30 frames per second with 23,810 frames, equal to the pose. Its motion energy correlates best with the pose speed at lag 0 (r = 0.754, falling to 0.19 and 0.26 at 15 frames either way). It is 184,059,454 bytes against 964,451,532 for CaltechDATA's mouse071_task1_annotator1.mp4, so it was re-encoded; the two were not compared frame by frame.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "contact-during-social-behaviors",
+     "statement": "Close investigation, attack and mount are behaviors in which the resident is in close contact with the intruder; other frames include the animals apart.",
+     "source": "Appendix D.2 (behavior definitions)",
+     "quote": "Close investigation: resident (black) mouse is in close contact with the intruder (white) and is actively sniffing the intruder anywhere on its body or tail. ... animals may be apart from each other exploring other parts of the arena",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "Median distance from the resident's nose to the nearest intruder keypoint is 21.4 px in 4,679 investigation frames and 15.0 px in 2,894 mount frames, against 376.0 px in 16,237 other frames (differences -354.6 and -361.0 px, 95% block bootstrap intervals -408.9 to -295.2 and -413.6 to -303.8, with blocks of contiguous session time). The centroid distance gives -307.2 and -355.5 px, with intervals excluding 0, and each half of the session gives the same order. Attack is absent from the session, so the attack part of the statement is untested.",
+     "deviations": [
+      "The paper defines the behaviors in words; the distance measure, the comparison with other frames and the bootstrap were chosen here.",
+      "One session, with no attack frames."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pose-errors-close-fast",
+     "statement": "Errors in pose estimation are most common on frames when the two animals are in close contact or moving very quickly.",
+     "source": "Appendix B (Composition, errors and noise)",
+     "quote": "some errors in pose estimation and noise in keypoint placement still occur. These are most common on frames when the two animals are in close contact or moving very quickly.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "657 of 23,810 frames (2.8%) have a body length outside the session's quartiles widened by 3 IQR. In the closest 10% of frames (centroid distance at most 66.4 px) the fraction is 0.131 against 0.016 elsewhere (difference 0.115, 95% interval 0.064 to 0.179). In the fastest 10% (at least 389 px/s) it is 0.010 against 0.030 (difference -0.020, interval -0.033 to -0.008), the reverse of the claim. Both directions hold at 5% and 20% and with a factor of 1.5. With the speed taken as the running median of the larger speed per frame, the fast difference is -0.020 (interval -0.033 to -0.008) at 10% and -0.011 (interval -0.025 to 0.001) at 20%. Error fractions by label are 0.045 (investigation), 0.105 (mount) and 0.009 (other), so a hunched posture in mount could give real outliers. Checked against the MARS confidence of the same frames, flagged close frames have a lower confidence than unflagged close frames (median 0.574 against 0.657, difference -0.082, interval -0.107 to -0.050), and in each of eight flagged close frames drawn at random and shown with the video, at least one segment visibly runs across the other mouse or the background (judged by eye). The flags in close frames therefore mark mostly tracking errors, though the share of real postures among them is not measured.",
+     "deviations": [
+      "The dandiset has no confidence values, so pose errors are counted with an anatomical proxy chosen here; the paper gives no measure of pose error.",
+      "The thresholds for close and fast frames were chosen here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "link-mouse071",
+     "statement": "The dandiset's CalMS21 sequence is the CalMS21 Task 1 test sequence mouse071, with the same keypoints, confidence scores and frame annotations.",
+     "source": "Appendix C; CaltechDATA record 10.22002/D1.1991, file task1_classic_classification.zip",
+     "quote": "",
+     "statistics": [],
+     "kind": "link",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "Matched by name to task1/test/mouse071_task1_annotator1 on CaltechDATA. Both have 23,810 frames; every keypoint coordinate is identical (largest difference 0 px), while swapping the mice or the axes gives differences of about 895 px. The frame labels from the bouts agree with the CaltechDATA annotations on all 23,810 frames (4,679 investigation, 2,894 mount, 16,237 other). CaltechDATA's confidence scores (0.030 to 0.980, all finite) are NaN in the dandiset. The same recording is also deposited on CaltechDATA as the Task 3 training sequence task3/groom/train/mouse002_task3_groom.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "pose-errors-close-fast-confidence",
+     "statement": "Errors in pose estimation are most common on frames when the two animals are in close contact or moving very quickly, as shown by the MARS confidence scores.",
+     "source": "Appendix B (Composition, errors and noise)",
+     "quote": "some errors in pose estimation and noise in keypoint placement still occur. These are most common on frames when the two animals are in close contact or moving very quickly.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "The mean confidence per frame (CaltechDATA scores, matched frame by frame) is lower in the closest 10% of frames (median 0.649 against 0.740, difference -0.091, 95% interval -0.107 to -0.074), most of all for the intruder (-0.149 against -0.031 for the resident). In the fastest 10% of frames it is higher (0.751 against 0.732, difference 0.018, interval 0.012 to 0.025), the reverse of the claim. Both hold at 5% and 20%. The confidence correlates with the body-length error flags of pose-errors-close-fast (point-biserial r = -0.366). With the speed taken as the running median of the larger speed per frame, the fast difference is 0.018 (interval 0.012 to 0.025). The link holds in full, so the match of scores to frames is exact.",
+     "deviations": [
+      "Confidence is a proxy for pose error; the paper gives no measure.",
+      "The confidence scores come from CaltechDATA, as the dandiset's are missing."
+     ],
+     "disagreed": false,
+     "data": "with_inputs",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "table5-task1-counts",
+     "statement": "Task 1 has 70 training sequences with 507,738 frames and 19 test sequences with 262,107 frames.",
+     "source": "Table 5; Section 3.1; Figure 4A",
+     "quote": "There are 70 videos in the public training set ... Training and test set instances counts for each task and category.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "The training file holds 70 sequences with 507,738 frames and the test file 19 with 262,107, as reported. Annotation lengths equal the frame counts of the scores in every sequence, and the frame counts of the keypoints and the scores agree in all 574 sequences of the deposit.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "table5-task2-counts",
+     "statement": "Task 2 has, for annotators 1 to 5, 6 training sequences each with 139,112, 135,623, 107,420, 108,325 and 92,383 frames, and 13, 6, 4, 4 and 20 test sequences with 286,810, 150,919, 77,079, 76,174 and 364,007 frames.",
+     "source": "Table 5; Section 3.2",
+     "quote": "we provide six 10-minute training videos for each of five annotators unseen in Task 1 ... Training and test set instances counts for each task and category.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "19 of 20 counts match exactly. Annotator 1's training set has 139,122 frames where Table 5 gives 139,112 (10 frames, 0.007%); its six sequences match. The six sequences have the same frame counts in scores, keypoints and annotations; the paper gives no per-sequence counts, so the sequence that holds the 10 frames is not known. Annotator ids in the metadata agree with those in the keys.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "table5-task3-counts",
+     "statement": "Task 3 has, for approach, disengaged, grooming, intromission, mount attempt, sniff face and white rearing, 3, 2, 2, 1, 4, 3 and 2 training sequences with 20,624, 35,751, 45,174, 19,200, 46,847, 19,244 and 36,181 frames, and 25, 1, 13, 10, 12, 47 and 1 test sequences with 126,468, 19,088, 156,664, 55,218, 85,836, 251,793 and 17,939 frames.",
+     "source": "Table 5; Section 3.3; Figure 4A",
+     "quote": "This task contains annotations on seven behaviors not labeled in Tasks 1 & 2, where some behaviors are very rare ... Training and test set instances counts for each task and category.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "All 28 counts match Table 5.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "table6-task1-label-fractions",
+     "statement": "In the Task 1 training set, 2.76% of frames are labelled attack, 28.9% investigation, 5.64% mount and 62.7% other.",
+     "source": "Table 6; Figure 4B",
+     "quote": "The percentage of frames labeled as attack, investigation, mount, and other in the Task 1 training set.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "Under reading (a), the training split, investigation, mount and other are within half a unit of the last reported digit; attack is 14,039 of 507,738 frames, 2.765009%, 0.005009 from 2.76 against a tolerance of 0.005. It rounds to 2.77 and truncates to the reported 2.76. All four are within 10% of the reported values. Reading (b), training and test, gives 3.46, 27.00, 7.85 and 61.68% and does not match.",
+     "deviations": [
+      "The tolerance of half a unit of the last digit is tighter than the protocol's default of 10%, because these are percentages of a fixed file; under the default the claim would be reproduced."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "fig4b-task2-label-fractions",
+     "statement": "The five Task 2 annotators label different fractions of frames as other, investigation, mount and attack (annotator 1 60.0, 20.6, 16.2 and 3.2%; annotator 2 65.5, 25.8, 3.4 and 5.3%; annotator 3 68.9, 13.5, 9.5 and 8.1%; annotator 4 75.2, 11.6, 4.5 and 8.7%; annotator 5 69.5, 26.4, 1.0 and 3.0%).",
+     "source": "Figure 4B",
+     "quote": "Annot 1, 2, 3, 4, 5 are different domain experts, whose annotations for attack, mount, and investigation are used in Task 2.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "Under the training split with the class order of the Task 1 pie (other, investigation, mount, attack), all 20 percentages are within 0.05 of the figure's values; the best assignment of classes gives the same 20. The closest case is annotator 1 attack, 4,517 of 139,122 frames (3.2468%, 0.047 from 3.2), which would stay within 0.05 with up to 4 more attack frames. Training and test together match 1 of 20 under either class reading.",
+     "deviations": [
+      "The Task 2 pies carry no class names; the order was read from the Task 1 pie, and the alternative reading (best assignment) was listed before the analysis. Both match."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "table7-task3-label-fractions",
+     "statement": "In Task 3 the behaviors occupy 3.25% (approach), 1.47% (disengaged), 14.0% (groom), 19.3% (intromission), 0.90% (mount attempt), 4.74% (sniff face) and 9.29% (white rearing) of frames.",
+     "source": "Table 7; Figure 4B",
+     "quote": "This task contains annotations on seven behaviors not labeled in Tasks 1 & 2, where some behaviors are very rare",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "Under reading (a), the training split, all seven are within tolerance. Training and test together give values outside 10% for five of seven (for example groom 7.36%).",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "dataset-size",
+     "statement": "The unlabeled set has 282 videos and about 6 million frames; the dataset holds over 1 million annotated frames, over 70 hours of tracked poses and over 10 hours of frame-by-frame annotation.",
+     "source": "Abstract; Section 3; Figure 4A; Section 5 (Discussion), paragraphs 1 and 3",
+     "quote": "The dataset consists of 6 million frames of unlabeled tracked poses of interacting mice, as well as over 1 million frames with tracked poses ... The released data include over 70 hours of tracked poses from pairs of mice, and over 10 hours of manual, frame-by-frame annotation ... unlabeled trajectory data from 282 videos",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "The unlabeled set has 282 sequences and 5,952,058 frames (55.1 h), counted the same in the keypoints and the scores. Annotated frames are 769,845 (7.1 h) in Task 1, 3,243,734 (30.0 h) over all labelled sets, and 2,273,674 (21.1 h) with each recording counted once; tracked pose including the unlabeled set is 62.2, 85.2 and 76.2 h. So the three \"over\" statements (1 million annotated frames, 10 hours of annotation, 70 hours of pose) hold under readings (b) and (c) and none holds under reading (a).",
+     "deviations": [
+      "The paper does not say which sets its totals cover; three readings were listed before the analysis."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "table10-task3-difficulty",
+     "statement": "On Task 3, classifier performance depends on the percentage of frames in which a behavior is observed and on its average bout duration, with shorter bouts giving lower performance.",
+     "source": "Section 4.4, paragraph 2; Tables 7 and 10",
+     "quote": "We found classifier performance to depend both on the percentage of frames during which a behavior was observed, and on the average duration of a behavior bout, with shorter bouts having lower classifier performance.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_sun_2021.ipynb",
+     "notes": "Across the seven behaviors the baseline F1 of Table 10 rises with the percentage of labelled frames (Spearman 0.786, exact one-sided p = 0.024 on the training split; 0.929, p = 0.003 on the test split) and with mean bout length, but the latter is not significant (0.321, p = 0.249; 0.607, p = 0.083). With the task programming model's F1 the bout-length correlations are 0.536 (p = 0.118) and 0.679 (p = 0.055). The direction of both parts of the statement holds; only the frequency part is significant with seven behaviors.",
+     "deviations": [
+      "The paper states the dependence without a test; the correlation and the permutation test were chosen here, using the paper's published F1 scores with frequencies and bout lengths computed from the data."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "table1-architectures",
+     "statement": "Among baseline architectures trained on Task 1, the 1D convolutional network performs best (F1 0.793, MAP 0.856), ahead of fully connected (0.659), LSTM (0.675) and self-attention (0.610) models.",
+     "source": "Table 1; Section 4.1, paragraph 2",
+     "quote": "Among the explored architectures, we obtained the highest performance using the 1D convolutional neural network (Table 1).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Needs the four baseline networks trained on Task 1. The paper gives some settings (input window, skip factor, the ranges searched) and refers to the project code for the rest, but the code at gitlab.aicrowd.com/aicrowd/research/mab-e/mab-e-baselines did not answer, with or without the sandbox, and no copy was found in Software Heritage or on GitHub; the web archive holds its landing page only. The data are public on CaltechDATA. Training five runs of each network was also not attempted within the time limit.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "table2-task-programming",
+     "statement": "Adding task programming features learned from the unlabeled set raises Task 1 F1 from 0.793 to 0.829, and the challenge's top entry reaches 0.864.",
+     "source": "Table 2 and Table 8; Section 4.2, paragraph 1",
+     "quote": "We found that including task programming features improved model performance.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Needs the baseline network (code unavailable, see table1-architectures) and the challenge's top entry, whose code is not linked. The task programming code (GitHub neuroethology/TREBA) and precomputed features on CaltechDATA are public, but without the baseline classifier the comparison cannot be repeated.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "table3-task2-style-transfer",
+     "statement": "On Task 2 the fine-tuned baseline reaches an annotator-averaged F1 of 0.754, 0.774 with task programming features and 0.809 for the top entry, and all models do better on annotators 1 and 2 than on 3, 4 and 5.",
+     "source": "Table 3 and Table 9; Section 4.3 and Appendix G.2, paragraph 1",
+     "quote": "We observe that all classifiers generally performs better on annotators 1 and 2, while performing worse on annotators 3, 4, and 5.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Needs the fine-tuned baseline and the top entry; the baseline code is unavailable (see table1-architectures) and the top entry's code is not linked.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "table4-task3-new-behaviors",
+     "statement": "On Task 3 the baseline reaches a behavior-averaged F1 of 0.338 (0.328 with task programming features, 0.319 for the top entry), far below Tasks 1 and 2.",
+     "source": "Table 4 and Table 10; Section 4.4; Appendix G.3, paragraph 1",
+     "quote": "Based on performance metrics, Task 3 is more difficult than the other two Tasks",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Needs the fine-tuned baseline with per-behavior learning rates hand-tuned on a validation set, and the top entry; neither's code is available (see table1-architectures).",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "fig7-errors-at-transitions",
+     "statement": "Many prediction errors of the baseline models fall around the boundaries between behaviors.",
+     "source": "Figure 7; Section 4.2, paragraph 1",
+     "quote": "Many prediction errors of the baseline models were localized around behavior transition boundaries (Figure 7).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Needs the baseline model's predictions; its code is unavailable (see table1-architectures), so the claim depends on a blocked claim. The predictions are also not deposited in either archive (data_missing).",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    },
+    {
+     "claim": "fig11-annotator-similarity",
+     "statement": "The annotator embedding learned by the top Task 2 entry places annotators 3 and 4 close to each other and apart from annotators 1, 2 and 5.",
+     "source": "Figure 11; Section 4.3, paragraph 2, and Appendix G.2",
+     "quote": "Annotators 3 and 4 were found to be similar to each other, and different from annotators 1, 2, and 5.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "Needs the trained top entry's annotator embedding; the entry's code is not linked and the paper describes the model only in outline. The learned matrix is also not deposited in either archive (data_missing).",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "CaltechDATA doi:10.22002/D1.1991 (record s0vdx-0k302, version 1.0)",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "data_missing",
+     "statement": "The MARS confidence scores, which CalMS21 distributes with every keypoint, are missing from the dandiset's CalMS21 file; the confidence field of all 14 pose series is present but all 333,340 values are NaN. CaltechDATA's copy of the same sequence has them (0.03 to 0.98)."
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "For CalMS21 the dandiset holds one sequence, the Task 1 test sequence mouse071, out of 574 sequences on CaltechDATA. Its description presents a collection of datasets and does not say that only one CalMS21 sequence is included or why this one was chosen."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The behavior catalogue (CalMS21_ethogram) has an empty definition for attack, investigation, mount and other, though the paper defines the three behaviors (Appendix D.2) and states that annotations refer to behaviors initiated by the resident."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The two mice are stored as one subject with strain C57BL/6, sex unknown and age P0D/; the intruder's strain (BALB/c) and the residents' sex (male) are known from the paper but not recorded, and which series belongs to the black or white mouse is given only by the series names."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The session start time is 2024-01-01T00:00, a placeholder; CalMS21 gives no recording dates."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The `centroid_speed` series, and the bout columns mean_speed, peak_speed and immobility_fraction that reduce it, are the speed of the mean of all 14 keypoints, which is the midpoint of the two mice, not the speed of either animal. The description (\"the pose centroid, mean over keypoints\") does not make this clear."
+    },
+    {
+     "kind": "other",
+     "statement": "The dandiset's mouse071 video (184 MB) is a re-encoding of CaltechDATA's (964 MB). It has the same frame count, size and rate, and its motion follows the pose at lag 0, but the dandiset does not say it was re-encoded."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The dandiset links the CalMS21 dataset DOI (10.22002/D1.1991) as IsDerivedFrom, but not the paper that describes the dataset and its benchmarks (arXiv 2104.02710, NeurIPS 2021 Datasets and Benchmarks)."
+    },
+    {
+     "kind": "other",
+     "statement": "On CaltechDATA, 574 CalMS21 sequences hold 450 distinct recordings (identical keypoints over the whole sequence). 93 of the 109 Task 3 test sequences are Task 1 training recordings, five Task 1 test recordings (mouse071 among them) appear as six Task 3 training sequences, and four Task 2 recordings are in the training set of one of annotators 3 and 4 and the test set of the other. The paper describes each sequence as an independent observation and does not mention the overlap, and the CaltechDATA readme says that training and test sets are split by animal identity."
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The paper's datasheet says the dataset does not include the raw videos, while Section 3.1 says all source videos of Task 1 are released, and the deposit holds them. The datasheet also gives the licence as CC-BY-NC-SA, while the CaltechDATA record and the dandiset give CC-BY 4.0."
+    },
+    {
+     "kind": "other",
+     "statement": "Table 5 gives 139,112 training frames for Task 2 annotator 1; the deposited file holds 139,122. The other 47 counts of Table 5 match."
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The baseline code the paper links (gitlab.aicrowd.com/aicrowd/research/mab-e/mab-e-baselines) is not reachable and no archived copy of the repository was found; the code of the challenge's top entries is not linked. The paper leaves the architectures' settings to that code, so none of the benchmark results can be repeated."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-19",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The executed notebook of the first run with the conclusion cells and the summary removed, the helper module and the claims file (commit cf06231).",
+     "agreed": 22,
+     "of": 22,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-19",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the second run, with its conclusion cells and summary, the helper module, the claims file and the attempt record (commit c209e2e).",
+     "agreed": 22,
+     "of": 22,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001878-sun-2021",
+   "type": "reproduction",
+   "title": "CalMS21 mouse social behavior dataset (Sun et al. 2021)",
+   "description": "Tests the claims of Sun et al. (2021), the paper describing the CalMS21 dataset of resident-intruder pose and behavior annotations, on dandiset 001878, which holds one CalMS21 sequence (Task 1 test sequence mouse071) with its video, and on the full dataset deposited on CaltechDATA. It checks the format, identities and annotations of the dandiset's sequence, links it to the deposit, and tests the dataset's counts and label fractions. The model benchmarks are not run.",
+   "datasets": [
+    "dandi:001878"
+   ],
+   "papers": [
+    "10.22002/d1.1991"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_sun_2021.ipynb",
+     "title": "Reproducing Sun et al. (2021) from dandiset 001878 and the CalMS21 deposit",
+     "executed": "notebooks/001878-sun-2021/reproduce_sun_2021.html"
+    }
+   ]
+  }
+ ]
+}
