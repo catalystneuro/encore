@@ -11,11 +11,11 @@ repository and a Zenodo record) and counted apart.
 |---|---|
 | The dandiset's cells match the paper's metadata table (link) | Reproduced |
 | Features extracted from the files match the paper's feature table (link) | Reproduced |
-| 1,329 cells from 266 mice | Reproduced |
+| 1,329 cells from 266 mice (the dandiset has 1,328, which the criterion accepts) | Reproduced |
 | Ages of the mice | Reproduced |
 | Mice per genotype | Partially reproduced |
 | Stimulus protocol | Partially reproduced |
-| 1,284 cells with a soma depth | Reproduced |
+| 1,284 cells with a soma depth (the dandiset has 1,283, which the criterion accepts) | Reproduced |
 | Features of the example cell (Extended Data Fig. 4) | Reproduced |
 | 1,320 cells with all 17 features, 1,219 with a t-type | Reproduced |
 | Pvalb fire fastest, Sst have the highest sag and rebound | Reproduced |
@@ -50,9 +50,9 @@ paper excludes are not marked. The attempt record, with the reasons and the diff
 method, is [`attempts/000008-scala-2021-01.yaml`](../../attempts/000008-scala-2021-01.yaml).
 
 - `scala_2021_ephys.ipynb`: the data check, the link claims and the claims on the recordings and metadata
-  (about 18 minutes, most of it streaming the files and running the paper's feature extraction).
+  (10 to 16 minutes in the runs so far, most of it streaming the files and running the paper's feature extraction).
 - `scala_2021_transcriptomics.ipynb`: the claims that combine the recordings with the paper's gene counts
-  and 10x reference (about 18 minutes).
-- `scala_2021_sequencing.ipynb`: the sequencing claims on the paper's count tables (about 4 minutes).
+  and 10x reference (10 to 16 minutes in the runs so far).
+- `scala_2021_sequencing.ipynb`: the sequencing claims on the paper's count tables (about 5 minutes).
 - `scala.py`: loading the files, the paper's feature extraction fetched from its repository at a pinned
   commit, the cell table, and the measures of the claims. Other notebooks on this dandiset can import it.
