@@ -135,6 +135,10 @@ if [ "$on_main" = true ] && [ "$deprecated" != true ] && ! is_done claims; then
   [ "${CLAIMS_ONLY:-}" = 1 ] && { rm -f "$mark"; echo "$d CLAIMS MERGED (already on main)"; exit 0; }
 elif [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
   step claims
+  fetch
+  # The reader writes no claims file when the paper's text is not enough to read them from (a missing
+  # supplement, say); its report says what to supply.
+  [ -n "$(claims_file)" ] || { echo "$d STOPPED: the reader wrote no claims file; see transcripts/$d/claims-report.md"; exit 1; }
   step claims-check
   fetch
   ready=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=(yaml.safe_load(sys.stdin) or {}).get('checks') or [{}]; print(str(c[-1].get('ready', False)).lower())")
