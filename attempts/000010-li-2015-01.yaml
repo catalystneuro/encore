@@ -1,5 +1,5 @@
 # Attempt 000010-li-2015-01: the author's record (docs/protocol.md, Author, step 5), revised after the
-# answers in questions/000010.yaml and after the first verification round.
+# answers in questions/000010.yaml and after the first and second verification rounds.
 schema_version: 2
 id: 000010-li-2015-01
 dataset:
@@ -90,7 +90,8 @@ outcomes:
     may decide; both were already run and agree here, so the outcome is unchanged.
   deviations:
   - Trials with tagging light are found from the laser traces, as the trial tables do not flag them.
-  - 66 trials whose go cue is not 2.6 s after the sample event, and trials without events, are dropped.
+  - 66 extracellular trials without an early lick whose go cue is not 2.6 s after the sample event, those
+    with no go cue (75 extracellular, 2 imaging) and trials without events are dropped.
 - claim: fig2d-preparatory-perimovement
   outcome: not_reproduced
   notebook: reproduce_li_2015.ipynb
@@ -162,7 +163,7 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_li_2015.ipynb
   output: claim:fig2e-no-contra-bias-spikes
-  measured: 8.5
+  measured: 7.97
   notes: 'On the paper''s test as written (overall spike count over the three epochs, all putative pyramidal
     neurons), the lick right minus lick left difference is not different from 0 (P = 0.82; 0.52 without
     light trials). The bootstrap finds no contralateral excess (419 of 912 selective neurons contra-preferring,
@@ -171,11 +172,17 @@ outcomes:
     In the 570 ms before the go cue the difference reaches P = 0.022 to 0.050 across neuron and light
     readings, and the delay epoch gives P = 0.051 to 0.12. The 8% modulation is matched in some readings
     (all neurons, 570 ms, over the mean rate, 8.5%; selective neurons, delay, light trials left out, 8.0%
-    and 8.3%) and not in others (5.8% to 10.7%). The answer on light trials named two readings, (t1) all trials and (t2) trials without the light, either of which may decide; the outcome is the same under both, so it is unchanged.
+    and 8.3%) and not in others (5.8% to 10.7%). Only one reading meets both the absence test and the
+    8% modulation, selective neurons, delay epoch, light trials left out (P = 0.060, 7.97%), and its
+    value is the measured one (earlier 8.5%, from all neurons in the 570 ms window, where the test gives
+    P = 0.036 with a contralateral excess). The answer on light trials named two readings, (t1) all trials and (t2) trials without the light, either of which may decide; the outcome is the same under both, so it is unchanged.
     The outcome rests on reading (a)(i) because the protocol judges a claim of absence on the paper''s
     test as written ("the overall spike count across the recorded population"). It is fragile: in the
     570 ms window, where the Results report the same P = 0.13 for all task-selective neurons, all four
-    tests give P = 0.022 to 0.050 with a contralateral excess.'
+    tests give P = 0.022 to 0.050 with a contralateral excess. The criterion sets no rule for deciding a
+    claim of absence across its readings, so the outcome depends on the reading taken: on the paper''s
+    second P = 0.13 test, for all task-selective neurons, the 570 ms window gives P = 0.050 and 0.038
+    with a contralateral excess and the delay epoch P = 0.12 and 0.060.'
   deviations:
   - The claim of absence is judged on the paper's test as written ('overall spike count across the recorded
     population'), reading (a)(i); the other window and neuron readings of the criterion are shown, and
@@ -197,7 +204,8 @@ outcomes:
     both.'
   deviations:
   - Baseline reading (b) covers the 0.57 s of recorded time before the sample event, as spikes are stored
-    only in trial windows, so it is close to reading (a).
+    almost only in trial windows (at least 99% of them in 97 of 99 sessions), so it is close to reading
+    (a).
   - Trials with tagging light are found from the laser traces; readings (t1) and (t2) are both run
     and give the same outcome.
 - claim: tagging-counts
@@ -284,6 +292,16 @@ outcomes:
     and give the same outcome.
 - claim: imaging-selectivity-counts
   outcome: partially_reproduced
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion sets only a reproduced condition, all values within tolerance under one
+      reading, and no reading meets it (0 of 16). The selective count is within tolerance only in the
+      4 readings with span (b) and the mean over epochs, where the task-related count is above it. It
+      is measured and misses under every reading, unlike the intermediate units of units-classification,
+      a class the dandiset lacks; fig2d-preparatory-perimovement, with the same kind of criterion and 2
+      of 3 counts within tolerance in three readings, is not reproduced. The paper's 1,575 lying between
+      the counts of two readings does not put it within tolerance under one. Both verification rounds
+      gave not_reproduced.
   notebook: reproduce_li_2015.ipynb
   output: claim:imaging-selectivity-counts
   measured:
@@ -292,7 +310,8 @@ outcomes:
   - 1315
   - 0.579
   - 59
-  notes: The dandiset holds 4,706 included cells in 59 planes, the paper's numbers. Over 16 readings,
+  notes: The outcome is kept as recorded before the second verification round, and a change to
+    not_reproduced is proposed (see proposed). The dandiset holds 4,706 included cells in 59 planes, the paper's numbers. Over 16 readings,
     the task-related count is 2,551 to 2,772 with span (a), within 2,740 +/- 274, and 3,104 to 3,134 with
     span (b), above it; the contra-preferring fraction is 0.547 to 0.590, within tolerance in 15 readings.
     The selective count is 1,315 to 1,417 where the task-related count fits (paper 1,575, lower limit
@@ -306,7 +325,9 @@ outcomes:
     them out, a check chosen here and not a reading, gives 1,416 (cut at 0) or 1,419 (cut at 0.1, then
     all five values within tolerance) in the closest reading, so the selective count sits at the edge
     of the tolerance and the outcome is kept as partially reproduced. Early licks cannot be left out, as
-    the imaging files hold only sample, delay and go events and flag no early lick.
+    the imaging files hold only sample, delay and go events and flag no early lick. The neuropil-corrected
+    F of 3,403 included ROIs reaches 0 in at least one frame; the longest such run is one frame in 2,034
+    of them, two to seven frames in 1,199 and eight frames (0.5 s) or more in 170.
   deviations:
   - The files' `included` flag stands for the Methods' brightness rule; 424 included ROIs have a median
     F below 1.05 times their neuropil.
@@ -485,7 +506,7 @@ verifications:
     outcome: reproduced
     reason: Under both steps and both light readings the sample-epoch count reaches 248 to 280, above the
       binomial limit of about 72, while pre-sample windows average about 60; the delay count rises from
-      273 to 326 to 377 to 408; the maximum starts 0.2 to 0.35 s after the go cue (3b). (3a) fails.
+      273-326 to 377-408; the maximum starts 0.2 to 0.35 s after the go cue (3b). (3a) fails.
     response: No change.
   - claim: fig2c-population-dynamics
     agrees: true
@@ -507,7 +528,8 @@ verifications:
   - claim: fig2e-no-contra-bias-spikes
     agrees: true
     outcome: reproduced
-    reason: Reproduced but fragile. (a)(i) gives P = 0.82 (t1) and 0.52 (t2), and only 419 of 912
+    reason: Reproduced but fragile. (a)(i) gives P = 0.82 (t1) and 0.52 (t2). Under (b)(delay)(t2), P =
+      0.060 and the modulation is 7.97%, inside 7.2 to 8.8. Only 419 of 912
       selective neurons are contra-preferring. But the claims file sets no rule for which reading
       decides; in the 570 ms window, where the paper reports the same P = 0.13, all four tests give P
       between 0.022 and 0.04999 with a contralateral excess, the criterion's not reproduced condition.
@@ -657,6 +679,208 @@ verifications:
     outcome: blocked
     reason: There is no histology in any asset.
     response: No change.
+- date: '2026-10-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: The full executed notebook of the author-revise-1 run (commit 583cce95), the helper module,
+    the entry README, the claims file, the attempt record and the round-1 report. Report in
+    transcripts/000010/verifier-2-report.md.
+  results:
+  - claim: behaviour-performance
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: fig1d-delay-inhibition-ipsi-bias
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome; for a blocked claim, the verifier found no part that
+      the record misstates.'
+    response: 'No change.'
+  - claim: fig1d-sample-inhibition-smaller
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome; for a blocked claim, the verifier found no part that
+      the record misstates.'
+    response: 'No change.'
+  - claim: units-classification
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: fig2-selective-fraction
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The deviation on "66 extracellular trials" is not supported: cell 5 prints "66
+      of 28508", and the 28,508 trials are 24,580 extracellular plus 3,928 imaging trials, so the
+      count is not limited to extracellular trials.'
+    response: 'Cell 5 now prints the 66 trials by kind (all 66 are extracellular; the 28,508 include
+      the imaging trials) and their range, and the trials without a go cue (75 extracellular, 2
+      imaging). The deviation, the data check text and the finding say this.'
+  - claim: fig2d-preparatory-perimovement
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: fig2c-selectivity-time-course
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. The record''s statement of the round-1 reason, "rises from 273 to 326 to 377 to
+      408", garbles "rises from 273-326 to 377-408".'
+    response: 'The round-1 reason is corrected to the verifier''s wording.'
+  - claim: fig2c-population-dynamics
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: ed2c-error-trials-predict-choice
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: fig2e-no-contra-bias-spikes
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees it is reproduced, but it stays fragile. The measured 8.5 comes from reading
+      (a)(ii), all neurons and the 570 ms window, where the absence test fails (P = 0.036 with a
+      contralateral excess) and the population is not the task-selective neurons of the statement;
+      the reading where both the test and the 8% value agree is (b)(iii)(t2), 7.97%, P = 0.060. The
+      rule "the paper''s test as written" does not single out (a)(i): the paper prints a second P =
+      0.13 test for all task-selective neurons, which gives P = 0.050 and 0.038 with a contralateral
+      excess in the 570 ms window and P = 0.12 and 0.060 in the delay window. The claims file sets
+      no rule for deciding a claim of absence across readings, so the outcome depends on which
+      reading is chosen. The round-1 reason in the record leaves out the (b)(delay)(t2) result.'
+    response: 'The measured value is now 7.97, from (b)(iii)(t2), the one reading where both hold;
+      cell 38 prints the readings that meet both. The conclusion and notes now say that the claims
+      file sets no rule across readings, so the outcome depends on the reading, and give the second
+      P = 0.13 test. The (b)(delay)(t2) result is added to the round-1 reason. No change of outcome;
+      the verifier agrees with it.'
+  - claim: ed1-fast-spiking-properties
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees, including the change to not_reproduced. "Spikes are stored only within the 5.5
+      s trial windows" (cell 10, the last finding, the ed1 baseline deviation) is not supported:
+      cell 9 prints a minimum of 0.7019 for the fraction of spikes inside a trial window, so in at
+      least one session 30% of spikes fall outside every trial window.'
+    response: 'Cell 9 now prints where the spikes outside the windows fall: in 97 of 99 sessions at
+      least 99% are inside; in two sessions (214429 and 219031) 24% and 30% fall between trials,
+      none before the first trial or after the last. Cell 10, the deviation and the finding now say
+      so.'
+  - claim: tagging-counts
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: antidromic-latencies
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: fig3e-pt-it-both-activity-types
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: fig3f-pt-contra-preferring
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees; B2 is resolved, as cell 54 shows the light is balanced (0.295 against 0.307 of
+      correct trials) and the light-only and no-light strata point the same way. The claim holds
+      only under t1 and only with light and no-light trials pooled; the claims file lets t1 decide,
+      so the outcome stands, but it is fragile. The README''s "with the trials pooled there are more
+      of them" is offered as the explanation but is not tested; cell 54 shows only that each stratum
+      alone gives P of about 0.14 and the pooled data P = 0.010. The finding''s "4,332 of 18,385
+      correct trials" is printed nowhere; cell 54 gives 4,332 of 14,388 correct trials in the 75
+      sessions with light.'
+    response: 'The README no longer gives an explanation; it says the result reaches P < 0.05 only
+      with the trials pooled and that why is not tested. Cell 54 now prints the total, 4,332 of
+      14,388 correct trials, and the finding gives it. No change of outcome.'
+  - claim: fig3f-pt-contra-selectivity
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: imaging-selectivity-counts
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The claims file sets only a reproduced condition, all values within tolerance under one
+      reading, and no reading meets it (0 of 16, cell 60). In units-classification the failing count
+      is a class the dandiset does not hold; here the selective count is measured and misses under
+      every reading. fig2d has the same kind of criterion, with 2 of 3 counts within tolerance under
+      three readings, and is recorded as not_reproduced. Bracketing 1,575 between two readings does
+      not put the count within tolerance under any one reading. The F0 part of B4 is resolved (145
+      of 305,349 included ROI-trials have F0 at or below 0). Cell 61 shows only that 3,403 ROIs
+      reach 0 in at least one frame; nothing printed shows the dips are single frames, and in 145
+      ROI-trials the 0.5 s F0 is itself at or below 0. Early-lick trials still cannot be excluded.'
+    response: 'Outcome kept as partially_reproduced, as round 2 may not change it, and a change to
+      not_reproduced is proposed with the reason under proposed: the verifier''s argument holds, the
+      criterion has no partial condition, and the notebook now tallies per reading how many values
+      are within tolerance (0 of 16 with all five, 12 with four, the selective count within
+      tolerance in 4 readings where the task-related count is above it). Cell 61 now prints how long
+      the dips last: the longest run at or below 0 is one frame in 2,034 of the 3,403 ROIs, two to
+      seven in 1,199 and eight or more (0.5 s) in 170, so the earlier "single frames" was wrong for
+      a third of them; the notes say this.'
+  - claim: fig4f-spatially-intermingled
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees with the stated outcome; the conclusions for this claim match the outputs.'
+    response: 'No change.'
+  - claim: fig4h-pt-contra-imaging
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; there is no depth in any of the 58 fields, so fig4h stays blocked.'
+    response: 'No change.'
+  - claim: reaction-time
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. A correction to the verifier''s own round-1 text: the s.d. across mice of 29 to
+      51 ms under every reading holds only for the (z) readings; the (k) readings reach 96 ms (cell
+      71). This does not change the outcome. The lick trace is still not documented as the
+      photodiode signal.'
+    response: 'No change. The record already lists, as a deviation and a finding, that the files do
+      not say the lick trace is the photodiode signal; the dataset gives nothing more.'
+  - claim: fig5b-pt-delay-activation-contra-bias
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome; for a blocked claim, the verifier found no part that
+      the record misstates.'
+    response: 'No change.'
+  - claim: fig5b-pt-sample-activation-contra-bias
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome; for a blocked claim, the verifier found no part that
+      the record misstates.'
+    response: 'No change.'
+  - claim: ed6b-pt-dose-response
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome; for a blocked claim, the verifier found no part that
+      the record misstates.'
+    response: 'No change.'
+  - claim: ed6d-it-activation-inconsistent
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome; for a blocked claim, the verifier found no part that
+      the record misstates.'
+    response: 'No change.'
+  - claim: ed3e-high-power-contra-licking
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome; for a blocked claim, the verifier found no part that
+      the record misstates.'
+    response: 'No change.'
+  - claim: ed7-pt-activation-persistent
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees; the trials without events, by mouse, show 218693 has 7, so ed7 is unaffected.'
+    response: 'No change.'
+  - claim: ed3-anatomy-it-pt-separate
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the stated outcome; for a blocked claim, the verifier found no part that
+      the record misstates.'
+    response: 'No change.'
 findings:
 - kind: data_missing
   statement: The dandiset holds none of the photoinhibition (Figure 1) or photoactivation (Figure 5, Extended
@@ -675,7 +899,7 @@ findings:
     neurons that passed.
 - kind: metadata_insufficient
   statement: In 75 sessions the antidromic tagging light was delivered during behavioural trials (4,332
-    of 18,385 correct trials). The trial tables do not flag these trials; they can be found only from
+    of 14,388 correct trials in those sessions). The trial tables do not flag these trials; they can be found only from
     the laser traces under stimulus/presentation, whose series have the description 'no description'.
 - kind: metadata_error
   statement: The laser power series are labelled 'watts' but hold values of 47.1 and 82 at the pulses,
@@ -686,7 +910,7 @@ findings:
     events; 1,447 of them are marked 'right', 'hit' and 'no early', last exactly 5.5 s, and 1,345 hold
     no spike from any unit. They look like placeholders for removed trials filled with default values.
     Taken as given they raise performance and bias trial counts towards lick right. 1,502 of them are in
-    the 75 sessions with tagging light, most in the first or last tenth of a session, and 7 in the Ai32
+    the 75 sessions with tagging light, 754 (49%) in the first or last tenth of a session, and 7 in the Ai32
     mouse 218693, so they are not the photoactivation trials.
 - kind: metadata_insufficient
   statement: The imaging files flag no trial as an early lick (all False, stored as booleans, where the
@@ -707,9 +931,12 @@ findings:
     level and direction differ between sessions (median baselines 0.069 to 4.83 a.u.; it falls after
     the go cue in 15 of 99 sessions), and nothing describes the gain or polarity.
 - kind: other
-  statement: 66 extracellular trials without an early lick have a go cue less than 2.6 s after the sample
-    event, against 2.6 s in all others; they are dropped here.
+  statement: 66 extracellular trials without an early lick have a go cue that is not 2.6 s after the
+    sample event (65 sooner, down to 0.03 s, and one later, 2.68 s), against 2.6 s in all others, and 75
+    have no go cue; they are dropped here.
 - kind: other
-  statement: Spikes are stored only within 5.5 s trial windows (from 0.57 s before the sample event),
-    so baselines before the trial and inter-trial activity cannot be measured, and in early-lick trials,
-    where the go cue comes later, part of the response epoch is not stored.
+  statement: Spikes are stored almost only within 5.5 s trial windows (from 0.57 s before the sample
+    event); in 97 of 99 sessions at least 99% of the spikes fall in a window. In two sessions (mice 214429
+    and 219031) 24% and 30% fall between trials, in gaps between the windows. So baselines before the
+    trial and inter-trial activity cannot be measured in most sessions, and in early-lick trials, where
+    the go cue comes later, part of the response epoch is not stored.

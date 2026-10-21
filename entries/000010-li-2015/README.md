@@ -22,7 +22,7 @@ photoinhibition or photoactivation data and no histology.
 | PT and IT neurons show both activity types | Reproduced |
 | PT neurons mostly contra-preferring, IT not | Reproduced |
 | Contralateral selectivity of PT neurons from 570 ms before the go cue | Not reproduced |
-| Imaging counts of task-related and selective cells | Partially reproduced |
+| Imaging counts of task-related and selective cells | Partially reproduced (change to not reproduced proposed) |
 | Contra- and ipsi-preferring cells spatially intermingled | Not reproduced |
 | Imaged PT cells mostly contra-preferring, IT not | Blocked: metadata insufficient |
 | Reaction time | Blocked: methods underspecified |
@@ -36,8 +36,8 @@ Every PT and IT unit is deposited twice (also as Pyr), and the tagging light was
 behavioural trials that the trial tables do not flag. The paper does not say whether those trials
 belong in the task analyses, and the claims file lets either reading decide; the notebook runs every
 electrophysiology claim with and without them, and the PT contra-preference holds only with them. The light is balanced between
-the two trial types, so this is not a bias from the light: with the trials pooled there are more
-of them.
+the two trial types, so this is not a bias from the light. The PT result reaches P < 0.05 only with
+the light and no-light trials pooled (each alone gives P = 0.14 to 0.15); why is not tested here.
 Seven questions to a reader, all answered, are in
 [`questions/000010.yaml`](../../questions/000010.yaml); the paper settles none of them, and the
 readings the answers name are run. The attempt record, with the reasons and
