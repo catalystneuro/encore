@@ -16,7 +16,7 @@ photoinhibition or photoactivation data and no histology.
 | Population dynamics and stable selectivity | Reproduced |
 | Error trials predict the lick direction | Reproduced |
 | No contralateral bias in spike counts | Reproduced |
-| Fast-spiking neurons fire more and are less selective | Partially reproduced |
+| Fast-spiking neurons fire more and are less selective | Not reproduced |
 | PT and IT tagging counts | Partially reproduced |
 | Antidromic latencies and jitter | Partially reproduced |
 | PT and IT neurons show both activity types | Reproduced |
@@ -35,14 +35,16 @@ reasoning and the differences from the paper's method.
 Every PT and IT unit is deposited twice (also as Pyr), and the tagging light was delivered during
 behavioural trials that the trial tables do not flag. The paper does not say whether those trials
 belong in the task analyses, and the claims file lets either reading decide; the notebook runs every
-electrophysiology claim with and without them, and the PT contra-preference holds only with them.
+electrophysiology claim with and without them, and the PT contra-preference holds only with them. The light is balanced between
+the two trial types, so this is not a bias from the light: with the trials pooled there are more
+of them.
 Seven questions to a reader, all answered, are in
 [`questions/000010.yaml`](../../questions/000010.yaml); the paper settles none of them, and the
 readings the answers name are run. The attempt record, with the reasons and
 the differences from the paper's method, is
 [`attempts/000010-li-2015-01.yaml`](../../attempts/000010-li-2015-01.yaml).
 
-- `reproduce_li_2015.ipynb`: the analysis. It takes about thirteen minutes, most of it streaming the
+- `reproduce_li_2015.ipynb`: the analysis. It takes about twenty minutes, most of it streaming the
   files (unit tables, trial tables, laser traces, fluorescence and the lick traces).
 - `alm.py`: loading the files, matching trials to their events, the light pulses, unit widths and
   duplicates, spike counts, antidromic latencies, the lick trace, and the imaging measures. Other notebooks on this dandiset can import it.

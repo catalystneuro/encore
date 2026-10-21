@@ -310,6 +310,36 @@ def load_ophys(asset_id):
     return out
 
 
+def ophys_metadata(asset_id):
+    """Every text field and attribute of one imaging file outside the data arrays (the
+    ImagingPlane group, session and experiment descriptions, image and series descriptions), to
+    look for a plane depth. Returns (path, text) pairs."""
+    f = open_asset(asset_id)
+    out = []
+
+    def visit(name, obj):
+        if name.startswith("specifications"):
+            return
+        for k, v in obj.attrs.items():
+            if isinstance(v, (bytes, str)):
+                out.append((f"{name}@{k}", _s(v)))
+        if isinstance(obj, h5py.Dataset) and obj.shape == () and obj.dtype.kind in "OSU":
+            out.append((name, _s(obj[()])))
+        elif isinstance(obj, h5py.Dataset) and obj.shape == ():
+            out.append((name, str(obj[()])))
+    f.visititems(visit)
+    f.close()
+    return out
+
+
+def ophys_metadata_all(assets, threads=12):
+    """`ophys_metadata` of every imaging file, as a DataFrame (file, path, field, text)."""
+    sub = assets[assets.kind == "ophys"]
+    with ThreadPoolExecutor(threads) as ex:
+        res = list(ex.map(ophys_metadata, sub.asset_id))
+    return pd.DataFrame([dict(file=p, field=k, text=t) for p, m in zip(sub.path, res) for k, t in m])
+
+
 def load_all(assets, kind, threads=12):
     fn = load_ephys if kind == "ephys" else load_ophys
     ids = assets[assets.kind == kind].asset_id.tolist()
@@ -512,11 +542,13 @@ def boot_more_ipsi(contra, rng, n=10_000):
 
 # ---------------------------------------------------------------- imaging measures
 
-def plane_trials(plane, tset, r=0.7, base=0.5):
+def plane_trials(plane, tset, r=0.7, base=0.5, return_f0=False):
     """DF/F0 of every ROI in each trial, as a (trials x frames x ROIs) array from the trial start
     to 2.0 s after the go cue, with frame times relative to the sample event and the lick right
     mask. F = F_roi - r * F_neuropil; F0 is the mean of F over `base` s before the trial start.
-    Trials without `base` s of frames before their start are dropped."""
+    Trials without `base` s of frames before their start are dropped. With `return_f0`, also
+    returns F0 per (trial, ROI) divided by the ROI's median raw fluorescence, for the sensitivity
+    check of imaging-selectivity-counts."""
     F = plane["F"] - r * plane["Fnp"]
     rate = plane["rate"]
     t = plane["t0"] + np.arange(F.shape[0]) / rate
@@ -536,32 +568,39 @@ def plane_trials(plane, tset, r=0.7, base=0.5):
     X = (F[idx] - F0[:, None, :]) / F0[:, None, :]
     rel = np.arange(-npre, npost) / rate
     right = (tr.instruction == "right").values[ok]
+    if return_f0:
+        return X, rel, right, int((~ok).sum()), F0 / np.median(plane["F"], 0)
     return X, rel, right, int((~ok).sum())
 
 
-def classify_plane(X, rel, right, included, resp_len, span, rank):
+def classify_plane(X, rel, right, included, resp_len, span, rank, drop=None):
     """Task-related, selective and contra-preferring ROIs of one plane (claims file,
     imaging-selectivity-counts). span 'a': Kruskal-Wallis bins from sample onset to the end of the
     response epoch; 'b': the whole recorded trial. rank 'mean': rank sum test of the mean DF/F
-    over the three epochs; 'each': each epoch, selective if any is significant."""
+    over the three epochs; 'each': each epoch, selective if any is significant. `drop`, a
+    (trials x ROIs) mask, leaves those ROI-trials out of every test (sensitivity check only)."""
     from scipy.stats import kruskal, ranksums
+    kw = {}
+    if drop is not None and drop.any():
+        X = np.where(drop[:, None, :], np.nan, X)
+        kw = dict(nan_policy="omit")
     if span == "a":
         f0, f1 = np.searchsorted(rel, 0), np.searchsorted(rel, SAMPLE_LEN + DELAY_LEN + resp_len)
     else:
         f0, f1 = 0, len(rel)
     nb = (f1 - f0) // 5
     B = X[:, f0:f0 + 5 * nb, :].reshape(X.shape[0], nb, 5, -1).mean(2)
-    p_kw = [kruskal(*[B[side, b, :] for b in range(nb)], axis=0).pvalue for side in (right, ~right)]
+    p_kw = [kruskal(*[B[side, b, :] for b in range(nb)], axis=0, **kw).pvalue for side in (right, ~right)]
     task = (p_kw[0] < 0.01) | (p_kw[1] < 0.01)
     eps = [(0, SAMPLE_LEN), (SAMPLE_LEN, SAMPLE_LEN + DELAY_LEN),
            (SAMPLE_LEN + DELAY_LEN, SAMPLE_LEN + DELAY_LEN + resp_len)]
     Ep = np.stack([X[:, np.searchsorted(rel, a):np.searchsorted(rel, b), :].mean(1) for a, b in eps], 1)
     y = Ep.mean(1)
     if rank == "mean":
-        sel = ranksums(y[right], y[~right], axis=0).pvalue < 0.05
+        sel = ranksums(y[right], y[~right], axis=0, **kw).pvalue < 0.05
     else:
-        sel = np.any([ranksums(Ep[right, k], Ep[~right, k], axis=0).pvalue < 0.05 for k in range(3)], 0)
-    contra = y[right].mean(0) > y[~right].mean(0)
+        sel = np.any([ranksums(Ep[right, k], Ep[~right, k], axis=0, **kw).pvalue < 0.05 for k in range(3)], 0)
+    contra = np.nanmean(y[right], 0) > np.nanmean(y[~right], 0)
     return dict(task=task & included, sel=task & sel & included, contra=contra, included=included)
 
 
