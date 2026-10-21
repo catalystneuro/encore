@@ -3012,6 +3012,10 @@
     "ready": null,
     "date": null
    },
+   "dandi:001893": {
+    "ready": true,
+    "date": "2026-10-21"
+   },
    "dandi:001933": {
     "ready": null,
     "date": null
@@ -13461,6 +13465,221 @@
     ]
    }
   ],
+  "dandi:001893": [
+   {
+    "path": "claims/001893/10.64898-2026.04.10.717727.yaml",
+    "paper": "10.64898/2026.04.10.717727",
+    "check": {
+     "ready": true,
+     "date": "2026-10-21"
+    },
+    "claims": [
+     {
+      "id": "patchseq-cohort",
+      "statement": "The whole-cell recordings comprise 96 LC-NE neurons from 28 mice, retrogradely labelled from frontal cortex (27 cells, 8 mice), cerebellar cortex (15 cells, 7 mice) or spinal cord (54 cells, 13 mice).",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 5",
+      "quote": "we made whole-cell patch clamp recordings from LC-NE neurons in brain slices (96 cells, 28 mice). We retrogradely labeled neurons from frontal cortex (27 cells, 8 mice), cerebellar cortex (15 cells, 7 mice), or spinal cord (54 cells, 13 mice)",
+      "criterion": "Cells are the dandiset's recorded neurons (one NWB file per ephys_roi_id in the code); mice are distinct donors and the target is the injection target, both from the dandiset's subject metadata (the code reads donor_local_id and injection_target_region in participants.tsv). Reproduced when every count is within tolerance; partially reproduced when the total cells and the three cell counts are, but a mouse count is not."
+     },
+     {
+      "id": "figs14k-waveform-spinal-vs-cortex",
+      "statement": "In slices, the action potential waveforms of LC-NE neurons projecting to spinal cord differ significantly from those of neurons projecting to isocortex (p < 0.01).",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 5; Figure S14k, left, legend",
+      "quote": "Neurons projecting to spinal cord had significantly different action potential waveforms than those projecting to isocortex or cerebellum",
+      "criterion": "The measure is fixed by the code (LCNE-patchseq-figures, code/spikes.py), as the paper says only \"action potential waveforms\". Per cell, among long-square rheobase sweeps (X3LP_Rheo_DA_0 and X5LP_Rheo_DA_0) whose main stimulus pulse lasts at least 0.8 s, the sweep with the smallest absolute amplitude that has a spike peak during the pulse; peaks found as the code does (voltage interpolated at the sampling interval, pairs of strict upward and downward crossings of -10 mV, the maximum between them); the raw voltage from -5 to 10 ms around every peak of that sweep, averaged. Each average is min-max normalised over -2 to 4 ms; PCA (mean-centred, by SVD) over -3 to 6 ms across all cells; PC1 per cell. The legend's \"paired\" t-test cannot apply to two groups of different cells of unequal size; the code's two-sided Welch t-test of PC1, spinal cord against cortex cells, is the test, and Student's two-sample t-test is shown as a variant. Cells and sweeps follow the Methods' inclusion criteria (sweep criteria applied before choosing the rheobase sweep, where the dataset holds the values they need); the code's choice, all 96 cells and no sweep criteria, is a variant. Reproduced when the Welch test gives p < 0.01; partially reproduced when 0.01 <= p < 0.05; not reproduced otherwise. The group means and SDs of PC1 are reported."
+     },
+     {
+      "id": "figs14k-waveform-spinal-vs-cerebellum",
+      "statement": "In slices, the action potential waveforms of LC-NE neurons projecting to spinal cord differ significantly from those of neurons projecting to cerebellum (p < 0.05).",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 5; Figure S14k, left, legend",
+      "quote": "Neurons projecting to spinal cord had significantly different action potential waveforms than those projecting to isocortex or cerebellum",
+      "criterion": "PC1 as in figs14k-waveform-spinal-vs-cortex (the same PCA over all included cells), with the same readings and variants. Two-sided Welch t-test of PC1, spinal cord against cerebellum cells. Reproduced when p < 0.05; not reproduced otherwise. The group means and SDs are reported."
+     },
+     {
+      "id": "figs14k-tau-cortex-vs-spinal",
+      "statement": "In slices, LC-NE neurons projecting to isocortex have significantly longer membrane time constants than those projecting to spinal cord (p < 0.001).",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 5; Figure S14k, right, legend",
+      "quote": "Neurons projecting to isocortex had significantly longer membrane time constants than those projecting to cerebellum or spinal cord",
+      "criterion": "The membrane time constant per cell as the IPFX package computes it (Methods, Patch-seq recordings), from the dataset's hyperpolarising long-square subthreshold sweeps, with IPFX's long-square analysis at its default settings. The paper gives neither the IPFX version nor its settings, and the code reads frozen values from the Allen Institute's internal database; the defaults are a standard choice and are recorded as a deviation. The code's frozen per-cell values (code/data/LCNE_patchseq_S14_cell_table.csv at commit 79fa20a, missing for 14 cells) are shown as a variant and compared with the recomputed values cell by cell. Cells without a time constant are left out. Sweep inclusion as in the Methods, the code's choice (none) a variant. Two-sided Welch t-test (the code's; the legend's \"paired\" t-test cannot apply to independent groups), Student's t-test a variant. The IPFX settings are the reader's standard choice, not the paper's, so they cannot decide the outcome alone. The test is also run on the code's frozen values (the paper's own IPFX output); if that gives a different outcome from the recomputed values, the claim is blocked as methods_underspecified with both shown. Reproduced when the cortex mean exceeds the spinal cord mean and p < 0.001; partially reproduced when the cortex mean is higher with 0.001 <= p < 0.05; not reproduced otherwise. The group means and SDs and the number of cells with a value are reported."
+     },
+     {
+      "id": "figs14k-tau-cortex-vs-cerebellum",
+      "statement": "In slices, LC-NE neurons projecting to isocortex have significantly longer membrane time constants than those projecting to cerebellum (p < 0.001).",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 5; Figure S14k, right, legend",
+      "quote": "Neurons projecting to isocortex had significantly longer membrane time constants than those projecting to cerebellum or spinal cord",
+      "criterion": "Time constants, cells, variants, test and the rule on the frozen values as in figs14k-tau-cortex-vs-spinal, cortex against cerebellum cells. Reproduced when the cortex mean exceeds the cerebellum mean and p < 0.001; partially reproduced when the cortex mean is higher with 0.001 <= p < 0.05; not reproduced otherwise."
+     },
+     {
+      "id": "patchseq-ne-identity",
+      "statement": "Each recorded cell's identity as an NE neuron was confirmed by RNA sequencing of its extracted nucleus.",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 5; Methods, cDNA and sequencing",
+      "quote": "At the end of the recording, we extracted the nucleus for RNA sequencing ( Lee et al. 2021 ) and confirmed each cell\u2019s identity as an NE neuron",
+      "criterion": "The paper does not say how identity was confirmed. The markers it uses to define LC-NE neurons (Figure S8c legend) are Dbh, Th, Slc6a2 and Slc18a2; expression is in counts per million (Methods). Readings, (a) Dbh detected (CPM > 0) in each cell; (b) all four markers detected in each cell. Reproduced when every recorded cell with a transcriptome passes under one reading. If the dandiset itself holds the transcriptomes, they are used instead."
+     },
+     {
+      "id": "fig1-lc-definition",
+      "statement": "LC, defined in CCF space as the dorsal pontine region holding the densest two-thirds of pontine NE neurons, has a volume of 0.13 mm3 and contains 1507 +- 55 NE neurons, with 367 +- 95 in sub-coeruleus.",
+      "source": "Results, LC-NE projections are spatially organized, paragraph 1; Figure 1a, 1b, Figure S1",
+      "quote": "We defined LC in the CCF as a small dorsal region (0.13 mm 3 in volume) containing approximately two-thirds of all pontine NE neurons (67th density percentile, 1507 \u00b1 55, mean \u00b1 SD). Additional NE neurons were found in sub-coeruleus (367 \u00b1 95)",
+      "criterion": ""
+     },
+     {
+      "id": "fig1-axon-density",
+      "statement": "LC-NE axons are dense in all CNS regions except the striatum; projections to the telencephalon are mainly ipsilateral, those to other regions bilateral.",
+      "source": "Results, LC-NE projections are spatially organized, paragraph 2; Figure 1c to 1e, Figure S2",
+      "quote": "We found a high density of LC-NE axons in all CNS regions other than the striatum, with varying densities across regions ... Projections to the telencephalon were predominantly ipsilateral",
+      "criterion": ""
+     },
+     {
+      "id": "fig2b-single-neuron-targets",
+      "statement": "Individual LC-NE neurons, though projecting widely as a population, tend to have axons in a particular region (cortex, thalamus and midbrain, cerebellum, brainstem or spinal cord), with forebrain-projecting and brainstem or spinal-cord-projecting neurons forming largely nonoverlapping pathways.",
+      "source": "Results, LC-NE projections are spatially organized, paragraph 3; Figure 2b, 2c",
+      "quote": "individual LC-NE neurons tended to have axons in a particular region ... Consistent with largely nonoverlapping pathways, neurons with forebrain projections tended to project to other regions in the forebrain but not the brainstem or spinal cord",
+      "criterion": ""
+     },
+     {
+      "id": "figs4a-axon-length-branching",
+      "statement": "Reconstructed LC-NE neurons have long axons (35.14 +- 13.60 cm, up to 72.57 cm) that branch little (17.8 branches/cm), significantly less than other CNS neurons of the MouseLight database (24.9 branches/cm; ANCOVA p < 0.001).",
+      "source": "Results, LC-NE projections are spatially organized, paragraph 3; Figure S4a",
+      "quote": "Many neurons had long axons, 35.14 \u00b1 13.60 cm (mean \u00b1 SD; Figure S4a ) with the largest neurons reaching 72.57 cm of total length ... these neurons branched little ( Figure S4a ; 17.8 branches/cm, R 2 = 0.74, p < 0.001) ... LC-NE neurons branched significantly less (ANCOVA, p < 0.001)",
+      "criterion": ""
+     },
+     {
+      "id": "fig2e-dorsal-forebrain-ventral-hindbrain",
+      "statement": "LC-NE neurons in dorsal LC project mainly to the forebrain and those in ventral LC to the hindbrain and spinal cord, as reconstructions and retrograde tracing both show.",
+      "source": "Results, LC-NE projections are spatially organized, paragraph 6; Figure 2e, 2f, Figure S7",
+      "quote": "Neurons in more dorsal LC had primary projections to the forebrain (olfactory bulb, isocortex, hippocampus), whereas neurons in more ventral LC had primary projections to the hindbrain (pons, medulla, and spinal cord)",
+      "criterion": ""
+     },
+     {
+      "id": "figs4dg-cortical-coprojection",
+      "statement": "Individual cortex-innervating LC-NE neurons send axons to nearby cortical regions, with no evidence of consistent targeting of separated but functionally related regions.",
+      "source": "Results, LC-NE projections are spatially organized, paragraph 4; Figure S4d to S4g",
+      "quote": "Individual cells tended to project to nearby regions, without evidence of individual cells consistently targeting spatially separated, but functionally related regions",
+      "criterion": ""
+     },
+     {
+      "id": "figs5-mapseq-consistent",
+      "statement": "MAPseq finds LC-NE neurons projecting across the CNS, with distributions of somata and axons consistent with the single-neuron morphologies.",
+      "source": "Results, LC-NE projections are spatially organized, paragraph 5; Figure S5",
+      "quote": "We found LC-NE neurons with projections across the CNS, with distributions of somata and axons consistent with our single-neuron morphologies",
+      "criterion": ""
+     },
+     {
+      "id": "fig3a-graded-expression",
+      "statement": "snRNAseq of 4,845 LC-NE neurons is best explained by a single cluster, with gene expression varying smoothly along a pseudospace axis.",
+      "source": "Results, LC-NE neurons have graded gene expression in space, paragraph 1; Figure 3a, 3b, Figure S8",
+      "quote": "A single cluster best explained the data ( Figure S8 ), although gene expression varied smoothly across the LC-NE neuron population",
+      "criterion": ""
+     },
+     {
+      "id": "fig3c-pseudospace-dorsoventral",
+      "statement": "Imputed gene-expression pseudospace of 2,221 MERFISH LC-NE neurons aligns with the dorsal-ventral axis of LC.",
+      "source": "Results, LC-NE neurons have graded gene expression in space, paragraph 2; Figure 3c, Figure S10",
+      "quote": "Gene expression pseudospace aligned with the dorsal-ventral axis of the LC",
+      "criterion": ""
+     },
+     {
+      "id": "fig3d-retroseq-targets",
+      "statement": "Neurons projecting to cortex, cerebellum and spinal cord occupy different parts of gene expression space, cortex-projecting neurons resembling dorsal and spinal-cord-projecting neurons ventral LC-NE neurons.",
+      "source": "Results, LC-NE neurons have graded gene expression in space, paragraph 3; Figure 3d legend",
+      "quote": "Neurons projecting to each region occupied different parts of gene expression space ( Figure 3d ). Cortex-projecting neurons shared gene expression with dorsal LC-NE neurons, spinal cord-projecting neurons with ventral neurons",
+      "criterion": ""
+     },
+     {
+      "id": "fig3e-axes-angle",
+      "statement": "The primary spatial axes of axonal projections and of gene expression both run dorsal-ventral, separated by 22.20 degrees.",
+      "source": "Results, LC-NE neurons have graded gene expression in space, paragraph 4; Figure 3e",
+      "quote": "Both axes aligned with the dorsal-ventral direction, separated by 22.20\u25e6",
+      "criterion": ""
+     },
+     {
+      "id": "figs14-waveform-dorsal-ventral",
+      "statement": "In vivo, extracellular spike waveforms of LC-NE neurons vary in space, dorsal neurons having more symmetric waveforms and longer peak-to-trough times than ventral ones.",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 4; Figure S14b to S14i",
+      "quote": "dorsal LC-NE neurons tended to have more symmetric spike waveforms and longer peak-to-trough times than ventral LC-NE neurons",
+      "criterion": ""
+     },
+     {
+      "id": "fig4g-go-cue-excitation",
+      "statement": "Nearly all LC-NE neurons (240 of 241, 19 mice) increase their spike rate in the 300 ms after the go cue.",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 6; Figure 4e to 4h",
+      "quote": "Nearly all LC-NE neurons showed an increase in spike rate in a 300 ms window following the go cue (paired t -tests, 240/241 cells, 19 mice",
+      "criterion": ""
+     },
+     {
+      "id": "fig5c-ignore-ventral",
+      "statement": "Spike rates in the 2 s before the go cue are higher before ignored trials and predict responding in 46.5% of neurons, an effect strongest in ventral LC (R2 = 0.152, p = 1.4e-3).",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 7; Figure 5b to 5d",
+      "quote": "spike rates in the 2 s before the go cue predicted whether the mouse would successfully respond to the go cue with a lick in either direction (46.5% of neurons had p -values < 0.05). This effect was strongest in neurons in ventral LC",
+      "criterion": ""
+     },
+     {
+      "id": "fig5g-switch-dorsal",
+      "statement": "Neurons more active during switch than stay choices lie in dorsal LC, those more active during stay choices in ventral LC (R2 = 0.168, p = 3.0e-4).",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 8; Figure 5f to 5h",
+      "quote": "Neurons with higher activity during \u201cswitch\u201d choices tended to be in dorsal LC, whereas those with higher activity during \u201cstay\u201d choices tended to be in ventral LC",
+      "criterion": ""
+     },
+     {
+      "id": "fig5d-ignore-on-anatomy-axes",
+      "statement": "Respond against ignore t-statistics of LC-NE neurons, projected onto the primary spatial axes of axonal projections and of gene expression, correlate significantly with position along both axes.",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 7; Figure 5d legend",
+      "quote": "We found a significant mapping of cellular activity onto axonal projections and gene expression",
+      "criterion": ""
+     },
+     {
+      "id": "fig5h-switch-on-anatomy-axes",
+      "statement": "Switch against stay t-statistics of LC-NE neurons, projected onto the primary spatial axes of axonal projections and of gene expression, correlate significantly with position along both axes.",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 8; Figure 5h legend",
+      "quote": "Comparing again to the anatomy, we found spatial variation of switch versus stay activity relative to axonal projections and gene expression",
+      "criterion": ""
+     },
+     {
+      "id": "fig5jk-pl-switch",
+      "statement": "LC-NE axonal fluorescence in prelimbic cortex and spiking of cortex-projecting LC-NE neurons are higher during switch than stay choices.",
+      "source": "Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 9; Figure 5j, 5k",
+      "quote": "LC-NE axonal fluorescence changes in PL and single-neuron spiking projecting to frontal cortex were significantly higher during switch versus stay choices",
+      "criterion": ""
+     },
+     {
+      "id": "fig6c-rpe-choice-change",
+      "statement": "The change of choice on consecutive trials correlates with the model's reward prediction error.",
+      "source": "Results, Activity of LC-NE projections to frontal cortex correlates with reward prediction errors, paragraph 1; Figure 6c",
+      "quote": "Relationship between how choices changed on consecutive trials and RPE (rank correlation, \u03c1 = 0.84, p = 0.0)",
+      "criterion": ""
+     },
+     {
+      "id": "fig6a-outcome-space",
+      "statement": "Most LC-NE neurons (76.8%) respond to reward or its absence, and neurons excited by reward lie more dorsal and anterior than those excited by no reward.",
+      "source": "Results, Activity of LC-NE projections to frontal cortex correlates with reward prediction errors, paragraphs 1 and 2; Figure 6a, Figure S18",
+      "quote": "Neurons with increased activity in response to reward tended to lie more dorsal and anterior in LC than neurons with increased activity in response to no reward",
+      "criterion": ""
+     },
+     {
+      "id": "fig6f-rpe-clusters",
+      "statement": "Regression coefficients of outcome activity on chosen value and outcome cluster nonuniformly, and neurons projecting to isocortex are biased toward RPE.",
+      "source": "Results, Activity of LC-NE projections to frontal cortex correlates with reward prediction errors, paragraph 2; Figure 6e, 6f",
+      "quote": "shows a nonuniform distribution of activity (Rayleigh test, z = 19.53, p = 2.3 \u00d7 10 \u22129 ) ... neurons projecting to isocortex are RPE-biased (Watson-Wheeler test, W = 0.04, permutation p = 0.01)",
+      "criterion": ""
+     },
+     {
+      "id": "fig6h-outcome-groups-choice",
+      "statement": "Neurons correlated with RPE and neurons excited by lack of reward have opposing correlations with choice behaviour on the next trial.",
+      "source": "Results, Activity of LC-NE projections to frontal cortex correlates with reward prediction errors, paragraph 2; Figure 6h",
+      "quote": "Neurons that correlated with RPE or lack of reward had opposing correlations with choice behavior on subsequent trials",
+      "criterion": ""
+     },
+     {
+      "id": "fig6jk-pl-axons-rpe",
+      "statement": "LC-NE axonal activity in frontal cortex after the outcome correlates with RPE, and its regression t-statistics and coefficients, with those of cortex-projecting neurons, are more positive than those of the population of single neurons.",
+      "source": "Results, Activity of LC-NE projections to frontal cortex correlates with reward prediction errors, paragraph 3; Figure 6i to 6l",
+      "quote": "LC-NE axonal activity in frontal cortex 1.5 s after choice outcome correlated with RPE ... Regression t -statistics ( Figure 6j ) and coefficients ( Figure 6k ) were more positive than the population of single neurons (Fisher\u2019s exact test, p < 0.01)",
+      "criterion": ""
+     }
+    ]
+   }
+  ],
   "dandi:001933": [
    {
     "path": "claims/001933/10.1038-s41467-026-75194-3.yaml",
@@ -15662,6 +15881,12 @@
    "verifier-2-report.md",
    "verifier-2.md"
   ],
+  "dandi:001893": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
+  ],
   "dandi:001933": [
    "author-report.md",
    "author-revise-1-report.md",
@@ -15817,7 +16042,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-21T03:48:05+00:00",
+ "generated": "2026-10-21T04:06:50+00:00",
  "queue_generated": "2026-10-21T03:29:33+00:00",
  "queue_counts": {
   "public_dandisets": 660,
