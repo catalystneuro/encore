@@ -5296,3 +5296,103 @@ speed-slope-steeper and speed-intercept although their analyses ran and agree
 under every reading; and many criteria give 32 to 64 combinations of readings
 that must all agree, which at the time blocked eight claims as
 `methods_underspecified`.
+
+### 000009, Guo et al. 2017
+
+Seven claims reproduced, two partially, thirteen not reproduced and seventeen
+blocked on the dandiset. It pins version 0.220126.1903, the only published
+version, as the paper cites none. The author put six questions to a reader,
+who did not have Supplementary Table 1; the answers made the computed spike
+width (P1) the rule for unit classes, kept the files' labels (P2) as a reading
+and added all units (P3) for the thalamic claims of Fig. 2 and 6, and allowed
+both whole-cell photostimulus onsets the claims file names (E and M). This
+moved four whole-cell claims from blocked and `selectivity-time-course` from
+partially reproduced to reproduced. Round 1 gave its own outcome for each
+claim from the notebook with its conclusion cells and summary removed and
+agreed with 29 of 39. `task-performance` moved from partially reproduced to
+not reproduced, as no reading puts percent correct, lick-early and
+no-response rates within tolerance together. Round 1 also found that the
+whole-cell files hold the laser trace in an OptogeneticSeries the loader never
+read; its onset is now shown as reading L, with a seventh question to a
+reader, and changes no outcome. For nine claims the author kept partially
+reproduced where round 1 gave not reproduced. Round 2 agreed with 30 of 39 and
+pointed out that none of the nine criteria has a partial clause; the author
+proposed changing them, and a third round, which reviewed only those nine,
+agreed with all of them, so they are not reproduced. The paper, "Maintenance
+of persistent activity in a frontal thalamocortical loop", records units in
+ALM, thalamus and SNr and whole-cell ALM neurons in mice performing a delayed
+licking task with optogenetic photoinhibition, and reports that thalamus
+photoinhibition reduces ALM activity to 6% of control and hyperpolarizes ALM
+neurons by 18.7 mV, more than photoinhibition of M1 or contralateral ALM, and
+that ALM photoinhibition reduces VM/VAL activity to 25% of control. The
+behaviour, unit classes, selectivity, the effects and latencies of
+photoinhibition in ALM, thalamus and SNr and the whole-cell claims were
+tested. `fig3-alm-collapse` is partially reproduced (activity falls to 2.1 to
+2.5% of control on 230 to 261 units against 314 +/- 31), and the unit-class,
+selectivity and SNr claims are not reproduced mostly because the dandiset
+holds fewer units than the paper, while the fractions often agree (P2
+fractions 0.839 and 0.125 against 0.829 and 0.137). `wc-thalamus-hyperpolarization`
+is not reproduced (-16.83 +/- 1.24 mV under M against -18.7 +/- 1.1), and
+`fig6c-vmval-reduced` because VM/VAL activity falls to about half of control
+where the paper gives 25%. Ten claims are blocked as `data_missing`, two as
+`metadata_insufficient` and five as `methods_underspecified`, three of them
+because their readings disagree and two because they rest on the
+Supplementary Information. Some outcomes rest on weak ground:
+`fig3-onset-latencies` passes under one reading of four, and its onset rule
+reports an onset below 10 ms in 30 to 48% of simulated runs with no effect;
+and in selectivity-time-course the VM/VAL increase holds in 3 of 12 VM/VAL
+readings, all under P3.
+
+The dandiset holds 966 of the paper's 1214 ALM units (47 of 57 sessions), 789
+of 790 thalamic units (72 of 73 sessions) and 181 of 227 SNr units (18 of 23
+sessions), apparently only the putative GABAergic ones, and the behaviour-only
+sessions, the muscimol experiments, the 0.5 mW thalamus photoinhibition of
+Fig. 5, the non-behaving whole-cell recordings with current injection, the M1
+whole-cell recordings, the Olig3-cre recordings and the histology are not
+deposited. Spikes are stored only from each trial's start to about 4.8 s after
+pole onset, although trials last about 9 s, so rates over whole trials or
+sessions cannot be computed. Most units hold spikes over only part of their
+session (median 70% of its trials; 1358 of 1936 units below 90%) and the Units
+table gives no observation interval. The mean waveforms are cut short (29 to
+38 samples at 25 kHz), so widths above about 0.5 ms cannot be measured, and the
+`cell_type` labels have no stated rule, though they give class sizes close to
+the paper's. In the whole-cell files every photostimulus column of the trial
+tables is empty and the laser time is held only in an OptogeneticSeries
+described as 'no description', starting 1.40 s after pole onset in mouse
+anm300476 and 1.47 s in the others. Thalamic units have no nucleus label, so
+VM/VAL can be selected only by distance from a centre the paper does not give
+in coordinates. Other findings: in the whole-cell file of cell_21_1 the trial
+start and stop times are shifted by one row against the pole and cue times;
+the Vm series state unit 'mV' with conversion 0.001, though the values are
+already in mV; every electrode group carries the ALM coordinates, and the SNr
+units of anm00261336 are placed at AP -1.56 mm, outside SNr; the 9 Gad2
+thalamic sessions give the genotype 'Ai35D x GAD2_Cre' and mark no
+photostimulus trial, though their 84 units match the optrode units of Extended
+Data Fig. 2c; the VGAT-ChR2-EYFP thalamic sessions give 2.23 mW where the paper
+gives 10 mW; unit_y has no stated reference, session_start_time is the
+conversion date (2017-06-27) for every session and no sorter is named, so the
+missing ALM sessions cannot be identified; photostimulation at galvo position
+(0.5, 0.5) mm in mouse anm00264943 is not named; and the dandiset holds data
+the paper does not describe, 21 ALM sessions of PV-Cre x Ai32 mice with
+thalamic photostimulation at 10, 22.5 and 45 mW and 12 thalamic sessions of
+C57BL6 mice without photostimulation.
+
+The notebook ran in 330 s in the first clean run, 576 s after the answers,
+about 11 minutes after round 1 and 669 s after round 3, and `entry.py check`
+reported no errors. Round 1's points led to the laser trace being read, spike
+windows past the stored spikes counted as missing, a check of the onset rule
+on simulated data, the delay lengths and 100 ms bins of the VGAT thalamic
+sessions, the SNr label reading set to 'Narrow width spiking', and Welch's
+test for the depth bins. Round 2 found sentences the outputs did not support,
+among them the README calling all 181 SNr units putative GABAergic and a group
+count of 286 described as within 250 +/- 25, and these were corrected.
+Untracked files in the repository root that the author did not create were
+left alone. The author's points on the protocol: it gives no outcome rule when
+the data contradict a claims-file convention; it does not say how the
+author's own readings combine with each criterion's; criteria without a
+partial clause do not say what counts short only because the dataset holds
+fewer units are; it has no rule for missing per-unit observation intervals;
+it does not say what `measured` holds when no reading matches; criteria can
+block on trivial disagreement, such as 0-against-0 ties in bins of 1 to 4
+neurons; questions of data interpretation cannot be answered from the paper;
+and it does not say how to record a claim testable only in part.
