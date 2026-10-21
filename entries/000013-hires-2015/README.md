@@ -10,20 +10,24 @@ whisker.
 |---|---|
 | Recording counts, behavioural performance, sample epoch | Reproduced |
 | The Figure 1 example cell: rates, sample-epoch Fano factor, spikes per touch, phase modulation | Reproduced (cell 23) |
+| Table 1 for L4 C2; the L5 rate increase with whisking | Reproduced |
 | Touch responses weaker outside C2; L5 rates higher; phase modulation L4 vs L5 and inside vs outside | Reproduced |
 | Modulation indices of Figure 5C; touch clusters; Fano factor near the binomial limit | Reproduced |
 | Fano factors of Figure 6E (five conditions); spikes per whisk cycle | Reproduced |
-| Whisking bouts; touches and reaction time; example cell's touch window; rate change with whisking (L4, L5) | Partially reproduced |
-| Mice and lines; whisking rates in the text; how many cells have a latency; time and phase decoding (Figure 4B, 4C) | Not reproduced |
-| Table 1; touch and phase coupled spikes (Figure 3C, 3D); touch detection (Figure 4A); Figure 5 correlations; refractory model (Figure 6D); Figure 6B example | Blocked: methods underspecified |
+| Whisking bouts; touches and reaction time; example cell's touch window; rate change with whisking in L4; Table 1 for L5 | Partially reproduced |
+| Mice and lines; whisking rates in the text; how many cells have a latency; time decoding (Figure 4B) | Not reproduced |
+| Table 1 for L4 outside C2; touch and phase coupled spikes (Figure 3C, 3D); touch detection (Figure 4A); phase decoding (Figure 4C); Figure 5 correlations; refractory model (Figure 6D); Figure 6B example | Blocked: methods underspecified |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-Most of the blocked claims turn on one question asked in
-[`questions/000013.yaml`](../../questions/000013.yaml): where the search for the touch-window
-cutoff starts. The files fall in batches that were converted differently: in 36 of them the
-spike train's timestamps run 10 ms ahead of the voltage they were detected from, and in 38 the
+The first run asked seven questions in
+[`questions/000013.yaml`](../../questions/000013.yaml), and a reader answered them from the
+paper. With the touch-window cutoff set to the transition where the curve levels off, Table 1
+for L4 C2 is reproduced and for L5 partially; the Figure 3 claims stay blocked on the range of
+the cutoff curve (100 or 200 ms), which the paper does not give.
+
+The files fall in batches that were converted differently: in 36 of them the spike train's timestamps run 10 ms ahead of the voltage they were detected from, and in 38 the
 stored `theta_filt` is not the band-passed angle and the voltage's unit conversion is off by
 1000.
 The attempt record, with the reasons and the differences from the paper's method, is

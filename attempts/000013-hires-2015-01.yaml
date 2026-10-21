@@ -118,10 +118,14 @@ outcomes:
   - 8
   - 37
   - 19.6
-  notes: Measured values are for the uniform shuffle and the onset before the spike, 100 ms. For
-    cell 23 the window runs from 8 ms to 36 to 38 ms under all 16 readings. The spike fraction is
-    78.4 to 79.1% with the closest onset on either side and 83.6 to 84.6% with the onset before;
-    the time fraction is 19.0 to 20.2% under every reading, against 15.3 +- 1.53%.
+  notes: Measured values are for the uniform shuffle, the onset before, 100 ms and the transition
+    cutoff. For cell 23 the window runs from 8 ms to 36 to 38 ms under all 8 readings of the
+    transition cutoff. The spike fraction is 78.4 to 79.1% with the closest onset on either side
+    and 83.6 to 84.6% with the onset before; the time fraction is 19.0 to 20.2% under every
+    reading, against 15.3 +- 1.53%. The answer on where the cutoff search starts changed nothing
+    here, as the transition and the literal cutoff give this cell the same window under every
+    reading; the 100 and 200 ms curves, now listed by the criterion, were both run before and
+    give the same outcome.
 - claim: example-cell-ff-around-touch
   outcome: blocked
   blocked_by: methods_underspecified
@@ -145,9 +149,12 @@ outcomes:
   - 0.305
   - 8
   notes: Under reading (a), the example cell, 1.474 to 1.505 spikes per first touch, 0.302 to
-    0.307 per later touch and an 8 ms latency under all 16 window readings (9 ms from the
-    all-touch PCTH, also within tolerance). Readings (b) and (c) do not match (means 0.53 to 1.28
-    and 0.28 to 0.68).
+    0.307 per later touch and an 8 ms latency under all 8 window readings of the transition
+    cutoff (9 ms from the all-touch PCTH, also within tolerance). Readings (b) and (c) do not
+    match (means 1.16 to 1.28 and 0.62 to 0.69, medians 0.70 to 0.73 and 0.31 to 0.33). The answer
+    on the cutoff leaves the outcome as it was, since the example cell's window is the same under
+    both starts; it moves the population values of (b) and (c), which were 0.53 to 1.28 and 0.28
+    to 0.68 over both starts.
 - claim: text-whisking-rates
   outcome: not_reproduced
   notebook: reproduce_hires_2015.ipynb
@@ -166,35 +173,87 @@ outcomes:
   notes: Depth 1.000 from 13 spikes in 16.4 s of phase-analysis cycles, with no spikes in the five
     bins centred from -75 to 45 deg, around phase 0. With so few spikes the depth is not precise.
 - claim: table1-l4-c2
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: reproduced
   notebook: reproduce_hires_2015.ipynb
   output: claim:table1-l4-c2
-  notes: Values within tolerance, 15 of 18 (reproduced) under the transition cutoff with whisking
-    read without touch epochs, 14 (partially) with them, and 9 to 14 under the literal cutoff.
-    Under every reading the medians of spikes per first touch (0.18 to 0.73), modulation depth
-    (1.0) and whisking rate (0.86 to 2.28) are outside tolerance, and the non-whisking rate, the
-    latency and the minimum ISI within it. 14 of the 25 cells with a phase fit have depth 1.
-  deviations:
-  - Spikes per touch and the coupled fractions depend on the touch-window cutoff, whose start and
-    range the claims file does not fix (asked in questions/000013.yaml).
+  measured:
+  - 1.24
+  - 0.704
+  - 0.66
+  - 0.314
+  - 73.8
+  - 80.0
+  - 80.9
+  - 82.7
+  - 0.727
+  - 1.0
+  - 1.303
+  - 0.315
+  - 2.402
+  - 0.86
+  - 7.29
+  - 7.0
+  - 2.768
+  - 2.3
+  notes: Measured values are for the first reading of each open detail (uniform shuffle, onset
+    before, 100 ms, transition cutoff, phase window +-t_w, latency from first touches, whisking
+    outside touch epochs). Under the transition cutoff, the criterion's after the answer, 15 of
+    18 values are within tolerance in all 64 combinations of the other readings, at the threshold
+    for reproduced. The three outside are medians, spikes per first touch (0.70 to 0.73 against
+    0.87), modulation depth (1.0 against 0.70) and whisking rate (0.86 against 0.33); 14 of the 25
+    cells with a phase fit have depth 1. Whisking periods are read as the claims file defines
+    them, outside touch epochs ("For other epochs ... whisking epochs have amplitude >2.5 deg",
+    and the answer about fig4c-phase-decoding quotes the Methods to the same effect); with touch
+    epochs in, a variant, the mean whisking rate (3.98) also falls outside and the count is 14.
+    What the answer changed, the earlier run was blocked because the literal cutoff gave 9 to 14
+    values and the transition one 14 or 15; the literal cutoff is now a variant only. The 100 and
+    200 ms curves give 15 alike.
 - claim: table1-l4-outside
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:table1-l4-outside
-  notes: 7 to 9 of 17 values within tolerance under the transition cutoff, 10 to 11 under the
-    literal one. The medians of spikes per touch are never 0, and the latency mean is 8.1 to 10.0
-    ms against 18.5. Rates, mean depth and minimum ISI match.
+  notes: Under the transition cutoff, the criterion's after the answer, 7 to 9 of 17 values are
+    within tolerance, 52 of the 64 combinations of readings below the threshold of 9 (not
+    reproduced) and 12 at it (partially); the readings of the touch window decide which. The
+    medians of spikes per touch are never 0; the means of spikes per touch (0.31 and 0.15 under
+    the first reading, against 0.08 and 0.02), the touch-evoked fraction (26.2%, median 23.8%,
+    against 9.2% and 3.6%) and the latency mean (8.1 ms against 18.5) are outside tolerance.
+    Rates, mean depth and minimum ISI match. What the answer changed, the literal cutoff, which
+    gave 10 to 11 (partially), is now a variant only; the outcome stays blocked because the
+    transition cutoff's own readings straddle the threshold.
 - claim: table1-l5
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: partially_reproduced
   notebook: reproduce_hires_2015.ipynb
   output: claim:table1-l5
-  notes: 11 to 13 of 18 values within tolerance under the transition cutoff, 9 to 11 under the
-    literal one. Rates, depth and the means of spikes per touch match; the median whisking rate
-    (11.0 to 11.3 against 13.5), median latency (4 to 10 against 8 ms) and median minimum ISI (1.5
-    against 2.7 ms) do not.
+  measured:
+  - 2.046
+  - 0.227
+  - 1.313
+  - 0.188
+  - 27.2
+  - 22.1
+  - 45.3
+  - 40.0
+  - 0.226
+  - 0.131
+  - 12.04
+  - 12.9
+  - 18.49
+  - 10.96
+  - 4.9
+  - 4.0
+  - 2.627
+  - 1.5
+  notes: Measured values are for the first reading of each open detail, as for table1-l4-c2.
+    Under the transition cutoff 11 to 13 of 18 values are within tolerance in every combination of
+    readings, partially reproduced throughout. Rates, depth (mean 0.226, median 0.131), the means
+    of spikes per touch and the touch-evoked fraction match; the medians of spikes per first and
+    later touch (0.23 and 0.19 against 0.98 and 0.42), the median whisking rate (11.0 against
+    13.5), the median latency (4 against 8 ms) and the median minimum ISI (1.5 against 2.7 ms) do
+    not. What the answer changed, the earlier run was blocked because the literal cutoff gave 9 to
+    11, 8 combinations not reproduced; with the literal cutoff a variant only, the outcome is
+    partially reproduced.
 - claim: latency-determinable
   outcome: not_reproduced
   notebook: reproduce_hires_2015.ipynb
@@ -209,9 +268,10 @@ outcomes:
   notebook: reproduce_hires_2015.ipynb
   output: claim:l4-outside-weaker-touch
   notes: Reading (a), spikes per touch, gives p < 0.05 for first and later touches with the C2
-    median higher in all 32 window readings (p = 1.6e-5 to 0.0043 and 1.7e-5 to 0.015). Reading
-    (b), the peak touch rate, gives 148.1 against 25.0 spikes/s (p = 1.63e-5) and 51.3 against 5.6
-    (p = 1.07e-5).
+    median higher in all 16 window readings of the transition cutoff (p = 1.0e-4 to 0.0043 and
+    2.0e-4 to 0.015), and in the 16 of the literal variant. Reading (b), the peak touch rate, gives
+    148.1 against 25.0 spikes/s (p = 1.63e-5) and 51.3 against 5.6 (p = 1.07e-5). The answer on
+    the cutoff leaves the outcome as it was, as both starts gave it.
 - claim: l5-higher-rates
   outcome: reproduced
   notebook: reproduce_hires_2015.ipynb
@@ -240,132 +300,167 @@ outcomes:
     change, p = 5.0e-5 without touch epochs (26 of 31 cells higher when whisking) and 2.8e-9 with
     them (30 of 31).
 - claim: whisking-rate-l5-increase
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_hires_2015.ipynb
   output: claim:whisking-rate-l5-increase
-  notes: Signed-rank p = 0.024 and 0.014 under the two readings, 9 and 10 of 11 cells higher when
-    whisking, median difference +1.88 and +1.79 spikes/s. The criterion's condition that the median
-    whisking rate be higher fails as written (11.0 and 11.3 against 12.9); its meaning is asked.
+  notes: Signed-rank p = 0.024 without touch epochs and 0.014 with them, 9 and 10 of 11 cells
+    higher when whisking, median of the per-cell differences +1.88 and +1.79 spikes/s, positive
+    under both readings. What the answer changed, the criterion now names the median of the
+    per-cell differences as the measure of the increase; the earlier run read "the median
+    whisking rate higher" as the group medians, which run the other way (11.0 and 11.3 against
+    12.9 spikes/s), and recorded partially reproduced.
 - claim: fig3c-touch-spikes-l4c2
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig3c-touch-spikes-l4c2
-  notes: Under the transition cutoff 66.9 to 75.8% of spikes in 14.6 to 17.6% of exploration time,
-    5 of 8 readings within both tolerances; under the literal cutoff 38.6 to 64.5% in 8.5 to 13.4%,
-    none. Asked in questions/000013.yaml, with the range of the fitted curve.
-  deviations:
-  - Two details not in the claims file were run under two readings each, the start of the cutoff
-    search and the longest window (100 or 200 ms).
+  notes: Under the transition cutoff, the criterion's after the answer, 66.9 to 75.8% of spikes
+    in 14.6 to 17.6% of exploration time. All 4 readings with the 100 ms curve put both values in
+    tolerance, but only 1 of 4 with the 200 ms curve (the other three cover 16.5 to 17.6% of
+    time), so the readings of the curve's range disagree. What the answers changed, the start of
+    the search is now fixed, and the literal cutoff (38.6 to 64.5% in 8.5 to 13.4%, none within
+    tolerance) is a variant only; the range of the curve, which the paper does not give, is now
+    the criterion's open detail (4), and it alone keeps the claim blocked.
 - claim: fig3c-touch-spikes-outside
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig3c-touch-spikes-outside
-  notes: Blocked as it depends on fig3c-touch-spikes-l4c2. Every one of its 32 readings is outside
-    tolerance (18.8 to 31.7% in 17.5 to 26.3% of time with the transition cutoff, 1.5 to 7.4% in
-    1.2 to 2.6% with the literal one), so the answer to the question would not make it reproduced.
+  notes: Blocked as it depends on fig3c-touch-spikes-l4c2. Every one of its 16 readings with the
+    transition cutoff is outside tolerance on the time fraction (18.8 to 31.7% of spikes in 17.5 to
+    26.3% of time, against 8.4 +- 13.3% in 3.5%), with the rank-sum test against L4 C2 at p < 0.001.
+    With the answer the literal cutoff (1.5 to 7.4% in 1.2 to 2.6%) is a variant only; the values
+    that decide are the transition ones, all outside tolerance.
 - claim: fig3c-touch-spikes-l5
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig3c-touch-spikes-l5
-  notes: 4 of the 8 transition-cutoff readings meet the criterion under both latency readings, none
-    of the literal ones (5.1 to 14.1% in 3.2 to 8.2% of time). It also depends on
-    fig3c-touch-spikes-l4c2.
+  notes: Depends on fig3c-touch-spikes-l4c2. Under the transition cutoff 4 of the 8 window
+    readings meet the criterion under both latency readings (2 with the 100 ms curve, 2 with the
+    200 ms one; 20.8 to 30.6% in 15.4 to 22.5% of time over the 8). With the answer the literal
+    cutoff (5.1 to 14.1% in 3.2 to 8.2%, none) is a variant only; the transition cutoff's readings
+    still disagree.
 - claim: fig3d-touch-phase-l4c2
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig3d-touch-phase-l4c2
-  notes: Depends on fig3c-touch-spikes-l4c2. 4 of 16 transition-cutoff readings meet both
-    tolerances (100 ms, window t_w wide in total), none of the literal ones (44.3 to 68.1% in 11.7
-    to 18.4%).
+  notes: Depends on fig3c-touch-spikes-l4c2. Under the transition cutoff, which the answer makes
+    the rule for t_w too, 74.6 to 81.7% in 22.3 to 28.1% of time, and 4 of 16 readings meet both
+    tolerances, all with the 100 ms curve and the window t_w wide in total. The literal cutoff
+    (44.3 to 68.1% in 11.7 to 18.4%, none) is a variant only.
 - claim: fig3d-touch-phase-outside
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig3d-touch-phase-outside
-  notes: Depends on fig3d-touch-phase-l4c2. 1 of 64 readings meets the criterion; the time
-    fraction is 27 to 42% under the transition cutoff and 7.0 to 16% under the literal one.
+  notes: Depends on fig3d-touch-phase-l4c2. None of the 32 readings with the transition cutoff
+    meets the criterion; the fraction is 40.6 to 60.2% (within tolerance) but the time fraction 27.0
+    to 42.0% against 16.9 +- 1.69%. The one reading that met it in the earlier run used the literal
+    cutoff, a variant only after the answer.
 - claim: fig3d-touch-phase-l5
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig3d-touch-phase-l5
-  notes: Depends on fig3d-touch-phase-l4c2. 8 of 64 readings meet the criterion, all with the
-    transition cutoff, 100 ms and the total-width phase window.
+  notes: Depends on fig3d-touch-phase-l4c2. 8 of the 32 readings with the transition cutoff meet
+    the criterion, all with the 100 ms curve and the total-width phase window (36.4 to 37.5% in
+    26.3 to 28.1% of time); over the 32 the time fraction is 26.3 to 41.0%. The answer drops the
+    literal cutoff to a variant (none of its readings met it), which does not change the outcome.
 - claim: fig3d-phase-only
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig3d-phase-only
-  notes: Depends on fig3d-touch-phase-l4c2. 27 of 32 readings meet the criterion (L4 C2 2.3 to 9.3%,
-    outside 18.4 to 32.8%, L5 1.0 to 25.4%); the 5 that fail have an L5 mean of 23.3 to 25.4%.
+  notes: Depends on fig3d-touch-phase-l4c2. Under the transition cutoff 11 of 16 readings meet the
+    criterion (L4 C2 5.1 to 9.3%, outside 20.3 to 32.1%, L5 10.3 to 25.4%); the 5 that fail have an
+    L5 mean of 23.3 to 25.4%. All 16 of the literal variant meet it; with the answer they no longer
+    count.
 - claim: fig4a-touch-detection-c2
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig4a-touch-detection-c2
-  notes: The population reaching 95% is 11 neurons with exploration non-touch windows, 18 or 30
-    with pre-touch windows and percent correct, and 1 or 2 with pre-touch windows and the fraction
-    detected. 20 repetitions per population size.
+  notes: The population reaching 95% is 11 (fraction detected) or 13 (percent correct) neurons
+    with exploration non-touch windows; 17, 30 and 25 with percent correct and the pre-touch
+    windows (a1), (a2) and (a3); 4, 1 and 1 with the fraction detected and the same windows. None
+    is within 15 +- 1.5. What the answer changed, it adds reading (a3), all pre-touch windows,
+    and keeps the threshold that maximises percent correct; the readings still disagree and none
+    matches. Adding (a3) changed the random draws of the other readings (20 repetitions per
+    population size), moving three of the earlier values by 1 to 3 neurons.
   deviations:
-  - Within reading (1a) two pre-touch windows were run (-10 to 0 and -30 to -20 ms); the claims
-    file does not say which. Reading (1b) leaves out windows within 60 ms before or 100 ms after a
-    touch onset, a standard choice.
+  - Reading (1b) leaves out windows within 60 ms before or 100 ms after a touch onset, a standard
+    choice.
 - claim: fig4a-touch-detection-outside
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig4a-touch-detection-outside
   notes: Depends on fig4a-touch-detection-c2. With percent correct 15 outside neurons reach 0.53 to
-    0.54 (upper bound 0.57 to 0.60) against 0.90 to 0.97 in C2, poor; with the fraction of touches
-    detected they reach 0.956 to 1.000, not poor.
+    0.55 (upper bound 0.56 to 0.60) against 0.90 to 0.97 in C2, poor; with the fraction of touches
+    detected they reach 0.91 to 0.94 with an upper bound of 1.000, so the bound does not exclude
+    95%. The added reading (a3) agrees with the other pre-touch readings, and the outcome is as
+    before.
 - claim: fig4b-touch-time-precision
   outcome: not_reproduced
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig4b-touch-time-precision
   measured: 1.396
-  notes: The smallest uncertainty 5 to 15 ms after onset, at 8 ms, is an RMS error of 1.09 to 1.40
-    ms, a 95% half width of 2.0 ms or 1.96 x RMS of 2.14 to 2.74 ms, under both splits and both
-    sets of time classes; none is within 0.55 +- 0.055 ms. The error falls with population size
-    (19.9 ms at 10 neurons, 1.55 ms at 200).
+  notes: With add-one smoothing the smallest uncertainty 5 to 15 ms after onset, at 8 ms, is an
+    RMS error of 1.09 to 1.40 ms, a 95% half width of 2.0 ms or 1.96 x RMS of 2.14 to 2.74 ms,
+    under both splits and both sets of time classes (c-all, from -21 ms, and c-post, from 0 ms);
+    none is within 0.55 +- 0.055 ms. The smaller pseudocount (0.01), a variant, gives 1.18 to 1.48
+    ms RMS. The error falls with population size (19.9 ms at 10 neurons, 1.55 ms at 200). What the
+    answer changed, the time classes and the smoothing are now readings of the criterion; both
+    sets of classes were run before, and the outcome is as before.
   deviations:
-  - The decoder's time classes are not given; every 1 ms from -21 ms and from 0 ms were both run
-    (asked). Naive Bayes smoothing is scikit-learn's default (alpha 1), a standard choice.
+  - The smaller pseudocount of the variant, 0.01, is a value of our choosing; the criterion gives
+    none.
 - claim: fig4c-phase-decoding
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig4c-phase-decoding
-  notes: With held-out cycle counts 1000 C2 neurons reach 76% correct in 3 or 6 of 100 runs (median
-    138 to 143 deg) and outside neurons in none; with Poisson rates C2 reaches it at 58.6 to 60.0
-    deg and outside C2 at 120.0 to 130.9 deg, against 24 and 33 deg. The criterion's fallback is
-    methods_underspecified, but all four readings agree the values are far from the paper's, so
-    the outcome is the one they all give.
+  notes: On the phase-tuning cycles (median 137 per C2 cell, 0.100 spikes per cycle, 6 of 31 C2
+    cells with none), held-out cycle counts with add-one smoothing never reach 76% correct in
+    either group. Poisson rates with add-one smoothing reach it at 84.0 or 60.0 deg in C2 (random
+    or even shifts) and 35.7 or 40.7 deg outside; with a floor rate at 14.8 or 12.0 deg in C2 and
+    6.0 deg outside. The C2 value is never within 24 +- 2.4 deg and C2 is never better than
+    outside, but the empty-bin readings put C2 on both sides of the paper's value, so the
+    criterion's fallback applies. What the answer changed, the decoder now uses the cycles of
+    phase tuning in place of every cycle peaking above 2.5 deg, and empty bins follow the two
+    listed readings; the earlier cycles and smoothing (64.5 deg in C2, 123.0 outside, a variant
+    here) gave values far above the paper's under every reading, and the earlier run recorded not
+    reproduced.
   deviations:
-  - Rates get one spike spread over the 120 bins so that none is zero, and cells without a phase
-    fit take preferred phase 0; neither is in the claims file (asked). Tests use 50 samples per
-    phase and phase differences in 6 deg steps.
+  - The floor rate, one spike over all of a cell's training cycles and bins, is a value of our
+    choosing, as the paper gives none. Cells without a phase fit take preferred phase 0. Tests
+    use 50 samples per phase and phase differences in 6 deg steps.
 - claim: fig5c-modulation-index
   outcome: reproduced
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig5c-modulation-index
   measured:
-  - 0.853
-  - 0.857
-  - 0.827
-  notes: Measured values are for the uniform shuffle, onset before, 100 ms, literal cutoff, order
-    by ranks, velocity at onset and curvature over the touch. Under every reading the means are
-    within tolerance, order 0.666 to 0.871, velocity 0.703 to 0.894 and curvature 0.664 to 0.848.
+  - 0.677
+  - 0.713
+  - 0.672
+  notes: Measured values are for the uniform shuffle, onset before, 100 ms, transition cutoff,
+    order by ranks, velocity at onset and curvature over the touch. Under every reading with the
+    transition cutoff the means are within tolerance, order 0.666 to 0.692, velocity 0.703 to
+    0.735 and curvature 0.664 to 0.698. The answer on the cutoff leaves the outcome as it was; the
+    earlier measured values (0.853, 0.857, 0.827) came from the literal cutoff, now a variant
+    (0.744 to 0.894, also within tolerance).
 - claim: fig5-modulation-correlations
   outcome: blocked
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig5-modulation-correlations
-  notes: Under reading (a) r is 0.549 to 0.788 (velocity, curvature), 0.621 to 0.830 (order,
-    velocity) and 0.534 to 0.681 (order, curvature), and the criterion holds in 24 of 128
-    combinations of the fig5c readings; under reading (b) it never holds (r 0.25 to 0.51).
+  notes: Under reading (a), with the transition cutoff, r is 0.618 to 0.788 (velocity,
+    curvature), 0.706 to 0.788 (order, velocity) and 0.588 to 0.641 (order, curvature), and the
+    criterion holds in 16 of 64 combinations of the fig5c readings; under reading (b) it never
+    holds (r 0.27 to 0.51 for velocity and curvature). With the answer the literal cutoff (8 of 64
+    under (a)) is a variant only; the fig5c readings still give different outcomes.
 - claim: fig6s1b-clusters-less-variable
   outcome: reproduced
   notebook: reproduce_hires_2015.ipynb
@@ -386,12 +481,18 @@ outcomes:
   blocked_by: methods_underspecified
   notebook: reproduce_hires_2015.ipynb
   output: claim:fig6d-not-refractory
-  notes: Under reading (2a) the data FF (0.75 to 0.82) is never below the model's (0.76 to 0.80) by
-    more than the sum of the s.e.m.; under (2b) it is below in 65 of 91 to 73 of 98 grouped units
-    and 22 of 31 pooled cells counted from onsets (p < 0.05), but 19 of 31 counted from offsets (p
-    = 0.14).
+  notes: With the rate compensated as the answer says (the free rate of Berry and Meister), the
+    model's mean count is 1.001 to 1.034 of the data's, and its FF at the data minimum 0.71 to
+    0.79. Under reading (2a) the data FF (0.75 to 0.82) is never below the model's by more than the
+    sum of the s.e.m.; under (2b) it is below in 4 of 6 touch readings (61 of 89, 61 of 100, 59 of
+    99 units and 22 of 31 pooled cells counted from onsets, p = 0.0003 to 0.035) but not with
+    groups of N points from offsets (52 of 91, p = 0.10) or pooled touches from offsets (17 of 31,
+    p = 0.36). What the answer changed, the uncompensated model, now a variant, has a mean count
+    0.80 to 0.89 of the data's and a higher FF, and gives (2b) in all 6 readings; compensation
+    lowers the model's FF and removes two of them. The outcome is blocked as before.
   deviations:
-  - The model's rate is the cell's PSTH, not raised for the refractory period (asked).
+  - The PSTH used for the free rate starts 10 ms before onset so that the integral over the
+    preceding 2.3 ms is defined at the first window.
 - claim: fig6e-sample-epoch-ff
   outcome: reproduced
   notebook: reproduce_hires_2015.ipynb

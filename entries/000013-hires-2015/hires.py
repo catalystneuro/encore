@@ -25,9 +25,11 @@ paper for each):
 - Onset latency from the 1 ms PCTH, pre-touch mean (-50 to 0 ms) plus two s.d., searched 0 to 50
   ms: claim latency-determinable.
 - Touch spike window: the shuffle rule with 1000 surrogates, 95th percentile, degree-11
-  polynomial, 1 ms steps: claim fig3c-touch-spikes-l4c2. The longest window searched
-  (``TMAX_READINGS``) is not given anywhere; both values are readings, asked about in
-  questions/000013.yaml.
+  polynomial, 1 ms steps: claim fig3c-touch-spikes-l4c2. The cutoff is the first increment
+  below chance after the increment has been above it (the criterion, after the answer in
+  questions/000013.yaml); the literal search from 1 ms is a variant. The longest window searched
+  (``TMAX_READINGS``) is not given in the paper; the criterion's open detail (4) lists both
+  values as readings.
 - Phase tuning: 12 bins, A[1 + cos(theta - phi)] + B with A, B >= 0, least squares: claim
   table1-l4-c2 (least squares named there as the standard choice).
 - Standard choices that cannot change a result: the polynomial is fitted on t rescaled to
@@ -64,7 +66,7 @@ PRE_MS = 50              # ms, pre-touch baseline for latency (Methods)
 LAT_SEARCH_MS = 50       # ms, latency searched 0 to 50 ms (claim latency-determinable)
 N_SURROGATES = 1000      # Methods
 POLY_DEGREE = 11         # Methods
-TMAX_READINGS = (100, 200)  # ms, longest touch window searched: open, two readings
+TMAX_READINGS = (100, 200)  # ms, longest touch window searched: readings (r100), (r200) of the claims file
 N_PHASE_BINS = 12        # Figure 3, figure supplement 1C
 N_SPOT_CHECK = 40        # spikes per file whose stored timestamp is read back
 
@@ -476,10 +478,11 @@ def surrogate_spikes(cell: Cell, E_idx: np.ndarray, E_trial: np.ndarray, spk_E: 
 
 
 def _cutoff(slope_d: np.ndarray, p95: np.ndarray, start: str) -> tuple[int, bool]:
-    """Index into t = 1..tmax of the cutoff. 'first': the first increment below chance, read
-    literally from t = 1. 'cross': the first increment below chance after the increment has
-    been above chance (the transition where the curve levels off, Results, paragraph on Figure
-    3); when it is never above chance, the literal cutoff is used and the second value is False."""
+    """Index into t = 1..tmax of the cutoff. 'cross', the criterion's: the first increment below
+    chance after the increment has been above chance (the transition where the curve levels off,
+    Results, paragraph on Figure 3; claim fig3c-touch-spikes-l4c2); when it is never above
+    chance, the literal cutoff is used and the second value is False. 'first', a variant only:
+    the first increment below chance, read literally from t = 1."""
     below = slope_d < p95
     lit = int(np.flatnonzero(below)[0]) if below.any() else len(below) - 1
     if start == "first":
@@ -946,16 +949,21 @@ def cycle_bin_counts(cell: Cell, svt: np.ndarray, cyc: pd.DataFrame, nbins: int 
 
 
 def phase_discrimination(C_list, pref, rng, N=1000, reps=100, model="cycles", shifts="random",
-                         deltas=np.arange(2, 61, 2), M=50, pseudo=1.0):
+                         deltas=np.arange(2, 61, 2), M=50, smooth="add_one"):
     """Naive Bayes (Poisson) discrimination of two whisking phases from N neurons drawn with
     replacement, their tuning circularly shifted to give uniformly distributed preferred phases
     (Methods, Population decoding). C_list: per recorded cell, cycles x 120 bins counts; pref:
     preferred phase (rad). model 'cycles': test responses are the counts of held-out cycles, the
     rates learned on the other half (one split per recorded cell and repetition, shared by the
     neurons drawn from it); 'poisson': responses drawn as Poisson counts with the cycle-averaged
-    rates. Rates get `pseudo` spikes spread over the bins (a standard choice so that no rate is
-    zero). Returns per repetition the phase difference (deg) reaching 76% correct (nan when none
-    does) and the percent-correct curves."""
+    rates. Returns per repetition the phase difference (deg) reaching 76% correct (nan when none
+    does) and the percent-correct curves.
+
+    Bins with no spikes (claim fig4c-phase-decoding, open detail 3, which the paper does not
+    treat): 'add_one' adds one spike to every bin's count over the training cycles (Laplace);
+    'floor' raises each bin's rate to at least one spike over all of the cell's training cycles
+    and bins, 1 / (120 n), a value of our choosing as the paper gives none; 'spread' adds one
+    spike spread over the 120 bins (the earlier run's choice, kept as a variant)."""
     nbins = C_list[0].shape[1]
     res, curves = [], []
     for _ in range(reps):
@@ -969,7 +977,13 @@ def phase_discrimination(C_list, pref, rng, N=1000, reps=100, model="cycles", sh
                 tr, te = C[perm[: len(C) // 2]], C[perm[len(C) // 2:]]
             else:
                 tr, te = C, None
-            lam_cell.append((tr.sum(0) + pseudo / nbins) / max(len(tr), 1))
+            n = max(len(tr), 1)
+            if smooth == "add_one":
+                lam_cell.append((tr.sum(0) + 1.0) / n)
+            elif smooth == "floor":
+                lam_cell.append(np.maximum(tr.sum(0) / n, 1.0 / (nbins * n)))
+            else:
+                lam_cell.append((tr.sum(0) + 1.0 / nbins) / n)
             test_cell.append(te)
         lam_cell = np.array(lam_cell)
         bins = np.arange(nbins)
