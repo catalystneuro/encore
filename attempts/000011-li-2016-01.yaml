@@ -1,0 +1,445 @@
+schema_version: 2
+id: 000011-li-2016-01
+dataset:
+  archive: dandi
+  id: "000011"
+  version: 0.220126.1907
+  doi: 10.48324/dandi.000011/0.220126.1907
+paper: doi:10.1038/nature17643
+date: 2026-10-21
+entry: 000011-li-2016
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39600002327
+outcomes:
+- claim: unit-classification
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:unit-classification
+  measured:
+  - 979
+  - 58
+  - 74
+  - 890
+  - 15
+  notes: The 12 control mice hold 979 units in 58 sessions (20 unilateral, 38 bilateral); by the
+    Methods' width thresholds 74 are fast-spiking, 890 putative pyramidal (the paper's number
+    exactly) and 15 intermediate. Four of five values are within tolerance; the intermediate count
+    is 15 against 50. The dandiset holds 33 units fewer than the paper's 1012, about the 35
+    intermediate units missing, so these were probably not deposited.
+  deviations:
+  - The 33 sessions of the 7 mice without a photostimulus record (564 units) are counted apart, as
+    the criterion asks.
+- claim: selective-fraction
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:selective-fraction
+  measured:
+  - 563
+  - 156
+  - 292
+  - 445
+  notes: On the 846 putative pyramidal units with identifiable control trials, no combination of
+    readings (R1 or R2, O1 or O2, Student or Welch, lick-early trials dropped or kept) puts all four
+    counts within tolerance. The sample-epoch count is 132 to 156 (band 158 to 194); the counts in
+    any epoch (up to 588), the delay epoch (up to 320) and the response epoch (up to 464) reach their
+    bands under readings with correct trials only. Measured values are R1, O1, Student, lick-early
+    dropped. With the 44 units of the three unlabelled experiment-1 sessions added on all their
+    trials, all four are within tolerance with correct trials and lick-early trials dropped (592,
+    165, 307, 464), under no reading that keeps them.
+  deviations:
+  - The 44 putative pyramidal units of three experiment-1 sessions with no photostimulus record
+    have no identifiable control trials and are left out (shown as a variant).
+  - Whether lick-early trials enter is not given (question 1); both readings are run.
+- claim: fig1d-late-delay-ipsilateral-bias
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The condition with light ending at the go cue is in none of the files; the recordings of
+    experiment 1 hold light ending 1.6, 0.8 and 0.3 s before the go cue. The behavioural
+    photoinhibition sessions of the 5 mice are not in the dandiset.
+- claim: fig1d-earlier-photoinhibition-minimal
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The paper's test uses the behavioural photoinhibition sessions of 5 mice, which are not in
+    the dandiset. As a reference only, in the recording sessions of 4 mice performance on early-delay
+    and late-delay (0.3 s before the go cue) photoinhibition trials is 0.745 and 0.749 against 0.799
+    in control (paired p 0.21 and 0.16).
+- claim: ed3-behaviour-recovery-interval
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No file holds 1.3 s photoinhibition or a variable delay of 1.2 to 1.7 s; the behavioural
+    sessions of Extended Data Fig. 3 are not in the dandiset.
+- claim: ed4-return-to-trajectory
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed4-return-to-trajectory
+  measured: 55
+  notes: The selection finds 47 to 67 putative pyramidal neurons with a significant delay-epoch
+    decrease, from 4 mice (paper 27 from 6; measured is the paired test with lick-early trials
+    dropped). Under no reading (a or b, paired or unpaired selection, 200 or 400 ms bins, lick-early
+    dropped or kept) is the time-matched RMS smaller than the end-point RMS; the two differ by at
+    most 0.015 and the paired p is 0.30 to 0.98.
+  deviations:
+  - The selection test (paired or unpaired) and the bin of the rate time course are not given
+    (question 6); all are run.
+  - Experiment 1 holds 4 mice here, against 6 in the paper.
+- claim: fig1f-spike-rate-recovery
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig1f-spike-rate-recovery
+  measured: 0.101
+  notes: Under reading (b), windows labelled by their centre (W2) and no exclusion (X2), the pooled
+    fraction of neurons with a significant change 400 ms after offset is 0.101 with lick-early trials
+    dropped and 0.097 with them kept. Per condition under that reading it is 0.105, 0.113 and 0.085
+    (dropped), so reading (a) does not hold. With the exclusion (X1), 170 to 172 neurons per
+    condition (paper 168 to 175) and pooled fractions 0.112 to 0.165.
+  deviations:
+  - Whether lick-early trials enter is not given (question 1); both readings reproduce.
+- claim: fig1g-selectivity-recovery
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig1g-selectivity-recovery
+  notes: The analysis ran; its outcome depends on details neither the claims file nor the paper gives
+    (questions 1, 2 and 4). With lick-early trials dropped, every combination of the preference window
+    and the window label has readings with all three recovery times within tolerance (for example
+    200 to 350, 250 to 350 and 300 ms with delay-epoch preference and centre labels). With them kept,
+    the early-delay time is 650 to 1400 ms, and only some combinations reach all three (whole-trial
+    preference, centre labels) while others reach two (delay-epoch preference) or none (whole-trial
+    preference, end labels). Every reading includes 138 to 173 neurons, against the paper's 55.
+  deviations:
+  - The search for recovery runs to 1.6 s after the go cue, as the paper's late-delay time falls
+    after the go cue.
+  - The measured time is that of all included neurons; bootstrap means and s.d. are shown beside it.
+- claim: ed5-photoactivation-recovery
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No Tlx_PL56-cre x Ai32 mouse is in the dandiset; its genotypes are VGAT-ChR2-EYFP and
+    PV-ires-Cre x ReaChR only.
+- claim: ed5-photoactivation-rate-changes
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As ed5-photoactivation-recovery; the photoactivation recordings are not in the dandiset.
+- claim: ed2b-silencing-strength
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed2b-silencing-strength
+  notes: With lick-early trials dropped, the normalised rate in experiment 2 is 0.077 to 0.097 for
+    bilateral and 0.94 to 1.00 for contralateral photoinhibition, and 0.035 to 0.052 for ipsilateral
+    photoinhibition in PV x ReaChR mice but 0.177 to 0.245 in VGAT-ChR2-EYFP mice, so the criterion
+    fails on VGAT mice under both windows. With lick-early trials kept all silencing values are
+    higher (0.14 to 0.36). Experiment 1 gives 0.037 to 0.098 (dropped). Neuron counts 172, 299 and
+    55 to 110 per condition, against 109 to 117, 294 to 301 and 52 to 102.
+  deviations:
+  - Neurons need at least 2 trials in the condition and in control (a standard choice).
+- claim: ed2d-spatial-extent
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The recordings in 4 untrained mice that map photoinhibition against distance are not in the
+    dandiset; every file is a behaving session of a trained mouse.
+- claim: ed2e-no-rebound
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed2e-no-rebound
+  notes: After ipsilateral photoinhibition the population mean rate is not higher than control (paired
+    p 0.93 and 0.22 in the two windows, lick-early dropped; 0.70 and 0.06 kept), but more neurons show
+    a significant increase than a significant decrease, 27 against 7 and 30 against 3 (dropped; 31
+    against 10 and 31 against 4 kept), the reverse of the legend. After bilateral photoinhibition the
+    mean rate rises above control in 400 to 800 ms (3.84 against 3.21 spikes/s, p = 0.002).
+- claim: fig2b-unilateral-performance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: Figure 2b uses behavioural sessions of 13 mice with 0.8 s and 1.3 s light and a four-spot
+    unilateral protocol; the dandiset holds only recording sessions with 0.8 s light, and no
+    four-spot unilateral light in experiment 2. In those sessions (7 mice), one-spot ipsilateral and
+    contralateral photoinhibition give 0.703 and 0.726 against 0.773 (reference only).
+- claim: fig2b-bilateral-performance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: As fig2b-unilateral-performance. In the recording sessions, eight-spot bilateral
+    photoinhibition gives 0.580 against 0.773 in control (paired p 0.0001, 7 mice); there is no
+    two-spot bilateral condition in experiment 2 (reference only).
+- claim: ed6a-bilateral-inconsistent-bias
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed6a-bilateral-inconsistent-bias
+  notes: In experiment 2, 12 (Fisher reading i) or 13 (reading ii) of 25 sessions have a significant
+    bias; 7 or 8 are biased toward lick right, in 4 mice, and 5 toward lick left, in 4 mice, with
+    no-response trials left out or counted as errors.
+  deviations:
+  - The 2 x 2 table of the Fisher test is not given (question 7); both readings reproduce.
+- claim: fig2-recordings-recovery
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig2-recordings-recovery
+  notes: Spike rates recover; 600 ms after offset 8% to 10% of neurons differ after ipsilateral
+    photoinhibition and the population rate is 1.00 to 1.05 of control (1.16 to 1.23 after bilateral
+    photoinhibition), and bilateral selectivity is 0.22 to 0.31 of control at the go cue. Under every
+    reading two parts fail; ipsilateral selectivity at 600 ms is 0.45 to 0.72 of control, and
+    contralateral photoinhibition changes the rate of up to 15% to 19% of neurons in some window during
+    or after the light.
+  deviations:
+  - Details of convention D asked in questions 1, 2 and 4 are run under each reading; the outcome is
+    the same under all.
+- claim: fig2e-selectivity-recovery-times
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig2e-selectivity-recovery-times
+  measured:
+  - 1250
+  - 500
+  - 286
+  notes: Under no reading are both times within tolerance. Ipsilateral selectivity reaches 80% of
+    control 1000 to 2400 ms after offset, after the go cue, or not at all (56 of 256 readings), against
+    the paper's 538; contralateral 200 to 1300 ms (paper 192). Bilateral selectivity stays below 80% of
+    control up to the go cue in 235 of 256 readings. 221 to 293 neurons are included (paper 143). Measured values are 200 ms bins,
+    whole-trial preference, trials per condition, centre labels, R1-O1-Student, lick-early dropped.
+- claim: ed7-larger-photoinhibition
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed7-larger-photoinhibition
+  notes: The analysis ran; its outcome depends on the window label (question 4). With centre labels
+    the criterion holds (all 16 readings with lick-early trials dropped, 2 to 6 of 16 with them kept);
+    ipsilateral four-spot recovery 650 to 700 ms (paper 490), contralateral 250 to 350 ms (paper 235),
+    bilateral one-spot selectivity at most 0.74 to 0.76 of control up to the go cue, and a larger
+    selectivity change at the go cue after bilateral one-spot (-0.39 to -0.47) than after ipsilateral
+    four-spot photoinhibition. With end labels the ipsilateral time is 750 to 900 ms, outside
+    tolerance. The four-spot ipsilateral ROC is below the one-spot one under H1. 58 to 62 neurons are
+    included, against 40.
+- claim: ed7e-roc-larger-photoinhibition
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed7e-roc-larger-photoinhibition
+  measured:
+  - 0.689
+  - 0.607
+  - 0.698
+  - 0.615
+  notes: Over 6 sessions of 3 mice, the ipsilateral (0.60 to 0.67) and contralateral (0.69 to 0.71)
+    four-spot values are within tolerance, and the bilateral one-spot value (0.615 to 0.616) with
+    lick-early trials dropped; the control value (0.680 to 0.689) is below 0.72 under every reading,
+    so no reading has all four. Measured values are H1 with lick-early trials dropped.
+  deviations:
+  - The bilateral s.e.m. printed as 0.8 is read as 0.08, as the claims file does.
+- claim: cd-stable-over-epochs
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:cd-stable-over-epochs
+  measured: 0.563
+  notes: The mean correlation of w between late sample and late delay is 0.563 (lick-early dropped)
+    and 0.588 (kept) over 24 sessions, within 0.56 to 0.66. From the training trials alone it is 0.534
+    to 0.554; counting trials per trial type (a variant) gives 0.559 and 0.580.
+  deviations:
+  - 24 sessions with 6 to 37 neurons, where the paper used 16 with 6 to 20 (question 5).
+- claim: cd-captures-selectivity
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:cd-captures-selectivity
+  measured:
+  - 87.0
+  - 59.1
+  - 97.8
+  - 96.1
+  notes: cd captures 74.8% to 88.0% of the selectivity under every reading (paper 65.6 +/- 5.1). The
+    variance captured is within tolerance only with squared ratios and the pre-sample baseline (37.5
+    to 44.8%), where the selectivity is 74.8 to 78.2%. Modes 1 to 5 capture 90.6 to 96.9% of
+    selectivity and 92.1 to 98.0% of variance. Measured values are the RMS ratio with the pre-sample
+    baseline, H1, lick-early dropped.
+  deviations:
+  - The trials whose average is decomposed are the training trials (question 8).
+- claim: fig3c-cd-recovery-roc
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig3c-cd-recovery-roc
+  measured:
+  - 0.656
+  - 0.652
+  - 0.683
+  - 0.558
+  notes: The bilateral ROC is within tolerance (0.558 to 0.559), but control is 0.649 to 0.677
+    (paper 0.76 +/- 0.03), ipsilateral 0.631 to 0.652 and contralateral 0.672 to 0.704. The order
+    holds; ipsilateral and contralateral are close to control and bilateral is lowest. Over 10 random
+    splits the control mean is 0.641 to 0.686. Measured values are H1, lick-early dropped.
+  deviations:
+  - 24 sessions with 6 to 37 neurons, where the paper used 16 with 6 to 20 (question 5).
+- claim: ed8-roc-during-photoinhibition
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed8-roc-during-photoinhibition
+  measured:
+  - 0.676
+  - 0.519
+  - 0.613
+  - 0.484
+  notes: During the light separation along cd falls below control in every condition; control 0.649
+    to 0.685, ipsilateral 0.49 to 0.58, contralateral 0.59 to 0.64, bilateral 0.48 to 0.55. Under
+    reading (c), H1, lick-early dropped, the three perturbed values are within tolerance (0.546, 0.626,
+    0.535), but control is below 0.70 under every reading. Measured values are reading (a), H1,
+    lick-early dropped.
+  deviations:
+  - Readings (a) and (b) are the same window here (0.2 to 0.6 s after delay onset).
+- claim: fig3c-cd-predicts-movement
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig3c-cd-predicts-movement
+  notes: The side of the boundary predicts the lick in 67% to 69% of held-out control trials (1890 to
+    2895) and 63% to 68% of ipsilateral trials (261 to 448), binomial p below 1e-6. Lick right
+    performance rises with distance (Spearman rho +0.28 to +0.99) and lick left performance falls
+    (rho -0.76 to -0.99), under every reading.
+- claim: fig3d-persistent-mode
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig3d-persistent-mode
+  notes: The persistent mode stays altered at the go cue after ipsilateral photoinhibition
+    (difference 1.08 to 1.75, more than 2 s.e.m.), but it predicts the lick on control trials above
+    chance (60% to 62%, binomial p below 1e-6) under every reading, and under two of four readings its
+    ROC (0.41 and 0.43) is further than 2 s.e.m. from 0.5.
+  deviations:
+  - The ipsilateral trials building the mode are split like the control trials (question 8); 3
+    sessions with too few trials to build it under H2 are left out.
+- claim: fig3e-ramping-mode
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig3e-ramping-mode
+  notes: The ramping mode is resistant to all three perturbations (differences at the go cue within 2
+    s.e.m.), and its ROC is near 0.5 under three of four readings, but it does not rise over the delay
+    (change -0.73 to +0.11 with the mode oriented to a positive weight sum), and it predicts the lick
+    in 55% to 58% of control trials, above chance (p below 1e-6).
+  deviations:
+  - The sign of the mode is set by a positive weight sum, a choice the paper does not give (question
+    8).
+- claim: fig4-bilateral-cd-predicts-movement
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig4-bilateral-cd-predicts-movement
+  notes: On bilateral trials the boundary predicts the lick in 59% to 64% of trials (777 to 1139),
+    binomial p below 1e-6; lick right performance rises with distance (rho +0.84 to +1.00) and lick
+    left performance falls (rho -0.93 to -1.00), under every reading.
+- claim: ed6b-session-bias-predicted
+  outcome: not_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed6b-session-bias-predicted
+  notes: The side of the boundary where bilateral trials end agrees in sign with the behavioural bias
+    in 11 to 15 of 19 to 24 sessions, not above chance (one-sided binomial p 0.15 to 0.50) under any
+    reading. The legend's five example sessions are not identified.
+- claim: ed9f-reaction-time
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The files hold no lick times, only the analogue lick_trace; the rule for reading the first
+    lick from it is not in the claims file or the paper (question 9).
+- claim: ed9c-cd-window-robust
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed9c-cd-window-robust
+  notes: With cd from the first or the last 400 ms of the delay, the ipsilateral ROC is within 0.05 of
+    control and the bilateral ROC is lowest under H1 and H2 with lick-early trials dropped, and under H2
+    with them kept (under H1 kept the first-window ipsilateral ROC is 0.059 to 0.072 below control).
+- claim: fig5b-callosotomy-control-performance
+  outcome: blocked
+  blocked_by: data_missing
+  notes: There are no sessions before the callosotomy, and no file marks any mouse as callosotomised;
+    the 7 mice are identified as the callosotomy group only by their genotypes, delay and the absence
+    of a photostimulus record. Control trials of their sessions cannot be identified either.
+- claim: fig5b-callosotomy-unilateral-sensitivity
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The 33 sessions of the 7 mice contain silenced trials (in 23 of 35 unlabelled sessions the
+    fraction of trials with population rate below 30% of median in the light window exceeds the one
+    1.5 s later by 0.1 or more) but no photostimulus record, so photoinhibition and control trials
+    cannot be told apart.
+- claim: ed10-callosotomy-preparatory-activity
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Control trials cannot be identified (as fig5b-callosotomy-unilateral-sensitivity). The
+    sessions hold 519 putative pyramidal units by width (paper 496), 15 fast-spiking and 30
+    intermediate.
+- claim: fig5-callosotomy-no-recovery
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The photoinhibition conditions (ipsilateral, contralateral, bilateral) of the callosotomy
+    sessions are not recorded in any file.
+- claim: fig5f-callosotomy-cd-reduced
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: As fig5-callosotomy-no-recovery; the ipsilateral trials of the callosotomy sessions cannot be
+    identified.
+- claim: ed1-monolithic-models-fail
+  outcome: reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:ed1-monolithic-models-fail
+  notes: Each of 10 simple integrators (persistent input) ends 20% to 22% of its selectivity away
+    from its unperturbed output at 2 s after half of its units are silenced, and each of 10 FORCE
+    networks trained to ramp after a transient input ends 13% to 76% away (median 41%); all exceed the
+    10% bound. Transient-input and cascaded integrators end about 50% away. The corrective-feedback
+    and tamed-chaos models lack parameters in the text and were not built.
+  deviations:
+  - FORCE target (a ramp to plus or minus 1 at 2 s), feedback weights, learning rate and update every
+    2 ms are standard choices the paper does not give.
+- claim: fig6-modular-models-recover
+  outcome: partially_reproduced
+  notebook: reproduce_li_2016.ipynb
+  output: claim:fig6-modular-models-recover
+  notes: With noise drawn once per 1 ms step the modular attractor ends at the instructed fixed point
+    in 100% of trials after unilateral silencing and 48% after bilateral silencing; with
+    Euler-Maruyama noise of intensity 0.01 it does so in about half of trials whatever the silencing
+    (51% unperturbed). The modular integrator built from the printed matrix restores lick right trials
+    (0.2% from unperturbed at 2 s) but not lick left ones (50% away), as its recovery unit passes only
+    right-preferring activity. Under both noise readings the claim holds in part.
+  deviations:
+  - The noise scaling is not given (question 10); both readings are run.
+  - The trained modular FORCE network is not specified enough to rebuild and was not built.
+findings:
+- kind: data_missing
+  statement: The dandiset holds only the recording sessions. The behavioural photoinhibition sessions
+    (Figs 1d, 2b, 5b and Extended Data Fig. 3), the photoactivation mice (Extended Data Fig. 5), the
+    untrained mice used to map photoinhibition (Extended Data Fig. 2d) and any session before
+    callosotomy are not in it. Nine of the paper's findings cannot be tested for this reason.
+- kind: data_missing
+  statement: 33 sessions of 7 mice (the callosotomy group by genotype and delay) and 3 experiment-1
+    sessions of mouse 255200 have no photostimulus record (no laser traces, no photostimulus events,
+    no trial column), though most of them contain trials whose activity is silenced in the light
+    window of the other sessions. Their photoinhibition trials cannot be identified.
+- kind: metadata_insufficient
+  statement: No file says which mice were callosotomised, on which side, or when; the subject
+    description holds only the JAX strain numbers.
+- kind: metadata_insufficient
+  statement: The trial table has no photostimulus column. The condition of a trial (site, number of
+    laser spots, timing) can be recovered only from the per-site laser power traces (one 5 s chunk per
+    photostimulus trial, matched to trials by time) and the photostim_start_time events, whose value
+    is the peak power. The number of spots is not stated anywhere and is inferred from the waveform
+    and power.
+- kind: metadata_error
+  statement: In lick-early trials the photostim_start_time and photostim_stop_time events are logged
+    at the restarted delay, up to 1.6 s after the light seen in the laser trace (20 of 41 lick-early
+    photostimulus trials in two sessions read in full); in other trials they agree within 5 ms.
+- kind: format_error
+  statement: Session 258250_20141202 holds two interleaved sequences of trial ids (1 to 24 and 105 to
+    160) whose times overlap (98 overlapping pairs), so its events cannot be assigned to trials. In 28
+    units of 3 sessions the spike times are not in time order, and two sessions have trials out of
+    time order.
+- kind: data_missing
+  statement: The control mice hold 979 units against the paper's 1012; 15 have intermediate spike
+    widths against 50, so about 33 intermediate units were not deposited.
+- kind: metadata_error
+  statement: The units' cell_type labels intermediate-width units (0.35 to 0.45 ms trough to peak) as
+    FS, where the Methods exclude them (45 units in all).
+- kind: other
+  statement: The asset sub-255200_ses-20140910_behavior.nwb holds only metadata (no trials, events or
+    time series).
+- kind: selection_undocumented
+  statement: The paper's neuron and session counts for its selectivity and population analyses (55,
+    143 and 40 selective neurons; 16 sessions with 6 to 20 neurons) cannot be reached with the
+    criteria the paper states; the dataset gives 138 to 173, 221 to 293, 58 to 62 and 24 sessions with
+    6 to 37 neurons. Experiment 1 holds 4 mice where the paper reports 6.
+- kind: metadata_insufficient
+  statement: No lick times are stored; licks exist only as the analogue lick_trace, without a stated
+    rule to detect a lick, so reaction times cannot be computed as the paper did.
