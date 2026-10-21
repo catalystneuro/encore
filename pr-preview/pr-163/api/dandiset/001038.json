@@ -1,0 +1,940 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "001038",
+  "label": "DANDI:001038"
+ },
+ "page": "datasets/dandi/001038/",
+ "generated": "2026-10-21T04:24:42+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 16,
+  "partially_reproduced": 7,
+  "not_reproduced": 1,
+  "blocked": 0
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 2,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 2
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "001038-azcorra-2023-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "001038",
+    "version": "0.241111.1719",
+    "doi": "10.48324/dandi.001038/0.241111.1719"
+   },
+   "key": "dandi:001038",
+   "label": "DANDI:001038",
+   "dataset_version": "0.241111.1719",
+   "paper": "10.1038/s41593-023-01401-9",
+   "paper_title": "Unique functional responses differentially map onto genetic subtypes of dopamine neurons",
+   "date": "2026-10-18",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39118648058"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "001038-azcorra-2023",
+   "entry_title": "Functional responses of genetic subtypes of dopamine neurons (Azcorra, Gaertner et al. 2023)",
+   "description": "Tests the fiber photometry findings of Azcorra, Gaertner et al. (2023) on dandiset 001038, which holds the recordings from striatal axons and SNc somas of Vglut2, Calb1, Anxa1, Aldh1a1 and DAT mice running on a treadmill and receiving rewards and air puffs. It covers locomotion signaling (Figures 2, 3 and 5), reward and air puff responses (Figure 4), clustering (Figure 6), soma and axon correlation (Figure 7) and Extended Data Figures 1 and 6 to 9. Two snRNA-seq claims of Figure 1 are tested on the paper's GEO matrices.",
+   "notebooks": [
+    {
+     "path": "reproduce_azcorra_2023.ipynb",
+     "title": "Reproducing Azcorra, Gaertner et al. (2023) from dandiset 001038",
+     "executed": "notebooks/001038-azcorra-2023/reproduce_azcorra_2023.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "recording-counts-locomotion",
+     "statement": "The striatal recordings that pass the locomotion criteria number 42 from 12 Vglut2 mice, 22 from 6 Calb1 mice, 47 from 10 Anxa1 mice, 74 from 14 DAT mice and 75 from 14 Aldh1a1 mice.",
+     "source": "Figure 2f legend; Extended Data Figure 6b,c legends; Methods, Analysis of signaling during locomotion, paragraph 1",
+     "quote": "Vglut2 mice = 12, n = 42 recordings; Calb1 mice = 6, n = 22 recordings; Anxa1 mice = 10, n = 47 recordings; DAT mice = 14, n = 74 recordings ... Aldh1a1 mice = 14, n = 75 recordings",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "With the Methods' and code's criteria (SNR above 10, stored 405 nm peak cross-correlation below 0.1, more than 100 s running and at most 5% artifact samples, both recomputed), 50, 28, 82, 89 and 85 striatal recordings pass for Vglut2, Calb1, Anxa1, DAT and Aldh1a1, against 42, 22, 47, 74 and 75; none within 10%. Mice are 14, 7, 9, 14 and 15 (legend 12, 6, 10, 14, 14; Methods 12, 6, 9, 14, 14). A 405 nm threshold of 0.05 gives 39, 24, 73, 68 and 73. The paper gives no counts by location, fiber setup or session type, so where the excess lies cannot be measured (every Anxa1 recording is from a dual-fiber file and every Calb1 recording is labelled DS). One recording per mouse, date and depth gives 47, 28, 57, 89 and 78, and recordings made before the paper's submission 50, 27, 75, 89 and 85. The stimulus counts match exactly from the same files, including 16 air puff recordings made after submission, so the recordings are present; which entered Figure 2 is not recoverable.",
+     "deviations": [
+      "Running time and artifact flags are recomputed with the code's procedure, as the files do not hold them; running after rewards that were not consumed cannot be excluded, as those rewards are not in the Events table."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "recording-counts-stimuli",
+     "statement": "The striatal recordings in the reward analysis number 28 (Vglut2), 17 (Calb1), 51 (Anxa1) and 63 (DAT), and in the air puff analysis 29, 17, 57 and 69.",
+     "source": "Figure 4d and 4f legends; Methods, Criteria for recording inclusion, paragraph 4",
+     "quote": "Vglut2 mice = 11, n = 28 recordings; Calb1 mice = 8, n = 17 recordings; Anxa1 mice = 8, n = 51; DAT mice = 11, n = 63 recordings ... Vglut2 mice = 12, n = 29 recordings; Calb1 mice = 8, n = 17 recordings; Anxa1 mice = 8, n = 57 recordings; DAT mice = 11, n = 69 recordings",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "All eight counts and the mouse counts equal the legend's, and the recordings without consumed rewards are 1/29, 0/17 and 6/57 as in the Methods.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2f-xcorr-direction",
+     "statement": "Cross-correlations between dF/F and acceleration show a trough at positive lags for Calb1 and Vglut2 axons (transients after decelerations) and a peak at positive lags for Anxa1 axons (transients after accelerations).",
+     "source": "Figure 2d,f; Results, Genetic subtypes show different signaling patterns during locomotion, paragraph 2",
+     "quote": "cross-correlations between calcium \u0394F/F traces (\u0394F/F traces) and acceleration revealed a deep trough at positive time lags for Calb1+ and Vglut2+ axons (indicative of calcium transient peaks after decelerations), but a large peak at positive lags for Anxa1+ axons",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Integral over lags 0 to 1 s, mean -0.033 for Vglut2 (94% negative), -0.036 for Calb1 (93%) and 0.014 for Anxa1 (26% negative), each p x3 below 0.0001. The 405 nm control integrals are 0.002 to 0.005. Holds in 14/14 Vglut2, 6/7 Calb1 and 7/9 Anxa1 mice. The selection has more recordings than the paper's (see recording-counts-locomotion).",
+     "deviations": [
+      "Larger selection than the paper's (50, 28, 82 against 42, 22, 47 recordings)."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2i-trough-lag",
+     "statement": "Calb1 transients follow decelerations with a shorter lag than Vglut2 transients; the trough of the cross-correlation is at 0.42 s for Vglut2 and 0.17 s for Calb1 on average (P = 1e-6).",
+     "source": "Figure 2i legend",
+     "quote": "Timing analysis showing the lag of the trough in the \u0394F/F-acceleration cross-correlations for each recording from Calb1 and Vglut2 ... Mean Vglut2 = 0.42, Calb1 = 0.17",
+     "statistics": [
+      {
+       "test": "two-sided Wilcoxon rank-sum test",
+       "p": 1e-06,
+       "corrected": "Bonferroni",
+       "n": "42 Vglut2 and 22 Calb1 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Methods timing gives Vglut2 0.416 s (within tolerance) and Calb1 0.140 s (below 0.153 to 0.187), rank-sum p x3 = 2.1e-08. The code's timing, which reports 0.02 s later, gives 0.436 and 0.160 s, both within tolerance. Mouse means 0.387 against 0.193 s, p = 0.0056.",
+     "deviations": [
+      "The Methods' lag is the main result; the code adds two bins to the reported lag, shown as a variant.",
+      "Larger selection than the paper's."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2jk-pca-variance",
+     "statement": "In a PCA of the cross-correlations of all Vglut2, Calb1 and Anxa1 striatal recordings, PC1 explains 64.2% and PC2 20.1% of the variance (84.3% together).",
+     "source": "Figure 2j,k; Results, Genetic subtypes show different signaling patterns during locomotion, paragraph 3",
+     "quote": "finding that the first two principal components (PC1 and PC2) explained 84.3% of the variance in the cross-correlations (64.2% PC1 and 20.1% PC2)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "PC1 58.32% and PC2 22.09% against 64.2 and 20.1; both inside tolerance by small margins (0.5 and 0.02 points). Bootstrap intervals 53.9 to 63.0% and 18.5 to 26.3%. 160 recordings against the paper's 111.",
+     "deviations": [
+      "Larger selection than the paper's."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2l-pc-angles",
+     "statement": "The PC1/PC2 angles of the cross-correlations separate the subtypes, with mean angles of 141 degrees for Vglut2, 208 for Calb1 and 239 for Anxa1 (P = 2e-7 V-C, 4e-11 V-A, 2e-4 C-A).",
+     "source": "Figure 2l; Results, Genetic subtypes show different signaling patterns during locomotion, paragraph 3",
+     "quote": "the decomposition of each recording along these PCs revealed distributions that were well separated between the subtypes (Fig. 2k,l; mean PC1/PC2 angles ... = 141\u00b0 for Vglut2+, 208\u00b0 for Calb1+ and 239\u00b0 for Anxa1+",
+     "statistics": [
+      {
+       "about": "Vglut2 against Calb1",
+       "test": "Wilcoxon rank-sum test",
+       "p": 2e-07,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "Vglut2 against Anxa1",
+       "test": "Wilcoxon rank-sum test",
+       "p": 4e-11,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "Calb1 against Anxa1",
+       "test": "Wilcoxon rank-sum test",
+       "p": 0.0002,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Mean angles 140.1, 208.8 and 233.3 degrees against 141, 208, 239; rank-sum p x3 7.9e-09 (V-C), 7.7e-13 (V-A), 1.3e-05 (C-A). Three of nine Anxa1 mice have mean angles below 160 degrees. The arithmetic mean on 0 to 360 degrees follows the code; the circular means are 136.4, 223.0 and 301.3, so the Anxa1 mean depends on where the circle is cut.",
+     "deviations": [
+      "Larger selection than the paper's."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2g-event-counts",
+     "statement": "Triggered averages on large accelerations and decelerations average 135 +/- 77 accelerations and 138 +/- 101 decelerations per recording (mean +/- s.d.).",
+     "source": "Methods, Analysis of signaling during locomotion, paragraph 6 (Figure 2g)",
+     "quote": "Triggered averages were the result of averaging 135 \u00b1 77 accelerations and 138 \u00b1 101 decelerations (mean \u00b1 s.d.) per recording (Fig. 2g).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "131.4 +/- 75.1 accelerations and 129.2 +/- 95.0 decelerations per recording over 334 recordings, against 135 +/- 77 and 138 +/- 101.",
+     "deviations": [
+      "Larger selection than the paper's."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed7f-prob-transient-after-event",
+     "statement": "The probability that a dF/F increase follows an acceleration is 57.5% for Anxa1, and that one follows a deceleration is 62.4% for Vglut2 and 62.3% for Calb1.",
+     "source": "Extended Data Figure 7f; Methods, Analysis of signaling during locomotion, paragraph 6",
+     "quote": "The probability that \u0394F/F transients follow accelerations is 57.5% for Anxa1, and the probability that transients follow decelerations is 62.4% for Vglut2+ and 62.3% for Calb1+, as shown in Extended Data Fig. 7f.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "61.8% (Vglut2 decelerations), 63.9% (Calb1) and 55.8% (Anxa1 accelerations), each above 50% with p below 3e-06; the opposite event types give 38.7 to 43.6%.",
+     "deviations": [
+      "Larger selection than the paper's."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed6f-dec-peak-timing",
+     "statement": "In averages triggered on decelerations, the dF/F peak comes later for Vglut2 (0.35 s) than for Calb1 (0.23 s), P = 0.01.",
+     "source": "Extended Data Figure 6f legend",
+     "quote": "Timing of the calcium transient peak in triggered averages on decelerations (Fig. 2g, right) for each recording from Calb1 and Vglut2. Means Vglut2 = 0.35, Calb1 = 0.23; p-value for comparison between subtypes = 0.01 (two-sided Wilcoxon rank-sum test).",
+     "statistics": [
+      {
+       "test": "two-sided Wilcoxon rank-sum test",
+       "p": 0.01,
+       "n": "42 Vglut2 and 22 Calb1 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Vglut2 peaks later than Calb1 (0.476 against 0.320 s, p = 0.001), but both means are about 0.1 s above the paper's 0.35 and 0.23 s and outside tolerance; the code's timing adds 0.01 s. Vglut2 is later as a whole (median 0.5 s, peak of the mean 0.44 s, 31 of 50 recordings above 0.385 s). Calb1 peaks are skewed to the right (skewness 1.48); the median 0.25 s is within tolerance and the peak of the mean is 0.27 s, so its gap in the mean comes from a tail of late peaks (13 of 28 above 0.253 s). The cause of the Vglut2 difference is not found.",
+     "deviations": [
+      "The Methods' time is the main result; the code adds one bin, shown as a variant.",
+      "Larger selection than the paper's."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5ab-transient-scaling",
+     "statement": "Transient amplitude grows with the size of the deceleration (Vglut2 214%, Calb1 243%) or acceleration (Anxa1 206%) from the smallest to the largest quintile (P = 0.01, 0.002, 0.002).",
+     "source": "Figure 5a,b; Results, Subtypes show different responses to rewards and aversive stimuli, paragraphs 1 and 2",
+     "quote": "Percent increase in transient amplitude for the largest versus smallest quintile of decelerations/accelerations: Vglut2 = 214%, Calb1 = 243%, Anxa1 = 206%. P values: Vglut2 = 0.01, Calb1 = 0.002, Anxa1 = 0.002 (two-sided paired Wilcoxon signed-rank test with Bonferroni correction).",
+     "statistics": [
+      {
+       "about": "Vglut2, largest against smallest deceleration quintile",
+       "test": "two-sided paired Wilcoxon signed-rank test",
+       "p": 0.01,
+       "corrected": "Bonferroni",
+       "n": "42 recordings"
+      },
+      {
+       "about": "Calb1, largest against smallest deceleration quintile",
+       "test": "two-sided paired Wilcoxon signed-rank test",
+       "p": 0.002,
+       "corrected": "Bonferroni",
+       "n": "22 recordings"
+      },
+      {
+       "about": "Anxa1, largest against smallest acceleration quintile",
+       "test": "two-sided paired Wilcoxon signed-rank test",
+       "p": 0.002,
+       "corrected": "Bonferroni",
+       "n": "47 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "With the recomputed onsets that are also stored (which carry the code's exclusion after every reward), ratios 241% (Vglut2), 246% (Calb1) and 232% (Anxa1), p x3 = 0.002, below 0.001 and 0.001. Calb1 is within tolerance; Vglut2 is above 235.4% and Anxa1 above 226.6%. With every recomputed onset (only consumed rewards excluded), 239, 266 and 222%. The ratio over recordings with both quintiles is the same.",
+     "deviations": [
+      "The code reselects onsets and excludes 5 s after every reward; the Events table lists consumed rewards only, so the recomputed onsets are kept where the stored onsets, which carry that exclusion, agree. All recomputed onsets are shown as a variant.",
+      "Larger selection than the paper's."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4g-reward-response",
+     "statement": "Vglut2 and Calb1 axons respond to unexpected rewards (means 7.9 and 12.4 normalized dF/F s), as do DAT recordings (5.9).",
+     "source": "Figure 4d,g; Results, Subtypes show different responses to rewards and aversive stimuli, paragraph 1",
+     "quote": "Means (m) and P values for reward: Vglut2 mice = 7.9 normalized \u0394F/F s ... Calb1 mice = 12.4, P = 0.001 ... DAT mice = 5.9",
+     "statistics": [
+      {
+       "about": "Vglut2 reward response against 0",
+       "test": "two-sided Wilcoxon signed-rank test",
+       "p": 2e-05,
+       "corrected": "Bonferroni",
+       "n": "28 recordings"
+      },
+      {
+       "about": "Calb1 reward response against 0",
+       "test": "two-sided Wilcoxon signed-rank test",
+       "p": 0.001,
+       "corrected": "Bonferroni",
+       "n": "17 recordings"
+      },
+      {
+       "about": "DAT reward response against 0",
+       "test": "two-sided Wilcoxon signed-rank test",
+       "p": 9e-07,
+       "corrected": "Bonferroni",
+       "n": "63 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "With the Methods' windows, Vglut2 8.77, Calb1 13.73 and DAT 6.69, all p x4 below 0.001, each just above tolerance (8.69, 13.64, 6.49). With the code's windows 7.90, 12.40 and 5.88, equal to the paper's values to the decimal, which suggests the paper's reward means come from the code's windows; for air puffs this holds except for DAT.",
+     "deviations": [
+      "Methods' windows (+0.05 to +0.55 s minus -0.5 to 0 s) as the main result; the code's (0 to 0.5 s minus -0.55 to -0.05 s) as a variant."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4g-anxa1-no-reward",
+     "statement": "Reward responses are almost entirely absent from Anxa1 axons (mean -0.5, P = 0.1, not significant).",
+     "source": "Figure 4d,g; Results, Subtypes show different responses to rewards and aversive stimuli, paragraph 2",
+     "quote": "unexpected reward responses were almost entirely absent from Anxa1+ axons (Fig. 4c\u2013e,g; integral of response: mean = \u22120.5, P = 0.1, NS)",
+     "statistics": [
+      {
+       "test": "two-sided Wilcoxon signed-rank test",
+       "p": 0.1,
+       "corrected": "Bonferroni",
+       "n": "51 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Mean -0.42, p x4 = 0.12 (code windows -0.39, p x4 = 0.14), against -0.5 and P = 0.1. 37% of 51 recordings are above 0 and 4 above 5.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4g-airpuff-response",
+     "statement": "Air puffs evoke increases in Vglut2 (15.8), Calb1 (5.3) and DAT (5.3) axons and a decrease in Anxa1 axons (-3.7).",
+     "source": "Figure 4f,g; Results, Subtypes show different responses to rewards and aversive stimuli, paragraphs 1 and 2",
+     "quote": "Means (m) and P values for air puff: Vglut2 mice = 15.8 ... Calb1 mice = 5.3, P = 0.007, Anxa1 mice = \u22123.7 ... DAT mice = 5.3, P = 0.02 (two-sided Wilcoxon signed-rank test with Bonferroni correction)",
+     "statistics": [
+      {
+       "about": "Vglut2 air puff response against 0",
+       "test": "two-sided Wilcoxon signed-rank test",
+       "p": 1e-05,
+       "corrected": "Bonferroni",
+       "n": "29 recordings"
+      },
+      {
+       "about": "Calb1 air puff response against 0",
+       "test": "two-sided Wilcoxon signed-rank test",
+       "p": 0.007,
+       "corrected": "Bonferroni",
+       "n": "17 recordings"
+      },
+      {
+       "about": "Anxa1 air puff response against 0",
+       "test": "two-sided Wilcoxon signed-rank test",
+       "p": 4e-08,
+       "corrected": "Bonferroni",
+       "n": "57 recordings"
+      },
+      {
+       "about": "DAT air puff response against 0",
+       "test": "two-sided Wilcoxon signed-rank test",
+       "p": 0.02,
+       "corrected": "Bonferroni",
+       "n": "69 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Vglut2 16.77, Calb1 5.41, Anxa1 -3.66 and DAT 2.69, all p x4 below 0.01 in the stated direction. The DAT mean is half the paper's 5.3 under either window (code 2.46), with the paper's 69 recordings; the others are within tolerance. DAT mouse means (code windows) run from -3.83 to 6.03, with 3 of 11 mice at or below 0; the cause of the difference is not found.",
+     "deviations": [
+      "Methods' windows as the main result; the code's as a variant."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4h-reward-vs-airpuff",
+     "statement": "Vglut2 axons respond more to air puffs than to rewards, and Calb1 axons more to rewards than to air puffs.",
+     "source": "Figure 4h; Results, Subtypes show different responses to rewards and aversive stimuli, paragraph 1",
+     "quote": "Vglut2+ axons displayed larger responses to air puffs than reward, whereas Calb1+ axons displayed larger responses to rewards than air puffs (Fig. 4h).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Vglut2 air puff minus reward 8.03 (86% of 28 recordings, p x4 = 9.1e-06); Calb1 -8.32 (18% favour air puffs, p x4 = 0.0034).",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4i-reward-size",
+     "statement": "Calb1 axons respond more to large than to small rewards (mean difference 3.9, P = 9e-3), as do DAT recordings (1.9, P = 8e-5), while Vglut2 (0.9, P = 0.6) and Anxa1 (0.04, P = 1) do not.",
+     "source": "Figure 4i; Results, Subtypes show different responses to rewards and aversive stimuli, paragraph 1",
+     "quote": "Mean difference (m) and P values: Vglut2 mice = 0.9 normalized \u0394F/F s, P = 0.6 (NS); Calb1 mice = 3.9 ... Anxa1 mice = 0.04, P = 1 (NS); DAT mice = 1.9",
+     "statistics": [
+      {
+       "about": "Vglut2, large against small rewards",
+       "test": "two-sided paired Wilcoxon signed-rank test",
+       "p": 0.6,
+       "corrected": "Bonferroni",
+       "n": "25 recordings"
+      },
+      {
+       "about": "Calb1, large against small rewards",
+       "test": "two-sided paired Wilcoxon signed-rank test",
+       "p": 0.009,
+       "corrected": "Bonferroni",
+       "n": "14 recordings"
+      },
+      {
+       "about": "Anxa1, large against small rewards",
+       "test": "two-sided paired Wilcoxon signed-rank test",
+       "p": 1,
+       "corrected": "Bonferroni",
+       "n": "42 recordings"
+      },
+      {
+       "about": "DAT, large against small rewards",
+       "test": "two-sided paired Wilcoxon signed-rank test",
+       "p": 8e-05,
+       "corrected": "Bonferroni",
+       "n": "55 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Calb1 4.43 (p x4 = 0.0049) and DAT 2.33 (p x4 = 3.7e-06) larger for large rewards; Vglut2 1.23 (p x4 = 0.22) and Anxa1 0.22 (p x4 = 1) not, so the significance pattern holds. The Calb1 and DAT differences are above tolerance with the Methods' windows and within it with the code's (3.93, 1.83). n is 25, 14, 37 and 50 against 25, 14, 42 and 55; requiring 1 or 2 rewards of each size gives Anxa1 and DAT 47 and 58, or 40 and 53, with the same differences and p-values.",
+     "deviations": [
+      "Methods' windows as the main result; the code's as a variant.",
+      "A recording needs 3 small and 3 large rewards; the paper's Anxa1 and DAT counts are higher, so its rule for this panel differs."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed8f-rest-reward-same",
+     "statement": "Reward responses of Vglut2 and Calb1 axons are the same for rewards delivered at rest as for the others (P = 1 for both), so the reward signal is not a movement response.",
+     "source": "Extended Data Figure 8e,f; Results, Subtypes show different responses to rewards and aversive stimuli, paragraph 1",
+     "quote": "the amplitude of the reward signals was the same at rest (Extended Data Fig. 8e,f; P = 1 (not significant (NS)) for both Vglut2+ and Calb1+, paired Wilcoxon signed-rank test with Bonferroni correction)",
+     "statistics": [
+      {
+       "about": "Vglut2, rewards at rest against rewards not at rest",
+       "test": "two-sided paired Wilcoxon signed-rank test",
+       "p": 1,
+       "corrected": "Bonferroni"
+      },
+      {
+       "about": "Calb1, rewards at rest against rewards not at rest",
+       "test": "two-sided paired Wilcoxon signed-rank test",
+       "p": 1,
+       "corrected": "Bonferroni"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "At rest minus not at rest, Vglut2 0.45 (p x4 = 1, n = 8) and Calb1 -0.15 (p x4 = 1, n = 8), against not-at-rest means 9.38 and 15.35. Anxa1 and DAT p x4 = 0.43 and 0.4. Counts differ from the legend's for Calb1 (8 against 10), Anxa1 (36 against 42) and DAT (33 against 42), and the mice for Vglut2 (3 against 6), Calb1 (4 against 6) and DAT (6 against 10); the cause is not found. The rest rows are the reward rows 0.01 s later with the same durations, and the 2647 onsets left after removing them equal the rewards minus the rest rewards in every file.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-kmeans",
+     "statement": "Unsupervised k-means clustering on locomotion (PC1, PC2 scores), reward and air puff responses assigns recordings to clusters that match the genetic subtypes with 91% accuracy (14/16 Vglut2, 10/11 Calb1, 15/16 Anxa1).",
+     "source": "Figure 6c; Results, Dopamine neuron functions differentially map onto genetic subtypes, paragraph 1",
+     "quote": "Unsupervised k-means classification distinguished subtypes based on locomotion (PC1 and PC2 scores), reward and air puff responses, with total accuracy of 91% ... 14/16 Vglut2, 10/11 Calb1 and 15/16 Anxa1 recordings correctly classified",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Median accuracy over 100 seeds 92.6% (Vglut2 89.5, Calb1 92.9, Anxa1 94.3; single starts 41 to 93%), chance 33%; the code's windows give the same. 19, 14 and 35 recordings against 16, 11 and 16. A one-to-one mapping of clusters to subtypes also gives 92.6%; the code's median-label mapping sends two subtypes to one cluster in 5 of 100 seeds.",
+     "deviations": [
+      "scikit-learn k-means summarized over 100 seeds, as MATLAB's seed cannot be repeated.",
+      "Larger locomotion selection than the paper's, so more recordings are clustered."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7f-soma-axon-correlation",
+     "statement": "Within genetic subtypes, simultaneously recorded SNc somas and striatal axons are highly correlated (mean peak cross-correlation 0.65 Vglut2, 0.67 Calb1, 0.58 Anxa1), more than in DAT recordings (0.37); P = 3e-4, 3e-3, 3e-4.",
+     "source": "Figure 7e,f; Results, Axons track somatic signaling within subtypes, paragraph 4",
+     "quote": "On average, the cross-correlation between soma and axon \u0394F/F recordings was significantly higher compared to DAT+ recordings (Fig. 7e,f; mean = 0.65 for Vglut2+, 0.67 for Calb1+ and 0.58 for Anxa1+, compared to 0.37 for DAT",
+     "statistics": [
+      {
+       "about": "Vglut2 against DAT",
+       "test": "two-sided Mann-Whitney U-test",
+       "p": 0.0003,
+       "corrected": "Bonferroni",
+       "n": "11 Vglut2 and 35 DAT paired recordings"
+      },
+      {
+       "about": "Calb1 against DAT",
+       "test": "two-sided Mann-Whitney U-test",
+       "p": 0.003,
+       "corrected": "Bonferroni",
+       "n": "5 Calb1 and 35 DAT paired recordings"
+      },
+      {
+       "about": "Anxa1 against DAT",
+       "test": "two-sided Mann-Whitney U-test",
+       "p": 0.0003,
+       "corrected": "Bonferroni",
+       "n": "43 Anxa1 and 35 DAT paired recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Mean peaks 0.650, 0.672, 0.530 and 0.377; each subtype above DAT with rank-sum p x3 = 0.0003, 0.0003 and 0.0017. 405 nm control peaks -0.011 to 0.017. 11, 5, 40 and 33 pairs against 11, 5, 43 and 35.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed9c-snc-stimulus-responses",
+     "statement": "Like their axons, Vglut2 and Calb1 somas in SNc respond to rewards and air puffs, while reward responses are largely undetectable in Anxa1 somas.",
+     "source": "Extended Data Figure 9a-c; Results, Axons track somatic signaling within subtypes, paragraph 2",
+     "quote": "Indeed, just as in the axonal recordings, Calb1+ and Vglut2+ somas responded to rewards and air puffs, whereas reward responses were largely undetectable in Anxa1+ somas (Extended Data Fig. 9a\u2013f).",
+     "statistics": [
+      {
+       "about": "Vglut2 soma reward response against 0",
+       "test": "two-sided Wilcoxon sign-rank test",
+       "p": 5e-05,
+       "corrected": "Bonferroni",
+       "n": "25 recordings"
+      },
+      {
+       "about": "Calb1 soma reward response against 0",
+       "test": "two-sided Wilcoxon sign-rank test",
+       "p": 0.007,
+       "corrected": "Bonferroni",
+       "n": "10 recordings"
+      },
+      {
+       "about": "Anxa1 soma reward response against 0",
+       "test": "two-sided Wilcoxon sign-rank test",
+       "p": 1,
+       "corrected": "Bonferroni",
+       "n": "23 recordings"
+      },
+      {
+       "about": "Vglut2 soma air puff response against 0",
+       "test": "two-sided Wilcoxon sign-rank test",
+       "p": 5e-05,
+       "corrected": "Bonferroni",
+       "n": "25 recordings"
+      },
+      {
+       "about": "Calb1 soma air puff response against 0",
+       "test": "two-sided Wilcoxon sign-rank test",
+       "p": 0.008,
+       "corrected": "Bonferroni",
+       "n": "10 recordings"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "SNc Vglut2 reward 10.20 and air puff 14.72, Calb1 12.34 and 4.68, all p x4 below 0.01; Anxa1 reward 0.52, p x4 = 1. Counts match the legend except Anxa1 rewards (22 against 23).",
+     "deviations": [
+      "Methods' windows as the main result; the code's as a variant."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed9k-snc-variance-explained",
+     "statement": "The striatal PCs explain most of the variance of the SNc cross-correlations, 77.6% (PC1 52.4%, PC2 25.2%).",
+     "source": "Extended Data Figure 9k legend; Methods, Analysis of signaling during locomotion, paragraph 16",
+     "quote": "Striatal PCs explain 77.6% of SNc variance (52.4% PC1, 25.2% PC2).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Striatal PCs explain 75.05% of 62 SNc cross-correlations (PC1 48.09%, PC2 26.96%), within 10% of the legend's 77.6, 52.4 and 25.2. Under the Methods' 53.2 and 24.3, PC2 is outside. The SNc selection has 26 Vglut2 and 30 Anxa1 recordings against 28 and 34. The 160 striatal components capture 100.00% of the SNc total variance, so the code's denominator equals it.",
+     "deviations": [
+      "The legend and the Methods give different components; the legend's reading matches.",
+      "The striatal PCs come from the larger striatal selection."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed1h-aldh1a1-depth",
+     "statement": "Aldh1a1 axons are heterogeneous; dorsal recordings are acceleration-correlated (Type 1) and more ventral ones deceleration-correlated (Type 2).",
+     "source": "Extended Data Figure 1h; Results, opening paragraph 2 (before the first subsection)",
+     "quote": "Distribution of locomotion response (integral of the cross-correlation at positive lags) along the dorso-ventral axis of the striatum ... showing how in Aldh1a1 dorsal recordings show acceleration correlation (Type 1) while more ventral recordings show deceleration correlation (Type 2).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Spearman rho = -0.569 (p = 1.3e-08) over 85 recordings, integrals positive above 2.5 mm (mean 0.024, 85% positive), but the 5 recordings below 3 mm average 0.0001, not below 0. The trend holds within 8 of 9 mice with 4 or more recordings. Depth follows the DV coordinate (Spearman rho 0.92, a median 0.83 mm above it), as a depth from the brain surface would. With the deep band from 2.75 or 2.9 mm (19 and 18 recordings) the mean integral is negative (-0.0043, -0.0036).",
+     "deviations": [
+      "The paper gives no test; the Spearman correlation and the depth bands were chosen here before the analysis."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed1i-aldh1a1-reward-locomotion",
+     "statement": "In Aldh1a1 recordings, larger reward responses go with deceleration-correlated signaling, and small or negative reward responses with acceleration-correlated signaling.",
+     "source": "Extended Data Figure 1i; Results, opening paragraph 2 (before the first subsection)",
+     "quote": "Relationship between reward response and locomotion response for each recording of each subtype, showing how in Aldh1a1 larger reward responses correspond with deceleration correlation (Type 2), while small or negative reward responses correspond with acceleration correlation (Type 1).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Spearman rho = -0.509, p = 0.011 over 24 recordings; mean reward response 9.59 with a negative integral and 1.90 with a positive one.",
+     "deviations": [
+      "The paper gives no test; the Spearman correlation was chosen here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig3a-overlap-locomotion",
+     "statement": "Where Calb1 and Anxa1 axons overlap in striatum, Calb1 recordings remain deceleration-correlated and Anxa1 recordings acceleration-correlated (Calb1 4 mice, 5 recordings; Anxa1 5 mice, 16 recordings).",
+     "source": "Figure 3a; Results, Genetic subtypes show different signaling patterns during locomotion, paragraph 2",
+     "quote": "Comparison of locomotion response (cross-correlation between \u0394F/F and acceleration) for Calb1 and Anxa1 recordings only from a region of striatum where their axons overlap ... Calb1 mice = 4, n = 5 recordings; Anxa1 mice = 5, n = 16 recordings.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Calb1 mean integral -0.027 (16 of 17 negative), Anxa1 0.009, rank-sum p = 0.00012. 17 Calb1 recordings from 4 mice and 20 Anxa1 from 6, against 5 from 4 mice and 16 from 5 mice.",
+     "deviations": [
+      "The region is the code's two circles converted to mm with the code's own scale and offsets.",
+      "The paper gives no test; the sign and rank-sum test were chosen here.",
+      "Larger selection than the paper's."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4l-overlap-stimuli",
+     "statement": "Where Calb1 and Anxa1 axons overlap, Calb1 recordings respond to rewards and Anxa1 recordings do not, and Anxa1 recordings decrease to air puffs (Calb1 4 mice, 9 recordings; Anxa1 5 mice, 13 for rewards, 17 for air puffs).",
+     "source": "Figure 4l; Results, Subtypes show different responses to rewards and aversive stimuli, paragraph 2",
+     "quote": "Notably, these differences persist even in regions where axons from different subtypes may overlap (Fig. 4l), indicating that they were intrinsic to each subtype and not simply defined by striatal projection location.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Calb1 reward mean 14.35 against Anxa1 0.94 (rank-sum p = 0.00052), Anxa1 air puff -2.06. Counts equal the paper's (Calb1 9 from 4 mice, Anxa1 13 and 17 from 5 mice).",
+     "deviations": [
+      "The paper gives no test; the rank-sum test and signs were chosen here."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "snrna-nuclei-qc",
+     "statement": "Single-nucleus RNA-seq of dopamine neurons from five DAT-Cre, Sun1-GFP mice yields 12,065 nuclei after quality control, with a mean of 3,435 UMIs and 1,683 genes per nucleus.",
+     "source": "Methods, Analysis of snRNA-seq data, paragraph 1; Figure 1a,b",
+     "quote": "nuclei with fewer than 500 unique features were removed from each dataset ... In total, the integration resulted in a final dataset of 12,065 nuclei, with a mean UMI count of 3,435 and a mean of 1,683 features.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "12,065 nuclei with 500 or more genes, mean UMI 3,436 and mean genes 1,684, from the GEO matrices.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GEO GSE222558 (samples GSM6926026 and GSM6926027)",
+     "proposed": null
+    },
+    {
+     "claim": "snrna-anxa1-within-aldh1a1",
+     "statement": "Anxa1 expression is limited to a subset of Aldh1a1-expressing dopamine neurons.",
+     "source": "Figure 1c; Extended Data Figure 2b; Results, Anxa1+, a new subtype within Aldh1a1+, paragraph 1",
+     "quote": "Expression of Aldh1a1 and Anxa1, the latter of which is expressed only within a subset of Aldh1a1-expressing neurons.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_azcorra_2023.ipynb",
+     "notes": "Aldh1a1 detected in 76.9% of Anxa1-detected nuclei (30.9% overall), odds ratio 8.22, p = 1.6e-107; Anxa1 detected in 10.6% of Aldh1a1-detected nuclei.",
+     "deviations": [
+      "Tested on raw detection without the paper's clustering."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GEO GSE222558 (samples GSM6926026 and GSM6926027)",
+     "proposed": null
+    },
+    {
+     "claim": "snrna-clusters",
+     "statement": "Clustering of the snRNA-seq nuclei gives 15 clusters; cluster 4 is enriched for Anxa1 (FDR-adjusted P = 9.4e-118) within the Aldh1a1 clusters, and clusters 9 and 11 are the Vglut2 and Calb1 subtypes.",
+     "source": "Figure 1b-d; Extended Data Figures 3 and 4; Results, Anxa1+, a new subtype within Aldh1a1+, paragraph 2",
+     "quote": "This approach resulted in the unbiased identification of 15 clusters ... we infer that clusters 9 and 11 represent the SNc Vglut2+ and Calb1+ subtypes ... Cluster 4 was, again, significantly enriched for Anxa1 expression",
+     "statistics": [
+      {
+       "about": "Anxa1 enrichment in cluster 4",
+       "test": "Wilcoxon rank-sum test",
+       "p": 9.4e-118,
+       "corrected": "FDR"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "The paper's pipeline is Seurat 4 (SCTransform v2 integration, FindClusters at resolution 0.5, FindAllMarkers) in R, which cannot be installed in the entry's Python lock file, and a Python reimplementation would not give the same clusters. The count matrices themselves are public (GEO GSE222558) and used by the two snRNA-seq claims above.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GEO GSE222558 (samples GSM6926026 and GSM6926027)",
+     "proposed": null
+    },
+    {
+     "claim": "scrna-meta-integration",
+     "statement": "Integrating four published single-cell datasets gives eight clusters, one of them defined by co-expression of Aldh1a1 and Anxa1.",
+     "source": "Extended Data Figure 2; Results, Anxa1+, a new subtype within Aldh1a1+, paragraph 1",
+     "quote": "We observed eight clusters, one of which was defined by co-expression of Aldh1a1 and Anxa1 (Extended Data Fig. 2a).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "Needs four public datasets and Seurat 3.2 and LIGER 2.0 in R, which cannot be installed in the entry's Python lock file.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GEO GSE116138 and GSE115070, dropviz.org (Saunders et al.), Bioconductor scRNAseq LaMannoBrainData",
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_error",
+     "statement": "The `coordinates` column of the fiber table is described as (AP, ML, DV) but holds (ML, AP, DV); the second value takes only the reference-slice AP positions and is negative in the tail of the striatum, and the paper's code builds the vector as [ML, AP, DV]."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The column `cross_correlation_with_acceleration` is described as the cross-correlation between dF/F and acceleration but holds the peak cross-correlation of the 405 nm control with acceleration (the code's Acc405, used for exclusion), and is missing where running was under 100 s."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The dF/F series are normalized so that the largest transient is 1, which the files do not state (unit n.a., described as DF/F); the normalization factor is in the column `normalized_fluorescence`, which in 123 files holds two values per row."
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The files carry the signal-to-noise ratio and 405 nm cross-correlation but not the other exclusion flags (running time, 405 nm artifacts) or which recordings each figure uses. Recomputed with the paper's code, the stimulus analyses give the paper's counts exactly, but the locomotion criteria select more striatal recordings than Figure 2 reports (Anxa1 82 against 47, Vglut2 50 against 42)."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "The Events table lists consumed rewards only; rewards the mouse did not lick for are only in the raw 4 kHz Reward trace. The code excludes 5 s after every reward, so 911 acceleration and 767 deceleration onsets recomputed from the processed data are not in the stored WheelEvents."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Three subject ids (Anxa-I765L, Anxa-I767L, Calb-2246L) are recordings from the left hemisphere of mice that also have ids without the L, so the archive's 105 subjects are 102 mice. The age is a range (P8W/P16W) in every file."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "In the published version the related resource link to the paper is malformed (https://doi.org/https://doi.org/...), fixed in the draft; the asset summary lists measurementTechnique \"analytical technique\" and variableMeasured \"ProcessingModule\" only."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "785 of 790 SNc fibers and 1281 of 2137 fibers overall have no coordinates."
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The Methods integrate responses from +0.05 to +0.55 s minus -0.5 to 0 s; the code integrates 0 to +0.5 s minus -0.55 to -0.05 s. The paper's reward means equal those of the code's windows to the decimal (Vglut2 7.90, Calb1 12.40, DAT 5.88), as do its Vglut2, Calb1 and Anxa1 air puff means within tolerance; its DAT air puff mean (5.3) does not (2.46). The Methods' windows give about 10% more."
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The code reports the trough of the cross-correlation 0.02 s, and the peak of triggered averages 0.01 s, later than the times the Methods define, and prints uncorrected p-values for Figures 2i and 7f, whose legends state Bonferroni correction."
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "The 405 nm artifact detection marks everything from the last noisy section to the end of a recording and from the start to the first, which the Methods do not describe."
+    },
+    {
+     "kind": "paper_inconsistency",
+     "statement": "The Results give reward P = 2e-5 for Calb1 and 0.001 for Vglut2; the Figure 4g legend gives them the other way round. The Figure 2f legend gives 10 Anxa1 mice, the Methods 9. Extended Data Figure 9k gives striatal PCs explaining 52.4% and 25.2% of SNc variance, the Methods 53.2% and 24.3%."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper (PMC10545540). The verifier queried the archive's asset list and tested the helper functions on synthetic inputs. Its report had no attempt record and gave its own outcome for each claim; all 29 outcomes agree with the record, and for the three blocked claims it gave other reasons.",
+     "agreed": 28,
+     "of": 28,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-18",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "Round 2. The full re-executed notebook after the round-1 revision, with its conclusions and summary, the README, the helper module, the claims file and this record. The verifier did not re-download the paper. It agrees with all 29 outcomes. Cell numbers in the reasons are those of the notebook it reviewed. Two points are not tied to a claim. The README and cell 0 say \"about three minutes\" while cell 94 reports 2.1 min; both now say the run takes a few minutes, and the run time is printed at the end. The 123 files with two normalized_fluorescence values, the malformed DOI link, the asset-summary fields and the paper_inconsistency items appear in no output; cell 13 now prints the value counts of normalized_fluorescence and the related resources and asset summary of the published and draft versions, cells 46 and 73 print the paper's conflicting P-values and percentages (checked against the paper's text, saved under paper/), and the Figure 2f legend and Methods mouse counts were already printed in cell 16.",
+     "agreed": 28,
+     "of": 28,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "001038-azcorra-2023",
+   "type": "reproduction",
+   "title": "Functional responses of genetic subtypes of dopamine neurons (Azcorra, Gaertner et al. 2023)",
+   "description": "Tests the fiber photometry findings of Azcorra, Gaertner et al. (2023) on dandiset 001038, which holds the recordings from striatal axons and SNc somas of Vglut2, Calb1, Anxa1, Aldh1a1 and DAT mice running on a treadmill and receiving rewards and air puffs. It covers locomotion signaling (Figures 2, 3 and 5), reward and air puff responses (Figure 4), clustering (Figure 6), soma and axon correlation (Figure 7) and Extended Data Figures 1 and 6 to 9. Two snRNA-seq claims of Figure 1 are tested on the paper's GEO matrices.",
+   "datasets": [
+    "dandi:001038"
+   ],
+   "papers": [
+    "10.1038/s41593-023-01401-9"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_azcorra_2023.ipynb",
+     "title": "Reproducing Azcorra, Gaertner et al. (2023) from dandiset 001038",
+     "executed": "notebooks/001038-azcorra-2023/reproduce_azcorra_2023.html"
+    }
+   ]
+  }
+ ]
+}
