@@ -93,7 +93,7 @@ outcomes:
   measured: [3.919, 6.433]
   notes: Under reading (a) the median major-axis FWHM is 3.919 um at the centre (11 beads) and
     6.433 um in the 500 um group (19 beads), within 10% of 4 and 7 um; reading (c), the mean major
-    axis, gives 3.887 and 6.883 um, also within. The minor axis (b, d) is 2.609 to 2.690 um at the
+    axis, gives 3.887 and 6.883 um (6.884 with Jacobian scaling), also within. The minor axis (b, d) is 2.609 to 2.690 um at the
     centre and 5.203 to 5.244 um at the edge and fails at both. All 155 regions name their image in
     file-number order. With Jacobian scaling of the optimizer no bead's major FWHM moves by more than
     0.5 um, and taking for each bead the lower-cost of the two fits gives the same readings (3.919
@@ -114,16 +114,24 @@ outcomes:
     The PSF is narrower than the 5.35 um pixel, and the fits depend on the optimizer; with Jacobian
     scaling 15 of 118 beads' major FWHM move by more than 0.5 um and (a) gives 3.639 um at the centre
     (within) and 5.892 um at the edge (0.392 um above the bound). Taking for each bead the lower-cost
-    fit gives 4.467 and 5.892 um under (a) and 4.685 and 7.944 um under (c); the 27.77 um edge bead
-    keeps its main fit, whose cost is lower (60.1 against 79.9). The fits also differ between
-    machines, and the centre under (a) was 4.422 um in the run reviewed in round 1 and is 4.467 um in this
-    run. Under every reading and every fit the FWHM is larger at the edge than at the centre. The
-    outcome is partial because the edge holds under (a) with the main fits and the centre misses by
-    0.067 um. New claim.
+    fit gives 4.467 and 5.892 um under (a), both outside, and 4.685 and 7.944 um under (c); the
+    27.77 um edge bead keeps its main fit, whose cost is lower (60.092 against 79.942). These are the
+    numbers of the run of 2026-10-21 made for the second revision. The seeds are fixed, but the fits
+    differ between runs on different machines. In the run reviewed in round 2 (as the verifier
+    quotes it) the centre under (a) was 4.422 um (0.022 um above the bound), the mean major axis
+    4.416 um at the centre, 14 of 118 beads moved with Jacobian scaling, which gave 3.578 um at the
+    centre, the lower-cost fits gave 4.084 um at the centre (within) and 5.892 um at the edge under
+    (a) and 4.222 and 7.952 um under (c), and both fits of the 27.77 um bead had a cost of 60.092. In
+    both runs no reading with any of the three sets of fits has both values within tolerance, and
+    the FWHM is larger at the edge than at the centre under every reading and fit. The outcome is
+    partial because one of the two positions is within tolerance under (a) in each set of fits, the
+    edge with the main fits and the centre with the Jacobian-scaled fits (and, in the run of round 2,
+    with the lower-cost fits). New claim.
   deviations:
   - MATLAB's lsqcurvefit is replaced by scipy's least_squares (trust-region-reflective, the code's
-    start, bounds and tolerances); the fits of sub-pixel beads depend on the optimizer and differ in
-    the last digits between machines.
+    start, bounds and tolerances); the fits of sub-pixel beads depend on the optimizer and differ
+    between runs on different machines, by up to 0.4 um in a group's median (4.467 against 4.084 um
+    for the centre's lower-cost fits).
   - The code reads the 91 images in order of file date, which the repository does not keep; they
     are read in file-number order, which the Featherscope's region labels confirm for that stack.
     For the Kiloscope stack the order is not confirmed; each region's listed slice lies at the
@@ -211,8 +219,8 @@ outcomes:
     reading (a) holds and (b) does not (classes 2- and 3- at 0.294 and 0.239). The (n1) null is of
     single fits; the real single fits have median accuracies of 0.138 to 0.604 (median 0.430), 2 of
     200 at or below the largest null value, and the weakest has 78 of 1000 null values at or above
-    it. Reading (n2), 200 fits per shuffle, needs 200,000 fits, measured at about 33.6 hours on this
-    machine against a 30 minute limit per notebook. Nine (n2) null decoders were run (one in the
+    it. Reading (n2), 200 fits per shuffle, needs 200,000 fits, measured at 33.3 hours in this run (24.6
+    hours in the run reviewed in round 2) against a 30 minute limit per notebook. Nine (n2) null decoders were run (one in the
     decoding notebook, 0.136; eight in decoding_null_n2_quadrant_direction.ipynb, 0.089 to 0.145),
     none near 0.437, but nine cannot show p < 0.001. The clock check of the main notebook peaks with
     labels shifted by +2 s (0.519 against 0.495 at 0 s, 3 fits each); an offset would lower the
@@ -233,11 +241,14 @@ outcomes:
   output: claim:fig2k-decoder-size
   notes: It depends on fig2-quadrant-direction-decoding, which is blocked as not_runnable, and it
     needs 140,800 fits (11 sizes, 64 subsets, 100 fits on the original and 100 on the shuffled
-    data), measured at about 5.0 hours on four cores. Not run in full. A reduced run chosen here (16
-    subsets of 5 fits per size, decoding_reduced.ipynb), which decides nothing, has the median
-    accuracy rising from 0.099 at 2 footprints to 0.442 at 2,048; original and shuffled subsets
-    differ with p of 1.5e-6 to 6.7e-6 from 32 footprints on but not at 2 to 8 (p 0.53 to 0.87), and
-    neither reading has every p at or below 2.7e-4. New claim.
+    data), measured at 4.8 hours on four cores in this run (3.0 hours in the run reviewed in round
+    2). Not run in full. A reduced run chosen here (16 subsets of 5 fits per size,
+    decoding_reduced.ipynb), which decides nothing, has the median accuracy rising from 0.094 at 2
+    footprints to 0.442 at 2,048; original and shuffled subsets differ with p of 1.5e-6 to 9.5e-6
+    from 32 footprints on but not at 2 to 8 (p 0.376 to 0.955) nor, at 2.7e-4, at 16 (p 0.0205),
+    and neither reading has every p at or below 2.7e-4. Its values differ between runs on different
+    machines (in the run of round 2, 0.101 at 2 footprints and p of 0.00213 at 16), with the same
+    pattern. New claim.
 - claim: fig2l-local-decoding-map
   outcome: blocked
   blocked_by: not_runnable
@@ -245,11 +256,12 @@ outcomes:
   output: claim:fig2l-local-decoding-map
   notes: It depends on fig2-quadrant-direction-decoding, which is blocked as not_runnable. The grid
     has 5411 used points at 45 pixels and 5905 at 50 (5409 and 5897 with centroids); with 10 fits per
-    point and per null decoder that is 64,090 to 69,050 fits, measured at about 4.5 to 4.8 hours on
-    four cores. Not run in full. A reduced run chosen here (a grid every 50 pixels with 56 points
-    used, 500 null decoders of one fit, decoding_reduced.ipynb), which decides nothing, gives point
-    values spanning 0.094 to 0.281 with 32 of 56 points significant (31 with (k + 1) / (n + 1)). New
-    claim.
+    point and per null decoder that is 64,090 to 69,050 fits, measured at 4.4 to 4.8 hours on
+    four cores in this run (2.7 to 2.9 hours in the run reviewed in round 2). Not run in full. A
+    reduced run chosen here (a grid every 50 pixels with 56 points used, 500 null decoders of one
+    fit, decoding_reduced.ipynb), which decides nothing, gives point values spanning 0.089 to 0.282
+    with 32 of 56 points significant (31 with (k + 1) / (n + 1)); in the run of round 2 they spanned
+    0.097 to 0.282, with 32 significant under both definitions of p. New claim.
 - claim: ed8-coactive-distributed
   outcome: blocked
   blocked_by: methods_underspecified
@@ -281,8 +293,8 @@ outcomes:
     accuracy of 0.326 (2.61 times chance) and none of 1000 shuffled decoders reaches it (largest
     0.229, p < 0.001). The real single fits have median accuracies of 0.179 to 0.417 (median
     0.320), 11 of 200 at or below the largest (n1) null value, and the weakest has 12 of 1000 null
-    values at or above it. Reading (n2) needs 200,000 fits, measured at about 33.9 hours on this
-    machine. Nine (n2) null decoders were run (one in the decoding notebook, 0.110; eight in
+    values at or above it. Reading (n2) needs 200,000 fits, measured at 33.7 hours in this run (25.0
+    hours in the run reviewed in round 2). Nine (n2) null decoders were run (one in the decoding notebook, 0.110; eight in
     decoding_null_n2_octant.ipynb, 0.109 to 0.149), none near 0.326, but nine cannot show p < 0.001.
     The criterion asks for both. -01 found it reproduced against
     decoders with shifted labels; the rewritten claims file uses the paper's null, shuffled
@@ -297,10 +309,13 @@ outcomes:
   output: claim:ed9c-local-decoding-map
   notes: It depends on ed9b-octant-decoding, which is blocked as not_runnable. The grid has 5411
     used points at 45 pixels and 5905 at 50; with 40 fits per point and per null decoder that is
-    256,360 to 276,200 fits, measured at about 11.9 to 12.8 hours on four cores. Not run in full. A
-    reduced run chosen here (as for fig2l-local-decoding-map, with 10 fits per point in place of 40,
-    decoding_reduced.ipynb), which decides nothing, gives point values spanning 0.078 to 0.203 with
-    5 of 56 points significant under both definitions of p. -01 found it
+    256,360 to 276,200 fits, measured at 11.9 to 12.8 hours on four cores in this run (6.9 to 7.4
+    hours in the run reviewed in round 2). Not run in full. A reduced run chosen here (as for
+    fig2l-local-decoding-map, with 10 fits per point in place of 40, decoding_reduced.ipynb), which
+    decides nothing, gives point values spanning 0.087 to 0.195 with 7 of 56 points significant
+    under both definitions of p, so (i) holds in it. In the run reviewed in round 2 the values
+    spanned 0.090 to 0.197 and no point was significant, so (i) failed there; with seeds fixed, the
+    reduced run's result changes between runs on different machines. -01 found it
     reproduced on a 30 pixel grid with 10 decoders per point and a null of shifted labels; the
     rewritten criterion uses the code's 5 pixel grid, 40 fits and the paper's null of a thousand
     decoders on 32 random shuffled footprints.
@@ -364,7 +379,7 @@ findings:
     grayscale format", without saying whether it is the raw video or the motion-corrected one the
     paper extracted footprints from, and the file holds no motion-correction module. Its values are
     consistent with the raw video (the histogram of its counts keeps the converter's uneven pattern,
-    which sub-pixel resampling smooths), and its frame-to-frame rigid shifts have an RMS of 0.037
+    which sub-pixel resampling smooths), and its rigid shifts against a template have an RMS of 0.037
     pixels, about a quarter of the 0.13 pixels the paper reports for the raw video.
 - kind: metadata_insufficient
   statement: New. ROICentroids are described as "The x, y, (z) centroids of each ROI", but they equal
@@ -540,8 +555,8 @@ verifications:
     agrees: true
     outcome: blocked
     reason: All four quarters are covered in 8 of 8 events under reading (a) but 7 of 8 under (b);
-      the criterion says the outcome is then methods_underspecified. The midline split leaves 85
-      footprints in the lower left, so the test turns on one sparse corner, and under (b) the event
+      the criterion says the outcome is then methods_underspecified. The midline split of the
+      footprints' extent leaves 85 footprints in the lower left, so the test turns on one sparse corner, and under (b) the event
       times land where four components' weights are only 0.04 to 0.13 of their maxima (problem 5).
     response: Added the counts with the quarters split at the image's midlines; the lower left holds
       86 footprints and the counts are again 8 of 8 and 7 of 8. The notes and conclusion now say that
@@ -567,4 +582,190 @@ verifications:
     agrees: true
     outcome: blocked
     reason: As the criterion says; maps, entropies and peaks are shown.
+    response: No change needed.
+- date: '2026-10-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 2. The full executed notebooks of a run made by the workflow for the verifier, with
+    the conclusions, summaries, README and attempt record, the helper module and the claims file,
+    with the paper. The verifier agrees with all 23 outcomes, including the two decoding claims it
+    disputed in round 1, and found no new place where the claims file misreads the paper. It found
+    numbers in the prose that its run did not print, which it took to be carried over from another
+    run; the run made for this revision (2026-10-21) shows that the PSF fits, the reduced runs and
+    the timings differ between runs on different machines. Every conclusion is now written from the
+    run made for this revision, and the record gives the values of the run of round 2 where they
+    differ.
+  results:
+  - claim: abstract-thousands-of-neurons
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: ed6a-curated-footprints
+    agrees: true
+    outcome: blocked
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: ed6bcd-other-mice
+    agrees: true
+    outcome: blocked
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: ed5-songbirds
+    agrees: true
+    outcome: blocked
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: birds-singing-rate
+    agrees: true
+    outcome: blocked
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: fig2d-lman-sparse-bursting
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Main notebook cell 23 says ed6a is metadata_insufficient and "the others" data_missing,
+      and the others include fig2d, which the record blocks as methods_underspecified.
+    response: Cell 23 now names fig2d-lman-sparse-bursting as methods_underspecified, with its data
+      also missing.
+  - claim: abstract-kiloscope-fov
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: abstract-weights
+    agrees: true
+    outcome: blocked
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: fig1e-featherscope-psf
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Trivially, the prose gives 6.883 for (c) where the output gives 6.884, and 5.203 for
+      the minor-axis edge where the output gives 5.202.
+    response: In the run made for this revision the main fits print 6.883 and 5.203 and the Jacobian
+      and lower-cost fits 6.884 (cells 29 to 31); the conclusion and notes now give 6.884 for the
+      Jacobian scaling as well. The minor-axis edge stays 5.203 as printed in this run.
+  - claim: fig1f-kiloscope-psf
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome, as no reading has both values within tolerance under any of the
+      three sets of fits (cells 29 to 31) and the edge is wider than the centre. The record's reasons
+      are wrong; its numbers (4.467 at the centre, 0.067 above the bound, mean major 4.537, 15 of 118
+      beads moved, Jacobian centre 3.639, lower-cost 4.467 and 5.892 under (a) and 4.685 and 7.944
+      under (c), costs 60.1 against 79.9) are not printed, where the notebook prints 4.422, 0.022,
+      4.416, 14 of 118, 3.578, 4.084 (within) and 5.892, 4.222 and 7.952, and 60.092 for both fits.
+      With the lower-cost fits the centre is within tolerance and the edge is not, so the stated
+      reason for partial is false.
+    response: The run made for this revision prints the numbers the prose gave (4.467, 15 of 118, 3.639,
+      lower-cost 4.467 and 5.892, costs 60.092 against 79.942), so the fits differ between runs on
+      different machines, by up to 0.4 um in a group's median. The conclusion is kept with this run's
+      numbers, and now says that the fits differ between executions and that in the run of round 2
+      the lower-cost fits put the centre within tolerance and the edge outside. The notes give the
+      values of both runs, and the reason for partial is restated so that it holds in both. Under (a)
+      one position is within tolerance in each set of fits, the edge with the main fits and the
+      centre with the Jacobian-scaled fits. The deviation no longer says the fits differ only in the
+      last digits. Outcome kept.
+  - claim: ed1cf-field-curvature
+    agrees: true
+    outcome: blocked
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: ed1-ed4-resolution
+    agrees: true
+    outcome: blocked
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: ed2b-featherscope-flat-illumination
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: ed2c-kiloscope-flat-illumination
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, for the reasons given in round 1.
+    response: No change needed.
+  - claim: ed3-adc
+    agrees: true
+    outcome: blocked
+    reason: Agrees, for the reasons given in round 1 (where it gave no outcome of its own for this claim).
+    response: No change needed.
+  - claim: ed7-motion-small
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees, and the outcome is no longer tentative. There are no comments and no motion-correction module,
+      histogram roughness 0.740 to 0.745 in every block where a sub-pixel shift of 0.13 px lowers it to
+      0.052, zeros scattered single pixels, a known jitter recovered (r = 0.996, RMS 0.033 to 0.136).
+      The README and main notebook cells 0 and 17 call the movie "the raw imaging video" as a fact,
+      where the record says only that it is consistent with it, and cell 17 and the motion summary
+      call the shifts "frame-to-frame", where they are shifts against a template.
+    response: The README, entry description and main notebook cell 0 now call it the imaging video,
+      consistent with the raw video; cell 17, the motion summary and the finding now say rigid shifts
+      against a template.
+  - claim: fig2-quadrant-direction-decoding
+    agrees: true
+    outcome: blocked
+    reason: Now agrees and withdraws its round-1 reproduced. The criterion judges p under (n1) and (n2),
+      the (n2) null takes 24.6 h against a 30 minute limit, and nine (n2) null decoders cannot show p
+      < 0.001; the evidence still points strongly to (n2) agreeing with (n1) (0.089 to 0.145 against
+      0.437). The prose's "about 33.6 hours" is not printed (24.6 h), and the null-(n2) notebook's
+      "about 34 hours" and its 8 decoders "as many as fit within the time limit" are not supported,
+      as eight took 706 s and the notebook ran 15.2 min.
+    response: The timings differ between machines. The run made for this revision prints 33.3 hours,
+      and the conclusion and notes now give that, with the 24.6 hours of the run of round 2 in the
+      notes. The null-(n2) notebook now says more than a day on four cores, and that 8 is a number
+      chosen here to keep the notebook well within the limit.
+  - claim: fig2k-decoder-size
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as the measured cost (3.0 h on four cores) is far over the limit. The prose's "about
+      5.0 hours" is not printed, and the reduced-run conclusion (0.099, p 1.5e-6 to 6.7e-6, 2 to 8 at p
+      0.53 to 0.87, 16 at p 0.017) differs from the output (0.101, 1.54e-6 to 7.96e-6, 0.356, 0.749 and
+      0.0935, 0.00213).
+    response: Conclusions and notes rewritten from the run made for this revision (4.8 hours; reduced
+      run 0.094 at 2 footprints, p 1.5e-6 to 9.5e-6 from 32 on, 0.376 to 0.955 at 2 to 8, 0.0205 at 16).
+      With seeds fixed the reduced run differs between runs on different machines; the notes give the
+      round-2 values and the reduced notebook's summary says so.
+  - claim: fig2l-local-decoding-map
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as the measured cost (2.7 to 2.9 h on four cores) is far over the limit. The prose's
+      "4.5 to 4.8 hours" is not printed, and the reduced run gives 0.097 to 0.282 (span 0.184) and 32
+      significant under both definitions of p, not "0.094 to 0.281 (0.187)" and 31.
+    response: Rewritten from the run made for this revision (4.4 to 4.8 hours; reduced run 0.089 to
+      0.282, span 0.193, 32 significant with p as a fraction and 31 with (k + 1) / (n + 1)), with the
+      round-2 values in the notes.
+  - claim: ed8-coactive-distributed
+    agrees: true
+    outcome: blocked
+    reason: Agrees, for the reasons given in round 1. The record's round-1 reason drops "of the
+      footprints' extent" from the midline split leaving 85 footprints, which matters now that the
+      image-midline split is added.
+    response: The round-1 reason now says the midline split of the footprints' extent.
+  - claim: ed9b-octant-decoding
+    agrees: true
+    outcome: blocked
+    reason: Now agrees and withdraws its round-1 reproduced, as for fig2-quadrant-direction-decoding.
+      The (n2) null takes 25.0 h, and nine (n2) decoders (0.109 to 0.149 against 0.326) cannot show p <
+      0.001. The prose's "33.9 hours" and the null-(n2) notebook's "about 34 hours" are not printed.
+    response: Rewritten from the run made for this revision (33.7 hours), with the 25.0 hours of round 2
+      in the notes; the null-(n2) notebook corrected as for fig2-quadrant-direction-decoding.
+  - claim: ed9c-local-decoding-map
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as the measured cost (6.9 to 7.4 h on four cores) is far over the limit. The prose's
+      "11.9 to 12.8 hours" is not printed. The reduced-run conclusion says 0.078 to 0.203 (0.125) and 5
+      of 56 significant, so (i) holds; the output gives 0.090 to 0.197 (0.107) and 0 of 56 significant
+      under both definitions, so (i) is False. The run decides no outcome, but the prose states the
+      opposite of the result.
+    response: In the run made for this revision the cost is 11.9 to 12.8 hours and the reduced run gives
+      0.087 to 0.195 (span 0.108) with 7 of 56 significant, so (i) holds there; the conclusion gives
+      these numbers. The notes now say that in the run of round 2 no point was significant and (i)
+      failed, so the reduced run's result changes between runs on different machines, and the reduced
+      notebook's summary says so. It decides no outcome.
+  - claim: ed10-localized-activity
+    agrees: true
+    outcome: blocked
+    reason: Agrees, for the reasons given in round 1.
     response: No change needed.

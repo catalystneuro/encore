@@ -3,8 +3,9 @@
 Tests the findings of [Scherrer et al. (2023)](https://doi.org/10.1038/s41592-023-01806-1) on
 [DANDI:000691](https://dandiarchive.org/dandiset/000691/0.260827.1358), version 0.260827.1358,
 which holds one session of one mouse imaged with the large-FOV head-mounted microscope (the
-Kiloscope) while it explores a square loop maze: the raw imaging video, 2948 EXTRACT footprints
-with their traces and masks, and a behaviour video. The claims file was written from the paper's
+Kiloscope) while it explores a square loop maze: the imaging video (its values are consistent with the raw
+video; nothing in the dandiset says which it is), 2948 EXTRACT footprints with their traces and
+masks, and a behaviour video. The claims file was written from the paper's
 full text and its code; the optical measurements of five claims are read from the paper's code
 repository, where the claims file places them.
 
@@ -30,17 +31,18 @@ are used. The attempt record, with the reasons and the differences from the pape
 [`attempts/000691-scherrer-2023-02.yaml`](../../attempts/000691-scherrer-2023-02.yaml); the earlier,
 deprecated attempt is [`attempts/000691-scherrer-2023-01.yaml`](../../attempts/000691-scherrer-2023-01.yaml).
 
-- `reproduce_scherrer_2023.ipynb`: the data check and most claims (about 7 minutes).
+- `reproduce_scherrer_2023.ipynb`: the data check and most claims (5 to 10 minutes; run times here are
+those of two executions on different machines).
 - `decoding_quadrant_direction.ipynb` and `decoding_octant.ipynb`: the decoders under one reading
-  of the paper's null, and the cost of the analyses that were not run (about 20 minutes each, on
+  of the paper's null, and the cost of the analyses that were not run (12 to 19 minutes each, on
   four cores).
 - `motion_scherrer_2023.ipynb`: rigid registration of the whole imaging movie, streamed in blocks,
-  with checks that the movie is the raw video and that the registration finds a known jitter
-  (about 25 minutes on four cores).
+  with checks of whether the movie is the raw video and that the registration finds a known
+  jitter (15 to 22 minutes on four cores).
 - `decoding_null_n2_quadrant_direction.ipynb` and `decoding_null_n2_octant.ipynb`: eight more null
-  decoders of the second reading (200 fits each) for each decoding claim (about 22 minutes each).
+  decoders of the second reading (200 fits each) for each decoding claim (15 to 23 minutes each).
 - `decoding_reduced.ipynb`: reduced runs of the decoder-size and map analyses, which decide no
-  outcome (about 21 minutes).
+  outcome (12 to 21 minutes).
 - `kiloscope.py`: loading the session, its masks and movie, tracking the mouse, the labels and
   decoders of the paper's code, NMF, place maps, the motion registration, and the bead and
   illumination measurements. Other notebooks on this dandiset can import it.
