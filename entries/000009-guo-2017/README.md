@@ -11,19 +11,21 @@ photoinhibition.
 | Behaviour: 77.6% correct, 10.3% lick early, 1.1% no response | Not reproduced |
 | ALM photoinhibition biases licking to the ipsilateral side (Fig. 1c) | Reproduced |
 | Thalamus photoinhibition in VGAT mice reduces activity 0.5 to 1.1 mm from the fibre to 15.9% | Reproduced |
-| ALM and thalamic unit classes by spike width | Partially reproduced (2 claims) |
-| 70% of ALM pyramidal neurons selective; selectivity types (Fig. 2e) | Partially reproduced |
+| ALM and thalamic unit classes by spike width | Partially reproduced (2 claims; not reproduced proposed) |
+| 70% of ALM pyramidal neurons selective; selectivity types (Fig. 2e) | Partially reproduced (not reproduced proposed) |
 | Equal numbers of contra- and ipsi-preferring ALM neurons | Reproduced |
-| VM/VAL selectivity like ALM (Fig. 2f) | Partially reproduced |
-| Thalamus photoinhibition collapses ALM activity (Fig. 3c) and silences thalamus (Fig. 3f) | Partially reproduced (2 claims) |
+| VM/VAL selectivity like ALM (Fig. 2f) | Partially reproduced (not reproduced proposed) |
+| Thalamus photoinhibition collapses ALM activity (Fig. 3c) | Partially reproduced |
+| Thalamus photoinhibition silences thalamus (Fig. 3f) | Partially reproduced (not reproduced proposed) |
 | Onsets: thalamus 2.5 ms, ALM 8.2 ms | Reproduced |
 | ALM photoinhibition reduces VM/VAL activity to 25% (Fig. 6c) | Not reproduced |
-| Unmodulated VM/VAL neurons less selective; localization to VM/VAL | Partially reproduced (2 claims) |
-| SNr response to ALM photoinhibition | Partially reproduced |
+| Unmodulated VM/VAL neurons less selective | Partially reproduced |
+| Reduction localized to VM/VAL (Fig. 6d) | Partially reproduced (not reproduced proposed) |
+| SNr response to ALM photoinhibition | Partially reproduced (not reproduced proposed) |
 | Onsets after ALM photoinhibition (Fig. 6e) | Not reproduced |
 | Selectivity time course in ALM and VM/VAL | Reproduced |
 | ALM Vm 12.7 mV below threshold | Not reproduced |
-| ALM Vm hyperpolarized by 18.7 mV under thalamus photoinhibition; small effect of M1 photoinhibition | Partially reproduced (2 claims) |
+| ALM Vm hyperpolarized by 18.7 mV under thalamus photoinhibition; small effect of M1 photoinhibition | Partially reproduced (2 claims; not reproduced proposed) |
 | Small Vm effect of contralateral ALM photoinhibition; thalamus drives ALM more strongly than cortex | Reproduced (2 claims) |
 | Equal inhibition across selectivity types; all cortical layers (3 claims) | Blocked: methods underspecified |
 | vM1 photoinhibition | Blocked: metadata insufficient |
@@ -31,11 +33,16 @@ photoinhibition.
 | Behaviour under thalamus photoinhibition, muscimol, weak photoinhibition (Fig. 5), current injection, M1 and Olig3 recordings, SNr rates, anatomy (10 claims) | Blocked: data missing |
 | Latency and network models (2 claims) | Blocked: methods underspecified |
 
+The second verification found that nine claims were given partially reproduced under criteria
+with no partial clause; no reading meets any of those criteria in full, so a change of each to not
+reproduced is proposed, for a third verification round to review.
+
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
 and the differences from the paper's method.
 
-The dandiset holds 966 of the paper's 1214 ALM units, nearly all its thalamic units and its 181
-putative GABAergic SNr units. Its mean waveforms are too short to measure the spike widths the
+The dandiset holds 966 of the paper's 1214 ALM units, nearly all its thalamic units and 181 of its
+227 SNr units, apparently the putative GABAergic ones (171 of the 181 by computed width, 146 by the
+files' label). Its mean waveforms are too short to measure the spike widths the
 Methods classify by, so unit classes are run both by computed width and by the files' own labels (and, for the
 thalamic claims of Fig. 2 and 6, with all units).
 Spikes are stored only to about 4.8 s after pole onset in each trial, so windows that end later are
