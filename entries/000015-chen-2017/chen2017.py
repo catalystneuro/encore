@@ -26,9 +26,18 @@ its conventions T, M, A, D, B and O are in its opening comment):
   gamma = (CR + CL - ER - EL)/2 (convention M).
 - Hierarchical bootstrap over animals, planes and cells with replacement (convention B); the number
   of resamples (1000) is the claims file's standard choice.
-- Onset: first bin at or after trial start where a curve exceeds its baseline mean by more than 6 SD
-  of the baseline bins (convention O); baselines O1 (all bins before trial start in the window) and
-  O2 (the 0.5 s before trial start).
+- Onset (convention O): the threshold is the baseline mean plus 6 SD of the baseline bins; baselines
+  O1 (all bins before trial start in the window) and O2 (the 0.5 s before trial start); rules S1 (the
+  first bin at or after trial start above the threshold) and S2 (the first bin from which the curve
+  stays above it up to the go cue).
+- dF/F is computed as the Methods' formula gives it, also where F0 <= 0 (convention T, reading V1);
+  the notebook leaves out the ROIs concerned as the check V2.
+- Tagged units of Li et al. (2015) in dandiset 000010 (claim ephys-pt-it-onset-not-detected): 400 ms
+  windows in 100 ms steps, trials of the four types without photostimulation and without an early
+  lick, time from the sample event (the criterion's readings 1 and 2). Matching trials to their
+  sample event (0.5 to 0.7 s after start_time), counting a unit only in the trials within its
+  observation intervals, and detecting the light from laser pulses or photostim events are readings
+  of the data, shown in the notebook.
 """
 
 from __future__ import annotations
@@ -281,16 +290,26 @@ def classify(p: np.ndarray) -> dict:
             "pure": sig & (n == 1)[..., None]}
 
 
-def onset(curve: np.ndarray, times: np.ndarray, baseline: str = "O1", n_sd: float = 6.0):
-    """First bin at or after trial start where the curve exceeds the baseline mean by more than n_sd
-    baseline SDs (convention O). O1: all bins before trial start; O2: the 0.5 s before trial start."""
-    if baseline == "O1":
-        base = times < 0
-    else:
-        base = (times >= BASELINE[0] - 1e-9) & (times < 0)
+def onset(curve: np.ndarray, times: np.ndarray, baseline: str = "O1", n_sd: float = 6.0,
+          rule: str = "S1", go: float = GO, base: np.ndarray | None = None, search_end: float | None = None):
+    """Onset of a curve by convention O: the threshold is the baseline mean plus n_sd baseline SDs.
+    Baseline O1: all bins before trial start; O2: the 0.5 s before trial start; or a mask `base`
+    given by the caller (the spike-count windows of the Li et al. units). Rule S1: the first bin at or
+    after trial start above the threshold (up to search_end if given); S2: the first bin at or after
+    trial start from which every bin before the go cue is above it. NaN when there is none."""
+    if base is None:
+        base = times < 0 if baseline == "O1" else (times >= BASELINE[0] - 1e-9) & (times < 0)
     mu, sd = curve[base].mean(), curve[base].std(ddof=1)
-    above = np.flatnonzero((times >= 0) & (curve > mu + n_sd * sd))
-    return times[above[0]] if len(above) else np.nan
+    above = curve > mu + n_sd * sd
+    if rule == "S1":
+        ok = (times >= 0) & above
+        if search_end is not None:
+            ok &= times < search_end
+        idx = np.flatnonzero(ok)
+        return times[idx[0]] if len(idx) else np.nan
+    span = np.flatnonzero((times >= 0) & (times < go))
+    stays = np.flip(np.cumprod(np.flip(above[span]))).astype(bool)
+    return times[span[np.argmax(stays)]] if stays.any() else np.nan
 
 
 def epochs(times: np.ndarray) -> dict:
@@ -346,7 +365,7 @@ def li2015_tagged_units(version: str = "0.220126.1905", workers: int = 16) -> li
 
     def one(a):
         f = _open(a["asset_id"])
-        row = {"path": a["path"], "genotype": f["general/subject/genotype"][()].decode()
+        row = {"path": a["path"], "asset_id": a["asset_id"], "genotype": f["general/subject/genotype"][()].decode()
                if "genotype" in f["general/subject"] else ""}
         row["cell_type"] = _text(f["units/cell_type"][()]) if "units" in f else np.array([])
         f.close()
@@ -354,3 +373,128 @@ def li2015_tagged_units(version: str = "0.220126.1905", workers: int = 16) -> li
 
     with cf.ThreadPoolExecutor(workers) as ex:
         return list(ex.map(one, sorted(assets, key=lambda a: a["path"])))
+
+
+# Tagged units of Li et al. (2015), dandiset 000010 (claim ephys-pt-it-onset-not-detected). The
+# criterion's readings: spike counts in 400 ms windows in 100 ms steps (EPH_WIN, EPH_STEP), each
+# window placed at its centre; trials of the four types without photostimulation, early-lick trials
+# excluded by the early_lick column; time from the sample event (pole movement onset).
+EPH_WIN = 0.4
+EPH_STEP = 0.1
+# A trial is matched to the sample event that falls 0.5 to 0.7 s after its start_time; in these files
+# it falls 0.57 s after it (a reading of the data, checked in the notebook).
+LI_MATCH = (0.5, 0.7)
+
+
+def _read_contiguous(url: str, ds, parts: int = 8) -> np.ndarray:
+    """All values of an uncompressed, contiguous dataset, read with parallel HTTP range requests (a
+    standard choice for speed that cannot change a result)."""
+    off, n, dt = ds.id.get_offset(), ds.shape[0], ds.dtype
+    if off is None or ds.compression or ds.chunks:
+        return ds[()]
+    edges = off + np.linspace(0, n, parts + 1).astype(int) * dt.itemsize
+
+    def get(i):
+        r = requests.get(url, headers={"Range": f"bytes={edges[i]}-{edges[i + 1] - 1}"}, timeout=300)
+        r.raise_for_status()
+        return r.content
+    with cf.ThreadPoolExecutor(parts) as ex:
+        buf = b"".join(ex.map(get, range(parts)))
+    return np.frombuffer(buf, dt.newbyteorder("<") if dt.byteorder == "=" else dt)
+
+
+def li2015_session(row: dict) -> dict:
+    """One session of dandiset 000010 with tagged units: its trial table with the matched sample and
+    go events, photostimulation per trial, and the spike times and observation intervals of the PT and
+    IT units. A trial counts as photostimulated when a laser pulse (a rising edge above half the
+    series maximum, in any laser_power series under stimulus/presentation) or a photostim_start_time
+    event falls between its start and stop."""
+    for attempt in range(5):
+        try:
+            url = requests.head(f"{API}/assets/{row['asset_id']}/download/", allow_redirects=True, timeout=120).url
+            f = h5py.File(remfile.File(url), "r")
+            break
+        except Exception:
+            if attempt == 4:
+                raise
+            time.sleep(5 * (attempt + 1))
+    t = f["intervals/trials"]
+    start, stop = t["start_time"][()], t["stop_time"][()]
+    be = f["acquisition/BehavioralEvents"]
+    ev = {k: np.sort(be[k]["timestamps"][()]) for k in be}
+    s = ev["sample"]
+    j = np.clip(np.searchsorted(s, start + LI_MATCH[0]), 0, len(s) - 1)
+    matched = (s[j] >= start + LI_MATCH[0]) & (s[j] <= start + LI_MATCH[1])
+    sample = np.where(matched, s[j], np.nan)
+    nxt = np.append(s[1:], np.inf)[j]
+    g = ev["go"]
+    k = np.clip(np.searchsorted(g, np.nan_to_num(sample, nan=-1.0)), 0, len(g) - 1)
+    go = np.where(matched & (g[k] >= sample) & (g[k] < nxt), g[k], np.nan)
+
+    def in_trial(times):
+        m = np.zeros(len(start), bool)
+        i = np.searchsorted(start, times, side="right") - 1
+        ok = (i >= 0) & (times <= stop[np.clip(i, 0, None)])
+        m[i[ok]] = True
+        return m, int((~ok).sum())
+
+    pulses = []
+    sp = f["stimulus/presentation"] if "stimulus/presentation" in f else {}
+    for name in sp:
+        if name.endswith("laser_power"):
+            d = _read_contiguous(url, sp[name]["data"])
+            ts = _read_contiguous(url, sp[name]["timestamps"])
+            on = d > 0.5 * d.max()
+            pulses.append(ts[np.flatnonzero(on[1:] & ~on[:-1]) + 1])
+    laser, laser_out = in_trial(np.concatenate(pulses) if pulses else np.array([]))
+    pst = ev.get("photostim_start_time", np.array([]))
+    event, event_out = in_trial(pst)
+    u = f["units"]
+    ct = _text(u["cell_type"][()])
+    si, oi_idx = u["spike_times_index"][()], u["obs_intervals_index"][()]
+    oi = u["obs_intervals"][()]
+    units = []
+    for n in np.flatnonzero(np.isin(ct, ["PT", "IT"])):
+        a, b = (si[n - 1] if n else 0), si[n]
+        c, d = (oi_idx[n - 1] if n else 0), oi_idx[n]
+        units.append({"label": ct[n], "index": int(n), "spikes": u["spike_times"][a:b], "obs": oi[c:d]})
+    out = {"path": row["path"], "subject": f["general/subject/subject_id"][()].decode(), "genotype": row["genotype"],
+           "start": start, "stop": stop, "sample": sample, "go": go,
+           "instruction": _text(t["trial_instruction"][()]), "outcome": _text(t["outcome"][()]),
+           "early": _text(t["early_lick"][()]), "light_laser": laser, "light_event": event,
+           "laser_series": len(pulses), "pulses_outside": laser_out, "events_outside": event_out, "units": units}
+    f.close()
+    return out
+
+
+def li2015_sessions(rows: list[dict], workers: int = 8) -> list[dict]:
+    with cf.ThreadPoolExecutor(workers) as ex:
+        return list(ex.map(li2015_session, rows))
+
+
+def li2015_types(sess: dict) -> np.ndarray:
+    """CR, CL, ER, EL per trial (right = posterior, lick right; hit = correct), or '' for trials
+    outside the four types, with an early lick, with photostimulation, or with no matched sample event."""
+    tt = np.full(len(sess["start"]), "", dtype=object)
+    ok = (sess["early"] == "no early") & ~(sess["light_laser"] | sess["light_event"]) & np.isfinite(sess["sample"])
+    right, left = sess["instruction"] == "right", sess["instruction"] == "left"
+    hit, miss = sess["outcome"] == "hit", sess["outcome"] == "miss"
+    tt[ok & right & hit] = "CR"
+    tt[ok & left & hit] = "CL"
+    tt[ok & right & miss] = "ER"
+    tt[ok & left & miss] = "EL"
+    return tt
+
+
+def li2015_unit_counts(sess: dict, unit: dict, centres: np.ndarray):
+    """Spike counts of one unit in 400 ms windows centred at `centres` (s from the sample event), for
+    the trials of the four types (li2015_types) that lie within the unit's observation intervals.
+    Returns counts (trials x windows) and the trial types."""
+    tt = li2015_types(sess)
+    obs = unit["obs"]
+    inside = np.array([np.any((obs[:, 0] <= a + 1e-6) & (obs[:, 1] >= b - 1e-6)) for a, b in zip(sess["start"], sess["stop"])])
+    keep = np.flatnonzero((tt != "") & inside)
+    lo = sess["sample"][keep][:, None] + centres[None, :] - EPH_WIN / 2
+    sp = unit["spikes"]
+    counts = np.searchsorted(sp, lo + EPH_WIN) - np.searchsorted(sp, lo)
+    return counts.astype(float), tt[keep], keep

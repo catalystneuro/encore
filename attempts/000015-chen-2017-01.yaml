@@ -1,3 +1,5 @@
+# Attempt 000015-chen-2017-01: the author's record (docs/protocol.md, Author, step 5), revised after the
+# answers in questions/000015.yaml.
 schema_version: 2
 id: 000015-chen-2017-01
 dataset:
@@ -20,9 +22,11 @@ provenance:
     platform: GitHub Actions
     url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39637903703
 inputs:
-- what: Cell-type labels (PT, IT) of the units of Li et al. (2015), the electrophysiology the paper
-    compares its imaging with, read from the units table of each file. Used only by the link claim
-    li2015-tagged-units-link.
+- what: The tagged units of Li et al. (2015), the electrophysiology the paper compares its imaging
+    with. The link claim li2015-tagged-units-link reads the cell-type labels of every file; the claim
+    ephys-pt-it-onset-not-detected reads, from the 50 sessions with a PT or IT unit, the spike times
+    and observation intervals of those units, the trial table, the behavioural events and the laser
+    power series.
   source: DANDI dandiset 000010 version 0.220126.1905, doi 10.48324/dandi.000010/0.220126.1905
 outcomes:
 - claim: early-lick-fraction
@@ -88,9 +92,12 @@ outcomes:
     10.5% to 14.3%. With T2 bins R2 gives ALM 45% and MM 38% (W1). ALM has the higher fraction under
     every reading. Without the 1,262 ROIs with a non-positive baseline, MM is 1,675 of 5,854
     (28.6%). Among the ROIs the files mark included, ALM 43.6% and MM 34.4%. Per mouse (R2, W1, T1)
-    ALM 25.8% to 40.1% and MM 19.7% to 32.7%.
+    ALM 25.8% to 40.1% and MM 19.7% to 32.7%. The answer on baselines F0 <= 0 (the paper does not
+    say) made dF/F as computed (V1) the reading that decides, as run before, and V2, without the
+    ROIs with F0 <= 0 on any trial, a check; V2 is now reported for every reading, and none puts all
+    four values within tolerance (R2, W1, T1 gives ALM 2,786 of 8,315, 33.5%, and MM 1,675 of 5,854,
+    28.6%). The outcome is unchanged.
   deviations:
-  - dF/F computed as given, including trials with a baseline F0 at or below zero (question asked).
   - Reading A2 not run (no coordinates).
 - claim: figs5-single-coefficient
   outcome: reproduced
@@ -158,11 +165,11 @@ outcomes:
     peaks at 0.026 (T1), above its delay mean 0.008 and delay maximum 0.015, and below the ALM peak
     0.062, under both readings of its delay value and both bin readings. Part (b), the spread across
     ALM layers, cannot be tested, as the files hold no depth. The outcome is partial because part
-    (b) is untested, not because it failed.
+    (b) is untested, not because it failed. The answer on the MM delay value (the paper does not say)
+    made the mean and the maximum over the delay bins readings of the criterion, (c) holding under
+    one; both were already run and both hold, so nothing changed.
   deviations:
   - Part (b) not tested (no plane depth).
-  - The MM delay value is read both as the mean and as the maximum over the delay bins (question
-    asked); both agree.
 - claim: fig6-outcome-response-uniform
   outcome: not_reproduced
   notebook: reproduce_chen_2017.ipynb
@@ -204,11 +211,13 @@ outcomes:
   notes: Over the whole window the mean dF/F of MM ROIs peaks after that of ALM (6.09 against 4.52 s,
     T1; 6.14 against 4.54, T2). The ALM mean at the end of the delay (0.212) is above its sample-epoch
     mean (0.112) and maximum (0.137). The MM mean is dominated by ROIs with a non-positive baseline
-    (range -1.15 to 0.71); without them MM peaks at 4.80 s, still after ALM. Searching only before the
-    go cue, a variant that does not decide, MM peaks at 1.51 s and ALM at 4.09 s.
-  deviations:
-  - The end of the delay is the last bin before the go cue, and the sample-epoch level is read as
-    the mean and as the maximum (question asked); both agree.
+    (range -1.15 to 0.71); without them (V2) MM peaks at 4.80 s, still after ALM. Searching only
+    before the go cue, a variant that does not decide, MM peaks at 1.51 s and ALM at 4.09 s. The answer
+    on the criterion's terms (the paper does not say) named readings L1 and L2 for the sample-epoch
+    level and E1 (last bin) and E2 (mean over the last 0.5 s) for the end of the delay; E2 is new
+    here. The ALM mean over the last 0.5 s is 0.205 (T1), also above both levels, so the second part
+    holds in all 8 combinations of bins and readings and the first fails in all; the answer on F0 <= 0
+    made V1 decide and V2 a check, as run before. The outcome is unchanged.
 - claim: fig8c-pt-deep-only
   outcome: partially_reproduced
   notebook: reproduce_chen_2017.ipynb
@@ -232,28 +241,50 @@ outcomes:
   notes: The mean beta of 385 ALM PT ROIs over the delay is positive (lick right), 0.0284 with T1 bins,
     1.71 hierarchical bootstrap SDs above zero (T2 0.0291, 1.56 SD), short of the 2 SD bound. Without
     ROIs with a non-positive baseline it is 1.97 (T1) and 1.86 (T2) SD. It is positive in each of the
-    three mice (0.0093 to 0.0341). The direction of the claim holds; its bound does not.
+    three mice (0.0093 to 0.0341). The direction of the claim holds; its bound does not. The answer
+    on F0 <= 0 (the paper does not say) made V1, the dF/F as computed, decide and V2, without those
+    ROIs, a check; both were run before and the outcome is unchanged.
 - claim: fig8d-pt-earlier-than-it
-  outcome: not_reproduced
+  outcome: reproduced
   notebook: reproduce_chen_2017.ipynb
   output: claim:fig8d-pt-earlier-than-it
-  measured: 0.215
+  measured: 1.801
   notes: Reading I2 (all ALM IT). Mean |beta| is larger in PT than in IT (maximum 0.229 against
-    0.084, T1). The IT minus PT onset is 0.215 s (T1, O1), 0.200 s (T2, O1 and O2) and -1.075 s (T1,
-    O2), with bootstrap SDs of 1.36 to 1.93 s and 0.31 to 0.53 of resamples with PT not earlier, so no
-    combination gives a difference within 1.4 +- 0.6 s or p < 0.01. Per mouse the onsets disagree
-    (PT earlier in two, IT earlier in one). Reading I1, deep ALM IT only, could not be run without
-    depth, so the outcome rests on I2.
+    0.084, T1; 0.231 against 0.085, T2). The answer on the onset rule (the paper does not say) added
+    rule S2, the first bin from which the curve stays above the threshold up to the go cue, beside S1,
+    the first single bin, and fixed the threshold at the baseline mean plus 6 SD, as run before. Under
+    S2 with T2 bins and the bootstrap over cells (H2), the IT minus PT onset is 1.801 s (O1, bootstrap
+    SD 0.415 s, p = 0.003) and 1.401 s (O2, SD 0.434 s, p = 0.006), within 1.4 +- 0.6 s at p < 0.01, so
+    the criterion (one combination) is met; the measured value is the first such combination in the
+    criterion's order (O1, S2, H2). The result rests on those combinations. Every S2 combination is
+    within tolerance (1.29 to 1.80 s), but with T1 bins p is 0.021 (O2) and 0.170 (O1) under H2, and
+    with the hierarchical bootstrap (H1) p is 0.065 to 0.319, with up to 307 of 1,000 resamples having
+    no S2 onset (counted as PT not earlier). Rule S1 gives 0.215 s (T1, O1), 0.200 s (T2) and -1.075 s
+    (T1, O2), with p from 0.31 to 0.52, the earlier outcome (not_reproduced) unchanged under S1. Per
+    mouse (T1, O1, S1) PT is earlier in an063 and an064 and later in an066. Reading I1, deep ALM IT
+    only, could not be run without depth, so the outcome rests on I2.
   deviations:
   - Reading I1 not run (no plane depth).
-  - Onset is the first single bin over 6 baseline SD (question asked).
 - claim: ephys-pt-it-onset-not-detected
-  outcome: blocked
-  blocked_by: methods_underspecified
-  notes: The 45 PT and 27 IT units are on DANDI (dandiset 000010, see li2015-tagged-units-link), but
-    the claims file does not fix how the onset test is applied to them (spike-count windows, which
-    trials of sessions that include photostimulation, trial start and baseline for the Li et al.
-    task timing, the bootstrap). A question was asked; the claim waits for the answer.
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:ephys-pt-it-onset-not-detected
+  notes: Blocked (methods_underspecified) before the answer. The answer (the paper does not say)
+    named the readings, run here on dandiset 000010 version 0.220126.1905. Spike counts in 400 ms
+    windows in 100 ms steps from the sample event, on the 9,828 trials of the four types without
+    photostimulation and without an early lick in the 50 sessions (14 mice) with a tagged unit, each
+    unit counted only in the trials within its observation intervals; 4,152 of 16,571 trials had
+    photostimulation (laser pulses or photostim events) and are left out. One IT unit (mouse 219253)
+    has no ER trial left and cannot be fitted, so 45 PT and 26 IT units are analysed. No combination
+    finds PT earlier at p < 0.01. The IT minus PT onset of mean |beta| is 0.7 s with rule S1 (PT 0.1 s,
+    IT 0.8 s; bootstrap SD 0.66 to 0.75 s, p 0.30 to 0.34) and 0.2 s with rule S2 (PT 1.2 s, IT 1.4 s;
+    SD 0.63 to 0.64 s, p 0.15 to 0.20), under both bootstraps. Baselines O1 and O2 are the same two
+    windows (centres -0.3 and -0.2 s), as spikes are stored only from 0.52 s before the sample event,
+    so the 8 combinations give 4 distinct results, each with a baseline SD from two overlapping
+    windows. The difference is positive under every reading but not significant.
+  deviations:
+  - One of the 27 IT units is left out, as it has no error-right trial without photostimulation.
+  - Baselines O1 and O2 coincide, as no spikes are stored before 0.52 s ahead of the sample event.
 - claim: li2015-tagged-units-link
   outcome: reproduced
   notebook: reproduce_chen_2017.ipynb
@@ -277,7 +308,9 @@ outcomes:
     0.0232 with T1 bins, 1.87 hierarchical bootstrap SDs above zero (T2 0.0242, 1.94), short of the
     2 SD bound (1.70 and 1.63 without ROIs with a non-positive baseline). It is positive in all five
     mice with MM planes, and significant MM ROI-bins in the sample epoch prefer the posterior pole
-    1,912 times against 747. The direction holds; the bound does not.
+    1,912 times against 747. The direction holds; the bound does not. The answer on F0 <= 0 (the
+    paper does not say) made V1 decide and V2 a check; both were run before and the outcome is
+    unchanged.
 - claim: fig8d-error-outnumber-correct
   outcome: partially_reproduced
   notebook: reproduce_chen_2017.ipynb
@@ -285,7 +318,11 @@ outcomes:
   notes: Reading (a) finds error preference; among ROIs purely outcome selective from the go cue to 2.5
     s after it, 2,825 prefer error and 2,004 correct trials (T1, binomial p = 2.8e-32; T2 2,730 and
     1,933). Reading (b) does not reach its bound; mean gamma over all ROIs is -0.0082 (T1), negative in
-    every mouse, but 1.81 bootstrap SDs from zero (T2 1.71). The criterion requires both readings.
+    every mouse, but 1.81 bootstrap SDs from zero (T2 1.70). The criterion requires both readings. The
+    answer on F0 <= 0 (the paper does not say) made V1 decide, as run before, and V2 a check; V2 is
+    now run in full. Under V2 (a) holds (2,722 against 1,927) and (b) reaches 2.20 SD with T1 bins
+    and 2.00 SD with T2, which the printed test puts just short of the bound. The outcome, decided by
+    V1, is unchanged.
 - claim: fig8ef-area-explains-variance
   outcome: blocked
   blocked_by: metadata_insufficient
@@ -350,4 +387,5 @@ findings:
 - kind: other
   statement: With the stored ROI and neuropil traces and the paper's r = 0.7, the baseline F0 is zero
     or negative on 0.26% of ROI-trials, in 1,262 ROIs, and dF/F reaches thousands; the mean dF/F of MM
-    is dominated by these ROIs. The paper does not say how they were treated.
+    is dominated by these ROIs. The paper does not say how they were treated (a reader confirmed
+    this in answer to a question).

@@ -25,15 +25,15 @@ photoinhibition and silicon probe recordings are not in it.
 | Peak of activity shifts from MM to ALM | Not reproduced |
 | 719 PT and 2,631 IT neurons, PT only deep | Partially reproduced (counts only) |
 | ALM PT neurons prefer contralateral licking in the delay | Not reproduced |
-| PT selectivity earlier than IT by 1.4 s | Not reproduced |
+| PT selectivity earlier than IT by 1.4 s | Reproduced (under one onset rule and bootstrap only) |
 | MM neurons prefer the posterior pole | Not reproduced |
 | Error-preferring neurons outnumber correct-preferring | Partially reproduced |
 | Under 20% of ALM PT or IT cells lick-direction selective at a time | Reproduced |
 | Tagged units of Li et al. (2015) on DANDI:000010 (link) | Reproduced |
+| No PT and IT onset difference in the Li et al. (2015) units | Reproduced |
 | Four findings on depth | Blocked: metadata insufficient |
 | Wide-field imaging (two), photoinhibition, whisking | Blocked: data missing |
 | Silicon probe recordings (two) | Blocked: never made public |
-| PT and IT onset in Li et al. (2015) units | Blocked: methods underspecified (question asked) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -43,8 +43,8 @@ claims file fixed (2 bootstrap SD), or turn on rules that count neurons selectiv
 bin, which chance bins dominate. The attempt record, with the reasons and the differences from the
 paper's method, is [`attempts/000015-chen-2017-01.yaml`](../../attempts/000015-chen-2017-01.yaml).
 
-- `reproduce_chen_2017.ipynb`: the analysis. It takes about twelve minutes, most of it streaming the
-  210 files.
+- `reproduce_chen_2017.ipynb`: the analysis. It takes about eighteen minutes, most of it streaming the
+  210 files and the 50 sessions of DANDI:000010 with tagged units.
 - `chen2017.py`: loading, deduplication of the doubled files, dF/F per trial, the 3-way ANOVA and
   coefficients of the paper's Methods, onsets and the hierarchical bootstrap. Other notebooks on
   this dandiset can import it.
