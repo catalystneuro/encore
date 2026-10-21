@@ -5396,3 +5396,114 @@ it does not say what `measured` holds when no reading matches; criteria can
 block on trivial disagreement, such as 0-against-0 ties in bins of 1 to 4
 neurons; questions of data interpretation cannot be answered from the paper;
 and it does not say how to record a claim testable only in part.
+
+### 000008, Scala et al. 2021
+
+Eleven claims reproduced, four partially, one not reproduced and none blocked
+on the dandiset, with nine more reproduced and two blocked that also use the
+paper's data from outside the dandiset. It pins version 0.211014.0809, the
+latest published version, as the paper cites none; version 0.211014.0808 has
+the same 1,328 assets. The author put one question to a reader, on reading (b)
+of `fig5d-sst-pvalb-calb2-firing`, where with 1,000 permutations the random
+seed decided the result. The answer, which notes that the paper has no test
+for Fig. 5d, made the p-value exact when there are at most 1,000,000 subsets
+and otherwise estimated from 100,000, with the upper bound of the 95%
+Clopper-Pearson interval also below 0.05, and the claim moved from blocked to
+reproduced (p = 0.0485, bound 0.0499 with seed 55; exact p = 0.0497), though
+with any of five other seeds (56 to 60) it would have stayed blocked. Round 1
+gave its own outcome for each claim from the notebooks with their conclusions
+and summaries removed and agreed with 32 of 35. It gave `cohort-cells-mice` as
+reproduced, which the author accepted, as the three duplicated recordings
+belong to six distinct cells; it gave `ed6-physiological-temperature` and
+`fig4e-pvalb-axon-shape` as blocked for `data_missing`, where the author kept
+`methods_underspecified` because their data are public elsewhere and the paper
+gives no measure to test, which round 2 accepted. Round 2 agreed with all 35
+and nothing was proposed, so there was no third round. The paper,
+"Phenotypic variation of transcriptomic cell types in mouse motor cortex" in
+Nature, records 1,329 neurons from 266 mice in primary motor cortex by
+Patch-seq, with 29 electrophysiological features, a transcriptomic type
+(t-type) and family for each cell and a morphology for 646, and reports that
+many t-types vary in their features and that within some the variation
+follows the transcriptomic landscape. The cohort, stimulus protocol, depths,
+feature counts and family features, the family and t-type predictions, the
+normalized variances and Leiden entropies, the distance correlations, the
+reduced-rank regressions and the within-type gradients of Fig. 4 and 5 were
+tested, those that need gene counts or reference data with the paper's code
+repository and Zenodo record 5118962. `ed8-leiden-entropy` is not reproduced
+(rho 0.266, one-sided p 0.061); `fig1a-ttype-coverage` is partially reproduced
+because the one cell missing from the dandiset is the only L6 CT Gpr139 cell,
+leaving 76 t-types against 77, and `fig1b-depth-layers` because L5 IT_4 has a
+median depth of 0.757, in L6 (18 of 19 t-types agree). `fig4a-vip-tau` and
+`fig5c-vip-mybpc1-rebound` are blocked as `methods_underspecified` because
+their readings disagree. Some outcomes rest on weak ground: the fig5d outcome
+depends on the seed; in `fig5b-ttype-variability` the share of t-types above
+the band runs from 22% to 56% across k-means n_init and membership variants,
+and 2 of the 8 variants fall below 25%; and ed8-leiden-entropy flips with the
+membership handling (p = 0.061 under the Methods' handling, 0.031 under the
+code's, both with duplicates removed).
+
+All 1,328 cells of the dandiset match a row of the paper's metadata table, and
+the table's 1,329th cell (20190211_sample_10) is not in the dandiset. Three
+pairs of files hold identical voltage recordings although each pair is two
+different cells of one mouse, with different depths and read counts, two of
+the pairs from different slices and one pair with different t-types; the
+paper's feature table has identical values for each pair, so the paper
+analysed each recording twice, and which cell each recording belongs to is not
+recorded. Three files hold other traces than the ones the paper's features
+were computed from, one with 41 sweeps, while the features of 1,320 files
+reproduce the published table on every feature but the rheobase, which the
+paper fits with an unseeded random procedure. The field
+cortical_thickness_4x holds the soma depth and cortical_thickness_um the
+cortical thickness, both in 4x image units, soma_depth_um is empty in all 43
+files that have it, and the paper's µm soma depths and cortical thicknesses
+are not in the dandiset. Voltage series are labelled volts with conversion 1
+but hold millivolts, and stimulus series are labelled amperes but hold
+picoamperes. No series has a start time (starting_time is NaN in all 104,409
+voltage series) and there are no timestamps, so the 1.3 or 1.4 s intervals
+the Methods give are lost, and each file holds a single series of current
+steps, where the Methods say the series was repeated for most neurons. Other
+findings: the five cells with a t-type that the paper excludes are not marked
+in the files, and the files use the older name PT for the ET subclass; the
+hold time and cDNA yield of each cell are not in the files, so
+`hold-time-yield` rests on the paper's table alone; 145 of 1,328 cells
+(10.9%) do not start at -200 pA (90 start at -100 pA, and 87 of these end at
+1,480 pA), and 112 go above 1,380 pA, up to 1,780 pA; one file
+(20190625_sample_13) has voltages of about +-1,025 mV in some sweeps; one
+mouse has the genotype Scnn1a-Tg3-Cre/wt; Ai9/wt, which the paper does not
+list, and the paper counts 27 wild-type mice where the files have 26; and the
+Extended Data Fig. 4 legend gives an AP threshold of -40.18 mV for the example
+cell where the paper's feature table and the file give -43.18 mV, and the sag
+time in ms where the value is in seconds.
+
+The notebooks ran in 1,269 s, 1,066 s and 230 s in the first run and in 15.8
+min, 16.1 min and about 5 minutes after round 2, and `entry.py check` reported
+no errors. `glmnet_python` cannot be installed on Python 3.13, so
+scikit-learn's estimator of the same objective was used and recorded as a
+deviation, and `morph-reconstructions` is blocked as `data_unreadable`
+because the Brain Image Library server timed out on every try, the last on
+2026-10-21. After the author's final run they corrected a few lines of
+conclusion text without running the notebooks again, checking that every code
+cell was unchanged. Round 1's points led to the layer being taken from depth
+with the Nissl boundaries as the claims file specifies (fig4b r = 0.339, p =
+0.0113, where it was 0.347, p = 0.0094), an exact comparison with the metadata
+table, a list of the files' metadata fields, a cross-tabulation of first and
+largest current step, two library-size normalizations for fig5c reading (b),
+the cross-validation folds of the reduced-rank regression and a second
+question to a reader, on whether the allowance for the missing cell in fig1a
+covers the t-type only that cell represents. Round 2 found statements the
+outputs did not support, among them a voltage range of -150 to +80 mV that
+nothing printed, exon sums said to be higher in most cells where only the
+median ratio (1.035) is, and README labels that read as though 1,329 cells and
+1,284 depths were reproduced, and these were corrected. Untracked files in the
+repository root that the author did not create were left alone. The author's
+points on the protocol: "count each recording once" gives no rule for which
+cell of a duplicated pair to keep; exclusion flags taken from the paper's
+table are neither `with_labels` nor `with_inputs`; it only implies that the
+author edits other claims' `depends_on` when adding a link claim; it has no
+outcome for a claim testable only in part; it has no block reason for an
+archive that does not respond; streaming with `remfile` took about 6 s per
+file, so whole files were read into memory; the 10-minute aim cannot be met
+when each notebook must redo a 15-minute feature extraction; the substitute
+for `glmnet_python` was recorded as a deviation, not a block; "scikit-learn
+defaults" is ambiguous because the k-means default changed in 2024; and it
+says a random seed cannot change an outcome, where in fig5d it does.

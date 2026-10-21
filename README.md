@@ -109,6 +109,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000005](https://dandiarchive.org/dandiset/000005) | [Yu et al. 2016](https://doi.org/10.1038/nn.4412) | 5 | 9 | 6 | 13 | [`000005-yu-2016`](entries/000005-yu-2016) |
 | [CRCNS:ret-1](https://crcns.org/data-sets/retina/ret-1) | [Lefebvre et al. 2008](https://doi.org/10.1242/dev.027912) | 3 | 0 | 2 | 21 | [`crcns-ret-1-lefebvre-2008`](entries/crcns-ret-1-lefebvre-2008) |
 | [000009](https://dandiarchive.org/dandiset/000009) | [Guo et al. 2017](https://doi.org/10.1038/nature22324) | 7 | 2 | 13 | 17 | [`000009-guo-2017`](entries/000009-guo-2017) |
+| [000008](https://dandiarchive.org/dandiset/000008) | [Scala et al. 2021](https://doi.org/10.1038/s41586-020-2907-3) | 11 (+9) | 4 | 1 | 0 (+2) | [`000008-scala-2021`](entries/000008-scala-2021) |
 
 Counts are of the paper's findings that rest on the dandiset, including
 those that take names for its own codes from elsewhere. Findings that also
