@@ -212,12 +212,22 @@ outcomes:
     paired t-test p = 0.010 against permutation and 0.008 against circular shifts, Wilcoxon 0.023 and 0.016).
     Anxa1 GCaMP-dCP is positive in 9 of 10 recordings but not significantly (mean r = 0.066, p = 0.080 and
     0.071, Wilcoxon 0.064); one recording (842430) is at r = -0.17. Without the seven recordings holding under
-    13 min of photometry, Anxa1 p = 0.097 and dLight-dCP p = 0.059. DAT GCaMP-dCP mean r = 0.032 (p = 0.22).
-    Without mouse 687662, whose water drop file says Dat_cre, Anxa1 has mean r = 0.057, 7 of 8 positive, p
-    = 0.21 and 0.18. The Anxa1 effect is present, with the claimed sign in 9 of 10 recordings and the mean
-    r of dLight-dCP, but weaker, so the outcome is partial; the verifier judged it not reproduced, and the
-    disagreement is recorded. The kinematics start at t = 0 and match the pose at lag 0 in 141 of 160 files,
-    and the photometry's starting_time matches its dF/F timestamps, so speed and signal are aligned as run.
+    13 min of photometry, Anxa1 p = 0.097 and 0.089, and dLight-dCP p = 0.059 against permutation and 0.0499
+    against circular shifts. DAT GCaMP-dCP mean r = 0.032 (p = 0.22). Without mouse 687662, whose water drop
+    file says Dat_cre, Anxa1 has mean r = 0.057, 7 of 8 positive, p = 0.21 and 0.18. Of the 19 open field
+    files whose kinematics are not at lag 0 to the pose, five hold photometry (two Anxa1, two dLight-dCP,
+    one dLight-cCP); with their speed moved by that lag, Anxa1 p = 0.082 and 0.073 and dLight-dCP p = 0.028
+    and 0.023. The Anxa1 speed-signal correlation peaks within 0.5 s of zero lag in 5 of 10 recordings and
+    at -2.3 to 2.1 s in the others; the photometry and the speed are consistent with one clock where the
+    files allow a check, not shown to share it in every recording. The outcome stays as recorded before round
+    2, since round 2 may not change it; the verifier judged it not reproduced in both rounds, and that change
+    is proposed.
+  proposed:
+    outcome: not_reproduced
+    reason: The criterion needs both groups above the shuffle at p < 0.05 under one reading, and Anxa1, the
+      subject of the claim, misses it in every reading (p = 0.064 to 0.21, including without the short recordings,
+      without mouse 687662 and with the kinematics lags applied). As for fig3e, whose main part fails in every
+      reading and which is not reproduced, a failed main part is a failure of the claim and not a partial result.
   deviations:
   - The legend counts 9 Anxa1 recordings of 9 mice and 8 dLight-dCP of 6; the dandiset holds 10 of 8 and 8
     of 5, all used.
@@ -369,7 +379,7 @@ outcomes:
     The tail base occupies the same pixel extent on every day (medians of the 1st and 99th percentiles 98 to
     111 and 567 to 620 px in x, 185 to 232 and 699 to 706 px in y), so the pixel scale does not change between
     days. The speeds are unsmoothed apart from the interpolation, and the mean of six points is noisy (raw
-    speeds 2 to 6 times those of the tail base); the outcome rests on these measures.
+    speeds 1.5 to 5.9 times those of the tail base in the group means); the outcome rests on these measures.
   deviations:
   - The dandiset holds pose only for the arrow maze; speed is computed from it in pixels per s, under the claims
     file's two point readings, and the smoothing, which is open, is run raw and with low-confidence positions
@@ -706,7 +716,8 @@ verifications:
       the motif labels used inconsistently (cells 41 to 58), the header rules this out ("a new VAME fit is
       not a basis for an outcome"), and the Methods describe 100 states reduced to 37 motifs, not 42. Problem
       2, the start times of kinematics and motifs were never checked; an offset of 0.5 to 1 s would shift every
-      0 to 1 s motif-onset AUC.
+      0 to 1 s motif-onset AUC. For information, fig4f is within tolerance in 1 of 4 readings, with R = -0.5713
+      against a bound of -0.572.
     response: Outcome changed to blocked (data_missing); the analysis is kept and marked as not deciding. The
       start times are now printed for every file (problem 2). Kinematics and labels start at t = 0 and have
       30 frames fewer than the pose; the kinematics match the pose at lag 0 in 141 of 160 files, but the labels
@@ -832,3 +843,268 @@ verifications:
       as a departure from the paper's protocol in the conclusion and the notes. The preferred limb over all
       of a mouse's sessions is reading (i) of the claims file as written, and reading (ii), per session, is
       also run, so it is not changed. The Sidak tests stay as stated in the deviations.
+- date: '2026-10-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of commit 7d3fb99e (author-revise-1) with its conclusions and summary, the
+    attempt record, the README, the helper module and the claims file, with the paper. agrees compares its outcome
+    with the outcome of the record it reviewed.
+  results:
+  - claim: fig1b-anxa1-downregulated-rnaseq
+    agrees: true
+    outcome: blocked
+    reason: Stays blocked, with the reason given as other. The record says the protocol does not allow data_missing
+      for a claim whose data are held elsewhere; it cannot check that rule, but the outcome is unchanged. The GEO
+      file listing it asked for has been added.
+    response: No change. The rule is in tools/entry.py check, which fails a claim with data elsewhere blocked as
+      data_missing.
+  - claim: fig1c-anxa1-aldh1a1-overlap
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig1e-ventral-snc-location
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig1h-mp-early-anxa1-loss
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig1j-ipsc-anxa1-reduced
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig1m-6ohda-anxa1-loss
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: figs1-6ohda-partial-th-loss
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig1p-catg7ko-anxa1-loss
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: figs1-vta-no-effect
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig2c-snr-dendrites
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig2f-dorsal-cp-projection
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: figs2-evoked-da-dcp-ccp
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome. Problem 11, the 2 s baseline, is resolved; the pre-train trace is flat.
+    response: No change.
+  - claim: fig2i-striosomal-features
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig2n-6ohda-axon-ablation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig3d-anxa1-ramp-to-touch
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. Problem 4, mouse 687662's genotype is still unresolved, but the new exclusion
+      variants show fig3d is unaffected. Still open and bearing on a conclusion, whether a correct event's time
+      is the drop-touch frame is unchecked, because there is no video decoder; the only evidence is that the signal
+      varies more around events than around random times, which cannot tell anything apart in sessions with 1 to
+      3 events.
+    response: No change. The videos are external mp4 files and this environment has no video decoder, so the event
+      frames cannot be checked against the video here; the conclusion and notes already say the event timing is
+      taken from the annotations as stored. A check against the video needs a new attempt with a decoder. The genotype
+      conflict stays a finding; the dandiset gives no way to settle it.
+  - claim: fig3e-dlight-dcp-ccp-reward
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. Still open and bearing on a conclusion, whether a correct event's time is the
+      drop-touch frame is unchecked, because there is no video decoder; the only evidence is that the signal varies
+      more around events than around random times, which cannot tell anything apart in sessions with 1 to 3 events.
+    response: No change. The videos are external mp4 files and this environment has no video decoder, so the event
+      frames cannot be checked against the video here; the conclusion and notes already say the event timing is
+      taken from the annotations as stored. A check against the video needs a new attempt with a decoder.
+  - claim: fig3fg-auc-change-from-baseline
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the outcome. Problem 3 is resolved; the notebook no longer picks a main reading. Still open
+      and bearing on a conclusion, whether a correct event's time is the drop-touch frame is unchecked, because
+      there is no video decoder; the only evidence is that the signal varies more around events than around random
+      times, which cannot tell anything apart in sessions with 1 to 3 events.
+    response: No change. The videos are external mp4 files and this environment has no video decoder, so the event
+      frames cannot be checked against the video here; the conclusion and notes already say the event timing is
+      taken from the annotations as stored. A check against the video needs a new attempt with a decoder.
+  - claim: fig3i-dat-not-anxa1-self-stimulation
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig3kl-reversal-dat-only
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig3o-tetx-no-motivation-deficit
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig4b-speed-correlation-dcp
+    agrees: false
+    outcome: not_reproduced
+    reason: 'The criterion needs both groups to beat the shuffle at p < 0.05, and the Anxa1 group fails in every
+      reading (t-test p = 0.080 and 0.071, Wilcoxon p = 0.0645). Anxa1 is the subject of the claim, and it gets
+      weaker without mouse 687662 (p = 0.21 and 0.18) and without the short recordings (p = 0.097 and 0.089). For
+      fig3e the record accepted that a claim is not reproduced when its main part fails, and the same rule applies
+      here; present but weaker describes the effect''s direction, not a part that fails its test. Unsupported sentences:
+      without the seven short recordings dLight-dCP p = 0.059 is only the permutation test, and against circular
+      shifts the same cell prints p = 0.0499 (minor). So speed and signal are aligned as run goes further than the
+      outputs show; cell 11 shows 19 of 160 kinematics files not at lag 0 and does not say whether any are photometry
+      files, cell 9 shows the correlation peaking within 0.5 s of zero lag in only 16 of 31 recordings, and cell
+      10 itself says the clocks are not shown to share one clock in every recording. Still open and bearing on a
+      conclusion, which recordings fall among the 19 files off lag 0, which touches the weak Anxa1 correlation.'
+    response: 'The outcome stays partially_reproduced, since round 2 may not change it, and not_reproduced is proposed
+      under proposed, with the reason, for a third round; the author now agrees that the failed Anxa1 part, as in
+      fig3e, makes the claim not reproduced. The dLight-dCP sentence now gives both p (0.059 and 0.0499), and the
+      Anxa1 values without the short recordings both (0.097 and 0.089). The aligned-as-run sentence is removed from
+      the notes and the conclusion. The data check now lists the 19 files off lag 0: five hold photometry (Anxa1
+      687642 at 5 frames and 816510 at 1, dLight-dCP 776769 at 1 and 829248 at 30, dLight-cCP 842388 at 1). fig4b
+      is re-run with their speed moved by that lag: Anxa1 p = 0.082 and 0.073, dLight-dCP p = 0.028 and 0.023. The
+      lag of the peak correlation is printed per Anxa1 recording: 5 of 10 within 0.5 s of zero, the others at -2.3
+      to 2.1 s on both sides; the conclusion says the shared clock is not shown for every recording.'
+  - claim: fig4b-speed-correlation-ccp-negative
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change. The re-run with the kinematics lags applied gives dLight-cCP p = 0.0004 and 0.0005, Wilcoxon
+      0.0156.
+  - claim: fig4c-vame-motifs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Problem 1 is resolved; all ten motif claims are now blocked and the analyses
+      are marked as not deciding. Problem 2 is resolved; the start times are printed, the labels are shown to sit
+      about 18 frames early, and the analyses are run with the labels shifted.
+    response: No change.
+  - claim: fig4e-anxa1-high-speed-motifs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Problem 1 is resolved; all ten motif claims are now blocked and the analyses
+      are marked as not deciding. Problem 2 is resolved; the start times are printed, the labels are shown to sit
+      about 18 frames early, and the analyses are run with the labels shifted.
+    response: No change.
+  - claim: fig4f-auc-correlations
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Problem 1 is resolved; all ten motif claims are now blocked and the analyses
+      are marked as not deciding. Problem 2 is resolved; the start times are printed, the labels are shown to sit
+      about 18 frames early, and the analyses are run with the labels shifted.
+    response: No change.
+  - claim: fig4h-auc-motif-speed
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Problem 1 is resolved; all ten motif claims are now blocked and the analyses
+      are marked as not deciding. Problem 2 is resolved; the start times are printed, the labels are shown to sit
+      about 18 frames early, and the analyses are run with the labels shifted.
+    response: No change.
+  - claim: fig5c-tetx-locomotion
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig5e-early-models-locomotion
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the outcome.
+    response: No change.
+  - claim: fig5g-pc1-stage
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Problem 1 is resolved; all ten motif claims are now blocked and the analyses
+      are marked as not deciding. Problem 2 is resolved; the start times are printed, the labels are shown to sit
+      about 18 frames early, and the analyses are run with the labels shifted.
+    response: No change.
+  - claim: fig5h-walk-stationary-loadings
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Problem 1 is resolved; all ten motif claims are now blocked and the analyses
+      are marked as not deciding. Problem 2 is resolved; the start times are printed, the labels are shown to sit
+      about 18 frames early, and the analyses are run with the labels shifted.
+    response: No change.
+  - claim: fig5i-pc1-motif-speed
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Problem 1 is resolved; all ten motif claims are now blocked and the analyses
+      are marked as not deciding. Problem 2 is resolved; the start times are printed, the labels are shown to sit
+      about 18 frames early, and the analyses are run with the labels shifted.
+    response: No change.
+  - claim: fig5j-tetx-five-motifs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Problem 1 is resolved; all ten motif claims are now blocked and the analyses
+      are marked as not deciding. Problem 2 is resolved; the start times are printed, the labels are shown to sit
+      about 18 frames early, and the analyses are run with the labels shifted.
+    response: No change.
+  - claim: fig5j-shared-and-stage-motifs
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Problem 1 is resolved; all ten motif claims are now blocked and the analyses
+      are marked as not deciding. Problem 2 is resolved; the start times are printed, the labels are shown to sit
+      about 18 frames early, and the analyses are run with the labels shifted.
+    response: No change.
+  - claim: fig5m-walk-motif-network
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. Problem 1 is resolved; all ten motif claims are now blocked and the analyses
+      are marked as not deciding. Problem 2 is resolved; the start times are printed, the labels are shown to sit
+      about 18 frames early, and the analyses are run with the labels shifted.
+    response: No change.
+  - claim: fig6c-maze-locomotion
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the outcome. Problem 6 is resolved; the pixel-scale check rests on tail-base occupancy,
+      so it is weak but adequate, and the lack of smoothing is now stated. Problem 7, the Sidak tests still use
+      separate t-tests and not Prism's pooled error term; this is stated. Unsupported sentence, raw speeds 2 to
+      6 times those of the tail base; the group means in cell 79 give ratios of 1.5 to 5.9, for example controls
+      on day 2 at 190.9 against 130.5 and on day 3 at 175.0 against 102.1 (minor).
+    response: The ratio of the mean of six points to the tail base is now printed per group and day (raw 1.46 to
+      5.86), and the conclusion and notes say 1.5 to 5.9 times in the group means. The Sidak tests stay as stated
+      in the deviations.
+  - claim: fig6d-maze-preference-learning
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig6d-maze-efficiency
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the outcome. The per-file object listing it asked for has been added.
+    response: No change.
+  - claim: fig6j-reaching-accuracy
+    agrees: true
+    outcome: partially_reproduced
+    reason: Now accepted as partially_reproduced, withdrawing the round-1 objection. The claim has three parts,
+      and two hold under one reading of the main run, the interaction (p = 0.034), controls improving (p = 0.010)
+      and TeTx below controls (p = 0.0014). Arch is below the controls on day 4 in all 8 main readings (cell 83),
+      although never at Sidak p < 0.05. Problems 5 and 9 are resolved; problem 7, the separate t-tests for Sidak,
+      is stated.
+    response: No change.
