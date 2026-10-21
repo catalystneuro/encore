@@ -1,0 +1,487 @@
+# Claims for Thompson & Gold (2026), "Limitations of pupil diameter as a proxy for modes of
+# locus coeruleus activity", on dandiset 002034.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the eLife Reviewed Preprint, version 1 (2 October 2026, not revised), full text as
+# served by the publisher's HTML: main text, figure legends, Materials and Methods, and the
+# legends of Supplemental Figures 1 and 2 (the only supplement; it holds figures, no tables). No
+# PDF was supplied and no figure image was read.
+#
+# Code read: https://github.com/lwthompson2/Thompson2026_LCPupilAnalysis, commit cf3c0b7
+# (2026-10-19), linked under Data availability. MATLAB. It rebuilds the trial tables from the
+# NWB files of this dandiset (Code/helpers/build_tables_from_nwb.m), restricts them to the
+# manuscript's sessions and units (Code/include_lists/*.csv, apply_manuscript_filter.m),
+# computes drift residuals and per-unit statistics (prepare_figure_analysis_tables.m), draws
+# Figure 2 and the supplements (PaperFigures/), and prints the statistics
+# (compute_manuscript_stats.m). Its README names dandiset 002034 version 0.261019.2146. The
+# repository also holds Code/Results/manuscript_stats_nwb.txt, the printed output of that code
+# on the dandiset. Some of its values differ from the paper's (for example Figure 2 row 1, Oz
+# p = 0.000521 against the paper's 8.6e-4; row 6, Ci p = 0.0105 against 0.008; 50 Ci sessions
+# for the pupil-only row against the paper's 51; 61 Ci units in the LLR counts against 63).
+# The claims take the paper's numbers. The code also holds analyses the paper does not report
+# (leave-one-out prediction, Figures S3 to S5), which are not claims here.
+#
+# Dataset: "Locus coeruleus and pupil data supporting Thompson et al., 202[6]", described as
+# cleaned, trial-delimited data for figure and statistics regeneration. The paper is a
+# reanalysis of the data of Joshi et al. 2016 (Neuron 89:221-34).
+#
+# Data the paper used. Two rhesus monkeys, Oz and Ci (Cicero in the code). 42 LC single units
+# from 32 sessions (Oz) and 63 units from 51 sessions (Ci). Passive fixation task, fixation of
+# 1 to 5 s; on about 25% of trials, at random, a loud tone (1 kHz, 0.5 s) 1 to 1.5 s into
+# fixation ("beep trials"); the other trials are fixation-only. Measured per trial: pupil
+# diameter (Eyelink 1000, monocular, 1000 Hz) and spike times of the sorted LC unit; trial
+# times within the session.
+#
+# Method fixed here for every claim, from the Methods and the code (cited per item).
+# - Units and sessions: those in the code's include lists (manuscript_session_include.csv,
+#   manuscript_unit_include.csv), 32 sessions and 42 units for Oz, 51 sessions and 63 units for
+#   Ci, matching the Results.
+# - Trials (code, build_tables_from_nwb.m): correct trials only. Beep trials have a beep time.
+#   Fixation-only trials have no beep and no stimulation marker. The Methods require at least
+#   100 ms of baseline before the beep; the code requires the beep more than 400 ms after the
+#   trial start and at least 800 ms before the end of the pupil record. The Methods' rule is the
+#   main one, the code's a variant. Beep trials whose raw (not baseline-subtracted) evoked firing
+#   rate, z-scored per unit over
+#   all of the unit's baseline, evoked and fixation-only rates, has absolute value 8 or more are
+#   dropped (code; the Methods are silent).
+# - Pupil preprocessing (Methods, Pupillometry): z-scored per session, the mean trace aligned to
+#   fixation onset subtracted from each trial, smoothed with a 151 ms boxcar. The code applies
+#   none of these to the stored trace (acquisition "pupil_value_channel4") and uses it as is;
+#   whether the stored trace already carries them is for the author to establish.
+# - Baseline pupil (Methods): mean pupil over fixation, up to the beep on beep trials, the whole
+#   fixation on fixation-only trials. The code takes the mean from the first sample of the
+#   trial record to the beep sample, or to the end of the trial.
+# - Evoked pupil. The Methods: the maximum change relative to baseline of means in 50 ms windows
+#   slid in 10 ms steps, from beep onset to 20 ms before the end of fixation. "Maximum change"
+#   allows two readings, named E1 (the largest value of window mean minus baseline) and E2 (the
+#   window mean minus baseline of largest absolute value, sign kept, which is how the code
+#   reads it). The code's own window (0 to 800 ms after the beep, 50 ms moving mean in 1 ms
+#   steps, signed largest absolute value) is a variant.
+# - Baseline firing rate (Methods, Neuronal Recordings): spikes from fixation onset to the beep
+#   divided by that time on beep trials; from fixation onset to 20 ms before the end of
+#   fixation on fixation-only trials. The code counts to the end of the trial on fixation-only
+#   trials (variant).
+# - Evoked firing rate (Methods, and code): rate 0 to 200 ms after the beep minus the trial's
+#   baseline rate.
+# - Drift residuals (Results paragraph 2, Figure 1B legend, and code): per unit, a linear
+#   regression of the baseline values (pupil, and firing rate, separately) on trial time over
+#   beep and fixation-only trials together; the residuals are the baseline measures.
+# - Per-unit and per-session coefficients (code, compute_manuscript_stats.m and
+#   PaperFigures/plot_02_examples_new.m). The paper's Figure 2 rows map to the code's
+#   build_unit_summary rows as paper row 1 = code 3, 2 = 4, 3 = session summary, 4 = 2, 5 = 6,
+#   6 = 5. Row 1, per unit, a partial Spearman correlation of baseline firing rate with
+#   baseline pupil, controlling for trial time, over beep and fixation-only trials. Rows 2, 4,
+#   5 and 6, per unit, a Spearman correlation over beep trials. Row 3, per session, a Spearman
+#   correlation over beep trials, each trial once.
+# - Population test, per monkey. The paper names a "Wilcoxon rank-sum test for H0: median
+#   (partial) Spearman correlation coefficient across sessions = 0". That hypothesis is one
+#   sample; the code runs the Wilcoxon signed-rank test against zero (signrank) and holds no
+#   rank-sum test anywhere, and its printed signed-rank p-values equal the paper's for Figure 2
+#   rows 2, 3, 4 and 6 in Oz (0.0135, 1.16e-6, 5.88e-7, 0.915). The test, T1, is therefore the
+#   signed-rank test against zero, the stated hypothesis as the code settles it. A rank-sum of
+#   the coefficients against an equal number of zeros (T2) is not described anywhere in the
+#   paper or the code; it may be shown as a variant and decides no outcome.
+# - Code's legacy removal (prepare_figure_analysis_tables.m, build_stats) drops rows 43 and 65 of
+#   the per-unit stats table, leaving 61 Ci units; the session list for the per-session
+#   analyses (Figure 2 row 3 and its LLR) is taken from that table, leaving 50 Ci sessions. The
+#   paper's counts (63 units, 51 sessions) are the main reading; the code's removal is a
+#   variant, or a reading where a claim says so.
+# - Significance level 0.05 throughout (Figure 2 legend).
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "002034"
+paper: doi:10.7554/elife.112525
+claims:
+- id: data-units-sessions
+  statement: The analysis used 42 LC single units from 32 sessions in monkey Oz and 63 units from
+    51 sessions in monkey Ci, recorded with pupil diameter during passive fixation with
+    occasional startling beeps.
+  source: Results, paragraph 1
+  quote: N = 42 single units from 32 sessions in monkey Oz and 63 units from 51 sessions in monkey
+    Ci
+  expected:
+  - quantity: Oz units
+    value: 42
+    tolerance: 0
+  - quantity: Oz sessions
+    value: 32
+    tolerance: 0
+  - quantity: Ci units
+    value: 63
+    tolerance: 0
+  - quantity: Ci sessions
+    value: 51
+    tolerance: 0
+  criterion: Counts of units and sessions in the code's include lists that hold beep trials with
+    LC spikes and pupil. Tolerance zero, as these are counts of recorded units and sessions, not
+    estimates.
+- id: fig2-row1-baseline-lc-pupil
+  statement: Trial-by-trial baseline LC firing rate is positively correlated with baseline pupil
+    diameter within sessions, after correcting both for linear drift, in both monkeys.
+  source: Results, paragraph 2; Figure 2, row 1
+  quote: trial-by-trial measurements of baseline LC activity were positively correlated with
+    simultaneously recorded measurements of baseline pupil diameter over the course of a session
+  statistics:
+  - about: monkey Oz
+    test: Wilcoxon rank-sum test for H0, median partial Spearman correlation coefficient = 0
+    p: 8.6e-4
+    n: 42 units
+  - about: monkey Ci
+    test: Wilcoxon rank-sum test for H0, median partial Spearman correlation coefficient = 0
+    p: 9.85e-6
+    n: 63 units
+  criterion: Per unit, the partial Spearman correlation of row 1 (opening comment). Reproduced
+    when, in each monkey, the median coefficient is above zero and the population test gives
+    p < 0.05 under T1; partially reproduced when this holds in one monkey only. The p-values
+    are reported beside the paper's.
+- id: fig2-row2-evoked-lc-pupil
+  statement: Baseline-subtracted evoked LC responses are positively correlated with
+    baseline-subtracted evoked pupil responses within units, in both monkeys.
+  source: Results, paragraph 2; Figure 2, row 2
+  quote: Likewise, baseline-subtracted evoked LC responses were positively correlated with
+    baseline-subtracted evoked pupil responses (p = 0.0135 for monkey Oz, p = 0.0018 for monkey
+    Ci)
+  statistics:
+  - about: monkey Oz
+    test: Wilcoxon rank-sum test for H0, median Spearman correlation coefficient = 0
+    p: 0.0135
+    n: 42 units
+  - about: monkey Ci
+    test: Wilcoxon rank-sum test for H0, median Spearman correlation coefficient = 0
+    p: 0.0018
+    n: 63 units
+  criterion: Per unit, the Spearman correlation over beep trials of evoked firing rate with
+    evoked pupil, under E1 and under E2. Reproduced when, in each monkey, the median coefficient
+    is above zero and the population test (T1) gives p < 0.05, under E1 and under E2; partially
+    reproduced when this holds in one monkey only. When E1 and E2 give different outcomes the
+    claim is blocked as methods_underspecified.
+- id: fig2-row3-pupil-evoked-vs-baseline
+  statement: Baseline-subtracted evoked pupil responses are negatively correlated with baseline
+    pupil diameter (drift residuals) within sessions, in both monkeys.
+  source: Results, paragraph 3; Figure 2, row 3
+  quote: baseline-subtracted evoked pupil responses were negatively correlated with baseline pupil
+    diameter (using residuals; p = 1.16×10-6 for monkey Oz, p = 5.02×10-9 for monkey Ci; Figure 2,
+    row 3)
+  statistics:
+  - about: monkey Oz
+    test: Wilcoxon test for H0, median Spearman correlation coefficient = 0
+    p: 1.16e-6
+    n: 32 sessions
+  - about: monkey Ci
+    test: Wilcoxon test for H0, median Spearman correlation coefficient = 0
+    p: 5.02e-9
+    n: 51 sessions
+  criterion: Per session, the Spearman correlation over beep trials (each trial once) of evoked
+    pupil with the baseline pupil residual, under E1 and under E2. Reproduced when, in each
+    monkey, the median coefficient is below zero and the population test (T1) gives p < 0.05,
+    under E1 and under E2; partially reproduced when this holds in one monkey only. When E1 and
+    E2 give different outcomes the claim is blocked as methods_underspecified. Sessions are the
+    paper's 51 for Ci; the code's 50 (legacy removal, opening comment) is shown as a variant.
+- id: fig2-row4-lc-evoked-vs-baseline
+  statement: Baseline-subtracted evoked LC responses are negatively correlated with baseline LC
+    activity (drift residuals) within units, in both monkeys.
+  source: Results, paragraph 3; Figure 2, row 4
+  quote: Similarly, baseline-subtracted evoked LC responses were negatively correlated with
+    baseline LC activity (using residuals; p = 5.88×10-7 for monkey Oz, p = 1.04×10-11 for monkey
+    Ci; Figure 2, row 4)
+  statistics:
+  - about: monkey Oz
+    test: Wilcoxon test for H0, median Spearman correlation coefficient = 0
+    p: 5.88e-7
+    n: 42 units
+  - about: monkey Ci
+    test: Wilcoxon test for H0, median Spearman correlation coefficient = 0
+    p: 1.04e-11
+    n: 63 units
+  criterion: Per unit, the Spearman correlation over beep trials of evoked firing rate with the
+    baseline firing-rate residual. Reproduced when, in each monkey, the median coefficient is
+    below zero and the population test gives p < 0.05 under T1; partially reproduced when this
+    holds in one monkey only.
+- id: fig2-row5-baseline-lc-vs-evoked-pupil
+  statement: Evoked pupil responses are not reliably related to baseline LC activity; the median
+    per-unit correlation does not differ from zero in either monkey.
+  source: Results, paragraph 4; Figure 2, row 5
+  quote: evoked pupil responses were rarely positively or negatively related to baseline LC
+    activity in a reliable manner (Wilcoxon rank-sum test for H0... p = 0.894 for monkey Oz, p =
+    0.904 for monkey Ci)
+  statistics:
+  - about: monkey Oz
+    test: Wilcoxon rank-sum test for H0, median Spearman correlation coefficient = 0
+    p: 0.894
+    n: 42 units
+  - about: monkey Ci
+    test: Wilcoxon rank-sum test for H0, median Spearman correlation coefficient = 0
+    p: 0.904
+    n: 63 units
+  criterion: A claim of absence. Per unit, the Spearman correlation over beep trials of evoked
+    pupil with the baseline firing-rate residual. The paper's test is the population test at
+    0.05 per monkey, T1 (opening comment). The evoked pupil has two readings (E1, E2), both
+    run. Reproduced when the test gives p >= 0.05 in both monkeys; not reproduced when it gives
+    p < 0.05 in either. When E1 and E2 give different outcomes the claim is blocked as
+    methods_underspecified. The median coefficient per monkey is reported either way, and T2
+    and the code's evoked pupil are shown as variants.
+- id: fig2-row6-baseline-pupil-vs-evoked-lc
+  statement: Baseline pupil diameter is not reliably related to evoked LC responses across
+    monkeys; the median per-unit correlation does not differ from zero in Oz (p = 0.915) and
+    does in Ci (p = 0.008).
+  source: Results, paragraph 4; Figure 2, row 6
+  quote: Likewise, baseline pupil diameter was rarely positively or negatively related to evoked LC
+    responses reliably across monkeys (Figure 2, bottom row) (p = 0.915 for monkey Oz, p = 0.008
+    for monkey Ci)
+  statistics:
+  - about: monkey Oz
+    test: Wilcoxon rank-sum test for H0, median Spearman correlation coefficient = 0
+    p: 0.915
+    n: 42 units
+  - about: monkey Ci
+    test: Wilcoxon rank-sum test for H0, median Spearman correlation coefficient = 0
+    p: 0.008
+    n: 63 units
+  criterion: Per unit, the Spearman correlation over beep trials of evoked firing rate with the
+    baseline pupil residual. Population test per monkey at 0.05, T1 as main, T2 as variant (as
+    in fig2-row5-baseline-lc-vs-evoked-pupil). The claim is that the relationship is not
+    reliable across monkeys. Reproduced when Oz gives p >= 0.05 and Ci gives p < 0.05, the
+    paper's pattern; partially reproduced when neither monkey reaches p < 0.05 (still no
+    relationship across monkeys, but Ci's is not found); not reproduced when both monkeys give
+    p < 0.05 with medians of the same sign; partially reproduced in the other cases (Oz
+    p < 0.05 with Ci p >= 0.05, or both p < 0.05 with medians of opposite sign), where no
+    relationship holds across monkeys but the paper's pattern is not found. Medians and
+    p-values are reported.
+- id: cross-epoch-no-reliable-relation
+  statement: Despite consistent within-epoch relationships between LC activity and pupil size,
+    there are no reliable relationships between the two across epochs (baseline of one against
+    evoked of the other).
+  source: Results, paragraph 4, last sentence; Discussion, paragraph 3
+  quote: Thus, despite consistent relationships between LC activity and pupil size within each
+    epoch, there were no reliable relationships between the two when comparing across epochs
+  depends_on:
+  - fig2-row1-baseline-lc-pupil
+  - fig2-row2-evoked-lc-pupil
+  - fig2-row5-baseline-lc-vs-evoked-pupil
+  - fig2-row6-baseline-pupil-vs-evoked-lc
+  criterion: Reproduced when rows 1 and 2 are reproduced (within-epoch relations in both
+    monkeys) and neither cross-epoch row (rows 5 and 6) shows p < 0.05 with medians of the same
+    sign in both monkeys. Not reproduced when either cross-epoch row does; partially reproduced
+    when the cross-epoch rows hold but a within-epoch row holds in one monkey only.
+- id: range-baseline-pupil-evoked-lc
+  statement: The correlation between baseline pupil and evoked LC responses does not depend on
+    the range of evoked LC responses in either monkey.
+  source: Results, paragraph 5 (first additional analysis)
+  quote: We found that the relationship between baseline pupil diameter and evoked LC responses was
+    not systematically impacted by the range of evoked LC responses for either monkey (Spearman’s
+    rho = 0.02, p = 0.89 for monkey Oz; rho = 0.07, p = 0.589 for monkey Ci)
+  statistics:
+  - about: monkey Oz
+    test: Spearman correlation
+    statistic: rho = 0.02
+    p: 0.89
+    n: 42 units
+  - about: monkey Ci
+    test: Spearman correlation
+    statistic: rho = 0.07
+    p: 0.589
+    n: 63 units
+  depends_on:
+  - fig2-row6-baseline-pupil-vs-evoked-lc
+  criterion: A claim of absence. Across units, per monkey, the Spearman correlation between each
+    unit's row 6 coefficient and the range (maximum minus minimum) of its evoked firing rates
+    over beep trials, as in compute_manuscript_stats.m (build_evoked_range_by_unit). The paper
+    says the range is per session; the code takes it per unit, which is followed. Reproduced
+    when p >= 0.05 in both monkeys; not reproduced when p < 0.05 in either. Rho is reported.
+- id: range-baseline-lc-evoked-pupil
+  statement: The correlation between baseline LC activity and evoked pupil responses does not
+    depend on the range of evoked pupil responses in Ci (rho = 0.18, p = 0.16), but in Oz it
+    becomes more negative as that range grows (rho = -0.33, p = 0.03).
+  source: Results, paragraph 5 (first additional analysis)
+  quote: the relationship between baseline LC activity and evoked pupil responses was not
+    systematically impacted by the range of evoked pupil responses for monkey Ci (rho = 0.18, p =
+    0.16). However, we did observe a modest impact for monkey Oz (rho = -0.33, p = 0.03)
+  statistics:
+  - about: monkey Ci
+    test: Spearman correlation
+    statistic: rho = 0.18
+    p: 0.16
+    n: 63 units
+  - about: monkey Oz
+    test: Spearman correlation
+    statistic: rho = -0.33
+    p: 0.03
+    n: 42 units
+  expected:
+  - quantity: Oz Spearman rho, row 5 coefficient against evoked pupil range
+    value: -0.33
+    tolerance: 0.033
+  depends_on:
+  - fig2-row5-baseline-lc-vs-evoked-pupil
+  criterion: Across units, per monkey, the Spearman correlation between each unit's row 5
+    coefficient and the range (maximum minus minimum) of its evoked pupil responses over beep
+    trials, as in compute_manuscript_stats.m, under E1 and E2. Reproduced when, under both, Ci
+    gives p >= 0.05 and Oz gives p < 0.05 with rho within tolerance of -0.33; partially
+    reproduced when Ci gives p >= 0.05 and Oz gives p < 0.05 with a negative rho outside the
+    tolerance; not reproduced otherwise. When E1 and E2 give different outcomes the claim is
+    blocked as methods_underspecified.
+- id: figs1-raw-baselines-similar
+  statement: Using raw baseline measures in place of drift residuals gives results similar to
+    those of Figure 2.
+  source: Results, paragraph 6 (second additional analysis); Supplemental Figure 1
+  quote: we obtained similar results when using raw baseline measurements as opposed to residuals
+    (see Supplemental Figure 1)
+  depends_on:
+  - fig2-row1-baseline-lc-pupil
+  - fig2-row2-evoked-lc-pupil
+  - fig2-row3-pupil-evoked-vs-baseline
+  - fig2-row4-lc-evoked-vs-baseline
+  - fig2-row5-baseline-lc-vs-evoked-pupil
+  - fig2-row6-baseline-pupil-vs-evoked-lc
+  criterion: The six Figure 2 coefficients recomputed with raw baseline pupil and raw baseline
+    firing rate in place of their residuals, as the code's "baseline" mode does
+    (PaperFigures/plot_S1_summary.m; row 1 stays the partial Spearman controlling for trial
+    time), and the population test per monkey. "Similar" is judged on the paper's own Figure 2
+    pattern, the sign of the median and whether p < 0.05, for 12 row and monkey cells.
+    Reproduced when all 12 match the pattern the paper reports with residuals (rows 1 to 4
+    significant in the reported direction in both monkeys, row 5 not significant in either,
+    row 6 not significant in Oz and significant in Ci); partially reproduced when 10 or 11
+    match; not reproduced below 10. The population test is T1 (T2 shown as a variant). Run
+    under E1 and under E2; when they give different outcomes the claim is blocked as
+    methods_underspecified.
+- id: figs2-llr-pupil-baseline-evoked
+  statement: The relationship between baseline and evoked pupil responses is better described by
+    a quadratic than a linear fit in only a minority of sessions (7 of 32 for Oz, 6 of 51 for
+    Ci).
+  source: Results, paragraph 7 (third additional analysis); Supplemental Figure 2, first panel
+  quote: The relationship between baseline and evoked pupil responses was better described by a
+    non-linear fit for a minority of sessions (LLR > critical value of 3.841... 7/32 sessions for
+    monkey Oz, 6/51 sessions for monkey Ci)
+  expected:
+  - quantity: Oz sessions with LLR above 3.841
+    value: 7
+    tolerance: 1
+  - quantity: Ci sessions with LLR above 3.841
+    value: 6
+    tolerance: 1
+  criterion: Per session, beep trials each once, evoked pupil regressed on the baseline pupil
+    residual with a linear and a quadratic model fit by maximum likelihood (the code's fitlme
+    with formulas y ~ x and y ~ x*x, compute_manuscript_stats.m); LLR = 2 times the difference in
+    log-likelihood, counted above 3.841. Sessions with fewer than 4 valid trials or 3 distinct
+    predictor values are left out, as in the code. Run under E1 and E2, and with all sessions
+    (the paper's 51 for Ci) or the code's 50 Ci sessions (legacy removal, opening comment;
+    compute_manuscript_stats.m prints 6/50). Tolerance of one session, as 10% of these counts
+    is under one session and would demand an exact count. Reproduced when both counts are
+    within tolerance and below half the sessions under one reading; partially reproduced when
+    the counts are outside tolerance but below half the sessions.
+- id: figs2-llr-lc-baseline-evoked
+  statement: LC evoked responses are rarely better described by a quadratic than a linear
+    function of baseline LC activity (2 of 42 units for Oz, 3 of 63 for Ci).
+  source: Results, paragraph 7; Supplemental Figure 2, second panel
+  quote: LC neuronal responses were rarely better characterized using a non-linear fit (2/42
+    neurons for monkey Oz, 3/63 for monkey Ci)
+  expected:
+  - quantity: Oz units with LLR above 3.841
+    value: 2
+    tolerance: 1
+  - quantity: Ci units with LLR above 3.841
+    value: 3
+    tolerance: 1
+  criterion: Per unit, beep trials, evoked firing rate regressed on the baseline firing-rate
+    residual, linear against quadratic as in figs2-llr-pupil-baseline-evoked
+    (prepare_figure_analysis_tables.m, compute_llr). The code drops rows 43 and 65 of its unit
+    table before counting (a "legacy" removal, leaving 61 Ci units); the paper's denominator is
+    63. Readings, all units (the paper's denominator) and the code's removal. Tolerance of one
+    unit, for the reason in figs2-llr-pupil-baseline-evoked. Reproduced when both counts are
+    within tolerance under one reading; partially reproduced when they are outside tolerance
+    but below a tenth of the units.
+- id: figs2-llr-cross-epoch
+  statement: Across-epoch relationships are rarely better described by a quadratic than a
+    linear fit (baseline LC against evoked pupil, 4 of 42 units for Oz and 4 of 63 for Ci;
+    baseline pupil against evoked LC, 2 of 42 and 5 of 63), so the null cross-epoch findings
+    are not due to a non-linear relationship.
+  source: Results, paragraph 7; Supplemental Figure 2, third and fourth panels
+  quote: across-epoch comparisons showed similar trends that favored a linear relationship
+    (baseline LC versus evoked pupil... 4/42 for monkey Oz, 4/63 for monkey Ci; baseline pupil
+    versus evoked LC... 2/42 for monkey Oz, 5/63 for monkey Ci)
+  expected:
+  - quantity: Oz units with LLR above 3.841, evoked pupil on baseline LC
+    value: 4
+    tolerance: 1
+  - quantity: Ci units with LLR above 3.841, evoked pupil on baseline LC
+    value: 4
+    tolerance: 1
+  - quantity: Oz units with LLR above 3.841, evoked LC on baseline pupil
+    value: 2
+    tolerance: 1
+  - quantity: Ci units with LLR above 3.841, evoked LC on baseline pupil
+    value: 5
+    tolerance: 1
+  criterion: Per unit, beep trials, evoked pupil regressed on the baseline firing-rate residual,
+    and evoked firing rate on the baseline pupil residual, linear against quadratic as in
+    figs2-llr-pupil-baseline-evoked, under E1 and E2, and with all units or the code's removal
+    of two (figs2-llr-lc-baseline-evoked). Tolerance of one unit, for the reason given there.
+    Reproduced when all four counts are within tolerance under one reading; partially
+    reproduced when they are outside tolerance but each below a tenth of the units.
+- id: fig3-pooled-within-epoch
+  statement: With data z-scored per session or unit and pooled across trials, sessions and units
+    for each monkey, the within-epoch relationships of Figure 2 hold (baseline LC with baseline
+    pupil and evoked LC with evoked pupil positive; evoked against baseline negative for pupil
+    and for LC).
+  source: Results, paragraph 8 (fourth additional analysis); Figure 3, columns 1 to 4
+  quote: we applied our single-unit analyses (Figure 2) to data pooled across all trials,
+    sessions, and units (Figure 3). The results are qualitatively similar for the pooled and
+    single-unit analyses
+  criterion: As in compute_manuscript_stats.m (Figure 3 block). Firing rates z-scored per unit
+    over its baseline, raw evoked and fixation-only rates (zscore_tables.m), evoked rate as
+    z-scored raw evoked minus z-scored baseline; pupil as stored, which the code uses. The
+    Methods and the Figure 3 legend z-score pupil per session; when the stored trace is not so
+    z-scored, the pupil samples are z-scored per session as the Methods say (main reading) and
+    the stored values are shown as the code's variant. Drift residuals recomputed. Per monkey, a Spearman correlation over pooled trials
+    for each column, beep and fixation-only trials pooled for column 1, beep trials each once
+    per session for column 3. The Figure 3 legend draws linear regression lines; the code's
+    test, Spearman, is followed. Reproduced when all four columns give p < 0.05 in the sign of
+    the corresponding Figure 2 row in both monkeys, under E1 and E2; partially reproduced when
+    six or seven of the eight column and monkey cells do. The code's raw-baseline version
+    (PaperFigures/plot_S1_combined.m) is shown as a variant.
+- id: fig3-pooled-cross-epoch-null
+  statement: In the pooled data, neither baseline pupil against evoked LC nor baseline LC against
+    evoked pupil shows a reliable relationship across monkeys, also when units are split by the
+    sign of their significant baseline LC-pupil relationship.
+  source: Results, paragraph 8; Figure 3, columns 5 and 6
+  quote: in neither case showing a reliable relationship between baseline pupil and evoked LC
+    responses or baseline LC activity and evoked pupil responses across monkeys. This result also
+    held when LC units were separated based on the direction of their baseline relationship with
+    pupil size
+  depends_on:
+  - fig2-row1-baseline-lc-pupil
+  criterion: A claim of absence. Pooled data as in fig3-pooled-within-epoch; Spearman
+    correlation per monkey of evoked firing rate with the baseline pupil residual (column 6)
+    and of the baseline firing-rate residual with evoked pupil (column 5), at 0.05, in all
+    units and in the two groups of units whose row 1 partial Spearman correlation has p < 0.05
+    with positive or with negative sign (Figure 3 legend). The code's per-group pooled Spearman
+    is in PaperFigures/plot_S1_combined.m (rows 3 and 4, raw baselines; groups from the
+    z-scored stats table after the legacy removal of two units); the Figure 3 script itself is
+    not in the repository (commented out in make_all_figures.m), so the residual version
+    follows that code with residuals in place of raw baselines, as the Figure 3 block of
+    compute_manuscript_stats.m uses them. "Across
+    monkeys" is read, as in fig2-row6-baseline-pupil-vs-evoked-lc, as significant with the same
+    sign in both monkeys. Reproduced when no column in no group is so; not reproduced when any
+    is. Rho and p for every cell are reported, under E1 and E2.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - Opening comment, population test. T2 (rank-sum against an equal number of zeros) dropped as a deciding reading, kept as a variant. The paper states a one-sample hypothesis (median = 0), the code at cf3c0b7 uses only signrank, and its printed signed-rank p-values equal the paper's for Figure 2 rows 2, 3, 4 and 6 in Oz; T2 is described nowhere in the paper or the code.
+  - Opening comment. Added the code's legacy removal of rows 43 and 65 of the per-unit stats table, which also sets the session list of the per-session analyses (50 Ci sessions in the code's output against the paper's 51).
+  - Opening comment. The 8 SD exclusion is on the raw evoked rate, not the baseline-subtracted one (build_tables_from_nwb.m).
+  - fig2-row1-baseline-lc-pupil, fig2-row4-lc-evoked-vs-baseline. Criterion decided by T1 alone, for the reason above.
+  - fig2-row2-evoked-lc-pupil, fig2-row3-pupil-evoked-vs-baseline. Criterion decided by T1 alone; E1 and E2 both run, and blocked as methods_underspecified when they differ (the combination rule was left unstated). Row 3 names the code's 50 Ci sessions as a variant.
+  - fig2-row5-baseline-lc-vs-evoked-pupil. Test is T1; added what happens when E1 and E2 give different outcomes.
+  - fig2-row6-baseline-pupil-vs-evoked-lc. Criterion did not cover Oz p < 0.05 with Ci p >= 0.05, or both significant with opposite signs; these are now partially reproduced.
+  - figs1-raw-baselines-similar. Test is T1; E1 and E2 rule made explicit.
+  - figs2-llr-pupil-baseline-evoked. Added the code's 50 Ci sessions as a reading, as for the units in figs2-llr-lc-baseline-evoked; compute_manuscript_stats.m prints 6/50.
+  - fig3-pooled-within-epoch. Pupil z-scoring per session (Methods, Figure 3 legend) made the main reading when the stored trace is not z-scored; the code's stored values a variant.
+  - fig3-pooled-cross-epoch-null. Citation corrected. compute_manuscript_stats.m has no per-group pooled test; the grouping and per-group Spearman are in plot_S1_combined.m (raw baselines), and the Figure 3 script is absent from the repository.
+  - Open. Whether the stored pupil trace already carries the Methods' preprocessing (z-score, fixation-onset mean subtraction, 151 ms boxcar), and whether trial start equals fixation onset, is for the author to establish from the data.
+  - Open. The range analysis is per session in the Results text and per unit in the code; with one unit per session in most sessions the two coincide, and the claims follow the code.
+  - Open. The code's own Ci range result (rho = 0.05, p = 0.688) differs from the paper's (0.07, 0.589); the paper's numbers are kept.
