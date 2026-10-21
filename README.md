@@ -166,7 +166,10 @@ first) through all its roles with `tools/runner/chain.sh`. It waits out the
 usage limits, picks up where a stopped chain left off, and then, one attempt
 at a time, rebases the branch on main, runs the `recorder` role, which adds
 the README row and the pilot notes, and merges the pull request once its
-checks pass. The scripts say how to start and stop it.
+checks pass. With `CLAIMS_ONLY=1`, a runner only reads claims: for each target
+whose papers are in the store, it runs the claims and their check and puts the
+checked claims on main, and a later attempt on the dataset starts from them.
+The scripts say how to start and stop it.
 
 ## Working on an entry
 

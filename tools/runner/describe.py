@@ -3,6 +3,10 @@
     python tools/runner/describe.py title FOLDER       # the pull request's title
     python tools/runner/describe.py body FOLDER        # the pull request's description
     python tools/runner/describe.py next [SKIP ...]    # the next dataset in the queue, by folder name
+    python tools/runner/describe.py next-claims [SKIP ...]
+                                                       # the next dataset to read claims for
+    python tools/runner/describe.py claims-ready FOLDER
+                                                       # "true" when main has a claims file whose check passed
     python tools/runner/describe.py folder DATASET     # a dataset's folder name (tools/datasets.py)
     python tools/runner/describe.py label FOLDER       # how the dataset is shown: DANDI:000003
     python tools/runner/describe.py deprecated FOLDER  # "true" when its latest attempt is deprecated
@@ -13,7 +17,9 @@
 `title` and `body` read the latest attempt in the working tree. `next` reads main (origin/main), so
 it can run from any checkout: the first target with no attempt on main, no branch of its own and not
 in SKIP, from every archive's list, taking datasets converted by CatalystNeuro first and otherwise the
-lists' own order.
+lists' own order. `next-claims` chooses among the targets whose papers are all in the paper store
+(papers/manifest.yaml on main) and which have no claims file on main, from the end of that order, so
+that a claims-only runner and a full one running at the same time do not reach for the same dataset.
 """
 
 from __future__ import annotations
@@ -50,7 +56,24 @@ def body(dandiset: str) -> str:
             "🤖 Generated with [Claude Code](https://claude.com/claude-code)\n")
 
 
-def next_target(skip: set[str]) -> str | None:
+def main_yaml(path: str):
+    import yaml
+    try:
+        return yaml.safe_load(git("show", f"origin/main:{path}"))
+    except subprocess.CalledProcessError:
+        return None
+
+
+def claims_ready(folder: str) -> bool:
+    """Whether main has a claims file for the dataset whose latest check says it is ready."""
+    for path in git("ls-tree", "--name-only", "origin/main", f"claims/{folder}/").split():
+        checks = (main_yaml(path) or {}).get("checks") or [{}]
+        if checks[-1].get("ready") is True:
+            return True
+    return False
+
+
+def next_target(skip: set[str], claims: bool = False) -> str | None:
     import datasets
     targets = []
     for archive, spec in datasets.ARCHIVES.items():
@@ -66,7 +89,14 @@ def next_target(skip: set[str]) -> str | None:
     # An attempt record is named <folder>-<first author>-<year>-<nn>.yaml.
     attempted = {t["folder"] for t in targets if any(r.startswith(t["folder"] + "-") for r in records)}
     open_ = [t for t in targets if t["folder"] not in attempted | branches | skip]
+    if claims:
+        papers = (main_yaml("papers/manifest.yaml") or {}).get("targets", {})
+        read = {Path(p).name for p in git("ls-tree", "--name-only", "origin/main", "claims/").split()}
+        open_ = [t for t in open_ if t["folder"] not in read and papers.get(t["folder"])
+                 and all(p["status"] == "stored" for p in papers[t["folder"]])]
     ours = [t for t in open_ if t.get("catalystneuro")]
+    if claims:
+        return (ours + [t for t in open_ if not t.get("catalystneuro")] or [{"folder": None}])[-1]["folder"]
     return (ours or open_ or [{"folder": None}])[0]["folder"]
 
 
@@ -98,8 +128,10 @@ def main() -> int:
         from agent_run import attempt_of
         found = attempt_of(rest[0])
         print("true" if found and found[0].get("deprecated") else "false")
-    elif command == "next":
-        found = next_target(set(rest))
+    elif command == "claims-ready":
+        print("true" if claims_ready(rest[0]) else "false")
+    elif command in ("next", "next-claims"):
+        found = next_target(set(rest), claims=command == "next-claims")
         if found is None:
             return 1
         print(found)

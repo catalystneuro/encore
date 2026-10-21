@@ -2,15 +2,16 @@
 # Put a dataset's checked claims file on main ahead of its attempt: the checkpoint after the claims check
 # (docs/pipeline.md). Run from a clone of the repository:
 #
-#   tools/runner/merge_claims.sh FOLDER
+#   tools/runner/merge_claims.sh FOLDER [--with-transcripts]
 #
-# Takes claims/<folder>/ from the branch attempt/<folder>, validates each file against
-# schemas/claims.schema.json, and commits it straight to main, with no pull request; when main has
-# moved on in the meantime, it starts again from the new main. Works in a temporary worktree, so the
-# clone's checkout is left alone. When the attempt itself is merged later, its rebase on main drops the
-# change main already has.
+# Takes claims/<folder>/ from the branch attempt/<folder> (and, with --with-transcripts, the claims
+# runs' transcripts and reports, transcripts/<folder>/claims*.md, for a branch that is deleted
+# afterwards), validates each claims file against schemas/claims.schema.json, and commits it straight
+# to main, with no pull request; when main has moved on in the meantime, it starts again from the new
+# main. Works in a temporary worktree, so the clone's checkout is left alone. When the attempt itself
+# is merged later, its rebase on main drops the change main already has.
 set -euo pipefail
-d=$1
+d=$1; with_transcripts=${2:-}
 here=$(cd "$(dirname "$0")" && pwd)
 label=$(python3 "$here/describe.py" label "$d" 2>/dev/null || echo "$d")
 tmp=$(mktemp -d)
@@ -20,6 +21,10 @@ for try in 1 2 3 4 5; do
   git worktree remove --force "$tmp" >/dev/null 2>&1 || true; rm -rf "$tmp"
   git worktree add -q --detach "$tmp" origin/main
   git -C "$tmp" checkout -q "origin/attempt/$d" -- "claims/$d"
+  if [ "$with_transcripts" = --with-transcripts ]; then
+    git -C "$tmp" ls-tree --name-only "origin/attempt/$d" "transcripts/$d/" | { grep '/claims[^/]*\.md$' || true; } \
+      | xargs -r git -C "$tmp" checkout -q "origin/attempt/$d" --
+  fi
   if git -C "$tmp" diff --cached --quiet; then echo "$d: main already has these claims"; exit 0; fi
   (cd "$tmp" && python - "claims/$d" <<'PY'
 import json, sys

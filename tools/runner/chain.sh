@@ -27,8 +27,13 @@
 # main, recorded (the recorder role adds the README row and the pilot notes) and merged once its
 # checks pass; each lands on a main that has the ones before it.
 #
-# The last line printed is "<dataset> MERGED <pr>", "<dataset> STOPPED ...", or
-# "<dataset> CHECKS FAILED <pr>", which leaves the pull request open.
+# A new attempt skips the claims and their check when main already has a claims file whose check
+# passed (put there by a claims-only chain, say). With CLAIMS_ONLY=1 the chain stops after the
+# checkpoint instead: the checked claims and their runs' transcripts go into main, the branch is
+# deleted, and the attempt is left for a later chain, which then starts from those claims.
+#
+# The last line printed is "<dataset> MERGED <pr>", "<dataset> CLAIMS MERGED", "<dataset> STOPPED ...",
+# or "<dataset> CHECKS FAILED <pr>", which leaves the pull request open.
 set -uo pipefail
 VERSION=${2:-}
 STATE=${RUNNER_STATE:-/tmp}
@@ -124,13 +129,25 @@ on_branch(){ git show "origin/attempt/$d:$1" 2>/dev/null; }
 claims_file(){ git ls-tree -r --name-only origin/attempt/"$d" "claims/$d" | grep '\.yaml$' | head -n 1; }
 
 deprecated=$(python "$here/describe.py" deprecated "$d")
-if [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
+on_main=$(python "$here/describe.py" claims-ready "$d")
+if [ "$on_main" = true ] && [ "$deprecated" != true ] && ! is_done claims; then
+  log "main has checked claims; skipping the claims and their check"
+  [ "${CLAIMS_ONLY:-}" = 1 ] && { rm -f "$mark"; echo "$d CLAIMS MERGED (already on main)"; exit 0; }
+elif [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
   step claims
   step claims-check
   fetch
   ready=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=(yaml.safe_load(sys.stdin) or {}).get('checks') or [{}]; print(str(c[-1].get('ready', False)).lower())")
   [ "$ready" = true ] || { echo "$d STOPPED: the claims check says the claims file is not ready"; exit 1; }
   # The checkpoint: the checked claims go into main now, ahead of the attempt. A failure here does not stop it.
+  if [ "${CLAIMS_ONLY:-}" = 1 ]; then
+    out=$("$here/merge_claims.sh" "$d" --with-transcripts 2>&1); st=$?
+    echo "$out" | while read -r line; do log "$line"; done
+    [ $st = 0 ] || { echo "$d STOPPED: the claims did not go into main"; exit 1; }
+    # The claims and their runs' transcripts are on main; the next chain on this dataset starts from main.
+    git push -q origin --delete "attempt/$d" 2>/dev/null || true
+    rm -f "$mark"; echo "$d CLAIMS MERGED"; exit 0
+  fi
   "$here/merge_claims.sh" "$d" 2>&1 | while read -r line; do log "$line"; done || true
 fi
 step author
