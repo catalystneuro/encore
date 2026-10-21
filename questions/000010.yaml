@@ -1,0 +1,101 @@
+# Questions from attempt 000010-li-2015-01 (author, 2026-10-21) about the claims file
+# claims/000010/10.1038-nature14178.yaml. Each is asked under docs/protocol.md, Author, step 1.6; the
+# attempt runs every reading it can see, or blocks the claim until the answer.
+dandiset: "000010"
+paper: doi:10.1038/nature14178
+questions:
+- claim: reaction-time
+  asked: 2026-10-21
+  question: Every extracellular file holds `lick_trace`, a 10 kHz signal described as the tongue
+    movement when licking (arbitrary units), in 5 s segments that start at each trial start. It
+    rises some tens of ms after the go cue in correct trials, so it looks like the photodiode and
+    laser diode signal of the Methods. The claims file does not say how a reaction time is read
+    from it. Which rule gives the reaction time of a trial (a threshold on the raw signal, a
+    number of standard deviations above a pre-cue baseline, and over which baseline window)?
+  passage: Methods, Behaviour, "Mouth movements were monitored using a photodiode and an infrared
+    laser diode to obtain reaction time measurements(Thorlabs)." No other passage gives the rule.
+  why: The latency of the first crossing moves with the threshold by tens of ms, the size of the
+    tolerance (61.1 +/- 10.5 ms). The claim is blocked as methods_underspecified until answered.
+- claim: behaviour-performance
+  asked: 2026-10-21
+  question: The trial tables mark trials without a lick in the response window as outcome
+    "ignore" (416 of 24,580 non-early ephys trials). Are these left out of the per cent correct,
+    or counted as errors?
+  passage: Methods, Behavioural data analyses, "Performance was computed as the fraction of
+    correct reports, excluding the 'lick early' trials." Methods, Behaviour, "Trials in which mice
+    did not lick within a 1.5 s window after the go cue were rare and typically occurred at the
+    end of a session."
+  why: Counting them as errors lowers performance by about 1.3 points (76.6% to 75.3% pooled). Both
+    are within the tolerance here, so the outcome does not depend on it; the attempt runs both.
+- claim: fig2c-population-dynamics
+  asked: 2026-10-21
+  question: Three details are not in the criterion. (1) "Normalized to its variance" read
+    literally divides by the variance; dividing by the standard deviation is the usual z-score.
+    Which is meant? (2) Are the 10 trials that set the preferred trial type 10 trials in all, or
+    10 of each trial type? (3) Which 200 ms bin is the population vector "at go cue onset", the bin
+    that starts at the go cue or the one that ends at it?
+  passage: Methods, Electrophysiology data analyses, "each neuron's response was mean-subtracted
+    and normalized to the variance of its response across the entire trial epoch (computed in time
+    bins of 200ms)" and "we first determined each neuron's preferred trial type using spike counts
+    from a subset of the trials (10 trials)".
+  why: The correlation values move with each choice (the delay-epoch mean runs from 0.04 to 0.78
+    across them). The attempt runs every combination. One fails when the trials with tagging
+    light are left out (division by the variance, difference vector, all neurons, bin starting at
+    the go cue), so the claim is blocked as methods_underspecified until this and the question on
+    light trials are answered.
+- claim: imaging-selectivity-counts
+  also: [fig4f-spatially-intermingled, fig4h-pt-contra-imaging]
+  asked: 2026-10-21
+  question: Reading (a) of the Kruskal-Wallis span runs from sample onset to the end of the
+    response epoch, and the rank sum test compares responses over the trial epochs, but the
+    criterion does not say how long the response epoch is for imaging. Is it 1.3 s after the go
+    cue, like the other epochs, or the 1.5 s lick window?
+  passage: Methods, Behaviour, "Trials in which mice did not lick within a 1.5 s window after the
+    go cue"; Methods, Calcium imaging data analyses, "across multiple 0.33 s time bins (five image
+    samples) during the task".
+  why: The task-related count is 2,551 with 1.3 s and 2,730 with 1.5 s (correct trials, reading
+    a), against 2,740 +/- 274. The attempt runs both lengths as readings.
+- claim: fig4h-pt-contra-imaging
+  asked: 2026-10-21
+  question: The imaging files give no depth for any plane, so the layer 5 selection (450 to 700
+    um) cannot be made. The files label 530 included cells PT and 843 IT. Does the paper say
+    anything that identifies the layer 5 planes otherwise, or should the claim be tested on all
+    labelled cells?
+  passage: Results, A movement command emerges in the pyramidal tract neurons, paragraph 4 (534 PT
+    and 542 IT neurons in layer 5); Methods, Two-photon calcium imaging (no depth per plane).
+  why: The IT count (843 against 542) and the IT selective count differ from the paper's while the
+    PT counts match, which suggests that IT cells outside layer 5 are included; the IT side of the
+    tests depends on which cells are counted. The attempt tests all labelled cells.
+- claim: fig2-selective-fraction
+  also: [fig2d-preparatory-perimovement, fig2c-selectivity-time-course, fig2c-population-dynamics,
+    ed2c-error-trials-predict-choice, fig2e-no-contra-bias-spikes, ed1-fast-spiking-properties,
+    fig3e-pt-it-both-activity-types, fig3f-pt-contra-preferring, fig3f-pt-contra-selectivity]
+  asked: 2026-10-21
+  question: In 75 of the 99 extracellular sessions the antidromic tagging light (1 ms pulse pairs
+    every 0.5 s, at the pons or the other ALM) was delivered during behavioural trials, in 4,332 of
+    18,385 correct trials. The trial tables do not flag these trials; the laser traces show them.
+    Should the task analyses of Figures 2 and 3 use all correct trials, or only those without the
+    tagging light?
+  passage: Methods, Electrophysiology data analyses, "Only trials in which mice correctly reported
+    pole locations were included." Methods, Electrophysiology, "Pairs of laser pulses (1 ms
+    duration, 47-82 mW peak power, separated by 10 ms) were deployed every 500ms to elicit
+    antidromic responses". No passage says whether tagging was done during the task or whether
+    those trials were analysed.
+  why: The PT neurons are driven antidromically by the light, and their contra-preference changes
+    with the choice (30 of 45 contra-preferring, bootstrap P = 0.010, with the light trials; 26 of
+    45, P = 0.14, without), so fig3f-pt-contra-preferring is blocked until the answer. The attempt
+    runs every electrophysiology claim both ways.
+- claim: antidromic-latencies
+  asked: 2026-10-21
+  question: The dandiset holds the tagging light as laser power traces, so latencies can be
+    measured from pulse onset. The criterion does not say how the antidromic spike is told apart
+    from spontaneous spikes. Which spikes count (a window after the pulse, only the first pulse of
+    each pair, only neurons or pulses with a reliable response), and is the jitter the s.d. over
+    all pulses with a spike in that window?
+  passage: Methods, Electrophysiology data analyses, "mean antidromic spike latencies" and "temporal
+    jitter (mean s.d. of the antidromic spike latency"; Extended Data Fig. 5 legend. No passage
+    gives the rule.
+  why: With the first spike within 10 ms of the first pulse of a pair, PT units give a mean latency
+    of 2.68 ms and IT units 5.11 ms, but the s.d. (0.64 and 0.96 ms) includes spontaneous spikes and
+    is far from 0.1 and 0.2 ms; a narrower rule would change both. The claim is blocked as
+    methods_underspecified until answered.
