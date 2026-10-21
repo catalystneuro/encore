@@ -30,3 +30,10 @@ def test_a_run_on_either_account_is_found():
     assert describe.newest_run(runs, "001636", "claims") == "5 queued"
     assert describe.newest_run(runs[1:], "001636", "claims") == "4 completed"
     assert describe.newest_run(runs, "001636", "claims-check") == ""
+
+
+def test_only_published_datasets_are_taken():
+    assert describe.published({"archive": "dandi", "published_version": "0.260521.2201"})
+    assert not describe.published({"archive": "dandi", "published_version": None})
+    # The other archives publish every dataset they list, and have no versions of this kind.
+    assert describe.published({"archive": "crcns"})
