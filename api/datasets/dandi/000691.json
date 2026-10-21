@@ -5,13 +5,13 @@
   "label": "DANDI:000691"
  },
  "page": "datasets/dandi/000691/",
- "generated": "2026-10-21T11:04:36+00:00",
+ "generated": "2026-10-21T11:05:15+00:00",
  "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
  "outcome_counts": {
-  "reproduced": 0,
+  "reproduced": 2,
   "partially_reproduced": 0,
-  "not_reproduced": 0,
-  "blocked": 0
+  "not_reproduced": 1,
+  "blocked": 15
  },
  "outcome_counts_with_outside_data": {
   "reproduced": 0,
@@ -20,10 +20,10 @@
   "blocked": 0
  },
  "outcome_counts_elsewhere": {
-  "reproduced": 0,
-  "partially_reproduced": 0,
+  "reproduced": 3,
+  "partially_reproduced": 1,
   "not_reproduced": 0,
-  "blocked": 0
+  "blocked": 1
  },
  "outcome_counts_links": {
   "reproduced": 0,
@@ -33,7 +33,7 @@
  },
  "attempts": [
   {
-   "id": "000691-scherrer-2023-01",
+   "id": "000691-scherrer-2023-02",
    "dataset": {
     "archive": "dandi",
     "id": "000691",
@@ -45,29 +45,56 @@
    "dataset_version": "0.260827.1358",
    "paper": "10.1038/s41592-023-01806-1",
    "paper_title": "An optical design enabling lightweight and large field-of-view head-mounted microscopes",
-   "date": "2026-10-17",
+   "date": "2026-10-20",
    "kind": "agent",
    "accountable": "CatalystNeuro",
    "agent": {
     "harness": "Claude Code (GitHub Actions)",
     "model": "claude-opus-5-5",
-    "protocol": "pilot-7"
+    "protocol": "pilot-10"
    },
-   "runner": {
-    "platform": "GitHub Actions",
-    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/39077316545"
-   },
+   "runner": null,
    "tier": "agent_verified",
-   "deprecated": "Its claims were written from the abstract and public figure legends only. Read against the full text on 2026-10-20, ed9c-local-decoding-map uses a different null from the paper's, an expected value is wrong, and a dropped claim is stated in the paper.",
-   "deprecated_on": "2026-10-20",
+   "deprecated": "",
+   "deprecated_on": null,
    "entry": "000691-scherrer-2023",
    "entry_title": "Imaging thousands of neurons in a freely moving mouse with a large-FOV head-mounted microscope (Scherrer et al. 2023)",
-   "description": "Tests the findings of Scherrer, Lynch, Zhang and Fee (2023) that can be tested on dandiset 000691, which holds one session of one mouse imaged with the large-FOV head-mounted microscope while it explores a looped maze, with 2948 EXTRACT footprints and a behaviour video. It counts the footprints, tracks the mouse from the video, decodes its position and direction from the activity, maps local decoding across the field of view, looks for footprints with localized activity and for the spread of coactive populations, and tests the illumination profiles of Extended Data Fig. 2 on images in the paper's code repository. The other mice, the birds and the optical tests are not in the dandiset.",
+   "description": "Tests the findings of Scherrer, Lynch, Zhang and Fee (2023) on dandiset 000691, which holds one session of one mouse imaged with the large-FOV head-mounted microscope while it explores a looped maze, with 2948 EXTRACT footprints, the imaging video and a behaviour video. It counts the footprints, computes the field of view, registers the whole movie for its motion, tracks the mouse from the video, decodes its position and direction against shuffled activity, looks at the spread of coactive footprints and at place maps, and tests the bead resolution, field curvature and illumination profiles on measurements in the paper's code repository. The other mice, the birds and the other optical tests are not in the dandiset.",
    "notebooks": [
     {
      "path": "reproduce_scherrer_2023.ipynb",
      "title": "Reproducing Scherrer et al. (2023) from dandiset 000691",
      "executed": "notebooks/000691-scherrer-2023/reproduce_scherrer_2023.html"
+    },
+    {
+     "path": "decoding_quadrant_direction.ipynb",
+     "title": "Decoding quadrant and direction (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
+    },
+    {
+     "path": "decoding_octant.ipynb",
+     "title": "Decoding octant (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
+    },
+    {
+     "path": "motion_scherrer_2023.ipynb",
+     "title": "Motion of the field of view (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
+    },
+    {
+     "path": "decoding_null_n2_quadrant_direction.ipynb",
+     "title": "More null decoders of reading n2 for quadrant and direction (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
+    },
+    {
+     "path": "decoding_null_n2_octant.ipynb",
+     "title": "More null decoders of reading n2 for octant (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
+    },
+    {
+     "path": "decoding_reduced.ipynb",
+     "title": "Reduced runs of the decoder-size and map analyses (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
     }
    ],
    "outcomes": [
@@ -82,9 +109,9 @@
      "outcome": "reproduced",
      "blocked_by": null,
      "notebook": "reproduce_scherrer_2023.ipynb",
-     "notes": "All 2948 footprints have a trace above zero at some time; no two have traces correlated above 0.77, so near-duplicate merging leaves 2948. The mouse visits all four arms and runs 48.5 loop lengths during the 1081 s of imaging that overlap the tracked video. Tracking has 2 steps above 40 px between video frames (one glitch at 1064.8 s) and 55 frames with a blob under 50 px; leaving them out changes the arm of 0.05% of imaging frames and the octant of 0.06%.",
+     "notes": "The session holds 2948 EXTRACT footprints (masks, ids and trace columns agree), within 2948 +/- 295, recorded together in one movie of 36596 frames while the mouse ran 47.7 loop lengths and visited all four quadrants. Same outcome as -01; the criterion no longer asks for duplicate merging or a nonzero trace, and the count is the same.",
      "deviations": [
-      "The count is of EXTRACT footprints before the paper's curation (2382 kept); the dandiset does not mark the curated set."
+      "The count is of the EXTRACT output before curation, as the claim states; the curated 2,382 are not marked in the dandiset."
      ],
      "disagreed": false,
      "data": "dataset",
@@ -102,7 +129,7 @@
      "outcome": "blocked",
      "blocked_by": "metadata_insufficient",
      "notebook": null,
-     "notes": "The dandiset holds 2948 footprints, the number the preprint gives for the extraction before curation, and its plane segmentation has no column that marks the 2382 kept. The selection is in the paper's Academic Torrents deposit (supporting_data/2021-07-26_isgood.mat and extract_curated.mat, infohash aa2a3d2f5ff0b3974871db47db57bc3dabf3c192); no peer connected in two attempts of 2.5 and 4 minutes from this environment, so it could not be fetched.",
+     "notes": "The plane segmentation has only image_mask and ROICentroids, with no column marking the curated footprints, so the criterion's count of marked footprints cannot be made. The selection is in the paper's Academic Torrents deposit (supporting_data/2021-07-26_isgood.mat, infohash aa2a3d2f5ff0b3974871db47db57bc3dabf3c192); a 4 minute download attempt outside the notebook found no peers, as in -01. Same outcome as -01.",
      "deviations": [],
      "disagreed": false,
      "data": "dataset",
@@ -120,7 +147,7 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
-     "notes": "The dandiset holds one mouse (4mm-mouse-1). The Academic Torrents deposit the paper names lists files of the same session only (2021-07-26), and no other dandiset of this paper was found.",
+     "notes": "The dandiset holds one subject (4mm-mouse-1) and one session. The Academic Torrents file list holds only this mouse's session, and no other dandiset of the paper was found. Same as -01.",
      "deviations": [],
      "disagreed": false,
      "data": "dataset",
@@ -138,7 +165,43 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
-     "notes": "No bird data in the dandiset or in the Academic Torrents deposit, whose file list holds only the mouse session.",
+     "notes": "No bird data in the dandiset, the Academic Torrents file list or the code repository. Same as -01.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "birds-singing-rate",
+     "statement": "Birds carrying the Featherscope sang 3,861 to 23,545 syllables per day, within the normal range.",
+     "source": "Main text, page 547, paragraph 2; Methods, Data analysis, paragraph 3",
+     "quote": "Implanted birds sang between 3,861 and 23,545 syllables per day, within the normal range and far exceeding the minimum amount needed for analysis of neural activity",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "data_missing",
+     "notebook": null,
+     "notes": "No song or bird data in the dandiset or the paper's deposits. New claim.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2d-lman-sparse-bursting",
+     "statement": "The activity of almost all LMAN footprints during song shows the sparse random bursting seen in earlier recordings of LMAN.",
+     "source": "Main text, page 548, paragraph 1; Fig. 2c and 2d",
+     "quote": "The activity patterns of almost all footprints recapitulate the sparse random bursting seen in previous observations of LMAN activity during song (Fig. 2c,d)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "The criterion says the paper gives no measure of sparse bursting and no count of the footprints that show it, so no method the paper fixes decides the claim. Its data are also missing (data_missing), with no bird imaging in the dandiset or the paper's deposits. New claim.",
      "deviations": [],
      "disagreed": false,
      "data": "dataset",
@@ -153,11 +216,13 @@
      "statistics": [],
      "kind": "finding",
      "inferred": "",
-     "outcome": "blocked",
-     "blocked_by": "metadata_insufficient",
-     "notebook": null,
-     "notes": "The NWB file gives no pixel size (no grid spacing in the imaging plane). Frames are 808 x 608 pixels; at the 5.94 um per pixel of the paper's code they would be 4.80 x 3.61 mm, and the footprint centroids span 3.09 x 3.31 mm. The pixel size comes from the code, so this does not test the claim on the dandiset.",
-     "deviations": [],
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scherrer_2023.ipynb",
+     "notes": "The file stores no pixel size, so the criterion's two readings from the code apply. Frames of 808 x 608 pixels are 4.800 x 3.612 mm at 5.94 um per pixel and 4.323 x 3.253 mm at 5.35 um per pixel; both sides are within tolerance under both readings, the second only just (4.323 against a lower bound of 4.32). Both pixel sizes come from the paper's code, not the data; with 5.94 um per pixel, 808 pixels give exactly 4.80 mm, so the test under that reading is close to circular. -01 blocked the claim as metadata_insufficient because its criterion admitted only a pixel size from the dandiset and its expected value was 4.0 mm; the rewritten criterion admits the code's pixel sizes.",
+     "deviations": [
+      "The pixel size comes from the paper's code, not from the dandiset, as the criterion allows."
+     ],
      "disagreed": false,
      "data": "dataset",
      "where": null,
@@ -174,11 +239,70 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
-     "notes": "Weights are hardware measurements; no data on them are in the dandiset or the paper's deposits.",
+     "notes": "Weights are hardware measurements; no data on them are in the dandiset or the paper's deposits. The only weight in the file is the device description's 1.0 g, given for the other microscope. Same as -01.",
      "deviations": [],
      "disagreed": false,
      "data": "dataset",
      "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-featherscope-psf",
+     "statement": "The Featherscope's resolution (FWHM of the bead PSF) is about 4 um at the centre of the field of view and 7 um at the edges.",
+     "source": "Main text, page 547, paragraph 1 (continuing from page 546); Fig. 1e",
+     "quote": "center of its FOV, which decreases to 7 \u03bcm at the edges and is limited by the astigmatism of the GRIN lenses (Fig. 1e and Extended Data Fig. 1a,b)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scherrer_2023.ipynb",
+     "notes": "Under reading (a) the median major-axis FWHM is 3.919 um at the centre (11 beads) and 6.433 um in the 500 um group (19 beads), within 10% of 4 and 7 um; reading (c), the mean major axis, gives 3.887 and 6.883 um (6.884 with Jacobian scaling), also within. The minor axis (b, d) is 2.609 to 2.690 um at the centre and 5.203 to 5.244 um at the edge and fails at both. All 155 regions name their image in file-number order. With Jacobian scaling of the optimizer no bead's major FWHM moves by more than 0.5 um, and taking for each bead the lower-cost of the two fits gives the same readings (3.919 and 6.433 um under a). New claim.",
+     "deviations": [
+      "MATLAB's lsqcurvefit is replaced by scipy's least_squares (trust-region-reflective, the code's start, bounds and tolerances)."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c, f2+sf4/feather (bead image stack) and f2+sf4/feather_roi.csv (155 bead regions)",
+     "proposed": null
+    },
+    {
+     "claim": "fig1f-kiloscope-psf",
+     "statement": "The Kiloscope's resolution (FWHM of the bead PSF) is about 4 um at the centre of the field of view and about 5 um at the edges.",
+     "source": "Main text, page 547, paragraph 1; Fig. 1f",
+     "quote": "The Kiloscope has a resolution of approximately 4 \u03bcm at the center of its FOV, which decreases to about 5 \u03bcm at the edges and is limited by the sensor pixel size",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scherrer_2023.ipynb",
+     "notes": "No reading puts both values within tolerance, which the criterion asks for, with either optimizer or with the lower-cost fit for each bead. Under (a) the edge (1500 um group, 11 beads) is 5.441 um, within 5 +/- 0.5, and the centre (11 beads) is 4.467 um, 0.067 um above the bound of 4.4. The mean major axis (c) is 4.537 um at the centre and 7.373 um at the edge, where one bead is fitted at 27.77 um; the minor axis gives 2.722 and 3.306 um (b) and 2.669 and 3.094 um (d). The PSF is narrower than the 5.35 um pixel, and the fits depend on the optimizer; with Jacobian scaling 15 of 118 beads' major FWHM move by more than 0.5 um and (a) gives 3.639 um at the centre (within) and 5.892 um at the edge (0.392 um above the bound). Taking for each bead the lower-cost fit gives 4.467 and 5.892 um under (a), both outside, and 4.685 and 7.944 um under (c); the 27.77 um edge bead keeps its main fit, whose cost is lower (60.092 against 79.942). These are the numbers of the run of 2026-10-21 made for the second revision. The seeds are fixed, but the fits differ between runs on different machines. In the run reviewed in round 2 (as the verifier quotes it) the centre under (a) was 4.422 um (0.022 um above the bound), the mean major axis 4.416 um at the centre, 14 of 118 beads moved with Jacobian scaling, which gave 3.578 um at the centre, the lower-cost fits gave 4.084 um at the centre (within) and 5.892 um at the edge under (a) and 4.222 and 7.952 um under (c), and both fits of the 27.77 um bead had a cost of 60.092. In both runs no reading with any of the three sets of fits has both values within tolerance, and the FWHM is larger at the edge than at the centre under every reading and fit. The outcome is partial because one of the two positions is within tolerance under (a) in each set of fits, the edge with the main fits and the centre with the Jacobian-scaled fits (and, in the run of round 2, with the lower-cost fits). New claim.",
+     "deviations": [
+      "MATLAB's lsqcurvefit is replaced by scipy's least_squares (trust-region-reflective, the code's start, bounds and tolerances); the fits of sub-pixel beads depend on the optimizer and differ between runs on different machines, by up to 0.4 um in a group's median (4.467 against 4.084 um for the centre's lower-cost fits).",
+      "The code reads the 91 images in order of file date, which the repository does not keep; they are read in file-number order, which the Featherscope's region labels confirm for that stack. For the Kiloscope stack the order is not confirmed; each region's listed slice lies at the median of its brightest slice, but within 5 slices of it for only 72% of regions."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c, f2+sf4/wf/beads (bead image stack) and f2+sf4/wf_roi.csv (118 bead regions)",
+     "proposed": null
+    },
+    {
+     "claim": "ed1cf-field-curvature",
+     "statement": "Both microscopes have field curvature small enough for typical imaging depths.",
+     "source": "Main text, page 547, paragraph 1; Extended Data Fig. 1c and 1f",
+     "quote": "Both microscope designs have sufficiently small field curvature for typical imaging depths (Extended Data Fig. 1c,f).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": "reproduce_scherrer_2023.ipynb",
+     "notes": "The paper gives no bound on field curvature and no typical imaging depth, as the criterion says. Shown as it asks, the Featherscope's slice of best focus rises from a median of 6 at the centre to 89 in the 500 um group (of 161 slices; Spearman 0.96 with radius) and the Kiloscope's falls from 48 to 29 in the 1500 um group (of 91 slices; Spearman -0.66). If the slices are evenly spaced over the 100 um the Methods give, that is about 52 and 21 um of focal shift. New claim.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c, f2+sf4 (slice of best focus per bead in feather_roi.csv and wf_roi.csv)",
      "proposed": null
     },
     {
@@ -192,11 +316,51 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
-     "notes": "The USAF target images are not in the dandiset, the Academic Torrents deposit or the code repository (which holds bead images for a point spread function analysis whose numbers are in the main text, not available here).",
+     "notes": "The USAF target images are not in the dandiset, the Academic Torrents file list or the code repository (listed in the main notebook). Same as -01.",
      "deviations": [],
      "disagreed": false,
      "data": "dataset",
      "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed2b-featherscope-flat-illumination",
+     "statement": "For the Featherscope, the axicon correction optics give a flat signal profile across the field of view, where total vignetting (optical vignetting with Gaussian illumination) makes the signal fall toward the edges.",
+     "source": "Extended Data Fig. 2b; Methods, Coupling optics, paragraph 3",
+     "quote": "Total vignetting (yellow) illustrates the decrease in fluorescent signal caused by the combination of optical vignetting and a Gaussian-shaped excitation light profile. The curve with correction optics (blue) illustrates the flat signal intensity profile that can be achieved with an axicon pair that increases the excitation intensity at the edges of the field of view.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scherrer_2023.ipynb",
+     "notes": "At both edge readings the corrected profile is higher than total vignetting and falls less from the centre. At 0.5 mm (the code's last bin, 499 um) 0.511 against 0.193, falling by 0.470 against 0.814; at 0.45 mm 0.628 against 0.257, falling by 0.353 against 0.750. It holds for all six centres tried at both radii. The three images are the ones sf3/feather/analysis.m loads in the same roles (its lines 20 to 22, printed in the notebook). -01 found it partially reproduced because its criterion, chosen by its author, asked for the corrected profile to stay above 0.8 out to 0.4 mm; the rewritten criterion compares it with total vignetting, as the legend does. The corrected profile still falls to about half its peak at 0.5 mm.",
+     "deviations": [
+      "The 0.5 mm reading lies one bin beyond the code's profile (0 to 499 um) and is read at 499 um; the bin at 500 um of an extended profile differs by at most 0.005."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c, sf3/feather (images of a thin layer of fluorescent dye; axicons, led and reference folders)",
+     "proposed": null
+    },
+    {
+     "claim": "ed2c-kiloscope-flat-illumination",
+     "statement": "For the Kiloscope, the axicon correction optics give a flat signal profile across the field of view, where total vignetting makes the signal fall toward the edges.",
+     "source": "Extended Data Fig. 2c",
+     "quote": "c, same as in (b) but for the Kiloscope.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_scherrer_2023.ipynb",
+     "notes": "At 1.8 mm the corrected profile is 0.557 against 0.180 for total vignetting (falling by 0.437 against 0.843), and at 2.0 mm (the code's last bin, 1999 um) 0.420 against 0.148 (falling by 0.573 against 0.875). It holds at both radii for all six centres tried. The three images are the ones sf3/widefield/analysis.m loads in the same roles (its lines 18 to 20). -01 found it partially reproduced under its own level of 0.8 out to 1.5 mm (0.797 there); the rewritten criterion compares the profile with total vignetting.",
+     "deviations": [
+      "The 2.0 mm reading is read at the code's last bin, 1999 um; the bin at 2000 um of an extended profile differs by 0.001."
+     ],
+     "disagreed": false,
+     "data": "elsewhere",
+     "where": "GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c, sf3/widefield",
      "proposed": null
     },
     {
@@ -210,7 +374,100 @@
      "outcome": "blocked",
      "blocked_by": "data_missing",
      "notebook": null,
-     "notes": "The test recordings of the analog-to-digital converter are not in the dandiset or the paper's deposits.",
+     "notes": "The test recordings of the analog-to-digital converter are not in the dandiset or the paper's deposits. Same as -01.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ed7-motion-small",
+     "statement": "Lateral shifts of the image due to the mouse's movement are small, with a root-mean-square displacement of 0.13 pixels (0.7 um).",
+     "source": "Main text, page 548, paragraph 2; Extended Data Fig. 7",
+     "quote": "Lateral shifts of the image due to mouse motion were small (root-mean-square displacement of 0.13 pixels or 0.7 \u03bcm (Extended Data Fig. 7).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "motion_scherrer_2023.ipynb",
+     "notes": "Rigid registration of all 36596 frames gives an RMS displacement of 0.0367 px under reading (a), 0.0381 px under (b) and 0.0260 px under (c), against 0.13 +/- 0.013 px; under (a) 0.218 um at 5.94 um per pixel and 0.196 um at 5.35, against 0.7 um. No frame moves more than 0.16 px along an axis, and the RMS in each 100 s window is 0.028 to 0.051 px. With a jitter of 0.132 px RMS added to the first 1200 frames, the estimated shifts follow it (correlation 0.996 on each axis) and their RMS rises from 0.033 to 0.136 px, so the registration finds motion of the paper's size. Nothing in the dandiset says whether the movie is the raw video or a motion-corrected one, and it holds no motion-correction module; its values are consistent with the raw video. The histogram of its 10-bit counts has a roughness (mean relative difference of each value's count from its neighbours') of 0.740 to 0.745 in every block, where moving frames by sub-pixel shifts of 0.13 px RMS and writing them back as integers lowers it from 0.745 to 0.052; its zero values are at most 2 single pixels in 243 of 36596 frames, not edge strips. A variant with high-pass filtered frames (chosen here, first 2400 frames) gives 0.0188 px under (a) against 0.0328 px for the main run on the same frames, so a static background pulling the estimate toward zero does not explain the difference. New claim.",
+     "deviations": [
+      "NoRMCorre (MATLAB) is replaced by a rigid registration written after its algorithm and defaults (dftregistration with 1/50 pixel upsampling, a template of the 100 middle frames, updated every 200 frames); the paper's settings are not given."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-quadrant-direction-decoding",
+     "statement": "Linear SVM decoders trained on half of the data decode the mouse's combined quadrant and movement direction on the other half at an accuracy at least three times chance, above that of decoders trained on shuffled data.",
+     "source": "Main text, page 549, paragraph 1; Fig. 2i and 2j; Methods, Data analysis, paragraphs 4 and 5",
+     "quote": "We trained a support vector machine (SVM) model on half of the data and used the other half to decode the mouse's combined position and movement direction, with the resulting accuracy at least three times chance level (Fig. 2j, P < 0.001, Monte Carlo sampling of n = 1,000 shuffled datasets).",
+     "statistics": [
+      {
+       "test": "Monte Carlo sampling of shuffled datasets",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "1,000 shuffled datasets"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": "decoding_quadrant_direction.ipynb",
+     "notes": "The criterion judges p under two readings of a null decoder. Under (n1), one fit per shuffle, the claim holds. The average matrix of 200 fits has a median accuracy of 0.437 (3.49 times chance), none of 1000 shuffled decoders reaches it (largest 0.227, p < 0.001), accuracy reading (a) holds and (b) does not (classes 2- and 3- at 0.294 and 0.239). The (n1) null is of single fits; the real single fits have median accuracies of 0.138 to 0.604 (median 0.430), 2 of 200 at or below the largest null value, and the weakest has 78 of 1000 null values at or above it. Reading (n2), 200 fits per shuffle, needs 200,000 fits, measured at 33.3 hours in this run (24.6 hours in the run reviewed in round 2) against a 30 minute limit per notebook. Nine (n2) null decoders were run (one in the decoding notebook, 0.136; eight in decoding_null_n2_quadrant_direction.ipynb, 0.089 to 0.145), none near 0.437, but nine cannot show p < 0.001. The clock check of the main notebook peaks with labels shifted by +2 s (0.519 against 0.495 at 0 s, 3 fits each); an offset would lower the accuracy, not raise it. The claim was dropped from the claims file of -01, which had no outcome for it.",
+     "deviations": [
+      "All 2948 footprints in place of the 2,382 curated ones (the claims file's variant); the curated set is not marked.",
+      "Position tracked from the behaviour video with the code's rule; linear position unwrapped by the loop length.",
+      "MATLAB's fitcecoc with templateLinear replaced by scikit-learn's SGDClassifier (hinge loss, alpha equal to lambda, 10 passes), as MATLAB's default for more than 100 predictors is 10 passes of dual SGD."
+     ],
+     "disagreed": true,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2k-decoder-size",
+     "statement": "Decoding accuracy depends on the number of footprints used, with P at or below 2.7 x 10^-4 (Mann-Whitney U) for every decoder size from 2 to 2,048 footprints.",
+     "source": "Main text, page 549, paragraph 1; Fig. 2k; Methods, Data analysis, paragraph 5",
+     "quote": "The accuracy of the decoder depended on the number of footprints used (Fig. 2k, P \u2264 2.7 \u00d7 10\u22124 for all decoder sizes, Mann\u2013Whitney U).",
+     "statistics": [
+      {
+       "about": "printed as P \u2264 2.7 \u00d7 10\u22124 for all decoder sizes; the schema has no \"at or below\"",
+       "test": "Mann-Whitney U",
+       "p": 0.00027,
+       "p_relation": "<",
+       "n": "64 decoders per size, sizes 2, 4, ..., 2,048 footprints"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": "decoding_quadrant_direction.ipynb",
+     "notes": "It depends on fig2-quadrant-direction-decoding, which is blocked as not_runnable, and it needs 140,800 fits (11 sizes, 64 subsets, 100 fits on the original and 100 on the shuffled data), measured at 4.8 hours on four cores in this run (3.0 hours in the run reviewed in round 2). Not run in full. A reduced run chosen here (16 subsets of 5 fits per size, decoding_reduced.ipynb), which decides nothing, has the median accuracy rising from 0.094 at 2 footprints to 0.442 at 2,048; original and shuffled subsets differ with p of 1.5e-6 to 9.5e-6 from 32 footprints on but not at 2 to 8 (p 0.376 to 0.955) nor, at 2.7e-4, at 16 (p 0.0205), and neither reading has every p at or below 2.7e-4. Its values differ between runs on different machines (in the run of round 2, 0.101 at 2 footprints and p of 0.00213 at 16), with the same pattern. New claim.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2l-local-decoding-map",
+     "statement": "Decoders built from the 32 footprints closest to a point decode quadrant and direction with accuracies that differ substantially across the field of view.",
+     "source": "Main text, page 549, paragraph 1; Fig. 2l; Methods, Data analysis, paragraph 5",
+     "quote": "Notably, footprints in different regions of the FOV yielded substantially different decoding accuracies (Fig. 2l).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": "decoding_quadrant_direction.ipynb",
+     "notes": "It depends on fig2-quadrant-direction-decoding, which is blocked as not_runnable. The grid has 5411 used points at 45 pixels and 5905 at 50 (5409 and 5897 with centroids); with 10 fits per point and per null decoder that is 64,090 to 69,050 fits, measured at 4.4 to 4.8 hours on four cores in this run (2.7 to 2.9 hours in the run reviewed in round 2). Not run in full. A reduced run chosen here (a grid every 50 pixels with 56 points used, 500 null decoders of one fit, decoding_reduced.ipynb), which decides nothing, gives point values spanning 0.089 to 0.282 with 32 of 56 points significant (31 with (k + 1) / (n + 1)); in the run of round 2 they spanned 0.097 to 0.282, with 32 significant under both definitions of p. New claim.",
      "deviations": [],
      "disagreed": false,
      "data": "dataset",
@@ -225,14 +482,13 @@
      "statistics": [],
      "kind": "finding",
      "inferred": "",
-     "outcome": "reproduced",
-     "blocked_by": null,
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
      "notebook": "reproduce_scherrer_2023.ipynb",
-     "notes": "For all 8 components the event has 196 to 320 active footprints, more than half of the component's members, with a spread of 0.945 to 1.055 times that of all footprints (0.98 mm) and a 90th percentile of pairwise distance of 2.05 to 2.29 mm. Active thresholds of 0.3 and 0.7 also give 8 of 8. The best of 4 NMF replicates was kept (errors 97.55 to 97.58). Two events (80.4 and 122.9 s) fall in the opening 153 s the behaviour analysis leaves out; with event times from 153 s on, 8 of 8 pass (spread ratios 0.94 to 1.05). The test is weak. In 100 random 50 s windows, the median fraction of members active is 0.399 to 0.519, and the event's fraction (0.568 to 0.851) is above the 95th percentile of random windows for 6 of 8 components. Random sets of footprints of the same size have spread ratios of 0.951 to 1.042 (5th to 95th percentiles), so any set this large passes the criterion's half. The event's spread ratio lies within its own component's random range for 3 of 8 components, below it for 2 (0.945 and 0.956, against 5th percentiles of 0.962) and above it for 3 (1.042, 1.055 and 1.050, against 95th percentiles of 1.037, 1.042 and 1.036).",
+     "notes": "The two event readings give different outcomes. Under (a), each component's largest temporal weight, every event has active footprints in all four quarters (8 of 8, 192 to 326 active). Under (b), the code's times assigned one to one, 7 of 8 do; component 1's event at 1000 s has 151 active footprints and none in the lower-left quarter, which holds 85 of all 2948 footprints. The code's times fall where this NMF's components have 0.04 to 0.68 of their largest weight. With weighted centroids as positions the counts are the same, and with the code's frame window (frames 30 times the times) component 1 again has none in the lower-left quarter. With the quarters split at the image's midlines (row 304.5, column 404.5), the lower-left quarter holds 86 footprints and the counts are again 8 of 8 under (a) and 7 of 8 under (b). Under (b), five components' assigned times fall where their weights are 0.04 to 0.13 of their maximum, so they are not events of this NMF run. -01 found it reproduced under a criterion its author chose (spread of at least half that of all footprints); the rewritten criterion asks for all four quarters under both readings.",
      "deviations": [
-      "All 2948 footprints in place of the 2382 curated ones.",
-      "Event times are each component's largest temporal weight; the code sets them by hand.",
-      "Distances use the code's 5.94 um per pixel, which the dandiset does not state; the outcome uses ratios and does not depend on it."
+      "All 2948 footprints in place of the 2,382 curated ones (the claims file's variant).",
+      "MATLAB's nnmf replaced by scikit-learn's multiplicative-update NMF (100 iterations, 4 random starts)."
      ],
      "disagreed": false,
      "data": "dataset",
@@ -254,16 +510,14 @@
      ],
      "kind": "finding",
      "inferred": "",
-     "outcome": "reproduced",
-     "blocked_by": null,
-     "notebook": "reproduce_scherrer_2023.ipynb",
-     "notes": "Median class accuracy 0.313 over 50 decoders (0.211 to 0.416), chance 0.125, null 95th percentile 0.144; all 50 exceed it, and each octant's mean accuracy (0.236 to 0.499) is above chance. On six splits fit by both solvers, SGD stops at objectives of 3.89 to 6.18 and the exact solver at 0.071 to 0.094 (at its limit of 10,000 iterations in all six); the exact solver gives 0.220 to 0.292 for three real decoders and 0.092 to 0.145 for three with shifted labels, so the claim also holds with it.",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": "decoding_octant.ipynb",
+     "notes": "Under null reading (n1) the claim holds. The average matrix of 200 fits has a median accuracy of 0.326 (2.61 times chance) and none of 1000 shuffled decoders reaches it (largest 0.229, p < 0.001). The real single fits have median accuracies of 0.179 to 0.417 (median 0.320), 11 of 200 at or below the largest (n1) null value, and the weakest has 12 of 1000 null values at or above it. Reading (n2) needs 200,000 fits, measured at 33.7 hours in this run (25.0 hours in the run reviewed in round 2). Nine (n2) null decoders were run (one in the decoding notebook, 0.110; eight in decoding_null_n2_octant.ipynb, 0.109 to 0.149), none near 0.326, but nine cannot show p < 0.001. The criterion asks for both. -01 found it reproduced against decoders with shifted labels; the rewritten claims file uses the paper's null, shuffled activity, with two readings of a null decoder, one of which cannot run here.",
      "deviations": [
-      "Position tracked here from the video (the paper's tracking output is not in the dandiset), in the unrotated frame, with the loop's sides at the 2nd and 98th percentiles of position.",
-      "All 2948 footprints in place of the 2382 curated ones.",
-      "scikit-learn's SGD classifier (hinge loss, ridge alpha equal to the code's lambda, 10 passes) in place of MATLAB's fitcecoc with templateLinear, whose default for more than 100 predictors is 10 passes of dual SGD; 50 decoders in place of 200."
+      "All 2948 footprints in place of the 2,382 curated ones; position tracked from the video; SGD in place of MATLAB's solver, as for fig2-quadrant-direction-decoding."
      ],
-     "disagreed": false,
+     "disagreed": true,
      "data": "dataset",
      "where": null,
      "proposed": null
@@ -276,17 +530,11 @@
      "statistics": [],
      "kind": "finding",
      "inferred": "The Extended Data Fig. 9c legend and the Methods give the method only. The main text states that accuracy differs across the field of view for the quadrant and direction map (Fig. 2l) and that octant position was decoded with the same approach, but states no result for the octant map. That it is significant in parts of the field of view and varies across it is read from the legend (non-significant pixels plotted in black) and the main text.",
-     "outcome": "reproduced",
-     "blocked_by": null,
-     "notebook": "reproduce_scherrer_2023.ipynb",
-     "notes": "With 32 footprints within 270 um (45 px), 150 grid points qualify and 18 (12%) are significant at Benjamini-Hochberg 5%, with scores of 0.112 to 0.187 (range 0.075, where the criterion asks for 0.05). Scores over all points 0.068 to 0.187, median 0.125, against null means of 0.065 to 0.123. The outcome depends on the solver. With 10 passes of SGD, as in round 1, on the same points and seeds, 1 point is significant and the criterion is not met; at four points SGD stops at objectives of 19.8 to 68.9 where the exact solver reaches 1.976 to 2.000, close to the 2.0 of predicting every class absent, so the scores rest on weak classifiers. liblinear reached its limit of 10,000 iterations in 2268 of 3000 fits. Null standard deviations per point 0.018 to 0.046 (5th to 95th percentile) from 10 shifted decoders; a point alone needs z above 3.40, and the smallest z among the significant points is 2.53. A Welch t-test of the 10 real against the 10 shifted decoders marks 80 points significant (range 0.079), and 5 with SGD (range 0.052). With the code's 64 footprints within 50 px, on a 60 px grid, 22 of 34 points are significant (scores 0.141 to 0.211, range 0.070), and 32 with the t-test. The exact fits stop at an iteration limit, so the counts can differ slightly between machines.",
-     "deviations": [
-      "The legend says 32 footprints within 270 um; the code uses 64 within 50 pixels. The legend is followed for the outcome and the code's choice is shown as a variant.",
-      "The paper does not describe its significance test. Here, 10 decoders and 10 shifted-label decoders per point and a one-sided z-test, chosen before the analysis.",
-      "Local decoders are fit by liblinear (LinearSVC) on the same objective, as MATLAB's default for 100 or fewer predictors is BFGS run to convergence; liblinear also penalizes the intercept, weakly. Round 1 used 10 passes of SGD here, which is shown as a variant.",
-      "A 30 pixel grid where the code uses 5 pixels; all 2948 footprints in place of 2382; position tracked from the video, as for octant decoding.",
-      "The code's variant is run on a 60 pixel grid where the criterion says 40; on the 40 pixel grid the notebook took 32 minutes on four cores, over the 30 minute limit."
-     ],
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": "decoding_octant.ipynb",
+     "notes": "It depends on ed9b-octant-decoding, which is blocked as not_runnable. The grid has 5411 used points at 45 pixels and 5905 at 50; with 40 fits per point and per null decoder that is 256,360 to 276,200 fits, measured at 11.9 to 12.8 hours on four cores in this run (6.9 to 7.4 hours in the run reviewed in round 2). Not run in full. A reduced run chosen here (as for fig2l-local-decoding-map, with 10 fits per point in place of 40, decoding_reduced.ipynb), which decides nothing, gives point values spanning 0.087 to 0.195 with 7 of 56 points significant under both definitions of p, so (i) holds in it. In the run reviewed in round 2 the values spanned 0.090 to 0.197 and no point was significant, so (i) failed there; with seeds fixed, the reduced run's result changes between runs on different machines. -01 found it reproduced on a 30 pixel grid with 10 decoders per point and a null of shifted labels; the rewritten criterion uses the code's 5 pixel grid, 40 fits and the paper's null of a thousand decoders on 32 random shuffled footprints.",
+     "deviations": [],
      "disagreed": false,
      "data": "dataset",
      "where": null,
@@ -300,115 +548,101 @@
      "statistics": [],
      "kind": "finding",
      "inferred": "",
-     "outcome": "reproduced",
-     "blocked_by": null,
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
      "notebook": "reproduce_scherrer_2023.ipynb",
-     "notes": "100 of 2948 footprints (3.4%) have an entropy over linear position below all 100 shifted values, against 29 expected (binomial p = 4.5e-25); 448 against 175 at a looser threshold. For the 100, the entropy is 0.20 to 0.90 bits below the shifted mean (5th to 95th percentile), out of a maximum of 6.64 bits. The binomial test treats footprints as independent, but the same 100 shifts serve every footprint; treating each shifted copy in turn as the observed data gives counts with a median of 28, a 95th percentile of 54 and a maximum of 62, and none of the 100 copies reaches 100.",
+     "notes": "The paper selected footprints by eye and neither it nor the code sets a test for localized, as the criterion says. Shown as it asks, over 6411 frames above the 80th percentile of speed the entropy of mean activity over linear position runs from 3.40 to 6.54 bits (median 6.24, largest possible 6.63 over the 99 occupied bins) and the peak of the smoothed map of the fraction of time active from 0.157 to 0.957 (median 0.567). The code's 12 examples index the curated set and cannot be identified. -01 found it reproduced under a shuffle test its author chose; the rewritten criterion has no test.",
      "deviations": [
-      "The paper selected its examples by eye and shows two-dimensional maps; here a test over all footprints on linear position, with the entropy measure of place_cells.m.",
-      "All 2948 footprints in place of 2382; position tracked from the video, as for octant decoding."
+      "Entropy over the 99 occupied position bins; the code's formula would give 0 for every footprint when a bin is empty."
      ],
      "disagreed": false,
      "data": "dataset",
      "where": null,
-     "proposed": null
-    },
-    {
-     "claim": "ed2b-featherscope-flat-illumination",
-     "statement": "For the Featherscope, the axicon correction optics give a flat signal profile across the field of view, where total vignetting (optical vignetting with Gaussian illumination) makes the signal fall toward the edges.",
-     "source": "Extended Data Fig. 2b; Methods, Coupling optics, paragraph 3",
-     "quote": "Total vignetting (yellow) illustrates the decrease in fluorescent signal caused by the combination of optical vignetting and a Gaussian-shaped excitation light profile. The curve with correction optics (blue) illustrates the flat signal intensity profile that can be achieved with an axicon pair that increases the excitation intensity at the edges of the field of view.",
-     "statistics": [],
-     "kind": "finding",
-     "inferred": "",
-     "outcome": "partially_reproduced",
-     "blocked_by": null,
-     "notebook": "reproduce_scherrer_2023.ipynb",
-     "notes": "At 0.4 mm the corrected profile is 0.742, total vignetting 0.342 and optical vignetting 0.628; the corrected profile is higher, but falls below 0.8 (minimum 0.742 over 0 to 0.4 mm). The minimum is 0.785 out to 0.38 mm and 0.698 out to 0.42 mm; with the centre moved by 100 um it is 0.626 to 0.867, and 0.766 about the image centre.",
-     "deviations": [
-      "The radius of 0.4 mm and the level of 0.8 that define \"flat\" were chosen here; the legend gives no number."
-     ],
-     "disagreed": false,
-     "data": "elsewhere",
-     "where": "GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c, sf3/feather (images of a thin layer of fluorescent dye; axicons, led and reference folders)",
-     "proposed": null
-    },
-    {
-     "claim": "ed2c-kiloscope-flat-illumination",
-     "statement": "For the Kiloscope, the axicon correction optics give a flat signal profile across the field of view, where total vignetting makes the signal fall toward the edges.",
-     "source": "Extended Data Fig. 2c",
-     "quote": "c, same as in (b) but for the Kiloscope.",
-     "statistics": [],
-     "kind": "finding",
-     "inferred": "",
-     "outcome": "partially_reproduced",
-     "blocked_by": null,
-     "notebook": "reproduce_scherrer_2023.ipynb",
-     "notes": "At 1.5 mm the corrected profile is 0.797, total vignetting 0.253 and optical vignetting 0.389. The corrected profile is higher, and its minimum over 0 to 1.5 mm, 0.797, is 0.003 below the criterion's 0.8; at 1.125 mm it is 0.922. The minimum is 0.846 out to 1.425 mm and 0.742 out to 1.575 mm; with the centre moved by 100 um it is 0.765 to 0.831 (above 0.8 for one of four moves), and 0.695 about the image centre.",
-     "deviations": [
-      "The radius of 1.5 mm and the level of 0.8 were chosen here; the result sits at the level."
-     ],
-     "disagreed": false,
-     "data": "elsewhere",
-     "where": "GitHub FeeLab/Feescope-Paper-Code at commit d596646b16a505907203828d8026feb7736ca69c, sf3/widefield",
      "proposed": null
     }
    ],
    "findings": [
     {
      "kind": "data_missing",
-     "statement": "The dandiset holds one of the paper's four mice and none of the songbird recordings or optical test data. The Academic Torrents deposit the paper names for its imaging data holds files of the same mouse session only, so the other mice and the birds are not public."
+     "statement": "Still present (finding of -01). The dandiset holds one of the paper's four mice and none of the songbird recordings. The bead and dye images of the optical tests are in the paper's code repository, but the USAF target images and ADC recordings are not public. The Academic Torrents deposit lists files of the same mouse session only."
     },
     {
      "kind": "metadata_error",
-     "statement": "The device description reads \"Head-mounted microscope (Kiloscope) optimized for weight (1.0 mm FOV; 1.0 g)\", and the dandiset description says the data come from the microscope optimized for weight. The data are from the large-FOV microscope (1.4 g, about 4 mm FOV) that the paper calls the Kiloscope; a 4 mm window, 2948 footprints and 808 x 608 pixel frames."
+     "statement": "Still present (finding of -01). The device description reads \"Head-mounted microscope (Kiloscope) optimized for weight (1.0 mm FOV; 1.0 g)\", and the dandiset description says the data come from the microscope optimized for weight; the data are from the large-FOV Kiloscope (4 mm window, 2948 footprints, 808 x 608 pixel frames)."
     },
     {
      "kind": "metadata_error",
-     "statement": "The imaging is stored as a TwoPhotonSeries and the dandiset lists two-photon microscopy among its techniques, but the microscope is a one-photon head-mounted epifluorescence microscope."
+     "statement": "Still present (finding of -01). The imaging is stored as a TwoPhotonSeries and the dandiset lists two-photon microscopy among its techniques, but the microscope is a one-photon head-mounted epifluorescence microscope."
     },
     {
      "kind": "metadata_error",
-     "statement": "The behaviour video is described as about 30 fps and its AVI header says 30 frames/s, but its 15521 timestamps run at a median 12.5 frames/s over 1234 s; at 30 frames/s it would cover only 517 s of the 1234 s of imaging."
+     "statement": "Still present (finding of -01). The behaviour video is described as about 30 fps and its AVI header says 30 frames/s, but its 15521 timestamps run at a median 12.5 frames/s over 1234 s."
     },
     {
      "kind": "metadata_insufficient",
-     "statement": "The imaging plane gives no pixel size, and its indicator and location are \"unknown\" with no excitation wavelength, although general/virus says GCaMP7f. Distances in the paper's figures cannot be computed from the dandiset alone."
+     "statement": "Still present (finding of -01). The imaging plane gives no pixel size (no grid spacing), its indicator and location are \"unknown\" and its excitation wavelength is NaN, although general/virus says GCaMP7f."
     },
     {
      "kind": "selection_undocumented",
-     "statement": "The 2948 footprints are the EXTRACT output before curation; the paper analyses the 2382 it kept (Extended Data Fig. 6a). Nothing in the dandiset marks the curated set or says that the footprints are uncurated."
+     "statement": "Still present (finding of -01). The 2948 footprints are the EXTRACT output before curation; the paper analyses the 2,382 it kept, and nothing in the dandiset marks them or says the footprints are uncurated."
     },
     {
      "kind": "data_missing",
-     "statement": "The mouse's position, which the paper's decoding and place analyses use, is not in the dandiset; it must be tracked from the behaviour video. The first 64 s of the video (by its nominal rate), which the paper's code drops because the experimenter is in view, are not marked."
+     "statement": "Still present (finding of -01). The mouse's position, which the paper's decoding and place analyses use, is not in the dandiset (its only processing module is ophys), and the opening of the behaviour video that the paper's code skips is not marked."
     },
     {
      "kind": "code_mismatch",
-     "statement": "The Extended Data Fig. 9c legend describes decoders on the 32 closest footprints within 270 um; the code (subregion_map_octant.m) uses 64 footprints within 50 pixels, which at the code's own 5.94 um per pixel (sf3/widefield/analysis.m) is 297 um."
+     "statement": "Still present for the number of footprints (finding of -01). The local decoding maps are described with the 32 closest footprints within 270 um (Fig. 2l and Extended Data Fig. 9c legends, Methods); both map scripts (subregion_map_quaddir.m, subregion_map_octant.m) use 64 footprints within 50 pixels. The radius differs only at the 5.94 um per pixel of the illumination script (297 um); at the bead script's 5.35 um per pixel it is 267.5 um."
     },
     {
      "kind": "paper_inconsistency",
-     "statement": "The title of Extended Data Fig. 8 refers to the Kiloscope data \"shown in Figure 3\", and its legend takes the ridgeline plot from Fig. 2d, while the version of record has two figures, and Supplementary Video 1 and Extended Data Fig. 10 place the bird data in Fig. 2a-d and the mouse data in Fig. 2e-h."
+     "statement": "Still present (finding of -01), now confirmed in the version of record's full text. The Extended Data Fig. 8 legend refers to \"the Kiloscope dataset shown in Figure 3\" and a \"Ridgeline plot from Fig. 2d\"; the paper has two figures and the ridgeline plot is Fig. 2h."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "New. The imaging movie is described only as \"Calcium imaging data at ~30 fps in grayscale format\", without saying whether it is the raw video or the motion-corrected one the paper extracted footprints from, and the file holds no motion-correction module. Its values are consistent with the raw video (the histogram of its counts keeps the converter's uneven pattern, which sub-pixel resampling smooths), and its rigid shifts against a template have an RMS of 0.037 pixels, about a quarter of the 0.13 pixels the paper reports for the raw video."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "New. ROICentroids are described as \"The x, y, (z) centroids of each ROI\", but they equal the mask's peak pixel (its first pixel of weight 1) for 84% of footprints and the rounded weighted centroid for only 43%; how they were computed is not said."
+    },
+    {
+     "kind": "other",
+     "statement": "New. The paper's tracking code unwraps linear position with MATLAB's unwrap on centimetres with a tolerance of half the loop, which corrects each lap's jump by a multiple of 2 pi cm; as the loop (147.1 cm) is not such a multiple, the position gains an error of up to pi cm at every lap. With it, about 1% of the running and direction labels differ from those of a position unwrapped by the loop length."
+    },
+    {
+     "kind": "other",
+     "statement": "New. The paper's bead scripts (feather_analysis_secondorder.m, wf_analysis_secondorder.m) order the images of each stack by file date, which the repository does not keep, so the order that the region lists' slice numbers refer to is not recorded. The Featherscope's region labels name their image and confirm the file-number order; the Kiloscope's labels do not."
     }
    ],
    "verifications": [
     {
-     "date": "2026-10-18",
+     "date": "2026-10-21",
      "kind": "agent",
-     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
-     "reviewed": "Round 1. The first executed notebook with the conclusion cells and the summary removed, the helper module and the claims file, with the paper's abstract and Extended Data legends from the publisher page. The verifier read the archive's asset list and metadata, read the paper's code at d596646, and tested the decoder and tracking helpers on synthetic inputs. Its report had no attempt record and gave its own outcome for each claim; all 15 agree with the record as it then stood. The revision changed the outcome of ed9c-local-decoding-map, which round 2 reviews.",
-     "agreed": 14,
-     "of": 14,
-     "disagreements": []
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "Round 1. The executed notebooks of the run of 2026-10-20 with the conclusion cells and the summaries removed, the helper module and the claims file, with the paper. The verifier queried the archive and tested helper functions on synthetic inputs. Its report gave its own outcome for 22 of the 23 claims; it gave none for ed3-adc, which is not listed here. It agrees with 20 of the 22 and gives reproduced for the two decoding claims the record blocks.",
+     "agreed": 20,
+     "of": 22,
+     "disagreements": [
+      {
+       "claim": "fig2-quadrant-direction-decoding",
+       "outcome": "reproduced",
+       "reason": "Median accuracy 0.437 >= 0.375 under reading (a); under null (n1) the largest of 1000 shuffles is 0.227, so p = 0. Null (n2), which the criterion also requires, was not run; its one sample (0.136) and the margin make a disagreement very unlikely. The n1 comparison sets a 200-fit averaged real matrix against single-fit null matrices, which overstates the separation, though not enough to matter here (problem 2)."
+      },
+      {
+       "claim": "ed9b-octant-decoding",
+       "outcome": "reproduced",
+       "reason": "0.326 > 1/8, above the n1 null maximum of 0.229, p = 0. As for fig2, n2 was not run; its one sample is 0.110."
+      }
+     ]
     },
     {
-     "date": "2026-10-18",
+     "date": "2026-10-21",
      "kind": "agent",
-     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
-     "reviewed": "Round 2. The full executed notebook of the first revision, the helper module, the claims file, the README and the attempt record; no paper text was downloaded this round, and the verifier worked from its round-1 reading. It agreed with all 15 outcomes. It quoted sentences the printed numbers contradict. Most of them (18 significant points, 2268 fits at the limit, NMF errors 97.55 to 97.58, 634 s) are the numbers of a run on four cores, while the executed copy it read came from another run (19, 2264, 97.79 to 97.8, 358 s, 13.7 min); the exact fits stop at an iteration limit and the NMF uses float32, so these numbers differ slightly between machines. The entry was re-run on four cores, which again gives 18, 2268, 97.55 to 97.58 and about 640 s, and the text now matches that run. The run takes about 25 minutes, so the README and entry say about 25. The verifier also found two sentences no output showed. The AVI's byte size matching the Academic Torrents listing (cell 15) is removed, and the draft holding the same blobs (cell 0) is now printed in the data check (same assets, sizes and blob ids).",
-     "agreed": 14,
-     "of": 14,
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)",
+     "reviewed": "Round 2. The full executed notebooks of a run made by the workflow for the verifier, with the conclusions, summaries, README and attempt record, the helper module and the claims file, with the paper. The verifier agrees with all 23 outcomes, including the two decoding claims it disputed in round 1, and found no new place where the claims file misreads the paper. It found numbers in the prose that its run did not print, which it took to be carried over from another run; the run made for this revision (2026-10-21) shows that the PSF fits, the reduced runs and the timings differ between runs on different machines. Every conclusion is now written from the run made for this revision, and the record gives the values of the run of round 2 where they differ.",
+     "agreed": 23,
+     "of": 23,
      "disagreements": []
     }
    ]
@@ -419,7 +653,7 @@
    "name": "000691-scherrer-2023",
    "type": "reproduction",
    "title": "Imaging thousands of neurons in a freely moving mouse with a large-FOV head-mounted microscope (Scherrer et al. 2023)",
-   "description": "Tests the findings of Scherrer, Lynch, Zhang and Fee (2023) that can be tested on dandiset 000691, which holds one session of one mouse imaged with the large-FOV head-mounted microscope while it explores a looped maze, with 2948 EXTRACT footprints and a behaviour video. It counts the footprints, tracks the mouse from the video, decodes its position and direction from the activity, maps local decoding across the field of view, looks for footprints with localized activity and for the spread of coactive populations, and tests the illumination profiles of Extended Data Fig. 2 on images in the paper's code repository. The other mice, the birds and the optical tests are not in the dandiset.",
+   "description": "Tests the findings of Scherrer, Lynch, Zhang and Fee (2023) on dandiset 000691, which holds one session of one mouse imaged with the large-FOV head-mounted microscope while it explores a looped maze, with 2948 EXTRACT footprints, the imaging video and a behaviour video. It counts the footprints, computes the field of view, registers the whole movie for its motion, tracks the mouse from the video, decodes its position and direction against shuffled activity, looks at the spread of coactive footprints and at place maps, and tests the bead resolution, field curvature and illumination profiles on measurements in the paper's code repository. The other mice, the birds and the other optical tests are not in the dandiset.",
    "datasets": [
     "dandi:000691"
    ],
@@ -432,6 +666,36 @@
      "path": "reproduce_scherrer_2023.ipynb",
      "title": "Reproducing Scherrer et al. (2023) from dandiset 000691",
      "executed": "notebooks/000691-scherrer-2023/reproduce_scherrer_2023.html"
+    },
+    {
+     "path": "decoding_quadrant_direction.ipynb",
+     "title": "Decoding quadrant and direction (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
+    },
+    {
+     "path": "decoding_octant.ipynb",
+     "title": "Decoding octant (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
+    },
+    {
+     "path": "motion_scherrer_2023.ipynb",
+     "title": "Motion of the field of view (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
+    },
+    {
+     "path": "decoding_null_n2_quadrant_direction.ipynb",
+     "title": "More null decoders of reading n2 for quadrant and direction (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
+    },
+    {
+     "path": "decoding_null_n2_octant.ipynb",
+     "title": "More null decoders of reading n2 for octant (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
+    },
+    {
+     "path": "decoding_reduced.ipynb",
+     "title": "Reduced runs of the decoder-size and map analyses (Scherrer et al. 2023, dandiset 000691)",
+     "executed": null
     }
    ]
   }
