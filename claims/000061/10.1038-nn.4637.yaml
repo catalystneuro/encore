@@ -104,14 +104,22 @@
 # O1 The 150-cm lap window of M8 starts at a left limit picked by hand on a plot (ClassifyLaps.m).
 #   Readings (a) lap intervals the dataset holds, if any; (b) the M8 rule with the window's left
 #   edge at the smallest run-epoch position; (c) laps as the intervals between consecutive
-#   rewards at opposite ends of the track.
+#   rewards at opposite ends of the track. Answered 2026-10-20 (questions/000061.yaml): reading
+#   (a) exists only where the dataset holds lap intervals, and reading (b) only where it holds
+#   position. The paper's laps are back-and-forth runs between the two reward ends of the track
+#   (Online Methods, Recordings and behavior, and the habituation index), which reading (c) counts
+#   from the reward times. A claim is judged on the O1 readings the dataset allows; reading (c)
+#   alone suffices when (a) and (b) cannot be formed, recorded as a deviation.
 # O2 poissonTest (M6) is not in the repository. Readings (a) upper tail P(X >= n) and lower tail
 #   P(X <= n); (b) upper tail P(X > n) and lower tail P(X < n).
 # O3 Bin time stamps (bin start or centre) when aligning R to ripple peaks. A standard choice (bin
 #   centre); it cannot change an outcome at 40-ms resolution.
 # O4 Fig. 2c uses monosynaptically identified pyramidal cells and interneurons (675 and 175). If
 #   the dataset does not mark which cells were identified monosynaptically, the readings are
-#   (a) the identified cells where marked; (b) all putative cells of each type.
+#   (a) the identified cells where marked; (b) all putative cells of each type. Answered
+#   2026-10-20 (questions/000061.yaml): the legend names the identified cells, so where the
+#   dataset marks them the claim is judged on reading (a) alone, over the sessions that mark them;
+#   reading (b) is shown as a variant where it can be formed, and is not needed for the outcome.
 # O5 The family size of the Bonferroni corrections in Fig. 1b is not given. Readings (a) all post
 #   hoc tests of the panel (four for speeds, three for ratios); (b) uncorrected 0.05.
 # O6 The post hoc correction of Fig. 5a. The Online Methods say Bonferroni; the legend says
@@ -323,7 +331,9 @@ claims:
     Spearman correlation between the training day rank within the rat and the index, sessions of
     all rats pooled, positive with p < 0.05; (b) a positive Spearman correlation in at least 3 of
     the 4 rats. Reproduced when the outcome holds under every reading; otherwise reported as
-    methods_underspecified with all results.
+    methods_underspecified with all results. Laps per O1, on the readings the dataset allows; when
+    it holds neither lap intervals nor position, the claim is judged on O1 reading (c) alone, the
+    back-and-forth laps between the reward ends that the Methods count.
 - id: bla-pyr-sleep-firing-increase
   statement: BLA pyramidal cells fire faster in REM sleep and, to a lesser extent, in NREM sleep
     than in wakefulness.
@@ -702,9 +712,6 @@ claims:
     value: 1.90
     tolerance: 0.71
     unit: percent
-  depends_on:
-  - bla-ripple-up-subgroup
-  - hpc-bla-reactivation-post-sleep
   criterion: Per session, EV and REV (M4) computed twice, with the BLA cells that are up- or
     downmodulated (M6) and with the non-modulated BLA cells; a session enters when it has more
     than 5 hippocampal and more than 5 modulated BLA cells of the type used
@@ -712,6 +719,10 @@ claims:
     sets, as the paper names it (Supplementary Fig. 5b legend); the signed rank test on the same
     sessions is shown as a variant. Reproduced when, for all cells and for pyramidal pairs,
     modulated exceeds non-modulated with p < 0.05; partially reproduced when one of the two holds.
+    The modulated cells are taken per M6, which is defined for every BLA unit and needs no cell
+    type, so the all-cell test needs no other claim's result. When the pyramidal test cannot be
+    run, the all-cell test is judged alone, as part of the claim; partially reproduced when it
+    holds, not reproduced when it does not.
 - id: run-correlated-pair-fractions
   statement: During run, 6.69% of hippocampus-BLA pyramidal pairs (2,521 of 37,660) are
     significantly positively correlated, 3.34% (1,258) negatively, and 89.96% (33,881) not
@@ -927,12 +938,13 @@ claims:
     statistic: z = -2.895
     p: 0.00189
     n: 27 sessions in 3 rats
-  depends_on:
-  - hpc-bla-reactivation-post-sleep
   criterion: R per M7 with the whole run epoch as template, pyramidal cells (and all cells as the
     second test). Per session, the ripple-peak value in pre-NREM and in post-NREM; a one-tailed
     Wilcoxon signed rank test, post greater than pre (ReplayInTime_All.m, tail left on pre
     against post). Reproduced when both tests have p < 0.05; partially reproduced when one does.
+    Sessions enter by the M7 cell minimum for the cell type of each test, which needs no other
+    claim's result. When the pyramidal test cannot be run, the all-cell test is judged alone, as
+    part of the claim; partially reproduced when it has p < 0.05, not reproduced when it does not.
 - id: airpuff-trajectory-ripple-reactivation
   statement: The hippocampus-BLA correlation pattern of the air puff trajectory is reactivated more
     around post-NREM ripples than around pre-NREM ripples.
@@ -1020,11 +1032,10 @@ claims:
     statistic: z = -1.333
     p: 0.0912
     n: 27 sessions in 3 rats
-  depends_on:
-  - aversive-direction-stronger
   criterion: The three tests of airpuff-trajectory-ripple-reactivation,
     safe-trajectory-no-ripple-reactivation and aversive-direction-stronger with all cells (ctype
-    all). Reproduced when both within-trajectory tests have p < 0.05 and the between-trajectory
+    all), using their procedure (M7, M8, laps per O1) but not their results; sessions enter by the
+    M7 cell minimum for all cells (ReplayInTime_LapTypes_All.m). Reproduced when both within-trajectory tests have p < 0.05 and the between-trajectory
     test has p >= 0.05 (absence on the paper's one-tailed test); partially reproduced when two of
     the three hold.
 - id: bla-rate-same-across-directions

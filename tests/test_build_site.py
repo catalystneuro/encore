@@ -240,6 +240,13 @@ def test_the_pipeline_has_a_row_per_target(built):
     assert "Pipeline" in (out / "pipeline" / "index.html").read_text()
 
 
+def test_the_pipeline_says_when_it_was_last_updated(built):
+    data, out = built
+    page = (out / "pipeline" / "index.html").read_text()
+    assert f'<time id="updated" datetime="{data["generated"]}">' in page
+    assert "Last updated <time" in page
+
+
 def test_a_deprecated_attempt_counts_for_nothing():
     kept = {"outcomes": [{"claim": "a", "outcome": "reproduced"}]}
     dropped = {"deprecated": "Claims written from the abstract only.",
@@ -463,10 +470,14 @@ def test_stylesheets_and_scripts_are_named_by_their_contents(built):
 def test_old_dandiset_links_redirect_to_the_dataset_pages(built):
     data, out = built
     for key in site.current_attempts(data):
-        old = (out / "dandisets" / site.split_key(key)[1] / "index.html").read_text()
+        archive, ident = site.split_key(key)
+        if archive != "dandi":   # only DANDI datasets had pages under dandisets/
+            assert not (out / "dandisets" / ident).exists()
+            continue
+        old = (out / "dandisets" / ident / "index.html").read_text()
         assert f'url=../../{site.page_of(key)}"' in old
         for a in site.earlier_attempts(data, key):
-            moved = (out / "dandisets" / site.split_key(key)[1] / a["id"] / "index.html").read_text()
+            moved = (out / "dandisets" / ident / a["id"] / "index.html").read_text()
             assert f'url=../../../{site.page_of(key)}{a["id"]}/"' in moved
     assert 'url=../datasets/"' in (out / "dandisets" / "index.html").read_text()
 
@@ -476,3 +487,25 @@ def test_datasets_are_named_by_archive_and_id():
     assert site.page_of("dandi:000003") == "datasets/dandi/000003/"
     assert site.dir_of("dandi:000003") == "000003" and site.dir_of("ebrains:abc") == "ebrains-abc"
     assert site.key_of_dir("000003") == "dandi:000003" and site.key_of_dir("ebrains-abc") == "ebrains:abc"
+
+
+def test_a_dataset_with_claims_and_no_attempt_has_a_page_linked_from_the_pipeline(built):
+    data, out = built
+    rows = json.loads((out / "data" / "pipeline.json").read_text())
+    for key in site.claims_only(data):
+        row = next(r for r in rows if r["key"] == key)
+        assert row["page"] == site.page_of(key)
+        page = (out / site.page_of(key) / "index.html").read_text()
+        claims = [c for f in data["claim_files"][key] for c in f["claims"]]
+        assert all(f'id="claim-{c["id"]}"' in page for c in claims)
+
+
+def test_a_dataset_waiting_on_a_person_links_its_issue():
+    data = site.collect()
+    label = data["targets"][0]["label"]
+    data["issues"] = {label: "https://github.com/catalystneuro/reproduction-registry/issues/1"}
+    row = next(r for r in site.pipeline_rows(data) if r["dataset"] == label)
+    assert row["issue"] == data["issues"][label]
+    page = site.page_pipeline(data)
+    assert f'<a href="{data["issues"][label]}">waiting on you</a>' in page
+    assert "has stopped on" in page and "1 dataset</a>" in page

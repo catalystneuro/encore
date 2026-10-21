@@ -75,6 +75,17 @@ def test_a_repeat_attempt_keeps_the_earlier_transcripts(tmp_path):
     assert not (tmp_path / "transcripts" / "000001" / "author.md").exists()
 
 
+def test_a_repeated_claims_run_before_any_attempt_archives_nothing(tmp_path):
+    import subprocess
+    (tmp_path / "attempts").mkdir()
+    (tmp_path / "transcripts" / "000001").mkdir(parents=True)
+    (tmp_path / "transcripts" / "000001" / "claims.md").write_text("# claims\n")
+    subprocess.run(["git", "init", "-q"], cwd=tmp_path, check=True)
+    subprocess.run(["git", "add", "."], cwd=tmp_path, check=True)
+    subprocess.run([REPO / "tools" / "archive_transcripts.sh", "000001"], cwd=tmp_path, check=True)
+    assert (tmp_path / "transcripts" / "000001" / "claims.md").is_file()
+
+
 def test_the_recorder_prompt_names_the_attempt():
     latest = tool.attempt_of("001933")[0]["id"]
     text = tool.fill("recorder", "001933", "m")
@@ -88,3 +99,12 @@ def test_the_conversion_issue_lists_every_finding():
     assert text.splitlines()[0] == "Problems found in DANDI:000559 by a reproduction attempt"
     assert text.count("\n- [ ] ") == len(record["findings"]) + 7
     assert record["id"] in text
+
+
+def test_the_target_paper_follows_the_hand_corrections():
+    # papers/triage.yaml names the paper behind 001871's data and says the one its metadata names is not.
+    assert tool.target("001871")["paper"] == "10.1073/pnas.2608896123"
+    # A review that triage says is not the paper is never chosen.
+    assert tool.target("000336")["paper"] != "10.1016/j.tins.2012.11.006"
+    # DOIs are cleaned, as the paper store names them.
+    assert tool.target("000026")["paper"] == "10.1117/1.jbo.24.10.106504"

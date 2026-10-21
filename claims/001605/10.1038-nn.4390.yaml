@@ -1,0 +1,1218 @@
+# Claims for Funamizu, Kuhn & Doya (2016), Nat Neurosci 19(12):1682-1689, on dandiset 001605.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (Nature Neuroscience, December 2016), from the PDF supplied by
+# hand, stored as paper/10.1038-nn.4390.txt: main text, figure legends, Online Methods, and the
+# supplement (41593_2016_BFnn4390_MOESM16_ESM.pdf: Supplementary Figs. 1 to 14 and Supplementary
+# Table 1). The display equations of the Methods are garbled in the text; the words around them
+# were read. PDF pages were rendered only to read Figure 1c, Figure 2c,d, Figure 4 and
+# Supplementary Table 1 (columns), which the text garbles. Code: the paper says its Matlab scripts
+# are "available from corresponding author upon request"; it links no code, so none was read.
+# Data availability in the paper points to https://groups.oist.jp/ncu/data.
+#
+# Data the paper used, as it reports them.
+#  - Imaging: eight male C57BL/6N mice, 94 sessions (one per day, one imaging plane), mouse 1 to 8
+#    with 2, 10, 5, 14, 15, 15, 12 and 21 sessions. Areas PPC (LPtA, about 1.7 mm posterior and
+#    1.6 mm lateral of bregma) and PM (V2ML, with some V2MM or MM), right hemisphere, layers 2, 3
+#    and 5. PPC: 17, 15 and 14 sessions in layers 2, 3, 5; PM: 16, 15 and 17. 41,031 active
+#    neurons (PPC 8,371, 7,108, 4,859; PM 7,788, 7,005, 5,900). Two-photon imaging at 30.9 Hz,
+#    GCaMP6f with TurboRFP; signal is the green/red ratio R(t), and dR/R = (R - mean R)/mean R with
+#    the mean over all 150 trials including inter-trial intervals. ROIs drawn by hand; active ROIs
+#    carry a signal beyond 3 sigma in the session.
+#  - Behaviour, simultaneous with imaging: auditory virtual navigation on a spherical treadmill in
+#    darkness. A trial starts with a start tone; the virtual sound source (goal) is 67 to 134 cm
+#    from the start; reward when the mouse passes the goal and licks. Conditions continuous,
+#    intermittent 1 and intermittent 2 at 70, 15 and 15%. Zones are 17 cm long; in intermittent 1
+#    a no-sound zone is centred on the goal, in intermittent 2 a sound zone is; the first 33 cm
+#    from the start always have sound. The figures put zone borders at 8.4, 25.1, 41.9 and 58.6 cm
+#    from the goal, so in intermittent 1 the zones 8.4-0 and 41.9-25.1 cm are silent and 25.1-8.4
+#    and 58.6-41.9 cm have sound; intermittent 2 is the reverse. Variables: goal distance,
+#    locomotion speed, licks, sound on or off, reward.
+#  - Per session, the first 150 trials; trials taking more than 20 s to reward (2.71%) and error
+#    trials (0.142%) excluded. Sessions kept only when the start-to-first-lick distance correlated
+#    positively with start-to-goal distance (P < 0.01; 4 of 100 dropped) and motion correction
+#    sufficed (2 of 100 dropped). First lick means the first lick more than 33 cm from the start.
+#  - Sound-response mapping before each imaging session: the task sound (200 ms) from each of 12
+#    speakers, ten times each, 5 s apart (Supplementary Fig. 4).
+#  - Muscimol: three further mice, bilateral PPC injection of muscimol or PBS on alternate days,
+#    no imaging (Fig. 1d-g, Supplementary Fig. 2). Fig. 1f gives "12 sessions, 3 mice"; its
+#    signed-rank w reaches 78 = 12 x 13 / 2 for both muscimol and PBS, so 12 sessions of each. Five more mice for the spread of
+#    fluorescent muscimol (histology only).
+# The archive's description of dandiset 001605 names only the imaging sessions with their
+# behaviour (94 session files); whether the muscimol sessions or the sound-mapping trials are
+# there is for the author to find. No claim uses outside data.
+#
+# Methods fixed by the paper and used throughout (Online Methods unless named):
+#  - Task-relevant neurons: trial traces of dR/R aligned (i) in time to the start tone, (ii) in
+#    time to reaching the goal, (iii) in time to the first lick, (iv) in distance from the start,
+#    (v) in goal distance; averaged over trials, then moving-averaged over 500 ms (time) or
+#    8.37 cm with 0.42 cm steps (distance). Task-relevant when the aligned average is
+#    significantly positive at any point against baseline, one-sided one-sample t-test,
+#    P < 1e-10. Start neurons, significant within 2 s of the start ((i) or (iv)); goal-aligned
+#    ((ii) or (v)) neurons are split by the time of peak activity into before- and after-reaching;
+#    the after-reaching group is split by k-means (two clusters) on the activity of the last
+#    500 ms (16 frames) before the goal into after-reaching (ramping) and reward neurons.
+#    Goal-distance neurons are the before- and after-reaching neurons. A neuron significant in
+#    goal-aligned and lick-aligned activity is assigned to whichever is more significant.
+#    Trials of all conditions are used (Fig. 2c legend, "Neural activity of all trials was
+#    averaged"). Traces are shown up to the goal in goal distance and after it in time (Fig. 2c
+#    legend); the before/after split is read on that joined trace.
+#  - Regression of single neurons (equations 1 to 3): unfiltered dR/R on Gaussian basis functions
+#    of goal distance or goal time, lick frequency and locomotion speed, with the centre of each
+#    basis at the value of maximal averaged activity and its width free; 11 variable sets; the
+#    best set by BIC on the sum of squared errors over all frames of the 150 trials.
+#  - After-reaching slopes (equation 5): per neuron, dR/R binned every 0.42 cm of goal distance,
+#    linear regression on distance within each zone.
+#  - Decoder (equations 6 to 10): all goal-distance neurons of a session (sessions with none, 3 of
+#    94, excluded); n is dR/R after a 3-frame (97.1 ms) moving average; tuning from continuous
+#    trials, 4.2 cm distance bins, mean and s.d. of log activity by maximum likelihood, smoothed
+#    with a Gaussian of s.d. 4.2 cm and resampled every 0.84 cm; traces shifted per neuron to be
+#    positive; log-normal likelihood, neurons independent, flat prior. Continuous trials decoded
+#    by leave-one-trial-out; intermittent trials decoded by a decoder trained on all continuous
+#    trials. Outputs per frame: RMSE, the root of the posterior-expected squared deviation from
+#    the actual distance; MAP; uncertainty, the posterior s.d. about the MAP. MAP and uncertainty
+#    slopes: linear regression on goal distance within each zone of each trial (equation 10).
+#    The slope is reported as decrease per cm of approach (Fig. 5 axes, "MAP decrease per cm").
+#  - Statistics: two-sided Mann-Whitney U, Wilcoxon signed-rank or Ansari-Bradley tests unless
+#    one-sided is stated; P < 0.01 for the multiple comparisons of Figs. 1c,f and 2d (Bonferroni).
+#    Medians with robust s.e. (1.4826 x MAD / sqrt(n)).
+#
+# Details the paper leaves open. The notebook runs every reading of a method; the outcome is the
+# one they all give, and the claim is blocked as methods_underspecified when they disagree. Where
+# readings are of what a reported number counts, the claim holds under any of them.
+#  - O1, baseline of the task-relevance t-test. Readings (a) zero, the session mean of R that
+#    dR/R is taken against; (b) the neuron's mean dR/R over inter-trial intervals. The t-test is
+#    over trials at each point of the aligned trace.
+#  - O2, extent of the aligned traces. Read from the axes of Fig. 2c: start, -1 to 6 s; goal
+#    time, -3 to 3 s; goal distance, 67 to 0 cm then 0 to 3 s after the goal; first lick, -2 to
+#    3 s. The start-aligned distance window (iv) is given nowhere; readings (a) 0 to 67 cm, the
+#    shortest start-to-goal distance; (b) 0 to 33 cm, the stretch always with sound.
+#  - O3, k-means feature for after-reaching against reward neurons. Readings (a) the 16-frame
+#    trace before the goal of each neuron's trial-averaged activity, normalized 0 to 1 as in
+#    Fig. 2c; (b) the mean of that trace. The cluster with higher pre-goal activity is
+#    after-reaching. Standard k-means with a fixed seed and repeated starts (a standard choice).
+#  - O4, distance preference: the goal distance of peak activity of the distance-aligned trace
+#    (67 to 0 cm), the "peaks of distance coding" of Fig. 2d, for every goal-distance neuron.
+#  - O5, per-session proportions against pooled counts, for percentages of neurons. Readings
+#    (a) mean over sessions of per-session proportions of active neurons; (b) pooled counts over
+#    sessions. The tests of proportions are Mann-Whitney U tests over sessions (the Wilcoxon w
+#    values of Fig. 2d, such as 13.5, fit sessions, not neurons).
+#  - O6, frames of the single-neuron regression. "All frames during all 150 trials". Readings
+#    (a) start tone to reaching the goal; (b) start tone to 3 s after the goal, with goal
+#    distance and time continuing past zero. The four initial values of each width are not
+#    given; readings (a) 1/8, 1/4, 1/2 and 1 of the variable's range in the session; (b) 1/16,
+#    1/8, 1/4 and 1/2 of it.
+#  - O7, the positive shift of traces for the log-normal likelihood. Readings: each neuron's
+#    trace shifted so its minimum is (a) 0.01 or (b) 0.1 in dR/R units.
+#  - O8, distance range decoded and bins of Figs. 4 and 5. The decoder covers 67 to 0 cm (axes of
+#    Fig. 4). Per-trial values in Fig. 4c-e are means over frames within 4.2-cm goal-distance bins
+#    (the tick spacing of Fig. 4c-e and the decoder's bin width); Supplementary Fig. 11a uses
+#    0.42 cm bins, a second reading for Fig. 4c-e. Fig. 5 zones are 58.6-41.9, 41.9-25.1,
+#    25.1-8.4 and 8.4-0 cm (axis of Fig. 5a); Figs. 5b,d use the last two.
+#  - O9, slow and fast trials (Supplementary Figs. 1 and 13): trials of each session split into
+#    equal halves by locomotion speed. Readings (a) mean speed over the trial; (b) mean speed in
+#    the no-sound zones analysed. Which no-sound zones: readings (a) every no-sound zone between
+#    67 and 0 cm, slopes averaged per trial; (b) the no-sound zone nearest the goal.
+#
+# Paper inconsistencies noted: the Results say uncertainty decreased with sound "between 25.8 and
+# 0 cm", where the figures use 25.1 cm. Fig. 4c legend calls RMSE "the expected squared
+# deviation", while its name and the Methods take the root. The Results give positive PM slopes
+# in no-sound zones as "P = 2.40 x 10-4 to 0, z = 3.67 to 9.59", while Supplementary Fig. 8a
+# gives PM without sound as "P = 0.497 to 9.97 x 10-10, z = 0.679 to 6.11".
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001605"
+paper: doi:10.1038/nn.4390
+claims:
+- id: session-counts
+  statement: Imaging data come from 94 sessions of 8 mice (2, 10, 5, 14, 15, 15, 12 and 21 sessions
+    for mice 1 to 8); PPC layers 2, 3 and 5 were imaged in 17, 15 and 14 sessions and PM layers 2,
+    3 and 5 in 16, 15 and 17.
+  source: Online Methods, Behavioral analysis; Results, Goal-distance representation in PPC and PM,
+    paragraph 1
+  quote: In total, we analyzed data from 94 sessions in 8 mice (mouse 1, 2 sessions; mouse 2, 10
+    sessions; mouse 3, 5 sessions; mouse 4, 14 sessions; mouse 5, 15 sessions; mouse 6, 15
+    sessions; mouse 7, 12 sessions; mouse 8, 21 sessions)
+  expected:
+  - quantity: sessions
+    value: 94
+    tolerance: 0
+  - quantity: mice
+    value: 8
+    tolerance: 0
+  - quantity: PPC layer 2 sessions
+    value: 17
+    tolerance: 0
+  - quantity: PPC layer 3 sessions
+    value: 15
+    tolerance: 0
+  - quantity: PPC layer 5 sessions
+    value: 14
+    tolerance: 0
+  - quantity: PM layer 2 sessions
+    value: 16
+    tolerance: 0
+  - quantity: PM layer 3 sessions
+    value: 15
+    tolerance: 0
+  - quantity: PM layer 5 sessions
+    value: 17
+    tolerance: 0
+  criterion: Counts of named sessions and animals, so the tolerance is 0 for each, and the sessions
+    per mouse must match the list as a multiset (the dataset's subject labels need not follow the
+    paper's numbering). Reproduced when all counts match; partially reproduced when the totals
+    match and at most two per-group counts differ by one.
+- id: neuron-counts
+  statement: 41,031 neurons were imaged, 8,371, 7,108 and 4,859 in PPC layers 2, 3 and 5 and 7,788,
+    7,005 and 5,900 in PM; these are active cells, 99.6% of the manually selected ROIs.
+  source: Results, Goal-distance representation in PPC and PM, paragraph 1; Supplementary Table 1
+  quote: In total, we imaged the activity of 41,031 neurons in 94 sessions (PPC ... 8,371, 7,108 and
+    4,859 neurons from 17, 15 and 14 sessions in layers 2, 3 and 5, respectively; PM ... 7,788,
+    7,005 and 5,900 neurons from 16, 15 and 17 sessions, respectively)
+  expected:
+  - quantity: neurons, all
+    value: 41031
+    tolerance: 4103.1
+  - quantity: PPC layer 2 neurons
+    value: 8371
+    tolerance: 837.1
+  - quantity: PPC layer 3 neurons
+    value: 7108
+    tolerance: 710.8
+  - quantity: PPC layer 5 neurons
+    value: 4859
+    tolerance: 485.9
+  - quantity: PM layer 2 neurons
+    value: 7788
+    tolerance: 778.8
+  - quantity: PM layer 3 neurons
+    value: 7005
+    tolerance: 700.5
+  - quantity: PM layer 5 neurons
+    value: 5900
+    tolerance: 590
+  criterion: The per-session averages of Supplementary Table 1 (active cells 492, 474, 347, 487,
+    467, 347) times the session counts give these totals, so they count active cells. Readings
+    of what the dataset's ROIs are, (a) all ROIs, (b) ROIs with a dR/R excursion beyond 3 s.d. of
+    the session trace (the paper's "signal beyond 3σ"). Reproduced when, under one reading, all
+    seven counts are within tolerance.
+- id: behaviour-timing
+  statement: Mice got the reward 7.4 ± 0.1 s after the trial start and spent 860 ± 10 ms in each
+    no-sound zone of the intermittent conditions (mean ± s.e.m. over 94 sessions).
+  source: Online Methods, Behavioral training, paragraph 5
+  quote: Mice got the reward in 7.4 ± 0.1 s (mean ± s.e.m., n = 94). In intermittent conditions,
+    mice spent 860 ± 10 ms (n = 94) in each no-sound zone.
+  expected:
+  - quantity: time from start to reward, mean over sessions
+    value: 7.4
+    tolerance: 0.1
+    unit: s
+  - quantity: time per no-sound zone, mean over sessions
+    value: 0.86
+    tolerance: 0.01
+    unit: s
+  criterion: Tolerances are the stated s.e.m. Per session, the mean over the analysed trials
+    (first 150, without trials over 20 s or error trials), then the mean over sessions. Which
+    no-sound zones count is not given; readings (a) every complete no-sound zone after the first
+    33 cm and before the goal, (b) every no-sound zone the mouse enters, including the one
+    around the goal in intermittent 1 up to the reward. Reproduced when the reward time and,
+    under one reading, the zone time are within tolerance.
+- id: lick-goal-correlation
+  statement: In every session the start-to-first-lick distance correlated with the start-to-goal
+    distance, with r from 0.258 to 0.822 over the 94 sessions (r = 0.798 in the example session).
+  source: Results, Licking indicates action-dependent distance estimation, paragraph 2; Figure 1b;
+    Online Methods, Behavioral analysis
+  quote: Mice increased licking frequency as they approached the goal (r = 0.798, P = 2.11 × 10−34;
+    Fig. 1b; 94 sessions of 8 mice ... r = 0.258 to 0.822, P = 0.00229 to 9.05 × 10−38)
+  statistics:
+  - about: largest P of the 94 sessions (range 0.00229 to 9.05e-38)
+    test: correlation coefficient
+    p: 0.00229
+    n: 94 sessions of 8 mice
+  expected:
+  - quantity: smallest session r
+    value: 0.258
+    tolerance: 0.0258
+  - quantity: largest session r
+    value: 0.822
+    tolerance: 0.0822
+  criterion: The Results do not name the two variables of r. They are read as those of the
+    Methods' session selection, since every reported P is below its 0.01 threshold. The Methods
+    define that correlation as start-to-lick distance against start-to-goal distance, first lick meaning the first lick more than 33 cm from the
+    start, over the analysed trials of all conditions. The coefficient is not named; readings
+    (a) Pearson, (b) Spearman. Reproduced when, under one reading, every session has r > 0 with
+    P < 0.01 and all r lie within 0.232 to 0.904 (the range widened by 10% of each bound).
+- id: fig1c-licking-without-sound
+  statement: Licking increased as mice approached the goal in all conditions, and in both
+    intermittent conditions it increased even within the no-sound zones (41.9-25.1 and 8.4-0 cm
+    in intermittent 1, 25.1-8.4 cm in intermittent 2).
+  source: Figure 1c; Results, Licking indicates action-dependent distance estimation, paragraph 2
+  quote: In intermittent conditions, anticipatory licking increased even when the sound was omitted
+    (one-sided Wilcoxon signed-rank test, P = 4.87 × 10−8 to 1.22 × 10−15; Fig. 1c)
+  statistics:
+  - about: intermittent 1, the four marked bins (largest P)
+    test: one-sided Wilcoxon signed-rank test
+    statistic: z = 7.91, 8.39, 7.45, 5.33
+    p: 4.87e-8
+    n: 94 sessions
+  - about: continuous, the four marked bins (largest P)
+    test: one-sided Wilcoxon signed-rank test
+    statistic: z = 7.11, 8.32, 8.42, 8.42
+    p: 5.64e-13
+    n: 94 sessions
+  - about: intermittent 2, the four marked bins (largest P)
+    test: one-sided Wilcoxon signed-rank test
+    statistic: z = 2.14, 5.44, 6.19, 8.41
+    p: 0.0160
+    n: 94 sessions
+  - about: the four no-sound comparisons of both intermittent conditions (range 4.87e-8 to
+      1.22e-15)
+    test: one-sided Wilcoxon signed-rank test
+    p: 4.87e-8
+    n: 94 sessions
+  criterion: Licks per trial in goal-distance bins, mean per session, for each condition (Fig. 1c).
+    The text does not state the bins or the pairs compared; they are read from the figure. The
+    boxes are 4.2 cm wide (32 from 134 to 0 cm), and each of the four brackets compares a bin
+    with the bin 8.4 cm (two boxes) farther from the goal. The tested bins are 29.3-25.1,
+    20.9-16.7, 12.6-8.4 and 4.2-0 cm. The text confirms this. Its no-sound range, P = 4.87e-8 to
+    1.22e-15, is exactly the set of the first and fourth intermittent 1 values and the second
+    and third intermittent 2 values, the comparisons whose tested bin is silent. Bin edges at
+    multiples of 4.2 cm from the goal are a standard choice read from the figure. One-sided
+    signed-rank test over the 94 sessions (tested bin higher), at the Bonferroni threshold
+    P < 0.01 (Statistics; the legend marks P < 1e-7). Reproduced when licking rises with
+    P < 0.01 in the four no-sound comparisons (intermittent 1, first and fourth; intermittent 2,
+    second and third) and in all four continuous comparisons. The other comparisons are shown.
+- id: supp1-licking-speed
+  statement: During no-sound zones licking rose more steeply in fast-locomotion trials than in slow
+    ones, in both intermittent conditions.
+  source: Supplementary Figure 1; Results, Licking indicates action-dependent distance estimation,
+    paragraph 2
+  quote: Slope of licking ... was significantly steeper in fast trials than slow trials, suggesting
+    that mice use action-dependent distance estimation
+  statistics:
+  - about: intermittent 1
+    test: Wilcoxon signed-rank test
+    statistic: z = 3.83
+    p: 1.27e-4
+    n: 94 sessions
+  - about: intermittent 2
+    test: Wilcoxon signed-rank test
+    statistic: z = 5.33
+    p: 9.81e-8
+    n: 94 sessions
+  criterion: Per trial, lick frequency in a no-sound zone regressed on time (Lick(t) = b0 + b1 t,
+    Supplementary Fig. 1); trials split into equal slow and fast halves per session (O9); per
+    session, mean slope of slow and of fast trials; signed-rank test over sessions per condition.
+    Reproduced when, under every reading of O9, fast slopes exceed slow with P < 0.01 in both
+    intermittent conditions.
+- id: fig1d-muscimol-correlation
+  statement: Silencing PPC with muscimol lowered the correlation between start-to-lick and
+    start-to-goal distance, making lick initiation more variable.
+  source: Figure 1d; Results, Licking indicates action-dependent distance estimation, paragraph 3
+  quote: Correlation coefficients decreased after muscimol injection, indicating that silencing of
+    PPC made lick initiation more variable (Mann-Whitney U test, P = 3.08 × 10−4, z = 3.61)
+  statistics:
+  - test: Mann-Whitney U test
+    statistic: z = 3.61
+    p: 3.08e-4
+    n: muscimol against PBS sessions of 3 mice (12 of each, read from Fig. 1f)
+  criterion: Session correlations as in lick-goal-correlation, muscimol sessions against PBS
+    sessions (no-injection sessions are shown in Fig. 1d but not tested), two-sided Mann-Whitney U.
+    Reproduced when muscimol correlations are lower with P < 0.05.
+- id: fig1e-muscimol-variance
+  statement: After muscimol the distance between the first lick and the goal was more variable
+    than after PBS, in all three conditions.
+  source: Figure 1e; Results, Licking indicates action-dependent distance estimation, paragraph 3
+  quote: Variance of the distance was compared between PBS and muscimol-injected trials
+  statistics:
+  - about: continuous
+    test: Ansari-Bradley test
+    statistic: w = 15.8
+    p: 4.35e-56
+    n: 1,407 PBS and 1,188 muscimol trials
+  - about: intermittent 1
+    test: Ansari-Bradley test
+    statistic: w = 7.90
+    p: 2.70e-15
+    n: 293 PBS and 240 muscimol trials
+  - about: intermittent 2
+    test: Ansari-Bradley test
+    statistic: w = 10.2
+    p: 2.53e-24
+    n: 259 PBS and 230 muscimol trials
+  criterion: First-lick-to-goal distance per trial, PBS against muscimol trials, Ansari-Bradley
+    test per condition. Reproduced when muscimol trials have the larger spread with P < 1e-14 (the
+    legend's threshold) in all three conditions.
+- id: fig1fg-muscimol-no-sound-licking
+  statement: After muscimol, licking no longer increased significantly in the no-sound zones of
+    the intermittent conditions, while after PBS it did. The increase of licks between adjacent
+    bins in those no-sound zones was smaller after muscimol than after PBS.
+  source: Figure 1f,g; Results, Licking indicates action-dependent distance estimation, paragraph 3
+  quote: The effect of PPC silencing was most prominent in intermittent conditions, with no increase
+    in licking in no-sound zones (one-sided Wilcoxon signed-rank test, P = 0.485 to 0.0212; Fig. 1f;
+    Mann-Whitney U-test, P = 0.00761 and 4.84 × 10−6; Fig. 1g)
+  statistics:
+  - about: muscimol, no-sound bins of intermittent conditions (range 0.485 to 0.0212)
+    test: one-sided Wilcoxon signed-rank test
+    p: 0.485
+    n: 12 sessions, 3 mice
+  - about: PBS against muscimol, increase from 25-17 to 17-8.4 cm, intermittent 2
+    test: Mann-Whitney U test
+    statistic: z = 2.67
+    p: 0.00761
+    n: 259 PBS and 230 muscimol trials
+  - about: PBS against muscimol, increase from 17-8.4 to 8.4-0 cm, intermittent 1
+    test: Mann-Whitney U test
+    statistic: z = 4.57
+    p: 4.84e-6
+    n: 293 PBS and 240 muscimol trials
+  criterion: Fig. 1f, licks per trial in 4.2-cm bins and the same four comparisons as
+    fig1c-licking-without-sound (each tested bin against the bin 8.4 cm farther from the goal;
+    the figure draws the same brackets), separately for the 12 muscimol and the 12 PBS sessions,
+    one-sided signed-rank test over sessions, P < 0.01 (legend). The text's muscimol range for
+    no-sound zones, P = 0.485 to 0.0212, is again the first and fourth intermittent 1 values and
+    the second and third intermittent 2 values. Fig. 1g, per trial, the change of lick count
+    from the 8.4-cm bin 25.1-16.7 cm to 16.7-8.4 cm and from 16.7-8.4 cm to 8.4-0 cm (the
+    legend's 25-17, 17-8.4 and 8.4-0 cm), PBS against muscimol trials, Mann-Whitney U, P < 0.01.
+    Reproduced when none of the four no-sound comparisons has P < 0.01 after muscimol, all four
+    have P < 0.01 after PBS (the paper's largest is 0.00464), and the Fig. 1g increase is larger
+    after PBS with P < 0.01 for intermittent 1 at 17-8.4 to 8.4-0 cm and intermittent 2 at 25-17
+    to 17-8.4 cm.
+- id: supp2d-muscimol-overrun
+  statement: Silencing PPC increased overrun, the start of licking more than 8.3 cm past the goal,
+    most in the intermittent 1 condition.
+  source: Supplementary Figure 2d; Results, Licking indicates action-dependent distance estimation,
+    paragraph 3
+  quote: Silencing of PPC increased overrun (start licking over 8.3 cm past the goal)
+  statistics:
+  - about: continuous
+    test: Mann-Whitney U-test
+    statistic: z = 4.09
+    p: 4.26e-5
+    n: 1,407 PBS and 1,188 muscimol trials
+  - about: intermittent 1
+    test: Mann-Whitney U-test
+    statistic: z = 7.96
+    p: 1.79e-15
+    n: 293 PBS and 240 muscimol trials
+  - about: intermittent 2
+    test: Mann-Whitney U-test
+    statistic: z = 2.29
+    p: 0.0221
+    n: 259 PBS and 230 muscimol trials
+  criterion: Per trial, the distance of the licking for reward acquisition relative to the goal
+    (the first lick at or past the goal), PBS against muscimol trials per condition, Mann-Whitney
+    U. Reproduced when muscimol trials lick farther past the goal with P < 0.01 in continuous and
+    intermittent 1 (the legend's threshold); intermittent 2 (reported P = 0.0221) is shown.
+- id: muscimol-locomotion
+  statement: PPC inactivation lowered locomotion speed and raised anticipatory licking in the
+    continuous condition, but changed neither in the intermittent conditions.
+  source: Online Methods, Muscimol injection, paragraph 2
+  quote: Inactivation of PPC decreased the locomotion speed of mice in the continuous condition
+    (MannWhitney U-test, P = 9.63 × 10−12, z = 6.81), which was most probably caused by increased
+    anticipatory licking (Mann-Whitney U-test, P = 6.92 × 10−11, z = 6.52). In intermittent
+    conditions, inactivation of PPC did not change the locomotion speed (P = 0.106, z = 1.62) and
+    the licking (P = 0.0828, z = 1.73).
+  statistics:
+  - about: speed, continuous
+    test: Mann-Whitney U-test
+    statistic: z = 6.81
+    p: 9.63e-12
+  - about: licking, continuous
+    test: Mann-Whitney U-test
+    statistic: z = 6.52
+    p: 6.92e-11
+  - about: speed, intermittent
+    test: Mann-Whitney U-test
+    statistic: z = 1.62
+    p: 0.106
+  - about: licking, intermittent
+    test: Mann-Whitney U-test
+    statistic: z = 1.73
+    p: 0.0828
+  criterion: Per trial, muscimol against PBS trials, Mann-Whitney U (two-sided, Statistics);
+    intermittent 1 and 2 pooled, as the text reports one test. The paper does not define the
+    measures. Readings for speed, (a) mean speed from start to goal, (b) mean speed from start
+    to reward. Readings for licking, (a) lick count from start to goal, (b) lick count from
+    start to reward. The no-change parts are claims of absence, judged at P < 0.05. Reproduced
+    when, under every reading, continuous speed is lower and licking higher after muscimol with
+    P < 0.05, and neither differs with P < 0.05 in intermittent trials.
+- id: sound-responsive-layer3
+  statement: PPC and PM neurons responded to sounds; in layer 3, PM had more sound-responsive
+    neurons than PPC (4.78% against 1.48%).
+  source: Results, Goal-distance representation in PPC and PM, paragraph 2; Supplementary Figure 4b
+  quote: On average, PM had more sound-responsive neurons than PPC in layer 3 (PPC, 1.48%, PM,
+    4.78%; Mann-Whitney U test, P = 0.0402)
+  statistics:
+  - about: layer 3, PPC against PM
+    test: Mann-Whitney U test
+    statistic: z = 2.05
+    p: 0.0402
+    n: 15 PPC and 15 PM sessions
+  expected:
+  - quantity: sound-responsive neurons, PPC layer 3
+    value: 1.48
+    tolerance: 0.148
+    unit: '%'
+  - quantity: sound-responsive neurons, PM layer 3
+    value: 4.78
+    tolerance: 0.478
+    unit: '%'
+  criterion: Sound-mapping trials (Online Methods, Imaging sound responses of neurons). Activity
+    after sound from two adjacent speakers pooled into six azimuths; 500 ms moving average; a
+    neuron is sound responsive when, at some azimuth, activity in the first 1.5 s after sound
+    onset exceeds activity in the 1 s before (one-sided t-test, P < 1e-5). Percentages per field
+    of view, readings of O5. Reproduced when, under one reading, both percentages are within
+    tolerance and the per-session Mann-Whitney U test gives PM higher with P < 0.05.
+- id: neuron-classes
+  statement: Goal-distance neurons numbered 1,116, 1,054 and 483 in PPC layers 2, 3 and 5 and 601,
+    479 and 129 in PM; of these, 744, 854 and 367 in PPC and 193, 204 and 54 in PM were
+    after-reaching neurons; per session, on average 65.6, 70.3 and 34.5 in PPC and 37.6, 31.9 and
+    7.59 in PM were goal-distance neurons.
+  source: Figure 2d; Figure 3c legend; Supplementary Figure 6 legend; Results, Distance prediction
+    with dynamic Bayesian inference, paragraph 2
+  quote: Number of after-reaching neurons in layers 2, 3, 5 was 744, 854, 367 in PPC and 193, 204,
+    54 in PM ... (average number of goal-distance neurons in layers 2, 3 and 5; PPC, 65.6, 70.3
+    and 34.5; PM, 37.6, 31.9 and 7.59)
+  expected:
+  - quantity: goal-distance neurons, PPC layer 2
+    value: 1116
+    tolerance: 111.6
+  - quantity: goal-distance neurons, PPC layer 3
+    value: 1054
+    tolerance: 105.4
+  - quantity: goal-distance neurons, PPC layer 5
+    value: 483
+    tolerance: 48.3
+  - quantity: goal-distance neurons, PM layer 2
+    value: 601
+    tolerance: 60.1
+  - quantity: goal-distance neurons, PM layer 3
+    value: 479
+    tolerance: 47.9
+  - quantity: goal-distance neurons, PM layer 5
+    value: 129
+    tolerance: 12.9
+  - quantity: after-reaching neurons, PPC layer 2
+    value: 744
+    tolerance: 74.4
+  - quantity: after-reaching neurons, PPC layer 3
+    value: 854
+    tolerance: 85.4
+  - quantity: after-reaching neurons, PPC layer 5
+    value: 367
+    tolerance: 36.7
+  - quantity: after-reaching neurons, PM layer 2
+    value: 193
+    tolerance: 19.3
+  - quantity: after-reaching neurons, PM layer 3
+    value: 204
+    tolerance: 20.4
+  - quantity: after-reaching neurons, PM layer 5
+    value: 54
+    tolerance: 5.4
+  criterion: The classification of the opening comment (Online Methods, Task-relevant neurons),
+    under readings O1, O2 and O3. Before-reaching counts follow by subtraction and match
+    Supplementary Fig. 9a (372, 200, 116; 408, 275, 75); the per-session averages are the totals
+    over session counts. Fig. 2d also gives goal-distance or reward neurons (1,745, 1,456 and
+    651 in PPC; 816, 625 and 183 in PM), so reward neurons are 629, 402, 168; 215, 146, 54.
+    These are shown, not judged. This claim selects the neurons other claims use. Reproduced when, under
+    every reading, at least 10 of the 12 counts are within tolerance; partially reproduced when at
+    least 6 are. The counts under each reading are shown.
+- id: fig2d-task-relevant-proportions
+  statement: Task-relevant neurons made up 41.3, 33.8 and 20.0% of active neurons in PPC layers 2,
+    3 and 5 and 19.6, 16.7 and 5.70% in PM, more in PPC than in PM in every layer.
+  source: Results, Goal-distance representation in PPC and PM, paragraph 4; Figure 2d
+  quote: Among active neurons (99.6% of all neurons; Supplementary Table 1), the proportions of
+    task-relevant neurons in layers 2, 3 and 5 were 41.3, 33.8 and 20.0% in PPC, and 19.6, 16.7
+    and 5.70% in PM, indicating that more neurons were recruited to the task in PPC than PM
+  statistics:
+  - about: layer 2
+    test: Mann-Whitney U test
+    statistic: z = 3.58
+    p: 3.38e-4
+  - about: layer 3
+    test: Mann-Whitney U test
+    statistic: z = 2.32
+    p: 0.0202
+  - about: layer 5
+    test: Mann-Whitney U test
+    statistic: z = 3.63
+    p: 2.81e-4
+  expected:
+  - quantity: task-relevant, PPC layer 2
+    value: 41.3
+    tolerance: 4.13
+    unit: '%'
+  - quantity: task-relevant, PPC layer 3
+    value: 33.8
+    tolerance: 3.38
+    unit: '%'
+  - quantity: task-relevant, PPC layer 5
+    value: 20.0
+    tolerance: 2.0
+    unit: '%'
+  - quantity: task-relevant, PM layer 2
+    value: 19.6
+    tolerance: 1.96
+    unit: '%'
+  - quantity: task-relevant, PM layer 3
+    value: 16.7
+    tolerance: 1.67
+    unit: '%'
+  - quantity: task-relevant, PM layer 5
+    value: 5.70
+    tolerance: 0.57
+    unit: '%'
+  depends_on:
+  - neuron-classes
+  criterion: Task relevance as in neuron-classes (O1, O2). Percentages under the two readings of
+    O5 (Fig. 2d shows pooled counts 3,497, 2,376, 1,045 and 1,533, 1,180, 317 task-relevant
+    neurons, which over the active counts give 41.8, 33.4, 21.5, 19.7, 16.8 and 5.37%. These
+    differ from the reported values by up to 1.5 percentage points, so the reported values are
+    probably per-session means, reading (a); the pooled values still lie within tolerance). Mann-Whitney U over per-session proportions, PPC
+    against PM per layer. Reproduced when, under one O5 reading, all six values are within
+    tolerance and, under every method reading, PPC exceeds PM with P < 0.05 in all three layers.
+- id: fig2d-goal-distance-ppc-more
+  statement: PPC had more goal-distance neurons than PM in all three layers.
+  source: Results, Goal-distance representation in PPC and PM, paragraph 4; Figure 2d
+  quote: PPC had more goal-distance neurons than PM in all layers (Mann-Whitney U test, P = 0.00415,
+    0.0152 and 4.98 × 10−4, z = 2.87, 2.43 and 3.48, respectively; Fig. 2d)
+  statistics:
+  - about: layer 2
+    test: Mann-Whitney U test
+    statistic: z = 2.87
+    p: 0.00415
+  - about: layer 3
+    test: Mann-Whitney U test
+    statistic: z = 2.43
+    p: 0.0152
+  - about: layer 5
+    test: Mann-Whitney U test
+    statistic: z = 3.48
+    p: 4.98e-4
+  depends_on:
+  - neuron-classes
+  criterion: Per session, goal-distance neurons, PPC against PM per layer, Mann-Whitney U over
+    sessions. Whether counts or proportions of active neurons are compared is not said;
+    readings (a) proportion of active neurons, (b) count. Reproduced when, under every reading
+    of O1 to O3 and of the measure,
+    PPC is higher with P < 0.05 in all three layers.
+- id: fig2d-after-vs-before
+  statement: PPC had more after-reaching than before-reaching neurons in every layer, whereas PM
+    tended the other way, significantly in layer 2.
+  source: Results, Goal-distance representation in PPC and PM, paragraph 4; Figure 2d
+  quote: PPC had more after-reaching neurons than before-reaching neurons (Wilcoxon signed-rank
+    test, P = 0.0319, 0.00568 and 0.0176, z = 2.15, w = 13.5 and 9.5), whereas PM had the opposite
+    tendency (P = 0.00771, 0.287 and 0.427, z = 2.66, w = 70 and 57.5)
+  statistics:
+  - about: PPC layer 2
+    test: Wilcoxon signed-rank test
+    statistic: z = 2.15
+    p: 0.0319
+  - about: PPC layer 3
+    test: Wilcoxon signed-rank test
+    statistic: w = 13.5
+    p: 0.00568
+  - about: PPC layer 5
+    test: Wilcoxon signed-rank test
+    statistic: w = 9.5
+    p: 0.0176
+  - about: PM layer 2
+    test: Wilcoxon signed-rank test
+    statistic: z = 2.66
+    p: 0.00771
+  - about: PM layer 3
+    test: Wilcoxon signed-rank test
+    statistic: w = 70
+    p: 0.287
+  - about: PM layer 5
+    test: Wilcoxon signed-rank test
+    statistic: w = 57.5
+    p: 0.427
+  depends_on:
+  - neuron-classes
+  criterion: Per session, counts (or proportions, O5) of after-reaching and before-reaching
+    neurons, paired over sessions, two-sided signed-rank test per area and layer. Reproduced
+    when, under every reading of O1 to O3, after-reaching exceeds before-reaching in all PPC
+    layers with P < 0.05, and in PM before-reaching exceeds after-reaching in layer 2 with
+    P < 0.05 and PM layers 3 and 5 do not show PPC's direction significantly.
+- id: fig2d-layer-distance-preference
+  statement: In both PPC and PM, goal-distance neurons in layers 3 and 5 preferred distances closer
+    to the goal than those in layer 2.
+  source: Figure 2d insets and legend; Results, Goal-distance representation in PPC and PM,
+    paragraph 4
+  quote: in both areas, goal-distance neurons in layers 3 and 5 were more tuned to the distance
+    near the goal than those in layer 2 (Mann-Whitney U test, P = 0.00319 to 2.25 × 10−16)
+  statistics:
+  - about: PPC, layer 2 against 3
+    test: Mann-Whitney U test
+    statistic: z = 8.21
+    p: 2.25e-16
+  - about: PPC, layer 2 against 5
+    test: Mann-Whitney U test
+    statistic: z = 4.88
+    p: 1.07e-6
+  - about: PPC, layer 3 against 5
+    test: Mann-Whitney U test
+    statistic: z = 1.43
+    p: 0.154
+  - about: PM, layer 2 against 3
+    test: Mann-Whitney U test
+    statistic: z = 3.18
+    p: 0.00147
+  - about: PM, layer 2 against 5
+    test: Mann-Whitney U test
+    statistic: z = 2.95
+    p: 0.00319
+  - about: PM, layer 3 against 5
+    test: Mann-Whitney U test
+    statistic: z = 1.15
+    p: 0.252
+  depends_on:
+  - neuron-classes
+  criterion: Distance preference per goal-distance neuron (O4), Mann-Whitney U over neurons between
+    layers within each area, Bonferroni threshold P < 0.01 (Statistics, Fig. 2d). Reproduced
+    when, under every reading of O1 to O3, layers 3 and 5 each have smaller preferred distances
+    than layer 2 with P < 0.01 in both areas. The layer 3 against 5 comparisons are shown.
+- id: fig3b-distance-over-time
+  statement: In PPC and PM, more goal-distance neurons were best fit by goal distance than by the
+    time to reach the goal.
+  source: Figure 3b; Results, Goal-distance representation in PPC and PM, paragraph 6
+  quote: More neurons represented the goal distance than the time to goal in PPC and PM (Wilcoxon
+    signed-rank test, P = 0.00348 to 4.33 × 10−4)
+  statistics:
+  - about: PPC layers 2, 3, 5
+    test: Wilcoxon signed-rank test
+    statistic: w = 136, 108.5, 87
+    p: 0.00348
+  - about: PM layers 2, 3, 5
+    test: Wilcoxon signed-rank test
+    statistic: w = 135, 112, 101
+    p: 0.00153
+  depends_on:
+  - neuron-classes
+  criterion: Single-neuron regression with BIC selection over the 11 variable sets (opening
+    comment; O6). A neuron represents distance when its best set contains distance, and time
+    when it contains time. Per session, counts of distance and of time neurons among
+    goal-distance neurons, paired two-sided signed-rank test over sessions per area and layer.
+    Reproduced when, under every reading, distance neurons outnumber time neurons with P < 0.01
+    in all six area-layer groups.
+- id: supp6-distance-not-sound
+  statement: Goal-distance and after-reaching neurons were fit better by goal distance than by a
+    distance held constant during no-sound zones or by the sound intensity.
+  source: Supplementary Figure 6; Results, Goal-distance representation in PPC and PM, paragraph 6
+  quote: RMSE of Distance was significantly smaller than of other variables both in goal-distance
+    neurons and after-reaching neurons, indicating goal distance representation
+  statistics:
+  - about: all comparisons (range 0.0428 to 0)
+    test: Wilcoxon signed-rank test
+    statistic: z = 2.03 to 27.0
+    p: 0.0428
+  depends_on:
+  - neuron-classes
+  criterion: Per neuron, y(t) = b0 + b1 phi(variable(t)) with the Gaussian basis of equation (3),
+    variable Distance, Step (goal distance held at its value on entering each no-sound zone) or
+    Sound (intensity, 100 dB SPL at 25 cm and 6 dB lower per doubling of distance; Online
+    Methods). Intensity during no-sound zones and below 25 cm is not given; readings (a) zero
+    during no-sound zones and the formula below 25 cm with distance floored at 0.42 cm; (b) the
+    same with intensity capped at 100 dB below 25 cm. Frames as O6. RMSE of each fit, paired
+    signed-rank test over neurons, Distance against Step and against Sound, for goal-distance
+    and for after-reaching neurons in each area and layer. Reproduced when, under every reading,
+    Distance has the lower RMSE with P < 0.05 in all 24 comparisons; partially when in at least
+    20.
+- id: tuning-similar-ppc-pm
+  statement: The distance tuning curves of goal-distance neurons, as fitted coefficients, did not
+    differ between PPC and PM.
+  source: Results, Goal-distance representation in PPC and PM, paragraph 6
+  quote: Fitted coefficients for goal-distance representation revealed that the distance tuning
+    curves of neurons were similar between PPC and PM (Online Methods; Mann-Whitney U test, P =
+    0.268 to 0.106, z = 1.11 to 1.62)
+  statistics:
+  - about: PPC against PM, per layer (smallest P of the range)
+    test: Mann-Whitney U test
+    statistic: z = 1.11 to 1.62
+    p: 0.106
+  depends_on:
+  - neuron-classes
+  criterion: A claim of absence. The coefficient compared is not named; the fit is the distance
+    model of equation (2) for goal-distance neurons. Readings (a) the width s of the distance
+    basis; (b) the distance coefficient b1. Mann-Whitney U over neurons, PPC against PM per layer,
+    two-sided. Reproduced when no layer differs with P < 0.05; not reproduced when any does;
+    effect sizes are shown. If the readings disagree the claim is blocked as
+    methods_underspecified.
+- id: fig3c-continuous-ramp
+  statement: In the continuous condition, after-reaching neurons increased their activity as mice
+    approached the goal, in both PPC and PM.
+  source: Figure 3c; Results, PPC represents goal distance estimated from action, paragraph 1
+  quote: Activity in the continuous condition gradually increased in both PPC and PM as mice
+    approached the goal (Wilcoxon signed-rank test, P = 0.00507 to 0, z = 2.80 to 25.0; Fig. 3c,
+    and Supplementary Figs. 7 and 8a)
+  statistics:
+  - about: all area, layer and zone tests (largest P)
+    test: Wilcoxon signed-rank test
+    statistic: z = 2.80 to 25.0
+    p: 0.00507
+  depends_on:
+  - neuron-classes
+  criterion: Per after-reaching neuron, its trial-averaged dR/R in the condition, binned every
+    0.42 cm (equation 5); whether the 8.37 cm moving average of the classification is applied
+    first is not said, readings (a) not applied, (b) applied. Slope of activity against approach
+    in the zones 25.1-8.4 and 8.4-0 cm (Supplementary Fig. 8a), signed-rank test of slopes
+    against zero over neurons per area and layer. Reproduced when, under every reading, the
+    median slope is positive (activity rising toward the goal) with P < 0.01 in all 12 area,
+    layer and zone tests.
+- id: fig3c-ppc-ramp-without-sound
+  statement: In the intermittent conditions, PPC after-reaching neurons in all layers increased
+    activity toward the goal both with and without sound.
+  source: Figure 3c; Supplementary Figure 8a; Results, PPC represents goal distance estimated from
+    action, paragraph 1
+  quote: In intermittent conditions, increased activity was observed with and without sound inputs
+    in all PPC layers (sound zones ... P = 1.37 × 10−4 to 0, z = 3.81 to 23.2; no-sound zones ...
+    P = 1.19 × 10−6 to 0, z = 4.86 to 17.9)
+  statistics:
+  - about: PPC, sound zones (largest P)
+    test: Wilcoxon signed-rank test
+    statistic: z = 3.81 to 23.2
+    p: 1.37e-4
+  - about: PPC, no-sound zones (largest P)
+    test: Wilcoxon signed-rank test
+    statistic: z = 4.86 to 17.9
+    p: 1.19e-6
+  depends_on:
+  - neuron-classes
+  criterion: Slopes as in fig3c-continuous-ramp (both readings), in intermittent 1 and 2 trials,
+    zones 25.1-8.4 and 8.4-0 cm (one with and one without sound in each condition). Reproduced
+    when, under every reading, the median slope is positive with P < 0.01 in all 12 PPC tests
+    (3 layers, 2 conditions, 2 zones).
+- id: supp8a-pm-no-sound
+  statement: In PM, after-reaching neurons showed positive slopes in some no-sound zones, but in
+    the intermittent 1 condition their slopes without sound were not significantly positive.
+  source: Supplementary Figure 8a; Results, PPC represents goal distance estimated from action,
+    paragraph 1
+  quote: Slopes were significantly positive with and without sound in PPC in all conditions, but in
+    PM in intermittent 1 condition they were not significantly positive without sound.
+  statistics:
+  - about: PM, without sound (range 0.497 to 9.97e-10)
+    test: Wilcoxon signed-rank test
+    statistic: z = 0.679 to 6.11
+    p: 0.497
+  - about: PM, no-sound zones with positive slopes (Results; range 2.40e-4 to 0)
+    test: Wilcoxon signed-rank test
+    statistic: z = 3.67 to 9.59
+    p: 2.40e-4
+  depends_on:
+  - neuron-classes
+  criterion: Slopes as in fig3c-continuous-ramp, PM after-reaching neurons, no-sound zones
+    (intermittent 1, 8.4-0 cm; intermittent 2, 25.1-8.4 cm), signed-rank against zero per
+    layer, P < 0.01 (the legend's threshold). Supplementary Fig. 8a marks all three PM layers
+    significant in intermittent 2 at 25.1-8.4 cm and none in intermittent 1 at 8.4-0 cm.
+    Reproduced when, under every reading, all three PM intermittent 2 no-sound tests are
+    positive with P < 0.01 and no PM intermittent 1 no-sound test is (the latter a claim of
+    absence, judged by the paper's test). Per layer results are shown.
+- id: supp8b-slopes-lower-without-sound
+  statement: Slopes of after-reaching activity were lower without sound than with sound.
+  source: Supplementary Figure 8b
+  quote: Although slopes were significantly positive even without sound in a, they were less steep
+    than those with sound
+  statistics:
+  - about: PPC, all layers
+    test: Wilcoxon signed-rank test
+    p: 0
+  - about: PM layer 5, largest P
+    test: Wilcoxon signed-rank test
+    statistic: z = 1.56
+    p: 0.118
+  depends_on:
+  - neuron-classes
+  criterion: For each after-reaching neuron and zone (25.1-8.4 and 8.4-0 cm), the slope with sound
+    (from the condition with sound in that zone) against without (the other intermittent
+    condition), paired signed-rank over neurons. Reproduced when, under every reading of
+    fig3c-continuous-ramp, the slope without sound is lower with P < 0.01 in all six PPC
+    comparisons and in at least four of six PM comparisons (the paper reports five).
+- id: supp8c-ppc-steeper-than-pm
+  statement: Without sound, PPC after-reaching neurons in layers 2 and 3 had steeper slopes than
+    PM, while slopes in PM were equal to or lower than in PPC.
+  source: Supplementary Figure 8c; Results, PPC represents goal distance estimated from action,
+    paragraph 1
+  quote: In layers 2 and 3, PPC had steeper slopes than PM without sound
+  statistics:
+  - about: layer 3, 25.1-8.4 cm, without sound (intermittent 2)
+    test: Mann-Whitney U-test
+    statistic: z = 2.45
+    p: 0.0142
+  - about: layer 3, 8.4-0 cm, without sound (intermittent 1)
+    test: Mann-Whitney U-test
+    statistic: z = 5.19
+    p: 2.15e-7
+  - about: layer 2, 8.4-0 cm, without sound (intermittent 1)
+    test: Mann-Whitney U-test
+    statistic: z = 2.95
+    p: 0.00320
+  depends_on:
+  - neuron-classes
+  criterion: No-sound slopes per neuron as in supp8b-slopes-lower-without-sound, PPC against PM
+    neurons per layer and zone, Mann-Whitney U. The legend gives two P values per zone and layer;
+    they are read in the order intermittent 1, intermittent 2, as the other legends list
+    conditions, which puts the without-sound value second in 25.1-8.4 cm and first in 8.4-0 cm
+    (the only order under which the legend supports the text's layers 2 and 3). The figure
+    confirms it, since in each zone the red intermittent 1 pair is drawn first, and the stars fall on
+    the no-sound pairs as read. Reproduced when, under every
+    reading, PPC no-sound slopes exceed PM with P < 0.05 in layer 3 in both zones and in layer 2
+    in at least one zone, and PM is significantly steeper in no comparison.
+- id: supp9-preserved-representation
+  statement: PPC neurons kept the distance preference they had in the continuous condition in the
+    intermittent conditions, especially near the goal, more than PM neurons did.
+  source: Supplementary Figure 9b; Results, PPC represents goal distance estimated from action,
+    paragraph 2
+  quote: PPC neurons preserved the distance representation, especially near the goal, significantly
+    more than neurons in PM (Mann-Whitney U test, P = 0.0429 to 6.82 × 10−14, z = 2.02 to 7.49)
+  statistics:
+  - about: significant comparisons, range 0.0429 to 6.82e-14
+    test: Mann-Whitney U test
+    statistic: z = 2.02 to 7.49
+    p: 0.0429
+  depends_on:
+  - neuron-classes
+  criterion: Per goal-distance neuron, the difference between its distance preference (O4) in
+    continuous trials and in intermittent 1 (and 2) trials. The legend says only "difference";
+    it is read as the absolute difference, the only reading under which a smaller value means
+    a better preserved preference (signed differences are shown); PPC against PM per layer and
+    neuron group, Mann-Whitney U. Groups as Supplementary Fig. 9a, before-reaching neurons in four
+    groups by continuous preference and after-reaching neurons; the four groups' borders are not
+    given, readings (a) equal 16.75 cm quarters of 67 to 0 cm, (b) the zone borders 58.6, 25.1 and
+    8.4 cm. Reproduced when, under every reading, in intermittent 1 PPC after-reaching neurons
+    have the smaller difference with P < 0.05 in at least one layer, and PM has a significantly
+    smaller difference in no comparison. "Especially near the goal" is read as the after-reaching
+    group, the one nearest the goal.
+- id: fig4-above-chance
+  statement: Decoders built from goal-distance neurons estimated goal distance above chance in both
+    PPC and PM.
+  source: Results, Distance prediction with dynamic Bayesian inference, paragraph 2; Figure 4b
+  quote: Both areas estimated the goal distances reliably above chance level (Wilcoxon signed rank
+    test, P = 0, z = 181 to 439)
+  statistics:
+  - test: Wilcoxon signed rank test
+    statistic: z = 181 to 439
+    p: 0
+  depends_on:
+  - neuron-classes
+  criterion: Decoder of the opening comment (O7, O8). Chance level is not defined. The z values
+    imply a paired test over frames. Readings of chance (a) the RMSE of the flat prior over 0 to
+    67 cm at each frame; (b) the RMSE of a decoder whose training trials have their distances
+    permuted across trials. Paired signed-rank test of decoder RMSE against chance over frames,
+    per area, layer and condition. Reproduced when, under every reading, decoder RMSE is lower
+    with P < 0.01 in all 18 settings.
+- id: fig4c-ppc-lower-error
+  statement: The decoding error (RMSE) from layer 2 neurons was lower in PPC than in PM.
+  source: Figure 4c; Results, Distance prediction with dynamic Bayesian inference, paragraph 2
+  quote: the estimation in PPC had significantly less deviation from the actual distance than in PM
+    (Mann-Whitney ... U-test in layer 2, P = 0.00765 to 0, z = 2.67 to 17.1)
+  statistics:
+  - about: significant bins, layer 2, range 0.00765 to 0
+    test: Mann-Whitney U-test
+    statistic: z = 2.67 to 17.1
+    p: 0.00765
+    n: trials, PPC and PM; continuous 1,785 and 1,721, intermittent 1 398 and 362, intermittent 2
+      367 and 317
+  depends_on:
+  - neuron-classes
+  criterion: Per trial, mean RMSE within each goal-distance bin (O8), PPC trials against PM trials
+    per bin and condition, Mann-Whitney U, P < 0.01 (legend threshold). The legend's ranges
+    (continuous P = 0.893 to 0) show that not every bin differs. Reproduced when, under every
+    reading, in each condition PPC has the lower median RMSE in more than half of the bins and
+    significantly lower RMSE in at least one, and PM is significantly lower in no bin. Layers 3
+    and 5 (Supplementary Fig. 10) are shown.
+- id: fig4d-map-near-goal
+  statement: PPC and PM gave similar MAP estimates, but near the goal PPC estimates were better than
+    PM.
+  source: Figure 4d; Results, Distance prediction with dynamic Bayesian inference, paragraph 2
+  quote: PPC and PM had similar MAP estimates, but the estimations near the goal were better in PPC
+    than in PM (P = 0.00549 to 2.47× 10−11, z = 2.78 to 6.68; Fig. 4d)
+  statistics:
+  - about: significant bins near the goal, range 0.00549 to 2.47e-11
+    test: Mann-Whitney U test
+    statistic: z = 2.78 to 6.68
+    p: 0.00549
+  depends_on:
+  - neuron-classes
+  criterion: Per trial, mean MAP within each bin (O8), PPC against PM, Mann-Whitney U per bin,
+    layer 2, P < 0.01. "Near the goal" is read as the bins between 8.4 and 0 cm. Reproduced
+    when, under every reading, in the continuous condition at least one bin in 8.4-0 cm has PPC
+    MAP closer to the actual distance with P < 0.01 and no bin in that range has PM closer with
+    P < 0.01.
+- id: fig4e-ppc-lower-uncertainty
+  statement: The uncertainty (posterior s.d.) of distance estimates was lower in PPC than in PM at
+    every goal distance and in every condition.
+  source: Figure 4e; Results, Distance prediction with dynamic Bayesian inference, paragraph 2
+  quote: uncertainty of distance estimation was significantly less in PPC than PM (P = 1.09 × 10−12
+    to 0, z = 7.12 to 22.9; Fig. 4e)
+  statistics:
+  - about: all bins, largest P
+    test: Mann-Whitney U test
+    statistic: z = 7.12 to 22.9
+    p: 1.09e-12
+  depends_on:
+  - neuron-classes
+  criterion: Per trial, mean posterior s.d. within each bin (O8), PPC against PM per bin and
+    condition, layer 2, Mann-Whitney U. Reproduced when, under every reading, PPC is lower with
+    P < 0.01 in every bin of every condition; partially when in at least 90% of bins. Layers 3
+    and 5 (Supplementary Fig. 10) are shown.
+- id: supp11-sound-reduces-error
+  statement: Decoding errors decreased with sound and increased without it. Within zones, the
+    change per cm of the RMSE difference (intermittent minus continuous) was lower in sound zones
+    than in no-sound zones, in all PPC layers and in PM layers 2 and 3.
+  source: Supplementary Figure 11b,c; Results, Distance prediction with dynamic Bayesian inference,
+    paragraph 2
+  quote: Decoding errors decreased with sound and increased without sound (Mann-Whitney U test, P =
+    0.00295 to 1.56 × 10−6, z = 2.97 to 4.80; Supplementary Fig. 11)
+  statistics:
+  - about: PPC layers 2, 3, 5
+    test: Mann-Whitney U-test
+    statistic: z = 4.23, 2.97, 4.80
+    p: 0.00295
+  - about: PM layer 5 (not significant)
+    test: Mann-Whitney U-test
+    statistic: z = 1.32
+    p: 0.188
+  depends_on:
+  - neuron-classes
+  criterion: Supplementary Fig. 11b,c. Per session, dRMSE, the difference of median RMSE (over
+    trials) between each intermittent condition and the continuous condition in 0.42-cm bins.
+    Linear regression of dRMSE on distance within each zone, y = b0 - b1 distance, so b1 is the
+    rise per cm of approach (Fig. 11c axis, "dRMSE per cm"). Then b1 of sound zones against b1
+    of no-sound zones, Mann-Whitney U. Fig. 11b shows four zones per intermittent condition
+    (58.6-41.9, 41.9-25.1, 25.1-8.4 and 8.4-0 cm). The legend's "n = 68 (that is, 17 sessions
+    times 4)" allows two readings. (a) Four sound and four no-sound zones per session, n = 68 per
+    group. (b) 68 zones in all, the zones 25.1-8.4 and 8.4-0 cm of both conditions, two sound and
+    two no-sound per session. Decoder sessions exclude the 3 with no goal-distance neurons, which
+    fits PM layer 5's 14 sessions. Reproduced when, under every reading, b1 is lower with sound
+    with P < 0.01 in all PPC layers. PM is shown.
+- id: fig5a-map-follows-continuous
+  statement: In the continuous condition, decoded MAP distances followed the actual distance in all
+    layers of PPC and PM.
+  source: Figure 5a; Results, Distance prediction with dynamic Bayesian inference, paragraph 3
+  quote: In the continuous condition, MAPs followed the actual distances in all layers of PPC and PM
+    (Wilcoxon signed-rank test, P = 9.56 × 10−14 to 0, z = 7.45 to 34.1; Fig. 5a)
+  statistics:
+  - about: all zones, largest P
+    test: Wilcoxon signed-rank test
+    statistic: z = 7.45 to 34.1
+    p: 9.56e-14
+  depends_on:
+  - neuron-classes
+  criterion: Per trial and zone (O8, four zones), MAP decrease per cm (equation 10); signed-rank
+    test of slopes against zero over trials. Reproduced when, under every reading, the median
+    slope is positive with P < 0.01 in all 24 area, layer and zone tests.
+- id: fig5a-map-decreases-without-sound
+  statement: In the intermittent conditions, MAPs decreased with and without sound in most zones,
+    and in every zone in PPC layers 3 and 5.
+  source: Figure 5a; Results, Distance prediction with dynamic Bayesian inference, paragraph 3;
+    Discussion, paragraph 3
+  quote: In intermittent conditions, MAPs decreased with and without sound inputs in most distance
+    zones, and especially in all zones in PPC layers 3 and 5 (sound zones ... P = 0.00293 to 0, z =
+    2.98 to 14.7; no-sound zones ... P = 6.59 × 10−4 to 0, z = 3.41 to 8.56)
+  statistics:
+  - about: sound zones, largest P
+    test: Wilcoxon signed-rank test
+    statistic: z = 2.98 to 14.7
+    p: 0.00293
+  - about: no-sound zones, largest P
+    test: Wilcoxon signed-rank test
+    statistic: z = 3.41 to 8.56
+    p: 6.59e-4
+  depends_on:
+  - neuron-classes
+  criterion: As fig5a-map-follows-continuous, in intermittent 1 and 2 trials. Reproduced when,
+    under every reading, in PPC layers 3 and 5 every zone of both conditions (16 tests) has a
+    positive median slope with P < 0.01, and over all 48 tests more than half do.
+- id: fig5b-map-slope-lower-without-sound
+  statement: MAP slopes were shallower without sound than with sound.
+  source: Figure 5b; Results, Distance prediction with dynamic Bayesian inference, paragraph 3
+  quote: Slopes of MAPs without sound were lower than those with sound (Mann-Whitney U test, P =
+    5.14 × 10−12 to 0; Fig. 5b)
+  statistics:
+  - about: range of the significant comparisons
+    test: Mann-Whitney U test
+    p: 5.14e-12
+  - about: PM layer 5, 25.1-8.4 cm
+    test: Mann-Whitney U test
+    statistic: z = 1.17
+    p: 0.241
+  depends_on:
+  - neuron-classes
+  criterion: Per trial MAP slopes in the zones 25.1-8.4 and 8.4-0 cm; for each zone, trials of the
+    condition with sound there against trials of the one without, Mann-Whitney U (Fig. 5b
+    legend). Reproduced when, under every reading, the no-sound slope is lower with P < 0.01 in
+    all six PPC comparisons and in at least four of six PM comparisons.
+- id: fig5-layer3-steeper-than-layer2
+  statement: In intermittent 1, without sound between 8.4 and 0 cm, MAPs decreased more steeply in
+    PPC layer 3 than layer 2, while the s.d. of the estimates did not differ between these layers.
+  source: Results, Distance prediction with dynamic Bayesian inference, paragraph 3
+  quote: In the intermittent 1 condition, the decrease of MAPs in PPC layer 3 was significantly
+    steeper than that in layer 2 without sound between 8.4 and 0 cm (Mann-Whitney U test, P =
+    0.00685, z = 2.70), whereas the s.d. of distance estimation showed no significant difference
+    (P = 0.247, z = 1.16)
+  statistics:
+  - about: MAP slope, layer 3 against layer 2
+    test: Mann-Whitney U test
+    statistic: z = 2.70
+    p: 0.00685
+  - about: s.d. slope, layer 3 against layer 2
+    test: Mann-Whitney U test
+    statistic: z = 1.16
+    p: 0.247
+  depends_on:
+  - neuron-classes
+  criterion: Per trial MAP slope and s.d. slope (equation 10) in intermittent 1 trials, zone 8.4-0
+    cm, PPC layer 3 trials against layer 2 trials, Mann-Whitney U. The s.d. part is a claim of
+    absence judged at P < 0.05. Reproduced when, under every reading, the layer 3 MAP slope is
+    steeper with P < 0.05 and the s.d. slopes do not differ with P < 0.05.
+- id: supp13-map-speed
+  statement: During no-sound zones, decoded MAPs fell faster in fast-locomotion trials than in slow
+    ones.
+  source: Supplementary Figure 13; Results, Distance prediction with dynamic Bayesian inference,
+    paragraph 3
+  quote: Slopes of MAPs were steeper in fast trials than slow trials, suggesting action-dependent
+    distance prediction of mice
+  statistics:
+  - about: PPC layer 2, intermittent 1 and 2
+    test: Mann-Whitney U-test
+    statistic: z = 3.54, 3.33
+    p: 8.60e-4
+  - about: PPC layer 3, intermittent 1 and 2
+    test: Mann-Whitney U-test
+    statistic: z = 2.98, 3.05
+    p: 0.00284
+  - about: PPC layer 5, intermittent 1 and 2
+    test: Mann-Whitney U-test
+    statistic: z = 1.71, 0.883
+    p: 0.377
+  depends_on:
+  - neuron-classes
+  criterion: Per trial, MAP regressed on time within no-sound zones (y(t) = b0 + b1 t); trials
+    split into slow and fast halves (O9); fast against slow trials per area, layer and condition,
+    Mann-Whitney U. Reproduced when, under every reading, fast trials have the steeper median
+    slope with P < 0.05 in PPC layers 2 and 3 in both conditions; the other eight tests are
+    shown (the paper reports PM significant in intermittent 1 only).
+- id: fig5cd-uncertainty-updating
+  statement: In all PPC layers, between 25.1 and 0 cm, uncertainty of the estimated distance fell
+    more steeply with sound than without, the updating step of dynamic Bayesian inference.
+  source: Figure 5c,d; Results, Distance prediction with dynamic Bayesian inference, paragraph 3;
+    Discussion, paragraph 3
+  quote: Uncertainty of estimated distance decreased with sound inputs compared with no sound in all
+    layers of PPC between 25.8 and 0 cm (P = 0.0153 to 6.92 × 10−11; Fig. 5c,d)
+  statistics:
+  - about: PPC layer 2, 25.1-8.4 and 8.4-0 cm
+    test: Mann-Whitney U test
+    statistic: z = 5.34, 3.29
+    p: 9.92e-4
+  - about: PPC layer 3, 25.1-8.4 and 8.4-0 cm
+    test: Mann-Whitney U test
+    statistic: z = 2.42, 2.86
+    p: 0.0153
+  - about: PPC layer 5, 25.1-8.4 and 8.4-0 cm
+    test: Mann-Whitney U test
+    statistic: z = 6.52, 2.98
+    p: 0.00285
+  depends_on:
+  - neuron-classes
+  criterion: Per trial s.d.-of-posterior slopes (decrease per cm, equation 10) in the zones
+    25.1-8.4 and 8.4-0 cm, sound trials against no-sound trials per zone as in
+    fig5b-map-slope-lower-without-sound, Mann-Whitney U. Reproduced when, under every reading,
+    the decrease is larger with sound with P < 0.05 in all six PPC comparisons. PM results are
+    shown (the paper reports them mixed).
+- id: fig5c-uncertainty-decreases-with-sound
+  statement: In all PPC layers, the uncertainty of the decoded distance (s.d. of the posterior)
+    decreased during sound presentation between 8.4 and 0 cm.
+  source: Figure 5c and legend
+  quote: Uncertainty decreased during sound presentations in PPC between 8.4 cm and 0 cm.
+  depends_on:
+  - neuron-classes
+  criterion: Per trial s.d.-of-posterior slope (decrease per cm, equation 10) in the zone 8.4-0
+    cm, signed-rank test against zero over trials per area, layer and condition, P < 0.01 (Fig.
+    5c, "Data presentation as in a"). The legend gives only the range over all Fig. 5c tests
+    (P = 0.892 to 0), so no statistic is recorded. Fig. 5c marks, in the 8.4-0 cm zone of each
+    PPC layer, the continuous and intermittent 2 tests, the two conditions with sound there.
+    Reproduced when, under every reading of O7 and O8, the decrease is positive with P < 0.01 in
+    all six (three PPC layers, continuous and intermittent 2). PM and intermittent 1 are shown.
+- id: lognormal-decoder-better
+  statement: The decoder with a log-normal likelihood estimated goal distance better than one with
+    a Gaussian likelihood in 17 of 18 settings, all but PM layer 5 in the continuous condition.
+  source: Online Methods, Probabilistic decoding of goal distance, paragraph 3
+  quote: The decoder with log-normal distribution gave better estimates for goal distance than that
+    with a Gaussian distribution in the 18 settings ... except for layer 5 in PM in continuous
+    condition (P = 0.834, z = 0.209)
+  statistics:
+  - about: 17 settings, largest P
+    test: Wilcoxon signed rank test
+    statistic: z = 2.74 to 31.9
+    p: 0.00609
+  - about: PM layer 5, continuous
+    test: Wilcoxon signed rank test
+    statistic: z = 0.209
+    p: 0.834
+  depends_on:
+  - neuron-classes
+  criterion: The same decoder with a Gaussian likelihood of raw activity (mean and s.d. per bin as
+    for the log-normal). "Better" is not defined; readings (a) lower RMSE, (b) lower absolute
+    MAP error, paired over frames (the z values imply frames), signed-rank test per setting
+    (3 layers x 2 areas x 3 conditions). Reproduced when, under every reading, the log-normal
+    decoder is better with P < 0.01 in at least 16 of the 18 settings.
+- id: svm-correlations
+  statement: An SVM decoder trained on recorded data did not estimate distance better than one
+    trained on trial-shuffled data, except in one setting, so ignoring correlations between
+    neurons cost the decoder little.
+  source: Online Methods, Probabilistic decoding of goal distance, paragraph 8
+  quote: Recorded-SVM did not estimate distance better than shuffled-SVM (one-sided Wilcoxon
+    signed-rank test, P = 0.957 to 1, z = 1.71 to 12.5), except in 1 setting (layer 3 in PM in
+    intermittent1 condition, P = 0.00572, z = 2.53)
+  statistics:
+  - about: 17 settings, smallest P
+    test: one-sided Wilcoxon signed-rank test
+    statistic: z = 1.71 to 12.5
+    p: 0.957
+  - about: PM layer 3, intermittent 1
+    test: one-sided Wilcoxon signed-rank test
+    statistic: z = 2.53
+    p: 0.00572
+  depends_on:
+  - neuron-classes
+  criterion: A claim of absence. SVM (Matlab) on goal-distance neurons' activity, trained and
+    validated as the probabilistic decoder. The paper says only "shuffled data" (refs. 49, 50);
+    the shuffle is read as the standard one of those references, each neuron's activity
+    permuted independently across training trials at the same goal distance (4.2-cm bin).
+    Kernel, classes and error measure are not given; readings (a) linear multiclass SVM over 4.2-cm distance bins, error the absolute
+    difference of the predicted bin centre from the actual distance; (b) linear SVM regression,
+    absolute error. One-sided signed-rank test (recorded better) over frames per setting.
+    Reproduced when, under every reading, no more than one of the 18 settings shows the recorded
+    SVM better with P < 0.01; not reproduced when more do.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Checker result 40 claims, 40 quotes, 78 statistical values, 6 problems. All six are values printed with a garbled "x 10-n" in the supplement text (supp1 1.27e-4 and 9.81e-8, supp2d 4.26e-5, supp8c 2.15e-7, supp13 8.60e-4) or in the Results (supp8a 2.40e-4, line "P = 2.40 x 10-4 to 0"). Each was confirmed by reading.
+  - Sources. Several paragraph numbers were off by one. "During sound omissions" continues Results paragraph 2 of the licking section (no indent in the PDF), so supp1 is paragraph 2 and the muscimol claims are paragraph 3. In "Goal-distance representation" the 41,031-neuron sentence is in paragraph 1, so session-counts and neuron-counts are paragraph 1, sound-responsive 2, the Fig. 2d claims 4, and fig3b, supp6 and tuning-similar 6. In "Distance prediction" the comparison of PPC and PM is paragraph 2 (neuron-classes, the fig4 claims, supp11), and the Fig. 5 text is paragraph 3. Behaviour timing is Behavioral training paragraph 5; the SVM text is decoding paragraph 8.
+  - fig1c-licking-without-sound. The statement put the intermittent 2 no-sound zone around the goal, where intermittent 2 has sound; it now names each condition's no-sound zones. The criterion's bin and comparison readings (adjacent 4.2-cm bins, or a baseline at 67 cm) did not match Fig. 1c. The figure's brackets compare 4.2-cm bins 8.4 cm apart, the tested bins being 29.3-25.1, 20.9-16.7, 12.6-8.4 and 4.2-0 cm. The text's no-sound P range is exactly the set of comparisons whose tested bin is silent under this layout. The criterion now uses it and tests intermittent 2 as well. Added the no-sound range as a statistic.
+  - fig1fg-muscimol-no-sound-licking. The statement said PBS licking increased "in every condition", but two PBS comparisons have P > 0.01. It now says what the text and legend support, that PBS licking still increased in the no-sound zones. The criterion uses the Fig. 1c layout (the muscimol no-sound range again matches those comparisons) and checks the PBS no-sound comparisons.
+  - fig1d-muscimol-correlation and header. The n "12 sessions" was read as the total. Fig. 1f's signed-rank w reaches 78 = 12 x 13 / 2 for both muscimol and PBS, so 12 sessions of each.
+  - supp2d-muscimol-overrun. Added the legend's trial numbers as n.
+  - muscimol-locomotion. The criterion fixed speed and licking measures (start to goal) that the paper does not give. They are now named as open, with readings.
+  - lick-goal-correlation. Said that the Results do not name the variables of r, and why the Methods' selection correlation is the reading.
+  - fig2d-task-relevant-proportions. The note said the pooled Fig. 2d counts fit the reported percentages "within 2%". They differ by up to 1.5 percentage points (PPC layer 5, 21.5 against 20.0%). Corrected.
+  - fig2d-goal-distance-ppc-more. The criterion fixed proportions where the paper does not say whether counts or proportions were compared; both are now readings.
+  - fig2d-layer-distance-preference. Removed "layers 3 and 5 did not differ" from the statement. The legend gives those P values but the paper states no such finding, and the criterion does not test it.
+  - neuron-classes. Added the Fig. 2d goal-distance-or-reward counts as values shown, not judged.
+  - supp8a-pm-no-sound. Supplementary Fig. 8a marks all three PM layers significant at 25.1-8.4 cm in intermittent 2 and none at 8.4-0 cm in intermittent 1. The criterion asked only for one of each, which is weaker than the paper. Tightened. Added the Results range for positive PM slopes (P = 2.40e-4 to 0), which conflicts with the legend's range; the conflict is noted in the header.
+  - supp8c-ppc-steeper-than-pm. Noted that the figure confirms the order of the legend's P values that the criterion assumed.
+  - supp9-preserved-representation. The criterion took "difference" as absolute without saying so. It now says this is a reading, and why.
+  - supp11-sound-reduces-error. The statement said RMSE was lower in sound zones. Supplementary Fig. 11c compares slopes of dRMSE per cm, not RMSE levels, so the statement was restated. The criterion read n = 68 as two zones per condition. Fig. 11b shows four zones per condition, so both readings of n are now named.
+  - svm-correlations. The shuffle method was stated as fact; the paper says only "shuffled data". It is now named as a reading.
+  - Added claim fig5c-uncertainty-decreases-with-sound, the Fig. 5c legend's finding that uncertainty decreased with sound in PPC between 8.4 and 0 cm. This is the within-condition side of the updating result and had no claim.
+  - Open. The Fig. 1c and 1f bin edges and pairs are read from the figure, and the text's P ranges support that reading. The paper states neither in words.
+  - Open. Fig. 1d plots sessions 1 to 10, while Fig. 1f's w values imply 12 sessions per injection type. The number of sessions behind the Fig. 1d test cannot be settled from the paper.
+  - Open. The Results and Supplementary Fig. 8a give incompatible ranges for PM no-sound slopes (z up to 9.59 against 6.11). The criterion follows the legend's per-layer marks.

@@ -1,0 +1,1130 @@
+# Claims for Rajebhosale, Jiang, Ressa, Johnson, Desai, Jone, Role & Talmage (2025), Life Sci
+# Alliance 8(7) e202403169, on dandiset 001545.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21, under
+# docs/protocol.md (version pilot-10), Reader section.
+#
+# Text read. The version of record as served by Europe PMC (PMC12032840), full text with Results,
+# Materials and Methods and every figure legend, including the supplementary figure legends (Figs S1
+# to S10), in paper/10.26508-lsa.202403169.txt. The Key Resources Table (Supplemental Data 1, a docx)
+# was not in paper/; it was read from the Europe PMC supplementary files bundle for PMC12032840. It
+# gives the GEO accession of the snMultiome data (GSE280167) and the two code repositories below.
+# Tables S1 to S6 (gene lists from the sequencing) were not needed for any criterion here. Figure 2,
+# Figure S2 and the confusion matrices were read from the figure images in the same bundle (Fig S2C
+# lists the electrophysiological features used in the LDA).
+#
+# Code read.
+# - https://github.com/nsdesai/patch_clamp_analysis at commit 5d756c2 (MATLAB, "Code for
+#   electrophysiology data analysis" in the KRT). It extracts the features from current-step
+#   recordings (analysis_of_neurophysiology_data.m and the functions it calls). It holds no
+#   statistics, no LDA, PCA, k-means or regression; the Methods say statistics were run in Prism and
+#   the regression and LDA in R.
+# - https://github.com/RajNINDS/V321L-snMultiome at commit c124726 (R, snRNA-Seq and snATAC-Seq).
+#   A nucleus is Penk+ when its raw Penk count is above 0 (Rcode_20230522.txt, line 2353).
+#
+# Data the paper used.
+# - Whole-cell current clamp recordings with biocytin fills of dentate granule cells in acute coronal
+#   slices from P24 to P34 mice, recorded at 30 C from the middle of the suprapyramidal (dorsal) blade
+#   and the top cell body layer. Cells are classed by their fill as GCs (one primary dendrite) or SGCs
+#   (several primary dendrites). WT, 24 positioned cells (14 GC, 10 SGC) from 5 mice and 20 slices, of
+#   which 14 GC and 9 SGC enter the electrophysiology; V321L (Nrg1 V321L knock-in), 10 GC and 15 SGC
+#   from 5 mice and 17 slices. Measured variables are the voltage responses to current steps and, per
+#   cell, the soma position (vertical distance from the cell body centre to the GCL-MOL boundary, in
+#   micrometres) and morphology from Imaris reconstructions (splay angle, branch points and dendritic
+#   length per primary dendrite, 15 parameters). These are the data dandiset 001545 is described as
+#   holding (48 NWB files of electrophysiology).
+# - Golgi-stained cell counts (5 mice per genotype), RNAScope FISH counts and positions in the
+#   suprapyramidal blade (3 mice per genotype or age group, ages 1, 2, 3 and 9 to 12 months), and
+#   10x Multiome snRNA-Seq and snATAC-Seq of microdissected DG (4 mice per genotype, 2 male and 2
+#   female), deposited in GEO as GSE280167.
+#
+# Electrophysiological features. The Methods say "Twenty features were extracted from the responses
+# to current steps as reported in Kim et al (2024)" (Cell Rep 43:114009). Kim et al define eighteen,
+# and Fig S2C of this paper lists the same eighteen (spike width, downstroke, spike threshold,
+# rheobase, AHP width, spike latency, CV, tau, upstroke, input resistance, max firing rate, spike
+# amplitude, sag, RMP, AHP latency, f-I slope, AHP amplitude, adaptation index). The Results also use an
+# upstroke-downstroke ratio, which neither Kim et al nor the code define. The code returns 21 outputs
+# (the 18, plus sag ratio, spike peak and the AHP after the maximal step). Which 20 the paper means is
+# open. Definitions used here, from Kim et al as the Methods' reference, with the code where Kim et al
+# are silent (the analysis is restricted to the first 500 ms of each step, as in the code).
+# - RMP, the membrane potential without current injection; in the code the mean voltage from 10 to 1 ms
+#   before step onset, averaged over all sweeps.
+# - Rheobase, the smallest positive step that elicits an action potential; in the code an overshooting
+#   peak (above 0 mV, prominence at least 30 mV, width under 5 ms) within the first 500 ms.
+# - Spike threshold, the voltage at which dV/dt first crosses 20 mV/ms on the first spike at rheobase
+#   (Kim et al). The code uses 10 mV/ms after 10-fold interpolation; this is a variant.
+# - Spike width, the width at half the height between threshold and peak of the first spike at rheobase.
+# - Upstroke and downstroke, the maximum and the minimum of dV/dt on the first spike at rheobase (Kim et
+#   al). The code takes the minimum from 5 ms before the first peak to the end of the 500 ms window
+#   (its downIdx line resolves to the window's end), which can include later spikes; this is a variant.
+#   A "faster" downstroke is a more negative minimum.
+# - Sag, from the -60 pA step, the steady-state potential minus the minimum potential (the code takes
+#   the maximum of the second half of the step minus the minimum of the first half, after a 20 ms
+#   median filter).
+# - Input resistance, from the -20 pA step (Kim et al); the code fits steady-state deflections of steps
+#   from -50 to 0 pA (a variant).
+# - Upstroke-downstroke ratio, not defined; taken here as upstroke divided by the magnitude of
+#   downstroke (the sign convention does not change any test the paper reports on it).
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001545"
+paper: doi:10.26508/lsa.202403169
+claims:
+- id: fig1f-sgc-soma-superficial
+  statement: In WT mice SGC somata lie closer to the GCL-MOL boundary than GC somata (SGCs in the
+    top cell body layers, under 20 micrometres from the surface).
+  source: Figure 1F; Results, SGCs have unique morphological and electrical properties, paragraph 2
+  quote: "SGC cell body locations were significantly different from those of GCs (**** P < 0.0001, Welch’s t test [two-tailed]; t = 8.471, df = 19.16)"
+  statistics:
+  - test: Welch's t test, two-tailed
+    statistic: t = 8.471, df = 19.16
+    p: 0.0001
+    p_relation: "<"
+    n: 14 GCs and 10 SGCs from 5 WT mice
+  criterion: Soma position is the vertical distance from the cell body centre to the GCL-MOL boundary
+    (Methods, Imaging and image analysis). Two-tailed Welch's t test of WT SGC against WT GC
+    positions, as in the legend. Reproduced when p < 0.0001 with SGCs nearer the boundary; partially
+    reproduced when p < 0.05 with SGCs nearer the boundary.
+- id: fig1g-sgc-wider-splay
+  statement: WT SGCs have wider dendritic splay angles than WT GCs.
+  source: Figure 1G
+  quote: "The splay angle (angle between the two farthest dendrites measured at the center of the cell body) was significantly larger in SGCs compared with GCs (* P = 0.0168, Welch’s t test [two-tailed]; t = 2.754, df = 12.59)"
+  statistics:
+  - test: Welch's t test, two-tailed
+    statistic: t = 2.754, df = 12.59
+    p: 0.0168
+    n: 13 GCs and 6 SGCs from 4 WT mice
+  criterion: Splay angle as the Methods define it (FIJI angle tool, from the most laterally displaced
+    dendritic termination through the soma centre to the opposite one). Two-tailed Welch's t test.
+    Reproduced when p < 0.05 with SGCs wider.
+- id: fig1h-gc-more-branch-points
+  statement: WT GCs have more dendritic branch points per primary dendrite than WT SGCs.
+  source: Figure 1H
+  quote: "The number of branch points was significantly higher in GCs compared with SGCs (** P = 0.0023, Mann–Whitney test, U = 2)"
+  statistics:
+  - test: Mann-Whitney test
+    statistic: U = 2
+    p: 0.0023
+    n: 11 GCs and 5 SGCs from 4 WT mice
+  criterion: Branch points from the Imaris reconstruction divided by the number of primary dendrites
+    (legend). Two-tailed Mann-Whitney test (the legend does not state tails, but U = 2 with 11 and 5
+    cells gives the reported P only two-tailed). Reproduced when p < 0.05 with GCs higher.
+- id: fig1i-gc-longer-dendrites
+  statement: WT GCs have greater dendritic length per primary dendrite than WT SGCs.
+  source: Figure 1I
+  quote: "The normalized dendritic length was significantly higher in GCs compared with SGCs (*** P = 0.0004, Welch’s t test [two-tailed]; t = 5.348, df = 9.366)"
+  statistics:
+  - test: Welch's t test, two-tailed
+    statistic: t = 5.348, df = 9.366
+    p: 0.0004
+    n: 11 GCs and 5 SGCs from 4 WT mice
+  criterion: Total dendritic length divided by the number of primary dendrites (legend). Two-tailed
+    Welch's t test. Reproduced when p < 0.05 with GCs longer.
+- id: fig1j-sgc-hyperpolarized-rmp
+  statement: In WT mice SGCs have a more hyperpolarized resting membrane potential than GCs.
+  source: Figure 1J; Results, SGCs have unique morphological and electrical properties, paragraph 2
+  quote: "SGCs have a significantly more hyperpolarized resting membrane potential compared with GCs (* P = 0.02, Mann–Whitney test, U = 26; N = 14 cells [GCs] and 9 cells [SGCs] from 5 mice)"
+  statistics:
+  - test: Mann-Whitney test
+    statistic: U = 26
+    p: 0.02
+    n: 14 GCs and 9 SGCs from 5 WT mice
+  criterion: RMP per cell as defined in the opening comment (code, baseline before step onset). WT
+    SGCs against WT GCs by two-tailed Mann-Whitney test (tails are not stated, but U = 26 with 14 and
+    9 cells gives P = 0.02 only two-tailed). Reproduced when p < 0.05 with SGCs more negative. The
+    cell counts are compared with 14 and 9, and U with 26.
+- id: fig1k-sgc-narrower-spike
+  statement: In WT mice SGCs have narrower action potentials than GCs.
+  source: Figure 1K; Results, SGCs have unique morphological and electrical properties, paragraph 2
+  quote: "SGCs have a significantly narrower spike width compared with GCs (* P = 0.012, Mann–Whitney test, U = 24"
+  statistics:
+  - test: Mann-Whitney test
+    statistic: U = 24
+    p: 0.012
+    n: 14 GCs and 9 SGCs from 5 WT mice
+  criterion: Spike width at half height between threshold and peak of the first spike at rheobase,
+    threshold at dV/dt 20 mV/ms (Kim et al, the Methods' reference); the code's 10 mV/ms threshold is
+    shown as a variant. Two-tailed Mann-Whitney test (U = 24 with 14 and 9 cells gives P = 0.012
+    only two-tailed). Reproduced when p < 0.05 with SGCs narrower.
+- id: fig1l-sgc-faster-downstroke
+  statement: In WT mice SGCs have a faster action potential downstroke than GCs.
+  source: Figure 1L; Results, SGCs have unique morphological and electrical properties, paragraph 2
+  quote: "SGCs have a significantly faster downstroke compared with GCs (* P = 0.046, Mann–Whitney test, U = 31"
+  statistics:
+  - test: Mann-Whitney test
+    statistic: U = 31
+    p: 0.046
+    n: 14 GCs and 9 SGCs from 5 WT mice
+  criterion: Downstroke as the minimum dV/dt on the repolarizing phase of the first spike at rheobase
+    (Kim et al). The code's window, from 5 ms before the first peak to the end of the first 500 ms of
+    the step, is a second reading, as the code disagrees with the Methods' reference only where the
+    rheobase sweep holds more than one spike. Two-tailed Mann-Whitney test (U = 31 with 14 and 9
+    cells gives P = 0.046 only two-tailed). Reproduced
+    when p < 0.05 with SGCs more negative under every reading; blocked as methods_underspecified when
+    the readings disagree, with each shown.
+- id: fig1m-phase-plots
+  statement: Phase plots of the action potential at rheobase show differences in waveform kinetics
+    between WT GCs and SGCs.
+  source: Figure 1M; Results, SGCs have unique morphological and electrical properties, paragraph 2
+  quote: "The pronounced differences in the kinetics of the SGC action potentials can be seen in the phase plots for APs at rheobase"
+  criterion: For each cell, dV/dt against Vm minus threshold for the first spike at rheobase, dV/dt
+    as the first difference over the time step (makephaseplot.m). Shown as a figure; the claim is
+    judged as reproduced when fig1k-sgc-narrower-spike and fig1l-sgc-faster-downstroke are, since
+    the paper reads the plot through those two measures.
+  depends_on:
+  - fig1k-sgc-narrower-spike
+  - fig1l-sgc-faster-downstroke
+- id: figs1a-f-properties-covary-with-position
+  statement: In WT cells (GCs and SGCs together), RMP, spike width, downstroke, rheobase, sag and
+    upstroke-downstroke ratio covary with soma position.
+  source: Figure S1A to F; Results, SGCs have unique morphological and electrical properties,
+    paragraph 3
+  quote: "We found that RMP ( Fig S1A , P = 0.0129), spike width ( Fig S1B , P = 0.0543), and downstroke ( Fig S1C , P = 0.0139) significantly covaried with soma position ... We also found that rheobase ( Fig S1D , P = 0.0475), sag ( Fig S1E , P = 0.0359), and upstroke–downstroke ratio ( Fig S1F , P = 0.0131) significantly covaried with soma positions in the GCL"
+  statistics:
+  - about: RMP against soma position
+    test: linear regression
+    statistic: R2 = 0.26
+    p: 0.0129
+  - about: spike width against soma position
+    test: linear regression
+    statistic: R2 = 0.17
+    p: 0.0543
+  - about: downstroke against soma position
+    test: linear regression
+    statistic: R2 = 0.26
+    p: 0.0139
+  - about: rheobase against soma position
+    test: linear regression
+    statistic: R2 = 0.17
+    p: 0.0475
+  - about: sag against soma position
+    test: linear regression
+    statistic: R2 = 0.19
+    p: 0.0359
+  - about: upstroke-downstroke ratio against soma position
+    test: linear regression
+    statistic: R2 = 0.26
+    p: 0.0131
+  expected:
+  - quantity: R2, RMP against soma position
+    value: 0.26
+    tolerance: 0.026
+  - quantity: R2, spike width against soma position
+    value: 0.17
+    tolerance: 0.017
+  - quantity: R2, downstroke against soma position
+    value: 0.26
+    tolerance: 0.026
+  - quantity: R2, rheobase against soma position
+    value: 0.17
+    tolerance: 0.017
+  - quantity: R2, sag against soma position
+    value: 0.19
+    tolerance: 0.019
+  - quantity: R2, upstroke-downstroke ratio against soma position
+    value: 0.26
+    tolerance: 0.026
+  criterion: The legend reports P and R2 per property, so each is a simple linear regression of the
+    property on soma position over the 23 WT cells (14 GC, 9 SGC), as fitted in Prism (Methods,
+    Statistical analysis). The paper counts spike width (P = 0.0543) as significant, so a property
+    matches when its slope p is at most 1.1 times the reported p or its R2 is within tolerance.
+    Reproduced when all six match; partially reproduced when four or five match. Feature definitions
+    as in the opening comment; the code's variants are shown.
+- id: figs1-remaining-properties-no-difference
+  statement: The remaining electrophysiological properties differ neither between WT GCs and SGCs
+    nor with soma position.
+  source: Results, SGCs have unique morphological and electrical properties, paragraph 3
+  quote: The remainder of the properties did not differ significantly between GCs and SGCs or by soma
+    position
+  criterion: A claim of absence, judged on the paper's tests at p < 0.05. For each property other
+    than the six of figs1a-f and the three of Fig 1J to L, WT GC against SGC by Welch's t test when
+    both groups pass Shapiro-Wilk and Kolmogorov-Smirnov normality tests and by Mann-Whitney test
+    otherwise (Methods, Statistical analysis), and a linear regression on soma position as in Fig S1.
+    Which properties make up the remainder depends on the 20 features, which the paper does not list
+    (opening comment); the readings are (a) the 18 features of Fig S2C less the five named (RMP,
+    spike width, downstroke, rheobase, sag), and (b) the 21 outputs of the code less those five.
+    Reproduced when no property in the reading finds an effect; not reproduced when any does. Every
+    test's p and effect size is shown.
+- id: figs1g-l-gc-only-position
+  statement: Among WT GCs alone, downstroke and sag still covary with soma position, while RMP,
+    spike width, rheobase and upstroke-downstroke ratio do not, so the GC-SGC differences in RMP and
+    spike width are cell-type features.
+  source: Figure S1G to L; Results, SGCs have unique morphological and electrical properties,
+    paragraph 3
+  quote: "we found that downstroke and sag were still significantly correlated with soma positions ( Fig S1I , downstroke, P = 0.006, and Fig S1K , sag, P = 0.03), whereas the rest of the properties did not correlate with soma positions ( Fig S1G , RMP, P = 0.22, Fig S1H , spike width, P = 0.1, Fig S1J , rheobase, P = 0.06, and Fig S1L , upstroke–downstroke ratio, P = 0.4)"
+  statistics:
+  - about: downstroke against soma position, GCs
+    test: linear regression
+    statistic: R2 = 0.5
+    p: 0.006
+    n: 14 WT GCs from 5 mice
+  - about: sag against soma position, GCs
+    test: linear regression
+    statistic: R2 = 0.32
+    p: 0.03
+    n: 14 WT GCs from 5 mice
+  - about: RMP against soma position, GCs
+    test: linear regression
+    statistic: R2 = 0.12
+    p: 0.22
+  - about: spike width against soma position, GCs
+    test: linear regression
+    statistic: R2 = 0.21
+    p: 0.1
+  - about: rheobase against soma position, GCs
+    test: linear regression
+    statistic: R2 = 0.26
+    p: 0.06
+  - about: upstroke-downstroke ratio against soma position, GCs
+    test: linear regression
+    statistic: R2 = 0.07
+    p: 0.4
+  criterion: Simple linear regressions on soma position over the 14 WT GCs, as in Fig S1A to F.
+    Reproduced when downstroke and sag have p < 0.05 and RMP, spike width, rheobase and the ratio
+    have p >= 0.05 (the absence half judged on this test as written); partially reproduced when the
+    two significant ones hold and one of the four absences fails. Every slope, p and R2 is shown.
+- id: fig2a-v321l-more-multiple-dendrite-gcs
+  statement: Golgi staining labels the same total number of GCs in WT and V321L DG, but V321L DG has
+    a higher percentage of GCs with multiple primary dendrites and a lower percentage with a single
+    one.
+  source: Figure 2A; Results, V321L mutation in Nrg1 results in altered composition of the DG granule
+    cell population, paragraph 1
+  quote: "There was no difference in the total number of cells labeled by the Golgi stain between genotypes ( Fig 2A , left; P = 0.68). However, V 321 L mice had a significantly higher number of Golgi-stained GCs with multiple primary dendrites compared with WT mice and a significantly lower number of GCs with single primary dendrites compared with WT mice"
+  statistics:
+  - about: total Golgi-labeled GCs, WT against V321L
+    test: Welch's t test, two-tailed
+    statistic: t = 0.4338, df = 6.972
+    p: 0.7
+    n: 5 mice per genotype
+  - about: genotype by number of primary dendrites interaction
+    test: two-way ANOVA
+    statistic: F(1,7) = 11.81
+    p: 0.011
+  - about: WT multiple against V321L multiple
+    test: post hoc comparison
+    p: 0.008
+  - about: WT single against V321L single
+    test: post hoc comparison
+    p: 0.008
+  - about: V321L single against V321L multiple
+    test: post hoc comparison
+    p: 0.013
+  criterion: Per mouse, the percentage of Golgi-stained GCs with one and with several primary
+    dendrites. Two-way ANOVA (genotype by dendrite class) with Bonferroni post hoc comparisons (the
+    Methods' parametric correction). The design is not named; the reported F(1,7) fits dendrite class
+    as a repeated measure within mouse (error df = mice minus 2, so 9 mice) and not an ordinary
+    two-way ANOVA (16 error df with 5 mice per genotype), so the repeated-measures ANOVA is the test
+    and the ordinary one is shown as a variant. Reproduced when the interaction has p < 0.05, both genotype
+    comparisons have p < 0.05 in the stated directions, and the total count does not differ by
+    two-tailed Welch's t test at p < 0.05. The Results print P = 0.68 and the legend P = 0.7 for the
+    total; both are recorded as one test.
+- id: fig2c-v321l-sgc-position-not-different
+  statement: In V321L mice SGC and GC soma positions do not differ; SGCs are found throughout the
+    GCL.
+  source: Figure 2B, 2C and 2H; Results, V321L mutation in Nrg1 results in altered composition of the
+    DG granule cell population, paragraph 2
+  quote: "SGC cell body locations are not significantly different to those of GCs ( P = 0.9012, Welch’s t test [two-tailed]; t = 0.1256, df = 21.78"
+  statistics:
+  - test: Welch's t test, two-tailed
+    statistic: t = 0.1256, df = 21.78
+    p: 0.9012
+    n: 10 GCs and 15 SGCs from 5 V321L mice
+  criterion: A claim of absence, judged on two-tailed Welch's t test of V321L SGC against V321L GC
+    soma positions at p < 0.05. Reproduced when p >= 0.05; the difference in means is shown.
+- id: fig2d-v321l-splay-not-different
+  statement: In V321L mice the splay angle does not differ between GCs and SGCs.
+  source: Figure 2D
+  quote: The splay angle was not significantly different between GCs and SGCs
+  statistics:
+  - test: Welch's t test, two-tailed
+    statistic: t = 1.879, df = 14.11
+    p: 0.0811
+    n: 8 GCs and 13 SGCs from 5 V321L mice
+  criterion: A claim of absence, judged on two-tailed Welch's t test at p < 0.05. Reproduced when p
+    >= 0.05; the difference is shown.
+- id: fig2ef-v321l-dendritic-complexity-preserved
+  statement: In V321L mice GCs still have more branch points and greater dendritic length per primary
+    dendrite than SGCs.
+  source: Figure 2E and 2F
+  quote: In contrast, the differences in dendritic complexity between GCs and SGCs were preserved in
+    the V 321 L mutant DG
+  statistics:
+  - about: normalized branch points
+    test: Mann-Whitney test
+    statistic: U = 13
+    p: 0.0013
+    n: 9 GCs and 13 SGCs from 5 V321L mice
+  - about: normalized dendritic length
+    test: Welch's t test, two-tailed
+    statistic: t = 5.023, df = 10.05
+    p: 0.0005
+    n: 9 GCs and 13 SGCs from 5 V321L mice
+  criterion: Measures as in Fig 1H and 1I. Reproduced when both tests give p < 0.05 with GCs higher
+    (Mann-Whitney two-tailed, as U = 13 with 9 and 13 cells gives P = 0.0013 only two-tailed);
+    partially reproduced when one does.
+- id: fig2g-morphology-lda-separates-cell-type
+  statement: Linear discriminant analysis of 15 morphological parameters separates GCs from SGCs
+    along LD1, but not WT from V321L cells.
+  source: Figure 2G and Figure S2A; Results, V321L mutation in Nrg1 results in altered composition of
+    the DG granule cell population, paragraph 2
+  quote: LDA resulted in successful capture of cell-type differences between GCs and SGCs (along the
+    primary classifier ... LD1) but not between genotypes
+  criterion: Features z-scored with scale(), then LDA (MASS lda), as the Methods (LDA) describe.
+    Whether PCA precedes this LDA, as it does for the classifier, is not stated; readings are (a) LDA
+    on the z-scored features and (b) LDA on their top 9 PCs, and the claim is blocked as
+    methods_underspecified when they disagree. The groups are not stated; Fig 2G shows LD1 and LD2, which needs at
+    least three classes, so the reading is four classes (genotype by cell type). The parameter set is
+    the morphological variables of Fig S2A. Reproduced when the LD1 scores of GCs and SGCs separate
+    (a two-tailed Mann-Whitney test of LD1 by cell type at p < 0.05 and at least 90% of cells on
+    their type's side of the midpoint between the type medians) while LD1 does not differ by
+    genotype within either cell type (Mann-Whitney p >= 0.05). The 90% bound is not from the paper;
+    the overlap is reported either way.
+- id: figs2b-morphology-kmeans-by-cell-type
+  statement: k-means clustering (k = 3) of morphological data groups cells by cell type, with all WT
+    GCs in one cluster and all WT SGCs in another; all but one V321L GC and all but two V321L SGCs fall
+    in the corresponding clusters.
+  source: Figure S2B
+  quote: All WT GCs and SGCs segregate into k1 and k2, respectively. All but one V 321 L GCs occupy
+    k1, whereas the one was in k3. All but 2 V 321 L SGCs occupy k2 with one in k1 and another in k3
+  criterion: k-means with k = 3 on the morphological data, on the PCA scores shown in the panel. The
+    paper gives neither the number of PCs, the scaling nor the seed; readings are k-means on (a) the
+    z-scored features and (b) the first two PCs of the z-scored features, each with 100 random starts
+    (a standard choice). Reproduced when, under every reading, the cluster that holds most WT GCs
+    holds all WT GCs and no WT SGC and the counts of V321L cells outside their type's cluster are
+    within one of the paper's (1 GC, 2 SGCs).
+- id: fig2i-v321l-rmp-not-different
+  statement: In V321L mice GCs and SGCs do not differ in RMP; both lie near the WT SGC median.
+  source: Figure 2I; Results, V321L mutation in Nrg1 results in altered composition of the DG granule
+    cell population, paragraph 3; Discussion, Composition of cell-type identity, paragraph 1
+  quote: "Unlike WT GCs and SGCs, we found no differences in electrical properties between V 321 L GCs and SGCs ( Fig 2I–K , RMP, P = 0.9"
+  statistics:
+  - test: Welch's t test
+    statistic: t = 0.2081, df = 18.86
+    p: 0.8374
+    n: 10 GCs and 15 SGCs from 5 V321L mice
+  criterion: A claim of absence, judged on Welch's t test of V321L GC against SGC RMP at p < 0.05.
+    Reproduced when p >= 0.05; the difference and both group medians, beside the WT GC and SGC
+    medians, are shown.
+- id: fig2j-v321l-spike-width-not-different
+  statement: In V321L mice GCs and SGCs do not differ in spike width.
+  source: Figure 2J
+  quote: "Spike width ( P = 0.2776, Mann–Whitney test, U = 55)"
+  statistics:
+  - test: Mann-Whitney test
+    statistic: U = 55
+    p: 0.2776
+    n: 10 GCs and 15 SGCs from 5 V321L mice
+  criterion: A claim of absence, judged on a two-tailed Mann-Whitney test at p < 0.05, with spike
+    width as in fig1k-sgc-narrower-spike. Reproduced when p >= 0.05; the code's threshold is shown as
+    a variant and the medians are shown.
+- id: fig2k-v321l-downstroke-not-different
+  statement: In V321L mice GCs and SGCs do not differ in downstroke.
+  source: Figure 2K
+  quote: "Downstroke ( P = 0.5392, Mann–Whitney test, U = 63.5)"
+  statistics:
+  - test: Mann-Whitney test
+    statistic: U = 63.5
+    p: 0.5392
+    n: 10 GCs and 15 SGCs from 5 V321L mice
+  criterion: A claim of absence, judged on a two-tailed Mann-Whitney test at p < 0.05, with
+    downstroke as in fig1l-sgc-faster-downstroke (Kim et al definition). Reproduced when p >= 0.05;
+    the code's window is shown as a variant.
+- id: fig2m-ephys-lda-wt-gc-apart
+  statement: LDA of electrical properties separates WT GCs from all other groups (WT SGCs, V321L GCs,
+    V321L SGCs) along LD1, driven mainly by spike width and downstroke.
+  source: Figure 2M and Figure S2C; Results, V321L mutation in Nrg1 results in altered composition of
+    the DG granule cell population, paragraph 3
+  quote: LDA resulted in separation of WT GCs and all other groups (WT SGCs, V 321 L GCs, and V 321 L
+    SGCs) along LD1 driven strongly by spike width
+  criterion: The 18 features of Fig S2C, z-scored with scale() (Methods, LDA), LDA (MASS lda) with
+    four classes (genotype by cell type; Fig 2M shows LD1 and LD2). Whether PCA precedes this LDA as it
+    does for the classifier is not stated; readings are (a) LDA on the z-scored features and (b) LDA
+    on their top 9 PCs. Cells with a missing feature are dropped. Reproduced when, under every
+    reading, the WT GC mean LD1 lies on one side and the means of the other three groups on the
+    other, and spike width or downstroke has the largest absolute LD1 coefficient; blocked as
+    methods_underspecified when the readings disagree.
+- id: figs2d-ephys-kmeans-v321l-like-wt-sgc
+  statement: k-means clustering (k = 3) of electrophysiological data places V321L GCs and SGCs in
+    clusters in nearly the same proportions as WT SGCs, while WT GCs spread across all three clusters.
+  source: Figure S2D; Results, V321L mutation in Nrg1 results in altered composition of the DG
+    granule cell population, paragraph 3
+  quote: WT GCs are evenly distributed across all clusters, whereas SGCs largely occupy k3 with a
+    minority in k1. All V 321 L GC and SGC cluster occupancy was virtually identical to WT SGCs
+  criterion: k-means with k = 3 on the 18 features of Fig S2C. The scaling, number of PCs and seed are
+    not given; readings are (a) z-scored features and (b) the first two PCs of the z-scored features,
+    100 random starts each. Reproduced when, under every reading, WT GCs occupy all three clusters with
+    none holding more than half of them, and WT SGCs, V321L GCs and V321L SGCs each have most cells
+    in one same cluster.
+- id: v321l-multiple-regression-wt-only
+  statement: Controlling for soma position, spike amplitude and upstroke covary with cell type in WT
+    mice, while no electrophysiological property shows a cell-type effect in V321L mice.
+  source: Results, V321L mutation in Nrg1 results in altered composition of the DG granule cell
+    population, paragraph 4
+  quote: "In WT mice, we found that two electrophysiological properties, spike amplitude ( P = 0.042, β1 = −46.2) and upstroke ( P = 0.038, β1 = −117.88), significantly covaried with cell type when controlling for soma position. However, this model did not detect significant cell-type effects for any electrophysiological properties in V 321 L mice"
+  statistics:
+  - about: spike amplitude, cell type coefficient, WT
+    test: multiple linear regression
+    statistic: beta1 = -46.2
+    p: 0.042
+  - about: upstroke, cell type coefficient, WT
+    test: multiple linear regression
+    statistic: beta1 = -117.88
+    p: 0.038
+  expected:
+  - quantity: cell type coefficient beta1 for spike amplitude, WT
+    value: -46.2
+    tolerance: 4.62
+    unit: mV
+  - quantity: cell type coefficient beta1 for upstroke, WT
+    value: -117.88
+    tolerance: 11.79
+    unit: mV/ms
+  criterion: Per property and genotype, lm(property ~ CellType + SomaPosition + CellType x
+    SomaPosition) in R (Methods, Statistical analysis), soma position in micrometres from the GCL-MOL
+    boundary. The coding of cell type is not stated; readings are SGC = 1 and GC = 1 (the sign of beta1
+    flips between them, so a beta1 matches when its magnitude is within tolerance and its sign fits
+    one coding used for both properties). Reproduced when in WT the beta1 p-values for spike amplitude
+    and upstroke are below 0.05 with beta1 within tolerance, and in V321L no property's beta1 has p <
+    0.05 (the absence half judged on this test). The property set for the V321L half is open
+    (opening comment); readings are the 18 features of Fig S2C and the 21 outputs of the code. The
+    WT properties other than these two are shown.
+- id: figs2e-pca-separation-lost
+  statement: PCA of the electrophysiological features separates WT GCs from WT SGCs on the first two
+    components, while V321L GCs and SGCs overlap.
+  source: Figure S2E; Results, V321L mutation in Nrg1 results in altered composition of the DG
+    granule cell population, paragraph 5
+  quote: Principal component analysis (PCA) revealed a clear separation between GCs and SGCs in WT
+    mice along the first two principal components, whereas cells in V 321 L mice showed substantial
+    overlap
+  criterion: PCA (prcomp) of the 18 z-scored features of Fig S2C over all cells, with 95% ellipses per
+    group as in the legend. The ellipse type is not stated; readings are (a) the 95% normal data
+    ellipse (ggplot2 stat_ellipse default) and (b) the 95% confidence ellipse of the group mean.
+    Reproduced when, under every reading, the WT GC and WT SGC centroids each lie outside the other
+    group's ellipse and the V321L GC and SGC centroids each lie inside the other's; blocked as
+    methods_underspecified when the readings disagree. The centroid distances are shown.
+- id: figs2f-centroid-separation-reduced
+  statement: In the WT-trained LDA, the distance between GC and SGC centroids along LD1 is much
+    smaller in V321L than in WT, with both V321L centroids on the WT SGC side of the boundary.
+  source: Figure S2F; Results, V321L mutation in Nrg1 results in altered composition of the DG
+    granule cell population, paragraph 5
+  quote: Centroid analysis demonstrated a striking reduction in the separation between GC and SGC
+    centroids in V 321 L mice along the first linear discriminant (LD1) axis
+  depends_on:
+  - figs2g-lda-classifier-accuracy
+  criterion: The classifier of figs2g-lda-classifier-accuracy; LD1 scores of WT cells and of V321L
+    cells (projected through the WT PCA and LDA). Reproduced when the V321L GC-SGC centroid distance
+    on LD1 is less than half the WT distance and both V321L centroids lie on the WT SGC side of the
+    LD1 decision boundary. The bound of one half is read from Fig S2F (about 1.3 against 3.3 units)
+    and is not stated in the text.
+- id: figs2g-lda-classifier-accuracy
+  statement: An LDA classifier trained on WT electrophysiology classifies held-out WT cells with 78%
+    accuracy (Cohen's kappa 0.57) but V321L cells with only 52% accuracy (kappa 0.08).
+  source: Figure S2G; Results, V321L mutation in Nrg1 results in altered composition of the DG
+    granule cell population, paragraph 5
+  quote: The LDA classifier, trained on 80% of the WT data, achieved 78% accuracy in cell-type
+    classification of the remainder 20% WT cells (Cohen’s κ = 0.57) ( Fig S2G , top). Using this
+    classifier on the recordings obtained from V 321 L mice resulted in 52% classification accuracy
+    (Cohen’s κ = 0.08)
+  expected:
+  - quantity: accuracy on held-out WT cells
+    value: 78
+    tolerance: 7.8
+    unit: percent
+  - quantity: Cohen's kappa on held-out WT cells
+    value: 0.57
+    tolerance: 0.1
+  - quantity: accuracy on V321L cells
+    value: 52
+    tolerance: 5.2
+    unit: percent
+  - quantity: Cohen's kappa on V321L cells
+    value: 0.08
+    tolerance: 0.1
+  criterion: As the Methods (LDA) describe. The 18 features of Fig S2C, z-scored with scale(); PCA
+    with prcomp on WT; the top 9 PCs; caret train with method lda and trainControl(method cv, number
+    5); the WT PCA and LDA applied to the V321L data. Kappa tolerances are 0.1, not 10%, because with
+    about 21 to 23 cells one reclassified cell moves kappa by about 0.08. Open details, with readings
+    run. (1) Whether V321L data are scaled with their own mean and SD or the WT ones ("applied to the
+    scaled V321L data"). (2) Whether 78% is caret's mean accuracy over the five folds or the pooled
+    out-of-fold accuracy; the WT confusion matrix in Fig S2G counts 21 cells (16 correct, 76%), so it
+    pools all folds. (3) The fold seed, not given; each value is the median over 100 random fold
+    assignments (a standard choice), with the range shown. Reproduced when under one reading all four
+    values are within tolerance; partially reproduced when the two accuracies are, or when WT accuracy
+    exceeds V321L accuracy by at least 15 points. The V321L matrix in Fig S2G (8, 5, 7, 3; 11 of 23
+    correct, 48%, kappa near -0.09) does not match the text's 52% and 0.08; both are compared and the
+    mismatch is recorded.
+- id: fig3b-penk-position-altered
+  statement: In WT mice most Penk+ GCs lie in the top two cell body layers of the suprapyramidal GCL;
+    this bias toward the GCL-MOL boundary is lost in V321L mice.
+  source: Figure 3B; Results, V321L mice have a higher number and altered positioning of Penk+ GCs
+    compared with WT mice, paragraph 1
+  quote: In WT mice, most of the Penk + GCs were in the top 2 cell body layers of the suprapyramidal
+    GCL, whereas this bias toward the GCL-MOL boundary was lost in the V 321 L DG
+  statistics:
+  - test: Kolmogorov-Smirnov test
+    statistic: D = 0.36
+    p: 0.013
+    n: 3 mice per genotype
+  criterion: Distances of Penk+ somata from the GCL-MOL boundary in FISH images (cells with at least
+    5 puncta or large clusters; Methods), pooled per genotype. Two-sample Kolmogorov-Smirnov test.
+    Reproduced when p < 0.05 with V321L cells farther from the boundary.
+- id: fig3d-more-penk-gcs
+  statement: V321L mice have a higher percentage of Penk-expressing GCs in snRNA-Seq.
+  source: Figure 3D; Results, V321L mice have a higher number and altered positioning of Penk+ GCs
+    compared with WT mice, paragraph 2
+  quote: the total percentage of Penk + GCs was significantly higher in V 321 L mice
+  statistics:
+  - test: Mann-Whitney test, two-tailed
+    statistic: U = 0
+    p: 0.03
+    n: 4 mice per genotype
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Per mouse, the percentage of GCs (clusters 0, 1, 5 and 18) with a raw Penk count above 0
+    (snMultiome code). Two-tailed Mann-Whitney test. Reproduced when p < 0.05 with V321L higher (U =
+    0 gives the smallest p available with 4 and 4, 0.029).
+- id: figs3b-prox1-count-not-different
+  statement: The total number of Prox1+ GCs does not differ between WT and V321L mice.
+  source: Figure S3B; Results, V321L mice have a higher number and altered positioning of Penk+ GCs
+    compared with WT mice, paragraph 2
+  quote: "We found no differences in the total number of Prox1 + neurons (GCs) ( Fig S3B ; Mann–Whitney test, P = 0.69, U = 6)"
+  statistics:
+  - about: as in the Results
+    test: Mann-Whitney test
+    statistic: U = 6
+    p: 0.69
+    n: 4 mice per genotype
+  - about: as in the Fig S3B legend
+    test: Welch's t test, two-tailed
+    statistic: t = 0.6994, df = 3.762
+    p: 0.5
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: A claim of absence. The Results and the legend name different tests; both are the
+    paper's, so both are run at p < 0.05 on per-mouse Prox1+ GC counts. Reproduced when neither finds
+    a difference.
+- id: figs3c-cluster18-penk-enriched
+  statement: Among the four GC clusters (0, 1, 5, 18), cluster 18 has the highest percentage of Penk+
+    cells in both genotypes.
+  source: Figure S3C; Results, V321L mice have a higher number and altered positioning of Penk+ GCs
+    compared with WT mice, paragraph 2
+  quote: cluster 18 contained the highest percentage of Penk + cells indicating enrichment for SGCs in
+    cluster 18 in both genotypes
+  statistics:
+  - about: cluster effect
+    test: two-way RM ANOVA
+    p: 0.0005
+  - about: cluster 0 against 18
+    test: Bonferroni corrected comparison
+    p: 0.0007
+    corrected: Bonferroni
+  - about: cluster 1 against 18
+    test: Bonferroni corrected comparison
+    p: 0.02
+    corrected: Bonferroni
+  - about: cluster 5 against 18
+    test: Bonferroni corrected comparison
+    p: 0.003
+    corrected: Bonferroni
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Per mouse and cluster, percentage of Penk+ GCs. Two-way repeated-measures ANOVA (cluster
+    by genotype, cluster within mouse) with Bonferroni comparisons of each cluster against 18.
+    Reproduced when the cluster effect and all three comparisons have p < 0.05 with cluster 18
+    highest.
+- id: figs3d-sorcs3-marks-cluster18
+  statement: Sorcs3 is the distinguishing marker of GC cluster 18, and Sorcs3+ cells are biased
+    toward the GCL-MOL boundary in FISH.
+  source: Figure S3D; Results, V321L mice have a higher number and altered positioning of Penk+ GCs
+    compared with WT mice, paragraph 2
+  quote: However, cluster 18 was uniquely marked by the expression of Sortilin Related VPS10 Domain
+    Containing Receptor 3 ( Sorcs3 )
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Seurat FindConservedMarkers across WT and V321L for each GC cluster (Methods). Reproduced
+    when Sorcs3 is among the conserved markers of cluster 18 and not of clusters 0, 1 or 5. The FISH
+    half is not tested here (no statistic is given).
+- id: figs5a-penk-sorcs3-subsets
+  statement: V321L mice have more Penk+Sorcs3+ and Penk+Sorcs3- GCs than WT, while Sorcs3+Penk- GCs are
+    unchanged.
+  source: Figure S5A; Results, V321L mice have a higher number and altered positioning of Penk+ GCs
+    compared with WT mice, paragraph 3
+  quote: V 321 L mice also showed an increase in the percentage of Penk + Sorcs3 + GCs ( Fig S5A ; P =
+    0.009). We found that there were no significant differences in the proportion of Penk-Sorcs3+
+    cells between WT and V 321 L mice
+  statistics:
+  - about: marker by genotype interaction
+    test: two-way ANOVA
+    statistic: F(2, 12) = 4.199
+    p: 0.041
+  - about: Penk+Sorcs3+, WT against V321L
+    test: Bonferroni corrected comparison
+    p: 0.009
+    corrected: Bonferroni
+  - about: Penk+Sorcs3-, WT against V321L
+    test: Bonferroni corrected comparison
+    p: 0.0002
+    corrected: Bonferroni
+  - about: Sorcs3+Penk-, WT against V321L
+    test: Bonferroni corrected comparison
+    p: 0.287
+    corrected: Bonferroni
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Per mouse, the percentage of GCs in each marker class (raw count above 0 for each gene).
+    Two-way ANOVA (marker class by genotype) with Bonferroni comparisons of genotype within class. The
+    design is not named; the reported F(2, 12) fits marker class as a repeated measure within mouse
+    (error df (3 - 1) x (8 - 2) = 12) and not an ordinary two-way ANOVA (18 error df), so the
+    repeated-measures ANOVA is the test and the ordinary one is shown as a variant.
+    Reproduced when the two Penk+ classes differ at p < 0.05 with V321L higher and Sorcs3+Penk- does not
+    (p >= 0.05).
+- id: fig4a-more-penk-sorcs3-cells-fish
+  statement: In FISH, V321L mice have more Penk+Sorcs3+ cells in the suprapyramidal blade than WT mice.
+  source: Figure 4A; Results, Discovery of novel marker genes for SGCs, paragraph 1
+  quote: We found that V 321 L mice had significantly higher numbers of cells co-expressing Penk and
+    Sorcs3
+  statistics:
+  - test: Welch's t test, two-tailed
+    statistic: t = 5.278, df = 2.941
+    p: 0.014
+    n: 3 mice per genotype, 9 sections
+  criterion: Per mouse, the count of Penk+Sorcs3+ cells in the suprapyramidal blade (averaged over its
+    sections, each dot one mouse). Two-tailed Welch's t test. Reproduced when p < 0.05 with V321L
+    higher.
+- id: fig4a-prime-penk-sorcs3-position
+  statement: Penk+Sorcs3+ cells in V321L DG are not restricted to the layers at the GCL-MOL boundary.
+  source: Figure 4a'
+  quote: the V 321 L mice showing more Penk+Sorcs3+ cells present in the lower layers of the GCL, away
+    from the GCL-MOL boundary
+  statistics:
+  - test: Kolmogorov-Smirnov test
+    statistic: D = 0.4
+    p: 0.029
+    n: 3 mice per genotype
+  criterion: Distances of Penk+Sorcs3+ cells from the GCL-MOL boundary pooled per genotype; two-sample
+    Kolmogorov-Smirnov test. Reproduced when p < 0.05 with V321L cells farther from the boundary.
+- id: fig4b-penk-enriched-genes
+  statement: Differential expression finds 102 genes significantly enriched in Penk+ GCs over Penk- GCs
+    (fold change of at least 2, adjusted P at most 0.05).
+  source: Figure 4B; Results, Discovery of novel marker genes for SGCs, paragraph 2
+  quote: We assessed differential gene expression in Penk + GCs compared with Penk -negative GCs
+    yielding 102 genes whose expression was significantly enriched in Penk + GCs (fold change of ≥2 and
+    adj. P ≤ 0.05)
+  expected:
+  - quantity: genes enriched in Penk+ GCs
+    value: 102
+    tolerance: 10
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Seurat FindMarkers of Prox1+Penk+ against Prox1+Penk- GCs (snMultiome code, workbook 58),
+    log2 fold change at least 1 and adjusted p at most 0.05. Reproduced when the count is within
+    tolerance.
+- id: fig4b2-marker-penk-cells-increased
+  statement: For each selected SGC marker gene except Grp, V321L mice have a higher proportion of GCs
+    co-expressing Penk and that marker.
+  source: Figure 4b''; Results, Discovery of novel marker genes for SGCs, paragraph 2
+  quote: Except for gastrin-releasing peptide ( Grp ) ... all other marker gene Penk-co-expressing
+    cells formed a significantly higher proportion of all GCs in the V 321 L mice
+  statistics:
+  - test: multiple Mann-Whitney tests, FDR corrected
+    statistic: U = 0
+    p: 0.03
+    corrected: FDR (two-stage step-up Benjamini, Krieger and Yekutieli)
+    n: 4 mice per genotype
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Per mouse, cells co-expressing Penk and each marker divided by all cells in clusters 0, 1,
+    5 and 18 (legend). Mann-Whitney test per gene, FDR by the two-stage Benjamini-Krieger-Yekutieli
+    method. The nine genes are those of Fig 4b' and 4b''. With 4 and 4 mice the smallest two-tailed p is
+    0.029, so the threshold is the paper's FDR adjusted p of 0.03 as printed. The Results and the
+    legend disagree on what 0.03 is (the Results give P = 0.03 with q = 0.002, and for Grp P = 0.1
+    with q = 0.01; the legend gives FDR adjusted P = 0.03, and 0.14 for Grp), so the judgement rests
+    on U and the q values are shown. Reproduced when every gene except Grp has U = 0 with V321L higher
+    and Grp does not.
+- id: fig4d-penk-marker-overlap
+  statement: In WT FISH, 84% of Penk+ GCs express Nptx2, 67% express Sorcs3, and 64% express both.
+  source: Figure 4D and 4d'; Results, Discovery of novel marker genes for SGCs, paragraph 2
+  quote: We found that on average 84% of the Penk + GCs also expressed Nptx2 , and 67% of the Penk +
+    GCs also expressed Sorcs3 . The co-expression of Nptx2 and Sorcs3 was detected in 64% of the Penk +
+    GCs
+  expected:
+  - quantity: Penk+ cells expressing Nptx2
+    value: 84
+    tolerance: 5
+    unit: percent
+  - quantity: Penk+ cells expressing Sorcs3
+    value: 67.3
+    tolerance: 5.5
+    unit: percent
+  - quantity: Penk+ cells expressing Nptx2 and Sorcs3
+    value: 64
+    tolerance: 7.9
+    unit: percent
+  criterion: Per mouse, percentages over Penk+ cells in the suprapyramidal blade, then the mean over the
+    three mice; tolerances are the SDs the legend gives. Reproduced when all three are within
+    tolerance.
+- id: figs6-increase-in-nrg1-expressing
+  statement: The increase in marker+Penk+ GCs in V321L mice is seen in Nrg1-expressing Penk+ GCs and
+    not in Nrg1-non-expressing ones; about 94% of Penk+ GCs co-express Nrg1 in FISH.
+  source: Figure S6A and S6B; Results, Discovery of novel marker genes for SGCs, paragraph 2
+  quote: Intriguingly, this increase in numbers of marker + Penk + cells was only observed in Penk and
+    Nrg1 co-expressing GCs ( Fig S6A ) and not in Nrg1 -non-expressing Penk + GCs ( Fig S6B ). In FISH
+    experiments for Penk and Nrg1 , we found that most of the Penk + GCs co-expressed Nrg1 (∼94%)
+  statistics:
+  - about: Penk+Nrg1+ GCs, Grp
+    test: multiple Mann-Whitney tests, FDR corrected
+    statistic: U = 2.5
+    p: 0.14
+  - about: Penk+Nrg1+ GCs, other markers
+    test: multiple Mann-Whitney tests, FDR corrected
+    statistic: U = 0 or 1
+    p: 0.1
+    p_relation: "<"
+  - about: Penk+Nrg1- GCs, Sorcs3, Itgav, Chgb, Scg2 and Grm8
+    test: multiple Mann-Whitney tests, FDR corrected
+    statistic: U = 0
+    p: 0.08
+  - about: Penk+Nrg1- GCs, other markers
+    test: multiple Mann-Whitney tests, FDR corrected
+    p: 0.1
+    p_relation: ">"
+  expected:
+  - quantity: Penk+ GCs co-expressing Nrg1 in FISH
+    value: 94
+    tolerance: 9.4
+    unit: percent
+  data: elsewhere
+  where: GEO GSE280167 (the FISH percentage is not deposited there)
+  criterion: As fig4b2-marker-penk-cells-increased, split by Nrg1 raw count above 0. The paper's
+    threshold here is FDR adjusted p < 0.1 (legend). Reproduced when in Penk+Nrg1+ GCs every marker
+    except Grp reaches adjusted p < 0.1 with V321L higher, and in Penk+Nrg1- GCs fewer markers reach
+    it. The FISH percentage is checked only if the FISH counts are available.
+- id: fig5b-pseudotime-sorcs3-top
+  statement: In WT GCs the top gene explaining pseudotime is Sorcs3, and late pseudotime falls at the
+    end of cluster 1 and in cluster 18; in V321L GCs trajectories are altered and the latest pseudotime
+    is in cluster 5.
+  source: Figure 5B; Results, Non-SGCs harbor the potential to express an SGC-like transcriptomic
+    state, paragraph 1
+  quote: The top gene explaining pseudotime in WT DG was found to be Sorcs3 ... Trajectories in the V
+    321 L DG were highly altered, and cells with late pseudotime were present in cluster 5
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Monocle3 on the GC clusters per genotype, root in cluster 0 (highest Camk4), graph_test
+    with neighbor_graph principal_graph (Methods; snMultiome code lines 2948 to 3228). Reproduced when
+    Sorcs3 has the highest Moran's I among genes with q < 0.05 in WT, the WT cells in the top decile of
+    pseudotime are mostly in clusters 1 and 18, and the V321L top decile is mostly in cluster 5. The
+    decile is not from the paper.
+- id: trajectory-geometry-directionality
+  statement: WT (original and downsampled) and V321L GC trajectories have significantly lower spherical
+    distances than randomized ones, so they have definite directionality; WT spherical distances
+    exceed V321L ones.
+  source: Results, Non-SGCs harbor the potential to express an SGC-like transcriptomic state,
+    paragraph 1
+  quote: WT original and downsampled trajectories resulted in significantly lower spherical distances
+    compared with randomized ones indicating the presence of a definite directionality within the
+    trajectories ... the spherical distances obtained for the WT trajectories were greater than those
+    for the V 321 L trajectory
+  statistics:
+  - about: randomized against WT original
+    test: Wilcoxon signed rank test
+    p: 4.25e-11
+  - about: randomized against WT downsampled
+    test: Wilcoxon signed rank test
+    p: 8.0e-31
+  - about: randomized against V321L
+    test: Wilcoxon signed rank test
+    p: 3.17e-54
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: TrajectoryGeometry analyseSingleCellTrajectory on the top 50 PCs rescaled to 0 to 100 with
+    Monocle3 pseudotime, nSamples 1000, N 1000, randomization byPermutation and permuteWithinColumns,
+    statistic mean (Methods). The downsampling seed is not given; the downsampled WT result is the
+    median over 20 draws. Reproduced when all three tests give p < 0.05 with lower distances than
+    random and the mean WT distance exceeds the V321L one.
+- id: fig5d-atac-cluster-composition
+  statement: In ATAC space, the Penk+ GC cluster 9 is populated evenly by WT and V321L nuclei, while
+    cluster 4 (Camk4+ GCs) is about 75% WT.
+  source: Figure 5d'; Results, Non-SGCs harbor the potential to express an SGC-like transcriptomic
+    state, paragraph 3
+  quote: Cluster 9 was comprised of the Penk + GCs, and it was uniformly populated by WT and V 321 L
+    GCs; however, cluster 4 that was comprised of the Camk4 + GCs (cluster 0 in the “RNA space”) was
+    disproportionately populated by WT GCs, which made up ∼75% of all cells in that cluster
+  expected:
+  - quantity: WT share of ATAC cluster 4
+    value: 75
+    tolerance: 7.5
+    unit: percent
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Clustering of GC nuclei in ATAC space at resolution 0.5 (Methods; ATAC code). Reproduced
+    when the WT share of cluster 4 is within tolerance and that of cluster 9 is between 40 and 60%
+    (a reading of "uniformly", not stated by the paper).
+- id: fig5f-sgc-genes-broadly-accessible
+  statement: SGC-enriched genes are accessible in cluster 9 and in nearly all other ATAC clusters of
+    GCs in both genotypes, though their expression is largely restricted to cluster 18 in WT.
+  source: Figure 5E and 5F; Results, Non-SGCs harbor the potential to express an SGC-like
+    transcriptomic state, paragraph 3
+  quote: However, we also found SGC-enriched genes to be accessible in cells in nearly all other
+    clusters for both genotypes
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Signac GeneActivity per gene (TSS and 1 kb), nine genes of Fig 5E and 5F. Reproduced when
+    for each gene the fraction of nuclei with nonzero activity is above zero in at least 8 of the 10
+    ATAC clusters in each genotype (a reading of "nearly all"), while in WT RNA the expressing
+    fraction is highest in cluster 18.
+- id: figs8b-penk-accessibility-not-different
+  statement: The percentage of GCs with an accessible Penk locus does not differ between WT and V321L
+    mice.
+  source: Figure S8b''; Results, Non-SGCs harbor the potential to express an SGC-like transcriptomic
+    state, paragraph 3
+  quote: the total number of GCs having the Penk locus accessible was not significantly different
+    between the genotypes
+  statistics:
+  - test: Mann-Whitney test
+    statistic: U = 7
+    p: 0.9
+    n: 4 mice per genotype
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: A claim of absence, judged on a Mann-Whitney test at p < 0.05 of per-mouse percentages of
+    GCs with nonzero Penk gene activity. Reproduced when p >= 0.05.
+- id: tables4-suz12-enrichment
+  statement: Genes enriched in Penk+ GCs and correlated with maximal pseudotime are strongly enriched
+    for regulation by Suz12, a core PRC2 component.
+  source: Results, Non-SGCs harbor the potential to express an SGC-like transcriptomic state,
+    paragraph 4; Table S4
+  quote: We found strong enrichment for regulation of these genes by Suz12, a core component of the
+    polycomb repressive complex 2 (PRC2)
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: The 60 genes (fig s10 intersection) submitted to ChEA and ENCODE. The paper names the
+    databases, not the tool or library versions; the Methods use the enrichR package for GO terms,
+    so the readings are the enrichR libraries ENCODE_and_ChEA_Consensus_TFs_from_ChIP-X, ChEA_2022
+    and ENCODE_TF_ChIP-seq_2015, and the claim is blocked as methods_underspecified when they
+    disagree. Within a reading that gives ChEA and ENCODE separately, reproduced when SUZ12 is the top
+    term by adjusted p in at least one of them; within the consensus library, when it is the top
+    term.
+- id: fig6a-penk-increases-with-age
+  statement: The number of Penk+ cells in the suprapyramidal GCL of WT mice increases with age, from
+    between 2 and 3 months.
+  source: Figure 6a'; Results, SGC numbers in the DG increase during the adolescence-adulthood
+    transition in WT mice, paragraph 1
+  quote: We confirmed that WT mice indeed show an increase in Penk expression starting between 2 and 3
+    mo of age
+  statistics:
+  - about: age effect
+    test: Brown-Forsythe ANOVA
+    statistic: F = 33.4 [3, 4.2]
+    p: 0.0032
+  - about: 1 against 3 months
+    test: Dunnett's T3 multiple comparisons
+    p: 0.008
+  - about: 1 against 12 months
+    test: Dunnett's T3 multiple comparisons
+    p: 0.03
+  - about: 2 against 3 months
+    test: Dunnett's T3 multiple comparisons
+    p: 0.008
+  criterion: Per mouse, the total count of Penk+ cells in the suprapyramidal GCL at 1, 2, 3 and 9 to
+    12 months. Brown-Forsythe ANOVA with Dunnett's T3 comparisons. The Results print P = 0.0032 and
+    the legend P = 0.002. Reproduced when the age effect and the 2 against 3 month comparison have p <
+    0.05 with the count higher at 3 months.
+- id: fig6b-sgc-count-increases-with-age
+  statement: The number of Penk+Nptx2+Sorcs3+ cells (SGCs) in the suprapyramidal GCL of WT mice
+    increases with age.
+  source: Figure 6b'; Results, SGC numbers in the DG increase during the adolescence-adulthood
+    transition in WT mice, paragraph 1
+  quote: We found that the numbers of Penk+Nptx2+Sorcs3+ GCs also increased with age
+  statistics:
+  - about: age effect
+    test: Kruskal-Wallis test
+    statistic: KW = 9.5
+    p: 0.0012
+  - about: 1 against 12 months
+    test: Dunn's multiple comparisons
+    p: 0.039
+    corrected: Dunn
+  criterion: Per mouse counts at 1, 2, 3 and 9 to 12 months; Kruskal-Wallis test with Dunn's
+    comparisons. The Results print P = 0.0012 and the legend P = 0.001. Reproduced when both have p <
+    0.05 with 12 months higher than 1 month.
+- id: figs9a-age-dynamics-lost-v321l
+  statement: The age-dependent increase in SGC number seen in WT mice is lost in V321L mice.
+  source: Figure S9A; Results, SGC numbers in the DG increase during the adolescence-adulthood
+    transition in WT mice, paragraph 1
+  quote: These dynamics of SGC abundance over adolescence were lost in the V 321 L DG
+  statistics:
+  - about: effect of time
+    test: two-way ANOVA
+    p: 0.008
+  - about: WT 1 against 12 months
+    test: Bonferroni corrected comparison
+    p: 0.008
+    corrected: Bonferroni
+  criterion: Two-way ANOVA (genotype by age) of per-mouse Penk+Nptx2+Sorcs3+ counts with Bonferroni
+    comparisons between ages within genotype (legend). Reproduced when the WT 1 against 12 month
+    comparison has p < 0.05 and no V321L comparison does (the absence half judged on these
+    comparisons).
+- id: figs9b-marker-fraction-stable
+  statement: The percentage of Penk+ cells that are Nptx2+Sorcs3+ does not change with age in either
+    genotype.
+  source: Figure S9B; Results, SGC numbers in the DG increase during the adolescence-adulthood
+    transition in WT mice, paragraph 1
+  quote: There were no significant differences in the overall percentage of Nptx2 - or Sorcs3
+    -expressing Penk + GCs at any of the ages
+  statistics:
+  - about: WT
+    test: Brown-Forsythe ANOVA
+    statistic: F = 2.1 [3, 4.75]
+    p: 0.2
+    n: 3 mice per age group
+  - about: V321L
+    test: Brown-Forsythe ANOVA
+    statistic: F = 0.99 [2.0, 4.3]
+    p: 0.44
+    n: 3 mice per age group
+  criterion: A claim of absence, judged on Brown-Forsythe ANOVA per genotype at p < 0.05. Reproduced
+    when neither genotype shows an age effect.
+- id: figs9d-penk-not-immature
+  statement: At 3 months, Penk+ cells in the GCL of WT mice do not express the immature neuron marker
+    Dcx.
+  source: Figure S9D; Results, SGC numbers in the DG increase during the adolescence-adulthood
+    transition in WT mice, paragraph 2
+  quote: we did not find any Penk + cells that expressed the immature neuron marker doublecortin ( Dcx )
+    at 3 mo of age
+  criterion: Count of Penk+Dcx+ cells in the GCL in FISH (cells with at least 5 puncta of each).
+    Reproduced when the count is zero.
+- id: figs10d-go-resting-membrane-potential
+  statement: The 60 genes both enriched in Penk+ GCs and in the cluster 18 end-trajectory modules are
+    enriched for gene ontology terms whose top term by odds ratio is regulation of resting membrane
+    potential, driven by Kcnk1 and Kcnj2.
+  source: Figure S10C and S10D; Results, SGC numbers in the DG increase during the
+    adolescence-adulthood transition in WT mice, paragraph 2
+  quote: we identified 60 genes that met this criterion ... the feature of highest odds ratio being
+    regulation of RMP, in line with our results showing a more hyperpolarized RMP in morphologically
+    identified SGCs ( Fig 1J ). This enrichment was driven by two potassium channel genes ... Kcnk1 and
+    Kcnj2
+  expected:
+  - quantity: genes in the intersection
+    value: 60
+    tolerance: 6
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Monocle3 find_gene_modules on WT GCs, modules correlated with the cluster 18 end
+    trajectories, intersected with the Penk+ enriched genes; enrichR GO_Biological_Process_2023, terms
+    with adjusted p < 0.05 ranked by odds ratio (legend and Methods). Reproduced when the count is
+    within tolerance and the top term is regulation of resting membrane potential with Kcnk1 and
+    Kcnj2 as its genes.
+- id: fig7a-type3-nrg1-declines
+  statement: Type III Nrg1 expression in the suprapyramidal DG of WT mice declines from 1 to 12 months
+    of age; the decline from 1 to 3 months is not significant.
+  source: Figure 7A; Results, Natural decline in capacity for Nrg1 nuclear back-signaling corresponds
+    to the SGC fate, paragraph 1
+  quote: We found that Type III Nrg1 expression declined from 1 to 12 mo of age in WT mice; however,
+    the reduction between 1 and 3 mo of age was not significant
+  statistics:
+  - about: age effect
+    test: Kruskal-Wallis test
+    statistic: KW = 6.25
+    p: 0.01
+    n: 3 mice per age group
+  - about: 1 against 12 months
+    test: Dunn's multiple comparisons
+    p: 0.04
+    corrected: Dunn
+  criterion: Per mouse, Type III Nrg1 FISH fluorescence intensity density normalized to the area of the
+    suprapyramidal blade (Methods). Kruskal-Wallis with Dunn's comparisons. Reproduced when the age
+    effect and 1 against 12 months have p < 0.05 with lower values at 12 months, and 1 against 3
+    months has p >= 0.05.
+- id: fig7bc-bace1-low-in-sgcs
+  statement: Bace1 expression peaks at intermediate pseudotime and drops at maximal pseudotime while
+    Nrg1 rises along pseudotime; fewer than 10 WT cells co-express Penk, Nrg1 and Bace1, so most
+    Penk+Nrg1+ GCs lack detectable Bace1.
+  source: Figure 7B and 7C; Results, Natural decline in capacity for Nrg1 nuclear back-signaling
+    corresponds to the SGC fate, paragraph 2
+  quote: Bace1 expression was found to be higher in cells at intermediate pseudotime compared with the
+    beginning or end of the trajectories ... examination of cells expressing Penk, Nrg1 , and Bace1 in
+    WT DG resulted in <10 cells showing co-expression of all three markers
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: WT GC pseudotime from fig5b-pseudotime-sorcs3-top, split into thirds. Reproduced when mean
+    Bace1 expression is highest in the middle third and lower in the last third than the middle,
+    mean Nrg1 is highest in the last third, and fewer than 10 WT GCs have raw counts above 0 for all
+    of Penk, Nrg1 and Bace1. The thirds are not from the paper.
+  depends_on:
+  - fig5b-pseudotime-sorcs3-top
+- id: figs5bc-penk-sorcs3-neg-outside-cluster18
+  statement: Penk+Sorcs3- GCs are excluded from cluster 18 in both WT and V321L mice.
+  source: Figure S5B and S5C; Results, V321L mice have a higher number and altered positioning of
+    Penk+ GCs compared with WT mice, paragraph 3
+  quote: we found that Penk + Sorcs3 - cells were excluded from cluster 18 in both WT and V 321 L mice
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: GCs with a raw Penk count above 0 and a raw Sorcs3 count of 0 (as in
+    figs5a-penk-sorcs3-subsets), counted per cluster and genotype. Reproduced when cluster 18 holds
+    none of them in either genotype, as the legend of Fig S5C says ("Note the absence of cells in
+    cluster 18 in both genotypes").
+- id: figs7-downsampled-pseudotime-robust
+  statement: With WT GCs downsampled to the V321L number, the pseudotime ordering is preserved and
+    Sorcs3 still marks the cells with maximal pseudotime.
+  source: Figure S7A and S7B; Results, Non-SGCs harbor the potential to express an SGC-like
+    transcriptomic state, paragraph 1
+  quote: We found that the pseudotime ordering of GCs and associated gene expression states were robust
+    to differences in sampling frequency, with Sorcs3 still representing cells with the maximal
+    pseudotime
+  data: elsewhere
+  where: GEO GSE280167
+  depends_on:
+  - fig5b-pseudotime-sorcs3-top
+  criterion: WT GCs downsampled at random to the number of V321L GCs, then Monocle3 and graph_test as in
+    fig5b-pseudotime-sorcs3-top. The seed is not given; 20 draws, as in
+    trajectory-geometry-directionality. Reproduced when in most draws Sorcs3 is among the top ten genes
+    by Moran's I with q < 0.05 (the legend says "some of the top pseudotime-associated genes") and the
+    Spearman correlation of each downsampled cell's pseudotime with its pseudotime in the full WT
+    analysis is positive. The top-ten bound and the correlation are readings, not the paper's.
+- id: figs8a-atac-pseudotime-cluster9
+  statement: In ATAC space the Penk+ GCs (cluster 9) have the maximal pseudotime; WT GC trajectories
+    have three end points and V321L GC trajectories one, ending at cluster 9.
+  source: Figure S8A; Results, Non-SGCs harbor the potential to express an SGC-like transcriptomic
+    state, paragraph 3
+  quote: Once again, we found that the Penk + GCs (now located in ATAC cluster 9) had the maximum
+    pseudotime values based on chromatin accessibility ... However, in the V 321 L GCs, there was only
+    one end point terminating at cluster 9
+  data: elsewhere
+  where: GEO GSE280167
+  criterion: Monocle3 on the ATAC GC subset, run separately on WT (LL) and V321L (VV) cells (Methods,
+    Single-nucleus ATAC-Seq analysis), root chosen from Camk4 and the other markers the Methods list.
+    Reproduced when cluster 9 has the highest median pseudotime in each genotype and the learned
+    principal graph has three leaf end points (other than the root) in WT and one in V321L. Monocle3
+    graph learning depends on its settings, which the Methods do not give beyond the workflow; the
+    snMultiome code's settings are used.
+- id: figs9c-embryonic-sgc-genes
+  statement: At E18.5, cells expressing SGC-enriched genes (Penk, Scg2, Nrg1, Cit) lie at the dorsal
+    border of the developing GCL, so marker expression is unlikely to reflect cellular age alone.
+  source: Figure S9C; Results, SGC numbers in the DG increase during the adolescence-adulthood
+    transition in WT mice, paragraph 1
+  quote: We found cells expressing SGC-enriched genes such as Penk , Scg2 , Nrg1 , and Cit in the
+    dorsal border of the developing GCL at E18.5
+  data: elsewhere
+  where: Allen Brain Atlas, developing mouse brain ISH at E18.5 (the paper names no experiment IDs)
+  criterion: A qualitative reading of public ISH images, with no statistic. Reproduced when the Allen
+    E18.5 ISH images for each of the four genes show labelled cells at the dorsal border of the
+    developing GCL. The image series are not given; any E18.5 series for the gene is a reading.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1h-gc-more-branch-points, fig1j-sgc-hyperpolarized-rmp, fig1k-sgc-narrower-spike, fig1l-sgc-faster-downstroke, fig2ef-v321l-dendritic-complexity-preserved. Removed the one-tailed Mann-Whitney readings. The exact two-tailed p for each reported U and n (U = 2 for 11 and 5, 0.0018; U = 26 for 14 and 9, 0.019; U = 24, 0.013; U = 31, 0.046; U = 13 for 9 and 13, 0.0014) matches the printed P, and the one-tailed p is half of it, so the paper's tests are two-tailed.
+  - fig2a-v321l-more-multiple-dendrite-gcs. The criterion left the ANOVA design unnamed. The reported F(1,7) fits a repeated-measures design (dendrite class within mouse) and not an ordinary two-way ANOVA (16 error df), so the repeated-measures test is now the test and the ordinary one a variant.
+  - figs5a-penk-sorcs3-subsets. Same change; F(2, 12) is the repeated-measures interaction df for 3 classes and 8 mice, an ordinary ANOVA would have 18.
+  - fig2g-morphology-lda-separates-cell-type. Cited the electrophysiology LDA for z-scoring but left out the PCA step the Methods' LDA section applies, while fig2m-ephys-lda-wt-gc-apart names it. Added the same two readings (with and without the top 9 PCs).
+  - fig2i-v321l-rmp-not-different. Added the Discussion as source for the half of the statement that both groups lie near the WT SGC values ("GCs with a single primary dendrite also showed an RMP resembling that of SGCs").
+  - fig4b2-marker-penk-cells-increased. Recorded that the Results (P = 0.03, q = 0.002; Grp P = 0.1, q = 0.01) and the legend (FDR adjusted P = 0.03; Grp 0.14) disagree on what the printed values are; the judgement on U is kept.
+  - tables4-suz12-enrichment. The criterion named Enrichr libraries as if the paper did; the paper names only ChEA and ENCODE. Named the tool and library as open, with readings.
+  - figs9d-penk-not-immature. The statement now says 3 months and WT, as the Results do.
+  - Added figs5bc-penk-sorcs3-neg-outside-cluster18, figs7-downsampled-pseudotime-robust, figs8a-atac-pseudotime-cluster9 and figs9c-embryonic-sgc-genes, findings of the Results with no claim.
+  - Open. Fig 2A reports 5 mice per genotype, but F(1,7) implies 9 mice in the repeated-measures design; one mouse may be missing from one genotype. Not settled from the text.
+  - Open. The marker genes of Fig 4b'' and Fig S6 are named only in the figure; the text gives Grp, Nptx2, Cit, Sorcs3, Scg2, Itgav, Chgb and Grm8. No PDF is under paper/, so this check could not read the figure, nor Fig S2C's feature list or the Fig S2G confusion matrix counts the opening comment cites.
+  - Open. The two code repositories and the Key Resources Table cited in the opening comment were not re-read in this check.
+  - Not changed, but chosen by the first reader and not taken from the paper. The 90% bound in fig2g, the top decile in fig5b, the thirds in fig7bc, the 8 of 10 clusters in fig5f, the 40 to 60% band in fig5d, the 1.1 x p rule in figs1a-f and the 15-point margin in figs2g. Each is labelled as a reading in its criterion.

@@ -1,0 +1,81 @@
+# Questions from attempt 000061-girardeau-2017-02 (author, 2026-10-20) about the claims file
+# claims/000061/10.1038-nn.4637.yaml. Each is asked under docs/protocol.md, Author, step 1.6; the
+# attempt runs every reading it can see and records the claims whose outcome depends on the answer.
+dandiset: "000061"
+paper: doi:10.1038/nn.4637
+questions:
+- claim: habituation-over-days
+  also: [airpuff-trajectory-ripple-reactivation, safe-trajectory-no-ripple-reactivation, aversive-direction-stronger, direction-all-cell-pairs, bla-rate-same-across-directions]
+  asked: 2026-10-20
+  question: O1 lists three lap readings, and the criteria say the notebook runs every one. The
+    dandiset holds no lap intervals (its `trials` table, in the Rat08 and Rat09 files only, holds
+    intervals of 3 to 5 s, partly outside the run) and no position, so readings a and b cannot be
+    run and only reading c (laps between consecutive rewards at opposite ends) can. Is a claim
+    judged on reading c alone, or is it blocked when the other readings cannot be run?
+  passage: Online Methods, "a habituation index was calculated for each training session and
+    animal as the total number of back-and-forth laps divided by the total time spent on the maze x
+    100"; ClassifyLaps.m defines laps from position in a hand-picked 150-cm window.
+  why: Under reading c the habituation index rises with training day under every lap count and
+    both readings of "gradually diminished" (pooled p = 0.011 to 0.046), so the attempt records
+    habituation-over-days as reproduced on reading c alone. If readings a and b are required, the
+    claim is blocked as data_missing. The other claims listed are blocked for missing cell types
+    and are not affected.
+  answered: 2026-10-20
+  answer: Judged on reading c alone. The paper counts "back-and-forth laps" on a track where rats
+    "run back and forth on a linear track for water rewards" (Online Methods, habituation index;
+    Recordings and behavior), so a lap is a run between the two reward ends, which reading c
+    counts from the reward times. Reading a exists only where the dataset holds lap intervals and
+    reading b only where it holds position; neither is a separate measure the paper reports. The
+    hand-picked 150-cm window of ClassifyLaps.m is not given anywhere, so no reading reproduces it
+    exactly. O1 and the habituation-over-days criterion now say that a claim is judged on the O1
+    readings the dataset allows, reading c alone when a and b cannot be formed, recorded as a
+    deviation.
+- claim: bla-pyr-sleep-firing-increase
+  also: [bla-int-sleep-firing]
+  asked: 2026-10-20
+  question: O4 gives reading a (the monosynaptically identified cells where the dataset marks them)
+    and reading b (all putative cells of each type). Five of the 33 files with units have a
+    `cell_type` column (excitatory, inhibitory, unclassified), read as the identified cells, and no
+    file has the putative types. Is the claim judged on reading a alone, with 152 excitatory and
+    36 inhibitory BLA units of one rat, or blocked because reading b cannot be run?
+  passage: Fig. 2c legend, "monosynaptically identified pyramidal cells; n = 675" and
+    "monosynaptically identified interneurons, n = 175".
+  why: The legend's cells are the identified ones, which favours reading a. On it
+    bla-pyr-sleep-firing-increase is reproduced and bla-int-sleep-firing is not reproduced (REM/wake
+    p = 0.020); if reading b is required both are blocked as metadata_insufficient.
+  answered: 2026-10-20
+  answer: Judged on reading a alone. The Fig. 2c legend gives the cells as "monosynaptically
+    identified pyramidal cells; n = 675" and "monosynaptically identified interneurons, n = 175",
+    and the Online Methods separate these from "the remaining, unidentified cells" typed by
+    k-means, which matches a marking of excitatory, inhibitory and unclassified. Reading b is
+    not the legend's set, so it is shown as a variant where it can be formed and is not needed.
+    O4 now says so. The paper's cells come from all rats; one rat's 152 and 36 cells is a smaller
+    sample, which the notes should state, but the claims carry no expected cell counts.
+- claim: reactivation-peaks-at-ripples
+  also: [direction-all-cell-pairs, ripple-modulated-cells-larger-reactivation]
+  asked: 2026-10-20
+  question: Each of these claims has a test with all cells as well as one with pyramidal cells, and
+    each lists in depends_on a claim that needs putative pyramidal cells (hpc-bla-reactivation-post-sleep,
+    aversive-direction-stronger, bla-ripple-up-subgroup), which the dandiset cannot give. Under the
+    protocol a claim that depends on a blocked claim is blocked. Do these claims need the
+    dependency for their all-cell tests (for example, for the sessions or the ripple-modulated
+    cells), or could their all-cell parts be judged on their own, at most as a partial outcome?
+  passage: M7, "A session enters with at least 6 hippocampal and 6 BLA cells of the type used";
+    M6 is defined for every BLA unit.
+  why: The attempt blocks all three and shows the all-cell tests as descriptions. With all cells,
+    reactivation-peaks-at-ripples gives post above pre in 11 of 15 sessions (one-tailed p = 0.0042),
+    direction-all-cell-pairs matches its statement (air puff p = 0.01, safe p = 0.0043, between p =
+    0.48), and ripple-modulated-cells-larger-reactivation does not hold (rank sum p = 0.27). If the
+    dependencies are only on method, the first two could be partially reproduced or reproduced.
+  answered: 2026-10-20
+  answer: The dependencies are on method only, and the all-cell tests can be judged on their own.
+    The paper selects sessions by cell count per type ("a minimum of 1 shank and 6 cells in each
+    structure", Online Methods; M7), which needs no other claim's result, and ripple modulation
+    ("a Poisson test with P < 0.001" on spikes in and outside SPW-Rs, M6) is a per-unit test that
+    uses no cell type. The all-cell n of Supplementary Fig. 11
+    (27 sessions) and Supplementary Fig. 5b (19 sessions) come from these rules with all cells.
+    The depends_on entries are removed from the three claims. direction-all-cell-pairs has only
+    all-cell tests and is judged in full (laps per O1, as answered above). For
+    reactivation-peaks-at-ripples and ripple-modulated-cells-larger-reactivation the criterion now
+    says that, when the pyramidal test cannot be run, the all-cell test is judged alone; partially
+    reproduced when it holds, not reproduced when it does not.

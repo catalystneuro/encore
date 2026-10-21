@@ -54,9 +54,22 @@ def target(dandiset: str) -> dict:
     for t in yaml.safe_load((ROOT / "targets" / "pilot.yaml").read_text())["targets"]:
         if datasets.key_of("dandi", t["dandiset"]) == key:
             return {"paper": t["paper"].removeprefix("doi:"), "title": t["title"]}
+    # The papers the archive names, corrected by hand in papers/triage.yaml: a paper triage names
+    # as the one behind the data comes first, and those it says are not papers are left out.
+    from papers_manifest import clean_doi
+    fix = ((yaml.safe_load((ROOT / "papers" / "triage.yaml").read_text()) or {}).get("targets", {})
+           .get(datasets.folder(key), {}))
+    drop = {clean_doi(d) for d in fix.get("not_papers", {})}
     for t in datasets.targets():
         if t["key"] == key:
-            p = next((p for p in t["papers"] if not p["preprint"]), t["papers"][0])
+            listed = [dict(p, doi=clean_doi(p["doi"])) for p in t["papers"] if clean_doi(p["doi"]) not in drop]
+            titles = {p["doi"]: p["title"] for p in listed}
+            named = [clean_doi(d) for d in fix.get("papers", {})]
+            if named:
+                return {"paper": named[0], "title": titles.get(named[0]) or t["name"]}
+            if not listed:
+                raise SystemExit(f"error: papers/triage.yaml leaves dataset {datasets.label(key)} no paper")
+            p = next((p for p in listed if not p["preprint"]), listed[0])
             return {"paper": p["doi"], "title": p["title"] or t["name"]}
     raise SystemExit(f"error: dataset {datasets.label(key)} is not in the queue")
 

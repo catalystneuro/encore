@@ -3,8 +3,9 @@ name: Publish the dashboard
 # Rebuilds the public dashboard from the registry's files and publishes it to
 # the root of the gh-pages branch, which GitHub Pages serves, on every push to
 # main, and again when the entry checks finish, so the executed notebooks they
-# produce are included. Previews of pull requests live in pr-preview/ on the
-# same branch (preview.yml) and are left in place.
+# produce are included, and when a needs-you issue opens or closes, so that the
+# pipeline page links the datasets waiting on a person. Previews of pull requests
+# live in pr-preview/ on the same branch (preview.yml) and are left in place.
 
 on:
   push:
@@ -13,10 +14,14 @@ on:
     workflows: ["Check entries"]
     types: [completed]
     branches: [main]
+  # A needs-you issue opened or closed (tools/notify.py) changes the pipeline page's links.
+  issues:
+    types: [opened, closed, reopened, labeled, unlabeled]
   workflow_dispatch:
 
 permissions:
   contents: write
+  issues: read
 
 # One publish at a time; previews (preview.yml) have their own groups.
 concurrency:
@@ -25,6 +30,9 @@ concurrency:
 
 jobs:
   build:
+    if: >-
+      github.event_name != 'issues' || github.event.label.name == 'needs-you' ||
+      contains(github.event.issue.labels.*.name, 'needs-you')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -45,9 +53,16 @@ jobs:
             echo "No executed branch yet"
           fi
 
+      - name: List the datasets waiting on a person
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh issue list --repo "$GITHUB_REPOSITORY" --label needs-you --state open --limit 500 \
+            --json title,url > "$RUNNER_TEMP/issues.json" || echo '[]' > "$RUNNER_TEMP/issues.json"
+
       - name: Build the site
         run: |
-          python tools/build_site.py --output site
+          python tools/build_site.py --output site --issues "$RUNNER_TEMP/issues.json"
           touch site/.nojekyll
 
       - uses: JamesIves/github-pages-deploy-action@v4.9.0

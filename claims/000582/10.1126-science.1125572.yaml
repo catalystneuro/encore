@@ -69,7 +69,13 @@
 #   centre plus that peak's radius (the circle encloses the peak), or (b) the distance to the
 #   outermost peak's centre. The central peak is removed (a) as its contiguous pixels above the
 #   threshold, or (b) as a disc of the radius of that peak. The threshold is r = 0.10; the paper's
-#   "in most cases" leaves the others unknown.
+#   "in most cases" leaves the others unknown. A peak's position and size are not defined in the
+#   SOM, which speaks only of "the vertices of the inner hexagon" and "a circle around the
+#   outermost peak" (Autocorrelation of rate maps; fig. S1 legend). Readings (answer of
+#   2026-10-20): a peak's centre is (a) its pixel of highest correlation or (b) the centroid of its
+#   pixels; its radius is (a) that of a disc of the same area or (b) the largest distance from its
+#   centre to one of its pixels. The same centre is used for spacing (the median distance to the
+#   six inner peaks) and orientation (the nearest inner peak counterclockwise).
 # (O4) Significance level for the head-direction criteria (Watson U2 and the block correlation).
 #   Not stated: (a) 0.05, the level the paper reports for its tests elsewhere; (b) 0.01.
 #   Watson U2 is the two-sample test on the head direction at each spike against the head
@@ -246,8 +252,12 @@ claims:
     test at p < 0.05; this test is a standard choice, not the paper's. Phase is distributed when,
     for most pairs (more than half), the peak of the rate-map crosscorrelogram nearest the centre
     is displaced from the centre; readings for displaced, standard choices since the paper gives
-    none, are (a) by more than one fifth of the grid spacing, (b) by more than the 3 cm bin. Reproduced when both parts hold under every
-    reading, in each layer with at least one simultaneous pair.
+    none, are (a) by more than one fifth of the grid spacing, (b) by more than the 3 cm bin. The
+    paper does not say whether the between-rat differences are taken within a layer; fig. S2
+    shows orientation per layer and ascribes the range to rats, but names no pool, so the
+    readings are (a) pairs of sessions of different rats in the same layer, (b) in any layers
+    (answer of 2026-10-20). Reproduced when both parts hold under every reading, the readings O1
+    to O3 included, in each layer with at least one simultaneous pair.
 - id: hd-layers
   statement: No head-direction cells were found in layer II, whereas a large proportion of the cells
     in layers III to VI had directional preferences (273 of 385 cells, counting conjunctive cells).
@@ -286,9 +296,16 @@ claims:
   - hd-layers
   criterion: Two-LED rats, layers III to VI, cell classes as in hd-layers and layer2-grid. The paper
     does not fix the unit of colocalization or what "usually" means. Readings of the unit are (a)
-    the recording session (rat, location and trial); (b) the tetrode within a session. Reproduced
-    when, under both readings, more than half of the units holding a head-direction cell also
-    hold a grid or conjunctive cell; methods_underspecified when the readings disagree.
+    the recording session (rat, location and trial); (b) the tetrode within a session. The
+    head-direction cells are the pure head-direction cells of table S1B (answer of 2026-10-20);
+    fig. S6 counts "grid cells, head-direction cells and grid x head-direction cells" as three
+    classes, and table S1B and the speed paragraph use "head-direction cells" for the 220 pure
+    ones. The cell they are found with is another cell of the unit, as fig. S6 counts each cell in
+    one class. The paper's classes allow two readings of that cell, (a) a pure grid cell, the
+    class fig. S6 calls grid cells; (b) a grid or conjunctive cell, since conjunctive cells meet
+    the grid criterion. Reproduced when, under every reading, more than half of the units holding
+    a head-direction cell also hold such a cell; methods_underspecified when the readings
+    disagree.
 - id: hd-tuning-breadth-layers
   statement: The breadth of directional tuning did not differ between layers III, V and VI (mean U2
     18.2, 25.2 and 18.3; mean angular standard deviation 55.9, 52.2 and 58.2 degrees; P > 0.05).
@@ -329,7 +346,11 @@ claims:
     the test are (a) a one-way ANOVA across the three layers, the test the paper uses for its
     slope comparison; (b) a Kruskal-Wallis test; each on U2 and on angular standard deviation.
     Readings of the cells are (a) pure head-direction cells; (b) head-direction and conjunctive
-    cells together. Reproduced when no reading finds a difference at p < 0.05; not reproduced when
+    cells together. Angular standard deviation from the mean vector length r (SOM, Analysis of
+    head-direction cells, citing Batschelet, S8); the SOM calls it "the angular standard deviation
+    of the mean vector" and the fig. S2 and S4 legends "the circular standard deviation", so the
+    paper allows (a) Batschelet's angular deviation, sqrt(2(1 - r)), and (b) his circular standard
+    deviation, sqrt(-2 ln r), both in degrees (answer of 2026-10-20). Reproduced when no reading finds a difference at p < 0.05; not reproduced when
     all do; methods_underspecified when they disagree. The means are reported and compared with
     tolerance either way; a reproduced absence with means outside tolerance is partially
     reproduced. Fig. S4 gives 388 cells for layers III to VI, the main text 385.
@@ -568,10 +589,16 @@ claims:
     are (a) the 15-point mean-filtered positions of the place-field Methods, (b) the raw tracked
     positions. Trials as O1. The significance of the relation is that of (a) the regression slope,
     (b) Pearson's r, (c) Spearman's rank correlation, which the SOM reports gave nearly identical
-    values. Reproduced when, under a combination of readings, all three fractions are within
-    tolerance; partially reproduced when the grid and conjunctive fractions exceed the
-    head-direction fraction and all exceed one half but a fraction is outside tolerance.
-    methods_underspecified when readings disagree between these outcomes.
+    values. Two kinds of reading (answer of 2026-10-20). The counting readings (a) and (b) and the
+    three significance measures are readings of the reported number, what "141/150 cells, P <
+    0.001" counts; for a given set of method details the outcome is the best of them. The speed
+    measure, the positions, the trials (O1) and the cell classes (O1 to O4, as in layer2-grid and
+    hd-layers) are method details, and the outcome must be the same under every combination of
+    them. For each combination of method details, the claim is reproduced when, under some
+    reading of the number, all three fractions are within tolerance; partially reproduced when no
+    reading reproduces it but under some reading the grid and conjunctive fractions exceed the
+    head-direction fraction and all exceed one half. The claim takes that outcome when every
+    combination of method details gives it; methods_underspecified when they disagree.
 - id: speed-slope-steeper
   statement: The slope of the speed-rate regression was steeper for conjunctive cells and grid
     cells than for head-direction cells, and did not differ between conjunctive and grid cells.

@@ -1,0 +1,11 @@
+I answered all three questions, each marked `answered: 2026-10-20`, and wrote the answers into the criteria in `claims/000061/10.1038-nn.4637.yaml`. No claim's statement or expected values changed.
+
+1. **habituation-over-days and the lap readings (O1):** The claim is judged on reading c alone. The Methods count "back-and-forth laps" on a track where rats "run back and forth on a linear track for water rewards", and reading c counts exactly those runs from the reward times. Reading a only exists if the dataset holds lap intervals, and reading b only if it holds position. The hand-picked 150-cm window in `ClassifyLaps.m` is given nowhere, so no reading can copy it exactly. O1 and the criterion now say a claim is judged on the readings the dataset allows, and that using c alone is recorded as a deviation.
+
+2. **bla-pyr-sleep-firing-increase and bla-int-sleep-firing (O4):** Both are judged on reading a alone. The Fig. 2c legend uses "monosynaptically identified" cells (675 and 175). The Methods set these apart from "the remaining, unidentified cells" sorted by k-means, which fits the dataset's excitatory, inhibitory and unclassified labels. O4 now says reading b is only a variant. The answer also notes that one rat's 152 and 36 cells is a much smaller sample than the paper's.
+
+3. **reactivation-peaks-at-ripples, direction-all-cell-pairs and ripple-modulated-cells-larger-reactivation:** These claims depend on the other claims for their method only, so their all-cell tests can be judged on their own. Sessions enter by the paper's per-type cell minimum, and ripple modulation is a per-unit Poisson test that uses no cell type. I removed the three claims' `depends_on` entries.
+   - direction-all-cell-pairs has only all-cell tests, so it is judged in full.
+   - For the other two, the criteria now say that when the pyramidal test cannot be run, the all-cell test is judged alone: partially reproduced if it holds, not reproduced if it does not.
+
+`python tools/claims_check.py` finds all quotes. It still flags the same 5 p-values as before (3.9469e-07, 9.7e-09, 8.85e-05, 7.75e-05 and 6.45e-05). The last check had already confirmed these by reading: the text prints them in forms the checker does not match. Both files load as valid YAML. Nothing is committed.

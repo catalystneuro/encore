@@ -158,10 +158,17 @@ def asset(name: str) -> str:
 def collect(executed: Path | None = None) -> dict:
     queue = json.loads((ROOT / "targets" / "dandisets.json").read_text())
     pilot = {key_of("dandi", t["dandiset"]) for t in load_yaml(ROOT / "targets" / "pilot.yaml")["targets"]}
-    claims = {}
+    claims, claim_files = {}, {}
     for path in sorted((ROOT / "claims").glob("*/*.yaml")):
         data = load_yaml(path)
-        claims[(key_of(data["dataset"]["archive"], data["dataset"]["id"]), data["paper"])] = {c["id"]: c for c in data["claims"]}
+        key = key_of(data["dataset"]["archive"], data["dataset"]["id"])
+        claims[(key, data["paper"])] = {c["id"]: c for c in data["claims"]}
+        last = (data.get("checks") or [None])[-1]
+        claim_files.setdefault(key, []).append({
+            "path": str(path.relative_to(ROOT)), "paper": str(data["paper"]).removeprefix("doi:"),
+            "check": None if last is None else {"ready": bool(last.get("ready")), "date": str(last.get("date"))},
+            "claims": [{k: squash(c.get(k) or "") for k in ("id", "statement", "source", "quote", "criterion")}
+                       for c in data["claims"]]})
     entries = {}
     for path in sorted((ROOT / "entries").glob("*/entry.yaml")):
         data = load_yaml(path)
@@ -273,6 +280,7 @@ def collect(executed: Path | None = None) -> dict:
                 for a in sorted(d.glob("attempt-*")) if a.is_dir()}
     return finish({
         "pipeline": pipeline_inputs(),
+        "claim_files": claim_files,
         "transcripts": {**transcripts, **archived},
         "generated": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
         "queue_generated": queue["generated"],
@@ -364,7 +372,7 @@ def demo(data: dict, n: int, seed: int = 1) -> dict:
     entries = [{"name": a["entry"], "type": "reproduction", "title": a["entry_title"],
                 "description": a["description"], "datasets": [a["key"]], "papers": [a["paper"]],
                 "derived_from": [], "notebooks": a["notebooks"]} for a in attempts]
-    out = dict(data, attempts=attempts, entries=entries, demo=True,
+    out = dict(data, attempts=attempts, entries=entries, demo=True, claim_files={},
                targets=[dict(t, status="pilot" if t["status"] == "pilot" else "open") for t in data["targets"]])
     return finish(out)
 
@@ -474,8 +482,9 @@ def pipeline_rows(data: dict) -> list[dict]:
         }
         nxt = next((label for key, label in PIPELINE_STEPS if state[key][0] in ("todo", "waiting", "deprecated")), "")
         out.append({"dataset": t["label"], "key": d, "name": t["name"], "state": state, "next": nxt,
+                    "issue": data.get("issues", {}).get(t["label"]),
                     "waiting": [label for key, label in PIPELINE_STEPS if state[key][0] == "waiting"],
-                    "missing": missing, "page": page_of(d) if atts else None})
+                    "missing": missing, "page": page_of(d) if atts or d in data.get("claim_files", {}) else None})
     return out
 
 
@@ -880,8 +889,8 @@ def progress_panel(data: dict) -> str:
     <div class="panel"><h2 id="progress-title">Datasets attempted over time</h2>
       <p class="small muted" style="margin:0">Running total, by day.</p>
       <div class="chart" id="progress-line"></div></div>
-    <div class="panel"><h2>Outcomes of claims tested, by day</h2>
-      <p class="small muted" style="margin:0">Claims that rest on the dataset, on the date of their attempt.</p>
+    <div class="panel"><h2 id="progress-day-title">Datasets attempted, new each day</h2>
+      <p class="small muted" style="margin:0" id="progress-day-note">Each dataset on the date of its first attempt.</p>
       <div class="chart" id="progress-outcomes"></div><div id="progress-legend"></div></div>
   </div>
   <details class="table-view panel"><summary>Table: new each day, all datasets</summary>
@@ -1037,7 +1046,7 @@ def pipeline_chart(counts: dict, total: int) -> str:
     for key, label in CHART_STEPS:
         c = counts[key]
         segs = "".join(f'<span class="seg st-{st}" style="width:{100 * c[st] / total:.2f}%" '
-                       f'title="{e(name)}: {c[st]:,}"></span>' for st, name in PIPELINE_STATES if c.get(st))
+                       f'data-tip="{e(name)}: {c[st]:,}"></span>' for st, name in PIPELINE_STATES if c.get(st))
         parts = ", ".join(f"{c[st]:,} {name.lower()}" for st, name in PIPELINE_STATES[1:] if c.get(st))
         done = c.get("done", 0) + c.get("older", 0)
         rows += (f'<div class="frow"><span class="flabel">{e(label)}</span>'
@@ -1047,6 +1056,68 @@ def pipeline_chart(counts: dict, total: int) -> str:
     legend = "".join(f'<span><i class="seg st-{st}"></i>{e(name)}</span>' for st, name in PIPELINE_STATES)
     return (f'<div class="panel"><h2>Targets at each step</h2><div class="funnel">{rows}</div>'
             f'<p class="flegend small">{legend}</p></div>')
+
+
+TABLE_STATES = [("done", "Done"), ("waiting", "Waiting on a person"), ("deprecated", "To redo"),
+                ("todo", "To do"), ("none", "Not applicable")]
+
+# Filters, sorts and pages the pipeline table in place. Sorting a step's column orders its rows by state
+# (done first), then by the cell's note.
+PIPELINE_TABLE_JS = r"""
+(function(){
+var table=document.querySelector('table.pipeline'),tools=document.querySelector('.pipeline-tools');
+if(!table||!tools)return;tools.hidden=false;
+var tbody=table.tBodies[0],rows=[].slice.call(tbody.rows),ths=[].slice.call(table.tHead.rows[0].cells);
+var steps=[].slice.call(document.getElementById('pstep').options,1).map(function(o){return o.value;});
+var rank={done:0,waiting:1,deprecated:2,todo:3,none:4};
+var state={q:'',step:'',st:'',col:-1,dir:1,page:1,size:50};
+var $=function(id){return document.getElementById(id);};
+function key(tr,col){var td=tr.cells[col],t=td.textContent.trim();
+  return td.classList.contains('ps')?[rank[td.className.split(' ')[1]],t]:[0,t];}
+function cmp(a,b){return a[0]-b[0]||a[1].localeCompare(b[1],undefined,{numeric:true,sensitivity:'base'});}
+function shown(tr){
+  if(state.q&&(tr.cells[0].textContent+' '+tr.cells[1].textContent).toLowerCase().indexOf(state.q)<0)return false;
+  var keys=state.step?[state.step]:steps;
+  if(state.st)return keys.some(function(k){return tr.dataset[k]===state.st;});
+  return true;}
+function draw(){
+  var list=rows.filter(shown);
+  if(state.col>=0)list.sort(function(a,b){return state.dir*cmp(key(a,state.col),key(b,state.col));});
+  var pages=Math.max(1,Math.ceil(list.length/state.size));if(state.page>pages)state.page=pages;
+  var start=(state.page-1)*state.size,page=list.slice(start,start+state.size);
+  rows.forEach(function(tr){tr.hidden=true;});
+  page.forEach(function(tr){tr.hidden=false;tbody.appendChild(tr);});
+  ths.forEach(function(th,i){if(i===state.col)th.setAttribute('aria-sort',state.dir>0?'ascending':'descending');
+    else th.removeAttribute('aria-sort');});
+  $('pcount').textContent=list.length===rows.length?rows.length.toLocaleString()+' targets'
+    :list.length.toLocaleString()+' of '+rows.length.toLocaleString()+' targets';
+  var el=$('ppager');if(!list.length){el.innerHTML='';return;}
+  var nums=[1,pages,state.page-1,state.page,state.page+1].filter(function(p,i,a){return p>=1&&p<=pages&&a.indexOf(p)===i;})
+    .sort(function(a,b){return a-b;}),last=0,buttons='';
+  nums.forEach(function(p){if(p-last>1)buttons+='<span class="muted">…</span>';
+    buttons+='<button type="button" data-page="'+p+'"'+(p===state.page?' aria-current="page"':'')+'>'+p+'</button>';last=p;});
+  el.innerHTML='<span class="muted">'+(start+1)+'–'+(start+page.length)+' of '+list.length.toLocaleString()+'</span><span class="grow"></span>'
+    +'<button type="button" data-page="'+(state.page-1)+'"'+(state.page===1?' disabled':'')+' aria-label="Previous page">‹</button>'+buttons
+    +'<button type="button" data-page="'+(state.page+1)+'"'+(state.page===pages?' disabled':'')+' aria-label="Next page">›</button>'
+    +'<select class="ghost" id="psize" aria-label="Rows per page">'+[25,50,100,250].map(function(s){
+      return '<option value="'+s+'"'+(s===state.size?' selected':'')+'>'+s+' per page</option>';}).join('')+'</select>';}
+var timer;
+$('pq').addEventListener('input',function(){clearTimeout(timer);timer=setTimeout(function(){
+  state.q=$('pq').value.trim().toLowerCase();state.page=1;draw();},120);});
+$('pstep').addEventListener('change',function(){state.step=this.value;state.page=1;draw();});
+$('pstate').addEventListener('change',function(){state.st=this.value;state.page=1;draw();});
+table.tHead.addEventListener('click',function(ev){var b=ev.target.closest('button.sort');if(!b)return;
+  var col=ths.indexOf(b.closest('th'));state.dir=col===state.col?-state.dir:1;state.col=col;state.page=1;draw();});
+$('ppager').addEventListener('click',function(ev){var b=ev.target.closest('[data-page]');if(!b||b.disabled)return;
+  state.page=+b.dataset.page;draw();table.scrollIntoView({block:'start'});});
+$('ppager').addEventListener('change',function(ev){if(ev.target.id==='psize'){state.size=+ev.target.value;state.page=1;draw();}});
+draw();
+})();
+"""
+
+
+def sort_button(label: str) -> str:
+    return f'<button class="sort" type="button">{e(label)}</button>'
 
 
 def page_pipeline(data: dict) -> str:
@@ -1060,7 +1131,7 @@ def page_pipeline(data: dict) -> str:
             counts[key][st] = counts[key].get(st, 0) + 1
     # Claims files made before the check existed count as checked, as in the chart.
     older = {key: sum(1 for r in rows if chart_state(key, *r["state"][key]) == "older") for key, _ in PIPELINE_STEPS}
-    head = "".join(f'<th>{e(label)}<div class="small muted">{counts[key].get("done", 0) + older[key]:,} done'
+    head = "".join(f'<th>{sort_button(label)}<div class="small muted">{counts[key].get("done", 0) + older[key]:,} done'
                    + (f', {counts[key]["waiting"]:,} waiting' if counts[key].get("waiting") else "")
                    + "</div></th>" for key, label in PIPELINE_STEPS)
     body = ""
@@ -1068,8 +1139,10 @@ def page_pipeline(data: dict) -> str:
         name = (f'<a href="{root}{e(r["page"])}">{e(r["dataset"])}</a>' if r["page"] else e(r["dataset"]))
         cells = "".join(f'<td class="ps {e(r["state"][key][0])}" title="{e(r["state"][key][0])}">'
                         f'{e(r["state"][key][1])}</td>' for key, _ in PIPELINE_STEPS)
-        body += (f'<tr data-waiting="{"1" if r["waiting"] else "0"}"><td>{name}</td>'
-                 f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}</td></tr>')
+        states = " ".join(f'data-{key}="{e(r["state"][key][0])}"' for key, _ in PIPELINE_STEPS)
+        body += (f'<tr {states}><td>{name}</td>'
+                 f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}'
+                 + (f' · <a href="{e(r["issue"])}">waiting on you</a>' if r["issue"] else "") + '</td></tr>')
     waiting = [r for r in rows if r["waiting"]]
     papers_missing = sum(len(r["missing"]) for r in waiting)
     charted = {key: {} for key, _ in PIPELINE_STEPS}
@@ -1078,25 +1151,40 @@ def page_pipeline(data: dict) -> str:
             st = chart_state(key, *r["state"][key])
             charted[key][st] = charted[key].get(st, 0) + 1
     chart = pipeline_chart(charted, len(rows))
+    step_opts = "".join(f'<option value="{key}">{e(label)}</option>' for key, label in PIPELINE_STEPS)
+    state_opts = "".join(f'<option value="{st}">{e(name)}</option>' for st, name in TABLE_STATES)
+    updated = datetime.datetime.fromisoformat(data["generated"]).strftime("%Y-%m-%d %H:%M UTC")
+    n_issues = len(data.get("issues", {}))
+    issues_note = (f' The runner has stopped on <a href="{REPO_URL}/issues?q=is%3Aissue+is%3Aopen+label%3Aneeds-you">'
+                   f'{n_issues:,} dataset{"s" if n_issues != 1 else ""}</a> that need a person.' if n_issues else "")
     html_ = f'''<header class="page">
   <h1>Pipeline</h1>
   <p class="lede">Every target, and where it stands in the
   <a href="{REPO_URL}/blob/main/docs/pipeline.md">pipeline</a>: its paper, the claims read from it and their
   check, the attempt, the questions it raised, and verification. {len(waiting):,} targets are waiting on a person,
   with {papers_missing:,} papers to supply; the list of missing papers is in
-  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.</p>
+  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.{issues_note}</p>
+  <p class="small muted">Last updated <time id="updated" datetime="{e(data["generated"])}">{e(updated)}</time>.
+  The page is rebuilt whenever main changes.</p>
 </header>
 <main>{chart}
-<p style="margin-top:16px"><label class="small"><input type="checkbox" id="only-waiting"> Only targets waiting on a
-person</label></p>
+<div class="listbar pipeline-tools" style="margin-top:16px" hidden>
+  <input id="pq" type="search" placeholder="Search datasets and names" aria-label="Search datasets and names">
+  <select class="ghost" id="pstep" aria-label="Step"><option value="">Any step</option>{step_opts}</select>
+  <select class="ghost" id="pstate" aria-label="State"><option value="">Any state</option>{state_opts}</select>
+  <strong id="pcount" aria-live="polite"></strong>
+</div>
 <div class="panel pipeline-wrap"><table class="pipeline">
-<thead><tr><th>Dataset</th><th>Name</th>{head}<th>Next</th></tr></thead>
-<tbody>{body}</tbody></table></div></main>
+<thead><tr><th>{sort_button("Dataset")}</th><th>{sort_button("Name")}</th>{head}<th>{sort_button("Next")}</th></tr></thead>
+<tbody>{body}</tbody></table></div>
+<nav class="pager" id="ppager" aria-label="Pages"></nav></main>
 <script>
-(function(){{var box=document.getElementById("only-waiting");if(!box)return;
-box.addEventListener("change",function(){{document.querySelectorAll("table.pipeline tbody tr").forEach(function(tr){{
-tr.hidden=box.checked&&tr.dataset.waiting!=="1";}});}});}})();
-</script>'''
+(function(){{var t=document.getElementById("updated");if(!t)return;
+var m=Math.round((Date.now()-new Date(t.getAttribute("datetime")))/60000);if(isNaN(m)||m<0)return;
+var ago=m<1?"just now":m<60?m+" minute"+(m==1?"":"s")+" ago":m<2880?Math.round(m/60)+" hours ago":Math.round(m/1440)+" days ago";
+t.textContent+=" ("+ago+")";}})();
+</script>
+<script>{PIPELINE_TABLE_JS}</script>'''
     return shell(data, "Pipeline", root, "pipeline", html_, path="pipeline/",
                  description="Where every target of the reproduction registry stands in its pipeline.")
 
@@ -1528,6 +1616,72 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
                  body, CLAIMS_JS + TABS_JS, path=path, description=dandiset_description(dandiset, atts))
 
 
+def claims_only(data: dict) -> list[str]:
+    """The datasets with claims read from their paper but no attempt yet."""
+    current = current_attempts(data)
+    return sorted(k for k in data.get("claim_files", {}) if k not in current)
+
+
+def page_claims(data: dict, key: str) -> str:
+    """A dataset's page before its first attempt: the claims read from its paper, and where it stands."""
+    root = "../../../"
+    target = next((t for t in data["targets"] if t["key"] == key), None)
+    row = next((r for r in pipeline_rows(data) if r["key"] == key), None)
+    titles = {t["paper"].lower(): t["paper_title"] for t in data["targets"] if t.get("paper")}
+    claims_html, n = "", 0
+    for f in data["claim_files"][key]:
+        check = ("not yet checked" if f["check"] is None else
+                 f'checked {e(f["check"]["date"])}: ' + ("ready" if f["check"]["ready"] else "not ready"))
+        items = ""
+        for c in f["claims"]:
+            n += 1
+            body = ""
+            if c["quote"]:
+                cite = f'<cite>{e(c["source"])}</cite>' if c["source"] else ""
+                body += f'<blockquote class="quote"><p>{e(c["quote"])}</p>{cite}</blockquote>'
+            if c["criterion"]:
+                body += f'<p class="deviations-title">How it will be judged</p><p class="notes">{e(c["criterion"])}</p>'
+            items += (f'<li class="claim" id="claim-{e(c["id"])}"><details><summary>'
+                      f'<div class="claim-head"><span class="tag">{e(c["id"])}</span></div>'
+                      f'<p class="statement">{e(c["statement"])}</p></summary>'
+                      f'<div class="claim-body">{body or '<p class="notes muted">No quote recorded.</p>'}</div>'
+                      f'</details></li>')
+        paper = titles.get(f["paper"].lower()) or f["paper"]
+        claims_html += (f'<p class="sub small" style="margin:14px 0 0">From the paper '
+                        f'<a href="https://doi.org/{e(f["paper"])}">{e(paper)}</a> · '
+                        f'<a href="{REPO_URL}/blob/main/{e(f["path"])}">claims file</a> · {check}</p>'
+                        f'<ul class="claims">{items}</ul>')
+    steps = ""
+    if row:
+        steps = "".join(f'<dt>{e(label)}</dt><dd>{e(row["state"][k][0])}'
+                        + (f' ({e(row["state"][k][1])})' if row["state"][k][1] else "") + "</dd>"
+                        for k, label in PIPELINE_STEPS)
+    tags = ""
+    if target:
+        tags = " ".join([f'<span class="tag">{e(t)}</span>' for t in target["technique"]]
+                        + [f'<span class="tag">{e(x)}</span>' for x in target["species"]])
+    actions = (f'<a href="{e(archive_url(key))}" target="_blank" rel="noopener">View on '
+               f'{e(ARCHIVES.get(split_key(key)[0], {}).get("label", split_key(key)[0]))}</a> '
+               f'<a href="{root}pipeline/">Pipeline</a>')
+    name = (target or {}).get("name") or dataset_label(key)
+    body = f'''<header class="page">
+  <p class="crumbs"><a href="{root}datasets/">Datasets</a> / {e(dataset_label(key))}</p>
+  <div class="dhead"><h1>{e(dataset_label(key))}</h1></div>
+  <p class="sub">{e(name)}</p>
+  <div style="display:flex;flex-wrap:wrap;gap:6px 8px;margin-top:8px">{tags}</div>
+  <p class="lede">Not attempted yet. These are the claims read from its paper, which an attempt will
+  test{("; next in the pipeline: " + e(row["next"].lower())) if row and row["next"] else ""}.</p>
+  <p class="actions">{actions}</p>
+</header>
+<main>
+  <section class="panel"><h2>Claims <span class="count">{n}</span></h2>{claims_html}</section>
+  <section class="panel" style="margin-top:28px"><h2>Pipeline</h2><dl class="kv" style="margin-top:14px">{steps}</dl></section>
+</main>'''
+    return shell(data, f"{dataset_label(key)} · Reproduction registry", root, "datasets", body, path=page_of(key),
+                 description=f"The claims read from the paper of dataset {dataset_label(key)} on "
+                             f"{archive_name(key)}, before an attempt to reproduce them.")
+
+
 # --- writing -------------------------------------------------------------------
 
 def build(data: dict, output: Path) -> None:
@@ -1572,6 +1726,10 @@ def build(data: dict, output: Path) -> None:
                 (old / sub).mkdir(parents=True, exist_ok=True)
                 (old / sub / "index.html").write_text(redirect_page(target, "../../" + ("../" if sub else "")))
             (output / "api" / "dandiset" / f"{split_key(key)[1]}.json").write_text(api)
+    for key in claims_only(data):
+        page = output / page_of(key)
+        page.mkdir(parents=True, exist_ok=True)
+        (page / "index.html").write_text(page_claims(data, key))
     (output / "dandisets" / "index.html").write_text(redirect_page("datasets/", "../"))
     (output / "data" / "dandisets.json").write_text((output / "data" / "datasets.json").read_text())
     (output / "registry.json").write_text(json.dumps(data, indent=1) + "\n")
@@ -1593,6 +1751,7 @@ def sitemap(data: dict) -> str:
     pages = [("", data["generated"][:10]), ("about/", data["generated"][:10]), ("pipeline/", data["generated"][:10])]
     pages += [(f"{kind}/", data["generated"][:10]) for kind in LISTS]
     pages += [(page_of(d), max(a["date"] for a in atts)) for d, atts in current_attempts(data).items()]
+    pages += [(page_of(d), data["generated"][:10]) for d in claims_only(data)]
     urls = "".join(f"<url><loc>{html.escape(SITE_URL + p)}</loc><lastmod>{day}</lastmod></url>" for p, day in pages)
     return ('<?xml version="1.0" encoding="UTF-8"?>\n'
             f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">{urls}</urlset>\n')
@@ -1604,6 +1763,8 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=ROOT / "site")
     parser.add_argument("--demo", type=int, metavar="N",
                         help="build from N made-up attempts, to test the site at scale; never publish")
+    parser.add_argument("--issues", type=Path, metavar="JSON",
+                        help="the open needs-you issues (gh issue list --json title,url), to link from the pipeline")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
     args = parser.parse_args()
@@ -1612,6 +1773,10 @@ def main() -> int:
     if args.demo:
         data = demo(data, args.demo)
     data["noindex"] = args.noindex
+    if args.issues and args.issues.is_file():
+        # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
+        data["issues"] = {i["title"].rsplit(": waiting on you", 1)[0]: i["url"]
+                          for i in json.loads(args.issues.read_text()) if i["title"].endswith(": waiting on you")}
     build(data, args.output)
     print(f"wrote {args.output} ({len(data['attempts'])} attempts, {len(data['targets'])} targets"
           f"{', DEMO DATA' if data['demo'] else ''})")

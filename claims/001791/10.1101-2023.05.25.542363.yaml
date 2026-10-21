@@ -1,0 +1,450 @@
+# Claims for Wong-Campos, Park, Davis, Qi, Fan, Marblestone, Grimm, Lavis, Cohen et al.,
+# "Voltage dynamics of dendritic integration and back-propagation in vivo", on dandiset 001791.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol as stated in docs/protocol.md.
+#
+# Text read: the bioRxiv preprint, version 1 (doi:10.1101/2023.05.25.542363v1), from its JATS
+# XML as stored under paper/: main text, figure legends, Methods, and the legends of the
+# supplementary figures S1 to S14. No PDF was available, so values printed only inside figures
+# (the p-values of Figs. 3i, 4d and 4h, the points of Figs. 2e, 2f, 3i, 4h and S13) could not be
+# read. Movie S1 was not read. The paper links no analysis code of its own; the only code it
+# names is NoRMCorre (github.com/flatironinstitute/NoRMCorre), used for xy motion correction,
+# which fixes no criterion below. No repository was read.
+#
+# Data the paper describes. Layer 2/3 pyramidal neurons of mouse barrel cortex, expressing
+# Optopatch (Voltron2 labelled with JFX608, and CheRiff-eYFP) after in utero electroporation of
+# CD1 mice; cranial windows at 4 weeks, both sexes. One-photon dual-plane structured illumination
+# voltage imaging, camera 1 on the soma and camera 2 on apical dendrites, at 500 or 1,000 Hz,
+# with DMD-targeted blue light for optogenetic stimulation. Measured variables are fluorescence
+# traces (dF/F) at the soma and at dendritic recording sites, contour distances from HiLo
+# morphology reconstructions, and the timing of optogenetic and air-puff stimuli. Experiments:
+#  - Fig. 1, one neuron, soma and four apical dendrites, 0.5 s widefield blue pulses of
+#    increasing intensity.
+#  - Fig. 2, bAP mapping in anesthetized mice (0.7 to 1% isoflurane), soma-targeted stimuli of
+#    40 pulses, 8 ms, 5 Hz, per camera 2 field of view; 30 recording sites, 5 neurons, 5 mice.
+#  - Fig. 3a-d and S8, S9, spontaneous activity in 3 to 5 simultaneously recorded dendrites,
+#    anesthetized (1% isoflurane) and quietly awake; 23 branch pairs, 3 neurons, 3 mice.
+#  - Fig. 3e-i and S10, round-robin dendrite-targeted stimulation (50 repeats, 10 ms, 5 Hz)
+#    below the somatic spike threshold; 92 pairs, 5 neurons, 5 mice. Fig. S11, stronger
+#    dendrite-targeted stimuli, 40 trials.
+#  - Fig. 4a-d and S12, spontaneous activity at soma and dendrites in awake mice; 216 doublet
+#    events and 186 spike triplets, 10 branches, 3 neurons, 3 mice.
+#  - Fig. 4e-h and S13, sustained (400 ms) soma-targeted blue light; 16 trials, 25 branches,
+#    7 neurons, 7 mice.
+#  - Fig. 4i-l, 100 ms, 45 psi air puffs to the contralateral whiskers every 4 s in awake mice;
+#    13 trials.
+# The dandiset's description says it holds "the traces from our analysis pipeline", which the
+# Methods describe as photobleaching-corrected, PCA-extracted per-branch traces. The background-
+# robust dF/F of the Methods is computed from spike-triggered average movies; whether the
+# dataset holds it, or the morphology distances, is the author's to find.
+#
+# Details the paper leaves open are named in each criterion with the readings its text allows.
+# Where a criterion uses p < 0.05 as its threshold and the paper prints no alpha, that is the
+# conventional reading of the paper's tests, and is said so.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001791"
+paper: doi:10.1101/2023.05.25.542363
+claims:
+- id: fig1d-light-intensity-spike-rate
+  statement: In vivo, 0.5 s pulses of blue light of increasing intensity evoke somatic spiking
+    at increasing rates, with corresponding bAPs in the dendrites.
+  source: Figure 1d legend; Results, Dendritic voltage mapping, paragraph 1
+  quote: Optogenetic stimulation with pulses of increasing blue light intensity evoked action
+    potentials with increasing spike rates and corresponding bAPs in the dendrites.
+  criterion: Shown for one neuron (Fig. 1c-d). Somatic spikes are counted in each blue light
+    pulse of the intensity series; the paper gives no spike detection method, so spikes are
+    detected under two readings, (a) peaks above 5 and (b) above 4 robust standard deviations
+    (median absolute deviation) of the high-pass filtered soma trace, a standard choice that
+    the paper does not fix. Reproduced when, under both readings, the spike rate rises with
+    pulse order (Spearman rho > 0 and higher in the last pulse than in the first), and the
+    dendritic traces show events within 5 ms after most somatic spikes.
+- id: fig1fg-dendrite-peaks-after-soma
+  statement: Spike-triggered averages of dendritic fluorescence, triggered off somatic spike
+    times, peak after the somatic spike, as expected for back-propagation.
+  source: Figure 1f-g legend; Results, Dendritic voltage mapping, paragraph 1
+  quote: The dendritic events peaked after the somatic spike (dashed line), as expected for
+    back-propagation.
+  criterion: For the Fig. 1 neuron, the spike-triggered average of each dendritic trace,
+    triggered off the somatic spike peaks. Reproduced when the dendritic STA peak follows the
+    somatic peak (delay > 0) at all four dendrites; partially reproduced for two or three.
+- id: fig2c-no-trial-variation
+  statement: For optogenetically evoked single spikes in anesthetized mice, bAP amplitude did
+    not vary from trial to trial beyond baseline noise at any recording site, so bAP failures
+    were infrequent.
+  source: Results, Mapping bAP propagation, paragraph 1; Figure 2c
+  quote: For these optogenetically evoked single spikes, we did not observe trial-to-trial
+    variation in the bAP amplitude beyond baseline noise fluctuations at any of the recording
+    sites (see e.g., Fig 2c ), indicating that bAP failures were infrequent under these conditions.
+  criterion: The paper reports no test. For each Fig. 2 recording site (40 pulses, 8 ms, 5 Hz),
+    the single-spike dendritic bAP amplitudes are compared with the baseline noise. The paper
+    does not define either quantity, so two readings are run, (a) the s.d. of single-trial bAP
+    amplitudes against the s.d. of the same measure taken in pre-stimulus windows of the same
+    length, and (b) the fraction of single bAPs smaller than 2 s.d. of baseline noise (a
+    failure count). Reproduced when, under both readings, at least 90% of sites show amplitude
+    variation no larger than 1.5 times the baseline variation and failures in under 10% of
+    spikes; these bounds are not in the paper and the result is reported with the values.
+- id: fig2e-half-amplitude-distance
+  statement: In anesthetized mice, the bAP peak amplitude decays to 50% at a contour distance
+    from the soma of 242 ± 30 μm (95% C.I., 30 sites, 5 neurons, 5 mice), with R2 = 0.49 for
+    amplitude against distance.
+  source: Results, Mapping bAP propagation, paragraph 2; Figure 2e legend
+  quote: The bAP peak amplitude decayed to 50% at a contour distance from the soma of 242 ± 30 μm
+    (95% C.I., n = 30 recording sites, 5 neurons, 5 mice, Fig. 2e ).
+  statistics:
+  - about: contour distance at which bAP amplitude falls to 50%, printed as 242 ± 30 μm
+    ci:
+      level: 0.95
+      low: 212
+      high: 272
+      unit: μm
+    n: 30 recording sites, 5 neurons, 5 mice
+  expected:
+  - quantity: contour distance at which bAP amplitude falls to 50%
+    value: 242
+    tolerance: 30
+    unit: μm
+  - quantity: R2 of amplitude against contour distance
+    value: 0.49
+    tolerance: 0.049
+  criterion: The distance tolerance is the paper's 95% C.I. (± 30 μm, 30 sites); the R2
+    tolerance is 10%. Amplitude is the peak of each site's mean bAP waveform (-dF/F), triggered off the
+    soma spike peaks, using the background-robust dF/F of the Methods (Robust estimate of
+    dF/F). The paper does not say what curve is fit or what the 50% is relative to. Readings,
+    (a) a linear regression of amplitude on contour distance, distance where the fit falls to
+    half its value at distance 0; (b) an exponential fit, distance ln(2) times the length
+    constant; (c) amplitude normalized to the somatic spike amplitude of the same recording,
+    distance where the linear fit reaches 0.5. Reproduced when, under one reading, the
+    distance is within 212 to 272 μm and R2 within tolerance; the readings are all reported.
+- id: fig2f-delay-range
+  statement: Back-propagation delays range from 1.5 to 4 ms over contour distances from the soma
+    of 50 to 280 μm.
+  source: Results, Mapping bAP propagation, paragraph 2; Figure 2f
+  quote: Back-propagation delays ranged from 1.5 to 4 ms, over contour distances from the soma of
+    50-280 μm ( Fig. 2f ).
+  expected:
+  - quantity: smallest peak delay, sites 50 to 280 μm from the soma
+    value: 1.5
+    tolerance: 0.15
+    unit: ms
+  - quantity: largest peak delay, sites 50 to 280 μm from the soma
+    value: 4
+    tolerance: 0.4
+    unit: ms
+  criterion: Delay is the time of the peak of each site's mean bAP waveform minus the time of
+    the somatic spike peak (Fig. 2f legend, "Peak delay"). At 500 or 1,000 Hz the paper does
+    not say how the peak is timed below one frame; readings, (a) the sample of the maximum and
+    (b) a parabolic fit through the maximum and its two neighbours, in both soma and dendrite.
+    Reproduced when, under one reading, the delays of sites between 50 and 280 μm lie within
+    1.35 to 4.4 ms.
+- id: fig2f-conduction-speed
+  statement: At distances over 50 μm from the soma, the bAP conduction speed is 0.09 ± 0.02 m/s
+    (95% C.I., 30 sites, 5 neurons, 5 mice), with R2 = 0.43 for delay against distance.
+  source: Results, Mapping bAP propagation, paragraph 2; Figure 2f legend
+  quote: Conduction speeds were 0.09 ± 0.02 m/s (95% C.I., n = 30 recording sites, 5 neurons, 5
+    mice), consistent with prior theoretical predictions
+  statistics:
+  - about: bAP conduction speed beyond 50 μm, printed as 0.09 ± 0.02 m/s
+    ci:
+      level: 0.95
+      low: 0.07
+      high: 0.11
+      unit: m/s
+    n: 30 recording sites, 5 neurons, 5 mice
+  expected:
+  - quantity: conduction speed beyond 50 μm
+    value: 0.09
+    tolerance: 0.02
+    unit: m/s
+  - quantity: R2 of delay against contour distance
+    value: 0.43
+    tolerance: 0.043
+  depends_on:
+  - fig2f-delay-range
+  criterion: The speed tolerance is the paper's 95% C.I. (± 0.02 m/s, 30 sites); the R2
+    tolerance is 10%. From the Fig. 2f legend, a linear regression of peak delay on contour distance for
+    sites more than 50 μm from the soma; speed is the inverse of the slope. The peak timing
+    readings are those of fig2f-delay-range. The paper does not say whether the fit pools all
+    sites or is made per neuron; readings, (a) one pooled fit over the sites, (b) the mean of
+    per-neuron fits. Reproduced when, under one reading, the speed is within 0.07 to 0.11 m/s
+    and the pooled R2 within tolerance.
+- id: fig3d-dendrite-cross-correlation
+  statement: Spontaneous voltage in pairs of dendritic branches of the same neuron is highly
+    cross-correlated, 91 ± 3% (mean ± s.d.) in the anesthetized state and 73 ± 4% in the awake
+    state (23 branch pairs, 3 neurons, 3 mice).
+  source: Results, Dendrite-Dendrite coupling, paragraph 2; Figure 3d legend
+  quote: Remarkably, dendrites displayed a 91 ± 3% cross-correlation (mean ± s.d.) in the
+    anesthetized state and 73 ± 4% in the awake state ( Fig. 3d ).
+  expected:
+  - quantity: mean pair-wise cross-correlation, anesthetized
+    value: 0.91
+    tolerance: 0.03
+  - quantity: mean pair-wise cross-correlation, awake
+    value: 0.73
+    tolerance: 0.04
+  criterion: Tolerance is the reported s.d. of the pairs. Per pair of simultaneously recorded
+    branches, the cross-correlation of spontaneous traces; the mean over the 23 pairs per state.
+    Fig. S9 legend takes the zero-lag value as the measure for the shot-noise bound, but the
+    paper does not say whether the branch-pair value is taken at zero lag or at the peak over
+    lags, nor whether spikes are kept in the traces. Readings, (a) zero-lag Pearson correlation
+    of the full traces; (b) peak of the normalized cross-correlation within ±10 ms; (c) as (a)
+    with spikes removed by excluding 10 ms around each somatic spike where a soma recording
+    exists. Reproduced when, under one reading, both means are within tolerance and the
+    anesthetized mean exceeds the awake mean.
+- id: figs9-shot-noise-bound
+  statement: Accounting for photon shot noise, the upper bounds on dendrite-to-dendrite
+    cross-correlation are 94 ± 2% (anesthetized) and 85 ± 4% (awake), so the electrical dynamics
+    are largely shared throughout the L2/3 apical dendritic tree.
+  source: Results, Dendrite-Dendrite coupling, paragraph 2; Figure S9; Methods, Contribution of
+    shot noise
+  quote: Accounting for the influence of shot noise ( Fig. S9 , Methods), the upper bounds on the
+    dendrite-to-dendrite cross-correlations were estimated to be 94 ± 2% (anesthetized) and 85 ±
+    4% (awake).
+  expected:
+  - quantity: shot-noise upper bound on cross-correlation, anesthetized
+    value: 0.94
+    tolerance: 0.02
+  - quantity: shot-noise upper bound on cross-correlation, awake
+    value: 0.85
+    tolerance: 0.04
+  depends_on:
+  - fig3d-dendrite-cross-correlation
+  criterion: Tolerance is the reported spread. The Methods split each branch's region of
+    interest into two interleaved checkerboard pixel sets and take the zero-lag
+    cross-correlation of the two signals. This needs pixel-level movies; if the dataset holds
+    only per-branch traces the claim cannot be tested and is reported so. Reproduced when both
+    bounds are within tolerance and each exceeds the matching fig3d mean.
+- id: fig3i-coupling-vs-distance
+  statement: Normalized dendrite-dendrite coupling amplitude decreases by 50% beyond about 200 μm
+    of interbranch distance and stays near 50% out to 300 μm (92 pairs, 5 neurons, 5 mice), so
+    most apical dendrites of L2/3 neurons are electrically coupled in vivo.
+  source: Results, Dendrite-Dendrite coupling, paragraph 4; Figure 3i legend
+  quote: Figure 3i shows dendrite-dendrite coupling amplitude vs. interbranch distance, displaying
+    a 50% decrease after ∼200 μm, and similar ∼50% coupling out to 300 μm.
+  expected:
+  - quantity: normalized coupling amplitude at interbranch distances beyond 200 μm
+    value: 0.5
+    tolerance: 0.05
+  criterion: From the Results and Methods (Dendrite-dendrite coupling matrix), the
+    stimulus-triggered average of each branch for each stimulated branch (50 repeats, 10 ms
+    pulses, 5 Hz), its amplitude as background-robust dF/F, each row divided by the amplitude
+    at the stimulated branch; interbranch contour distance from the reconstruction. The
+    figure's distance bins and the bins its Wilcoxon rank-sum p-values compare are not in the
+    text (no PDF was available). Readings, (a) bins of 0 to 100, 100 to 200, 200 to 300 μm and
+    beyond; (b) bins of 50 μm. Reproduced when, under both readings, the mean coupling of the
+    bins beyond 200 μm is within 0.45 to 0.55, is lower than that of the bin nearest 0 by a
+    Wilcoxon rank-sum test at p < 0.05 (the conventional threshold; the paper prints none in
+    the text), and pairs beyond 300 μm, if any, keep a mean coupling above 0.4.
+- id: figs11-dendritic-spikes-rare
+  statement: Strong dendrite-targeted stimuli usually evoke spikes that correspond to bAPs; in 2
+    of 40 trials they evoke dendritic and not somatic spikes.
+  source: Results, Dendrite-Dendrite coupling, paragraph 5; Figure S11
+  quote: Simultaneous recordings at soma and dendrites in anesthetized mice showed that these
+    spikes usually corresponded to bAPs, although occasionally (2 of 40 trials) dendrite-targeted
+    stimuli evoked dendritic and not somatic spikes ( Fig. S11 ).
+  expected:
+  - quantity: trials with dendritic but no somatic spike
+    value: 2
+    tolerance: 0
+    unit: trials of 40
+  criterion: Tolerance 0, since the 10% default (0.2 trials) admits no count but 2. A trial is
+    one strong dendrite-targeted stimulus with soma and dendrite recorded (anesthetized). The
+    paper does not say what the 40 trials are; readings, (i) all strong dendrite-targeted
+    stimuli, including those that evoked only subthreshold events (Fig. S11e), and (ii) only the
+    trials in which a spike was detected at the soma or the dendrite. The paper gives no
+    detection rule for spikes or dendritic spikes; readings for an event, (a) a peak above 5 and
+    (b) above 4 robust s.d. of the trace, the standard choices used in
+    fig1d-light-intensity-spike-rate. A dendritic spike with no somatic spike is one with no
+    somatic spike in the 10 ms before it (a window not in the paper). Reproduced when, under one
+    reading, 40 trials are found, exactly 2 of them have a dendritic spike with no somatic spike,
+    and in most trials with a dendritic spike a somatic spike precedes it ("usually"); the counts
+    of every reading are reported.
+- id: fig4a-doublet-isi
+  statement: In awake mice some cells fire spontaneous spike doublets with a narrow distribution
+    of inter-spike intervals, 18 ± 7 ms (mean ± s.d., 216 events, 3 neurons, 3 mice).
+  source: Results, Accelerating spike rate favors spontaneous bAP propagation, paragraph 1; Figure
+    4a
+  quote: In some cells, we observed spike doublets with a narrow distribution of inter-spike
+    intervals (ISIs, 18 ± 7 ms, mean ± s.d., n = 216 events, 3 neurons, 3 mice, Fig. 4a ).
+  expected:
+  - quantity: doublet ISI mean
+    value: 18
+    tolerance: 1.8
+    unit: ms
+  - quantity: doublet ISI s.d.
+    value: 7
+    tolerance: 0.7
+    unit: ms
+  - quantity: number of doublet events
+    value: 216
+    tolerance: 21.6
+  criterion: The paper does not define a doublet. Readings, (a) a pair of somatic spikes with ISI
+    below 75 ms (the threshold the paper uses for triplets), preceded and followed by ISIs above
+    75 ms; (b) any consecutive pair with ISI below 75 ms. Spike detection as in
+    fig1d-light-intensity-spike-rate. Reproduced when, under one reading, mean, s.d. and count
+    are within tolerance.
+- id: fig4bc-doublet-first-fails
+  statement: In spontaneous spike doublets, the first spike typically fails to propagate to
+    distal dendrites while the second succeeds (doublet ISIs 18 ± 7 ms, 10 branches, 3 neurons,
+    3 mice).
+  source: Results, Accelerating spike rate favors spontaneous bAP propagation, paragraph 1; Figure
+    4b-c legend
+  quote: Examination of individual spike doublets ( Fig. 4b , S12 ) as well as the average doublet
+    waveforms ( Fig. 4c ) revealed that the first spike typically failed to propagate to distal
+    dendrites, while the second spike succeeded.
+  depends_on:
+  - fig4a-doublet-isi
+  criterion: The paper reports no test. Doublets as in fig4a-doublet-isi, the average dendritic
+    waveform triggered off the first somatic spike peak, per branch. bAP amplitude is the peak
+    of the dendritic trace within 0 to 5 ms after each somatic spike peak (covering the 1.5 to
+    4 ms delays of Fig. 2f) minus the mean of the 5 ms before the first spike; this window is
+    not in the paper, so a second reading of 0 to 8 ms is run. Distal is read as (a) all 10
+    branches and (b) branches with conduction delay > 3 ms (the Methods' split for optogenetic
+    data). Reproduced when, under every reading, the second bAP exceeds the first in at least
+    70% of branches, with the median ratio of second to first over branches above 1.
+- id: fig4d-accelerating-amplifies
+  statement: In spontaneous spike trios, the third bAP is amplified relative to the second when
+    the spike rate accelerates (ISI n-1 > 75 ms, ISI n < 75 ms) and suppressed when it
+    decelerates (186 spike triplets, 10 branches, 3 neurons, 3 mice), so spontaneous bAP
+    propagation is favored by an accelerating spike rate.
+  source: Results, Accelerating spike rate favors spontaneous bAP propagation, paragraph 2; Figure
+    4d legend; Methods, Analysis of bAP failures during spontaneous activity
+  quote: The third bAP in accelerating trios experienced amplification relative to the second bAP,
+    while the third bAP in decelerating trios experienced suppression relative to the second (10
+    branches, 3 neurons, 3 mice).
+  criterion: From the Methods, somatic spikes and their dendritic events; for each dendritic
+    compartment bAPs normalized by their mean amplitude; trios classified by the somatic ISIs at
+    the 75 ms threshold of the Fig. 4d legend. The figure tests with a Wilcoxon signed-rank test,
+    but its p-value is printed only in the figure and the paired quantity is not stated.
+    Readings, (a) per trio and branch, third against second normalized amplitude, paired, within
+    each class; (b) per branch, mean third-to-second ratio, accelerating against decelerating,
+    paired over the 10 branches; (c) as the Methods word it ("The amplitude of the third spike
+    in each triplet was determined and was classified"), the normalized third-spike amplitude in
+    each class against the per-compartment mean of 1, by signed-rank test. The bAP amplitude
+    window is that of fig4bc-doublet-first-fails, both readings. Reproduced when, under every
+    reading, accelerating trios show third > second and decelerating trios third < second (in
+    (b), accelerating ratio above decelerating; in (c), accelerating third above 1 and
+    decelerating third below 1), at p < 0.05 by the Wilcoxon signed-rank test (the conventional
+    threshold).
+    The number of trios found is reported against the paper's 186.
+- id: fig4fg-opto-first-bap-attenuated
+  statement: With sustained (400 ms) blue light on the soma, the first bAP in each evoked spike
+    train is highly attenuated in the dendrites relative to the soma, and subsequent bAPs
+    propagate.
+  source: Results, Accelerating spike rate favors optogenetically triggered bAP propagation,
+    paragraph 2; Figure 4f-g legend
+  quote: As in the spontaneous activity, the first bAP in each spike train was highly attenuated
+    in the dendrites relative to the soma ( Fig. 4f-g ).
+  criterion: The paper reports no test. Fig. 4g shows one neuron (n = 10 trials); the claim is
+    tested over all sustained-pulse recordings (16 trials, 7 neurons, Fig. 4h legend), and for
+    the Fig. 4g neuron alone where it can be identified. The statement compares the dendrite with
+    the soma, which the Methods' normalization does not; readings, (a) bAP amplitudes normalized
+    per dendrite by the mean bAP amplitude 200 to 400 ms after stimulus onset (Methods, Analysis
+    of bAP failures during optogenetic stimulation); (b) per spike, the dendritic bAP amplitude
+    divided by the somatic spike amplitude of the same spike, normalized by the same ratio's
+    200 to 400 ms mean. Reproduced when, under both readings, in electrotonically distal
+    dendrites (delay > 3 ms, Methods), the median normalized value of the first bAP of each
+    train is below that of the second and later bAPs in the first 150 ms (a window not in the
+    paper, the end of the Results' 50 to 150 ms window), and below 1, with the windows of
+    fig4bc-doublet-first-fails.
+- id: fig4h-biphasic-bap-amplitude
+  statement: In distal dendrites, bAP amplitude during sustained optogenetic stimulation is
+    biphasic in time after stimulus onset, suppressed for the first bAPs, enhanced in a window
+    from 50 to 150 ms, then decreasing (16 trials, 7 neurons, 7 mice).
+  source: Results, Accelerating spike rate favors optogenetically triggered bAP propagation,
+    paragraph 2; Figure 4h legend
+  quote: There was a window from 50 –150 ms after stimulus onset where bAP amplitude increased;
+    then bAP amplitude decreased again ( Fig. 4h ).
+  depends_on:
+  - fig4fg-opto-first-bap-attenuated
+  criterion: From the Methods, spikes sorted into time bins after stimulus onset; in each bin
+    the STA at soma and dendrite triggered off the soma spike times and its mean bAP amplitude,
+    normalized by the 200 to 400 ms mean; distal dendrites have conduction delay > 3 ms. The
+    bin widths and the bins the legend's Wilcoxon signed-rank tests compare are not in the text,
+    nor are the p-values. Readings, (a) bins of 0 to 50, 50 to 150, 150 to 200 and 200 to 400 ms
+    (the window the Results name); (b) bins of 25 ms; (c) bins of 50 ms. In each reading the
+    first bin, and the peak bin within 50 to 150 ms, are compared over the 16 trials with the
+    200 to 400 ms value of 1 by a Wilcoxon signed-rank test. Reproduced when, under every
+    reading, the first bin is below 1 and a 50 to 150 ms bin above 1, each at p < 0.05 (the
+    conventional threshold), and the amplitude after 150 ms is below that peak.
+- id: figs13-distal-more-modulated
+  statement: The biphasic modulation of bAP amplitude is larger in dendrites further from the
+    soma, by mean propagation delay, than in more proximal dendrites (25 branches, 7 cells, 7
+    mice).
+  source: Results, Accelerating spike rate favors optogenetically triggered bAP propagation,
+    paragraph 2; Figure S13
+  quote: This biphasic modulation of bAP amplitude was larger in dendrites further from the soma
+    (as measured by mean propagation delay) than in more proximal dendrites ( Fig. S13 , 25
+    branches, 7 cells, 7 mice).
+  depends_on:
+  - fig4h-biphasic-bap-amplitude
+  criterion: The paper reports no test. Branches split at a conduction delay of 3 ms (Methods
+    and Fig. S13 legend), the time-binned normalized amplitudes of fig4h under each of its bin
+    readings. Modulation is not defined; readings, (a) the peak bin within 50 to 150 ms minus
+    the first bin; (b) the range of bin values. Reproduced when, under every reading, the mean
+    modulation of distal branches exceeds that of proximal branches.
+- id: fig4ijk-sensory-first-fails
+  statement: Contralateral whisker air puffs in awake mice evoke bursts of spikes in which all
+    detected dendritic spikes start as bAPs from the soma, and the first spike in the burst
+    typically fails to propagate to distal dendrites while subsequent spikes succeed (13
+    trials).
+  source: Results, Accelerating spike rate favors sensory evoked bAP propagation; Figure 4i-k
+    legend
+  quote: Examination of the single-trial responses ( Fig. 4j ) as well as the average evoked
+    waveforms ( Fig. 4k ) revealed that the first spike in the burst typically failed to
+    propagate to distal dendrites, while subsequent spikes succeeded (n = 13 trials).
+  criterion: The paper reports no test. Air-puff trials with a somatic burst; the average
+    dendritic waveform triggered off the first somatic spike peak (Fig. 4k legend). bAP
+    amplitude windows as in fig4bc-doublet-first-fails; distal read as delay > 3 ms and as all
+    recorded dendrites. Reproduced when, under every reading, the first bAP is smaller than the
+    mean of the subsequent bAPs of the burst in the average and in at least 9 of the 13 trials
+    (a bound not in the paper, for "typically"), and every dendritic spike detected in the
+    air-puff trials (spike detection as in fig1d, both readings) follows a somatic spike within
+    the bAP windows of fig4bc-doublet-first-fails ("all detected dendritic spikes initiating as
+    bAPs from the soma").
+- id: fig4l-sensory-plateau
+  statement: The average sensory-evoked dendritic response is a fast upstroke followed by a
+    sustained plateau depolarization lasting about 400 ms, much longer than the 100 ms stimulus.
+  source: Results, Accelerating spike rate favors sensory evoked bAP propagation; Figure 4l legend
+  quote: The average dendritic waveform showed a fast sensory-evoked upstroke, followed by a
+    sustained plateau depolarization which lasted ∼400 ms, substantially longer than the
+    stimulus.
+  expected:
+  - quantity: duration of the dendritic plateau after air puff
+    value: 400
+    tolerance: 40
+    unit: ms
+  criterion: The stimulus-triggered average dendritic trace, triggered off air-puff onset
+    (Fig. 4l). The paper does not define the plateau's duration; readings, (a) time from puff
+    onset until the average falls back within 1 s.d. of the 500 ms pre-stimulus baseline;
+    (b) full width at half of the plateau amplitude, the plateau taken as the mean from 50 to
+    150 ms after onset. Reproduced when, under one reading, the duration is within 360 to 440
+    ms and the depolarization outlasts 100 ms in both.
+- id: figs12-spontaneous-failures-both-states
+  statement: During spontaneous activity, bAP failures occur in both anesthetized and awake
+    recordings.
+  source: Figure S12 legend
+  quote: We observe bAP failures in both anesthetized and awake recordings.
+  criterion: The paper reports no test and shows example traces only. Spontaneous recordings
+    with soma and dendrite, split by state (anesthetized, awake). A failure is a somatic spike
+    whose dendritic bAP amplitude, in the windows of fig4bc-doublet-first-fails, is below 2 s.d.
+    of the dendrite's baseline noise (the failure reading (b) of fig2c-no-trial-variation; the
+    paper gives no rule). Spike detection as in fig1d-light-intensity-spike-rate, both readings.
+    Reproduced when, under every reading, failures are found in at least one recording of each
+    state; their fraction per state is reported.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2e-half-amplitude-distance, added the paper's 95% C.I. (242 ± 30 μm, as 212 to 272) under statistics, which the file had left out; the checker cannot find the bounds as printed since the paper prints them as ± 30, and they were confirmed by reading.
+  - fig2f-conduction-speed, added the paper's 95% C.I. (0.09 ± 0.02 m/s, as 0.07 to 0.11) under statistics, for the same reason and with the same note.
+  - figs11-dendritic-spikes-rare, the criterion accepted 1 to 3 trials while expected has tolerance 0; it now requires exactly 2, names the two readings of what the 40 trials are (all strong stimuli, Fig. S11e, or only those with a spike), marks the 10 ms window as not in the paper, and tests the "usually corresponded to bAPs" part of the statement, which it had left out.
+  - fig4d-accelerating-amplifies, added reading (c), the Methods' wording (third-spike amplitude, normalized by the compartment mean, classified by trio type), since the Methods allow it and the paired quantity of the figure's signed-rank test is not stated.
+  - fig4fg-opto-first-bap-attenuated, the statement says attenuated relative to the soma and the criterion did not compare with the soma; added reading (b), the dendrite to soma amplitude ratio, noted that Fig. 4g is one neuron (n = 10 trials), and marked the 150 ms window as not in the paper.
+  - fig4ijk-sensory-first-fails, the criterion only checked that no dendritic event precedes the first somatic spike, while the paper says all detected dendritic spikes start as bAPs; it now requires every detected dendritic spike to follow a somatic spike, and marks 9 of 13 as a bound not in the paper.
+  - figs12-spontaneous-failures-both-states, new claim; the Fig. S12 finding of spontaneous bAP failures in both states had no claim.
+  - Open, fig2c-no-trial-variation, the paper says "at any of the recording sites" and gives no measure or test; the 90% of sites, 1.5 times and 10% bounds are not in the paper and the author must report the values with them.
+  - Open, several claims, the spike detection thresholds (5 and 4 robust s.d.), the bAP amplitude windows (0 to 5 and 0 to 8 ms), and the bounds for "most" and "typically" (70% of branches, 9 of 13 trials) are not in the paper; they are named as readings or bounds in each criterion. No PDF was available, so the bins and p-values printed only in Figs. 3i, 4d and 4h remain open.
