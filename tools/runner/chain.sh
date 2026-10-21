@@ -46,6 +46,16 @@ d=$(python "$here/describe.py" folder "$1") || { echo "$1 STOPPED: not a dataset
 account=${RUNNER_ACCOUNT:-unverified}
 [ -e "$STATE/verified-$d" ] && account=verified
 log(){ echo "$(date -u +%Y-%m-%dT%H:%MZ) $d $*"; }
+# The chain's last line, the reason a role stopped and its run, for notify(): a chain that stops for a
+# person opens or updates the dataset's issue (notify.yml), and one that merges closes it.
+last=""; last_why=""; last_run=""
+end(){ last="$*"; echo "$*"; }
+notify(){
+  [ -n "$last" ] && [ "${RUNNER_NOTIFY:-}" != none ] || return 0
+  gh workflow run notify.yml -f dataset="$d" -f status="$last" -f detail="$last_why" -f run="$last_run" \
+    >/dev/null 2>&1 || log "could not dispatch notify.yml"
+}
+trap notify EXIT
 
 remote_branch(){ git ls-remote --heads origin "attempt/$d" | cut -f1; }
 fetch(){ git fetch -q origin main 2>/dev/null || true; git fetch -q origin "attempt/$d" 2>/dev/null || true; }
@@ -88,19 +98,20 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
       fi
       id=""
       for _ in $(seq 1 60); do read -r id st <<<"$(run_of "$role")"; [ -n "${id:-}" ] && [ "$id" != "$before" ] && break; id=""; sleep 5; done
-      [ -n "$id" ] || { log "STOPPED: the run of $role was not found"; return 1; }
+      [ -n "$id" ] || { last_why="the run of $role was not found"; log "STOPPED: $last_why"; return 1; }
       log "$role started: run $id"
     fi
-    st=$(wait_run "$id"); log "$role $st (run $id)"
+    last_run=$id; st=$(wait_run "$id"); log "$role $st (run $id)"
     [ "$st" = success ] && return 0
     runlog=$(gh run view "$id" --log-failed 2>/dev/null || gh run view "$id" --log 2>/dev/null)
     if echo "$runlog" | grep -qE "FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE"; then
       # Put the branch back where the run started, and run the role, and the rest, on the verified account.
-      reset_branch "$start" || { log "STOPPED: could not reset attempt/$d after the flag"; return 1; }
+      reset_branch "$start" || { last_why="could not reset attempt/$d after the flag"; log "STOPPED: $last_why"; return 1; }
       why=$(echo "$runlog" | grep -oE "(FLAGGED on the unverified account|UNVERIFIED-UNAVAILABLE)[^\"]*" | head -n 1 | cut -c1-200)
       if [ "${RUNNER_FALLBACK:-verified}" = none ]; then
         # The verified account is not to be used (out of budget, say): leave the dataset for later.
-        touch "$STATE/flagged-$d"; log "STOPPED at $role: $why; no fallback to the verified account"; return 1
+        last_why="$why; no fallback to the verified account"
+        touch "$STATE/flagged-$d"; log "STOPPED at $role: $last_why"; return 1
       fi
       log "$role: $why; on the verified account from here"
       account=verified; touch "$STATE/verified-$d"
@@ -108,11 +119,11 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
     fi
     if echo "$runlog" | grep -q "session limit" && [ $tries -lt 100 ]; then
       tries=$((tries+1))
-      reset_branch "$start" || { log "STOPPED: could not reset attempt/$d after the session limit"; return 1; }
+      reset_branch "$start" || { last_why="could not reset attempt/$d after the session limit"; log "STOPPED: $last_why"; return 1; }
       log "$role hit the session limit; branch reset, retry $tries in 30 minutes"
       sleep 1800; continue
     fi
-    log "STOPPED at $role (run $id)"; return 1
+    last_why="the run of $role failed"; log "STOPPED at $role (run $id)"; return 1
   done; }
 
 # Only published datasets: a DANDI draft can change under an attempt, and the record could not name
@@ -129,7 +140,7 @@ if [ ! -e "$mark" ]; then
   fi
   date -u +%Y-%m-%dT%H:%M:%SZ > "$mark"
 fi
-step(){ is_done "$1" || run_role "$1" || { echo "$d STOPPED at $1"; exit 1; }; }
+step(){ is_done "$1" || run_role "$1" || { end "$d STOPPED at $1"; exit 1; }; }
 # On the branch: python reads a file of the attempt's branch from stdin.
 on_branch(){ git show "origin/attempt/$d:$1" 2>/dev/null; }
 claims_file(){ git ls-tree -r --name-only origin/attempt/"$d" "claims/$d" | grep '\.yaml$' | head -n 1; }
@@ -138,25 +149,25 @@ deprecated=$(python "$here/describe.py" deprecated "$d")
 on_main=$(python "$here/describe.py" claims-ready "$d")
 if [ "$on_main" = true ] && [ "$deprecated" != true ] && ! is_done claims; then
   log "main has checked claims; skipping the claims and their check"
-  [ "${CLAIMS_ONLY:-}" = 1 ] && { rm -f "$mark"; echo "$d CLAIMS MERGED (already on main)"; exit 0; }
+  [ "${CLAIMS_ONLY:-}" = 1 ] && { rm -f "$mark"; end "$d CLAIMS MERGED (already on main)"; exit 0; }
 elif [ -z "$VERSION" ] || [ "$deprecated" = true ]; then
   step claims
   fetch
   # The reader writes no claims file when the paper's text is not enough to read them from (a missing
   # supplement, say); its report says what to supply.
-  [ -n "$(claims_file)" ] || { echo "$d STOPPED: the reader wrote no claims file; see transcripts/$d/claims-report.md"; exit 1; }
+  [ -n "$(claims_file)" ] || { end "$d STOPPED: the reader wrote no claims file; see transcripts/$d/claims-report.md"; exit 1; }
   step claims-check
   fetch
   ready=$(on_branch "$(claims_file)" | python -c "import yaml,sys; c=(yaml.safe_load(sys.stdin) or {}).get('checks') or [{}]; print(str(c[-1].get('ready', False)).lower())")
-  [ "$ready" = true ] || { echo "$d STOPPED: the claims check says the claims file is not ready"; exit 1; }
+  [ "$ready" = true ] || { end "$d STOPPED: the claims check says the claims file is not ready"; exit 1; }
   # The checkpoint: the checked claims go into main now, ahead of the attempt. A failure here does not stop it.
   if [ "${CLAIMS_ONLY:-}" = 1 ]; then
     out=$("$here/merge_claims.sh" "$d" --with-transcripts 2>&1); st=$?
     echo "$out" | while read -r line; do log "$line"; done
-    [ $st = 0 ] || { echo "$d STOPPED: the claims did not go into main"; exit 1; }
+    [ $st = 0 ] || { end "$d STOPPED: the claims did not go into main"; exit 1; }
     # The claims and their runs' transcripts are on main; the next chain on this dataset starts from main.
     git push -q origin --delete "attempt/$d" 2>/dev/null || true
-    rm -f "$mark"; echo "$d CLAIMS MERGED"; exit 0
+    rm -f "$mark"; end "$d CLAIMS MERGED"; exit 0
   fi
   "$here/merge_claims.sh" "$d" 2>&1 | while read -r line; do log "$line"; done || true
 fi
@@ -178,21 +189,21 @@ fi
 
 # Finish, one dataset at a time.
 until mkdir "$STATE/finalize.lock" 2>/dev/null; do sleep 60; done
-trap 'rmdir "$STATE/finalize.lock" 2>/dev/null' EXIT
+trap 'rmdir "$STATE/finalize.lock" 2>/dev/null; notify' EXIT
 log "finishing"
 fetch
 git checkout -q -B "attempt/$d" origin/attempt/"$d"
 if ! git rebase -q origin/main; then
-  git rebase --abort; echo "$d STOPPED: the branch does not rebase on main"; exit 1
+  git rebase --abort; end "$d STOPPED: the branch does not rebase on main"; exit 1
 fi
 git push -q --force-with-lease origin "attempt/$d"
-is_done recorder || run_role recorder || { echo "$d STOPPED at recorder"; exit 1; }
+is_done recorder || run_role recorder || { end "$d STOPPED at recorder"; exit 1; }
 fetch; git checkout -q -B "attempt/$d" origin/attempt/"$d"
 title=$(python "$here/describe.py" title "$d")
 pr=$(gh pr list --head "attempt/$d" --state open --json url --jq '.[0].url // empty')
 if [ -z "$pr" ]; then
   pr=$(gh pr create --base main --head "attempt/$d" --title "$title" \
-    --body "$(python "$here/describe.py" body "$d")") || { echo "$d STOPPED: could not open a pull request"; exit 1; }
+    --body "$(python "$here/describe.py" body "$d")") || { end "$d STOPPED: could not open a pull request"; exit 1; }
 fi
 log "pull request $pr"
 while true; do
@@ -201,7 +212,7 @@ while true; do
   sleep 60
 done
 if echo "$s" | jq -e 'all(.bucket=="pass" or .bucket=="skipping")' >/dev/null; then
-  gh pr merge "$pr" --merge >/dev/null && { rm -f "$mark"; echo "$d MERGED $pr"; exit 0; }
-  echo "$d STOPPED: merging $pr failed"; exit 1
+  gh pr merge "$pr" --merge >/dev/null && { rm -f "$mark"; end "$d MERGED $pr"; exit 0; }
+  end "$d STOPPED: merging $pr failed"; exit 1
 fi
-echo "$d CHECKS FAILED $pr"; exit 1
+end "$d CHECKS FAILED $pr"; exit 1
