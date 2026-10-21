@@ -11,9 +11,10 @@
     python tools/runner/describe.py folder DATASET     # a dataset's folder name (tools/datasets.py)
     python tools/runner/describe.py label FOLDER       # how the dataset is shown: DANDI:000003
     python tools/runner/describe.py deprecated FOLDER  # "true" when its latest attempt is deprecated
-    gh run list ... --json displayTitle,createdAt,updatedAt,conclusion | python tools/runner/describe.py queue [LANES CLAIMS_LANES]
-                                                       # both queues, the open branches and how long a chain
-                                                       # takes, as JSON for the pipeline page
+    gh run list ... --json displayTitle,createdAt,updatedAt,status,conclusion | python tools/runner/describe.py queue [LANES CLAIMS_LANES]
+                                                       # both queues, the open branches, how long a chain
+                                                       # takes and how long the running ones have left, as
+                                                       # JSON for the pipeline page
     gh run list ... --json databaseId,displayTitle,status | python tools/runner/describe.py run FOLDER ROLE
                                                        # "<id> <status>" of the newest run of a role, if any,
                                                        # on either account
@@ -161,36 +162,92 @@ def json_lists(text: str) -> list:
     return items
 
 
-def chain_hours(runs: list[dict]) -> dict[str, float | None]:
-    """How long a chain takes, from the agent runs (gh run list --json displayTitle,createdAt,updatedAt,conclusion):
-    the median time from a dataset's first run to its last, for full attempts (author to recorder) and for
-    claims-only chains. A dataset's runs more than three hours apart belong to different chains."""
+def chains(runs: list[dict]) -> dict[str, list[list[tuple]]]:
+    """Each dataset's agent runs (gh run list --json displayTitle,createdAt,updatedAt,status,conclusion), split
+    into chains: runs more than three hours apart belong to different chains. A run is (start, end, role,
+    conclusion, status)."""
     import datetime
     import re
-    import statistics
     when = lambda s: datetime.datetime.fromisoformat(s.replace("Z", "+00:00"))
     by_dataset: dict[str, list] = {}
     for r in runs:
         m = re.match(r"(?:Agent|Paper) run: (\S+) (\S+)(?: \(unverified\))?$", r.get("displayTitle", ""))
         if m:
             by_dataset.setdefault(m.group(1), []).append((when(r["createdAt"]), when(r["updatedAt"]), m.group(2),
-                                                          r.get("conclusion")))
-    full, claims = [], []
-    for found in by_dataset.values():
+                                                          r.get("conclusion"), r.get("status", "completed")))
+    out = {}
+    for dataset, found in by_dataset.items():
         found.sort()
-        chains = [[found[0]]]
+        out[dataset] = [[found[0]]]
         for run in found[1:]:
-            if (run[0] - max(x[1] for x in chains[-1])).total_seconds() > 3 * 3600:
-                chains.append([])
-            chains[-1].append(run)
-        for chain in chains:
-            roles = {x[2] for x in chain if x[3] == "success"}
-            hours = (max(x[1] for x in chain) - min(x[0] for x in chain)).total_seconds() / 3600
-            if {"author", "recorder"} <= roles:
-                full.append(hours)
-            elif {"claims", "claims-check"} <= roles and "author" not in roles:
-                claims.append(hours)
-    return {"full": statistics.median(full) if full else None, "claims": statistics.median(claims) if claims else None}
+            if (run[0] - max(x[1] for x in out[dataset][-1])).total_seconds() > 3 * 3600:
+                out[dataset].append([])
+            out[dataset][-1].append(run)
+    return out
+
+
+def chain_kind(chain: list[tuple]) -> str | None:
+    """"full" for a finished attempt (author to recorder), "claims" for a claims-only chain, else None."""
+    roles = {x[2] for x in chain if x[3] == "success"}
+    if {"author", "recorder"} <= roles:
+        return "full"
+    if {"claims", "claims-check"} <= roles and "author" not in roles:
+        return "claims"
+    return None
+
+
+def chain_hours(runs: list[dict]) -> dict[str, float | None]:
+    """How long a chain takes, from the agent runs: the median time from a dataset's first run to its last,
+    for full attempts (author to recorder) and for claims-only chains."""
+    import statistics
+    found = {"full": [], "claims": []}
+    for chain in (c for cs in chains(runs).values() for c in cs):
+        kind = chain_kind(chain)
+        if kind:
+            found[kind].append((max(x[1] for x in chain) - min(x[0] for x in chain)).total_seconds() / 3600)
+    return {k: statistics.median(v) if v else None for k, v in found.items()}
+
+
+def running(runs: list[dict], folders: set[str], lanes: dict[str, int], now=None) -> dict[str, dict]:
+    """The chains going now on these datasets (a run of theirs is queued or in progress), with the runner
+    each is on and about how many hours it has left: the median time, in finished chains of its kind, from
+    the start of a run of the role it is on to the chain's end, less the time that run has taken so far.
+
+    A chain on any role past the claims check is the full runner's. One that has only read claims so far
+    could be either runner's; it is taken to be the claims runner's when the full runner's lanes are taken."""
+    import datetime
+    import statistics
+    now = now or datetime.datetime.now(datetime.timezone.utc)
+    done = {k: v for k, v in chain_hours(runs).items() if v}
+    after: dict[tuple, list] = {}   # (kind, role) -> hours from that role's start to the chain's end
+    for chain in (c for cs in chains(runs).values() for c in cs):
+        kind = chain_kind(chain)
+        if kind:
+            end = max(x[1] for x in chain)
+            for x in chain:
+                if x[3] == "success":
+                    after.setdefault((kind, x[2]), []).append((end - x[0]).total_seconds() / 3600)
+    going = {}
+    for d, cs in chains(runs).items():
+        current = [x for x in cs[-1] if x[4] in ("queued", "in_progress")]
+        if d in folders and current:
+            going[d] = (cs[-1], current[-1])
+    past_claims = lambda chain: any(x[2] not in ("claims", "claims-check") for x in chain)
+    full = sum(1 for chain, _ in going.values() if past_claims(chain))
+    out = {}
+    for d, (chain, run) in sorted(going.items(), key=lambda kv: kv[1][1][0]):
+        if past_claims(chain) or full < lanes.get("full", 3):
+            kind = "full"
+            full += not past_claims(chain)
+        else:
+            kind = "claims"
+        hours = None
+        if after.get((kind, run[2])):
+            hours = statistics.median(after[(kind, run[2])]) - (now - run[0]).total_seconds() / 3600
+        elif kind in done:
+            hours = done[kind] - (now - min(x[0] for x in chain)).total_seconds() / 3600
+        out[d] = {"kind": kind, "hours": None if hours is None else max(hours, 0.0)}
+    return out
 
 
 def newest_run(runs: list[dict], dandiset: str, role: str) -> str:
@@ -224,8 +281,9 @@ def main() -> int:
     elif command == "queue":
         # The queues, for the dashboard's pipeline page; the runs (as for "run") come on stdin.
         lanes = dict(zip(("full", "claims"), map(int, rest or (3, 1))))
-        print(json.dumps({"full": queue(), "claims": queue(claims=True), "branches": sorted(branches()),
-                          "lanes": lanes, "hours": chain_hours(json_lists(sys.stdin.read()))}))
+        runs, open_ = json_lists(sys.stdin.read()), branches()
+        print(json.dumps({"full": queue(), "claims": queue(claims=True), "branches": sorted(open_),
+                          "lanes": lanes, "hours": chain_hours(runs), "running": running(runs, open_, lanes)}))
     elif command == "published":
         import datasets
         key = datasets.key_of_folder(rest[0])
