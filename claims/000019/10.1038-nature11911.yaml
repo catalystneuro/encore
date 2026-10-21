@@ -1,0 +1,685 @@
+# Claims for Bouchard, Mesgarani, Johnson & Chang (2013), "Functional organization of human
+# sensorimotor cortex for speech articulation", Nature 495, 327-332, on dandiset 000019
+# ("Human ECoG speaking consonant-vowel syllables").
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read. The NIH author manuscript as served by PubMed Central (PMC3606666, NIHMS436351),
+# not the version of record: main text, figure legends and Methods, with the supplement
+# (NIHMS436351-supplement-1.pdf, Supplementary Figures 1 to 13 with their legends,
+# Supplementary Table 1 and Supplementary Methods), as extracted to text. No PDF of the main
+# text was supplied, so the main figures were read from their legends and from the Results
+# sentences that cite them. Supplement pages 2 and 8 were opened in the supplement PDF, to
+# see Supplementary Figure 1d and to confirm a printed p-value on page 8.
+#
+# Code. The paper links no code, and none is named in the Methods or the supplement. Every
+# method below is from the Methods, the legends or the Supplementary Methods.
+#
+# Data the paper describes. Three native English speakers (Supplementary Table 1 names them
+# EC2, EC33 and EC31) with a high-density subdural ECoG array over peri-Sylvian cortex, left
+# hemisphere in two (EC2, EC31) and right in one (EC33), implanted for epilepsy monitoring.
+# Each read aloud consonant-vowel syllables (CVs), 19 consonants (/b d f g h k l m n p r s sh t
+# th v w j z/) for two subjects and 18 for one, each followed by /a/, /i/ or /u/; each CV was
+# produced 15 to 100 times. 168 syllables in all (57 + 57 + 54). The microphone signal was
+# recorded with the ECoG at 3052 Hz (TDT system) and transcribed with WaveSurfer; every
+# analysis is aligned to the acoustic onset of the consonant-to-vowel transition (t = 0).
+# Measured variables. ECoG voltage per channel; electrode positions on each subject's MRI
+# reconstruction, expressed as dorsal-ventral distance from the Sylvian fissure and
+# anterior-posterior distance from the central sulcus (mm), and whether each electrode lies on
+# ventral sensorimotor cortex (vSMC, pre- and post-central gyri and the guenon); the audio; and
+# the CV label and the C-V transition time of each utterance. The dataset's title is enough to
+# know it is meant to hold these recordings; its files were not looked at.
+#
+# Definitions used by several criteria, from the Methods unless marked.
+# - High gamma (Hg). Channels with artifacts or excessive noise are excluded (by inspection;
+#   if the dataset marks bad channels, those marks are used). Common average reference over
+#   the remaining channels. Analytic amplitude from eight Gaussian band-pass filters with
+#   logarithmically spaced centres from 85 to 175 Hz and semi-logarithmically increasing
+#   bandwidths, by the Hilbert transform; averaged over the eight bands; down-sampled to
+#   200 Hz (5 ms steps); z-scored per channel against "baseline data". The exact centres and
+#   bandwidths are not given; the bank of Mesgarani and Chang (2012, ref. 17/48), the paper's
+#   cited source, is the standard choice, and it cannot change an outcome beyond what the
+#   baseline does. OPEN, the baseline. The Methods do not say which data are baseline.
+#   Readings (a) a silent window before each utterance (the 500 ms before the start of the
+#   plotted epochs, -1000 to -500 ms from the C-V transition, is used for this reading);
+#   (b) the mean and SD of the whole recording of the channel. Both are run.
+# - Per-syllable responses. The analyses use cross-syllable variability in the average Hg
+#   (Methods, Acoustic Analysis), so each CV's response at each electrode is the mean over
+#   its renditions, aligned at the C-V transition. Epoch -500 to +750 ms (the range of the
+#   Fig. 5a symbols); the analysis windows below lie within it.
+# - vSMC electrodes. Electrodes on the pre- and post-central gyri and the guenon (Methods,
+#   Fig. 1a, b). If the dataset gives anatomical labels, those are used; if it gives
+#   neither labels nor positions relative to the central sulcus and Sylvian fissure, the
+#   spatial claims are blocked (metadata_insufficient) and the others are run on all
+#   electrodes that pass the activity rule, as a variant only.
+# - Articulator state matrix. Supplementary Figure 1d: per CV, four binary consonant
+#   articulators (Lips, Tongue, Larynx, Jaw) and two vowel features (Back Tongue, High
+#   Tongue). It is given only as a figure; the author reads it from supplement page 2.
+# - Phonetic feature matrix. Supplementary Figure 12: nine constriction location features,
+#   six constriction degree/shape features and four vowel configuration features, white = 1.
+#   Given only as a figure (supplement page 15). The Methods point to Supplemental Figure 9
+#   for it; the legend of Supplementary Figure 12 is the matrix.
+# - Major oral articulator labels for consonants, labial, coronal and dorsal (Fig. 4a, c;
+#   Supplementary Figure 10, 11). Which consonant is which is from the phonetic feature matrix
+#   and Fig. 4c; /h/ and /r/ are not placed by any text sentence. OPEN; readings (a) /h/ and
+#   /r/ left out of the labelled sets, (b) /r/ coronal and /h/ dorsal.
+# - Cortical state-space. Per subject, PCA on the matrix of vSMC electrodes by
+#   concatenated (CV x time) Hg, each electrode's time series z-scored across syllables; the
+#   first nine PCs; a CV's state at time t is the projection of its electrode vector on them.
+#   Consonant time t = -25 ms; vowel time t = +250 ms (Fig. 4a, b legend).
+# - Time windows. Early window -375 to 120 ms and late window 125 to 620 ms (Results, Phonetic
+#   Organization, paragraph 3), in 5 ms steps.
+# - Tolerances. 10% of a reported value when the paper gives no spread; the paper's s.e. when
+#   it gives one; reasons for any other are given in the claim. Counts of subjects are exact.
+# - Outside data. The paper relies on none and deposited nothing elsewhere; every claim
+#   uses the dataset alone (data: dataset, the default).
+# - Readings. Where a claim lists readings of a reported number, it matches if it matches
+#   under any of them. Where a claim lists readings of a method detail, its outcome is the one
+#   all readings give, and it is methods_underspecified when they differ.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000019"
+paper: doi:10.1038/nature11911
+claims:
+- id: data-composition
+  statement: Three subjects with high-density ECoG (two left, one right hemisphere) read aloud CV
+    syllables made of 18 or 19 consonants followed by /a/, /i/ or /u/, each CV produced 15 to
+    100 times, with the microphone recorded with the ECoG at 3052 Hz.
+  source: Methods, Subjects and Experimental Task, and Data acquisition and Signal Processing;
+    Supplementary Table 1
+  quote: Three native English speaking human subjects underwent chronic implantation of a
+    high-density, subdural electrocortigraphic (ECoG) array over the left hemisphere (two
+    subjects) or right hemisphere (one subject) ... composed of 18–19 consonants (19 consonants
+    for two subjects, 18 consonants for one subject), followed by one of three vowels. Each CV
+    was produced between 15 and 100 times
+  expected:
+  - quantity: subjects
+    value: 3
+    tolerance: 0
+  - quantity: distinct CV syllables over all subjects
+    value: 168
+    tolerance: 0
+  - quantity: ECoG sampling rate
+    value: 3052
+    tolerance: 1
+    unit: Hz
+  criterion: Reproduced when the dataset holds three subjects with ECoG and audio, CV labels
+    with 19, 19 and 18 consonants by three vowels (168 distinct CVs, Fig. 3c legend), at least
+    15 renditions of every CV and at most 100, and two left and one right hemisphere grids.
+    Partially reproduced when it holds the three subjects but some counts differ; the counts
+    found are reported. The sampling rate within 1 Hz of 3052 Hz (TDT rates are often printed
+    rounded, e.g. 3051.76 Hz).
+- id: active-electrodes
+  statement: About 30 active vSMC electrodes were found per subject during syllable articulation,
+    an electrode being active when its high-gamma z-score changed by more than 2 for any
+    syllable.
+  source: Results, vSMC Physiology During Syllable Production, paragraph 1
+  quote: During syllable articulation, approximately 30 active vSMC electrode sites were
+    identified per subject (~1200 mm 2 , change in z-score > 2 for any syllable)
+  expected:
+  - quantity: active vSMC electrodes per subject
+    value: 30
+    tolerance: 3
+  criterion: Per subject, vSMC electrodes whose mean Hg for any CV exceeds a z-score of 2 at any
+    time in the epoch. OPEN, "change in z-score" read as (a) Hg above 2, (b) absolute Hg above
+    2 (increase or decrease). Reproduced when, under each baseline reading and one reading of
+    the change, the mean count over subjects is within 27 to 33; partially reproduced when the
+    mean is within tolerance under some baseline readings only. The ~1200 mm2 is not tested,
+    as the paper does not say how it was measured; the counts per subject are reported.
+- id: fig1c-e-articulator-electrodes
+  statement: In one subject, dorsal electrodes (e124, e108) were active for /b/ (lips), mid vSMC
+    electrodes (e129, e133, e105) for /d/ (front tongue), and a more ventral electrode (e104)
+    was most active for /g/ (back tongue).
+  source: Results, vSMC Physiology During Syllable Production, paragraph 1; Figure 1c-e
+  quote: Dorsally located electrodes (e.g. e124, e108; black) were active during production of
+    /b/, which requires transient closure of the lips. In contrast, mid-positioned electrodes
+    (e.g. e129, e133, e105; grey) were active during production of /d/ ... Amore ventral
+    electrode (e.g. e104; red) was most active during production of /g/
+  criterion: The paper does not say which subject Fig. 1 shows ("single subject brain", Fig. 1a
+    legend) or how its electrodes are numbered. OPEN, the numbering; readings (a) the
+    dataset's electrode index counted from 1, (b) counted from 0. The subject is the one in
+    which all named electrodes are vSMC electrodes; each subject is tried. OPEN, the measure
+    of activity for a syllable; readings (i) mean Hg at the paper's consonant time, -25 ms
+    (Fig. 4a), (ii) peak mean Hg over the epoch (Fig. 1c-e shows the whole trace and says
+    "most active"). Reproduced when, in one subject and numbering, e124 and e108 respond more
+    to /ba/ than to /da/ and /ga/, e129, e133 and e105 respond more to /da/ than to /ba/ and
+    /ga/, e104 responds more to /ga/ than to /ba/ and /da/, and the distance from the Sylvian
+    fissure orders them /b/ electrodes above /d/ electrodes above e104; partially reproduced
+    when the order holds but some named electrode prefers another syllable. Blocked as
+    metadata_insufficient when no subject and numbering puts all named electrodes on vSMC.
+- id: fig1f-h-phonetic-contrasts
+  statement: Fricatives with different tongue-tip constriction locations (/th/, /s/, /sh/)
+    engaged different electrodes; front-tongue consonants of different manner (/l/, /n/, /d/)
+    engaged overlapping electrodes with different magnitudes; for /ja/, /ji/, /ju/ the activity
+    was similar before the C-V transition, while a dorsal electrode was active during /u/ only.
+  source: Results, vSMC Physiology During Syllable Production, paragraph 2; Figure 1f-h
+  quote: Syllables with the same consonant followed by different vowels ( Fig. 1h, /ja/, /ji/,
+    /ju/ ) revealed similar activity patterns preceding the CV transition. During vowel
+    phonation, a dorsal electrode is clearly active during /u/ (black arrow), but not /i/ or /a/
+  criterion: The paper calls these qualitative illustrations ("can be observed qualitatively")
+    at electrodes it does not name, with no measure, window or test. Only the last part can be
+    judged with the paper's own threshold. Reproduced when, in at least one subject, a vSMC
+    electrode with a positive lips weight (claim fig2a-lips-dorsal) has mean Hg above a z-score
+    of 2 (the activity rule of claim active-electrodes) at the vowel time, +250 ms, for /ju/
+    and below 2 for /ja/ and /ji/. The other parts are shown as traces and not judged
+    (methods_underspecified for those parts).
+  depends_on:
+  - fig2a-lips-dorsal
+- id: fig2a-lips-dorsal
+  statement: Each articulator is represented across vSMC; the lip representation lies in dorsal
+    vSMC and the tongue representation is spread over its ventral part.
+  source: Results, Spatial Representation of Articulators, paragraph 1; Figure 2a
+  quote: We found representations for each articulator distributed across vSMC ( Fig. 2a ). For
+    example, the lip representation was localized to the dorsal aspect of vSMC, whereas the
+    tongue representation was more distributed across the ventral aspect
+  criterion: GLM of Methods Eq. 2, at each time and vSMC electrode, of the CVs' mean Hg on the
+    four consonant articulators (Supplementary Figure 1d), by least squares. Electrodes kept
+    when the mean over T_A of the regression p-value (F-test of the model) is below 0.05 for
+    any articulator A; W_iA is the mean of the weight over T_A (Methods Eq. 3); T_A is the
+    subject's mean onset-to-offset window of significant partial correlations for A (claim
+    fig3d-timing-sequence). Per subject, the W-weighted mean dorsal-ventral distance from the
+    Sylvian fissure over electrodes with positive weights, for lips and for tongue.
+    Reproduced when lips lie dorsal to tongue in every subject; partially reproduced in two
+    of three. The paper's maps are smoothed with a 2 mm uniform circular kernel and averaged
+    over subjects; the maps are shown for comparison.
+  depends_on:
+  - fig3d-timing-sequence
+- id: fig2b-somatotopic-sequence
+  statement: Across subjects the articulator representations are laid out from dorsal to ventral
+    as larynx, lips, jaw, tongue and larynx, with a laryngeal representation at the dorsal end
+    of vSMC as well as a ventral one.
+  source: Results, Spatial Representation of Articulators, paragraph 2; Figure 2b; Discussion,
+    paragraph 1
+  quote: "We found an overall somatotopic dorsal-ventral arrangement of articulator
+    representations laid out in the following sequence: larynx (X), lips (L), jaw (J), tongue
+    (T), and larynx (X)"
+  criterion: As in Methods, Somatotopic map. The W_iA maps of claim fig2a-lips-dorsal, per
+    subject smoothed with a 2 mm uniform circular kernel in the (AP, DV) plane and averaged
+    over subjects; the locations of the top 10% of weights for each articulator; then k = 4
+    nearest neighbours within 3 mm, mixed when no articulator holds more than 50%. OPEN, the
+    grid on which maps are smoothed and averaged; a 1 mm grid is the standard choice, and
+    0.5 mm is shown as a variant. Reproduced when the DV positions of the top-10% points
+    order as larynx (a dorsal group) above lips above jaw above tongue above larynx (a
+    ventral group), read from the medians of each articulator's points with the larynx
+    points split at the median DV of the lips and tongue points; partially reproduced when
+    lips above jaw above tongue holds but the dorsal larynx group is absent. The 5% and 15%
+    thresholds (Supplementary Figure 4) are shown as variants.
+  depends_on:
+  - fig2a-lips-dorsal
+- id: suppfig3b-spatial-clustering
+  statement: Electrodes with similar articulator representations lie closer together than
+    chance; the mean spatial autocorrelation within 3 mm is 0.45 against 0.26 for permuted
+    electrode positions.
+  source: Supplementary Figure 3a, b legend
+  quote: The correlation values for the data (0.45 ± 0.03, mean ± s.e., 3 subjects x 4
+    articulators, n = 12) were significantly greater than for the randomized data (0.26 ± 0.02,
+    mean ± s.d., 1000 randomizations for each subject; P < 10-3)
+  statistics:
+  - test: permutation test, electrode locations shuffled within subject, 1000 randomizations
+    p: 0.001
+    p_relation: "<"
+    n: 3 subjects x 4 articulators, 12 maps
+  expected:
+  - quantity: mean autocorrelation within 3 mm, data
+    value: 0.45
+    tolerance: 0.03
+  - quantity: mean autocorrelation within 3 mm, shuffled
+    value: 0.26
+    tolerance: 0.02
+  criterion: Per subject and articulator, the smoothed W_iA map of claim fig2b-somatotopic-
+    sequence; its normalized 2-D spatial autocorrelation; the mean within 3 mm of zero shift.
+    Null by shuffling electrode locations within subject 1000 times before smoothing
+    (Supplementary Methods). OPEN, the normalization of the 2-D correlation; readings (a)
+    Pearson correlation of the overlapping parts at each shift, (b) the cross-correlation
+    divided by its value at zero shift. Reproduced when the data's mean is within tolerance
+    and above the 99.9th percentile of the null.
+  depends_on:
+  - fig2b-somatotopic-sequence
+- id: suppfig3d-cross-subject
+  statement: Each articulator's representation lies in a more consistent place across subjects
+    than chance (mean cross-subject correlation within 3 mm 0.195 against 0.031).
+  source: Supplementary Figure 3c, d legend
+  quote: The correlation values for the data (0.195 ± 0.064, mean ± s.e., 3 subjects x 4
+    articulators, n = 12) were significantly greater than for the randomized data (0.031 ±
+    0.021, mean ± s.d., P < 10-3, 1000 iteration permutation test)
+  statistics:
+  - test: permutation test, 1000 iterations
+    p: 0.001
+    p_relation: "<"
+    n: 3 subject pairs x 4 articulators, 12 comparisons
+  expected:
+  - quantity: mean cross-subject correlation within 3 mm, data
+    value: 0.195
+    tolerance: 0.064
+  - quantity: mean cross-subject correlation within 3 mm, shuffled
+    value: 0.031
+    tolerance: 0.021
+  criterion: As claim suppfig3b-spatial-clustering, with the cross-correlation of one
+    articulator's maps between pairs of subjects (S1-S2, S2-S3, S1-S3). The right-hemisphere
+    subject's AP axis is taken as the paper's coordinates give it (distance from the central
+    sulcus, anterior positive), so no mirroring is needed. Reproduced when the data's mean is
+    within tolerance and above the 99.9th percentile of the null.
+  depends_on:
+  - fig2b-somatotopic-sequence
+- id: suppfig3f-dv-sequence
+  statement: Within each subject, adjacent articulator representations (larynx-tongue,
+    tongue-jaw, jaw-lips) are spatially sequenced along the dorsal-ventral axis, with positive
+    cross-correlation on one side of the diagonal (0.099) and negative on the other (-0.102),
+    both beyond chance.
+  source: Supplementary Figure 3e, f legend
+  quote: The correlation values for the above diagonal data were positive (0.099 ± 0.052, mean ±
+    s.e., 3 subjects x 3 cross-articulator comparisons, n = 9) and significantly greater than
+    for the randomized data ... the correlation values for the below diagonal data were negative
+    (-0.102 ± 0.052, mean ± s.e., n = 9)
+  statistics:
+  - about: above the diagonal
+    test: permutation test, 1000 permutations for each subject
+    p: 0.001
+    p_relation: "<"
+    n: 3 subjects x 3 comparisons, 9
+  - about: below the diagonal
+    test: permutation test, 1000 permutations for each subject
+    p: 0.001
+    p_relation: "<"
+    n: 3 subjects x 3 comparisons, 9
+  expected:
+  - quantity: mean cross-correlation within the 6 mm semicircle above the diagonal
+    value: 0.099
+    tolerance: 0.052
+  - quantity: mean cross-correlation within the 6 mm semicircle below the diagonal
+    value: -0.102
+    tolerance: 0.052
+  criterion: As claim suppfig3b-spatial-clustering, cross-correlating larynx with tongue, tongue
+    with jaw and jaw with lips within each subject; the mean over the 6 mm semicircles above and
+    below the diagonal that the legend draws, the anterior-dorsal to posterior-ventral axis.
+    OPEN, the diagonal's exact angle; readings (a) 45 degrees, (b) the anisotropy axis of the
+    mean autocorrelation of claim suppfig3b-spatial-clustering. Reproduced when both means are
+    within tolerance with opposite signs and both exceed the null's 99.9th percentile in
+    magnitude.
+  depends_on:
+  - suppfig3b-spatial-clustering
+- id: suppfig5-intermediate-organization
+  statement: The observed map is neither a perfect linear somatotopy nor random; the mean
+    distance between electrodes preferring the same articulator (11.06 mm) and between those
+    preferring different ones (15.11 mm) lie between the two null models.
+  source: Supplementary Figure 5b legend
+  quote: The observed intra-articulator distances (11.06 ± 1.01 mm. mean ± s.e., n = 3188
+    pair-wise distances) and across articulator distances (15.11 ± 1.01mm, mean ± s.e., n = 4587
+    pair-wise distances) are both intermediate to these bounding values
+  statistics:
+  - about: observed against both null models; printed as "P >10-3", which with the figure's
+      *** marks reads as P < 10-3
+    test: comparison with 1000 simulated maps per null model
+    p: 0.001
+    p_relation: ">"
+    n: 3188 within- and 4587 across-articulator distances
+  expected:
+  - quantity: mean within-articulator distance
+    value: 11.06
+    tolerance: 1.01
+    unit: mm
+  - quantity: mean across-articulator distance
+    value: 15.11
+    tolerance: 1.01
+    unit: mm
+  criterion: Electrodes of claim fig2a-lips-dorsal labelled by their largest W_iA (winner take
+    all); Euclidean distances in the (AP, DV) plane between pairs of electrodes, within and
+    across labels. OPEN, whether pairs are formed within subjects only or over the pooled
+    electrodes of all subjects; both are run. The Methods do not describe how the linear
+    somatotopy maps were made (the legend says "see Methods" and the Methods are silent), so
+    the bounds are the legend's own values (linear 7.43 and 17.7 mm; random 14.08 and 14.07
+    mm). Reproduced when both observed means are within tolerance and lie strictly between
+    the bounds; a random-scatter null, by permuting labels over the electrodes 1000 times, is
+    shown as a variant.
+  depends_on:
+  - fig2a-lips-dorsal
+- id: suppfig6-mixed-tuning
+  statement: Single electrodes show a clear preferred articulator and also carry weights for
+    other articulators.
+  source: Results, Spatial Representation of Articulators, paragraph 2; Supplementary Figure 6
+  quote: This analysis revealed clear preferred tuning for individual articulators at single
+    electrodes (Fig. 2c, electrodes categorized according to the strongest articulator
+    representation), and also demonstrated that single electrodes had functional
+    representations of multiple articulators
+  criterion: As in Methods (analysis of representational overlap) for the electrodes of claim
+    fig2a-lips-dorsal. Electrodes grouped by their largest W_iA; for each, the positive
+    weights as a percentage of their sum; the group means. Reproduced when, in every group,
+    the preferred articulator has the largest mean percentage and at least one other
+    articulator has a mean percentage above zero. The paper gives no number, so the group
+    means are reported.
+  depends_on:
+  - fig2a-lips-dorsal
+- id: fig3d-timing-sequence
+  statement: Articulator correlations follow a staggered sequence consistent across subjects;
+    lip and tongue correlations begin well before sound onset, jaw and larynx align to the C-V
+    transition, and the high and back tongue vowel features peak near the vowel midpoint (~250
+    ms).
+  source: Results, Timing of Articulator Representations, paragraph 1; Figure 3a-d
+  quote: lip and tongue correlations began well before sound onset ( Fig. 3a, c, d ); jaw and
+    larynx correlations were aligned to the CV transition ( Fig. 3a, c, d ); high tongue and
+    back tongue features showed high temporal specificity for the vowel phase, peaking near the
+    acoustic mid-point of the vowels (~250 ms, Fig. 3b–d ). This sequence of articulator
+    correlations was consistent across subjects
+  statistics:
+  - test: ANOVA
+    statistic: F = 40, df = 5
+    p: 1.0e-10
+    p_relation: "<"
+    n: 211 electrodes from 3 subjects
+  expected:
+  - quantity: electrodes over all articulators and subjects
+    value: 211
+    tolerance: 21
+  - quantity: peak time of high and back tongue correlations
+    value: 250
+    tolerance: 25
+    unit: ms
+  criterion: Partial correlation (Methods Eq. 4), per vSMC electrode and time, of the CVs' mean
+    Hg with each of the six articulator variables of Supplementary Figure 1d, the other five
+    partialled out. For each articulator, electrodes whose peak rho exceeds the mean + 2.5 SD
+    of rho over electrodes and time (per subject; OPEN whether over all articulators or per
+    articulator, both run). Onset and offset are the first and last times of the contiguous
+    run around the peak above that threshold (OPEN, the paper does not define them; reading
+    (b) threshold at half the peak is shown). One-way ANOVA across the six articulators of
+    the timing values pooled over subjects. OPEN, which timing value the ANOVA uses; readings
+    (a) onset, (b) peak. Acoustic onset per CV from the audio of the prototype rendition
+    (Methods Eq. 1, cochlear spectrogram, a threshold on acoustic power). Reproduced when the
+    ANOVA has p < 1e-10, the mean onsets of lips and tongue precede the mean acoustic onset,
+    the mean onsets of jaw and larynx are later than those of lips and tongue, and the mean
+    peaks of high and back tongue are within tolerance of 250 ms; partially reproduced when
+    the ANOVA holds and two of the three order conditions hold. Counts per articulator are
+    reported against the 211 total.
+- id: suppfig7-no-latency-difference
+  statement: Onset latencies of the articulator model fit do not differ between electrodes
+    just anterior and just posterior to the central sulcus (within 10 mm), nor across the
+    guenon.
+  source: Results, Timing of Articulator Representations, paragraph 1; Supplementary Figure 7
+  quote: we found no significant latency differences in those areas immediately anterior and
+    posterior to the central sulcus (±10 mm), or across the geunon (a-b, P > 0.4, Rank-Sum test;
+    n = 71 and n = 67 electrodes
+  statistics:
+  - test: rank-sum test
+    p: 0.4
+    p_relation: ">"
+    n: 71 electrodes (pre against post central) and 67 electrodes (across the guenon), three
+      subjects
+  criterion: A claim of absence, judged on the paper's test. Per electrode, the onset latency of
+    the GLM R2 (Methods Eq. 2). OPEN, the onset; readings (a) first time R2 is significant
+    (F-test p < 0.05) in the run that holds its peak, (b) first time R2 exceeds the mean + 2.5
+    SD rule used for partial correlations. Electrodes within 10 mm anterior against within
+    10 mm posterior of the central sulcus; electrodes on the guenon against those dorsal to it
+    (OPEN, how the guenon boundary is set; the dataset's anatomical labels are used, and the
+    comparison is blocked without them). Two-sided Wilcoxon rank-sum at p < 0.05. Reproduced
+    when neither comparison is significant under every onset reading; not reproduced when
+    one is under every reading; the medians and counts are reported against 71 and 67.
+- id: pca-nine-components
+  statement: The cortical state-space has nine spatial PCs in every subject, the eigenvalues
+    falling fast up to the ninth and slowly after, together explaining about 60% of the
+    variance.
+  source: Results, Phonetic Organization of Spatial Patterns, paragraph 1; Methods, PCA and
+    Cortical-State Space; Supplementary Figure 8
+  quote: we used principal components analysis to transform the observed cortical activity
+    patterns into a ‘cortical state-space’ (9 spatial PCs for all subjects, ~60% of variance
+    explained
+  expected:
+  - quantity: variance explained by the first nine PCs
+    value: 0.6
+    tolerance: 0.06
+  criterion: PCA as in the header, per subject, on the vSMC electrodes. OPEN, the time range
+    concatenated; readings (a) the epoch -500 to 750 ms, (b) the union of the early and late
+    windows, -375 to 620 ms. Reproduced when, under one reading, the mean over subjects of the
+    variance explained by nine PCs is within tolerance. The paper gives no measure of the
+    inflection at the ninth eigenvalue, so the eigenvalue spectra are shown and not judged.
+    Values per subject are reported. The Methods cite Supplemental Figure 6 for the eigenvalues; the
+    figure is Supplementary Figure 8.
+- id: fig4a-consonant-clusters
+  statement: At the consonant time (-25 ms) k-means clustering of the cortical state-space groups
+    syllables by major oral articulator (labial, coronal, dorsal), and three clusters are more
+    parsimonious than two or four (mean silhouette 0.47 against 0.45 and 0.43).
+  source: Results, Phonetic Organization of Spatial Patterns, paragraph 1; Figure 4a; Methods,
+    Clustering Analysis, paragraph 2
+  quote: On average across subjects, this analysis validated the claim that three clusters
+    (Average Silhouette = 0.47) was a more parsimonious clustering scheme than either two
+    (Average Silhouette = 0.45) or four clusters (Average Silhouette = 0.43)
+  expected:
+  - quantity: mean silhouette, 3 clusters
+    value: 0.47
+    tolerance: 0.047
+  - quantity: mean silhouette, 2 clusters
+    value: 0.45
+    tolerance: 0.045
+  - quantity: mean silhouette, 4 clusters
+    value: 0.43
+    tolerance: 0.043
+  criterion: Per subject, k-means with Euclidean distance on the CVs' nine-PC states at -25 ms,
+    for k = 2, 3 and 4; mean silhouette per k, averaged over subjects. k-means starts are a
+    standard choice (100 random starts, the best kept) that is not expected to change the
+    outcome. Reproduced when k = 3 has the highest mean silhouette and the three values are
+    within tolerance; partially reproduced when k = 3 is highest but values are outside it.
+    The cluster-articulator match is claim suppfig11-co-clustering.
+- id: suppfig11-co-clustering
+  statement: Clusters of the cortical state-space match the major articulators at the consonant
+    time (median co-clustering 0.50 against 0.32 by chance) and the vowels at the vowel time
+    (0.65 against 0.37), across subjects.
+  source: Results, Phonetic Organization of Spatial Patterns, paragraph 1; Supplementary Figure
+    11a, b
+  quote: "clustering of CV’s in the cortical state-space co-clustered with the major articulators
+    significantly more than expected by chance (Red: observed distribution, median = 0.50,
+    Black: null distribution from 1000 random permutations of articulator assignments of CVs,
+    median = 0.32"
+  statistics:
+  - about: consonants
+    test: Wilcoxon signed-rank test
+    p: 1.0e-20
+    p_relation: "<"
+    n: 168 syllables from three subjects
+  - about: vowels
+    test: Wilcoxon signed-rank test
+    p: 1.0e-15
+    p_relation: "<"
+    n: 168 syllables from three subjects
+  - about: consonants and vowels, main text
+    test: not named
+    p: 1.0e-10
+    p_relation: "<"
+  expected:
+  - quantity: median co-clustering, consonants
+    value: 0.50
+    tolerance: 0.05
+  - quantity: median co-clustering, consonant null
+    value: 0.32
+    tolerance: 0.032
+  - quantity: median co-clustering, vowels
+    value: 0.65
+    tolerance: 0.065
+  - quantity: median co-clustering, vowel null
+    value: 0.37
+    tolerance: 0.037
+  criterion: Per subject, k-means (k = 3) at -25 ms (consonants) and +250 ms (vowels) as in
+    claim fig4a-consonant-clusters; the co-clustering coefficient of each CV against the
+    major articulator labels (consonants) or vowel identity (vowels), Supplementary Methods
+    Eq. 1, kappa = 1 - |NC delta AC| / (|NC| + |AC|); the null for each CV the mean of kappa
+    over 1000 permutations of the labels within subject. Wilcoxon signed-rank, observed
+    against null, over the 168 CVs. For consonants the two readings of the /h/ and /r/
+    labels in the header. Reproduced when both medians are within tolerance and both tests
+    give p < 1e-10 (the main text's bound); partially reproduced when the tests hold and a
+    median is outside tolerance.
+  depends_on:
+  - fig4a-consonant-clusters
+- id: fig4c-d-hierarchy
+  statement: Hierarchical clustering of the state-space puts the major oral articulator
+    (dorsal, labial, coronal) at the top tier for consonants, superordinate to constriction
+    location, with constriction degree only at the lowest level; for vowels the first split
+    is lip rounding (/u/ against /a/ and /i/).
+  source: Results, Phonetic Organization of Spatial Patterns, paragraph 2; Figure 4c, d
+  quote: "For consonants, this analysis confirmed that the primary tier of organization was
+    defined by the major oral articulator features: dorsal, labial, or coronal ( Fig. 4c ) ...
+    during the vowel period, a primary distinction was based upon the presence/absence of
+    lip-rounding (/u/ vs. /a/ & /i/)"
+  criterion: Agglomerative clustering with Ward's method on Euclidean distances between the
+    CVs' nine-PC states (Methods), at -25 ms and +250 ms. The paper does not say whether Fig.
+    4c, d is one subject or pooled; each subject is run. Consonants. The tree cut into three
+    clusters; reproduced for a subject when the three clusters have different majority major
+    articulators and at least two thirds of the labelled CVs fall in the cluster of their
+    articulator's majority (OPEN, the paper gives no purity measure; the co-clustering
+    coefficient of claim suppfig11-co-clustering for the cut is reported as well). Vowels.
+    The tree cut into two clusters; reproduced for a subject when one cluster holds a
+    majority of the /u/ syllables and the other a majority of the /a/ and /i/ syllables. The
+    claim is reproduced when both hold in every subject and partially reproduced when they
+    hold in some. The lowest-level manner grouping is shown, not judged.
+- id: fig4ef-feature-correlations
+  statement: Over early times (-375 to 120 ms) constriction location correlates with the
+    state-space structure more than constriction degree, which correlates more than the
+    upcoming vowel; over later times (125 to 620 ms) vowel configuration correlates most.
+  source: Results, Phonetic Organization of Spatial Patterns, paragraph 3; Figure 4e, f
+  quote: Across early time points (−375:120 ms), we found that consonant features describing
+    constriction location yielded a significantly greater correlation with the cortical
+    state-space than constriction degree, which in turn was significantly more correlated than
+    the upcoming vowel ... across later time points (125:620 ms), we found that vowel features
+    provided the greatest correlation
+  statistics:
+  - about: early window, location against degree against vowel
+    test: Wilcoxon signed-rank test
+    p: 1.0e-10
+    p_relation: "<"
+    n: 297 from 3 subjects
+  - about: late window, vowel configuration against the others
+    test: Wilcoxon signed-rank test
+    p: 1.0e-10
+    p_relation: "<"
+    n: 297 from 3 subjects
+  criterion: Per subject and time, R(t) of Methods Eq. 7, the Pearson correlation between the
+    unique pairwise Euclidean distances of the CVs' nine-PC states and those of the CVs in each
+    feature set of Supplementary Figure 12 (location, degree/shape, vowel). The n of 297 is
+    read as 99 time points in each window x 3 subjects, at 5 ms steps (OPEN, which end point
+    is left out; the result is not expected to depend on it). Paired Wilcoxon signed-rank
+    tests over these values. Reproduced when location > degree and degree > vowel in the early
+    window, and vowel > location and vowel > degree in the late window, each with p < 1e-10;
+    partially reproduced when some of the four comparisons hold. Distances in Hamming form
+    for the feature sets are a variant (Methods say both gave the same result).
+- id: fig5c-separability-timing
+  statement: Cluster separability, averaged over subjects, rises from about -300 ms and peaks
+    about 200 ms before the C-V transition for consonants, and rises from about 50 ms and
+    peaks at +250 ms for vowels.
+  source: Results, Dynamics of Phonetic Representations, paragraph 2; Figure 5c
+  quote: separability peaked ~200 ms before the CV transition for consonants (onset, ~−300 ms),
+    and at +250 ms for vowels (onset, ~50 ms)
+  expected:
+  - quantity: consonant separability peak
+    value: -200
+    tolerance: 20
+    unit: ms
+  - quantity: consonant separability onset
+    value: -300
+    tolerance: 30
+    unit: ms
+  - quantity: vowel separability peak
+    value: 250
+    tolerance: 25
+    unit: ms
+  - quantity: vowel separability onset
+    value: 50
+    tolerance: 10
+    unit: ms
+  criterion: Separability at each time is the mean distance between CVs in different clusters
+    minus the mean distance within clusters (Methods, Cluster Separability), on nine-PC states,
+    per subject, then averaged over subjects. OPEN, the clusters; readings (a) the phonetic
+    groups, major articulator for consonants and vowel identity for vowels, (b) k-means (k =
+    3) at each time. OPEN, the onset; readings (a) the first time the mean exceeds its
+    pre-epoch level by 2 bootstrap s.e. (1000 bootstrap samples of syllables, as the
+    Methods), (b) the time at half the peak. The vowel onset tolerance is two 5 ms samples, as
+    10% would be a single sample. Reproduced when, under each reading of the clusters and one
+    of the onset, all four values are within tolerance; partially reproduced when the peaks
+    are and an onset is not.
+- id: fig5d-separability-coupling
+  statement: Cluster separability and the correlation of the state-space with phonetic features
+    are tightly linked over time for consonants and vowels in each subject (R2 0.42 to 0.98, all
+    P < 1e-10).
+  source: Results, Dynamics of Phonetic Representations, paragraph 2; Figure 5c, d
+  quote: Across subjects, we found that cluster separability and the correlation between cortical
+    state-space organization and phonetic features were tightly linked for both consonants and
+    vowels in a time-dependent fashion (R 2 range = [0.42–0.98], P < 10 −10 for all)
+  statistics:
+  - test: linear regression R2 between time courses
+    p: 1.0e-10
+    p_relation: "<"
+    n: 3 subjects x consonants and vowels, time points as samples
+  expected:
+  - quantity: lowest R2 over subjects and categories
+    value: 0.42
+    tolerance: 0.042
+  - quantity: highest R2 over subjects and categories
+    value: 0.98
+    tolerance: 0.098
+  criterion: Per subject, the separability time course of claim fig5c-separability-timing and
+    R(t) of claim fig4ef-feature-correlations, constriction location for consonants and vowel
+    configuration for vowels (OPEN; reading (b) the mean over the three feature sets);
+    squared Pearson correlation over the epoch at 5 ms steps. Reproduced when the six R2
+    values lie within 0.38 to 1 (the reported range widened by 10% of each bound) with each
+    p < 1e-10; partially reproduced when all are positive and significant but some fall below
+    0.38.
+  depends_on:
+  - fig5c-separability-timing
+  - fig4ef-feature-correlations
+- id: suppfig13-consonant-vowel-distance
+  statement: Consonant and vowel representations occupy distinct regions of the state-space;
+    consonant-vowel distances are larger than consonant-consonant and vowel-vowel distances,
+    and consonant-consonant distances are larger than vowel-vowel ones.
+  source: Results, Dynamics of Phonetic Representations, paragraph 3; Supplementary Figure 13
+  quote: We found that the distribution of distances comparing consonants and vowels was
+    significantly greater than the consonant-consonant comparison or vowel-vowel comparison,
+    and the consonant-consonant comparison was greater than the vowel-vowel comparison
+  statistics:
+  - test: Wilcoxon signed-rank test
+    p: 1.0e-10
+    p_relation: "<"
+    corrected: Bonferroni, 3 comparisons
+    n: 4623 for all
+  criterion: Per subject, nine-PC states of each CV at -25 ms (consonant) and +250 ms (vowel).
+    For each unordered pair of CVs in a subject, the consonant-consonant distance, the
+    vowel-vowel distance and the consonant-vowel distance (OPEN, which of the pair at which
+    time; readings (a) the mean of the two cross pairings, (b) i at -25 ms and j at +250 ms).
+    4623 is read as the pairs within subjects (1596 + 1596 + 1431). Paired Wilcoxon
+    signed-rank tests over the pairs pooled over subjects, Bonferroni for 3. Reproduced when
+    all three orderings hold with corrected p < 1e-10 and the pair count is 4623.
+- id: suppfig9-pc-articulator-weights
+  statement: The first three PCs are weighted toward tongue over lips, and toward lips over jaw
+    and larynx, while jaw and larynx do not differ.
+  source: Supplementary Figure 9a legend
+  quote: the magnitude of the articulator weightings (log10(|(PCNi*Wij)|)) was significantly
+    biased towards tongue over lips (P < 0.05) over jaw and larynx (P < 0.001 for each), while
+    the difference between jaw and larynx was not significant (P > 0.2)
+  statistics:
+  - about: tongue against lips
+    test: Wilcoxon signed-rank test
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni, 6 comparisons per PC
+    n: 266 electrodes across subjects for each PC
+  - about: lips against jaw and larynx
+    test: Wilcoxon signed-rank test
+    p: 0.001
+    p_relation: "<"
+    corrected: Bonferroni, 6 comparisons per PC
+    n: 266 electrodes across subjects for each PC
+  - about: jaw against larynx
+    test: Wilcoxon signed-rank test
+    p: 0.2
+    p_relation: ">"
+    corrected: Bonferroni, 6 comparisons per PC
+    n: 266 electrodes across subjects for each PC
+  expected:
+  - quantity: electrodes across subjects
+    value: 266
+    tolerance: 27
+  criterion: Methods Eq. 6, PCw_ij = M_ij beta_j, with beta_j the GLM weights of claim
+    fig2a-lips-dorsal averaged over each articulator's window (W_jA) for every vSMC electrode
+    (OPEN, all 266 electrodes or only the significant ones; the n reads as all), for PCs 1 to
+    3; log10 of the absolute value. Paired Wilcoxon signed-rank across electrodes for the six
+    articulator pairs, per PC, Bonferroni for 6. Reproduced when, in each PC, tongue > lips at
+    p < 0.05, lips > jaw and lips > larynx at p < 0.001, and jaw against larynx p > 0.05 (the
+    absence judged on the paper's test); partially reproduced when this holds in one or two of
+    the three PCs.
+  depends_on:
+  - fig2a-lips-dorsal
