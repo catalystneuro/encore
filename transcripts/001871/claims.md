@@ -1,58 +1,77 @@
-# 001871 · claims · run 39543214079
+# 001871 · claims · run 39636595520
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cat docs/protocol.md; ls paper claims/001453 claims/001871 2>&1
+cat docs/protocol.md | sed -n '/^## Reader/,/^## [^R]/p'; ls claims/001453 paper claims/001871 2>&1
 ```
 
 ```
 Exit code 2
-# Protocol for an attempt
+## Reader
 
-Version: `pilot-10`. Record this version in the attempt's provenance.
+### 1. Get the paper
 
-This is what agents, or people, do to attempt a target and deposit the
-result. A target is a dataset in a public archive and a paper it names. How
-each archive's datasets are named, versioned and read is in
-[archives.md](archives.md); the examples here are from DANDI, the first. It is written from the pilot attempts
-([pilot notes](pilot-notes.md)); the reasons for the rules are there.
+The workflow puts the paper's full text, and its PDF where there is one, under
+`paper/`: the main text, the Methods, and the supplement. Read the text; open
+the PDF only to read a figure or a table the text garbles. If the full text is
+not there, or lacks the Methods or a supplement the results rest on, stop:
+write no claims, and end with a report that names what is missing, so that it
+can be supplied. Never write claims from the abstract. Do not copy figures.
+Do not look at the dataset's data: its title and description on the archive
+are enough to know which paper and which experiments it is meant to hold.
 
-An attempt has three roles, each a separate run with a separate context:
+### 2. Read the paper's code
 
-- The **reader** reads the paper and writes the claims file: every finding,
-  and how each is to be tested, taken from the paper. A second reader checks
-  it against the paper. Readers never see the dataset's data.
-- The **author** tests the claims on the dataset. It reads the paper to
-  understand the claims, but the claims file binds it: it cannot change a
-  claim, and it asks a reader for any method detail the file lacks.
-- The **verifier** checks the author's work and must not be the author.
-[... 179 more lines not kept]
+Read the code the paper links to before writing criteria. Say what it holds,
+and record the repository and commit read. Where the Methods leave a choice
+open and the code settles it, follow the code and say so. Where they disagree,
+follow the Methods for the main result and name the code's choice as a
+[... 124 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-head -40 paper/*.txt; wc -l paper/*.txt; grep -n -i "plume\|fluorescence\|acetone\|2591\|s00348" paper/*.txt | head -30
+head -40 paper/10.1073-pnas.2608896123.txt; wc paper/*.txt; grep -il "odor plume\|fluorescence" paper/*.txt
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+grep -n -i "Connor\|Exp Fluids\|Experiments in Fluids\|PLIF\|planar laser\|dandi\|001871" paper/*.txt | head -30
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+grep -n "(30\|30)\|30," paper/*.txt | head; sed -n 1270,1276p paper/*.txt
 ```
 
 Result: not kept, because it reads the paper's text.
 
 **Agent**
 
-I wrote no claims. The full text of the target paper is not in the repository.
+I wrote no claims, because the paper's text is missing. Nothing is under `claims/001871/`.
 
-- **Target paper:** doi:10.1007/s00348-018-2591-3, "Quantification of airborne odor plumes using planar laser-induced fluorescence" (Experiments in Fluids, 2018).
-- **What is under `paper/`:** only `10.1073-pnas.2608896123.txt` and its PDF. That is a different paper: Brudner, Zhou, ... Crimaldi, Clark, Emonet, "Fly navigational responses exploit plume-specific odor motion and gradient cues", PNAS 2026, version of record. Crimaldi is an author on it and it uses plume imaging, but it is not the paper named for this target.
+**What was read:** `paper/` holds only one paper, and it is not the one named. The header of `paper/10.1073-pnas.2608896123.txt` gives:
+- DOI 10.1073/pnas.2608896123, version of record, extracted from a PDF a person supplied.
+- Title: "Fly navigational responses exploit plume-specific odor motion and gradient cues" (Brudner, Zhou, Jayaram, Madeira Santana, Crimaldi, Clark, Emonet), PNAS 2026.
 
-**Missing:** the main text, Methods and any supplement of doi:10.1007/s00348-018-2591-3. The text and PDF need to go under `paper/` as `10.1007-s00348-018-2591-3.txt` (with the source header) and the matching PDF.
+That paper cites the one this dataset is for as reference 30: Connor, McHugh, Crimaldi, "Quantification of airborne odor plumes using planar laser-induced fluorescence", Exp. Fluids 59 (2018). It uses plumes from that paper ("plumes generated in ref. 30", SI Appendix Fig. S1), but it does not report that paper's findings or Methods.
 
-If the PNAS paper is the one DANDI:001871 actually holds, the target's DOI should be corrected and the reader re-run for it.
+**Claims:** none, so there are no quotes, statistics or criteria. The quote check did not run, and I did not read any linked code.
 
-Nothing was written under `claims/001871/`, so there are no claims, quotes, statistics or criteria to count, and no open details or readings.
+**Open details:** none could be assessed without the text.
+
+**Missing:** the full text of doi:10.1007/s00348-018-2591-3, with its Methods and any supplementary material, as a `.txt` file (and the PDF if there is one) under `paper/`. Once it is there, the reader run can start again.
 
 ## End of run
 
-3 turns, 0 minutes, result: success.
+5 turns, 0 minutes, result: success.
