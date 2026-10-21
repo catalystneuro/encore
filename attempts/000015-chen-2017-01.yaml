@@ -1,0 +1,353 @@
+schema_version: 2
+id: 000015-chen-2017-01
+dataset:
+  archive: dandi
+  id: "000015"
+  version: 0.220126.1914
+  doi: 10.48324/dandi.000015/0.220126.1914
+paper: doi:10.1016/j.neuron.2017.05.005
+date: 2026-10-21
+entry: 000015-chen-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39637903703
+inputs:
+- what: Cell-type labels (PT, IT) of the units of Li et al. (2015), the electrophysiology the paper
+    compares its imaging with, read from the units table of each file. Used only by the link claim
+    li2015-tagged-units-link.
+  source: DANDI dandiset 000010 version 0.220126.1905, doi 10.48324/dandi.000010/0.220126.1905
+outcomes:
+- claim: early-lick-fraction
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:early-lick-fraction
+  measured: 13.24
+  notes: Mean over the 105 planes of the percentage of trials with an early lick, 13.24 +- 9.14 with
+    all trials as denominator (reading a). Every reading is within 13.3 +- 10, from 13.24 (planes)
+    to 15.08 (mice, trials with a lick). Per mouse 8.8% to 21.9%.
+- claim: imaging-sample
+  outcome: partially_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:imaging-sample
+  notes: Six mice and 105 distinct planes, as stated. Reading (a), the four analysed trial types,
+    gives 92.15 +- 25.98 trials per plane at 73.83% +- 9.03% correct, both within tolerance. Reading
+    (b), all trials, gives 107.37 trials, within tolerance, at 63.89% correct, just outside. Planes
+    per session 3.09 +- 1.11, range 1 to 6, over 34 sessions. The 12 locations and the 8.8 planes per
+    location cannot be counted, as the files carry no location identifier; subject and area give 10
+    combinations, which fits 1 to 3 locations per mouse but does not count them. Every value that
+    could be measured is within tolerance; the outcome is partial because two of the seven could
+    not be tested.
+  deviations:
+  - The location counts are not tested, for lack of a location identifier.
+- claim: trials-per-type
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:trials-per-type
+  measured:
+  - 34.06
+  - 35.51
+  - 12.18
+  - 10.4
+  notes: Mean trials per plane CR 34.06 +- 13.43, CL 35.51 +- 13.94, ER 12.18 +- 4.71, EL 10.40 +-
+    4.42, all within the paper's spread. Every plane has at least 3 trials of each type.
+- claim: neuron-counts
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:neuron-counts
+  measured:
+  - 15431
+  - 8837
+  - 6594
+  notes: 15,431 ROIs over the 105 distinct planes, 8,837 in planes labelled left_alm and 6,594 in
+    planes labelled left_vm1 (reading A1), exactly the paper's counts. Reading A2 cannot be run, as
+    no coordinates are in the files.
+  deviations:
+  - Area from the files' experiment_description (left_alm, left_vm1), as ImagingPlane.location reads
+    ALM for every plane.
+- claim: fraction-selective-alm-mm
+  outcome: not_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fraction-selective-alm-mm
+  measured:
+  - 1755
+  - 2877
+  - 26.6
+  - 32.6
+  notes: No reading puts all four values within tolerance. The measured values are those of the
+    closest reading, R2, W1, T1, where ALM is 2,877 (32.6%, within tolerance) and MM 1,755 (26.6%),
+    above the tolerance (at most 1,675 and 25.3%). Rule R1 marks 78% to 91% of ROIs selective, and
+    72% to 85% with permuted trial types, so it counts chance bins; R2 with permuted labels gives
+    10.5% to 14.3%. With T2 bins R2 gives ALM 45% and MM 38% (W1). ALM has the higher fraction under
+    every reading. Without the 1,262 ROIs with a non-positive baseline, MM is 1,675 of 5,854
+    (28.6%). Among the ROIs the files mark included, ALM 43.6% and MM 34.4%. Per mouse (R2, W1, T1)
+    ALM 25.8% to 40.1% and MM 19.7% to 32.7%.
+  deviations:
+  - dF/F computed as given, including trials with a baseline F0 at or below zero (question asked).
+  - Reading A2 not run (no coordinates).
+- claim: figs5-single-coefficient
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:figs5-single-coefficient
+  notes: Among ROIs trial-type selective in a bin, the fraction purely selective exceeds one half in
+    all 59 bins (T1) and 63 bins (T2) from trial start to the go cue, 0.845 to 0.928 (T1). After the
+    go cue its mean is 0.793 (T1), 0.784 (T2).
+- claim: fig4a-lick-direction-epochs
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig4a-lick-direction-epochs
+  notes: With T1 bins, 4,125 ROIs are purely lick-direction selective in the delay epoch, 3,611 are
+    first so after the go cue and 4,426 more than 2 s after it (T2 3,825, 3,514 and 4,155). With
+    permuted trial types the counts are 3,273, 2,526 and 3,196, so each group exceeds chance but
+    most of each count is what chance bins give. The time after the last lick is not tested, as lick
+    times are not in the files.
+  deviations:
+  - The median last lick, which the criterion reports as the reading of "stopped consuming water",
+    cannot be computed; lick times are not in the files.
+- claim: fig4b-object-location-memory
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig4b-object-location-memory
+  notes: With T1 bins, 2,148 ROIs are purely object-location selective in the sample epoch, 2,487 have
+    most of their object-location bins in the delay and 1,149 are selective in the last 0.5 s before
+    the go cue (T2 2,067, 2,483, 1,074). With permuted trial types the counts are 1,694, 1,719 and
+    707.
+- claim: fig4c-outcome-after-lick
+  outcome: not_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig4c-outcome-after-lick
+  notes: Of 9,431 ROIs purely outcome selective in any bin (T1), 41.3% have their first such bin after
+    the go cue (T2 41.8% of 8,892), below the half the criterion requires. With permuted trial types
+    8,070 ROIs qualify, 29.6% first after the go cue, so most of the 9,431 are chance bins. Requiring
+    two consecutive bins, a variant that does not decide, leaves 1,463 ROIs, 78.5% first after the
+    go cue. Both signs of gamma occur (4,157 correct-preferring and 5,274 error-preferring at the
+    first bin), and outcome selectivity reaches the end of the window (9.17 s after trial start).
+- claim: fig5-mixed-response-epoch
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig5-mixed-response-epoch
+  notes: 76.5% of 23,363 mixed-selective ROI-bins fall after the go cue (T1; T2 77.6%), against 50%
+    of bins and 52.3% with permuted labels. 4,682 ROIs (T1) are purely object-location selective
+    before the go cue and purely lick-direction or outcome selective after it.
+- claim: fig6-object-location-mm
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig6-object-location-mm
+  notes: The fraction of purely object-location-selective ROIs is higher in MM than in ALM in 27 of 31
+    bins from trial start to 2.2 s and 34 of 38 to 2.7 s (T1; T2 29 of 33 and 37 of 41). Mean
+    fractions 0.037 in MM and 0.012 in ALM to 2.2 s (T1). In every mouse with both areas MM is higher.
+- claim: fig6-lick-direction-deep-alm-first
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion compares deep and superficial ALM and MM, and the files hold no plane depth
+    (the ImagingPlane has no depth, origin or coordinates, and no other field gives it). The ALM and
+    MM curves are in the notebook under fig6-object-location-mm.
+- claim: fig6-lick-direction-spread
+  outcome: partially_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig6-lick-direction-spread
+  notes: Part (a) holds; in ALM the fraction of purely lick-direction-selective ROIs and mean |beta|
+    peak after the go cue (4.44 and 4.66 s, T1; 4.67 and 4.67 s, T2). Part (c) holds; the MM fraction
+    peaks at 0.026 (T1), above its delay mean 0.008 and delay maximum 0.015, and below the ALM peak
+    0.062, under both readings of its delay value and both bin readings. Part (b), the spread across
+    ALM layers, cannot be tested, as the files hold no depth. The outcome is partial because part
+    (b) is untested, not because it failed.
+  deviations:
+  - Part (b) not tested (no plane depth).
+  - The MM delay value is read both as the mean and as the maximum over the delay bins (question
+    asked); both agree.
+- claim: fig6-outcome-response-uniform
+  outcome: not_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig6-outcome-response-uniform
+  notes: Part (b) holds; averaged over the response epoch the ALM and MM outcome fractions differ by a
+    factor of 1.46 (T1) and 1.45 (T2). Part (a) fails in MM; its largest outcome fraction before the go
+    cue (0.0112, T1) is not below a third of the largest after it (0.0268); in ALM 0.0123 against
+    0.0373 just passes. T2 gives the same. The pre-cue maxima are near the range of permuted-label
+    fractions (0.0067 to 0.0105), so the test turns on chance fluctuations against a small response
+    peak in MM. Mixed ROIs (reported only) are 2.8 times as frequent in ALM as in MM over the
+    response epoch.
+- claim: fig6h-preparatory-alm-object-mm
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig6h-preparatory-alm-object-mm
+  notes: In the delay epoch ALM is above MM on both lick-direction measures in 24 of 42 bins (T1) and
+    30 of 45 (T2); on the fraction alone in all delay bins, on mean |beta| alone in 24 and 30. From
+    trial start to the go cue MM is above ALM on both object-location measures in 52 of 59 (T1) and
+    57 of 63 (T2) bins.
+- claim: figs9-photoinhibition-alm-mm
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No photoinhibition data are in the dandiset (its files hold only imaging sessions, and no
+    optogenetics group), and none of the paper's photoinhibition is deposited elsewhere; the CRCNS
+    DOI the paper names is an unfilled placeholder.
+- claim: widefield-mm-to-alm
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds no wide-field imaging; every file is one two-photon image plane. The
+    CRCNS DOI the paper names for its data is an unfilled placeholder, and no other deposit was found.
+- claim: widefield-contralateral-bilateral
+  outcome: blocked
+  blocked_by: data_missing
+  notes: No wide-field imaging is in the dandiset or found elsewhere (see widefield-mm-to-alm).
+- claim: figs4-peak-shift
+  outcome: not_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:figs4-peak-shift
+  notes: Over the whole window the mean dF/F of MM ROIs peaks after that of ALM (6.09 against 4.52 s,
+    T1; 6.14 against 4.54, T2). The ALM mean at the end of the delay (0.212) is above its sample-epoch
+    mean (0.112) and maximum (0.137). The MM mean is dominated by ROIs with a non-positive baseline
+    (range -1.15 to 0.71); without them MM peaks at 4.80 s, still after ALM. Searching only before the
+    go cue, a variant that does not decide, MM peaks at 1.51 s and ALM at 4.09 s.
+  deviations:
+  - The end of the delay is the last bin before the go cue, and the sample-epoch level is read as
+    the mean and as the maximum (question asked); both agree.
+- claim: fig8c-pt-deep-only
+  outcome: partially_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig8c-pt-deep-only
+  measured:
+  - 719
+  - 2631
+  notes: 719 PT and 2,631 IT ROIs in three mice (an063, an064, an066), exactly the paper's counts. The
+    depth part (PT only deep, IT in both) cannot be tested, as the files hold no plane depth. The
+    outcome is partial because that part is untested.
+  deviations:
+  - Depth not tested.
+- claim: fig8d-alm-deep-lick-direction
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion compares deep and superficial ALM, and the files hold no plane depth.
+- claim: fig8d-pt-contra-bias
+  outcome: not_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig8d-pt-contra-bias
+  notes: The mean beta of 385 ALM PT ROIs over the delay is positive (lick right), 0.0284 with T1 bins,
+    1.71 hierarchical bootstrap SDs above zero (T2 0.0291, 1.56 SD), short of the 2 SD bound. Without
+    ROIs with a non-positive baseline it is 1.97 (T1) and 1.86 (T2) SD. It is positive in each of the
+    three mice (0.0093 to 0.0341). The direction of the claim holds; its bound does not.
+- claim: fig8d-pt-earlier-than-it
+  outcome: not_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig8d-pt-earlier-than-it
+  measured: 0.215
+  notes: Reading I2 (all ALM IT). Mean |beta| is larger in PT than in IT (maximum 0.229 against
+    0.084, T1). The IT minus PT onset is 0.215 s (T1, O1), 0.200 s (T2, O1 and O2) and -1.075 s (T1,
+    O2), with bootstrap SDs of 1.36 to 1.93 s and 0.31 to 0.53 of resamples with PT not earlier, so no
+    combination gives a difference within 1.4 +- 0.6 s or p < 0.01. Per mouse the onsets disagree
+    (PT earlier in two, IT earlier in one). Reading I1, deep ALM IT only, could not be run without
+    depth, so the outcome rests on I2.
+  deviations:
+  - Reading I1 not run (no plane depth).
+  - Onset is the first single bin over 6 baseline SD (question asked).
+- claim: ephys-pt-it-onset-not-detected
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notes: The 45 PT and 27 IT units are on DANDI (dandiset 000010, see li2015-tagged-units-link), but
+    the claims file does not fix how the onset test is applied to them (spike-count windows, which
+    trials of sessions that include photostimulation, trial start and baseline for the Li et al.
+    task timing, the bootstrap). A question was asked; the claim waits for the answer.
+- claim: li2015-tagged-units-link
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:li2015-tagged-units-link
+  measured:
+  - 45
+  - 27
+  notes: Dandiset 000010 version 0.220126.1905 labels 45 units PT (40 in sim1-cre and 5 in rbp4-cre
+    mice) and 27 IT (24 in tlx-cre mice, 3 in rbp4-cre), the paper's 45/27, among 1,441 units in 99
+    files. Matched by label and count only; no identifier links them to the paper's analysis.
+- claim: fig8d-mm-object-location
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Every part of the criterion compares groups split by depth (deep PT, deep IT, deep other,
+    superficial IT, superficial other, and the ALM deep maximum), and the files hold no plane depth.
+- claim: fig8d-mm-posterior-preferring
+  outcome: not_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig8d-mm-posterior-preferring
+  notes: The mean alpha of the 6,594 MM ROIs over the sample epoch is positive (posterior preferring),
+    0.0232 with T1 bins, 1.87 hierarchical bootstrap SDs above zero (T2 0.0242, 1.94), short of the
+    2 SD bound (1.70 and 1.63 without ROIs with a non-positive baseline). It is positive in all five
+    mice with MM planes, and significant MM ROI-bins in the sample epoch prefer the posterior pole
+    1,912 times against 747. The direction holds; the bound does not.
+- claim: fig8d-error-outnumber-correct
+  outcome: partially_reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:fig8d-error-outnumber-correct
+  notes: Reading (a) finds error preference; among ROIs purely outcome selective from the go cue to 2.5
+    s after it, 2,825 prefer error and 2,004 correct trials (T1, binomial p = 2.8e-32; T2 2,730 and
+    1,933). Reading (b) does not reach its bound; mean gamma over all ROIs is -0.0082 (T1), negative in
+    every mouse, but 1.81 bootstrap SDs from zero (T2 1.71). The criterion requires both readings.
+- claim: fig8ef-area-explains-variance
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion needs the depth grouping (z < 350 against z >= 350 um) in both of its
+    conditions, and the files hold no plane depth. Area and projection type are in the files.
+- claim: ephys-selective-counts
+  outcome: blocked
+  blocked_by: other
+  notes: The silicon probe recordings are not in the dandiset, which holds only imaging. The claims
+    file places them at CRCNS doi 10.6080/K0S180F9, the deposit the paper names; that DOI resolves to a
+    placeholder record (title "CRCNS.org ssc-8TBD", "This data is not yet available but is expected
+    to be sometime during 2017"), and CRCNS ssc-8 holds an unrelated dataset (Goncalves et al.). No
+    other public copy was found on CRCNS or DANDI. The data are not public, so the claim cannot be
+    tested; the registry's check does not allow data_missing for a claim with data elsewhere, so the
+    reason is given as other.
+- claim: fig7d-ephys-area-distribution
+  outcome: blocked
+  blocked_by: other
+  notes: Depends on ephys-selective-counts; the silicon probe recordings were never made public (see
+    that claim).
+- claim: fig1c-whisking-similar
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The dandiset holds no whisker video or tracking, and none is deposited elsewhere.
+- claim: alm-pt-it-lick-fraction-below-20
+  outcome: reproduced
+  notebook: reproduce_chen_2017.ipynb
+  output: claim:alm-pt-it-lick-fraction-below-20
+  measured: 12.7
+  notes: The largest per-bin fraction of lick-direction-selective ALM PT ROIs is 12.7% (reading a,
+    purely selective) or 15.6% (reading b, beta significant), and of ALM IT ROIs 3.3% or 6.0% (T1);
+    with T2 at most 16.1%. Per mouse at most 19.8% (an063, PT, reading b). All below 22%.
+findings:
+- kind: other
+  statement: Every one of the 105 image planes is deposited twice, as two files with different names,
+    identifiers and digests (for example an041_2014-08-23_21 and an041_2014-08-23_43) whose contents
+    are otherwise identical. The archive's file count (210) is twice the number of recordings.
+- kind: metadata_error
+  statement: ImagingPlane.location is "ALM" in every file, including the 47 planes whose
+    experiment_description says left_vm1 (the paper's MM). The area per plane is given only by
+    experiment_description, and with it the counts match the paper (8,837 ALM and 6,594 MM ROIs).
+- kind: metadata_insufficient
+  statement: The files hold no plane depth, no stereotactic coordinates of the planes or cells, and
+    no identifier of the imaging location within a mouse. Four of the paper's findings rest on depth
+    and cannot be tested, nor can the depth parts of three others; the 12 imaging locations cannot
+    be counted.
+- kind: data_missing
+  statement: The dandiset holds only the two-photon imaging. The wide-field imaging, the whisker
+    tracking, the lick times, the photoinhibition behaviour and the silicon probe recordings (567
+    units) are not in it. The paper's Key Resources Table names CRCNS doi 10.6080/K0S180F9 for its
+    imaging and electrophysiology, and that DOI resolves to a placeholder record that says the data
+    are not yet available.
+- kind: metadata_insufficient
+  statement: The ROI table's `included` column ("whether to include this roi into later analyses")
+    marks 8,655 of 15,431 ROIs, without saying what excluded the others; the paper's counts use all
+    15,431.
+- kind: metadata_insufficient
+  statement: The trial table's start_time is 0.623 s before the sample event in every trial, while
+    the paper's trial start is pole movement onset (the sample event, 4.2 s before the go cue). The
+    offset is not described. Early-lick trials have instruction and outcome "non-performing", so
+    their pole position is not recorded.
+- kind: other
+  statement: With the stored ROI and neuropil traces and the paper's r = 0.7, the baseline F0 is zero
+    or negative on 0.26% of ROI-trials, in 1,262 ROIs, and dF/F reaches thousands; the mean dF/F of MM
+    is dominated by these ROIs. The paper does not say how they were treated.

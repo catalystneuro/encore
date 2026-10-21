@@ -1,0 +1,64 @@
+dandiset: "000015"
+paper: doi:10.1016/j.neuron.2017.05.005
+questions:
+- claim: ephys-pt-it-onset-not-detected
+  asked: 2026-10-21
+  question: The tagged units of Li et al. (2015) are on DANDI (dandiset 000010, 45 PT and 27 IT, see
+    li2015-tagged-units-link). How is the onset test of fig8d-pt-earlier-than-it to be applied to
+    them? (1) The spike counts for the 3-way ANOVA, the paper's own 400 ms windows in 100 ms steps or
+    another bin. (2) Which trials, given that the sessions of dandiset 000010 contain photostimulation
+    trials and that its early-lick column is separate from its outcome column; and which event is
+    trial start, as the task timing of Li et al. (2015) differs from this paper's. (3) The window
+    and the baseline of convention O for those trials. (4) Whether the units of all sessions are
+    pooled, and whether the bootstrap is over units only, as the criterion says, or hierarchical.
+  passage: Spiking data were subjected to the same analyses as imaging data to obtain a(t), b(t), and
+    g(t) using spike counts within 400 ms windows (in 100 ms steps). (STAR Methods, Electrophysiology
+    data analysis). The Discussion gives the cell counts (PT/IT cells; electrophysiology, 45/27) but
+    no method for the Li et al. data.
+  why: The onset is the first bin over 6 baseline SD of mean |beta|; with 45 and 27 units it depends
+    on the bin width, on the baseline period and on which trials enter the ANOVA, and including
+    photostimulation trials would change the selectivity itself. The claim is blocked as
+    methods_underspecified until this is answered.
+- claim: fraction-selective-alm-mm
+  asked: 2026-10-21
+  question: After neuropil subtraction (F = F_roi - 0.7 F_neuropil) the baseline F0 of a trial is zero
+    or negative for 0.26% of ROI-trials, in 1,262 of 15,431 ROIs, and dF/F = (F - F0)/F0 then reaches
+    thousands. Does the paper say how such trials or ROIs are handled (left out, F0 floored, ROIs
+    excluded), or is dF/F used as computed? The same applies to every claim built on dF/F, notably
+    figs4-peak-shift and the mean coefficients of fig8d-pt-contra-bias,
+    fig8d-mm-posterior-preferring and fig8d-error-outnumber-correct.
+  passage: DF/F was computed for each trial as (F-F0)/F0, where F0 is the baseline fluorescence
+    averaged over a 0.5 s period immediately before the start of each trial. (STAR Methods, Image
+    analysis)
+  why: dF/F is used as computed here. Without the ROIs that have F0 <= 0 on any trial, MM under rule
+    R2, window W1, bins T1 goes from 1,755 (26.6%) to 1,675 of 5,854 (28.6%) selective, and the MM
+    mean dF/F of figs4-peak-shift changes shape (its peak moves from 6.09 to 4.80 s); neither change
+    alters an outcome here, but the means of the bootstrap claims are near their 2 SD bounds.
+- claim: fig8d-pt-earlier-than-it
+  asked: 2026-10-21
+  question: Is the onset the first single bin in which mean |beta| exceeds the baseline by more than
+    6 SD, or must it stay above that level (for how long)? And is "above baseline" measured from the
+    baseline mean?
+  passage: delta onset time; time when selectivity rose to >6 SD above baseline = 1.4 ± 0.6 s; p <
+    0.01, bootstrap (Results, Projection-Specific Coding)
+  why: With the first single bin the IT minus PT difference is 0.2 s (baseline O1) and in one
+    combination negative, with bootstrap SDs of 1.3 to 1.9 s, so single crossings driven by noise
+    may decide the onset; a sustained rule could give a different difference.
+- claim: figs4-peak-shift
+  asked: 2026-10-21
+  question: The criterion requires the ALM mean "above its sample-epoch level at the end of the
+    delay". Is the sample-epoch level the mean over the sample epoch or its maximum, and is the end
+    of the delay the last bin before the go cue or a window before it?
+  passage: the peak of activity shifted from MM to ALM over the course of the delay epoch (Figure S4)
+    (Results, Mapping Activity Using Two-Photon Calcium Imaging, paragraph 3)
+  why: Both readings (mean and maximum, last bin) are run here and agree; the outcome is decided by
+    the peak times, so the answer cannot change it in this attempt but fixes the measure for later
+    ones.
+- claim: fig6-lick-direction-spread
+  asked: 2026-10-21
+  question: In part (c), is the MM fraction's "value in the delay epoch" its mean over the delay bins
+    or its maximum there?
+  passage: Lickdirection selectivity, including number of neurons and the strength of coding,
+    continued to increase and spread across ALM layers and to a minor extent into MM (Figure S7),
+    reaching a maximum after the go cue (Results, Spatial Map of Behavior-Related Activity, paragraph 1)
+  why: Both readings are run here and agree; the answer fixes the measure for later attempts.
