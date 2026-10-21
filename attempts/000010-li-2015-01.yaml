@@ -1,4 +1,5 @@
-# Attempt 000010-li-2015-01: the author's record (docs/protocol.md, Author, step 5). Not yet verified.
+# Attempt 000010-li-2015-01: the author's record (docs/protocol.md, Author, step 5), revised after the
+# answers in questions/000010.yaml. Not yet verified.
 schema_version: 2
 id: 000010-li-2015-01
 dataset:
@@ -19,27 +20,29 @@ provenance:
     protocol: pilot-10
   runner:
     platform: GitHub Actions
-    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39537980291
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39547993365
 outcomes:
 - claim: behaviour-performance
   outcome: reproduced
   notebook: reproduce_li_2015.ipynb
   output: claim:behaviour-performance
-  measured: 76.5
+  measured: 75.8
   notes: Without the trials with tagging light, in the 99 extracellular sessions, per cent correct is
-    77.2% pooled, 76.5% over sessions and 75.9% over mice with no-response trials left out (76.5%, 75.8%
-    and 75.2% counted as errors), all within 78.4 +/- 7.84%. Early licks are 11.6% of trials over sessions,
-    below 14.3%, but 14.5% pooled and 14.7% over mice, so the claim holds under reading (b) only. Keeping
-    the light trials gives 76.6%, 76.3% and 75.7% correct and 13.0%, 11.7% and 14.7% early licks. The
-    imaging sessions, which flag no early licks, give 83.5% correct pooled.
+    76.5% pooled, 75.8% over sessions and 75.2% over mice with no-lick trials counted as not correct
+    (reading x), and 77.2%, 76.5% and 75.9% with them left out (reading y), all within 78.4 +/- 7.84%.
+    Early licks are 11.6% of trials over sessions, below 14.3%, but 14.5% pooled and 14.7% over mice,
+    so the claim holds under reading (b) only, with either no-lick reading. Keeping the light trials
+    gives 75.3%, 75.0% and 74.4% correct under (x) (76.6%, 76.3% and 75.7% under y) and 13.0%, 11.7%
+    and 14.7% early licks. The imaging sessions, which flag no early licks, give 82.3% (x) and 83.5%
+    (y) correct pooled. The answer on no-lick trials made (x) and (y) readings of the criterion, either
+    of which may decide; both were already run, so the outcome is unchanged, and the measured value
+    is now that of (x), the first reading listed (75.8%, earlier 76.5% under y).
   deviations:
   - The dandiset holds 23 of the paper's 42 task mice (the recording and imaging mice).
   - Trials with tagging light are found from the laser traces, as the trial tables do not flag them.
   - 1,540 extracellular trials with a lick instruction but no events (1,447 of them marked right, hit,
     no early) are left out; counted as given they would raise performance.
   - Only the extracellular sessions are used, as the imaging files flag no early licks.
-  - Whether no-response trials count as errors is not stated (question asked); both are shown and give
-    the same outcome.
 - claim: fig1d-delay-inhibition-ipsi-bias
   outcome: blocked
   blocked_by: data_missing
@@ -77,12 +80,13 @@ outcomes:
   measured:
   - 912
   - 0.733
-  notes: Correct trials and a 1.3 s response epoch give 912 of 1,245 putative pyramidal neurons selective
-    (0.733). The other readings give 910, 846 and 851; without the trials with tagging light, 870 (0.699),
-    868, 795 and 792. All are within tolerance.
+  notes: Correct trials, a 1.3 s response epoch and all trials (t1) give 912 of 1,245 putative pyramidal
+    neurons selective (0.733). The other readings give 910, 846 and 851; without the trials with tagging
+    light (t2), 870 (0.699), 868, 795 and 792. All are within tolerance. The answer on light trials wrote
+    (t1) and (t2) into this criterion for every electrophysiology claim of Figs 2 and 3, either of which
+    may decide; both were already run and agree here, so the outcome is unchanged.
   deviations:
-  - Run with and without the trials with tagging light, which the claims file does not mention (question
-    asked); both give the same outcome.
+  - Trials with tagging light are found from the laser traces, as the trial tables do not flag them.
   - 66 trials whose go cue is not 2.6 s after the sample event, and trials without events, are dropped.
 - claim: fig2d-preparatory-perimovement
   outcome: not_reproduced
@@ -97,8 +101,11 @@ outcomes:
     trials kept or left out), preparatory only is 228 to 233 (always within), peri-movement only 272 to
     294 (never within) and both 289 to 397 (within in three readings). No reading puts all three counts
     within tolerance.
+    The answer on light trials named two readings, (t1) all trials and (t2) trials without the light,
+    either of which may decide; the outcome is the same under both, so it is unchanged.
   deviations:
-  - Run with and without the trials with tagging light (question asked); same outcome.
+  - Trials with tagging light are found from the laser traces; readings (t1) and (t2) are both run
+    and give the same outcome.
 - claim: fig2c-selectivity-time-course
   outcome: reproduced
   notebook: reproduce_li_2015.ipynb
@@ -108,26 +115,31 @@ outcomes:
     321 to 408), and the maximum (574, 582) falls 0.2 s and 0.35 s after the go cue. The first window
     after the go cue holds 500, so reading (3a) fails and (3b) holds under both steps. Without the trials
     with light the same holds (maximum 525 and 538 at 0.2 s and 0.25 s).
+    The answer on light trials named two readings, (t1) all trials and (t2) trials without the light,
+    either of which may decide; the outcome is the same under both, so it is unchanged.
   deviations:
   - Spikes are stored only from 0.57 s before the sample event, so there are two (200 ms step) or eight
     (50 ms step) pre-sample windows.
-  - Run with and without the trials with tagging light (question asked); same outcome.
+  - Trials with tagging light are found from the laser traces; readings (t1) and (t2) are both run
+    and give the same outcome.
 - claim: fig2c-population-dynamics
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: reproduced
   notebook: reproduce_li_2015.ipynb
   output: claim:fig2c-population-dynamics
-  notes: 39 of 40 rows hold. With the light trials kept, all 16 correlation readings give a lower mean
-    correlation with the go-cue vector over the sample epoch (-0.12 to 0.24) than over the delay (0.04
-    to 0.78), below 1, and the population selectivity is above 0 in every delay bin (minimum 0.62 spikes/s).
-    Without the light trials, one reading fails (all neurons, divided by the variance, difference vector,
-    bin starting at the go cue; sample 0.078 against delay 0.054). The criterion asks the claim to hold
-    under each reading, so the outcome turns on details the claims file leaves open (questions asked on
-    the normalization, the 10 trials, the go-cue bin and the light trials).
+  notes: With the light trials kept (t1), all 24 correlation readings hold (neurons a or b, normalization
+    v or s, concatenated or difference vector, go-cue bin gs, gc or ge). The mean correlation with the
+    go-cue vector is lower over the sample epoch (-0.12 to 0.24) than over the delay epoch (0.04 to 0.78),
+    below 1, and the population selectivity is above 0 in every delay bin under the four selectivity
+    readings, n10 and n20 (minimum 0.62 spikes/s). Without the light trials (t2), 22 of 24 correlation
+    readings hold; two fail (all neurons, variance, difference vector, bin starting at or centred on the
+    go cue, sample 0.078 and 0.126 against delay 0.054 and 0.103). The answers on the three details named
+    readings (v)/(s), (n10)/(n20) and (gs)/(gc)/(ge); the centred bin (gc) is new and holds under t1
+    (sample -0.04 to 0.24, delay 0.11 to 0.67). The answer on light trials lets either of (t1) and (t2)
+    decide, so the claim, earlier blocked because one t2 reading failed, is reproduced under t1.
   deviations:
-  - Normalization by the variance or the standard deviation, 10 trials in all or 10 per type, and the
-    go-cue bin starting or ending at the cue are open; all are run.
-  - Run with and without the trials with tagging light.
+  - The bin centred on the go cue comes from a second grid of 200 ms bins shifted by 0.1 s, normalized
+    over that grid.
+  - Trials with tagging light are found from the laser traces; under (t2) two readings fail.
 - claim: ed2c-error-trials-predict-choice
   outcome: reproduced
   notebook: reproduce_li_2015.ipynb
@@ -135,9 +147,10 @@ outcomes:
   notes: 'Correlation across selective neurons between correct-trial and error-trial selectivity: delay
     r = -0.30 (897 neurons, at least one error trial of each type) and -0.25 (833, at least five); response
     -0.38 and -0.34; all P < 1e-12. Without the light trials: delay -0.29 and -0.32, response -0.33 and
-    -0.30. Sample epoch near 0 (-0.025 to 0.045). Per mouse the delay r ranges from -0.76 to 0.49.'
+    -0.30. Sample epoch near 0 (-0.025 to 0.045). Per mouse the delay r ranges from -0.76 to 0.49. The answer on light trials named two readings, (t1) all trials and (t2) trials without the light, either of which may decide; the outcome is the same under both, so it is unchanged.'
   deviations:
-  - Run with and without the trials with tagging light (question asked); same outcome.
+  - Trials with tagging light are found from the laser traces; readings (t1) and (t2) are both run
+    and give the same outcome.
 - claim: fig2e-no-contra-bias-spikes
   outcome: reproduced
   notebook: reproduce_li_2015.ipynb
@@ -151,12 +164,13 @@ outcomes:
     In the 570 ms before the go cue the difference reaches P = 0.022 to 0.050 across neuron and light
     readings, and the delay epoch gives P = 0.051 to 0.12. The 8% modulation is matched in some readings
     (all neurons, 570 ms, over the mean rate, 8.5%; selective neurons, delay, light trials left out, 8.0%
-    and 8.3%) and not in others (5.8% to 10.7%).'
+    and 8.3%) and not in others (5.8% to 10.7%). The answer on light trials named two readings, (t1) all trials and (t2) trials without the light, either of which may decide; the outcome is the same under both, so it is unchanged.'
   deviations:
   - The claim of absence is judged on the paper's test as written ('overall spike count across the recorded
     population'), reading (a)(i); the other window and neuron readings of the criterion are shown, and
     the 570 ms window finds a contralateral excess.
-  - Run with and without the trials with tagging light (question asked); same outcome.
+  - Trials with tagging light are found from the laser traces; readings (t1) and (t2) are both run
+    and give the same outcome.
 - claim: ed1-fast-spiking-properties
   outcome: partially_reproduced
   notebook: reproduce_li_2015.ipynb
@@ -165,11 +179,12 @@ outcomes:
     median 4.51 against 1.50 spikes/s, mean 6.90 against 2.92; Mann-Whitney P = 1.3e-17). They are not
     less selective: 0.750 of them are selective against 0.733 of putative pyramidal neurons (Fisher P
     = 0.75; 0.710 and 0.699 without light trials), and their mean absolute rate difference is larger (median
-    1.46 against 0.62 spikes/s). The baseline part holds and the selectivity part does not.'
+    1.46 against 0.62 spikes/s). The baseline part holds and the selectivity part does not. The answer on light trials named two readings, (t1) all trials and (t2) trials without the light, either of which may decide; the outcome is the same under both, so it is unchanged.'
   deviations:
   - Baseline reading (b) covers the 0.57 s of recorded time before the sample event, as spikes are stored
     only in trial windows, so it is close to reading (a).
-  - Run with and without the trials with tagging light (question asked); same outcome.
+  - Trials with tagging light are found from the laser traces; readings (t1) and (t2) are both run
+    and give the same outcome.
 - claim: tagging-counts
   outcome: partially_reproduced
   notebook: reproduce_li_2015.ipynb
@@ -181,17 +196,29 @@ outcomes:
   deviations:
   - Only the labelled classes can be counted.
 - claim: antidromic-latencies
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: partially_reproduced
   notebook: reproduce_li_2015.ipynb
   output: claim:antidromic-latencies
-  notes: The dandiset holds the tagging light as laser traces in 75 sessions, but the criterion does not
-    say how the antidromic spike is told apart from spontaneous spikes (question asked). As a variant
-    that decides nothing, the first spike within 10 ms after the first pulse of each pair gives a mean
-    latency of 2.68 ms for the 45 PT units and 5.11 ms for the 19 IT units with a light record, with s.d.
-    0.64 and 0.96 ms that include spontaneous spikes (spike probability 0.04 and 0.03 in the 10 ms before
-    a pulse, 0.40 and 0.28 after). The activated neurons that failed the collision test carry no label,
-    so their latencies cannot be found.
+  notes: PT latency is below IT latency in all 18 combinations of reading and parameter (windows of
+    5, 8 and 10 ms; collision intervals of 5, 10 and 20 ms for (c); 0.5 and 1 ms around the evoked peak
+    for (r)). PT latency is within tolerance in all (2.65 to 2.78 ms, paper 2.7); IT latency in 10
+    (4.63 to 5.00 ms with the 8 and 10 ms windows under (w) and (c), 4.90 to 4.91 ms under (r) with 8
+    ms; 3.61 to 3.66 ms with 5 ms and 5.09 ms under (r) with 10 ms are outside). The jitter matches the
+    printed precision only under (r), 0.115 to 0.129 ms for PT and 0.188 to 0.211 ms for IT with 0.5 ms
+    around the peak (0.31 to 0.33 ms with 1 ms); under (w) and (c) it is 0.30 to 0.64 ms and 0.75 to
+    0.96 ms, which include spontaneous spikes. All four measurable values are within tolerance in one
+    combination ((r), 8 ms window, 0.5 ms; PT 2.674 and 0.115 ms, IT 4.905 and 0.197 ms); keeping
+    spikes within 0.5 ms of the peak bounds the s.d., so that agreement is partly set by the reading.
+    The 22 PT-activated and 106 IT-activated neurons that failed collision carry no label, so their
+    four values, and the comparison of jitter with them, cannot be tested. 45 PT and 19 of 27 IT units
+    have a light record. The answer named readings (w), (c) and (r) with the window and intervals open;
+    the claim, earlier blocked as methods_underspecified, is tested under all three and is partially
+    reproduced under each, as the order holds and values fall outside or cannot be measured.
+  deviations:
+  - The open parameters are run at several values (window 5, 8 and 10 ms; collision interval 5, 10 and
+    20 ms; peak width 0.5 and 1 ms around the 0.1 ms histogram bin with most spikes).
+  - Only the neurons that passed collision are labelled, so the activated neurons cannot be measured.
+  - The 8 IT units of the two Tlx x Ai32 mice have no light record and are not included.
 - claim: fig3e-pt-it-both-activity-types
   outcome: reproduced
   notebook: reproduce_li_2015.ipynb
@@ -199,22 +226,25 @@ outcomes:
   notes: Under the main reading, 17 of 45 PT neurons have preparatory and 24 peri-movement selectivity,
     13 of 27 IT neurons each. Every reading, with or without the light trials, gives at least 11 neurons
     of each kind in each type.
+    The answer on light trials named two readings, (t1) all trials and (t2) trials without the light,
+    either of which may decide; the outcome is the same under both, so it is unchanged.
   deviations:
   - PT/IT neurons are the Pyr twins of the labelled duplicates.
-  - Run with and without the trials with tagging light (question asked); same outcome.
+  - Trials with tagging light are found from the laser traces; readings (t1) and (t2) are both run
+    and give the same outcome.
 - claim: fig3f-pt-contra-preferring
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: reproduced
   notebook: reproduce_li_2015.ipynb
   output: claim:fig3f-pt-contra-preferring
-  notes: With the light trials kept, 30 of 45 PT neurons are contra-preferring (bootstrap P = 0.010) and
-    13 of 27 IT neurons (P = 0.58), so the claim holds under reading (a); selective PT neurons give 18
-    of 29 (P = 0.09). Without the trials with tagging light, PT gives 26 of 45 (P = 0.14) and 17 of 32
-    selective (P = 0.30), and the claim holds under no reading. The PT neurons are driven by the light,
-    so whether these trials are kept, which the claims file does not say, decides the outcome (question
-    asked).
+  notes: With the light trials kept (t1), 30 of 45 PT neurons are contra-preferring (bootstrap P = 0.010)
+    and 13 of 27 IT neurons (P = 0.58), so the claim holds under reading (a); selective PT neurons give
+    18 of 29 (P = 0.09). Without the trials with tagging light (t2), PT gives 26 of 45 (P = 0.14) and
+    17 of 32 selective (P = 0.30), and the claim holds under no reading. The answer on light trials made
+    (t1), the literal reading of the Methods, and (t2) readings of the criterion, either of which may
+    decide, so the claim, earlier blocked because the two disagreed, is reproduced under (t1). The PT
+    result depends on keeping the trials in which the PT neurons were driven by the tagging light.
   deviations:
-  - Run with and without the trials with tagging light, which give different outcomes.
+  - Trials with tagging light are found from the laser traces; the claim holds under (t1) only.
 - claim: fig3f-pt-contra-selectivity
   outcome: not_reproduced
   notebook: reproduce_li_2015.ipynb
@@ -225,8 +255,11 @@ outcomes:
     to 16 single 200 ms windows reach P < 0.05, not continuously). PT modulation is 13.9% to 27.0% with
     light trials and 18.9% to 38.5% without, against 34%. IT is not significant (P = 0.06 to 0.13), with
     modulations of -15.9% to -29.7%, some within the tolerance of -19%.
+    The answer on light trials named two readings, (t1) all trials and (t2) trials without the light,
+    either of which may decide; the outcome is the same under both, so it is unchanged.
   deviations:
-  - Run with and without the trials with tagging light (question asked); same outcome.
+  - Trials with tagging light are found from the laser traces; readings (t1) and (t2) are both run
+    and give the same outcome.
 - claim: imaging-selectivity-counts
   outcome: partially_reproduced
   notebook: reproduce_li_2015.ipynb
@@ -243,9 +276,9 @@ outcomes:
     The selective count is 1,315 to 1,417 where the task-related count fits (paper 1,575, lower limit
     1,417.5) and 1,469 to 2,138 elsewhere. No reading puts all five values within tolerance; the closest
     misses the selective count by 0.5 (1,417; 1.5 s response epoch, span a, mean over epochs, all non-early
-    trials).
+    trials). The answer on the response epoch made (r1) 1.3 s and (r2) 1.5 s readings of the criterion;
+    both were already run, so the outcome is unchanged.
   deviations:
-  - The response epoch length for imaging is not given; 1.3 s and 1.5 s are run (question asked).
   - The files' `included` flag stands for the Methods' brightness rule; 424 included ROIs have a median
     F below 1.05 times their neuropil.
   - Early licks cannot be excluded, as the imaging files flag none.
@@ -257,35 +290,48 @@ outcomes:
     at least one test gives P < 0.05: nearby cells share their preference more often, and same-preference
     cells are closer, than with shuffled labels (for example 0.539 against 0.517 for shuffles). Every
     combination with all cells as neighbours finds it. In 9 of 16 selection readings, some plane lacks
-    one of the two preferences. Neighbouring ROIs share neuropil, which may contribute.'
+    one of the two preferences. Neighbouring ROIs share neuropil, which may contribute. The answer on the response epoch, (r1) 1.3 s and (r2) 1.5 s, names the two lengths already run in the selection readings, so the outcome is unchanged.'
   deviations:
   - Distances are in pixels between ROI centroids; the files give no spatial scale.
 - claim: fig4h-pt-contra-imaging
-  outcome: not_reproduced
+  outcome: blocked
+  blocked_by: metadata_insufficient
   notebook: reproduce_li_2015.ipynb
   output: claim:fig4h-pt-contra-imaging
-  measured:
-  - 530
-  - 843
-  - 152
-  - 231
-  - 0.599
-  - 0.519
-  notes: 'Without a depth for any plane, all included labelled cells are used: 530 PT (paper 534) and
-    843 IT (paper 542). Selective PT cells are contra-preferring in a majority under every reading (0.577
-    to 0.649; binomial P < 0.001 in 5 of 16 readings) and IT cells are not (0.476 to 0.532; P > 0.05 in
-    all), but the chi-squared test of PT against IT never reaches P < 0.001 (smallest 0.0016), so in no
-    reading do the three tests come out as in the paper. The direction of the finding holds; the IT count
-    suggests IT cells outside layer 5 are included.'
+  notes: No imaging plane gives its depth, so the layer 5 population (450 to 700 um) cannot be selected.
+    The answer found nothing else in the paper that marks the layer 5 planes, and the criterion now says
+    that all labelled cells is a substitute population, not a reading of the paper, whose results are a
+    variant; the paper also reports IT cells in superficial layers. The claim, earlier not_reproduced
+    on all labelled cells, is therefore blocked. On the variant, 530 included cells are labelled PT
+    (paper 534) and 843 IT (paper 542); selective PT cells are contra-preferring in a majority under
+    every reading (0.577 to 0.649; binomial P < 0.001 in 5 of 16 readings) and IT cells are not (0.476
+    to 0.532; P > 0.05 in all), but the chi-squared test of PT against IT never reaches P < 0.001
+    (smallest 0.0016), so on this population the three tests never come out as in the paper.
   deviations:
-  - No layer 5 selection, as the files give no imaging depth (question asked).
+  - All included cells labelled PT or IT are shown as a substitute for the layer 5 cells, which cannot
+    be selected; the IT counts are not expected to match on it.
 - claim: reaction-time
   outcome: blocked
   blocked_by: methods_underspecified
-  notes: The extracellular files hold `lick_trace`, a 10 kHz signal of mouth movements in 5 s segments
-    per trial, which rises some 40 to 100 ms after the go cue (data check). The claims file and the paper
-    give no rule for reading a reaction time from it (question asked). The imaging files have no such
-    trace.
+  notebook: reproduce_li_2015.ipynb
+  output: claim:reaction-time
+  notes: The answer confirmed that the paper gives no rule for reading a reaction time from the
+    photodiode signal and named readings (k) a fixed raw threshold and (z) the baseline mean plus a
+    number of s.d., with the threshold, the number and the baseline open. Both are now run on the
+    `lick_trace` of all 99 sessions (24,023 non-early trials, 113 without a stored window). Under (z)
+    the mean across mice is 40.2 to 129.1 ms and rises with the number of s.d. (last 0.5 s as baseline,
+    40.2 to 44.3 ms at 2 s.d., 59.2 to 61.9 at 3, 71.5 to 75.5 at 4, 76.7 to 83.8 at 5, 92.8 to 106.3
+    at 10); it is within 61.1 +/- 10.5 ms in all 8 rows at 3 s.d. with the last 0.5 s, 6 of 8 at 2 s.d.
+    and 2 of 8 at 3 s.d. with the delay epoch, 1 at 4 s.d. and none at 5 or 10. Under (k) no single raw
+    threshold suits all sessions, whose baselines run from 0.069 to 4.83 a.u.; 36% to 90% of trials
+    have no crossing and the mean is 77.9 to 166.1 ms, never within tolerance. Since the number of s.d.,
+    which the paper does not give, can be chosen to give any mean from about 40 to 130 ms, the claim
+    stays blocked, now for that reason and not for want of a rule. Where the mean matches, the s.d.
+    across mice is 31.5 to 38.5 ms against the paper's 10.5; the signal falls after the go cue in 15
+    of 99 sessions from 6 mice, and one of them, 219248, gives 178.9 ms.
+  deviations:
+  - The `lick_trace` series is taken as the photodiode signal; the files do not say it is.
+  - The open parameters are run at several values (2, 3, 4, 5 and 10 s.d.; raw thresholds 0.1 to 4 a.u.).
 - claim: fig5b-pt-delay-activation-contra-bias
   outcome: blocked
   blocked_by: data_missing
@@ -391,7 +437,9 @@ findings:
     their neuropil by the median ratio.
 - kind: metadata_insufficient
   statement: The `lick_trace` series (10 kHz) is described only as the tongue movement when licking; nothing
-    says it is the photodiode signal used for reaction times or how a reaction time is read from it.
+    says it is the photodiode signal used for reaction times or how a reaction time is read from it. Its
+    level and direction differ between sessions (median baselines 0.069 to 4.83 a.u.; it falls after
+    the go cue in 15 of 99 sessions), and nothing describes the gain or polarity.
 - kind: other
   statement: 66 extracellular trials without an early lick have a go cue less than 2.6 s after the sample
     event, against 2.6 s in all others; they are dropped here.

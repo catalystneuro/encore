@@ -15,6 +15,11 @@ Where parameters come from:
 - The window used to match a trial to its behavioural events (0.5 to 0.7 s after the trial
   start) is a reading of the data: the sample event falls 0.572 s (ephys) or 0.583 s (imaging)
   after the trial start in almost every trial. It is shown in the notebook's data check.
+- The readings of reaction-time (a fixed threshold on the lick trace, or the baseline mean plus a
+  number of s.d., with the delay epoch or its last 0.5 s as baseline) and of antidromic-latencies
+  (the first spike in a window after the first pulse of a pair, without collision trials, or in
+  the evoked peak) come from the claims file; the thresholds, numbers of s.d. and windows it
+  leaves open are passed in from the notebook, which runs several.
 - Thread counts for streaming are a standard choice that cannot change a result.
 """
 import json
@@ -100,6 +105,79 @@ def lick_trace_check(asset_id):
                description=lt.attrs["description"])
     f.close()
     return out
+
+
+def _read_contiguous(url, ds, parts=8):
+    """All values of an uncompressed, contiguous HDF5 dataset `ds`, read from its byte offset in
+    the file with parallel HTTP range requests (h5py serializes reads across threads)."""
+    off, n, dt = ds.id.get_offset(), ds.shape[0], ds.dtype
+    if off is None or ds.compression or ds.chunks:
+        return ds[:]
+    edges = off + np.linspace(0, n, parts + 1).astype(int) * dt.itemsize
+
+    def get(i):
+        r = requests.get(url, headers={"Range": f"bytes={edges[i]}-{edges[i + 1] - 1}"}, timeout=300)
+        r.raise_for_status()
+        return r.content
+    with ThreadPoolExecutor(parts) as ex:
+        buf = b"".join(ex.map(get, range(parts)))
+    return np.frombuffer(buf, dt.newbyteorder("<") if dt.byteorder == "=" else dt)
+
+
+def lick_windows(asset_id, go, post=0.4):
+    """The lick trace (photodiode signal of mouth movements) around each go cue in `go`: the mean
+    and s.d. over two baselines before the cue, the delay epoch (1.3 s) and its last 0.5 s (the
+    examples the claims file gives under reaction-time), the value of the last sample before the
+    cue, and the trace from the cue to `post` s after it (float32, NaN where not stored). The
+    0.4 s span is a standard choice that cannot change a result: trials without a crossing in it
+    are counted, not dropped silently."""
+    url = requests.head(f"{API}/assets/{asset_id}/download/", allow_redirects=True, timeout=60).url
+    f = h5py.File(remfile.File(url), "r")
+    lt = f["acquisition/BehavioralTimeSeries/lick_trace"]
+    ts = _read_contiguous(url, lt["timestamps"])
+    x = _read_contiguous(url, lt["data"])
+    f.close()
+    rate = 1 / np.median(np.diff(ts[:10000]))
+    n_post, n_delay, n_last = int(round(post * rate)), int(round(DELAY_LEN * rate)), int(round(0.5 * rate))
+    i = np.searchsorted(ts, go)
+    out = dict(rate=rate, base_delay_mean=[], base_delay_sd=[], base_last_mean=[], base_last_sd=[], at_go=[],
+               trace=np.full((len(go), n_post), np.nan, np.float32))
+    for n, k in enumerate(i):
+        # Only windows stored without a gap (within one segment) are used.
+        ok = (k - n_delay >= 0 and k + n_post <= len(ts) and np.isfinite(go[n])
+              and abs(ts[k + n_post - 1] - ts[k - n_delay] - (n_post + n_delay - 1) / rate) < 2 / rate)
+        d, l = (x[k - n_delay:k], x[k - n_last:k]) if ok else (np.array([np.nan]), np.array([np.nan]))
+        out["base_delay_mean"].append(d.mean()); out["base_delay_sd"].append(d.std())
+        out["base_last_mean"].append(l.mean()); out["base_last_sd"].append(l.std())
+        out["at_go"].append(x[k - 1] if ok else np.nan)
+        if ok:
+            out["trace"][n] = x[k:k + n_post]
+    for key in ("base_delay_mean", "base_delay_sd", "base_last_mean", "base_last_sd", "at_go"):
+        out[key] = np.array(out[key])
+    return out
+
+
+def lick_all(sessions, threads=6):
+    """`lick_windows` for the non-early trials (as `trial_sets`) of every extracellular session,
+    with the session index and the correct and light flags of each trial."""
+    def one(si):
+        tr = sessions[si]["trials"]
+        m = trial_sets(tr)["nonearly"]
+        w = lick_windows(sessions[si]["asset_id"], tr.go[m].values)
+        w.update(session=si, correct=trial_sets(tr)["correct"][m].values,
+                 light=tr["light"][m].values.astype(bool) if "light" in tr else np.zeros(int(m.sum()), bool))
+        return w
+    with ThreadPoolExecutor(threads) as ex:
+        return list(ex.map(one, range(len(sessions))))
+
+
+def first_crossing_ms(trace, level, rate):
+    """Time (ms) of the first sample of each row of `trace` above `level` (one value per row);
+    NaN where none."""
+    above = trace > np.asarray(level, float).reshape(-1, 1)
+    first = above.argmax(1).astype(float)
+    first[~above.any(1)] = np.nan
+    return first / rate * 1000.0
 
 
 def _trials(f, events):
@@ -562,4 +640,24 @@ def first_spike_latency(spikes, onsets, window):
     d = spikes[np.clip(j, 0, len(spikes) - 1)] - onsets
     ok &= d < window
     lat[ok] = d[ok]
+    return lat
+
+
+def antidromic_latencies(spikes, onsets, window, reading="w", par=None, bin_ms=0.1):
+    """Latencies (ms) kept under the readings of antidromic-latencies (claims file): (w) the first
+    spike within `window` s after the first pulse of each pair; (c) as (w), without pulses that
+    have a spike in the `par` ms before them (collision trials); (r) as (w), keeping only latencies
+    within `par` ms of the peak of the neuron's latency histogram (`bin_ms` bins, a standard choice
+    finer than the jitter tested). The claims file leaves the window and `par` open."""
+    first = pair_onsets(onsets)
+    lat = first_spike_latency(spikes, first, window) * 1000
+    if reading == "c":
+        j = np.searchsorted(spikes, first) - 1
+        prev = np.where(j >= 0, (first - spikes[np.clip(j, 0, None)]) * 1000, np.inf)
+        lat[prev < par] = np.nan
+    lat = lat[~np.isnan(lat)]
+    if reading == "r" and len(lat):
+        h, e = np.histogram(lat, bins=np.arange(0, window * 1000 + bin_ms, bin_ms))
+        peak = e[h.argmax()] + bin_ms / 2
+        lat = lat[np.abs(lat - peak) <= par]
     return lat
