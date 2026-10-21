@@ -47,3 +47,14 @@ def test_a_dataset_whose_latest_attempt_is_deprecated_is_open_again(monkeypatch)
     assert not describe.latest_deprecated("000001", records)
     assert describe.latest_deprecated("000002", records)
     assert not describe.latest_deprecated("000003", records)
+
+
+def test_a_target_with_a_journal_paper_has_a_publication():
+    preprint = {"papers": [{"doi": "10.1101/2024.01.01.000001", "preprint": True}]}
+    journal = {"papers": [{"doi": "10.1038/s41586-024-00001-1", "preprint": False}]}
+    assert describe.has_publication(journal, {})
+    assert not describe.has_publication(preprint, {})
+    # papers/triage.yaml can replace the preprint with its publication, or rule a paper out.
+    assert describe.has_publication(preprint, {"not_papers": {"10.1101/2024.01.01.000001": ""},
+                                               "papers": {"10.7554/elife.00001": ""}})
+    assert not describe.has_publication(journal, {"not_papers": {"10.1038/s41586-024-00001-1": ""}})

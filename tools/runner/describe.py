@@ -74,6 +74,17 @@ def claims_ready(folder: str) -> bool:
     return False
 
 
+PREPRINT_SERVERS = ("10.1101/", "10.64898/", "10.48550/", "10.21203/")   # bioRxiv and medRxiv, arXiv, Research Square
+
+
+def has_publication(target: dict, fix: dict) -> bool:
+    """Whether a target names a paper that is not a preprint, after the hand corrections in papers/triage.yaml."""
+    drop = {d.lower() for d in fix.get("not_papers", {})}
+    papers = [p for p in target.get("papers", []) if p["doi"].lower() not in drop]
+    return (any(not p.get("preprint") and not p["doi"].lower().startswith(PREPRINT_SERVERS) for p in papers)
+            or any(not d.lower().startswith(PREPRINT_SERVERS) for d in fix.get("papers", {})))
+
+
 def latest_deprecated(folder: str, records: list[str]) -> bool:
     """Whether the newest attempt record of a dataset is deprecated, so that it is to be done again."""
     mine = sorted(r for r in records if r.startswith(folder + "-") and r.endswith(".yaml"))
@@ -111,10 +122,16 @@ def next_target(skip: set[str], claims: bool = False) -> str | None:
         read = {Path(p).name for p in git("ls-tree", "--name-only", "origin/main", "claims/").split()}
         open_ = [t for t in open_ if t["folder"] not in read and papers.get(t["folder"])
                  and all(p["status"] == "stored" for p in papers[t["folder"]])]
-    ours = [t for t in open_ if t.get("catalystneuro")]
-    if claims:
-        return (ours + [t for t in open_ if not t.get("catalystneuro")] or [{"folder": None}])[-1]["folder"]
-    return (ours or open_ or [{"folder": None}])[0]["folder"]
+    # Datasets whose paper is published come first, so that fewer attempts rest on a preprint that is
+    # published later; then ours. Python's sort is stable, so the list's order holds within each group.
+    fix = (main_yaml("papers/triage.yaml") or {}).get("targets", {})
+    order = sorted(open_, key=lambda t: (not has_publication(t, fix.get(t["folder"], {})), not t.get("catalystneuro")))
+    if not order:
+        return None
+    if claims:   # from the other end of the same group as the full runner, so the two do not meet
+        return [t for t in order if has_publication(t, fix.get(t["folder"], {})) == has_publication(
+            order[0], fix.get(order[0]["folder"], {}))][-1]["folder"]
+    return order[0]["folder"]
 
 
 def newest_run(runs: list[dict], dandiset: str, role: str) -> str:
