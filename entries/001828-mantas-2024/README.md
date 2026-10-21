@@ -14,7 +14,7 @@ GSE282753, which lacks the cMfn2KO counts the same claim needs.
 | Anxa1 and DAT axons in dCP ramp to the water drop and drop after it (Figure 3D) | Not reproduced |
 | dLight in dCP follows them, cCP has a reward profile (Figure 3E) | Not reproduced (cCP holds, dCP does not) |
 | AUC changes from baseline (Figure 3F-G) | Partially reproduced (holds with one of two z-scorings) |
-| Anxa1 and dLight-dCP signals correlate with speed (Figure 4B) | Partially reproduced (Anxa1 misses p < 0.05; not reproduced is proposed for a third round) |
+| Anxa1 and dLight-dCP signals correlate with speed (Figure 4B) | Not reproduced (dLight-dCP holds, Anxa1 misses p < 0.05 in every reading) |
 | dLight-cCP correlates negatively with speed (Figure 4B) | Reproduced |
 | Anxa1-TeTx mice are slower in the open field (Figure 5C-E) | Reproduced |
 | Their phenotype resembles the early PD models (Figure 5C-F) | Reproduced |
