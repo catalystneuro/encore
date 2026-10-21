@@ -5,6 +5,7 @@
     python tools/runner/describe.py next [SKIP ...]    # the next dataset in the queue, by folder name
     python tools/runner/describe.py next-claims [SKIP ...]
                                                        # the next dataset to read claims for
+    python tools/runner/describe.py published FOLDER   # "true" when the dataset has a published version
     python tools/runner/describe.py claims-ready FOLDER
                                                        # "true" when main has a claims file whose check passed
     python tools/runner/describe.py folder DATASET     # a dataset's folder name (tools/datasets.py)
@@ -15,8 +16,8 @@
                                                        # on either account
 
 `title` and `body` read the latest attempt in the working tree. `next` reads main (origin/main), so
-it can run from any checkout: the first target with no attempt on main, no branch of its own and not
-in SKIP, from every archive's list, taking datasets converted by CatalystNeuro first and otherwise the
+it can run from any checkout: the first published target with no attempt on main, no branch of its
+own and not in SKIP, from every archive's list, taking datasets converted by CatalystNeuro first and otherwise the
 lists' own order. `next-claims` chooses among the targets whose papers are all in the paper store
 (papers/manifest.yaml on main) and which have no claims file on main, from the end of that order, so
 that a claims-only runner and a full one running at the same time do not reach for the same dataset.
@@ -73,6 +74,12 @@ def claims_ready(folder: str) -> bool:
     return False
 
 
+def published(target: dict) -> bool:
+    """Whether a target has a published version: a DANDI draft can still change under an attempt.
+    The other archives publish every dataset they list."""
+    return target.get("archive", "dandi") != "dandi" or bool(target.get("published_version"))
+
+
 def next_target(skip: set[str], claims: bool = False) -> str | None:
     import datasets
     targets = []
@@ -81,8 +88,10 @@ def next_target(skip: set[str], claims: bool = False) -> str | None:
             listed = json.loads(git("show", f"origin/main:targets/{spec['list']}"))["targets"]
         except subprocess.CalledProcessError:
             continue
-        targets += [{**t, "folder": datasets.folder(datasets.key_of(archive, t.get("id") or t["dandiset"]))}
+        targets += [{**t, "archive": archive,
+                     "folder": datasets.folder(datasets.key_of(archive, t.get("id") or t["dandiset"]))}
                     for t in listed]
+    targets = [t for t in targets if published(t)]
     records = [Path(p).name for p in git("ls-tree", "--name-only", "origin/main", "attempts/").split()]
     branches = {line.split("refs/heads/attempt/", 1)[1] for line in git("ls-remote", "--heads", "origin",
                                                                           "attempt/*").split("\n") if line}
@@ -128,6 +137,11 @@ def main() -> int:
         from agent_run import attempt_of
         found = attempt_of(rest[0])
         print("true" if found and found[0].get("deprecated") else "false")
+    elif command == "published":
+        import datasets
+        key = datasets.key_of_folder(rest[0])
+        found = next((t for t in datasets.targets() if t["key"] == key), None)
+        print("true" if found and published(found) else "false")
     elif command == "claims-ready":
         print("true" if claims_ready(rest[0]) else "false")
     elif command in ("next", "next-claims"):

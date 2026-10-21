@@ -32,8 +32,9 @@
 # checkpoint instead: the checked claims and their runs' transcripts go into main, the branch is
 # deleted, and the attempt is left for a later chain, which then starts from those claims.
 #
-# The last line printed is "<dataset> MERGED <pr>", "<dataset> CLAIMS MERGED", "<dataset> STOPPED ...",
-# or "<dataset> CHECKS FAILED <pr>", which leaves the pull request open.
+# A dataset with no published version is skipped. The last line printed is "<dataset> MERGED <pr>",
+# "<dataset> CLAIMS MERGED", "<dataset> SKIPPED ...", "<dataset> STOPPED ...", or "<dataset> CHECKS
+# FAILED <pr>", which leaves the pull request open.
 set -uo pipefail
 VERSION=${2:-}
 STATE=${RUNNER_STATE:-/tmp}
@@ -114,6 +115,11 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
     log "STOPPED at $role (run $id)"; return 1
   done; }
 
+# Only published datasets: a DANDI draft can change under an attempt, and the record could not name
+# the version it tested.
+if [ "$(python "$here/describe.py" published "$d")" != true ]; then
+  echo "$d SKIPPED: no published version"; exit 1
+fi
 fetch
 if [ ! -e "$mark" ]; then
   # A new attempt. A branch already merged into main belongs to an earlier one; start from main.
