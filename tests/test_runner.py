@@ -37,3 +37,24 @@ def test_only_published_datasets_are_taken():
     assert not describe.published({"archive": "dandi", "published_version": None})
     # The other archives publish every dataset they list, and have no versions of this kind.
     assert describe.published({"archive": "crcns"})
+
+
+def test_a_dataset_whose_latest_attempt_is_deprecated_is_open_again(monkeypatch):
+    records = ["000001-demo-2020-01.yaml", "000001-demo-2020-02.yaml", "000002-demo-2021-01.yaml"]
+    deprecated = {"attempts/000001-demo-2020-01.yaml", "attempts/000002-demo-2021-01.yaml"}
+    monkeypatch.setattr(describe, "main_yaml", lambda path: {"deprecated": {"date": "2026-10-21"}} if path in deprecated else {})
+    # 000001 has a newer attempt that stands; 000002's only attempt is deprecated.
+    assert not describe.latest_deprecated("000001", records)
+    assert describe.latest_deprecated("000002", records)
+    assert not describe.latest_deprecated("000003", records)
+
+
+def test_a_target_with_a_journal_paper_has_a_publication():
+    preprint = {"papers": [{"doi": "10.1101/2024.01.01.000001", "preprint": True}]}
+    journal = {"papers": [{"doi": "10.1038/s41586-024-00001-1", "preprint": False}]}
+    assert describe.has_publication(journal, {})
+    assert not describe.has_publication(preprint, {})
+    # papers/triage.yaml can replace the preprint with its publication, or rule a paper out.
+    assert describe.has_publication(preprint, {"not_papers": {"10.1101/2024.01.01.000001": ""},
+                                               "papers": {"10.7554/elife.00001": ""}})
+    assert not describe.has_publication(journal, {"not_papers": {"10.1038/s41586-024-00001-1": ""}})
