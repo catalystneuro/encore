@@ -1,0 +1,1525 @@
+# Claims for Xiao, Severson et al. (2026), "Peri-head distance coding in the mouse brainstem",
+# Neuron, doi:10.1016/j.neuron.2026.05.027, on dandiset 001687.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript in PubMed Central (NIHMS2191201, PMC13336321), as
+# fetched 2026-10-20 into paper/10.1016-j.neuron.2026.05.027.txt: main text, STAR Methods, the
+# legends of Figures 1 to 6, and the supplement file NIHMS2191201-supplement-1.pdf (legends of
+# Figures S1 to S6 and Tables S2 to S5). The version of record was not read. Tables S1 (mouse
+# sex, age and figure assignments) and S6 (test statistics, degrees of freedom and p-values of
+# all analyses) are named in the text but are not in the supplement file read; every number
+# used below is in the main text, the legends or Tables S2 to S5. Figures were not opened.
+#
+# Code read: github.com/wanglab-neuro/2026_Xiao-Severson_Peri-head-distance at commit b1a9f3c
+# (2026-08-21; archived as doi:10.5281/zenodo.20330279). It holds the original MATLAB scripts
+# for Figures 1E, 2, 3, 4B-C, 5C-E, 6D, 6G-I, S1, S4I and S5A ("Manuscript figures/Original
+# Matlab code"), Python helpers that read the deposited NWB files, the Python circuit model
+# (PrV_simulation/simulate_prv.py), and a submodule (Processing, the spike-sorting pipeline;
+# not read). The helper generate_deposition_tables.py reads, per NWB unit, the columns
+# unit_label, wall_responsive, wall_tuned, activated, suppressed, tuning_type, pref_dist_index,
+# pref_dist_mm, low_firing and trial_include, and a wall_tuning processing module with a
+# distance_axis; so the deposit is meant to carry the paper's own unit labels. The repository's
+# unit_tuning_summary.csv is derived from the deposit and was not read for these claims.
+#
+# Data the paper used (Methods, Results, Table and figure legends):
+# - Wall-passing paradigm. Awake head-fixed mice on a linear treadmill, in the dark; a wall
+#   moves anterior to posterior past the face at 10 mm/s; each pass about 14 s, onset at t = 0,
+#   whisker contact typically 3 to 11 s. Wall distance is measured from the C2 follicle. Silicon
+#   probe sessions: 7 to 23 mm in 2-mm steps (nine distances), 15 to 20 passes per distance,
+#   randomly ordered. Analysis windows: baseline -4.5 to 0 s, wall pass 3 to 11 s; onset 2.5 to
+#   4.5 s, sustained 4.5 to 9.5 s, offset 9.5 to 11.5 s. Distances are binned into nine 2-mm bins
+#   centred on 7, 9, ..., 23 mm; sessions with fewer than nine distances are left out of
+#   population analyses.
+# - Wild-type silicon probe recordings (C57BL/6J): 1,358 units from 36 mice, 1,141 passing the
+#   unit criteria (SNR of at least 5, ISI false-alarm rate at most 2% at 0.8 ms, firing above 1
+#   Hz). This set includes the full-array part of the whisker-cutting sessions (the code merges
+#   "naive" and pre-cut tables).
+# - Whisker-cutting sessions (subset of the above): 195 units from 18 mice recorded with the full
+#   array and then after cutting all but one whisker, in one continuous recording.
+# - SpVi-TeLC (vGat-Cre, AAV-FLEX-TeLC in caudal SpVi, recorded 10 to 15 days later): 665 units
+#   from 11 mice, 587 passing the criteria.
+# - PrV GtACR optogenetics (vGat-Cre, N = 2): 112 units; distances 7 to 23 mm in 4-mm steps,
+#   laser on and off passes interleaved, light during the whole pass.
+# - Tungsten single-electrode recordings: 46 units from 14 mice, C-row whiskers only, distances
+#   4 to 20 mm in 1-mm steps, 10 to 20 passes per distance.
+# - High-speed video (500 Hz): 4 mice with a single whisker row, awake then anesthetized (20
+#   passes per distance, 7 to 23 mm); and whisker-array midpoint angle in 15 wild-type sessions
+#   (6 mice) and 15 SpVi-TeLC sessions (6 mice).
+# - Measured variables: spike times of sorted units, wall pass start and end times (from the
+#   stepper-motor signal), wall distance per pass, laser condition, cutting condition, whisker
+#   angle and curvature from video.
+# The dandiset's description names baseline recordings and the multi-whisker, local-inhibition
+# and long-range-inhibition perturbations, processed and raw NWB files; whether the tungsten and
+# video data are there is for the author to find.
+#
+# Method choices fixed here (each claim cites them), from the Methods and, where the Methods
+# are silent, from Fig2DEF_Pop_Heatmap_Hist_Pie.m (same procedure in Fig5CE_TeLC_heatmap_stacked_bar.m):
+# - Per pass, the wall firing rate is the mean rate from 3 to 11 s and the baseline rate the
+#   mean rate from -4.5 to 0 s after wall-movement onset (Methods, Wall Distance Tuning Curve
+#   Calculation).
+# - Unit inclusion: SNR and false-alarm criteria (Methods); the code drops a unit as low-firing
+#   when both its largest per-distance mean wall rate and its mean baseline rate are below 1 Hz.
+# - Wall-activated or wall-suppressed: at each distance, one-tailed Wilcoxon signed-rank test of
+#   the pass's wall rate against its own baseline rate, p < 0.05 (Methods, no correction named,
+#   while the same paragraph names BH-FDR for the tuning test). The code corrects the nine
+#   p-values of each direction with Benjamini-Hochberg (BH-FDR) and uses q < 0.05. Methods and
+#   code disagree, so the Methods' uncorrected p < 0.05 is the main reading, on which claims are
+#   judged, and the code's BH-FDR is the variant, shown. Wall-responsive means activated or
+#   suppressed.
+# - Distance-tuned: two-tailed Wilcoxon signed-rank tests between all 36 pairs of distances,
+#   BH-FDR corrected, any q < 0.05 (Methods). The code pairs the k-th pass at one distance with
+#   the k-th pass at the other.
+# - Preferred distance: the distance of the maximum of the unit's mean tuning curve (code: the
+#   z-scored curve, which has the same maximum).
+# - Proximity unit: activated, tuned, preferred distance 7 mm. Map unit: activated, tuned,
+#   preferred distance at least 9 mm, and at least one of the eight one-tailed signed-rank tests
+#   (distance d above 7 mm) significant after BH-FDR across the eight (Methods; Figure S4H
+#   legend; code). Ambiguous: activated, tuned, preferred at least 9 mm, no significant test.
+#   Suppressed-only: tuned, suppressed, never activated. Untuned: wall-responsive and not
+#   distance-tuned (Methods; code).
+# - Population decoding (Methods; Fig3ABC_Decoder_Accuracy_Time_Confusion_Avg.m): maximum
+#   correlation coefficient classifier of the Neural Decoding Toolbox on a pseudo-population;
+#   spike counts in 150-ms windows stepped by 50 ms from 0 to 14 s; 15 passes per distance,
+#   resampled 5 times; z-score feature normalisation (code; Methods silent); subpopulations of
+#   118 units drawn 10 times without replacement (the combined group 36 map and 82 proximity
+#   units); a shuffled group from map and proximity units with the passes' distance labels
+#   scrambled; accuracy per distance is the true-positive rate, averaged over the time bins
+#   starting within 3 to 11 s; overall accuracy is the mean over the nine distances (Table S2,
+#   "Average"). Cross-validation is 10-fold in the Methods and 15 splits (one pass per distance
+#   held out) in the code: the Methods' 10-fold is the main reading, the code's the variant.
+#   Group comparisons per distance are Wilcoxon rank-sum tests on the 10 subsample values,
+#   BH-FDR across the nine distances (Methods; Figure 3C legend; code).
+#
+# Inconsistencies in the paper, noted where they bear on a claim: 472 activated + 213 suppressed
+# - 29 both = 656 tuned implies 184 suppressed-only and 112 untuned, but Figure 2F gives 119 and
+# 177 (fig2f-tuning-categories); the Figure 4B legend gives 11.58 +/- 2.986 sp/s where the text
+# gives +/- 1.338; the Figure S6J legend prints p = 3.98 x 10^-3 for the TeLC untuned baseline
+# where the text prints 3.98 x 10^-5; the Methods describe the +/- of firing-rate comparisons as a
+# bootstrap 95% CI half-width while the Figure S4 legends call it SEM; Figure 3C plots mean +/-
+# SEM while Tables S2 and S3 give mean +/- 95% CI; the Methods correct per-unit whisker-cutting
+# tests with Bonferroni in one place and BH-FDR in another, and the Results print p < 0.05.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001687"
+paper: doi:10.1016/j.neuron.2026.05.027
+claims:
+- id: figs1f-angle-awake-vs-anesthetized
+  statement: >-
+    Wall-induced change in whisker midpoint angle does not differ significantly between awake and
+    anesthetized mice for the C1, C2 and Greek whiskers (paired t-tests across 4 mice, Bonferroni
+    alpha 0.017); the mean awake minus anesthetized difference is 2.28 degrees.
+  source: Results, A wall-passing paradigm, paragraph 2; Figure S1F legend
+  quote: >-
+    Awake mice showed similar bending angle (mean difference: 2.28°) and curvature (mean
+    difference: 1.66 × 10 −5 mm −1 ) changes, with no significant differences from the
+    anesthetized condition across whiskers
+  statistics:
+  - about: C1 whisker, awake against anesthetized
+    test: two-tailed paired t-test across mice
+    p: 0.03
+    corrected: Bonferroni, alpha 0.017
+    n: 4 mice
+  - about: C2 whisker
+    test: two-tailed paired t-test across mice
+    p: 0.04
+    corrected: Bonferroni, alpha 0.017
+    n: 4 mice
+  - about: Greek whisker
+    test: two-tailed paired t-test across mice
+    p: 0.0199
+    corrected: Bonferroni, alpha 0.017
+    n: 4 mice
+  expected:
+  - quantity: mean awake minus anesthetized change in midpoint angle
+    value: 2.28
+    tolerance: 0.228
+    unit: degrees
+  criterion: >-
+    A claim of absence, judged on the paper's test (Methods, Data Analysis: Wall-Induced Whisker
+    Retraction; FigS1_Stats.m). Per pass, the midpoint angle (Savitzky-Golay 21 frames, order 3,
+    mean of the upper and lower envelopes) is averaged over 3 to 11 s minus its mean over -4.5 to
+    0 s; per mouse, whisker and condition, averaged over distances and passes; for each whisker a
+    two-tailed paired t-test across the 4 mice, significant at 0.05/3. Reproduced when no whisker
+    reaches p < 0.0167; not reproduced when any does. The mean difference is reported for each
+    whisker; the paper does not say whether 2.28 degrees is pooled over whiskers or for one, so
+    the readings are the mean over the three whiskers and each whisker alone. The code
+    (FigS1_Code.m) takes the midpoint as a 101-frame Savitzky-Golay smoothing of the twice
+    21-frame-smoothed angle, with the envelope method commented out; this is the variant, shown,
+    and the Methods' envelope midpoint is the main.
+- id: figs1j-curvature-awake-vs-anesthetized
+  statement: >-
+    Wall-induced change in whisker curvature does not differ significantly between awake and
+    anesthetized mice for any of the three whiskers.
+  source: Results, A wall-passing paradigm, paragraph 2; Figure S1H-J legend
+  quote: >-
+    (H-J) Same as D-F, but for curvature. Significance reflects mouse-level paired comparisons
+    (awake vs. anesthe- tized) with Bonferroni correction (α = 0.017): C1, p = 0.56 (n.s.); C2, p
+    = 0.053 (n.s.), Greek: p = 0.43 (n.s.)
+  statistics:
+  - about: C1 whisker
+    test: two-tailed paired t-test across mice
+    p: 0.56
+    corrected: Bonferroni, alpha 0.017
+    n: 4 mice
+  - about: C2 whisker
+    test: two-tailed paired t-test across mice
+    p: 0.053
+    corrected: Bonferroni, alpha 0.017
+    n: 4 mice
+  - about: Greek whisker
+    test: two-tailed paired t-test across mice
+    p: 0.43
+    corrected: Bonferroni, alpha 0.017
+    n: 4 mice
+  expected:
+  - quantity: mean awake minus anesthetized change in curvature
+    value: 1.66e-5
+    tolerance: 1.66e-6
+    unit: 1/mm
+  criterion: >-
+    A claim of absence, as figs1f-angle-awake-vs-anesthetized, for curvature (signed planar
+    curvature from a local second-order fit to a 4-mm arclength segment, minus its baseline mean
+    over -4.5 to 0 s, averaged over 3 to 11 s; Methods). Reproduced when no whisker reaches p <
+    0.0167. The Methods do not say where along the whisker the 4-mm segment lies; this is open,
+    and the author reports the segment used.
+- id: figs1d-bending-larger-closer
+  statement: >-
+    Under anesthesia the passing wall bends whiskers in the retraction direction, with larger
+    angle changes and larger curvature changes at closer wall distances, so wall-induced bending
+    grows roughly monotonically as the wall approaches.
+  source: Results, A wall-passing paradigm, paragraph 2; Figure S1D, H
+  quote: >-
+    Under anesthesia, the moving wall pushed whiskers in the retraction direction, producing
+    larger absolute bending angles ( Supplemental Figure S1D , right) and greater change in
+    whisker curvature ( Supplemental Figure S1H , right) at closer wall distances
+  criterion: >-
+    The paper reports no test. Per distance, the across-mouse mean of the absolute change in
+    midpoint angle and of the absolute change in curvature in the anesthetized condition
+    (measures as in figs1f-angle-awake-vs-anesthetized). Reproduced when, for each of the two
+    measures and each of the three whiskers, the value at 7 mm exceeds the value at 23 mm and the
+    Spearman correlation between distance and value over the nine distances is negative. These
+    two summaries are the readings of "larger ... at closer wall distances"; the outcome is the
+    one both give. The cited panels (S1D and S1H, right) show one example C1 whisker in one
+    mouse; the across-mouse curves per whisker are in S1F and S1J, which this criterion uses.
+- id: figs2-tungsten-responsiveness
+  statement: >-
+    Of 46 tungsten-recorded PrV units from 14 mice, 41 (89.1%) were wall-activated, 3 (6.5%)
+    wall-suppressed, and 43 (93.5%) wall-responsive in all, one unit being both.
+  source: Results, PrV contains both proximity and map codes, paragraphs 1-2
+  quote: >-
+    Of the 46 units, 41/46 (89.1%) were wall-activated and 3/46 (6.5%) were wall-suppressed; one
+    unit showed both activation and suppression at different distances, yielding a total of
+    43/46 (93.5%) wall-responsive
+  expected:
+  - quantity: tungsten units passing criteria
+    value: 46
+    tolerance: 4.6
+  - quantity: wall-activated tungsten units
+    value: 41
+    tolerance: 4.1
+  - quantity: wall-suppressed tungsten units
+    value: 3
+    tolerance: 0.3
+  - quantity: wall-responsive tungsten units
+    value: 43
+    tolerance: 4.3
+  criterion: >-
+    Classification as in the opening comment, applied to the tungsten sessions with their own
+    distances (4 to 20 mm in 1-mm steps, so the binning into nine 2-mm bins does not apply; the
+    code leaves the number of distances to each session). Responsiveness is judged with the
+    Methods' uncorrected p < 0.05 per distance; the code's BH-FDR across distances is the
+    variant, shown. Reproduced when all four counts are within tolerance under the Methods'
+    test.
+- id: figs2-tungsten-tuning
+  statement: >-
+    Of the 43 wall-responsive tungsten units, 39 (90.7%) were distance-tuned; 24 (55.8%) were
+    broadly monotonic, firing more at closer distances, and 6 (14.0%) peaked at intermediate or
+    far distances.
+  source: Results, PrV contains both proximity and map codes, paragraph 2; Figure S2D-F
+  quote: >-
+    Wall-responsive units with significant differences in mean firing rates for at least one
+    distance pair were classified as "distance-tuned" (i.e., distance-selective; 90.7%, 39/43)
+    ... The majority of wall-responsive units (55.8%, 24/43) showed a broadly monotonic,
+    inversely proportional relationship with wall distance ... a distinct subset (14.0%, 6/43)
+    showed peak responses at intermediate or far wall distances
+  depends_on:
+  - figs2-tungsten-responsiveness
+  expected:
+  - quantity: distance-tuned tungsten units
+    value: 39
+    tolerance: 3.9
+  - quantity: monotonic (proximity-like) tungsten units
+    value: 24
+    tolerance: 2.4
+  - quantity: tungsten units peaking at intermediate or far distances
+    value: 6
+    tolerance: 0.6
+  criterion: >-
+    Distance tuning as in the opening comment (36 pairs become all pairs of the session's
+    distances). The paper does not say how the 24 monotonic and 6 peaked units were defined for
+    the tungsten data. Readings: (a) the silicon-probe rule, proximity (preferred at the closest
+    distance) and map (preferred farther, with a significant BH-FDR one-tailed test against the
+    closest distance), with activated or suppressed units both eligible as in the code's
+    tungsten branch; (b) preferred distance at the closest distance against elsewhere, without
+    the map test. Reproduced when all three counts are within tolerance under one reading.
+- id: si-unit-yield
+  statement: >-
+    Silicon probe recordings in wild-type mice yielded 1,141 single units from 36 mice passing
+    isolation and firing criteria, out of 1,358 sorted units.
+  source: Results, PrV contains both proximity and map codes, paragraph 3; Methods, Isolation of Single Unit Activity
+  quote: >-
+    For silicon probe data, in wild-type mice, 1141 of 1358 units (36 mice), in TeLC experiments,
+    587 of 665 units (11 mice)
+  expected:
+  - quantity: wild-type silicon probe units passing criteria
+    value: 1141
+    tolerance: 114.1
+  - quantity: wild-type silicon probe mice
+    value: 36
+    tolerance: 0
+  criterion: >-
+    Units with SNR of at least 5 and ISI false-alarm rate at most 2% (0.8 ms), not low-firing as
+    defined in the opening comment, in wild-type full-array sessions (including the pre-cut part
+    of whisker-cutting sessions). The number of mice is a count and must match exactly. If the
+    deposit carries only curated units, the count of deposited units is compared and the
+    difference reported.
+- id: fig2-wall-responsive-counts
+  statement: >-
+    Of the 1,141 units, 768 (67.3%) were wall-responsive; of these 532 (69.3%) were activated at
+    one or more distances, 333 (43.4%) suppressed, and 97 both.
+  source: Results, PrV contains both proximity and map codes, paragraph 3
+  quote: >-
+    Of the 1,141 units, 67.3% (768/1141) were significantly modulated by the passing-wall
+    stimulus and classified as "wall-responsive". Among these wall-responsive units, 532/768
+    (69.3%) showed significant activation at one or more distances, 333/768 (43.4%) showed
+    significant suppression, and 97 units met both criteria
+  depends_on:
+  - si-unit-yield
+  expected:
+  - quantity: wall-responsive units
+    value: 768
+    tolerance: 76.8
+  - quantity: wall-activated units
+    value: 532
+    tolerance: 53.2
+  - quantity: wall-suppressed units
+    value: 333
+    tolerance: 33.3
+  - quantity: units both activated and suppressed
+    value: 97
+    tolerance: 9.7
+  criterion: >-
+    Classification as in the opening comment (Methods, uncorrected p < 0.05 per distance; variant,
+    the code's BH-FDR across the nine distances, shown). Reproduced when all four counts are
+    within tolerance under the Methods' test.
+- id: fig2-distance-tuned-counts
+  statement: >-
+    Over the full wall-contact period, 656 of 768 wall-responsive units (85.4%) were distance
+    tuned; of these, 472 (72.0%) were activated at one or more distances (the activated
+    population), 213 (32.5%) suppressed (the suppressed population), and 29 both.
+  source: Results, PrV contains both proximity and map codes, paragraph 4
+  quote: >-
+    Across the full wall-contact period (8 s), we identified 656 out of the 768 (85.4%)
+    wall-responsive units that were significantly tuned to wall distance. Within this
+    distance-tuned population, 472/656 (72.0%) showed significant activation relative to
+    baseline at one or more distances ... whereas 213/656 (32.5%) showed significant suppression
+    at one or more distances ... A small subset of units (29/656; 4.4%) exhibited both
+  depends_on:
+  - fig2-wall-responsive-counts
+  expected:
+  - quantity: distance-tuned units
+    value: 656
+    tolerance: 65.6
+  - quantity: activated population (activated and tuned)
+    value: 472
+    tolerance: 47.2
+  - quantity: suppressed population (suppressed and tuned)
+    value: 213
+    tolerance: 21.3
+  - quantity: tuned units both activated and suppressed
+    value: 29
+    tolerance: 2.9
+  criterion: >-
+    Distance tuning as in the opening comment. Reproduced when all four counts are within
+    tolerance under the Methods' responsiveness test (the code's BH-FDR variant shown). The 472 activated units are the
+    population of Figures 2D-E, 5D, 6G-I and S4.
+- id: fig2f-tuning-categories
+  statement: >-
+    Among the 768 wall-responsive units, 266 (34.6%) were proximity units, 118 (15.4%) map
+    units, 88 (11.5%) ambiguous, and 119 (15.5%) suppressed-only; the remainder (177, 23.0%) were
+    untuned, giving a proximity to map ratio of 2.3 to 1.
+  source: Results, PrV contains both proximity and map codes, paragraph 7; Figure 2F; Figure 5E legend
+  quote: >-
+    We identified 266 proximity units (34.6%) and 118 map units (15.4%) out of the 768
+    wall-responsive units ( Figure 2F ) ... An additional 88 units (11.5%) were
+    distance-selective but did not meet criteria for either map or proximity and were labeled
+    "ambiguous" ... Suppressed-only units ... accounted for 119 out of 768 wall-responsive units
+    (15.5%; Figure 2F )
+  depends_on:
+  - fig2-distance-tuned-counts
+  expected:
+  - quantity: proximity units
+    value: 266
+    tolerance: 26.6
+  - quantity: map units
+    value: 118
+    tolerance: 11.8
+  - quantity: ambiguous units
+    value: 88
+    tolerance: 8.8
+  - quantity: suppressed-only units
+    value: 119
+    tolerance: 11.9
+  - quantity: untuned units
+    value: 177
+    tolerance: 17.7
+  criterion: >-
+    Categories as in the opening comment. The paper's counts are not consistent with each other
+    (472 + 213 - 29 = 656 tuned implies 184 suppressed-only and 112 untuned; the five Figure 2F
+    counts sum to 768 with 119 and 177). Readings for the last two: (a) the Figure 2F counts as
+    printed; (b) the counts implied by fig2-distance-tuned-counts (184 and 112, same 10%
+    tolerance; the Methods also count 112 silicon-probe units as wall-responsive but not
+    distance-tuned, Characterizing Wall Distance Tuning). Reproduced when the proximity, map and ambiguous counts are within tolerance and
+    the suppressed-only and untuned counts are within tolerance under one reading; partially
+    reproduced when only the proximity, map and ambiguous counts are.
+- id: figs4a-baseline-activated-lower
+  statement: >-
+    Before wall movement, units of the activated population fire less than untuned units (5.46
+    against 6.93 sp/s).
+  source: Results, PrV contains both proximity and map codes, paragraph 4; Figure S4A
+  quote: >-
+    At baseline prior to wall movement onset, units in the activated population showed lower
+    firing rates than untuned units (5.46 ± 0.670 vs. 6.93 ± 0.947 sp/s; two-tailed
+    Kolmogorov-Smirnov (K-S) test: p = 2.47 × 10 − 7 )
+  statistics:
+  - test: two-tailed two-sample Kolmogorov-Smirnov test
+    p: 2.47e-7
+    n: 472 activated and 177 untuned units
+  depends_on:
+  - fig2f-tuning-categories
+  expected:
+  - quantity: mean baseline rate, activated population
+    value: 5.46
+    tolerance: 0.67
+    unit: sp/s
+  - quantity: mean baseline rate, untuned units
+    value: 6.93
+    tolerance: 0.947
+    unit: sp/s
+  criterion: >-
+    Per unit, the mean baseline rate (-4.5 to 0 s) over all passes; two-sample K-S test
+    (two-tailed, kstest2) between the activated population and untuned units (Methods). The
+    tolerances are the paper's printed spread (bootstrap CI half-width in the Methods, SEM in the
+    legend). Reproduced when p < 0.05 with the activated mean lower and both means within
+    tolerance; partially reproduced when the test holds but a mean is out of tolerance.
+- id: figs4a-baseline-suppressed-similar
+  statement: >-
+    Units of the suppressed population have baseline firing comparable to untuned units (7.31
+    against 6.93 sp/s, not significant).
+  source: Results, PrV contains both proximity and map codes, paragraph 4; Figure S4A
+  quote: >-
+    whereas units in the suppressed population had baseline firing rates comparable to untuned
+    units (7.31 ± 1.124 vs. 6.93 ± 0.947 sp/s; two-tailed K-S test: p = 0.63
+  statistics:
+  - test: two-tailed two-sample Kolmogorov-Smirnov test
+    p: 0.63
+    n: 213 suppressed and 177 untuned units
+  depends_on:
+  - fig2f-tuning-categories
+  expected:
+  - quantity: mean baseline rate, suppressed population
+    value: 7.31
+    tolerance: 1.124
+    unit: sp/s
+  criterion: >-
+    A claim of absence, judged on the paper's test, a two-tailed two-sample K-S test of per-unit
+    mean baseline rates, suppressed population (213) against untuned units, at p < 0.05.
+    Reproduced when p >= 0.05; not reproduced when p < 0.05. The difference of means is reported
+    either way.
+- id: figs4b-activated-increase-suppressed-decrease
+  statement: >-
+    During wall passes the activated population fires more than at baseline (16.44 against 6.36
+    sp/s at the preferred distance) and the suppressed population fires less (4.47 against 6.19
+    sp/s).
+  source: Results, PrV contains both proximity and map codes, paragraph 5; Figure S4B
+  quote: >-
+    During wall-passing period, the activated population increased firing relative to baseline
+    (16.44 ± 1.640 vs. 6.36 ± 0.704 sp/s; one-tailed K-S test: p = 9.26 × 10 −28 ; Supplemental
+    Figure S4B , left), while the suppressed population exhibited a significant decrease in
+    firing (4.47 ± 1.000 vs. 6.19 ± 1.076 sp/s; one-tailed K-S test: p = 3.06 × 10 −4
+  statistics:
+  - about: activated population, wall at preferred distance against baseline
+    test: one-tailed two-sample Kolmogorov-Smirnov test
+    p: 9.26e-28
+    n: 472 units
+  - about: suppressed population, wall at least-preferred distance against baseline
+    test: one-tailed two-sample Kolmogorov-Smirnov test
+    p: 3.06e-4
+    n: 213 units
+  depends_on:
+  - fig2-distance-tuned-counts
+  expected:
+  - quantity: activated population, mean wall rate at preferred distance
+    value: 16.44
+    tolerance: 1.64
+    unit: sp/s
+  - quantity: activated population, mean baseline rate
+    value: 6.36
+    tolerance: 0.704
+    unit: sp/s
+  - quantity: suppressed population, mean wall rate at its minimum
+    value: 4.47
+    tolerance: 1.0
+    unit: sp/s
+  - quantity: suppressed population, mean baseline rate
+    value: 6.19
+    tolerance: 1.076
+    unit: sp/s
+  criterion: >-
+    Per unit, the mean wall rate (3 to 11 s) at the preferred distance (activated) or at the
+    distance of minimum rate (suppressed; Figure S4B legend), against the unit's baseline rate;
+    one-tailed two-sample K-S tests in the stated direction (Methods). The baseline paired with
+    it is not specified, and the paper's 6.36 sp/s differs from the 5.46 sp/s of the same
+    population's all-pass baseline (figs4a-baseline-activated-lower). Readings: (a) baseline of
+    the passes at that same distance; (b) baseline over all passes. Reproduced when both tests
+    give p < 0.05 in the stated direction and the four means are within tolerance under one
+    reading; partially reproduced when both tests hold but no reading puts the means within
+    tolerance.
+- id: figs4c-untuned-no-change
+  statement: >-
+    Untuned units do not change their firing between baseline and wall passes (6.93 against 6.32
+    sp/s).
+  source: Results, PrV contains both proximity and map codes, paragraph 5; Figure S4C
+  quote: >-
+    Untuned units showed no significant change between baseline and wall-passing periods (6.93 ±
+    0.947 vs. 6.32 ± 0.953 sp/s; two-tailed K-S test: p = 0.53
+  statistics:
+  - test: two-tailed two-sample Kolmogorov-Smirnov test
+    p: 0.53
+    n: 177 units
+  depends_on:
+  - fig2f-tuning-categories
+  expected:
+  - quantity: untuned units, mean wall rate averaged over distances
+    value: 6.32
+    tolerance: 0.953
+    unit: sp/s
+  criterion: >-
+    A claim of absence, judged on the paper's test, a two-tailed two-sample K-S test between
+    per-unit mean baseline rates and per-unit wall rates averaged across distances (Figure S4C
+    legend) for untuned units, at p < 0.05. Reproduced when p >= 0.05; not reproduced when p <
+    0.05. The difference of means is reported either way.
+- id: fig2de-preferred-distances-span
+  statement: >-
+    In both the activated and the suppressed populations a large proportion of units prefer the
+    closest wall position (7 mm), while others are best tuned to intermediate or far distances.
+  source: Results, PrV contains both proximity and map codes, paragraph 6; Figure 2D-E; Figure S4D, G
+  quote: >-
+    In both populations, while a large proportion of units preferred the closest wall position (7
+    mm), others were best tuned to intermediate or far distances ( Figure 2E , Supplemental
+    Figure S4G ), revealing coexistence of proximity and map-like coding schemes in PrV
+  depends_on:
+  - fig2-distance-tuned-counts
+  criterion: >-
+    Preferred distance is the maximum of the mean tuning curve (activated population, 472) and
+    the minimum (trough, suppressed population, 213; Figure S4G legend and the code's
+    pref_dist_sup). Reproduced when, in each population, 7 mm is the most frequent preferred
+    distance and at least one unit prefers each of the eight distances from 9 to 23 mm. The
+    paper reports no test; the most frequent bin and coverage of the range are the reading of
+    "a large proportion ... others".
+- id: figs4ef-crossvalidated-stability
+  statement: >-
+    Preferred distances of the activated population are stable across two random halves of the
+    wall passes, whereas the suppressed population is only partly reproducible, with only
+    proximity-preferring responses stable.
+  source: Results, PrV contains both proximity and map codes, paragraph 6; Figure S4E-F
+  quote: >-
+    The resulting distance-tuning heatmaps of the activated population revealed little changes in
+    the preferred distance between cross-validated partitions ( Supplemental Figure S4E ). In
+    contrast, the suppressed population showed partial reproducibility, where only
+    proximity-preferring responses were stable, while map-like profiles lacked consistent
+    structure
+  depends_on:
+  - fig2-distance-tuned-counts
+  criterion: >-
+    Per unit, passes at each distance are split at random into two halves (the code draws
+    floor(reps/2) repetition indices without replacement, the same split for all distances of a
+    unit); preferred distance (maximum for activated, minimum for suppressed units) is taken in
+    each half. The paper gives no measure of stability. Readings: (a) the fraction of units whose
+    preferred distance is the same in both halves; (b) the Spearman correlation of preferred
+    distance across halves. Reproduced when, under both readings, the activated population is
+    more stable than the suppressed population, and, within the suppressed population, units
+    whose first-half trough is at 7 mm keep it more often than units with a trough at 9 mm or
+    more. A fixed seed is a standard choice; the split is repeated 100 times and the median
+    reported.
+- id: figs4j-ventral-location
+  statement: >-
+    Wall-responsive units, and proximity and map units among them, lie preferentially in ventral
+    PrV, toward the probe tip.
+  source: Results, PrV contains both proximity and map codes, paragraphs 3 and 7; Figure S4I-J
+  quote: >-
+    We identified 266 proximity units (34.6%) and 118 map units (15.4%) out of the 768
+    wall-responsive units ( Figure 2F ), which were preferentially located in ventral PrV (
+    Supplemental Figure S4J )
+  depends_on:
+  - fig2f-tuning-categories
+  criterion: >-
+    Depth is the shank coordinate of the unit's peak channel (largest peak-to-trough amplitude of
+    the mean waveform) from the probe tip, Poly2 probes only, in 100-um bins (Methods, Unit Depth
+    Along Silicon Probe; FigS4I_probemap.m), n = 1050 well-isolated and 703 wall-responsive units
+    (Figure S4I-J legends). The paper reports no test. Readings: (a) the median depth of
+    wall-responsive units is smaller than that of unresponsive units, and the median depth of
+    proximity and of map units is smaller than that of unresponsive units; (b) the fraction of
+    units that are responsive is higher in the 0 to 400 um half of the shank than in the 400 to
+    800 um half, and so is the fraction that are proximity or map units. Reproduced when both
+    readings agree.
+- id: figs4l-temporal-windows-map
+  statement: >-
+    Applied to temporal windows, the classification finds map units most often in the sustained
+    period (122 of 768, 15.9%), less in the onset period (83, 10.8%) and fewest in the offset
+    period (34, 4.4%).
+  source: Results, PrV contains both proximity and map codes, paragraph 8; Figure S4L
+  quote: >-
+    Map units were most prevalent during the sustained period among wall-responsive units (15.9%,
+    122/768), but were also present during the onset epoch (10.8%, 83/768). In contrast, offset
+    responses yielded fewer map units (4.4%, 34/768)
+  depends_on:
+  - fig2-wall-responsive-counts
+  expected:
+  - quantity: map units, sustained window
+    value: 122
+    tolerance: 12.2
+  - quantity: map units, onset window
+    value: 83
+    tolerance: 8.3
+  - quantity: map units, offset window
+    value: 34
+    tolerance: 3.4
+  criterion: >-
+    The classification of the opening comment with the wall rate taken in the onset (2.5 to 4.5
+    s), sustained (4.5 to 9.5 s) or offset (9.5 to 11.5 s) window. The paper does not say whether
+    the 768 wall-responsive units are reclassified for responsiveness in each window or kept from
+    the full-period classification. Readings: (a) responsiveness kept from the full period, tuning
+    and map tests rerun in each window; (b) all tests rerun in each window. Reproduced when the
+    three counts are within tolerance, and ordered sustained > onset > offset, under one reading;
+    partially reproduced when the order holds but a count is out of tolerance.
+- id: fig3a-decoding-above-controls
+  statement: >-
+    Population decoders trained on map, proximity, suppressed-only and combined map plus
+    proximity units decode wall distance during the contact period better than shuffled and
+    untuned controls.
+  source: Results, The map code in PrV allows more accurate readout, paragraph 1; Figure 3A
+  quote: >-
+    As expected, decoding accuracy during the wall-contact period was higher in the map,
+    proximity, suppressed-only, and combined "map + proximity" groups compared to shuffled and
+    untuned controls ( Figure 3A )
+  statistics:
+  - about: suppressed-only against shuffled, each of nine distances
+    test: Wilcoxon rank-sum test
+    p: 1.83e-4
+    corrected: BH-FDR
+    n: 10 subsamples per group
+  depends_on:
+  - fig2f-tuning-categories
+  criterion: >-
+    Decoding as in the opening comment. Reproduced when the overall accuracy (mean over the nine
+    distances, 3 to 11 s) of each of the four groups exceeds that of both the shuffled and the
+    untuned groups, and a two-sided Wilcoxon rank-sum test (MATLAB ranksum default, as in the
+    code; the Table S2 value 1.83e-4 is the two-sided normal-approximation p for complete
+    separation of 10 against 10) on the 10 subsample values has p < 0.05 for each such pair, under the Methods' 10-fold cross-validation and under the code's 15
+    splits.
+- id: fig3-overall-decoding-accuracy
+  statement: >-
+    Averaged across the nine distances, the map group decodes best (71.5%), ahead of the combined
+    map plus proximity group (58.6%) and the proximity group (48.9%); the suppressed-only group
+    reaches 32.6% and untuned units 15.7%, against a chance level of 11.1%.
+  source: Results, The map code in PrV allows more accurate readout, paragraph 1; Table S2
+  quote: >-
+    the map group achieved the highest overall decoding accuracy averaged across all nine
+    distances (71.5%), outperforming the proximity (48.9%) and combined "map + proximity" (58.6%)
+    groups. The suppressed-only group had an average overall decoding accuracy of 32.6%. Untuned
+    units performed slightly above chance (15.7%)
+  depends_on:
+  - fig2f-tuning-categories
+  expected:
+  - quantity: overall accuracy, map
+    value: 71.53
+    tolerance: 7.15
+    unit: percent
+  - quantity: overall accuracy, combined map plus proximity
+    value: 58.55
+    tolerance: 5.86
+    unit: percent
+  - quantity: overall accuracy, proximity
+    value: 48.86
+    tolerance: 4.89
+    unit: percent
+  - quantity: overall accuracy, suppressed-only
+    value: 32.56
+    tolerance: 3.26
+    unit: percent
+  - quantity: overall accuracy, untuned
+    value: 15.73
+    tolerance: 1.57
+    unit: percent
+  - quantity: overall accuracy, shuffled
+    value: 10.9
+    tolerance: 1.09
+    unit: percent
+  criterion: >-
+    Decoding as in the opening comment; values from the Table S2 "Average" row. The text says
+    "During the sustained wall-passing period" while the Methods, the code (summary_period 3000
+    to 11000 ms) and the Table give the 3 to 11 s contact period. Readings: window (i) 3 to 11 s
+    (main), (ii) 4.5 to 9.5 s; cross-validation (x) 10-fold (Methods), (y) 15 splits (code).
+    Reproduced when the order map > combined > proximity > suppressed-only > untuned > shuffled
+    holds and all six values are within tolerance under one reading; partially reproduced when
+    the order holds with the map group first but values are out of tolerance.
+- id: fig3c-decoding-by-distance
+  statement: >-
+    At the two closest distances (7 and 9 mm) the combined map plus proximity and proximity
+    groups decode most accurately, whereas the map group is most accurate at 11 to 23 mm.
+  source: Results, The map code in PrV allows more accurate readout, paragraph 2; Figure 3B-C; Table S2
+  quote: >-
+    At the closest distances (7 and 9 mm), the combined "map + proximity" and proximity
+    populations achieved the highest accuracy. In contrast, the map population was most accurate
+    at decoding more distal wall positions (11–23 mm)
+  statistics:
+  - about: proximity against map at 7 mm, MCC accuracy
+    test: Wilcoxon rank-sum test
+    p: 2.06e-4
+    corrected: BH-FDR
+    n: 10 subsamples per group
+  - about: proximity against map plus proximity at 7 mm, MCC accuracy
+    test: Wilcoxon rank-sum test
+    p: 0.18
+    corrected: BH-FDR
+    n: 10 subsamples per group
+  - about: map against map plus proximity at each distance, MCC accuracy
+    test: Wilcoxon rank-sum test
+    p: 1.83e-4
+    corrected: BH-FDR
+    n: 10 subsamples per group
+  depends_on:
+  - fig3-overall-decoding-accuracy
+  expected:
+  - quantity: MCC accuracy at 7 mm, combined
+    value: 88.48
+    tolerance: 8.85
+    unit: percent
+  - quantity: MCC accuracy at 7 mm, proximity
+    value: 87.84
+    tolerance: 8.78
+    unit: percent
+  - quantity: MCC accuracy at 7 mm, map
+    value: 81.14
+    tolerance: 8.11
+    unit: percent
+  - quantity: MCC accuracy at 15 mm, map
+    value: 82.5
+    tolerance: 8.25
+    unit: percent
+  - quantity: MCC accuracy at 15 mm, proximity
+    value: 36.29
+    tolerance: 3.63
+    unit: percent
+  criterion: >-
+    Per-distance accuracy as in the opening comment, with the readings of
+    fig3-overall-decoding-accuracy. Tolerances are 10% of the Table S2 values; the Table's 95%
+    CIs over 10 subsamples (0.1 to 3 points) are left aside because a rerun draws new subsamples.
+    Reproduced when, under one reading, (a) at 7 and at 9 mm the combined and proximity groups
+    both exceed the map group, (b) at each of 11 to 23 mm the map group exceeds every other
+    group, with the per-distance rank-sum tests (BH-FDR over nine distances) of map against
+    proximity and map against combined giving q < 0.05 at 11 to 23 mm, and (c) the five values
+    are within tolerance. Partially reproduced when (a) and (b) hold at all but one distance.
+- id: fig3c-decoding-error
+  statement: >-
+    Decoding error grows with distance; proximity, map and combined groups reach submillimetre
+    error at 7 and 9 mm, and only the map group is submillimetre at 13 and 15 mm.
+  source: Results, The map code in PrV allows more accurate readout, paragraph 2; Figure 3C right; Table S3
+  quote: >-
+    While classification error generally increased with distance, proximity, map, and the
+    combined "map + proximity" groups showed submillimeter precision when decoding the two
+    closest distances (7 and 9 mm; Figure 3C , right; Table S3 ). Only the map population
+    achieved submillimeter error at the intermediate distances of 13 and 15 mm
+  depends_on:
+  - fig3-overall-decoding-accuracy
+  expected:
+  - quantity: MCC error at 13 mm, map
+    value: 0.7
+    tolerance: 0.07
+    unit: mm
+  - quantity: MCC error at 15 mm, map
+    value: 0.78
+    tolerance: 0.078
+    unit: mm
+  - quantity: mean MCC error over distances, map
+    value: 0.86
+    tolerance: 0.086
+    unit: mm
+  - quantity: mean MCC error over distances, proximity
+    value: 1.78
+    tolerance: 0.178
+    unit: mm
+  criterion: >-
+    Error per true distance is the confusion-matrix-weighted mean of the absolute difference
+    between predicted and true distance, averaged over time bins in the contact period (Methods;
+    code err_by_distance). Readings as in fig3-overall-decoding-accuracy. Reproduced when, under
+    one reading, proximity, map and combined errors are below 1 mm at 7 and 9 mm, the map error
+    is below 1 mm at 13 and 15 mm while proximity and combined errors are not, and the four values
+    are within tolerance.
+- id: figs5c-single-neuron-decoders
+  statement: >-
+    Single-neuron decoders show the same pattern with lower accuracy than population decoders,
+    proximity units being more accurate than map units at 7 mm and map units more accurate at 11
+    to 17 mm.
+  source: Results, The map code in PrV allows more accurate readout, paragraph 2; Figure S5B-C; Table S4
+  quote: >-
+    These results are consistent with the performance of single-neuron decoders, although their
+    overall decoding accuracy is lower than that of population decoders
+  statistics:
+  - about: proximity against map at 7 mm
+    test: Wilcoxon rank-sum test
+    p: 0.01
+    corrected: BH-FDR
+    n: 266 proximity and 118 map units
+  - about: proximity against map at 11 mm
+    test: Wilcoxon rank-sum test
+    p: 0.02
+    corrected: BH-FDR
+    n: 266 proximity and 118 map units
+  - about: proximity against map at 13, 15 and 17 mm
+    test: Wilcoxon rank-sum test
+    p: 0.001
+    p_relation: "<"
+    corrected: BH-FDR
+    n: 266 proximity and 118 map units
+  depends_on:
+  - fig2f-tuning-categories
+  expected:
+  - quantity: single-neuron accuracy at 7 mm, proximity
+    value: 65.84
+    tolerance: 2.582
+    unit: percent
+  - quantity: single-neuron accuracy at 7 mm, map
+    value: 59.08
+    tolerance: 3.702
+    unit: percent
+  - quantity: single-neuron accuracy at 15 mm, map
+    value: 34.72
+    tolerance: 4.463
+    unit: percent
+  - quantity: single-neuron accuracy at 15 mm, proximity
+    value: 18.84
+    tolerance: 2.154
+    unit: percent
+  criterion: >-
+    Per unit, spike counts in 200-ms bins over 3 to 11 s; a template (mean over training passes)
+    per distance; nearest template in Euclidean distance; leave-two-out cross-validation (two
+    passes per distance held out, exhaustively); accuracy the fraction of correct test passes
+    (Methods). Tolerances are the Table S4 95% CIs across units. Per-distance proximity against
+    map with Wilcoxon rank-sum tests, BH-FDR over nine distances. Reproduced when proximity
+    exceeds map at 7 mm and map exceeds proximity at 11, 13, 15 and 17 mm, each with q < 0.05,
+    every single-neuron group's mean accuracy is below the corresponding population value of
+    fig3-overall-decoding-accuracy, and the four values are within tolerance; partially
+    reproduced when the directions hold but some tests or values do not.
+- id: figs5de-svm-robust
+  statement: >-
+    The ranking of subpopulations is robust to the decoder; with a linear SVM the map group
+    still has the highest average accuracy (72.1%) and proximity and combined groups are best at
+    the closest distance.
+  source: Results, The map code in PrV allows more accurate readout, paragraph 2; Figure S5D-E; Tables S2-S3
+  quote: >-
+    Importantly, these findings were robust to the choice of decoder (see STAR Methods ,
+    Supplemental Figure S5D , E , and Tables S2 , S3 for SVM classifier)
+  depends_on:
+  - fig3-overall-decoding-accuracy
+  expected:
+  - quantity: SVM overall accuracy, map
+    value: 72.14
+    tolerance: 7.21
+    unit: percent
+  - quantity: SVM overall accuracy, combined
+    value: 54.43
+    tolerance: 5.44
+    unit: percent
+  - quantity: SVM overall accuracy, proximity
+    value: 52.79
+    tolerance: 5.28
+    unit: percent
+  - quantity: SVM overall accuracy, suppressed-only
+    value: 35.01
+    tolerance: 3.5
+    unit: percent
+  criterion: >-
+    As fig3-overall-decoding-accuracy and fig3c-decoding-by-distance with the Neural Decoding
+    Toolbox libsvm_CL, linear kernel, C = 1, one-versus-one (Methods). Reproduced when, under one
+    reading, the map group has the highest overall accuracy, the proximity and combined groups
+    both exceed the map group at 7 mm, the map group is highest at 13 to 23 mm, and the four
+    values are within tolerance.
+- id: fig4-cut-baseline-unchanged
+  statement: >-
+    Cutting all whiskers but one does not change baseline firing across the recorded population
+    (7.09 against 7.10 sp/s; 195 units from 18 mice).
+  source: Results, PrV map tuning can persist, paragraph 2
+  quote: >-
+    Across the recorded population (n = 195 units from 18 mice), acute whisker cutting did not
+    significantly alter baseline firing rates, measured before wall-movement onset for each wall
+    pass (full array: 7.09 ± 1.034 vs. single whisker: 7.10 ± 1.038 sp/s; Wilcoxon signed-rank
+    test: p = 0.70)
+  statistics:
+  - test: two-sided Wilcoxon signed-rank test
+    p: 0.7
+    n: 195 units from 18 mice
+  expected:
+  - quantity: whisker-cutting units
+    value: 195
+    tolerance: 19.5
+  - quantity: mean baseline rate, full array
+    value: 7.09
+    tolerance: 1.034
+    unit: sp/s
+  - quantity: mean baseline rate, single whisker
+    value: 7.1
+    tolerance: 1.038
+    unit: sp/s
+  criterion: >-
+    A claim of absence, judged on the paper's test, a two-sided Wilcoxon signed-rank test of
+    per-unit mean baseline rates (-4.5 to 0 s; the code averages the per-distance means) between full-array and
+    single-whisker conditions, at p < 0.05 (Methods; Fig4BC_WhiskerCutting_pairwise_FR_PrefDist.m,
+    signrank on fr_base). Units are those passing the unit criteria with stable waveforms in both
+    conditions (Methods). Reproduced when p >= 0.05; not reproduced when p < 0.05. The difference
+    of means is reported either way.
+- id: fig4b-cut-wall-firing-reduced
+  statement: >-
+    In the 86 wall-activated, distance-tuned units, firing during wall passes falls after cutting
+    to a single whisker (11.58 against 8.18 sp/s), in many cases to below 1 sp/s.
+  source: Results, PrV map tuning can persist, paragraph 2; Figure 4B
+  quote: >-
+    firing rates of wall-activated, distance-tuned units (activated population; n = 86) during
+    wall-passing periods were significantly reduced following cutting down to a single whisker
+    (full array: 11.58 ± 1.338 vs. single whisker: 8.18 ± 2.602 sp/s, p = 4.43 × 10 −8 ; Figure
+    4B )
+  statistics:
+  - test: two-sided Wilcoxon signed-rank test
+    p: 4.43e-8
+    n: 86 units from 18 mice
+  depends_on:
+  - fig4-cut-baseline-unchanged
+  expected:
+  - quantity: activated tuned units in cutting sessions
+    value: 86
+    tolerance: 8.6
+  - quantity: mean wall rate, full array
+    value: 11.58
+    tolerance: 1.338
+    unit: sp/s
+  - quantity: mean wall rate, single whisker
+    value: 8.18
+    tolerance: 2.602
+    unit: sp/s
+  criterion: >-
+    Units activated and distance-tuned in the full-array condition (classification of the
+    opening comment). The per-unit wall rate in the code is the median over distances of the
+    per-distance mean rate (fr_wall = median of fr_mean); the Methods say mean firing rate during
+    wall passes. Readings: (a) median over distances (code); (b) mean over all passes (Methods).
+    Two-sided Wilcoxon signed-rank test. The full-array spread is printed as 1.338 in the text
+    and 2.986 in the Figure 4B legend; the larger is used as the tolerance. Reproduced when p <
+    0.05 with lower single-whisker rates and the three values within tolerance under one reading;
+    partially reproduced when the test holds but a value does not.
+- id: fig4b-cut-per-unit-changes
+  statement: >-
+    Of the 86 activated units, 66 change firing significantly after cutting, 52 decreasing and 14
+    increasing.
+  source: Results, PrV map tuning can persist, paragraph 2; Figure 4B
+  quote: >-
+    Among the 86 activated units, 66 showed significant changes in firing rates during
+    wall-passing periods between cutting conditions (two-sided Wilcoxon signed-rank test, p <
+    0.05). Of these 66 units, 52 exhibited a significant decrease in firing rates ... whereas 14
+    units displayed increased firing rates
+  depends_on:
+  - fig4b-cut-wall-firing-reduced
+  expected:
+  - quantity: units with a significant change
+    value: 66
+    tolerance: 6.6
+  - quantity: units with a significant decrease
+    value: 52
+    tolerance: 5.2
+  - quantity: units with a significant increase
+    value: 14
+    tolerance: 1.4
+  criterion: >-
+    Per unit, two-sided Wilcoxon signed-rank test of per-pass wall rates (3 to 11 s) between
+    conditions, passes paired in order and truncated to the shorter condition (code), direction
+    from the sign of the median difference (code). The paper gives three corrections. Readings:
+    (a) uncorrected p < 0.05 (Results); (b) BH-FDR across the 86 units (Methods, Data Analysis:
+    Acute Whisker-Cutting Manipulation; code mafdr); (c) Bonferroni across units (Methods,
+    Characterizing Wall Distance Tuning; code alpha / (2n)). The code also differs on the pass
+    set: (i) all passes pooled over distances; (ii) the code's exact-test block over repetitions.
+    Reproduced when the three counts are within tolerance under one reading.
+- id: fig4c-map-units-after-cut
+  statement: >-
+    Of 21 map units in the full-array condition, 10 remain distance-tuned after cutting to a
+    single whisker; of these, 2 shift their preferred distance to the closest distance (becoming
+    proximity units), 6 shift their preferred distance while keeping map tuning, and 2 keep their
+    preferred distance with a change in gain.
+  source: Results, PrV map tuning can persist, paragraph 3; Figure 4C-I
+  quote: >-
+    Of the 21 units categorized as map cells in the full-array condition, 10 remained
+    significantly tuned to wall distance after cutting down to a single whisker ... Two units
+    shifted their preferred distance to the closest distance ( Figure 4D , E ), effectively
+    converting from map cells to proximity cells. In contrast, six units shifted their preferred
+    distance while retaining map tuning (e.g., Figure 4F , G ), and two additional units
+    preserved their preferred distance but changed in response gain
+  depends_on:
+  - fig4b-cut-wall-firing-reduced
+  expected:
+  - quantity: map units in full-array condition
+    value: 21
+    tolerance: 2.1
+  - quantity: map units still tuned after cutting
+    value: 10
+    tolerance: 1.0
+  - quantity: map units converted to proximity
+    value: 2
+    tolerance: 0.2
+  - quantity: map units shifting preference but staying map
+    value: 6
+    tolerance: 0.6
+  - quantity: map units keeping preferred distance
+    value: 2
+    tolerance: 0.2
+  - quantity: activated units still tuned after cutting (Figure 4C)
+    value: 33
+    tolerance: 3.3
+  criterion: >-
+    Classification of the opening comment run separately on full-array and single-whisker
+    passes. "Remained tuned" is read as in the code, activated and distance-tuned in the
+    single-whisker condition and not silenced (activated_tuned_mask); the variant drops the
+    activation requirement. Map after cutting means the map category in the single-whisker
+    condition (with the map test); a variant counts any preferred distance above 7 mm. Reproduced
+    when all six counts are within tolerance under one reading; partially reproduced when the
+    first two are and the split of the 10 is off by at most one unit per class. Gain change is
+    reported, not judged, as the paper gives no measure.
+- id: fig4jk-proximity-units-after-cut
+  statement: >-
+    Of 45 proximity units in the full-array condition only 15 remain distance-selective after
+    cutting; 9 stay proximity units with lower gain, 4 stay proximity units with higher gain, and
+    2 become map units.
+  source: Results, PrV map tuning can persist, paragraph 4; Figure 4J-K
+  quote: >-
+    Of the 45 units categorized as proximity cells before whisker cutting, only 15 remained
+    distance-selective after cutting down to a single whisker. Of these 15 units, nine remained
+    proximity cells with reduced response gain ... four remained proximity cells with increased
+    response gain ... and two shifted to exhibit map tuning
+  depends_on:
+  - fig4b-cut-wall-firing-reduced
+  expected:
+  - quantity: proximity units in full-array condition
+    value: 45
+    tolerance: 4.5
+  - quantity: proximity units still tuned after cutting
+    value: 15
+    tolerance: 1.5
+  - quantity: proximity units staying proximity with lower gain
+    value: 9
+    tolerance: 0.9
+  - quantity: proximity units staying proximity with higher gain
+    value: 4
+    tolerance: 0.4
+  - quantity: proximity units becoming map
+    value: 2
+    tolerance: 0.2
+  criterion: >-
+    As fig4c-map-units-after-cut. Gain is not defined in the paper. Readings for lower or higher
+    gain: (a) the unit's peak mean wall rate in the single-whisker condition below or above that
+    in the full-array condition; (b) its mean wall rate over distances below or above. Reproduced
+    when all five counts are within tolerance under one reading.
+- id: figs5fg-cut-decoding
+  statement: >-
+    Whisker cutting lowers population decoding accuracy in both map (31.0 to 21.5%) and proximity
+    (24.1 to 20.2%) populations of 21 units, with the largest decreases at intermediate and far
+    distances in the map population and less effect at the closest distances.
+  source: Results, PrV map tuning can persist, paragraph 5; Figure S5F-G
+  quote: >-
+    Whisker cutting reduced overall decoding accuracy in both populations (map: 31.0 ± 0.10% vs.
+    21.5 ± 0.08%; proximity: 24.1 ± 0.82% vs. 20.2 ± 1.22%; mean ± 95% CI for full-array vs.
+    single-whisker conditions), with the largest decreases occurring at intermediate and far
+    distances in the map population
+  depends_on:
+  - fig4c-map-units-after-cut
+  - fig4jk-proximity-units-after-cut
+  expected:
+  - quantity: overall accuracy, map, full array
+    value: 31.0
+    tolerance: 3.1
+    unit: percent
+  - quantity: overall accuracy, map, single whisker
+    value: 21.5
+    tolerance: 2.15
+    unit: percent
+  - quantity: overall accuracy, proximity, full array
+    value: 24.1
+    tolerance: 2.41
+    unit: percent
+  - quantity: overall accuracy, proximity, single whisker
+    value: 20.2
+    tolerance: 2.02
+    unit: percent
+  criterion: >-
+    MCC decoders as in the opening comment, trained and tested within each condition on units
+    recorded in both, grouped by full-array category; map n = 21, proximity 21 of 45 drawn 10
+    times (Methods). Tolerances are 10%: the printed CIs (0.08 to 1.2 points) describe the spread
+    over subsamples, not a rerun's error. Readings for cross-validation as in
+    fig3-overall-decoding-accuracy. Reproduced when, under one reading, accuracy falls in both
+    populations, the map population's largest per-distance drop is at 11 mm or farther and its
+    mean drop per distance over 11 to 23 mm exceeds its mean drop over 7 and 9 mm, and the four
+    values are within tolerance; partially reproduced when the falls and
+    the distance pattern hold but values do not.
+- id: figs6-opto-local-inhibition-gain
+  statement: >-
+    Optogenetic silencing of local PrV inhibitory neurons (GtACR in vGat-Cre mice) strongly
+    inhibits 18 of 112 units (putative inhibitory neurons); among 71 distance-tuned units, 17 are
+    inhibited and 16 disinhibited by light, and disinhibited units keep their preferred distance,
+    so local inhibition affects gain without changing distance preference.
+  source: Results, Inhibition contributes to the PrV map code, paragraph 2; Figure S6B-G
+  quote: >-
+    Among the 112 well-isolated units, 18 were putative inhibitory neurons expressing GtACR, as
+    they were strongly inhibited during the "Laser ON" period (modulation index ≤ −0.5 ... Of
+    distance-tuned units (71/112), 17 were opto-inhibited ... Sixteen units showed a reduction
+    in inhibition under the "Laser ON" condition (modulation index > 0 ... Nonetheless, these
+    opto-disinhibited neurons, regardless of whether they were proximity or map cells, retained
+    their preferred distance
+  expected:
+  - quantity: GtACR units
+    value: 112
+    tolerance: 11.2
+  - quantity: strongly inhibited units (MI at most -0.5)
+    value: 18
+    tolerance: 1.8
+  - quantity: distance-tuned units
+    value: 71
+    tolerance: 7.1
+  - quantity: inhibited distance-tuned units
+    value: 17
+    tolerance: 1.7
+  - quantity: disinhibited distance-tuned units
+    value: 16
+    tolerance: 1.6
+  criterion: >-
+    MI = (FR on - FR off) / (FR on + FR off) of mean wall-period rates; a unit is modulated when
+    its bootstrap CI on MI excludes zero; strongly inhibited MI <= -0.5, inhibited -0.5 < MI < 0,
+    disinhibited MI > 0 (Methods). The paper does not give the CI level or what is resampled;
+    readings, 95% percentile CI from 10,000 resamples (the paper's bootstrap elsewhere) of (a)
+    passes within each laser condition, (b) passes within each condition and distance. Tuning is
+    classified at the five distances (7 to 23 mm in 4-mm steps); the paper does not say on which
+    passes, so the readings are (i) laser-off passes and (ii) all passes. Reproduced when the
+    five counts are within tolerance under one reading and the disinhibited tuned units keep
+    their preferred distance with laser on as off; the paper says they retained it but gives no
+    number, so the readings are all of them and more than half of them, and the share is
+    reported. The 17 inhibited units
+    are counted among tuned units with MI below 0 (strongly or not); whether the 18 strongly
+    inhibited are inside the 17 is not said, so both counts are compared as printed.
+- id: figs6i-telc-kinematics-unchanged
+  statement: >-
+    Chronic TeLC expression in SpVi does not change whisker kinematics during wall passes
+    (whisker-array midpoint angle; mean difference 0.84 degrees, Wald t = 1.02, p = 0.31).
+  source: Results, Inhibition contributes to the PrV map code, paragraph 4; Figure S6I
+  quote: >-
+    Chronic TeLC expression in SpVi did not significantly alter whisker kinematics during wall
+    passes, as measured by whisker array midpoint angle (mean difference across distance = 0.84°;
+    two-tailed Wald's t -test: t = 1.02, p = 0.31
+  statistics:
+  - test: two-tailed Wald t-test on the TeLC fixed effect of a linear mixed-effects model
+    statistic: t = 1.02
+    p: 0.31
+    n: 15 sessions from 6 wild-type and 15 sessions from 6 SpVi-TeLC mice
+  expected:
+  - quantity: mean difference in midpoint angle, TeLC minus wild type
+    value: 0.84
+    tolerance: 0.084
+    unit: degrees
+  - quantity: group mean change in midpoint angle, wild type
+    value: -5.35
+    tolerance: 0.445
+    unit: degrees
+  - quantity: group mean change in midpoint angle, SpVi-TeLC
+    value: -4.51
+    tolerance: 0.738
+    unit: degrees
+  criterion: >-
+    A claim of absence, judged on the paper's test (Methods, Whisker Kinematics, Wild-Type vs
+    SpVi-TeLC). Per pass, the change in midpoint angle averaged across tracked whiskers per
+    frame; fitlme by maximum likelihood, theta_mid ~ TeLC + distance + (1|subject) + (1|session),
+    two-sided Wald test of TeLC at p < 0.05. Reproduced when p >= 0.05, and no per-distance model
+    theta_mid ~ TeLC + (1|subject) + (1|session) gives p < 0.05 (Figure S6I legend); not
+    reproduced otherwise. The effect size is reported either way. The legend's group means
+    carry its printed spread as tolerance.
+- id: telc-unit-yield
+  statement: >-
+    In SpVi-TeLC mice, 587 of 665 sorted PrV units from 11 mice passed the unit criteria, of
+    which 395 were wall-responsive and 252 wall-activated and distance-tuned.
+  source: Methods, Isolation of Single Unit Activity; Figure 5C, E legends
+  quote: >-
+    in TeLC experiments, 587 of 665 units (11 mice)
+  expected:
+  - quantity: TeLC units passing criteria
+    value: 587
+    tolerance: 58.7
+  - quantity: TeLC wall-responsive units
+    value: 395
+    tolerance: 39.5
+  - quantity: TeLC activated and distance-tuned units
+    value: 252
+    tolerance: 25.2
+  - quantity: TeLC mice
+    value: 11
+    tolerance: 0
+  criterion: >-
+    Unit criteria and classification as in the opening comment (the same code,
+    Fig5CE_TeLC_heatmap_stacked_bar.m). Reproduced when all four values are within tolerance
+    under the Methods' responsiveness test (the code's BH-FDR variant shown).
+- id: fig5d-telc-preferred-closer
+  statement: >-
+    Wall-activated, distance-tuned units in SpVi-TeLC mice prefer closer distances than those in
+    wild-type mice.
+  source: Results, Inhibition contributes to the PrV map code, paragraph 4; Figure 5C-D
+  quote: >-
+    Comparison of normalized tuning curves of all wall-activated, distance-tuned units revealed a
+    reduction in the proportion of map units in SpVi-TeLC mice ( Figure 5C ) relative to
+    wild-type mice ( Figure 2D ), shifting the population to prefer closer distances ( Figure 5D
+    )
+  statistics:
+  - test: one-tailed two-sample Kolmogorov-Smirnov test
+    p: 8.02e-5
+    n: 472 wild-type and 252 SpVi-TeLC units
+  depends_on:
+  - fig2-distance-tuned-counts
+  - telc-unit-yield
+  criterion: >-
+    Preferred distance (maximum of the mean tuning curve, binned to the nine centres) of
+    activated, distance-tuned units; one-tailed two-sample K-S test that TeLC preferred distances
+    are smaller (Fig5D_TeLC_Pref_Dist_CDF.m, kstest2 with Tail smaller, wild type first).
+    Population readings: (a) activated and distance-tuned (Figure 5D legend, "same units in C");
+    (b) activated without the tuning requirement (the code's mask1 and mask2). Reproduced when p
+    < 0.05 under reading (a); the result under (b) is shown as a variant.
+- id: fig5e-telc-category-shift
+  statement: >-
+    Among wall-responsive units, SpVi-TeLC mice have nearly threefold fewer map units than
+    wild-type mice (5.8 against 15.4%), more proximity units (47.9 against 34.6%) and modestly
+    fewer suppressed-only units (10.9 against 15.5%).
+  source: Results, Inhibition contributes to the PrV map code, paragraph 4; Figure 5E
+  quote: >-
+    In particular, the proportion of map units was nearly threefold lower in SpVi-TeLC mice than
+    in wild-type mice (5.8% vs 15.4%; Z -statistic: 4.721, p = 1.2×10 −6 ), whereas the
+    proportion of proximity units increased (47.9% vs 34.6%; Z -statistic: −4.33, p = 7.5×10 −6
+    ) ... The proportion of suppressed units decreased modestly (10.9% vs 15.5%; Z -statistic:
+    2.15, p = 0.02)
+  statistics:
+  - about: map units
+    test: one-tailed two-proportion Z-test
+    statistic: Z = 4.721
+    p: 1.2e-6
+    n: 768 wild-type and 395 SpVi-TeLC wall-responsive units
+  - about: proximity units
+    test: one-tailed two-proportion Z-test
+    statistic: Z = -4.33
+    p: 7.5e-6
+    n: 768 wild-type and 395 SpVi-TeLC wall-responsive units
+  - about: suppressed-only units
+    test: one-tailed two-proportion Z-test
+    statistic: Z = 2.15
+    p: 0.02
+    n: 768 wild-type and 395 SpVi-TeLC wall-responsive units
+  depends_on:
+  - fig2f-tuning-categories
+  - telc-unit-yield
+  expected:
+  - quantity: map share, SpVi-TeLC
+    value: 5.8
+    tolerance: 0.58
+    unit: percent of wall-responsive units
+  - quantity: proximity share, SpVi-TeLC
+    value: 47.9
+    tolerance: 4.79
+    unit: percent of wall-responsive units
+  - quantity: suppressed-only share, SpVi-TeLC
+    value: 10.9
+    tolerance: 1.09
+    unit: percent of wall-responsive units
+  criterion: >-
+    Shares of the five categories among wall-responsive units in each group; pooled two-proportion
+    Z = (p_WT - p_TeLC) / SE, one-tailed in the paper's direction (map and suppressed-only lower,
+    proximity higher in TeLC; Methods; Fig5CE code). The Methods' denominator is "the total number
+    of recorded units" while the legend and the code use wall-responsive units; readings (a)
+    wall-responsive units (768 and 395, main), (b) all units passing criteria (1141 and 587).
+    Reproduced when the three tests give p < 0.05 in the stated directions and the three TeLC
+    shares are within tolerance under reading (a); partially reproduced when the map and
+    proximity tests hold but the suppressed-only test or a share does not.
+- id: fig5e-telc-untuned-ambiguous-unchanged
+  statement: >-
+    The shares of untuned (25.3 against 23.0%) and ambiguous (10.1 against 11.5%) units do not
+    differ between SpVi-TeLC and wild-type mice.
+  source: Results, Inhibition contributes to the PrV map code, paragraph 4; Figure 5E legend
+  quote: >-
+    whereas the proportions of untuned (25.3% vs 23.0%; Z -statistic: −0.86, p = 0.39) and
+    ambiguous units (10.1% vs 11.5%; Z -statistic: 0.62, p = 0.53) remained unchanged
+  statistics:
+  - about: untuned units
+    test: two-tailed two-proportion Z-test
+    statistic: Z = -0.86
+    p: 0.39
+  - about: ambiguous units
+    test: two-tailed two-proportion Z-test
+    statistic: Z = 0.62
+    p: 0.53
+  depends_on:
+  - fig5e-telc-category-shift
+  criterion: >-
+    A claim of absence, judged on the paper's test, two-tailed pooled two-proportion Z-tests
+    (Figure 5E legend; code) on shares of wall-responsive units, at p < 0.05. Reproduced when
+    neither test gives p < 0.05; not reproduced when either does. The difference in share is
+    reported for each.
+- id: figs6j-telc-untuned-higher-firing
+  statement: >-
+    Untuned units in SpVi-TeLC mice fire more than in wild-type mice at baseline (10.01 against
+    6.93 sp/s) and during wall passes (9.64 against 6.32 sp/s).
+  source: Results, Inhibition contributes to the PrV map code, paragraph 5; Figure S6J
+  quote: >-
+    During both baseline and wall-passing periods, untuned units in SpVi-TeLC mice exhibited
+    significantly higher firing rates than those in the wild-type population, consistent with
+    loss of long-range inhibitory inputs from SpVi (baseline: 10.01 ± 2.431 vs 6.93 ± 0.947 sp/s,
+    p = 3.98 × 10 −5 ; wall passes: 9.64 ± 2.772 vs. 6.32 ± 0.953 sp/s, p =9.64 × 10 −4 ;
+    one-tailed K-S tests
+  statistics:
+  - about: baseline rates
+    test: one-tailed two-sample Kolmogorov-Smirnov test
+    p: 3.98e-5
+    corrected: Bonferroni, four comparisons (alpha 0.0125)
+  - about: wall-pass rates averaged across distances
+    test: one-tailed two-sample Kolmogorov-Smirnov test
+    p: 9.64e-4
+    corrected: Bonferroni, four comparisons (alpha 0.0125)
+  depends_on:
+  - fig2f-tuning-categories
+  - telc-unit-yield
+  expected:
+  - quantity: mean baseline rate, TeLC untuned
+    value: 10.01
+    tolerance: 2.431
+    unit: sp/s
+  - quantity: mean wall rate, TeLC untuned
+    value: 9.64
+    tolerance: 2.772
+    unit: sp/s
+  criterion: >-
+    Per-unit mean baseline rate and wall rate averaged across distances; one-tailed two-sample
+    K-S tests (TeLC higher), significant at 0.0125 (Figure S6K legend, four comparisons). The
+    baseline p-value is printed as 3.98 x 10^-5 in the text and 3.98 x 10^-3 in the legend; both
+    are below 0.0125. Untuned population readings: (a) wall-responsive but not distance-tuned
+    (177 wild type, the population whose 6.93 and 6.32 sp/s match Figure S4); (b) the Table S5
+    "untuned" sets (550 wild type, 294 TeLC), every unit outside the activated-tuned and
+    suppressed-only groups. Reproduced when both tests give p < 0.0125 and both TeLC means are
+    within tolerance under one reading.
+- id: figs6k-telc-tuned-baseline-similar
+  statement: >-
+    Wall-activated, distance-tuned units in SpVi-TeLC mice have baseline firing comparable to
+    wild type (5.60 against 5.46 sp/s).
+  source: Results, Inhibition contributes to the PrV map code, paragraph 5; Figure S6K left
+  quote: >-
+    In contrast, distance-tuned units in SpVi-TeLC mice showed baseline activity comparable to
+    that of wild-type mice in the absence of wall contact (5.60 ± 0.845 vs. 5.46 ± 0.670 sp/s;
+    one-tailed K-S test: p = 0.14)
+  statistics:
+  - test: one-tailed two-sample Kolmogorov-Smirnov test
+    p: 0.14
+    n: 252 SpVi-TeLC and 472 wild-type units
+  depends_on:
+  - fig5d-telc-preferred-closer
+  expected:
+  - quantity: mean baseline rate, TeLC activated tuned units
+    value: 5.6
+    tolerance: 0.845
+    unit: sp/s
+  criterion: >-
+    A claim of absence, judged on the paper's test, a one-tailed two-sample K-S test (TeLC
+    higher) of per-unit mean baseline rates of activated, distance-tuned units, at the legend's
+    Bonferroni level 0.0125. Reproduced when p >= 0.0125; not reproduced when p < 0.0125. The
+    result at 0.05 and the difference of means are reported as well.
+- id: figs6k-telc-tuned-wall-higher
+  statement: >-
+    During wall contact, wall-activated, distance-tuned units in SpVi-TeLC mice fire more than in
+    wild type (9.96 against 9.02 sp/s, averaged across distances).
+  source: Results, Inhibition contributes to the PrV map code, paragraph 5; Figure S6K right
+  quote: >-
+    but exhibited significantly greater wall-evoked firing (9.96 ± 1.209 vs. 9.02 ± 1.005 sp/s;
+    one-tailed K-S test: p = 9.34 × 10 −3
+  statistics:
+  - test: one-tailed two-sample Kolmogorov-Smirnov test
+    p: 9.34e-3
+    corrected: Bonferroni, four comparisons (alpha 0.0125)
+    n: 252 SpVi-TeLC and 472 wild-type units
+  depends_on:
+  - fig5d-telc-preferred-closer
+  expected:
+  - quantity: mean wall rate, TeLC activated tuned units
+    value: 9.96
+    tolerance: 1.209
+    unit: sp/s
+  - quantity: mean wall rate, wild-type activated tuned units
+    value: 9.02
+    tolerance: 1.005
+    unit: sp/s
+  criterion: >-
+    Per-unit wall rate (3 to 11 s) averaged across the nine distances; one-tailed two-sample K-S
+    test (TeLC higher). Reproduced when p < 0.0125 and both means are within tolerance; partially
+    reproduced when 0.0125 <= p < 0.05 or the test holds with a mean out of tolerance.
+- id: figs6l-telc-increase-at-close-distances
+  statement: >-
+    The TeLC increase in firing of activated, distance-tuned units is distance dependent, largest
+    at 7 mm (4.74 sp/s) and significant only at 7 and 9 mm, whereas untuned units show a roughly
+    uniform increase of about 2 sp/s, significant at every distance.
+  source: Results, Inhibition contributes to the PrV map code, paragraph 5; Figure S6L; Table S5
+  quote: >-
+    This enhancement was distance dependent, with the largest increase at the closest wall
+    distance ( Supplemental Figure S6L , bottom; Table S5 ). Thus, SpVi inhibition appears to be
+    strongest at close distances for distance-tuned units
+  statistics:
+  - about: tuned units, 7 mm
+    test: two-tailed Wilcoxon rank-sum test
+    p: 3.13e-6
+    corrected: Bonferroni over nine distances (alpha 0.00556)
+    ci:
+      level: 0.95
+      low: 2.09
+      high: 7.45
+      unit: sp/s
+    n: 472 wild-type and 252 SpVi-TeLC units
+  - about: tuned units, 9 mm
+    test: two-tailed Wilcoxon rank-sum test
+    p: 1.74e-3
+    corrected: Bonferroni over nine distances (alpha 0.00556)
+    ci:
+      level: 0.95
+      low: -0.04
+      high: 5.02
+      unit: sp/s
+  - about: untuned units, 7 mm
+    test: two-tailed Wilcoxon rank-sum test
+    p: 4.38e-4
+    corrected: Bonferroni over nine distances (alpha 0.00556)
+    ci:
+      level: 0.95
+      low: 0.95
+      high: 3.85
+      unit: sp/s
+    n: 550 wild-type and 294 SpVi-TeLC units
+  depends_on:
+  - fig5d-telc-preferred-closer
+  expected:
+  - quantity: TeLC minus wild-type mean rate at 7 mm, tuned units
+    value: 4.74
+    tolerance: 2.71
+    unit: sp/s
+  - quantity: TeLC minus wild-type mean rate at 9 mm, tuned units
+    value: 2.53
+    tolerance: 2.57
+    unit: sp/s
+  - quantity: TeLC minus wild-type mean rate at 23 mm, tuned units
+    value: -0.16
+    tolerance: 1.03
+    unit: sp/s
+  - quantity: TeLC minus wild-type mean rate at 7 mm, untuned units
+    value: 2.38
+    tolerance: 1.47
+    unit: sp/s
+  criterion: >-
+    Per distance, per-unit mean wall rate; TeLC minus wild-type difference of means with a
+    bootstrap 95% CI, and a two-tailed Wilcoxon rank-sum test at the Bonferroni level 0.00556
+    (Table S5; Figure S6L legend). Tolerances are the larger half of each Table S5 CI around its
+    mean. Populations as Table S5 (tuned 472 and 252; untuned 550 and 294). Reproduced when, for
+    tuned units, the largest difference is at 7 mm, the tests are significant at 7 and 9 mm and at
+    no distance from 11 to 23 mm, and, for untuned units, every distance is significant, with the
+    four values within tolerance; partially reproduced when the tuned-unit difference is largest
+    at 7 mm and significant there but the pattern elsewhere differs.
+- id: fig6-model-telc-loses-map
+  statement: >-
+    A feedforward model in which PrV neurons sum sparse sigmoidal TG excitation and SpVi-relayed
+    inhibition yields both proximity-like and map-like tuning across 1,225 model neurons; halving
+    long-range inhibition loses map units and expands proximity units.
+  source: Results, Inhibition contributes to the PrV map code, paragraphs 6-7; Figure 6C-F
+  quote: >-
+    When long-range inhibitory input to each PrV neuron was reduced by 50% to simulate
+    TeLC-mediated silencing of SpVi inhibition, the model showed a loss of map units and a
+    corresponding expansion of proximity units ( Figure 6D – F , right)
+  data: elsewhere
+  where: github.com/wanglab-neuro/2026_Xiao-Severson_Peri-head-distance at commit b1a9f3c (PrV_simulation); Zenodo doi:10.5281/zenodo.20330279
+  expected:
+  - quantity: model neurons
+    value: 1225
+    tolerance: 0
+  - quantity: distance-tuned model neurons, control
+    value: 590
+    tolerance: 59
+  - quantity: distance-tuned model neurons, 50% inhibition
+    value: 636
+    tolerance: 63.6
+  criterion: >-
+    A simulation, not a test on recorded data. Run PrV_simulation/simulate_prv.py at the commit
+    with its defaults (M1 = 20, seed 42, p_untuned 0.4, long_inh_gain 10, local_inh_gain 1.7),
+    without and with --telc (telc_inh_scale 0.5); classification as in the Methods (untuned when
+    max - min < 0.1 over nine bins, suppressed when max below zero, proximity when the peak is at
+    bin 0, map when it is later). Reproduced when the map share of distance-tuned model neurons
+    falls and the proximity share rises with --telc, and the two tuned counts are within
+    tolerance. The Methods' equations and the code's defaults are both recorded; where they
+    differ (the code adds local excitation and inhibition terms the Methods do not write), the
+    code is run, as only it gives the figure's numbers.
+- id: fig6ghi-tuning-shape-telc
+  statement: >-
+    Compared with wild type, activated, distance-tuned units in SpVi-TeLC mice show little change
+    in tuning width, a modest increase in tuning amplitude and a pronounced shift of monotonicity
+    toward proximity-like (near-preferring) tuning, a pattern the model with reduced inhibition
+    reproduces.
+  source: Results, Inhibition contributes to the PrV map code, paragraph 7; Figure 6G-I
+  quote: >-
+    This simulated manipulation also recapitulated the experimental population-level changes in
+    tuning curve shape ( Figure 6G – I ; see STAR Methods ): tuning width changed relatively
+    little, tuning amplitude showed a modest rightward shift, and monotonicity exhibited a
+    pronounced leftward shift toward more proximity-like responses
+  depends_on:
+  - fig5d-telc-preferred-closer
+  criterion: >-
+    Experimental part, on 472 wild-type and 252 SpVi-TeLC activated, distance-tuned units
+    (Methods, Distance Tuning Curve Shape; Fig6GHI_left_TC_shape_analysis.m). Width is the full
+    width at half maximum above the 4.5-s baseline, in mm, by linear interpolation, truncated at
+    the sampled edges, undefined units dropped; amplitude is peak minus baseline in sp/s;
+    monotonicity is (far-edge minus near-edge response) / peak after subtracting the curve's
+    minimum. The paper reports no test. Readings for "shift": (a) difference of medians; (b)
+    difference of means. Reproduced when, under both readings, TeLC monotonicity is lower than
+    wild type and TeLC amplitude is higher, and the width shift, expressed as a fraction of the
+    pooled interquartile range, is smaller than the monotonicity shift so expressed. The model
+    part (Fig6GHI_right_model_TC_shape_analysis.m, simulation outputs) is reported, not judged.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment. The Methods give the responsiveness test as one-tailed signed-rank at p < 0.05 with no correction, while the code applies BH-FDR across distances. The file made the code the main reading; protocol step 2 puts the Methods first, so the uncorrected test is now the main reading on which claims are judged and the code's BH-FDR is the variant, shown.
+  - figs2-tungsten-responsiveness, fig2-wall-responsive-counts, fig2-distance-tuned-counts, telc-unit-yield. Judged under the Methods' responsiveness test, with the code's BH-FDR shown as a variant, following the change above. Claims that classify "as in the opening comment" follow it too.
+  - fig2f-tuning-categories. Added that the Methods count 112 silicon-probe units as wall-responsive but not tuned, which supports reading (b).
+  - figs1f-angle-awake-vs-anesthetized. Named the code's midpoint (FigS1_Code.m, 101-frame Savitzky-Golay smoothing, envelope method commented out) as a variant of the Methods' envelope midpoint.
+  - figs1d-bending-larger-closer. Noted that the cited panels S1D and S1H show one example C1 whisker in one mouse and that the criterion uses the across-mouse curves of S1F and S1J.
+  - fig3a-decoding-above-controls. The criterion used a one-sided rank-sum test. The code calls ranksum with its two-sided default, and the Table S2 value 1.83e-4 is the two-sided normal-approximation p for complete separation of 10 against 10. Changed to two-sided.
+  - figs5c-single-neuron-decoders. Added the Table S4 test at 11 mm (p = 0.02), which the criterion requires but the statistics did not record.
+  - figs5fg-cut-decoding. The criterion compared the map drop summed over seven distances (11 to 23 mm) with the drop summed over two (7 and 9 mm), which favours the far range by construction. It now compares mean drops per distance and requires the largest drop at 11 mm or farther ("largest decreases").
+  - figs6-opto-local-inhibition-gain. Removed the threshold of 12 of 16 disinhibited units keeping their preferred distance, which is not in the paper. The readings are now all of them and more than half. Named as open whether tuning is classified on laser-off or on all passes, which the paper does not say.
+  - figs6l-telc-increase-at-close-distances. The 7 mm tolerance was 2.68, the mean half-width of the CI. By the criterion's own rule (larger half of the CI [2.09, 7.45] around 4.74) it is 2.71. Corrected.
+  - fig4-cut-baseline-unchanged. Noted that the code's per-unit baseline is the mean of per-distance means.
+  - Checked the code details the file cites against the repository at b1a9f3c (classification and low-firing rule in Fig2DEF, decoder settings in Fig3ABC, cutting tests in Fig4BC, masks and kstest2 tail in Fig5D, model defaults in simulate_prv.py, Poly2 mask in FigS4I). They match the file.
+  - Not settled. Figure 2F (119 suppressed-only, 177 untuned) cannot be reconciled with 472 + 213 - 29 = 656 tuned. Both readings stay in fig2f-tuning-categories, and the downstream claims use the paper's printed populations.
+  - Not settled. Minor findings without a claim, the Figure S4M shifts of preferred distance across windows, the SVM error values of Table S3, and the receptive-field split of tungsten units (18 single-whisker, 28 multi-whisker). These are descriptive and judged not main findings.
+  - Not settled. Tables S1 and S6 are named in the paper but absent from the supplement read; S6 may hold test details (tails, degrees of freedom) that the criteria now treat as open.
