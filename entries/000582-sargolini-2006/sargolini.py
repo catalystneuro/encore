@@ -84,6 +84,8 @@ ANGLES = (30, 60, 90, 120, 150)   # rotations used by gridness (SOM)
 HD_BINS = 60               # head-direction bins of 6 degrees (SOM)
 SPEED_BIN_S = 1.0          # speed bins (SOM)
 LOW_SPEED = 3.0            # cm/s, the paper's lowest velocity bin (main text)
+CIRCLE_RESCALE = 200 / 180  # a variant, not the paper's: the circular files span 200 cm, the SOM's
+                            # large circle is 180 cm, so their speeds may be this much too large
 
 BINS = {"3cm": 3.0, "1.5cm": 1.5}                 # O2
 CIRCLES = ("enclose", "centre")                     # O3, circle radius
@@ -554,16 +556,21 @@ def speed_bins(session: Session, window: tuple[float, float], how: str,
 
 def speed_regression(speed: np.ndarray, starts: np.ndarray, spike_times: np.ndarray) -> dict:
     """Linear regression of firing rate on speed over 1-s bins (SOM), with Pearson and
-    Spearman p-values, and the mean rate in the bins from 0 to 3 cm/s."""
+    Spearman p-values, and the mean rate in the bins from 0 to 3 cm/s. The "_rescaled"
+    values take the bins up to 3 cm/s times CIRCLE_RESCALE, the lowest bin if the positions
+    were scaled down by that factor; the notebook uses them for the circular files only."""
     spikes = np.sort(spike_times)
     counts = np.searchsorted(spikes, starts + SPEED_BIN_S) - np.searchsorted(spikes, starts)
     rate = counts / SPEED_BIN_S
     fit = stats.linregress(speed, rate)
     low = speed <= LOW_SPEED
+    wide = speed <= LOW_SPEED * CIRCLE_RESCALE
     return dict(slope=fit.slope, intercept=fit.intercept, r=fit.rvalue, p_linear=fit.pvalue,
                 p_spearman=stats.spearmanr(speed, rate).pvalue,
                 low_rate=float(rate[low].mean()) if low.any() else np.nan,
-                low_bins=int(low.sum()), low_spikes=int(counts[low].sum()))
+                low_bins=int(low.sum()), low_spikes=int(counts[low].sum()),
+                low_rate_rescaled=float(rate[wide].mean()) if wide.any() else np.nan,
+                low_bins_rescaled=int(wide.sum()), low_spikes_rescaled=int(counts[wide].sum()))
 
 
 # --- per cell -----------------------------------------------------------------

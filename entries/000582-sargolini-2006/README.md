@@ -43,11 +43,20 @@ updated criteria. After the answers `grid-phase-orientation` was called partiall
 outcome its criterion does not name; following the verifier's first round
 ([report](../../transcripts/000582/verifier-1-report.md)) it is again blocked as methods
 underspecified, as its readings disagree. That revision also added the outputs the verifier asked
-for: a time-shifted control for gridness above 0, every grid and head-direction claim with each
-cell counted once, the tracking of the files that hold the layer II head-direction cells, the LED
-geometry of every two-LED file, the speed sign test in the outcome and the electrodes table. The
-verifier would call `speed-slope-steeper` partially reproduced and `speed-intercept` not
-reproduced; both stay blocked because they depend on `speed`, and the disagreement is recorded.
+for: a time-shifted control for gridness above 0, four claims with each cell counted once, the
+tracking of the files that hold the layer II head-direction cells, the LED geometry of every
+two-LED file, the speed sign test in the outcome and the electrodes table. The verifier's second
+round ([report](../../transcripts/000582/verifier-2-report.md)) agreed with every outcome. In reply
+the conclusions it quoted were corrected, and the outputs it asked for were added: each cell
+counted once for every tested claim but the two that depend on `speed`, pairwise layer tests for
+`gridness-range-similar`, both chi-square readings for the `deep-hd-conjunctive` variants,
+`hd-stable-trials` without the third file with questionable LED geometry, and the low-speed rates
+with the circular files rescaled. No outcome changed. Under a stricter grid threshold than the
+paper's, layer III has more grid cells than layer II, which limits what the partial outcome of
+`layer2-grid` shows. The verifier would call `speed-slope-steeper` partially reproduced and
+`speed-intercept` not reproduced; both stay blocked because they depend on `speed` (the protocol
+blocks such a claim "for the same reason", so `blocked_by` is that of `speed`), and the
+disagreement is recorded.
 
 - `reproduce_sargolini_2006.ipynb`: the analysis. It streams all 118 files and takes about eight
   minutes on four cores.
