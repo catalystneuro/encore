@@ -41,7 +41,7 @@ outcomes:
   notes: The criterion needs the rat's speed in the 20 cm before the day's and the previous day's
     air puff location, so it needs position on the track and the puff locations. The dandiset holds
     neither, only puff times and the raw video frames (40 run videos, 1920573 frames, 1328 GB
-    uncompressed); streaming 20 frames took 8.1 s in the final run, about 216 hours for the run
+    uncompressed); streaming 20 frames took 8.3 s in the final run, about 222 hours for the run
     frames alone, before any tracking, and the video timestamps are not on the session clock. No
     file has a Position, SpatialSeries or other behavioural time series group (the data check lists
     the groups of every file). Same outcome as the earlier attempt, which blocked it for the same
@@ -313,7 +313,15 @@ outcomes:
     platform and stops (median lap 22.6 s, but minutes long in early Rat08 sessions); leaving out
     Rat08-20130708, the only session with fewer than 3 laps in a template (one safe lap of 23 s),
     gives air puff p = 0.0052, safe p = 0.0052 and air puff greater than safe p = 0.37 (13
-    sessions). Before the answers to this attempt's questions (questions/000061.yaml) the claim was
+    sessions). Long laps are not limited to that session (median air puff laps of 660 s in
+    Rat08-20130711, 192 s in Rat08-20130710 and 46 to 115 s in four other Rat08 sessions), so two
+    further variants, with values of the author's that decide nothing, limit the platform time and
+    stops. With laps of at most 30 s (11 sessions) the result is the same (air puff p = 0.034, safe
+    p = 0.021, air puff greater than safe p = 0.71). With each lap cut to its last 10 s (14
+    sessions) the air puff test holds (p = 0.034) but the safe test does not reach p < 0.05 (10 of
+    14, p = 0.052), and air puff greater than safe has p = 0.36. The result under the criterion's
+    laps thus depends in part on the time around the run that reading c laps hold; the criterion
+    fixes reading c, so the outcome is unchanged. Before the answers to this attempt's questions (questions/000061.yaml) the claim was
     blocked as metadata_insufficient through aversive-direction-stronger; the answers removed that
     dependency, the claim using that claim's procedure but not its result, and confirmed that laps
     are judged on O1 reading c alone here. No outcome in the earlier attempt.
@@ -336,7 +344,11 @@ outcomes:
     session readings, median air puff minus safe 0.0036 Hz, p = 0.022 (739 cells, 14 sessions) and
     0.0032 Hz, p = 0.0048 (1033 cells, 21 sessions), the direction of not reproduced; only O7
     reading b keeps the claim from that outcome. The pyramidal test cannot be run (no putative
-    types) and is not needed for not reproduced. Blocked as metadata_insufficient before the
+    types) and is not needed for not reproduced. The difference may come from the platform time
+    and stops these laps hold, not from the trajectory. With laps of at most 30 s it remains
+    (0.0050 Hz, p = 0.016, 466 cells in 11 sessions; 0.0030 Hz, p = 0.0043, 760 cells in 18
+    sessions), but with each lap cut to its last 10 s it is gone (median 0.0000 Hz, p = 0.75 and
+    0.82); these variants are the author's and decide nothing. Blocked as metadata_insufficient before the
     verifier's round 1, which pointed out that the all-cell test alone can decide. No outcome in
     the earlier attempt.
 - claim: ripple-rate-unchanged
@@ -493,11 +505,11 @@ verifications:
     outcome: reproduced
     reason: Pooled Spearman rho 0.38, 0.33, 0.40 with p = 0.015, 0.046, 0.011 for the three lap counts;
       4 of 4 rats have rho > 0 under every lap count. Laps use O1 reading (c) only, which the criterion
-      allows, recorded as a deviation. Each reading (c) lap runs from the reward at one end to the reward
-      at the other, so it includes the reward-consumption time on the starting platform, which M8 laps
-      exclude; this is not flagged in the analysis cells.
-    response: Outcome unchanged. The analysis cell and the deviation now say that a reading c lap includes
-      the platform time and stops; the lap count is unaffected.
+      allows, recorded as a deviation.
+    response: Outcome unchanged. The verifier raised the platform time of reading c laps for the air puff
+      and safe templates (direction-all-cell-pairs), not for this claim; the analysis cell and the deviation
+      here also say that a reading c lap includes the platform time and stops, and the lap count is
+      unaffected.
   - claim: bla-pyr-sleep-firing-increase
     agrees: true
     outcome: reproduced
@@ -680,3 +692,237 @@ verifications:
     outcome: blocked
     reason: Same.
     response: No change needed.
+- date: '2026-10-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook with its conclusions and summary, the helper
+    module, the claims file, the attempt record and the README, with the paper. The verifier
+    agreed with all 32 outcomes and found no place where the claims file misreads the paper.
+    Points not tied to one claim. The README''s run time (10.0 min, six of them streaming)
+    did not match cell 77 (7.2 min) and cell 1 (302 s of loading); the README now gives the
+    final run of this revision (10.2 min, 366 s of loading). The round-1 reasons were found
+    faithful, except that the platform-time point was attributed to habituation-over-days;
+    that entry is corrected.'
+  results:
+  - claim: unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Follows from the printed outputs (cell 30) under the claims-file criteria. Cell 31''s
+      Result paragraph ends with a stray bold marker, formatting only.'
+    response: 'Outcome unchanged; the stray marker is removed.'
+  - claim: rats-learn-puff-location
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Position would come only from video tracking, the reason the
+      behaviour claims are too_large. The notes say streaming 20 frames took 8.1 s, about 216
+      hours, and the README says about 216 hours, where cell 13 prints 7.0 s and about 186
+      hours. The outcome does not change.'
+    response: 'Outcome unchanged. The notes and README now give the rate of the final run of this
+      revision (8.3 s for 20 frames, about 222 hours), which varies between runs.'
+  - claim: each-rat-learns-puff-location
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Position would come only from video tracking, the reason the
+      behaviour claims are too_large.'
+    response: 'No change needed.'
+  - claim: dz-speed-slower-post-run
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Position would come only from video tracking, the reason the
+      behaviour claims are too_large.'
+    response: 'No change needed.'
+  - claim: puff-location-no-speed-bias
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Position would come only from video tracking, the reason the
+      behaviour claims are too_large.'
+    response: 'No change needed.'
+  - claim: habituation-over-days
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 34). The record adds the round-1 platform-time
+      point to this claim, where it was raised about the air puff and safe templates (cells 51
+      and 52), not about habituation; harmless, because the lap counts are unaffected.'
+    response: 'Outcome unchanged. The round-1 entry of this claim no longer gives the platform-time
+      point as the verifier''s reason here, and its response says where it was raised.'
+  - claim: bla-pyr-sleep-firing-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 38) under the claims-file criteria.'
+    response: 'No change needed.'
+  - claim: bla-int-sleep-firing
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Follows from the printed outputs (cell 41). Cell 43''s sentence that, with an effect
+      size r of 0.39 against the paper''s 0.09, these cells differ from the paper''s in REM,
+      not only in number, is not supported. No test compares the two samples; a significant
+      result here next to a non-significant one in the paper does not show the samples differ,
+      and the bootstrap interval of the REM median (-0.015 to 0.109) includes zero.'
+    response: 'Outcome unchanged. The sentence is replaced; cell 43 now gives the effect sizes and
+      says that no test here compares the two samples and that the interval of the median
+      includes zero.'
+  - claim: hpc-bla-reactivation-post-sleep
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: reactivation-all-cell-pairs
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 46) under the claims-file criteria. Cell 48''s
+      Result paragraph ends with a stray bold marker, formatting only.'
+    response: 'Outcome unchanged; the stray marker is removed.'
+  - claim: reactivation-decay
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: no-rem-reactivation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: piriform-weaker-reactivation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: cen-no-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 53). It stays reproduced only on the paper''s p
+      threshold with 9 and 8 sessions, which the notebook now says; the NREM interval (-2.4 to
+      4.1%) includes the hippocampus-BLA median of 1.96%.'
+    response: 'Outcome unchanged, as the criterion decides on p. The conclusion, notes, summary and
+      README already call the absence weak evidence and give the interval; no further
+      change.'
+  - claim: intra-structure-reactivation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: bla-ripple-up-subgroup
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: bla-ripple-down-subgroup
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: ripple-modulated-cells-larger-reactivation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Follows from the printed outputs (cell 64) under the claims-file criteria.'
+    response: 'No change needed.'
+  - claim: run-correlated-pair-fractions
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: reactivation-involves-ripple-up-cells
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: pair-group-ev
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: contributing-up-cells-gain-increase
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: ev-independent-of-firing-rate
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: reactivation-peaks-at-ripples
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Follows from the printed outputs (cell 68) under the claims-file criteria.'
+    response: 'No change needed.'
+  - claim: airpuff-trajectory-ripple-reactivation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: safe-trajectory-no-ripple-reactivation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: aversive-direction-stronger
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: direction-all-cell-pairs
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 70) under the claims-file criteria. The
+      templates still include platform time and stops; early Rat08 air puff laps have median
+      durations up to 998 s (Rat08-20130708; 660 s in Rat08-20130711) against a median lap of
+      22.6 s. The robustness variant removes only Rat08-20130708, so it does not address the
+      other long-lap sessions. The air puff result rests mostly on Rat08, 7 of 8 sessions
+      against 1 of 3 for Rat11.'
+    response: 'Outcome unchanged, and no change proposed, because the criterion fixes O1 reading c
+      laps. Added two variants that limit the platform time and stops in every session
+      (values of the author''s, deciding nothing). With laps of at most 30 s (11 sessions)
+      the result is the same (p = 0.034, 0.021 and 0.71). With each lap cut to its last 10 s
+      (14 sessions) the air puff test holds (p = 0.034) but the safe test has p = 0.052 and
+      air puff greater than safe p = 0.36. The conclusion, notes, summary and README say the
+      result depends in part on the time around the run that reading c laps hold.'
+  - claim: bla-rate-same-across-directions
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with blocked, and with too_large in place of its round-1 other; O7 reading b
+      needs position, which only video tracking would give. The readings that find a
+      difference (median 0.0036 and 0.0032 Hz, cell 73) use the same reward-to-reward laps, so
+      the difference may come from platform time and not the trajectory; the README and notes
+      present it as the direction of not reproduced without this caveat.'
+    response: 'Outcome unchanged. Added the rates over the two trimmed lap variants. With laps of at
+      most 30 s the difference remains (p = 0.016 and 0.0043); with each lap cut to its last
+      10 s it is gone (median 0.0000 Hz, p = 0.75 and 0.82). The conclusion, notes, summary
+      and README now carry the caveat.'
+  - claim: ripple-rate-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 76). The Summary row''s excludes changes above
+      about 11% is wrong, as 11% is the change detected with 80% power (cell 77), not an
+      exclusion bound; the bootstrap interval is -1.4% to 8.4%, and cell 78''s about a tenth
+      of the rate is closer. It stays reproduced only on the paper''s p threshold with 23
+      sessions, which the notebook says.'
+    response: 'Outcome unchanged. The Summary row now gives the bootstrap interval of the change
+      (-1.4% to 8.4% of the rate).'
+  - claim: contributing-pairs-run-sleep-coupling
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: contributing-quartiles-run-sleep-coupling
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'

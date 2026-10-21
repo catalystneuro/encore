@@ -26,11 +26,11 @@ their criteria allow when the pyramidal test cannot be run.
 | `cen-no-reactivation` | Reproduced |
 | `ripple-rate-unchanged` | Reproduced |
 | `reactivation-peaks-at-ripples` | Partially reproduced (all-cell test alone, p = 0.0042) |
-| `direction-all-cell-pairs` | Reproduced (laps from reward times) |
+| `direction-all-cell-pairs` | Reproduced (laps from reward times; with laps cut to their last 10 s, a variant, the safe test has p = 0.052) |
 | `ripple-modulated-cells-larger-reactivation` | Not reproduced (all-cell test alone, p = 0.27) |
 | 17 claims on putative pyramidal cells or interneurons | Blocked: metadata insufficient |
 | `rats-learn-puff-location` and the three behaviour claims that depend on it | Blocked: too large (position only in raw video frames) |
-| `bla-rate-same-across-directions` | Blocked: too large (one reading of the rate needs position; the readings that run find a difference) |
+| `bla-rate-same-across-directions` | Blocked: too large (one reading of the rate needs position; the readings that run find a difference, which is gone with laps cut to their last 10 s) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -41,10 +41,10 @@ the notebook gives their power and bounds, and the central nuclei result is weak
 absence.
 
 Position could only come from tracking the raw video frames stored in the files, which would take
-about 216 hours to stream at the rate measured in the final run (the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks
+about 222 hours to stream at the rate measured in the final run (8.3 s for 20 frames; the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks
 only cells identified as excitatory or inhibitory.
 
-- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 10 minutes (10.0 in the final run), six of
-  them streaming the files; the notebook prints its run time at the end.
+- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 10 minutes (10.2 in the final run), about six of
+  them loading the files (366 s in the final run); the notebook prints its run time at the end.
 - `hpcbla.py`: loading the files, sleep epochs, laps, EV and REV, ripple modulation, reactivation
   strength around ripples, firing rates by state. Other notebooks on this dandiset can import it.

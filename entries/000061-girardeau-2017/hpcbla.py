@@ -33,7 +33,8 @@ its open details O1 to O7, cited below.
   choice). A ripple is in NREM when its peak is (M5; a standard choice for "inside").
 - Laps (O1 reading c): the intervals between consecutive rewards at opposite ends of the track.
   A lap so includes the time spent on the starting platform after its reward, which the M8 laps
-  (position inside a 150-cm window) leave out.
+  (position inside a 150-cm window) leave out. `trim_laps` (variants only, decides no claim)
+  keeps laps of at most 30 s or cuts each lap to its last 10 s; these values are the author's.
 - M3 drops spikes after the end of the last run epoch. It is not applied: the last run epoch
   (post-run) follows post-sleep, and every analysis here reads only bins of the run and of the
   sleep epochs and z-scores within those bins, so the dropped spikes could not enter any of them.
@@ -334,6 +335,20 @@ def lap_intervals(session: dict, kind: str) -> np.ndarray:
         return np.zeros((0, 2))
     keep = [(a, b) for a, b, d in run_laps(session) if (d == direction) == (kind == "puff")]
     return np.array(keep).reshape(-1, 2)
+
+
+def trim_laps(iv: np.ndarray, max_s: float | None = None, last_s: float | None = None) -> np.ndarray:
+    """Laps of at most max_s, or each lap cut to its last last_s seconds (variants only).
+
+    Both limit the time on the starting platform and the stops that a reading c lap holds; the
+    values are the author's, for a robustness check that decides no claim.
+    """
+    d = iv[:, 1] - iv[:, 0]
+    if max_s is not None:
+        iv = iv[d <= max_s]
+    if last_s is not None:
+        iv = np.column_stack([np.maximum(iv[:, 0], iv[:, 1] - last_s), iv[:, 1]])
+    return iv.reshape(-1, 2)
 
 
 # --- units and binning -----------------------------------------------------------------------
