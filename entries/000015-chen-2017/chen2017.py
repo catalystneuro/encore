@@ -104,9 +104,48 @@ def _text(values) -> np.ndarray:
     return np.array([v.decode() if isinstance(v, bytes) else str(v) for v in values])
 
 
+def text_values(f: h5py.File) -> dict:
+    """Every text value of a file outside the NWB specification: string datasets of at most 10
+    values and string attributes, by path ('path@attribute' for attributes)."""
+    out = {}
+
+    def text(v):
+        if isinstance(v, bytes):
+            return v.decode(errors="replace")
+        if isinstance(v, str):
+            return v
+        if isinstance(v, np.ndarray) and v.dtype.kind in "OSU" and v.size <= 10:
+            return " | ".join(text(x) or "" for x in v.ravel())
+        return None
+
+    def visit(name, obj):
+        if name.startswith("specifications"):
+            return
+        for k, v in obj.attrs.items():
+            if k not in ("namespace", "neurodata_type", "object_id") and text(v) is not None:
+                out[f"{name}@{k}"] = text(v)
+        if isinstance(obj, h5py.Dataset) and obj.dtype.kind in "OSU" and obj.size <= 10:
+            out[name] = text(obj[()]) if obj.shape == () else text(np.asarray(obj[()]))
+    f.visititems(visit)
+    return out
+
+
+def compare_files(a: dict, b: dict) -> tuple[int, list[str]]:
+    """Read every dataset of two files in full; return how many there are and which differ."""
+    fa, fb = _open(a["asset_id"]), _open(b["asset_id"])
+    names, differ = [], []
+    fa.visititems(lambda n, o: names.append(n) if isinstance(o, h5py.Dataset) and not n.startswith("specifications") else None)
+    for n in names:
+        if n not in fb or not np.array_equal(np.asarray(fa[n][()]), np.asarray(fb[n][()])):
+            differ.append(n)
+    fa.close()
+    fb.close()
+    return len(names), differ
+
+
 def read_header(asset: dict) -> dict:
-    """The small parts of a file: metadata, trial table, events, ROI table, and a slice of the traces
-    used to tell copies of the same plane apart."""
+    """The small parts of a file: metadata, every text value, trial table, events, ROI table, and the
+    first and last 200 frames of the traces, used to tell copies of the same plane apart."""
     f = _open(asset["asset_id"])
     ip = f["general/optophysiology/ImagingPlane"]
     t = f["intervals/trials"]
@@ -134,7 +173,10 @@ def read_header(asset: dict) -> dict:
         "go": be["go/timestamps"][()],
         "cell_type": _text(ps["cell_type"][()]), "included": ps["included"][()].astype(bool),
         "roi_ids": ps["id"][()], "rr_rois": rr["rois"][()],
-        "probe": np.concatenate([rr["data"][:200].ravel(), npl["data"][:200].ravel()]),
+        "probe": np.concatenate([rr["data"][:200].ravel(), npl["data"][:200].ravel(),
+                                 rr["data"][-200:].ravel(), npl["data"][-200:].ravel()]),
+        "behavior_events": sorted(be.keys()),
+        "texts": text_values(f),
     }
     h["area"] = "ALM" if h["experiment_description"].endswith("left_alm") else (
         "MM" if h["experiment_description"].endswith("left_vm1") else "?")
@@ -149,7 +191,7 @@ def read_headers(assets: list[dict], workers: int = 24) -> list[dict]:
 
 def content_key(h: dict) -> tuple:
     """What two copies of one plane share: subject, session, frame and ROI counts, the trial table, and
-    the first 200 frames of both trace series."""
+    the first and last 200 frames of both trace series."""
     return (h["subject"], h["session"], h["n_frames"], h["n_rois"], h["trial_start"].tobytes(),
             h["outcome"].tobytes(), h["probe"].tobytes())
 
@@ -331,6 +373,18 @@ def assemble(headers: list[dict], results: list[dict], binning: str) -> dict:
         out["shuffled"] = classify(np.concatenate([r[binning]["p_shuffled"] for r in results]))
     out["epochs"] = epochs(out["times"])
     return out
+
+
+def ss_between(X: np.ndarray, labels: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Per bin, the sum of squares between the groups of `labels` (SSB) and the total sum of squares
+    (SST) over cells, for X (cells x bins) (Methods, variance of neuronal selectivity)."""
+    mu = X.mean(0)
+    sst = ((X - mu) ** 2).sum(0)
+    ssb = np.zeros(X.shape[1])
+    for g in np.unique(labels):
+        m = labels == g
+        ssb += m.sum() * (X[m].mean(0) - mu) ** 2
+    return ssb, sst
 
 
 def joint_resample(animal: np.ndarray, plane: np.ndarray, groups: list[np.ndarray],
