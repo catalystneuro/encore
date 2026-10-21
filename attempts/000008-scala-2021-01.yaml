@@ -358,18 +358,25 @@ outcomes:
     length-normalized Patch-seq counts against the mean of log2(UMI + 1) of the reference (as the code's
     mapping) is the main reading, and log2 of the mean UMI a variant; both give the same.
 - claim: fig5d-sst-pvalb-calb2-firing
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: reproduced
   notebook: scala_2021_transcriptomics.ipynb
   output: claim:fig5d-sst-pvalb-calb2-firing
   notes: 26 Sst Pvalb Calb2 cells (19 mice), max APs 15 to 87. Reading (a), max APs rise towards the Pvalb
-    centroid (rho = 0.363, one-sided p = 0.034). Reading (b), the 13 high-firing cells are closer together
-    than random subsets with p = 0.052 (1,000 permutations, seed 55); with 100,000 subsets p = 0.0505, and
-    five other seeds give 0.045 to 0.057, so reading (b) sits on its threshold and the readings disagree
-    under the criterion as written. A question on the number of permutations is in questions/000008.yaml.
+    centroid (rho = 0.363, one-sided p = 0.034). Reading (b), the 13 high-firing cells (mean pairwise
+    distance 7.05, against 8.49 for random subsets) under the criterion as the answer of 2026-10-21 fixes
+    it. With 10,400,600 subsets of that size, more than 1,000,000, p is estimated from 100,000 random
+    subsets, p = 0.0485 with a 95% Clopper-Pearson interval of 0.0472 to 0.0499, so (b) holds and both
+    readings hold. What the answer changed, before it the criterion's 1,000 permutations gave p = 0.052 with
+    this seed and 0.045 to 0.057 with five others, and the claim was blocked as methods_underspecified
+    because the readings disagreed; the answer replaced them with 100,000 subsets and the bound, under
+    which the claim is reproduced. The margin is small, and the seed still matters. The exact p-value
+    over all 10,400,600 subsets, computed as a variant, is 0.0497, below 0.05, but the 100,000-subset
+    estimate with five other seeds gives 0.0496 to 0.0514, and each interval reaches 0.05 or above, so (b)
+    would not hold under the criterion with those seeds. The section's seed (55) was fixed before the
+    answer. A follow-up question on this is in questions/000008.yaml.
   deviations:
-  - The permutation seed is a standard choice; here it decides reading (b), so its spread over seeds and a
-    100,000-subset estimate are shown.
+  - The seed of the 100,000 random subsets is a standard choice (55, the section's seed before the
+    answer); it can decide reading (b) here, so five other seeds and the exact p-value are shown.
 - claim: rnaseq-depth
   outcome: reproduced
   notebook: scala_2021_sequencing.ipynb

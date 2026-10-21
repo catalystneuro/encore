@@ -32,7 +32,8 @@ repository and a Zenodo record) and counted apart.
 | Reduced-rank regression, full and ion-channel genes (with gene counts) | Reproduced (2) |
 | Transcriptomic and electrophysiological distances correlate (with the reference) | Reproduced (2) |
 | IT depth follows transcriptomic distance; L5 Sst rebound (with the reference) | Reproduced (2) |
-| Vip tau, Vip Mybpc1_2 rebound, Sst Pvalb Calb2 firing on the t-SNE | Blocked: methods underspecified (3) |
+| Vip tau, Vip Mybpc1_2 rebound on the t-SNE | Blocked: methods underspecified (2) |
+| High-firing Sst Pvalb Calb2 cells group on the t-SNE (with the reference) | Reproduced, at the threshold of its permutation test |
 | Sequencing depth, quality control, reference agreement (paper's deposits) | Reproduced (3) |
 | 34 °C follow-up; Pvalb axon shape | Blocked: methods underspecified (2) |
 | Number of reconstructions (Brain Image Library) | Blocked: data unreadable |
