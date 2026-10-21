@@ -1,5 +1,5 @@
 # Attempt 000015-chen-2017-01: the author's record (docs/protocol.md, Author, step 5), revised after the
-# answers in questions/000015.yaml and after the first verification round.
+# answers in questions/000015.yaml and after the first and second verification rounds.
 schema_version: 2
 id: 000015-chen-2017-01
 dataset:
@@ -81,13 +81,15 @@ outcomes:
   notebook: reproduce_chen_2017.ipynb
   output: claim:fraction-selective-alm-mm
   measured:
-  - 1755
-  - 2877
-  - 26.6
-  - 32.6
+  - 1736
+  - 2853
+  - 26.3
+  - 32.3
   notes: No reading puts all four values within tolerance. The measured values are those of the
-    closest reading, R2, W1, T1, where ALM is 2,877 (32.6%, within tolerance) and MM 1,755 (26.6%),
-    above the tolerance (at most 1,675 and 25.3%). Rule R1 marks 78% to 91% of ROIs selective, and
+    closest reading, R2, W3, T1, where ALM is 2,853 (32.3%, within tolerance) and MM 1,736 (26.3%),
+    above the tolerance (at most 1,675 and 25.3%); R2, W1, T1 is next, with ALM 2,877 (32.6%) and
+    MM 1,755 (26.6%). Until the second verification the measured values were those of W1, which
+    were given as closest by mistake. Rule R1 marks 78% to 91% of ROIs selective, and
     72% to 85% with permuted trial types, so it counts chance bins; R2 with permuted labels gives
     10.5% to 14.3%. With T2 bins R2 gives ALM 45% and MM 38% (W1). ALM has the higher fraction under
     every reading. Without the 1,262 ROIs with a non-positive baseline, MM is 1,675 of 5,854
@@ -95,8 +97,8 @@ outcomes:
     ALM 25.8% to 40.1% and MM 19.7% to 32.7%. The answer on baselines F0 <= 0 (the paper does not
     say) made dF/F as computed (V1) the reading that decides, as run before, and V2, without the
     ROIs with F0 <= 0 on any trial, a check; V2 is now reported for every reading, and none puts all
-    four values within tolerance (R2, W1, T1 gives ALM 2,786 of 8,315, 33.5%, and MM 1,675 of 5,854,
-    28.6%). The outcome is unchanged.
+    four values within tolerance (R2, T1 gives ALM 2,762 of 8,315, 33.2%, and MM 1,656 of 5,854,
+    28.3%, in W3, and ALM 2,786, 33.5%, and MM 1,675, 28.6%, in W1). The outcome is unchanged.
   deviations:
   - Reading A2 not run (no coordinates).
 - claim: figs5-single-coefficient
@@ -322,7 +324,10 @@ outcomes:
     V1; T2 0.586 against 0.033; V2 0.704 against 0.029), MM larger in 0.977 of the hierarchical
     resamples holding both groups (29 of 1,000 lack one), with an MM bootstrap SD of 0.617, as large
     as the mean; 280 of the 334 MM PT ROIs are in 7 planes of an064. Without the depth split MM IT
-    (0.057 against 0.027) and other ROIs (0.122 against 0.025) are also above ALM.
+    (0.057 against 0.027) and other ROIs (0.122 against 0.025) are also above ALM. On the same account
+    part (c) looks unlikely to hold for PT, as the maximum of mean |beta| before the go cue is 0.523 in
+    MM PT (T1, V1), so the ALM deep maximum would have to exceed 1.047, against 0.112 in ALM PT. 45 of
+    the 47 MM PT ROIs with F0 <= 0 on some trial are in an064.
 - claim: fig8d-mm-posterior-preferring
   outcome: not_reproduced
   notebook: reproduce_chen_2017.ipynb
@@ -369,14 +374,16 @@ outcomes:
     placeholder record (title "CRCNS.org ssc-8TBD", "This data is not yet available but is expected
     to be sometime during 2017", size "TBD"), as the notebook prints from its DataCite record. That
     CRCNS ssc-8 holds an unrelated dataset (Goncalves et al.) was seen while preparing and is not run
-    in the notebook. No other public copy was found on CRCNS or DANDI. The data are not public, so the claim cannot be
+    in the notebook. A search of DANDI by the paper's DOI and by its authors, run in the notebook,
+    finds only dandiset 000015; CRCNS was searched while preparing, not in the notebook, and no other
+    copy was found there. The data are not public as far as these searches show, so the claim cannot be
     tested; the registry's check does not allow data_missing for a claim with data elsewhere, so the
     reason is given as other.
 - claim: fig7d-ephys-area-distribution
   outcome: blocked
   blocked_by: other
-  notes: Depends on ephys-selective-counts; the silicon probe recordings were never made public (see
-    that claim).
+  notes: Depends on ephys-selective-counts; the silicon probe recordings are not public at the DOI the
+    paper names or on DANDI (see that claim).
 - claim: fig1c-whisking-similar
   outcome: blocked
   blocked_by: data_missing
@@ -681,4 +688,251 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: Cell 54, max PT 15.6% and IT 6.0% (beta significant; T2 16.1%), below 22%.
+    response: No change.
+- date: 2026-10-21
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: Round 2. The full executed notebook of the run after the first revision, with the
+    conclusions and the summary, the helper module, the claims file and this record, with the paper.
+    Report in transcripts/000015/verifier-2-report.md. It agrees with all 33 outcomes. Other points
+    of the report, with the reply. The README gave about fifteen minutes against 19.7 min printed; it
+    now says about twenty (this run printed 20.4 min). The verifier could not check the statement that
+    five questions were answered, as questions/000015.yaml was not among its materials; the file
+    holds six questions, five answered with "the paper does not say" and one (the figs4-peak-shift
+    window) open, as the notebook header says. It noted that the round-1 reasons cite round-1 cell
+    numbers, which no longer match the notebook; those reasons are kept as given. It has not viewed
+    the rendered figures and relied on the printed ranges.
+  results:
+  - claim: early-lick-fraction
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: imaging-sample
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs. Locations and depth remain absent, so it stays partial, "correct as recorded".
+    response: No change.
+  - claim: trials-per-type
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: neuron-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: fraction-selective-alm-mm
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Cell 30 and the notes say R2, T1 in window W1 comes closest, but cell 29 shows W3 is
+      slightly closer on both MM values (1,736, 26.3%, with ALM 2,853, 32.3%, still within tolerance). Cell
+      30's "Under V2 ... no other reading comes closer" is false, as under V2 W3 gives MM 1,656 (28.3%)
+      against 1,675 (28.6%) for W1. The outcome does not change, as the MM fraction is out of tolerance
+      in every reading.
+    response: Cell 30 now gives W3 as the closest reading, with W1 next, and the V2 values of both windows,
+      and drops the sentence that no other reading comes closer. The measured values are now those of W3
+      (1,736, 2,853, 26.3, 32.3), and the notes say so. Outcome unchanged.
+  - claim: figs5-single-coefficient
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, on the criterion only. Cell 32 shows the permuted labels pass as well, a weakness of
+      the claims file. The permuted-label null, now computed and disclosed, resolves its round-1 problem
+      2.
+    response: No change.
+  - claim: fig4a-lick-direction-epochs
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, on the criterion only. Cell 35 shows the permuted labels pass as well, a weakness of
+      the claims file. BehavioralEvents holds only delay, go and sample in all 105 planes (cell 7), which
+      resolves round-1 problem 7.
+    response: No change.
+  - claim: fig4b-object-location-memory
+    agrees: true
+    outcome: reproduced
+    reason: Agrees, on the criterion only. The permuted labels pass as well, a weakness of the claims file.
+    response: No change.
+  - claim: fig4c-outcome-after-lick
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs. The permuted-label null is now disclosed (round-1 problem 2 resolved).
+    response: No change.
+  - claim: fig5-mixed-response-epoch
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: fig6-object-location-mm
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: fig6-lick-direction-deep-alm-first
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: fig6-lick-direction-spread
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs. The Summary's "ALM purely lick-direction selective at most 6.2%" holds
+      for T1 only; with T2 the peak is 6.45% (cell 50).
+    response: The Summary now says at most 6.2% with T1 bins and 6.5% with T2. Outcome unchanged.
+  - claim: fig6-outcome-response-uniform
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs. That part (a) has no chance allowance is disclosed in the notes (round-1
+      problem 3 resolved).
+    response: No change.
+  - claim: fig6h-preparatory-alm-object-mm
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: figs9-photoinhibition-alm-mm
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: widefield-mm-to-alm
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: widefield-contralateral-bilateral
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: figs4-peak-shift
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees under the criterion as written, but the criterion misreads the paper. The paper says
+      the peak "shifted from MM to ALM over the course of the delay epoch"; the criterion leaves that out
+      and takes the peak over the whole -0.8 to 9.2 s window. With the peak restricted to the delay or to
+      before the go cue, MM peaks first in all four bin and dF/F combinations (V1 T1 2.08 against 4.16 s),
+      the other part holds in all eight, and the outcome would become reproduced. The question has been
+      asked and is not yet answered.
+    response: No change. The criterion decides and the question on the window (questions/000015.yaml) is
+      still unanswered, so no change of outcome is proposed; the notebook already shows the peak before
+      the go cue and in the delay.
+  - claim: fig8c-pt-deep-only
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: fig8d-alm-deep-lick-direction
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: fig8d-pt-contra-bias
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs. The dF/F outliers (round-1 problem 1) are settled by the reader's answer,
+      so V1 decides, but this outcome stays sensitive to them, reaching 1.97 SD under V2.
+    response: No change; the notes already give the V2 values (1.97 and 1.86 SD) as a check.
+  - claim: fig8d-pt-earlier-than-it
+    agrees: true
+    outcome: reproduced
+    reason: Agrees only because the criterion accepts a single combination. In cell 68 it passes in 2 of
+      16, both with T2 bins, rule S2 and the bootstrap over cells. The README row ("under one onset rule
+      and bootstrap only") and the Summary text (cell 92) leave out the third condition, T2 bins; with S2
+      and the bootstrap over cells, T1 bins fail (p = 0.021 and 0.170). The Summary table row and the notes
+      state all three.
+    response: The README row and the Summary text now name all three conditions, rule S2, T2 bins and the
+      bootstrap over cells. Outcome unchanged.
+  - claim: ephys-pt-it-onset-not-detected
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: li2015-tagged-units-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: fig8d-mm-object-location
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 78 and the Summary row ("the PT part of (a) holds if PT are deep") report only
+      part (a) and leave out the (c) quantity printed in cell 77, where the MM PT maximum of mean |beta|
+      before the go cue is 0.523 against 0.112 for ALM PT; on the same PT-deep assumption the ALM deep maximum
+      would have to exceed about 1.05 for (c) to pass. The MM PT bootstrap SD (0.617) is about the size
+      of its mean, so these values are probably driven by a few outlier ROIs. The statement reads more favourably
+      than the printed numbers. The printed label of cell 77 gives per-animal totals of all MM PT ROIs (54
+      + 280 = 334), not of the 47 with F0 <= 0.
+    response: Cell 77 now prints what the ALM deep maximum would have to exceed for MM PT to pass part (c)
+      (1.047, T1, V1), and its per-animal line gives both the MM PT ROIs and those with F0 <= 0 on some
+      trial (45 of the 47 in an064). Cell 78, the Summary row and the notes now say part (c) looks unlikely
+      to hold for PT on the same account. Outcome unchanged (blocked).
+  - claim: fig8d-mm-posterior-preferring
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: fig8d-error-outnumber-correct
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with not_reproduced, the outcome it gave in round 1. Under V1 reading (b) is at -1.81
+      SD with T1 and -1.70 with T2, against a bound of 2 (cell 74). It stays sensitive to the dF/F outliers,
+      passing under V2 with T1 bins (-2.20 SD).
+    response: No change.
+  - claim: fig8ef-area-explains-variance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs. Area is below projection type in every reading (cell 80), area above in
+      0.414 of resamples (round-1 problem 6 resolved).
+    response: No change.
+  - claim: ephys-selective-counts
+    agrees: true
+    outcome: blocked
+    reason: Agrees, and accepts blocked_by other in place of its data_missing, the reason being the registry's
+      rule on data the claims file places in another archive; cell 14 prints the DataCite placeholder record.
+      The README and Summary say the silicon probe data were "never made public", but the notebook shows
+      only that the CRCNS DOI is a placeholder; the search for other copies is not run in the notebook.
+    response: Cell 14 now searches DANDI by the paper's DOI and by its authors and finds only dandiset 000015.
+      The README and the notebook's header and Summary now say the data are not public at the placeholder
+      DOI or on DANDI, in place of "never made public", and the notes say CRCNS was searched only while
+      preparing. Outcome unchanged.
+  - claim: fig7d-ephys-area-distribution
+    agrees: true
+    outcome: blocked
+    reason: Agrees, and accepts blocked_by other, as for ephys-selective-counts, including the point that
+      "never made public" is not shown in the notebook.
+    response: Wording changed as for ephys-selective-counts. Outcome unchanged.
+  - claim: fig1c-whisking-similar
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
+    response: No change.
+  - claim: alm-pt-it-lick-fraction-below-20
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome ("I agree with all 33 stated outcomes"); the conclusion and notes
+      match the printed outputs.
     response: No change.
