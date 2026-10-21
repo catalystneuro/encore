@@ -482,6 +482,7 @@ def pipeline_rows(data: dict) -> list[dict]:
         }
         nxt = next((label for key, label in PIPELINE_STEPS if state[key][0] in ("todo", "waiting", "deprecated")), "")
         out.append({"dataset": t["label"], "key": d, "name": t["name"], "state": state, "next": nxt,
+                    "issue": data.get("issues", {}).get(t["label"]),
                     "waiting": [label for key, label in PIPELINE_STEPS if state[key][0] == "waiting"],
                     "missing": missing, "page": page_of(d) if atts or d in data.get("claim_files", {}) else None})
     return out
@@ -1140,7 +1141,8 @@ def page_pipeline(data: dict) -> str:
                         f'{e(r["state"][key][1])}</td>' for key, _ in PIPELINE_STEPS)
         states = " ".join(f'data-{key}="{e(r["state"][key][0])}"' for key, _ in PIPELINE_STEPS)
         body += (f'<tr {states}><td>{name}</td>'
-                 f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}</td></tr>')
+                 f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}'
+                 + (f' · <a href="{e(r["issue"])}">waiting on you</a>' if r["issue"] else "") + '</td></tr>')
     waiting = [r for r in rows if r["waiting"]]
     papers_missing = sum(len(r["missing"]) for r in waiting)
     charted = {key: {} for key, _ in PIPELINE_STEPS}
@@ -1152,13 +1154,16 @@ def page_pipeline(data: dict) -> str:
     step_opts = "".join(f'<option value="{key}">{e(label)}</option>' for key, label in PIPELINE_STEPS)
     state_opts = "".join(f'<option value="{st}">{e(name)}</option>' for st, name in TABLE_STATES)
     updated = datetime.datetime.fromisoformat(data["generated"]).strftime("%Y-%m-%d %H:%M UTC")
+    n_issues = len(data.get("issues", {}))
+    issues_note = (f' The runner has stopped on <a href="{REPO_URL}/issues?q=is%3Aissue+is%3Aopen+label%3Aneeds-you">'
+                   f'{n_issues:,} dataset{"s" if n_issues != 1 else ""}</a> that need a person.' if n_issues else "")
     html_ = f'''<header class="page">
   <h1>Pipeline</h1>
   <p class="lede">Every target, and where it stands in the
   <a href="{REPO_URL}/blob/main/docs/pipeline.md">pipeline</a>: its paper, the claims read from it and their
   check, the attempt, the questions it raised, and verification. {len(waiting):,} targets are waiting on a person,
   with {papers_missing:,} papers to supply; the list of missing papers is in
-  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.</p>
+  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.{issues_note}</p>
   <p class="small muted">Last updated <time id="updated" datetime="{e(data["generated"])}">{e(updated)}</time>.
   The page is rebuilt whenever main changes.</p>
 </header>
@@ -1758,6 +1763,8 @@ def main() -> int:
     parser.add_argument("--output", type=Path, default=ROOT / "site")
     parser.add_argument("--demo", type=int, metavar="N",
                         help="build from N made-up attempts, to test the site at scale; never publish")
+    parser.add_argument("--issues", type=Path, metavar="JSON",
+                        help="the open needs-you issues (gh issue list --json title,url), to link from the pipeline")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
     args = parser.parse_args()
@@ -1766,6 +1773,10 @@ def main() -> int:
     if args.demo:
         data = demo(data, args.demo)
     data["noindex"] = args.noindex
+    if args.issues and args.issues.is_file():
+        # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
+        data["issues"] = {i["title"].rsplit(": waiting on you", 1)[0]: i["url"]
+                          for i in json.loads(args.issues.read_text()) if i["title"].endswith(": waiting on you")}
     build(data, args.output)
     print(f"wrote {args.output} ({len(data['attempts'])} attempts, {len(data['targets'])} targets"
           f"{', DEMO DATA' if data['demo'] else ''})")
