@@ -18,9 +18,19 @@ Where the parameters come from (the claims file is claims/000009/10.1038-nature2
 opening comment names the conventions E, S, P, O, V, L cited here):
 
 - Epochs (convention E): sample is 1.3 s from pole onset (`pole_in_time`), delay from there to the
-  go cue (`cue_start_time`), response 1.3 s (reading R1) or 1.5 s (R2) from the go cue. The
-  photostimulus starts at the delay onset (conventions P and E), `pole_in_time + 1.3`; the files
-  hold no laser trace, so this is the onset used for every latency.
+  go cue (`cue_start_time`), response 1.3 s (reading R1) or 1.5 s (R2) from the go cue. In the
+  extracellular files the photostimulus starts at the delay onset (conventions P and E),
+  `pole_in_time + 1.3`; those files hold no laser trace, so this is the onset used for every
+  extracellular latency.
+- Spike storage: within a trial the extracellular files hold spikes only to about 4.8 s after pole
+  onset, whatever the delay. A trial's stored span is taken to end at the last spike of any unit
+  of the session in that trial; a window that ends later is counted as missing (NaN) for that
+  trial, not as a count. This follows from the data, not from a choice that can change a result.
+- Whole-cell photostimulus onset: readings E and M of the claims file (`WC_ONSETS`), and the onset
+  of the deposited laser trace (`stimulus/presentation/photostim_on_*`, an OptogeneticSeries at
+  20 kHz), reading "L": the first sample of the trial above `LASER_FRAC` of the file's maximum.
+  The fraction is a standard choice; 1% and 20% are shown alongside and move the onset by at most
+  about 2 ms.
 - Trials: 'lick early' and 'no response' trials are left out of every analysis (Methods,
   Behavior). Contra trials are 'lick right' (recordings and photoinhibition in the left
   hemisphere).
@@ -64,10 +74,13 @@ TC_SPAN = (-0.5, 4.1)     # 100 ms bins from pole onset, for the time courses
 VMVAL_CENTRE = (0.85, -4.0)   # ML, DV (mm), convention L reading L2
 KEEP = ("correct", "incorrect")
 WC_RATE = 20000.0
-# Photostimulus onset in the whole-cell files, two readings (the files hold no laser trace):
-# "E", the claims file's convention E, 1.3 s after pole onset; "M", the end of the sample epoch as
-# the Methods define it, 0.1 s after the pole starts to retract (`pole_out_time`).
-WC_ONSETS = {"E": ("pole_in", 1.3), "M": ("pole_out", 0.1)}
+# Photostimulus onset in the whole-cell files: "E", the claims file's convention E, 1.3 s after pole
+# onset; "M", the end of the sample epoch as the Methods define it, 0.1 s after the pole starts to
+# retract (`pole_out_time`); "L", the onset of the deposited laser trace. Control trials have no
+# laser, so under L they are aligned at the cell's median laser onset after pole onset.
+WC_ONSETS = {"E": ("pole_in", 1.3), "M": ("pole_out", 0.1), "L": ("laser", None)}
+LASER_FRAC = 0.05
+MASKED_WINDOWS = ("sample", "delay", "R1", "R2", "pw", "pw0", "pre")
 WIDE_SPAN = (1.0, 3.0)    # s from pole onset, 1 ms samples of the deposited spike-removed Vm
 
 
@@ -173,6 +186,8 @@ def load_ecephys(asset: dict) -> dict:
     starts = np.concatenate([[0], idx[:-1]])
     wf = U["waveform_mean"][()]
     rate = U["sampling_rate"][()]
+    meta["unit_y_description"] = _s(U["unit_y"].attrs.get("description"))
+    meta["units_description"] = _s(U.attrs.get("description"))
     units = pd.DataFrame({
         "unit_id": U["id"][()], "cell_type": _strings(U["cell_type"][()]),
         "ml": U["unit_x"][()], "dv": U["unit_y"][()], "ap": U["unit_z"][()],
@@ -185,11 +200,20 @@ def load_ecephys(asset: dict) -> dict:
 
     on, cue, pin = task.on.values, task.cue.values, task.pole_in_time.values
     tstart, tstop = task.start_time.values, task.stop_time.values
+    # end of the stored spikes in each trial: the last spike of any unit before the trial's stop
+    st_sorted = np.sort(st_all)
+    last = np.searchsorted(st_sorted, tstop, side="left") - 1
+    last_t = st_sorted[np.clip(last, 0, len(st_sorted) - 1)] if len(st_sorted) else np.full(len(task), np.nan)
+    stored_end = np.where((last >= 0) & (last_t >= tstart), last_t, np.nan)
+    task["stored_end"] = stored_end
+    task["stored_from_pole"] = stored_end - pin
+    task["tc_ok"] = stored_end >= pin + TC_SPAN[1]
+    psth_ok = stored_end >= on + PSTH_SPAN[1]
     windows = {
         "sample": (pin, pin + SAMPLE_S), "delay": (on, cue),
         "R1": (cue, cue + RESP_S["R1"]), "R2": (cue, cue + RESP_S["R2"]),
         "pw": (on + PW[0], on + PW[1]), "pw0": (on + PW0[0], on + PW0[1]),
-        "pre": (on - 0.1, on), "trial": (tstart, tstop),
+        "pre": (on - 0.1, on), "trial": (tstart, tstop), "stored": (tstart, stored_end),
         "mid": (pin + 2.0, pin + 4.5), "late": (pin + 5.5, pin + 8.0),
     }
     nb_tc = int(round((TC_SPAN[1] - TC_SPAN[0]) / BIN_S))
@@ -218,14 +242,15 @@ def load_ecephys(asset: dict) -> dict:
         k1 = np.searchsorted(tstart, st[-1], side="right") - 1
         valid[i] = (trial_no >= k0) & (trial_no <= k1)
         for k, (lo, hi) in windows.items():
-            counts[k][i, valid[i]] = (np.searchsorted(st, hi) - np.searchsorted(st, lo))[valid[i]]
+            ok = valid[i] & (hi <= stored_end) if k in MASKED_WINDOWS else valid[i] & np.isfinite(hi)
+            counts[k][i, ok] = (np.searchsorted(st, hi) - np.searchsorted(st, lo))[ok]
         edges = pin[:, None] + TC_SPAN[0] + BIN_S * np.arange(nb_tc + 1)[None, :]
         c = np.searchsorted(st, edges)
         tc[i] = np.diff(c, axis=1)
         pedges = on[:, None] + PSTH_SPAN[0] + 0.001 * np.arange(nb_ps + 1)[None, :]
         pc = np.diff(np.searchsorted(st, pedges), axis=1)
         for gk, gm in gmask.items():
-            ti = gm & valid[i]
+            ti = gm & valid[i] & psth_ok
             psth[gk][i] = pc[ti].sum(axis=0)
             psth_n[gk][i] = int(ti.sum())
     units["n_spikes"] = (idx - starts)
@@ -345,11 +370,12 @@ def selectivity_table(sessions, units: pd.DataFrame, resp: str = "R1", equal_var
 
 
 def photo_effect(sessions, units: pd.DataFrame, stim: str | list, outcomes=KEEP, window: str = "pw",
-                 min_trials: int = 5, equal_var: bool = True) -> pd.DataFrame:
+                 min_trials: int = 5, equal_var: bool = True, max_delay: float | None = None) -> pd.DataFrame:
     """Convention P, per unit: rate in `window` under photostimulus `stim` against control trials.
 
     `stim` is a trial label (see stim_label) or a list of labels pooled. Contra and ipsi pooled.
     window: 'pw' (20 to 120 ms), 'pw0' (0 to 100 ms) or 'delay' (the whole delay epoch, W1).
+    max_delay: if given, only trials whose delay epoch is at most this long (s) enter.
     """
     stims = [stim] if isinstance(stim, str) else list(stim)
     dur = {"pw": PW[1] - PW[0], "pw0": PW0[1] - PW0[0]}
@@ -358,6 +384,8 @@ def photo_effect(sessions, units: pd.DataFrame, stim: str | list, outcomes=KEEP,
         s = sessions[si]
         t = s["trials"]
         m = t.response.isin(outcomes).values
+        if max_delay is not None:
+            m = m & (t.delay_s.values <= max_delay)
         ctrl = m & (t.stim == "none").values
         pi = m & t.stim.isin(stims).values
         ui = grp.unit.values
@@ -394,13 +422,14 @@ def effect_counts(df: pd.DataFrame) -> dict:
             "sig_inhibited": int((df.sig & (df.delta < 0)).sum()), "sig_activated": int((df.sig & (df.delta > 0)).sum())}
 
 
-def population_psth(sessions, units: pd.DataFrame, stims, outcomes=KEEP) -> tuple[np.ndarray, np.ndarray]:
+def population_psth(sessions, units: pd.DataFrame, stims, outcomes=KEEP, with_n: bool = False):
     """Per unit mean rate (spikes/s) in 1 ms bins around photostimulus onset, for control and stim.
 
-    Returns two arrays, units x bins; a unit with no trials of a condition gives NaN.
+    Returns two arrays, units x bins; a unit with no trials of a condition gives NaN. With
+    `with_n`, also the number of photostimulus trials per unit.
     """
     stims = [stims] if isinstance(stims, str) else list(stims)
-    out_c, out_p = [], []
+    out_c, out_p, n_pi = [], [], []
     for r in units.itertuples():
         s = sessions[r.session]
         acc = {"c": 0.0, "p": 0.0}
@@ -415,6 +444,9 @@ def population_psth(sessions, units: pd.DataFrame, stims, outcomes=KEEP) -> tupl
             n[key] += int(s["psth_n"][(st, resp)][r.unit])
         out_c.append(acc["c"] / n["c"] * 1000 if n["c"] else np.full(len(next(iter(s["psth"].values()))[0]), np.nan))
         out_p.append(acc["p"] / n["p"] * 1000 if n["p"] else np.full(len(next(iter(s["psth"].values()))[0]), np.nan))
+        n_pi.append(n["p"])
+    if with_n:
+        return np.array(out_c), np.array(out_p), np.array(n_pi)
     return np.array(out_c), np.array(out_p)
 
 
@@ -448,6 +480,27 @@ def bootstrap_onset(ctrl_u: np.ndarray, pi_u: np.ndarray, reading: str, rng, n_b
     return est, float(np.nanstd(vals)), int(np.isnan(vals).sum())
 
 
+def onset_reliability(ctrl_u: np.ndarray, n_pi: np.ndarray, reading: str, rng, n_sim: int = 200,
+                      step_ms: float | None = None, step_ratio: float = 1.0) -> np.ndarray:
+    """Onsets that convention O returns on simulated photostimulus PSTHs, for a check of the rule.
+
+    Each unit's photostimulus trials are drawn as Poisson counts from its own control PSTH, with its
+    own number of photostimulus trials; with `step_ms`, the rate is multiplied by `step_ratio` from
+    that time on. Without a step any onset found is a false one. Returns one onset (ms) per run."""
+    t = psth_time_ms()
+    keep = np.isfinite(ctrl_u).all(axis=1) & (n_pi > 0)
+    lam = ctrl_u[keep] / 1000.0
+    if step_ms is not None:
+        lam = lam * np.where(t >= step_ms, step_ratio, 1.0)[None, :]
+    n = n_pi[keep][:, None]
+    mc = np.nanmean(ctrl_u[keep], 0)
+    out = []
+    for _ in range(n_sim):
+        sim = rng.poisson(lam * n) / n * 1000.0
+        out.append(onset_ms(mc, sim.mean(0), reading))
+    return np.array(out)
+
+
 def vmval_distance(units: pd.DataFrame) -> np.ndarray:
     """Distance (mm) in the coronal plane from the VM/VAL centre of reading L2."""
     return np.hypot(np.abs(units.ml.values) - VMVAL_CENTRE[0], units.dv.values - VMVAL_CENTRE[1])
@@ -459,10 +512,12 @@ def kink_clip(v: np.ndarray, peaks: np.ndarray, rate: float = WC_RATE):
     """Convention V: for each spike peak, the kink is the first sample after the window 2.5 to 1.5 ms
     before the peak where dV/dt exceeds the window's mean plus 3 SD; Vm from -0.5 to 5 ms around the
     kink is replaced by a straight line. Returns the clipped trace and the Vm at each kink (the
-    threshold), NaN where no kink was found."""
+    threshold), NaN where no kink was found, and whether the kink is the first sample searched (the
+    derivative already above the limit 1.5 ms before the peak)."""
     dv = np.diff(v, prepend=v[0])
     out = v.copy()
     thr = np.full(len(peaks), np.nan)
+    edge = np.zeros(len(peaks), dtype=bool)
     a0, a1 = int(2.5e-3 * rate), int(1.5e-3 * rate)
     pre, post = int(0.5e-3 * rate), int(5e-3 * rate)
     for i, p in enumerate(peaks):
@@ -476,9 +531,10 @@ def kink_clip(v: np.ndarray, peaks: np.ndarray, rate: float = WC_RATE):
         if not len(hit):
             continue
         thr[i] = v[k]
+        edge[i] = hit[0] == 0
         lo, hi = max(k - pre, 0), min(k + post, len(v) - 1)
         out[lo:hi + 1] = np.linspace(out[lo], v[hi], hi - lo + 1)
-    return out, thr
+    return out, thr, edge
 
 
 def deposited_spikes(raw: np.ndarray, proc: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
@@ -518,9 +574,10 @@ def load_wholecell(asset: dict) -> dict:
     meta["current_values_nA"] = sorted(set(np.round(np.unique(cur), 3).tolist()))[:10]
     meta["frac_current_nonzero"] = float(np.mean(np.abs(cur) > 0.01))
     peaks, run_starts = deposited_spikes(raw, proc)
-    clipped, thr = kink_clip(raw, peaks, rate)
+    clipped, thr, edge = kink_clip(raw, peaks, rate)
     meta["n_spikes"] = len(peaks)
     meta["threshold_mV"] = thr
+    meta["kink_at_edge"] = edge
     meta["deposited_kink_mV"] = raw[np.clip(run_starts + int(0.5e-3 * rate), 0, len(raw) - 1)]
     meta["clip_vs_deposited_mad"] = float(np.median(np.abs(clipped - proc)))
     spk_t = peaks / rate + t0
@@ -532,11 +589,37 @@ def load_wholecell(asset: dict) -> dict:
     trials["cue"] = trials.cue_start_time
     trials["contra"] = trials["type"] == "lick right"
     trials["pi"] = trials.stim_present == 1
+    # the deposited laser trace: per trial, first and last sample above LASER_FRAC of the file's
+    # maximum between 0.5 s before and 4.5 s after pole onset (also at 1% and 20%, for the check)
+    ls = [k for k in f["stimulus/presentation"].keys() if k.startswith("photostim")]
+    lz = f[f"stimulus/presentation/{ls[0]}"]
+    laser = lz["data"][()].astype(np.float64)
+    meta["laser_series"] = ls
+    meta["laser_unit"], meta["laser_conversion"] = _s(lz["data"].attrs.get("unit")), float(lz["data"].attrs.get("conversion"))
+    meta["laser_max"] = float(laser.max())
+    lt0 = float(lz["starting_time"][()])
+    for frac in (0.01, LASER_FRAC, 0.2):
+        ons, offs, peak = [], [], []
+        for r in trials.itertuples():
+            a = int(np.clip(np.round((r.pole_in_time - 0.5 - lt0) * rate), 0, len(laser)))
+            b = int(np.clip(np.round((r.pole_in_time + 4.5 - lt0) * rate), 0, len(laser)))
+            h = np.flatnonzero(laser[a:b] > frac * meta["laser_max"])
+            ons.append((a + h[0]) / rate + lt0 if len(h) else np.nan)
+            offs.append((a + h[-1]) / rate + lt0 if len(h) else np.nan)
+            peak.append(float(laser[a:b].max()) if b > a else np.nan)
+        trials[f"laser_on_{frac:g}"] = ons
+        if frac == LASER_FRAC:
+            trials["laser_on"], trials["laser_off"], trials["laser_peak"] = ons, offs, peak
+    lag = float(np.nanmedian((trials.laser_on - trials.pole_in_time)[trials.pi]))
+    meta["laser_lag_from_pole"] = lag
     w0, w1 = int(PW[0] * rate), int(PW[1] * rate)
     pre_n, post_n = int(0.05 * rate), int(0.15 * rate)
     traces, traces_dep = {}, {}
     for name, onset in WC_ONSETS.items():
-        on = trials.pole_in_time + onset[1] if onset[0] == "pole_in" else trials.pole_out_time + onset[1]
+        if onset[0] == "laser":
+            on = trials.laser_on.where(trials.pi & trials.laser_on.notna(), trials.pole_in_time + lag)
+        else:
+            on = trials.pole_in_time + onset[1] if onset[0] == "pole_in" else trials.pole_out_time + onset[1]
         trials["on_" + name] = on
         on_i = idx(on)
         tr, trd, vm, vmd, sp, cu = [], [], [], [], [], []

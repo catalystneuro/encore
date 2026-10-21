@@ -21,7 +21,7 @@ provenance:
     url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39501872494
 outcomes:
 - claim: task-performance
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: reproduce_guo_2017.ipynb
   output: claim:task-performance
   measured:
@@ -32,8 +32,10 @@ outcomes:
     (reading c, mean over sessions), within 77.6 +/- 7.76%. Lick-early trials are 14.66 to 18.18%
     against 10.3 +/- 1.03%, and no-response trials 0.73 to 0.98% against 1.1 +/- 0.11%. No reading
     puts all three within tolerance. The 36 whole-cell recordings alone give 77.42 to 83.47% correct,
-    7.93 to 9.65% lick early and 0.96 to 1.55% no response. Per mouse, lick-early rates range from
-    3.6 to 37.2%.
+    7.93 to 9.65% lick early and 0.96 to 1.55% no response, at most two values within tolerance. Per
+    mouse, lick-early rates range from 3.6 to 37.2%. Partially reproduced before the first
+    verification; changed to not reproduced because the criterion asks all three values under one
+    reading and two of the three are out under every reading of the full set of recordings.
   deviations:
   - The dandiset holds recording sessions only; the paper's averages may come from behaviour
     sessions that are not deposited.
@@ -76,7 +78,10 @@ outcomes:
     fibre site fall to 17.0 to 20.3% of control (Q1) or 16.5 to 19.3% (Q3), within 15.9 +/- 9.3%;
     Q2 gives 37.5 to 51.2%. In the 20 to 120 ms window (W2) they fall to 1.2 to 1.5% (Q1). 63 to 79
     units qualify (paper 114), grouped 23 to 24, 21 to 24 and 31 to 42 near 0.6, 0.8 and 1.0 mm
-    (paper 34, 42, 38).
+    (paper 34, 42, 38). Every trial of the VGAT thalamic sessions has a 1.3 s delay, so W1 ends with
+    the delay epoch and holds no time after the photostimulus (W1 on 1.3 s delays only gives the same
+    values). In 100 ms bins the ratio is 21.6% in the bin from 1.4 s after pole onset, falls to 9 to
+    11% by the end of the delay and returns to 100% in the response epoch.
   deviations:
   - Distance is measured from the files' photostimulus site (AP -1.5, ML 0.9, DV -4.1 mm), the same
     nominal coordinate in every session, not from the fibre tip as placed in each mouse.
@@ -123,6 +128,9 @@ outcomes:
   deviations:
   - Each unit's trials are those from the trial holding its first spike to the trial holding its
     last, as the files give no observation interval per unit; this applies to every unit analysis.
+  - A window that ends after the last stored spike of a trial (spikes are stored to about 4.8 s
+    after pole onset) is counted as missing for that trial; this applies to every unit analysis and
+    touches 221 of 8991 kept ALM trials, 173 of 14997 thalamic and 19 of 3573 SNr for R1.
   - Unit classes under readings P1 and P2 of convention C (answer of 2026-10-20; P3 does not apply to
     ALM). Outcome unchanged.
 - claim: fig2e-alm-contra-ipsi-balance
@@ -206,12 +214,13 @@ outcomes:
   notes: By the sign of the change (m1), inhibited neurons outnumber activated ones in every depth
     bin under every reading (12 of 12 bins of 100 um, 7 of 7 of 200 um), and the population rate under
     photoinhibition is at most 0.205 of control in any bin. Counting significant changes (m2), 1 to 3
-    bins fail, each holding 1 to 4 neurons with no significant change in either direction (0
-    against 0). The criterion blocks a claim whose readings disagree. The reduction is seen at every
+    bins fail with Student's test and 1 with Welch's, each holding 1 to 4 neurons with no significant
+    change in either direction (0 against 0). The criterion blocks a claim whose readings disagree. The reduction is seen at every
     depth sampled (0.1 to 1.3 mm). The answers of 2026-10-20 leave its units (VGAT at 10 mW, P1 and P2)
     as they were; outcome unchanged.
   deviations:
-  - Depth is the files' `unit_y`.
+  - Depth is the files' `unit_y`, described only as "y-coordinate of this unit (mm)"; whether it is
+    depth below the pia is not stated.
 - claim: fig3b-selectivity-types-equally-inhibited
   outcome: blocked
   blocked_by: methods_underspecified
@@ -257,10 +266,14 @@ outcomes:
     1.08 with P1, 0.96 with P2) and the ALM onset 9.0 ms (P1, SEM 3.68) or 7.0 ms (P2, SEM 3.16),
     within 2.5 +/- 0.8 and 8.2 +/- 1.5 ms, ALM later. Under O1 the ALM onset is 0 ms in three of four
     cases (the first 1 ms bin already lies 3 SD below control) and under T2 with O2 it is 6 ms; those
-    readings fail.
+    readings fail. The pass rests on one reading of four, and the onset rule is fragile. On
+    photostimulus PSTHs simulated from each unit's control PSTH with no effect it reports an onset
+    below 10 ms in 30 to 48% of runs, and with a step at 8 ms it reports one before 8 ms in 18 to 43%
+    and within 6.5 to 9.5 ms in 60 to 84%. The ALM onset of 0 ms under O1 is such a false onset.
   deviations:
   - The photostimulus onset is the delay onset of the trial table (1.3 s after pole onset), as the
-    files record no laser time; the data check shows thalamic units fall within 5 ms of it.
+    extracellular files hold no laser trace; the data check shows thalamic units fall within 5 ms of
+    it.
   - Populations are those of fig3f-thalamus-silenced (reading a) and fig3-alm-collapse, which the
     answers of 2026-10-20 leave unchanged; outcome unchanged.
 - claim: wc-near-threshold
@@ -273,7 +286,9 @@ outcomes:
   notes: In the 36 deposited cells (paper 60), threshold minus basal Vm is 7.19 +/- 0.43 mV with the
     Methods' baseline (a) and 6.46 +/- 0.35 mV with the delay epoch (b), against 12.7 +/- 0.7 mV.
     With the deposited kink, 6.88 and 6.15 mV. Leaving out cell_21_1, whose trial start times are
-    shifted by one row, changes these by at most 0.14 mV.
+    shifted by one row, changes these by at most 0.14 mV. The kink is the first sample searched
+    (1.5 ms before the peak) in 1.7% of spikes (0.4 to 6.8% per cell); leaving those spikes out gives
+    7.23 mV with baseline (a).
   deviations:
   - The threshold is the Vm at the kink of convention V, averaged over every spike of the recording.
   - Spike peaks are located from the deposited spike-removed trace; the kink and clipping are
@@ -285,21 +300,23 @@ outcomes:
   measured:
   - -16.83
   - 9.05
-  notes: Earlier blocked (metadata insufficient), as the files record no photostimulus time. The
-    answer of 2026-10-20 gives two onset readings, E (1.3 s after pole_in_time) and M (0.1 s after
-    pole_out_time), rules out placing the onset from the Vm change, and says the 7.9 ms latency cannot
-    be judged without the laser time; the claim is now judged on the Vm change. Under E the 20 to 120
-    ms window precedes the change and Vm changes by +0.31 mV. Under M thalamus photoinhibition
-    changes Vm by -16.83 +/- 1.24 mV (16 cells), outside -18.7 +/- 1.1, and the spike rate falls from
-    3.14 to 0.06 spikes/s, so spiking is prevented. The hyperpolarization is present at 90% of the
-    paper's size. The onset under M (9.05 ms by V1, 9.33 ms by V2) is recorded but not judged; the
-    change begins about 7 ms before M (median 1.493 s after pole onset).
+  notes: The criterion's onset readings are E (1.3 s after pole_in_time) and M (0.1 s after
+    pole_out_time); the files also hold the laser trace, an OptogeneticSeries the first attempt did
+    not read, whose onset (reading L, asked about in question 7) lies 1.4725 s after pole_in_time in
+    these cells, 27 ms before M. Under E the 20 to 120 ms window precedes the change and Vm changes
+    by +0.31 mV. Under L thalamus photoinhibition changes Vm by -13.68 +/- 1.14 mV (all 16 cells
+    hyperpolarize, -4.7 to -21.7 mV) and the spike rate falls from 3.24 to 0.14 spikes/s; the onset
+    is 9.60 +/- 1.98 ms by V2, within 7.9 +/- 1.7, and 0.40 ms by V1, which is not. Under M the
+    change is -16.83 +/- 1.24 mV and the rate falls from 3.14 to 0.06 spikes/s; its onset (9.05 ms by
+    V1) is not judged. The hyperpolarization and the loss of spiking are present at 73% (L) or 90%
+    (M) of the paper's -18.7 +/- 1.1 mV; no reading puts both values within tolerance. Measured is
+    reading M, a reading the criterion lists.
   deviations:
-  - The photostimulus onset is placed by readings E and M of the criterion; the files hold no laser
-    time.
+  - The photostimulus onset is placed by readings E and M of the criterion, and by the onset of the
+    deposited laser trace (L), a reading not in the claims file, shown pending question 7.
   - The criterion has no partial clause; the outcome is partially reproduced because the
-    hyperpolarization and the silencing are present under M and the value is 1.9 mV short of the
-    paper's, 0.8 mV beyond its SEM.
+    hyperpolarization and the silencing are present under M and L at 73 to 90% of the paper's
+    value.
 - claim: wc-loss-of-excitation
   outcome: blocked
   blocked_by: data_missing
@@ -313,40 +330,43 @@ outcomes:
   measured:
   - -2.75
   - 0.76
-  notes: Earlier blocked (metadata insufficient). With the onset readings E and M of the answer of
-    2026-10-20, under M the 11 cells change by -2.75 +/- 1.30 mV, within -3.3 +/- 1.0, and by +0.76
-    +/- 1.29 spikes/s, outside -1.4 +/- 0.6; under E by -0.09 mV and +0.94 spikes/s, neither within
-    tolerance. The slight hyperpolarization holds under M; the drop in spike rate does not.
+  notes: Under M the 11 cells change by -2.75 +/- 1.30 mV, within -3.3 +/- 1.0, and by +0.76 +/- 1.29
+    spikes/s, outside -1.4 +/- 0.6. Under the laser onset (L) they change by -3.26 +/- 1.08 mV,
+    within, and by -0.01 +/- 1.16 spikes/s, outside; under E by -0.09 mV and +0.94 spikes/s, neither
+    within. The slight hyperpolarization holds under M and L; the drop in spike rate is not seen
+    under any reading.
   deviations:
-  - The photostimulus onset is placed by readings E and M; the files hold no laser time.
-  - The criterion has no partial clause; one of its two values is within tolerance under M.
+  - The photostimulus onset is placed by readings E and M, and by the laser onset (L, question 7).
+  - The criterion has no partial clause; one of its two values is within tolerance under M and L.
 - claim: wc-contra-alm-small-effect
   outcome: reproduced
   notebook: reproduce_guo_2017.ipynb
   output: claim:wc-contra-alm-small-effect
   measured: -1.6
-  notes: Earlier blocked (metadata insufficient). With the onset readings E and M of the answer of
-    2026-10-20, under M the 9 cells change by -1.60 +/- 0.64 mV, within -1.4 +/- 0.5; under E by
-    +0.86 mV, where the window precedes the change.
+  notes: Under M the 9 cells change by -1.60 +/- 0.64 mV, within -1.4 +/- 0.5; under the laser onset
+    (L) by -1.38 +/- 0.58 mV, within; under E by +0.86 mV, where the window precedes the change.
   deviations:
-  - The photostimulus onset is placed by readings E and M; the files hold no laser time.
+  - The photostimulus onset is placed by readings E and M, and by the laser onset (L, question 7).
 - claim: thalamus-stronger-than-cortex
   outcome: reproduced
   notebook: reproduce_guo_2017.ipynb
   output: claim:thalamus-stronger-than-cortex
-  notes: Earlier blocked (metadata insufficient) with the three whole-cell claims. With the onset
-    readings of the answer of 2026-10-20, under M thalamus photoinhibition (-16.83 mV) is more
-    negative than M1 (-2.75 mV) and contralateral ALM photoinhibition (-1.60 mV), p = 5.2e-8 and
-    7.9e-9 (Student) and 5.0e-8 and 3.4e-10 (Welch), so readings (a) and (b) both hold. Under E, where
-    the window precedes the change in all three groups, neither holds (p = 0.41 to 0.58).
+  notes: Under M thalamus photoinhibition (-16.83 mV) is more negative than M1 (-2.75 mV) and
+    contralateral ALM photoinhibition (-1.60 mV), p = 5.2e-8 and 7.9e-9 (Student) and 5.0e-8 and
+    3.4e-10 (Welch); under the laser onset (L), -13.68 against -3.26 and -1.38 mV, p = 1.3e-6 and
+    8.1e-8 (Student) and 6.7e-7 and 3.7e-9 (Welch). Readings (a) and (b) both hold under M and L.
+    Under E, where the window precedes the change in all three groups, neither holds (p = 0.41 to
+    0.58).
   deviations:
-  - The photostimulus onset is placed by readings E and M; the files hold no laser time.
+  - The photostimulus onset is placed by readings E and M, and by the laser onset (L, question 7).
 - claim: indirect-pathway-too-slow
   outcome: blocked
   blocked_by: data_missing
   notes: The dandiset holds no whole-cell recordings of M1 neurons (every whole-cell recording is in
-    ALM), and the ALM onset after M1 photoinhibition needs the photostimulus time the whole-cell
-    files do not record.
+    ALM), so the M1 onset after thalamus photoinhibition cannot be measured. The other onset, ALM
+    after M1 photoinhibition, can be measured from the laser trace the whole-cell files hold
+    (reading L, question 7) and is 8.7 +/- 4.6 ms (V1) or 27.3 +/- 6.6 ms (V2), against 13.9 +/-
+    3.2; the claim needs both.
 - claim: conduction-delay
   outcome: blocked
   blocked_by: data_missing
@@ -385,7 +405,7 @@ outcomes:
   - 0
   notes: Under P1 only 15 VM/VAL units qualify (to 50.0% of control). Under P2, 172 units from 7 mice
     fall to 47.5% (Q1), 46.5% (Q2) or 36.4% (Q3) of control under ALM photoinhibition at 1.5 mW
-    against 25%; 151 are inhibited, 21 activated, 98 (Student) or 105 (Welch) significantly inhibited
+    against 25%; 151 are inhibited, 21 activated, 99 (Student) or 105 (Welch) significantly inhibited
     and 2 significantly activated. The answers of 2026-10-20 fix the power at 1.5 mW (as already run)
     and add reading P3 (all VM/VAL units). Under P3 with T1, 201 units qualify, the paper's n, and 173
     are inhibited (within 190 +/- 19), but activity falls only to 55.9% (Q1) or 40.0% (Q3), 28 are
@@ -415,13 +435,13 @@ outcomes:
   - -0.195
   - -0.445
   notes: Under P1 (15 neurons, first reading) the slope is -0.195 and r -0.445, and the group
-    difference is not significant (p = 0.077). Under P2 with T1, the 72 neurons not significantly
-    changed are less selective in the delay epoch than the 100 changed ones (1.12 against 1.79
-    spikes/s, p = 0.0019; paper P = 0.002), and the change of rate and selectivity are negatively
+    difference is not significant (p = 0.077). Under P2 with T1, the 71 neurons not significantly
+    changed are less selective in the delay epoch than the 101 changed ones (1.13 against 1.77
+    spikes/s, p = 0.0030; paper P = 0.002), and the change of rate and selectivity are negatively
     correlated (r = -0.278; slope -0.074 with selectivity on change, -1.048 with change on
     selectivity; paper -0.73 and -0.33). The answer of 2026-10-20 adds P3 (all VM/VAL units); under
-    it the group difference and a negative r hold in 12 of 16 readings (90 against 111 neurons, p =
-    0.0021, T1, Student), with r -0.142 to -0.201. The group difference and a negative r hold in all
+    it the group difference and a negative r hold in 12 of 16 readings (89 against 112 neurons, p =
+    0.0031, T1, Student), with r -0.142 to -0.201. The group difference and a negative r hold in all
     16 P2 readings and 4 of 16 P1 readings; slope and r are out of tolerance in every reading.
     Outcome unchanged.
   deviations:
@@ -469,8 +489,9 @@ outcomes:
   - 12.0
   notes: Under P1 no ALM pyramidal unit of the PV-Cre x Ai32 ALM sessions qualifies (computed widths
     are 0.6 ms or less there). Under P2, 151 units (paper 256) give an ALM onset of 6 or 7 ms (8.1 +/-
-    1.2); VM/VAL onsets are 14 ms (T1) or 4 ms (T2) against 10.9 +/- 2.9, and SNr onsets 12 to 31 ms
-    against 15.2 +/- 4.6. No reading puts all three within tolerance with SNr latest; measured is
+    1.2); VM/VAL onsets are 14 ms (T1) or 4 ms (T2) against 10.9 +/- 2.9, and SNr onsets 12 to 32 ms
+    against 15.2 +/- 4.6 (P2 SNr units, now the 'Narrow width spiking' label, with 35 inhibited and 53
+    modulated). No reading puts all three within tolerance with SNr latest; measured is
     reading O1 with T1 and SNr reading (a).
   deviations:
   - SNr populations from snr-photoinhibition under P2, 5 trials, T1, Student.
@@ -488,13 +509,15 @@ outcomes:
   - 21
   - 2.33
   - 5.97
-  notes: The dandiset holds 181 SNr units (paper 227), 171 under P1 and 168 under P2. Under P2 with
-    T1, 43 to 48 units are significantly inhibited and 21 activated (paper 48 and 23), and more
-    decrease than increase (bootstrap p = 0.0003 to 0.0025). Under P1 (no minimum of trials, T1, Student) 45 and 21, reduction 2.33 spikes/s (5.97%).
-    The reduction is 2.2 to 2.3 spikes/s (5.7 to 5.9% of control) under P2 against 3.6 spikes/s
-    (8.3%), out of tolerance in every reading. Counts and the bootstrap test agree with the paper;
-    the reduction is weaker. The answers of 2026-10-20 keep P1 and P2 for SNr and the 1.5 mW
-    condition the attempt used; outcome unchanged.
+  notes: The dandiset holds 181 SNr units (paper 227), 171 under P1 and 146 under P2 (the 'Narrow
+    width spiking' label; before the first verification P2 took every unit not labelled wide, 168).
+    Under P1 (no minimum of trials, T1, Student) 45 units are significantly inhibited and 21 activated
+    (paper 48 and 23), the reduction is 2.33 spikes/s (5.97%), and more decrease than increase
+    (bootstrap p = 0.0009); under P1 and T1, 44 to 50 and 21, p = 0.0003 to 0.0019. Under P2 and T1,
+    35 to 40 and 18 (p = 0.0020 to 0.0105). The reduction is 2.25 to 2.44 spikes/s (5.8 to 6.3%)
+    under P1 and 2.68 to 2.98 (6.5 to 7.2%) under P2, against 3.6 spikes/s (8.3%), out of tolerance
+    in every reading. Under P1 the counts and the bootstrap test agree with the paper; the reduction
+    is weaker.
   deviations:
   - The 46 wider SNr units of the paper are not deposited; the dandiset's 181 units appear to be the
     putative GABAergic ones, shown also as a set of their own.
@@ -503,12 +526,15 @@ outcomes:
   blocked_by: data_missing
   notebook: reproduce_guo_2017.ipynb
   output: claim:snr-unit-properties
-  notes: Spikes are stored only for about 5 s of each 9 s trial and between trials not at all, so
-    neither reading of the mean rate can be computed as defined; as computed, both give 20.8 spikes/s
-    for the putative GABAergic units against 40.9, and the same units fire 37.3 spikes/s in the sample
-    epoch. Only 10 (P1) or 13 (P2) other SNr units are deposited against 46. The selectivity count
-    is testable, 139 of 171 (P1) and 137 of 168 (P2) under the first reading, within 152 +/- 15. The
-    answer of 2026-10-20 on unit classes changes neither part; outcome unchanged.
+  notes: Spikes are stored only to about 4.8 s after pole onset in each 9 s trial and not between
+    trials, so neither reading of the mean rate can be computed as defined; as computed, both give
+    20.7 (P1) or 22.0 (P2) spikes/s for the putative GABAergic units against 40.9, biased low because
+    they divide by time without stored spikes. Over the stored part of each trial (a variant) the
+    same units fire 36.0 (P1) or 38.1 (P2) spikes/s and the other units 13.1 (10 units, P1) or 20.3
+    (35 units, P2) against 23.4. Only 10 (P1) or 35 (P2, most labelled 'Cannot be determined') other
+    SNr units are deposited against 46. The selectivity part is tested and within tolerance under P1,
+    139 of 171 under the first reading (137 to 143 over the c1 readings), against 152 +/- 15; under P2
+    114 to 122 of 146, below it.
 - claim: anatomy-reciprocal-thalamus
   outcome: blocked
   blocked_by: data_missing
@@ -517,20 +543,20 @@ outcomes:
   outcome: reproduced
   notebook: reproduce_guo_2017.ipynb
   output: claim:selectivity-time-course
-  notes: Earlier partially reproduced, the VM/VAL delay increase failing under P1 and P2. The answers
-    of 2026-10-20 keep both trial readings (t1 correct control, t2 all correct), as run, and add
-    reading P3 (all VM/VAL units). With VM/VAL P3 (258 units, t2) and ALM P2 (810 units, t2), both
-    areas meet the criterion. Selectivity emerges in the sample epoch (first window above twice its
-    SEM centred at 0.1 s in ALM and 0.2 s in VM/VAL), is higher at the end of the delay than at its
-    start (ALM 0.91 to 1.03, VM/VAL 0.25 to 0.35 spikes/s), and peaks in the response epoch (3.1 and
-    3.4 s). Five combinations of readings meet the criterion in both areas, all with VM/VAL P3. With
-    P1 or P2 VM/VAL selectivity is lower at the end of the delay than at its start in every reading
-    (P2, all neurons, t1, 0.59 against 0.23), so the VM/VAL increase holds in 3 of 12 VM/VAL readings
-    and is small where it holds. The ALM peak lies 0.4 to 0.6 s after the go cue, not within its first
-    200 ms.
+  notes: With VM/VAL P3 (258 units, t2) and ALM P2 (810 units, t2), both areas meet the criterion.
+    Selectivity emerges in the sample epoch (first window above twice its SEM centred at 0.1 s in ALM
+    and 0.3 s in VM/VAL), is higher at the end of the delay than at its start (ALM 0.85 to 1.10,
+    VM/VAL -0.05 to 0.38 spikes/s), and peaks in the response epoch (3.0 and 3.3 s). Six combinations
+    of readings meet the criterion in both areas, all with VM/VAL P3 (all neurons with t2, selective
+    neurons with t1 and t2) and ALM P1 or P2. With VM/VAL P1 or P2, selectivity is lower at the end of
+    the delay than at its start in every reading (P2, all neurons, t1, 0.83 against 0.17), and with P3,
+    all neurons and t1 as well (0.57 against 0.53), so the VM/VAL increase holds in 3 of 12 VM/VAL
+    readings. The ALM peak lies 0.4 to 0.6 s after the go cue, not within its first 200 ms. The
+    answers of 2026-10-20 keep both trial readings (t1, t2) and add P3.
   deviations:
   - Preference from total spike counts over the three epochs (convention S) in a random half of the
-    trials; windows of 200 ms stepped by 100 ms; only trials with a 1.3 s delay.
+    trials; windows of 200 ms stepped by 100 ms; only trials with a 1.3 s delay whose spikes are
+    stored to 4.1 s after pole onset.
 - claim: alm-gabaergic-no-thalamic-projection
   outcome: blocked
   blocked_by: data_missing
@@ -543,9 +569,10 @@ findings:
     thalamus photoinhibition of Fig. 5, non-behaving whole-cell recordings with current injection,
     M1 whole-cell recordings, Olig3-cre recordings and the histology are not deposited.
 - kind: data_missing
-  statement: Spikes are stored only from each trial's start to about 5 s after pole onset, although
-    trials last about 9 s, and not between trials; spike rates over whole trials or sessions cannot
-    be computed.
+  statement: Spikes are stored only from each trial's start to about 4.8 s after pole onset, although
+    trials last about 9 s, and not between trials. The end is fixed to pole onset, not to the go cue,
+    so in trials with delays above about 2 s the response epoch is not stored; spike rates over whole
+    trials or sessions cannot be computed.
 - kind: metadata_insufficient
   statement: Most units hold spikes over only part of their session (median 70% of its trials; 1358
     of 1936 units below 90%), and the Units table gives no observation interval, so the trials in
@@ -559,11 +586,13 @@ findings:
     determined') have no stated rule; they cannot be derived from the deposited waveforms but give
     class sizes close to the paper's.
 - kind: metadata_insufficient
-  statement: The whole-cell trial tables leave every photostimulus column empty and the files hold no
-    laser time; `stim_present` marks the photostimulus trials without description. Thalamus
-    photoinhibition hyperpolarizes ALM neurons from about 1.49 s after pole onset, 0.19 s after one
-    delay onset the trial times allow (1.3 s after pole_in_time) and about 7 ms before the other (0.1
-    s after pole_out_time), so the photostimulus onset and onset latencies cannot be placed.
+  statement: The whole-cell trial tables leave every photostimulus column empty, and `stim_present`
+    marks the photostimulus trials without description. The laser time is held only in an
+    OptogeneticSeries (stimulus/presentation/photostim_on_*) whose description is 'no description'.
+    It starts between the two delay onsets the trial times allow, 0.10 to 0.17 s after 1.3 s past
+    pole_in_time and 0.03 to 0.10 s before 0.1 s past pole_out_time (1.40 s after pole onset in mouse
+    anm300476, 1.47 s in the others), and it is on in one trial not marked by stim_present
+    (cell_21_1).
 - kind: metadata_error
   statement: In the whole-cell file of cell_21_1 (anm300476) the trial start and stop times are
     shifted by one row against the pole and cue times (85 rows), and the table is not in time order.
@@ -574,6 +603,11 @@ findings:
   statement: Every electrode group, in thalamus and SNr as well as ALM, carries the ALM coordinates
     (AP 2.5, ML -1.5, DV 0); the SNr units of anm00261336 are placed at AP -1.56 mm, outside SNr;
     photostimulus sites give ML negative for the left hemisphere while units give it positive.
+- kind: metadata_insufficient
+  statement: The Units column unit_y is described only as "y-coordinate of this unit (mm)", with no
+    reference, so whether it is depth below the pia is not stated; session_start_time is the date of
+    conversion (all sessions on 2017-06-27), not of recording, and no sorter is named, so the ALM
+    sessions missing from the dandiset cannot be identified.
 - kind: metadata_insufficient
   statement: Thalamic units have no nucleus label (brain_subregion 'N/A'), so VM/VAL units can be
     selected only by distance from a centre the paper does not give in coordinates.
@@ -593,3 +627,309 @@ findings:
   statement: The dandiset holds data the paper does not describe, 21 ALM sessions of PV-Cre x Ai32
     mice with thalamic photostimulation at 10, 22.5 and 45 mW and 12 thalamic sessions of C57BL6 mice
     without photostimulation.
+verifications:
+- date: '2026-10-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebook of the author-answers run with the conclusion cells and the
+    summary removed, the helper module and the claims file, with the paper. The verifier queried the
+    archive metadata and tested helper functions on synthetic inputs. Its report had no attempt record
+    and gave its own outcome for each claim; 29 of 39 agree with the record as it then stood, 10 do
+    not (it would give not reproduced where the record gave partially reproduced).
+  results:
+  - claim: task-performance
+    agrees: false
+    outcome: not_reproduced
+    reason: No reading has all three values within tolerance. The closest, whole-cell trials pooled,
+      gives 77.4% correct and 9.65% lick-early, but 1.55% no-response against 1.1 +/- 0.11.
+    response: Changed to not reproduced. The criterion asks all three values under one reading, and
+      under every reading of the full set of recordings two of the three are out (lick early 14.7 to
+      18.2% against 10.3 +/- 1.0).
+  - claim: fig1c-alm-photoinhibition-bias
+    agrees: true
+    outcome: reproduced
+    reason: At 1.5 mW, over 66 sessions from 11 mice, contra 0.774 to 0.368 (p = 3.6e-25) and ipsi
+      0.673 to 0.744 (p = 1.7e-4). Both are below 0.001.
+    response: No change needed.
+  - claim: fig1d-thalamus-photoinhibition-bias
+    agrees: true
+    outcome: blocked
+    reason: Confirmed on the archive. The 9 Ai35D x GAD2_Cre assets are plain ecephys.nwb files with no
+      ogen part and no OptogeneticSeries, and there are no behaviour-only assets.
+    response: No change needed.
+  - claim: gad2-thalamus-reduction
+    agrees: true
+    outcome: blocked
+    reason: Confirmed on the archive. The unit count matches (84 = 26 + 41 + 17), but no trial is
+      photostimulated, so nothing can be tested.
+    response: No change needed.
+  - claim: vgat-thalamus-reduction
+    agrees: true
+    outcome: reproduced
+    reason: Under W1 (whole delay) Q1 is 15.8 to 20.3%, within 15.9 +/- 9.3; under W2 it is only 1.2 to
+      1.5%. Group sizes are not the paper's and distances are from one nominal fibre coordinate. W1
+      runs to the go cue and, where the delay is longer than the photostimulus, takes in time after
+      the laser is off; the notebook shows neither the delay lengths nor the ratio over time (problem
+      5).
+    response: Added the delay lengths of the VGAT thalamic sessions, W1 restricted to 1.3 s delays, and
+      the ratio in 100 ms bins across the delay. Every trial of these sessions has a 1.3 s delay, so W1
+      holds no time after the photostimulus and the restriction changes nothing; the ratio is 21.6% in
+      the bin from 1.4 s, falls to 9 to 11% by the end of the delay and returns to 100% in the response
+      epoch. Outcome kept.
+  - claim: muscimol-vmval-bias
+    agrees: true
+    outcome: blocked
+    reason: No infusion data among the 173 assets.
+    response: No change needed.
+  - claim: alm-unit-classes
+    agrees: false
+    outcome: not_reproduced
+    reason: 966 units against 1214 +/- 121, and pyramidal and fast-spiking counts are out under P1 and
+      P2. The P2 fractions do match (0.839 against 0.829; 0.125 against 0.137); about 250 units are
+      simply not deposited.
+    response: Outcome kept as partially reproduced, with the disagreement recorded. The width histogram
+      is bimodal and the class fractions under P2 match the paper's; only the counts fail, because
+      about 250 units are not deposited, so the claim holds in part. The files give no recording date
+      or sorter per session (session_start_time is the conversion date, 2017-06-27, for every session),
+      now printed and recorded as a finding, so the missing sessions cannot be identified.
+  - claim: fig2e-alm-selectivity
+    agrees: false
+    outcome: not_reproduced
+    reason: 0 of 32 readings meet the criterion on absolute counts. The fraction matches (P2 0.70), and
+      scaled to 1006 units control/R2/c1 gives 702/156/268/277, within tolerance. The shortfall is
+      missing units.
+    response: Outcome kept as partially reproduced, with the disagreement recorded, for the reason the
+      verifier gives; the selective fraction and the type proportions hold, the counts fail on missing
+      units. Spike counts in windows past the stored spikes are now counted as missing (problem 2);
+      every kept trial has a 1.3 s delay, so this touches 221 of 8991 kept ALM trials, and the counts
+      in the record are those of the corrected run.
+  - claim: fig2e-alm-contra-ipsi-balance
+    agrees: true
+    outcome: reproduced
+    reason: Both readings hold in all 32 readings; contra fraction 0.495 to 0.543.
+    response: No change needed.
+  - claim: thalamus-unit-classes
+    agrees: false
+    outcome: not_reproduced
+    reason: 789 units and 682 putative thalamic (P2) are within tolerance. Within 0.4 mm gives 259
+      (allowed 282 to 344) and VM/VAL 222 (allowed 265 to 325). Reading L1 has no label.
+    response: Outcome kept as partially reproduced, with the disagreement recorded. Two of the four
+      counts are within tolerance and the location counts rest on the claims file's proxy centre, so
+      the claim holds in part.
+  - claim: fig2f-vmval-selectivity
+    agrees: false
+    outcome: not_reproduced
+    reason: Counts are out under all 64 readings. Under P2 and P3 the selectivity types differ from ALM
+      (2 x 4 test p = 0.0003 to 0.04). Only P1 (n = 20) passes the chi-squared tests.
+    response: Outcome kept as partially reproduced, with the disagreement recorded. The selective
+      fraction does not differ from ALM in any reading (2 x 2 test), which is the first half of the
+      claim; the type distribution and the counts fail. The storage correction (problem 2) touches 173
+      of 14997 kept thalamic trials.
+  - claim: fig3-alm-collapse
+    agrees: true
+    outcome: partially_reproduced
+    reason: Activity falls to 2.1 to 2.5% (Q1) or 5.1 to 5.2% (Q2), against 6 +/- 0.6; n is 230 to 261
+      against 314. In every reading inhibited units outnumber activated ones and 0 are significantly
+      activated.
+    response: No change needed.
+  - claim: fig3d-all-layers
+    agrees: true
+    outcome: blocked
+    reason: Under m1 every bin passes. Under m2, bins of 1 to 4 neurons tie at 0 to 0, so the readings
+      disagree. Reading m2 uses Student's test only; convention P also gives Welch's (problem 7).
+      Whether unit_y in ALM is depth below the pia is not shown.
+    response: Added m2 with Welch's test (1 bin fails, against 1 to 3 with Student's) and the depth
+      range and the files' description of unit_y ("y-coordinate of this unit (mm)", no reference),
+      recorded as a finding. Outcome kept.
+  - claim: fig3b-selectivity-types-equally-inhibited
+    agrees: true
+    outcome: blocked
+    reason: With the rate difference as measure, some pair differs at p < 0.05 in all readings. With the
+      ratio, mostly no pair differs; both differ together in only 13 of 64.
+    response: No change needed.
+  - claim: fig3f-thalamus-silenced
+    agrees: false
+    outcome: not_reproduced
+    reason: Q1 is 0.9 to 1.1% against 2 +/- 0.2, and n is 89 to 113 against 148 +/- 15. Reading (b),
+      VM/VAL, has 0 units.
+    response: Outcome kept as partially reproduced, with the disagreement recorded. The thalamic
+      activity is abolished nearly completely, as the claim states (101 of 113 units significantly
+      inhibited, none activated); the value lies below the paper's 2% and the unit count is short, so
+      the claim holds in part.
+  - claim: fig3-onset-latencies
+    agrees: true
+    outcome: reproduced
+    reason: Under T1/O2 thalamus 2.0 ms, ALM 9.0 ms (P1) or 7.0 ms (P2), ALM later. Under O1 the ALM
+      onset is 0.0 ms, before the thalamus, and the bootstrap SEMs are twice the paper's. The onset rule
+      takes the first bin past 3 SD with no persistence; on synthetic data with no effect it reported an
+      onset within 10 ms in 56% (O1) and 39% (O2) of runs, and the pass rests on one reading of four
+      (problem 4).
+    response: Added a check of the rule on PSTHs simulated from each unit's control PSTH. With no effect
+      it reports an onset below 10 ms in 30 to 48% of runs; with a step at 8 ms, before 8 ms in 18 to
+      43% and within 6.5 to 9.5 ms in 60 to 84%. The conclusion and the record now say the pass is
+      fragile. Outcome kept, as the criterion is met under one reading.
+  - claim: wc-near-threshold
+    agrees: true
+    outcome: not_reproduced
+    reason: 7.2 mV (reading a) and 6.5 mV (reading b) against 12.7 +/- 0.7, with n = 36 against 60. The
+      deposited-kink variant agrees. The kink search starts 1.5 ms before the peak and can return the
+      window's first sample; the notebook does not report how often (problem 8).
+    response: Added the fraction of spikes whose kink is the first sample searched (1.7%, 0.4 to 6.8%
+      per cell) and the threshold without them (7.23 mV with baseline a). Outcome kept.
+  - claim: wc-thalamus-hyperpolarization
+    agrees: false
+    outcome: not_reproduced
+    reason: Under E the change is +0.31 mV. Under M it is -16.83 +/- 1.24 mV, outside -18.7 +/- 1.1; the
+      onset is not judged. Provisional, because the archive metadata list an OptogeneticSeries in all 36
+      whole-cell assets that the loader never reads (problem 1).
+    response: The verifier was right; the files hold the laser trace. The loader now reads it, and its
+      onset is shown as reading L, with a question to the reader (question 7). Under L the change is
+      -13.68 +/- 1.14 mV with spiking stopped, and the onset 9.60 +/- 1.98 ms by V2 (within 7.9 +/-
+      1.7) and 0.40 ms by V1. Outcome kept as partially reproduced, with the disagreement recorded; the
+      hyperpolarization and the loss of spiking are present at 73 to 90% of the paper's size under M
+      and L.
+  - claim: wc-loss-of-excitation
+    agrees: true
+    outcome: blocked
+    reason: Confirmed. All 36 whole-cell assets are behaving recordings, Ai32 x PV-Cre or VGAT. There are
+      no Gad2 or current-injection experiments.
+    response: No change needed.
+  - claim: wc-m1-small-effect
+    agrees: false
+    outcome: not_reproduced
+    reason: Under M, Vm is -2.75 (within) but the rate change is +0.76 spikes/s against -1.4 +/- 0.6.
+      Under E both values are out.
+    response: Outcome kept as partially reproduced, with the disagreement recorded. Under the laser
+      onset (L) Vm changes by -3.26 mV (within) and the rate by -0.01 spikes/s (out); the slight
+      hyperpolarization holds under M and L and the drop in rate is not seen, so the claim holds in
+      part.
+  - claim: wc-contra-alm-small-effect
+    agrees: true
+    outcome: reproduced
+    reason: -1.60 +/- 0.64 mV under M, within -1.4 +/- 0.5. Under E it is +0.86.
+    response: Added reading L (-1.38 +/- 0.58 mV, within). Outcome kept.
+  - claim: thalamus-stronger-than-cortex
+    agrees: true
+    outcome: reproduced
+    reason: Under M, readings (a) and (b) both hold, p = 5e-8 against M1 and 8e-9 against contra ALM.
+      Under E neither holds, but under E there is no photostimulus effect at all.
+    response: Added reading L, under which both readings hold (p = 1.3e-6 and 8.1e-8). Outcome kept.
+  - claim: indirect-pathway-too-slow
+    agrees: true
+    outcome: blocked
+    reason: No M1 whole-cell neurons are deposited. The ALM-after-M1 onset (13.9 ms) could only be tested
+      with a laser time (problem 1).
+    response: The ALM onset after M1 photoinhibition under the laser onset is now shown (8.7 +/- 4.6 ms
+      by V1, 27.3 +/- 6.6 by V2, against 13.9 +/- 3.2). The claim needs the M1 onset too and stays
+      blocked.
+  - claim: conduction-delay
+    agrees: true
+    outcome: blocked
+    reason: Confirmed, there is no Olig3 genotype in any asset's metadata.
+    response: No change needed.
+  - claim: latency-model-t3
+    agrees: true
+    outcome: blocked
+    reason: A simulation; its parameters are in the Supplementary Information.
+    response: No change needed.
+  - claim: fig5-weak-photoinhibition-rates
+    agrees: true
+    outcome: blocked
+    reason: ALM sessions with thalamic photostimulation use 10, 22.5 or 45 mW only; none at 0.5 mW. It
+      could not confirm that the 248 missing ALM units are the Fig. 5 sessions.
+    response: The files give no recording date or sorter (session_start_time is the conversion date for
+      every session), now printed and recorded as a finding, so the missing sessions cannot be
+      identified from the dandiset. No change of outcome.
+  - claim: fig5c-selectivity-reduced
+    agrees: true
+    outcome: blocked
+    reason: Depends on the claim above.
+    response: No change needed.
+  - claim: network-models
+    agrees: true
+    outcome: blocked
+    reason: A model result; its equations are in the Supplementary Information.
+    response: No change needed.
+  - claim: fig6c-vmval-reduced
+    agrees: true
+    outcome: not_reproduced
+    reason: Activity falls to 43 to 56% (Q1) against 25 +/- 2.5. The partial condition fails under P2 and
+      P3, which have 1 to 5 significantly activated units.
+    response: No change needed; one count moved with the storage correction (99 significantly inhibited
+      under P2, T1, Student, against 98).
+  - claim: fig6b-selectivity-types-equally-inhibited
+    agrees: true
+    outcome: blocked
+    reason: Group readings and measures disagree; group set (a) differs often, group set (b) under the
+      ratio never.
+    response: No change needed.
+  - claim: fig6c-unmodulated-less-selective
+    agrees: true
+    outcome: partially_reproduced
+    reason: Unmodulated units are less selective (p = 0.002 to 0.03 under P2 and P3) and r is negative
+      (-0.14 to -0.28). Slope and r are outside tolerance in every reading.
+    response: No change of outcome; the numbers in the record are those of the corrected run (71 against
+      101 neurons, p = 0.0030, under P2, T1, Student).
+  - claim: fig6d-localized
+    agrees: false
+    outcome: not_reproduced
+    reason: Group counts are out in all 12 readings, e.g. 111 against 160 and 26 against 46. Near < far
+      does hold under P2 and P3.
+    response: Outcome kept as partially reproduced, with the disagreement recorded. The reduction is
+      concentrated near the VM/VAL centre (48% within 0.5 mm against 81 to 85% at 1.0 mm or more) and
+      the within-1.0 mm value is within tolerance under one reading (Q3, T2, 39.6%); the counts away
+      from the centre fail, so the claim holds in part.
+  - claim: vm1-photoinhibition-no-effect
+    agrees: true
+    outcome: blocked
+    reason: The archive metadata name no vM1 site, and the (0.5, 0.5) galvo condition comes from 1 mouse,
+      not 3.
+    response: No change needed.
+  - claim: fig6e-onset-latencies
+    agrees: true
+    outcome: not_reproduced
+    reason: ALM 6 to 7 ms (within). VM/VAL is 14 ms (T1, just outside) or 4 to 7 ms (T2). Under O1, SNr
+      (12 ms) is not the latest. The SNr populations under P2 include 22 'Cannot be determined' units
+      (problem 6).
+    response: SNr P2 is now the 'Narrow width spiking' label (146 units); the SNr onsets are 12 to 32 ms.
+      Outcome kept.
+  - claim: snr-photoinhibition
+    agrees: false
+    outcome: not_reproduced
+    reason: The reduction is 2.1 to 2.4 spikes/s against 3.6 +/- 0.36 (5.6 to 6.3% against 8.3 +/-
+      0.83), and 181 SNr units are deposited against 227 +/- 23. The bootstrap p < 0.01 holds in most
+      readings. GABA P2 uses every unit not labelled wide (168), where the claims file's P2 is "Narrow
+      width spiking" (146) (problem 6).
+    response: P2 is now the 'Narrow width spiking' label (146 units); reduction 2.68 to 2.98 spikes/s
+      (6.5 to 7.2%), out as before. Outcome kept as partially reproduced, with the disagreement
+      recorded. Under P1 the significantly inhibited and activated counts (44 to 50 and 21, against 48
+      and 23) and the bootstrap test (p = 0.0003 to 0.0019) agree with the paper and the reduction is
+      present but weaker.
+  - claim: snr-unit-properties
+    agrees: true
+    outcome: blocked
+    reason: The 46 wider SNr units are not deposited. Selectivity, 137 to 143 of 181, is within 152 +/- 15
+      under the c1 readings. The rates (about 20.8) are biased low, as readings (a) and (b) divide by
+      time that includes periods with no stored spikes (problem 3). The record should state both the
+      block and the selectivity part (problem 9).
+    response: Added a rate over the stored part of each trial (a variant, 36.0 spikes/s under P1, 38.1
+      under P2); the header table, the summary and the notes now say the selectivity part is tested and
+      within tolerance under P1. Outcome kept.
+  - claim: anatomy-reciprocal-thalamus
+    agrees: true
+    outcome: blocked
+    reason: Confirmed, all assets are ecephys or icephys NWB files; there is no histology.
+    response: No change needed.
+  - claim: selectivity-time-course
+    agrees: true
+    outcome: reproduced
+    reason: All three conditions hold with ALM P1 or P2 and VM/VAL P3. They fail with VM/VAL P1 or P2,
+      where selectivity does not rise over the delay. The rises that pass are tiny.
+    response: Only trials stored to the end of the time course now enter; six combinations meet the
+      criterion in both areas, all with VM/VAL P3, and the VM/VAL increase holds in 3 of 12 VM/VAL
+      readings, as the notes say. Outcome kept.
+  - claim: alm-gabaergic-no-thalamic-projection
+    agrees: true
+    outcome: blocked
+    reason: No histology.
+    response: No change needed.

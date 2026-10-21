@@ -8,7 +8,7 @@ photoinhibition.
 
 | Claim | Outcome |
 |---|---|
-| Behaviour: 77.6% correct, 10.3% lick early, 1.1% no response | Partially reproduced |
+| Behaviour: 77.6% correct, 10.3% lick early, 1.1% no response | Not reproduced |
 | ALM photoinhibition biases licking to the ipsilateral side (Fig. 1c) | Reproduced |
 | Thalamus photoinhibition in VGAT mice reduces activity 0.5 to 1.1 mm from the fibre to 15.9% | Reproduced |
 | ALM and thalamic unit classes by spike width | Partially reproduced (2 claims) |
@@ -38,10 +38,11 @@ The dandiset holds 966 of the paper's 1214 ALM units, nearly all its thalamic un
 putative GABAergic SNr units. Its mean waveforms are too short to measure the spike widths the
 Methods classify by, so unit classes are run both by computed width and by the files' own labels (and, for the
 thalamic claims of Fig. 2 and 6, with all units).
-Spikes are stored only in the first 5 s or so of each trial, and most units hold spikes over only
-part of their session. The whole-cell files record no photostimulus time; the effect of photoinhibition
-starts about 0.19 s after one onset their trial times allow (E) and just before the other (M), and
-the whole-cell claims hold under M only. The attempt record,
+Spikes are stored only to about 4.8 s after pole onset in each trial, so windows that end later are
+counted as missing, and most units hold spikes over only part of their session. The whole-cell
+files hold the laser trace in an OptogeneticSeries; its onset lies between the two onsets the
+claims file allows (E and M), and the whole-cell outcomes are the same under M and under the laser
+onset, while nothing holds under E. The attempt record,
 with the reasons and the differences from the paper's method, is
 [`attempts/000009-guo-2017-01.yaml`](../../attempts/000009-guo-2017-01.yaml).
 
