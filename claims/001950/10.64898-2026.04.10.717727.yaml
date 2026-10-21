@@ -1,0 +1,1081 @@
+# Claims for "Topographic structure and function of locus coeruleus norepinephrine neurons"
+# (Allen Institute; bioRxiv doi:10.64898/2026.04.10.717727, preprint version 1) on dandiset 001950.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21, under
+# docs/protocol.md as it stands (version pilot-10).
+#
+# Text read: the preprint, version 1, full text from the bioRxiv JATS XML (paper/
+# 10.64898-2026.04.10.717727.txt): Results, Discussion, Methods, the legends of Figures 1 to 6 and
+# of Supplementary Figures S1 to S18. The supplementary figures exist in this text as legends
+# only; their panels were not seen. The extraction lost every display equation of the Methods (the
+# logistic regressions, the Q-learning update, the softmax, the change of choice likelihood, the
+# drift contrast, the Watson-Wheeler statistic, the permutation p-values) and the contents of
+# Tables 1 to 3 (injection coordinates and counts, Stan priors). Where these matter the code fixes
+# them, as noted below. The analysis code's README cites a later version of record (Nature,
+# doi:10.1038/s41586-026-11026-0), not read here; its figure numbering differs (code Fig. E9 to
+# E15 are preprint Figs. S12 to S18).
+#
+# Code read (Data and code availability; Methods, Data analysis):
+# - github.com/AllenNeuralDynamics/aind-beh-ephys-analysis, commit 971c1ca (2026-10-05): all in vivo
+#   physiology and behaviour analyses. Prep scripts in code/beh_ephys_analysis/session_combine/
+#   figure_preparation (unit tables, go-cue metrics in basic_ephys_generation.py, go-cue and
+#   baseline t-statistics in response_tstats_generation.py, outcome windows in
+#   outcome_window_generation_parallel.py, outcome regressions in
+#   beh_combined_outcome_generation.py, photometry regressions in photometry_generation.py),
+#   figure notebooks in session_combine/manuscript_figures (F_*.ipynb, with printed outputs),
+#   unit criteria in session_combine/metrics/*.json. It names DANDI:001950 as the home of the NWB
+#   files.
+# - github.com/AllenNeuralDynamics/aind_stan_fit_sim, commit 89371ee: the hierarchical Q-learning
+#   model (code/stan_qLearning_5params.stan) and the posterior-averaged model variables (Q, RPE).
+# - github.com/AllenNeuralDynamics/aind-fip-dff, commit 03ca4d2: photometry dF/F preprocessing.
+# - github.com/AllenNeuralDynamics/LC-ephys-tonguemovements, commit f6dd736: reaction-time analysis.
+# - github.com/AllenNeuralDynamics/locus_coeruleus_norepinephrine_neurons, commit 43f7083: an index
+#   of the 16 Code Ocean capsules (anatomy, transcriptomics, Patch-seq, physiology). The anatomy
+#   and transcriptomic capsules were not read.
+#
+# Data the paper used (as the paper reports them):
+# - Anatomy and genes (not the subject of this dandiset): SPIM of H2B-labelled Dbh+ nuclei (34,998
+#   cells, 8 mice); dense unilateral axon labelling; 130 complete single-neuron reconstructions (4
+#   mice, ExA-SPIM); retrograde tracing from six targets (4 to 7 mice each); MAPseq/BARseq (2
+#   brains); snRNAseq (398,912 nuclei, 40 mice, 4,845 LC-NE neurons); MERFISH of 2,221 LC-NE neurons
+#   from Nardone et al. 2024 (4 mice); retro-seq; Patch-seq (96 cells, 28 mice).
+# - Physiology (this dandiset, "Electrophysiology and fiber photometry"): Dbh-Cre mice, head-fixed,
+#   in a dynamic foraging task. 42 mice (6 female) for behaviour, 28 (5 female) with
+#   electrophysiology during the task, 14 (1 female) with axonal calcium recordings. Each trial has
+#   a 0.5 s go cue (7.5 or 15 kHz; no-go cues with P = 0.05 in tetrode and photometry experiments,
+#   treated as inter-trial interval), a 1.5 or 1.8 s response window, a left or right lick, reward
+#   after a 300 ms delay (ephys) or 200 ms (photometry), with reward probabilities from {0.1, 0.5,
+#   0.9} changing in blocks of 20 to 35 trials per spout; a trial with no lick is "ignored".
+#   Spiking from tetrodes (Neuralynx, 32 kHz) or Neuropixels probes in right LC, with LC-NE neurons
+#   identified by optogenetic tagging (ChR2, Chrimson or ChRmine) and, in some sessions,
+#   projections to cortex identified by antidromic stimulation of frontal cortex with collision
+#   tests. Unit locations in CCF coordinates (Neuropixels sessions with probe reconstruction).
+#   Pupil video (22 to 24 frames/s, DeepLabCut edges) and tongue video (500 Hz, Lightning Pose) in
+#   some sessions. Axonal GCaMP (axon-GCaMP6s or axon-jGCaMP8s) photometry from an optic fibre over
+#   prelimbic cortex (PL), 488 nm and 405 nm (isosbestic) channels at 20 Hz each. The dandiset's
+#   description also lists photometry from thalamus and cerebellum, which the paper does not
+#   analyse. The behavioural analyses use 241 LC-NE neurons from 19 mice (Results, paragraph on
+#   the go cue); Figure 6i has 9 mice with PL photometry.
+#
+# Definitions shared by the claims below (from the Methods unless marked as code):
+# - Population. Identified LC-NE neurons recorded during the task. Methods (Electrode recording,
+#   Optical identification, Drift control): ISI-violation ratio < 0.1 (0.2 for cortex-projecting
+#   neurons), presence ratio > 0.8, amplitude cutoff < 0.1; tetrode units L-ratio < 0.05 and ISI
+#   violations < 0.1%; light responses on early and late pulses with latency between 2 and 20 ms
+#   and response probability > 0.55; light-evoked and spontaneous waveforms with correlation > 0.95
+#   and normalised Euclidean distance < 0.35; periods with abrupt drift removed; neurons whose SD/mean
+#   of rate in 300 s bins exceeds 0.3 excluded. The code (metrics/beh_all.json applied by
+#   utils/combine_tools.py apply_qc, then the session filter metrics/beh_only.json) applies ISI <
+#   0.1 (0.2 if antidromic tier 1), response probability minus baseline > 0.55, latency 2 to 20 ms,
+#   correlation > 0.95, distance < 0.35, 4.5 < significant pulse counts < 6, drift sd < 0.3, 100 to
+#   2000 trials, and sessions with at least 90 choices and fitted behaviour passing aN >= 0.15,
+#   |bias| <= 1.25, p_sw_L >= 0.04; it does not apply presence ratio or amplitude cutoff. It prints
+#   241 units, 19 mice, 106 sessions, the paper's numbers. Per the protocol the Methods population
+#   is the main one and the code population a variant; when they give different outcomes the
+#   claim is blocked as methods_underspecified. A unit label in the dataset that marks identified
+#   LC-NE neurons may stand for either, once the author has checked its counts.
+# - Trials. Go-cue trials; responded = a left or right lick in the response window, ignored = no
+#   lick. Switch = a choice different from the previous choice; stay = the same.
+# - Drift regressor (Methods, Drift control and Linear regression models of spike rates): the
+#   deviation of each trial's mean waveform amplitude on the peak channel from the mode of the
+#   amplitudes, added to every single-neuron regression. The code (drift_analysis.py) takes the
+#   absolute deviation of the mean spike amplitude within 60 s of the trial from its mode (10-unit
+#   bins) for the outcome model, and the signed amplitude for the go-cue models.
+# - Space (Methods, Analyzing relationships with space). CCF coordinates (x, y, z) with ML replaced by
+#   its absolute value; neurons with missing location removed; tests run only with at least 100
+#   neurons (the 103 and 114 neurons of Figure 5 meet this). Linear model: OLS of the feature on
+#   the three coordinates, R2, one-sided permutation p over B = 5000 permutations of the feature
+#   (code 10000, seed 42; waveform notebook 2000). kNN: distance-weighted k-nearest-neighbour
+#   regression, k = 20, 5-fold shuffled cross-validation, cross-validated R2 with a permutation p
+#   (code seed 42; the waveform and cross-correlation notebooks use k = 30). The coefficient
+#   vector of the linear model, normalised, is the primary spatial axis.
+# - Directions. The criteria state directions anatomically (dorsal, anterior). In Allen CCFv3 the
+#   DV coordinate grows ventrally and the AP coordinate posteriorly, so a coefficient pointing
+#   dorsally is negative there. The code's printed axes (fig5d) suggest it uses coordinates that
+#   grow dorsally and anteriorly. The author states the convention of the coordinates used, and
+#   for fig5d, fig5h and figs18d projects on the code's axes only in the code's convention.
+# - Behavioural model (Methods, Analyses and models of behavior; Behavioral model fitting). The
+#   Q-learning model with separate learning rates after reward and no reward, a forgetting rate on
+#   the unchosen value and softmax inverse temperature (code adds a side bias: 5 parameters, Stan
+#   file stan_qLearning_5params.stan), fit hierarchically per mouse in Stan (16 chains, 5000
+#   iterations, 2500 warmup); Q values and RPE (delta = R - Q of the chosen side) are averaged over
+#   at least 1000 posterior draws run through the actual choices and outcomes. Qc is the chosen
+#   value. The dataset's files were not opened, so whether they hold these model variables is the
+#   author's to find; if not, the model is fit as above.
+#
+# Discrepancies between the preprint and its code that bear on the claims are named in each
+# criterion. The paper also disagrees with itself in places: the GCaMP variant (Results
+# "jGCaMP8s"; Methods "GCaMP6s, or jGCaMP8m" then "Axon-jGCaMP8s"); the legend of Figure S15f gives
+# the same r and p for two different panels; Figure 6i reports 9 mice while the code's outcome
+# regression prints 67 sessions from 7 mice.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001950"
+paper: doi:10.64898/2026.04.10.717727
+claims:
+- id: fig1-lc-definition
+  statement: LC, defined in CCF space as the region at the 67th density percentile of pontine Dbh+
+    nuclei, is a small dorsal region of 0.13 mm3 holding about two thirds of pontine NE neurons
+    (1507 +- 55 per mouse, mean +- SD), with 367 +- 95 more in sub-coeruleus (34,998 cells, 8 mice).
+  source: Results, LC-NE projections are spatially organized, paragraph 1; Figure 1a, 1b; Figure S1
+  quote: We defined LC in the CCF as a small dorsal region (0.13 mm 3 in volume) containing
+    approximately two-thirds of all pontine NE neurons (67th density percentile, 1507 ± 55, mean ±
+    SD). Additional NE neurons were found in sub-coeruleus (367 ± 95)
+  expected:
+  - quantity: LC volume
+    value: 0.13
+    tolerance: 0.013
+    unit: mm3
+  - quantity: LC-NE neurons per mouse, mean
+    value: 1507
+    tolerance: 55
+  - quantity: sub-coeruleus NE neurons per mouse, mean
+    value: 367
+    tolerance: 95
+  criterion: The tolerances on the counts are the SD the paper gives. Uses the SPIM nucleus data,
+    which this dandiset is not described as holding.
+- id: fig1-axon-density
+  statement: LC-NE axons are dense in all CNS regions except the striatum; projections to the
+    telencephalon are predominantly ipsilateral, those to other regions bilateral.
+  source: Results, LC-NE projections are spatially organized, paragraph 2; Figure 1c to 1e; Figure S2
+  quote: We found a high density of LC-NE axons in all CNS regions other than the striatum, with
+    varying densities across regions ... Projections to the telencephalon were predominantly
+    ipsilateral, from somata in the same hemisphere
+  criterion: Uses the dense-labelling SPIM volumes, not described as part of this dandiset.
+- id: fig2b-single-neuron-targets
+  statement: Individual reconstructed LC-NE neurons (130 cells, 4 mice) tend to send axons to one
+    particular region (cortex, thalamus and midbrain, cerebellum, brainstem or spinal cord), and
+    neurons with forebrain projections avoid the brainstem and spinal cord and the reverse.
+  source: Results, LC-NE projections are spatially organized, paragraph 3; Figure 2b, 2c; Figure S3
+  quote: However, individual LC-NE neurons tended to have axons in a particular region ... neurons
+    with forebrain projections tended to project to other regions in the forebrain but not the
+    brainstem or spinal cord
+  criterion: Uses the single-neuron reconstructions, not described as part of this dandiset.
+- id: figs4a-axon-length-branching
+  statement: LC-NE axons are long (35.14 +- 13.60 cm, mean +- SD; up to 72.57 cm) but branch little
+    (17.8 branches/cm, R2 = 0.74), significantly less than 1,227 other MouseLight neurons (24.9
+    branches/cm; ANCOVA p < 0.001).
+  source: Results, LC-NE projections are spatially organized, paragraph 3; Figure S4a
+  quote: Many neurons had long axons, 35.14 ± 13.60 cm (mean ± SD; Figure S4a ) with the largest
+    neurons reaching 72.57 cm of total length ... Compared to 1,227 other CNS neurons from the
+    MouseLight database ( Winnubst et al. 2019 ) (24.9 branches/cm, R 2 = 0.42, p < 0.001), LC-NE
+    neurons branched significantly less (ANCOVA, p < 0.001)
+  statistics:
+  - about: branches against axon length, LC-NE neurons
+    statistic: R2 = 0.74
+    p: 0.001
+    p_relation: "<"
+    n: 130 LC-NE neurons
+  - about: branching of LC-NE against MouseLight neurons
+    test: ANCOVA
+    p: 0.001
+    p_relation: "<"
+    n: 130 LC-NE and 1,227 MouseLight neurons
+  expected:
+  - quantity: mean total axon length
+    value: 35.14
+    tolerance: 3.51
+    unit: cm
+  - quantity: longest axon
+    value: 72.57
+    tolerance: 7.26
+    unit: cm
+  - quantity: branches per cm, LC-NE
+    value: 17.8
+    tolerance: 1.78
+  data: with_inputs
+  criterion: Uses the reconstructions and the MouseLight database (Winnubst et al. 2019); neither is
+    in this dandiset.
+- id: fig2e-dorsal-forebrain-ventral-hindbrain
+  statement: LC-NE neurons in dorsal LC project mainly to the forebrain and those in ventral LC to the
+    hindbrain and spinal cord; retrograde tracing confirms that cortex-projecting somata lie
+    dorsally and spinal-cord-projecting somata ventrally.
+  source: Results, LC-NE projections are spatially organized, paragraph 6; Figure 2e, 2f; Figure S7
+  quote: Neurons in more dorsal LC had primary projections to the forebrain (olfactory bulb,
+    isocortex, hippocampus), whereas neurons in more ventral LC had primary projections to the
+    hindbrain (pons, medulla, and spinal cord) ... somata of NE neurons with projections to cortex
+    were preferentially in dorsal LC and NE neurons with projections to the spinal cord were in
+    ventral LC
+  criterion: Uses the reconstructions and the retrograde-tracing volumes, not described as part of
+    this dandiset.
+- id: figs5-mapseq-consistent
+  statement: MAPseq/BARseq identifies LC-NE neurons projecting across the CNS, with distributions of
+    somata and axons consistent with the single-neuron morphologies.
+  source: Results, LC-NE projections are spatially organized, paragraph 5; Figure S5
+  quote: We found LC-NE neurons with projections across the CNS, with distributions of somata and
+    axons consistent with our single-neuron morphologies
+  criterion: Uses the MAPseq/BARseq sequencing data, not described as part of this dandiset.
+- id: fig3a-graded-expression
+  statement: LC-NE gene expression (4,845 neurons, 40 mice) is best described by a single cluster
+    with smooth variation along one axis ("pseudospace"), along which many genes vary in graded
+    and sometimes opposing gradients.
+  source: Results, LC-NE neurons have graded gene expression in space, paragraph 1; Figure 3a, 3b;
+    Figures S8, S9
+  quote: A single cluster best explained the data ( Figure S8 ), although gene expression varied
+    smoothly across the LC-NE neuron population ... Thus, variation in LC-NE gene expression is
+    dominated by smooth variation
+  criterion: Uses the snRNAseq data, not described as part of this dandiset.
+- id: fig3c-pseudospace-dorsoventral
+  statement: Imputed pseudospace scores of 2,221 MERFISH LC-NE neurons align with the dorsal-ventral
+    axis of LC, and so with the organisation of projection targets.
+  source: Results, LC-NE neurons have graded gene expression in space, paragraph 2; Figure 3c; Figure
+    S10
+  quote: Gene expression pseudospace aligned with the dorsal-ventral axis of the LC ( Figures 3c and
+    S10 ) and thus with the organization of projection targets observed in our anatomical
+    experiments
+  data: with_inputs
+  criterion: Uses MERFISH data from Nardone et al. 2024 and the paper's snRNAseq reference; neither
+    is in this dandiset.
+- id: fig3d-retroseq-targets
+  statement: Neurons projecting to cortex, cerebellum and spinal cord occupy different parts of gene
+    expression space, cortex-projecting with dorsal and spinal-projecting with ventral neurons,
+    cerebellum-projecting in between (Kruskal-Wallis p < 0.001).
+  source: Results, LC-NE neurons have graded gene expression in space, paragraph 3; Figure 3d legend;
+    Figure S11
+  quote: Cortex-projecting neurons shared gene expression with dorsal LC-NE neurons, spinal
+    cord-projecting neurons with ventral neurons, and cerebellum-projecting neurons were in between
+  statistics:
+  - test: Kruskal-Wallis
+    p: 0.001
+    p_relation: "<"
+  criterion: Uses the retro-seq and snRNAseq data, not described as part of this dandiset.
+- id: fig3e-axes-angle
+  statement: The axes explaining most variation in axonal projections and in gene expression both
+    align with the dorsal-ventral direction and are separated by 22.20 degrees.
+  source: Results, LC-NE neurons have graded gene expression in space, paragraph 4; Figure 3e
+  quote: Both axes aligned with the dorsal-ventral direction, separated by 22.20◦
+  expected:
+    quantity: angle between projection and gene-expression axes
+    value: 22.2
+    tolerance: 2.22
+    unit: degrees
+  data: with_inputs
+  criterion: Uses the retrograde-tracing points and the MERFISH data; neither is in this dandiset.
+- id: figs14k-patchseq-by-target
+  statement: In slices, spinal-cord-projecting LC-NE neurons have action potential waveforms
+    different from those projecting to isocortex or cerebellum, and isocortex-projecting neurons
+    have longer membrane time constants than those projecting to cerebellum or spinal cord.
+  source: Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 5;
+    Figure S14j, S14k
+  quote: Neurons projecting to spinal cord had significantly different action potential waveforms
+    than those projecting to isocortex or cerebellum. Neurons projecting to isocortex had
+    significantly longer membrane time constants than those projecting to cerebellum or spinal cord
+  statistics:
+  - about: action potential waveform, spinal cord against cortex
+    test: paired t-test
+    p: 0.01
+    p_relation: "<"
+  - about: action potential waveform, spinal cord against cerebellum
+    test: paired t-test
+    p: 0.05
+    p_relation: "<"
+  - about: membrane time constant, spinal cord against cortex
+    test: paired t-test
+    p: 0.001
+    p_relation: "<"
+  - about: membrane time constant, cerebellum against cortex
+    test: paired t-test
+    p: 0.001
+    p_relation: "<"
+  criterion: Uses the Patch-seq recordings (96 cells, 28 mice), not described as part of this
+    dandiset.
+- id: task-trials-per-session
+  statement: Each day mice performed a few hundred trials, a mean of 342 per session (range 94 to
+    558).
+  source: Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 2;
+    Figure S12a
+  quote: Each day mice performed a few hundred trials (mean, 342, range, 94–558 trials; Figure S12 )
+  expected:
+  - quantity: mean trials per session
+    value: 342
+    tolerance: 34.2
+  - quantity: fewest trials in a session
+    value: 94
+    tolerance: 9.4
+  - quantity: most trials in a session
+    value: 558
+    tolerance: 55.8
+  criterion: The paper does not say which sessions or which trials are counted. Readings (a) all
+    task sessions of the dandiset (electrophysiology and photometry), all go-cue trials; (b) the
+    same sessions, responded trials only; (c) as the code's Figure S12a (session_len in
+    beh_mertics.py), responded trials after cutting interruptions, over sessions passing
+    beh_only.json; (d) readings (a) and (b) restricted to electrophysiology sessions. Reproduced when
+    the mean is within tolerance under one reading; the range is reported against the reported
+    range widened by 10% of each bound.
+- id: task-iti
+  statement: Inter-trial intervals average 4.83 s and range from 1.1 to 20 s, including the no-lick
+    window.
+  source: Methods, Behavioral task, paragraph 6
+  quote: Inter-trial intervals were 4.83 s on average (range, 1.1–20 s, including a no-lick window;
+    see below)
+  expected:
+    quantity: mean inter-trial interval
+    value: 4.83
+    tolerance: 0.483
+    unit: s
+  criterion: The Methods place the intervals "After the 3.0 or 3.1 s trial duration" but also call
+    them "the times between consecutive cue onsets"; which is meant is open. The reported minimum of
+    1.1 s fits only the time after the trial ends. Readings (a) onset-to-onset minus trial
+    duration, (b) onset to onset, over all sessions. Reproduced when the mean is within tolerance
+    and the range lies within 1.0 to 22 s (the reported range widened by 10% of each bound) under
+    one reading.
+- id: task-response-rate
+  statement: In more than 90% of well-trained sessions, mice made a left or right choice on more than
+    90% of trials.
+  source: Methods, Behavioral task, paragraph 6
+  quote: In more than 90% of all well-trained sessions, mice made a leftward or rightward choice in
+    greater than 90% of trials
+  expected:
+    quantity: fraction of well-trained sessions with more than 90% of trials answered
+    value: 0.9
+    tolerance: 0.09
+  criterion: Reproduced when the fraction exceeds 0.9 under one reading, partially reproduced when it
+    lies within 0.81 to 0.9. "Well-trained" is not defined. Readings (a) all task sessions in the
+    dandiset; (b) sessions passing the code's behaviour criteria (metrics/beh_only.json). The
+    denominator is go-cue trials, no-go cues excluded (Methods, Data analysis).
+- id: fig4c-choice-history
+  statement: Mice use reward and choice history to guide choices; a logistic regression of choice on
+    outcome history explains choices with R2 = 0.60 and predicts 88% of them, and its coefficients
+    decay with an exponential coefficient of 3.95.
+  source: Figure 4c; Results, Spatial variation of LC-NE activity during action-outcome learning,
+    paragraph 3
+  quote: "Logistic regression coefficients for choice as a function of outcome history for all mice
+    (error bars are smaller than points). R 2 = 0.60, successful choice prediction, 0.88. Gray:
+    exponential fit (coefficient of 3.95)"
+  expected:
+  - quantity: R2 of the choice model
+    value: 0.6
+    tolerance: 0.06
+  - quantity: fraction of choices predicted correctly
+    value: 0.88
+    tolerance: 0.088
+  - quantity: exponential fit coefficient
+    value: 3.95
+    tolerance: 0.395
+  criterion: Choice c_r(t) (1 right, 0 left) regressed on past outcomes. The Methods name regressors
+    R (rewarded choice) and N (unrewarded choice), signed by side, per mouse; the equation and the
+    number of lags were lost from the text. The code (F_behavior_w_FP, model choice_reward_choice,
+    the one mapped to Figure 4c) pools all sessions passing beh_only.json, lags 1 to 10, regressors
+    rewarded-side history and choice history, unregularised statsmodels Logit, and fits A
+    exp(-lag/tau) + C to the reward coefficients. Neither text nor code defines R2 or the
+    prediction rate; the code computes neither. Readings for the model (a) Methods R and N
+    regressors, lags 1 to 10 (the code's lag count), pooled; (b) the code's reward and choice
+    regressors, pooled; (c) reading (a) per mouse, values averaged over mice. Readings for R2 (i)
+    McFadden pseudo-R2 of the logistic model; (ii) R2 of the exponential fit to the coefficients.
+    Prediction rate is the in-sample fraction of choices whose predicted probability is at least
+    0.5; the coefficient of 3.95 is the decay constant tau in trials. Reproduced when all three
+    values are within tolerance under one combination of readings; partially reproduced when the
+    reward coefficients are positive at lag 1 and decay with lag but a value misses.
+- id: fig6b-example-model-fit
+  statement: In the example session of Figure 4b, the reinforcement-learning model predicts 87% of
+    choices with a per-trial log likelihood of -0.24.
+  source: Figure 6b legend
+  quote: model fit to the example in Figure 4b . Success rate of predicting choices, 0.87.
+    Per-trial log likelihood, –0.24
+  expected:
+  - quantity: success rate of predicting choices
+    value: 0.87
+    tolerance: 0.087
+  - quantity: per-trial log likelihood
+    value: -0.24
+    tolerance: 0.024
+  criterion: The example session is mZS061d20210408 in the code (manuscript_figure_panel_map.json,
+    Figure 4b). Model as in the header. Success rate is the fraction of choices for which the
+    model's probability of the chosen side is at least 0.5 (code, p_correct); log likelihood is the
+    mean over trials of the log probability of the actual choice under the posterior-averaged
+    model. Reproduced when both are within tolerance.
+- id: figs14-waveform-space
+  statement: Extracellular spike waveforms of LC-NE neurons vary in space; dorsal neurons have more
+    symmetric waveforms and longer peak-to-trough times than ventral neurons (slope symmetry,
+    kNN p = 5.0e-4 and linear model p = 5.0e-4; post-trough slope, linear model p = 4.0e-3, kNN p =
+    0.59).
+  source: Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 4;
+    Figure S14b, S14c
+  quote: dorsal LC-NE neurons tended to have more symmetric spike waveforms and longer peak-to-trough
+    times than ventral LC-NE neurons
+  statistics:
+  - about: post-trough slope in space, kNN
+    test: kNN cross-validated permutation test
+    p: 0.59
+  - about: post-trough slope in space, linear model
+    test: linear model permutation test
+    p: 4.0e-3
+  - about: slope symmetry in space, kNN
+    test: kNN cross-validated permutation test
+    p: 5.0e-4
+  - about: slope symmetry in space, linear model
+    test: linear model permutation test
+    p: 5.0e-4
+  criterion: Methods (Spike waveform extraction) and code (opto_waveforms_preprocessing.py,
+    waveform_generation_np.py, F_waveform_space). Neurons from tetrodes or Neuropixels 2.0 only,
+    ISI violation ratio < 0.5, peak below -50 uV, plus the tagging criteria; the code prints 263
+    Neuropixels units from 18 mice. Waveform is the mean of up to 500 spikes on the peak channel
+    from raw traces filtered 50 to 8000 Hz, aligned to the negative peak, normalised to baseline 0
+    and peak 1. Features as the code defines them; post-trough slope = (post-peak positive maximum
+    / peak) / its time after the peak; slope symmetry = log(pre-slope / post-slope); post-peak time
+    = time of the post-peak positive maximum. Spatial tests as in the header, with the waveform
+    notebook's k = 30 and 2000 permutations (the floor 1/2001 = 5.0e-4 matches the reported p).
+    Reproduced when slope symmetry has linear and kNN p < 0.05, post-trough slope has linear p <
+    0.05, and the post-peak time increases dorsally (DV coefficient pointing dorsally, see Directions in the header). The paper does not
+    give the sign of "more symmetric"; readings (a) |slope symmetry| decreases dorsally, (b) slope
+    symmetry moves towards 0 along the fitted axis; the direction is reported under both and
+    decides nothing alone. If the dataset holds only templates and not raw traces, the waveform
+    difference from the Methods' 50 to 8000 Hz filter is a deviation.
+- id: fig4g-go-cue-excitation
+  statement: Nearly all LC-NE neurons (240 of 241 cells, 19 mice) increase their spike rate in the 300
+    ms after the go cue relative to the 2 s before it.
+  source: Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 6;
+    Figure 4g
+  quote: Nearly all LC-NE neurons showed an increase in spike rate in a 300 ms window following the
+    go cue (paired t -tests, 240/241 cells, 19 mice; Figures 4e–4h )
+  expected:
+  - quantity: neurons in the population
+    value: 241
+    tolerance: 24.1
+  - quantity: mice in the population
+    value: 19
+    tolerance: 1.9
+  - quantity: fraction of neurons with a significant go-cue increase
+    value: 0.996
+    tolerance: 0.0996
+  criterion: Per neuron, a paired t-test across go-cue trials of the rate in the response window
+    against the rate in the baseline window (Figure 4g legend; code basic_ephys_generation.py,
+    response [0.01, 0.3] s, baseline [-2, -0.01] s, all go cues including ignored ones, scipy
+    ttest_rel two-sided, alpha 0.05 as the notebook counts it). The code does not check the sign;
+    readings (a) p < 0.05 as the code counts, (b) p < 0.05 and mean response rate above baseline.
+    Reproduced when the fraction meets tolerance under one reading in the population of the header.
+    The per-neuron alpha of 0.05 is the code's; the paper does not print it.
+- id: fig4h-phasic-tonic-anticorrelation
+  statement: Across LC-NE neurons, the go-cue response normalised by baseline is anticorrelated with
+    the trial-by-trial correlation between baseline and go-cue spike rates (r = -0.38, p = 8.3e-11).
+  source: Figure 4h legend; Methods, Comparison of phasic and tonic responses
+  quote: Change in go-cue spike rate relative to baseline, normalized by baseline vs. the correlation
+    between go-cue and baseline spike rates ( r = –0.38, p = 8.3 × 10 −11 )
+  statistics:
+  - test: correlation across neurons
+    statistic: r = -0.38
+    p: 8.3e-11
+  expected:
+    quantity: r
+    value: -0.38
+    tolerance: 0.038
+  criterion: Per neuron, the Pearson correlation across go-cue trials between the rate 0.5 s before
+    the go cue and the rate 0 to 0.3 s after (Methods; Figure S15e; code bl_response_corr_short,
+    [-0.5, -0.01] and [0.01, 0.3] s, all go cues). Normalised response = (mean response rate - mean
+    baseline rate) / mean baseline rate. The baseline of the normalisation is open; readings (a)
+    the 2 s baseline of Figure 4g (the code), (b) the 0.5 s baseline. Pearson r across neurons
+    (code pearsonr). The code's panel uses its be_filter population (274 units, 21 mice in the
+    later version); readings for neurons (i) the population of the header, (ii) the code's
+    be_filter set. Reproduced when r is within tolerance and p < 0.05 under one combination;
+    partially reproduced when r is negative with p < 0.05 but outside tolerance. The Methods' sham
+    comparison is not reported as a result and is not tested.
+- id: figs15f-tonic-modulation-engagement
+  statement: Neurons with stronger tonic modulation (more negative baseline-to-response correlation)
+    show a larger increase of go-cue response in trials with lick responses over those without (r
+    = -0.59, p = 4.63e-21).
+  source: Figure S15f legend, top
+  quote: Top, increase of spike rate in trials with lick responses vs. those without against tonic
+    modulation strength from e ( r = –0.59, p = 4.63 × 10 −21 )
+  statistics:
+  - test: correlation across neurons
+    statistic: r = -0.59
+    p: 4.63e-21
+  expected:
+    quantity: r
+    value: -0.59
+    tolerance: 0.059
+  depends_on:
+  - fig4h-phasic-tonic-anticorrelation
+  criterion: Tonic modulation strength is the per-neuron correlation of fig4h. The increase is, per
+    the code (basic_ephys_generation.py response_diff; F_ephys_behavior_action_outcome), the
+    baseline-normalised go-cue response (0.01 to 0.3 s, 2 s baseline) in responded trials minus that
+    in ignored trials. Pearson r across neurons of the header population. Reproduced when r is
+    within tolerance and p < 0.05. The legend prints the same r and p for the bottom panel, a
+    different quantity; that panel is not tested.
+- id: fig5a-engagement-reward-history
+  statement: Whether mice respond to a go cue depends on reward history.
+  source: Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 7;
+    Figure 5a
+  quote: A logistic regression predicting whether mice responded to a go cue with a lick revealed a
+    dependence on reward history
+  criterion: Response (1) or ignore (0) on each go-cue trial regressed on past rewards R (1 for a
+    rewarded choice regardless of side) by logistic regression (Methods, equation lost). The Methods
+    say per mouse; the code (F_hit_miss, beh_functions.hit_glm_all_trial) pools all sessions,
+    15 lags, unregularised Logit with Wald 95% CIs. Lags 1 to 15 are used in both readings, (a) per
+    mouse, (b) pooled. Reproduced when at least one reward-history coefficient differs from 0 with
+    its 95% CI excluding 0 (pooled reading) or with p < 0.05 in most mice (per-mouse reading); the
+    sign of the lag-1 coefficient is reported.
+- id: fig5b-higher-before-ignore
+  statement: LC-NE neurons have higher spike rates in the 2 s before go cues that the mouse ignores
+    than before those it responds to, and this baseline rate predicts the response in 46.5% of
+    neurons (p < 0.05).
+  source: Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 7;
+    Figure 5b; Figure S15
+  quote: LC-NE neurons had higher spike rates preceding ignored trials relative to those with a lick
+    response ... spike rates in the 2 s before the go cue predicted whether the mouse would
+    successfully respond to the go cue with a lick in either direction (46.5% of neurons had p
+    -values < 0.05)
+  expected:
+    quantity: fraction of neurons with p < 0.05
+    value: 0.465
+    tolerance: 0.0465
+  criterion: Per neuron, linear regression of the spike rate in the 2 s before each go cue on
+    response (1) or ignore (0), with the drift regressor (Methods, Linear regression models of spike
+    rates). The code (response_tstats_generation.py) adds a switch regressor (spikes ~ 1 + hit +
+    amp + svs, window [-2, -0.01] s) and drops neurons with fewer than 2 ignored trials; it is a
+    variant. The denominator is open; readings (a) all 241 neurons, (b) neurons with at least 2
+    ignored trials (the fit is defined). Reproduced when the fraction is within tolerance under one
+    reading and, as Figure 5b shows, more neurons have a higher mean baseline rate before ignored
+    than before responded trials. The code's Figure 5b compares ignored trials with unrewarded
+    responded trials and needs 3 trials per condition; that comparison is shown as a variant.
+- id: fig5c-ignore-ventral
+  statement: Neurons with higher activity before ignored than responded trials lie more in ventral
+    than dorsal LC (103 cells, 15 mice; linear model R2 = 0.152, p = 1.4e-3; kNN cross-validated R2
+    = 5.57e-2, p = 8.4e-3).
+  source: Figure 5c legend; Results, Spatial variation of LC-NE activity during action-outcome
+    learning, paragraph 7
+  quote: Neurons with higher activity preceding ignore vs. respond trials (blue) were located more in
+    ventral than dorsal LC (103 cells, 15 mice; t -statistics shown in d ; kNN cross-validated R 2 =
+    5.57 × 10 −2 , p = 8.4 × 10 −3 ; linear model R 2 = 0.152, p = 1.4 × 10 −3 )
+  statistics:
+  - about: linear model of t-statistic on CCF location
+    test: permutation test
+    statistic: R2 = 0.152
+    p: 1.4e-3
+    n: 103 neurons, 15 mice
+  - about: kNN prediction of t-statistic from CCF location
+    test: permutation test
+    statistic: cross-validated R2 = 5.57e-2
+    p: 8.4e-3
+    n: 103 neurons, 15 mice
+  expected:
+  - quantity: neurons with location and respond-ignore t-statistic
+    value: 103
+    tolerance: 10.3
+  - quantity: linear model R2
+    value: 0.152
+    tolerance: 0.0152
+  - quantity: kNN cross-validated R2
+    value: 0.0557
+    tolerance: 0.00557
+  depends_on:
+  - fig5b-higher-before-ignore
+  criterion: The feature is each neuron's t-statistic for response from fig5b (positive when the rate
+    is higher before responded trials), for neurons with CCF location; spatial tests as in the
+    header. Reproduced when the linear model has p < 0.05, the t-statistic increases dorsally
+    (DV coefficient pointing dorsally, see Directions in the header; ignore-preferring neurons
+    ventral), and the kNN test has p < 0.05;
+    partially reproduced when the linear test and direction hold but the kNN test does not. The R2
+    values are reported against tolerance and decide nothing alone, since they depend on the exact
+    neuron set.
+- id: fig5d-ignore-on-anatomical-axes
+  statement: The respond-versus-ignore t-statistics vary along the primary spatial axes derived from
+    axonal projections (r = 0.23, p = 6.1e-3) and gene expression (r = 0.23, p = 5.8e-3).
+  source: Figure 5d legend; Results, Spatial variation of LC-NE activity during action-outcome
+    learning, paragraph 7
+  quote: Respond vs. ignore t -statistics projected onto the primary spatial axes from axonal
+    projections and gene expression ( Figure 3e ; left, r = 0.23, p = 6.1 × 10 −3 ; right, r = 0.23,
+    p = 5.8 × 10 −3 )
+  statistics:
+  - about: axonal-projection axis
+    test: Pearson correlation
+    statistic: r = 0.23
+    p: 6.1e-3
+  - about: gene-expression axis
+    test: Pearson correlation
+    statistic: r = 0.23
+    p: 5.8e-3
+  expected:
+  - quantity: r on the axonal-projection axis
+    value: 0.23
+    tolerance: 0.023
+  - quantity: r on the gene-expression axis
+    value: 0.23
+    tolerance: 0.023
+  depends_on:
+  - fig5c-ignore-ventral
+  data: with_inputs
+  criterion: Methods, Relating behavioral features to spatial axes; code F_spatial-axis-comparison.
+    Each neuron's CCF location (ML mirrored) is projected on the unit axis and Pearson-correlated
+    with its t-statistic. The axes come from data outside the dandiset (retrograde tracing,
+    LDA on injection target; MERFISH, CCA); the code prints them as (ML mirrored, AP, DV), target
+    (0.024, 0.332, 0.943) and gene (-0.248, 0.499, 0.830), which may be used. Reproduced when both
+    correlations are positive with p < 0.05; values reported against tolerance.
+- id: fig5e-switch-history
+  statement: Mice are likely to repeat a choice when they recently received rewards from that lick
+    direction, and to switch after unrewarded choices.
+  source: Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 8;
+    Figure 5e
+  quote: Mice were likely to repeat choices when they received recent rewards from those lick
+    directions
+  criterion: Switch (1) or stay (0) regressed by logistic regression on no-reward history (N_ipsi = 1
+    for an unrewarded choice on the side of the choice at t - 1, -1 on the other side, 0 for
+    rewarded) and choice history (Methods). The code (F_behavior_w_FP, switch_noreward_choice)
+    pools sessions, lags 1 to 10, ignored trials dropped. Readings (a) pooled, (b) per mouse.
+    Reproduced when the lag-1 no-reward coefficient is positive with p < 0.05 (pooled) or in most
+    mice (per mouse).
+- id: fig5g-switch-dorsal
+  statement: Neurons with higher activity in the 500 ms after the go cue during switch than stay
+    choices lie more in dorsal LC, and stay-preferring neurons in ventral LC (114 cells, 15 mice;
+    linear model R2 = 0.168, p = 3.0e-4; kNN R2 = -4.96e-2, p = 0.15).
+  source: Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 8;
+    Figure 5f, 5g
+  quote: Neurons with higher activity during “switch” choices tended to be in dorsal LC, whereas
+    those with higher activity during “stay” choices tended to be in ventral LC
+  statistics:
+  - about: linear model of t-statistic on CCF location
+    test: permutation test
+    statistic: R2 = 0.168
+    p: 3.0e-4
+    n: 114 neurons, 15 mice
+  - about: kNN prediction of t-statistic from CCF location
+    test: permutation test
+    statistic: cross-validated R2 = -4.96e-2
+    p: 0.15
+    n: 114 neurons, 15 mice
+  expected:
+  - quantity: neurons with location and switch-stay t-statistic
+    value: 114
+    tolerance: 11.4
+  - quantity: linear model R2
+    value: 0.168
+    tolerance: 0.0168
+  criterion: Per neuron, linear regression of the spike rate in 0.5 s after the go cue on switch
+    (Methods), with the drift regressor, over responded trials. The code (response_tstats_generation
+    .py) uses spikes ~ 1 + amp + svs + ipsi + ipsi:svs, window [0.01, 0.5] s, and counts a trial
+    after an ignored trial, and the first trial, as stay; it is a variant. Readings for switch (a)
+    against the previous responded choice, (b) the code's, previous trial responded and different.
+    Spatial tests as in the header on the switch t-statistic (positive when higher on switch).
+    Reproduced when the linear model has p < 0.05 with the t-statistic increasing dorsally (see
+    Directions in the header), under one reading. The kNN test is reported; the paper's kNN p = 0.15 is not significant and decides
+    nothing.
+- id: fig5h-switch-on-anatomical-axes
+  statement: Switch-versus-stay t-statistics vary along the primary spatial axes from axonal
+    projections (r = 0.32, p = 6.1e-5) and gene expression (r = 0.30, p = 1.7e-4).
+  source: Figure 5h legend; Results, Spatial variation of LC-NE activity during action-outcome
+    learning, paragraph 8
+  quote: Switch vs. stay t -statistics projected onto the primary spatial axes from axonal
+    projections and gene expression (left, r = 0.32, p = 6.1 × 10 −5 ; right, r = 0.30, p = 1.7 ×
+    10 −4 )
+  statistics:
+  - about: axonal-projection axis
+    test: Pearson correlation
+    statistic: r = 0.32
+    p: 6.1e-5
+  - about: gene-expression axis
+    test: Pearson correlation
+    statistic: r = 0.30
+    p: 1.7e-4
+  expected:
+  - quantity: r on the axonal-projection axis
+    value: 0.32
+    tolerance: 0.032
+  - quantity: r on the gene-expression axis
+    value: 0.3
+    tolerance: 0.03
+  depends_on:
+  - fig5g-switch-dorsal
+  data: with_inputs
+  criterion: As fig5d-ignore-on-anatomical-axes, on the switch t-statistics of fig5g. Reproduced when
+    both correlations are positive with p < 0.05.
+- id: fig5jk-pl-switch
+  statement: LC-NE axonal fluorescence in prelimbic cortex, and the spiking of LC-NE neurons
+    projecting to frontal cortex, is higher during switch than stay choices (Fisher's exact test, p =
+    7.8e-5).
+  source: Results, Spatial variation of LC-NE activity during action-outcome learning, paragraph 10;
+    Figure 5j, 5k
+  quote: LC-NE axonal fluorescence changes in PL and single-neuron spiking projecting to frontal
+    cortex were significantly higher during switch versus stay choices ( Figures 5j and 5k ; Fisher’s
+    exact test, p = 7.8 × 10 −5 )
+  statistics:
+  - test: Fisher's exact test
+    p: 7.8e-5
+  depends_on:
+  - fig5g-switch-dorsal
+  criterion: Photometry (Methods, Data preprocessing; aind-fip-dff) is tri-exponentially detrended,
+    isosbestic-corrected dF/F, low-passed at 3 Hz, z-scored over the recording, PL only; sessions
+    kept when the go-cue response exceeds 0.5 z (code, mean over [0.1, 1] s minus [-1, -0.1] s).
+    Per session (the code's unit), linear regression of dF/F in 0.75 s after the go cue on switch.
+    The Methods add the isosbestic signal as a regressor; the code fits switch + outcome without it
+    (window [0.1, 0.85] s through rounding). Readings (a) Methods, switch + isosbestic, [0, 0.75]
+    s; (b) the code. The Fisher test (code binary_shift_X_vs_Y) compares the fraction of positive
+    switch t-statistics in PL sessions against all single LC-NE neurons of fig5g, two-sided.
+    Cortex-projecting neurons are identified by the antidromic criteria of the Methods (laser t >
+    0 and p < 0.005; laser by collision interaction t < -3.5 and p < 0.005; jitter < 20 ms; 13
+    such neurons in the code). Reproduced when, under one reading, PL sessions are more often
+    positive than single neurons with Fisher p < 0.05, most PL sessions are positive, and most
+    cortex-projecting neurons have positive switch t-statistics; partially reproduced when the
+    photometry parts hold and the cortex-projecting part does not.
+- id: figs17-respond-ignore-axons
+  statement: LC-NE axon activity in PL before go cues is lower before responded than ignored trials;
+    the fraction of positive respond-versus-ignore t-statistics differs between axonal
+    fluorescence and single-neuron spiking (Fisher's exact test with permutation, p = 4.2e-4), while cortex-projecting single neurons do not differ significantly from the population
+    (Welch test with permutation, p = 6.7e-2; Fisher's exact test with permutation, p = 8.8e-2).
+  source: Figure S17h, S17i legends
+  quote: Axonal fluorescence vs. single-neuron spiking, Fisher’s exact test with permutation, p = 4.2
+    × 10 −4 . Single neurons projecting to cortex compared to the population of single neurons,
+    Welch test with permutation, p = 6.7 × 10 −2 ; Fisher’s exact test with permutation, p = 8.8 ×
+    10 −2
+  statistics:
+  - about: axonal fluorescence against single-neuron spiking
+    test: Fisher's exact test with permutation
+    p: 4.2e-4
+  - about: cortex-projecting neurons against all single neurons
+    test: Welch test with permutation
+    p: 6.7e-2
+  - about: cortex-projecting neurons against all single neurons, sign
+    test: Fisher's exact test with permutation
+    p: 8.8e-2
+  depends_on:
+  - fig5b-higher-before-ignore
+  criterion: Per PL session, regression of dF/F in the 2 s before the go cue on response (Methods;
+    code spikes ~ 1 + hit, window [-2.1, -0.1] s; the Methods' isosbestic regressor is reading (a),
+    the code (b)). Single-neuron t-statistics from fig5b. Sign comparison by Fisher's exact test on
+    the fraction of positive t-statistics, two-sided, with the code's 5000-permutation version
+    shown. Reproduced when the photometry against single-neuron test has p < 0.05 and, as a
+    claim of absence judged by the paper's tests, the Welch permutation test (5000 permutations)
+    and the Fisher test of cortex-projecting neurons both have p >= 0.05. The comparison group is
+    open. The legend, which reports the test, says "the population of single neurons", and the
+    absence is judged on that comparison; the Methods' comparison with neurons not identified as
+    projecting to cortex is shown as a variant. The code
+    counts neurons with undefined t-statistics as negative; excluding them is the Methods reading
+    and the code's count a variant.
+- id: fig6-outcome-responses
+  statement: LC-NE neurons respond in varied ways to reward or its absence; 76.8% of cells have
+    significant regressions on outcome.
+  source: Results, Activity of LC-NE projections to frontal cortex correlates with reward prediction
+    errors, paragraph 1; Figure 6a; Figure S15c
+  quote: Across the population, LC-NE neurons showed varied responses to the reward or its absence
+    (76.8% cells with significant regressions; Figures 6a and S15 )
+  expected:
+    quantity: fraction of neurons with significant outcome regressions
+    value: 0.768
+    tolerance: 0.0768
+  criterion: Per neuron, linear regression of the spike rate on outcome R, choice side (1 ipsi, -1
+    contra to the recording site), chosen value Qc and outcome by side, with the drift regressor,
+    over responded trials; fit in a reward window and a no-reward window, keeping the one with the
+    larger |t| of outcome (Methods; code beh_combined_outcome_generation.py). Windows, Methods
+    reading (a) auROC of reward against no reward in sliding 1 s windows from response time to 2 s
+    after, peak time per neuron where auROC is furthest from 0.5, windows centred on the modes of
+    the peak times of positive and negative neurons, 1 s wide; code reading (b) aligned to reward
+    delivery (choice + reward delay), 1.5 s bins, centres from metrics/beh_all_*/auc_windows.json
+    (Neuropixels 0.736 and 1.782 s, tetrodes 1.274 and 0.996 s), spike count in centre +- 0.75 s.
+    "Significant" is not defined and the code does not compute the fraction; readings (i) outcome
+    coefficient p < 0.05 (185 of 241 gives 76.8%), (ii) outcome or Qc p < 0.05, (iii) the full
+    model F-test p < 0.05. Reproduced when the fraction is within tolerance under one reading.
+- id: fig6a-reward-dorsal-anterior
+  statement: Neurons excited by reward lie more dorsal and anterior in LC than neurons excited by its
+    absence; the distribution is nonuniform in space (p = 3.0e-4).
+  source: Figure 6a legend; Results, Activity of LC-NE projections to frontal cortex correlates with
+    reward prediction errors, paragraph 3; Figure S18
+  quote: Neurons with increased activity in response to reward tended to lie more dorsal and anterior
+    in LC than neurons with increased activity in response to no reward
+  statistics:
+  - test: spatial permutation test
+    p: 3.0e-4
+  depends_on:
+  - fig6-outcome-responses
+  criterion: The feature is each neuron's outcome t-statistic from fig6 (code T_outcome_com_mc), for
+    neurons with CCF location; spatial tests as in the header (the code runs both on this feature).
+    Which test gave p = 3.0e-4 is not said; readings (a) linear model, (b) kNN. The legend
+    describes groups ("excited by reward (cyan) or no reward (pink)"), so the feature may also be
+    the group label, the sign of the outcome t-statistic among neurons with outcome p < 0.05,
+    in the same two tests (readings (c), (d)). Reproduced when, under one reading, p < 0.05 and
+    the linear coefficients have the feature increasing dorsally and anteriorly (see Directions
+    in the header).
+- id: fig6c-rpe-choice-change
+  statement: The change of choice likelihood on consecutive trials increases with the model's RPE
+    (rank correlation, rho = 0.84).
+  source: Figure 6c legend; Results, Activity of LC-NE projections to frontal cortex correlates with
+    reward prediction errors, paragraph 1
+  quote: Relationship between how choices changed on consecutive trials and RPE (rank correlation, ρ
+    = 0.84, p = 0.0)
+  statistics:
+  - test: rank correlation
+    statistic: rho = 0.84
+    p: 0
+  expected:
+    quantity: rho
+    value: 0.84
+    tolerance: 0.084
+  criterion: Change of choice likelihood (Methods, equation lost) is built from the likelihood of
+    repeating the current choice, from the logistic choice model, and the likelihood of the current
+    choice from the Q-learning model, centred per session; the operator is lost with the equation,
+    and the difference (first minus second) is read from the word "change". The code's Figure 6c uses instead the change in log
+    odds of the chosen side from the logistic model (policy_glm_change_log_odd), 9 equal-width RPE
+    bins per session, mean over sessions; it computes no rank correlation. Readings for the
+    measure (a) Methods, (b) code. Readings for the correlation (i) Spearman over all trials pooled;
+    (ii) Spearman over the 9 bin means. Sessions are those of the header population. Reproduced
+    when rho is within tolerance under one combination.
+- id: fig6ef-outcome-clusters
+  statement: In the plane of regression effects of chosen value and outcome, LC-NE neurons cluster
+    nonuniformly (Rayleigh z = 19.53, p = 2.3e-9); some are excited by reward and inhibited by
+    predicted reward (RPE-like), others excited by lack of reward without strong modulation by
+    prediction.
+  source: Figure 6e, 6f; Results, Activity of LC-NE projections to frontal cortex correlates with
+    reward prediction errors, paragraph 3
+  quote: some were primarily excited by reward and inhibited by predicted reward (that is, they
+    correlated with RPE), whereas other neurons were primarily excited by lack of reward without
+    strong modulation by reward prediction
+  statistics:
+  - test: Rayleigh test
+    statistic: z = 19.53
+    p: 2.3e-9
+  expected:
+    quantity: Rayleigh z
+    value: 19.53
+    tolerance: 1.95
+  depends_on:
+  - fig6-outcome-responses
+  criterion: Angle per neuron = arctan2(Qc coefficient, outcome coefficient) of the fig6 regression
+    in the kept window (Methods; code F_ephys_behavior_action_outcome, pycircstat2 rayleigh_test,
+    printed z = 19.5275, p = 2.285e-9 over 241 neurons). Reproduced when p < 0.05 with z within
+    tolerance, and both groups exist among neurons with outcome p < 0.05; RPE-like neurons have
+    positive outcome and negative Qc t-statistics, no-reward neurons negative outcome t with |Qc t|
+    smaller than |outcome t| in the median. Partially reproduced when p < 0.05 but z is outside
+    tolerance.
+- id: fig6f-cortex-projecting-rpe
+  statement: LC-NE neurons projecting to isocortex are RPE-biased, their angles differing from the
+    rest of the population (Watson-Wheeler W = 0.04, permutation p = 0.01).
+  source: Figure 6f legend
+  quote: 'Purple: neurons projecting to isocortex are RPE-biased (Watson-Wheeler test, W = 0.04,
+    permutation p = 0.01)'
+  statistics:
+  - test: Watson-Wheeler test, permutation
+    statistic: W = 0.04
+    p: 0.01
+  depends_on:
+  - fig6ef-outcome-clusters
+  criterion: Angles from fig6ef; cortex-projecting neurons by the antidromic criteria of the Methods
+    (see fig5jk-pl-switch), compared with all other neurons by the rank-based Mardia-Watson-Wheeler
+    statistic with 5000 label permutations, p = (k + 1) / (5000 + 1) (Methods, Circular
+    distribution comparison). The code's statistic carries a 1/n factor, W = (2/n) sum over groups
+    (C^2 + S^2) / n_g, on which scale W = 0.04 is read. Reproduced when the permutation p < 0.05 and
+    the circular mean angle of cortex-projecting neurons lies in the RPE quadrant (outcome
+    coefficient positive, Qc coefficient negative).
+- id: fig6g-rpe-tuning
+  statement: Average responses of neurons excited by reward scale with RPE, and those of neurons
+    excited by no reward are higher after lack of reward.
+  source: Figure 6g; Results, Activity of LC-NE projections to frontal cortex correlates with reward
+    prediction errors, paragraph 3
+  quote: Average responses of neurons of each population showed modulation by RPE or lack of reward
+  depends_on:
+  - fig6-outcome-responses
+  criterion: As the code's Figure 6g, neurons split by the sign of the outcome t-statistic of fig6;
+    rate in each neuron's kept window; trials binned by RPE into 6 bins split at 0; group means.
+    The paper gives no test; the reading of the figure is that the reward-excited group's mean rate
+    rises with RPE across the 6 bins (Spearman rho of bin means against bin order > 0) and the
+    no-reward group's mean rate over negative-RPE bins exceeds that over positive-RPE bins.
+    Reproduced when both hold.
+- id: fig6h-opposing-choice-correlations
+  statement: Neurons that correlate with RPE and neurons excited by lack of reward have opposing
+    correlations with the change of choice on the next trial.
+  source: Figure 6h; Results, Activity of LC-NE projections to frontal cortex correlates with reward
+    prediction errors, paragraph 3
+  quote: Neurons that correlated with RPE or lack of reward had opposing correlations with choice
+    behavior on subsequent trials
+  depends_on:
+  - fig6-outcome-responses
+  - fig6c-rpe-choice-change
+  criterion: As the code's Figure 6h, neurons with outcome p < 0.05 split by the sign of the outcome
+    t-statistic; within each neuron, trials binned by outcome-window rate into 8 bins; mean change
+    of choice likelihood per bin (measure readings as in fig6c). The paper gives no test; the
+    reading of the figure is that the change rises with rate in the reward-excited group (legend
+    6h) and falls with rate in the no-reward group, judged by the Spearman rho of group means over
+    the 8 bins. Reproduced when the two rhos have opposite signs with the reward-excited one
+    positive.
+- id: fig6i-pl-axons-rpe
+  statement: LC-NE axonal fluorescence in PL after the choice outcome correlates with RPE (9 mice).
+  source: Results, Activity of LC-NE projections to frontal cortex correlates with reward prediction
+    errors, paragraph 4; Figure 6i, 6l
+  quote: LC-NE axonal activity in frontal cortex 1.5 s after choice outcome correlated with RPE (
+    Figures 6i–6l )
+  expected:
+    quantity: mice with PL photometry
+    value: 9
+    tolerance: 0.9
+  criterion: Photometry as in fig5jk-pl-switch. Windows, readings (a) 0 to 1.5 s after outcome (the
+    text), (b) 0.2 to 2.2 s after the choice lick (code, Figure 6l). Per session, mean dF/F in the
+    window binned by RPE into 6 equal-width bins split at 0, z-scored within session (code). The
+    paper gives no test; the reading of the figure is that the mean over sessions rises with RPE
+    across the bins (Spearman rho of bin means against bin order > 0) and the per-session Pearson
+    correlation of trial dF/F with RPE is positive in most mice. Reproduced when both hold under one
+    reading.
+- id: fig6jk-pl-axons-more-rpe
+  statement: Regression t-statistics and coefficients on chosen value and outcome of PL axonal
+    activity (and, per the Results, of single neurons projecting to cortex) are more positive than
+    those of the single-neuron population and consistent with RPE (Fisher's exact test, p < 0.01);
+    the angles of the axonal coefficients differ from single neurons (Watson-Wheeler W =
+    0.1, permutation p = 2.0e-4).
+  source: Results, Activity of LC-NE projections to frontal cortex correlates with reward prediction
+    errors, paragraph 4; Figure 6j, 6k
+  quote: Regression t -statistics ( Figure 6j ) and coefficients ( Figure 6k ) were more positive
+    than the population of single neurons (Fisher’s exact test, p < 0.01) and consistent with
+    modulation by RPE
+  statistics:
+  - about: sign of axonal against single-neuron regression effects
+    test: Fisher's exact test
+    p: 0.01
+    p_relation: "<"
+  - about: angles, axonal against single neurons
+    test: Watson-Wheeler test, permutation
+    statistic: W = 0.1
+    p: 2.0e-4
+  depends_on:
+  - fig6ef-outcome-clusters
+  criterion: Per PL session, regression of dF/F on outcome, choice side, their interaction, Qc and the
+    isosbestic signal. Windows, readings (a) Methods, one 2 s window after outcome; (b) code, [-0.3,
+    1.7] s around the choice lick. Angles and Watson-Wheeler as in fig6f-cortex-projecting-rpe,
+    PL sessions against all single neurons. No code computes the Fisher test; readings for its
+    table (i) sign of the outcome t-statistic, (ii) membership of the RPE quadrant (outcome
+    positive, Qc negative), each PL sessions against single neurons. The Results name the regressions of
+    cortex-projecting neurons and of axonal dF/F before the comparison, so the first group may also
+    be PL sessions together with cortex-projecting neurons (reading (iii), with table (i) or (ii));
+    Figure 6j and 6k show only the axonal data. Reproduced when, under one
+    combination, Fisher p < 0.01 with PL sessions more often positive (or RPE-like), and the
+    Watson-Wheeler permutation p < 0.05.
+- id: figs18d-outcome-not-on-axes
+  statement: Reward versus no-reward t-statistics show no correlation with neuron positions along the
+    primary axes from other modalities (r = -0.01, p = 0.91; r = 0.01, p = 0.86).
+  source: Figure S18d legend
+  quote: t -statistics of reward vs. no reward ( Figure 6 ) plotted against each neuron’s location
+    along the primary axes from different modalities. From left to right
+  statistics:
+  - about: first axis
+    test: Pearson correlation
+    statistic: r = -0.01
+    p: 0.91
+  - about: second axis
+    test: Pearson correlation
+    statistic: r = 0.01
+    p: 0.86
+  depends_on:
+  - fig6-outcome-responses
+  data: with_inputs
+  criterion: A claim of absence, judged by the paper's test, Pearson correlation of the outcome
+    t-statistic with the projection on each axis (as fig5d; the code uses the gene-expression and
+    projection-target axes). Reproduced when both p >= 0.05, not reproduced when either is below;
+    r is reported either way.
+- id: figs15t-xcorr-outcome-axis
+  statement: The first principal component of cross-correlograms between simultaneously recorded
+    LC-NE neurons varies along the spatial axis of outcome responses, but not along those of other
+    task responses or waveforms.
+  source: Figure S15t legend
+  quote: Spatial analysis shows PC1 of cross-correlogram changes along axes of outcome, but not other
+    task responses (kNN cross-validation bootstrapped p -values
+  statistics:
+  - about: waveform axis
+    p: 0.1529
+  - about: respond versus ignore axis
+    p: 0.7166
+  - about: switch versus stay axis
+    p: 0.5787
+  - about: reward versus no reward axis
+    p: 0.0005
+  depends_on:
+  - fig5c-ignore-ventral
+  - fig5g-switch-dorsal
+  - fig6a-reward-dorsal-anterior
+  - figs14-waveform-space
+  criterion: Spike counts in 50 ms bins, cross-correlograms over +-2 s outside go-cue periods and
+    stimulation (Methods, Spike count cross-correlations; code cross_auto_corr.py), z-scored, PCA
+    (with time-flipped copies, as the code). Each pair's mean CCF location is projected on the
+    linear-model axis of each feature; a kNN test (k = 30, 5-fold, 2000 permutations, as the code)
+    of whether that coordinate predicts PC1. Reproduced when the outcome axis has p < 0.05 and the
+    three others p >= 0.05.
+- id: figs15q-spontaneous-licks
+  statement: Peak spike rates around spontaneous licks correlate with those around in-trial licks (r
+    = 0.49, p < 0.001).
+  source: Figure S15q legend
+  quote: Peak spike rate around spontaneous vs. in-trial licks ( r = 0.49, p < 0.001 )
+  statistics:
+  - test: Pearson correlation
+    statistic: r = 0.49
+    p: 0.001
+    p_relation: "<"
+  expected:
+    quantity: r
+    value: 0.49
+    tolerance: 0.049
+  criterion: Lick bouts separated by inter-lick intervals; readings (a) > 0.5 s (Methods, Lick bout
+    detection), (b) > 0.8 s and bouts shorter than 3.5 s (code lick_utils.py). In-trial bouts start
+    0 to 1.5 s after a go cue; others are spontaneous (code). Per neuron, PSTHs aligned to bout
+    start (0.2 s bins, 0.05 s steps), baseline-subtracted, peak between -1 and 0.5 s (code);
+    Pearson r across neurons. Reproduced when r is within tolerance and p < 0.001 under one reading.
+- id: figs16-pupil-autocorrelation
+  statement: The autocorrelation of pupil diameter decays exponentially with a time constant of 3.37
+    on average (SD 1.03); the paper gives no unit.
+  source: Methods, Pupil auto-correlogram; Figure S16c, S16d
+  quote: τ had a mean of 3.37 and SD of 1.03
+  expected:
+  - quantity: mean tau
+    value: 3.37
+    tolerance: 0.337
+    unit: s
+  - quantity: SD of tau
+    value: 1.03
+    tolerance: 0.103
+    unit: s
+  criterion: Pupil diameter (edge confidence >= 0.9, low-passed at 5 Hz) in 0.5 s bins, periods of
+    poor alignment or detection removed; autocorrelation over the session fit with A exp(-t/tau) + C
+    (Methods). Readings for the unit (a) one tau per session (legend S16d, "across all sessions"),
+    (b) one per neuron recorded with pupil, as the code (106 values). The unit of tau is not
+    given; readings (i) seconds, (ii) lags of the 0.5 s window. Reproduced when both values are
+    within tolerance under one combination of readings.
+- id: figs16-pupil-spiking
+  statement: LC-NE spiking correlates with pupil size; baseline pupil diameter correlates positively
+    with baseline spike rate.
+  source: Figure S16 title and panels i, j
+  quote: LC-NE neuron spiking correlates with pupil size
+  criterion: Per neuron with pupil video, Pearson correlation across trials of spike rate and pupil
+    diameter in the 1 s before the go cue (Methods, Pupil correlation with neuron activity; code
+    about -1 to -0.1 s). The paper reports only an example (r = 0.46). The reading of Figure S16j
+    is that more neurons have significantly positive than significantly negative r (p < 0.05) and
+    the median r is positive; reproduced when both hold.
+- id: figs12h-spontaneous-lick-preference
+  statement: The side preference of spontaneous licks follows the reward ratio of the task (Pearson r =
+    0.39, p = 1.54e-10), and the share of licks made in the task falls as spontaneous preference
+    departs from the reward ratio (Spearman r = -0.26, p = 3.40e-5).
+  source: Figure S12h, S12i legends
+  quote: Lick preference (left/right) in spontaneous period vs. normalized reward ratios (left/right)
+    in the task (Pearson’s r = 0.39, p = 1.54 × 10 −10 ). i , % of licks in task vs. deviation of
+    lick preference from reward ratio shown in ( h ; Spearman’s r = –0.26, p = 3.40 × 10 −5 )
+  statistics:
+  - about: spontaneous lick preference against reward ratio
+    test: Pearson correlation
+    statistic: r = 0.39
+    p: 1.54e-10
+  - about: share of licks in task against deviation from reward ratio
+    test: Spearman correlation
+    statistic: r = -0.26
+    p: 3.40e-5
+  expected:
+  - quantity: Pearson r
+    value: 0.39
+    tolerance: 0.039
+  - quantity: Spearman r
+    value: -0.26
+    tolerance: 0.026
+  criterion: Per session (code F_lick_train_analysis, licks_prep.py), preference (R - L) / (R + L) of
+    rewarded choices and of lick trains outside trials; deviation is the absolute difference; share
+    in task is the fraction of lick trains inside trials. Lick trains as in figs15q (both readings);
+    video-detected licks where available, else the lick sensor. Reproduced when both r are within
+    tolerance with p < 0.05 under one reading.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig4g-go-cue-excitation, removed the statistics entry (p < 0.05 per neuron); it is the threshold used to count neurons, not a result, and the paper does not print it.
+  - task-iti, the criterion asserted that the interval excludes the trial; the Methods both place the intervals after the trial and call them the times between cue onsets, so this is now named as open, with both readings kept.
+  - header and fig5c, fig5g, fig6a, figs14 criteria, "positive DV coefficient" was used for dorsal; in Allen CCFv3 the DV coordinate grows ventrally, so directions are now stated anatomically, with a header note on coordinate conventions, including the code's axis vectors for fig5d, fig5h and figs18d.
+  - fig6a-reward-dorsal-anterior, the legend describes groups of neurons excited by reward or by no reward, so readings with the group label as the spatial feature were added.
+  - fig6c-rpe-choice-change, the criterion gave "minus" as the Methods' operator, but the equation is lost; it now says the difference is read from the word "change".
+  - figs17-respond-ignore-axons, the statement said axons differ "in sign" from single neurons; both are higher before ignored trials, and the paper reports only a difference in the fraction of positive t-statistics, so the statement now says that.
+  - figs17-respond-ignore-axons, the comparison group for cortex-projecting neurons was given as other neurons; the legend that reports the test says the population of single neurons, so the absence is judged on that, and the Methods' comparison with non-projecting neurons is a variant.
+  - fig6jk-pl-axons-more-rpe, the Results compare both cortex-projecting neurons and axonal dF/F with the population; the statement now names both, and the criterion adds the reading with cortex-projecting neurons in the first group.
+  - figs16-pupil-autocorrelation, the paper gives tau no unit; the statement no longer says seconds, and the criterion reads it as seconds or as 0.5 s lags.
+  - Open, the checker reports VALUE NOT FOUND for p = 3.0e-4 (fig5g, fig6a) and 3.40e-5 (figs12h); all three are in the text, printed as "3.0 × 10 −4" and "3.40 × 10 −5", so the problem is in how the checker matches them.
+  - Open, code details cited in the criteria (windows, permutation counts, k = 30, populations, axis vectors) were not checked against the repositories, which are not in this checkout; they are taken as the claims author recorded them.
+  - Open, minor anatomical results without a claim (cortical co-projection to nearby regions, Figure S4d to S4g; dendrite orientation, Figure S6); they are not main findings and not tested by this dandiset.
