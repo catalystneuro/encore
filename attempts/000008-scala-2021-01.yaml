@@ -43,7 +43,7 @@ outcomes:
     PT read as the paper's ET (1,279 agree in the files' spelling). The files' cortical_thickness_4x equals
     the table's soma depth in 4x units and cortical_thickness_um its cortical thickness in 4x units for all
     1,328 cells; the µm columns are not in the files. The five cells with a t-type that the table excludes
-    are all in the dandiset and are not marked.
+    are all in the dandiset and are not marked. Numbers are compared exactly, as floats without rounding.
 - claim: link-ephys-features
   outcome: reproduced
   notebook: scala_2021_ephys.ipynb
@@ -59,19 +59,18 @@ outcomes:
   - The rheobase is computed with the global numpy seed set to 0 before each cell; the paper's code sets no
     seed.
 - claim: cohort-cells-mice
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: scala_2021_ephys.ipynb
   output: claim:cohort-cells-mice
   measured:
-  - 1325
+  - 1328
   - 266
-  notes: The dandiset has files for 1,328 distinct cells from 266 mice, which matches the mouse count and,
-    by file count, reading (b). But three pairs of files hold identical voltage matrices (each pair two
-    different cells of one mouse), so the files hold 1,325 distinct recordings. Counting each recording
-    once, as the protocol requires, the cell count matches neither reading; measured gives that count.
-  deviations:
-  - Cells are counted as distinct recordings (identical voltage matrices counted once), following the
-    protocol's rule on recordings deposited more than once.
+  notes: The dandiset has files for 1,328 distinct cells from 266 mice, which matches reading (b) and the
+    mouse count. Three pairs of files hold identical voltage matrices, so the files hold 1,325 distinct
+    recordings, but the six cells of these pairs are distinct cells (different read counts, genes detected
+    and depths, four of the six on different slices). The criterion counts distinct recorded cells, so the
+    duplicated recordings are a fault of the deposit, recorded as a finding, not missing cells. Changed
+    from partially_reproduced after verification round 1, which counted the cells this way.
 - claim: cohort-ages
   outcome: reproduced
   notebook: scala_2021_ephys.ipynb
@@ -110,7 +109,8 @@ outcomes:
   notes: Every step lasts 600 ms (samples 2,500 to 17,500 at 25 kHz) and every series rises in 20 pA steps.
     1,183 cells (89.1%) start at -200 pA, 90 at -100 pA and the rest between -320 and -80 pA; 112 cells go
     above 1,380 pA (87 to 1,480, one to 1,780). 89.0% conform on the steps, between the criterion's 80% and
-    95%. The intervals between pulses cannot be tested, as no series has a start time, and no file holds a
+    95%. The departures are mostly one shift of the whole series, as 87 of the 90 cells that start at -100 pA
+    end at 1,480 pA. The intervals between pulses cannot be tested, as no series has a start time, and no file holds a
     second series (0 cells), so the repeated stimulation is not in the dandiset.
   deviations:
   - The interval part of the criterion could not be applied; conformance is judged on the steps alone.
@@ -195,11 +195,15 @@ outcomes:
   outcome: reproduced
   notebook: scala_2021_ephys.ipynb
   output: claim:ed6-it-et-room-features
-  notes: 111 L5 IT cells (61 mice) against 45 L5 ET cells (26 mice), layer from the files' inferred layer
-    (which equals the paper's layer for all cells, link). After leaving out UDR, sag time and sag area, the
-    four smallest p are sag ratio (1.8e-13), input resistance (6.8e-12), AP width (1.2e-10) and rebound
-    (2.9e-05); the fifth is the AHP (7.7e-05). Same with all cells.
+  notes: Layer as the claims file's opening comment defines it, the files' normalized depth cut at the
+    Nissl boundaries (the targeted layer without a depth). 111 L5 IT cells (61 mice) against 46 L5 ET cells
+    (26 mice). After leaving out UDR, sag time and sag area, the four smallest p are sag ratio (7.9e-14),
+    input resistance (5.9e-12), AP width (6.4e-11) and rebound (1.8e-05); the fifth is the AHP (8.7e-05).
+    With the files' inferred_layer, or the same rule on the paper's µm depths (45 L5 ET cells each), the same
+    four come first, rebound 2.9e-05 against AHP 7.7e-05. Same with all cells.
   deviations:
+  - The normalized depth is the ratio of the files' 4x image measurements; the paper's code uses µm depths,
+    which are not in the dandiset. The µm reading from the paper's table is shown and gives the same.
   - Cells with an undefined feature are dropped for that feature, the reading the claims file names; here no
     L5 IT or ET cell lacks a feature among the top ranks.
 - claim: ed6-physiological-temperature
@@ -207,7 +211,9 @@ outcomes:
   blocked_by: methods_underspecified
   notes: The claims file records this claim for coverage and its criterion leaves nothing to test; the 34
     degree recordings are in DANDI:000035, and the paper gives no measure of the IT/ET overlap at 34 degrees
-    (Extended Data Fig. 6f, g show it in two-dimensional plots only).
+    (Extended Data Fig. 6f, g show it in two-dimensional plots only). The data are public, so the claim is
+    not blocked for data_missing, which the protocol rules out for a claim with data elsewhere; what is
+    missing is a measure to test.
 - claim: fig1a-ttype-coverage
   outcome: partially_reproduced
   notebook: scala_2021_ephys.ipynb
@@ -220,7 +226,9 @@ outcomes:
   notes: The files give 1,226 cells with a t-type after the exclusions, 817 inhibitory and 409 excitatory, in
     76 t-types. The cell the dandiset lacks (20190211_sample_10) is excitatory, so 1,226 and 409 are accepted
     by the criterion. It is the only L6 CT Gpr139 cell, so the t-type count is 76, not 77; the paper's table,
-    with that cell, gives 1,227 cells and 77 t-types. Three of the four counts match.
+    with that cell, gives 1,227 cells and 77 t-types. Three of the four counts match. Whether the allowance
+    for the missing cell extends to the t-type it alone covers is not in the criterion; the question is in
+    questions/000008.yaml.
   deviations:
   - The five exclusions come from the paper's table (link-metadata-table); the files alone give 1,231 cells.
 - claim: fig1b-depth-layers
@@ -289,14 +297,20 @@ outcomes:
   outcome: reproduced
   notebook: scala_2021_transcriptomics.ipynb
   output: claim:fig4b-sst-rebound
-  notes: 11 L5 Sst t-types with at least five cells (143 cells, 64 mice), 55 pairs; r = 0.347, p = 0.0094 with
-    all 17 features. Rebound alone r = 0.275, p = 0.042. The morphological part is not tested.
+  notes: Layer as the claims file defines it, from the files' normalized depth. 11 L5 Sst t-types with at
+    least five cells (143 cells, 63 mice), 55 pairs; r = 0.339, p = 0.0113 with all 17 features. Rebound alone
+    r = 0.275, p = 0.042. With the files' inferred_layer or the paper's µm depths (64 mice), r = 0.347, p =
+    0.0094. The morphological part is not tested.
+  deviations:
+  - The normalized depth that gives the layer is the ratio of the files' 4x image measurements; the paper's
+    µm depths are shown as a variant.
 - claim: fig4e-pvalb-axon-shape
   outcome: blocked
   blocked_by: methods_underspecified
   notes: Shown only as a colour overlay; the paper gives no measure and the criterion names none. The
     reconstructions are at the Brain Image Library, whose server did not answer from the runner (see
-    morph-reconstructions).
+    morph-reconstructions), and the paper's morphometric table is public in its code repository, so the
+    data are elsewhere and the claim is not blocked for data_missing; the lack of a measure blocks it.
 - claim: fig3d-morph-combined
   outcome: reproduced
   notebook: scala_2021_ephys.ipynb
@@ -304,8 +318,9 @@ outcomes:
   notes: Inhibitory mean diagonal 0.737 with morphology against 0.851 with electrophysiology; seven-family mean
     highest for the combined representation, 0.872 (16 PCs) or 0.874 (17 PCs), against 0.808 and 0.753 (627
     cells with both). Both handlings of the excluded cells, both block sizes and all cells give the same
-    orderings. The morphology covers 635 cells (367 inhibitory, 268 excitatory); the paper's 636 includes
-    the cell missing from the dandiset.
+    orderings; with all cells, as the paper, 628 cells have both, the criterion's count, with inhibitory means
+    0.737 against 0.847 and the combined seven-family mean 0.869 or 0.872. The morphology covers 635 cells
+    (367 inhibitory, 268 excitatory); the paper's 636 includes the cell missing from the dandiset.
   deviations:
   - Each recording counted once; the result with all cells is the same.
 - claim: fig5a-ttypes-between-families
@@ -352,16 +367,18 @@ outcomes:
     against 2.26 mV for Vip Sncg. Reading (a), rebound rises with the distance to the nearest Vip Sncg
     reference cell (rho = 0.356, one-sided p = 0.019). Reading (b), rebound does not fall with the
     correlation to the Vip Sncg mean (rho = 0.067, one-sided p = 0.648; 0.066 and 0.644 with the log taken
-    after the mean).
+    after the mean). Scaling the Patch-seq counts to a million per cell first gives rho = 0.068, p = 0.648,
+    and raw counts per million rho = 0.016, p = 0.536.
   deviations:
   - The transform of reading (b) is not given by the claims file; the Methods' log2(x + 1) of
-    length-normalized Patch-seq counts against the mean of log2(UMI + 1) of the reference (as the code's
-    mapping) is the main reading, and log2 of the mean UMI a variant; both give the same.
+    length-normalized Patch-seq counts (the code's rnaseqTools.map_to_tsne with normalizeNew=True) against
+    the mean of log2(UMI + 1) of the reference is the main reading; log2 of the mean UMI, and two
+    library-size normalizations of the Patch-seq counts, are variants, and all give the same.
 - claim: fig5d-sst-pvalb-calb2-firing
   outcome: reproduced
   notebook: scala_2021_transcriptomics.ipynb
   output: claim:fig5d-sst-pvalb-calb2-firing
-  notes: 26 Sst Pvalb Calb2 cells (19 mice), max APs 15 to 87. Reading (a), max APs rise towards the Pvalb
+  notes: 26 Sst Pvalb Calb2 cells (19 mice), max APs 15 to 87, none at the median (32.5), so 13 above it. Reading (a), max APs rise towards the Pvalb
     centroid (rho = 0.363, one-sided p = 0.034). Reading (b), the 13 high-firing cells (mean pairwise
     distance 7.05, against 8.49 for random subsets) under the criterion as the answer of 2026-10-21 fixes
     it. With 10,400,600 subsets of that size, more than 1,000,000, p is estimated from 100,000 random
@@ -414,8 +431,8 @@ outcomes:
   outcome: blocked
   blocked_by: data_unreadable
   notes: The SWC files are at the Brain Image Library (download.brainimagelibrary.org/3a/88/3a88a7687ab66069);
-    the server did not answer from the runner (connection timed out, twice, on 2026-10-20), so the folders
-    could not be listed. The paper's table and morphometric features (646 traced cells) are in its code
+    the server did not answer from the runner (connection timed out, twice, on 2026-10-20, and again
+    from the notebook on 2026-10-21), so the folders could not be listed. The paper's table and morphometric features (646 traced cells) are in its code
     repository but are not the data the criterion names.
 - claim: fig2-rrr
   outcome: reproduced
@@ -429,7 +446,8 @@ outcomes:
   notes: Main reading (four log-transformed features), 1,216 cells from 264 mice. At lambda 0.5, 24 genes,
     cross-validated R2 0.370 and correlations 0.895, 0.725, 0.648; at lambda 0.45, 29 genes, 0.382, 0.898,
     0.744, 0.669. All within tolerance at both lambdas; also under the code's three-feature transform and with
-    all 1,219 cells.
+    all 1,219 cells. The folds are those of the paper's elastic_rrr_cv (seed 42, one permutation, ten
+    contiguous test blocks of 121 cells, 6 cells never tested).
   deviations:
   - The elastic net inside the paper's sparseRRR.py is fitted with scikit-learn (ElasticNet,
     MultiTaskElasticNet), which minimizes the same objective, because glmnet_python has no distribution for
@@ -456,11 +474,13 @@ outcomes:
   measured: -0.012
   notes: Spearman correlation between hold time and log cDNA yield over the 1,319 dandiset cells with both
     values, -0.012 (p = 0.65); over all 1,320 cells of the table, also -0.012. Neither value is in the
-    dandiset's files.
+    dandiset's files; the data check lists every DandiIcephysMetadata and subject field and every entry
+    under general, and none is a hold time or a yield. The dandiset contributes only the cells.
 findings:
 - kind: other
   statement: Three pairs of files hold identical voltage recordings although each pair is two different cells
-    of one mouse, with different slices, depths, read counts and in one pair different t-types
+    of one mouse, with different depths and read counts, two of the pairs from different slices, and in
+    one pair different t-types
     (20190731_sample_5 and 20190731_sample_8; 20181116_sample_2 and 20181116_sample_4; 20190829_sample_2 and
     20190829_sample_6). The paper's feature table has identical values for each pair, so the duplication
     predates the deposit and the paper analysed each recording twice. Which cell each recording belongs to
@@ -503,3 +523,284 @@ findings:
   statement: The Extended Data Fig. 4 legend gives an AP threshold of -40.18 mV for the example cell; the
     paper's own feature table and the extraction from the file give -43.18 mV. The legend also gives the sag
     time in ms where the value is in seconds.
+verifications:
+- date: 2026-10-21
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebooks)
+  reviewed: The handover of the first run, the three executed notebooks with the conclusions and
+    summaries removed, the helper module scala.py and the claims file; the verifier also had the paper.
+  results:
+  - claim: link-metadata-table
+    agrees: true
+    outcome: reproduced
+    reason: All 1,328 dandiset cells match a table row (cell 13). Every compared field agrees for 1,328 of
+      1,328, with ET spelled PT in the files; age also 1,328 of 1,328. The table's 1,329th cell
+      (20190211_sample_10) is not in the dandiset. Numbers are compared after .6g formatting, which can
+      hide differences of up to about 50 reads in counts above 10^6.
+    response: The comparison is now exact (numbers as floats, without rounding); every field still agrees
+      for 1,328 of 1,328 cells.
+  - claim: link-ephys-features
+    agrees: true
+    outcome: reproduced
+    reason: 1,320 of 1,328 cells (99.4%) agree on all 28 non-rheobase features (cell 15). Rheobase agrees
+      for 1,287 cells; reported, as the criterion asks.
+    response: No change.
+  - claim: cohort-cells-mice
+    agrees: false
+    outcome: reproduced
+    reason: 1,328 distinct cells (reading b) and 266 subjects (cell 18). The archive summary gives the same
+      counts.
+    response: Outcome changed to reproduced. The criterion counts distinct recorded cells, and the six cells
+      of the three duplicated pairs are distinct cells (the notebook now prints their read counts, genes
+      detected, depths and slices); the shared recordings stay a finding, and the 1,325 distinct recordings
+      are reported. Measured is now 1,328 and 266.
+  - claim: cohort-ages
+    agrees: true
+    outcome: reproduced
+    reason: Per mouse (n = 266) min 35, Q1 64, median 75, Q3 100, max 245 days under every quantile method
+      (cell 20).
+    response: No change.
+  - claim: cohort-genotypes
+    agrees: true
+    outcome: partially_reproduced
+    reason: 9 of 10 lines match and the total is 266. Wild type is 26 against 27, and one Scnn1a-Tg3-Cre
+      mouse is not in the paper's list (cell 22).
+    response: No change.
+  - claim: stimulus-protocol
+    agrees: true
+    outcome: partially_reproduced
+    reason: Steps conform for 89.0% of cells (first step -200 pA 89.1%, max at most 1,380 pA 91.6%), in the
+      80 to 95% band. The interval and repeat parts could not be tested (every starting_time is NaN; each
+      file holds a single ascending series); both are data_missing, not failures. The 90 cells
+      starting at -100 pA and the 87 ending at 1,480 pA are probably the same cells; a cross-tabulation
+      would show that.
+    response: Added the cross-tabulation of first and largest step; 87 of the 90 cells that start at -100
+      pA end at 1,480 pA. Notes and conclusion say so.
+  - claim: soma-depth-count
+    agrees: true
+    outcome: reproduced
+    reason: 1,283 cells have a depth (cell 26). The missing cell has a depth in the table, so the
+      criterion's 1,283 alternative applies. cortical_thickness_4x equals the table's Soma depth (4x) for
+      1,328 of 1,328.
+    response: No change.
+  - claim: ed4-example-cell
+    agrees: true
+    outcome: reproduced
+    reason: 23 of 23 values within tolerance (cell 28). AP threshold is -43.18 mV, within 4.018 of -40.18.
+    response: No change.
+  - claim: ephys-feature-count
+    agrees: true
+    outcome: reproduced
+    reason: 1,320 cells with all features and 1,219 with a t-type (all cells), or 1,317 and 1,216 with
+      duplicates removed (cell 30). Both are within 10%.
+    response: No change.
+  - claim: fig2-family-features
+    agrees: true
+    outcome: reproduced
+    reason: Under reading (b), Pvalb has the highest median max APs (71) and Sst the highest median sag
+      ratio (1.154) and rebound (5.70) (cell 32). Under reading (a), ET has the highest sag ratio.
+    response: No change.
+  - claim: fig3d-families-ephys
+    agrees: true
+    outcome: reproduced
+    reason: ET to IT is 49.0%. The largest other off-diagonal entry is 14.4% (Lamp5 to Sst). Both handlings
+      of excluded cells and both cell sets give the same result (cell 35).
+    response: No change.
+  - claim: ed6-it-et-room-features
+    agrees: true
+    outcome: reproduced
+    reason: After the omissions, the four smallest p are sag ratio, input resistance, AP width and rebound
+      (cell 38); the fifth, AHP, has p = 7.7e-5 against 2.9e-5 for rebound. The layer comes from the files'
+      inferred_layer, not from depth with the Nissl boundaries as the claims file's opening comment
+      specifies; the two disagree for 19 of 1,283 cells. The margin is probably robust, but this was not
+      checked.
+    response: The layer is now computed as the opening comment defines it, from the files' normalized depth
+      at the Nissl boundaries (targeted layer without a depth), in scala.cell_table; the files'
+      inferred_layer and the same rule on the paper's µm depths are variants. All three give the same four
+      features; with the main layer (46 L5 ET cells) rebound has p = 1.8e-05 against 8.7e-05 for the AHP.
+      No change of outcome.
+  - claim: ed6-physiological-temperature
+    agrees: false
+    outcome: blocked
+    reason: The 34 degree data are in DANDI:000035. The archive description of 000008 says so, and the paper
+      gives no measure. The verifier gives blocked with data_missing.
+    response: Kept as blocked with methods_underspecified. The claim is data elsewhere, the data are public
+      in DANDI:000035, and the protocol rules out data_missing for such a claim; what blocks it is that the
+      paper gives no measure to test. The disagreement, which is on the reason only, is recorded.
+  - claim: fig1a-ttype-coverage
+    agrees: true
+    outcome: partially_reproduced
+    reason: Counts are 1,226, 817, 409 and 76 t-types (cell 40). The two one-short cell counts are accepted
+      under reading (b); the t-type count, 76 against 77, is not covered by that allowance. The missing cell
+      is the only L6 CT Gpr139 cell, so the shortfall is fully explained by it. This is a gap in the claims
+      file, not the notebook.
+    response: No change of outcome. A question for a reader, whether the allowance covers the t-type the
+      missing cell alone represents, is added to questions/000008.yaml and cited in the notes and the
+      notebook.
+  - claim: fig1b-depth-layers
+    agrees: true
+    outcome: partially_reproduced
+    reason: 18 of 19 excitatory t-types agree (95%). L5 IT_4 has a median depth of 0.757, which falls in L6
+      (cell 42).
+    response: No change.
+  - claim: l45-it1-boundary
+    agrees: true
+    outcome: reproduced
+    reason: Median 0.279 lies in 0.235 to 0.40, and the IQR (0.259 to 0.306) contains 0.29 (cell 44).
+    response: No change.
+  - claim: fig4c-distance-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Reading (a) gives 50 t-types, 200 within-family pairs, r = 0.597 (transcriptomics cell 10).
+    response: No change.
+  - claim: ed7-within-families
+    agrees: true
+    outcome: reproduced
+    reason: All 6 families have r > 0, and 16 of 17 features have r > 0 in at least half the families
+      (transcriptomics cell 12).
+    response: No change.
+  - claim: fig4d-it-depth
+    agrees: true
+    outcome: reproduced
+    reason: 8 IT t-types; r = 0.690 from the files and 0.698 from the µm table, both within 0.70 plus or
+      minus 0.07 (transcriptomics cell 14).
+    response: No change.
+  - claim: fig4a-vip-tau
+    agrees: true
+    outcome: blocked
+    reason: Reading (a) gives rho = -0.582, p = 1.6e-15. Reading (b) gives rho = -0.383, p = 0.154. The
+      readings disagree, which the criterion maps to blocked (transcriptomics cell 16).
+    response: No change.
+  - claim: fig4b-sst-rebound
+    agrees: true
+    outcome: reproduced
+    reason: Over all 17 features r = 0.347, p = 0.0094 (11 t-types, 55 pairs); rebound alone r = 0.275, p =
+      0.042 (transcriptomics cell 18). The layer comes from the files' inferred_layer, not from depth with
+      the Nissl boundaries as the opening comment specifies; the p is probably robust, but this was not
+      checked.
+    response: The layer is now the depth-derived one of the opening comment, with the files' inferred_layer
+      and the paper's µm depths as variants. Main reading r = 0.339, p = 0.0113 (143 cells, 63 mice); the
+      variants give r = 0.347, p = 0.0094; rebound alone 0.275, p = 0.042 under all three. No change of
+      outcome.
+  - claim: fig4e-pvalb-axon-shape
+    agrees: false
+    outcome: blocked
+    reason: All 1,328 assets are NWB files, with no morphology. The paper gives no measure. The verifier
+      gives blocked with data_missing.
+    response: Kept as blocked with methods_underspecified. The claim is data elsewhere (Brain Image Library;
+      the morphometric table is public in the paper's repository), which the protocol does not block for
+      data_missing; the lack of a measure in the paper is what blocks it. The disagreement, on the reason
+      only, is recorded.
+  - claim: fig3d-morph-combined
+    agrees: true
+    outcome: reproduced
+    reason: The inhibitory mean diagonal is 0.737 for morphology against 0.851 for ephys. The seven-family
+      mean is highest for combined (0.872 and 0.874), under 16 and 17 PCs and both handlings (cell 46). The
+      morphological representation is rebuilt inline but phenotype-tsne.ipynb is not cited cell by cell;
+      the combined count is 627 with duplicates removed, the criterion says 628, and the all-cells count is
+      not printed.
+    response: The code cell now cites the cells of phenotype-tsne.ipynb that each step follows (cells 7,
+      10, 11, 12, 13 and 17), and the tables are printed for all cells too; with all cells 628 cells have
+      both, the criterion's count, and the orderings hold (inhibitory 0.737 against 0.847; combined 0.869
+      or 0.872). No change of outcome.
+  - claim: fig5a-ttypes-between-families
+    agrees: true
+    outcome: reproduced
+    reason: (i) 28 of 35 t-types are at most 25% wrong. (ii) Sst Pvalb Calb2 to Pvalb is 0.385. (iii)
+      Lamp5 Egln3_1 to Vip or Sst is 0.90. (iv)(a) Vip Mybpc1_3 to Sst is 0.375 (cell 48).
+    response: No change.
+  - claim: fig5b-ttype-variability
+    agrees: true
+    outcome: reproduced
+    reason: Main reading (Methods membership, n_init = 10) gives 17 of 35 t-types (49%) above the band with
+      all cells, 43% with duplicates removed; Pvalb Vipr2_2 (0.449) is not above the band, Vip Mybpc1_2
+      (0.692) is (cell 50). This is fragile; the share ranges from 22% to 56% with n_init and membership
+      handling, and two of eight variants fall below the 25% reading. The claims file's scikit-learn
+      defaults is version-dependent; the choice of n_init = 10 is reasoned but is a choice.
+    response: No change. The notes and the deviation already give the variants, the 'auto' result and the
+      reason for n_init = 10 (the default under the code's Python 3.7).
+  - claim: ed8-leiden-entropy
+    agrees: true
+    outcome: not_reproduced
+    reason: Main (Methods) membership gives rho = 0.266, one-sided p = 0.061 (duplicates removed) and rho =
+      0.166, p = 0.171 (all cells). Only code membership with duplicates removed reaches p < 0.05 (p =
+      0.031). The outcome flips between membership handlings and the criterion does not say which governs;
+      the verifier took the Methods' handling, which fig5b treats as the main reading. leiden_entropies
+      reads the global loop variable label, which works but is fragile.
+    response: No change of outcome. leiden_entropies now takes the label as an argument; the numbers are
+      unchanged.
+  - claim: fig5c-vip-mybpc1-rebound
+    agrees: true
+    outcome: blocked
+    reason: Reading (a) gives rho = 0.356, p = 0.019; reading (b) rho = 0.067, p = 0.648. The Vip Sncg
+      median rebound (2.26) is below Vip Mybpc1_2 (11.31). The readings disagree, so blocked per the
+      criterion. In reading (b) the Patch-seq expression is exon/kb plus intron/kb with no library-size
+      normalization before log2(x + 1), the author's own choice, not the code's normalizeNew path; with
+      rho = 0.067 a flip is unlikely.
+    response: The main transform is the code's normalizeNew path (rnaseqTools.map_to_tsne with
+      normalizeNew=True divides exon and intron counts by length in kb, adds them and takes log2(x + 1)),
+      now said in the conclusion and the deviation. Two library-size normalizations were added as
+      variants, rho = 0.068, p = 0.648, and rho = 0.016, p = 0.536. No change of outcome.
+  - claim: fig5d-sst-pvalb-calb2-firing
+    agrees: true
+    outcome: reproduced
+    reason: Reproduced, marginal. Reading (a) rho = 0.363 > 0; reading (b) with seed 55 p = 0.0485, upper
+      bound 0.0499; the exact p over all 10.4M subsets is 0.0497. Seeds 56 to 60 all fail the upper-bound
+      rule, so the seed decides the criterion's outcome, which the rule was written to prevent. The true p
+      is just below 0.05, so the verifier keeps reproduced. Which cells sit above the median is not shown;
+      ties at the median could not be checked.
+    response: No change of outcome. The notebook now prints the sorted max APs, the median (32.5, no cell
+      at it, 13 above and 13 below) and the 13 cells above it. The follow-up question on judging (b) by
+      the exact p-value stays open in questions/000008.yaml.
+  - claim: rnaseq-depth
+    agrees: true
+    outcome: reproduced
+    reason: Median exonic reads 1,281,492, median intronic 687,965, mean detected genes 9,097, all within
+      10% (sequencing cell 4).
+    response: No change.
+  - claim: ttype-qc-counts
+    agrees: true
+    outcome: reproduced
+    reason: 78, 14, 5 and 1,232. Pass or fail agrees with the table for 1,329 of 1,329 cells (sequencing
+      cell 6).
+    response: No change.
+  - claim: ed2-smartseq-similarity
+    agrees: true
+    outcome: reproduced
+    reason: Single-nucleus Smart-seq2 has the highest median max correlation (0.703). Single-cell Smart-seq2
+      and 10x v2 assign the same t-type for 78.6% of cells (sequencing cell 8).
+    response: No change.
+  - claim: morph-reconstructions
+    agrees: true
+    outcome: blocked
+    reason: The Brain Image Library URL did not respond within 30 s when the verifier tried it on
+      2026-10-21. The paper's morphometric table has 646 cells (cell 46), but it is not the SWC archive the
+      criterion names. A listing of the folder would have allowed a check.
+    response: No change. The notebook now tries to list the folder itself (30 s limit); on 2026-10-21 it got
+      no answer (ConnectTimeout), so no listing could be added.
+  - claim: fig2-rrr
+    agrees: true
+    outcome: reproduced
+    reason: Main reading at lambda 0.5 gives R2 0.370 and correlations 0.895, 0.725, 0.648 (24 genes); at
+      lambda 0.45 0.382, 0.898, 0.744, 0.669, all within tolerance (transcriptomics cell 6). Gene selection
+      and X standardization use all cells before cross-validation, which follows the paper, uses no Y and
+      leaks no labels. The sparseRRR folds (seed 42, contiguous) could not be inspected; printing the fold
+      indices would settle it.
+    response: The folds are now printed as elastic_rrr_cv builds them (seed 42, one permutation, ten
+      contiguous test blocks of 121 cells, 6 cells never tested). No change of outcome.
+  - claim: ed5-rrr-ion-channels
+    agrees: true
+    outcome: reproduced
+    reason: 307 genes. R2 0.341 and correlations 0.865, 0.706, 0.565, all within tolerance (transcriptomics
+      cell 8).
+    response: No change.
+  - claim: hold-time-yield
+    agrees: true
+    outcome: reproduced
+    reason: rho = -0.0124 (n = 1,320), within 0.05 of -0.01 (cell 54). Both variables come only from the
+      paper's table, so this re-computes the paper's own table. Cell 6 lists only a fixed whitelist of file
+      fields, so it is not shown whether the files hold a hold time.
+    response: The data check now lists every DandiIcephysMetadata and subject field in any file and every
+      entry under general of one file; none is a hold time or a yield. The notes say the dandiset
+      contributes only the cells. No change of outcome.

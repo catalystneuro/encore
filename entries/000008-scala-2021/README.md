@@ -11,7 +11,7 @@ repository and a Zenodo record) and counted apart.
 |---|---|
 | The dandiset's cells match the paper's metadata table (link) | Reproduced |
 | Features extracted from the files match the paper's feature table (link) | Reproduced |
-| 1,329 cells from 266 mice | Partially reproduced |
+| 1,329 cells from 266 mice | Reproduced |
 | Ages of the mice | Reproduced |
 | Mice per genotype | Partially reproduced |
 | Stimulus protocol | Partially reproduced |
@@ -41,7 +41,8 @@ repository and a Zenodo record) and counted apart.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-What the attempt found about the dandiset: three pairs of cells share identical voltage recordings, three
+What the attempt found about the dandiset: three pairs of cells share identical voltage recordings (1,325
+recordings for 1,328 cells), three
 files hold other traces than the ones the paper's features came from, the fields named
 `cortical_thickness_4x` and `cortical_thickness_um` hold a soma depth and a cortical thickness in 4x image
 units, the units of voltage and current are mislabelled, no sweep has a start time, and the five cells the

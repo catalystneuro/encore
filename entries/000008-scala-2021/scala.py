@@ -343,7 +343,11 @@ def paper_feature_table() -> pd.DataFrame:
 
 
 def layer_from_depth(nd, fallback):
-    """Layer from normalized depth with the Nissl boundaries, else the fallback (the code's rule)."""
+    """Layer from normalized depth with the Nissl boundaries, else the fallback (the code's rule).
+
+    The comparisons are those of the code (phenotype-tsne.ipynb cell 3, physiological-temperature.ipynb
+    cell 2): strict on both sides, so a depth exactly at 0.07, 0.29 or 0.73 keeps the fallback, as
+    it does in the code. The claims file's opening comment gives the targeted layer as the fallback."""
     out = np.array(fallback, dtype=object).copy()
     nd = np.asarray(nd, dtype=float)
     with np.errstate(invalid="ignore"):
@@ -374,7 +378,9 @@ def cell_table(meta: pd.DataFrame, feats: pd.DataFrame, excluded=None, drop=None
     `ttype` and `family` use the paper's spelling; cells without a t-type have family
     'low quality' as in the files. `depth_norm` is the files' `cortical_thickness_4x` (which
     holds the soma depth in 4x image units) over `cortical_thickness_um` (which holds the
-    cortical thickness in the same units). `excluded` is a set of cell ids to flag. The features
+    cortical thickness in the same units). `layer` is the layer of the claims file's opening
+    comment: `depth_norm` cut at the Nissl boundaries, the targeted layer where there is no depth
+    (`layer_from_depth`); `inferred_layer` is the files' own field. `excluded` is a set of cell ids to flag. The features
     of the cells in `drop` (duplicated recordings) are set to missing, so that analyses of the
     recordings count each recording once; their labels are kept.
     """
@@ -384,11 +390,12 @@ def cell_table(meta: pd.DataFrame, feats: pd.DataFrame, excluded=None, drop=None
     t["mouse"] = m["subject.subject_id"].values
     t["ttype"] = [paper_name(x) if isinstance(x, str) else "" for x in m.get("RNA_type", pd.Series([np.nan] * len(m))).values]
     t["family"] = [paper_name(x) for x in m["RNA_family"].values]
-    t["layer"] = m["inferred_layer"].astype(str).values
+    t["inferred_layer"] = m["inferred_layer"].astype(str).values
     t["targeted_layer"] = m["targeted_layer"].astype(str).values
     with np.errstate(invalid="ignore", divide="ignore"):
         t["depth_norm"] = (pd.to_numeric(m["cortical_thickness_4x"], errors="coerce")
                            / pd.to_numeric(m["cortical_thickness_um"], errors="coerce")).values
+    t["layer"] = layer_from_depth(t["depth_norm"].values, t["targeted_layer"].values)
     t["excluded"] = t.index.isin(set(excluded or []))
     f = feats.reindex(m.index)
     for c in FEATURES_29:
