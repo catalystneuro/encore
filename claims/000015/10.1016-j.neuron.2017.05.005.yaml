@@ -1,0 +1,596 @@
+# Claims for Chen, Li, Daie & Svoboda (2017) on dandiset 000015.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21, protocol
+# as stated in docs/protocol.md (pilot-10), Reader steps 1 to 4.
+#
+# Text read: the version of record (Neuron 94, 866-879), from a PDF supplied by a person, as
+# extracted to paper/10.1016-j.neuron.2017.05.005.txt: main text, figure legends 1 to 8 and the STAR
+# Methods (e1 to e4). The PDF pages could not be rendered in this run, so no figure was looked at;
+# everything below is read from the text and legends. Not in the text: the Supplemental Information
+# (Figures S1 to S10 and one movie). The claims on Figures S1, S4, S5, S7 and S9
+# (widefield-contralateral-bilateral, figs4-peak-shift, figs5-single-coefficient,
+# fig6-lick-direction-spread, figs9-photoinhibition-alm-mm) are written from the main text alone;
+# the main findings rest on Figures 2, 4 to 8 and the Methods, which are in the text.
+#
+# Code read: none. The paper links no analysis code. It names the data deposit in its Key
+# Resources Table as "Imaging and electrophysiology data in NWB format", "Available at CRCNS.ORG",
+# 10.6080/K0S180F9. The dandiset's archive title is the paper's title and its description reads
+# 'Data from "A Map of Anticipatory Activity in Mouse Motor Cortex" Chen et al. Neuron 2017'; its
+# metadata list 6 subjects, cell population imaging and behaviour (PlaneSegmentation,
+# BehavioralEvents). The silicon probe recordings (3 mice) are therefore read as being in the CRCNS
+# deposit; whether the dandiset holds the wide-field imaging or the photoinhibition behaviour is for
+# the author to find.
+#
+# The data the paper used, as it reports them. Male Thy1-GCaMP6s (GP4.3) mice with a window over
+# left motor cortex. Task: a pole presented at a posterior (lick right) or anterior (lick left)
+# position during the sample epoch (1.2 s from pole movement onset to retraction onset), a 3 s
+# delay epoch, an auditory go cue (3.4 kHz, 0.1 s) at 4.2 s after trial start, then licking one of
+# two ports. Four trial types: correct right (CR), correct left (CL), error right (ER), error left
+# (EL). Trials with licking during the delay epoch were excluded (13.3% +- 10%). Whisker video at
+# 1 kHz; lick times from the lickport.
+# Two-photon imaging: 6 mice, 12 locations (1 to 3 per mouse), 105 image planes (8.8 +- 2.6 per
+# location, 4 to 12), 600 x 600 um, 512 x 512 pixels, 14 Hz, depths 100 to 600 um, 92 +- 26 trials
+# per plane, 3 +- 1 planes per session (range 1 to 6). 15,431 neurons (ALM 8,837, MM 6,594),
+# fluorescence with neuropil subtracted (r = 0.7, neuropil within 40 um of the cell centre, other
+# cells excluded). Stereotactic coordinates of each cell from vascular landmarks. In three of the
+# mice, PT neurons (719, red RetroBeads in left basal pontine nucleus) and IT neurons (2,631, CTB
+# Alexa 647 in right ALM and MM) were labelled.
+# Wide-field imaging: 5 mice (Figure 2C), 2X objective, 260 x 348 pixels, 15 Hz, dF/F0 with F0 the
+# mean of the six frames before trial start.
+# Silicon probes: 567 single units, 3 mice, 24 sessions (ALM 297 units in 13 sessions; MM, called
+# vM1 in the Methods, 270 units in 11 sessions), 468 from deep layers; spike counts in 400 ms
+# windows in 100 ms steps. Photoinhibition (Figure S9) used VGAT-ChR2-EYFP line 8 mice (Key
+# Resources Table); the text gives no other detail of it.
+#
+# Conventions used by the criteria below, from the STAR Methods unless marked open.
+# T (trials and time). Trials of the four types, early-lick trials excluded. Fluorescence 5 s
+#   before to 5 s after the go cue, aligned to trial start (go cue at 4.2 s); dF/F = (F-F0)/F0 per
+#   trial, F0 the mean over the 0.5 s before trial start. Time bins are open: Figure 3B gives 66.7
+#   ms bins while imaging was at 14 Hz (71.4 ms frames); readings (T1) the frames as acquired,
+#   (T2) traces resampled to 66.7 ms bins. Trials with no lick after the go cue fit none of the
+#   four types and are left out.
+# M (selectivity model). Per neuron and time bin, dF/F of single trials on three binary factors,
+#   object location (posterior CR, ER against anterior CL, EL), lick direction (right CR, EL
+#   against left CL, ER) and outcome (correct CR, CL against error ER, EL), by a 3-way ANOVA with
+#   main effects only (MATLAB anovan, 'linear'). A neuron is trial-type selective at t if any
+#   factor has p < 0.01; purely object location, lick direction or outcome selective if only that
+#   factor has p < 0.01; mixed if more than one. Coefficients from trial-type means,
+#   alpha = (CR - CL + ER - EL)/2, beta = (CR - CL - ER + EL)/2, gamma = (CR + CL - ER - EL)/2,
+#   set to 0 where the factor is not significant before averaging over neurons. So alpha > 0 is
+#   posterior-preferring, beta > 0 lick-right (contralateral to the left hemisphere imaged)
+#   preferring, gamma > 0 correct-preferring. (The Results, paragraph 1 of Analysis of
+#   Behavior-Related Activity, calls CR and EL "lick left trials"; the Methods and the trial names
+#   say lick right, and the Methods are followed.)
+# A (area). ALM is centred 2.5 mm anterior, 1.5 mm lateral; MM 1.5 mm anterior, 1.0 mm lateral.
+#   The border of ALM is "a spatially deconvolved region where photo inactivation affects behavior
+#   (Li et al., 2016)" (Figure 2A legend); no coordinates are given. Every neuron is in one of the
+#   two (8,837 + 6,594 = 15,431). Open, readings (A1) the dataset's own area label per cell or
+#   imaging location, if it has one; (A2) each cell assigned to the nearer of the two centres. The
+#   counts 8,837 and 6,594 check the reading.
+# D (depth). Superficial z < 350 um, deep z >= 350 um (Methods; the Results write > 350), z the
+#   depth of the image plane. Figure 6 histograms use 100-250, 250-400 and 400-620 um.
+# B (bootstrap). The error of averages over neurons is the SD of the average over hierarchical
+#   resamples of animals, planes and cells, with replacement (Methods, for Figure 8D). The number
+#   of resamples is not given; 1000 is used as a standard choice that cannot change the outcome.
+# O (onset). "time when selectivity rose to >6 SD above baseline" (Results, Projection-Specific
+#   Coding). The baseline period is open, readings (O1) the bins before trial start in the
+#   extracted window (from 0.8 s before trial start), (O2) the 0.5 s F0 window before trial start.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000015"
+paper: doi:10.1016/j.neuron.2017.05.005
+claims:
+- id: early-lick-fraction
+  statement: Mice licked early, during the delay epoch, on 13.3% +- 10% of trials, and these trials
+    were not analysed.
+  source: Results, paragraph 2 (four trial types)
+  quote: Trials in which the mice licked early during the delay epoch (13.3% ± 10%) were not analyzed
+  expected:
+    quantity: early-lick trials as a percentage of trials
+    value: 13.3
+    tolerance: 10
+    unit: percent
+  criterion: The tolerance is the paper's stated spread. The paper does not say over what the mean
+    and SD are taken. Readings (a) mean over imaged planes; (b) mean over sessions; (c) mean over
+    mice; (d) all trials pooled. Denominator all trials with a lick or all trials of the session,
+    both read. Reproduced when the mean is within tolerance under one reading. If the dataset holds
+    no early-lick trials, the claim cannot be tested.
+- id: imaging-sample
+  statement: Two-photon imaging covered 12 locations in 6 mice with 8.8 +- 2.6 planes per location,
+    105 planes in all, each imaged for 92 +- 26 trials at 73% +- 9% correct, 3 +- 1 planes per
+    session.
+  source: Results, Mapping Activity Using Two-Photon Calcium Imaging, paragraph 1; Figure 2E, 2F
+  quote: For each mouse (n = 6), we collected data from 1 to 3 image locations (n = 12 locations in
+    total, Figure 2E), each containing multiple (8.8 ± 2.6) image planes ... Each image plane (n = 105,
+    Figure 2F and S2) was sampled at 14 Hz while mice performed the task for 92 ± 26 trials, with
+    performance at 73% ± 9% trials correct ... allowing sequential imaging of 3 ± 1 planes per
+    session (range 1–6
+  expected:
+  - quantity: mice
+    value: 6
+    tolerance: 0
+  - quantity: imaging locations
+    value: 12
+    tolerance: 0
+  - quantity: image planes
+    value: 105
+    tolerance: 0
+  - quantity: planes per location, mean
+    value: 8.8
+    tolerance: 2.6
+  - quantity: trials per plane, mean
+    value: 92
+    tolerance: 26
+  - quantity: percent correct per plane, mean
+    value: 73
+    tolerance: 9
+    unit: percent
+  - quantity: planes per session, mean
+    value: 3
+    tolerance: 1
+  criterion: Counts of mice, locations and planes are exact (tolerance 0, as they are counts of
+    the recordings). Means take the paper's stated spread as tolerance. Trials per plane and percent
+    correct are open as to which trials count; readings (a) the four analysed trial types (early
+    lick and no-response excluded); (b) all trials of the plane. The Methods give 74% +- 9% for
+    "Behavior performance during imaging", read as the same quantity. Reproduced when every value is
+    within tolerance under one reading.
+- id: trials-per-type
+  statement: Each imaged plane had on average 34 +- 13 CR, 36 +- 14 CL, 12 +- 5 ER and 10 +- 4 EL
+    trials.
+  source: Results, Mapping Activity Using Two-Photon Calcium Imaging, paragraph 3
+  quote: average number of trials per imaged plane ... CR ... 34 ± 13, CL ... 36 ± 14; ER ... 12 ± 5,
+    EL ... 10 ± 4
+  expected:
+  - quantity: CR trials per plane
+    value: 34
+    tolerance: 13
+  - quantity: CL trials per plane
+    value: 36
+    tolerance: 14
+  - quantity: ER trials per plane
+    value: 12
+    tolerance: 5
+  - quantity: EL trials per plane
+    value: 10
+    tolerance: 4
+  criterion: Mean over the 105 planes of the number of trials of each type (early-lick trials
+    excluded, convention T). Tolerances are the paper's stated spread. Reproduced when all four
+    are within tolerance.
+- id: neuron-counts
+  statement: 15,431 neurons were imaged across 6 mice, 8,837 in ALM and 6,594 in MM.
+  source: Results, Mapping Activity Using Two-Photon Calcium Imaging, paragraphs 2 and 3
+  quote: Our sample (15,431 neurons across 6 mice) is therefore biased toward the active population
+  expected:
+  - quantity: neurons
+    value: 15431
+    tolerance: 1543
+  - quantity: ALM neurons
+    value: 8837
+    tolerance: 884
+  - quantity: MM neurons
+    value: 6594
+    tolerance: 659
+  criterion: Segmented cells (ROIs) over all planes. Area by readings A1 and A2 (convention A).
+    Reproduced when the total and both area counts are within tolerance under one area reading;
+    the reading that matches is the one used by the claims that split ALM and MM.
+- id: fraction-selective-alm-mm
+  statement: A large fraction of neurons distinguished between trial types, 23% in MM (1,523 of
+    6,594) and 31% in ALM (2,754 of 8,837).
+  source: Results, Mapping Activity Using Two-Photon Calcium Imaging, paragraph 3
+  quote: the activity of a large proportion of neurons distinguished between trial types in MM (23%,
+    1,523/6,594) ... and ALM (31%, 2,754/8,837
+  depends_on:
+  - neuron-counts
+  expected:
+  - quantity: MM trial-type-selective neurons
+    value: 1523
+    tolerance: 152
+  - quantity: ALM trial-type-selective neurons
+    value: 2754
+    tolerance: 275
+  - quantity: MM fraction selective
+    value: 23
+    tolerance: 2.3
+    unit: percent
+  - quantity: ALM fraction selective
+    value: 31
+    tolerance: 3.1
+    unit: percent
+  criterion: The test is the Methods' 3-way ANOVA per time bin (convention M, p < 0.01 for any
+    factor). The paper does not say how per-bin results make a neuron selective over the trial,
+    nor over which window. Readings for the rule (R1) selective in at least one bin; (R2)
+    selective in at least two consecutive bins; and for the window (W1) the task period 4.6 s
+    before to 2.5 s after the go cue (the window of Figure 8F); (W2) the whole extracted window,
+    5 s before to 5 s after the go cue; (W3) trial start to the go cue plus 2.5 s. Each with time
+    bins T1 and T2 and area readings A1 and A2. Reproduced when both counts and both fractions are
+    within tolerance under one reading, and ALM has the higher fraction.
+- id: figs5-single-coefficient
+  statement: The selectivity of most neurons can be attributed to one of the three coefficients,
+    especially early in the trial, so most neurons mainly encode one behavioural variable at a
+    time.
+  source: Results, Analysis of Behavior-Related Activity, paragraph 2; Figure S5 (not read)
+  quote: The selectivity of most neurons can be attributed to one of the three coefficients,
+    especially during the early part of the trial (Figure S5)
+  criterion: Figure S5 was not read; written from the main text. Per time bin, among neurons
+    trial-type selective at that bin (convention M), the fraction purely selective (one factor)
+    and the fraction mixed. Reproduced when the purely selective fraction exceeds one half in
+    every bin from trial start to the go cue; partially reproduced when it does in most of them
+    (more than half of the bins) but not all. The fraction after the go cue is reported. This
+    measure is fixed here, as the text gives none.
+- id: fig4a-lick-direction-epochs
+  statement: Different neurons coded for lick direction in different epochs, some during the sample
+    and delay epochs before licking, some during the response epoch, and some after the mouse
+    stopped consuming water.
+  source: Results, Analysis of Behavior-Related Activity, paragraph 3; Figure 4A
+  quote: Some neurons were selective during the sample and delay epochs, long before onset of
+    licking ... Other neurons became selective during the response epoch ... Some neurons even
+    represented licking direction after the animal stopped consuming water
+  criterion: Pure lick-direction selectivity per bin (convention M). Reproduced when there are
+    neurons purely lick-direction selective in the delay epoch, and other neurons first
+    lick-direction selective after the go cue, and neurons lick-direction selective more than 2 s
+    after the go cue. The paper gives no count or time for "stopped consuming water"; the lick
+    times give the last lick of each trial, and lick-direction selectivity after the median last
+    lick is reported as the reading of it. Counts of each group are reported.
+- id: fig4b-object-location-memory
+  statement: Many object-location-selective neurons were selective during the sample epoch, and a
+    subset coded object location mainly in the delay epoch after the pole was removed, some up to
+    the end of the delay.
+  source: Results, Analysis of Behavior-Related Activity, paragraph 4; Figure 4B
+  quote: Many of these neurons were selective during the sample epoch when mice explored the object
+    ... However, a subset of neurons coded object location primarily during the delay epoch, after
+    the pole was removed ... Some of these neurons carried information about object location up to
+    the end of the delay epoch
+  criterion: Pure object-location selectivity per bin (convention M). Reproduced when (a) neurons
+    are object-location selective in the sample epoch; (b) some neurons have most of their
+    object-location-selective bins in the delay epoch; (c) some neurons are object-location
+    selective in the last 0.5 s before the go cue. Counts of each group are reported.
+- id: fig4c-outcome-after-lick
+  statement: Outcome-selective neurons typically became selective after the answer lick; some
+    preferred correct and others error trials, and some kept the outcome long after the trial
+    ended.
+  source: Results, Analysis of Behavior-Related Activity, paragraph 5; Figure 4C
+  quote: These neurons typically became selective after the answer lick. A subset of the
+    outcome-selective neurons responded preferentially during correct trials ... whereas others
+    responded strongly during error trials
+  criterion: Pure outcome selectivity per bin (convention M). Reproduced when most outcome-selective
+    neurons (more than half) have their first outcome-selective bin after the go cue, and both signs
+    of gamma occur among them. The latest outcome-selective bins in the extracted window (up to 5 s
+    after the go cue) are reported.
+- id: fig5-mixed-response-epoch
+  statement: Most neurons with mixed selectivity were seen during the response epoch; a subset
+    responded in only one trial type and a few switched the variable they coded during the trial.
+  source: Results, Analysis of Behavior-Related Activity, paragraph 6; Figure 5
+  quote: Most of these neurons with ‘‘mixed’’ selectivity were observed during the response epoch
+  criterion: Mixed selectivity per bin (convention M). Reproduced when more than half of the
+    neuron-bins of mixed selectivity fall after the go cue. Neurons purely selective for object
+    location early and for outcome or lick direction later are counted and reported.
+- id: fig6-object-location-mm
+  statement: During the sample and early delay epochs, object location was represented mainly in MM.
+  source: Results, Spatial Map of Behavior-Related Activity, paragraph 1; Figure 6B to 6D, 6H
+  quote: During the sample and the early part of the delay epoch, representation of object location
+    was prominent, mainly in MM
+  depends_on:
+  - neuron-counts
+  criterion: Fraction of neurons purely object-location selective per time bin, in ALM and in MM
+    (as Figure 6H and 6I), area by the reading that matched neuron-counts. Reproduced when the MM
+    fraction exceeds the ALM fraction in most bins (more than half) from trial start to 2.2 s
+    (the sample epoch and the first second of the delay; "early part" is not defined, and a
+    window ending 1.5 s, the time of Figure 6D, is also read).
+- id: fig6-lick-direction-deep-alm-first
+  statement: Neurons selective for lick direction appeared first in the deep layers of ALM, early
+    in the delay epoch.
+  source: Results, Spatial Map of Behavior-Related Activity, paragraph 1; Figure 6D, 6E and 6H
+  quote: Neurons selective for lick direction appeared first in the deep layers of ALM, early in the
+    delay epoch
+  depends_on:
+  - neuron-counts
+  criterion: Groups are ALM and MM, each split by depth (convention D, readings (D1) superficial
+    against deep at 350 um; (D2) the three bins of Figure 6, 100-250, 250-400 and 400-620 um, with
+    the deepest bin as deep). For each group, the fraction of neurons purely lick-direction selective
+    per bin (Figure 6H). The text defines no onset for Figure 6; readings (F1) onset as convention O
+    applied to the fraction; (F2) onset as convention O applied to mean |beta| (the measure used for
+    the onset in Figure 8D), each with baselines O1 and O2. Reproduced when, under each reading,
+    deep ALM has the earliest onset of all groups and that onset is in the delay epoch (1.2 to 4.2 s
+    after trial start).
+- id: fig6-lick-direction-spread
+  statement: Lick-direction selectivity, in number of neurons and strength, kept increasing and
+    spread across ALM layers and to a minor extent into MM, peaking after the go cue.
+  source: Results, Spatial Map of Behavior-Related Activity, paragraph 1; Figures 6F to 6I and S7
+    (not read)
+  quote: Lickdirection selectivity, including number of neurons and the strength of coding,
+    continued to increase and spread across ALM layers and to a minor extent into MM (Figure S7),
+    reaching a maximum after the go cue
+  depends_on:
+  - neuron-counts
+  criterion: Figure S7 was not read. Fraction of neurons purely lick-direction selective and mean
+    |beta| (non-significant set to 0) per bin, in ALM and MM, each by depth (convention D).
+    Reproduced when (a) in ALM both measures reach their maximum after the go cue; (b) the
+    superficial ALM fraction at its maximum is above its value in the first half of the delay;
+    (c) the MM fraction at its maximum is above its value in the delay epoch and below the ALM
+    maximum.
+- id: fig6-outcome-response-uniform
+  statement: Outcome-selective neurons were seen only during the response epoch, scattered roughly
+    uniformly through ALM and MM; mixed neurons were also seen mainly in the response epoch in both
+    areas.
+  source: Results, Spatial Map of Behavior-Related Activity, paragraph 2; Figure 6G to 6I
+  quote: Outcome-selective neurons, which were observed only during the response epoch, were
+    scattered approximately uniformly throughout ALM and MM
+  depends_on:
+  - neuron-counts
+  criterion: Fraction of neurons purely outcome selective per bin in ALM and in MM. The paper gives
+    no test; this measure is fixed here. Reproduced when (a) in both areas the largest fraction in
+    any bin before the go cue is below one third of the largest fraction after it; and (b) the
+    ALM and MM fractions averaged over the response epoch (go cue to 2.5 s after) differ by less
+    than a factor of 1.5. The same is reported for mixed neurons.
+- id: fig6h-preparatory-alm-object-mm
+  statement: Throughout the trial preparatory activity, as the fraction of lick-direction-selective
+    neurons or the average coding coefficient, was most pronounced in ALM, while object location
+    selectivity was mainly limited to MM.
+  source: Results, Spatial Map of Behavior-Related Activity, paragraph 2; Figure 6H, 6I, S6 and S8
+    (not read)
+  quote: Throughout the trial, preparatory activity, quantified either as fraction of lick
+    direction-selective neuron (Figures 6H and 6I) or as average coding coefficient (Figures S6 and
+    S8), was most pronounced in ALM, whereas object location related selectivity was mainly limited
+    to MM
+  depends_on:
+  - neuron-counts
+  criterion: Per bin, the fraction of purely lick-direction-selective neurons and mean |beta|
+    (non-significant set to 0, convention M), and the same for object location and |alpha|, in ALM
+    and MM. Reproduced when, in most bins (more than half) of the delay epoch, ALM is above MM on
+    both lick-direction measures, and in most bins from trial start to the go cue MM is above ALM
+    on both object-location measures; partially reproduced when only one of the two holds.
+- id: figs9-photoinhibition-alm-mm
+  statement: Optogenetic inactivation during the delay epoch affected lick direction more in ALM
+    than in MM.
+  source: Results, Spatial Map of Behavior-Related Activity, paragraph 2; Figure S9 (not read);
+    Discussion, paragraph 2
+  quote: Consistently, the effects of optogenetic inactivation during the delay epoch on lick
+    direction were greater in ALM compared to MM
+  criterion: Figure S9 and its methods were not read; the text gives only that VGAT-ChR2-EYFP mice
+    were used and, from Guo et al. (2014b), 1.5 mW average power. Measure, per site, the change in
+    the fraction of lick-right (contralateral) responses under photoinhibition against control,
+    on lick-right and lick-left trials. Reproduced when the bias is larger for ALM (2.5 mm
+    anterior, 1.5 mm lateral) than for MM (1.5 mm anterior, 1.0 mm lateral). The test, the sites
+    and the number of mice are not in the text read; no statistic can be named.
+- id: widefield-mm-to-alm
+  statement: In wide-field imaging, activity during the sample and early delay was most pronounced
+    in MM, and spread forward and laterally to ALM as the delay progressed; after the response it
+    rose across much of motor and somatosensory cortex.
+  source: Results, Mapping Neural Activity Using Wide-Field Imaging; Figure 2B to 2D
+  quote: During the sample and early parts of the delay epoch, activity was most pronounced in MM
+    ... As the delay epoch progressed, activity spread forward and lateral to ALM ... Behavior-related
+    activity therefore shifts from MM to ALM before the behavioral response
+  criterion: Per mouse (5), dF/F0 per pixel with F0 the mean of the six frames before trial start,
+    averaged over trials of each correct type (Methods, Wide field calcium imaging). Peak location
+    (pixel of maximum dF/F0, averaged over CR and CL) in the sample epoch and in the last second of
+    the delay, in stereotactic coordinates. Reproduced when the sample-epoch peak is nearer the MM
+    centre and the late-delay peak nearer the ALM centre, in the mean over mice and in at least 3 of
+    5 mice. The paper's measure is the image itself; this measure is fixed here.
+- id: widefield-contralateral-bilateral
+  statement: Early wide-field activity in MM was contralateral to the whiskers touching the object,
+    and the later ALM activity was in both hemispheres.
+  source: Results, Mapping Neural Activity Using Wide-Field Imaging; Figure S1 (not read)
+  quote: contralateral to the whiskers touching the object (Figure S1) ... across both ALM hemispheres
+    (Figure S1)
+  criterion: Figure S1 was not read, and the main text describes a window over the left frontal
+    cortex only; the bilateral imaging behind Figure S1 is not described in the text read. Reproduced
+    when imaging of both hemispheres exists and MM activity in the sample epoch is larger in the
+    hemisphere contralateral to the whiskers, and ALM activity at the end of the delay is present in
+    both. Otherwise not testable from the text read.
+- id: figs4-peak-shift
+  statement: In two-photon imaging, the peak of activity shifted from MM to ALM over the delay.
+  source: Results, Mapping Activity Using Two-Photon Calcium Imaging, paragraph 3; Figure S4 (not
+    read)
+  quote: the peak of activity shifted from MM to ALM over the course of the delay epoch (Figure S4)
+  depends_on:
+  - neuron-counts
+  criterion: Figure S4 was not read. Mean dF/F over all neurons and trials of the four types, per
+    bin, in ALM and in MM; peak time of each. Reproduced when the MM mean peaks earlier than the
+    ALM mean and the ALM mean is above its sample-epoch level at the end of the delay. The measure
+    is fixed here.
+- id: fig8c-pt-deep-only
+  statement: IT neurons were found in both superficial and deep layers, PT neurons only in deep
+    layers; 719 PT and 2,631 IT neurons were imaged in three mice.
+  source: Results, Projection-Specific Coding, paragraph 1; Figure 8C
+  quote: In three mice, we combined retrograde labeling of pyramidal tract (PT) (n = 719) and
+    intratelencephalic (IT) (n = 2,631) neurons ... IT neurons were found in both superficial and deep
+    layers, whereas PT neurons were exclusively in deep layers
+  expected:
+  - quantity: PT neurons
+    value: 719
+    tolerance: 72
+  - quantity: IT neurons
+    value: 2631
+    tolerance: 263
+  criterion: Labels as the dataset gives them. Reproduced when both counts are within tolerance, no
+    PT neuron is in a plane shallower than 350 um, and IT neurons occur in both depth groups
+    (convention D).
+- id: fig8d-alm-deep-lick-direction
+  statement: In ALM the strongest lick direction selectivity was in the deep layers, where PT and IT
+    neurons were intermingled.
+  source: Results, Projection-Specific Coding, paragraph 1; Figures 8D and S10 (not read)
+  quote: In ALM, the strongest lick direction selectivity was observed in the deep layers (Figures 8D
+    and S10), where PT and IT neurons were intermingled
+  depends_on:
+  - neuron-counts
+  criterion: Mean |beta| over neurons (non-significant set to 0) per bin, ALM deep against ALM
+    superficial (convention D), with bootstrap SD (convention B). Figure 8D groups only the three
+    labelled mice; readings (a) those three mice; (b) all six. Reproduced when the deep maximum over
+    the trial exceeds the superficial maximum, and deep exceeds superficial in most bins (more than
+    half) of the delay epoch.
+- id: fig8d-pt-contra-bias
+  statement: During the delay epoch, ALM PT neurons showed a bias toward contralateral (lick right)
+    selectivity.
+  source: Results, Projection-Specific Coding, paragraphs 1 and 2; Figure 8D
+  quote: A contra bias during the delay epoch was ... observed in PT neurons (Figure 8D), consistent
+    with previous electrophysiological recordings
+  depends_on:
+  - fig8c-pt-deep-only
+  criterion: Mean beta (signed, non-significant set to 0) of ALM PT neurons per bin over the delay
+    epoch, with bootstrap SD (convention B); contra is lick right (beta > 0, convention M).
+    Reproduced when the mean over the delay epoch is above zero by more than 2 bootstrap SD. The
+    paper reports no test; the 2 SD bound is fixed here from the shading Figure 8D shows.
+- id: fig8d-pt-earlier-than-it
+  statement: In ALM, lick direction selectivity (|beta|) was stronger and earlier in PT than in IT
+    neurons, with an onset difference of 1.4 +- 0.6 s (p < 0.01, bootstrap).
+  source: Results, Projection-Specific Coding, paragraph 2; Figure 8D
+  quote: The magnitude of lick direction selectivity (jbj) appeared stronger and earlier in PT than
+    in IT neurons (delta onset time; time when selectivity rose to >6 SD above baseline = 1.4 ± 0.6 s;
+    p < 0.01, bootstrap
+  statistics:
+  - about: onset of mean |beta|, ALM PT against ALM IT
+    test: bootstrap
+    p: 0.01
+    p_relation: "<"
+    n: 719 PT and 2,631 IT neurons from 3 mice (all areas)
+  depends_on:
+  - fig8c-pt-deep-only
+  expected:
+    quantity: IT onset minus PT onset of mean |beta|
+    value: 1.4
+    tolerance: 0.6
+    unit: s
+  criterion: Mean |beta| (non-significant set to 0) over ALM PT and over ALM IT neurons per bin;
+    onset by convention O (baselines O1 and O2). The IT group is open, readings (I1) deep ALM IT,
+    the neurons intermingled with PT; (I2) all ALM IT. The bootstrap is open, readings (H1)
+    hierarchical over animals, planes and cells (convention B, as for Figure 8D); (H2) over cells.
+    The +- is read as the bootstrap SD of the difference, and p as the fraction of resamples in which
+    the PT onset is not earlier. Reproduced when, under one combination of readings, the difference
+    is within tolerance, p < 0.01, and the PT maximum of mean |beta| exceeds the IT maximum.
+- id: ephys-pt-it-onset-not-detected
+  statement: The difference in onset of lick direction selectivity between PT and IT neurons was not
+    detected in an electrophysiology dataset recorded under similar conditions (45 PT and 27 IT
+    cells, Li et al., 2015).
+  source: Results, Projection-Specific Coding, paragraph 2; Discussion, paragraph 8
+  quote: However, this difference in lick direction selectivity onset was not detected in an
+    electrophysiology dataset recorded under similar conditions (Li et al., 2015)
+  data: with_inputs
+  criterion: The data are those of Li et al. (2015, Nature 519, 51-56), tagged PT and IT units in
+    ALM; the paper does not say where they are deposited. A claim of absence with no test named in
+    the text; the test of fig8d-pt-earlier-than-it (onset of mean |beta| by convention O, bootstrap
+    over units, p < 0.01) is applied to it. Reproduced when that test does not find PT earlier at
+    p < 0.01; the onset difference is reported either way.
+- id: fig8d-mm-object-location
+  statement: MM neurons showed strong object location selectivity in superficial and deep layers and
+    in PT and IT cells, PT cells particularly in the early delay; neither PT nor IT neurons in MM
+    showed prominent lick direction selectivity before licking.
+  source: Results, Projection-Specific Coding, paragraph 3; Figure 8D
+  quote: In contrast, MM neurons displayed strong object location selectivity in both superficial and
+    deep layers, and in both PT and IT cells. PT neurons in MM also displayed strong object location
+    selectivity particularly during the early delay period ... Neither PT nor IT neurons in MM
+    displayed prominent lick direction selectivity before licking movement
+  depends_on:
+  - fig8c-pt-deep-only
+  criterion: Mean |alpha| and mean |beta| (non-significant set to 0) per bin for the Figure 8D
+    groups of MM (deep PT, deep IT, deep other, superficial IT, superficial other) and of ALM, with
+    bootstrap SD (convention B). Reproduced when (a) every MM group has a maximum of mean |alpha| in
+    the sample or early delay (trial start to 2.2 s) larger than the ALM deep IT group's; (b) MM PT
+    mean |alpha| over the first second of the delay is the largest of the MM groups; (c) before the
+    go cue, the MM PT and MM IT maxima of mean |beta| are below half the ALM deep maximum. Partially
+    reproduced when (a) holds and (b) or (c) does not. The thresholds are fixed here; the paper
+    gives none.
+- id: fig8d-mm-posterior-preferring
+  statement: MM neurons were more active in posterior trials, when the pole was within reach of the
+    whiskers, than in anterior trials.
+  source: Discussion, paragraph 4; Figure 8D
+  quote: Neurons were more active in posterior trials, when the pole was within reach of the
+    whiskers, than in the anterior location, when the pole was out of reach (Figure 8D
+  criterion: Mean alpha (signed, non-significant set to 0) of MM neurons per bin over the sample
+    epoch, with bootstrap SD (convention B); alpha > 0 is posterior preferring. Reproduced when the
+    mean over the sample epoch is above zero by more than 2 bootstrap SD (bound fixed here).
+- id: fig8d-error-outnumber-correct
+  statement: Overall, neurons preferring error trials outnumbered those preferring correct trials.
+  source: Discussion, paragraph 6; Figure 8D
+  quote: Overall, neurons preferring error trials outnumbered neurons preferring correct trials
+    (Figure 8D
+  criterion: Among neurons purely outcome selective at any bin from the go cue to 2.5 s after it,
+    those whose gamma at their most significant bin is negative (error preferring) against
+    positive. Reproduced when error-preferring neurons are more numerous, by a two-sided binomial
+    test at p < 0.05 (test fixed here); the mean signed gamma per bin, which Figure 8D shows, is
+    reported as well.
+- id: fig8ef-area-explains-variance
+  statement: Coding is mainly determined by cortical location; cortical area (ALM against MM) and
+    cell depth explain most of the variance of selectivity, more than projection type.
+  source: Results, Projection-Specific Coding, paragraph 4; Figure 8E and 8F
+  quote: Our results suggest that coding of PT and IT neurons is primarily determined by their
+    location in the motor cortex ... Cortical area ... and cell depth ... explained the majority of
+    response variability (Figures 8E and 8F
+  depends_on:
+  - fig8c-pt-deep-only
+  criterion: Methods, variance of neuronal selectivity. Groupings area (ALM, MM; k = 2), depth (z <
+    350 against z >= 350 um; k = 2) and projection type (PT, IT, other; k = 3). For each grouping and
+    coefficient (alpha, beta, gamma, |alpha|, |beta|, |gamma|, non-significant set to 0), SST(t) and
+    SSB(t) over neurons; variance explained(t) = SSB/SST (Figure 8E); total variance explained = sum
+    over t and the three absolute coefficients of SSB over the same sum of SST, t from 4.6 s before
+    to 2.5 s after the go cue (Figure 8F). The neurons are open, readings (N1) the three labelled
+    mice for all groupings; (N2) all six mice for area and depth, the three for projection type.
+    Reproduced when total variance explained by area and by depth each exceed that by projection
+    type, and area is the largest of the three; partially reproduced when area and depth together
+    exceed projection type but area is not the largest. Bootstrap SD as convention B.
+- id: ephys-selective-counts
+  statement: Of 567 single units recorded with silicon probes in left ALM and MM of 3 mice, 393
+    distinguished trial types, 115 in the sample, 182 in the delay and 309 in the response epoch.
+  source: Results, Comparison with Extracellular Electrophysiology, paragraph 2; Methods,
+    Electrophysiology data analysis
+  quote: We recorded single units (n = 567, 3 mice) in the left ALM and MM under identical behavioral
+    conditions as the imaging experiments. The spikes rates of 393 neurons distinguished trial types
+    during either sample (n = 115), delay (n = 182), or response epoch (n = 309
+  data: elsewhere
+  where: CRCNS doi:10.6080/K0S180F9
+  expected:
+  - quantity: single units
+    value: 567
+    tolerance: 0
+  - quantity: units selective in any epoch
+    value: 393
+    tolerance: 39
+  - quantity: units selective in the sample epoch
+    value: 115
+    tolerance: 12
+  - quantity: units selective in the delay epoch
+    value: 182
+    tolerance: 18
+  - quantity: units selective in the response epoch
+    value: 309
+    tolerance: 31
+  criterion: Units 297 in ALM (13 sessions) and 270 in MM (11 sessions) (Methods); the unit count
+    is exact. The 3-way ANOVA of convention M on spike counts in 400 ms windows in 100 ms steps.
+    How windows make an epoch selective is open, readings (R1) any window wholly inside the epoch
+    with p < 0.01 for any factor; (R2) any window whose centre is inside the epoch; (R3) the ANOVA on
+    the spike count of the whole epoch. The response epoch length is not given; readings 1.2 s and
+    2.5 s after the go cue (the end of the Figure 8F window). Whether the fast-spiking and
+    intermediate units are included is open; readings all 567, and the 486 putative pyramidal
+    units. Reproduced when all values are within tolerance under one reading.
+- id: fig7d-ephys-area-distribution
+  statement: In the silicon probe recordings, object-location-selective neurons were most frequent in
+    MM, lick-direction-selective neurons mainly in ALM, and outcome and mixed neurons numerous in
+    both; most object location, lick direction and outcome selectivity fell in the sample,
+    delay/response and response epochs.
+  source: Results, Comparison with Extracellular Electrophysiology, paragraph 2; Figure 7D
+  quote: The majority of object location-, lick direction-, and outcome-selective neurons were
+    observed during sample, delay/response, and response epochs, respectively (Figure 7D). Neurons
+    selective for object location were observed most frequently in MM; neurons selective for lick
+    direction were mainly observed in ALM; neurons selective for outcome and mixed neurons were
+    numerous in both ALM and MM
+  data: elsewhere
+  where: CRCNS doi:10.6080/K0S180F9
+  depends_on:
+  - ephys-selective-counts
+  criterion: Fraction of units purely selective for each factor, and mixed, per 400 ms window
+    (100 ms steps), in ALM and MM (Figure 7D). Reproduced when (a) the object-location fraction
+    peaks in the sample epoch and the time-averaged fraction is higher in MM than ALM; (b) the
+    lick-direction fraction averaged over delay and response is higher in ALM than MM, and its peak
+    is in the delay or response epoch; (c) the outcome fraction peaks in the response epoch and is
+    above 5% in both areas there; (d) the mixed fraction is above 5% in both areas in the response
+    epoch. The 5% level (above the 1% expected by chance at p < 0.01) is fixed here.
+- id: fig1c-whisking-similar
+  statement: Whisker movements were similar across the four trial types, so neurons coding whisker
+    movement were likely classed as non-selective.
+  source: Discussion, paragraph 5; Figure 1C
+  quote: In our experiments, whisker movements were similar across trial types (Figure 1) and neurons
+    encoding whisker movements were likely classified as ‘‘non-selective.’’
+  criterion: A claim of absence for which the paper names no test. Whisker angle from the 1 kHz
+    video, whisking amplitude per trial averaged over the sample epoch, compared across the four
+    trial types by a one-way ANOVA per session at p < 0.05 (test fixed here). Reproduced when the
+    test finds no difference in most sessions (more than half); the effect size is reported. Not
+    testable if the dataset holds no whisker tracking.
