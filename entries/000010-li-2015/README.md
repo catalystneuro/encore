@@ -22,7 +22,7 @@ photoinhibition or photoactivation data and no histology.
 | PT and IT neurons show both activity types | Reproduced |
 | PT neurons mostly contra-preferring, IT not | Reproduced |
 | Contralateral selectivity of PT neurons from 570 ms before the go cue | Not reproduced |
-| Imaging counts of task-related and selective cells | Partially reproduced (change to not reproduced proposed) |
+| Imaging counts of task-related and selective cells | Not reproduced |
 | Contra- and ipsi-preferring cells spatially intermingled | Not reproduced |
 | Imaged PT cells mostly contra-preferring, IT not | Blocked: metadata insufficient |
 | Reaction time | Blocked: methods underspecified |

@@ -1,5 +1,5 @@
 # Attempt 000010-li-2015-01: the author's record (docs/protocol.md, Author, step 5), revised after the
-# answers in questions/000010.yaml and after the first and second verification rounds.
+# answers in questions/000010.yaml and after the first, second and third verification rounds.
 schema_version: 2
 id: 000010-li-2015-01
 dataset:
@@ -291,17 +291,7 @@ outcomes:
   - Trials with tagging light are found from the laser traces; readings (t1) and (t2) are both run
     and give the same outcome.
 - claim: imaging-selectivity-counts
-  outcome: partially_reproduced
-  proposed:
-    outcome: not_reproduced
-    reason: The criterion sets only a reproduced condition, all values within tolerance under one
-      reading, and no reading meets it (0 of 16). The selective count is within tolerance only in the
-      4 readings with span (b) and the mean over epochs, where the task-related count is above it. It
-      is measured and misses under every reading, unlike the intermediate units of units-classification,
-      a class the dandiset lacks; fig2d-preparatory-perimovement, with the same kind of criterion and 2
-      of 3 counts within tolerance in three readings, is not reproduced. The paper's 1,575 lying between
-      the counts of two readings does not put it within tolerance under one. Both verification rounds
-      gave not_reproduced.
+  outcome: not_reproduced
   notebook: reproduce_li_2015.ipynb
   output: claim:imaging-selectivity-counts
   measured:
@@ -310,8 +300,13 @@ outcomes:
   - 1315
   - 0.579
   - 59
-  notes: The outcome is kept as recorded before the second verification round, and a change to
-    not_reproduced is proposed (see proposed). The dandiset holds 4,706 included cells in 59 planes, the paper's numbers. Over 16 readings,
+  notes: Changed from partially reproduced after verification round 3 agreed. The criterion sets only a
+    reproduced condition, all values within tolerance under one reading, and no reading meets it (0 of
+    16); four values are within tolerance in 12 readings, and the selective count only in the 4 readings
+    with span (b) and the mean over epochs, where the task-related count is above it. The selective count
+    is measured and misses under every reading, unlike the intermediate units of units-classification, a
+    class the dandiset lacks. The measured values are from the reading (1.3 s response epoch, span a,
+    mean over epochs, correct trials). The dandiset holds 4,706 included cells in 59 planes, the paper's numbers. Over 16 readings,
     the task-related count is 2,551 to 2,772 with span (a), within 2,740 +/- 274, and 3,104 to 3,134 with
     span (b), above it; the contra-preferring fraction is 0.547 to 0.590, within tolerance in 15 readings.
     The selective count is 1,315 to 1,417 where the task-related count fits (paper 1,575, lower limit
@@ -324,7 +319,7 @@ outcomes:
     below 0 in 145 of 305,349 included ROI-trials, below a tenth of the ROI's median F in 622); leaving
     them out, a check chosen here and not a reading, gives 1,416 (cut at 0) or 1,419 (cut at 0.1, then
     all five values within tolerance) in the closest reading, so the selective count sits at the edge
-    of the tolerance and the outcome is kept as partially reproduced. Early licks cannot be left out, as
+    of the tolerance; the cut is not a reading and does not decide the outcome. Early licks cannot be left out, as
     the imaging files hold only sample, delay and go events and flag no early lick. The neuropil-corrected
     F of 3,403 included ROIs reaches 0 in at least one frame; the longest such run is one frame in 2,034
     of them, two to seven frames in 1,199 and eight frames (0.5 s) or more in 170.
@@ -881,6 +876,33 @@ verifications:
     reason: 'Agrees with the stated outcome; for a blocked claim, the verifier found no part that
       the record misstates.'
     response: 'No change.'
+- date: '2026-10-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: Round 3. Only the proposed change of outcome for imaging-selectivity-counts and the analysis
+    behind it in the full executed notebook of the author-revise-2 run (commit 437ac3b9), cells 60 to 63,
+    with the claims file and the attempt record. Nothing else was reviewed. Report in
+    transcripts/000010/verifier-3-report.md.
+  results:
+  - claim: imaging-selectivity-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: Cell 60 runs all 16 readings with alm.classify_plane, which applies the test as the criterion
+      states it, and prints "Readings with every value within tolerance 0 of 16"; the counts are the
+      same as in rounds 1 and 2, and the tally in cell 62 matches cell 60 row by row (12 readings with
+      four values within tolerance, the selective count within tolerance in 4, where the task-related
+      count is above tolerance at 3,104 and 3,134). The only combination with all values within
+      tolerance is the F0 cut at 0.1 (1,419), a sensitivity check the author chose and not a reading, and
+      a cut at 0 gives 1,416, outside again. The claims file gives only one condition, sets no partial
+      condition, and the selective count is measured and misses in every reading, so partially_reproduced
+      has no basis; the units-classification precedent does not apply, and the proposal treats this
+      claim as fig2d-preparatory-perimovement is treated. Not bearing on the outcome, the record does not
+      say which reading `measured` reports (it is 1.3 s, a, mean, correct), cell 61 now resolves the
+      round-2 point on how long the dips at or below 0 last, and early-lick trials still cannot be
+      excluded.
+    response: Outcome changed to not_reproduced and the proposal removed. The notes now say which reading
+      the measured values come from. Cell 63, the summary and the README updated.
 findings:
 - kind: data_missing
   statement: The dandiset holds none of the photoinhibition (Figure 1) or photoactivation (Figure 5, Extended
