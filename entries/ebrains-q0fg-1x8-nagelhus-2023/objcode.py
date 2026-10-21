@@ -16,6 +16,12 @@ Where the parameters come from (claims file claims/ebrains-q0fg-1x8/10.1016-j.ne
 - Single-cell rate maps: 2.5 cm bins, Gaussian smoothing with SD 2 bins, epochs with speed above
   2.5 cm/s (Methods, Firing rate maps). Firing fields: contiguous bins above 3 x the median
   absolute deviation of all bins, at least 225 cm2, rate of at least 1 Hz (Methods).
+- Every rate map (opening comment, "Smoothing and unvisited bins", from the Methods and
+  calculateRateMap.m; called rm b there): the rate per bin (spikes over time), 0 in unvisited
+  bins, then smoothed with the mirrored map padding the edges (smoothData.m); blanked maps have
+  the unvisited bins set to NaN after smoothing. The time per position sample is the gap to the
+  next sample, clipped at 0.1 s (maxGap); a spike is counted at the last position sample at or
+  before it (histc).
 - Template matching: 3 cm bins over 0 to 150 cm (50 x 50), smoothing 2 bins, unvisited bins not
   blanked; Gaussian templates at 9 offsets x 8 directions (0 offset once) and 8 widths, 500
   shuffled locations per width drawn uniformly in the arena and used in both trials; 99th
@@ -27,21 +33,19 @@ Where the parameters come from (claims file claims/ebrains-q0fg-1x8/10.1016-j.ne
   equalDistanceEdges.m, calculateDecodingAccuracy.m).
 
 Readings the claims file leaves open, run side by side (see the questions file
-questions/ebrains-q0fg-1x8.yaml):
+questions/ebrains-q0fg-1x8.yaml, and each claim's criterion):
 
-- `rm`: how a rate map is smoothed. "a": spike-count and time maps smoothed separately, then
-  divided; "b": spikes over time per bin, then the rate map smoothed (unvisited bins left out of
-  the smoothing where the map is blanked, set to zero where it is not).
 - `speed`: for the decoders, "a" rate maps and occupancy from epochs above 2.5 cm/s, "b" no speed
   filter (claims file, distance decoder).
 - `field`: "a" a field's peak is at least 1 Hz; "b" every bin of a field is at least 1 Hz.
 
 Standard choices for details that cannot change a result (stated here once): speed from the
-gradient of position over time; each tracking sample stands for the median sampling interval of
-its trial; a spike takes the position of the nearest valid tracking sample and is dropped when
-that sample is more than 0.2 s away (tracking gaps); Gaussian smoothing truncated at 4 SD with
-edges normalised by the smoothed arena mask; rates floored at 1e-10 Hz inside the Poisson
-log-likelihood (in place of log 0).
+gradient of position over time; tracking samples without a position are dropped with their time,
+and a spike whose position sample has none gets no position; the last sample of a trial stands for
+the median sampling interval; the Gaussian kernel is truncated at 4 SD (smoothData.m's width is
+not given); rates floored at 1e-10 Hz inside the Poisson log-likelihood (in place of log 0);
+tracking resampled to 25 Hz for the behavioural decoders drops grid points more than 0.2 s from a
+valid sample.
 """
 
 from __future__ import annotations
@@ -63,7 +67,9 @@ DATASET_VERSION = "v1"
 BASE = f"https://data-proxy.ebrains.eu/api/v1/public/datasets/{KG_ID}"
 ARENA = 150.0
 SPEED_MIN = 2.5          # cm/s, Methods, Firing rate maps
-MAX_SPIKE_GAP = 0.2      # s, standard choice (see docstring)
+MAX_GAP = 0.1            # s, largest time per position sample (calculateRateMap.m, maxGap)
+MAX_INTERP_GAP = 0.2     # s, standard choice (see docstring)
+LUT_STEP = 0.01          # s, grid of the spike-to-sample lookup (speed only; the result is exact)
 LAMBDA_FLOOR = 1e-10     # Hz, standard choice
 
 SINGLE_FILES = {"CA1": "singlecellanalyses_CA1", "CA3": "singlecellanalyses_CA3",
@@ -110,9 +116,18 @@ class Trial:
         self.n_samples_raw = len(t)
         ok = np.isfinite(x) & np.isfinite(y) & np.isfinite(t)
         self.n_nan = int((~ok).sum())
-        self.t, self.x, self.y = t[ok], x[ok], y[ok]
+        # Time per position sample: the gap to the next sample, clipped at MAX_GAP (calculateRateMap.m,
+        # maxGap), over all samples; samples without a position then drop out with their time.
+        gap = np.diff(t)
+        gap = np.append(gap, np.nanmedian(gap) if len(gap) else 0.0)
+        gap = np.where(np.isfinite(gap), np.clip(gap, 0.0, MAX_GAP), 0.0)
+        self.t, self.x, self.y, self.sdt = t[ok], x[ok], y[ok], gap[ok]
         self.t0, self.t1 = float(t[0]), float(t[-1])
         self.dt = float(np.median(np.diff(t)))
+        # raw samples and the index of each among the valid ones (-1 without a position), for
+        # assigning spikes to the last sample at or before them (histc in calculateRateMap.m)
+        self._t_raw = np.where(np.isfinite(t), t, -np.inf)
+        self._raw2valid = np.where(ok, np.cumsum(ok) - 1, -1)
         if len(self.t) > 2:
             vx = np.gradient(self.x, self.t)
             vy = np.gradient(self.y, self.t)
@@ -131,15 +146,28 @@ class Trial:
             self.spike_si.append(self._sample_index(s))
 
     def _sample_index(self, s):
-        """Index of the nearest valid tracking sample for each spike (-1 when too far)."""
+        """Index of the valid tracking sample each spike is counted at: the last sample at or before
+        the spike (histc), -1 when that sample has no position or the spike lies outside the
+        tracking (before the first sample, or after the last)."""
         if len(self.t) == 0:
             return np.full(len(s), -1)
-        j = np.clip(np.searchsorted(self.t, s), 1, len(self.t) - 1)
-        left = self.t[j - 1]
-        right = self.t[j]
-        j = np.where(np.abs(s - left) <= np.abs(right - s), j - 1, j)
-        far = np.abs(self.t[j] - s) > MAX_SPIKE_GAP
-        return np.where(far, -1, j)
+        tr = self._t_raw
+        if getattr(self, "_lut", None) is None:
+            # last sample at or before each point of a 10 ms grid, to start the search from
+            start = tr[0]
+            grid = start + LUT_STEP * np.arange(int(np.ceil((tr[-1] - start) / LUT_STEP)) + 2)
+            self._lut = (start, (np.searchsorted(tr, grid, side="right") - 1).astype(np.int64))
+        start, lut = self._lut
+        c = np.clip(np.floor((s - start) / LUT_STEP).astype(np.int64), 0, len(lut) - 1)
+        j = lut[c]
+        while True:
+            nxt = j + 1 < len(tr)
+            nxt[nxt] = tr[j[nxt] + 1] <= s[nxt]
+            if not nxt.any():
+                break
+            j = j + nxt
+        out = np.where((s >= start) & (s <= tr[-1]), self._raw2valid[j], -1)
+        return out
 
     @property
     def n_units(self):
@@ -166,6 +194,12 @@ class Trial:
         remap = np.full(len(self.t), -1)
         remap[idx] = np.arange(len(idx))
         new.t, new.x, new.y, new.speed = self.t[m], self.x[m], self.y[m], self.speed[m]
+        new.sdt = self.sdt[m]
+        mr = (self._t_raw >= a) & (self._t_raw < b)
+        r2v = self._raw2valid[mr]
+        new._t_raw = self._t_raw[mr]
+        new._raw2valid = np.where(r2v >= 0, remap[np.maximum(r2v, 0)], -1)
+        new._lut = None
         new.t0, new.t1 = float(a), float(b)
         new.spikes, new.spike_si = [], []
         for s, si in zip(self.spikes, self.spike_si):
@@ -273,7 +307,7 @@ def raw_maps(trial: Trial, mask, bin_cm, units=None):
     nb = nbins(bin_cm)
     B = nb * nb
     bidx = bin_index(trial.x, trial.y, bin_cm)
-    occ = np.bincount(bidx[mask], minlength=B) * trial.dt
+    occ = np.bincount(bidx[mask], weights=trial.sdt[mask], minlength=B)
     units = range(trial.n_units) if units is None else units
     rows, cols = [], []
     for k, u in enumerate(units):
@@ -289,36 +323,29 @@ def raw_maps(trial: Trial, mask, bin_cm, units=None):
 
 
 def _gauss(a, sigma=2.0):
-    """Gaussian smoothing over the last two axes (maps of shape (..., nb, nb))."""
+    """Gaussian smoothing over the last two axes (maps of shape (..., nb, nb)), edges padded with
+    the mirrored map (smoothData.m), truncated at 4 SD."""
     sig = (0,) * (a.ndim - 2) + (sigma, sigma)
-    return ndimage.gaussian_filter(a, sig, mode="constant", cval=0.0, truncate=4.0)
+    return ndimage.gaussian_filter(a, sig, mode="reflect", truncate=4.0)
 
 
-def rate_maps(occ, spk, rm="a", blank=True, sigma=2.0):
-    """Smoothed rate maps (U, B) from time (B,) and spike (U, B) maps under rate-map reading `rm`.
-    Blanked maps have NaN where the animal never was."""
+def _raw_rate(O, S):
+    """Spikes over time per bin, 0 where the animal never was (countRaw ./ (timeRaw + eps))."""
+    visited = O > 0
+    with np.errstate(invalid="ignore", divide="ignore"):
+        return np.where(visited, S / np.where(visited, O, 1.0), 0.0), visited
+
+
+def rate_maps(occ, spk, rm="b", blank=True, sigma=2.0):
+    """Smoothed rate maps (U, B) from time (B,) and spike (U, B) maps, by the claims file's method
+    ("Smoothing and unvisited bins", rm b; calculateRateMap.m): the rate per bin, unvisited bins 0,
+    smoothed; blanked maps have NaN where the animal never was."""
+    if rm != "b":
+        raise ValueError(f"rate-map reading {rm!r}: only b, the paper's method, is defined")
     B = occ.shape[-1]
     nb = int(round(np.sqrt(B)))
-    O = occ.reshape(nb, nb)
-    S = spk.reshape(-1, nb, nb)
-    visited = O > 0
-    edge = _gauss(np.ones((nb, nb)), sigma)
-    if rm == "a":
-        num = _gauss(S, sigma)
-        den = _gauss(O, sigma)
-        with np.errstate(invalid="ignore", divide="ignore"):
-            r = np.where(den > 1e-12, num / np.maximum(den, 1e-300), 0.0)
-    elif rm == "b":
-        with np.errstate(invalid="ignore", divide="ignore"):
-            raw = np.where(visited, S / np.where(visited, O, 1.0), 0.0)
-        if blank:
-            w = _gauss(visited.astype(float), sigma)
-            with np.errstate(invalid="ignore", divide="ignore"):
-                r = np.where(w > 1e-12, _gauss(raw, sigma) / np.maximum(w, 1e-300), 0.0)
-        else:
-            r = _gauss(raw, sigma) / edge
-    else:
-        raise ValueError(rm)
+    raw, visited = _raw_rate(occ.reshape(nb, nb), spk.reshape(-1, nb, nb))
+    r = _gauss(raw, sigma)
     if blank:
         r = np.where(visited[None], r, np.nan)
     return r.reshape(-1, B)
@@ -330,7 +357,7 @@ def mean_rate(trial: Trial, u: int, speed_filter: bool, mask=None):
     si = trial.spike_si[u]
     if speed_filter or mask is not None:
         n = np.sum(m[si[si >= 0]])
-        T = m.sum() * trial.dt
+        T = trial.sdt[m].sum()
     else:
         n = len(trial.spikes[u])
         T = trial.duration
@@ -353,11 +380,15 @@ def rate_overlap(r1, r2):
     return lo / hi if hi > 0 else np.nan
 
 
-def spatial_information(rmap, occ, rate):
-    """Skaggs information in bits per spike (Methods, Spatial information content)."""
+def spatial_information(rmap, occ, rate, duration=None):
+    """Skaggs information in bits per spike (Methods, Spatial information content). Pi is the time
+    in bin i over the summed time (duration None, lambda reading si-a) or over the trial's duration
+    (si-b; then `rate` is ignored and lambda is sum Pi li, the claims file's fig7 criterion)."""
     ok = np.isfinite(rmap) & (occ > 0)
-    P = occ[ok] / occ[ok].sum()
+    P = occ[ok] / (occ[ok].sum() if duration is None else duration)
     l = rmap[ok]
+    if duration is not None:
+        rate = float(np.sum(P * l))
     if rate <= 0:
         return np.nan
     with np.errstate(divide="ignore", invalid="ignore"):
@@ -588,7 +619,7 @@ def _logmarg(C, logl, lsum, prior):
     return (np.log(np.exp(LL - m).sum(1)) + m[:, 0]).astype(float)
 
 
-def decode_pair(partsA, partsB, mode="distance", obj=None, units=None, rm="a", dt=1.0,
+def decode_pair(partsA, partsB, mode="distance", obj=None, units=None, rm="b", dt=1.0,
                 edges_fixed=None, uniform=False, bin_cm=3.0, angle_start=0.0, sample_filter=None,
                 keep_bins=None, return_samples=False, cache=None, chunk=20000):
     """Run the two-trial decoder over both iterations. `partsA`/`partsB` are lists of Parts (one
@@ -753,7 +784,8 @@ class PairContext:
                 e = equal_sample_edges(d)
                 self.rings[ti, it] = assign(d, e)
                 self.masks[ti, it] = masks_from_edges(dbins, e)
-                self.occ[ti, it] = np.bincount(self.bidx[ti][p.train_mask], minlength=self.B) * self.trials[ti].dt
+                self.occ[ti, it] = np.bincount(self.bidx[ti][p.train_mask], weights=self.trials[ti].sdt[p.train_mask],
+                                                minlength=self.B)
 
 
 def single_cell_tuning(ctx: PairContext, u_pair, rm, shifts=((0.0, 0.0),)):
@@ -929,7 +961,7 @@ def resample_25hz(trial: Trial, hz=25.0):
     g = np.arange(trial.t[0], trial.t[-1], 1 / hz)
     j = np.clip(np.searchsorted(trial.t, g), 1, len(trial.t) - 1)
     near = np.minimum(np.abs(g - trial.t[j - 1]), np.abs(trial.t[j] - g))
-    keep = near <= MAX_SPIKE_GAP
+    keep = near <= MAX_INTERP_GAP
     return g[keep], np.interp(g[keep], trial.t, trial.x), np.interp(g[keep], trial.t, trial.y)
 
 
@@ -1007,9 +1039,9 @@ class SecMaps:
         valid = sec < n
         fast = valid & (trial.speed > SPEED_MIN)
         bidx = bin_index(trial.x, trial.y, bin_cm)
-        self.A = sparse.csr_matrix((np.full(fast.sum(), trial.dt), (sec[fast], bidx[fast])), shape=(n, B))
-        self.t_fast = np.bincount(sec[fast], minlength=n) * trial.dt
-        self.t_all = np.bincount(sec[valid], minlength=n) * trial.dt
+        self.A = sparse.csr_matrix((trial.sdt[fast], (sec[fast], bidx[fast])), shape=(n, B))
+        self.t_fast = np.bincount(sec[fast], weights=trial.sdt[fast], minlength=n)
+        self.t_all = np.bincount(sec[valid], weights=trial.sdt[valid], minlength=n)
         self.units = list(units)
         C, self.s_fast, self.s_all = [], [], []
         for u in self.units:
@@ -1027,31 +1059,24 @@ class SecMaps:
         self.s_all = np.array(self.s_all, float)
 
     def prepare(self, W, rm):
-        """Cache what the groups in W (R, n) share across units: their time maps and its smoothing."""
+        """Cache what the groups in W (R, n) share across units: their time maps."""
+        if rm != "b":
+            raise ValueError(rm)
         occ = np.asarray((self.A.T @ W.T).T, np.float32)
         nb = int(round(np.sqrt(self.B)))
         O = occ.reshape(-1, nb, nb)
-        visited = O > 0
-        K = _kernel(nb)
-        if rm == "a":
-            den = K @ O @ K.T
-        else:
-            den = K @ visited.astype(np.float32) @ K.T
-        return {"W": W, "O": O, "visited": visited, "den": den, "rm": rm, "K": K,
+        return {"W": W, "O": O, "visited": O > 0, "K": _kernel(nb),
                 "t_fast": W @ self.t_fast, "t_all": W @ self.t_all}
 
     def groups(self, prep, k):
         """Blanked rate maps (R, B) of unit k for the prepared groups, and the two mean rates (R,)."""
         W, O, visited, K = prep["W"], prep["O"], prep["visited"], prep["K"]
         spk = np.asarray((self.C[k].T @ W.T).T, np.float32).reshape(O.shape)
-        if prep["rm"] == "a":
-            num = K @ spk @ K.T
-        else:
-            with np.errstate(invalid="ignore", divide="ignore"):
-                raw = np.where(visited, spk / np.where(visited, O, 1.0), 0.0).astype(np.float32)
-            num = K @ raw @ K.T
         with np.errstate(invalid="ignore", divide="ignore"):
-            r = np.where(visited, num / prep["den"], np.nan)
+            raw = np.where(visited, spk / np.where(visited, O, 1.0), 0.0).astype(np.float32)
+        num = K @ raw @ K.T
+        with np.errstate(invalid="ignore", divide="ignore"):
+            r = np.where(visited, num, np.nan)
             r_fast = (W @ self.s_fast[k]) / prep["t_fast"]
             r_all = (W @ self.s_all[k]) / prep["t_all"]
         return r.reshape(len(W), -1), r_fast, r_all
@@ -1060,30 +1085,23 @@ class SecMaps:
 _KERNELS = {}
 
 
-def _kernel(nb, sigma=2.0):
-    """Gaussian smoothing as a matrix (constant zero padding, truncated at 4 SD): K @ M @ K.T."""
-    if (nb, sigma) not in _KERNELS:
-        _KERNELS[(nb, sigma)] = ndimage.gaussian_filter1d(np.eye(nb), sigma, axis=0, mode="constant",
-                                                         truncate=4.0).astype(np.float32)
-    return _KERNELS[(nb, sigma)]
+def _kernel(nb, sigma=2.0, mode="reflect"):
+    """Gaussian smoothing as a matrix (edges mirrored, truncated at 4 SD, as _gauss; or circular,
+    mode "wrap"): K @ M @ K.T."""
+    if (nb, sigma, mode) not in _KERNELS:
+        _KERNELS[(nb, sigma, mode)] = ndimage.gaussian_filter1d(np.eye(nb), sigma, axis=0, mode=mode,
+                                                               truncate=4.0).astype(np.float32)
+    return _KERNELS[(nb, sigma, mode)]
 
 
 def rate_maps_batch(occ, spk, rm, sigma=2.0):
-    """Blanked rate maps for R pairs of time (R, B) and spike (R, B) maps."""
+    """Blanked rate maps for R pairs of time (R, B) and spike (R, B) maps (method of rate_maps)."""
+    if rm != "b":
+        raise ValueError(rm)
     R, B = occ.shape
     nb = int(round(np.sqrt(B)))
-    O = occ.reshape(R, nb, nb)
-    S = spk.reshape(R, nb, nb)
-    visited = O > 0
-    if rm == "a":
-        num, den = _gauss(S, sigma), _gauss(O, sigma)
-        with np.errstate(invalid="ignore", divide="ignore"):
-            r = num / den
-    else:
-        with np.errstate(invalid="ignore", divide="ignore"):
-            raw = np.where(visited, S / np.where(visited, O, 1.0), 0.0)
-            r = _gauss(raw, sigma) / _gauss(visited.astype(float), sigma)
-    r = np.where(visited, r, np.nan)
+    raw, visited = _raw_rate(occ.reshape(R, nb, nb), spk.reshape(R, nb, nb))
+    r = np.where(visited, _gauss(raw, sigma), np.nan)
     return r.reshape(R, B)
 
 
@@ -1207,6 +1225,94 @@ def object_tuning(sessions, rm, widths, trials=("O", "OM"), objs=None, key="", m
                         "tuned": r["tuned"], "single": r["single"], "n_sig": r["n_sig"],
                         "max_margin": float(np.nanmax(r["scores"] - r["thr"][:, None]))})
     return out
+
+
+# ----------------------------------------------------------------------------------------------
+# Object-vector score (claims file, ovs-method-extra-cells: Methods, Object-vector score, and the
+# bins and smoothing of the paper's reference 12, Andersson et al. 2021)
+
+OV_DIST_BIN = 2.0        # cm, reference 12
+OV_ANGLE_BIN = 10.0      # degrees, reference 12, 0 = East
+OV_SIGMA = 1.5           # bins, circular 2D Gaussian, reference 12
+
+
+def shift_values(trial: Trial, n, rng):
+    """Circular shifts (s) between 20 s and the trial's duration less 20 s (Methods, Shuffling of
+    spike data)."""
+    return rng.uniform(20.0, trial.duration - 20.0, n)
+
+
+def shifted_samples(trial: Trial, u, shifts):
+    """The sample index (as Trial._sample_index) of unit u's spikes, each spike train circularly
+    shifted within the trial by each of `shifts`. Returns the shift number and sample index of the
+    spikes that have a position."""
+    s = trial.spikes[u]
+    T = trial.t1 - trial.t0
+    allt = ((s[None, :] - trial.t0 + np.asarray(shifts, float)[:, None]) % T + trial.t0).ravel()
+    k = np.repeat(np.arange(len(shifts)), len(s))
+    j = trial._sample_index(allt)
+    ok = j >= 0
+    return k[ok], j[ok]
+
+
+def spatial_information_shuffled(trial: Trial, u, shifts):
+    """Spatial information (bits per spike) of unit u in the 2.5 cm, speed-filtered, blanked map
+    for each shift (a shift of 0 is the cell itself), under the lambda readings si-a and si-b of
+    spatial_information. Returns two arrays (len(shifts),)."""
+    m = sample_mask(trial, True)
+    bidx = bin_index(trial.x, trial.y, 2.5)
+    B = nbins(2.5) ** 2
+    occ = np.bincount(bidx[m], weights=trial.sdt[m], minlength=B)
+    k, j = shifted_samples(trial, u, shifts)
+    keep = m[j]
+    R = len(shifts)
+    nb = nbins(2.5)
+    spk = np.bincount(k[keep] * B + bidx[j[keep]], minlength=R * B).reshape(R, nb, nb).astype(np.float32)
+    raw, visited = _raw_rate(occ.reshape(nb, nb), spk)
+    K = _kernel(nb)
+    l = np.where(visited.ravel()[None], (K @ raw.astype(np.float32) @ K.T).reshape(R, B), 0.0).astype(float)
+    out = []
+    for P, rate in ((occ / occ.sum(), spk.sum((1, 2)) / occ.sum()), (occ / trial.duration, None)):
+        if rate is None:
+            rate = (P[None] * l).sum(1)
+        with np.errstate(divide="ignore", invalid="ignore"):
+            terms = np.where(l > 0, P[None] * l * np.log2(l / rate[:, None]), 0.0)
+            out.append(np.where(rate > 0, terms.sum(1) / rate, np.nan))
+    return out
+
+
+def max_object_distance(trial: Trial, obj):
+    """Largest distance from the object sampled in the speed-filtered epochs."""
+    m = sample_mask(trial, True)
+    return float(np.hypot(trial.x[m] - obj[0], trial.y[m] - obj[1]).max())
+
+
+def vector_maps(trial: Trial, u, shifts, obj, dmax):
+    """Vector maps of unit u (rate as a function of distance and direction from the object) for
+    each shift: speed-filtered samples up to dmax, distance bins of 2 cm from 0, direction bins of
+    10 degrees from East, the rate per bin (unvisited bins 0) smoothed with a Gaussian of SD 1.5
+    bins, circular in direction and with mirrored edges in distance (the rate-map method of the
+    opening comment), unvisited bins blanked. Returns (len(shifts), nd * 36)."""
+    m = sample_mask(trial, True)
+    dx, dy = trial.x - obj[0], trial.y - obj[1]
+    d = np.hypot(dx, dy)
+    a = np.degrees(np.arctan2(dy, dx)) % 360
+    nd = int(np.ceil(dmax / OV_DIST_BIN))
+    na = int(round(360 / OV_ANGLE_BIN))
+    m &= d <= dmax
+    vb = np.minimum((d // OV_DIST_BIN).astype(int), nd - 1) * na + (a // OV_ANGLE_BIN).astype(int) % na
+    B = nd * na
+    occ = np.bincount(vb[m], weights=trial.sdt[m], minlength=B)
+    k, j = shifted_samples(trial, u, shifts)
+    keep = m[j]
+    R = len(shifts)
+    spk = np.bincount(k[keep] * B + vb[j[keep]], minlength=R * B).reshape(R, nd, na).astype(float)
+    O = occ.reshape(nd, na)
+    visited = O > 0
+    with np.errstate(divide="ignore", invalid="ignore"):
+        raw = np.where(visited[None], spk / np.where(visited, O, 1.0)[None], 0.0)
+    sm = _kernel(nd, OV_SIGMA) @ raw.astype(np.float32) @ _kernel(na, OV_SIGMA, "wrap").T
+    return np.where(visited[None], sm, np.nan).reshape(R, B)
 
 
 def roi_rate_overlap_shuffled(mapA, mapB, iy, ix, nb, shifts):
