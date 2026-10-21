@@ -498,3 +498,14 @@ def test_a_dataset_with_claims_and_no_attempt_has_a_page_linked_from_the_pipelin
         page = (out / site.page_of(key) / "index.html").read_text()
         claims = [c for f in data["claim_files"][key] for c in f["claims"]]
         assert all(f'id="claim-{c["id"]}"' in page for c in claims)
+
+
+def test_a_dataset_waiting_on_a_person_links_its_issue():
+    data = site.collect()
+    label = data["targets"][0]["label"]
+    data["issues"] = {label: "https://github.com/catalystneuro/reproduction-registry/issues/1"}
+    row = next(r for r in site.pipeline_rows(data) if r["dataset"] == label)
+    assert row["issue"] == data["issues"][label]
+    page = site.page_pipeline(data)
+    assert f'<a href="{data["issues"][label]}">waiting on you</a>' in page
+    assert "has stopped on" in page and "1 dataset</a>" in page

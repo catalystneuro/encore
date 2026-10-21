@@ -174,7 +174,11 @@ the README row and the pilot notes, and merges the pull request once its
 checks pass. With `CLAIMS_ONLY=1`, a runner only reads claims: for each target
 whose papers are in the store, it runs the claims and their check and puts the
 checked claims on main, and a later attempt on the dataset starts from them.
-The scripts say how to start and stop it.
+When a chain stops for a reason a person can fix (a supplement the reader needs, a
+claims file that did not pass its check, a failed run), it opens an issue for the
+dataset, labelled `needs-you`, that says what stopped it and @-mentions whoever
+runs the runner; the issue closes when the dataset is merged, and the Pipeline
+page links it. The scripts say how to start and stop it.
 
 ## Working on an entry
 
