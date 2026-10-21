@@ -47,9 +47,9 @@ jobs:
         run: |
           pip install --no-cache-dir pyyaml
           { gh run list --repo "$GITHUB_REPOSITORY" --workflow attempt.yml --limit 1000 \
-              --json displayTitle,createdAt,updatedAt,conclusion
+              --json displayTitle,createdAt,updatedAt,status,conclusion
             gh run list --repo "$GITHUB_REPOSITORY" --workflow papers.yml --limit 1000 \
-              --json displayTitle,createdAt,updatedAt,conclusion; } \
+              --json displayTitle,createdAt,updatedAt,status,conclusion; } \
             | python tools/runner/describe.py queue "${{ vars.RUNNER_LANES || 3 }}" "${{ vars.CLAIMS_LANES || 1 }}" \
             > "$RUNNER_TEMP/queue.json" || rm -f "$RUNNER_TEMP/queue.json"
 
