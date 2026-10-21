@@ -51,6 +51,11 @@ result is marked "standard choice".
   pixel, in MATLAB's column order, at which the footprint's weight equals 1. The NWB masks are
   stored transposed (axis 1 is MATLAB's column, axis 2 its row), so that pixel is the first one in
   C order of the stored mask; positions are returned as (MATLAB row, MATLAB column), 1-based.
+- Local decoding maps (claims file, fig2l and ed9c; subregion_map_*.m): the code's grid, a point
+  used when at least 32 footprints lie within the radius, the 32 nearest footprints decoded; the
+  null decoders use 32 footprints drawn at random and shuffled. The reduced runs of the decoding
+  notebooks (a coarser grid, fewer fits, fewer null decoders) are choices made here and decide no
+  outcome.
 - Pixel sizes: 5.94 um per pixel in sf3/widefield/analysis.m and 5.35 um per pixel in
   f2+sf4/wf_analysis_secondorder.m, both for the Kiloscope (claims file, abstract-kiloscope-fov).
   The NWB file gives none.
@@ -526,6 +531,59 @@ def null_medians(X, labels, n_class, lam, n_null, n_fits, seed: int, solver=None
         delayed(_null_one)(X, labels, n_class, lam, solver, n_fits, s) for s in seeds))
 
 
+# --- local decoding maps (fig2l, ed9c) ----------------------------------------------------------
+
+def map_grid(every: int = 1) -> np.ndarray:
+    """The map points of subregion_map_*.m, (MATLAB row, column): r * 5 + 1 and c * 5 + 140 for r
+    in 1 to round(607 / 5) and c in 1 to round(560 / 5). `every` keeps every k-th point along
+    each axis (a coarser grid, for a reduced run)."""
+    rs = np.arange(1, round((608 - 1) / 5) + 1)[every - 1::every]
+    cs = np.arange(1, round((700 - 140) / 5) + 1)[every - 1::every]
+    return np.array([(r * 5 + 1, c * 5 + 140) for r in rs for c in cs], dtype=float)
+
+
+def map_values(X, labels, n_class, lam, positions, grid, radius, n_near, n_fits, rng, n_jobs=4):
+    """At each grid point with at least `n_near` footprints within `radius` pixels, the median
+    accuracy of the average matrix of `n_fits` fits on its `n_near` nearest footprints. Returns
+    (used points, values); footprints without a position are left out."""
+    ok = ~np.isnan(positions).any(1)
+    idx, P = np.flatnonzero(ok), positions[ok]
+    used, values = [], []
+    for g in grid:
+        d = np.hypot(P[:, 0] - g[0], P[:, 1] - g[1])
+        if (d <= radius).sum() < n_near:
+            continue
+        cols = idx[np.argsort(d, kind="stable")[:n_near]]
+        used.append(g)
+        values.append(decoding_matrix(X[:, cols], labels, n_class, lam, n_fits, rng, n_jobs=n_jobs)["median"])
+    return np.array(used), np.array(values)
+
+
+def _null_local_one(X, labels, n_class, lam, n_cols, n_fits, seed):
+    rng = np.random.default_rng(seed)
+    cols = rng.choice(X.shape[1], n_cols, replace=False)
+    return decoding_matrix(shuffle_columns(X[:, cols], rng), labels, n_class, lam, n_fits, rng)["median"]
+
+
+def null_local(X, labels, n_class, lam, n_null, n_cols, n_fits, seed: int, n_jobs=4) -> np.ndarray:
+    """Median accuracies of `n_null` decoders, each on `n_cols` footprints drawn anew and shuffled
+    (Methods, paragraph 5), with `n_fits` fits each."""
+    seeds = np.random.SeedSequence(seed).spawn(n_null)
+    return np.array(Parallel(n_jobs=n_jobs, prefer="threads")(
+        delayed(_null_local_one)(X, labels, n_class, lam, n_cols, n_fits, s) for s in seeds))
+
+
+def benjamini_hochberg(p: np.ndarray, q: float = 0.05) -> np.ndarray:
+    """Which p-values are significant at false discovery rate `q` (Benjamini-Hochberg)."""
+    p = np.asarray(p, float)
+    order = np.argsort(p)
+    passed = p[order] <= q * np.arange(1, len(p) + 1) / len(p)
+    k = np.flatnonzero(passed).max() + 1 if passed.any() else 0
+    sig = np.zeros(len(p), bool)
+    sig[order[:k]] = True
+    return sig
+
+
 # --- NMF and place maps ------------------------------------------------------------------------
 
 def nmf_replicates(T: np.ndarray, n_components: int, replicates: int, seed: int) -> dict:
@@ -693,11 +751,14 @@ class MovieReader:
 
 
 def normcorre_rigid(reader: MovieReader, init_batch: int = 100, bin_width: int = 200,
-                    buffer_width: int = 50, batch: int = 50, blocks=None, prefilter=None, log=print) -> dict:
+                    buffer_width: int = 50, batch: int = 50, blocks=None, prefilter=None, log=print,
+                    block_stats=None) -> dict:
     """Rigid shifts of every frame of the movie (or of the frames of `blocks`, a list of block
     starts), with NoRMCorre's template scheme (see the module docstring). Blocks are fetched one
     ahead of the registration. `prefilter`, a function of a stack of frames, is applied before
-    registration (a variant; NoRMCorre's default applies none)."""
+    registration (a variant; NoRMCorre's default applies none). `block_stats`, a function of a
+    block of raw frames, is applied to each block as it is read; its results are returned under
+    "stats", in block order."""
     starts = reader.blocks if blocks is None else list(blocks)
     frames_of = {s: min(reader.chunks[0], reader.shape[0] - s) for s in starts}
     frame_ids = np.concatenate([np.arange(s, s + frames_of[s]) for s in starts])
@@ -715,13 +776,15 @@ def normcorre_rigid(reader: MovieReader, init_batch: int = 100, bin_width: int =
     template = _median_frames(corrected)
     template_ft = sfft.fft2(template)
     shifts = np.zeros((T, 2))
-    memory, buffer, buffered, done, t0 = [], [], 0, 0, time.time()
+    memory, buffer, buffered, done, t0, stats = [], [], 0, 0, time.time(), []
     with ThreadPoolExecutor(1) as ex:
         pending = ex.submit(reader.block, starts[0])
         for k, start in enumerate(starts):
             frames = pending.result()
             if k + 1 < len(starts):
                 pending = ex.submit(reader.block, starts[k + 1])
+            if block_stats is not None:
+                stats.append(block_stats(frames))
             pos = 0
             while pos < len(frames):
                 n = min(batch, len(frames) - pos, bin_width - buffered)
@@ -738,7 +801,35 @@ def normcorre_rigid(reader: MovieReader, init_batch: int = 100, bin_width: int =
                     buffer, buffered = [], 0
             if log and k % 5 == 0:
                 log(f"  block {k + 1} of {len(starts)} registered, {time.time() - t0:.0f} s")
-    return {"shifts": shifts, "frames": frame_ids, "template": np.mean(memory, 0), "seconds": time.time() - t0}
+    return {"shifts": shifts, "frames": frame_ids, "template": np.mean(memory, 0), "seconds": time.time() - t0,
+            "stats": stats}
+
+
+def fourier_shift_frames(frames: np.ndarray, shifts: np.ndarray, batch: int = 100) -> np.ndarray:
+    """Frames moved by sub-pixel `shifts` (row, column; content moves by +shift) with Fourier
+    shifts, rounded and clipped back to 16-bit counts: what a sub-pixel motion correction written
+    back as integers does to the values. For checks of the registration and of the movie."""
+    nr, nc = frames.shape[1:]
+    fr = np.fft.fftfreq(nr)[None, :, None]
+    fc = np.fft.fftfreq(nc)[None, None, :]
+    out = np.empty(frames.shape, np.uint16)
+    for i in range(0, len(frames), batch):
+        s = shifts[i:i + batch]
+        F = sfft.fft2(frames[i:i + batch].astype(np.float32), axes=(1, 2), workers=-1)
+        F *= np.exp(-2j * np.pi * (s[:, 0, None, None] * fr + s[:, 1, None, None] * fc)).astype(np.complex64)
+        out[i:i + batch] = np.clip(np.round(sfft.ifft2(F, axes=(1, 2), workers=-1).real), 0, 65535)
+    return out
+
+
+def histogram_roughness(counts: np.ndarray, min_count: int = 1000) -> float:
+    """Mean relative difference between the count of each value and the mean count of its two
+    neighbours, over values whose neighbours' mean count is at least `min_count`. The histogram of
+    raw sensor counts carries the converter's unequal code widths; resampling the frames (a
+    sub-pixel shift) mixes neighbouring pixels and smooths it. A check chosen here."""
+    h = np.asarray(counts, dtype=float)
+    m = (h[:-2] + h[2:]) / 2
+    ok = m >= min_count
+    return float(np.mean(np.abs(h[1:-1][ok] - m[ok]) / m[ok]))
 
 
 def highpass(frames: np.ndarray, sigma: float = 10) -> np.ndarray:

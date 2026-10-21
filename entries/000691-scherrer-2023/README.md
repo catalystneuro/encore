@@ -17,9 +17,9 @@ repository, where the claims file places them.
 | Flat illumination with the axicon correction (Featherscope, Kiloscope) | Reproduced (both) |
 | Motion of the field of view of 0.13 pixels RMS | Not reproduced |
 | Quadrant and direction, and octant, decoded above shuffled data; decoder size; local decoding maps | Blocked: not runnable within the time limit |
-| Coactive footprints spread across the field of view; footprints with localized activity; field curvature | Blocked: methods underspecified |
+| Coactive footprints spread across the field of view; footprints with localized activity; field curvature; LMAN bursting (whose data are also missing) | Blocked: methods underspecified |
 | 2,382 footprints after curation | Blocked: metadata insufficient |
-| Other mice, songbirds, singing rate, LMAN bursting, weights, resolution targets, ADC | Blocked: data missing |
+| Other mice, songbirds, singing rate, weights, resolution targets, ADC | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -34,8 +34,13 @@ deprecated attempt is [`attempts/000691-scherrer-2023-01.yaml`](../../attempts/0
 - `decoding_quadrant_direction.ipynb` and `decoding_octant.ipynb`: the decoders under one reading
   of the paper's null, and the cost of the analyses that were not run (about 20 minutes each, on
   four cores).
-- `motion_scherrer_2023.ipynb`: rigid registration of the whole imaging movie, streamed in blocks
-  (about 22 minutes on four cores).
+- `motion_scherrer_2023.ipynb`: rigid registration of the whole imaging movie, streamed in blocks,
+  with checks that the movie is the raw video and that the registration finds a known jitter
+  (about 25 minutes on four cores).
+- `decoding_null_n2_quadrant_direction.ipynb` and `decoding_null_n2_octant.ipynb`: eight more null
+  decoders of the second reading (200 fits each) for each decoding claim (about 22 minutes each).
+- `decoding_reduced.ipynb`: reduced runs of the decoder-size and map analyses, which decide no
+  outcome (about 21 minutes).
 - `kiloscope.py`: loading the session, its masks and movie, tracking the mouse, the labels and
   decoders of the paper's code, NMF, place maps, the motion registration, and the bead and
   illumination measurements. Other notebooks on this dandiset can import it.
