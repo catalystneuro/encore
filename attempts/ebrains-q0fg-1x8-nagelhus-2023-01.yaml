@@ -1,0 +1,619 @@
+schema_version: 2
+id: ebrains-q0fg-1x8-nagelhus-2023-01
+dataset:
+  archive: ebrains
+  id: Q0FG-1X8
+  version: v1
+  doi: 10.25493/Q0FG-1X8
+paper: doi:10.1016/j.neuron.2023.04.008
+date: '2026-10-20'
+entry: ebrains-q0fg-1x8-nagelhus-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39495857152
+outcomes:
+- claim: cell-counts
+  outcome: reproduced
+  notebook: 01_single_cells.ipynb
+  output: claim:cell-counts
+  measured:
+  - 1189
+  - 219
+  - 620
+  notes: The CA1 file holds 1189 cells from 9 rats in 60 sessions, the CA1 control file 219 cells from 3 rats, and
+    the largest session 620 cells (rat 27207). Under the inclusion rules as computed here 1178 of 1189 and 218 of
+    219 pass. Reading (b), counting cell-sessions, cannot be formed, as the files give each cell once and cell-sessions
+    are not deposited.
+  deviations:
+  - Counts are those of the deposited files; the inclusion rules are checked, not re-applied.
+- claim: fig1c-object-tuned-fraction
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 01_single_cells.ipynb
+  output: claim:fig1c-object-tuned-fraction
+  notes: The rate-map readings give different outcomes. Under rm a with the Methods' variances (w b), 224 of 1189
+    CA1 cells (0.188) are object-tuned against 11 of 219 controls (0.0502) under both control readings, binomial
+    p = 7.3e-65, so every part of the criterion is met. Under rm b no reading meets it. With w b the CA1 fraction
+    is 0.183, but the chance level is 0.0365 (CON2-CON3) or 0.0822 (CON1-CON2). With the code's SDs (w a) 0.266
+    to 0.275 of CA1 cells and 0.110 to 0.169 of controls are tuned under either rm. In every reading the CA1 fraction
+    exceeds the control level (p at most 6.5e-20).
+  deviations:
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+  - The template is an isotropic Gaussian at bin centres correlated with all 2500 bins, the claims file's reading.
+- claim: fig1d-field-distances
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 01_single_cells.ipynb
+  output: claim:fig1d-field-distances
+  notes: Depends on fig1c-object-tuned-fraction, which is blocked as methods_underspecified, so it is blocked for
+    the same reason (protocol, Author 1.5). Under every reading, the fields of tuned cells cover all eight 45 degree
+    sectors and the smallest distances are 2.2 to 7.6 cm. The mean is within 37.7 +/- 3.77 cm under several readings
+    (for example 34.2 cm, rm a, w b, field a, distance b). The largest distance is 92.8 to 127.0 cm under every
+    reading, beyond the widened bound of 88.8 cm, so no reading meets the whole criterion. Under every rate-map
+    and field reading the claim would be partially reproduced.
+  deviations:
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+  - Whether a field's 1 Hz rule applies to its peak or to every bin is not given; both are run (asked).
+- claim: fig1e-object-cells-and-object-vector-cells
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 01_single_cells.ipynb
+  output: claim:fig1e-object-cells-and-object-vector-cells
+  notes: Depends on fig1c-object-tuned-fraction, which is blocked as methods_underspecified, so it is blocked for
+    the same reason (protocol, Author 1.5). No reading puts all three values within tolerance. Under rm a, w b,
+    field a, distance a, 45 object cells (0.038) and 156 object-vector cells (0.131) are both within tolerance,
+    with 23 tuned cells without a field against 30 +/- 3. Across readings the object-cell fraction is 0.019 to 0.055,
+    the object-vector fraction 0.095 to 0.248, and the cells without a field 2 to 62. Under every rate-map and field
+    reading one or two of the three values are within tolerance under some reading, so the claim would be partially
+    reproduced.
+  deviations:
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+  - Field rate criterion run both ways (asked).
+- claim: fig1f-orientation-coverage
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 01_single_cells.ipynb
+  output: claim:fig1f-orientation-coverage
+  notes: Depends on fig1c-object-tuned-fraction, which is blocked as methods_underspecified, so it is blocked for
+    the same reason (protocol, Author 1.5). Under every rm, field and w reading at least one distance reading gives
+    a negative Pearson correlation of orientation coverage with field distance at p < 0.05. With distance reading
+    a, r = -0.45 to -0.75, p at most 2.3e-10. The claim would be reproduced under every reading.
+  deviations:
+  - Orientation coverage is the union of the angular spans of the field bins seen from the object, at 1 degree resolution.
+- claim: fig1g-no-experience-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: 01_single_cells.ipynb
+  output: sanity
+  notes: The dataset has no cell identities across days and no day of exposure to the object. The CA1 file holds
+    each cell once, and the 283 tetrode population units with no match in it carry no identifier. Searched in the
+    file list and in every field of every file (data check of notebook 01).
+- claim: fig1h-cross-day-stability
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: 01_single_cells.ipynb
+  output: sanity
+  notes: As fig1g-no-experience-effect, no cell identities across days are deposited.
+- claim: figs2e-within-trial-stability
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 01_single_cells.ipynb
+  output: claim:figs2e-within-trial-stability
+  notes: The readings give different outcomes. Within-trial stability correlates with the object-tuning score under
+    every reading (p at most 1.3e-8), but r is within 0.45 +/- 0.045 only under rm b with w b (r = 0.46, 215 cells).
+    It is 0.35 to 0.38 under the other three. The criterion does not say under one reading, so the width readings
+    must agree. It also depends on fig1c-object-tuned-fraction, which is blocked.
+  deviations:
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: figs2c-no-proximodistal-effect
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: 01_single_cells.ipynb
+  output: sanity
+  notes: The dataset holds no implant sites (the data descriptor says histological data are not shared), and the
+    two probes of rat 27207 are not told apart in its files.
+- claim: figs3a-ca3-object-tuned
+  outcome: not_reproduced
+  notebook: 01_single_cells.ipynb
+  output: claim:figs3a-ca3-object-tuned
+  measured: 0.3196
+  notes: Over the 341 CA3 cells of the file, 0.191 to 0.199 are object-tuned with the Methods' variances (w b) and
+    0.320 to 0.323 with the code's SDs (w a), under either rate-map reading; both are outside 0.23 +/- 0.023. The
+    file holds 341 cells from 4 rats (221 Neuropixels), against the paper's 313; tetrode cells alone give 0.083
+    to 0.125 (w b) and 0.258 to 0.283 (w a). Which 313 cells the paper used cannot be told.
+  deviations:
+  - Run on the 341 CA3 cells of the file, not the paper's 313.
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: fig2d-spatial-change-no-o
+  outcome: reproduced
+  notebook: 01_single_cells.ipynb
+  output: claim:fig2d-spatial-change-no-o
+  notes: NO-O spatial correlations (median 0.500 under rm a, 0.461 under rm b) are lower than CON1-CON2 correlations
+    (0.812, 0.797), z = -12.11 and -12.19, p below 1e-33. The NO-O median is below the control median in 8 of 9
+    rats; rat 25224 has 0.814 against 0.812.
+  deviations:
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: fig2d-rate-overlap-no-o-unchanged
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 01_single_cells.ipynb
+  output: claim:fig2d-rate-overlap-no-o-unchanged
+  notes: The claims file's two rate-overlap readings give different outcomes of the paper's test. With speed-filtered
+    rates (a) NO-O overlaps are lower than CON1-CON2 overlaps, median 0.685 against 0.741, z = -2.52, p = 0.012.
+    With whole-trial rates (b), 0.718 against 0.748, z = -1.18, p = 0.24.
+- claim: fig2-fraction-changed-no-o
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 02_single_cell_changes.ipynb
+  output: claim:fig2-fraction-changed-no-o
+  notes: The readings give different outcomes. 881 (0.741, rm a, rate overlap a), 795 (0.669, rm b, a) and 802 (0.675,
+    rm b, b) of 1189 cells change between NO and O, within 0.675 +/- 0.0675; under rm a with whole-trial rates 894
+    (0.752) change, outside it.
+  deviations:
+  - The 500 random groups of 1 s sections are drawn once per session and comparison and shared by its cells.
+  - The signed-rank test pairs the 500 within and between values by repetition, as the claims file says.
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: fig2d-o-om-change
+  outcome: reproduced
+  notebook: 02_single_cell_changes.ipynb
+  output: claim:fig2d-o-om-change
+  measured: 0.7401
+  notes: Under every rate-map and rate-overlap reading O-OM spatial correlations (median 0.49 to 0.50 against 0.84
+    to 0.87) and rate overlaps (0.70 to 0.73 against 0.78 to 0.79) are lower than CON2-CON3 values, rank-sum p at
+    most 0.00037, and 794 to 904 cells (0.668 to 0.760) change between O and OM, within 0.697 +/- 0.0697.
+  deviations:
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: fig2d-om-no-prime-change
+  outcome: reproduced
+  notebook: 01_single_cells.ipynb
+  output: claim:fig2d-om-no-prime-change
+  notes: OM-NO' spatial correlations (median 0.619 and 0.589) are lower than CON3-CON4 correlations (0.844, 0.841),
+    z = -12.5 and -12.9, and the rate-overlap test gives p = 0.88 (a) and 0.75 (b), over the 1090 cells with a No
+    Object' trial. The part on retained fields is tested by figs4-object-traces.
+  deviations:
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: fig2d-no-no-prime-change
+  outcome: reproduced
+  notebook: 01_single_cells.ipynb
+  output: claim:fig2d-no-no-prime-change
+  notes: NO-NO' spatial correlations (median 0.337 and 0.313) are lower than CON1-CON4 correlations (0.681, 0.692),
+    z = -11.0 and -11.4, p below 1e-27. The paper's identical statistics for this pair and OM-NO' are not reproduced;
+    the two tests give different z here.
+  deviations:
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: figs3f-ca3-changes
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 01_single_cells.ipynb
+  output: claim:figs3f-ca3-changes
+  notes: All four spatial-correlation tests give p < 1e-5 under both rate-map readings. The rate-overlap readings
+    give different outcomes. With whole-trial rates (b) no rate-overlap test is significant (p = 0.066 to 0.46),
+    so the claim is reproduced. With speed-filtered rates (a) the OM-NO' test gives p = 0.0044, so it is partially
+    reproduced. The file holds 341 CA3 cells, not 313; with the 120 tetrode cells only the O-OM spatial test is
+    significant.
+  deviations:
+  - 341 CA3 cells, not the paper's 313.
+- claim: figs4-object-traces
+  outcome: partially_reproduced
+  notebook: 02_single_cell_changes.ipynb
+  output: claim:figs4-object-traces
+  measured:
+  - 0.0723
+  - 964
+  notes: 914 to 970 cells change between NO and NO', within 919 +/- 91.9. Under every reading 66 to 130 cells (0.056
+    to 0.109 of 1189) have an object-trace field, far above the 1% chance level (binomial p below 1e-27) but fewer
+    than 0.183 +/- 0.0183. The same holds under both rate-map and both field readings.
+  deviations:
+  - The ROI is the claims file's two readings, as the Methods refer to a section the paper does not contain.
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: figs2d-traces-no-interference
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 02_single_cell_changes.ipynb
+  output: claim:figs2d-traces-no-interference
+  notes: The template-width readings give different outcomes of the paper's test. With the Methods' variances the
+    count after removal is 225 to 246 (0.189 to 0.207), binomial p = 0.42 to 0.97 against 0.199, so the claim holds;
+    with the code's SDs it is 327 to 357 (0.275 to 0.300), p < 1e-9, a level that reading reaches before removal
+    too. It also depends on fig1c-object-tuned-fraction, which is blocked.
+- claim: ovs-method-extra-cells
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 01_single_cells.ipynb
+  output: sanity
+  notes: The criterion takes the vector map's distance and direction bins and smoothing from the paper's references
+    11 and 12 but does not give them, and the paper does not either; asked in the questions file. It also depends
+    on fig1c-object-tuned-fraction, which is blocked.
+- claim: fig3b-decode-presence
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:fig3b-decode-presence
+  notes: Under both speed readings and both rate-map readings the whole-arena decoder tells NO from O above 0.5
+    and above the mean of 50 label shuffles in all 16 sessions; accuracies 0.61 to 0.77, shuffle means 0.49 to 0.51.
+  deviations:
+  - The two Neuropixels sessions' tracking is taken from the CA1 file, as y is a copy of x in their population files.
+  - Trials last 913 to 2334 s, not the 1800 s the Methods assume.
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: fig3c-bin-size
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:fig3c-bin-size
+  notes: Under every reading the median accuracy rises at each step from 10 ms (0.51) to 1000 ms (0.69), and its
+    gain from 1 to 10 s (0.031 to 0.045) is smaller than its gain from 100 ms to 1 s (0.112 to 0.118).
+  deviations:
+  - The Poisson mean is the training rate times the bin size; the training maps are those of the 1 s decoder.
+- claim: fig3d-number-of-cells
+  outcome: reproduced
+  notebook: 05_subsets.ipynb
+  output: claim:fig3d-number-of-cells
+  notes: On the 620-cell session (reading a) mean accuracy rises from 0.52 to 0.54 with one cell to 0.74 to 0.77
+    with 500 cells, Pearson r = 0.58 to 0.64 over 1100 subsets, p below 1e-90, under every speed and rate-map reading.
+    Reading (b) was not run, as the criterion is met under (a).
+- claim: fig4b-distance-decline
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:fig4b-distance-decline
+  notes: Under every speed and rate-map reading the Kruskal-Wallis test across the five distance bins gives H =
+    48.4 to 50.9 (paper 44.6), p at most 7.9e-10, with medians falling at every step from 0.79 to 0.80 (bin 1) to
+    0.59 to 0.60 (bin 5). Signed-rank tests of bins 1 vs 2 (p at most 0.0012), 2 vs 3 (at most 0.0010) and 4 vs
+    5 (at most 0.0008) each find the nearer bin higher. The mean of bin 1 minus bin 5 is 0.18 to 0.19 (paper 0.19).
+    The session readings S-methods and S-legends give the same 16 sessions.
+  deviations:
+  - The dataset holds 16 decoding sessions (14 tetrode), the legends' count; the Methods' text says 15 tetrode sessions.
+  - The two Neuropixels sessions' tracking is taken from the CA1 file.
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: fig4c-each-session-decreasing
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:fig4c-each-session-decreasing
+  notes: Under every reading all 16 sessions have a negative slope (-0.072 to -0.007) and a positive bin 1 minus
+    bin 5 difference (0.026 to 0.317).
+- claim: fig4e-angle-flat
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 03_population_decoding.ipynb
+  output: claim:fig4e-angle-flat
+  notes: The claims file's two sector-start readings give different outcomes of the paper's test. With sectors from
+    0 degrees the Kruskal-Wallis test finds a difference under every speed and rate-map reading (H = 9.8 to 13.5,
+    p = 0.0089 to 0.044); with sectors from 36 degrees it does not (H = 6.2 to 8.4, p = 0.077 to 0.19).
+- claim: fig4h-population-vector-correlation
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:fig4h-population-vector-correlation
+  notes: Under every speed and rate-map reading, with fixed 20 cm rings (reading a), the Kruskal-Wallis test gives
+    p at most 7.9e-6, correlations rise from 0.45 (bin 1) to 0.77 to 0.80 (bin 5), and the rises from bin 1 to 2,
+    2 to 3 and 3 to 4 are significant (p at most 0.013). With equal-count bins (b) the rise from bin 3 to 4 is not
+    significant.
+  deviations:
+  - Rate maps of the whole trials are smoothed like the decoder's maps, not blanked; asked.
+- claim: figs5a-decode-no-from-no-prime
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs5a-decode-no-from-no-prime
+  notes: NO is told from NO' above 0.5 and above the shuffle mean in all 16 sessions under every reading, 0.51 to
+    0.80 in tetrode sessions and 0.96 to 0.99 in the Neuropixels sessions.
+  deviations:
+  - The population files hold no No Object' trial; the CA1 file has it for the same recordings, with all cells of
+    the Neuropixels sessions but only 3 to 15 of the 25 to 39 cells of each tetrode session, which are used.
+- claim: figs5b-fixed-distance-bins
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs5b-fixed-distance-bins
+  notes: With bins of 0-20 to 80-100 cm the Kruskal-Wallis test gives H = 51.6 to 53.0, p at most 1.7e-10, with
+    accuracy highest in bin 1 (0.81 to 0.82) and lowest in bin 5 (0.59 to 0.60) under every reading.
+- claim: figs5c-half-trial-control
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs5c-half-trial-control
+  notes: Decoding the first from the second half of NO gives Kruskal-Wallis H = 0.16 to 0.67, p at least 0.955,
+    under every reading.
+- claim: figs5d-control-sessions
+  outcome: blocked
+  blocked_by: other
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs5d-control-sessions
+  notes: The criterion uses control sessions with at least 25 simultaneously recorded cells; the control file holds
+    each cell once and only one of its 14 sessions has 25 or more cells (30), so no test over sessions can be formed.
+    As a variant over all 14 control sessions (6 to 30 cells) the Kruskal-Wallis p is 0.024 to 0.17 across readings,
+    below 0.05 in 2 of 8.
+- claim: figs5e-shuffled-labels
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs5e-shuffled-labels
+  notes: With labels shuffled 50 times per session the mean accuracy is within 0.49 to 0.51 in every bin under every
+    reading (0.498 to 0.503). The t tests against 0.5 give different outcomes by reading. The smallest p is 0.052
+    (speed a, rm a) and 0.22 (speed b, rm a), where the criterion holds, and 0.022 (speed a, rm b) and 0.0054 (speed
+    b, rm b), where it fails.
+- claim: figs5f-random-partition
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs5f-random-partition
+  notes: With 1 s bins partitioned at random (reading a) the Kruskal-Wallis test gives H = 26.0 to 30.4, p at most
+    3.2e-5, with accuracy highest in bin 1 (0.84 to 0.85) and lowest in bin 5 (0.71 to 0.73) under every reading.
+    Reading (b) was not run, as the claims file does not say how testing samples would be formed (asked) and (a)
+    meets the criterion.
+- claim: figs5ghi-fields-and-rates
+  outcome: not_reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs5ghi-fields-and-rates
+  notes: One of the three parts holds. (i) Fields are not more concentrated within 20 cm of the object in O than
+    in NO (rank-sum p = 0.12 to 0.33 under every rate-map and field reading). (ii) The mean rate peaks in distance
+    bin 2 in both trials, not bin 3. (iii) NO and O rates differ in bins 3 and 4 (signed-rank p = 0.0027 and 0.011).
+  deviations:
+  - The tests are the claims file's; the paper reports none.
+- claim: figs6-behaviour-decoders-flat
+  outcome: not_reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs6-behaviour-decoders-flat
+  notes: The occupancy decoder's accuracy depends on distance (Kruskal-Wallis H = 22.8, p = 0.0001; medians 0.56
+    to 0.71), so the criterion fails whatever the head-direction test would give. The speed decoder shows no effect
+    (H = 8.9, p = 0.062). The head-direction decoder cannot be run, as the dataset holds no head direction. Median
+    accuracies are 0.54 (speed) and 0.62 (occupancy).
+  deviations:
+  - Neuropixels tracking is interpolated to 25 Hz; spatial bins with fewer than two speed samples get no gamma fit.
+  - The distance-bin edges are those of the neural decoder's 1 s testing samples.
+- claim: figs6hij-behaviour-matched
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs6hij-behaviour-matched
+  notes: After matching speed or occupancy the neural decoder's accuracy still falls with distance under every reading
+    and both matching readings (Kruskal-Wallis H = 27.3 to 50.5, p at most 1.7e-5, bin 1 highest). Head direction,
+    needed for the third match, is not in the dataset.
+- claim: figs6k-uniform-prior
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs6k-uniform-prior
+  notes: With a uniform prior the Kruskal-Wallis test gives H = 46.9 to 48.6 (paper 42.92), p at most 1.6e-9, with
+    bin 1 highest, under every reading.
+- claim: figs6l-sampling-thresholds
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs6l-sampling-thresholds
+  notes: Under every combination of speed, rate-map, occupancy (whole trial or training half) and testing-sample
+    readings, all four thresholds give Kruskal-Wallis p at most 1.4e-6 (H = 32.6 to 42.8) with bin 1 highest.
+  deviations:
+  - Whether a bin's time is that of the whole trial or the training half, and whether testing samples in left-out
+    bins are kept, are not given; all four combinations are run (asked).
+- claim: tables1-without-bin-1
+  outcome: reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:tables1-without-bin-1
+  measured: 32.75
+  notes: Over bins 2 to 5 the Kruskal-Wallis test gives p at most 3.0e-6 with bin 2 highest under every reading.
+    H is 28.4 to 32.8, above 25.06 +/- 2.506 under every reading, so the effect is stronger than the paper's.
+- claim: fig5b-words-more-informative
+  outcome: reproduced
+  notebook: 06_words.ipynb
+  output: claim:fig5b-words-more-informative
+  notes: Under both subset readings words carry more information than counts in every distance bin (bias-subtracted
+    MI medians 0.075 to 0.156 bits against 0.0002 to 0.0014), with every per-bin rank-sum test (reading c) and the
+    pooled test (reading d) giving p < 0.05, words higher.
+  deviations:
+  - Words cover every 10 ms bin of each trial without a speed filter.
+- claim: fig5bc-words-information-falls-with-distance
+  outcome: reproduced
+  notebook: 06_words.ipynb
+  output: claim:fig5bc-words-information-falls-with-distance
+  notes: Kruskal-Wallis H = 11.6 and 13.1 (p = 0.021 and 0.011) for the two subset readings, bin 1 highest (median
+    0.155 bits against 0.075 in bin 5).
+- claim: fig5b-counts-uninformative
+  outcome: not_reproduced
+  notebook: 06_words.ipynb
+  output: claim:fig5b-counts-uninformative
+  notes: The information from counts does not depend on distance (Kruskal-Wallis p = 0.19 and 0.29), but it is above
+    zero in four of five bins by one-sample t tests (p = 0.0039 to 0.050) under both subset readings; the values
+    are small (means 0.0011 to 0.0035 bits).
+- claim: fig5e-kl-divergence
+  outcome: reproduced
+  notebook: 06_words.ipynb
+  output: claim:fig5e-kl-divergence
+  notes: Kruskal-Wallis H = 15.5 and 18.0 (p = 0.0038 and 0.0012), bin 1 above bin 5 by signed-rank test (p = 0.0021
+    and 0.0017; medians 0.169 against 0.050 bits), and no effect of distance on shuffled labels (p = 0.41 and 0.98).
+  deviations:
+  - The divergence sums over words seen in both trials, as the claims file says.
+- claim: fig5-entropy
+  outcome: not_reproduced
+  notebook: 06_words.ipynb
+  output: claim:fig5-entropy
+  measured:
+  - 5.926
+  - 1.082
+  notes: Word entropy is 5.5 to 5.9 bits without the all-zero word (readings a, c) and 1.90 to 1.97 bits with it
+    (b), against 1.65 +/- 0.165; count entropy is 1.07 to 1.08 bits (a, c) and 0.92 to 0.93 (b), against 0.84 +/-
+    0.084. No reading puts both within tolerance. Words have the higher entropy in every reading.
+- claim: figs7cd-number-of-words
+  outcome: reproduced
+  notebook: 06_words.ipynb
+  output: claim:figs7cd-number-of-words
+  notes: The number of distinct words does not differ across distance bins (NO p = 0.90 and 0.91, O p = 0.78) or
+    between NO and O (reading i p = 0.85, reading ii p = 0.94).
+  deviations:
+  - Which values the NO against O rank-sum compares is not given; two readings are run and both give p >= 0.05 (asked).
+- claim: figs7e-downsampled-words
+  outcome: reproduced
+  notebook: 06_words.ipynb
+  output: claim:figs7e-downsampled-words
+  notes: Downsampled words are more informative than counts in all 80 session-bin pairs, signed-rank W = 0, p below
+    0.05 with or without bias subtraction. The downsampled words' MI (median 0.30 bits) is above that of full words,
+    since each trial keeps its own most frequent words.
+- claim: fig6ab-single-cell-distance-tuning
+  outcome: partially_reproduced
+  notebook: 04_distance_tuning.ipynb
+  output: claim:fig6ab-single-cell-distance-tuning
+  measured:
+  - 0.017
+  - 0.9798
+  - 0.1228
+  - 0.0505
+  notes: Under every speed, rate-map and cell reading, the mean tuning (0.015 to 0.017), the fraction within -0.2
+    to 0.2 (0.977 to 0.987) and the fraction with significant positive tuning (0.119 to 0.127) are within tolerance,
+    while the fraction with significant negative tuning (0.042 to 0.056) is above 0.038 +/- 0.0038, which is the
+    criterion's partial case.
+  deviations:
+  - The 897 decoding-session cells that are also in the CA1 file take their values from it (same recording and tracking).
+  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+- claim: figs5l-without-positively-tuned
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 04_distance_tuning.ipynb
+  output: claim:figs5l-without-positively-tuned
+  notes: Without the 140 to 150 positively tuned cells the Kruskal-Wallis test gives p at most 0.0001 (H = 25.0
+    to 29.5) under every reading. Bin 1 is highest under three readings, but under speed b, rm a bin 2 is (0.699
+    against 0.689), so the readings give different outcomes.
+- claim: figs5m-without-object-tuned
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs5m-without-object-tuned
+  notes: Depends on fig1c-object-tuned-fraction, which is blocked as methods_underspecified, so it is blocked for
+    the same reason (protocol, Author 1.5). Removing the object-tuned cells among the 897 linked cells (181 to 272
+    cells) leaves Kruskal-Wallis H = 43.8 to 46.8, p at most 7.0e-9, bin 1 highest, under every reading, so the
+    claim would be reproduced. The 283 tetrode cells of unknown status stay in. Removing them too leaves bin 1 highest
+    with p = 0.026 to 0.050 (rm a) and 0.071 to 0.17 (rm b).
+  deviations:
+  - Object-tuning status exists only for the 897 decoding-session cells linked to the CA1 file.
+- claim: fig6c-subsets-decline
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 05_subsets.ipynb
+  output: claim:fig6c-subsets-decline
+  notes: The speed and size-list readings give different outcomes. The single-cell curve shows no decline in any
+    reading (signed-rank p = 0.23 to 0.76). Every size from 100 cells up declines (both tests p at most 0.0006).
+    Under speed b with the legend's sizes and the signed-rank test every other size gives p < 0.05, so the criterion
+    is met there; under speed a sizes of 5 to 30 cells give signed-rank p up to 0.35 and it is met under no size
+    list.
+- claim: fig6d-reorganization-grows-with-cells
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 05_subsets.ipynb
+  output: claim:fig6d-reorganization-grows-with-cells
+  notes: The speed readings give different outcomes. Under speed b both Kruskal-Wallis tests give p < 0.05 and the
+    largest mean difference and most negative mean slope are at 500 cells under every size list; under speed a the
+    most negative slope is at 400 cells, and under speed a, rm b the slope test gives p = 0.055 to 0.10. It also
+    depends on fig6c-subsets-decline, which is blocked.
+- claim: figs8-smaller-datasets
+  outcome: reproduced
+  notebook: 05_subsets.ipynb
+  output: claim:figs8-smaller-datasets
+  notes: In the 14 tetrode sessions pooled and in the 135-cell session both Kruskal-Wallis tests across sizes give
+    p at most 5.6e-16 under every reading (H = 480 to 573 tetrode, 84 to 100 for the 135-cell session), with the
+    mean difference rising and the mean slope falling with size.
+- claim: fig6ef-least-tuned-cells
+  outcome: not_reproduced
+  notebook: 04_distance_tuning.ipynb
+  output: claim:fig6ef-least-tuned-cells
+  measured:
+  - -0.3061
+  - 0.0743
+  notes: The 124 cells (20%) of the 620-cell session with the lowest distance tuning give a bin 1 minus bin 5 difference
+    of -0.295 to -0.351 and a slope of +0.074 to +0.079 under every reading, against 0.121 and -0.0267, so accuracy
+    rises with distance. All 620 cells give 0.075 to 0.106 and -0.016 to -0.023, and keeping the lowest 80% already
+    reverses the sign. The cells kept by the rule (lowest values first) are those with negative tuning.
+- claim: fig7-single-cell-properties
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 04_distance_tuning.ipynb
+  output: claim:fig7-single-cell-properties
+  notes: Depends on fig1c-object-tuned-fraction, which is blocked as methods_underspecified, so it is blocked for
+    the same reason (protocol, Author 1.5). No reading meets the whole criterion. Spatial information is not correlated
+    with distance tuning (r = -0.023 to 0.010, p at least 0.43, against -0.13). The object-tuning score (r = 0.12
+    to 0.16, 1189 cells), spatial correlation (-0.06 to -0.07) and rate overlap (-0.15 to -0.16) are weak and within
+    0.05 of the printed values, with p < 0.05 except spatial correlation under speed b, rm a (p = 0.054). The claim
+    would be partially reproduced.
+  deviations:
+  - Spatial information uses the trial's speed-filtered spikes over time as the mean rate (asked).
+- claim: fig7-slope-variant
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: 04_distance_tuning.ipynb
+  output: claim:fig7-slope-variant
+  notes: Depends on fig7-single-cell-properties, which is blocked. With the slope, the object-tuning score (r =
+    -0.12 to -0.16) and rate overlap (r = 0.15) are within 0.05 of the printed values over the 1189 cells, spatial
+    information (r = -0.02 to 0.01, printed 0.10) is not, and spatial correlation has the opposite sign (r = +0.05
+    to +0.09, printed -0.08). The claim would be partially reproduced.
+- claim: figs5jk-walls-no-pivot
+  outcome: not_reproduced
+  notebook: 03_population_decoding.ipynb
+  output: claim:figs5jk-walls-no-pivot
+  notes: All 12 signed-rank tests (4 readings x 3 measures) find a difference between near and far from the walls
+    (p = 0.0001 to 0.013). Position errors are 7.4 to 10.2 cm larger near the walls (medians 35 to 39 against 27
+    to 29 cm), and population vector correlations between the halves of NO are 0.05 to 0.08 lower.
+  deviations:
+  - The position decoder and the paired test are the claims file's readings; the paper reports no test.
+- claim: figs8eh-least-tuned-smaller-datasets
+  outcome: reproduced
+  notebook: 04_distance_tuning.ipynb
+  output: claim:figs8eh-least-tuned-smaller-datasets
+  measured:
+  - 0.4
+  - 0.4
+  notes: With all cells the bin 1 minus bin 5 difference is positive and the slope negative in both datasets (tetrode
+    mean 0.178 to 0.188 and -0.043 to -0.045; 135-cell session 0.248 to 0.296 and -0.061 to -0.069), both shrink
+    as fewer of the least-tuned cells are kept, and the largest kept fraction with a mean slope of zero or above
+    is 0.4 in both under every reading, within 0.6 +/- 0.2 and 0.5 +/- 0.2. The 20% values are negative differences
+    (tetrode -0.073 to -0.091, 135-cell -0.12 to -0.18).
+findings:
+- kind: format_error
+  statement: In the two Neuropixels population files (populationanalyses_27012.mat and populationanalyses_27207.mat)
+    the tracking y equals x in every sample. The same recordings in singlecellanalyses_CA1.mat (sessions 58 and
+    59) have the same timestamps, x and spike trains and a y of their own, so the y column of the population files
+    is a copy of x.
+- kind: data_missing
+  statement: No cell identities across days and no day of exposure to the object are deposited, so the cross-day
+    analyses (Figures 1G and 1H) cannot be run.
+- kind: identifier_missing
+  statement: Of the 425 tetrode units of the population files, 283 have no match in the CA1 single-cell file and
+    carry no identifier; they are presumably repeat recordings of cells the file gives from another day, so they
+    have no Object Moved or No Object' trial and no object-tuning status.
+- kind: data_missing
+  statement: The implant sites (Supplementary Figure 1) and head direction are not deposited; the data descriptor
+    says histology is not shared, and tracking holds one position per sample.
+- kind: selection_undocumented
+  statement: The CA3 file holds 341 cells from 4 rats (including two Neuropixels sessions, 221 cells), while the
+    paper's Supplementary Figure 3 counts 313 CA3 cells; which cells the paper used is not documented.
+- kind: metadata_error
+  statement: In CA3 session 3 (rat 25987) the Object trial's object is near a corner (61.4 cm from the centre) and
+    the Object Moved trial's near the centre (9.0 cm), the reverse of the protocol; the trials or the positions
+    may be swapped.
+- kind: format_error
+  statement: Three units of singlecellanalyses_CA1.mat have spike times out of order within the Object Moved trial.
+- kind: selection_undocumented
+  statement: A few deposited units break the paper's inclusion rules as computed from the trials (4 of 1189 CA1
+    units more than 1% ISIs under 2 ms, 7 outside 0.05 to 10 Hz), perhaps because the rates were computed over a
+    recording not deposited.
+- kind: other
+  statement: 26 of 273 gaps between trials in the single-cell files exceed 10 min (up to 4.1 h), while the Methods
+    describe 1 to 3 min between trials.
+- kind: paper_inconsistency
+  statement: The Methods use 15 tetrode decoding sessions, the legends 14; the dataset holds 14, with the two Neuropixels
+    sessions 16 in all.
+- kind: data_missing
+  statement: The population files hold the No Object and Object trials only; the Object Moved and No Object' trials
+    of the decoding sessions exist only for the cells the single-cell file gives there (3 to 15 per tetrode session).
+    The control file gives each cell once, and only one control session has 25 or more cells.
+- kind: other
+  statement: The tracking unit is stored as a MATLAB string object, which scipy and other non-MATLAB readers return
+    as an opaque object; its value (centimeters) can be recovered only from the raw bytes.

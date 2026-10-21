@@ -1,0 +1,99 @@
+# Questions from attempt ebrains-q0fg-1x8-nagelhus-2023-01 (author, 2026-10-20) about the claims file
+# claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml. Each is asked under docs/protocol.md,
+# Author, step 1.6; the attempt runs every reading it can see and blocks, as methods_underspecified,
+# the claims whose outcome depends on the answer.
+dataset: EBRAINS:Q0FG-1X8
+paper: doi:10.1016/j.neuron.2023.04.008
+questions:
+- claim: fig1c-object-tuned-fraction
+  also: [figs2e-within-trial-stability, fig2-fraction-changed-no-o, fig2d-rate-overlap-no-o-unchanged,
+    figs3f-ca3-changes, fig1d-field-distances, fig1e-object-cells-and-object-vector-cells,
+    fig4b-distance-decline, figs5e-shuffled-labels, figs5l-without-positively-tuned]
+  asked: 2026-10-20
+  question: How are unvisited bins handled when a rate map is smoothed? The opening comment gives
+    "spikes over time per bin, Gaussian smoothing with SD 2 bins" for single-cell maps (blanked) and
+    "smoothing 2 bins, unvisited bins not blanked" for the template and decoder maps, without saying
+    how bins the rat never visited enter the smoothing. The attempt runs two readings everywhere -
+    (rm a) spike-count and time maps smoothed separately, then divided; (rm b) the rate per bin,
+    then smoothed, with unvisited bins left out of the kernel (blanked maps) or set to zero (maps not
+    blanked).
+  passage: Methods, Firing rate maps and identification of firing fields ("the firing rate in each
+    position bin was calculated as the number of spikes recorded in the bin, divided by the time the
+    rat spent in the bin. The 2D rate map was smoothed with a Gaussian kernel with standard deviation
+    of 2 bins"); the claims file cites rateMapData.m, distanceDecoder.m and calculateRateMap.m for the
+    other maps.
+  why: In fig1c the chance level is 5.02% (11 of 219 controls) under rm a with the Methods'
+    variances, the paper's own count, and 3.65% or 8.22% under rm b, outside 0.0503 +/- 0.00503. In
+    figs2e r is 0.46 under rm b and 0.35 to 0.38 otherwise. The near-object footprint of the Object
+    trial is unvisited, so zero-filling it (rm b) can change decoder likelihoods near the object.
+- claim: fig1d-field-distances
+  also: [fig1e-object-cells-and-object-vector-cells, fig1f-orientation-coverage, figs4-object-traces,
+    figs5ghi-fields-and-rates]
+  asked: 2026-10-20
+  question: Does the rule that a firing field has "a minimum firing rate of at least 1 Hz" apply to
+    the field's peak (field reading a) or to every bin of the field (b, threshold max(3 x MAD, 1 Hz))?
+    The attempt runs both.
+  passage: Methods, Firing rate maps and identification of firing fields ("Firing fields were defined
+    as contiguous areas within a contour with a size of at least 225 cm2 and with a minimum firing
+    rate of at least 1 Hz").
+  why: The number of tuned cells without a field is 13 to 26 under reading a and 20 to 62 under b
+    (expected 30 +/- 3), and the number of trace fields changes by up to 50 cells.
+- claim: ovs-method-extra-cells
+  asked: 2026-10-20
+  question: The criterion says the vector map's distance and direction bins and its smoothing are
+    those of references 11 and 12 (Hoydal et al. 2019; Andersson et al. 2021), but it does not give
+    them. What are the bins and the smoothing, and over what range of distances is the vector map
+    built?
+  passage: Methods, Object-vector score and object-vector cell criteria ("we applied the methods used
+    in previous publications to identify object-vector cells.11,12"); the paper itself gives no bins.
+  why: The vector map's bins and smoothing set the object-vector score and its shuffled
+    distribution, and so the count of cells the method finds. The claim is blocked until they are
+    given.
+- claim: figs6l-sampling-thresholds
+  asked: 2026-10-20
+  question: Is a spatial bin's sampling time that of the whole trial or of the training half, and are
+    testing samples whose position falls in a left-out bin kept or dropped? The attempt runs the four
+    combinations.
+  passage: Methods, Sampling analysis ("we identified spatial bins in which the animal had spent less
+    time than a threshold value ... in either trial and excluded those spatial bins from both trials").
+  why: Under all four combinations the criterion is met, so the answer does not change this outcome;
+    it is asked so that a later attempt can use one reading.
+- claim: figs5f-random-partition
+  asked: 2026-10-20
+  question: Under reading (b), position samples permuted, how are the testing samples formed? The
+    decoder's testing samples are 1 s spike-count vectors, and a random half of position samples
+    does not give 1 s windows.
+  passage: Methods, Random partitioning into training and testing data ("we generated a random
+    permutation of the set of integers {1, 2, 3...T} and used the first T/2 integers as timepoints for
+    training data and the last T/2 integers for testing data").
+  why: Reading (a), 1 s bins, meets the criterion under every speed and rate-map reading, so the
+    outcome does not depend on the answer; reading (b) was not run.
+- claim: figs7cd-number-of-words
+  asked: 2026-10-20
+  question: The rank-sum test of NO against O is over "n = 16 sessions". Is each session's value its
+    number of distinct words over the whole trial (16 against 16), or are the 80 session and distance
+    bin values compared? The attempt runs both.
+  passage: Supplementary Figure 7 legend (image on PDF page 46), "z = 0.221, p = 0.8252", n = 16
+    sessions.
+  why: Both readings give p >= 0.05 here (0.85 and 0.94), so the outcome does not depend on the
+    answer.
+- claim: fig4h-population-vector-correlation
+  asked: 2026-10-20
+  question: Are the NO and O rate maps of the population vector correlation speed-filtered, and
+    are unvisited bins blanked (left out of the correlation) or filled by smoothing? The attempt uses
+    maps not blanked, like the decoder's, under both speed readings and both rate-map readings.
+  passage: Methods, Population vector correlation ("we stacked the rate maps from the No Object trial
+    and Object trial separately"); Methods, Firing rate maps ("Only time epochs in which the animal was
+    moving at a speed above 2.5 cm/s were used for constructing the rate maps and for spatial
+    analyses").
+  why: Bins at the object's footprint are unvisited in the Object trial and lie in distance bin 1,
+    where the correlation is lowest; blanking them could change bin 1. Under the readings run, the
+    criterion is met.
+- claim: fig7-single-cell-properties
+  also: [fig7-slope-variant]
+  asked: 2026-10-20
+  question: In the spatial information, is the mean rate (lambda) the trial's spikes over time
+    (speed-filtered, as the attempt uses) or the occupancy-weighted mean of the smoothed map?
+  passage: Methods, Spatial information content ("l is the mean firing rate in the trial").
+  why: Spatial information is the one property whose correlation with distance tuning misses here
+    (r about 0 against -0.13); the definition of lambda changes the values for sparse cells.
