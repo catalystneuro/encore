@@ -3498,6 +3498,10 @@
     "ready": null,
     "date": null
    },
+   "dandi:001436": {
+    "ready": true,
+    "date": "2026-10-21"
+   },
    "dandi:001444": {
     "ready": true,
     "date": "2026-10-21"
@@ -12896,6 +12900,116 @@
       "source": "Results, Calcium and cholinergic signals encode behavioral state, paragraph 3; Figure S8",
       "quote": "we observed a similar relationship between behavioral state and cholinergic axonal signaling measured via mesoscopic imaging of genetically targeted GCaMP6s-expressing fibers",
       "criterion": ""
+     }
+    ]
+   }
+  ],
+  "dandi:001436": [
+   {
+    "path": "claims/001436/10.1038-s41598-018-22181-4.yaml",
+    "paper": "10.1038/s41598-018-22181-4",
+    "check": {
+     "ready": true,
+     "date": "2026-10-21"
+    },
+    "claims": [
+     {
+      "id": "table3-tem-mice-accuracy",
+      "statement": "The TEM model trained on mouse images segments the mouse test images with a mean three-class pixel-wise accuracy of 95% (0.9451 in Table 3, mean over 24 test images).",
+      "source": "Results, Segmentation, paragraph 1; Table 3, row TEM, Mice",
+      "quote": "The TEM model trained on mice microscopy achieved a pixel-wise accuracy of 95% on mice samples",
+      "criterion": "Segment each mouse TEM image of the dandiset with default_TEM_model_v1 at commit 7f60132, by segment.py with its defaults (0.01 um working pixel size, overlap 25, the input contrast inverted once as segment.py does for this model, see the opening comment), using the pixel size the dandiset gives for each image (Table 1 gives 0.002 um). The result without the inversion is shown as a variant. Pixel-wise accuracy is, per image, the fraction of pixels whose class (background, myelin, axon) in the prediction equals the class in the dandiset's segmentation, at the native pixel size (Methods, Pipeline overview and Pixel-wise accuracy); the value is the mean over images (Table 3 legend). The test set is open, as the paper names neither the mice nor their group. The readings are (a) every mouse image in the dandiset, which also holds the model's training images; (b) the images of the control mice only, following the Discussion's statement that the models were trained and tested on healthy tissues. Neither reading is the paper's test set (3 of the 20 mice, disjoint from the 17 training mice, Table 1), so both may hold training images and a match is weaker evidence than a test on held-out mice. When a mouse has more than 8 images, all its images are used (the paper does not say which 8 it took). Reproduced when the mean is within tolerance under both readings; when the readings differ in outcome the claim is blocked as methods_underspecified. The per-mouse means, and the cuprizone mice apart, are reported."
+     },
+     {
+      "id": "table3-tem-mice-dice-detection",
+      "statement": "On the mouse test images the TEM model reaches a mean axon Dice of 0.9493, a mean myelin Dice of 0.8552, a mean axon detection sensitivity of 0.9597 and a mean precision of 0.9647.",
+      "source": "Table 3, row TEM, Mice",
+      "quote": "",
+      "criterion": "Segmentations and test-set readings as in table3-tem-mice-accuracy. Dice per image is 2|A and B| / (|A| + |B|) between the predicted and the ground-truth masks, for axon and for myelin apart (Methods, Equation 1; pw_dice in segmentation_scoring.py). Sensitivity and precision per image are TP / (TP + FN) and TP / (TP + FP) over axon objects matched by centroids (Methods, Detection metrics), computed with score_analysis as the opening comment states. Each value is the mean over images. Reproduced when all four means are within tolerance under both readings; partially reproduced when two or three are under both."
+     },
+     {
+      "id": "myelin-dice-below-axon-dice",
+      "statement": "In both models and every test sample the myelin Dice is lower than the axon Dice, which the authors attribute to myelin having two boundaries (with the axon and with the background).",
+      "source": "Discussion, Performance metrics, paragraph 1; Table 3",
+      "quote": "In both models and all test samples, computed myelin Dice was lower than axon Dice.",
+      "criterion": "Tested on the mouse TEM images only, with the values of table3-tem-mice-dice-detection. Which units \"all test samples\" covers is open. The readings are (i) the rows of Table 3, so that for the mice the means over images are compared, and (ii) every single test image, as the Table 3 legend calls each of the 24 mouse images a sample. Reproduced when the myelin Dice is below the axon Dice under either of (i) and (ii), for both test-set readings; the result under each, and the fraction of single images with myelin Dice below axon Dice, are reported. The SEM rows and the macaque row cannot be tested on this dandiset; the paper's values (Table 3) hold the order in all five rows."
+     },
+     {
+      "id": "sensitivity-above-93",
+      "statement": "Axon detection sensitivity is above 93% in every test set (Table 3 gives 0.9300 for the human sample, so there the bound is met only with rounding).",
+      "source": "Discussion, Performance metrics, paragraph 1; Table 3",
+      "quote": "In all test sets, sensitivity was high (>93%, see Table 3 ), indicating good capability to detect true positive axons.",
+      "criterion": "Tested on the mouse TEM images only, with the mean sensitivity of table3-tem-mice-dice-detection. Reproduced when the mean is above 0.93 under both test-set readings. The other test sets (rat 1, rat 2, human, macaque) are not in the dandiset."
+     },
+     {
+      "id": "table3-sem-rat-accuracy",
+      "statement": "The SEM model trained on rat spinal cord reaches a pixel-wise accuracy between 85% and 88% on the two rat test images (0.8510 and 0.8822 in Table 3).",
+      "source": "Results, Segmentation, paragraph 1; Table 3, rows SEM, Rat 1 and Rat 2",
+      "quote": "The SEM model trained on rat microscopy was able to achieve a pixel-wise accuracy between 85% and 88% on the rat test samples",
+      "criterion": "Not testable on this dandiset, which holds no SEM images. If the two rat test images and their ground truth were found, segment with default_SEM_model_v1 at commit 7f60132 by segment.py with its defaults (0.1 um working pixel size, overlap 25) and compute the accuracy as in table3-tem-mice-accuracy."
+     },
+     {
+      "id": "table3-sem-human-accuracy",
+      "statement": "On the human spinal cord SEM test image the rat-trained SEM model reaches a pixel-wise accuracy of 81% (0.8114), the lowest of all test samples, which the authors attribute to the human sample's different contrast, quality and noise.",
+      "source": "Results, Segmentation, paragraph 1; Table 3, row SEM, Human; Discussion, Performance metrics, paragraph 1",
+      "quote": "while the pixel-wise accuracy on human test sample was 81%",
+      "criterion": "Not testable on this dandiset, which holds no SEM images. Method as in table3-sem-rat-accuracy."
+     },
+     {
+      "id": "table3-tem-macaque-accuracy",
+      "statement": "On the macaque corpus callosum TEM test image the mouse-trained TEM model reaches a pixel-wise accuracy of 84% (0.8438).",
+      "source": "Results, Segmentation, paragraph 1; Table 3, row TEM, Macaque",
+      "quote": "and a pixel-wise accuracy of 84% on macaque samples",
+      "criterion": "Not testable on this dandiset, which holds mouse images only. Method as in table3-tem-mice-accuracy, on the single macaque image of ref. 7."
+     },
+     {
+      "id": "table3-other-samples-dice-detection",
+      "statement": "For the SEM test images and the macaque TEM image the axon Dice, myelin Dice, sensitivity and precision are rat 1 0.9089, 0.8193, 0.9699, 0.8468; rat 2 0.9244, 0.8389, 0.9876, 0.7987; human 0.8089, 0.7629, 0.9300, 0.7306; macaque 0.9069, 0.7519, 0.9429, 0.8129.",
+      "source": "Table 3, rows Rat 1, Rat 2, Human and Macaque",
+      "quote": "",
+      "criterion": "Not testable on this dandiset. Methods as in table3-tem-mice-dice-detection, with the SEM model for the rat and human images."
+     },
+     {
+      "id": "macaque-myelin-underestimated",
+      "statement": "The TEM model slightly underestimates the myelin sheaths of the macaque sample compared with its ground truth.",
+      "source": "Discussion, Performance metrics, paragraph 1",
+      "quote": "Note that myelin sheaths of the macaque TEM sample are slightly underestimated when compared to the ground truth segmentation.",
+      "criterion": "Not testable on this dandiset, which holds no macaque image. The paper gives no measure; the reading would be a predicted myelin area below the ground-truth myelin area on the macaque image."
+     },
+     {
+      "id": "full-slice-processing-time",
+      "statement": "Segmenting a full rat cervical spinal cord SEM slice took 5 hours on a Mac laptop (2.9 GHz).",
+      "source": "Results, Segmentation, paragraph 2",
+      "quote": "Processing time was 5 hours in a Mac laptop (2.9 GHz).",
+      "criterion": "Not testable on this dandiset, which holds no SEM slice; the time also depends on the machine."
+     },
+     {
+      "id": "fig7-corticospinal-tract",
+      "statement": "In the corticospinal tract of the rat cervical spinal cord the segmentation gives small axon diameters (around 1 um), very high axon density (around 200,000 axons per mm2) and g-ratios around 0.6.",
+      "source": "Results, Morphometrics extraction, paragraph 1; Figure 7",
+      "quote": "In the corticospinal tract (tract",
+      "criterion": "Not testable on this dandiset, which holds no rat spinal cord. Per the Methods (Morphometrics extraction), with AxonSeg (ref. 16) as the paper used, the segmentation of the full slice is aggregated into 50 x 50 um2 cells, within a white matter mask; axon diameter is the equivalent diameter sqrt(4 Area / pi) of each axon object, density is axons per mm2, and g-ratio is sqrt(1 / (1 + MVF / AVF)). The paper gives the tract only as a schematic diagram (Figure 7, refs. 34 to 36), so the cells that form the tract are open."
+     },
+     {
+      "id": "fig7-larger-axons-periphery",
+      "statement": "Larger axons are found close to the periphery of the rat spinal cord.",
+      "source": "Results, Morphometrics extraction, paragraph 1; Figure 7",
+      "quote": "Larger axons are found close to the spinal cord periphery.",
+      "criterion": "Not testable on this dandiset. Method as in fig7-corticospinal-tract; the paper gives no measure of distance to the periphery."
+     },
+     {
+      "id": "fig7-tract-diameters",
+      "statement": "The diameter map agrees with the literature in that the ventral spinothalamic tract has the largest axons and the spinocerebellar tracts are mostly large-diameter fibres (both stated with citations, as known anatomy the map is consistent with), and axons of the cuneate fasciculus are observed to be larger than those of the gracile fasciculus.",
+      "source": "Discussion, Morphometrics extraction, paragraph 1; Figure 7",
+      "quote": "The ventral spinothalamic tract (#3 in tract reference of Fig. 7 ) contains the largest axons ... We also observe that axons in the cuneate fasciculus (#7 in tract reference) are larger than those found in the gracile fasciculus",
+      "criterion": "Not testable on this dandiset. Method as in fig7-corticospinal-tract, comparing the mean axon diameter between tracts; the tract boundaries are open."
+     },
+     {
+      "id": "fig7-gratio-range",
+      "statement": "Across the rat spinal cord white matter the g-ratio ranges between 0.5 and 0.75, in agreement with other rat studies.",
+      "source": "Discussion, Morphometrics extraction, paragraph 1; Figure 7",
+      "quote": "G-ratio ranges between 0.5 and 0.75, which is in agreement with other rat microstructure studies",
+      "criterion": "Not testable on this dandiset. Method as in fig7-corticospinal-tract, over all 50 x 50 um2 white matter cells; the claim holds when the g-ratios lie within 0.45 to 0.825 (the range widened by 10% of each bound). Whether isolated cells at the edge of the mask count is open."
      }
     ]
    }
@@ -29299,6 +29413,12 @@
    "verifier-3-report.md",
    "verifier-3.md"
   ],
+  "dandi:001436": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
+  ],
   "dandi:001444": [
    "claims-check-report.md",
    "claims-check.md",
@@ -29907,7 +30027,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-21T19:22:23+00:00",
+ "generated": "2026-10-21T19:26:07+00:00",
  "queue_generated": "2026-10-21T11:49:08+00:00",
  "queue_counts": {
   "public_dandisets": 660,
@@ -82765,7 +82885,6 @@
    "000232",
    "000233",
    "000727",
-   "000017",
    "000019",
    "000034",
    "000036",
@@ -82882,6 +83001,7 @@
    "001362",
    "001371",
    "001414",
+   "001436",
    "001444",
    "001454",
    "001474",
@@ -83060,7 +83180,6 @@
    "000036",
    "000034",
    "000019",
-   "000017",
    "000727",
    "000233",
    "000232",
@@ -83081,11 +83200,11 @@
    "000013",
    "000015",
    "000016",
+   "000017",
    "000053",
    "000055",
    "001169",
    "001177",
-   "001436",
    "001777",
    "001828",
    "001871",
@@ -83099,24 +83218,20 @@
   },
   "hours": {
    "full": 3.82125,
-   "claims": 0.24986111111111112
+   "claims": 0.2475
   },
   "running": {
-   "ebrains-q0fg-1x8": {
-    "kind": "full",
-    "hours": 0.8335958850000003
-   },
    "000016": {
     "kind": "full",
-    "hours": 2.3031792183333337
+    "hours": 2.2407824069444446
    },
    "000015": {
     "kind": "full",
-    "hours": 1.644845885
+    "hours": 1.5824490736111112
    },
-   "001436": {
-    "kind": "claims",
-    "hours": 0.013595884999999988
+   "ebrains-q0fg-1x8": {
+    "kind": "full",
+    "hours": 1.8093935180555556
    }
   }
  },
