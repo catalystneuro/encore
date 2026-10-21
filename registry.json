@@ -3574,6 +3574,10 @@
     "ready": null,
     "date": null
    },
+   "dandi:001750": {
+    "ready": true,
+    "date": "2026-10-21"
+   },
    "dandi:001751": {
     "ready": true,
     "date": "2026-10-21"
@@ -13610,6 +13614,256 @@
     ]
    }
   ],
+  "dandi:001750": [
+   {
+    "path": "claims/001750/10.1038-s41556-026-02009-4.yaml",
+    "paper": "10.1038/s41556-026-02009-4",
+    "check": {
+     "ready": true,
+     "date": "2026-10-21"
+    },
+    "claims": [
+     {
+      "id": "na-cell-table-link",
+      "statement": "The dandiset's recordings are the 35 outside-out patches of the paper's code table (14 VEN and 21 PC), and the maximal Na+ current computed from each recording agrees with the value the table gives for it.",
+      "source": "Data availability; github.com/RFLiu2021/AIC_proj at commit 44cd8a6, ephysio/data_ephy/rawdata_ephysio/metadata_outSideOutSodiumCurrentRec.csv",
+      "quote": "https://dandiarchive.org/dandiset/001750 (sodium channel currents)",
+      "criterion": "Recordings are matched to table rows by NWB file name (fileName_nwb), and the cell type is compared with the dataset's own label where it has one. For each cell, the maximal peak inward current is computed under each reading of fig4d-sodium-current-lower. The link holds (reproduced) when all 35 files are found, every cell type the dataset gives agrees with the table, and, under at least one reading, the absolute computed maximum is within 10% of the absolute max_Na_current for at least 28 of the 35 cells. Partially reproduced when the files and types match but fewer than 28 values agree under every reading; not reproduced when files are missing or types disagree. Which reading agrees best is reported; it does not choose the reading for the finding, which is judged under all of them."
+     },
+     {
+      "id": "fig4d-sodium-current-lower",
+      "statement": "Somatic Na+ currents recorded in outside-out patches are significantly lower in VENs (n = 14) than in L5 PCs (n = 21).",
+      "source": "Results, The AIC evolved a neural signal-processing strategy, paragraph 3; Figure 4d",
+      "quote": "outside-out patch-clamp recording showed that the somatic Na + currents evoked in VENs ( n = 14) were significantly lower than those of L5 PCs ( n = 21) (Fig. 4d )",
+      "criterion": "Selection, every outside-out patch of a VEN or an L5 PC, typed as the dataset labels it or, when it does not, as metadata_outSideOutSodiumCurrentRec.csv does (through na-cell-table-link). Protocol, steps from -80 to 0 mV in 5 mV increments, 25 ms, leak subtracted online (Methods). Measure, per patch, the largest peak inward current over the steps, as an absolute value in pA; the code compares abs(maxNaCurrent) in pA (Fig4d_plotNaCurrent.m), and the Methods' model section speaks of \"peak sodium current\", so current, not current density, is compared. Repeated sweeps of a step are averaged before the peak is taken, as the code does for its example traces. Open and run as readings, (a) baseline, (a1) the trace as recorded, already leak subtracted (Methods), or (a2) a pre-step baseline subtracted as in the code's example traces, the mean of the first 100 samples of a cut starting 2 ms before the step onset (2 ms at 50 kHz, 1 ms at 100 kHz); (b) steps, (b1) the 17 steps from -80 to 0 mV (Methods, and the code's nTraces = 17) or (b2) every step recorded (the code's example array holds 28); (c) window, (c1) 0 to 20 ms after the step onset (the code's plotted window) or (c2) the whole 25 ms step (Methods). The sampling rate and step onset are read from each file, as the code's examples differ (50 kHz and 40 ms against 100 kHz and 20 ms). Test, two-tailed Wilcoxon rank-sum, VEN against PC (Fig. 4d legend; ranksum in the code), at p < 0.05 (conventional; the panel's P value was not readable). Reproduced when, under every reading, the VEN median is lower with p < 0.05 and the counts are within tolerance; not reproduced when the VEN median is not lower or p >= 0.05 under every reading; blocked as methods_underspecified when readings disagree. The two-sample t-test the code also runs, and the current density (current over the area from each patch's capacitance at 1 uF/cm2, Methods), are shown as variants that do not decide."
+     },
+     {
+      "id": "model-na-ratio",
+      "statement": "The VEN model's somatodendritic Na+ conductance (55 pS/um2, against 80 pS/um2 in the PC model) was set from the recorded ratio of peak Na+ current in VENs to PCs, which puts that ratio near 55/80, about 0.69.",
+      "source": "Methods, Computational model, paragraph 3",
+      "quote": "The VEN model's somatodendritic conductance (55 pS \u00b5m \u22122 ) was set based on the experimentally recorded ratio of peak sodium current in VENs relative to PCs. (Fig. 4d )",
+      "criterion": "The ratio is not printed; 0.6875 is 55/80, both values from the Methods, and \"set based on\" may allow rounding, so the 10% tolerance stands. The Extended Data Fig. 7c legend says the range of somatic Na+ conductance \"was defined by experimental data and previous publications\", so 55 pS/um2 may not be the recorded ratio alone; this is reported with the result. The per-patch maxima of fig4d-sodium-current-lower, under each of its readings. Which group summary forms the ratio is not said; readings of the reported number, (i) mean VEN over mean PC and (ii) median VEN over median PC. Reproduced when the ratio is within tolerance under one summary reading for every reading of the measure; partially reproduced when it is within tolerance for some readings of the measure only; not reproduced otherwise."
+     },
+     {
+      "id": "na-patch-capacitance",
+      "statement": "The outside-out patches have a capacitance of about 50 fF, a membrane area of about 5 um2 at 1 uF/cm2, and similar membrane areas were sampled from both cell types.",
+      "source": "Methods, Electrophysiological recording, paragraph 2",
+      "quote": "No differences in the degree or time of suction applied to the back of pipettes were required to form high resistance (3\u201310 G\u03a9) seals at somatic sites, suggesting that similar membrane areas were sampled ... the membrane surface area (~5 \u00b5m 2 ) of outside-out patches was calculated from the capacitance (~50 fF) assuming a specific membrane capacitance of 1 \u00b5F cm \u22122",
+      "criterion": "Per patch, the capacitance recorded with the patch (as the dataset stores it, for example the PatchMaster slow or fast capacitance compensation value), and the area as capacitance over 1 uF/cm2 (Methods). The \"~\" values are not said to be a mean or a median; readings of the reported number, the mean and the median over all 35 patches. Reproduced when both values are within tolerance under one reading. The paper reports no test of VEN against PC patch size (its \"similar\" rests on the suction applied); VEN and PC medians and a two-tailed Wilcoxon rank-sum test are shown as a description that does not decide. Blocked as data_missing when the dataset holds no patch capacitance."
+     },
+     {
+      "id": "model-sd-na-density",
+      "statement": "In the PC model, lowering the somatodendritic Na+ conductance over the tested range (80 to 55 pS/um2, defined by experimental data and previous publications) only modestly changes the AP (slightly lower and broader) and does not produce the saddle-like phase-plane shape.",
+      "source": "Results, The AIC evolved a neural signal-processing strategy, paragraph 5; Extended Data Figure 7c",
+      "quote": "A reduction in somatodendritic Na + channel density in the PC model only produced modest changes in AP shape (slightly lower amplitude, broader width) but did not induce the saddle-like phase\u2013plane pattern.",
+      "criterion": "Simulations of the PC model as in the Methods (Computational model) with somatodendritic Na+ conductance from 55 to 80 pS/um2. Reproduced when AP amplitude rises and half-width falls with the conductance, each slope with two-tailed t-test p < 0.05 (Extended Data Fig. 7c legend), and the phase-plane plot shows no decay of the AIS phase before the SD phase at any value."
+     },
+     {
+      "id": "fig5d-connectivity-totals",
+      "statement": "Simultaneous recordings of up to eight layer 5b neurons tested 1,292 potential connections among 377 neurons and found 31 monosynaptic connections.",
+      "source": "Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 2; Figure 5d",
+      "quote": "In total, we tested 1,292 potential connections from an additional set of 377 neurons in layer 5b and confirmed 31 monosynaptic connections.",
+      "criterion": "Tested in full under the claims file of DANDI:001751, with the readings named there."
+     },
+     {
+      "id": "fig5-ven-sparse-connectivity",
+      "statement": "VENs form no connections with VENs (0 of 110), PCs (0 of 200) or interneurons (0 of 55), receive none from interneurons (0 of 55) and one in 200 PC-to-VEN pairs, while PCs connect to PCs in 24 of 503 pairs.",
+      "source": "Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 2; Figure 5i",
+      "quote": "PCs formed monosynaptic connections with other PCs in 24 out of 503 tested pairs ... VENs did not form synaptic connections with adjacent VENs (VEN-to-VEN, 0 of 110, 135.7 \u00b1 60.0 \u03bcm) or with PCs (VEN-to-PC, 0 of 200, 119.3 \u00b1 63.1 \u03bcm). Likewise, VENs received minimal local excitatory input, suggesting PCs rarely projected to VENs (PC-to-VEN, 1 of 200 ... no synaptic connections were found between VENs and INs (VEN-to-IN, 0 of 55 and IN-to-VEN, 0 of 55",
+      "criterion": "Tested in full under the claims file of DANDI:001751 (fig5-pc-to-pc, fig5-ven-outputs-absent, fig5-pc-to-ven, fig5-pc-in, fig5-in-to-ven-absent and fig5i-ven-sparse-local-connectivity), with the readings named there."
+     },
+     {
+      "id": "fig5b-psc-frequency",
+      "statement": "The frequencies of spontaneous and miniature EPSCs and IPSCs are lower in VENs than in neighbouring PCs.",
+      "source": "Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 1; Figure 5b",
+      "quote": "The frequencies of both excitatory and inhibitory events were significantly lower in VENs than in PCs (Fig. 5b )",
+      "criterion": "Per cell event frequency, sEPSC 8 VEN and 11 PC, sIPSC 7 and 8, mEPSC 8 and 8, mIPSC 15 and 21 (Fig. 5b legend); events detected at \"the maximus root mean squared noise level (5 pA)\" (Methods); two-tailed Wilcoxon rank-sum test per event type (legend), at p < 0.05 (conventional; the panel's p-values were not readable). Reproduced when the VEN median is lower with p < 0.05 for each type. Tested in full under the claims file of DANDI:001752."
+     },
+     {
+      "id": "fig5c-psc-amplitude",
+      "statement": "The amplitudes of spontaneous and miniature EPSCs and IPSCs do not differ significantly between VENs and PCs.",
+      "source": "Results, Altered connectivity profile of deep-layer AIC neurons, paragraph 1; Figure 5c",
+      "quote": "whereas the amplitudes were not significantly different between VENs and PCs (Fig. 5c )",
+      "criterion": "A claim of absence, judged on the paper's test, a two-tailed Wilcoxon rank-sum test of per-cell amplitudes per event type (Fig. 5c legend; \"The same data in b\", so the cells of Fig. 5b), alpha 0.05 (conventional). The paper does not say how a cell's amplitude summarizes its events (Clampfit, Methods); readings, (a) the mean and (b) the median of the cell's event amplitudes. Reproduced when p >= 0.05 for each type, with the effect size reported."
+     },
+     {
+      "id": "scrna-classes",
+      "statement": "The whole-cell scRNA-seq atlas of the macaque AIC holds 122,663 transcriptomes in four classes, excitatory neurons (21,733, 17.8%), inhibitory neurons (17,007, 13.9%), glial cells (83,283, 67.8%) and vascular cells (640, 0.5%).",
+      "source": "Results, Transcriptomic landscape of the macaque AIC, paragraph 2; Figure 1b,c",
+      "quote": "we categorized these cells into four main classes: excitatory neurons (21,733 cells, 17.8%), inhibitory neurons (17,007 cells, 13.9%), glial cells (83,283 cells, 67.8%) and vascular cells (640 cells, 0.5%)",
+      "criterion": ""
+     },
+     {
+      "id": "scrna-78-types",
+      "statement": "The four classes divide into 20 subclasses and 78 transcriptomic types, 34 inhibitory, 20 excitatory and 24 non-neuronal.",
+      "source": "Results, Transcriptomic landscape of the macaque AIC, paragraph 2; Extended Data Figure 1e,f",
+      "quote": "The four classes were divided into 20 subclasses and further subdivided into 78 molecularly defined transcriptomic cell types, including 34 inhibitory and 20 excitatory neuron types, and 24 non-neuronal cell types",
+      "criterion": "Judged on the paper's cluster labels if the deposit carries them (counts of types per class equal to those stated); a re-clustering with the Methods' pipeline (SCANPY, Harmony, Leiden) has no stated resolution, so the number of clusters it gives cannot decide the claim."
+     },
+     {
+      "id": "patchseq-mapping",
+      "statement": "Of 307 Patch-seq neurons with transcriptomes, 273 excitatory neurons map to 18 of the 20 excitatory types and 34 inhibitory neurons to 17 of the 33 inhibitory types.",
+      "source": "Results, Patch-seq revealed extensive cellular heterogeneity in the primate AIC, paragraph 1; Figure 1e",
+      "quote": "273 excitatory neurons mapped to 18 of the 20 excitatory types, while 34 inhibitory neurons mapped to 17 of the 33 inhibitory types",
+      "criterion": ""
+     },
+     {
+      "id": "ven-map-et-ct",
+      "statement": "The 29 morphologically identified VENs do not map to one molecular cluster; 14 map to L5 ET and 15 to L5/6 CT.",
+      "source": "Results, Patch-seq revealed extensive cellular heterogeneity in the primate AIC, paragraph 2; Figure 2a",
+      "quote": "29 neurons that were morphologically identified as VENs did not map to a unique molecular cluster; instead, they mapped to either L5 ET ( n = 14) or L5/6 CT ( n = 15)",
+      "criterion": ""
+     },
+     {
+      "id": "ven-firing-rate-variability",
+      "statement": "VENs have lower firing rates and greater variability in spike timing than PCs.",
+      "source": "Results, Patch-seq revealed extensive cellular heterogeneity in the primate AIC, paragraph 3; Supplementary Tables 1 and 2",
+      "quote": "Notably, VENs exhibit lower firing rate and greater variability in spike timing than PCs",
+      "criterion": "The paper's values and tests are in Supplementary Tables 1 and 2, not in the text read, and the measure of spike-timing variability is not named in the text; blocked as methods_underspecified unless they are supplied."
+     },
+     {
+      "id": "fig3ab-ven-axon-from-basal-dendrite",
+      "statement": "The axons of VENs emanate from their basal dendrite, while those of PCs originate at the base of the soma.",
+      "source": "Results, The AIC evolved a neural signal-processing strategy, paragraph 1; Figure 3a,b",
+      "quote": "One of the most notable morphological features that distinguish VENs from other PC types is that the axons of the VENs emanate from its basal dendrite (Fig. 3a )",
+      "criterion": "The paper shows examples (Fig. 3a, 20 replications; Fig. 3b, biocytin and Pan-Nav co-staining, 35 replications, axon origins \"from prominent basal dendrites in VEN\" and \"from the base of the soma in PC\") and reports no count or test. Measured on the reconstructed VENs and PCs whose axon was recovered (Fig. 6e counts 36 VEN-L, 20 VEN-S and 74 PCs with axonal information). The paper gives no fraction; readings, (a) every such VEN's axon leaves a basal dendrite and every PC's the soma, and (b) more than half do in each type. Reproduced when either reading holds, with the fractions reported and the reading that holds named."
+     },
+     {
+      "id": "fig3c-ais-distance-length",
+      "statement": "In Pan-Nav stained sections the AIS of VENs lies farther from the soma than that of PCs, and VENs have a shorter AIS.",
+      "source": "Results, The AIC evolved a neural signal-processing strategy, paragraph 2; Figure 3c",
+      "quote": "showed that the AIS in VENs was, on average, located significantly farther from the soma than in PCs (Fig. 3c ). Additionally, VENs had a shorter AIS than PCs.",
+      "criterion": "The legend names a two-way ANOVA (n = 108 VENs and 430 PCs, 23 slices, five animals) without its factors; the readings are cell type with slice, and cell type with animal, as the second factor. Reproduced when, under both, the cell-type effect is significant at p < 0.05 (conventional) for AIS distance (VEN larger) and AIS length (VEN shorter)."
+     },
+     {
+      "id": "fig3e-phase-peak-index",
+      "statement": "VENs have lower AP phase-plane peak indices than every PC type.",
+      "source": "Results, The AIC evolved a neural signal-processing strategy, paragraph 3; Figure 3e",
+      "quote": "The VENs had lower phase peak indices than any type of PCs (Fig. 3e )",
+      "criterion": "Phase peak index (Psd - Pais)/(Psd + Pais) (Methods, Calculation of the phase peak index). Kruskal-Wallis test followed by Dunn's test (Fig. 3e legend). Reproduced when the VEN median is the lowest and Dunn's test separates VENs from each PC type at p < 0.05 (conventional)."
+     },
+     {
+      "id": "fig4ac-ap-width-amplitude",
+      "statement": "In 281 VENs and 306 L5 PCs, APs of VENs are broader and lower in amplitude.",
+      "source": "Results, The AIC evolved a neural signal-processing strategy, paragraph 3; Figure 4a-c",
+      "quote": "APs in VENs were broader and had a lower amplitude compared with L5 PCs (Fig. 4a-c )",
+      "criterion": "AP amplitude and half-width of the first AP as in the Methods. Reproduced when the VEN median width is larger and amplitude smaller, each with two-tailed Wilcoxon rank-sum p < 0.001."
+     },
+     {
+      "id": "fig4i-peak-index-ais-distance",
+      "statement": "The phase peak index decreases linearly with AIS distance from the soma in the VEN model, and this relation closely matches the one in real neurons.",
+      "source": "Results, The AIC evolved a neural signal-processing strategy, paragraph 4; Figure 4i",
+      "quote": "the linear decrease in the phase peak index with increasing AIS distance observed in the VEN model closely matched the experimental data (Fig. 4i , ANCOVA: F(1, 93) = 1.07, P = 0.5729 for intersection, P = 0.0031 for slope)",
+      "criterion": "Reproduced when the slope is negative with two-tailed t-test p < 0.05 in the model and in real neurons, and the ANCOVA intercept term gives p >= 0.05. What the ANCOVA slope P tests is not said (common slope against zero, or difference of slopes); it is reported under both readings and does not decide. The printed F(1, 93) = 1.07 is placed before both P values and gives p of about 0.30, matching neither 0.5729 nor 0.0031, so which term it belongs to is open; it is recorded under the intercept as the text's order suggests and does not decide."
+     },
+     {
+      "id": "fig4g-model-ais-distance-ap-shape",
+      "statement": "In the VEN model, moving the AIS farther from the soma makes APs wider and smaller and the phase-plane plot more saddle-like; this effect is not replicated in the PC model.",
+      "source": "Results, The AIC evolved a neural signal-processing strategy, paragraph 4; Figure 4g,h; Extended Data Figure 7b",
+      "quote": "Crucially, simulating an increase in the distance of the AIS from the soma in the VEN model led to APs being wider and smaller in amplitude",
+      "criterion": "Simulations as in the Methods (Computational model), AIS distance 0 to 170 um in the VEN model and hillock length 0 to 70 um in the PC model. Reproduced when, in the VEN model, AP amplitude falls and width rises with AIS distance, each slope with two-tailed t-test p < 0.05 (Extended Data Fig. 7b legend), and in the PC model amplitude does not fall (the legend reports it slightly increasing; the PC AP also widens slightly, p = 0.0013, so width does not separate the models and is reported only)."
+     },
+     {
+      "id": "fig4j-eepsp-latency",
+      "statement": "Latencies of eEPSPs evoked by deep-layer stimulation do not differ between paired VENs and PCs (5.13 and 5.02 ms).",
+      "source": "Results, VENs respond robustly to deep-layer synaptic input, paragraph 1; Figure 4j",
+      "quote": "The postsynaptic response latencies were similar between VENs and PCs (5.13 \u00b1 0.29 ms for VENs and 5.02 \u00b1 0.30 ms for PCs, two-tailed paired t -test: P = 0.8941)",
+      "criterion": "Only monosynaptic eEPSPs, those whose amplitude increases monotonically with stimulation current at a constant latency, with polysynaptic responses and those evoking APs excluded (Methods, electrical stimulation). A claim of absence, judged on the paper's two-tailed paired t-test at alpha 0.05; reproduced when p >= 0.05, with the mean difference reported. Tolerances are the stated s.e.m."
+     },
+     {
+      "id": "fig4j-eepsp-amplitude",
+      "statement": "eEPSP amplitudes are higher in VENs than in adjacent PCs, with effects of cell type and stimulation level in an ANOVA.",
+      "source": "Results, VENs respond robustly to deep-layer synaptic input, paragraph 1; Figure 4j",
+      "quote": "whereas the response amplitudes in VENs were significantly higher than those in adjacent PCs (analysis of variance (ANOVA), P = 0.0034 for cell type and P < 0.001 for stimulation level",
+      "criterion": "The monosynaptic eEPSPs of fig4j-eepsp-latency (Methods). ANOVA of amplitude on cell type and stimulation level (the Results name the two factors; the legend of the same design in Extended Data Fig. 9e,f says two-way ANOVA). Whether it treats the 26 VEN-PC pairs and the stimulation levels as repeated measures is not said; readings, (a) ordinary two-way ANOVA and (b) repeated-measures ANOVA with the pair as subject. Reproduced when, under both, VEN amplitudes are higher and the cell-type effect has p < 0.05 (conventional)."
+     },
+     {
+      "id": "model-ven-fires-more",
+      "statement": "In simulations, the VEN model fires more than the PC model to the same synaptic input trains, and a distal axon origin raises the somatic response to distal basal inputs.",
+      "source": "Results, VENs respond robustly to deep-layer synaptic input, paragraph 2; Figure 4k,l",
+      "quote": "VEN fired more robustly than PC to the same synaptic input trains (Fig. 4k ), and the distal origin of the axon facilitates the somatic response to the distal basal dendritic inputs (Fig. 4l )",
+      "criterion": "Reproduced when, across input frequencies of 200 to 1,100 Hz (Methods), the VEN model's firing rate exceeds the PC model's, and the VEN model with AIS D = 70 um fires more than with AIS D = 0 um."
+     },
+     {
+      "id": "fig6-ven-subtype-morphology",
+      "statement": "VEN-L has a larger basal dendritic arborization than L5 PCs, VEN-S an intermediate one similar to PCs; the axon origin lies farther from the soma in both VEN subtypes than in PCs, with no difference between VEN-L and VEN-S.",
+      "source": "Results, Multimodal profiling of two VEN subtypes, paragraph 1; Figure 6c-e",
+      "quote": "VEN-L had larger basal dendritic arborization than L5 PCs, whereas VEN-S had intermediate-sized basal dendrite arborization similar to PCs ... the distance from the axon originating site to the soma was significantly greater in both VEN subtypes compared with PCs (Fig. 6e ), with no significant difference observed between VEN-L and VEN-S",
+      "criterion": "Two-tailed Wilcoxon rank-sum tests with Benjamini-Hochberg FDR (Fig. 6d,e legend), n = 38 VEN-L, 34 VEN-S, 85 PCs for basal height and field size, and 36, 20 and 74 for axon distance. \"Basal dendritic arborization\" is measured in Fig. 6d by two features, basal dendritic height and field size; the text does not say which carries the finding, so each is a reading. Reproduced when, under each, VEN-L exceeds PCs at FDR < 0.05 and VEN-S does not differ from PCs (FDR >= 0.05), both subtypes exceed PCs in axon distance at FDR < 0.05, and VEN-L against VEN-S in axon distance gives FDR >= 0.05."
+     },
+     {
+      "id": "fig6f-g-ven-subtype-mapping",
+      "statement": "VEN-Ls map to L5 ET (Exc FEZF2 DSG2, n = 10) and VEN-Ss to L5/6 CT (Exc FEZF2 COL24A1, n = 11), where they fall in the subcluster COL24A1 POC5 apart from canonical L5/6 CT neurons.",
+      "source": "Results, Multimodal profiling of two VEN subtypes, paragraph 2; Figure 6f,g",
+      "quote": "the morphologically defined VENs mapped to L5 ET (Exc FEZF2 DSG2) were VEN-Ls ( n = 10), while those VENs mapped to L5/6 CT (Exc FEZF2 COL24A1) were VEN-Ss ( n = 11)",
+      "criterion": ""
+     },
+     {
+      "id": "fig6h-subtype-markers",
+      "statement": "VEN-L expresses markers such as DSG2, HAPLN4, TOX2, TRPC4, CAMK1G and TAGLN2; VEN-S expresses ATP8A2, POC5 and SEMA3E.",
+      "source": "Results, Multimodal profiling of two VEN subtypes, paragraph 2; Figure 6h",
+      "quote": "VEN-L expressed markers such as DSG2, HAPLN4, TOX2, TRPC4, CAMK1G and TAGLN2 , whereas VEN-S showed high expression of ATP8A2, POC5 and SEMA3E",
+      "criterion": "SCANPY Wilcoxon differential expression (Methods, Enrichment marker genes), comparing VEN-L, VEN-S and L5/6 CT types (Results; Fig. 6h shows the Exc FEZF2 COL24A1 subpopulations and Exc FEZF2 DSG2). The Methods give two levels, (a) significant marker genes, log fold change > 1 and FDR < 0.05, and (b) enriched marker genes, among the top 50 and meeting the four expression criteria listed; the text does not say which the named genes meet. Reproduced when each named gene passes for its subtype under both; blocked as methods_underspecified when they disagree."
+     },
+     {
+      "id": "ven-subtypes-similar-physiology",
+      "statement": "VEN-L and VEN-S have similar physiological properties.",
+      "source": "Results, Multimodal profiling of two VEN subtypes, paragraph 2; Extended Data Figure 9c-f; Supplementary Table 8",
+      "quote": "Despite their distinct morphological and transcriptomic profiles, both VEN subtypes exhibited similar physiological properties (Extended Data Fig. 9 and Supplementary Table 8 )",
+      "criterion": "A claim of absence, judged on the paper's tests, two-tailed Wilcoxon rank-sum with Benjamini-Hochberg FDR (Extended Data Fig. 9c,d), on AP width and amplitude of 85 VEN-L and 41 VEN-S, and the two-way ANOVA of eEPSP amplitudes between VEN-L and VEN-S (Extended Data Fig. 9f legend, 12 VEN-L and 12 VEN-S paired with PCs, a subset of the Fig. 4j recordings). Reproduced when none is significant at 0.05 (FDR for the first two). The other features are in Supplementary Table 8, not read."
+     },
+     {
+      "id": "fig7c-tau-rna-distance",
+      "statement": "Across pairs of projection neuron types, distances in membrane time constant correlate with transcriptomic distances (r = 0.53).",
+      "source": "Results, Transcriptomic distinctions underlie phenotypic variation, paragraph 1; Figure 7a-c",
+      "quote": "Pooling the pairs across all clusters revealed a high correlation ( r = 0.53) between the membrane time constant (tau) distances and RNA distances (Fig. 7a\u2013c )",
+      "criterion": "Transcriptomic distance from the Pearson correlation of mean log2(x + 1) counts over the 500 most-variable genes, tau distance as the Euclidean distance between type means (Methods, Variability analysis of transcriptomic neuron types); Pearson r over all pairs. The Methods define the distance as \"the Pearson correlation\"; the Results call it the \"correlation distance between average log counts\", so it is taken as 1 - r, the reading the Results give and the one under which a positive r between distances is possible. The pairs are those of all projection neuron types with mapped Patch-seq neurons (\"Pooling the pairs across all clusters\"); no minimum number of cells per type is given."
+     },
+     {
+      "id": "fig8a-metabolite-gradient",
+      "statement": "Of 581 metabolites, 228 differ between AIC and V1 and only 108 between AIC and parietal cortex.",
+      "source": "Results, Cortical metabolomics reveals a glycolytic bias of the AIC, paragraph 1; Figure 8a",
+      "quote": "we identified 228 differentially abundant metabolites between the AIC and V1 (Welch's ANOVA test followed by Games\u2013Howell test, P < 0.05) compared with only 108 between the AIC and PrC",
+      "criterion": "Welch's ANOVA followed by Games-Howell at P < 0.05 per metabolite (a selection threshold), on 6 AIC, 6 PrC and 7 V1 samples from three animals (Fig. 8 legend)."
+     },
+     {
+      "id": "fig8de-glycolytic-bias",
+      "statement": "Compared with V1, AIC shows elevated citrate, reduced 2-ketobutyrate and increased glutamate, read as a glycolytic bias.",
+      "source": "Results, Cortical metabolomics reveals a glycolytic bias of the AIC, paragraphs 3 and 4; Figure 8d,e",
+      "quote": "AIC cells displayed elevated citrate and reduced 2-ketobutyrate levels, along with increased glutamate",
+      "criterion": "Welch's ANOVA followed by Games-Howell test (Fig. 8 legend). Reproduced when citrate and glutamate are higher and 2-ketobutyrate lower in AIC than in V1 at P < 0.05."
+     },
+     {
+      "id": "ext7d-ais-length-no-effect",
+      "statement": "In the models, varying AIS length (10 to 70 um) has no significant effect on AP shape; the legends give, for the VEN model, p = 0.3887 for amplitude and p = 0.0515 for width, and for the PC model p = 0.087 for amplitude and p = 0.0038 for width (wider with longer AIS).",
+      "source": "Results, The AIC evolved a neural signal-processing strategy, paragraph 5; Extended Data Figure 7d,e",
+      "quote": "Varying AIS length had no significant effect on AP shape in either model.",
+      "criterion": "Simulations as in the Methods (Computational model), AIS length from 10 to 70 um in each model. A claim of absence, judged on the paper's test, the two-tailed t-test of the slope of AP amplitude and of AP width against AIS length (Extended Data Fig. 7d,e legends), at 0.05 (conventional). Reproduced when the VEN amplitude, VEN width and PC amplitude slopes give p >= 0.05. The PC width slope is significant in the paper's own legend (p = 0.0038), which conflicts with the Results sentence; it is reported with its slope and does not decide."
+     },
+     {
+      "id": "ext7i-basal-dendrite-diameter",
+      "statement": "VENs have thicker basal dendrites than PCs (n = 72 VENs, 86 PCs), compared along the distance from the soma.",
+      "source": "Results, VENs respond robustly to deep-layer synaptic input, paragraph 1; Extended Data Figure 7i",
+      "quote": "These findings indicated that VENs responded more robustly to deep-layer inputs than PCs, likely due to their thicker basal dendrites (Extended Data Fig. 7i ).",
+      "criterion": "Basal dendritic diameter as a function of distance from the soma, in 50 um bins with a 10 um sliding step, VEN against PC by two-tailed Student's t-test per bin (Extended Data Fig. 7i legend), at p < 0.05 (conventional). Open, with readings, (a) which dendrite, the prominent (thickest) basal dendrite of each cell, as in Fig. 6b and the AB_thickRatio of the Methods, or all basal dendrites; (b) which bins must differ, every bin holding data from both groups, or at least one bin with none significant in the other direction. Reproduced when VEN means are larger with p < 0.05 under every reading, not reproduced when under none, and blocked as methods_underspecified when the readings disagree; the per-bin results are shown."
+     },
+     {
+      "id": "fig2df-l23-it-tau-width",
+      "statement": "Among projection neuron subclasses, L2/3 IT HPCAL1 neurons stand out with a small membrane time constant and a narrow AP width.",
+      "source": "Results, Patch-seq revealed extensive cellular heterogeneity in the primate AIC, paragraph 3; Figure 2d,f",
+      "quote": "L2/3 IT HPCAL1 neurons stood out with a small membrane time constant (tau) and narrow action potential (AP) width (Fig. 2d\u2013f )",
+      "criterion": "Tau and AP half-width as defined in the Methods (Extraction of electrophysiological features), per subclass, n = 30 L2/3 IT HPCAL1, 17 IT RORB, 119 L5 IT FEZF2, 22 VEN, 16 L5 ET and 13 L6 PC (Fig. 2 legend); two-tailed Wilcoxon rank-sum tests with Benjamini-Hochberg FDR (legend), at FDR < 0.05 (conventional). The paper's values are in Supplementary Tables 1 and 2, not in the text read. \"Stood out\" is read as the lowest median of the six subclasses with FDR < 0.05 against each other subclass, for tau and for AP width. Partially reproduced when the medians are lowest but not every comparison is significant."
+     },
+     {
+      "id": "fig3f-ais-distance-types",
+      "statement": "Among Patch-seq projection neuron subclasses, the AIS of VENs lies farther from the soma than in the other subclasses.",
+      "source": "Results, The AIC evolved a neural signal-processing strategy, paragraph 3; Figure 3f",
+      "quote": "The VENs had lower phase peak indices than any type of PCs (Fig. 3e ), reflecting the unique AIS geometry in VENs (Fig. 3f )",
+      "criterion": "The quote cites Fig. 3f without stating its result; the direction is read from the Fig. 3f legend (AIS distance from the soma compared among cell types) and from Fig. 3c, which places the VEN AIS farther from the soma. AIS distance from the soma per Patch-seq neuron, n = 25 L2/3 IT HPCAL1, 16 IT RORB, 54 L5 IT FEZF2, 18 VEN, 11 L5 ET and 13 L6 PC (Fig. 3f legend, as Fig. 2h); two-sided Wilcoxon rank-sum tests with Benjamini-Hochberg FDR (legend), at FDR < 0.05 (conventional). Reproduced when the VEN median is the highest and VENs differ from each other subclass at FDR < 0.05; partially reproduced when the median is highest but not every comparison is significant. The paper's values are in Supplementary Tables 3 and 4, not in the text read."
+     }
+    ]
+   }
+  ],
   "dandi:001751": [
    {
     "path": "claims/001751/10.1038-s41556-026-02009-4.yaml",
@@ -19533,6 +19787,12 @@
    "verifier-2-report.md",
    "verifier-2.md"
   ],
+  "dandi:001750": [
+   "claims-check-report.md",
+   "claims-check.md",
+   "claims-report.md",
+   "claims.md"
+  ],
   "dandi:001751": [
    "claims-check-report.md",
    "claims-check.md",
@@ -19816,7 +20076,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-21T08:03:15+00:00",
+ "generated": "2026-10-21T08:14:25+00:00",
  "queue_generated": "2026-10-21T03:29:33+00:00",
  "queue_counts": {
   "public_dandisets": 660,
