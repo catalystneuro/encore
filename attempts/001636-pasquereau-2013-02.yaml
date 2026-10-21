@@ -144,8 +144,9 @@ outcomes:
     spike trains at each cell-direction's baseline rate give 0.21 (main) and 0.48 (t-test) with the
     earlier attempt's seed, and 0.16 to 0.19 (main) with eight other seeds, so most of the excess
     comes from the detection procedure. The rate does not fall with baseline rate (0.18 to 0.29 by
-    quartile) or number of trials (0.21 to 0.26). 14 cell-directions (10 CSN) have no baseline spike
-    and cannot respond. Every spike window lies inside its trial (onsets come at least 2968 ms after
+    quartile) or number of trials (0.21 to 0.26). 14 cell-directions (10 CSN) have a baseline SD of
+    exactly 0 and cannot respond; near-silent cell-directions with a threshold of about 0 can respond
+    (v5801.1, baseline 0.00 spikes/s, an extension response at 30 ms), adding to the false positives. Every spike window lies inside its trial (onsets come at least 2968 ms after
     the trial start and 1516 ms before its stop), so no window is cut by a trial boundary. A
     threshold calibrated to a pseudo-onset rate of 0.01 (t = 6.67 against 3.11)
     finds 30.4% and 32.5% of M1 cells torque-related. Same outcome as 001636-pasquereau-2013-01; its
@@ -346,11 +347,12 @@ outcomes:
     and the triceps lateralis (medians 3.1 against 164.0, 3.7 against 297.1 and 5.5 against 76.0
     A/D units; Kolmogorov-Smirnov p = 1.1e-56, 6.0e-50, 4.7e-15). The increase follows the torque
     command; median m2 is 0.86 at the smallest command size (pre only), 41.85 (pre) and 1.81 (post)
-    at the middle, and 17.09 (pre, n = 5) and 194.4 (post) at the largest, so within a state it does
-    not rise simply with command size, and in the middle-size sessions m2 is not larger after MPTP
+    at the middle, and 17.09 (pre, n = 5) and 194.4 (post) at the largest, so before MPTP it does not
+    rise with command size while after MPTP it does, and in the middle-size sessions m2 is not larger after MPTP
     (triceps longus 1 median 47.6 against 1.3, p = 0.013, with 40 and 6 sessions). Rebuilt from the
     perturbations of one per-trial command step, at twice the smallest step the median m2 over the
-    triceps channels is 44.9 before and 1.8 after MPTP (p = 0.004, 66 and 11 channel-sessions); no
+    triceps channels is 44.9 before and 1.8 after MPTP (p = 0.004, 66 and 11 channel-sessions), though
+    on triceps longus 2 it is larger after MPTP (52.2 against 113.0, n = 26 and 4, p = 0.36); no
     other step has 5 channel-sessions in both states. The outcome is the
     criterion's comparison; as the torque command is about four times larger in most post-MPTP
     sessions, the increase cannot be attributed to MPTP. Same outcome as 001636-pasquereau-2013-01.
@@ -728,4 +730,276 @@ verifications:
     agrees: true
     outcome: blocked
     reason: The paper gives no single-trial latency; it checked the Methods text.
+    response: No change.
+- date: '2026-10-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook after the first revision, the helper module, the claims
+    file and the attempt record, with the paper's full text. It recomputed group statistics from the per-cell
+    table. It could not check the claims file's expected values against the supplementary table, as no
+    PDF reader was available. Text corrected in reply, besides the claims below; the README run time now
+    matches the latest run (4.1 min; the report cited 1.7 min, with the README giving 5.2 min). The report
+    notes the round-1 cell numbers in this record have since shifted; they are kept as the round-1 report
+    gave them.
+  results:
+  - claim: cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Matches round 1 and the current outputs (cell 25).
+    response: No change.
+  - claim: monkey-l-perturbations
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs.
+    response: No change.
+  - claim: baseline-rate
+    agrees: true
+    outcome: reproduced
+    reason: Matches round 1 and the current outputs. It recomputed the baseline rates from the new per-cell
+      table (cell 23); they match the notebook.
+    response: No change.
+  - claim: ptn-faster-than-csn
+    agrees: true
+    outcome: reproduced
+    reason: Matches round 1 and the current outputs; the baseline rates recomputed from the per-cell table
+      (cell 23) match the notebook.
+    response: No change.
+  - claim: antidromic-latency
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches round 1 and the current outputs (cell 35, CSN p = 0.0190 against 0.0167, False). Round-1
+      problem 2 is resolved, as cell 35 prints each antidromic test against its threshold.
+    response: No change.
+  - claim: false-positive-rate
+    agrees: true
+    outcome: blocked
+    reason: It now accepts blocked (methods_underspecified), where in round 1 it said not_reproduced.
+      The claims file's header treats a pseudo-onset rate outside 0.0033 to 0.03 as showing that the procedures
+      differ; Poisson spike trains give 0.16 to 0.19 with eight seeds (cell 40) against 0.23 observed
+      (cell 38), so the excess comes from the detection as reconstructed here and the test says nothing
+      about the paper's own rate. It cannot see the protocol rule the author cites; the tension sits in
+      the claims file, whose criterion only says when it is Reproduced, which would otherwise default
+      to not_reproduced; it is not a misreading of the paper. Item 2 says cell 43's 'Both rates are more
+      than 3 times the paper's' is true but understates the gap (0.23 and 0.46 are about 23 and 46 times
+      0.01), and its 'cannot tell whether the paper's procedure differs' sits awkwardly next to the earlier
+      'so the procedure here differs from the paper's'. Cell 43 and the record's notes say 14 cell-directions
+      can never respond, which is true only for a baseline SD of exactly 0 (cell 22); cell 23 shows near-silent
+      cells with thresholds of about 0 that do respond (v5801.1, baseline 0.00, thresholds 0.00, an extension
+      response at 30 ms). This adds to the detection's false positives, but every dependent claim is blocked,
+      so no conclusion changes. Round-1 section C on spike windows is resolved (cell 42); problem 8 does
+      not bear on a conclusion, as both readings are shown and both block.
+    response: Cell 43 now says the rates are about 23 and 46 times the paper's, and that either the procedure
+      here differs from the paper's in a way the Methods do not settle or the paper's stated rate does
+      not hold, and the analysis cannot tell which. Cell 43 and the notes now say the 14 cell-directions
+      have a baseline SD of exactly 0, and that near-silent cell-directions with a threshold of about
+      0 can respond (v5801.1 given), adding to the false positives. Outcome unchanged.
+  - claim: torque-related-fractions
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it. It recomputed the torque-related fractions from the per-cell table (cell 23); they match
+      the notebook.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: prevalence-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: ptn-more-responsive
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: one-direction-half
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: excitatory-majority
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: magnitude-unchanged
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: venus-response-magnitudes
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: latency-shorter
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it. The earliest latencies recomputed from the per-cell table (cell 23) match the notebook.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: latency-not-training
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: fwhm-shorter-ptn
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: dsi-reduced
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it. The reciprocal-plus-unidirectional shares recomputed from the per-cell table (cell 23) match
+      the notebook; problems 6 and 7 are resolved.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: venus-dsi
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: dsi-not-baseline
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: kinematics-slower
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Matches round 1 and the current outputs (cell 83). Problem 3, the torque confound, is addressed
+      as far as the data allow: the conclusion and note say the effect cannot be attributed to MPTP. The
+      not reproduced outcome carries the same confound, which the record states.'
+    response: No change.
+  - claim: kinematic-latency-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Matches round 1 and the current outputs (cell 87). Problem 4 is resolved, as the filter is
+      now run on synthetic movements (cell 88). The not reproduced outcome carries the torque confound,
+      which the record states.
+    response: No change.
+  - claim: emg-m2-larger
+    agrees: true
+    outcome: reproduced
+    reason: Matches round 1 and the current outputs (cell 93). It is reproduced on the criterion but is
+      not evidence of an MPTP effect; at the one comparable command step the pooled median goes the other
+      way (cell 94). The record says this, but the Summary (cell 110) and README lines 37 to 39, 'the
+      m2 response is smaller after MPTP, not larger', overstate it; cell 94 supports this only at one
+      step (twice the smallest) and only with 66 against 11 channel-sessions, and on triceps longus 2
+      at that step m2 is larger after MPTP (52.2 against 113.0, n = 4, p = 0.36). Cell 95's 'so it does
+      not rise simply with command size within a state' holds before MPTP only (0.86, 41.85, then 17.09
+      with n = 5); after MPTP m2 rises with command size (1.81 to 194.4).
+    response: The Summary and README now say m2 can be compared at one step only (66 against 11 channel-sessions),
+      where the pooled median is smaller after MPTP but triceps longus 2 is larger (52.2 against 113.0,
+      4 post-MPTP channel-sessions, p = 0.36). Cell 95 and the notes now say m2 does not rise with command
+      size before MPTP but does after, and give the triceps longus 2 result at that step. Outcome unchanged.
+  - claim: emg-duration-longer
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches round 1 and the current outputs (cells 93, 97 and 101). Problem 5 is addressed as
+      far as the data allow; counts are printed and the cell 98 conclusion says many pre-MPTP responses
+      are brief crossings of a small signal. Problem 7 is resolved. The outcome carries the torque confound,
+      which the record states.
+    response: No change.
+  - claim: emg-onset-unchanged
+    agrees: true
+    outcome: not_reproduced
+    reason: Matches round 1 and the current outputs (cells 93, 97 and 101). Problem 5 is addressed as
+      far as the data allow; counts are printed and the cell 98 conclusion says many pre-MPTP responses
+      are brief crossings of a small signal. The not reproduced outcomes carry the torque confound, which
+      the record states.
+    response: No change.
+  - claim: emg-m1-weak
+    agrees: true
+    outcome: partially_reproduced
+    reason: Matches round 1 and the current outputs (cells 93, 97 and 101). Problem 5 is addressed as
+      far as the data allow; counts are printed and the cell 98 conclusion says many pre-MPTP responses
+      are brief crossings of a small signal. The outcome carries the torque confound, which the record
+      states.
+    response: No change.
+  - claim: velocity-matched-magnitude
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: session-correlations
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs. Round-1 problem 1 is resolved, as the cell 0 header
+      marks the dependent claims as run and blocked. Its item 2 says the Summary's 'The header now marks
+      the 16 claims blocked by the false-positive rate' miscounts, as cell 0 marks 16 claims run and blocked
+      but that count includes false-positive-rate itself, and cell 0's own text says 15 claims depend
+      on it.
+    response: The Summary now says the header marks false-positive-rate and the 15 claims blocked by it
+      as run and blocked. Outcome unchanged.
+  - claim: trial-correlations
+    agrees: true
+    outcome: blocked
+    reason: Matches round 1 and the current outputs.
     response: No change.

@@ -35,8 +35,9 @@ where the paper's threshold implies 0.01, so the claims that use the selection a
 analyses still run, and the notebook reports them. The torque command is about four times larger
 in most post-MPTP sessions than in most pre-MPTP ones, which bears on every pre against post
 comparison of the movements and EMG. Compared at the same per-trial command step, movements are
-faster after MPTP for some steps and directions and slower for others, and the m2 response is
-smaller after MPTP, not larger.
+faster after MPTP for some steps and directions and slower for others. The m2 response can be
+compared at one step only (66 against 11 channel-sessions): its median over the triceps channels is
+smaller after MPTP, though on triceps longus 2 it is larger (4 post-MPTP channel-sessions).
 
 In the draft, the analog streams share the clock of the trials, the angle's sign convention and
 the monkey L series names are corrected, repeated files and unit copies are gone, and neurons
@@ -49,7 +50,7 @@ The attempt records, with the reasons and the differences from the paper's metho
 version) and [`attempts/001636-pasquereau-2013-01.yaml`](../../attempts/001636-pasquereau-2013-01.yaml)
 (version 0.260518.1819).
 
-- `reproduce_pasquereau_2013.ipynb`: the analysis. It took 5.2 min in the latest run (1.8 to 4.5 min in earlier runs), most of it streaming the
+- `reproduce_pasquereau_2013.ipynb`: the analysis. It took 4.1 min in the latest run (1.7 to 5.2 min in earlier runs), most of it streaming the
   439 files of the draft and the units of the 447 files of the earlier version.
 - `stretch.py`: loading the files (with the analog streams realigned to the trials where needed,
   and each unit's perturbations taken from its own trials), the spike density functions, response
