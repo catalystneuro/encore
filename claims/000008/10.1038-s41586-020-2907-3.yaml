@@ -738,8 +738,16 @@ claims:
     Spearman correlation between maximum AP count and the cell's position along the line from
     the Sst reference centroid to the Pvalb reference centroid, positive, and (b) cells above
     the t-type's median firing having a smaller mean pairwise embedding distance among
-    themselves than random halves of the t-type (1,000 permutations, one-sided p < 0.05).
-    Reproduced when both hold; when the readings disagree, methods_underspecified.
+    themselves than random halves of the t-type (one-sided p < 0.05). Reproduced when both
+    hold; when the readings disagree, methods_underspecified. Neither the paper nor the code
+    (phenotype-tsne.ipynb, the Fig. 5d cell, which only colours the mapped cells by maximum
+    number of APs on 10x-tsne-pvsst) gives a test, so the number of permutations in (b) is
+    not the paper's; it is fixed here so that no random seed decides the outcome (answer of
+    2026-10-21). The p-value of (b) is exact, over all subsets of the same size, when there
+    are at most 1,000,000 of them; otherwise it is estimated from 100,000 random subsets as
+    (k + 1) / (N + 1). Reading (b) holds when p < 0.05 and the upper bound of the 95% binomial
+    (Clopper-Pearson) interval of the estimate is also below 0.05; a p-value whose interval
+    contains 0.05 does not show the grouping at p < 0.05, and (b) does not hold.
   depends_on:
   - link-metadata-table
 # --- Sequencing and transcriptomic quality (not in the dandiset) ----------------------------
