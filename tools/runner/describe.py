@@ -11,6 +11,9 @@
     python tools/runner/describe.py folder DATASET     # a dataset's folder name (tools/datasets.py)
     python tools/runner/describe.py label FOLDER       # how the dataset is shown: DANDI:000003
     python tools/runner/describe.py deprecated FOLDER  # "true" when its latest attempt is deprecated
+    gh run list ... --json displayTitle,createdAt,updatedAt,conclusion | python tools/runner/describe.py queue [LANES CLAIMS_LANES]
+                                                       # both queues, the open branches and how long a chain
+                                                       # takes, as JSON for the pipeline page
     gh run list ... --json databaseId,displayTitle,status | python tools/runner/describe.py run FOLDER ROLE
                                                        # "<id> <status>" of the newest run of a role, if any,
                                                        # on either account
@@ -97,7 +100,8 @@ def published(target: dict) -> bool:
     return target.get("archive", "dandi") != "dandi" or bool(target.get("published_version"))
 
 
-def next_target(skip: set[str], claims: bool = False) -> str | None:
+def queue(skip: set[str] = frozenset(), claims: bool = False) -> list[str]:
+    """The datasets a runner will take, by folder name, in the order it will take them."""
     import datasets
     targets = []
     for archive, spec in datasets.ARCHIVES.items():
@@ -110,13 +114,12 @@ def next_target(skip: set[str], claims: bool = False) -> str | None:
                     for t in listed]
     targets = [t for t in targets if published(t)]
     records = [Path(p).name for p in git("ls-tree", "--name-only", "origin/main", "attempts/").split()]
-    branches = {line.split("refs/heads/attempt/", 1)[1] for line in git("ls-remote", "--heads", "origin",
-                                                                          "attempt/*").split("\n") if line}
     # An attempt record is named <folder>-<first author>-<year>-<nn>.yaml. A dataset whose latest attempt
     # is deprecated is to be done again (its claims too, see chain.sh), so it is open.
     attempted = {t["folder"] for t in targets if any(r.startswith(t["folder"] + "-") for r in records)}
     attempted -= {f for f in attempted if latest_deprecated(f, records)}
-    open_ = [t for t in targets if t["folder"] not in attempted | branches | skip]
+    taken = attempted | branches() | set(skip)
+    open_ = [t for t in targets if t["folder"] not in taken]
     if claims:
         papers = (main_yaml("papers/manifest.yaml") or {}).get("targets", {})
         read = {Path(p).name for p in git("ls-tree", "--name-only", "origin/main", "claims/").split()}
@@ -125,13 +128,69 @@ def next_target(skip: set[str], claims: bool = False) -> str | None:
     # Datasets whose paper is published come first, so that fewer attempts rest on a preprint that is
     # published later; then ours. Python's sort is stable, so the list's order holds within each group.
     fix = (main_yaml("papers/triage.yaml") or {}).get("targets", {})
-    order = sorted(open_, key=lambda t: (not has_publication(t, fix.get(t["folder"], {})), not t.get("catalystneuro")))
-    if not order:
-        return None
-    if claims:   # from the other end of the same group as the full runner, so the two do not meet
-        return [t for t in order if has_publication(t, fix.get(t["folder"], {})) == has_publication(
-            order[0], fix.get(order[0]["folder"], {}))][-1]["folder"]
-    return order[0]["folder"]
+    published_paper = [t for t in open_ if has_publication(t, fix.get(t["folder"], {}))]
+    preprint_only = [t for t in open_ if not has_publication(t, fix.get(t["folder"], {}))]
+    groups = [sorted(g, key=lambda t: not t.get("catalystneuro")) for g in (published_paper, preprint_only)]
+    if claims:   # each group from its other end, so that the two runners do not meet
+        groups = [g[::-1] for g in groups]
+    return [t["folder"] for g in groups for t in g]
+
+
+def next_target(skip: set[str], claims: bool = False) -> str | None:
+    return next(iter(queue(skip, claims)), None)
+
+
+def branches() -> set[str]:
+    """The datasets with an attempt branch that is not merged into main: an attempt going on, or one stopped
+    for a person. A merged branch is left behind by an earlier attempt and is deleted when the next one
+    starts (chain.sh), so it does not hold its dataset back."""
+    git("fetch", "-q", "origin", "+refs/heads/attempt/*:refs/remotes/origin/attempt/*")
+    merged = {b.strip() for b in git("branch", "-r", "--merged", "origin/main", "--list", "origin/attempt/*").split("\n")}
+    return {line.split("refs/heads/attempt/", 1)[1] for line in git("ls-remote", "--heads", "origin",
+                                                                    "attempt/*").split("\n")
+            if line and "origin/attempt/" + line.split("refs/heads/attempt/", 1)[1] not in merged}
+
+
+def json_lists(text: str) -> list:
+    """The items of one or more JSON lists written one after another, as two `gh run list` calls write them."""
+    decoder, items, text = json.JSONDecoder(), [], text.strip()
+    while text:
+        found, end = decoder.raw_decode(text)
+        items += found
+        text = text[end:].strip()
+    return items
+
+
+def chain_hours(runs: list[dict]) -> dict[str, float | None]:
+    """How long a chain takes, from the agent runs (gh run list --json displayTitle,createdAt,updatedAt,conclusion):
+    the median time from a dataset's first run to its last, for full attempts (author to recorder) and for
+    claims-only chains. A dataset's runs more than three hours apart belong to different chains."""
+    import datetime
+    import re
+    import statistics
+    when = lambda s: datetime.datetime.fromisoformat(s.replace("Z", "+00:00"))
+    by_dataset: dict[str, list] = {}
+    for r in runs:
+        m = re.match(r"(?:Agent|Paper) run: (\S+) (\S+)(?: \(unverified\))?$", r.get("displayTitle", ""))
+        if m:
+            by_dataset.setdefault(m.group(1), []).append((when(r["createdAt"]), when(r["updatedAt"]), m.group(2),
+                                                          r.get("conclusion")))
+    full, claims = [], []
+    for found in by_dataset.values():
+        found.sort()
+        chains = [[found[0]]]
+        for run in found[1:]:
+            if (run[0] - max(x[1] for x in chains[-1])).total_seconds() > 3 * 3600:
+                chains.append([])
+            chains[-1].append(run)
+        for chain in chains:
+            roles = {x[2] for x in chain if x[3] == "success"}
+            hours = (max(x[1] for x in chain) - min(x[0] for x in chain)).total_seconds() / 3600
+            if {"author", "recorder"} <= roles:
+                full.append(hours)
+            elif {"claims", "claims-check"} <= roles and "author" not in roles:
+                claims.append(hours)
+    return {"full": statistics.median(full) if full else None, "claims": statistics.median(claims) if claims else None}
 
 
 def newest_run(runs: list[dict], dandiset: str, role: str) -> str:
@@ -162,6 +221,11 @@ def main() -> int:
         from agent_run import attempt_of
         found = attempt_of(rest[0])
         print("true" if found and found[0].get("deprecated") else "false")
+    elif command == "queue":
+        # The queues, for the dashboard's pipeline page; the runs (as for "run") come on stdin.
+        lanes = dict(zip(("full", "claims"), map(int, rest or (3, 1))))
+        print(json.dumps({"full": queue(), "claims": queue(claims=True), "branches": sorted(branches()),
+                          "lanes": lanes, "hours": chain_hours(json_lists(sys.stdin.read()))}))
     elif command == "published":
         import datasets
         key = datasets.key_of_folder(rest[0])

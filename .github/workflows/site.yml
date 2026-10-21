@@ -22,6 +22,7 @@ on:
 permissions:
   contents: write
   issues: read
+  actions: read
 
 # One publish at a time; previews (preview.yml) have their own groups.
 concurrency:
@@ -35,7 +36,10 @@ jobs:
       contains(github.event.issue.labels.*.name, 'needs-you')
     runs-on: ubuntu-latest
     steps:
+      # The whole history, so that the queue can tell the attempt branches merged into main from the open ones.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -60,9 +64,22 @@ jobs:
           gh issue list --repo "$GITHUB_REPOSITORY" --label needs-you --state open --limit 500 \
             --json title,url > "$RUNNER_TEMP/issues.json" || echo '[]' > "$RUNNER_TEMP/issues.json"
 
+      # The runners' queues and how long a chain takes, for the pipeline page's estimates. The numbers of
+      # lanes come from the repository variables RUNNER_LANES and CLAIMS_LANES, when they are set.
+      - name: Work out the queues
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          { gh run list --repo "$GITHUB_REPOSITORY" --workflow attempt.yml --limit 1000 \
+              --json displayTitle,createdAt,updatedAt,conclusion
+            gh run list --repo "$GITHUB_REPOSITORY" --workflow papers.yml --limit 1000 \
+              --json displayTitle,createdAt,updatedAt,conclusion; } \
+            | python tools/runner/describe.py queue "${{ vars.RUNNER_LANES || 3 }}" "${{ vars.CLAIMS_LANES || 1 }}" \
+            > "$RUNNER_TEMP/queue.json" || rm -f "$RUNNER_TEMP/queue.json"
+
       - name: Build the site
         run: |
-          python tools/build_site.py --output site --issues "$RUNNER_TEMP/issues.json"
+          python tools/build_site.py --output site --issues "$RUNNER_TEMP/issues.json" --queue "$RUNNER_TEMP/queue.json"
           touch site/.nojekyll
 
       - uses: JamesIves/github-pages-deploy-action@v4.9.0

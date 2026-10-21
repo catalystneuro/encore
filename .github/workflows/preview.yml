@@ -15,6 +15,7 @@ on:
 permissions:
   contents: write
   pull-requests: write
+  actions: read
 
 # One run per pull request: a newer push, or closing the pull request, cancels the
 # run before it. Not shared with site.yml: in a shared group a queued preview
@@ -38,16 +39,29 @@ jobs:
         with:
           python-version: '3.13'
 
+      # The runners' queues, as in site.yml, for the pipeline page's Queue and Done in columns.
+      - name: Work out the queues
+        if: github.event.action != 'closed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          pip install --no-cache-dir pyyaml
+          { gh run list --repo "$GITHUB_REPOSITORY" --workflow attempt.yml --limit 1000 \
+              --json displayTitle,createdAt,updatedAt,conclusion
+            gh run list --repo "$GITHUB_REPOSITORY" --workflow papers.yml --limit 1000 \
+              --json displayTitle,createdAt,updatedAt,conclusion; } \
+            | python tools/runner/describe.py queue "${{ vars.RUNNER_LANES || 3 }}" "${{ vars.CLAIMS_LANES || 1 }}" \
+            > "$RUNNER_TEMP/queue.json" || rm -f "$RUNNER_TEMP/queue.json"
+
       - name: Build the site
         if: github.event.action != 'closed'
         run: |
-          pip install --no-cache-dir pyyaml
           mkdir -p site/notebooks
           if git fetch --depth 1 origin executed 2>/dev/null; then
             git archive FETCH_HEAD | tar -x -C site/notebooks
             rm -f site/notebooks/.nojekyll
           fi
-          python tools/build_site.py --output site --noindex
+          python tools/build_site.py --output site --noindex --queue "$RUNNER_TEMP/queue.json"
 
       - uses: rossjrw/pr-preview-action@v1.8.1
         with:

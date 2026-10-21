@@ -58,3 +58,15 @@ def test_a_target_with_a_journal_paper_has_a_publication():
     assert describe.has_publication(preprint, {"not_papers": {"10.1101/2024.01.01.000001": ""},
                                                "papers": {"10.7554/elife.00001": ""}})
     assert not describe.has_publication(journal, {"not_papers": {"10.1038/s41586-024-00001-1": ""}})
+
+
+def test_a_chain_takes_from_its_first_run_to_its_last():
+    def run(dataset, role, start, end, conclusion="success"):
+        return {"displayTitle": f"Agent run: {dataset} {role}", "createdAt": f"2026-10-21T{start}:00Z",
+                "updatedAt": f"2026-10-21T{end}:00Z", "conclusion": conclusion}
+    runs = [run("000001", "author", "01:00", "02:00"), run("000001", "recorder", "04:00", "05:00"),
+            run("000002", "claims", "01:00", "01:10"), run("000002", "claims-check", "01:10", "01:20")]
+    runs[3]["displayTitle"] = "Paper run: 000002 claims-check (unverified)"
+    assert describe.chain_hours(runs) == {"full": 4.0, "claims": 20 / 60}
+    # Two lists written one after the other, as two `gh run list` calls write them.
+    assert describe.json_lists('[1, 2]\n[3]\n') == [1, 2, 3]
