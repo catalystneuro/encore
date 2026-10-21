@@ -358,8 +358,9 @@ outcomes:
     pass the recomputed cut, as does 1 PTlower unit), 16 of the 21 most predictive are PTupper, and the PTlower
     mean (56.2%) is below 56.7 +/- 0.4%. On the paper's units 15 and 0 at 70%, 20 of 21, 62.7% and 56.6%. On
     the processed data for the same 100 units, 9 and 0 at 70%, 15 of 21, 62.33% and 56.84%; the counts fall short
-    because units are missing, and the PTlower mean moves out of tolerance with the files, whose baseline rates,
-    the rectification threshold, are higher. What the answer changed - it fixed the selection; the outcome is
+    because units are missing, and the PTlower mean is out of tolerance on the files and within it on the same
+    units processed. The files' higher baseline rates, the rectification threshold, may explain this, but the
+    notebook does not isolate the baseline as the cause. What the answer changed - it fixed the selection; the outcome is
     unchanged.
 - claim: pt-cdgo-onset
   outcome: partially_reproduced
@@ -421,7 +422,9 @@ outcomes:
     +0.3 s, against 0.79 for PTupper). Lick-aligned bins later than 3.0 s after the go cue count no spikes, but
     the last lick is more than 2.5 s after the go cue in only 0.16% of PTupper and 0.17% of PTlower unit-trials,
     so this cut does not bear on the result. The windows also fail for CDlate on the paper's own units and
-    licks. What the answer changed - the paper gives no windows, so both stay and
+    licks. Those units give the dandiset's pattern for PTlower only. For PTupper, CDgo selectivity on the
+    dandiset is significant in 82.5% to 100% of the bins before the last lick and in 4 to 13 bins after it,
+    and on the paper's units in no bin. What the answer changed - the paper gives no windows, so both stay and
     the claim stays blocked; the last lick is the code's, and a rebuilt one is acceptable only where the check
     above leaves the outcome the same, which it does not in that one combination.
   deviations:
@@ -518,7 +521,8 @@ verifications:
   by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
   reviewed: Round 1. The executed notebook with the conclusion cells and the summary removed, the helper
     module and the claims file, with the paper. The verifier checked the archive and the Anatomy.zip listing
-    for the blocked claims and tested the helper functions on synthetic inputs. 28 of its 31 outcomes agree
+    for the blocked claims and tested the helper functions on synthetic inputs. It did not download the
+    Figshare sequencing and axon files itself and relied on the notebook's outputs for them. 28 of its 31 outcomes agree
     with the record; for pt-upper-persistent, pt-cohort-control and pt-types-differ-in-timing it gives the
     outcome of the claim's own test, where the record blocks them through a blocked dependency.
   results:
@@ -602,7 +606,7 @@ verifications:
       (6.69 Hz baseline, 20.96 Hz peak). Separately, a trial's spikes are taken by time window on the file's
       clock, so at least 11.65% of baseline-epoch spikes belong to the previous trial, which inflates baseline
       rates; it could not check how much this moves results without the processed-data variant restricted to
-      the 100 units the dandiset holds (problem 3).
+      the 100 units the dandiset holds (problem 3, which it rated as not affecting a conclusion).
     response: Added a section that reruns the measures on the processed data for the 100 units the dandiset
       holds. There peak rates also differ (p = 0.03), so the failure comes from the missing units. On these
       units every unit's baseline rate is higher in the files (median by 0.99 and 0.97 Hz), which quantifies
@@ -758,3 +762,229 @@ verifications:
       blocked (pt-upper-early-preparatory, and pt-upper-persistent through it), and the protocol blocks a
       claim that depends on a blocked claim. The conclusion and notes now say the criterion would give
       partially reproduced without that rule.
+- date: '2026-10-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebook with the conclusions and the summary, the README, the attempt
+    record, the helper module and the claims file, with the paper and its round-1 report. It agrees with all 31
+    outcomes, including the three blocked through a dependency, which in round 1 it gave the outcome of their
+    own test. It also found the README's run time of about twelve minutes high, as the run took 591 s; the
+    README now says about ten minutes.
+  results:
+  - claim: pt-types-transcriptomic
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-upper-thalamus-projection
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-lower-medulla-projection
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-types-shared-targets
+    agrees: true
+    outcome: blocked
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-retrograde-sublaminae
+    agrees: true
+    outcome: blocked
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. The BL648 image counts and sizes are now
+      given; the pixel size was read outside the notebook.
+    response: No change needed.
+  - claim: pt-projection-cluster-mapping
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-types-account-for-all-pt
+    agrees: true
+    outcome: partially_reproduced
+    reason: It still agrees, but the criterion has no outcome rule at all, so partial is a judgement. The structures
+      of AA0134's axon nodes are now listed (cell 31).
+    response: No change; the outcome is kept as a judgement, as the conclusion and notes already say the criterion has
+      no partial rule.
+  - claim: pt-marker-genes
+    agrees: true
+    outcome: blocked
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-bulk-sc-fold-change-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-tagged-units
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. Problem 1 (missing sessions) is
+      confirmed as the cause by the same-unit variant and recorded as a finding. Problem 10 is reconciled as 143
+      good-quality units plus 7 Fair PTlower units.
+    response: No change needed.
+  - claim: pt-depth
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-spike-rates-similar
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. Problem 3 is quantified, baseline rates
+      a median 0.97 to 0.99 Hz higher in the files. The README's "raises every unit's baseline rate by about 1
+      Hz" is not supported, as the rise ranges from 0.14 to 6.47 Hz and about 1 Hz is the median (cell 123
+      states this correctly). The record attaches problem 3 here without saying that it rated it as not
+      affecting a conclusion.
+    response: The README now says every unit's baseline rate is higher, by a median of about 1 Hz (0.14 to 6.47 Hz). The
+      round-1 reason now says problem 3 was rated as not affecting a conclusion.
+  - claim: pt-lower-heterogeneous-rates
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-lower-bursting
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. Problem 2 is still open and bears on the
+      conclusion, pending the reader's answer in questions/000006.yaml on count criteria that 100 units cannot
+      reach; the same-unit variant shows the processed data give the same counts on the same units.
+    response: No change; the outcome waits for the reader's answer to the question already asked.
+  - claim: pt-selective-any-epoch
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. Problem 2 is still open and bears on the
+      conclusion, pending the reader's answer in questions/000006.yaml on count criteria that 100 units cannot
+      reach; the same-unit variant shows the processed data give the same counts on the same units. The fraction
+      is 0.99 against 0.94. The README's statement that the processed data for the 100 units give the dandiset's
+      counts and test results does not hold everywhere, as selective units are 97 against 99 (cell 122).
+    response: The README now says the processed data for the same units give most of the dandiset's counts and test
+      results, with this difference as an example. The outcome waits for the reader's answer to the question
+      already asked.
+  - claim: pt-variance-explained
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-preparatory-activity
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. Problem 2 is still open and bears on the
+      conclusion, pending the reader's answer in questions/000006.yaml on count criteria that 100 units cannot
+      reach; the same-unit variant shows the processed data give the same counts on the same units.
+    response: No change; the outcome waits for the reader's answer to the question already asked.
+  - claim: pt-upper-early-preparatory
+    agrees: true
+    outcome: blocked
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. On the same units rule (ii) under
+      projection (a) holds on the processed data and fails on the files, one of the differences that the
+      README's "gives the dandiset's counts and test results" leaves out (cell 122).
+    response: The README now says most counts and test results, not all.
+  - claim: pt-upper-persistent
+    agrees: true
+    outcome: blocked
+    reason: It now accepts blocked, as the claims file makes it depend on pt-upper-early-preparatory, which is
+      blocked, taking the dependency rule as the author states it since docs/protocol.md was not among its
+      materials. The claim's own test is not reproduced (68 and 160 of 420 bins; p = 0.053 and 0.058; cell 76).
+      If the rule differs from how the author states it, the outcome would be not reproduced. The README's
+      "Where the remaining open readings give different outcomes, the claim is blocked" leaves out the three
+      claims blocked through a dependency, whose own readings agree with each other.
+    response: The rule is in docs/protocol.md, Author step 1.5 ("A claim that depends on a blocked claim is blocked for
+      the same reason."), so the outcome is kept. The README now names the three claims blocked through a
+      dependency and says their own readings agree with each other.
+  - claim: pt-lower-cdearly-decay
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. The PTlower decay p on the same units is
+      0.474 on the processed data against 0.348 on the files, another difference the README's sentence on the
+      same-unit variant leaves out.
+    response: The README now says most counts and test results, not all.
+  - claim: pt-cd-stability
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-single-neuron-early-selectivity
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-upper-decoding
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. Problem 2 is still open and bears on the
+      conclusion, pending the reader's answer in questions/000006.yaml on count criteria that 100 units cannot
+      reach; the same-unit variant shows the processed data give the same counts on the same units.
+    response: No change; the outcome waits for the reader's answer to the question already asked.
+  - claim: pt-upper-decoding-rectified
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. Problem 2 is still open and bears on the
+      conclusion, pending the reader's answer in questions/000006.yaml on count criteria that 100 units cannot
+      reach; the same-unit variant shows the processed data give the same counts on the same units. Cell 92,
+      cell 124 and the notes say the PTlower mean leaves tolerance with the files, whose baseline rates are
+      higher. The notebook shows the files and the processed data differ on the same units (56.20% against
+      56.84%) but does not isolate the baseline as the cause, so this is plausible but untested. The rectified
+      PTupper count at 70% (9 against 8) and PTupper units in the top 21 (15 against 16) differ on the same
+      units, which the README leaves out.
+    response: Cell 92, cell 124 and the notes now give the two means and say the higher baseline may explain the
+      difference but is not isolated as its cause. The README now says most counts and test results, not all.
+  - claim: pt-lower-late-and-motor
+    agrees: true
+    outcome: reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-cdgo-onset
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. Problem 8 is narrowed down but only
+      partly resolved, as PTlower's onset is the 37.5 ms bin in the files, in the same units processed and in all
+      the paper's units (cell 95), so the gap comes from the method here; what in the method causes it is not
+      found. It does not change the outcome. The PTupper onset on the same units differs (82.5 against 77.5 ms),
+      which the README leaves out.
+    response: The README now gives this onset difference as an example of where the same-unit variant differs. What in
+      the method causes the PTlower offset is not looked into further; it does not change the outcome.
+  - claim: reaction-time
+    agrees: true
+    outcome: blocked
+    reason: Agreed in round 1; the re-executed outputs give the same numbers.
+    response: No change needed.
+  - claim: pt-cd-change-at-go-cue
+    agrees: true
+    outcome: blocked
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. Problem 9, the one-bin difference with
+      no uncertainty, is now stated.
+    response: No change needed.
+  - claim: pt-lower-movement-termination
+    agrees: true
+    outcome: blocked
+    reason: Agreed in round 1; the re-executed outputs give the same numbers. Problems 4 to 6 are resolved
+      (lick-aligned truncation 0.16% and 0.17% of unit-trials). Cell 112 and the notes say the paper's units
+      with their own last licks give the same pattern as the dandiset with all trials; this is true for PTlower
+      only. For PTupper, CDgo selectivity on the dandiset is significant before the last lick (0.825 to 1.0 of
+      bins) and after it (4 to 10 bins), and on the paper's units at 0 bins (cell 108).
+    response: Cell 112 and the notes now say the pattern matches for PTlower only and give the PTupper difference. The
+      printed table gives 4 to 13 bins after the last lick with the code's selection (9 and 13 under projection
+      (a), 4 under (b)), so that range is used. The outcome is unchanged.
+  - claim: pt-cohort-control
+    agrees: true
+    outcome: blocked
+    reason: It now accepts blocked through the dependency on pt-upper-early-preparatory, taking the rule as the author
+      states it; the claim's own test gives partially reproduced (cell 115), and if the rule differs it would be
+      partially reproduced. Problem 7 (cohort-control direction) is reported and asked in questions/000006.yaml;
+      it is still a claims-file issue. The Summary's "the unidentified pools are about half the paper's" holds
+      only for the PTupper cohort (232 of 495); the PTlower cohort has 430 of 511, 84% (cells 11 and 13).
+    response: The Summary now gives both cohorts' counts against the paper's. The dependency rule is in
+      docs/protocol.md, Author step 1.5, so the outcome is kept; the README now names the claims blocked through
+      a dependency.
+  - claim: pt-types-differ-in-timing
+    agrees: true
+    outcome: blocked
+    reason: It now accepts blocked through the dependency, taking the rule as the author states it; the claim's own
+      test gives partially reproduced if the dependency rule is not applied (cell 120), and if the rule differs
+      it would be partially reproduced.
+    response: The dependency rule is in docs/protocol.md, Author step 1.5, so the outcome is kept; the README now names
+      the claims blocked through a dependency.

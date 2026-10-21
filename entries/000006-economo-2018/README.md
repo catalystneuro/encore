@@ -32,15 +32,20 @@ attempt's questions (`questions/000006.yaml`), and the claims file now settles t
 decided under those, with the Methods' session rule and all trials shown as variants. On the
 dandiset the code's rule keeps 44 PTupper and 56 PTlower units, not the paper's 61 and 69, because
 11 sessions are missing from it. Where the remaining open readings give different outcomes, the
-claim is blocked. The same code run on the paper's units from its processed data gives most of the
+claim is blocked; three more claims (PTupper persistent activity, cohort control and the summary of
+the two types' timing) are blocked because the claims file makes them depend on a blocked claim,
+though their own readings agree with each other. The same code run on the paper's units from its processed data gives most of the
 paper's numbers; those runs are variants, and no outcome rests on them. Run on the processed data for
-only the 100 units the dandiset holds, the code gives the dandiset's counts and test results, so most
-failures here come from the missing units; the files' clock raises every unit's baseline rate by about
-1 Hz. The spike and lick times in
-the files are not sorted, and consecutive trials overlap on the files' clock; the notebook shows
-this and rebuilds the trials from the stored order.
+only the 100 units the dandiset holds, the code gives most of the dandiset's counts and test results
+(not all: for example 97 selective units against the dandiset's 99, and a PTupper CDgo onset of 82.5 ms
+against the dandiset's 77.5 ms),
+so most failures here come from the missing units; the files' clock raises every unit's baseline rate,
+by a median of about 1 Hz (0.14 to 6.47 Hz). The spike and lick times in the files are not sorted,
+and consecutive trials overlap on the files' clock. The notebook shows this; it gives spikes to trials
+by time window on the files' clock, and uses the stored order only to rebuild each trial's last lick
+and the trial boundaries of the bursting measure.
 
-- `reproduce_economo_2018.ipynb`: the analysis. It takes about twelve minutes, most of it streaming
+- `reproduce_economo_2018.ipynb`: the analysis. It takes about ten minutes, most of it streaming
   the files and the processed data and running the bootstraps.
 - `alm.py`: loading the files, the paper's processed data and the Seq and Axons files of the Figshare
   record; the two unit selections; smoothed rates; the single-unit measures; the hierarchical
