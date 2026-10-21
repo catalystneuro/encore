@@ -322,10 +322,39 @@ def nonwhisk_mask(cell: Cell, T: Touches) -> np.ndarray:
     return out
 
 
-def whisk_mask(cell: Cell, T: Touches, with_touch: bool) -> np.ndarray:
-    """Whisking, amplitude > 2.5 deg; read with touch epochs added, or with them left out."""
+def post_touch_mask(cell: Cell, T: Touches) -> np.ndarray:
+    """Touch samples and the samples within 70 ms after the end of each touch, inside its trial
+    (Methods: whisking cycles within 70 ms after touch are excluded)."""
+    after = touch_mask(cell, T)
+    for b in T.off:
+        k = cell.trial_of[min(b, len(after) - 1)]
+        e = min(b + AFTER_TOUCH_MS, len(after))
+        seg_end = cell.seg_start[k + 1] if k + 1 < len(cell.seg_start) else len(after)
+        after[b:min(e, seg_end)] = True
+    return after
+
+
+def lick_cycle_mask(cell: Cell) -> np.ndarray:
+    """Samples of the whisk cycles that hold a lick onset, and the lick onset samples themselves
+    (Methods: whisking cycles during licking are excluded; the files give lick onsets only, so a
+    cycle is "during licking" when a lick onset falls in it, a standard choice)."""
+    m = cell.lick.copy()
+    lc = np.r_[0, np.cumsum(cell.lick)]
+    for a, b in cycles(cell):
+        if lc[b] > lc[a]:
+            m[a:b] = True
+    return m
+
+
+def whisk_mask(cell: Cell, T: Touches, with_touch: bool, exclude: bool = True) -> np.ndarray:
+    """Whisking, amplitude > 2.5 deg, leaving out licking cycles and the 70 ms after each touch
+    (claims file, opening comment, from the Methods); read with touch epochs added, or with them
+    left out. exclude=False drops the licking and after-touch exclusions (the earlier run's mask,
+    a variant only)."""
     touch = touch_mask(cell, T)
     w = cell.amp > WHISK_AMP
+    if exclude:
+        w &= ~post_touch_mask(cell, T) & ~lick_cycle_mask(cell)
     return (w | touch) if with_touch else (w & ~touch)
 
 
@@ -344,13 +373,7 @@ def cycle_table(cell: Cell, T: Touches) -> pd.DataFrame:
     cyc = cycles(cell)
     ph = cell.phase.astype(float)
     touch = touch_mask(cell, T)
-    # samples within 70 ms after the end of a touch (or in it)
-    after = touch.copy()
-    for b in T.off:
-        k = cell.trial_of[min(b, len(after) - 1)]
-        e = min(b + AFTER_TOUCH_MS, len(after))
-        seg_end = cell.seg_start[k + 1] if k + 1 < len(cell.seg_start) else len(after)
-        after[b:min(e, seg_end)] = True
+    after = post_touch_mask(cell, T)   # touch samples and the 70 ms after each touch
     lick_c = np.r_[0, np.cumsum(cell.lick)]
     after_c = np.r_[0, np.cumsum(after)]
     touch_c = np.r_[0, np.cumsum(touch)]
@@ -869,8 +892,12 @@ def touch_detection(I_list, Q_list, N, rng, n_resp=1000, reps=50):
     integrated touch responses (n_touch x n_bins); Q_list: per neuron, dict of non-touch count
     arrays by reading. For each repetition, N neurons drawn with replacement and n_resp responses
     per neuron with replacement; the threshold maximising percent correct on the first half, the
-    performance on the second half. Returns {reading: (reps, n_post_bins, 2)} with the hit rate
-    and percent correct at each post-touch bin."""
+    performance on the second half. Returns {reading: (reps, n_post_bins, 4)} with the hit rate
+    and percent correct at each post-touch bin, first with the middle of the thresholds that tie
+    for the best training percent correct, then with the lowest of them (the earlier run's rule,
+    which classifies every sample as touch when no threshold beats chance; a variant only). How
+    ties are broken is not given in the paper; the middle one is a standard choice, and both are
+    shown."""
     keys = list(Q_list[0].keys())
     post = slice(30, None)
     out = {k: [] for k in keys}
@@ -887,17 +914,19 @@ def touch_detection(I_list, Q_list, N, rng, n_resp=1000, reps=50):
                 Q[k] = Q[k] + q[rng.integers(0, len(q), n_resp)]
         for k in keys:
             q = Q[k]
-            res = np.empty((P.shape[1], 2))
+            res = np.empty((P.shape[1], 4))
             for j in range(P.shape[1]):
                 p = P[:, j]
                 cand = np.unique(np.r_[p[:h], q[:h]]) + 0.5
                 cand = np.r_[cand.min() - 1, cand]
                 hit = (p[:h, None] > cand[None, :]).mean(0)
                 cr = (q[:h, None] < cand[None, :]).mean(0)
-                th = cand[np.argmax((hit + cr) / 2)]
-                hit_t = (p[h:] > th).mean()
-                cr_t = (q[h:] < th).mean()
-                res[j] = hit_t, (hit_t + cr_t) / 2
+                pc = (hit + cr) / 2
+                tied = np.flatnonzero(pc >= pc.max() - 1e-12)
+                for ti, th in enumerate((cand[tied[len(tied) // 2]], cand[tied[0]])):
+                    hit_t = (p[h:] > th).mean()
+                    cr_t = (q[h:] < th).mean()
+                    res[j, 2 * ti:2 * ti + 2] = hit_t, (hit_t + cr_t) / 2
             out[k].append(res)
     return {k: np.array(v) for k, v in out.items()}
 
