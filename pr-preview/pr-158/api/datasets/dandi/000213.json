@@ -1,0 +1,784 @@
+{
+ "dataset": {
+  "archive": "dandi",
+  "id": "000213",
+  "label": "DANDI:000213"
+ },
+ "page": "datasets/dandi/000213/",
+ "generated": "2026-10-21T02:27:23+00:00",
+ "caution": "A failure to reproduce is not a finding that the paper is wrong. It may be a failure of the attempt.",
+ "outcome_counts": {
+  "reproduced": 3,
+  "partially_reproduced": 8,
+  "not_reproduced": 9,
+  "blocked": 5
+ },
+ "outcome_counts_with_outside_data": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_elsewhere": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "outcome_counts_links": {
+  "reproduced": 0,
+  "partially_reproduced": 0,
+  "not_reproduced": 0,
+  "blocked": 0
+ },
+ "attempts": [
+  {
+   "id": "000213-tingley-2018-01",
+   "dataset": {
+    "archive": "dandi",
+    "id": "000213",
+    "version": "0.250624.0438",
+    "doi": "10.48324/dandi.000213/0.250624.0438"
+   },
+   "key": "dandi:000213",
+   "label": "DANDI:000213",
+   "dataset_version": "0.250624.0438",
+   "paper": "10.1016/j.neuron.2018.04.028",
+   "paper_title": "Transformation of a Spatial Map across the Hippocampal-Lateral Septal Circuit",
+   "date": "2026-10-16",
+   "kind": "agent",
+   "accountable": "CatalystNeuro",
+   "agent": {
+    "harness": "Claude Code (GitHub Actions)",
+    "model": "claude-opus-5-5",
+    "protocol": "pilot-7"
+   },
+   "runner": {
+    "platform": "GitHub Actions",
+    "url": "https://github.com/catalystneuro/reproduction-registry/actions/runs/38976767044"
+   },
+   "tier": "agent_verified",
+   "deprecated": "",
+   "deprecated_on": null,
+   "entry": "000213-tingley-2018",
+   "entry_title": "Spatial phase coding in the lateral septum (Tingley and Buzsaki 2018)",
+   "description": "Tests the findings of Tingley and Buzsaki (2018) on dandiset 000213, which holds 67 sessions of simultaneous hippocampal and lateral septum recordings from five rats running on alternation mazes and a linear track. It decodes position from the spike rate and the spike theta phase of each LS and hippocampal unit, finds place fields, measures spatial information, relates phase coding to recording depth, and measures hippocampal-LS theta coherence and theta-gamma coupling, and detects hippocampal-LS cell assemblies on a random sample of pairs.",
+   "notebooks": [
+    {
+     "path": "reproduce_tingley_2018.ipynb",
+     "title": "Reproducing Tingley and Buzsaki (2018) from dandiset 000213",
+     "executed": "notebooks/000213-tingley-2018/reproduce_tingley_2018.html"
+    }
+   ],
+   "outcomes": [
+    {
+     "claim": "ls-neuron-count",
+     "statement": "A total of 1,647 LS neurons were recorded from five animals, in 62 sessions.",
+     "source": "Results, paragraph 4; Figure 2G (N = 62 sessions)",
+     "quote": "We recorded a total of 1,647 LS neurons from five animals ... lateral septum (magenta; N = 62 sessions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "1,696 units are labelled ls (DT2 375, DT5 480, DT7 60, DT8 296, DT9 485), 3.0% more than 1,647, in 62 sessions, and all five rats hold LS units. 43 units of DT7 20170317 carry no region label and are not counted.",
+     "deviations": [
+      "The criterion was written after the counts had been seen in the data check."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "hpc-unit-count",
+     "statement": "The hippocampal recordings hold 2,297 isolated CA1 units and 654 CA3 units (2,951 in all, Figure 3A).",
+     "source": "Results, first paragraph; Figure 3A legend",
+     "quote": "First, we examined the firing patterns of 1,587 place fields of 2,297 isolated CA1 units and 224 place fields of 654 CA3 units ... (N = 2,951 units, A)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "2,593 units are labelled hpc (+12.9% on 2,297 CA1 units, outside tolerance) and 624 ca3 (-4.6% on 654, within); the sum, 3,217, is 9.0% above 2,951. 36 sessions hold hpc units and 11 ca3 units, where Figure 6A gives 63 CA1 and 19 CA3 sessions.",
+     "deviations": [
+      "The labels hpc and ca3 are read as CA1 and CA3; the dandiset does not define hpc.",
+      "The criterion was written after the counts had been seen in the data check."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ls-active-neurons",
+     "statement": "Of the LS neurons, 840 fired at least 1.5 action potentials per trial on average.",
+     "source": "Results, paragraph 4; STAR Methods, position prediction analysis",
+     "quote": "We recorded a total of 1,647 LS neurons from five animals, of which 840 surpassed a minimum threshold of at least 1.5 action potentials per trial on average",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "793 LS neurons pass (-5.6% on 840), over 3,694 neuron-condition pairs against the paper's 4,393; 1,630 of 1,696 LS units have a condition with at least 10 trials. With 1.0, 2.0 and 3.0 spikes per trial the count is 932, 707 and 563.",
+     "deviations": [
+      "Conditions are formed from trial type, direction and start and end site, as the paper's trial conditions are not in the dandiset; the count depends on them."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-ls-phase-vs-shuffle",
+     "statement": "The majority of LS neurons (751 of 840, 89%) showed position encoding in their spike theta phase, compared with shuffled data, in at least one condition.",
+     "source": "Results, paragraph 4; Figure 2C and 2D",
+     "quote": "the majority of LS neurons showed a form of position encoding in their spike timing relative to the phase of theta oscillations ... (751/840,89%; two sample t test; p < 0.01) when compared to shuffled data, in at least one of the behavioral conditions",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "408 of 783 decoded active LS neurons (52.1%) decode position from phase better than chance at p < 0.01 in at least one condition, against 89%; 66.0% at p < 0.05 and 43.3% at p < 0.001. Per rat 39% (DT2) to 63% (DT9). 23.2% of conditions pass. The rate code passes its own chance test in 54.4% of neurons. Mean MSE over LS conditions is 6,359 for phase against 6,839 for its chance; uniform guessing over 200 bins gives 6,666. In the 37 sessions whose theta channel has more 6 to 9 Hz than 1 to 4 Hz power the fraction is 52.9%, against 51.1% in the others, so the weak theta of DT5 does not account for the gap.",
+     "deviations": [
+      "Linearization (path fraction, 200 bins), conditions and the theta channel are rebuilt; the paper's are not in the dandiset.",
+      "The binning of spike phases (bz_phaseMap2Bins) is not public; the circular mean per bin is used.",
+      "10 active LS neurons of DT2 20160217, which has no hippocampal channel, are not decoded."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2-ls-phase-beats-rate",
+     "statement": "Spike-phase decoding outperformed rate decoding of the rat's position for 786 of 840 LS neurons, 3,046 of 4,393 conditions, and 62 of 62 sessions.",
+     "source": "Results, paragraph 4; Figures 2F and 2G",
+     "quote": "Spike-phase-based decoding outperformed firing rate-based decoding of the rat\u2019s position on the tracks (Figures 2F and 2G) whether we made the comparison at the level of LS neurons (N = 786/840; two-sample t test; p < 0.01), conditions (N = 3,046/4,393), or recording sessions (N = 62/62).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "Phase beats rate at p < 0.01 in 662 of 783 neurons (84.5%, paper 93.6%), 1,762 of 3,660 conditions (48.1%, paper 69.3%) and 58 of 58 sessions (paper 62 of 62). The neuron and condition fractions are outside tolerance and fewer than half the conditions pass, so the criterion gives not reproduced; the direction holds in every rat (neurons 72% to 95%) and session, and rate beats phase in 5.3% of conditions. At p < 0.05, 89.5% of neurons and 60.1% of conditions; in the 37 sessions with a theta ratio above 1, 87.5% and 52.8%; with whole trials held out, 72.9% and 35.4%. Samples are split at random as in the paper's per-cell decoder (randperm over all trial-by-bin samples in scratch_07_11_17_spatialBinnedMaxCorr.m).",
+     "deviations": [
+      "As for fig2-ls-phase-vs-shuffle.",
+      "58 sessions are decoded, not 62; DT2 20160217 has no theta reference, and three sessions have no LS condition that passes."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2e-ls-phase-lower-mse",
+     "statement": "Across LS neurons the spike-phase code is stronger than the rate code (two-sample t tests; N = 4,393 conditions, p < 1e-100; N = 62 sessions, p < 1e-10).",
+     "source": "Results, paragraph 4; Figure 2E",
+     "quote": "Across the population of LS neurons, we observed significantly stronger spike-phase coding when compared with models that utilized spike rate information (Figure 2E; two sample t tests; N = 4,393 conditions",
+     "statistics": [
+      {
+       "about": "phase against rate MSE over LS conditions",
+       "test": "two sample t test",
+       "p": 1e-100,
+       "p_relation": "<",
+       "n": "4,393 conditions"
+      },
+      {
+       "about": "phase against rate MSE over sessions",
+       "test": "two sample t test",
+       "p": 1e-10,
+       "p_relation": "<",
+       "n": "62 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "Over 3,660 LS conditions phase MSE is 6,359 and rate MSE 7,404 (t = -33.8, p = 2.5e-232); over 58 sessions 6,349 and 7,481 (p = 2.9e-23). Each rat gives phase lower (DT7 p = 0.018, others below 1e-38). In the 37 sessions with a theta ratio above 1, p = 2.9e-147. With whole trials held out, 6,527 against 7,920.",
+     "deviations": [
+      "As for fig2-ls-phase-vs-shuffle."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig2fg-mse-difference",
+     "statement": "The mean phase minus rate MSE is about -1,000 for LS conditions and -33 for hippocampal place fields, and -1,024 and -25 for LS and hippocampal sessions.",
+     "source": "Figure 2F and 2G legends",
+     "quote": "for all conditions for lateral septum (LS) cells (magenta; N = 4,393, mean = \u2212 1,000) and hippocampal place fields (black; N = 1,820, mean = \u2212 33) ... (black; N = 45 sessions, mean = \u2212 25) and lateral septum (magenta; N = 62 sessions, mean = \u2212 1,024)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "The LS condition mean, -1,045, is within tolerance of -1,000; the LS session mean, -1,132, is just outside -1,024 plus or minus 102; the hippocampal place field mean (-234) and session mean (-126) are far from -33 and -25. LS values are larger in magnitude than the hippocampal ones at both levels. Per rat the LS mean runs from -565 (DT7) to -1,428 (DT2).",
+     "deviations": [
+      "MSE is in bins squared with 200 bins of about 1.1 cm; the paper's bin count is not given.",
+      "Only 531 hippocampal place fields are found against 1,820 (see ls-few-place-fields)."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1i-hpc-rate-phase-equivalent",
+     "statement": "For hippocampal place fields the distributions of rate and phase decoding errors are statistically equivalent (two-sample KS test; 1,820 place fields, p = 0.19; 45 sessions, p = 0.61).",
+     "source": "Results, paragraph 2; Figure 1I",
+     "quote": "the distributions of mean squared errors for these two forms of encoding were statistically equivalent ... (Figure 1I; two-way Kolmogorov-Smirnov [KS] test; N = 1,820 place fields comparison p = 0.19; N = 45 sessions; p = 0.61)",
+     "statistics": [
+      {
+       "about": "rate against phase MSE over place fields",
+       "test": "two-way Kolmogorov-Smirnov test",
+       "p": 0.19,
+       "n": "1,820 place fields"
+      },
+      {
+       "about": "rate against phase MSE over sessions",
+       "test": "two-way Kolmogorov-Smirnov test",
+       "p": 0.61,
+       "n": "45 sessions"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "Changed from reproduced in revision, after the place fields were found on the Gaussian rate map the paper's code uses. The two-sample KS test finds a difference between phase and rate MSE over 531 place fields (D = 0.085, p = 0.044), so the claim of absence fails; over 42 sessions it finds none (D = 0.167, p = 0.61). The mean phase minus rate MSE is -234 bins squared (fields) and -126 (sessions). Per rat only DT2 differs (KS p = 0.001; DT5, DT7, DT9 p = 0.51 to 0.79). With the 318 fields of the 5-bin box map, p = 0.097. Over all 5,045 included hippocampal conditions the distributions differ (p = 7.4e-48); with whole trials held out the fields differ too (KS p below 0.001); and without the rule dropping peaks whose SD across trials exceeds their mean, 2,320 fields differ (D = 0.104, p below 0.001).",
+     "deviations": [
+      "531 fields in 42 sessions, against 1,820 in 45; the field detector finds fewer fields than the paper's."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ls-few-place-fields",
+     "statement": "Only 5.3% (232 of 4,393) of LS rate maps showed place fields by the criteria applied to hippocampal units, where 31.7% (1,820 of 5,735) did.",
+     "source": "Results, paragraph 4",
+     "quote": "only 5.3% (232/4,393) of LS ratemaps showed place fields, using the same criteria we applied to hippocampal units where 31.7% (1,820/5,735) of ratemaps displayed a place field.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "Changed from not reproduced in revision, after the place fields were found on the Gaussian rate map the paper's code uses. 198 of 3,694 LS rate maps have a field (5.4%, within tolerance of 5.3%) and 531 of 5,045 hippocampal maps (10.5% against 31.7%, outside); the LS fraction is lower (chi-squared p = 8.9e-18), the partial outcome of the criterion. The hippocampal fraction is 8.0% to 13.6% per rat. With a Gaussian of SD 5 bins the fractions are 4.9% and 11.6%; with the 5-bin box map 5.8% and 6.3% (p = 0.40); with the 1% threshold of the code's default 0.4% and 4.6%. Without the rule dropping peaks whose SD across trials exceeds their mean they are 20.0% and 46.0%, so that rule accounts for most of the hippocampal shortfall, and no setting matches both of the paper's fractions.",
+     "deviations": [
+      "Per-trial rate maps are smoothed with a Gaussian of SD 4 bins (FMAToolbox Smooth in bz_firingMap1D rateMaps, with tau = round(nBins/50) as in scratch_07_25_17_calc_firingMaps.m); the paper's bin count is not known. The Methods' widths (8 and 120 cm) are converted to 5 and 80 bins at the paper's 1.5 cm per bin, and the 2 Hz peak and 20% threshold of the Methods are used; the code's 1% default is shown as a variant.",
+      "Per-trial rate maps come from a linearization by path fraction with about one position sample per bin and trial, which probably makes the code's rule dropping peaks whose SD across trials exceeds their mean strict."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "hpc-place-field-properties",
+     "statement": "711 of 1,425 hippocampal neurons had at least one place field (1.27 fields per neuron on average); the median peak in-field rate was 8.5 Hz and the median field width 38 bins.",
+     "source": "STAR Methods, place field definition",
+     "quote": "Given these criteria, 711 of 1,425 HPC neurons had at least one place field with a mean of 1.27 \u00b1 1.76 fields per neuron ... The median peak in-field firing rate was 8.5 \u00b1 12 Hz, and the median field width was 38 \u00b1 16 spatial bins (~57 cm).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "301 of 1,314 active hippocampal neurons have a field (22.9% against 49.9%, outside tolerance), with 0.47 fields per neuron against 1.27; the median peak rate, 8.4 Hz, and the median width, 39 bins over 614 fields, are within tolerance of 8.5 Hz and 38 bins. The peak rate is the RMS-smoothed peak, as bz_getPlaceFields1D reports it. Under the variants of the map and threshold the fraction is 12.4% to 24.1% (14.7% with the 5-bin box map), and 62.3% without the rule dropping peaks whose SD across trials exceeds their mean.",
+     "deviations": [
+      "As for ls-few-place-fields."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ls-place-fields-unstable",
+     "statement": "The few LS rate maps with a place field were less stable across trials than CA1/CA3 place fields (median coefficient of variance 41.5 against 10; two-sample t test, p < 1e-20).",
+     "source": "Results, paragraph 4",
+     "quote": "Those few LS ratemaps that did qualify as having a \u201cplace field\u201d were significantly less stable across trials than CA1/CA3 place fields (median coefficient of variance = 41.5 for LS versus 10 for CA1/CA3 place fields; two sample t test",
+     "statistics": [
+      {
+       "test": "two sample t test",
+       "p": 1e-20,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "Changed from partially reproduced in revision, after the place fields were found on the Gaussian rate map the paper's code uses (makeFig2.m also takes the SD from that map). Under reading (a), the SD at the peak that makeFig2.m computes, the LS median (3.5 Hz) is below the hippocampal one (6.4 Hz, t = -7.76, p = 2.8e-14), the reverse of the claim. Under reading (b), SD over mean, the medians are 86.2% and 83.6% and do not differ (t = 1.56, p = 0.12). No reading has LS higher at p < 0.05.",
+     "deviations": [
+      "The paper does not define its coefficient of variance; two readings are shown.",
+      "198 LS and 531 hippocampal fields, against 232 and 1,820."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1e-phase-info-smaller-scale",
+     "statement": "Hippocampal place fields reach their peak information at smaller smoothing scales for phase than for rate (medians 15 and 29 bins; two-sample t test, p < 1e-40).",
+     "source": "Results, paragraph 1; Figure 1E",
+     "quote": "The mean peak information rate occurred at consistently smaller spatial scales for phase \u201ccoding\u201d compared to discharge frequency coding (Figure 1E; N = 1,820; two-sample t test",
+     "statistics": [
+      {
+       "test": "two-sample t test",
+       "p": 1e-40,
+       "p_relation": "<",
+       "n": "1,820 place fields"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "Peak information is reached at a median smoothing of 10 bins for phase and 17 for rate (paper 15 and 29), t = -11.18, p = 1.9e-27, over 525 and 493 fields kept of 531. Phase is below rate in each rat (medians 7 to 15 against 16 to 19).",
+     "deviations": [
+      "The information function of the paper (olypherInfo) is not public; the measure is built from the Methods' formula with choices fixed in the claims file.",
+      "Bins are about 1.1 cm against the paper's 1.5 cm, which shrinks the medians in bins.",
+      "At the same nominal span the rate and phase smoothings differ slightly (MATLAB smooth drops an even span by one; circ_smoothTS uses 2 ceil(w/2) + 1 bins), as in the paper's code."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig1g-phase-more-info-fine-scale",
+     "statement": "At smoothing below 6 cm (about one theta cycle) phase carries more spatial information than rate in hippocampal place fields, and above 10 cm rate carries more.",
+     "source": "Results, paragraph 1; Figure 1G",
+     "quote": "For smoothing windows less than 6 cm ... the phase code carried significantly (two sample t test; p < 0.00001; N = 1,820 place fields) more spatial information than the firing rate code (Figure 1G), whereas at spatial scales larger than 10 cm the firing rate code was more informative.",
+     "statistics": [
+      {
+       "about": "phase against rate information at smoothing below 6 cm",
+       "test": "two sample t test",
+       "p": 1e-05,
+       "p_relation": "<",
+       "n": "1,820 place fields"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "At 7 to 50 bins rate carries more information than phase at p < 0.05 in 42 of 44 smoothings (95%; difference -0.008 at 7 bins to -0.033 at 50). At 2 bins phase is higher (+0.018, p = 2.1e-5); at 3 bins it is higher by +0.006, not significantly (p = 0.16). Neither reaches the criterion's p < 1e-5.",
+     "deviations": [
+      "As for fig1e-phase-info-smaller-scale. Spans of 3 and 4 bins give the same smoothing, and so do 5 and 6; for rate because MATLAB smooth reduces even spans by one, for phase because circ_smoothTS uses 2 ceil(w/2) + 1 bins."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4d-depth-gradient",
+     "statement": "The strength of phase coding relative to rate coding increases with recording depth within the LS, within sessions and across animals.",
+     "source": "Results, paragraph 6; Figures 4A to 4D",
+     "quote": "Within single recording sessions in individual rats (Figures 4A and 4B) and across all animals (Figures 4C and 4D) the strength of phase coding, relative to rate coding, reliably increased as a function of recording depth within LS.",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "With depth and session value centred within rat, r = -0.365 (p = 0.005, 58 sessions). Per rat r = -0.70 (DT2, p = 0.034), -0.43 (DT5, p = 0.10), -0.62 (DT9, p = 0.024) and +0.24 (DT8, p = 0.36); DT7 has three sessions. Without centring r = -0.10 (p = 0.45). With the second depth of the name the per-rat signs are the same, and the pooled centred r is -0.268 (p = 0.042). The within-session part could not be tested, as the dandiset gives no recording site per unit.",
+     "deviations": [
+      "The LS depth is the first number in the session name, an assumption; the dandiset does not describe the depths. It rests on DT9, where units are labelled ca3 exactly when the second depth is 828 um or more; in DT5 the hpc and ca3 files alternate at second depths of 2232 to 2448 um, and DT8 does not settle it.",
+      "Session depth only; the paper adds the site of each unit on the shank."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig4e-onset-depth",
+     "statement": "The theta phase at the onset of LS phase fields varies with recording depth (DT5 r = 0.38, DT9 r = 0.25, DT2 r = 0.27; circular-linear correlation, p < 0.001).",
+     "source": "Results, paragraph 6; Figure 4E",
+     "quote": "the phase onset for precession varied systematically and significantly with recording depth (DT5 r = 0.38, DT9 r = 0.25, DT2 r = 0.27; circular/linear correlation; p < 0.001).",
+     "statistics": [
+      {
+       "test": "circular/linear correlation",
+       "statistic": "DT5 r = 0.38, DT9 r = 0.25, DT2 r = 0.27",
+       "p": 0.001,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "Circular-linear r between onset phase and LS depth is 0.082 (p = 0.57, 169 neurons) in DT5, 0.072 (p = 0.78, 98) in DT9 and 0.118 (p = 0.65, 62) in DT2, against 0.38, 0.25 and 0.27 at p < 0.001. Using every significant condition gives r = 0.06 to 0.16, p above 0.27. Keeping only the sessions whose theta channel has the rat's most common label (hpc in DT5 and DT9) gives r = 0.027 (p = 0.96) and 0.170 (p = 0.37).",
+     "deviations": [
+      "As for fig4d-depth-gradient. The theta channel is chosen per session and may sit in a different layer from session to session, which shifts phases between sessions.",
+      "Neurons are selected by this attempt's phase test (52% of neurons pass, against 89%)."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6c-ca3-coherence-increases",
+     "statement": "Theta phase coherence between LS and the CA3 pyramidal layer increases from the beginning to the end of the run, while coherence between LS and CA1 stays relatively flat.",
+     "source": "Results, paragraph 9; Figure 6C",
+     "quote": "LFP theta phase coherence between LS and CA1 pyramidal layer sites was relatively flat during the entire span of the tracks. In contrast, theta phase coherence between LS and CA3 pyramidal layer increased significantly from the beginning to the end of run (Figure 6C).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "In 11 CA3 sessions (DT5 6, DT9 5) the median slope of LS-hippocampal theta phase locking on position segment is 0.0026 (signed-rank p = 0.83, 7 of 11 positive); in 36 CA1 sessions -0.0018 (p = 0.35). CA3 slopes are not above CA1 slopes (Mann-Whitney p = 0.35), nor within DT5 (p = 0.18) or DT9 (p = 0.91). Mean locking is 0.74 to 0.76 (CA3) and 0.78 to 0.81 (CA1) over the ten segments. With the 19 sessions without hippocampal units counted as CA1, as in the first version, p = 0.24.",
+     "deviations": [
+      "Phase locking value of the 4 to 12 Hz phase difference in 150 ms windows, not multitaper coherence.",
+      "The hippocampal channel is the chosen theta channel, labelled ca3 in the CA3 sessions and hpc (or unknown, in DT2) in the CA1 sessions; no session has both labels, where the paper's Figure 6A implies sessions with both a CA1 and a CA3 site. The sessions without hippocampal units (17 DT8, 2 DT7) are left out, as the criterion groups sessions by their unit labels."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6d-cfc-stronger-ca3",
+     "statement": "Coupling between hippocampal theta phase and LS gamma amplitude increases along the run for both CA1 and CA3, and is stronger for CA3-LS than for CA1-LS.",
+     "source": "Results, paragraph 9; Figure 6D",
+     "quote": "Although the strength of coupling increased in both cases, it was significantly stronger for CA3-LS than for CA1-LS comparisons (Figure 6D).",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "Changed from reproduced in revision. The first version put the 19 sessions without hippocampal units in the CA1 group, against the criterion; with the criterion's grouping (36 CA1 sessions) theta-gamma coupling is not higher in CA3 than CA1 sessions at p < 0.05 (medians 0.059 and 0.051, Mann-Whitney p = 0.089), which the criterion needs for a full or a partial outcome. Coupling rises along the run in both groups (CA3 slope 0.0036 per segment, p = 0.002, 10 of 11 positive; CA1 0.00125, p = 0.001, 24 of 36). Within DT5 CA3 coupling is higher (p = 0.011); within DT9 it is not (CA3 0.049 against CA1 0.057, p = 0.88). Per rat the CA1 medians span 0.027 (DT2) to 0.090 (DT7); the CA3 group is two rats.",
+     "deviations": [
+      "As for fig6c-ca3-coherence-increases for the channel and grouping."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs7-ensemble-ls-phase-best",
+     "statement": "The firing phases of ensembles of simultaneously recorded LS neurons read out position better than the firing phases or rates of an equal number of hippocampal neurons (p < 0.001 at 15 to 25 neurons).",
+     "source": "Results, paragraph 4; Figure S7; STAR Methods, ensemble position prediction",
+     "quote": "the firing phases of ensembles of simultaneously recorded LS neurons (range: 1\u201353) provided a better readout of spatial position than either the firing phases or rates of an equivalent number of HPC neurons (Figure S7; two-sample t test; p < 0.001 at ensemble sizes of 15\u201325 neurons)",
+     "statistics": [
+      {
+       "test": "two-sample t test",
+       "p": 0.001,
+       "p_relation": "<",
+       "n": "ensemble sizes of 15\u201325 neurons"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "In 65 conditions from 13 sessions (DT2, DT5, DT9) with at least 15 active LS and 15 hippocampal units, ensembles of 15 give MSE 4,738 for LS phase, 4,597 for hippocampal phase and 3,119 for hippocampal rate; LS phase is worse than both (one-sided p for LS phase higher = 5.8e-04 and 3e-186). At 20 units (7 conditions) the same (differences +290 and +1,668). At 25 units (3 conditions) LS phase MSE is below hippocampal phase (3,459 against 3,746, one-sided p = 0.0075, which treats the ensemble draws within a condition as independent and so overstates the evidence) but not below hippocampal rate (2,259).",
+     "deviations": [
+      "The Methods' Poisson naive Bayes on discretized phases is followed with choices fixed in the claims file (20 equal-width levels, 10 ensembles per size); Figure S7 was not read."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5-assemblies",
+     "statement": "Spike trains of hippocampal neurons predicted LS firing in 18.5% (2,087 of 11,264) of hippocampal-LS pairs, with a median optimal timescale of 25 ms.",
+     "source": "Results, paragraph 7; Figure 5D to 5F",
+     "quote": "Across 18.5% (2,087/11,264) of hippocampal-LS cell pairs examined, spike trains of hippocampal neurons reliably predicted the firing of action potentials in LS neurons ... the median optimal timescale for peer prediction was 25 ms (Figure 5F)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "not_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "Changed from blocked in revision, at the verifier's request, by testing a random sample of pairs. Of 670 sampled pairs (of 70,898 hippocampal-LS pairs active in the same condition, counted per condition; 20,979 pairs of active units recorded together, against the paper's 11,264), 35 form an assembly of strength at least 4 (5.2%, 95% interval 3.7% to 7.2%), against 18.5%, and the median best window of the assemblies is 20 ms, against 25. Both are outside the criterion. The real gain beats all ten shuffles in 35.4% of pairs; this has no 1 in 11 reference, as the window is chosen on the real fit and the shuffles run only at that window. With thresholds of 1.5, 2 and 8 the fractions are 19.4%, 12.7% and 1.8%. Per rat 0% (DT7, 5 pairs) to 10.2% (DT5). With the LS unit's rate map at the current position added as a covariate, 5.5% (95% interval 3.9% to 7.5%), so the linear coding of position does not account for the low fraction.",
+     "deviations": [
+      "A random 1% of the pairs, as all pairs need about 12 process-hours at about 0.6 s per pair measured in this run (1.2 s in the previous run).",
+      "The bin size (1 ms), the Gaussian kernel, the window grid (13 windows from 1 to 150 ms) and the covariate coding are choices made here; the Methods do not give them and the paper's assembly code is not public. Shuffles are run at the best window only.",
+      "Pairs are counted once per condition in which both units are active, as the Methods imply (one strength per pair and block of trials)."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig5g-assembly-neurons-stronger-phase",
+     "statement": "LS neurons that take part in at least one predictive assembly carry a stronger spatial phase code than those that do not (p < 1e-20).",
+     "source": "Results, paragraph 7; Figure 5G",
+     "quote": "LS neurons that participated in at least one predictive cell assembly were found to carry a more robust spatial phase code compared to neurons that were not part of a predictive assembly (Figure 5G; two sample t test",
+     "statistics": [
+      {
+       "test": "two sample t test (the Figure 5G legend names a two-way KS test)",
+       "p": 1e-20,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "Needs to know which LS neurons take part in any assembly, which needs the assembly strength of every pair; at about 0.6 s per pair measured under fig5-assemblies in this run (1.2 s in the previous run), the 70,898 pairs take about 12 process-hours, beyond the time limit. A 1% sample leaves most LS neurons with no sampled pair. A sample of LS neurons with all of their pairs (about 89 each) would fit and was not run in this attempt.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig6e-assembly-position",
+     "statement": "CA3 place fields form progressively stronger gamma assemblies with LS along the track (r = 0.34) while CA1 coupling decreases (r = -0.11), and the two are anti-correlated (r = -0.88).",
+     "source": "Results, paragraph 9; Figure 6E",
+     "quote": "The functional coupling between CA1 place cells and LS neurons decreased somewhat (r = \u22120.11; p = 0.079; N = 260 pairs), while coupling between CA3 place cells and LS neurons significantly increased (r = 0.34; p = 0.006; N = 72 pairs)",
+     "statistics": [
+      {
+       "about": "CA1-LS coupling against position",
+       "statistic": "r = \u22120.11",
+       "p": 0.079,
+       "n": "260 pairs"
+      },
+      {
+       "about": "CA3-LS coupling against position",
+       "statistic": "r = 0.34",
+       "p": 0.006,
+       "n": "72 pairs"
+      },
+      {
+       "about": "CA1-LS against CA3-LS coupling",
+       "statistic": "r = \u2212 0.88",
+       "p": 2.6e-64,
+       "n": "200 spatial bins"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "not_runnable",
+     "notebook": null,
+     "notes": "Needs the assembly strengths of all CA1 and CA3 place cells paired with LS units, which needs every pair (about 12 process-hours, as for fig5g-assembly-neurons-stronger-phase).",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "speed-independent",
+     "statement": "Only 2.8% (125 of 4,393) of LS conditions showed a significant correlation between running speed and the rate of phase precession, and 10.7% of LS rate maps were modulated by running speed.",
+     "source": "Results, paragraph 5",
+     "quote": "Only 125 of 4,393 LS conditions (2.8%) had significant correlations between running speed and the rate of phase precession ... only 10.7% of firing rate maps in LS were significantly modulated by running speed",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "methods_underspecified",
+     "notebook": null,
+     "notes": "The paper does not define the rate of phase precession, how it is correlated with running speed, or the test of speed modulation of rate maps, and no code for it is in the repositories read. The data needed (positions, spikes, LFP) are in the dandiset.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "ls-information-lower",
+     "statement": "LS rate maps have lower peak information rates than hippocampal place field maps (0.4 against 1.7 bits/cm; p < 1e-100).",
+     "source": "Results, paragraph 4",
+     "quote": "LS action potential ratemaps had significantly lower peak information rates than hippocampal place field maps (average of 0.4 bits/cm versus 1.7 bits/cm; two-sample t test",
+     "statistics": [
+      {
+       "test": "two-sample t test",
+       "p": 1e-100,
+       "p_relation": "<"
+      }
+     ],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "partially_reproduced",
+     "blocked_by": null,
+     "notebook": "reproduce_tingley_2018.ipynb",
+     "notes": "Changed from blocked in revision, after the verifier noted that the direction could be tested; the criterion was added then. LS rate maps carry less peak information than hippocampal place-field maps (means 0.632 and 1.490 bits/cm over 2,873 and 301 maps, t = -40.3, p = 6.0e-287, below the paper's 1e-100), but neither value is within tolerance under either reading (medians 0.556 and 1.435). Per rat the LS means are 0.52 to 0.66 and the hippocampal means 1.06 to 1.60.",
+     "deviations": [
+      "The paper does not say how its per-bin information becomes bits per cm, at which smoothing the maps were compared, or how its information function normalizes; the measure of fig1e-phase-info-smaller-scale on the place-field map, divided by the bin size, is used, so the scale of the values is uncertain.",
+      "DT2 is left out, as its positions are in pixels."
+     ],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "figs6-reference-frame",
+     "statement": "After maze rotation many LS neurons kept their phase precession related to distal room cues, so the phase shift is a spatial code.",
+     "source": "Discussion, Transmission and Utilization of the Hippocampal Spatial Map by LS Neurons, paragraph 2; Figure S6; STAR Methods, reference frame analysis",
+     "quote": "theta phase precession of many LS neurons retained their relation to distant room cues after the rotation of the maze, suggesting that the spike-phase shift is a spatial \u201ccode\u201d (Figure S6)",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "metadata_insufficient",
+     "notebook": null,
+     "notes": "No file, trial or interval marks a maze rotation; the trials carry only type (central or wheel alternation) and direction. processing/behavior/allocentric_frame_tracking holds one series, a head-orientation quaternion with timestamps, in every file of DT5, DT7, DT8 and DT9 (the data check prints it), but which sessions or trials follow a rotation cannot be told. Figure S6 was not read.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    },
+    {
+     "claim": "fig7-dynamic-weighting-model",
+     "statement": "In a spiking model, CA1 and CA3 inputs weighted dynamically as the measured assemblies give a rate-independent phase code in the LS neuron, which static or random weights, or the loss of theta sequences, do not.",
+     "source": "Figure 7; Results, paragraph 12",
+     "quote": "Thus, by dynamically weighting the outputs of CA3 and CA1 place fields at different positions, the assembly firing of the hippocampal output is transformed into a rate-independent phase code of that space in the LS",
+     "statistics": [],
+     "kind": "finding",
+     "inferred": "",
+     "outcome": "blocked",
+     "blocked_by": "other",
+     "notebook": null,
+     "notes": "A simulation that uses no recorded data from the dandiset (its weights come from a file in the paper's code repository), so it says nothing about the dandiset. It was not run.",
+     "deviations": [],
+     "disagreed": false,
+     "data": "dataset",
+     "where": null,
+     "proposed": null
+    }
+   ],
+   "findings": [
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The paper's processed behaviour is not in the dandiset; the linearized position, the trial conditions used for every rate and phase map, and the CA1 pyramidal layer channel used as the theta reference in each session must be rebuilt, and several outcomes depend on how."
+    },
+    {
+     "kind": "data_missing",
+     "statement": "Units have no waveform, recording site or channel of largest amplitude, so the within-session depth analyses of Figure 4 (unit site on the shank) cannot be repeated."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "The two depths in each session name (for example 1944um and 2232um) are not described; which is the LS probe and what the zero is cannot be told from the metadata. The `hpc` unit label is not defined as CA1."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "Eight DT8 files state position in mm but hold values spanning about 1.1 to 1.3, which are metres."
+    },
+    {
+     "kind": "format_error",
+     "statement": "In all 67 files the third column (z) of position is a copy of the second (y)."
+    },
+    {
+     "kind": "format_error",
+     "statement": "In eight of the eleven DT2 files the position timestamps repeat or go back; the time per sample (33.3 ms) can only be taken from the session span."
+    },
+    {
+     "kind": "format_error",
+     "statement": "11 units in six files hold spike times that are not in increasing order."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Every DT2 electrode, and those of two DT9 files, is labelled `unknown`; DT2 positions are in pixels with no scale; DT7 20170317 has 43 units with no region or group; DT7 20170324 has no units."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "Trials on the linear track, and in two DT8 alternation files (20170207 and 20170224), carry no type or direction."
+    },
+    {
+     "kind": "other",
+     "statement": "In DT9 20170501 the trials do not match the positions (speed inside the trial windows does not change when they are shifted by up to 3 s), and in DT2 20160221 speed peaks with the trials shifted by 1 s, which suggests an offset of up to a second."
+    },
+    {
+     "kind": "selection_undocumented",
+     "statement": "The dandiset holds 1,696 LS units and 3,217 hippocampal units (2,593 hpc, 624 ca3) against the paper's 1,647 LS and 2,951 hippocampal units, and 20,979 pairs of active hippocampal and LS units against 11,264 examined; which units the paper left out is not documented."
+    },
+    {
+     "kind": "methods_unavailable",
+     "statement": "The functions the paper's figure scripts call to bin spike phases (bz_phaseMap2Bins), compute information (olypherInfo) and detect assemblies, and the parameters of its place-field call, are not in the public repositories; the session files they read (behavior.mat, sessionInfo) are not in the dandiset."
+    },
+    {
+     "kind": "metadata_error",
+     "statement": "The head-orientation quaternion in processing/behavior/allocentric_frame_tracking states its unit as meters."
+    },
+    {
+     "kind": "metadata_insufficient",
+     "statement": "In every session the hippocampal channels and units carry one label, hpc or ca3, so no session has both a CA1 and a CA3 site labelled, where the paper's Figure 6A counts 63 CA1 and 19 CA3 sessions, more than the 67 files, so some of its sessions had both; the paper's per-session CA1 and CA3 channels cannot be recovered."
+    },
+    {
+     "kind": "code_mismatch",
+     "statement": "In scratch_07_25_17_calc_firingMaps.m (DavidTingley/scratch at 2f80453), the place-field file that the figure scripts load is named for a 20% threshold, but the call that fills it passes no threshold, so bz_getPlaceFields1D's default of 1% applies; the Methods state 20%."
+    },
+    {
+     "kind": "other",
+     "statement": "42 files chunk the LFP as 500 samples by all channels, so reading one channel of a session means reading the whole LFP; chunks along time per channel would make single-channel access practical."
+    }
+   ],
+   "verifications": [
+    {
+     "date": "2026-10-17",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The executed notebook of the first run (commit 1775fd8) with the conclusion cells and the summary removed, the helper module and the claims file.",
+     "agreed": 25,
+     "of": 25,
+     "disagreements": []
+    },
+    {
+     "date": "2026-10-17",
+     "kind": "agent",
+     "by": "Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)",
+     "reviewed": "The full executed notebook of the first revision (commit 984db9b), with its conclusions and summary, the helper module, the claims file and the attempt record.",
+     "agreed": 25,
+     "of": 25,
+     "disagreements": []
+    }
+   ]
+  }
+ ],
+ "entries": [
+  {
+   "name": "000213-tingley-2018",
+   "type": "reproduction",
+   "title": "Spatial phase coding in the lateral septum (Tingley and Buzsaki 2018)",
+   "description": "Tests the findings of Tingley and Buzsaki (2018) on dandiset 000213, which holds 67 sessions of simultaneous hippocampal and lateral septum recordings from five rats running on alternation mazes and a linear track. It decodes position from the spike rate and the spike theta phase of each LS and hippocampal unit, finds place fields, measures spatial information, relates phase coding to recording depth, and measures hippocampal-LS theta coherence and theta-gamma coupling, and detects hippocampal-LS cell assemblies on a random sample of pairs.",
+   "datasets": [
+    "dandi:000213"
+   ],
+   "papers": [
+    "10.1016/j.neuron.2018.04.028"
+   ],
+   "derived_from": [],
+   "notebooks": [
+    {
+     "path": "reproduce_tingley_2018.ipynb",
+     "title": "Reproducing Tingley and Buzsaki (2018) from dandiset 000213",
+     "executed": "notebooks/000213-tingley-2018/reproduce_tingley_2018.html"
+    }
+   ]
+  }
+ ]
+}
