@@ -296,7 +296,7 @@ outcomes:
     cells, median 0.548), depth from every phase-analysis cycle of the trial. Four L4 C2 cells have
     no phase-analysis spikes and no depth. With cells of at least 20 phase spikes only (a variant,
     11 and 8 cells) p = 0.934; with the cycles counted only in exploration time (the earlier run's,
-    a variant) p = 0.971.
+    a variant) p = 0.798.
 - claim: phase-mod-l4-vs-l5
   outcome: reproduced
   notebook: reproduce_hires_2015.ipynb
@@ -411,7 +411,10 @@ outcomes:
     ties between thresholds broken at the middle one; the earlier run took the highest hit rate
     over time points, which with ties broken at the lowest threshold counted every sample as a
     touch and gave 1 to 4 neurons. Breaking ties at the lowest threshold, a variant, changes only
-    the (a2) fraction-detected value (25). One neuron gives 0.618 to 0.642 percent correct.
+    the (a2) fraction-detected value (25). One neuron gives 0.618 to 0.642 percent correct. On
+    synthetic neurons whose touch and non-touch counts come from one distribution, one neuron gives
+    a fraction detected of 0.329 at percent correct 0.541 under either tie rule, against 0.987
+    under the earlier run's rule.
   deviations:
   - Reading (1b) leaves out windows within 60 ms before or 100 ms after a touch onset, a standard
     choice.
@@ -454,9 +457,10 @@ outcomes:
     reading that reaches 76% correct (held-out counts never do). On the phase-tuning
     cycles of the whole trial (median 494 per C2 cell, 0.107 spikes per cycle, 4 of 31 C2 cells
     with none), held-out cycle counts with add-one smoothing never reach 76% correct in either
-    group. Poisson rates with add-one smoothing reach it at 102.8 or 98.2 deg in C2 (random or even
-    shifts) and 90.0 deg outside; with a floor rate at 72.0 or 66.0 deg in C2 and 41.2 or 36.0 deg
-    outside. Under every reading C2 is far from 24 +- 2.4 deg and worse than outside, so all
+    group. Poisson rates with add-one smoothing reach it in C2 in only 42 and 38 of the 100 runs
+    (random or even shifts), at a median of 102.8 and 98.2 deg over those runs, so in most runs C2
+    never reaches it; outside C2 reaches it at 90.0 deg (91 and 89 runs). With a floor rate C2
+    reaches it at 72.0 or 66.0 deg (91 runs each) and outside C2 at 41.2 or 36.0 deg (100 runs). Under every reading C2 is far from 24 +- 2.4 deg and worse than outside, so all
     readings give the same failing result; the criterion's "else methods_underspecified" is read
     as its rule for readings that disagree, which they no longer do. With the cycles restricted
     to the sample epoch, as the earlier run did and the criterion does not, the floor rate put C2
@@ -854,7 +858,9 @@ verifications:
       monotonic in N (does not affect the conclusion).
     response: Fixed. The fraction detected is now the hit rate at the time point of best percent
       correct, and tied thresholds are broken at the middle one, the lowest shown as a variant; the
-      same synthetic test now gives 0.15. Repetitions raised to 50 and the performance at N = 1
+      synthetic test now gives 0.15 (corrected in round 2, no output showed this; the notebook now
+      prints a synthetic test, 0.329 at percent correct 0.541, against 0.987 under the earlier
+      rule). Repetitions raised to 50 and the performance at N = 1
       printed. N95 is 12 to 30 across readings, 14 under one; still blocked.
   - claim: fig4a-touch-detection-outside
     agrees: false
@@ -946,3 +952,290 @@ verifications:
       the restriction to pole-in-reach time (problem 3).
     response: The cycles are now every phase-analysis cycle of the trial, 0.107 to 0.124 spikes per
       cycle, all below 0.15; the sample-epoch cycles are a variant. Outcome unchanged.
+- date: '2026-10-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (verifier-2, run 39638064063; same harness, separate context,
+    did not write the notebook)
+  reviewed: The full executed notebook of the author-revise-1 run (commit 9e44bead) with its conclusions
+    and summary, the README, the attempt record, the helper module and the claims file. Points not tied
+    to a claim, the README run time (twelve minutes against 8.8 printed), were corrected as well.
+  results:
+  - claim: recordings-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: recordings-mice
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: behavior-performance
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: behavior-sample-epoch
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: behavior-whisking-bouts
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: behavior-touches-reaction
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. Round-1 point 7 (negative reaction times) is resolved: a variant without them is
+      shown (cell 36).'
+    response: No change.
+  - claim: example-cell-rates
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Minor: cell 40 says the next nearest cell is four times farther in the scaled distance
+      (5.38 against 1.10); the ratio is 4.9.'
+    response: Corrected to 4.9 times.
+  - claim: example-cell-sample-ff
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: example-cell-touch-window
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: example-cell-ff-around-touch
+    agrees: true
+    outcome: blocked
+    reason: Agrees, changed from reproduced in round 1. Cell 127 shows that pooled touches give no matching
+      cell in 62 units, and grouped touches give a match only for cell 11, in 2 of 394 units, so the two
+      readings of the touches give different outcomes. Two matches out of about 400 tries could also be
+      chance.
+    response: No change.
+  - claim: text-spikes-per-touch
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Round-1 point 5 (clock offset) is partly resolved: per-file touch-peak latencies
+      are printed (cell 9) and the residual 4 ms is stated as unexplained; it bears on no conclusion.
+      Minor: the README''s "the spike train''s timestamps run 10 ms ahead of the voltage" is ambiguous;
+      cell 7 and the findings say the SpikeTrain timestamps are 10 ms before the voltage timestamps.'
+    response: The README now says the SpikeTrain timestamps are 10 ms earlier than the timestamps of the
+      voltage samples. The residual 4 ms stays unexplained.
+  - claim: text-whisking-rates
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. Round-1 point 1 (whisking mask) is resolved: whisking now leaves out licking cycles
+      and the 70 ms after each touch (cells 13, 51 and 79).'
+    response: No change.
+  - claim: example-cell-phase-modulation
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Round-1 point 3 (phase cycles restricted to the sample epoch) is resolved.
+    response: No change.
+  - claim: table1-l4-c2
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. It sits exactly at its threshold, 15 of 18; one value moving would change the outcome.
+      Round-1 point 4 (n_ok) is resolved. The depth median fails either way, 0.859 over all cells but
+      0.444 over the cells with at least 20 spikes.
+    response: No change. The threshold and the count are the criterion's; the notes give the count.
+  - claim: table1-l4-outside
+    agrees: true
+    outcome: blocked
+    reason: Agrees, changed from not reproduced in round 1. Under the criterion's readings, 52 combinations
+      give not reproduced and 12 give partially reproduced (cell 60).
+    response: No change.
+  - claim: table1-l5
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: latency-determinable
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees. Still bears on the conclusion: the claims file''s rule of mean plus two s.d. over
+      sparse 1 ms bins gives noise latencies, which count as determined (cells 36 to 38 get 0 ms from
+      all touches and cell 40 gets 1 ms from first touches, cell 65). The 7 and 10 cells with a latency,
+      against the paper''s 4, may reflect the rule and not the data.'
+    response: No change. The rule is the criterion's and is not changed here; the concern was recorded
+      in round 1 as a question about the claims file.
+  - claim: l4-outside-weaker-touch
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: l5-higher-rates
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 72 quotes the earlier mask, now only a variant ("L5 medians are 12.90 spikes/s
+      outside whisking and 10.96 (11.33 with touch epochs) during it, against 0.32 and 0.86 (2.28) for
+      L4 C2 and 1.09 and 1.75 (1.78) for L4 outside C2"); cell 71 prints 12.82 (11.52), 0.38 (2.27) and
+      1.46 (1.54). The attempt record has the right numbers.
+    response: The conclusion now gives the printed whisking medians, 12.82 (11.52), 0.38 (2.27) and 1.46
+      (1.54).
+  - claim: phase-mod-l4-inside-outside
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 75 and the attempt record's notes say "with the cycles counted only in exploration
+      time p = 0.971"; cell 74 prints p = 0.798. The cosine fit with a non-negative baseline is biased
+      upward on sparse counts (12 of the 27 L4 C2 cells with a fit sit at depth 1, median 14 spikes per
+      cell), but the test holds under every variant, p = 0.584, 0.934 and 0.798.
+    response: Both now say p = 0.798.
+  - claim: phase-mod-l4-vs-l5
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. The test holds under every variant of the phase cycles, p = 8e-5 and 0.0043.
+    response: No change.
+  - claim: whisking-rate-l4-no-change
+    agrees: true
+    outcome: blocked
+    reason: Agrees. With the corrected whisking mask (round-1 point 1, resolved) it is now correctly blocked.
+    response: No change.
+  - claim: whisking-rate-l5-increase
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: fig3c-touch-spikes-l4c2
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. Minor, about the README: "the Figure 3 claims stay blocked on the range of the cutoff
+      curve (100 or 200 ms)" is true only of fig3c-touch-spikes-l4c2.'
+    response: The README sentence now names the claims for which it holds and those whose readings also
+      disagree within one range.
+  - claim: fig3c-touch-spikes-outside
+    agrees: true
+    outcome: blocked
+    reason: Agrees, changed from not reproduced in round 1. Blocked because it depends on a blocked claim;
+      the record states this as a protocol rule, which the verifier could not check, as docs/protocol.md
+      is not among its materials. On its own criterion it fails under every reading, 0 of 32 (cell 87).
+    response: No change.
+  - claim: fig3c-touch-spikes-l5
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. The README''s sentence on the range of the cutoff curve does not hold for it: the
+      readings also disagree within each range, 2 of 4 passing at 100 ms and 2 of 4 at 200 ms (cell 89).'
+    response: README corrected, as for fig3c-touch-spikes-l4c2.
+  - claim: fig3d-touch-phase-l4c2
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. The README''s sentence on the range of the cutoff curve does not hold for it: 1 of
+      8 readings passes at 100 ms (cell 93).'
+    response: README corrected, as for fig3c-touch-spikes-l4c2.
+  - claim: fig3d-touch-phase-outside
+    agrees: true
+    outcome: blocked
+    reason: Agrees, changed from not reproduced in round 1. Blocked because it depends on a blocked claim
+      (a rule the verifier could not check); on its own criterion it fails under every reading, 0 of 64
+      (cell 95).
+    response: No change.
+  - claim: fig3d-touch-phase-l5
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: fig3d-phase-only
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Blocked by dependency; on its own criterion it holds in 32 of 32 (cell 99).
+    response: No change.
+  - claim: fig4a-touch-detection-c2
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees. Round-1 point 2 (threshold rule) is resolved: the fraction detected is taken at the
+      time point of best percent correct, ties are broken at the middle threshold, there are 50 repetitions,
+      and the N = 1 performance is printed (cells 102 to 105). Round-1 point 6 (repetitions) is resolved.
+      Minor: the round-1 response "the same synthetic test now gives 0.15" is shown by no printed output.'
+    response: 'The notebook now prints a synthetic test (neurons whose touch and non-touch counts come
+      from one distribution, N = 1): fraction detected 0.329 at percent correct 0.541 under either tie
+      rule, against 0.987 under the earlier rule. The round-1 response and the notes now give these printed
+      values.'
+  - claim: fig4a-touch-detection-outside
+    agrees: true
+    outcome: blocked
+    reason: Agrees, changed from partially reproduced in round 1. Blocked because it depends on a blocked
+      claim (a rule the verifier could not check); on its own criterion it holds under every reading (cell
+      105).
+    response: No change.
+  - claim: fig4b-touch-time-precision
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: fig4c-phase-decoding
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Agrees, changed from blocked in round 1; every reading fails, with C2 never better than outside
+      C2 (cell 113). Cell 114''s "C2 reaches it at 102.8 deg (random shifts) or 98.2 deg (even shifts)"
+      overstates the result: only 42 and 38 of the 100 runs reach 76% correct, and the median is over
+      those runs alone, so in most runs C2 never reaches 76%. About the claims file, reported and not
+      corrected: its criterion literally says "else methods_underspecified", which would block any result
+      that is not reproduced; the record reads it as the rule for readings that disagree, a reasonable
+      reading but not the literal text.'
+    response: The conclusion and the notes now say that C2 reaches 76% in only 42 and 38 of 100 runs,
+      that the medians are over those runs, and give the run counts of the other readings. The reading
+      of "else methods_underspecified" is kept and the point is left for a reader, as the claims file
+      is not changed here.
+  - claim: fig5c-modulation-index
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: fig5-modulation-correlations
+    agrees: true
+    outcome: blocked
+    reason: Agrees, changed from partially reproduced in round 1. The claim holds in 16 of the 64 inherited
+      fig5c readings and fails in 48 (cell 120), and the criterion has no rule for a partial result.
+    response: No change.
+  - claim: fig6s1b-clusters-less-variable
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Round-1 point 8 (five touch groups) is resolved; it is stated in the notes.
+    response: No change.
+  - claim: fig6cd-ff-near-binomial
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: fig6d-not-refractory
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: fig6e-sample-epoch-ff
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: fig6e-random-38ms-ff
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: fig6e-touch-38ms-ff
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the conclusion matches the printed outputs.
+    response: No change.
+  - claim: fig6e-touch-10ms-ff
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Minor: the Summary''s "The Figure 6E Fano factors come out as the paper''s to two
+      or three digits" holds for three of the five conditions; the 10 ms touch FF is 0.70 to 0.86 against
+      0.73 (cell 144).'
+    response: The Summary now says three of the five Fano factors match to two or three digits and gives
+      the range of the other two.
+  - claim: fig6e-similar-touch-ff
+    agrees: true
+    outcome: reproduced
+    reason: 'Agrees. Minor: the Summary''s sentence on the Figure 6E Fano factors does not hold for it;
+      the similar-touch FF is 0.50 to 0.69 against 0.54 (cell 146).'
+    response: Summary corrected, as for fig6e-touch-10ms-ff.
+  - claim: whisk-cycle-spikes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Round-1 point 3 (phase cycles restricted to the sample epoch) is resolved.
+    response: No change.

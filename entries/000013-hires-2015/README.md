@@ -24,8 +24,10 @@ reasoning and the differences from the paper's method.
 The first run asked seven questions in
 [`questions/000013.yaml`](../../questions/000013.yaml), and a reader answered them from the
 paper. With the touch-window cutoff set to the transition where the curve levels off, Table 1
-for L4 C2 is reproduced and for L5 partially; the Figure 3 claims stay blocked on the range of
-the cutoff curve (100 or 200 ms), which the paper does not give.
+for L4 C2 is reproduced and for L5 partially; the Figure 3 claims stay blocked because their
+readings disagree: for fig3c-touch-spikes-l4c2 they split by the range of the cutoff curve (100
+or 200 ms), which the paper does not give, and for fig3c-touch-spikes-l5 and
+fig3d-touch-phase-l4c2 they also disagree within one range.
 
 After the first verification round, whisking periods leave out licking and the 70 ms after
 touch, phase tuning uses every phase-analysis cycle of the trial, and the touch detector's
@@ -33,16 +35,17 @@ fraction detected is read at the time point of best percent correct. Five outcom
 whisking bouts, touches and reaction time, and the example cell's touch window are now not
 reproduced (their criteria have no partial rule), the L4 rate change with whisking is blocked
 (its two readings of whisking disagree), and phase decoding is not reproduced (C2 is far from
-24 deg and worse than outside C2 under every reading).
+24 deg and worse than outside C2 under every reading). The second verification round agreed with
+all 45 outcomes and corrected only text.
 
-The files fall in batches that were converted differently: in 36 of them the spike train's timestamps run 10 ms ahead of the voltage they were detected from, and in 38 the
+The files fall in batches that were converted differently: in 36 of them the spike train's timestamps are 10 ms earlier than the timestamps of the voltage samples they were detected from, and in 38 the
 stored `theta_filt` is not the band-passed angle and the voltage's unit conversion is off by
 1000.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000013-hires-2015-01.yaml`](../../attempts/000013-hires-2015-01.yaml).
 
-- `reproduce_hires_2015.ipynb`: the analysis. It takes about twelve minutes, two of them streaming
-  the files.
+- `reproduce_hires_2015.ipynb`: the analysis. It takes eight to nine minutes, one to two of them
+  streaming the files, depending on the archive.
 - `hires.py`: loading the files, the touch, whisking and exploration epochs, latencies, touch and
   phase windows, the decoders and the touch grouping. Other notebooks on this dandiset can import
   it.
