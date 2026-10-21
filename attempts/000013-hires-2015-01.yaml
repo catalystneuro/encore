@@ -1,0 +1,471 @@
+schema_version: 2
+id: 000013-hires-2015-01
+dataset:
+  archive: dandi
+  id: "000013"
+  version: 0.220126.2143
+  doi: 10.48324/dandi.000013/0.220126.2143
+paper: doi:10.7554/elife.06619
+date: 2026-10-21
+entry: 000013-hires-2015
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39600960457
+outcomes:
+- claim: recordings-counts
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:recordings-counts
+  measured:
+  - 31
+  - 10
+  - 11
+  - 115.0
+  notes: The electrode location of each file gives 31 L4 C2, 10 L4 surround and 11 L5 C2 cells,
+    one per file, with 115.0 +- 60.6 trials per neuron. The files mark no subset of trials as
+    analysed, so readings (a) and (b) of the trial count are the same.
+- claim: recordings-mice
+  outcome: not_reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:recordings-mice
+  measured:
+  - 23
+  - 52
+  - 22
+  - 17
+  notes: 52 recordings, but 23 subject identifiers. By genotype, C57BL6 9 mice and 22 neurons
+    (paper 7 and 21), Ai32 x PV-Cre 3 mice and 7 neurons (paper 3 and 8), PV-Cre 8 mice and 17
+    neurons (as the paper), and 3 mice and 6 neurons with a blank genotype, which match the
+    paper's VGAT-ChR2 counts but carry no label.
+- claim: behavior-performance
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:behavior-performance
+  measured: 0.741
+  notes: Hits and correct rejections over all trials, 0.741 +- 0.085 over 52 sessions. The files
+    mark no trials as analysed, so readings (a) and (b) are the same.
+- claim: behavior-sample-epoch
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:behavior-sample-epoch
+  measured:
+  - 2.394
+  - 1.543
+  - 4.049
+  notes: Under reading (a), all trials pooled, the pole is in reach for 2.394 s on average, 1.543
+    to 4.049 s. Under reading (b), session means, the mean is 2.403 s but the range 1.930 to
+    3.125 s is outside tolerance. 617 of 5978 trials are cut by the end of the recording.
+  deviations:
+  - The sample epoch is read from the `pole_available` series, cut at the end of each 4.5 to 5 s
+    recording; the paper's own measure may extend past it.
+- claim: behavior-whisking-bouts
+  outcome: partially_reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:behavior-whisking-bouts
+  measured:
+  - 91.6
+  - 15.74
+  - 15.76
+  notes: Measured values are for peak-to-peak as twice the Hilbert amplitude with touch not
+    breaking bouts. Amplitude 15.74 deg and frequency 15.76 Hz match; the mean bout duration is
+    91.6 ms (69.7 ms when touch breaks bouts) against 261 ms, so no reading puts all three in
+    tolerance. Bouts holding a complete cycle (a variant outside the claims file) last 213.8 to
+    238.3 ms but then have amplitudes of 33.9 to 35.7 deg.
+- claim: behavior-touches-reaction
+  outcome: partially_reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:behavior-touches-reaction
+  measured:
+  - 3.0
+  - 190
+  notes: The reaction time is 190 +- 700 ms over 3093 trials, within the tolerance of 234 ms; 544
+    trials have the first lick before the first touch, and with those left out it is 420 +- 411
+    ms. Touches before the response are 3.00 under reading (a) and 3.51 under (b), outside 2.33 +-
+    0.233.
+- claim: example-cell-rates
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:example-cell-rates
+  measured:
+  - 0.727
+  - 1.754
+  - 2.41
+  notes: Cell 23 (jf35892, 2010-02-19) is the only L4 C2 cell within tolerance on all three, with
+    rank-sum p = 1.36e-7 over 121 trials. Its rates from pooled spikes and time are 0.727 and
+    1.909 spikes/s, 2.63-fold, the paper's 0.73, 1.91 and 2.6. Cell 17 has no trial with 500 ms
+    before the pole comes into reach and was not evaluated.
+- claim: example-cell-sample-ff
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:example-cell-sample-ff
+  measured: 7.51
+  notes: Reading (a), cell 23, gives 7.51, and reading (c), the mean over 52 cells, 7.89; both
+    match. Reading (b), the mean over 41 L4 cells, gives 6.31.
+- claim: example-cell-touch-window
+  outcome: partially_reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:example-cell-touch-window
+  measured:
+  - 84.6
+  - 8
+  - 37
+  - 19.6
+  notes: Measured values are for the uniform shuffle and the onset before the spike, 100 ms. For
+    cell 23 the window runs from 8 ms to 36 to 38 ms under all 16 readings. The spike fraction is
+    78.4 to 79.1% with the closest onset on either side and 83.6 to 84.6% with the onset before;
+    the time fraction is 19.0 to 20.2% under every reading, against 15.3 +- 1.53%.
+- claim: example-cell-ff-around-touch
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:example-cell-ff-around-touch
+  notes: Cell 23 matches under no reading; its mean 10 ms count before touch is 0.000 to 0.008
+    against about 0.03, its peak mean count 0.15 to 1.36 and its FF at the peak 0.61 to 1.82. With
+    pooled touches no L4 C2 cell matches; with grouped touches cell 11 matches in 2 of 394 cell
+    and group units. The criterion lets another cell decide the claim, and the two readings of
+    the touches then give different outcomes.
+  deviations:
+  - The pre-touch windows are those ending at or before onset (starts -50 to -10 ms), a choice
+    the claims file does not fix; the example cell's pre-touch rate is far from the paper's under
+    any window.
+- claim: text-spikes-per-touch
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:text-spikes-per-touch
+  measured:
+  - 1.505
+  - 0.305
+  - 8
+  notes: Under reading (a), the example cell, 1.474 to 1.505 spikes per first touch, 0.302 to
+    0.307 per later touch and an 8 ms latency under all 16 window readings (9 ms from the
+    all-touch PCTH, also within tolerance). Readings (b) and (c) do not match (means 0.53 to 1.28
+    and 0.28 to 0.68).
+- claim: text-whisking-rates
+  outcome: not_reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:text-whisking-rates
+  measured:
+  - 1.257
+  - 0.227
+  notes: No reading puts both rates in tolerance. The example cell's non-whisking rate is 0.227
+    spikes/s; its whisking rate 1.257 (2.373 with touch epochs), against 0.67. The L4 C2 mean,
+    median and pooled readings are further off.
+- claim: example-cell-phase-modulation
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:example-cell-phase-modulation
+  measured: 1.0
+  notes: Depth 1.000 from 13 spikes in 16.4 s of phase-analysis cycles, with no spikes in the five
+    bins centred from -75 to 45 deg, around phase 0. With so few spikes the depth is not precise.
+- claim: table1-l4-c2
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:table1-l4-c2
+  notes: Values within tolerance, 15 of 18 (reproduced) under the transition cutoff with whisking
+    read without touch epochs, 14 (partially) with them, and 9 to 14 under the literal cutoff.
+    Under every reading the medians of spikes per first touch (0.18 to 0.73), modulation depth
+    (1.0) and whisking rate (0.86 to 2.28) are outside tolerance, and the non-whisking rate, the
+    latency and the minimum ISI within it. 14 of the 25 cells with a phase fit have depth 1.
+  deviations:
+  - Spikes per touch and the coupled fractions depend on the touch-window cutoff, whose start and
+    range the claims file does not fix (asked in questions/000013.yaml).
+- claim: table1-l4-outside
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:table1-l4-outside
+  notes: 7 to 9 of 17 values within tolerance under the transition cutoff, 10 to 11 under the
+    literal one. The medians of spikes per touch are never 0, and the latency mean is 8.1 to 10.0
+    ms against 18.5. Rates, mean depth and minimum ISI match.
+- claim: table1-l5
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:table1-l5
+  notes: 11 to 13 of 18 values within tolerance under the transition cutoff, 9 to 11 under the
+    literal one. Rates, depth and the means of spikes per touch match; the median whisking rate
+    (11.0 to 11.3 against 13.5), median latency (4 to 10 against 8 ms) and median minimum ISI (1.5
+    against 2.7 ms) do not.
+- claim: latency-determinable
+  outcome: not_reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:latency-determinable
+  measured:
+  - 31
+  - 7
+  notes: All 31 L4 C2 cells have a latency under both readings; of the 10 L4 cells outside C2, 7
+    have one from first touches and 10 from all touches, not 4. L5, not judged, has 10 or 9.
+- claim: l4-outside-weaker-touch
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:l4-outside-weaker-touch
+  notes: Reading (a), spikes per touch, gives p < 0.05 for first and later touches with the C2
+    median higher in all 32 window readings (p = 1.6e-5 to 0.0043 and 1.7e-5 to 0.015). Reading
+    (b), the peak touch rate, gives 148.1 against 25.0 spikes/s (p = 1.63e-5) and 51.3 against 5.6
+    (p = 1.07e-5).
+- claim: l5-higher-rates
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:l5-higher-rates
+  notes: L5 medians 12.90 (non-whisking) and 10.96 or 11.33 (whisking) spikes/s against 0.32 and
+    0.86 or 2.28 in L4 C2 and 1.09 and 1.75 or 1.78 in L4 outside C2; all four rank-sum tests p <
+    0.05 under both readings (largest 0.0092). Diversity is not judged.
+- claim: phase-mod-l4-inside-outside
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:phase-mod-l4-inside-outside
+  notes: Rank-sum p = 0.942 between L4 C2 (25 cells with a fit, median 1.000) and L4 outside C2 (10
+    cells, median 0.994). Six L4 C2 cells have no phase-analysis spikes and no depth.
+- claim: phase-mod-l4-vs-l5
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:phase-mod-l4-vs-l5
+  notes: L4 C2 against L5 p = 2.55e-4 and L4 outside against L5 p = 0.0039, L4 medians higher
+    (1.000 and 0.994 against 0.131). With cells of at least 20 phase spikes only (a variant), p =
+    0.051 and 0.050.
+- claim: whisking-rate-l4-no-change
+  outcome: partially_reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:whisking-rate-l4-no-change
+  notes: L4 outside C2 shows no change (signed-rank p = 0.432 under both readings). L4 C2 does
+    change, p = 5.0e-5 without touch epochs (26 of 31 cells higher when whisking) and 2.8e-9 with
+    them (30 of 31).
+- claim: whisking-rate-l5-increase
+  outcome: partially_reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:whisking-rate-l5-increase
+  notes: Signed-rank p = 0.024 and 0.014 under the two readings, 9 and 10 of 11 cells higher when
+    whisking, median difference +1.88 and +1.79 spikes/s. The criterion's condition that the median
+    whisking rate be higher fails as written (11.0 and 11.3 against 12.9); its meaning is asked.
+- claim: fig3c-touch-spikes-l4c2
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig3c-touch-spikes-l4c2
+  notes: Under the transition cutoff 66.9 to 75.8% of spikes in 14.6 to 17.6% of exploration time,
+    5 of 8 readings within both tolerances; under the literal cutoff 38.6 to 64.5% in 8.5 to 13.4%,
+    none. Asked in questions/000013.yaml, with the range of the fitted curve.
+  deviations:
+  - Two details not in the claims file were run under two readings each, the start of the cutoff
+    search and the longest window (100 or 200 ms).
+- claim: fig3c-touch-spikes-outside
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig3c-touch-spikes-outside
+  notes: Blocked as it depends on fig3c-touch-spikes-l4c2. Every one of its 32 readings is outside
+    tolerance (18.8 to 31.7% in 17.5 to 26.3% of time with the transition cutoff, 1.5 to 7.4% in
+    1.2 to 2.6% with the literal one), so the answer to the question would not make it reproduced.
+- claim: fig3c-touch-spikes-l5
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig3c-touch-spikes-l5
+  notes: 4 of the 8 transition-cutoff readings meet the criterion under both latency readings, none
+    of the literal ones (5.1 to 14.1% in 3.2 to 8.2% of time). It also depends on
+    fig3c-touch-spikes-l4c2.
+- claim: fig3d-touch-phase-l4c2
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig3d-touch-phase-l4c2
+  notes: Depends on fig3c-touch-spikes-l4c2. 4 of 16 transition-cutoff readings meet both
+    tolerances (100 ms, window t_w wide in total), none of the literal ones (44.3 to 68.1% in 11.7
+    to 18.4%).
+- claim: fig3d-touch-phase-outside
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig3d-touch-phase-outside
+  notes: Depends on fig3d-touch-phase-l4c2. 1 of 64 readings meets the criterion; the time
+    fraction is 27 to 42% under the transition cutoff and 7.0 to 16% under the literal one.
+- claim: fig3d-touch-phase-l5
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig3d-touch-phase-l5
+  notes: Depends on fig3d-touch-phase-l4c2. 8 of 64 readings meet the criterion, all with the
+    transition cutoff, 100 ms and the total-width phase window.
+- claim: fig3d-phase-only
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig3d-phase-only
+  notes: Depends on fig3d-touch-phase-l4c2. 27 of 32 readings meet the criterion (L4 C2 2.3 to 9.3%,
+    outside 18.4 to 32.8%, L5 1.0 to 25.4%); the 5 that fail have an L5 mean of 23.3 to 25.4%.
+- claim: fig4a-touch-detection-c2
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig4a-touch-detection-c2
+  notes: The population reaching 95% is 11 neurons with exploration non-touch windows, 18 or 30
+    with pre-touch windows and percent correct, and 1 or 2 with pre-touch windows and the fraction
+    detected. 20 repetitions per population size.
+  deviations:
+  - Within reading (1a) two pre-touch windows were run (-10 to 0 and -30 to -20 ms); the claims
+    file does not say which. Reading (1b) leaves out windows within 60 ms before or 100 ms after a
+    touch onset, a standard choice.
+- claim: fig4a-touch-detection-outside
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig4a-touch-detection-outside
+  notes: Depends on fig4a-touch-detection-c2. With percent correct 15 outside neurons reach 0.53 to
+    0.54 (upper bound 0.57 to 0.60) against 0.90 to 0.97 in C2, poor; with the fraction of touches
+    detected they reach 0.956 to 1.000, not poor.
+- claim: fig4b-touch-time-precision
+  outcome: not_reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig4b-touch-time-precision
+  measured: 1.396
+  notes: The smallest uncertainty 5 to 15 ms after onset, at 8 ms, is an RMS error of 1.09 to 1.40
+    ms, a 95% half width of 2.0 ms or 1.96 x RMS of 2.14 to 2.74 ms, under both splits and both
+    sets of time classes; none is within 0.55 +- 0.055 ms. The error falls with population size
+    (19.9 ms at 10 neurons, 1.55 ms at 200).
+  deviations:
+  - The decoder's time classes are not given; every 1 ms from -21 ms and from 0 ms were both run
+    (asked). Naive Bayes smoothing is scikit-learn's default (alpha 1), a standard choice.
+- claim: fig4c-phase-decoding
+  outcome: not_reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig4c-phase-decoding
+  notes: With held-out cycle counts 1000 C2 neurons reach 76% correct in 3 or 6 of 100 runs (median
+    138 to 143 deg) and outside neurons in none; with Poisson rates C2 reaches it at 58.6 to 60.0
+    deg and outside C2 at 120.0 to 130.9 deg, against 24 and 33 deg. The criterion's fallback is
+    methods_underspecified, but all four readings agree the values are far from the paper's, so
+    the outcome is the one they all give.
+  deviations:
+  - Rates get one spike spread over the 120 bins so that none is zero, and cells without a phase
+    fit take preferred phase 0; neither is in the claims file (asked). Tests use 50 samples per
+    phase and phase differences in 6 deg steps.
+- claim: fig5c-modulation-index
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig5c-modulation-index
+  measured:
+  - 0.853
+  - 0.857
+  - 0.827
+  notes: Measured values are for the uniform shuffle, onset before, 100 ms, literal cutoff, order
+    by ranks, velocity at onset and curvature over the touch. Under every reading the means are
+    within tolerance, order 0.666 to 0.871, velocity 0.703 to 0.894 and curvature 0.664 to 0.848.
+- claim: fig5-modulation-correlations
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig5-modulation-correlations
+  notes: Under reading (a) r is 0.549 to 0.788 (velocity, curvature), 0.621 to 0.830 (order,
+    velocity) and 0.534 to 0.681 (order, curvature), and the criterion holds in 24 of 128
+    combinations of the fig5c readings; under reading (b) it never holds (r 0.25 to 0.51).
+- claim: fig6s1b-clusters-less-variable
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig6s1b-clusters-less-variable
+  notes: 28 of 31 cells (0.90) under all four readings; 28 or 29 cells have a group and 8 have all
+    five, as most cells have fewer than 100 touches after the 250 ms interval.
+  deviations:
+  - Pre-touch velocity is taken as the frame before onset, fig5c's "pretouch" reading; the claims
+    file does not repeat which reading applies here.
+- claim: fig6cd-ff-near-binomial
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig6cd-ff-near-binomial
+  notes: Mean minimum FF 0.504 to 0.676 and fraction of units close to the binomial limit 0.79 to
+    1.00 under all 16 combinations.
+- claim: fig6d-not-refractory
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig6d-not-refractory
+  notes: Under reading (2a) the data FF (0.75 to 0.82) is never below the model's (0.76 to 0.80) by
+    more than the sum of the s.e.m.; under (2b) it is below in 65 of 91 to 73 of 98 grouped units
+    and 22 of 31 pooled cells counted from onsets (p < 0.05), but 19 of 31 counted from offsets (p
+    = 0.14).
+  deviations:
+  - The model's rate is the cell's PSTH, not raised for the refractory period (asked).
+- claim: fig6e-sample-epoch-ff
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig6e-sample-epoch-ff
+  measured: 6.58
+  notes: 6.58 +- 5.40 over the 31 L4 C2 cells.
+- claim: fig6e-random-38ms-ff
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig6e-random-38ms-ff
+  measured: 1.56
+  notes: 1.56 +- 0.47 within the sample epoch, 1.59 +- 0.47 anywhere in the trial.
+- claim: fig6e-touch-38ms-ff
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig6e-touch-38ms-ff
+  measured: 1.39
+  notes: 1.39 +- 0.60 over all touches, 1.34 and 1.36 +- 0.74 over touches after a 250 ms interval.
+- claim: fig6e-touch-10ms-ff
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig6e-touch-10ms-ff
+  measured: 0.85
+  notes: 0.85 and 0.86 over all touches, 0.70 to 0.74 over touches after a 250 ms interval, under
+    both readings of the window starts.
+- claim: fig6e-similar-touch-ff
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:fig6e-similar-touch-ff
+  measured: 0.504
+  notes: 0.504 to 0.691 under all 16 readings, with the five conditions in the paper's order under
+    each.
+- claim: whisk-cycle-spikes
+  outcome: reproduced
+  notebook: reproduce_hires_2015.ipynb
+  output: claim:whisk-cycle-spikes
+  notes: 0.100 (L4 C2) and 0.114 (all L4) spikes per cycle as means over cells, 0.092 and 0.114
+    pooled; 0.107 to 0.124 over the same cycles at any time of the trial.
+findings:
+- kind: metadata_error
+  statement: In 36 files the SpikeTrain timestamps run 10 ms before the CurrentClampSeries
+    timestamps of the same samples (the spike samples line up with the voltage one for one); in 16
+    files they agree. The spike timestamps put the touch response at the same latency in both
+    kinds of file (median peak 8 and 12 ms in L4 C2), the voltage timestamps would not (8 and 22
+    ms), so the voltage timestamps of the 36 files are 10 ms late.
+- kind: metadata_error
+  statement: In 38 files the CurrentClampSeries data, with the stated conversion of 0.001 to volts,
+    span only 2 to 26 microvolts, so the conversion is off by 1000; in the other 14 they span 3 to
+    28 mV.
+- kind: metadata_error
+  statement: In 38 files theta_filt, described as theta_at_base filtered 6 to 60 Hz, is not the
+    signal the stored amplitude and phase come from (up to 46 deg apart); in 14 it equals
+    amplitude times cos(phase). The stored amplitude and phase match a 6 to 60 Hz Butterworth
+    band-pass and Hilbert transform of theta_at_base.
+- kind: metadata_error
+  statement: set_point is described as the amplitude of the Hilbert transform of theta_at_base but
+    follows theta minus its band-passed part (r 0.96 to 1.00), and holds missing values in 23 files.
+- kind: metadata_error
+  statement: pole_position is described in mm, but its values range over several scales between
+    files, 0.2 to 1.6 in some, 992 to 13888 (motor steps) in others, about 1e8 in others, and up to
+    1.4e12 in one.
+- kind: metadata_insufficient
+  statement: Three subjects (anm211295, anm215592, anm217330; six cells) have no genotype, the
+    paper's VGAT-ChR2 mice by their counts. The files hold 23 subjects where the paper reports 21
+    mice, and the C57BL6 and Ai32 x PV-Cre counts differ from the paper's by one cell each, so the
+    mapping of subjects to the paper's animals is not given.
+- kind: other
+  statement: 30 files are named with an ogen suffix, but no file holds an optogenetic stimulus
+    series and stim_present is 0 in every trial.
+- kind: other
+  statement: first_lick_time disagrees with the lick onset series in some trials, by up to 3.1 s;
+    47 trials have licks in the series and no first_lick_time, and 136 have a first_lick_time and
+    no lick in the series.
+- kind: methods_unavailable
+  statement: The paper's analysis code (touch windows, phase decomposition, decoders, clustering,
+    Fano factors) is not public; the repository it links holds only the contact detection, so
+    several procedures could not be fixed and are asked about.
