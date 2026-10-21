@@ -1,0 +1,1244 @@
+# Claims for Nakagawa et al. (2026), "Early dopamine disruption in the entorhinal cortex of a
+# knock-in model of Alzheimer's disease", Nature Neuroscience (doi:10.1038/s41593-026-02260-w),
+# on dandiset 001968.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record (open access, CC BY), as served by Europe PMC (PMC13246448),
+# in paper/10.1038-s41593-026-02260-w.txt: main text, figure legends, Methods, Extended Data
+# Fig. 1 to 10 legends, and the supplement PDF (Supplementary Figs. 1 to 11 and Supplementary
+# Tables 1 to 4) extracted to text. Supplementary Table 1 (statistics) is garbled in the text and
+# its pages 14 to 18 were read from the supplement PDF. The main article PDF was not supplied, so
+# the figures themselves were not seen; numbers shown only in figure panels are not available
+# here. The reporting summary and source data were not supplied and were not read.
+#
+# Methods by reference. The Methods describe behavioral performance, spike sorting, PCA,
+# shuffle, similarity index, bootstrapping and photometry as "previously described" in their
+# ref. 16 (Lee et al. 2021, Nature 598, 321, doi:10.1038/s41586-021-03948-8). The Methods of
+# that paper (author manuscript, PMC8744500, read through the PMC BioC service) were read for
+# those steps only, and are cited below as "ref. 16".
+#
+# Code. The Code availability statement says "standard functions in MATLAB" were used and that
+# analytical codes are at https://www.igarashilab.org/resource. That page (read 2026-10-21) links
+# a Box folder "matlabCodes" with three files, analyze4LinearTracks.m, analyzePopulationVector.m
+# (header dated 05/20/2021) and boxSpikeInfo3.m, and a zip of 110 hippocampal neurons
+# (Igarashi_remapping_data.zip). These belong to the 2021 place cell remapping protocol (the
+# paper's ref. 39) and compute spatial rate maps and population vector correlations on linear
+# tracks. None of them covers the odor task, cue responses, PCA trajectories, similarity index,
+# bootstrap, decoding or photometry of this paper; Box gives no commit or version. So no method
+# detail below is settled by code.
+#
+# The dandiset. Its title is the paper's title; its description says only that it holds "data
+# associated with" the paper. Its archive summary lists mouse, an electrophysiological approach,
+# spike sorting, NWB, and 37 subjects. It is read here as meant to hold the tetrode recordings of
+# LEC L2/3 units (Fig. 2, Extended Data Figs. 3 to 9, Fig. 6d to i), possibly with the task
+# events of those sessions. Whether it also holds behavior of other mice, photometry or
+# histology is the author's to find; claims on those data are written all the same.
+#
+# Data the paper used, as it reports them.
+# - Mice. Homozygous APP NL-G-F knock-in mice (APP-KI) and APP WT/WT C57BL/6 controls (WT);
+#   young 3 to 6 months, old 7 to 11 months; 12 to 13 months for histology. Photometry and
+#   optogenetics used APP-KI x DAT-Cre mice and DAT-Cre controls; PS19 mice for one L-DOPA test.
+#   Animal IDs, sex and procedure per mouse are in Supplementary Table 2.
+# - Task. Head-fixed olfactory go/no-go task. Prelearned Odor-A (isoamyl acetate, lick for
+#   sucrose) and Odor-B (alpha-pinene, withhold licking to avoid quinine). Each day an AB-only
+#   session of about 20 trials, then an AB12 session of 160 trials with a novel rewarded Odor-1
+#   (C, E or G) and a novel punished Odor-2 (D, F or H), in random order every 18 to 22 s; A and
+#   B 20% each, 1 and 2 30% each. Delay of 2 s between odor and the response window; licking in
+#   the delay aborts the trial. Timepoints T1 to T5 within the session; T1 first 10 trials, T3
+#   middle 10, T5 last 10 (Fig. 2d legend); T1 also split into T1a (trials 1 to 3), T1b (4 to 6)
+#   and T1c (7 to 9). Behavioral T5 is trials 121 to 160. A session is correct when percent
+#   correct in T5 exceeds 80%, an error session otherwise.
+# - Units. Tetrode drives (64 channels) in right LEC, layer 2/3 (+-200 um of putative L2).
+#   Young: 479 neurons from 5 WT mice and 846 from 5 APP-KI mice; putative principal cells
+#   (peak-trough width > 230 us, > 100 spikes in a session) 423 and 636; putative interneurons
+#   56 and 210. Per mouse principal cells (Supplementary Fig. 2): WT #00364 95, #00375 48,
+#   #00390 130, #01398 112, #01431 38; APP-KI #00789 125, #01199 52, #01253 271, #01254 89,
+#   #01517 99 (97 in the Extended Data Fig. 3b legend). Correct and error sessions for young
+#   WT 352 and 71 cells, young APP-KI 411 and 225 cells (Supplementary Table 1). Old: 671 cells
+#   (WT) and 618 cells (APP-KI). L-DOPA: 144 cells from 4 L-DOPA mice and 132 from 4 saline
+#   mice, all APP-KI (Supplementary Table 1 prints 132 for both). Tetrodes were moved 40 to
+#   80 um between sessions, so each session holds new cells.
+# - Behavior. Young 11 WT and 16 APP-KI mice, old 11 WT and 14 APP-KI. Optogenetics 11 young
+#   APP-KI x DAT-Cre mice, stimulation on Odor-1 trials (473 nm, 5 s from Odor-1 onset then a
+#   10 s taper), against no-laser sessions in the same mice. L-DOPA (50 mg/kg i.p., 30 min before
+#   testing, 5 days) 9 mice, saline 8 mice; PS19 5 and 5; WT 4 and 4 (Supplementary Fig. 11
+#   also says 5 L-DOPA WT mice).
+# - Photometry. GCaMP6m in VTA/SNc dopamine neurons, fibers in LEC; 10 hemispheres from WT
+#   (DAT-Cre) and 8 from APP-KI x DAT-Cre mice.
+# - Histology. Abeta immunostaining by age (4 mice per group), TH+ fiber density in LEC and TH+
+#   cells in VTA/SNc (8 young WT, 8 young APP-KI, 6 old WT, 6 old APP-KI).
+#
+# Shared method, from the Methods, the legends, Supplementary Table 1 and ref. 16.
+# - Behavioral performance (Methods; ref. 16). Hits (licks to A or 1) plus correct rejections
+#   (no lick to B or 2), in a sliding window of 20 trials for the curves; percent correct in T5
+#   from trials 121 to 160; averaged over all sessions of a mouse; mice are the units. Open,
+#   with readings (B1) the trials of each odor pair that fall in session trials 121 to 160,
+#   (B2) the last 40 trials of each odor pair. Whether aborted trials count is open; the reading
+#   is that they count as trials of their odor, with their exclusion as a variant.
+# - Correct session. Methods say "> 80%", Results say ">= 80%". Both are run; they differ only
+#   for sessions at exactly 80%.
+# - Timepoints for units. T1 is read as the first 10 trials of each odor type, T5 the last 10,
+#   T3 the middle 10, since T1a to T1c (trials 1 to 3, 4 to 6, 7 to 9) count trials within an odor
+#   type and cells from different sessions are pooled. T2 and T4 are not defined. Open, with
+#   readings (T-a) 10-trial blocks of each odor type centered midway between T1 and T3 and
+#   between T3 and T5, (T-b) each odor type's trials split into five equal blocks, with the
+#   first, middle and last 10 trials for T1, T3 and T5 and the whole second and fourth blocks
+#   for T2 and T4.
+# - Spike response (Methods). Firing rates in 50 ms bins, Gaussian filter sigma 100 ms, z-scored
+#   to the -1 to 0 s pre-odor baseline. A cell responds to an odor when its spike count 0.5 to
+#   1.5 s after odor onset differs from the 1 s pre-odor count over the timepoint's 10 trials,
+#   Wilcoxon signed-rank p < 0.05 (Supplementary Table 1, "Significance of LEC cell firing in
+#   odor period", p<0.05; Extended Data Fig. 5 and Supplementary Fig. 3 say classification used
+#   0.5 to 1.5 s). The P < 0.01 of Fig. 2b is the example cell's result, not a threshold. Open,
+#   with readings for the direction (D+) increases only ("fired to"), (D+-) any change. Shown
+#   as a variant, not judged: a response in any of the odor (0.5 to 1.5 s), delay (2 to 3 s) and
+#   choice (3 to 4 s) periods, which the Methods list.
+# - PCA (Methods; ref. 16). For each timepoint separately (ref. 16 reports explained variance per
+#   timepoint), each cell's mean firing rate in 50 ms bins from -1 to 4 s after odor onset for
+#   each of the four odor types, concatenated; normalized per neuron by subtracting the minimum
+#   and dividing by the maximum; MATLAB pca with neurons as variables; PC1 and PC2 kept;
+#   Euclidean distance between the trajectories of two odor types, averaged over 0.5 to 1.5 s.
+#   Cells of all sessions and mice of a group are pooled. Open, with readings (N1) (x - min) /
+#   max, (N2) (x - min) / (max - min); and (F1) firing rates smoothed as in Spike response,
+#   (F2) unsmoothed binned rates.
+# - Shuffle (Methods; ref. 16). Odor labels shuffled across trials, keeping the count of each
+#   type; 1000 shuffles; the 95th percentile of the shuffle distances of each odor pair, averaged
+#   over pairs, is the significance threshold. Supplementary Table 1 calls it "trial shift".
+#   Open, with readings (S1) one permutation per session applied to all its cells, (S2) an
+#   independent permutation per cell.
+# - Similarity index (Methods). SI = -(real distance - mean shuffle distance) / mean shuffle
+#   distance, the mean shuffle distance averaged across T1 to T5. Open, with readings (M1) the
+#   mean shuffle distance of the odor pair itself (A-1), (M2) averaged over all six pairs.
+# - Bootstrap (Methods). Neurons resampled with replacement, PCA and SI recomputed, 1000 times;
+#   the difference of SIs between groups, bootstrap by bootstrap, is tested against 0, p < 0.05.
+#   The Results call the test "maximum likelihood estimation". Open, with readings (BS1) a normal
+#   distribution fitted to the differences by maximum likelihood, two-sided p of 0 under it,
+#   (BS2) the empirical two-sided fraction of differences on the other side of 0.
+# - Photometry (ref. 16). dF/F from the mean of the 1 s before cue, Gaussian filter sigma 200 ms,
+#   z-scored to the 1 s before cue; mean per odor type and timepoint per hemisphere. The paper
+#   gives two windows: (G1) 1 to 4 s after cue onset for the mean signals compared between
+#   strains (Fig. 4d legend, Supplementary Fig. 6c), (G2) 2 to 4 s for the significance of the
+#   signal against the precue (Supplementary Table 1, Wilcoxon signed-rank, p<0.05). Where a
+#   claim's window is not one of these uses, both are readings; (G3) 0.5 to 3 s (ref. 16) is
+#   shown as a variant only, since this paper gives its own windows.
+# - Statistics. The ANOVAs are ordinary (not repeated measures) on per mouse, per hemisphere or
+#   per session values, as their degrees of freedom show; Tukey post hoc; two-sided tests.
+# - Readings, how they combine (docs/protocol.md, Reader, step 3). Readings of what a reported
+#   number counts (B1, B2; the 80% session cut off; T-a, T-b; D+, D+-; the 39% denominator;
+#   which G window a reported mean uses) are alternatives: the claim matches if it matches under
+#   any of them. Readings of a method detail the paper leaves open (N1, N2; F1, F2; S1, S2; M1,
+#   M2; BS1, BS2; the decoding readings; the SD of figs6d) must all be run: the outcome is the
+#   one they all give, and when they give different outcomes the claim is blocked as
+#   methods_underspecified, with every result shown. "Under the readings" in a criterion below
+#   means this rule.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001968"
+paper: doi:10.1038/s41593-026-02260-w
+claims:
+- id: units-recorded
+  statement: In LEC layer 2/3 of young mice, 479 neurons were recorded from 5 WT mice and 846 from
+    5 APP-KI mice.
+  source: Results, Disrupted associative memory encoding in lateral entorhinal cortex layer 2/3
+    neurons, paragraph 1
+  quote: recorded 479 and 846 neurons from n = 5 young WT and n = 5 young APP-KI mice, respectively
+  expected:
+  - quantity: young WT neurons
+    value: 479
+    tolerance: 48
+  - quantity: young APP-KI neurons
+    value: 846
+    tolerance: 85
+  criterion: Counts of sorted units from young WT and young APP-KI tetrode sessions. The putative
+    principal cells (peak-trough width above 230 us and more than 100 spikes in the session,
+    Methods) are counted as well and compared with 423 and 636 (Fig. 2d legend) and with the
+    per mouse counts of Supplementary Fig. 2. Reproduced when both totals are within tolerance.
+- id: ed4a-spike-type-distribution
+  statement: The proportions of narrow, regular and wide spiking LEC L2/3 cells differ between
+    young WT and young APP-KI mice.
+  source: Extended Data Fig. 4a; Supplementary Table 1
+  quote: Bottom, percentage of NS, RS, and WS cells in young WT and young APP-KI mice. ( p =
+    1.2e-23, Chi-squared test for comparing distributions
+  statistics:
+  - test: Chi-squared test
+    statistic: chi2 = 105.51
+    p: 1.2e-23
+    n: 479 young WT and 846 young APP-KI cells
+  depends_on:
+  - units-recorded
+  criterion: All units classified by spike peak-trough width into NS (below 230 us), RS (230 to
+    390 us) and WS (above 390 us), the cut offs of Extended Data Fig. 4a; chi-squared test of the
+    3 by 2 table. The channel the width is read from is not given; readings (a) the channel with
+    the largest mean amplitude, (b) the mean over the four channels. Reproduced when p < 0.05.
+- id: ed4b-spike-width
+  statement: Putative principal cells of LEC L2/3 have narrower spikes in young APP-KI mice than
+    in young WT mice, while putative interneurons do not differ.
+  source: Results, Disrupted associative memory encoding in lateral entorhinal cortex layer 2/3
+    neurons, paragraph 1; Extended Data Fig. 4b; Supplementary Fig. 2b
+  quote: LEC L2/3 neurons in APP-KI mice showed decreasing spike widths compared to those of WT
+    mice, suggesting alterations in spike generation mechanisms
+  statistics:
+  - about: principal cells, cells as units
+    test: two-sided rank sum test
+    statistic: Z = 11.47
+    p: 3.9e-15
+    n: 423 young WT and 636 young APP-KI cells
+  - about: interneurons, cells as units
+    test: two-sided rank sum test
+    statistic: Z = -0.29
+    p: 0.76
+    n: 56 young WT and 210 young APP-KI cells
+  - about: principal cells, mice as units
+    test: two-sided unpaired t-test
+    statistic: t(8) = 2.49
+    p: 0.037
+    n: 5 and 5 mice
+  depends_on:
+  - units-recorded
+  criterion: Peak-trough width as in ed4a-spike-type-distribution; principal cells are RS plus WS,
+    interneurons NS (Supplementary Fig. 2b). Wilcoxon rank sum test on cells. Supplementary Table 1
+    gives p = 1.7e-30 for the principal cells where the legend gives 3.9e-15; either is
+    significant. Reproduced when the principal cells are narrower in APP-KI at p < 0.05 and the
+    interneurons do not differ at p < 0.05 (the paper's test, a claim of absence for that part).
+    The per mouse t-test is shown as well.
+- id: ed4c-higher-firing-rates
+  statement: Mean firing rates of putative principal neurons and interneurons in LEC L2/3 are
+    higher in young APP-KI mice than in young WT mice.
+  source: Results, Disrupted associative memory encoding in lateral entorhinal cortex layer 2/3
+    neurons, paragraph 1; Extended Data Fig. 4c and 4d
+  quote: the mean firing rates of putative LEC L2/3 principal neurons and interneurons were both
+    higher in APP-KI mice than those of WT mice
+  statistics:
+  - about: principal cells, mean rate
+    test: two-sided rank sum test
+    statistic: Z = -7.85
+    p: 3.9e-15
+    n: 423 young WT and 636 young APP-KI cells
+  - about: interneurons, mean rate
+    test: two-sided rank sum test
+    statistic: Z = -2.84
+    p: 0.0044
+    n: 56 young WT and 210 young APP-KI cells
+  - about: principal cells, peak rate
+    test: two-sided rank sum test
+    statistic: Z = -4.06
+    p: 4.7e-5
+  depends_on:
+  - units-recorded
+  criterion: Mean firing rate of each cell over the associative learning session (Extended Data
+    Fig. 4c), Wilcoxon rank sum test on cells, principal (RS and WS) and interneurons (NS)
+    separately. The rate's definition is not given; readings (a) spike count over the whole
+    recording of the session, (b) over the AB12 session's trial periods only. Reproduced when
+    both cell classes have higher rates in APP-KI at p < 0.05; partially when one class does.
+    The peak rate (not defined; read as the maximum of the 50 ms, sigma 100 ms smoothed rate) and
+    the per mouse t-tests of Supplementary Fig. 2c, 2d are shown.
+- id: fig2d-more-cue-responsive
+  statement: At the end of the session (T5), 16% of LEC L2/3 principal neurons respond to at
+    least one odor cue in young WT mice and 34% in young APP-KI mice; the distribution of
+    response classes differs at T1, T3 and T5.
+  source: Results, Disrupted associative memory encoding in lateral entorhinal cortex layer 2/3
+    neurons, paragraph 2; Fig. 2d
+  quote: While 16% of LEC L2/3 neurons fired to at least one odor cue at T5 in WT mice, an
+    excessive 34% of neurons exhibited cue responses in APP-KI mice
+  statistics:
+  - about: T5 distribution
+    test: chi-squared test
+    statistic: chi2 = 2.29
+    p: 3.6e-9
+    n: 423 young WT and 636 young APP-KI cells
+  - about: T1 distribution
+    test: chi-squared test
+    p: 7.1e-5
+  - about: T3 distribution
+    test: chi-squared test
+    p: 1.5e-7
+  expected:
+  - quantity: WT cells responsive to at least one odor at T5
+    value: 16
+    tolerance: 1.6
+    unit: percent
+  - quantity: APP-KI cells responsive to at least one odor at T5
+    value: 34
+    tolerance: 3.4
+    unit: percent
+  depends_on:
+  - units-recorded
+  criterion: Principal cells of all young sessions (correct and error). Each cell is classed at
+    T1, T3 and T5 by the number of odor types (0 to 4) it responds to, as in Shared method, Spike
+    response (odor period, p < 0.05), under readings D+ and D+-; T1, T3, T5 do not depend on the
+    T-a, T-b readings. Chi-squared test of the class by strain table at each timepoint,
+    Benjamini-Hochberg post hoc per class. Reproduced when, under one reading, both T5
+    percentages are within tolerance and the T5 chi-squared test has p < 0.05 with more
+    responsive cells in APP-KI. The any-period variant of Shared method is shown. The printed
+    chi2 of 2.29 cannot give p = 3.6e-9 on these counts and is not used as a target.
+- id: ed5-more-odor-a-cells
+  statement: Among LEC L2/3 cells, young APP-KI mice have a higher percentage of Odor-A
+    responsive cells than young WT mice through T1 to T5.
+  source: Results, Disrupted associative memory encoding in lateral entorhinal cortex layer 2/3
+    neurons, paragraph 2; Extended Data Fig. 5; Supplementary Table 1
+  quote: Among these cue-responsive neurons in APP-KI mice, the percentage of Odor-A responsive
+    cells was higher in APP-KI mice compared to those in WT mice
+  statistics:
+  - about: overall distribution at T1
+    test: chi-squared test
+    statistic: chi2 = 39.39
+    p: 5.5e-4
+    n: 423 young WT and 636 young APP-KI cells
+  - about: overall distribution at T3
+    test: chi-squared test
+    statistic: chi2 = 58.49
+    p: 4.5e-7
+  - about: overall distribution at T5
+    test: chi-squared test
+    statistic: chi2 = 51.63
+    p: 6.4e-6
+  - about: Odor-A class at T1
+    test: Benjamini-Hochberg post hoc test
+    p: 0.032
+  - about: Odor-A class at T3
+    test: Benjamini-Hochberg post hoc test
+    p: 3.8e-3
+  - about: Odor-A class at T5
+    test: Benjamini-Hochberg post hoc test
+    p: 1.8e-3
+  - about: Odor-A class, mice as units, T5
+    test: two-sided unpaired t-test followed by FDR correction
+    p: 0.031
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 and 5 mice
+  depends_on:
+  - fig2d-more-cue-responsive
+  criterion: Response classes by odor combination (A, B, 1, 2, A-1, and so on, and none) from the
+    responses of fig2d-more-cue-responsive, under the same readings, as a percentage of all
+    principal cells. Chi-squared test of the class by strain table at T1, T3, T5, with
+    Benjamini-Hochberg post hoc tests per class. Supplementary Table 1 gives the post hoc tests
+    per combination class (A, 1, A-1, B-1, null), so the Odor-A class is the cells responding to
+    A only; cells responding to A among others are shown as a variant. Reproduced when, under
+    one of the D readings, the Odor-A class is larger in APP-KI at T1, T3 and T5 with a post hoc
+    p < 0.05 at each; partially when that holds at one or two timepoints.
+- id: fig2j-per-mouse-response-types
+  statement: Analysed per mouse, the response type distribution of LEC L2/3 cells differs between
+    young WT and young APP-KI mice at T5, with fewer non-responsive cells and more 1-odor cells in
+    APP-KI mice.
+  source: Fig. 2j; Extended Data Fig. 3c
+  quote: Similar results were obtained when data were separated and analyzed per animal
+  statistics:
+  - about: responsive type x strain at T5
+    test: two-way ANOVA
+    statistic: F(4,40) = 8.0
+    p: 7.7e-5
+    n: 5 mice per strain
+  - about: 1-odor cells at T5
+    test: two-sided Tukey post hoc test
+    p: 0.021
+  - about: non-responsive cells at T5
+    test: two-sided Tukey post hoc test
+    p: 4.3e-3
+  depends_on:
+  - fig2d-more-cue-responsive
+  criterion: Per mouse percentages of principal cells responding to 1, 2, 3 or 4 odors or none
+    at T5, under the readings of fig2d-more-cue-responsive; two-way ANOVA type by strain on the
+    50 mouse-by-type values, Tukey post hoc. Reproduced when, under one reading, the interaction
+    has p < 0.05 and the non-responsive percentage is lower in APP-KI with a Tukey p < 0.05.
+- id: fig2g-wt-a1-generalized
+  statement: In young WT mice, the PCA distance between Odor-A and Odor-1 population trajectories
+    is slightly above the shuffle at T1 and below it from T2 to T5, so the two rewarded cues
+    become similarly represented.
+  source: Results, Disrupted associative memory encoding in lateral entorhinal cortex layer 2/3
+    neurons, paragraph 3; Fig. 2e, 2g, 2h; Supplementary Fig. 4a
+  quote: In WT mice, A-1 distance was slightly larger than the shuffle at T1, but became smaller
+    than the shuffle through T2–T5, indicating generalized representations of rewarded cues
+    during learning
+  expected:
+  - quantity: young WT shuffle 95th percentile, T1
+    value: 1.57
+    tolerance: 0.157
+  - quantity: young WT shuffle 95th percentile, T3
+    value: 1.51
+    tolerance: 0.151
+  - quantity: young WT shuffle 95th percentile, T5
+    value: 1.59
+    tolerance: 0.159
+  depends_on:
+  - units-recorded
+  criterion: PCA, shuffle and SI as in Shared method on the 423 young WT principal cells, correct
+    and error sessions pooled, under the readings N1, N2, F1, F2, S1, S2, M1, M2 (method, all
+    run) and T-a, T-b (alternatives). "Smaller than the shuffle" is a reading of the paper's
+    words, with alternatives (a) below the mean shuffle distance (SI above 0), (b) below the
+    95th percentile threshold (the red line of Fig. 2g). Reproduced when, under the readings,
+    the A-1 distance is above the shuffle at T1 and below it at each of T2 to T5; partially
+    when below at three of the four. The shuffle thresholds (from
+    Supplementary Table 1) are a check of the pipeline and are reported, not judged alone.
+- id: fig2f-app-a1-separated
+  statement: In young APP-KI mice, the Odor-A and Odor-1 trajectories stay far apart throughout
+    the session, the A-1 distance remaining above the shuffle from T1 to T5.
+  source: Results, Disrupted associative memory encoding in lateral entorhinal cortex layer 2/3
+    neurons, paragraph 3; Fig. 2f, 2g, 2h; Supplementary Fig. 4b
+  quote: However, A-1 distance in APP-KI mice remained above shuffle, indicating that Odors-A and
+    -1 representations were not generalized together in APP-KI mice
+  expected:
+  - quantity: young APP-KI shuffle 95th percentile, T1
+    value: 2.14
+    tolerance: 0.214
+  - quantity: young APP-KI shuffle 95th percentile, T3
+    value: 2.04
+    tolerance: 0.204
+  - quantity: young APP-KI shuffle 95th percentile, T5
+    value: 2.08
+    tolerance: 0.208
+  depends_on:
+  - units-recorded
+  criterion: As fig2g-wt-a1-generalized on the 636 young APP-KI principal cells. "Above shuffle"
+    is read as (a) above the mean shuffle distance (SI below 0), (b) above the 95th percentile
+    threshold. Reproduced when, under the readings, the A-1 distance is above the shuffle at
+    each of T1 to T5; partially when at four of the five.
+- id: fig2i-si-wt-above-app
+  statement: Bootstrapped similarity between Odor-A and Odor-1 representations is higher in young
+    WT than in young APP-KI mice across the session, significantly at T1a and T1c to T5.
+  source: Results, Disrupted associative memory encoding in lateral entorhinal cortex layer 2/3
+    neurons, paragraph 3; Fig. 2i; Extended Data Fig. 8e
+  quote: A bootstrapping analysis confirmed the decreased A-1 similarity in APP-KI mice compared
+    to WT mice throughout the session
+  statistics:
+  - about: T1a
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 0.023
+  - about: T1b
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 0.072
+  - about: T1c
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 8.7e-4
+  - about: T2
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 6.6e-7
+  - about: T3
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 1.7e-5
+  - about: T4
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 8.7e-6
+  - about: T5
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 1.1e-3
+  depends_on:
+  - fig2g-wt-a1-generalized
+  - fig2f-app-a1-separated
+  criterion: Bootstrap as in Shared method (readings BS1 and BS2) on the SI of fig2g and fig2f,
+    with the same PCA readings. Reproduced when, under the readings, WT minus APP-KI SI is
+    positive with p < 0.05 at each of T1a, T1c, T2, T3, T4 and T5, the timepoints the paper
+    reports as significant; partially when it is at three to five of them. Bootstrap p values
+    below 0.001 cannot be matched exactly under BS2 and are compared as bounds.
+- id: fig2k-per-mouse-distance
+  statement: Analysed per mouse, the A-1 PCA distance at T5 is larger in young APP-KI mice than
+    in young WT mice.
+  source: Fig. 2k; Extended Data Fig. 3d
+  inferred: The finding is read from the Fig. 2k legend, which gives the test but no sentence of
+    the paper states its direction; Fig. 2f and the Results give it as larger in APP-KI.
+  statistics:
+  - test: two-sided unpaired t-test followed by FDR correction
+    p: 0.048
+    corrected: FDR
+    n: 5 young WT and 5 young APP-KI mice
+  depends_on:
+  - fig2g-wt-a1-generalized
+  criterion: PCA as in Shared method on each mouse's principal cells, per timepoint; A-1 mean
+    distance per mouse; unpaired t-test WT against APP-KI at each timepoint, Benjamini-Hochberg
+    FDR. Supplementary Table 1 (Extended Data Fig. 3d) lists the test at T1, T3 and T5 (NS, NS,
+    p = 0.048). The family of the correction is a method detail left open, with readings (a) T1,
+    T3 and T5, (b) the six odor pairs at each timepoint, (c) both together, all run under the
+    rule for readings. Reproduced when, under the readings, the T5 A-1 distance is larger in
+    APP-KI with corrected p < 0.05.
+- id: fig2l-per-mouse-si
+  statement: Analysed per mouse, the A-1 similarity index is lower in young APP-KI mice than in
+    young WT mice across learning.
+  source: Fig. 2l; Extended Data Fig. 3e
+  inferred: The finding is read from the Fig. 2l legend, which gives the strain effect; no
+    sentence of the Results states it apart from the general "similar results" per animal.
+  statistics:
+  - about: strain effect
+    test: two-way ANOVA (strain x timepoint)
+    statistic: F(1,56) = 14.8
+    p: 3.1e-4
+    n: 5 young WT and 5 young APP-KI mice
+  depends_on:
+  - fig2k-per-mouse-distance
+  criterion: Per mouse SI from fig2k-per-mouse-distance at T1a, T1b, T1c, T2, T3, T4, T5; two-way
+    ANOVA strain by timepoint on the 70 values. Reproduced when the strain effect has p < 0.05
+    with WT higher.
+- id: ed8-t1-a1-decrease
+  statement: Within the first 10 trials, the A-1 distance of young WT mice decreases clearly from
+    trials 1 to 3 (T1a) to trials 7 to 9 (T1c), while in young APP-KI mice the trajectories stay
+    far apart.
+  source: Results, Disrupted associative memory encoding in lateral entorhinal cortex layer 2/3
+    neurons, paragraph 3; Extended Data Fig. 8
+  quote: We further subdivided T1 into trials 1–3 (T1a), 4–6 (T1b) and 7–9 (T1c) and observed
+    clear decrease of A-1 distance from T1a to T1c
+  expected:
+  - quantity: young WT shuffle 95th percentile, T1a
+    value: 1.16
+    tolerance: 0.116
+  - quantity: young WT shuffle 95th percentile, T1c
+    value: 1.11
+    tolerance: 0.111
+  - quantity: young APP-KI shuffle 95th percentile, T1a
+    value: 1.67
+    tolerance: 0.167
+  - quantity: young APP-KI shuffle 95th percentile, T1c
+    value: 1.64
+    tolerance: 0.164
+  depends_on:
+  - fig2g-wt-a1-generalized
+  criterion: PCA as in fig2g-wt-a1-generalized on trials 1 to 3, 4 to 6 and 7 to 9 of each odor
+    type. Reproduced when, under the readings, the WT A-1 distance at T1c is below that at T1a,
+    the APP-KI A-1 distance stays above the shuffle at T1a, T1b and T1c (Extended Data Fig. 8b,
+    "kept far apart through T1a to T1c"), and the WT minus APP-KI SI at T1c is positive in the
+    bootstrap with p < 0.05; partially when the WT decrease holds and one other part fails.
+- id: ed9-old-a1-separated
+  statement: In old mice, Odor-A and Odor-1 representations generalize from T2 to T5 in WT mice
+    but stay separated throughout the session in APP-KI mice.
+  source: Results, Disrupted associative memory encoding in lateral entorhinal cortex layer 2/3
+    neurons, paragraph 3; Extended Data Fig. 9; Supplementary Fig. 5
+  quote: In old age, generalization of Odors-A and -1 was observed through T2–T5 in WT mice,
+    whereas representations for these two cues were again kept separated throughout the session
+    in APP-KI mice
+  statistics:
+  - about: WT minus APP-KI SI, T1b
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 5.9e-3
+    n: 671 old WT and 618 old APP-KI cells
+  - about: T1c
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 7.1e-6
+  - about: T2
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 0.015
+  - about: T4
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 0.017
+  - about: T5
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 6.9e-3
+  expected:
+  - quantity: old WT cells
+    value: 671
+    tolerance: 67
+  - quantity: old APP-KI cells
+    value: 618
+    tolerance: 62
+  - quantity: old WT shuffle 95th percentile, T1
+    value: 2.41
+    tolerance: 0.241
+  - quantity: old APP-KI shuffle 95th percentile, T1
+    value: 2.09
+    tolerance: 0.209
+  criterion: As fig2g-wt-a1-generalized, fig2f-app-a1-separated and fig2i-si-wt-above-app on old
+    principal cells. Supplementary Table 1 gives T3 p = 0.089 and T1a p = 0.17, so T3 is not
+    required. Reproduced when, under the readings, the old WT A-1 distance is below the shuffle
+    at each of T2 to T5, the old APP-KI distance is above it at each of T1 to T5, and the
+    bootstrap difference is positive with p < 0.05 at T1b, T1c, T2, T4 and T5; partially when
+    one or two of these timepoints fail.
+- id: ed7-decoding-correct-error
+  statement: In both young WT and young APP-KI mice, a decoder trained on Odor-A against Odor-B
+    activity discriminates Odor-1 from Odor-2 in correct sessions but not in error sessions.
+  source: Extended Data Fig. 7b and 7d
+  quote: The decoding analysis showed that neural activity in correct sessions discriminated
+    between Odor-1 vs. Odor-2, whereas activity in error session could not discriminate them in
+    WT mice
+  statistics:
+  - about: young WT, session x time
+    test: two-way ANOVA
+    statistic: F(6,126) = 37.83
+    p: 5.7e-26
+  - about: young APP-KI, session x time
+    test: two-way ANOVA
+    statistic: F(6,126) = 21.59
+    p: 2.4e-17
+  depends_on:
+  - units-recorded
+  criterion: Methods, Decoding analysis. Mean firing rates in 50 ms bins, 1 to 4 s after odor
+    onset, normalized; binary support vector machine trained on Odor-A against Odor-B, tested on
+    Odor-1 (as A) and Odor-2 (as B); 10 bootstraps of resampled data (Extended Data Fig. 7b);
+    correct and error sessions apart (young WT 352 and 71 cells, APP-KI 411 and 225); timepoints
+    T1a to T5 (Supplementary Table 1). The kernel is not given; the linear kernel, MATLAB's
+    default for a binary SVM, is a standard choice and is recorded as a deviation. Method
+    details left open, all run under the rule for readings. The test window, given as 2 to 5 s
+    in the same paragraph, with readings (a) 1 to 4 s, (b) 2 to 5 s; what a sample is, with
+    readings (c) each 50 ms bin's population vector, (d) each odor type's mean over the window;
+    the normalization, with readings N1, N2 and a z-score per neuron. Reproduced when the
+    session by time interaction has p < 0.05 in both strains and correct exceeds error sessions
+    with Tukey p < 0.05 at each of T2 to T5 in both strains. The paper gives no test that error
+    sessions are at chance; error-session performance is reported, not judged.
+- id: fig3b-abeta-snc-above-vta
+  statement: In young APP-KI mice, Abeta plaque density is higher in the SNc than in the VTA.
+  source: Results, Dysfunction of lateral entorhinal cortex dopamine activity, paragraph 1;
+    Fig. 3b
+  quote: The density of Aβ plaques was higher in the SNc than that in the VTA
+  statistics:
+  - test: two-sided rank sum test (Wilcoxon signed-rank in Supplementary Table 1)
+    statistic: Z = -3.2
+    p: 1.4e-3
+    n: 12 young APP-KI mice
+  criterion: Histology. Abeta-positive area above three standard deviations of background as a
+    percentage of image area (Methods), per region and mouse. The test is named as rank sum in
+    the text and signed-rank in Supplementary Table 1; both are run. Reproduced when SNc exceeds
+    VTA with p < 0.05 under either.
+- id: fig3d-th-fibers-spared
+  statement: TH-positive axon density in the LEC does not differ significantly between APP-KI and
+    WT mice, nor between ages.
+  source: Results, Dysfunction of lateral entorhinal cortex dopamine activity, paragraph 1;
+    Fig. 3d
+  quote: Although there was a trend of decrease in the density of TH + axons of APP-KI mice, the
+    effect was not significant across strain nor age
+  statistics:
+  - about: strain
+    test: two-way ANOVA
+    statistic: F(1,24) = 0.79
+    p: 0.38
+    n: 8 young WT, 8 young APP-KI, 6 old WT, 6 old APP-KI mice
+  - about: age
+    test: two-way ANOVA
+    statistic: F(1,24) = 0.57
+    p: 0.46
+  criterion: A claim of absence, on the paper's test. TH-positive area in LEC images (3.4 to 3.8
+    mm AP) above three standard deviations of background, as a percentage of image area, per
+    mouse; two-way ANOVA strain by age. Reproduced when neither the strain nor the age effect has
+    p < 0.05; the effect sizes are reported.
+- id: ed10-th-cells-spared
+  statement: The density of TH-positive dopamine neurons in the VTA and SNc does not differ
+    between APP-KI and WT mice.
+  source: Results, Dysfunction of lateral entorhinal cortex dopamine activity, paragraph 1;
+    Extended Data Fig. 10
+  quote: We also measured the density of dopaminergic neurons in the VTA and SNc, finding no
+    significant alteration between APP-KI and WT mice
+  statistics:
+  - about: VTA, strain
+    test: two-way ANOVA
+    statistic: F(1,22) = 0.01
+    p: 0.91
+  - about: VTA, strain x age
+    test: two-way ANOVA
+    statistic: F(1,22) = 0.08
+    p: 0.78
+  - about: SNc, strain
+    test: two-way ANOVA
+    statistic: F(1,22) = 0.41
+    p: 0.52
+  - about: SNc, strain x age
+    test: two-way ANOVA
+    statistic: F(1,22) = 0.20
+    p: 0.65
+  criterion: A claim of absence, on the paper's test. TH-positive cell counts per image area in
+    VTA and SNc (3.4 to 3.6 mm AP), per hemisphere or mouse; two-way ANOVA strain by age with
+    Tukey post hoc. Reproduced when no strain effect, interaction or WT against APP-KI Tukey
+    comparison at the same age has p < 0.05 (Supplementary Table 1 reports one significant pair,
+    young WT against old APP-KI in SNc, which is across ages).
+- id: ed1-abeta-onset
+  statement: In APP-KI mice, Abeta accumulates with age, starting in the LEC at 2 months and in
+    the VTA and SNc from 4 months.
+  source: Results, Impaired associative memory formation in amyloid precursor protein knock-in
+    mice, paragraph 1; Results, Dysfunction of lateral entorhinal cortex dopamine activity,
+    paragraph 1; Extended Data Fig. 1
+  quote: age-dependent accumulation of amyloid-ß (Aβ) starts widely in cortical regions,
+    including the LEC, at 2 months of age
+  statistics:
+  - about: LEC, group
+    test: one-way ANOVA
+    statistic: F(7,24) = 15.34
+    p: 1.8e-7
+    n: 4 mice per group
+  - about: VTA, group
+    test: one-way ANOVA
+    statistic: F(7,24) = 13.18
+    p: 7.4e-7
+  - about: SNc, group
+    test: one-way ANOVA
+    statistic: F(7,24) = 13.18
+    p: 7.4e-7
+  criterion: Abeta-positive area above three standard deviations of background as a percentage
+    of image area (Methods), per region and age group (12 month WT, APP-KI at 1, 2, 3, 4, 6, 9
+    and 12 months, 4 mice each); one-way ANOVA with Tukey (Supplementary Table 1). The LEC F is
+    15.34 in Supplementary Table 1 and 3.72 in the Extended Data Fig. 1b legend; the SNc entry
+    repeats the VTA numbers. Reproduced when the ANOVA has p < 0.05 in each region and 12 month
+    APP-KI exceeds 12 month WT with Tukey p < 0.05 in each. The paper gives no test for the onset
+    ages (2 months in the LEC, 4 months in the VTA and SNc); the group means are reported against
+    them, not judged.
+- id: fig4b-wt-dopamine-t1
+  statement: In correct sessions of control mice, LEC dopamine fibers respond at T1 to prelearned
+    Odor-A, to novel Odor-1 and to novel Odor-2; with learning the Odor-2 signal disappears while
+    the Odor-A and Odor-1 signals remain to T5.
+  source: Results, Dysfunction of lateral entorhinal cortex dopamine activity, paragraph 2;
+    Fig. 4b
+  quote: At T1, dopamine was released primarily during delay periods of prelearned rewarded
+    Odor-A (mean z -scored GCaMP signal, 1.1 ± 0.24
+  statistics:
+  - about: Odor-A at T1 against precue
+    test: rank sum test
+    statistic: Z = -2.7
+    p: 6.9e-3
+  - about: Odor-1 at T1 against precue
+    test: rank sum test
+    statistic: Z = -2.8
+    p: 5.1e-3
+  - about: Odor-2 at T1 against precue
+    test: rank sum test
+    statistic: Z = -2.27
+    p: 0.028
+  expected:
+  - quantity: Odor-A mean z-scored GCaMP signal at T1
+    value: 1.1
+    tolerance: 0.24
+  - quantity: Odor-1 mean z-scored GCaMP signal at T1
+    value: 1.8
+    tolerance: 0.2
+  - quantity: Odor-2 mean z-scored GCaMP signal at T1
+    value: 0.76
+    tolerance: 0.24
+  criterion: Photometry as in Shared method, correct sessions of the 10 control hemispheres, mean
+    over hemispheres (Supplementary Fig. 6a shows these data by timepoint). The window of the
+    reported means is "delay periods", not given; alternatives G1, G2 and (G4) 2 to 3 s, the
+    delay period of the spike analysis (Methods). The test against the precue period uses the
+    2 to 4 s window (G2, Supplementary Table 1); it is named rank sum in the text and Wilcoxon
+    signed-rank in Supplementary Table 1, and both are run. Reproduced when all three T1 means
+    are within tolerance under one window, all three are above precue at p < 0.05, and the
+    Odor-2 signal at T5 is not significant while Odor-A and Odor-1 are.
+- id: fig4c-app-dopamine-delayed
+  statement: In APP-KI mice, Odor-1 dopamine signals emerge late, from T3, in correct sessions and
+    are absent in error sessions (39% of sessions), while Odor-A signals stay intact.
+  source: Results, Dysfunction of lateral entorhinal cortex dopamine activity, paragraph 2;
+    Fig. 4c; Supplementary Fig. 6b
+  quote: In APP-KI mice, in contrast, signals for Odor-1 emerged in a delayed manner from T3 (Fig.
+    4c , top), while dopamine signals for Odor-A remained intact when mice learned the association
+  expected:
+  - quantity: error sessions among APP-KI photometry sessions
+    value: 39
+    tolerance: 3.9
+    unit: percent
+  criterion: Photometry as in Shared method, APP-KI hemispheres, correct and error sessions apart
+    (correct when T5 performance exceeds 80%, at or above 80% as the alternative). Signal
+    significance per timepoint against the 1 s precue by Wilcoxon signed-rank at p < 0.05 in the
+    2 to 4 s window (G2, Supplementary Table 1). The denominator of the 39% is not given, with
+    alternatives (a) the sessions of the APP-KI photometry hemispheres, (b) the sessions of the
+    APP-KI photometry mice, counted once per session. Reproduced when the error-session share is
+    within tolerance under one alternative, Odor-1 is not significant at T1 and T2 and
+    significant at T3 in correct sessions, not significant at any timepoint in error sessions,
+    and Odor-A is significant at T1 and T5 in both.
+- id: fig4d-app-odor1-dopamine-decreased
+  statement: Across all sessions, LEC dopamine activity during Odor-1 trials is significantly
+    lower in APP-KI mice than in WT mice at T1.
+  source: Results, Dysfunction of lateral entorhinal cortex dopamine activity, paragraph 2;
+    Fig. 4d
+  quote: dopamine activity was significantly decreased in APP-KI mice during Odor-1 trials at T1
+  statistics:
+  - about: strain x time, Odor-1
+    test: two-way ANOVA
+    statistic: F(4,80) = 2.5
+    p: 0.047
+    n: 10 WT and 8 APP-KI hemispheres
+  - about: WT against APP-KI at T1, Odor-1
+    test: two-sided Tukey post hoc test
+    p: 4.2e-3
+  criterion: Per hemisphere mean z-scored GCaMP signal for Odor-1 at T1 to T5, correct and error
+    sessions together, window G1 (1 to 4 s, Fig. 4d legend); two-way ANOVA strain by timepoint
+    on the 90 values, Tukey post hoc. Reproduced when the interaction has p < 0.05 and WT
+    exceeds APP-KI at T1 with Tukey p < 0.05; partially when only the T1 Tukey comparison
+    holds. G2 and G3 are shown as variants.
+- id: fig4e-correct-sessions-odor1-decreased
+  statement: In correct sessions, Odor-1 dopamine activity at T1 is also lower in APP-KI mice
+    than in WT mice, with no significant interaction for Odor-2.
+  source: Results, Dysfunction of lateral entorhinal cortex dopamine activity, paragraph 2;
+    Fig. 4e; Supplementary Fig. 6c
+  quote: Dopamine was also decreased in APP-KI mice during Odor-1 at T1 in correct sessions
+  statistics:
+  - about: Odor-1, strain x time
+    test: two-way ANOVA
+    statistic: F(4,80) = 3.72
+    p: 7.8e-3
+    n: 10 WT and 8 APP-KI hemispheres
+  - about: Odor-1, T1
+    test: two-sided Tukey post hoc test
+    p: 4.8e-3
+  - about: Odor-2, strain x time
+    test: two-way ANOVA
+    statistic: F(4,80) = 2.1
+    p: 0.093
+  criterion: As fig4d-app-odor1-dopamine-decreased on correct sessions only. Reproduced when,
+    under G1, the Odor-1 interaction and the T1 Tukey comparison have p < 0.05 with WT higher.
+- id: fig4f-error-sessions-no-difference
+  statement: In error sessions, dopamine activity does not differ between young WT and young
+    APP-KI mice.
+  source: Results, Dysfunction of lateral entorhinal cortex dopamine activity, paragraph 2;
+    Fig. 4f
+  quote: No difference was observed in error sessions
+  statistics:
+  - test: two-way ANOVA
+    p: 0.05
+    p_relation: ">"
+    n: 10 WT and 8 APP-KI hemispheres
+  criterion: A claim of absence, on the paper's test. As fig4d-app-odor1-dopamine-decreased on
+    error sessions, window G1, for each odor type. Supplementary Table 1 reports for these data
+    strain main effects at p = 0.047 (Odor-1) and 0.0061 (Odor-2) together with no significant
+    interaction and "NS for all pairs" in the Tukey tests, so the legend's "NS" is the
+    interaction and the post hoc comparisons. Reproduced when, for each odor type, the strain by
+    time interaction has p >= 0.05 and no Tukey comparison of WT against APP-KI at the same
+    timepoint has p < 0.05; the strain main effects and effect sizes are reported.
+- id: figs7-odor1-specific-decrease
+  statement: The WT minus APP-KI dopamine difference at T1 is larger for Odor-1 than for Odor-A or
+    Odor-B.
+  source: Results, Dysfunction of lateral entorhinal cortex dopamine activity, paragraph 2;
+    Supplementary Fig. 7a
+  quote: The difference for Odor-1 was significantly larger than that for Odor-A or Odor-B,
+    suggesting specific decrease of dopamine for Odor-1
+  statistics:
+  - about: group effect at T1, all sessions
+    test: one-way ANOVA
+    statistic: F(3,28) = 3.98
+    p: 0.017
+    n: 8 young WT and 8 young APP-KI mice
+  - about: Odor-A against Odor-1
+    test: two-sided Tukey post hoc test
+    p: 0.042
+  - about: Odor-B against Odor-1
+    test: two-sided Tukey post hoc test
+    p: 0.041
+  criterion: How a WT minus APP-KI difference is formed per unit is not given; F(3,28) implies 8
+    values per odor and Supplementary Table 1 says 8 WT and 8 APP-KI units. The one construction
+    the text and the degrees of freedom allow is the 8 APP-KI hemispheres each subtracted from
+    the WT mean; it is used and recorded as a deviation. Window G1. One-way ANOVA over the four
+    odors at T1, Tukey post hoc. Reproduced when Odor-1 exceeds Odor-A and Odor-B with Tukey
+    p < 0.05.
+- id: figs6d-dopamine-behavior-correlation
+  statement: In APP-KI mice, the trial at which Odor-1 dopamine signals emerge correlates with the
+    trial at which licking to Odor-1 is learned.
+  source: Results, Dysfunction of lateral entorhinal cortex dopamine activity, paragraph 2;
+    Supplementary Fig. 6d
+  quote: The delayed emergence of Odor-1 dopamine signals correlated well with slow learning of
+    licking to Odor-1 in APP-KI mice
+  statistics:
+  - test: two-sided Pearson correlation
+    statistic: r(19) = 0.7810
+    p: 2.5e-5
+    n: 21 sessions from 8 young APP-KI mice
+  expected:
+    quantity: Pearson r
+    value: 0.78
+    tolerance: 0.078
+  criterion: Per session (Supplementary Fig. 6d), the trial after which five consecutive Odor-1
+    hits start, against the trial after which five consecutive Odor-1 trials have GCaMP signal
+    above 3 SD; sessions without such a run are dropped. Method details left open, all run under
+    the rule for readings. What the 3 SD is taken from, with readings (a) the SD of the precue
+    baseline, (b) the SD of the session's signal; the window, with readings G1 and G2 (Shared
+    method, Photometry). Reproduced when, under the readings, r is within tolerance and
+    p < 0.05.
+- id: fig1d-young-new-association-impaired
+  statement: Young APP-KI mice perform worse than young WT mice on novel odor associations at T5
+    (78.6% against 90.6% correct).
+  source: Results, Impaired associative memory formation in amyloid precursor protein knock-in
+    mice, paragraph 2; Fig. 1c, 1d
+  quote: Young WT mice performed at 90.6 ± 0.9% in T5, whereas young APP-KI performed at 78.6 ±
+    2.1%
+  statistics:
+  - about: odor x strain
+    test: two-way ANOVA
+    statistic: F(1,50) = 20.2
+    p: 4.1e-5
+    n: 11 young WT and 16 young APP-KI mice
+  - about: odor 1/2, WT against APP-KI
+    test: two-sided Tukey post hoc test
+    p: 3.1e-8
+  expected:
+  - quantity: young WT percent correct, Odor-1/2, T5
+    value: 90.6
+    tolerance: 0.9
+    unit: percent
+  - quantity: young APP-KI percent correct, Odor-1/2, T5
+    value: 78.6
+    tolerance: 2.1
+    unit: percent
+  criterion: Behavioral performance as in Shared method (readings B1, B2), per mouse means over
+    all sessions; two-way ANOVA odor pair (A/B, 1/2) by strain on the 54 values, Tukey post hoc.
+    Reproduced when, under one reading, both means are within tolerance (the s.e.m.), the
+    interaction has p < 0.05 and the 1/2 Tukey comparison has p < 0.05; partially when the tests
+    hold and the means do not.
+- id: fig1d-prelearned-retrieval-intact
+  statement: Young and old APP-KI mice retrieve the prelearned Odor-A/B association as well as WT
+    mice.
+  source: Results, Impaired associative memory formation in amyloid precursor protein knock-in
+    mice, paragraph 2; Fig. 1d, 1g
+  quote: both young and old APP-KI mice showed intact performance for retrieving prelearned
+    associative memories
+  statistics:
+  - about: young, A/B, WT against APP-KI
+    test: post hoc Tukey test
+    p: 0.92
+  - about: old, A/B, WT against APP-KI
+    test: post hoc Tukey test
+    p: 0.61
+  depends_on:
+  - fig1d-young-new-association-impaired
+  criterion: A claim of absence, on the paper's test. The Tukey comparison of A/B WT against A/B
+    APP-KI in the ANOVAs of fig1d-young-new-association-impaired and fig1g-old-new-association-impaired.
+    Reproduced when p >= 0.05 at both ages; the differences are reported.
+- id: fig1e-young-correct-sessions
+  statement: Young WT mice learn the new association in 77.5% of sessions, young APP-KI mice in
+    59.1%.
+  source: Results, Impaired associative memory formation in amyloid precursor protein knock-in
+    mice, paragraph 2; Fig. 1e
+  quote: Young WT mice had correct sessions at 77.5 ± 6.1% among all tested sessions, whereas
+    young APP-KI mice had correct sessions at 59.1 ± 5.5%
+  statistics:
+  - test: two-sided unpaired t-test
+    statistic: t(25) = 2.19
+    p: 0.037
+    n: 11 young WT and 16 young APP-KI mice
+  expected:
+  - quantity: young WT correct sessions
+    value: 77.5
+    tolerance: 6.1
+    unit: percent
+  - quantity: young APP-KI correct sessions
+    value: 59.1
+    tolerance: 5.5
+    unit: percent
+  criterion: Per mouse percentage of correct sessions (Odor-1/2 T5 performance above 80%, and
+    at or above 80% as the variant, readings B1 and B2); unpaired t-test across mice. Reproduced
+    when, under one reading, both means are within tolerance and p < 0.05.
+- id: fig1g-old-new-association-impaired
+  statement: Old APP-KI mice are further impaired on novel associations compared with old WT mice
+    (67.9% against 84.9% correct at T5).
+  source: Results, Impaired associative memory formation in amyloid precursor protein knock-in
+    mice, paragraph 3; Fig. 1f, 1g
+  quote: 84.9 ± 1.8% correct trials for old WT mice versus 67.9 ± 2.0% for old APP-KI mice
+  statistics:
+  - about: odor x strain
+    test: two-way ANOVA
+    statistic: F(1,46) = 41.4
+    p: 6.4e-8
+    n: 11 old WT and 14 old APP-KI mice
+  - about: odor 1/2, WT against APP-KI
+    test: post hoc Tukey test
+    p: 2.7e-9
+  expected:
+  - quantity: old WT percent correct, Odor-1/2, T5
+    value: 84.9
+    tolerance: 1.8
+    unit: percent
+  - quantity: old APP-KI percent correct, Odor-1/2, T5
+    value: 67.9
+    tolerance: 2.0
+    unit: percent
+  criterion: As fig1d-young-new-association-impaired, for old mice.
+- id: fig1h-old-correct-sessions
+  statement: Old WT mice learn the new association in 81.3% of sessions, old APP-KI mice in 47.3%.
+  source: Results, Impaired associative memory formation in amyloid precursor protein knock-in
+    mice, paragraph 3; Fig. 1h
+  quote: Old WT mice correctly learned 81.3 ± 6.4% of all sessions, whereas APP-KI correctly
+    learned 47.3 ± 6.5%
+  statistics:
+  - test: two-sided unpaired t-test
+    statistic: t(23) = 3.65
+    p: 1.3e-3
+    n: 11 old WT and 14 old APP-KI mice
+  expected:
+  - quantity: old WT correct sessions
+    value: 81.3
+    tolerance: 6.4
+    unit: percent
+  - quantity: old APP-KI correct sessions
+    value: 47.3
+    tolerance: 6.5
+    unit: percent
+  criterion: As fig1e-young-correct-sessions, for old mice.
+- id: figs1c-old-wt-decline
+  statement: Old WT mice show a slight decline of novel association performance compared with
+    young WT mice.
+  source: Results, Impaired associative memory formation in amyloid precursor protein knock-in
+    mice, paragraph 3; Supplementary Fig. 1c
+  quote: Notably, old WT mice showed a slight decline of associative memory compared to young WT
+    mice
+  statistics:
+  - about: odor x age
+    test: two-way ANOVA
+    statistic: F(1,40) = 5.04 (the Results print 30.1)
+    p: 0.031
+    n: 11 young WT and 11 old WT mice
+  - about: odor 1/2, young against old
+    test: post hoc Tukey test
+    p: 0.038
+  criterion: As fig1d-young-new-association-impaired with age in place of strain, WT mice only.
+    Reproduced when the 1/2 performance is lower in old WT with Tukey p < 0.05.
+- id: figs1f-prelearning-duration-similar
+  statement: APP-KI and WT mice need comparable numbers of days to reach criterion in the
+    prelearning (Odor-A/B) sessions.
+  source: Results, Impaired associative memory formation in amyloid precursor protein knock-in
+    mice, paragraph 3; Supplementary Fig. 1f
+  quote: APP-KI and WT mice showed comparable duration for the training with prelearning sessions
+    using Odor-A and Odor-B
+  statistics:
+  - about: strain x age
+    test: two-way ANOVA
+    statistic: F(1,48) = 2.2e-3
+    p: 0.96
+    n: 11 young WT, 16 young APP-KI, 11 old WT, 14 old APP-KI mice
+  - about: young APP-KI against young WT
+    test: post hoc Tukey test
+    p: 0.93
+  - about: old APP-KI against old WT
+    test: post hoc Tukey test
+    p: 0.99
+  criterion: A claim of absence, on the paper's test. Days of prelearning to reach 80% per
+    mouse; two-way ANOVA strain by age, Tukey post hoc. Reproduced when neither Tukey comparison
+    within age has p < 0.05 and the interaction has p >= 0.05.
+- id: fig5c-optogenetic-rescue
+  statement: Optogenetic stimulation of LEC dopamine fibers during Odor-1 trials improves young
+    APP-KI mice's novel association performance at T5 (95.2% against 77.9% in control
+    sessions).
+  source: Results, Rescued memory by dopamine reactivation, paragraph 1; Fig. 5b, 5c
+  quote: 'stimulation: 95.2 ± 1.6% versus control: 77.9 ± 4.9% at T5'
+  statistics:
+  - about: odor x stimulation
+    test: two-way ANOVA
+    statistic: F(1,40) = 4.17
+    p: 0.045
+    n: 11 young APP-KI mice
+  - about: odor 1/2, control against stimulation
+    test: post hoc Tukey test
+    p: 0.024
+  expected:
+  - quantity: percent correct, Odor-1/2, T5, stimulation sessions
+    value: 95.2
+    tolerance: 1.6
+    unit: percent
+  - quantity: percent correct, Odor-1/2, T5, control sessions
+    value: 77.9
+    tolerance: 4.9
+    unit: percent
+  criterion: As fig1d-young-new-association-impaired with session type (control, stimulation) in
+    place of strain, per mouse means over sessions of each type. The interaction p is 0.045 in
+    the text and 0.047 in the legend and Supplementary Table 1. Reproduced when, under one
+    reading, both means are within tolerance and the 1/2 Tukey comparison has p < 0.05.
+- id: fig5d-optogenetic-correct-sessions
+  statement: The percentage of correct sessions rises with stimulation (86.9% against 50.1%).
+  source: Results, Rescued memory by dopamine reactivation, paragraph 1; Fig. 5d
+  quote: The percentage of total correct sessions significantly increased with stimulation
+  statistics:
+  - test: two-sided unpaired t-test
+    statistic: t(20) = -2.55
+    p: 0.019
+    n: 11 young APP-KI mice
+  expected:
+  - quantity: correct sessions with stimulation
+    value: 86.9
+    tolerance: 8.2
+    unit: percent
+  - quantity: correct sessions in control
+    value: 50.1
+    tolerance: 11.4
+    unit: percent
+  criterion: As fig1e-young-correct-sessions, stimulation against control sessions per mouse, with
+    the paper's unpaired t-test (a paired test is shown as a variant).
+- id: figs9a-all-odor-stimulation-no-rescue
+  statement: Stimulating LEC dopamine fibers during all four odor types does not rescue
+    associative learning in young APP-KI mice.
+  source: Results, Rescued memory by dopamine reactivation, paragraph 1; Supplementary Fig. 9a
+  quote: No rescuing effect was observed when dopamine axons were stimulated during all four odor
+    types
+  statistics:
+  - test: two-way ANOVA (odor x stimulation)
+    statistic: F(1,16) = 0.55
+    p: 0.47
+    n: 5 young APP-KI mice
+  criterion: A claim of absence, on the paper's test. As fig5c-optogenetic-rescue for the
+    all-odor stimulation mice. Reproduced when the interaction has p >= 0.05.
+- id: fig6b-ldopa-rescue
+  statement: L-DOPA restores young APP-KI mice's novel association performance at T5 (82.6%
+    against 67.1% with saline).
+  source: Results, Rescued memory by dopamine reactivation, paragraph 2; Fig. 6a, 6b
+  quote: L- DOPA groups 82.6 ± 1.7% versus saline group 67.1 ± 4.2% at T5
+  statistics:
+  - about: odor x drug
+    test: two-way ANOVA
+    statistic: F(1,30) = 5.2 (3.6 in the legend and Supplementary Table 1)
+    p: 0.029
+    n: 9 L-DOPA and 8 saline mice
+  - about: odor 1/2, saline against L-DOPA
+    test: post hoc Tukey test
+    p: 1.1e-3
+  expected:
+  - quantity: percent correct, Odor-1/2, T5, L-DOPA
+    value: 82.6
+    tolerance: 1.7
+    unit: percent
+  - quantity: percent correct, Odor-1/2, T5, saline
+    value: 67.1
+    tolerance: 4.2
+    unit: percent
+  criterion: As fig1d-young-new-association-impaired with drug in place of strain, over the 5
+    injection days. Reproduced when, under one reading, both means are within tolerance and the
+    1/2 Tukey comparison has p < 0.05.
+- id: fig6c-ldopa-correct-sessions
+  statement: L-DOPA raises the percentage of correct sessions in young APP-KI mice (78.5% against
+    33.1%).
+  source: Results, Rescued memory by dopamine reactivation, paragraph 2; Fig. 6c
+  quote: The percentage of total correct sessions significantly increased with L- DOPA treatment
+  statistics:
+  - test: two-sided unpaired t-test
+    statistic: t(15) = -4.25
+    p: 7.0e-4
+    n: 9 L-DOPA and 8 saline mice
+  expected:
+  - quantity: correct sessions, L-DOPA
+    value: 78.5
+    tolerance: 5.6
+    unit: percent
+  - quantity: correct sessions, saline
+    value: 33.1
+    tolerance: 9.4
+    unit: percent
+  criterion: As fig1e-young-correct-sessions, L-DOPA against saline mice.
+- id: fig6h-ldopa-restores-a1-similarity
+  statement: In L-DOPA treated APP-KI mice, Odor-A and Odor-1 trajectories become close and the
+    SI is above 0 from T1c to T5, while saline-treated APP-KI mice keep them separated with
+    negative SI.
+  source: Results, Rescued memory by dopamine reactivation, paragraph 3; Fig. 6e to 6h
+  quote: Saline-injected APP-KI mice showed separated trajectories for prelearned rewarded Odor-A
+    and novel rewarded Odor-1 (Fig. 6e,g ), resulting in negative SI values ... As a result, SI
+    values were above 0 from trials 7–9 (T1c) to T5
+  expected:
+  - quantity: L-DOPA cells
+    value: 144
+    tolerance: 14
+  - quantity: saline cells
+    value: 132
+    tolerance: 13
+  - quantity: saline shuffle 95th percentile, T1
+    value: 0.73
+    tolerance: 0.073
+  - quantity: L-DOPA shuffle 95th percentile, T1
+    value: 0.98
+    tolerance: 0.098
+  criterion: PCA, shuffle and SI as in fig2g-wt-a1-generalized on the L-DOPA and saline principal
+    cells. Reproduced when, under the readings, the L-DOPA A-1 SI is above 0 at each of T1c, T2,
+    T3, T4 and T5 and the saline SI is below 0 at each of the same timepoints (the paper gives
+    no timepoints for "negative SI values"; the L-DOPA range is used); partially when one or two
+    timepoints fail.
+- id: fig6i-ldopa-si-bootstrap
+  statement: Bootstrapped A-1 similarity is higher with L-DOPA than with saline from T1c to T4.
+  source: Fig. 6i; Supplementary Table 1
+  quote: The subtraction confirms higher similarity in the representations between Odor-A and
+    Odor-1 in L -dopa treatment compared to that in saline control
+  statistics:
+  - about: T1c
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 9.1e-5
+  - about: T2
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 4.8e-3
+  - about: T3
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 0.011
+  - about: T4
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 0.041
+  - about: T5
+    test: two-sided bootstrapping test, 1000 bootstraps
+    p: 0.12
+  depends_on:
+  - fig6h-ldopa-restores-a1-similarity
+  criterion: As fig2i-si-wt-above-app, L-DOPA minus saline. Reproduced when, under the readings,
+    the difference is positive with p < 0.05 at each of T1c, T2, T3 and T4; partially when at
+    two or three of them. T5 (p = 0.12) is not required.
+- id: fig6k-ps19-ldopa-rescue
+  statement: L-DOPA also rescues novel association performance in young PS19 tau model mice
+    (84.8% against 64.8% with saline).
+  source: Results, Rescued memory by dopamine reactivation, paragraph 3; Fig. 6j to 6l;
+    Supplementary Fig. 10
+  quote: L -DOPA groups 84.8 ± 3.8% versus saline group 64.8 ± 4.6% at T5
+  statistics:
+  - about: odor x drug
+    test: two-way ANOVA
+    statistic: F(1,16) = 10.99 (printed F2,16 = 10.9 in the Results)
+    p: 4.4e-3
+    n: 5 L-DOPA and 5 saline PS19 mice
+  - about: odor 1/2, saline against L-DOPA
+    test: post hoc Tukey test
+    p: 4.7e-3
+  - about: correct sessions, saline against L-DOPA (Fig. 6l)
+    test: two-sided unpaired t-test
+    statistic: t(8) = -3.18
+    p: 8.9e-3
+    n: 5 L-DOPA and 5 saline PS19 mice
+  expected:
+  - quantity: percent correct, Odor-1/2, T5, L-DOPA PS19
+    value: 84.8
+    tolerance: 3.8
+    unit: percent
+  - quantity: percent correct, Odor-1/2, T5, saline PS19
+    value: 64.8
+    tolerance: 4.6
+    unit: percent
+  criterion: As fig6b-ldopa-rescue for PS19 mice.
+- id: figs11-wt-ldopa-no-effect
+  statement: L-DOPA has no effect on the associative learning of control WT mice.
+  source: Results, Rescued memory by dopamine reactivation, paragraph 3; Supplementary Fig. 11
+  quote: No effect was observed in L -DOPA-treated control WT mice
+  statistics:
+  - test: two-way ANOVA (odor x drug)
+    statistic: F(1,4) = 0.011
+    p: 0.91
+    n: 4 L-DOPA and 4 saline WT mice
+  criterion: A claim of absence, on the paper's test. As fig6b-ldopa-rescue for WT mice.
+    Reproduced when the interaction has p >= 0.05.
+- id: figs9b-odor2-stimulation-impairs-wt
+  statement: Optogenetic stimulation of LEC dopamine fibers during Odor-2 trials impairs novel
+    association learning in young WT mice.
+  source: Supplementary Fig. 9b; Supplementary Table 1
+  quote: The stimulation during Odor-2 impaired associative memory in WT mice
+  statistics:
+  - about: odor x stimulation
+    test: two-way ANOVA
+    statistic: F(1,16) = 15.83
+    p: 0.018
+    n: 4 young WT mice
+  - about: odor 1/2, control against stimulation
+    test: two-sided Tukey post hoc test
+    p: 1.4e-4
+  criterion: As fig5c-optogenetic-rescue for the WT mice stimulated on Odor-2 trials, control
+    against stimulation sessions in the same mice. Reproduced when the 1/2 performance at T5 is
+    lower with stimulation with Tukey p < 0.05. The binomial test of correct sessions
+    (p < 0.001) is shown. F(1,16) does not fit 4 mice in a 2 by 2 design (12 error degrees of
+    freedom); the result is reported against the paper's numbers all the same.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, Spike response. Removed the P < 0.01 threshold reading; Supplementary Table 1 gives p<0.05 for cell response significance and the Fig. 2b P < 0.01 is the example cell's result. Made the odor period (0.5 to 1.5 s) the classification window, as Extended Data Fig. 5, Supplementary Fig. 3 and Supplementary Table 1 state, with the any-period reading shown as a variant only.
+  - Header, Photometry. The paper fixes 1 to 4 s for strain comparisons (Fig. 4d legend, Supplementary Fig. 6c) and 2 to 4 s for significance against precue (Supplementary Table 1); the ref. 16 window is now a variant only.
+  - Header, new paragraph on how readings combine. Criteria accepted a result under any one combination of method readings (normalization, smoothing, shuffle, SI baseline, bootstrap test, decoding, SD); docs/protocol.md requires method readings to agree, and blocks the claim as methods_underspecified when they do not. Readings of what a reported number counts stay alternatives.
+  - fig2d-more-cue-responsive. Criterion follows the fixed threshold and window; only the direction readings remain.
+  - ed5-more-odor-a-cells. The chi-squared p 5.5e-4 was recorded as covering T1, T3 and T5; it is T1 only. Split into T1, T3, T5 entries with the chi2 values and p of Supplementary Table 1 and the Extended Data Fig. 5 legend, and added the Odor-A post hoc p at T1 and T3. The Odor-A class is cells responding to A only, since the table's post hoc classes are odor combinations; the wider reading is a variant.
+  - fig2g-wt-a1-generalized, fig2f-app-a1-separated. Criteria use the readings rule.
+  - fig2i-si-wt-above-app. Criterion asked for T1a or T1c; the paper reports both significant, so both are required.
+  - fig2k-per-mouse-distance. Added the six odor pairs as a reading of the FDR family and noted that Supplementary Table 1 lists only T1, T3 and T5; dropped the T1 to T5 and T1a to T5 families, which the table does not show.
+  - ed8-t1-a1-decrease. Criterion did not test the APP-KI half of the statement; added it from the Extended Data Fig. 8b legend.
+  - ed9-old-a1-separated. Added the T1b bootstrap p (5.9e-3, legend and Supplementary Table 1). Criterion passed with one or two timepoints missing; the paper says through T2 to T5 and throughout the session, so all are required and misses give partial.
+  - ed7-decoding-correct-error. Removed the linear kernel as a stated method (the Methods say only binary SVM; it is now a recorded standard choice), the normalization fixed by the claims writer (now open, all readings run), and the near-chance band within 10 points of 50%, which no part of the paper gives.
+  - ed10-th-cells-spared. Added the strain main effects for VTA and SNc from Supplementary Table 1, the direct test of the statement.
+  - ed1-abeta-onset. Replaced an invented Spearman test with the paper's one-way ANOVA and Tukey 12 month APP-KI against WT; added the SNc ANOVA; onset ages have no test in the paper and are reported only.
+  - fig4b-wt-dopamine-t1. The precue test uses the 2 to 4 s window of Supplementary Table 1; the 0.5 to 3 s window from ref. 16 is dropped from the readings.
+  - fig4c-app-dopamine-delayed. Significance window set to 2 to 4 s (Supplementary Table 1); added the readings of the 39% denominator, which the paper does not give.
+  - fig4d-app-odor1-dopamine-decreased. Window fixed by the legend; other windows are variants only.
+  - fig4f-error-sessions-no-difference. Criterion required no strain main effect, which the paper's own data fail (Supplementary Table 1, p = 0.047 and 0.0061); the paper's NS rests on the interaction and the Tukey comparisons, which are now the test.
+  - figs7-odor1-specific-decrease. Removed the rank-order pairing reading, which nothing in the paper supports; the remaining construction is recorded as a deviation.
+  - figs6d-dopamine-behavior-correlation. Window was fixed by the claims writer; now G1 and G2, run with the SD readings under the readings rule.
+  - fig6h-ldopa-restores-a1-similarity. Criterion passed with one timepoint failing for each group; the paper says above 0 from T1c to T5, so all are required, misses give partial.
+  - fig6i-ldopa-si-bootstrap. Same, for T1c to T4.
+  - fig6k-ps19-ldopa-rescue. Added the Fig. 6l correct-session t-test.
+  - figs9b-odor2-stimulation-impairs-wt. New claim; Supplementary Fig. 9b reports this finding with its tests and no claim covered it.
+  - Open. The supplement PDF could not be rendered here (no PDF tools), so the assignment of shuffle thresholds to groups in Supplementary Table 1 (saline 0.73 against L-DOPA 0.98; old WT 2.41 against old APP-KI 2.09) was checked from the text order only, which agrees with the file.
+  - Open. The analysis code at igarashilab.org was not re-read in this check; the claims writer's account that it does not cover this paper's analyses is taken as given.
+  - Open. Sample sizes conflict within the paper for figs9a (5 mice in the legend, 4 in Supplementary Table 1) and figs11 (4 or 5 L-DOPA WT mice); left as recorded.
