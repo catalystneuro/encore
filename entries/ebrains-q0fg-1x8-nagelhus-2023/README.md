@@ -8,8 +8,10 @@ the No Object and Object trials of the 16 decoding sessions.
 
 The outcomes, with the reasons and the differences from the paper's method, are in the attempt record
 [`attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml`](../../attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml).
-Many claims are blocked because the readings of a method detail that the claims file does not fix
-give different outcomes; the questions are in
+Of the 57 claims, 30 are reproduced, 7 partially reproduced and 7 not reproduced; 13 are blocked, 8
+of them because the readings of a method detail that the claims file does not fix give different
+outcomes. Every rate map follows the paper's calculateRateMap.m, as the claims file gives it since
+the answers of 2026-10-21. The questions and answers are in
 [`questions/ebrains-q0fg-1x8.yaml`](../../questions/ebrains-q0fg-1x8.yaml).
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the

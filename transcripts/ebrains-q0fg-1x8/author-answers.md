@@ -1,101 +1,205 @@
-# ebrains-q0fg-1x8 · author-answers · run 39623909011
+# ebrains-q0fg-1x8 · author-answers · run 39641836986
 
 Model `claude-opus-5-5`, Claude Code 2.1.284, permission mode `default`. Tools: `Task`, `Bash`, `DesignSync`, `Edit`, `EnterWorktree`, `ExitWorktree`, `Glob`, `Grep`, `ListAgents`, `NotebookEdit`, `Read`, `ReportFindings`, `SendMessage`, `Skill`, `TaskCreate`, `TaskGet`, `TaskList`, `TaskStop`, `TaskUpdate`, `ToolSearch`, `WebFetch`, `WebSearch`, `Write`.
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "Author" -A3 docs/protocol.md | head -40; ls entries/ebrains-q0fg-1x8-nagelhus-2023 entries/ebrains-q0fg-1x8-nagelhus-2023/*; cat questions/ebrains-q0fg-1x8.yaml
+cd  sed -n '/^## Author/,/^## [A-Z]/p' docs/protocol.md | head -300; echo ----; cat questions/ebrains-q0fg-1x8.yaml; ls entries/ebrains-q0fg-1x8-nagelhus-2023 entries/ebrains-q0fg-1x8-nagelhus-2023/*
+```
+
+```
+## Author
+
+The workflow puts the paper under `paper/`, as for the reader. Read it to
+understand the claims, their data and their figures. The claims file still
+decides what is tested and how: do not change a claim's statement, expected
+values or criterion, and do not apply a method detail the claims file lacks,
+even one the paper gives. Ask for it (step 6).
+
+### 1. Establish what can be tested
+
+Do this before any analysis.
+
+1. List the dataset's files and read its metadata from the archive. Open a
+   file and list everything it holds, including every column of every table.
+2. Work out which of the subjects, sessions, conditions and measured
+   variables that the claims file describes are in the dataset. A dataset
+   that names a paper may hold only part of its data. Check for recordings
+   deposited more than once (identical traces, frame counts or annotations),
+   report each pair, and count each recording once. Where the analysis treats
+   a unit as the same across sessions, show that it is, or state it as an
+[... 420 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  tail -n +105 docs/protocol.md
+cd  git show --stat HEAD | head -30; git show --stat HEAD~1 | head -30; ls attempts | grep q0fg; ls executed 2>/dev/null | head; wc -l entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py claims/ebrains-q0fg-1x8/*.yaml attempts/ebrains-q0fg-1x8*
 ```
 
 ```
-171:## Author
-172-
-173-The workflow puts the paper under `paper/`, as for the reader. Read it to
-174-understand the claims, their data and their figures. The claims file still
-entries/ebrains-q0fg-1x8-nagelhus-2023/01_single_cells.ipynb
-entries/ebrains-q0fg-1x8-nagelhus-2023/02_single_cell_changes.ipynb
-entries/ebrains-q0fg-1x8-nagelhus-2023/03_population_decoding.ipynb
-entries/ebrains-q0fg-1x8-nagelhus-2023/04_distance_tuning.ipynb
-entries/ebrains-q0fg-1x8-nagelhus-2023/05_subsets.ipynb
-entries/ebrains-q0fg-1x8-nagelhus-2023/06_words.ipynb
-entries/ebrains-q0fg-1x8-nagelhus-2023/README.md
-entries/ebrains-q0fg-1x8-nagelhus-2023/entry.yaml
-entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py
-entries/ebrains-q0fg-1x8-nagelhus-2023/requirements.in
-entries/ebrains-q0fg-1x8-nagelhus-2023/requirements.lock.txt
+commit 1bb7f92c9d2f3a318bfbd0a089bcf6a9752b5661
+Author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
+Date:   Wed Oct 21 17:11:37 2026 +0000
 
-entries/ebrains-q0fg-1x8-nagelhus-2023:
-01_single_cells.ipynb
-02_single_cell_changes.ipynb
-03_population_decoding.ipynb
-[... 160 more lines not kept]
-```
+    Agent run on ebrains-q0fg-1x8: author-answers (cancelled)
+    
+    Run: https://github.com/catalystneuro/reproduction-registry/actions/runs/39623909011
+    
+    Account: unverified
 
-```
-form the denominator, which subset is meant), list in the criterion the
-     readings the paper's text plausibly allows, before the analysis. The
-     claim is reproduced if the result matches under any of them. The
-     notebook shows every reading, the notes say which ones match, and the
-     ambiguity is recorded as a deviation.
-   - Methods come from the paper, never from the author. Every part of a
-     criterion's method (the selection, the measure, the test, windows,
-     bins, thresholds, what a measure is compared with) is taken from the
-     Methods, the figure legends, the supplement, or the code the paper
-     links, and the criterion says which. Search all of them before
-     treating a detail as open.
-   - A detail none of them fixes is recorded as a deviation that says so.
-     If it cannot change the outcome (a plotting bin, a random seed), use a
-     standard choice and say that it is one. If it could change the outcome
-     (how folds are formed, what a measure is compared with, how a penalty
-     is chosen), the criterion names the readings the paper's text allows,
-     before the analysis, and the notebook runs each of them. The outcome is
-     the one they all give; when they give different outcomes, the claim is
-     blocked as `methods_underspecified`, with every result shown. A choice
-     made by an agent is never the basis of an outcome.
-[... 363 more lines not kept]
+ .../01_single_cells.ipynb                          |  191 +-
+ .../02_single_cell_changes.ipynb                   |   16 +-
+ .../03_population_decoding.ipynb                   |   76 +-
+ .../04_distance_tuning.ipynb                       |   33 +-
+ .../05_subsets.ipynb                               |    2 +-
+ entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py  |  282 ++-
+ transcripts/ebrains-q0fg-1x8/author-answers.md     | 2037 ++++++++++++++++++++
+ 7 files changed, 2466 insertions(+), 171 deletions(-)
+commit 5d70cbe5960ec8b9d980a366ac917018c9d11d5e
+Merge: 7f6ee155 3acda6d7
+[... 33 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  ls attempts | grep q0fg; wc -l attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml claims/ebrains-q0fg-1x8/*.yaml entries/ebrains-q0fg-1x8-nagelhus-2023/*; ls paper; git log --oneline -8 -- claims/ebrains-q0fg-1x8 questions/ebrains-q0fg-1x8.yaml entries/ebrains-q0fg-1x8-nagelhus-2023
+cd  grep -n "^## \|^### \|^\*\*" transcripts/ebrains-q0fg-1x8/author-answers.md | head -80
 ```
 
 ```
-ebrains-q0fg-1x8-nagelhus-2023-01.yaml
-   619 attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml
-  1365 claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml
-  1203 entries/ebrains-q0fg-1x8-nagelhus-2023/01_single_cells.ipynb
-   479 entries/ebrains-q0fg-1x8-nagelhus-2023/02_single_cell_changes.ipynb
-  1409 entries/ebrains-q0fg-1x8-nagelhus-2023/03_population_decoding.ipynb
-   535 entries/ebrains-q0fg-1x8-nagelhus-2023/04_distance_tuning.ipynb
-   366 entries/ebrains-q0fg-1x8-nagelhus-2023/05_subsets.ipynb
-   538 entries/ebrains-q0fg-1x8-nagelhus-2023/06_words.ipynb
-    30 entries/ebrains-q0fg-1x8-nagelhus-2023/README.md
-    37 entries/ebrains-q0fg-1x8-nagelhus-2023/entry.yaml
-  1345 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py
-     7 entries/ebrains-q0fg-1x8-nagelhus-2023/requirements.in
-    71 entries/ebrains-q0fg-1x8-nagelhus-2023/requirements.lock.txt
-  8004 total
-10.1016-j.neuron.2023.04.008.pdf
-10.1016-j.neuron.2023.04.008.txt
+5:**Agent calls Bash**
+11:**Agent calls Bash**
+65:**Agent calls Bash**
+95:**Agent calls Bash**
+125:**Agent calls Bash**
+155:**Agent calls Read**
+187:**Agent calls Bash**
+217:**Agent calls Bash**
+247:**Agent calls Bash**
+277:**Agent calls Bash**
+307:**Agent calls Bash**
+346:**Agent calls Bash**
+376:**Agent calls Bash**
+406:**Agent calls Bash**
+436:**Agent calls Bash**
+473:**Agent calls Bash**
+481:**Agent calls Bash**
+489:**Agent calls Bash**
+509:**Paper.** Nagelhus A, Andersson SO, Gonzalo Cogno S, Moser EI, Moser M-B (2023). Object-centered
+515:**Dataset.** EBRAINS [10.25493/Q0FG-1X8](https://doi.org/10.25493/Q0FG-1X8), "Extracellular unit
+[... 34 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 590,1000p transcripts/ebrains-q0fg-1x8/author-answers.md
+```
+
+````
+return trial.t, trial.x, trial.y
+    g = np.arange(trial.t[0], trial.t[-1], 1 / hz)
+    j = np.clip(np.searchsorted(trial.t, g), 1, len(trial.t) - 1)
+    near = np.minimum(np.abs(g - trial.t[j - 1]), np.abs(trial.t[j] - g))
+    keep = near <= MAX_SPIKE_GAP
+    return g[keep], np.interp(g[keep], trial.t, trial.x), np.interp(g[keep], trial.t, trial.y)
+```
+
+**Agent**
+
+Now the Trial edits in objcode.py.
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
+p='objcode.py'
+s=open(p).read()
+old_init=s[s.index('    def __init__(self, name, t, x, y, obj, spikes):'):s.index('    @property\n    def n_units(self):\n        return len(self.spikes)')]
+new_init='''    def __init__(self, name, t, x, y, obj, spikes):
+[... 390 more lines not kept]
+````
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 1000,1520p transcripts/ebrains-q0fg-1x8/author-answers.md
+```
+
+````
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+pd.set_option("display.width", 220)
+pd.set_option("display.float_format", "{:.4g}".format)
+pd.set_option("display.max_columns", 40)
+pd.set_option("display.max_rows", 200)
+
+started = time.time()
+RAW_POP = []
+for p in oc.POP_FILES:
+[... 437 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
+import json,re
+reps_all=[('for rm in "ab":','for rm in "b":'),('for rmt in "ab":','for rmt in "b":'),
+ ('for rm in "ab"]','for rm in "b"]'),
+ ('rm a, w b','rm b, w b'),('speed a, rm a','speed a, rm b'),('rm a, rate overlap a','rm b, rate overlap a'),
+[... 499 more lines not kept]
+````
+
+**Agent calls Bash**
+
+```bash
+cd  sed -n 1520,2040p transcripts/ebrains-q0fg-1x8/author-answers.md
+```
+
+````
+```
+load 14.399784088134766
+0.03997000000026674 [0.04044  0.039911 0.03955  0.039459 0.040397] 959.765748 959.7257779999998 23994 0
+no pos spikes 0 7151
+0.0 27.204888604065555 1208
+0 3.149 3.149 3.805 3.805 1.365 ov -0.001 0.358 (501, 2628)
+1 1.902 1.902 2.769 2.769 0.782 ov -0.077 0.475 (501, 2628)
+2 1.84 1.84 3.536 3.536 1.918 ov 0.254 0.379 (501, 2628)
+3 1.344 1.344 2.854 2.854 1.762 ov 0.474 0.486 (501, 2628)
+4 0.763 0.763 1.536 1.536 0.505 ov 0.511 0.42 (501, 2628)
+5 1.513 1.513 2.14 2.14 1.004 ov 0.438 0.49 (501, 2628)
+6 1.574 1.574 2.021 2.021 1.259 ov -0.124 0.409 (501, 2628)
+7 1.721 1.721 1.994 1.994 0.534 ov 0.091 0.433 (501, 2628)
+8 1.379 1.379 2.39 2.39 0.75 ov -0.154 0.411 (501, 2628)
+9 1.582 1.582 2.354 2.354 0.839 ov -0.138 0.393 (501, 2628)
+per cell 0.3864840745925903
+```
+
+**Agent calls Bash**
+
+[... 498 more lines not kept]
+````
+
+**Agent calls Bash**
+
+```bash
+cd  git log --oneline -8 -- claims/ebrains-q0fg-1x8/ questions/ebrains-q0fg-1x8.yaml attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml; git log -1 --format=%H -- questions/ebrains-q0fg-1x8.yaml
+```
+
+```
 7f6ee155 Agent run on ebrains-q0fg-1x8: answer (success)
 f298a248 Agent run on ebrains-q0fg-1x8: author (success)
 b61a62fa Agent run on ebrains-q0fg-1x8: claims-check (success)
-[... 1 more lines not kept]
+31e2935f Agent run on ebrains-q0fg-1x8: claims (success)
+7f6ee155d8575a4e1c8ff332f39cb7547122d262
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  git show 7f6ee155 --stat; git show 7f6ee155 -- claims/ | head -400
+cd  git show 7f6ee155 -- claims/ | head -400
 ```
 
 ```
@@ -109,274 +213,119 @@ Date:   Wed Oct 21 01:12:53 2026 +0000
     
     Account: unverified
 
- .../10.1016-j.neuron.2023.04.008.yaml              |  66 +-
- questions/ebrains-q0fg-1x8.yaml                    |  53 ++
- transcripts/ebrains-q0fg-1x8/answer-report.md      |  12 +
- transcripts/ebrains-q0fg-1x8/answer.md             | 764 +++++++++++++++++++++
- 4 files changed, 884 insertions(+), 11 deletions(-)
-commit 7f6ee155d8575a4e1c8ff332f39cb7547122d262
-Author: github-actions[bot] <github-actions[bot]@users.noreply.github.com>
-Date:   Wed Oct 21 01:12:53 2026 +0000
-
-    Agent run on ebrains-q0fg-1x8: answer (success)
-[... 139 more lines not kept]
+diff --git a/claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml b/claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml
+index 855c6c8f..66a80ac7 100644
+--- a/claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml
++++ b/claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml
+@@ -55,6 +55,23 @@
+ # active trial. Firing fields (Methods): contours from the peak down to 3 x MAD of all bins, fields
+ # at least 225 cm2 with a rate of at least 1 Hz. Open: whether the mean rate for rate overlap uses
+ # all of the trial or only the speed-filtered epochs; readings (a) speed-filtered, (b) whole trial.
++# Open (answered 2026-10-21, not given): whether the 1 Hz rule applies to the field's peak (field
++# reading a) or to every bin of the field (b, threshold max(3 x MAD, 1 Hz)); the Methods say only
+[... 124 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cat attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml
+cd  grep -n "id: ovs-method-extra-cells" -A40 claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml; grep -n -i "object-vector score and object-vector cell criteria" -A30 paper/*.md 2>/dev/null | head -60; ls paper
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd  grep -n -i "object-vector score" paper/*.txt | head; n=$(grep -n -i "Object-vector score and object-vector cell criteria" paper/*.txt | tail -1 | cut -d: -f1); sed -n "${n},$((n+30))p" paper/*.txt; grep -n -i "shuffling of spike data" -A15 paper/*.txt | head -30
+```
+
+Result: not kept, because it reads the paper's text.
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; grep -n "LUT_STEP\|def vector_maps\|def spatial_information\|def _kernel\|mode=\"wrap\"\|_kernel(na" objcode.py; ls $TMPDIR; grep -n "PLACEHOLDER" *.ipynb
 ```
 
 ```
-<persisted-output>
-Output too large (36.9KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/86684d7f-2f03-43a3-a06b-adcb88e8ef33/tool-results/bclln1pl3.txt
-
-Preview (first 2KB):
-schema_version: 2
-id: ebrains-q0fg-1x8-nagelhus-2023-01
-dataset:
-  archive: ebrains
-  id: Q0FG-1X8
-  version: v1
-  doi: 10.25493/Q0FG-1X8
-paper: doi:10.1016/j.neuron.2023.04.008
-date: '2026-10-20'
-entry: ebrains-q0fg-1x8-nagelhus-2023
-provenance:
-  kind: agent
-  accountable:
-    name: CatalystNeuro
-  agent:
-    harness: Claude Code (GitHub Actions)
-[... 34 more lines not kept]
-```
-
-**Agent calls Read**
-
-```json
-{
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/86684d7f-2f03-43a3-a06b-adcb88e8ef33/tool-results/bclln1pl3.txt"
-}
-```
-
-```
-1	schema_version: 2
-2	id: ebrains-q0fg-1x8-nagelhus-2023-01
-3	dataset:
-4	  archive: ebrains
-5	  id: Q0FG-1X8
-6	  version: v1
-7	  doi: 10.25493/Q0FG-1X8
-8	paper: doi:10.1016/j.neuron.2023.04.008
-9	date: '2026-10-20'
-10	entry: ebrains-q0fg-1x8-nagelhus-2023
-11	provenance:
-12	  kind: agent
-13	  accountable:
-14	    name: CatalystNeuro
-15	  agent:
-16	    harness: Claude Code (GitHub Actions)
-17	    model: claude-opus-5-5
-18	    protocol: pilot-10
-19	  runner:
-20	    platform: GitHub Actions
-[... 600 more lines not kept]
+72:LUT_STEP = 0.01          # s, grid of the spike-to-sample lookup (speed only; the result is exact)
+158:            grid = start + LUT_STEP * np.arange(int(np.ceil((tr[-1] - start) / LUT_STEP)) + 2)
+161:        c = np.clip(np.floor((s - start) / LUT_STEP).astype(np.int64), 0, len(lut) - 1)
+383:def spatial_information(rmap, occ, rate, duration=None):
+1088:def _kernel(nb, sigma=2.0, mode="reflect"):
+1258:def spatial_information_shuffled(trial: Trial, u, shifts):
+1290:def vector_maps(trial: Trial, u, shifts, obj, dmax):
+1314:    sm = _kernel(nd, OV_SIGMA) @ raw.astype(np.float32) @ _kernel(na, OV_SIGMA, "wrap").T
+-home-runner-work--temp
+-home-runner-work-reproduction-registry-reproduction-registry
+bash-edit-diff
+01_single_cells.ipynb:951:    "**Result: PLACEHOLDER.**\n"
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n "def \|rm\b\|'a'\|'b'\|blank\|mode=" entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py | head -200
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; grep -n "PYTHON_VERSION =" ../../tools/entry.py; uv venv -q --python 3.13 $TMPDIR/venv && uv pip install -q --python $TMPDIR/venv/bin/python -r requirements.lock.txt nbconvert ipykernel nbclient 2>&1 | tail -3; $TMPDIR/venv/bin/python -m ipykernel install --prefix $TMPDIR/venv --name tmpq0fg >/dev/null 2>&1; echo ok
 ```
 
 ```
-20:  blanked; Gaussian templates at 9 offsets x 8 directions (0 offset once) and 8 widths, 500
-32:- `rm`: how a rate map is smoothed. "a": spike-count and time maps smoothed separately, then
-34:  the smoothing where the map is blanked, set to zero where it is not).
-78:def list_files() -> list[dict]:
-84:def read_bytes(path: str) -> bytes:
-89:def _units_strings(mat: dict) -> list[str]:
-98:def _L(x):
-105:    def __init__(self, name, t, x, y, obj, spikes):
-133:    def _sample_index(self, s):
-145:    def n_units(self):
-149:    def duration(self):
-152:    def subset(self, units):
-160:    def window(self, a, b):
-180:    def __init__(self, file, index, rat, technique, trials):
-184:    def n_units(self):
-187:    def trial(self, name):
-194:    def key(self):
-202:def load(name: str) -> tuple[list[Session], dict]:
-223:def spike_hash(trial: Trial, u: int) -> bytes:
-227:def link_population(pop: Session, single_sessions: list[Session]):
-[... 97 more lines not kept]
+57:PYTHON_VERSION = "3.13"
+ok
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 1,76p entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py; sed -n 100,175p entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py; sed -n 240,330p entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; cat > $TMPDIR/t4.py <<'EOF'
+import numpy as np, time
+import objcode as oc
+CA1,_=oc.load(oc.SINGLE_FILES["CA1"])
+rng=np.random.default_rng(1)
+for si in (5,59,58):
+    for tr in CA1[si].trials:
+        s=np.sort(np.r_[rng.uniform(tr.t0-5, tr.t1+5, 200000), tr.t[:1000], tr._t_raw[-3:]])
+        tr._lut=None
+        a=tr._sample_index(s)
+        j=np.searchsorted(tr._t_raw,s,side="right")-1
+        ref=np.where(j>=0, tr._raw2valid[np.clip(j,0,None)], -1); ref=np.where((j==len(tr._t_raw)-1)&(s>tr._t_raw[-1]),-1,ref)
+        print(si, tr.name, np.array_equal(a,ref), np.isfinite(tr._t_raw).all())
+s=CA1[59]; tr=s.trial("O"); tm=s.trial("OM")
+t1=time.time()
+for u in range(5):
+    a,b=oc.spatial_information_shuffled(tr,u,np.r_[0, oc.shift_values(tr,1000,rng)])
+    shO=np.r_[0,oc.shift_values(tr,500,rng)]; shM=np.r_[0,oc.shift_values(tm,500,rng)]
+    r=oc.pearson_rows(oc.vector_maps(tr,u,shO,tr.obj,150),oc.vector_maps(tm,u,shM,tm.obj,150))
+print("per cell", (time.time()-t1)/5)
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/t4.py
 ```
 
 ```
-"""Loading and measures for EBRAINS dataset 10.25493/Q0FG-1X8 (v1).
-
-Nagelhus, Andersson, Gonzalo Cogno, Moser & Moser (2023), "Object-centered population coding in
-CA1 of the hippocampus", Neuron 111, 2091-2104, doi:10.1016/j.neuron.2023.04.008.
-
-The dataset holds eight MATLAB files: four "single cell" files (CA1 and CA3 object sessions, CA1
-and CA3 control sessions; each cell appears once) and four "population" files, one per rat, with
-the No Object and Object trials of the sessions used for decoding. Each trial has tracking
-(timestamps in s, x and y; the stored unit string, a MATLAB `string` object, reads "centimeters"),
-the object position in object trials, and spike times per unit. The files are streamed from the
-EBRAINS data proxy at the pinned version and read in memory; nothing is written to disk.
-
-Where the parameters come from (claims file claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml,
-"opening comment", which cites the paper's Methods and code):
-
-- Single-cell rate maps: 2.5 cm bins, Gaussian smoothing with SD 2 bins, epochs with speed above
-  2.5 cm/s (Methods, Firing rate maps). Firing fields: contiguous bins above 3 x the median
-  absolute deviation of all bins, at least 225 cm2, rate of at least 1 Hz (Methods).
-- Template matching: 3 cm bins over 0 to 150 cm (50 x 50), smoothing 2 bins, unvisited bins not
-  blanked; Gaussian templates at 9 offsets x 8 directions (0 offset once) and 8 widths, 500
-[... 223 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 1,185p claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml
-```
-
-```
-# Claims for Nagelhus, Andersson, Gonzalo Cogno, Moser & Moser (2023), "Object-centered population
-# coding in CA1 of the hippocampus", Neuron 111, 2091-2104, on EBRAINS dataset 10.25493/Q0FG-1X8.
-# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-20, protocol
-# as stated in docs/protocol.md (pilot-10).
-#
-# Text read: the version of record (open access, CC BY), from the PDF supplied by a person, as
-# extracted to paper/10.1016-j.neuron.2023.04.008.txt: main text, figure legends, STAR Methods and
-# the Supplemental information (Supplementary Figures 1 to 8 and Supplementary Table 1). The legend
-# of Supplementary Figure 7 is an image in the PDF and is missing from the text; it was read from
-# PDF page 46. The CA3 p-values of Supplementary Figure 3F were read from PDF page 35. Supplementary
-# Table 1 is garbled in the text (exponents of some p-values are lost); its values were read from PDF
-# page 49.
-#
-# Code read: the paper's code on Zenodo (doi:10.5281/zenodo.7797252, "v1.0"), a snapshot of GitHub
-# sebasoa/Object-centered-population-coding at tag v1.0, commit 4e4f5ac. It holds MATLAB functions
-# for the object-tuning score (objectTuningScore.m, templateMatchingScore.m,
-# shuffledTemplateMatchingScore.m, rateMapData.m, compareThreshold.m) and for the distance decoder
-# (distanceDecoder.m, divideTrainingTesting.m, binningSpikeMatrix.m, equalDistanceEdges.m,
-# calculateDistanceMap.m, calculateDecodingAccuracy.m), with a rate-map function (calculateRateMap.m,
-# from the Behavioural Neurology Toolbox). Two functions they call are not in the repository:
-[... 165 more lines not kept]
+5 NO True True
+5 O True True
+5 OM True True
+59 NO True True
+59 O True True
+59 OM True True
+59 NOp True True
+58 NO True True
+58 O True True
+58 OM True True
+58 NOp True True
+per cell 0.5751348495483398
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  cd entries/ebrains-q0fg-1x8-nagelhus-2023; grep -n "\.dt\b\|spike_si\|_gauss\|rm=\|rm)" objcode.py; sed -n 995,1110p objcode.py
-```
-
-```
-115:        self.dt = float(np.median(np.diff(t)))
-124:        self.spikes, self.spike_si = [], []
-131:            self.spike_si.append(self._sample_index(s))
-157:        new.spike_si = [self.spike_si[u] for u in units]
-170:        new.spikes, new.spike_si = [], []
-171:        for s, si in zip(self.spikes, self.spike_si):
-175:            new.spike_si.append(np.where(ss >= 0, remap[np.maximum(ss, 0)], -1))
-276:    occ = np.bincount(bidx[mask], minlength=B) * trial.dt
-280:        si = trial.spike_si[u]
-291:def _gauss(a, sigma=2.0):
-297:def rate_maps(occ, spk, rm="a", blank=True, sigma=2.0):
-305:    edge = _gauss(np.ones((nb, nb)), sigma)
-307:        num = _gauss(S, sigma)
-308:        den = _gauss(O, sigma)
-315:            w = _gauss(visited.astype(float), sigma)
-317:                r = np.where(w > 1e-12, _gauss(raw, sigma) / np.maximum(w, 1e-300), 0.0)
-319:            r = _gauss(raw, sigma) / edge
-321:        raise ValueError(rm)
-330:    si = trial.spike_si[u]
-333:        T = m.sum() * trial.dt
-[... 143 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; for f in *.ipynb; do echo "== $f"; python - "$f" <<'EOF'
-import json,sys,re
-nb=json.load(open(sys.argv[1]))
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; cat entry.yaml; python - <<'EOF'
+import json
+nb=json.load(open('01_single_cells.ipynb'))
 for i,c in enumerate(nb['cells']):
     s=''.join(c['source'])
-    for ln in s.split('\n'):
-        if re.search(r'\brm\b|RM|"rm', ln) and c['cell_type']=='code':
-            print(i, ln[:150])
+    print(f"--- [{i}] {c['cell_type']} {c['metadata'].get('tags','')} :: {s[:150]!r}")
 EOF
-done 2>&1 | head -150
-```
-
-```
-== 01_single_cells.ipynb
-23 for rm in "ab":
-23         ca1 = oc.object_tuning(CA1, rm, oc.WIDTHS[w], key="CA1")
-23         TUNE["CA1", rm, w] = ca1
-23             con = oc.object_tuning(CON1, rm, oc.WIDTHS[w], trials=trs, objs=((75.0, 75.0), (35.0, 120.0)), key="CON_CA1")
-23             TUNE["CON", rm, w, ctl] = con
-23             rows.append({"rm": rm, "w": w, "controls": ctl, "tuned": k, "cells": len(ca1), "fraction": k / len(ca1),
-23 for rm in "ab":
-23     d = fig1c[fig1c.rm == rm]
-23     print(f"rm {rm}: readings (w x controls) meeting the criterion: {int(d.reproduced.sum())} of {len(d)}; "
-24 for (_, rm, w), cells in [(k, v) for k, v in TUNE.items() if k[0] == "CA1"]:
-24     rows.append({"rm": rm, "w": w, **{r: f"{int(a)}/{int(b)}" for r, (a, b) in per.iterrows()}})
-24 print("\nSignificant scores per tuned cell (rm a, w b): one only", int((df[df.tuned].n_sig == 1).sum()), "of", int(df.tuned.sum()),
-27 def cell_fields(sessions, rm, field):
-27             maps, _ = oc.single_maps(tr, rm)
-27 for rm in "ab":
-27         FIELDS[rm, field] = cell_fields(CA1, rm, field)
-27 for rm in "ab":
-27         tuned = [(c["session"], c["unit"]) for c in TUNE["CA1", rm, w] if c["tuned"]]
-27             F = FIELDS[rm, field]
-[... 130 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; sed -n 176,240p objcode.py; sed -n 327,370p objcode.py; sed -n 486,560p objcode.py; sed -n 726,800p objcode.py; sed -n 840,865p objcode.py
-```
-
-```
-return new
-
-
-class Session:
-    def __init__(self, file, index, rat, technique, trials):
-        self.file, self.index, self.rat, self.technique, self.trials = file, index, rat, technique, trials
-
-    @property
-    def n_units(self):
-        return self.trials[0].n_units
-
-    def trial(self, name):
-        for t in self.trials:
-            if t.name == name:
-                return t
-        return None
-
-    @property
-    def key(self):
-        return f"{self.file.replace('analyses', '')}#{self.index}"
-[... 265 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  cat entries/ebrains-q0fg-1x8-nagelhus-2023/entry.yaml entries/ebrains-q0fg-1x8-nagelhus-2023/README.md; ls executed 2>/dev/null | head; nproc; free -g; grep -n "def \|timeout\|parallel" tools/entry.py | head -60
 ```
 
 ```
@@ -400,37 +349,7 @@ notebooks:
   runtime_minutes: 20
 - path: 03_population_decoding.ipynb
   title: Decoding the object from population activity, with its controls
-[... 69 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd  sed -n 286,410p tools/entry.py
-```
-
-```
-def lock(entry_dir: Path) -> int:
-    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--python-version", PYTHON_VERSION,
-                        "requirements.in", "-o", "requirements.lock.txt"], cwd=entry_dir)
-    if r.returncode == 0:
-        print(f"wrote {(entry_dir / 'requirements.lock.txt').relative_to(ROOT)}")
-    return r.returncode
-
-
-def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
-    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
-    output_dir.mkdir(parents=True, exist_ok=True)
-    venv = (output_dir / ".venv").resolve()
-    python = venv / "bin" / "python"
-    # A kernel of the entry's own environment, under a name no other kernel on the machine has, so
-    # nbconvert cannot pick up some other "python3" kernel (a user's or a conda install's).
-    kernel = f"registry-{entry_dir.name}"
-    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", PYTHON_VERSION, str(venv)],
-                ["uv", "pip", "install", "--quiet", "--python", str(python),
-                 "-r", str(entry_dir / "requirements.lock.txt"), *HARNESS],
-                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
-[... 103 more lines not kept]
+[... 74 more lines not kept]
 ```
 
 **Agent calls Bash**
@@ -438,72 +357,139 @@ def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> 
 ```bash
 cd  python - <<'EOF'
 import yaml
-d=yaml.safe_load(open('claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml'))
-for c in d['claims']:
-    if c['id'] in ('ovs-method-extra-cells','fig1c-object-tuned-fraction','figs2e-within-trial-stability','fig7-single-cell-properties','fig4h-population-vector-correlation','fig1e-object-cells-and-object-vector-cells'):
-        print(yaml.safe_dump(c, width=120, sort_keys=False))
-print(d.get('checks'))
+a=yaml.safe_load(open('attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml'))
+print([k for k in a])
+for o in a['outcomes']:
+    print(o['claim'], '|', o['outcome'], o.get('blocked_by',''), '|', o.get('measured'))
+print(a.get('verifications'))
 EOF
+sed -n 1,40p attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml
 ```
 
 ```
-id: fig1c-object-tuned-fraction
-statement: 19.9% of CA1 cells (237 of 1,189) were object-tuned by the template matching procedure, significantly more than
-  the 5.03% (11 of 219) found by the same procedure in control trials without objects.
-source: Results, Object cells and object-vector cells in the hippocampus, paragraph 3; Figure 1C
-quote: Using the template matching procedure, 19.9% of CA1 cells were classified as object-tuned (237/1,189 cells) ... This
-  fraction was significantly higher than a chance level determined by running the same template matching procedure on control
-  trials without objects (11/219 cells, 5.03%
-statistics:
-- test: binomial test
-  p: 5.73e-141
-  p_relation: <
-  n: 1,189 CA1 cells against a chance level from 219 control cells
-expected:
-- quantity: fraction of CA1 cells object-tuned
-  value: 0.199
-  tolerance: 0.0199
-- quantity: fraction of control cells object-tuned (chance level)
-  value: 0.0503
-  tolerance: 0.00503
-criterion: Template matching as in the opening comment, under each template-width reading, on the O and OM trials of every
-[... 152 more lines not kept]
+['schema_version', 'id', 'dataset', 'paper', 'date', 'entry', 'provenance', 'outcomes', 'findings']
+cell-counts | reproduced  | [1189, 219, 620]
+fig1c-object-tuned-fraction | blocked methods_underspecified | None
+fig1d-field-distances | blocked methods_underspecified | None
+fig1e-object-cells-and-object-vector-cells | blocked methods_underspecified | None
+fig1f-orientation-coverage | blocked methods_underspecified | None
+fig1g-no-experience-effect | blocked data_missing | None
+fig1h-cross-day-stability | blocked data_missing | None
+figs2e-within-trial-stability | blocked methods_underspecified | None
+figs2c-no-proximodistal-effect | blocked data_missing | None
+figs3a-ca3-object-tuned | not_reproduced  | 0.3196
+fig2d-spatial-change-no-o | reproduced  | None
+fig2d-rate-overlap-no-o-unchanged | blocked methods_underspecified | None
+fig2-fraction-changed-no-o | blocked methods_underspecified | None
+fig2d-o-om-change | reproduced  | 0.7401
+fig2d-om-no-prime-change | reproduced  | None
+fig2d-no-no-prime-change | reproduced  | None
+figs3f-ca3-changes | blocked methods_underspecified | None
+figs4-object-traces | partially_reproduced  | [0.0723, 964]
+figs2d-traces-no-interference | blocked methods_underspecified | None
+[... 79 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd  grep -n -i "object-vector score\|vector map\|object vector score" paper/*.txt | head;
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; grep -n "def pearson_rows" -A16 objcode.py; grep -n "def seed_for" -A8 objcode.py; grep -n "def distances" -B2 -A25 01_single_cells.ipynb | head -50
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+1108:def pearson_rows(a, b):
+1109-    """Pearson correlation per row over the entries finite in both."""
+1110-    ok = np.isfinite(a) & np.isfinite(b)
+1111-    n = ok.sum(1).astype(np.float64)
+1112-    a0 = np.where(ok, a, 0).astype(np.float32)
+1113-    b0 = np.where(ok, b, 0).astype(np.float32)
+1114-    sa, sb = a0.sum(1, dtype=np.float64), b0.sum(1, dtype=np.float64)
+1115-    saa = np.einsum("ij,ij->i", a0, a0, dtype=np.float64)
+1116-    sbb = np.einsum("ij,ij->i", b0, b0, dtype=np.float64)
+1117-    sab = np.einsum("ij,ij->i", a0, b0, dtype=np.float64)
+1118-    with np.errstate(invalid="ignore", divide="ignore"):
+1119-        r = (n * sab - sa * sb) / np.sqrt((n * saa - sa ** 2) * (n * sbb - sb ** 2))
+1120-    r[n < 3] = np.nan
+1121-    return r
+1122-
+1123-
+1124-def random_halves(n, R, rng):
+1180:def seed_for(*parts) -> int:
+1181-    """A fixed seed from a text key, so each claim's random draws do not depend on cell order
+1182-    elsewhere in a notebook."""
+[... 34 more lines not kept]
+```
+
+**Agent**
+
+Helper checks pass: the spike-to-sample lookup matches a plain search exactly, at about 0.6 s per cell for the object-vector shuffles. Now running all six notebooks with the paper's rate-map method.
 
 **Agent calls Bash**
 
 ```bash
-cd  sed -n 1440,1510p paper/*.txt; grep -n -i "Shuffling of spike data" -A12 paper/*.txt | sed -n 1,40p
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; rm -rf $TMPDIR/exec; mkdir -p $TMPDIR/exec; for f in 01 02 03 04 05 06; do nb=$(ls ${f}_*.ipynb); ( s=$(date +%s); JUPYTER_PATH=$TMPDIR/venv/share/jupyter $TMPDIR/venv/bin/python -m jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=7200 --ExecutePreprocessor.kernel_name=tmpq0fg --output-dir $TMPDIR/exec --output $nb $nb > $TMPDIR/exec/$f.log 2>&1; echo "$nb exit $? $(( $(date +%s)-s )) s" >> $TMPDIR/exec/status) & done; wait; cat $TMPDIR/exec/status
 ```
 
-Result: not kept, because it reads the paper's text.
+```
+06_words.ipynb exit 0 1479 s
+05_subsets.ipynb exit 0 2196 s
+03_population_decoding.ipynb exit 0 2265 s
+04_distance_tuning.ipynb exit 0 2520 s
+02_single_cell_changes.ipynb exit 0 2640 s
+01_single_cells.ipynb exit 0 3049 s
+```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-import json
-nb=json.load(open('01_single_cells.ipynb'))
+nproc; cat > $TMPDIR/show.py <<'EOF'
+import json,sys
+nb=json.load(open(sys.argv[1]))
+sel=set(int(x) for x in sys.argv[2].split(',')) if len(sys.argv)>2 else None
 for i,c in enumerate(nb['cells']):
-    print(f"---- [{i}] {c['cell_type']} {c.get('metadata',{}).get('tags','')}")
-    print(''.join(c['source']))
+    if sel is not None and i not in sel: continue
+    if c['cell_type']!='code':
+        if sel is not None: print(f"==== [{i}] MD\n"+''.join(c['source']))
+        continue
+    print(f"==== [{i}] {c['metadata'].get('tags','')}")
+    for o in c.get('outputs',[]):
+        if 'text' in o: print(''.join(o['text']))
+        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
 EOF
+cd $TMPDIR/exec; python $TMPDIR/show.py 01_single_cells.ipynb 3,5,7,9,11,13,15,17 | cut -c1-250
 ```
 
 ```
-<persisted-output>
-Output too large (44.6KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/86684d7f-2f03-43a3-a06b-adcb88e8ef33/tool-results/bjbbdeh6w.txt
+4
+==== [3] ['sanity']
+Files in the dataset (data proxy listing):
+                                        name     bytes                                hash       last_modified
+                           Licence-CC-BY.pdf    127919    ae9e06da3622c4bd40eb47bab3babaa7 2025-01-25T10:56:23
+            data-descriptor_40440db5bc0c.pdf     95516    fa730dad65457d20f5952fe26d93975f 2025-01-25T10:56:23
+       datasets/populationanalyses_25987.mat  13219155    15c72d61ca2dc101007cb35be02079b2 2025-01-25T10:56:23
+       datasets/populationanalyses_26186.mat   9516833    10a99b3a1a5379dfa72dd52fa84a923d 2025-01-25T10:56:23
+       datasets/populationanalyses_27012.mat  15701304    d7bcc9c86d72136cafc825042b772a5f 2025-01-25T10:56:23
+       datasets/populationanalyses_27207.mat  34148928    c754cefc15d563bcfc1c3d56e5ba01f6 2025-01-25T10:56:23
+         datasets/singlecellanalyses_CA1.mat 237595229 8aee9c461e94bf5d783b882540dcb3b9-46 2025-01-25T10:56:26
+         datasets/singlecellanalyses_CA3.mat  71256175    22dbf2a6606df23ba8abe015c48ed02b 2025-01-25T10:56:23
+datasets/singlecellanalyses_controls_CA1.mat  41783771    a110e91d88c9dddc468b7d95f1e745be 2025-01-25T10:56:23
+datasets/singlecellanalyses_controls_CA3.mat  10396188    356055f5fc86f1780263ba79a460f0a6 2025-01-25T10:56:23
+                    file  sessions  rats                                               rat ids           techniques  units            trial sets unit strings
+                     CA1        60     9 25224 25371 25387 25450 25770 25987 26186 27012 27207 neuropixels tetrodes   1189 NO-O-OM | NO-O-OM-NOp  centimeters
+                     CA3        13     4                               25987 26186 27013 27207 neuropixels tetrodes    341           NO-O-OM-NOp  centimeters
+                 CON_CA1        14     3                                     25770 25987 26186             tetrodes    219   CON1-CON2-CON3-CON4  centimeters
+                 CON_CA3         4     2                                          
+[... 216 more lines not kept]
+```
 
-Preview (first 2KB):
----- [0] markdown 
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/exec; python $TMPDIR/show.py 01_single_cells.ipynb 0,4,6,8,10,12,14,16,18
+```
+
+```
+==== [0] MD
 # Nagelhus et al. (2023), single cells: object tuning, fields and whole-trial changes
 
 **Paper.** Nagelhus A, Andersson SO, Gonzalo Cogno S, Moser EI, Moser M-B (2023). Object-centered
@@ -519,393 +505,1238 @@ data statement cites this DOI, which is the DOI of version v1 itself, and the Kn
 other version, so v1 is pinned. Files are streamed from the EBRAINS data proxy into memory.
 
 This is the first of five notebooks. It holds the data check, and the single-cell claims that use
-[... 17 more lines not kept]
+whole-trial rate maps. `02_single_cell_changes.ipynb` holds the within/between-trial classification
+and object traces, `03_population_decoding.ipynb` the decoders, `04_distance_tuning.ipynb` the
+single-cell and subset decoders, `05_words.ipynb` the words and counts.
+
+[... 95 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/exec; python $TMPDIR/show.py 01_single_cells.ipynb 20,22,23,24,25,26,27,28,29 | cut -c1-260
+```
+
+```
+==== [20] ['claim:cell-counts']
+CA1 object sessions: 1189 cells from 9 rats, 60 sessions; passing both inclusion rules as computed here: 1178
+CA1 control sessions: 219 cells from 3 rats, 14 sessions; passing: 218
+Largest number of CA1 cells in one session: 620 (rat 27207)
+CA1 cells per rat: {'25224': 43, '25371': 26, '25387': 39, '25450': 13, '25770': 33, '25987': 151, '26186': 129, '27012': 135, '27207': 620}
+Reading (a), each cell once: the file holds each cell once, 1189 cells.
+Reading (b), every session: cell-sessions are not deposited. The population files add 283 tetrode units with no match in the CA1 file, for 2 of the 9 rats only.
+  unique CA1 cells: 1189 against 1189 +/- 118.9: within
+  control CA1 cells: 219 against 219 +/- 21.9: within
+  largest simultaneous: 620 against 620 +/- 62.0: within
+
+==== [22] MD
+## fig1c-object-tuned-fraction
+
+> 19.9% of CA1 cells (237 of 1,189) were object-tuned by the template matching procedure,
+> significantly more than the 5.03% (11 of 219) found by the same procedure in control trials
+> without objects.
+
+Template matching as in the claims file's opening comment, for every combination of the template
+width reading (`w`: a, the code's SDs; b, the Methods' variances) and the rate-map reading (`rm`).
+[... 71 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; grep -n "def object_tuning" -A75 objcode.py | head -110; grep -n "class SecMaps" -A40 objcode.py | head -60
+```
+
+```
+1200:def object_tuning(sessions, rm, widths, trials=("O", "OM"), objs=None, key="", masks_OM=None,
+1201-                  zero_OM=None, only=None):
+1202-    """Template matching for every cell of the sessions. objs: fixed object positions for the two
+1203-    trials (control sessions), else the trials' own. masks_OM / zero_OM: optional dict
+1204-    (session index, unit) -> boolean 50 x 50 array of OM bins left out of the correlations or set
+1205-    to zero (trace removal). only: optional set of (session index, unit) to run. Returns one dict
+1206-    per cell."""
+1207-    rng = np.random.default_rng(seed_for("object-tuning", key, rm, widths[0], *trials))
+1208-    out = []
+1209-    for si, s in enumerate(sessions):
+1210-        tO, tM = s.trial(trials[0]), s.trial(trials[1])
+1211-        if tO is None or tM is None:
+1212-            continue
+1213-        oO, oM = (objs if objs is not None else (tO.obj, tM.obj))
+1214-        MO, MM = template_maps(tO, rm), template_maps(tM, rm)
+1215-        for u in range(s.n_units):
+1216-            if only is not None and (si, u) not in only:
+1217-                continue
+1218-            mm, V = MM[u], None
+1219-            if zero_OM is not None and (si, u) in zero_OM:
+[... 97 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; grep -n "def template_matching" -A60 objcode.py | head -80; grep -n "def template_maps" -A10 objcode.py; git show HEAD~1:entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py | grep -n "def template_maps" -A10
+```
+
+```
+492:def template_matching(MO, MOM, objO, objOM, widths, rng, n_shuffle=500, VO=None, VOM=None):
+493-    """Object-tuning scores (widths x 65), per-width 99th percentile thresholds of 500 shuffled
+494-    minimum scores, whether the cell is object-tuned, and its single score (largest margin)."""
+495-    offs = template_offsets()
+496-    nb = MO.shape[0]
+497-    scores = np.zeros((len(widths), len(offs)))
+498-    thr = np.zeros(len(widths))
+499-    for w, sd in enumerate(widths):
+500-        cO = _template_corr(MO, objO[0] + offs[:, 0], objO[1] + offs[:, 1], sd, VO)
+501-        cOM = _template_corr(MOM, objOM[0] + offs[:, 0], objOM[1] + offs[:, 1], sd, VOM)
+502-        scores[w] = np.minimum(cO, cOM)
+503-        loc = rng.uniform(0, ARENA, size=(n_shuffle, 2))
+504-        sO = _template_corr(MO, loc[:, 0], loc[:, 1], sd, VO)
+505-        sOM = _template_corr(MOM, loc[:, 0], loc[:, 1], sd, VOM)
+506-        thr[w] = np.nanpercentile(np.minimum(sO, sOM), 99)
+507-    margin = scores - thr[:, None]
+508-    tuned = bool(np.nanmax(margin) > 0) if np.isfinite(margin).any() else False
+509-    k = np.nanargmax(margin) if np.isfinite(margin).any() else 0
+510-    single = scores.ravel()[k]
+511-    return {"scores": scores, "thr": thr, "tuned": tuned, "single": float(single),
+[... 63 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; cat > $TMPDIR/t5.py <<'EOF'
+import time, numpy as np, cProfile, pstats
+import objcode as oc
+CA1,_=oc.load(oc.SINGLE_FILES["CA1"])
+print(sum(s.n_units for s in CA1[:20]))
+cProfile.run('oc.object_tuning(CA1[:20], "b", oc.WIDTHS["a"], key="CA1")', '/tmp/claude-1001/prof5')
+pstats.Stats('/tmp/claude-1001/prof5').sort_stats('tottime').print_stats(10)
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/t5.py 2>&1 | head -40
+```
+
+```
+121
+Wed Oct 21 18:09:53 2026    /tmp/claude-1001/prof5
+
+         244781 function calls (243811 primitive calls) in 0.881 seconds
+
+   Ordered by: internal time
+   List reduced from 147 to 10 due to restriction <10>
+
+   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
+     3872    0.564    0.000    0.714    0.000 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:471(_template_corr)
+    30209    0.115    0.000    0.115    0.000 {method 'reduce' of 'numpy.ufunc' objects}
+      121    0.024    0.000    0.836    0.007 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:492(template_matching)
+       40    0.016    0.000    0.019    0.000 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:280(bin_index)
+     3872    0.011    0.000    0.012    0.000 /tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/_core/numeric.py:246(ones_like)
+    23312    0.010    0.000    0.125    0.000 {method 'sum' of 'numpy.ndarray' objects}
+      968    0.010    0.000    0.058    0.000 /tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:4727(_quantile)
+      121    0.009    0.000    0.012    0.000 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:463(template_offsets)
+       40    0.008    0.000    0.028    0.001 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:305(raw_maps)
+      968    0.007    0.000    0.016    0.000 /tmp/claude-1001/venv/lib/python3.13/site-packages/numpy/lib/_function_base_impl.py:4692(_get_indexes)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
+import json
+nb=json.load(open('01_single_cells.ipynb'))
+for i in (1,23):
+    print(f"==== [{i}]"); print(''.join(nb['cells'][i]['source']))
+EOF
+```
+
+```
+==== [1]
+import time
+import warnings
+
+import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
+from scipy import stats
+
+import objcode as oc
+
+warnings.filterwarnings("ignore", category=RuntimeWarning)
+pd.set_option("display.width", 220)
+pd.set_option("display.float_format", "{:.4g}".format)
+pd.set_option("display.max_columns", 40)
+pd.set_option("display.max_rows", 300)
+
+started = time.time()
+files = oc.list_files()
+data, meta = {}, {}
+[... 35 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; cat > $TMPDIR/t6.py <<'EOF'
+import time, numpy as np
+import objcode as oc
+t=time.time(); CA1,_=oc.load(oc.SINGLE_FILES["CA1"]); print("load", time.time()-t)
+t=time.time(); r=oc.object_tuning(CA1, "b", oc.WIDTHS["a"], key="CA1"); print("tune", time.time()-t, sum(c["tuned"] for c in r))
+EOF
+PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/t6.py 2>&1 | tail
+```
+
+```
+load 12.753380298614502
+tune 7.577824831008911 331
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/exec; python $TMPDIR/show.py 01_single_cells.ipynb 31,32,34,35,38,39,41,42,44,45 | cut -c1-260
+```
+
+```
+==== [31] ['claim:fig1e-object-cells-and-object-vector-cells']
+rm w field distance  object cells  frac OC  OVC  frac OVC  no field  OC ok  OVC ok  no field ok  reproduced
+ b a     a        a            45  0.03785  256    0.2153        30   True   False         True       False
+ b a     a        b            29  0.02439  298    0.2506         4  False   False        False       False
+ b a     a        c            37  0.03112  264     0.222        30  False   False         True       False
+ b a     b        a            34   0.0286  225    0.1892        72  False   False        False       False
+ b a     b        b            29  0.02439  271    0.2279        31  False   False         True       False
+ b a     b        c            31  0.02607  228    0.1918        72  False   False        False       False
+ b b     a        a            38  0.03196  163    0.1371        21  False    True        False       False
+ b b     a        b            26  0.02187  194    0.1632         2  False   False        False       False
+ b b     a        c            30  0.02523  171    0.1438        21  False    True        False       False
+ b b     b        a            28  0.02355  142    0.1194        52  False   False        False       False
+ b b     b        b            22   0.0185  176     0.148        24  False   False        False       False
+ b b     b        c            26  0.02187  144    0.1211        52  False    True        False       False
+Readings meeting the criterion: 0 of 12
+Most parts within tolerance under one reading, per rm and field:
+rm  field
+b   a        2
+    b        1
+
+[... 181 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/exec; python $TMPDIR/show.py 01_single_cells.ipynb 46,47,48,49,50,51,52,54,55,56 | cut -c1-260
+```
+
+```
+==== [46] MD
+## Whole-trial changes between trials (Figure 2D, Supplementary Figure 3F)
+
+Spatial correlation between the 2.5 cm, speed-filtered, blanked maps of two trials, over bins with
+a value in both. Rate overlap from the mean rate in each trial: (a) speed-filtered epochs; (b) the
+whole trial. Each object-session pair is tested against its control pair with a two-sided Wilcoxon
+rank-sum test. The tables print the medians, z, p and the difference in medians.
+==== [47] ['claim:fig2d-spatial-change-no-o', 'claim:fig2d-rate-overlap-no-o-unchanged', 'claim:fig2d-om-no-prime-change', 'claim:fig2d-no-no-prime-change']
+rm   pair   control measure  n obj  n con  median obj  median con  difference         z         p
+ b   NO-O CON1-CON2      sc   1189    219      0.4543      0.7951     -0.3408    -12.14 6.221e-34
+ b   NO-O CON1-CON2    ro_a   1189    219       0.684      0.7374    -0.05344    -2.484   0.01299
+ b   NO-O CON1-CON2    ro_b   1189    219      0.7177      0.7479    -0.03014    -1.178     0.239
+ b   O-OM CON2-CON3      sc   1189    219      0.4879      0.8467     -0.3587    -13.94 3.568e-44
+ b   O-OM CON2-CON3    ro_a   1189    219      0.6976      0.7812    -0.08368     -4.42 9.874e-06
+ b   O-OM CON2-CON3    ro_b   1189    219       0.731       0.789    -0.05799    -3.563 0.0003661
+ b OM-NOp CON3-CON4      sc   1090    219      0.5879      0.8376     -0.2497    -12.74 3.547e-37
+ b OM-NOp CON3-CON4    ro_a   1090    219      0.7631      0.7692   -0.006078 -0.001763    0.9986
+ b OM-NOp CON3-CON4    ro_b   1090    219      0.7772      0.7771   4.408e-05    0.3144    0.7532
+ b NO-NOp CON1-CON4      sc   1090    219      0.3169       0.698     -0.3811    -11.34 8.572e-30
+ b NO-NOp CON1-CON4    ro_a   1090    219       0.591      0.6129    -0.02193    -1.477    0.1396
+[... 102 more lines not kept]
+```
+
+**Agent**
+
+Notebook 01 is read. The rate-map answer changes fig1c and frees the claims that depended on it. Now notebook 02:
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/exec; python $TMPDIR/show.py 02_single_cell_changes.ipynb $(python -c "
+import json;nb=json.load(open('02_single_cell_changes.ipynb'));print(','.join(str(i) for i in range(len(nb['cells']))))") | cut -c1-240
+```
+
+```
+==== [0] MD
+# Nagelhus et al. (2023), single cells: changes between trials and object traces
+
+**Paper.** Nagelhus et al. (2023), *Neuron* 111, 2091-2104,
+[doi:10.1016/j.neuron.2023.04.008](https://doi.org/10.1016/j.neuron.2023.04.008); claims file written
+from the version of record with its STAR Methods and Supplemental information.
+
+**Dataset.** EBRAINS [10.25493/Q0FG-1X8](https://doi.org/10.25493/Q0FG-1X8), version v1, the version
+whose DOI the paper cites and the only one published (see `01_single_cells.ipynb` for the data check
+of every file).
+
+| Claim | Tested or blocked |
+|---|---|
+| fig2-fraction-changed-no-o | tested |
+| fig2d-o-om-change | tested |
+| figs4-object-traces | tested |
+| figs2d-traces-no-interference | tested |
+
+The classification of the Methods (Spatial correlation and rate overlap): within-trial distributions
+from the No Object trial, split 500 times into two random groups of 1 s sections; between-trial
+[... 178 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/exec; python $TMPDIR/show.py 03_population_decoding.ipynb $(python -c "
+import json;nb=json.load(open('03_population_decoding.ipynb'));print(','.join(str(i) for i in range(len(nb['cells']))))") | cut -c1-240 > $TMPDIR/nb03.txt; wc -l $TMPDIR/nb03.txt; head -c 30000 $TMPDIR/nb03.txt
+```
+
+```
+<persisted-output>
+Output too large (29.3KB). Full output saved to: /home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/6c2785f1-a8a5-4c62-8727-196a7dd8f580/tool-results/b6vx36ewk.txt
+
+Preview (first 2KB):
+621 /tmp/claude-1001/nb03.txt
+==== [0] MD
+# Nagelhus et al. (2023), population decoding of the object
+
+**Paper.** Nagelhus et al. (2023), *Neuron* 111, 2091-2104,
+[doi:10.1016/j.neuron.2023.04.008](https://doi.org/10.1016/j.neuron.2023.04.008); claims file written
+from the version of record with its STAR Methods and Supplemental information.
+
+**Dataset.** EBRAINS [10.25493/Q0FG-1X8](https://doi.org/10.25493/Q0FG-1X8), version v1, the version
+whose DOI the paper cites and the only one published (data check of every file in
+`01_single_cells.ipynb`).
+
+The decoding sessions are the 16 sessions of the four population files: 14 tetrode sessions (rats
+25987 and 26186, 25 to 39 cells) and the two Neuropixels sessions (135 and 620 cells). This is the
+legends' count (16 sessions, 14 tetrode). The Methods' text says 15 tetrode sessions, which the
+dataset does not hold, so the claims file's session readings (S-methods, S-legends) give the same
+[... 23 more lines not kept]
 ```
 
 **Agent calls Read**
 
 ```json
 {
- "file_path": "/home/runner/.claude/projects/-home-runner-work-reproduction-registry-reproduction-registry/86684d7f-2f03-43a3-a06b-adcb88e8ef33/tool-results/bjbbdeh6w.txt"
+ "file_path": "/tmp/claude-1001/nb03.txt",
+ "offset": 30,
+ "limit": 330
 }
 ```
 
 ```
-1	---- [0] markdown 
-2	# Nagelhus et al. (2023), single cells: object tuning, fields and whole-trial changes
+30	| figs5d-control-sessions | blocked: one control session has at least 25 cells (shown as a variant) |
+31	| figs5e-shuffled-labels | tested |
+32	| figs5f-random-partition | tested |
+33	| figs5ghi-fields-and-rates | tested |
+34	| figs6-behaviour-decoders-flat | speed and occupancy tested; head direction not in the dataset |
+35	| figs6hij-behaviour-matched | speed and occupancy tested; head direction not in the dataset |
+36	| figs6k-uniform-prior | tested |
+37	| figs6l-sampling-thresholds | tested |
+38	| tables1-without-bin-1 | tested |
+39	| figs5jk-walls-no-pivot | tested |
+40	| figs5m-without-object-tuned | tested |
+41	==== [1] 
+42	Sessions whose tracking is taken from the CA1 file (y equals x in the population file): ['population_27012#0', 'population_27207#0']
+43	
+44	dataset Q0FG-1X8 version v1: read in 32 s
+45	
+46	==== [2] ['sanity']
+47	session   technique  cells  NO s  O s  dt ms       object  1 s test samples NO  1 s test samples O  speed>2.5 NO  speed>2.5 O
+48	25987#0    tetrodes     25  1470 1507     40 (70.2, 75.9)                 1468                1506          0.89         0.86
+49	25987#1    tetrodes     32  1429 1441     40 (83.1, 77.9)                 1428                1440          0.85         0.75
+[... 310 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/nb03.txt",
+ "offset": 360,
+ "limit": 270
+}
+```
+
+```
+360	**Result: reproduced.** With 1 s bins partitioned at random, the Kruskal-Wallis test gives H = 26.0
+361	to 30.4 (p < 1e-4) under every reading. The median accuracy is highest in bin 1 (0.84 to 0.85) and
+362	lowest in bin 5 (0.71 to 0.73).
+363	==== [41] MD
+364	## figs5ghi-fields-and-rates
+365	
+366	> Firing fields were spread across the arena, not concentrated at the object, and firing rates were
+367	> similar between NO and O and highest at middle distances (bin 3).
+368	
+369	(i) Field centroids in the 2.5 cm maps of NO and O (both `rm` and `field` readings). Per session and
+370	trial: the share of fields with a centroid within 20 cm of the object, divided by the share of the
+371	arena's area within 20 cm of it. Two-sided rank-sum test O against NO over sessions. (ii) Each
+372	cell's mean rate (spikes over time, whole trial) in the 5 equal-sample distance bins of the trial's
+373	position samples, averaged over cells, then over sessions. (iii) Signed-rank test of NO against O in
+374	each bin over sessions.
+375	==== [42] ['claim:figs5ghi-fields-and-rates']
+376	rm field  density ratio NO (median)  density ratio O (median)  z (O vs NO)      p  (i) holds
+377	 b     a                     0.9511                    0.3707       -1.168 0.2427       True
+378	 b     b                     0.9856                    0.3818       -1.884 0.0595       True
+379	
+[... 243 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd $TMPDIR/exec; for n in 04_distance_tuning 05_subsets 06_words; do python $TMPDIR/show.py $n.ipynb $(python -c "
+import json;nb=json.load(open('$n.ipynb'));print(','.join(str(i) for i in range(len(nb['cells']))))") | cut -c1-250 > $TMPDIR/$n.txt; wc -l $TMPDIR/$n.txt; done
+```
+
+```
+330 /tmp/claude-1001/04_distance_tuning.txt
+195 /tmp/claude-1001/05_subsets.txt
+191 /tmp/claude-1001/06_words.txt
+Shell cwd was reset to
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/04_distance_tuning.txt"
+}
+```
+
+```
+1	==== [0] MD
+2	# Nagelhus et al. (2023), distance tuning of single cells
 3	
-4	**Paper.** Nagelhus A, Andersson SO, Gonzalo Cogno S, Moser EI, Moser M-B (2023). Object-centered
-5	population coding in CA1 of the hippocampus. *Neuron* 111, 2091-2104.
-6	[doi:10.1016/j.neuron.2023.04.008](https://doi.org/10.1016/j.neuron.2023.04.008). The claims file
-7	was written from the version of record (open access), with its STAR Methods and Supplemental
-8	information, and from the paper's code on Zenodo (doi:10.5281/zenodo.7797252).
-9	
-10	**Dataset.** EBRAINS [10.25493/Q0FG-1X8](https://doi.org/10.25493/Q0FG-1X8), "Extracellular unit
-11	recordings from CA1/CA3 pyramidal cells in rats exploring an open arena with object landmarks",
-12	version v1 (Knowledge Graph id 0162668e-bef0-4754-8562-40440db5bc0c, released 2023-05-05). The paper's
-13	data statement cites this DOI, which is the DOI of version v1 itself, and the Knowledge Graph lists no
-14	other version, so v1 is pinned. Files are streamed from the EBRAINS data proxy into memory.
-15	
-16	This is the first of five notebooks. It holds the data check, and the single-cell claims that use
-17	whole-trial rate maps. `02_single_cell_changes.ipynb` holds the within/between-trial classification
-18	and object traces, `03_population_decoding.ipynb` the decoders, `04_distance_tuning.ipynb` the
-19	single-cell and subset decoders, `05_words.ipynb` the words and counts.
+4	**Paper.** Nagelhus et al. (2023), *Neuron* 111, 2091-2104,
+5	[doi:10.1016/j.neuron.2023.04.008](https://doi.org/10.1016/j.neuron.2023.04.008); claims file written
+6	from the version of record with its STAR Methods and Supplemental information.
+7	
+8	**Dataset.** EBRAINS [10.25493/Q0FG-1X8](https://doi.org/10.25493/Q0FG-1X8), version v1, the version
+9	whose DOI the paper cites and the only one published (data check in `01_single_cells.ipynb`).
+10	
+11	| Claim | Tested or blocked |
+12	|---|---|
+13	| fig6ab-single-cell-distance-tuning | tested |
+14	| figs5l-without-positively-tuned | tested |
+15	| fig6ef-least-tuned-cells | tested |
+16	| figs8eh-least-tuned-smaller-datasets | tested |
+17	| fig7-single-cell-properties | tested |
+18	| fig7-slope-variant | tested |
+19	
+20	The distance decoder runs with one cell at a time (Equation 1: distance tuning is accuracy in bin
+[... 311 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/05_subsets.txt"
+}
+```
+
+```
+1	==== [0] MD
+2	# Nagelhus et al. (2023), decoding with subsets of cells
+3	
+4	**Paper.** Nagelhus et al. (2023), *Neuron* 111, 2091-2104,
+5	[doi:10.1016/j.neuron.2023.04.008](https://doi.org/10.1016/j.neuron.2023.04.008); claims file written
+6	from the version of record with its STAR Methods and Supplemental information.
+7	
+8	**Dataset.** EBRAINS [10.25493/Q0FG-1X8](https://doi.org/10.25493/Q0FG-1X8), version v1, the version
+9	whose DOI the paper cites and the only one published (data check in `01_single_cells.ipynb`).
+10	
+11	| Claim | Tested or blocked |
+12	|---|---|
+13	| fig3d-number-of-cells | tested |
+14	| fig6c-subsets-decline | tested |
+15	| fig6d-reorganization-grows-with-cells | tested |
+16	| figs8-smaller-datasets | tested |
+17	
+18	Random subsets of cells are drawn with a permutation of the cells, the first k kept (Methods,
+19	Subsampling for decoder). Every decoder runs under both speed readings and both rate-map readings.
+20	The Neuropixels sessions' tracking comes from the CA1 file (y is a copy of x in the population
+[... 176 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "/tmp/claude-1001/06_words.txt"
+}
+```
+
+```
+1	==== [0] MD
+2	# Nagelhus et al. (2023), words and counts
+3	
+4	**Paper.** Nagelhus et al. (2023), *Neuron* 111, 2091-2104,
+5	[doi:10.1016/j.neuron.2023.04.008](https://doi.org/10.1016/j.neuron.2023.04.008); claims file written
+6	from the version of record with its STAR Methods and Supplemental information.
+7	
+8	**Dataset.** EBRAINS [10.25493/Q0FG-1X8](https://doi.org/10.25493/Q0FG-1X8), version v1, the version
+9	whose DOI the paper cites and the only one published (data check in `01_single_cells.ipynb`).
+10	
+11	| Claim | Tested or blocked |
+12	|---|---|
+13	| fig5b-words-more-informative | tested |
+14	| fig5bc-words-information-falls-with-distance | tested |
+15	| fig5b-counts-uninformative | tested |
+16	| fig5e-kl-divergence | tested |
+17	| fig5-entropy | tested |
+18	| figs7cd-number-of-words | tested |
+19	| figs7e-downsampled-words | tested |
 20	
-[... 728 more lines not kept]
+[... 172 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; grep -n "MAX_SPIKE_GAP\|_sample_index\|spikes_far" objcode.py *.ipynb | cut -c1-200
+cd  python - <<'EOF'
+import yaml
+c=yaml.safe_load(open('claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml'))
+ids="fig1c-object-tuned-fraction fig1d-field-distances fig1e-object-cells-and-object-vector-cells fig1f-orientation-coverage figs2e-within-trial-stability fig2-fraction-changed-no-o figs2d-traces-no-interference figs5e-shuffled-labels tables1-without-bin-1 figs5l-without-positively-tuned figs5m-without-object-tuned fig7-single-cell-properties fig7-slope-variant fig4e-angle-flat fig6c-subsets-decline fig6d-reorganization-grows-with-cells figs3f-ca3-changes fig2d-rate-overlap-no-o-unchanged".split()
+for cl in c['claims']:
+    if cl['id'] in ids:
+        print('###', cl['id'], '| depends', cl.get('depends_on'), '| expected', cl.get('expected'))
+        print(cl['criterion']); print()
+EOF
 ```
 
 ```
-objcode.py:66:MAX_SPIKE_GAP = 0.2      # s, standard choice (see docstring)
-objcode.py:131:            self.spike_si.append(self._sample_index(s))
-objcode.py:133:    def _sample_index(self, s):
-objcode.py:141:        far = np.abs(self.t[j] - s) > MAX_SPIKE_GAP
-objcode.py:775:        j = tr._sample_index(allt)
-objcode.py:932:    keep = near <= MAX_SPIKE_GAP
-01_single_cells.ipynb:165:    "                         \"spikes_far_from_tracking\": int(sum((si < 0).sum() for si in t.spike_si)),\n",
-01_single_cells.ipynb:175:    "    far=(\"spikes_far_from_tracking\", \"sum\"), spikes=(\"spikes\", \"sum\"))\n",
-01_single_cells.ipynb:440:    "            tt.spike_si = [t._sample_index(x) for x in tt.spikes]\n",
+### fig1c-object-tuned-fraction | depends None | expected [{'quantity': 'fraction of CA1 cells object-tuned', 'value': 0.199, 'tolerance': 0.0199}, {'quantity': 'fraction of control cells object-tuned (chance level)', 'value': 0.0503, 'tolerance': 0.00503}]
+Template matching as in the opening comment, under each template-width reading, on the O and OM trials of every CA1 cell. Chance level as in the Methods (Template matching, Chance level), on the 219 control cells with the object placed at (75, 75) cm in the trial standing for O and at (35, 120) cm in the trial standing for OM. The paper does not say which control trials stand for O and OM; readings (a) CON2 and CON3, the trials in the same place in the session; (b) CON1 and CON2. Rate maps are smoothed as the opening comment's "Smoothing and unvisited bins" says (rate per bin, unvisited bins 0, then smoothed; calculateRateMap.m and the Methods, Firing rate maps). Reproduced when, under one reading, both fractions are within tolerance and a binomial test of the object-tuned count against the chance fraction gives p < 0.05 (two-sided, as all the paper's tests are; Methods, Statistical tests).
+
+### fig1d-field-distances | depends ['fig1c-object-tuned-fraction'] | expected [{'quantity': "mean distance of object-tuned cells' fields from the object", 'value': 37.7, 'tolerance': 3.77, 'unit': 'cm'}, {'quantity': 'smallest field distance', 'value': 4.8, 'tolerance': 0.48, 'unit': 'cm'}, {'quantity': 'largest field distance', 'value': 80.7, 'tolerance': 8.07, 'unit': 'cm'}]
+The tolerance on the mean is 10% of it, as the SD of 16.0 cm is the spread over cells, not an uncertainty of the mean. Fields detected as in the opening comment. The paper does not say which point of a field gives its distance, in which trial, or which field of a cell with several. Readings (a) the centroid of the field (the point Supplementary Figure 5G plots) in the O trial, nearest field; (b) as (a) averaged over the O and OM trials; (c) the field's
+[... 48 more lines not kept]
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; sed -n 920,935p objcode.py
+cd  grep -n "def cmd_all\|def run\|def cmd_run\|timeout\|parallel\|Thread\|OMP\|def cmd_handover\|executed" tools/entry.py | head -40; cat entries/ebrains-q0fg-1x8-nagelhus-2023/README.md
 ```
 
 ```
-out = np.where(np.abs(den) > 1e-12, (S2 * T0 - S1 * T1) / den, T0 / np.maximum(S0, 1e-12))
-    return out
+7:    python tools/entry.py handover entries/<name> # the verifier's package, from the executed copies
+26:directory. The executed copies
+27:go to --output-dir (default: executed/<name>/, which git ignores). A notebook
+31:(docs/protocol.md): the executed notebooks with the conclusions removed (every
+34:executed/<name>/handover/. Run the entry first.
+294:def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
+316:             f"--ExecutePreprocessor.timeout={timeout}", f"--ExecutePreprocessor.kernel_name={kernel}",
+357:        executed = output_dir / notebook["path"]
+358:        if not executed.is_file():
+359:            print(f"error: no executed copy of {notebook['path']} in {output_dir}; run the entry first",
+362:        nb = strip_conclusions(nbformat.read(executed, as_version=4))
+382:    parser.add_argument("--output-dir", type=Path, help="where executed notebooks go")
+383:    parser.add_argument("--timeout", type=int, default=3600, help="seconds allowed per cell")
+391:    output_dir = args.output_dir or ROOT / "executed" / entry_dir.name
+404:    return run(entry_dir, output_dir, args.timeout, args.max_minutes)
+# Nagelhus, Andersson, Gonzalo Cogno, Moser & Moser (2023) from EBRAINS 10.25493/Q0FG-1X8
 
+Tests the findings of [Nagelhus et al. (2023)](https://doi.org/10.1016/j.neuron.2023.04.008) on
+[EBRAINS:Q0FG-1X8](https://doi.org/10.25493/Q0FG-1X8), version v1. The dataset holds spike times and
+tracking of CA1 and CA3 cells in rats foraging in an open field with and without an object, from
+[... 25 more lines not kept]
+```
 
-def resample_25hz(trial: Trial, hz=25.0):
-    """Tracking on a 25 Hz grid (linear interpolation; grid points more than 0.2 s from a valid
-    sample are dropped). Tetrode tracking is already at 25 Hz and is returned as it is."""
-    if abs(trial.dt - 1 / hz) < 1e-3:
-        return trial.t, trial.x, trial.y
-    g = np.arange(trial.t[0], trial.t[-1], 1 / hz)
-    j = np.clip(np.searchsorted(trial.t, g), 1, len(trial.t) - 1)
-    near = np.minimum(np.abs(g - trial.t[j - 1]), np.abs(trial.t[j] - g))
-    keep = near <= MAX_SPIKE_GAP
-    return g[keep], np.interp(g[keep], trial.t, trial.x), np.interp(g[keep], trial.t, trial.y)
+**Agent calls Bash**
+
+```bash
+cd  sed -n 294,345p tools/entry.py
+```
+
+```
+def run(entry_dir: Path, output_dir: Path, timeout: int, max_minutes: float) -> int:
+    entry = yaml.safe_load((entry_dir / "entry.yaml").read_text())
+    output_dir.mkdir(parents=True, exist_ok=True)
+    venv = (output_dir / ".venv").resolve()
+    python = venv / "bin" / "python"
+    # A kernel of the entry's own environment, under a name no other kernel on the machine has, so
+    # nbconvert cannot pick up some other "python3" kernel (a user's or a conda install's).
+    kernel = f"registry-{entry_dir.name}"
+    for cmd in (["uv", "venv", "--quiet", "--clear", "--python", PYTHON_VERSION, str(venv)],
+                ["uv", "pip", "install", "--quiet", "--python", str(python),
+                 "-r", str(entry_dir / "requirements.lock.txt"), *HARNESS],
+                [str(python), "-m", "ipykernel", "install", "--prefix", str(venv), "--name", kernel]):
+        if subprocess.run(cmd).returncode != 0:
+            print(f"error: could not build the environment ({' '.join(cmd[:3])})", file=sys.stderr)
+            return 1
+
+    results, failed = [], False
+    for notebook in entry["notebooks"]:
+        name = notebook["path"]
+        started = time.time()
+[... 32 more lines not kept]
 ```
 
 **Agent**
 
-Now the Trial edits in objcode.py.
+Writing the notebook edits now. First, one number I want the fig1c conclusion to print: how far the control count is from the paper's 11 of 219.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-p='objcode.py'
-s=open(p).read()
-old_init=s[s.index('    def __init__(self, name, t, x, y, obj, spikes):'):s.index('    @property\n    def n_units(self):\n        return len(self.spikes)')]
-new_init='''    def __init__(self, name, t, x, y, obj, spikes):
-        t = np.asarray(t, float)
-        x = np.asarray(x, float)
-        y = np.asarray(y, float)
-        self.name = name
-        self.n_samples_raw = len(t)
-        ok = np.isfinite(x) & np.isfinite(y) & np.isfinite(t)
-        self.n_nan = int((~ok).sum())
-        # Time per position sample: the gap to the next sample, clipped at MAX_GAP (calculateRateMap.m,
-        # maxGap), over all samples; samples without a position then drop out with their time.
-        gap = np.diff(t)
-        gap = np.append(gap, np.nanmedian(gap) if len(gap) else 0.0)
-        gap = np.where(np.isfinite(gap), np.clip(gap, 0.0, MAX_GAP), 0.0)
-        self.t, self.x, self.y, self.sdt = t[ok], x[ok], y[ok], gap[ok]
-        self.t0, self.t1 = float(t[0]), float(t[-1])
-        self.dt = float(np.median(np.diff(t)))
-        # raw samples and the index of each among the valid ones (-1 without a position), for
-        # assigning spikes to the last sample at or before them (histc in calculateRateMap.m)
-        self._t_raw = np.where(np.isfinite(t), t, -np.inf)
-        self._raw2valid = np.where(ok, np.cumsum(ok) - 1, -1)
-        if len(self.t) > 2:
-            vx = np.gradient(self.x, self.t)
-            vy = np.gradient(self.y, self.t)
-            self.speed = np.hypot(vx, vy)
-        else:
-            self.speed = np.zeros(len(self.t))
-        self.obj = obj
-        self.n_unsorted = 0
-        self.spikes, self.spike_si = [], []
-        for s in spikes:
-            s = np.atleast_1d(np.asarray(s, float))
-            if np.any(np.diff(s) < 0):
-                self.n_unsorted += 1
-                s = np.sort(s)
-            self.spikes.append(s)
-            self.spike_si.append(self._sample_index(s))
-
-    def _sample_index(self, s):
-        """Index of the valid tracking sample each spike is counted at: the last sample at or before
-        the spike (histc), -1 when that sample has no position or the spike lies outside the
-        tracking (before the first sample, or after the last)."""
-        if len(self.t) == 0:
-            return np.full(len(s), -1)
-        tr = self._t_raw
-        j = np.searchsorted(tr, s, side="right") - 1
-        out = np.where(j >= 0, self._raw2valid[np.clip(j, 0, len(tr) - 1)], -1)
-        out = np.where((j == len(tr) - 1) & (s > tr[-1]), -1, out)
-        return out
-
-'''
-s=s.replace(old_init,new_init)
-# window
-old='''        new.t, new.x, new.y, new.speed = self.t[m], self.x[m], self.y[m], self.speed[m]
-        new.t0, new.t1 = float(a), float(b)'''
-new='''        new.t, new.x, new.y, new.speed = self.t[m], self.x[m], self.y[m], self.speed[m]
-        new.sdt = self.sdt[m]
-        mr = (self._t_raw >= a) & (self._t_raw < b)
-        r2v = self._raw2valid[mr]
-        new._t_raw = self._t_raw[mr]
-        new._raw2valid = np.where(r2v >= 0, remap[np.maximum(r2v, 0)], -1)
-        new.t0, new.t1 = float(a), float(b)'''
-assert old in s; s=s.replace(old,new)
-s=s.replace('''MAX_SPIKE_GAP = 0.2      # s, standard choice (see docstring)''','''MAX_GAP = 0.1            # s, largest time per position sample (calculateRateMap.m, maxGap)
-MAX_INTERP_GAP = 0.2     # s, standard choice (see docstring)''')
-s=s.replace('keep = near <= MAX_SPIKE_GAP','keep = near <= MAX_INTERP_GAP')
-open(p,'w').write(s)
-EOF
-grep -n "trial.dt\|\.dt)" objcode.py
-```
-
-```
-292:    occ = np.bincount(bidx[mask], minlength=B) * trial.dt
-349:        T = m.sum() * trial.dt
-528:    halves = [(trial.t[0], tm), (tm, trial.t[-1] + trial.dt)]
-543:    n = int(np.floor((trial.t[-1] + trial.dt - a) / dt + 1e-9))
-748:    T = max(trial.t[-1] + trial.dt, s.max() + 1e-6 if len(s) else 0) - lo
-865:    a, b = trial.t[0], trial.t[-1] + trial.dt
-943:    if abs(trial.dt - 1 / hz) < 1e-3:
-1019:        self.n = n = int(np.floor(trial.t[-1] + trial.dt - a))
-1026:        self.A = sparse.csr_matrix((np.full(fast.sum(), trial.dt), (sec[fast], bidx[fast])), shape=(n, B))
-1027:        self.t_fast = np.bincount(sec[fast], minlength=n) * trial.dt
-1028:        self.t_all = np.bincount(sec[valid], minlength=n) * trial.dt
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-p='objcode.py'
-s=open(p).read()
-reps=[
-('occ = np.bincount(bidx[mask], minlength=B) * trial.dt','occ = np.bincount(bidx[mask], weights=trial.sdt[mask], minlength=B)'),
-('        T = m.sum() * trial.dt','        T = trial.sdt[m].sum()'),
-('self.A = sparse.csr_matrix((np.full(fast.sum(), trial.dt), (sec[fast], bidx[fast])), shape=(n, B))','self.A = sparse.csr_matrix((trial.sdt[fast], (sec[fast], bidx[fast])), shape=(n, B))'),
-('self.t_fast = np.bincount(sec[fast], minlength=n) * trial.dt','self.t_fast = np.bincount(sec[fast], weights=trial.sdt[fast], minlength=n)'),
-('self.t_all = np.bincount(sec[valid], minlength=n) * trial.dt','self.t_all = np.bincount(sec[valid], weights=trial.sdt[valid], minlength=n)'),
-('self.occ[ti, it] = np.bincount(self.bidx[ti][p.train_mask], minlength=self.B) * self.trials[ti].dt',
- 'self.occ[ti, it] = np.bincount(self.bidx[ti][p.train_mask], weights=self.trials[ti].sdt[p.train_mask],\n                                                minlength=self.B)'),
-]
-for a,b in reps:
-    assert s.count(a)==1,a
-    s=s.replace(a,b)
-open(p,'w').write(s)
-EOF
-sed -n 1335,1365p objcode.py
-```
-
-```
-ok = ring >= 0
-            dec = np.where(L[0] > L[1], 0, np.where(L[1] > L[0], 1, -1))
-            v = ok & (dec >= 0)
-            np.add.at(total, ring[v], 1)
-            np.add.at(correct, ring[v], dec[v] == label)
-    with np.errstate(invalid="ignore"):
-        return correct / total
-
-
-def decoding_sessions(pop_sessions, ca1_sessions):
-    """The 16 decoding sessions of the population files. In the two Neuropixels population files
-    the tracking y equals x in every sample (checked in notebook 01); the same recordings in the
-    CA1 single-cell file have the same timestamps, x and spike trains, and a y of their own. For
-    those sessions the No Object and Object trials are taken from the CA1 file, with the units in
-    the population file's order. Returns the sessions and the keys of the replaced ones."""
-    out, replaced = [], []
-    for p in pop_sessions:
-        if not all(np.array_equal(t.x, t.y) for t in p.trials):
-            out.append(p)
-            continue
-[... 8 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-p='objcode.py'
-s=open(p).read()
-a=s.index('def _gauss(a, sigma=2.0):'); b=s.index('def mean_rate(')
-s=s[:a]+'''def _gauss(a, sigma=2.0):
-    """Gaussian smoothing over the last two axes (maps of shape (..., nb, nb)), edges padded with
-    the mirrored map (smoothData.m), truncated at 4 SD."""
-    sig = (0,) * (a.ndim - 2) + (sigma, sigma)
-    return ndimage.gaussian_filter(a, sig, mode="reflect", truncate=4.0)
-
-
-def _raw_rate(O, S):
-    """Spikes over time per bin, 0 where the animal never was (countRaw ./ (timeRaw + eps))."""
-    visited = O > 0
-    with np.errstate(invalid="ignore", divide="ignore"):
-        return np.where(visited, S / np.where(visited, O, 1.0), 0.0), visited
-
-
-def rate_maps(occ, spk, rm="b", blank=True, sigma=2.0):
-    """Smoothed rate maps (U, B) from time (B,) and spike (U, B) maps, by the claims file's method
-    ("Smoothing and unvisited bins", rm b; calculateRateMap.m): the rate per bin, unvisited bins 0,
-    smoothed; blanked maps have NaN where the animal never was."""
-    if rm != "b":
-        raise ValueError(f"rate-map reading {rm!r}: only b, the paper's method, is defined")
-    B = occ.shape[-1]
-    nb = int(round(np.sqrt(B)))
-    raw, visited = _raw_rate(occ.reshape(nb, nb), spk.reshape(-1, nb, nb))
-    r = _gauss(raw, sigma)
-    if blank:
-        r = np.where(visited[None], r, np.nan)
-    return r.reshape(-1, B)
-
-
-'''+s[b:]
-# SecMaps
-old_prep=s[s.index('    def prepare(self, W, rm):'):s.index('_KERNELS = {}')]
-new_prep='''    def prepare(self, W, rm):
-        """Cache what the groups in W (R, n) share across units: their time maps."""
-        if rm != "b":
-            raise ValueError(rm)
-        occ = np.asarray((self.A.T @ W.T).T, np.float32)
-        nb = int(round(np.sqrt(self.B)))
-        O = occ.reshape(-1, nb, nb)
-        return {"W": W, "O": O, "visited": O > 0, "K": _kernel(nb),
-                "t_fast": W @ self.t_fast, "t_all": W @ self.t_all}
-
-    def groups(self, prep, k):
-        """Blanked rate maps (R, B) of unit k for the prepared groups, and the two mean rates (R,)."""
-        W, O, visited, K = prep["W"], prep["O"], prep["visited"], prep["K"]
-        spk = np.asarray((self.C[k].T @ W.T).T, np.float32).reshape(O.shape)
-        with np.errstate(invalid="ignore", divide="ignore"):
-            raw = np.where(visited, spk / np.where(visited, O, 1.0), 0.0).astype(np.float32)
-        num = K @ raw @ K.T
-        with np.errstate(invalid="ignore", divide="ignore"):
-            r = np.where(visited, num, np.nan)
-            r_fast = (W @ self.s_fast[k]) / prep["t_fast"]
-            r_all = (W @ self.s_all[k]) / prep["t_all"]
-        return r.reshape(len(W), -1), r_fast, r_all
-
-
-'''
-s=s.replace(old_prep,new_prep)
-old_k=s[s.index('def _kernel(nb, sigma=2.0):'):s.index('def pearson_rows(')]
-new_k='''def _kernel(nb, sigma=2.0):
-    """Gaussian smoothing as a matrix (edges mirrored, truncated at 4 SD, as _gauss): K @ M @ K.T."""
-    if (nb, sigma) not in _KERNELS:
-        _KERNELS[(nb, sigma)] = ndimage.gaussian_filter1d(np.eye(nb), sigma, axis=0, mode="reflect",
-                                                         truncate=4.0).astype(np.float32)
-    return _KERNELS[(nb, sigma)]
-
-
-def rate_maps_batch(occ, spk, rm, sigma=2.0):
-    """Blanked rate maps for R pairs of time (R, B) and spike (R, B) maps (method of rate_maps)."""
-    if rm != "b":
-        raise ValueError(rm)
-    R, B = occ.shape
-    nb = int(round(np.sqrt(B)))
-    raw, visited = _raw_rate(occ.reshape(R, nb, nb), spk.reshape(R, nb, nb))
-    r = np.where(visited, _gauss(raw, sigma), np.nan)
-    return r.reshape(R, B)
-
-
-'''
-s=s.replace(old_k,new_k)
-s=s.replace('rm="a"','rm="b"')
-open(p,'w').write(s)
-EOF
-grep -n 'rm="\|rm=' objcode.py; python -c "
-import numpy as np
-from scipy import ndimage
-import sys; sys.path.insert(0,'.')
-import objcode as oc
-M=np.random.rand(60,60)
-K=oc._kernel(60)
-print(np.abs(K@M@K.T-oc._gauss(M)).max())
+$TMPDIR/venv/bin/python -c "
+from scipy import stats
+for k in (9,16,26,37): print(k, stats.binomtest(k,219,0.0503).pvalue)
 "
+```
+
+```
+9 0.6433374205718851
+16 0.12176691759134423
+26 6.138298082415294e-05
+37 1.1511096140008216e-10
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; cat > $TMPDIR/nbedit.py <<'EOF'
+import json, sys
+def load(f): return json.load(open(f))
+def save(nb, f):
+    json.dump(nb, open(f, 'w'), indent=1, ensure_ascii=False); open(f, 'a').write('\n')
+def src(nb, i): return ''.join(nb['cells'][i]['source'])
+def put(nb, i, text, expect=None):
+    if expect is not None:
+        assert src(nb, i).lstrip().startswith(expect), (i, src(nb, i)[:80])
+    nb['cells'][i]['source'] = text.strip('\n').splitlines(True)
+def rep(nb, i, a, b):
+    s = src(nb, i); assert a in s, (i, a); nb['cells'][i]['source'] = s.replace(a, b).splitlines(True)
+EOF
+python - <<'EOF'
+import json
+nb=json.load(open('01_single_cells.ipynb'))
+for i in (24,):
+    print(''.join(nb['cells'][i]['source']))
+print(''.join(nb['cells'][33]['source']))
+EOF
+```
+
+```
+rows = []
+for (_, rm, w), cells in [(k, v) for k, v in TUNE.items() if k[0] == "CA1"]:
+    df = pd.DataFrame(cells)
+    per = df.groupby("rat").tuned.agg(["sum", "size"])
+    rows.append({"rm": rm, "w": w, **{r: f"{int(a)}/{int(b)}" for r, (a, b) in per.iterrows()}})
+print("Object-tuned cells per rat (tuned/cells):")
+print(pd.DataFrame(rows).to_string(index=False))
+df = pd.DataFrame(TUNE["CA1", "b", "b"])
+print("\nSignificant scores per tuned cell (rm b, w b): one only", int((df[df.tuned].n_sig == 1).sum()), "of", int(df.tuned.sum()),
+      f"({(df[df.tuned].n_sig == 1).mean():.3f}; paper 11.4%)")
+## ovs-method-extra-cells
+
+> The object-vector score method of earlier studies classified 40 cells (3.4%) that the template
+> matching did not, mostly false positives on inspection.
+
+The Methods' four criteria (Object-vector score and object-vector cell criteria), with the vector
+map of the paper's reference 12 as the criterion now gives it (answer of 2026-10-21): distance bins
+of 2 cm, direction bins of 10° from East, the rate per bin smoothed with a Gaussian of SD 1.5 bins,
+circular in direction. The rate per bin, its unvisited bins (0 before smoothing, blanked after) and
+the speed filter follow the opening comment's rate-map method. Range readings of the criterion:
+[... 15 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; PYTHONPATH=$TMPDIR python - <<'EOF'
+from nbedit import *
+f='01_single_cells.ipynb'; nb=load(f)
+# header
+rep(nb,0,"""This is the first of five notebooks. It holds the data check, and the single-cell claims that use
+whole-trial rate maps. `02_single_cell_changes.ipynb` holds the within/between-trial classification
+and object traces, `03_population_decoding.ipynb` the decoders, `04_distance_tuning.ipynb` the
+single-cell and subset decoders, `05_words.ipynb` the words and counts.""",
+"""This is the first of six notebooks. It holds the data check, and the single-cell claims that use
+whole-trial rate maps. `02_single_cell_changes.ipynb` holds the within/between-trial classification
+and object traces, `03_population_decoding.ipynb` the decoders, `04_distance_tuning.ipynb` the
+single-cell decoders, `05_subsets.ipynb` the decoders on subsets of cells, `06_words.ipynb` the
+words and counts.""")
+rep(nb,0,"| ovs-method-extra-cells | - | blocked: methods underspecified (vector-map bins and smoothing not in the claims file; asked) |",
+"| ovs-method-extra-cells | 01 | tested |")
+rep(nb,0,"| fig6ab to figs8eh, fig7 (10 claims) | 04 | tested |\n| fig5b to figs7e (7 word claims) | 05 | tested |",
+"| fig6ab to figs8eh, fig7 (6 claims) | 04 | tested |\n| fig3d, fig6c, fig6d, figs8 (4 subset claims) | 05 | tested |\n| fig5b to figs7e (7 word claims) | 06 | tested |")
+rep(nb,0,"""Readings that the claims file leaves open and that are run side by side are listed in the
+docstring of `objcode.py` and in `questions/ebrains-q0fg-1x8.yaml`: `rm` (rate-map smoothing),
+`speed` (decoders), `field` (rate criterion of a field), and the claims file's own readings
+(template width `w`: a the code's SDs, b the Methods' variances).""",
+"""Every rate map is built as the claims file's opening comment now says ("Smoothing and unvisited
+bins", answered on 2026-10-21 from the paper's calculateRateMap.m): the rate per bin (spikes over
+time, the time per position sample clipped at 0.1 s), unvisited bins 0, then smoothed; blanked maps
+have the unvisited bins set to NaN after smoothing. Tables still print this as `rm` b, the name the
+questions file gave it. The other readings run side by side are the claims file's own and are listed
+in the docstring of `objcode.py`: `speed` (decoders), `field` (rate criterion of a field), template
+width `w` (a, the code's SDs; b, the Methods' variances) and the readings each criterion names.""")
+put(nb,6,"""Positions lie within 0 to 150 cm in every file, consistent with the 150 cm arena and the stated
+unit. Tetrode tracking is sampled every 40 ms (25 Hz, as the Methods say), Neuropixels tracking
+every 8.3 ms (120 Hz). In the Neuropixels sessions 8 to 29% of tracking samples have no position
+(NaN). They are dropped with their time. A spike is counted at the last position sample at or before
+it (histc, as calculateRateMap.m does), and gets no position when that sample has none. These are the
+`no_pos` spikes above, nearly all in the Neuropixels sessions, where they are 24 to 29% of spikes in
+27012 and 9% in 27207. Three units of the CA1 file have spike times out of order within the Object
+Moved trial; they are sorted on loading. Trials last 564 to 2334 s (median 1232 s), shorter than
+the 1800 s the Methods assume for their sample counts.""","Positions lie")
+put(nb,18,"""Moving the spikes by 2 s against the positions lowers the median half-trial stability from 0.64
+to 0.76 down to 0.12 to 0.33, and by 10 s or more it is near zero, in every file. Zero shift gives
+the highest median in 89 of 91 sessions. The exceptions are CA1 session 26 (3 units, highest at
++10 s) and CA3 control session 1 (9 units, highest at +2 s). Spikes and tracking share a clock to
+within about 2 s. This is consistent with the data, and was not established for those two sessions.
+Trial membership is given by the file structure, and every spike of a trial lies within its
+tracking span (0 spikes outside, by a check of the raw files not run here; the `no_pos` count above
+is spikes whose position sample has no position).""","Moving the spikes")
+rep(nb,22,"""Template matching as in the claims file's opening comment, for every combination of the template
+width reading (`w`: a, the code's SDs; b, the Methods' variances) and the rate-map reading (`rm`).""",
+"""Template matching as in the claims file's opening comment, under both template width readings (`w`:
+a, the code's SDs; b, the Methods' variances). The rate maps are those the criterion now gives
+(answered 2026-10-21): the rate per bin, unvisited bins 0, then smoothed, not blanked.""")
+s=src(nb,24)+'''
+print("\\nControl counts against the paper's chance level (11 of 219, 0.0503), two-sided binomial test:")
+for (_, rm, w, ctl), cells in [(k, v) for k, v in TUNE.items() if k[0] == "CON"]:
+    kc = sum(c["tuned"] for c in cells)
+    print(f"  w {w}, {ctl}: {kc} of {len(cells)}, p = {stats.binomtest(kc, len(cells), 0.0503).pvalue:.3g}")'''
+put(nb,24,s)
+put(nb,25,"""**Result: partially reproduced.** With the rate maps the criterion now gives, no reading meets the
+whole criterion. With the Methods' variances (`w` b), 222 of 1,189 CA1 cells (18.7%) are
+object-tuned, within 0.199 ± 0.0199, and far above the controls (binomial p = 6e-79 and 2e-37). But
+the control level is 9 of 219 (4.11%, CON2-CON3) or 16 of 219 (7.31%, CON1-CON2), outside
+0.0503 ± 0.00503. The 9 of 219 does not differ from the paper's 11 of 219 by a binomial test
+(p = 0.64), so the chance-level procedure agrees with the paper's within sampling error, and the
+miss is of the tolerance. With the code's SDs (`w` a), 331 cells (27.8%) and 26 or 37 controls
+(11.9 or 16.9%) are tuned, both outside. The tuned fraction differs between rats (2.3 to 30.3%
+under `w` b, printed above). 20 of 222 tuned cells (9.0%) have one significant score, against the
+paper's 11.4%.""","**Result:")
+rep(nb,26,"""Fields in the 2.5 cm maps of the O (and OM) trial, under both field readings (`field`), for the""",
+"""Fields in the 2.5 cm maps of the O (and OM) trial, under both field readings (`field`), which the
+criterion allows (answered 2026-10-21: the paper does not say where the 1 Hz rule applies), for the""")
+put(nb,29,"""**Result: partially reproduced.** Fields lie in every 45° sector around the object under every
+reading (10 to 24 cells in the sector with fewest), and the mean distance is within 37.7 ± 3.77 cm
+under 8 of the 12 readings (29.8 to 40.8 cm over all; for example 34.4 cm, `w` a, field a, distance
+b). But the largest distance is 104.2 to 125.3 cm under every reading, beyond the widened bound of
+88.8 cm, so no reading meets the whole criterion. The spread over cells (SD 16.1 to 26.6 cm) is at or
+above the paper's 16.0 cm. Both field readings give the same outcome.""","**Result:")
+put(nb,32,"""**Result: partially reproduced.** No reading puts all three values within tolerance. Under `w` a,
+field a, distance a, 45 object cells (3.8%) and 30 tuned cells without a field are both within
+tolerance, but 256 object-vector cells (21.5%) are far above 13.3 ± 1.33%. Under `w` b the
+object-vector fraction is within tolerance under three readings (12.1 to 14.4%), with 1.9 to 2.5%
+object cells and 21 or 52 cells without a field. Over all readings object cells are 1.9 to 3.8% of
+CA1 cells, object-vector cells 11.9 to 25.1%, and cells without a field 2 to 72. Both cell types are
+present under every reading.""","**Result:")
+rep(nb,33,"""Details the criterion does not fix, run as readings here and asked in the questions file:""",
+"""Details the criterion does not fix, run as readings here and asked in the questions file (question
+of 2026-10-21):""")
+put(nb,36,"""**Result: blocked (methods underspecified).** The count depends on a detail the criterion does
+not give: which fields decide the exclusion of cells whose fields would fall outside the arena in
+OM. When a cell is excluded if any of its O fields would fall outside (x-a), 59 to 70% of CA1 cells
+are excluded and 9 to 15 cells are found by the method and not by template matching, never within
+40 ± 4. When it is excluded only if all of them would (x-b), 19 to 21% are excluded and the count is
+34 to 53, within tolerance under 27 of the 48 x-b readings, under both range readings of the
+criterion (r-a 13, r-b 14 of 48 readings overall). Neither exclusion reading gives the paper's 28.8%
+excluded. The object-vector score is above the 99th percentile of its shuffles for 133 (r-a) and 132
+(r-b) of the 1,113 cells with fields in both trials, and the two range readings change the count by
+at most 1 cell. The manual inspection is not repeated.""","**Result:")
+put(nb,39,"""**Result: reproduced.** Under every `w` and `field` reading, at least one distance reading gives a
+negative Pearson correlation between orientation coverage and field distance with p < 0.05. Under
+distance reading a, r is -0.52 to -0.73 (p < 1e-12). One combination (`w` b, field b, distance c)
+gives r = -0.10, p = 0.19.""","**Result:")
+put(nb,42,"""**Result: reproduced.** Within-trial stability of the O trial correlates with the object-tuning
+score over the tuned cells: r = 0.41 (`w` a, 330 cells) and 0.42 (`w` b, 221 cells), both within
+0.45 ± 0.045, p < 1e-10. One tuned cell under each width has no stability value. With the rate maps
+the criterion now gives, the width readings agree; before, they did not.""","**Result:")
+put(nb,45,"""**Result: not reproduced.** Over the 341 CA3 cells of the file, 19.1% are object-tuned with the
+Methods' variances (`w` b) and 32.6% with the code's SDs (`w` a). Both are outside 0.23 ± 0.023. The
+file holds 341 cells, not the paper's 313, and its Neuropixels cells (221) are more often tuned than
+the tetrode cells (per rat above). Tetrode cells alone give 8.3% (`w` b) and 28.3% (`w` a). The cells
+the paper used cannot be identified.""","**Result:")
+put(nb,49,"""**Result: reproduced** (fig2d-spatial-change-no-o). NO-O spatial correlations (median 0.45) are
+lower than CON1-CON2 correlations (0.80), z = -12.1, p = 6e-34. The median is below the control
+median in all 9 rats (0.36 to 0.79).""","**Result:")
+put(nb,50,"""**Result: blocked (methods underspecified)** (fig2d-rate-overlap-no-o-unchanged). The two
+rate-overlap readings give different outcomes. With speed-filtered rates (a), NO-O overlaps are
+lower than CON1-CON2 overlaps (medians 0.684 against 0.737, z = -2.48, p = 0.013): the paper's test
+finds a difference. With whole-trial rates (b), the difference is not significant (0.718 against
+0.748, z = -1.18, p = 0.24).""","**Result:")
+put(nb,51,"""**Result: reproduced** (fig2d-om-no-prime-change). OM-NO' spatial correlations (median 0.59) are
+lower than CON3-CON4 correlations (0.84), z = -12.7, p = 4e-37. The rate-overlap test gives p = 1.00
+(a) and 0.75 (b), over the 1,090 cells with a No Object' trial. The "many cells retained firing
+fields" part is the object-trace analysis of notebook 02.""","**Result:")
+put(nb,52,"""**Result: reproduced** (fig2d-no-no-prime-change). NO-NO' spatial correlations (median 0.32) are
+lower than CON1-CON4 correlations (0.70), z = -11.3, p = 9e-30.""","**Result:")
+put(nb,55,"""**Result: blocked (methods underspecified).** All four spatial-correlation tests find lower
+correlations in object sessions (p ≤ 1.6e-6). The rate-overlap readings give different outcomes.
+With whole-trial rates (b) no rate-overlap test is significant (p = 0.066 to 0.46), so the claim is
+reproduced. With speed-filtered rates (a) the OM-NO' test is significant (p = 0.0081), so it is
+partially reproduced. The file holds 341 CA3 cells against the paper's 313. With the 120 tetrode
+cells alone, the NO-O and O-OM spatial tests are significant (p = 0.023 and 0.0059) and the other
+two are not.""","**Result:")
+s=src(nb,56)
+a=s.index("| fig1c-object-tuned-fraction"); b=s.index("| figs3f-ca3-changes")
+s=s[:a]+"""| fig1c-object-tuned-fraction | partially reproduced (18.7% tuned, within tolerance; chance level 4.11% or 7.31%, outside) |
+| fig1d-field-distances | partially reproduced (all sectors, mean within tolerance, largest distance beyond the bound) |
+| fig1e-object-cells-and-object-vector-cells | partially reproduced (no reading has all three values within tolerance) |
+| ovs-method-extra-cells | blocked, methods underspecified (the exclusion rule decides the count; asked) |
+| fig1f-orientation-coverage | reproduced |
+| figs2e-within-trial-stability | reproduced (r 0.41 and 0.42) |
+| figs3a-ca3-object-tuned | not reproduced (19.1 or 32.6% of 341 cells) |
+| fig2d-spatial-change-no-o | reproduced |
+| fig2d-rate-overlap-no-o-unchanged | blocked, methods underspecified (p = 0.013 or 0.24 by rate-overlap reading) |
+| fig2d-om-no-prime-change | reproduced |
+| fig2d-no-no-prime-change | reproduced |
+"""+s[b:]
+s=s.replace("""How the analysis differs from the paper's: the claims file leaves open how unvisited bins enter
+the smoothing of a rate map (`rm`) and whether a field's 1 Hz rule applies to its peak or to every
+bin (`field`). Both are run both ways and asked as questions, and a claim whose outcome depends on
+them is blocked until they are answered. Speed and dwell time use standard choices. The template's
+form is the claims file's reading, an isotropic Gaussian at bin centres.""",
+"""How the analysis differs from the paper's: rate maps follow the paper's calculateRateMap.m as the
+claims file now gives it, also for the single-cell maps, whose own code is not given. Whether a
+field's 1 Hz rule applies to its peak or to every bin (`field`) is not given by the paper, and both
+are run. The object-vector method's exclusion rule, field and lambda are not given and are run as
+readings (asked). Speed uses a standard choice. The template's form is the claims file's reading,
+an isotropic Gaussian at bin centres.""")
+put(nb,56,s)
+save(nb,f)
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; PYTHONPATH=$TMPDIR python - <<'EOF'
+from nbedit import *
+f='01_single_cells.ipynb'; nb=load(f)
+rep(nb,32,"with 1.9 to 2.5% object cells","with 2.2 to 3.2% object cells")
+save(nb,f)
+nb=load('02_single_cell_changes.ipynb')
+for i in (0,7,10,11,13,14,16,17): print(i, src(nb,i)[:3000] if i in (0,17) else '')
+EOF
 ```
 
 ```
 Exit code 1
-321:def rate_maps(occ, spk, rm="b", blank=True, sigma=2.0):
-553:    def __init__(self, part: Part, units, rm, bin_cm=3.0, uniform=False):
-556:        self.lam = rate_maps(occ, spk, rm=rm, blank=False)            # (U, B), Hz
-600:def decode_pair(partsA, partsB, mode="distance", obj=None, units=None, rm="b", dt=1.0,
-601:                edges_fixed=None, uniform=False, bin_cm=3.0, angle_start=0.0, sample_filter=None,
-795:            lam = np.maximum(rate_maps(ctx.occ[mi, it], spk, rm=rm, blank=False), LAMBDA_FLOOR)
-1167:    return rate_maps(occ, spk, rm=rm, blank=False).reshape(-1, 50, 50)
-1174:    return rate_maps(occ, spk, rm=rm, blank=True), occ
 Traceback (most recent call last):
-  File "<string>", line 2, in <module>
-    import numpy as np
-ModuleNotFoundError: No module named 'numpy'
+  File "<stdin>", line 3, in <module>
+  File "/tmp/claude-1001/nbedit.py", line 11, in rep
+    s = src(nb, i); assert a in s, (i, a); nb['cells'][i]['source'] = s.replace(a, b).splitlines(True)
+                           ^^^^^^
+AssertionError: (32, 'with 1.9 to 2.5% object cells')
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; grep -n PYTHON_VERSION ../../tools/entry.py | head -2; uv venv -q --python 3.12 $TMPDIR/venv && uv pip install -q --python $TMPDIR/venv/bin/python -r requirements.lock.txt nbconvert ipykernel nbclient 2>&1 | tail -3; $TMPDIR/venv/bin/python -c "
-import numpy as np
-import objcode as oc
-M=np.random.rand(3,60,60)
-K=oc._kernel(60)
-print(np.abs(K@M@K.T-oc._gauss(M)).max())
-"
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; sed -i 's/with 1.9 to 2.5%\\n/with 2.2 to 3.2%\\n/' 01_single_cells.ipynb; grep -n "2.2 to 3.2%\|1.9 to 2.5" 01_single_cells.ipynb
 ```
 
 ```
-57:PYTHON_VERSION = "3.13"
-287:    r = subprocess.run(["uv", "pip", "compile", "--quiet", "--python-version", PYTHON_VERSION,
-2.8779817307089672e-08
+813:    "object-vector fraction is within tolerance under three readings (12.1 to 14.4%), with 2.2 to 3.2%\n",
 ```
+
+**Agent**
+
+Notebook 01's text is done. Now notebook 02:
 
 **Agent calls Bash**
 
 ```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-p='objcode.py'
-s=open(p).read()
-old=s[s.index('- Single-cell rate maps: 2.5 cm bins'):s.index('- Template matching: 3 cm bins')]
-new='''- Single-cell rate maps: 2.5 cm bins, Gaussian smoothing with SD 2 bins, epochs with speed above
-  2.5 cm/s (Methods, Firing rate maps). Firing fields: contiguous bins above 3 x the median
-  absolute deviation of all bins, at least 225 cm2, rate of at least 1 Hz (Methods).
-- Every rate map (opening comment, "Smoothing and unvisited bins", from the Methods and
-  calculateRateMap.m; called rm b there): the rate per bin (spikes over time), 0 in unvisited
-  bins, then smoothed with the mirrored map padding the edges (smoothData.m); blanked maps have
-  the unvisited bins set to NaN after smoothing. The time per position sample is the gap to the
-  next sample, clipped at 0.1 s (maxGap); a spike is counted at the last position sample at or
-  before it (histc).
-'''
-s=s.replace(old,new)
-old=s[s.index('- `rm`: how a rate map is smoothed.'):s.index('- `speed`: for the decoders')]
-s=s.replace(old,'')
-old=s[s.index('Standard choices for details that cannot change a result'):s.index('"""\n\nfrom __future__')]
-new='''Standard choices for details that cannot change a result (stated here once): speed from the
-gradient of position over time; tracking samples without a position are dropped with their time,
-and a spike whose position sample has none gets no position; the last sample of a trial stands for
-the median sampling interval; the Gaussian kernel is truncated at 4 SD (smoothData.m's width is
-not given); rates floored at 1e-10 Hz inside the Poisson log-likelihood (in place of log 0);
-tracking resampled to 25 Hz for the behavioural decoders drops grid points more than 0.2 s from a
-valid sample.
-'''
-s=s.replace(old,new)
-s=s.replace("Readings the claims file leaves open, run side by side (see the questions file\nquestions/ebrains-q0fg-1x8.yaml):","Readings the claims file leaves open, run side by side (see the questions file\nquestions/ebrains-q0fg-1x8.yaml, and each claim's criterion):")
-open(p,'w').write(s)
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; PYTHONPATH=$TMPDIR python - <<'EOF'
+from nbedit import *
+f='02_single_cell_changes.ipynb'; nb=load(f)
+rep(nb,0,"""Maps are the
+2.5 cm, speed-filtered, blanked single-cell maps under both rate-map readings (`rm`); rate overlap
+uses speed-filtered rates (reading a) or all of the sections (b).""","""Maps are the
+2.5 cm, speed-filtered, blanked single-cell maps, built as the claims file now gives (answered
+2026-10-21: the rate per bin, unvisited bins 0, then smoothed and blanked; printed as `rm` b); rate
+overlap uses speed-filtered rates (reading a) or all of the sections (b).""")
+put(nb,7,"""**Result: reproduced.** Between NO and O, 789 (66.4%, rate overlap a) and 793 (66.7%, rate overlap
+b) of the 1,189 cells change, both within 0.675 ± 0.0675. With the rate maps the criterion now
+gives, the two rate-overlap readings agree; before, one map reading put one of them outside. The
+fraction changing differs between rats (34.6% in 25371 to 76.9% in 25450, printed above).""","**Result:")
+put(nb,10,"""**Result: reproduced.** Under both rate-overlap readings, O-OM spatial correlations (median 0.49
+against 0.85) and rate overlaps (0.70 and 0.73 against 0.78 and 0.79) are lower than CON2-CON3
+values (rank-sum p ≤ 0.00037). Between O and OM 778 and 814 cells (65.4 and 68.5%) change, within
+0.697 ± 0.0697.""","**Result:")
+put(nb,13,"""**Result: partially reproduced.** 908 and 916 cells change between NO and NO', within 919 ± 91.9.
+Under every reading the cells with an object-trace field, 72 to 117 (6.1 to 9.8% of 1,189), are far
+above the 1% chance level (binomial p < 1e-32), but fewer than 18.3 ± 1.83%. The effect is present
+and weaker under both field, ROI and rate-overlap readings.""","**Result:")
+put(nb,16,"""**Result: blocked (methods underspecified).** The paper's test gives different outcomes under the
+template-width readings. With the Methods' variances (`w` b) the count after removal is 226 to 240
+(19.0 to 20.2%), and the binomial test against 19.9% gives p = 0.47 to 1 under every trace and
+removal reading, so the claim holds. With the code's SDs (`w` a) it is 340 to 355 (28.6 to 29.9%),
+p < 1e-12, a level that reading gives before any removal too (331 tuned). Removing traces raises the
+count by 4 to 24 cells. The re-run uses new shuffles for the 72 to 117 trace cells (table above).""","**Result:")
+s=src(nb,17)
+s=s.replace("| fig2-fraction-changed-no-o | blocked, methods underspecified (one of four readings outside tolerance) |","| fig2-fraction-changed-no-o | reproduced (66.4 and 66.7%) |")
+s=s.replace("| figs4-object-traces | partially reproduced (trace fields 5.6 to 10.9%, above chance) |","| figs4-object-traces | partially reproduced (trace fields 6.1 to 9.8%, above chance) |")
+put(nb,17,s)
+save(nb,f)
 EOF
-sed -n 1,50p objcode.py
+grep -n "rm\b\|rate-map reading" 02_single_cell_changes.ipynb | grep -v '"rm"\|rm in\|, rm)\|rm, \|rm=' | head
+```
+
+```
+31:    "2026-10-21: the rate per bin, unvisited bins 0, then smoothed and blanked; printed as `rm` b); rate\n",
+153:    "    print(f\"rm {rm}: classified {len(CLASS[rm])} cells in {time.time() - t0:.0f} s\")"
+180:    "    C = CLASS[rm]\n",
+191:    "print(\"\\nBy rat (rm b, rate overlap a): changed/cells\")\n",
+193:    "print(\"\\nMean within-trial and between-trial spatial correlation (rm b), median over cells:\",\n",
+247:    "    Cl = CLASS[rm]\n",
+326:    "                changed = set(map(tuple, CLASS[rm].loc[CLASS[rm][f\"NO-NOp any_{r}\"].fillna(False).astype(bool), [\"session\", \"unit\"]].values))\n",
+339:    "print(\"\\nPer rm and field, any ROI and rate-overlap reading meeting the criterion:\")\n",
+340:    "print(figs4.groupby([\"rm\", \"field\"]).reproduced.any().to_string())\n",
+426:    "print(figs2d.groupby([\"rm\", \"w\"])[\"binomial p vs 0.199\"].agg([\"min\", \"max\"]).to_string())\n",
+```
+
+**Agent**
+
+Notebook 02 done. Now notebook 03, the decoders:
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; PYTHONPATH=$TMPDIR python - <<'EOF'
+from nbedit import *
+nb=load('03_population_decoding.ipynb')
+for i in (0,20,38,53,65): print(i, src(nb,i)[-1800:]); print('-----')
+EOF
+```
+
+```
+0 8](https://doi.org/10.25493/Q0FG-1X8), version v1, the version
+whose DOI the paper cites and the only one published (data check of every file in
+`01_single_cells.ipynb`).
+
+The decoding sessions are the 16 sessions of the four population files: 14 tetrode sessions (rats
+25987 and 26186, 25 to 39 cells) and the two Neuropixels sessions (135 and 620 cells). This is the
+legends' count (16 sessions, 14 tetrode). The Methods' text says 15 tetrode sessions, which the
+dataset does not hold, so the claims file's session readings (S-methods, S-legends) give the same
+16 sessions. Every decoder runs under the claims file's two speed readings (`speed` a: rate maps and
+occupancy from epochs above 2.5 cm/s; b: no speed filter) and the two rate-map readings (`rm`).
+
+| Claim | Tested or blocked |
+|---|---|
+| fig3b-decode-presence | tested |
+| fig3c-bin-size | tested |
+| fig4b-distance-decline | tested |
+| fig4c-each-session-decreasing | tested |
+| fig4e-angle-flat | tested |
+| fig4h-population-vector-correlation | tested |
+| figs5a-decode-no-from-no-prime | tested (tetrode sessions with the cells of the single-cell file only) |
+[... 71 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; PYTHONPATH=$TMPDIR python - <<'EOF'
+from nbedit import *
+f='03_population_decoding.ipynb'; nb=load(f)
+rep(nb,0,"""16 sessions. Every decoder runs under the claims file's two speed readings (`speed` a: rate maps and
+occupancy from epochs above 2.5 cm/s; b: no speed filter) and the two rate-map readings (`rm`).""",
+"""16 sessions. Every decoder runs under the claims file's two speed readings (`speed` a: rate maps and
+occupancy from epochs above 2.5 cm/s; b: no speed filter). Rate maps are built as the claims file now
+gives (answered 2026-10-21, from calculateRateMap.m): the rate per bin, unvisited bins 0, then
+smoothed and not blanked; tables print this as `rm` b.""")
+put(nb,7,"""**Result: reproduced.** Under both speed readings the whole-arena decoder tells NO from O above
+0.5, and above the mean of 50 label shuffles, in all 16 sessions. Accuracies are 0.62 to 0.76 (table
+above), and shuffle means 0.49 to 0.51.""","**Result:")
+put(nb,10,"""**Result: reproduced.** Under both speed readings the median accuracy over sessions rises at each
+step from 10 ms (0.51) to 1000 ms (0.69). Its gain from 1 to 10 s (0.027 and 0.036) is smaller than
+its gain from 100 ms to 1 s (0.113).""","**Result:")
+put(nb,13,"""**Result: reproduced.** Under both speed readings the Kruskal-Wallis test across the five bins
+gives H = 47.3 and 48.9 (paper 44.6), p < 1e-8. The median accuracy falls at every step, from bin 1
+(0.79 and 0.80) to bin 5 (0.60). The signed-rank tests of bins 1 vs 2 (p ≤ 0.0019), 2 vs 3
+(p = 6.1e-5) and 4 vs 5 (p ≤ 0.0034) each give the nearer bin higher. The mean of bin 1 minus bin 5
+over sessions is 0.18 (paper 0.19). With the Neuropixels tracking as deposited (y = x), the two
+sessions give a less regular profile (the variant printed above).""","**Result:")
+put(nb,16,"""**Result: reproduced.** Under both speed readings all 16 sessions have a negative slope of accuracy
+on distance bin (-0.070 to -0.014) and a positive bin 1 minus bin 5 difference (0.056 to 0.315).""","**Result:")
+put(nb,19,"""**Result: blocked (methods underspecified).** The two sector-start readings of the claims file give
+different outcomes. With sectors starting at 0°, the Kruskal-Wallis test finds a difference between
+sectors with speed-filtered maps (H = 10.3, p = 0.036) and not without the filter (H = 8.9,
+p = 0.065). With sectors starting at 36° it finds none under either speed reading (H = 5.9 and 6.0,
+p = 0.21 and 0.20).""","**Result:")
+rep(nb,20,"""Rate maps of the whole NO and O trials, 3 cm bins (50 x 50), smoothed like the decoder's maps (not
+blanked), under both speed and rate-map readings.""","""Rate maps of the whole NO and O trials, 3 cm bins (50 x 50), smoothed like the decoder's maps.
+The criterion now names (answered 2026-10-21) the readings speed-filtered (pv-a, printed as `speed` a)
+or not (pv-b, `speed` b), and blanked, with unvisited bins left out of that bin's correlation (bl-a,
+printed as `bl` a), or not blanked (bl-b); all four are run.""")
+put(nb,22,"""**Result: reproduced.** Under every speed and blanking reading, the fixed 20 cm rings (reading a)
+give a Kruskal-Wallis p < 1e-4 (H = 28.2 to 31.4). Median correlation rises from bin 1 (0.46 to 0.47)
+to bin 5 (0.77 to 0.79), with significant rises from bin 1 to 2, 2 to 3 and 3 to 4 (p ≤ 0.025).
+Blanking leaves out up to 667 of the 2,500 spatial bins in a session and makes the 3 to 4 step
+stronger (p = 0.00043 against 0.025). With equal-count bins (reading b) the rise from bin 3 to 4 is
+not significant under any reading.""","**Result:")
+put(nb,25,"""**Result: reproduced.** NO is told from NO' above 0.5, and above the shuffle mean, in all 16
+sessions under both speed readings: 0.51 to 0.79 in the tetrode sessions, 0.96 to 0.98 in the
+Neuropixels sessions. In the tetrode sessions this uses only the 3 to 15 cells of the single-cell
+file. One session (26186#2, 3 cells) is at 0.51.""","**Result:")
+put(nb,28,"""**Result: reproduced.** With bins of 0-20 to 80-100 cm, the Kruskal-Wallis test gives H = 50.7 and
+52.9 (p < 1e-9) under both speed readings. The median accuracy is highest in bin 1 (0.81 and 0.82)
+and lowest in bin 5 (0.61 and 0.60).""","**Result:")
+put(nb,31,"""**Result: reproduced.** Decoding the first from the second half of the NO trial shows no effect of
+distance: Kruskal-Wallis H = 0.35 and 0.43, p ≥ 0.98 under both speed readings.""","**Result:")
+put(nb,34,"""**Result: blocked (other).** Only one control session has 25 or more cells. In the variant over all
+14 control sessions (6 to 30 cells), the Kruskal-Wallis p is 0.14 to 0.22 across the readings. This
+does not decide the outcome.""","**Result:")
+put(nb,37,"""**Result: blocked (methods underspecified).** With labels shuffled 50 times per session, the mean
+accuracy is within 0.49 to 0.51 in every bin under both speed readings (0.498 to 0.504). The t tests
+against 0.5 give different outcomes by reading. The smallest p is 0.063 with speed-filtered maps
+(a), so the criterion holds, and 0.0094 without the filter (b), so it fails. Shuffled accuracy need
+not be exactly 0.5 when a bin's NO and O samples and the decoder's choices are unbalanced.""","**Result:")
+put(nb,38,"""## figs5f-random-partition
+
+> Partitioning training and testing samples at random gave the same decline of accuracy with distance.
+
+As the criterion now says (answered 2026-10-21): the timepoints permuted are the trial's 1 s
+spike-count vectors, the first half training; training rate maps come from the position and spike
+samples within the training windows.""")
+put(nb,40,"""**Result: reproduced.** With 1 s bins partitioned at random, the Kruskal-Wallis test gives H = 29.7
+and 31.4 (p < 1e-5) under both speed readings. The median accuracy is highest in bin 1 (0.83 and
+0.84) and lowest in bin 5 (0.72).""","**Result:")
+rep(nb,41,"""(i) Field centroids in the 2.5 cm maps of NO and O (both `rm` and `field` readings).""","""(i) Field centroids in the 2.5 cm maps of NO and O (both `field` readings).""")
+put(nb,43,"""**Result: not reproduced.** Only one of the three parts holds. (i) holds: fields are not more
+concentrated within 20 cm of the object in O than in NO under either field reading (rank-sum p = 0.24
+and 0.060; the O ratio is lower). (ii) fails: the mean rate peaks in bin 2 in both trials, not in
+bin 3 in either. (iii) fails: NO and O rates differ in bins 3 and 4 (signed-rank p = 0.0042 and
+0.013), O being higher.""","**Result:")
+put(nb,49,"""**Result: blocked (data missing).** After matching speed or occupancy, the neural decoder's accuracy
+still falls with distance under both speed readings and both matching readings: Kruskal-Wallis
+H = 28.7 to 46.6, p < 1e-5, bin 1 highest. The head-direction match, one of the three the criterion
+needs, cannot be made, as the dataset holds no head direction.""","**Result:")
+put(nb,52,"""**Result: reproduced.** With a uniform prior the Kruskal-Wallis test gives H = 47.3 and 47.2
+(p < 1e-8), with bin 1 highest, under both speed readings (paper H = 42.92).""","**Result:")
+put(nb,53,"""## figs6l-sampling-thresholds
+
+> Using only spatial bins visited for at least 100, 500, 1000 or 2000 ms in both trials, the decline of
+> accuracy with distance remained.
+
+10 cm rate-map bins. The criterion now names as readings (answered 2026-10-21: the paper does not
+say) whether a bin's time is that of the whole trial or of the training half, and whether testing
+samples in left-out bins are kept; all four combinations are run: occupancy (w) whole trial or (t)
+training half; testing samples (k) kept or (d) dropped.""")
+put(nb,55,"""**Result: reproduced.** Under every combination of readings, all four thresholds give a
+Kruskal-Wallis p < 1e-5 (H = 33.4 to 43.6), with bin 1 highest.""","**Result:")
+put(nb,58,"""**Result: reproduced.** Over bins 2 to 5 the Kruskal-Wallis test gives p < 1e-5 with bin 2 highest,
+under both speed readings. H is 28.0 and 28.2, just above 25.06 ± 2.506: the effect is a little
+stronger here than in the paper.""","**Result:")
+put(nb,61,"""**Result: not reproduced.** All 6 signed-rank tests (2 speed readings x 3 measures) find a
+difference between near and far from the walls (p = 6.1e-5 to 0.0010). Position errors are 8.2 to
+9.7 cm larger near the walls (medians 36 to 38 against 27 to 29 cm). Population vector correlations
+between the two halves of NO are 0.08 lower near the walls.""","**Result:")
+put(nb,64,"""**Result: reproduced.** Without the linked object-tuned cells (r1: 277 cells removed under `w` a,
+186 under `w` b), the Kruskal-Wallis test gives H = 42.3 to 44.1, p < 1e-7, with bin 1 highest, under
+both template-width and both speed readings. The 283 tetrode cells of unknown status stay in.
+Removing them too (r2, 469 or 560 cells removed) leaves bin 1 highest, with p = 0.032 to 0.044 under
+three readings and 0.065 under `w` a, speed a.""","**Result:")
+s=src(nb,65)
+for a,b in [("| fig4h-population-vector-correlation | reproduced |","| fig4h-population-vector-correlation | reproduced (every speed and blanking reading) |"),
+            ("| figs5e-shuffled-labels | blocked, methods underspecified (t tests differ by reading) |","| figs5e-shuffled-labels | blocked, methods underspecified (t tests differ by speed reading) |"),
+            ("| figs5m-without-object-tuned | blocked, depends on fig1c (reproduced under every reading of variant r1) |","| figs5m-without-object-tuned | reproduced |")]:
+    assert a in s, a; s=s.replace(a,b)
+put(nb,65,s)
+save(nb,f)
+EOF
+grep -n "rate-map reading\|both \`rm\`\|rm\` a" 03_population_decoding.ipynb | head
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent**
+
+Notebook 03 done; I checked each number against its printed table. Now notebook 04:
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; PYTHONPATH=$TMPDIR python - <<'EOF'
+from nbedit import *
+f='04_distance_tuning.ipynb'; nb=load(f)
+rep(nb,0,"""only the other 283 are computed again. Every run
+uses the two speed readings and the two rate-map readings.""","""only the other 283 are computed again. Every run
+uses the two speed readings. Rate maps are built as the claims file now gives (answered 2026-10-21,
+from calculateRateMap.m: the rate per bin, unvisited bins 0, then smoothed; printed as `rm` b).""")
+put(nb,6,"""**Result: partially reproduced.** Under every speed and cell reading, three of the four values are
+within tolerance. The mean distance tuning is 0.016 to 0.017 (0.02 ± 0.005), 97.7 to 98.5% of cells
+lie between -0.2 and 0.2, and 12.5 to 12.9% have significant positive tuning (0.122 ± 0.0122). The
+fraction with significant negative tuning is 4.7 to 5.6%, above 3.8 ± 0.38%. The criterion's partial
+rule (mean and within-bounds fraction match, a significant fraction does not) applies. Mean tuning
+is positive in every rat (0.004 to 0.041, printed above).""","**Result:")
+put(nb,9,"""**Result: reproduced.** Without the 149 or 151 cells with significant positive tuning, the
+Kruskal-Wallis test gives p < 1e-4 under both speed readings (H = 25.4 and 23.9), with bin 1 highest
+(medians 0.705 against 0.673 and 0.684 in bin 2). With the rate maps the criterion now gives, the
+readings agree; before, one map reading put bin 2 highest.""","**Result:")
+put(nb,12,"""**Result: not reproduced.** The 20% of the 620 cells with the lowest distance tuning (124 cells) give
+a bin 1 minus bin 5 difference of -0.346 and -0.345 and a slope of +0.081 and +0.077 under the two
+speed readings. Accuracy rises with distance, against the paper's 0.121 and -0.0267. All 620 cells
+give 0.064 and 0.082, and slopes of -0.014 and -0.016. Keeping the lowest 80% already reverses the
+sign. Sorted by the claims file's rule (lowest values first), the kept cells are those with negative
+tuning.""","**Result:")
+put(nb,15,"""**Result: reproduced.** With all cells, the bin 1 minus bin 5 difference is positive and the slope
+negative in both datasets (tetrode mean 0.176 and 0.184, slope -0.043 and -0.044; 135-cell session
+0.291 and 0.273, slope -0.068 and -0.066). Both shrink as fewer of the least-tuned cells are kept.
+The largest kept fraction with a mean slope of zero or above is 0.4 in both datasets under both speed
+readings, within 0.6 ± 0.2 and 0.5 ± 0.2. The 20% values are printed above (tetrode difference
+-0.075 and -0.088; 135-cell -0.149 and -0.103).""","**Result:")
+rep(nb,16,"""Spatial information in bits per spike in the O trial's
+2.5 cm map, with the trial's speed-filtered mean rate.""","""Spatial information in bits per spike in the O trial's
+2.5 cm map, under the two lambda readings the criterion now names (answered 2026-10-21; printed as
+`si`): (si-a) the trial's speed-filtered spikes over speed-filtered time, with Pi the time in bin i
+over the summed time; (si-b) the occupancy-weighted mean of the smoothed map, sum of Pi li, with Pi
+the time in bin i over the trial's duration.""")
+put(nb,18,"""**Result: partially reproduced** (fig7-single-cell-properties). No reading meets the criterion,
+because spatial information is not correlated with distance tuning under either lambda reading:
+r = -0.038 to -0.002, p ≥ 0.23, against the printed -0.13. The lambda readings change spatial
+information (median 0.90 bits per spike under si-a, 1.72 under si-b) but not this. The other three
+correlations are weak (|r| < 0.3) and significant (p < 0.05) under every reading. Over the 1,189
+cells (cell reading a) all three are within 0.05 of the printed values: object-tuning score r = 0.11
+to 0.15, spatial correlation r = -0.081 and -0.089, rate overlap r = -0.154 to -0.160. Over the 897
+cells (b) the object-tuning score under `w` a (r = 0.067 and 0.069) and the rate overlap (r = -0.117
+to -0.124) fall outside.""","**Result:")
+put(nb,19,"""**Result: partially reproduced** (fig7-slope-variant). With the slope in place of distance tuning,
+the object-tuning score (r = -0.071 to -0.150, every reading) and the rate overlap (r = 0.148 to
+0.156 over the 1,189 cells) are within 0.05 of the printed values. Spatial information (r = -0.011 to
+0.023, printed 0.10) is not, under either lambda reading, and spatial correlation has the opposite
+sign (r = +0.065 to +0.088, printed -0.08). The claims file notes that this printed sign breaks the
+pattern of the other three.""","**Result:")
+s=src(nb,20)
+for a,b in [("| figs5l-without-positively-tuned | blocked, methods underspecified (bin 1 highest under 3 of 4 readings) |","| figs5l-without-positively-tuned | reproduced |"),
+            ("| fig7-single-cell-properties | blocked, depends on fig1c (partially reproduced under every reading: no correlation with spatial information) |","| fig7-single-cell-properties | partially reproduced (no correlation with spatial information under either lambda reading) |"),
+            ("| fig7-slope-variant | blocked, depends on fig7 (partially reproduced under every reading) |","| fig7-slope-variant | partially reproduced (two of four correlations match) |"),
+            ("spatial information uses the speed-filtered mean rate of the trial.","spatial information is run under both lambda readings of the criterion.")]:
+    assert a in s, a; s=s.replace(a,b)
+put(nb,20,s)
+save(nb,f)
+EOF
+```
+
+```
+(Bash completed with no output)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; PYTHONPATH=$TMPDIR python - <<'EOF'
+from nbedit import *
+f='04_distance_tuning.ipynb'; nb=load(f)
+rep(nb,6,"12.5 to 12.9%","12.4 to 12.9%")
+rep(nb,12,"-0.346 and -0.345","-0.346 and -0.344")
+rep(nb,15,"135-cell -0.149 and -0.103","135-cell -0.15 and -0.10")
+save(nb,f)
+nb=load('05_subsets.ipynb')
+print(src(nb,3))
+nb=load('06_words.ipynb'); print(src(nb,20)); print(src(nb,21))
+EOF
+```
+
+```
+## fig3d-number-of-cells
+
+> Decoding accuracy increased with the number of cells used.
+
+Reading (a) of the claims file: the 620-cell session, k = 1, 5, 10, 20, 30, 50, 100, 200, 300, 400 and
+500, 100 random subsets each, whole-arena decoder. Reading (b), the four datasets pooled, is run
+only if (a) does not meet the criterion under every speed and rate-map reading.
+## figs7cd-number-of-words
+
+> The number of distinct words did not differ between trial types or across distance bins.
+
+Rank-sum test of NO against O, which the legend runs over "n = 16 sessions": readings (i) the 80
+session-bin values of each trial; (ii) the number of distinct words of each session's whole trial
+(16 against 16).
+rows = []
+for reading in "ab":
+    DN, DO = table(reading, "distinct NO"), table(reading, "distinct O")
+    hN, pN = oc.kruskal(DN.T)
+    hO, pO = oc.kruskal(DO.T)
+    z1, p1 = oc.ranksum(DN.ravel(), DO.ravel())
+[... 6 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; PYTHONPATH=$TMPDIR python - <<'EOF'
+from nbedit import *
+f='06_words.ipynb'; nb=load(f)
+put(nb,20,"""## figs7cd-number-of-words
+
+> The number of distinct words did not differ between trial types or across distance bins.
+
+Rank-sum test of NO against O, which the legend runs over "n = 16 experiments". The criterion now
+names the readings (answered 2026-10-21: the paper does not say): (w-a) the number of distinct words
+of each session's whole trial, 16 against 16; (w-b) the 80 session and distance bin values of each
+trial.""")
+s=src(nb,21)
+s=s.replace('"(i) z": z1, "(i) p": p1, "(ii) z": z2, "(ii) p": p2,','"w-a z": z2, "w-a p": p2, "w-b z": z1, "w-b p": p1,')
+put(nb,21,s)
+put(nb,22,"""**Result: reproduced.** The number of distinct words does not differ across distance bins (NO
+p = 0.91 and 0.90, O p = 0.78) or between NO and O (w-a p = 0.94, w-b p = 0.85), under both subset
+readings.""","**Result:")
+save(nb,f)
+f='05_subsets.ipynb'; nb=load(f)
+rep(nb,0,"Every decoder runs under both speed readings and both rate-map readings.","Every decoder runs under both speed readings, with rate maps built as the claims file now gives\n(answered 2026-10-21: the rate per bin, unvisited bins 0, then smoothed; printed as `rm` b).")
+rep(nb,3,"under every speed and rate-map reading.","under both speed readings.")
+put(nb,5,"""**Result: reproduced.** On the 620-cell session, mean accuracy rises from 0.53 with one cell to 0.74
+and 0.75 with 500 cells. The Pearson correlation of accuracy with the number of cells over the 1,100
+subsets is r = 0.58 and 0.60, p < 1e-97, under both speed readings. Reading (b) is not needed.""","**Result:")
+put(nb,8,"""**Result: blocked (methods underspecified)** (fig6c-subsets-decline). The readings give different
+outcomes. The single-cell curve shows no decline under every reading (signed-rank p = 0.29 and 0.33,
+Kruskal-Wallis p ≥ 0.70). Every size from 100 cells up declines, with both tests p ≤ 0.0012. Small
+subsets are mixed: without the speed filter (b), with the legend's sizes (b) and the signed-rank
+test, every size of that list from 5 cells up gives p < 0.05 with bin 1 higher, so the criterion is
+met. With the speed filter (a), 5 cells give signed-rank p = 0.14, and the criterion is met under no
+size list.""","**Result:")
+put(nb,9,"""**Result: blocked (methods underspecified)** (fig6d-reorganization-grows-with-cells). The
+Kruskal-Wallis tests across sizes give p < 0.05 for the difference under every reading. Without the
+speed filter (b), the slope test also gives p < 0.05, and the largest mean difference and the most
+negative mean slope are both at 500 cells, under every size list, so the criterion is met. With the
+speed filter (a), the slope test gives p = 0.040 to 0.078 and both extremes are at 400 cells, so it
+is not. The speed readings give different outcomes.""","**Result:")
+put(nb,12,"""**Result: reproduced.** In the 14 tetrode sessions pooled and in the 135-cell session, both
+Kruskal-Wallis tests across sizes give p < 1e-15 under both speed readings (H = 528 to 587 tetrode,
+84 to 93 for the 135-cell session). The mean difference rises and the mean slope falls with size.
+In the tetrode sessions the full count (25 to 39 cells) is close to 30 cells (0.18 against 0.20 and
+0.21).""","**Result:")
+save(nb,f)
+EOF
+grep -n "rate-map" 0*.ipynb objcode.py | head -20
+```
+
+```
+01_single_cells.ipynb:832:    "the speed filter follow the opening comment's rate-map method. Range readings of the criterion:\n",
+03_population_decoding.ipynb:1125:    "10 cm rate-map bins. The criterion now names as readings (answered 2026-10-21: the paper does not\n",
+objcode.py:344:        raise ValueError(f"rate-map reading {rm!r}: only b, the paper's method, is defined")
+objcode.py:1294:    bins, circular in direction and with mirrored edges in distance (the rate-map method of the
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; PYTHONPATH=$TMPDIR python - <<'EOF'
+from nbedit import *
+f='05_subsets.ipynb'; nb=load(f)
+rep(nb,12,"(0.18 against 0.20 and\n0.21)","(0.176 and 0.184\nagainst 0.200 and 0.205)")
+save(nb,f)
+EOF
+sed -n 1,75p objcode.py
 ```
 
 ```
@@ -929,1109 +1760,797 @@ Where the parameters come from (claims file claims/ebrains-q0fg-1x8/10.1016-j.ne
   absolute deviation of all bins, at least 225 cm2, rate of at least 1 Hz (Methods).
 - Every rate map (opening comment, "Smoothing and unvisited bins", from the Methods and
   calculateRateMap.m; called rm b there): the rate per bin (spikes over time), 0 in unvisited
-[... 29 more lines not kept]
+[... 55 more lines not kept]
+```
+
+**Agent calls Edit**
+
+```json
+{
+ "replace_all": false,
+ "file_path": "entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py",
+ "old_string": "- `field`: \"a\" a field's peak is at least 1 Hz; \"b\" every bin of a field is at least 1 Hz.\n",
+ "new_string": "- `field`: \"a\" a field's peak is at least 1 Hz; \"b\" every bin of a field is at least 1 Hz.\n- `si` (spatial information, fig7 criterion): lambda \"a\" the trial's speed-filtered spikes over\n  speed-filtered time; \"b\" the occupancy-weighted mean of the smoothed map.\n- Object-vector score (ovs-method-extra-cells criterion): vector-map bins of 2 cm and 10 degrees,\n  smoothing SD 1.5 bins (reference 12, Andersson et al. 2021); range \"r-a\" to the largest distance\n  sampled in either trial, \"r-b\" in both. Which fields decide the exclusion of cells whose fields\n  would leave the arena in OM is not given (asked); the notebook runs \"x-a\" any field, \"x-b\" all.\n"
+}
+```
+
+```
+The file entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py has been updated successfully.
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; for f in 0[2-6]*.ipynb; do echo "== $f"; python - "$f" <<'EOF'
-import json,sys,re
-nb=json.load(open(sys.argv[1]))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    s=''.join(c['source'])
-    for ln in s.split('\n'):
-        if re.search(r'"a"|"ab"|rm a|rm b|\[.a., .a.\]|, "a"\]', ln):
-            print(i, ln[:170])
+cd  sed -n 1,12p questions/ebrains-q0fg-1x8.yaml; tail -5 questions/ebrains-q0fg-1x8.yaml; ls questions | head; grep -l "author-answers\|asked: 2026-10-21" questions/*.yaml | head -3
+```
+
+```
+# Questions from attempt ebrains-q0fg-1x8-nagelhus-2023-01 (author, 2026-10-20) about the claims file
+# claims/ebrains-q0fg-1x8/10.1016-j.neuron.2023.04.008.yaml. Each is asked under docs/protocol.md,
+# Author, step 1.6; the attempt runs every reading it can see and blocks, as methods_underspecified,
+# the claims whose outcome depends on the answer.
+dataset: EBRAINS:Q0FG-1X8
+paper: doi:10.1016/j.neuron.2023.04.008
+questions:
+- claim: fig1c-object-tuned-fraction
+  also: [figs2e-within-trial-stability, fig2-fraction-changed-no-o, fig2d-rate-overlap-no-o-unchanged,
+    figs3f-ca3-changes, fig1d-field-distances, fig1e-object-cells-and-object-vector-cells,
+    fig4b-distance-decline, figs5e-shuffled-labels, figs5l-without-positively-tuned]
+  asked: 2026-10-20
+  answered: 2026-10-21
+  answer: The paper does not say. It gives "l is the mean firing rate in the trial" and Pi as "the
+    occupancy in the i-th bin (time spent in the bin) divided by the total duration of the trial",
+    which allow both the speed-filtered spikes over time and the occupancy-weighted mean of the
+    smoothed map. Both are named as readings in the criterion of fig7-single-cell-properties.
+000005.yaml
+000008.yaml
+000009.yaml
+[... 9 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  cat >> questions/ebrains-q0fg-1x8.yaml <<'EOF'
+- claim: ovs-method-extra-cells
+  asked: 2026-10-21
+  question: Which cells are excluded before the object-vector criteria as having "firing fields that
+    would fall outside of the arena in the Object Moved trial"? The attempt runs (x-a) a cell is
+    excluded when any of its Object-trial fields, moved with the object to its Object Moved position,
+    would have its centroid outside the arena, and (x-b) when all of them would. The criterion also
+    does not say which fields count for criteria 3 and 4 (the field rule of fig1d-field-distances,
+    and which field must lie 15 cm from the object) or which lambda the spatial information uses
+    (the fig7 readings si-a and si-b); these are run as the fig1d and fig7 readings.
+  passage: Methods, Object-vector score and object-vector cell criteria ("Before applying the
+    criteria, we excluded cells with firing fields that would fall outside of the arena in the Object
+    Moved trial (for example, when the object was moved to the south-east corner, when the cell fired
+    at a south-east angle from the object) (28.8% of CA1 cells were excluded)").
+  why: Under x-a 59 to 70% of CA1 cells are excluded and the count is 9 to 15, never within 40 +/- 4;
+    under x-b 19 to 21% are excluded and the count is 34 to 53, within tolerance under 27 of 48
+    readings. The claim is blocked until the exclusion rule is given. Neither reading excludes the
+    paper's 28.8%.
 EOF
-done
+python -c "import yaml;d=yaml.safe_load(open('questions/ebrains-q0fg-1x8.yaml'));print(len(d['questions']))"
 ```
 
 ```
-== 02_single_cell_changes.ipynb
-4             w_ro = {"a": np.minimum(f1, f2) / np.maximum(f1, f2), "b": np.minimum(a1, a2) / np.maximum(a1, a2)}
-4                 b_ro = {"a": np.minimum(g1, g2) / np.maximum(g1, g2), "b": np.minimum(h1, h2) / np.maximum(h1, h2)}
-4                 for r in "ab":
-4 for rm in "ab":
-6 for rm in "ab":
-6     for r in "ab":
-6 C = CLASS["a"]
-6 print("\nBy rat (rm a, rate overlap a): changed/cells")
-6 print("\nMean within-trial and between-trial spatial correlation (rm a), median over cells:",
-9 for rm in "ab":
-9     for r in "ab":
-12 for rm in "ab":
-12     for field in "ab":
-12         for roi in "ab":
-12             for r in "ab":
-12 print("\nPer rm and field, any ROI and rate-overlap reading meeting the criterion:")
-15         rad = np.sqrt(len(idx) * 2.5 ** 2 / np.pi) if roi == "a" else np.hypot(X25[idx] - cx, Y25[idx] - cy).max()
-15 for rm in "ab":
-15     for w in "ab":
-[... 71 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-import json
-for f,ids in (('03_population_decoding.ipynb',[1,4,12,21,60,62,63,64]),('04_distance_tuning.ipynb',[1,3,5,6,17,18,19]),('05_subsets.ipynb',[1,7])):
-    nb=json.load(open(f))
-    for i in ids:
-        c=nb['cells'][i]
-        print(f"==== {f} [{i}] {c['cell_type']} {c['metadata'].get('tags','')}")
-        print(''.join(c['source']))
-EOF
-```
-
-```
-==== 03_population_decoding.ipynb [1] code 
-import time
-import warnings
-
-import matplotlib.pyplot as plt
-import numpy as np
-import pandas as pd
-from scipy import stats
-
-import objcode as oc
-
-warnings.filterwarnings("ignore", category=RuntimeWarning)
-pd.set_option("display.width", 220)
-pd.set_option("display.float_format", "{:.4g}".format)
-pd.set_option("display.max_columns", 40)
-pd.set_option("display.max_rows", 200)
-
-started = time.time()
-RAW_POP = []
-for p in oc.POP_FILES:
-[... 437 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-import json,re
-reps_all=[('for rm in "ab":','for rm in "b":'),('for rmt in "ab":','for rmt in "b":'),
- ('for rm in "ab"]','for rm in "b"]'),
- ('rm a, w b','rm b, w b'),('speed a, rm a','speed a, rm b'),('rm a, rate overlap a','rm b, rate overlap a'),
- ('(rm a)','(rm b)'),('spatial, rm a','spatial, rm b'),('rm="a"','rm="b"')]
-per={'01_single_cells.ipynb':[('oc.single_maps(tt, "a",','oc.single_maps(tt, "b",'),('TUNE["CA1", "a", "b"]','TUNE["CA1", "b", "b"]'),
-   ('DIST["a", "b", "a"]','DIST["b", "b", "a"]'),('S2["a", "NO", "O"]','S2["b", "NO", "O"]'),('Tt.rm == "a"','Tt.rm == "b"'),
-   ('"spikes_far_from_tracking"','"spikes_no_position"'),('far=("spikes_far_from_tracking"','no_pos=("spikes_no_position"')],
- '02_single_cell_changes.ipynb':[('C = CLASS["a"]','C = CLASS["b"]')],
- '03_population_decoding.ipynb':[('MAIN["a", "a"]','MAIN["a", "b"]'),('main decoder run under 4 readings','main decoder run under 2 readings')],
- '04_distance_tuning.ipynb':[('SUM["a", "a"]','SUM["a", "b"]')],
- '05_subsets.ipynb':[]}
-for f,extra in per.items():
-    nb=json.load(open(f))
-    n=0
-    for c in nb['cells']:
-        if c['cell_type']!='code': continue
-        s=''.join(c['source'])
-        s0=s
-        for a,b in reps_all+extra:
-            s=s.replace(a,b)
-        if s!=s0:
-            n+=1
-            c['source']=s.splitlines(True)
-    json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
-    print(f,n)
-EOF
-git diff --stat; for f in 0[1-5]*.ipynb; do python - "$f" <<'EOF'
-import json,sys,re
-nb=json.load(open(sys.argv[1]))
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']!='code': continue
-    s=''.join(c['source'])
-    for ln in s.split('\n'):
-        if re.search(r'rm a\b|"ab"\)? *$', ln) and 'rm' in ln:
-            print(sys.argv[1],i, ln[:170])
-EOF
-done
-```
-
-```
-01_single_cells.ipynb 11
-02_single_cell_changes.ipynb 5
-03_population_decoding.ipynb 5
-04_distance_tuning.ipynb 3
-05_subsets.ipynb 1
- .../01_single_cells.ipynb                          |  38 ++---
- .../02_single_cell_changes.ipynb                   |  16 +-
- .../03_population_decoding.ipynb                   |  18 +--
- .../04_distance_tuning.ipynb                       |   8 +-
- .../05_subsets.ipynb                               |   2 +-
- entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py  | 161 ++++++++++-----------
- 6 files changed, 121 insertions(+), 122 deletions(-)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; git diff 05_subsets.ipynb; git diff 01_single_cells.ipynb | head -30; tail -c 50 05_subsets.ipynb | od -c | tail -3
-```
-
-```
-diff --git a/entries/ebrains-q0fg-1x8-nagelhus-2023/05_subsets.ipynb b/entries/ebrains-q0fg-1x8-nagelhus-2023/05_subsets.ipynb
-index db6a82ef..99f09203 100644
---- a/entries/ebrains-q0fg-1x8-nagelhus-2023/05_subsets.ipynb
-+++ b/entries/ebrains-q0fg-1x8-nagelhus-2023/05_subsets.ipynb
-@@ -56,7 +56,7 @@
-     "POP, replaced = oc.decoding_sessions(RAW_POP, CA1)\n",
-     "del CA1\n",
-     "print(f\"dataset {oc.DATASET_ID} version {oc.DATASET_VERSION}: read in {time.time() - started:.0f} s; tracking from the CA1 file for {replaced}\")\n",
--    "READINGS = [(sp, rm) for sp in \"ab\" for rm in \"ab\"]\n",
-+    "READINGS = [(sp, rm) for sp in \"ab\" for rm in \"b\"]\n",
-     "PARTS = {(k, sp): (oc.half_parts(p.trials[0], sp == \"a\"), oc.half_parts(p.trials[1], sp == \"a\")) for k, p in enumerate(POP) for sp in \"ab\"}\n",
-     "CACHE = {}\n",
-     "\n",
-diff --git a/entries/ebrains-q0fg-1x8-nagelhus-2023/01_single_cells.ipynb b/entries/ebrains-q0fg-1x8-nagelhus-2023/01_single_cells.ipynb
-index 12d4d2af..4a6e839c 100644
---- a/entries/ebrains-q0fg-1x8-nagelhus-2023/01_single_cells.ipynb
-+++ b/entries/ebrains-q0fg-1x8-nagelhus-2023/01_single_cells.ipynb
-@@ -162,7 +162,7 @@
-     "                         \"frac_above_2.5\": np.mean(t.speed > oc.SPEED_MIN),\n",
-     "                         \"obj_x\": t.obj[0] if t.obj else np.nan, \"obj_y\": t.obj[1] if t.obj else np.nan,\n",
-[... 26 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; sed -i 's/    far=(\\"spikes_no_position\\"/    no_pos=(\\"spikes_no_position\\"/' 01_single_cells.ipynb; grep -n 'spikes_no_position' 01_single_cells.ipynb; grep -n "def pv_correlation" -A12 objcode.py; grep -n "def fields" -A26 objcode.py; grep -n "def single_maps" -A5 objcode.py
-```
-
-```
-165:    "                         \"spikes_no_position\": int(sum((si < 0).sum() for si in t.spike_si)),\n",
-175:    "    no_pos=(\"spikes_no_position\", \"sum\"), spikes=(\"spikes\", \"sum\"))\n",
-847:def pv_correlation(mA, mB):
-848-    """Pearson correlation across cells at each spatial bin between two stacks of rate maps (U, B)."""
-849-    a = mA - mA.mean(0)
-850-    b = mB - mB.mean(0)
-851-    num = (a * b).sum(0)
-852-    den = np.sqrt((a ** 2).sum(0) * (b ** 2).sum(0))
-853-    with np.errstate(invalid="ignore", divide="ignore"):
-854-        return np.where(den > 0, num / den, np.nan)
-855-
-856-
-857-# ----------------------------------------------------------------------------------------------
-858-# Words and counts
-859-
-384:def fields(rmap, bin_cm=2.5, field="a"):
-385-    """Firing fields of a blanked map: contiguous bins above 3 x MAD of all bins, at least 225 cm2,
-386-    rate at least 1 Hz (reading a: the field's peak; b: every bin). Returns a list of bin-index arrays."""
-387-    v = rmap[np.isfinite(rmap)]
-388-    if v.size == 0:
-[... 28 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-import json
-f='03_population_decoding.ipynb'
-nb=json.load(open(f))
-c=nb['cells'][21]
-s=''.join(c['source'])
-old_s=s
-s=s.replace('''for sp, rm in READINGS:
-    for reading in "ab":
-        vals = []
-        for s in POP:
-            NO, O = s.trials
-            mA = oc.rate_maps(*oc.raw_maps(NO, oc.sample_mask(NO, sp == "a"), 3.0), rm=rm, blank=False)
-            mB = oc.rate_maps(*oc.raw_maps(O, oc.sample_mask(O, sp == "a"), 3.0), rm=rm, blank=False)
-            r = oc.pv_correlation(mA, mB)''','''for (sp, rm), bl, reading in [(x, b, r) for x in READINGS for b in "ab" for r in "ab"]:
-        vals, n_blank = [], []
-        for s in POP:
-            NO, O = s.trials
-            mA = oc.rate_maps(*oc.raw_maps(NO, oc.sample_mask(NO, sp == "a"), 3.0), rm=rm, blank=bl == "a")
-            mB = oc.rate_maps(*oc.raw_maps(O, oc.sample_mask(O, sp == "a"), 3.0), rm=rm, blank=bl == "a")
-            r = oc.pv_correlation(mA, mB)
-            n_blank.append(int(np.isnan(r).sum()))''')
-s=s.replace('''        PV[sp, rm, reading] = V''','''        PV[sp, rm, bl, reading] = V''')
-s=s.replace('''rows.append({"speed": sp, "rm": rm, "bins": reading,''','''rows.append({"speed": sp, "blanked": bl, "bins": reading, "bins left out (max per session)": max(n_blank),''')
-s=s.replace('''print("Per speed and rm, any bin reading meeting the criterion:")
-print(fig4h.groupby(["speed", "rm"]).reproduced.any().to_string())''','''print("Per speed (pv) and blanking (bl) reading, any bin reading meeting the criterion:")
-print(fig4h.groupby(["speed", "blanked"]).reproduced.any().to_string())''')
-assert s!=old_s
-# fix indentation: body of old nested loop had 8-space indent under 'for reading'; new single loop -> body at 8 spaces? check
-c['source']=s.splitlines(True)
-nb['cells'][21]=c
-json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
-print(s)
-EOF
-```
-
-```
-X3, Y3 = oc.bin_centres(3.0)
-rows = []
-PV = {}
-for (sp, rm), bl, reading in [(x, b, r) for x in READINGS for b in "ab" for r in "ab"]:
-        vals, n_blank = [], []
-        for s in POP:
-            NO, O = s.trials
-            mA = oc.rate_maps(*oc.raw_maps(NO, oc.sample_mask(NO, sp == "a"), 3.0), rm=rm, blank=bl == "a")
-            mB = oc.rate_maps(*oc.raw_maps(O, oc.sample_mask(O, sp == "a"), 3.0), rm=rm, blank=bl == "a")
-            r = oc.pv_correlation(mA, mB)
-            n_blank.append(int(np.isnan(r).sum()))
-            d = np.hypot(X3 - O.obj[0], Y3 - O.obj[1])
-            if reading == "a":
-                g = np.searchsorted([20, 40, 60, 80, 100], d, side="right")
-                g[d >= 100] = -1
-            else:
-                order = np.argsort(d)
-                g = np.empty(len(d), int)
-                g[order] = np.minimum(np.arange(len(d)) // (len(d) // 5), 4)
-            vals.append([np.nanmean(r[g == i]) for i in range(5)])
-[... 14 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-import json
-f='03_population_decoding.ipynb'
-nb=json.load(open(f))
-c=nb['cells'][21]
-lines=''.join(c['source']).split('\n')
-out=[]
-inside=False
-for ln in lines:
-    if ln.startswith('for (sp, rm), bl, reading'):
-        inside=True; out.append(ln); continue
-    if inside and ln.startswith('        '):
-        if ln.startswith('                     ') and not ln.strip().startswith(('"1v2','"steps','"reproduced')):
-            pass
-        out.append(ln[4:]); continue
-    if inside and not ln.startswith('    '): inside=False
-    out.append(ln)
-s='\n'.join(out)
-c['source']=s.splitlines(True)
-json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
-print(s)
-EOF
-grep -n 'PV\[' 03_population_decoding.ipynb
-```
-
-```
-X3, Y3 = oc.bin_centres(3.0)
-rows = []
-PV = {}
-for (sp, rm), bl, reading in [(x, b, r) for x in READINGS for b in "ab" for r in "ab"]:
-    vals, n_blank = [], []
-    for s in POP:
-        NO, O = s.trials
-        mA = oc.rate_maps(*oc.raw_maps(NO, oc.sample_mask(NO, sp == "a"), 3.0), rm=rm, blank=bl == "a")
-        mB = oc.rate_maps(*oc.raw_maps(O, oc.sample_mask(O, sp == "a"), 3.0), rm=rm, blank=bl == "a")
-        r = oc.pv_correlation(mA, mB)
-        n_blank.append(int(np.isnan(r).sum()))
-        d = np.hypot(X3 - O.obj[0], Y3 - O.obj[1])
-        if reading == "a":
-            g = np.searchsorted([20, 40, 60, 80, 100], d, side="right")
-            g[d >= 100] = -1
-        else:
-            order = np.argsort(d)
-            g = np.empty(len(d), int)
-            g[order] = np.minimum(np.arange(len(d)) // (len(d) // 5), 4)
-        vals.append([np.nanmean(r[g == i]) for i in range(5)])
-[... 15 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-import json
-f='03_population_decoding.ipynb'
-nb=json.load(open(f))
-c=nb['cells'][21]
-s=''.join(c['source']).replace('"blanked": bl','"bl": bl').replace('groupby(["speed", "blanked"])','groupby(["speed", "bl"])')
-c['source']=s.splitlines(True)
-json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
-
-p='objcode.py'
-s=open(p).read()
-old='''def spatial_information(rmap, occ, rate):
-    """Skaggs information in bits per spike (Methods, Spatial information content)."""
-    ok = np.isfinite(rmap) & (occ > 0)
-    P = occ[ok] / occ[ok].sum()
-    l = rmap[ok]
-'''
-new='''def spatial_information(rmap, occ, rate, duration=None):
-    """Skaggs information in bits per spike (Methods, Spatial information content). Pi is the time
-    in bin i over the summed time (duration None, lambda reading si-a) or over the trial's duration
-    (si-b; then `rate` is ignored and lambda is sum Pi li, the claims file's fig7 criterion)."""
-    ok = np.isfinite(rmap) & (occ > 0)
-    P = occ[ok] / (occ[ok].sum() if duration is None else duration)
-    l = rmap[ok]
-    if duration is not None:
-        rate = float(np.sum(P * l))
-'''
-assert old in s
-s=s.replace(old,new)
-open(p,'w').write(s)
-
-f='04_distance_tuning.ipynb'
-nb=json.load(open(f))
-c=nb['cells'][17]
-s=''.join(c['source'])
-reps=[('sc, ro_a, ro_b, si_ = {}, {}, {}, {}','sc, ro_a, ro_b, si_a, si_b = {}, {}, {}, {}, {}'),
-('            si_[i, u] = oc.spatial_information(mO[u], occO, oc.mean_rate(O, u, True))',
- '            si_a[i, u] = oc.spatial_information(mO[u], occO, oc.mean_rate(O, u, True))\n            si_b[i, u] = oc.spatial_information(mO[u], occO, None, duration=O.duration)'),
-('PROPS[rm, w] = {"object-tuning score": score, "spatial information": si_, "spatial correlation": sc,',
- 'PROPS[rm, w] = {"object-tuning score": score, "spatial information a": si_a, "spatial information b": si_b, "spatial correlation": sc,'),
-('''        for ro in "ab":
-            for cells in "ab":''','''        for ro, si in [(r, x) for r in "ab" for x in "ab"]:
-            for cells in "ab":'''),
-('rec = {"speed": sp, "rm": rm, "w": w, "rate overlap": ro, "cells": cells,','rec = {"speed": sp, "rm": rm, "w": w, "rate overlap": ro, "si": si, "cells": cells,'),
-('src = P[prop if prop != "rate overlap" else f"rate overlap {ro}"]','src = P[{"rate overlap": f"rate overlap {ro}", "spatial information": f"spatial information {si}"}.get(prop, prop)]'),
-('cols = ["speed", "rm", "w", "rate overlap", "cells", "measure", "n"]','cols = ["speed", "rm", "w", "rate overlap", "si", "cells", "measure", "n"]'),
-('[["speed", "rm", "w", "rate overlap", "cells"] + [c for c','[["speed", "rm", "w", "rate overlap", "si", "cells"] + [c for c'),
-('''print("\\nReadings meeting the criterion, per speed and rm:")
-print(fig7.groupby(["measure", "speed", "rm"])["all within"].any().to_string())''','''print("\\nReadings meeting the criterion, per speed and lambda reading (si):")
-print(fig7.groupby(["measure", "speed", "si"])["all within"].any().to_string())
-print("\\nSpatial information (bits per spike, O trial), median and range over cells:")
-for si in "ab":
-    v = np.array(list(PROPS["b", "a"][f"spatial information {si}"].values()), float)
-    print(f"  si-{si}: median {np.nanmedian(v):.3f}, range {np.nanmin(v):.3f} to {np.nanmax(v):.3f}, no value {int(np.isnan(v).sum())}")'''),
-]
-for a,b in reps:
-    assert a in s, a
-    s=s.replace(a,b)
-c['source']=s.splitlines(True)
-json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
-print(s[:3000])
-EOF
-```
-
-```
-PROPS = {}
-for rm in "b":
-    sc, ro_a, ro_b, si_a, si_b = {}, {}, {}, {}, {}
-    for i, s in enumerate(CA1):
-        NO, O = s.trial("NO"), s.trial("O")
-        mN, _ = oc.single_maps(NO, rm)
-        mO, occO = oc.single_maps(O, rm)
-        for u in range(s.n_units):
-            sc[i, u] = oc.pearson_nan(mN[u], mO[u])
-            ro_a[i, u] = oc.rate_overlap(oc.mean_rate(NO, u, True), oc.mean_rate(O, u, True))
-            ro_b[i, u] = oc.rate_overlap(oc.mean_rate(NO, u, False), oc.mean_rate(O, u, False))
-            si_a[i, u] = oc.spatial_information(mO[u], occO, oc.mean_rate(O, u, True))
-            si_b[i, u] = oc.spatial_information(mO[u], occO, None, duration=O.duration)
-    for w in "ab":
-        score = {(c["session"], c["unit"]): c["single"] for c in oc.object_tuning(CA1, rm, oc.WIDTHS[w], key="CA1")}
-        PROPS[rm, w] = {"object-tuning score": score, "spatial information a": si_a, "spatial information b": si_b, "spatial correlation": sc,
-                        "rate overlap a": ro_a, "rate overlap b": ro_b}
-linked = {(LINK[k][0].index, LINK[k][1][u]) for k, p in enumerate(POP) for u in LINK[k][1]}
-
-EXPECT = {"tuning": {"object-tuning score": 0.12, "spatial information": -0.13, "spatial correlation": -0.08, "rate overlap": -0.18},
-[... 28 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; grep -n "def field_geometry" -A12 objcode.py; grep -n "def object_tuning" -A30 objcode.py; grep -n "def seed_for" -A6 objcode.py
-```
-
-```
-413:def field_geometry(idx, rmap, obj, bin_cm=2.5):
-414-    """Centroid (mean of bin centres), peak bin centre, their distances from the object, and the
-415-    angles of the field's bins seen from the object."""
-416-    X, Y = bin_centres(bin_cm)
-417-    cx, cy = X[idx].mean(), Y[idx].mean()
-418-    p = idx[np.nanargmax(rmap[idx])]
-419-    return {"cx": cx, "cy": cy, "d_centroid": float(np.hypot(cx - obj[0], cy - obj[1])),
-420-            "px": X[p], "py": Y[p], "d_peak": float(np.hypot(X[p] - obj[0], Y[p] - obj[1])),
-421-            "angle": float(np.degrees(np.arctan2(cy - obj[1], cx - obj[0])) % 360)}
-422-
-423-
-424-def orientation_coverage(field_list, obj, bin_cm=2.5, res_deg=1.0):
-425-    """Fraction of 0 to 360 degrees around the object covered by the angular spans of the field bins."""
-1185:def object_tuning(sessions, rm, widths, trials=("O", "OM"), objs=None, key="", masks_OM=None,
-1186-                  zero_OM=None, only=None):
-1187-    """Template matching for every cell of the sessions. objs: fixed object positions for the two
-1188-    trials (control sessions), else the trials' own. masks_OM / zero_OM: optional dict
-1189-    (session index, unit) -> boolean 50 x 50 array of OM bins left out of the correlations or set
-1190-    to zero (trace removal). only: optional set of (session index, unit) to run. Returns one dict
-1191-    per cell."""
-[... 31 more lines not kept]
+9
 ```
 
 **Agent**
 
-Now the object-vector functions in objcode.py.
+Notebook text, helper docstring and the new question are written. Now locking and running the whole entry the way CI does (sequentially, from a clean environment). This takes about an hour.
 
 **Agent calls Bash**
 
 ```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-p='objcode.py'
-s=open(p).read()
-anchor='def roi_rate_overlap_shuffled('
-add='''# ----------------------------------------------------------------------------------------------
-# Object-vector score (claims file, ovs-method-extra-cells: Methods, Object-vector score, and the
-# bins and smoothing of the paper's reference 12, Andersson et al. 2021)
-
-OV_DIST_BIN = 2.0        # cm, reference 12
-OV_ANGLE_BIN = 10.0      # degrees, reference 12, 0 = East
-OV_SIGMA = 1.5           # bins, circular 2D Gaussian, reference 12
-
-
-def shift_values(trial: Trial, n, rng):
-    """Circular shifts (s) between 20 s and the trial's duration less 20 s (Methods, Shuffling of
-    spike data)."""
-    return rng.uniform(20.0, trial.duration - 20.0, n)
-
-
-def shifted_samples(trial: Trial, u, shifts):
-    """The sample index (as Trial._sample_index) of unit u's spikes, each spike train circularly
-    shifted within the trial by each of `shifts`. Returns the shift number and sample index of the
-    spikes that have a position."""
-    s = trial.spikes[u]
-    T = trial.t1 - trial.t0
-    allt = ((s[None, :] - trial.t0 + np.asarray(shifts, float)[:, None]) % T + trial.t0).ravel()
-    k = np.repeat(np.arange(len(shifts)), len(s))
-    j = trial._sample_index(allt)
-    ok = j >= 0
-    return k[ok], j[ok]
-
-
-def spatial_information_shuffled(trial: Trial, u, shifts):
-    """Spatial information (bits per spike) of unit u in the 2.5 cm, speed-filtered, blanked map
-    for each shift (a shift of 0 is the cell itself), under the lambda readings si-a and si-b of
-    spatial_information. Returns two arrays (len(shifts),)."""
-    m = sample_mask(trial, True)
-    bidx = bin_index(trial.x, trial.y, 2.5)
-    B = nbins(2.5) ** 2
-    occ = np.bincount(bidx[m], weights=trial.sdt[m], minlength=B)
-    k, j = shifted_samples(trial, u, shifts)
-    keep = m[j]
-    R = len(shifts)
-    spk = np.bincount(k[keep] * B + bidx[j[keep]], minlength=R * B).reshape(R, B).astype(float)
-    maps = rate_maps_batch(np.broadcast_to(occ, spk.shape), spk, "b")
-    ok = np.isfinite(maps[0]) & (occ > 0)
-    l = np.where(ok[None], np.nan_to_num(maps), 0.0)
-    out = []
-    for P, rate in ((occ / occ.sum(), spk.sum(1) / occ.sum()), (occ / trial.duration, None)):
-        if rate is None:
-            rate = (P[None] * l).sum(1)
-        with np.errstate(divide="ignore", invalid="ignore"):
-            terms = np.where(l > 0, P[None] * l * np.log2(l / rate[:, None]), 0.0)
-            out.append(np.where(rate > 0, terms.sum(1) / rate, np.nan))
-    return out
-
-
-def max_object_distance(trial: Trial, obj):
-    """Largest distance from the object sampled in the speed-filtered epochs."""
-    m = sample_mask(trial, True)
-    return float(np.hypot(trial.x[m] - obj[0], trial.y[m] - obj[1]).max())
-
-
-def vector_maps(trial: Trial, u, shifts, obj, dmax):
-    """Vector maps of unit u (rate as a function of distance and direction from the object) for
-    each shift: speed-filtered samples up to dmax, distance bins of 2 cm from 0, direction bins of
-    10 degrees from East, the rate per bin (unvisited bins 0) smoothed with a Gaussian of SD 1.5
-    bins, circular in direction and with mirrored edges in distance (the rate-map method of the
-    opening comment), unvisited bins blanked. Returns (len(shifts), nd * 36)."""
-    m = sample_mask(trial, True)
-    dx, dy = trial.x - obj[0], trial.y - obj[1]
-    d = np.hypot(dx, dy)
-    a = np.degrees(np.arctan2(dy, dx)) % 360
-    nd = int(np.ceil(dmax / OV_DIST_BIN))
-    na = int(round(360 / OV_ANGLE_BIN))
-    m &= d <= dmax
-    vb = np.minimum((d // OV_DIST_BIN).astype(int), nd - 1) * na + (a // OV_ANGLE_BIN).astype(int) % na
-    B = nd * na
-    occ = np.bincount(vb[m], weights=trial.sdt[m], minlength=B)
-    k, j = shifted_samples(trial, u, shifts)
-    keep = m[j]
-    R = len(shifts)
-    spk = np.bincount(k[keep] * B + vb[j[keep]], minlength=R * B).reshape(R, nd, na).astype(float)
-    O = occ.reshape(nd, na)
-    visited = O > 0
-    with np.errstate(divide="ignore", invalid="ignore"):
-        raw = np.where(visited[None], spk / np.where(visited, O, 1.0)[None], 0.0)
-    sm = ndimage.gaussian_filter(raw, (0, OV_SIGMA, OV_SIGMA), mode=("reflect", "reflect", "wrap"), truncate=4.0)
-    return np.where(visited[None], sm, np.nan).reshape(R, B)
-
-
-'''
-assert anchor in s
-s=s.replace(anchor, add+anchor,1)
-open(p,'w').write(s)
-EOF
+cd  python tools/entry.py lock entries/ebrains-q0fg-1x8-nagelhus-2023 && git status --short && python tools/entry.py all entries/ebrains-q0fg-1x8-nagelhus-2023 2>&1 | tail -30
 ```
 
 ```
-(Bash completed with no output)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; cat > $TMPDIR/t1.py <<'EOF'
-import time, numpy as np, pickle
-import objcode as oc
-t0=time.time()
-CA1,_=oc.load(oc.SINGLE_FILES["CA1"])
-print("load", time.time()-t0)
-s=CA1[5]; tr=s.trial("O"); tm=s.trial("OM")
-print(tr.dt, tr.sdt[:5], tr.sdt.sum(), tr.duration, len(tr.t), tr.n_nan)
-print("no pos spikes", sum((x<0).sum() for x in tr.spike_si), sum(len(x) for x in tr.spikes))
-m,occ=oc.single_maps(tr,"b"); print(np.nanmin(m), np.nanmax(m), np.isnan(m[0]).sum())
-rng=np.random.default_rng(0)
-t1=time.time()
-for u in range(min(10,s.n_units)):
-    sh=np.r_[0, oc.shift_values(tr,1000,rng)]
-    a,b=oc.spatial_information_shuffled(tr,u,sh)
-    sa=oc.spatial_information(m[u],occ,oc.mean_rate(tr,u,True)); sb=oc.spatial_information(m[u],occ,None,duration=tr.duration)
-    dmax=max(oc.max_object_distance(tr,tr.obj),oc.max_object_distance(tm,tm.obj))
-    shO=np.r_[0,oc.shift_values(tr,500,rng)]; shM=np.r_[0,oc.shift_values(tm,500,rng)]
-    VO=oc.vector_maps(tr,u,shO,tr.obj,dmax); VM=oc.vector_maps(tm,u,shM,tm.obj,dmax)
-    r=oc.pearson_rows(VO,VM)
-    print(u, round(a[0],3), round(sa,3), round(b[0],3), round(sb,3), np.percentile(a[1:],99).round(3), "ov", r[0].round(3), np.percentile(r[1:],99).round(3), VO.shape)
-print("per cell", (time.time()-t1)/10)
-pickle.dump(CA1[:6], open('/tmp/claude/ca1_small.pkl','wb')) if False else None
-EOF
-$TMPDIR/venv/bin/python $TMPDIR/t1.py
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/t1.py", line 2, in <module>
-    import objcode as oc
-ModuleNotFoundError: No module named 'objcode'
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/t1.py
-```
-
-```
-load 14.399784088134766
-0.03997000000026674 [0.04044  0.039911 0.03955  0.039459 0.040397] 959.765748 959.7257779999998 23994 0
-no pos spikes 0 7151
-0.0 27.204888604065555 1208
-0 3.149 3.149 3.805 3.805 1.365 ov -0.001 0.358 (501, 2628)
-1 1.902 1.902 2.769 2.769 0.782 ov -0.077 0.475 (501, 2628)
-2 1.84 1.84 3.536 3.536 1.918 ov 0.254 0.379 (501, 2628)
-3 1.344 1.344 2.854 2.854 1.762 ov 0.474 0.486 (501, 2628)
-4 0.763 0.763 1.536 1.536 0.505 ov 0.511 0.42 (501, 2628)
-5 1.513 1.513 2.14 2.14 1.004 ov 0.438 0.49 (501, 2628)
-6 1.574 1.574 2.021 2.021 1.259 ov -0.124 0.409 (501, 2628)
-7 1.721 1.721 1.994 1.994 0.534 ov 0.091 0.433 (501, 2628)
-8 1.379 1.379 2.39 2.39 0.75 ov -0.154 0.411 (501, 2628)
-9 1.582 1.582 2.354 2.354 0.839 ov -0.138 0.393 (501, 2628)
-per cell 0.3864840745925903
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-import json
-f='01_single_cells.ipynb'
-nb=json.load(open(f))
-def md(src): return {"cell_type":"markdown","metadata":{},"source":src.splitlines(True)}
-def code(src,tags): return {"cell_type":"code","execution_count":None,"metadata":{"tags":tags},"outputs":[],"source":src.splitlines(True)}
-intro='''## ovs-method-extra-cells
-
-> The object-vector score method of earlier studies classified 40 cells (3.4%) that the template
-> matching did not, mostly false positives on inspection.
-
-The Methods' four criteria (Object-vector score and object-vector cell criteria), with the vector
-map of the paper's reference 12 as the criterion now gives it (answer of 2026-10-21): distance bins
-of 2 cm, direction bins of 10° from East, the rate per bin smoothed with a Gaussian of SD 1.5 bins,
-circular in direction. The rate per bin, its unvisited bins (0 before smoothing, blanked after) and
-the speed filter follow the opening comment's rate-map method. Range readings of the criterion:
-(r-a) 0 to the largest distance sampled in either trial, the correlation over bins with a value in
-both maps; (r-b) 0 to the largest distance sampled in both trials. Shuffles as the Methods' Shuffling
-of spike data: each trial's spike train circularly shifted by 20 s to its duration less 20 s, 500
-times for the object-vector score (O and OM shifted independently) and 1,000 times per trial for
-spatial information; 99th percentiles.
-
-Details the criterion does not fix, run as readings here and asked in the questions file: which
-fields count for the exclusion of cells whose fields "would fall outside of the arena" in OM (x-a, a
-cell is excluded when the centroid of any of its O fields, moved with the object to the OM object
-position, lies outside the arena; x-b, when that holds for all of them); the lambda of spatial
-information (si-a, si-b, as the fig7 criterion names them); the field rate rule (`field` a, b) and
-which field must be 15 cm from the object (distance readings a, b, c of fig1d). The count is of
-cells meeting the four criteria and not object-tuned by template matching under each width reading
-`w`. Shuffles are run for the cells that have a field in both trials under some field reading, as
-the other cells fail criterion 3 under every reading.
-'''
-c1='''t0 = time.time()
-X25, Y25 = oc.bin_centres(2.5)
-
-
-def outside_after_move(F, si, u, objO, objM):
-    """For each O field of the cell: whether its centroid, moved with the object to OM, leaves the arena."""
-    fl, m, _ = F[si, u, "O"]
-    out = []
-    for idx in fl:
-        cx = X25[idx].mean() + objM[0] - objO[0]
-        cy = Y25[idx].mean() + objM[1] - objO[1]
-        out.append(not (0 <= cx <= 150 and 0 <= cy <= 150))
-    return out
-
-
-cand = set()
-for field in "ab":
-    F = FIELDS["b", field]
-    for si, s in enumerate(CA1):
-        for u in range(s.n_units):
-            if F[si, u, "O"][0] and F[si, u, "OM"][0]:
-                cand.add((si, u))
-OVS = {}
-for si, s in enumerate(CA1):
-    tO, tM = s.trial("O"), s.trial("OM")
-    mO, mM = oc.max_object_distance(tO, tO.obj), oc.max_object_distance(tM, tM.obj)
-    ranges = {"r-a": max(mO, mM), "r-b": min(mO, mM)}
-    for u in range(s.n_units):
-        if (si, u) not in cand:
-            continue
-        rng = np.random.default_rng(oc.seed_for("ovs-method-extra-cells", si, u))
-        siO = oc.spatial_information_shuffled(tO, u, np.r_[0.0, oc.shift_values(tO, 1000, rng)])
-        siM = oc.spatial_information_shuffled(tM, u, np.r_[0.0, oc.shift_values(tM, 1000, rng)])
-        shO = np.r_[0.0, oc.shift_values(tO, 500, rng)]
-        shM = np.r_[0.0, oc.shift_values(tM, 500, rng)]
-        rec = {}
-        for k, (a, b) in enumerate(((siO[0], siM[0]), (siO[1], siM[1]))):
-            lam = "ab"[k]
-            rec[f"si-{lam}"] = bool(a[0] > np.nanpercentile(a[1:], 99) and b[0] > np.nanpercentile(b[1:], 99))
-        for rr, dmax in ranges.items():
-            r = oc.pearson_rows(oc.vector_maps(tO, u, shO, tO.obj, dmax), oc.vector_maps(tM, u, shM, tM.obj, dmax))
-            rec[f"ovs {rr}"] = float(r[0])
-            rec[f"thr {rr}"] = float(np.nanpercentile(r[1:], 99))
-        OVS[si, u] = rec
-print(f"Cells with a field in O and OM under some field reading: {len(cand)} of {n_ca1}; shuffles in {time.time() - t0:.0f} s")
-ov = pd.DataFrame.from_dict(OVS, orient="index")
-for rr in ("r-a", "r-b"):
-    print(f"{rr}: object-vector score median {ov[f'ovs {rr}'].median():.3f} (range {ov[f'ovs {rr}'].min():.2f} to "
-          f"{ov[f'ovs {rr}'].max():.2f}), 99th percentile of shuffles median {ov[f'thr {rr}'].median():.3f}; "
-          f"above it {int((ov[f'ovs {rr}'] > ov[f'thr {rr}']).sum())} cells")
-print("Spatial information above the 99th percentile in both trials:", {k: int(ov[k].sum()) for k in ("si-a", "si-b")})
-'''
-c2='''rows = []
-excl_rows = []
-for field in "ab":
-    F = FIELDS["b", field]
-    for xr in ("x-a", "x-b"):
-        excluded = set()
-        for si, s in enumerate(CA1):
-            objO, objM = s.trial("O").obj, s.trial("OM").obj
-            for u in range(s.n_units):
-                out = outside_after_move(F, si, u, objO, objM)
-                if out and (any(out) if xr == "x-a" else all(out)):
-                    excluded.add((si, u))
-        excl_rows.append({"field": field, "exclusion": xr, "excluded": len(excluded), "fraction": len(excluded) / n_ca1})
-        for w in "ab":
-            tuned = {(c["session"], c["unit"]) for c in TUNE["CA1", "b", w] if c["tuned"]}
-            D = {cu: distances(F, *cu) for cu in OVS}
-            for rr in ("r-a", "r-b"):
-                for lam in ("si-a", "si-b"):
-                    for rd in "abc":
-                        ovc = [cu for cu, rec in OVS.items()
-                               if cu not in excluded and rec[lam] and rec[f"ovs {rr}"] > rec[f"thr {rr}"]
-                               and F[cu[0], cu[1], "O"][0] and F[cu[0], cu[1], "OM"][0]
-                               and rd in D[cu] and D[cu][rd][0] >= 15]
-                        extra = [cu for cu in ovc if cu not in tuned]
-                        rows.append({"field": field, "exclusion": xr, "w": w, "range": rr, "lambda": lam, "distance": rd,
-                                     "OVC by the method": len(ovc), "of them tuned": len(ovc) - len(extra),
-                                     "not tuned": len(extra), "fraction": len(extra) / n_ca1,
-                                     "within 40+/-4": abs(len(extra) - 40) <= 4})
-print("Cells excluded before the criteria (paper: 28.8% of CA1 cells):")
-print(pd.DataFrame(excl_rows).to_string(index=False))
-ovs = pd.DataFrame(rows)
-print(ovs.to_string(index=False))
-print("\\nReadings with the count within 40 +/- 4:", int(ovs["within 40+/-4"].sum()), "of", len(ovs))
-print("Per range reading, readings within tolerance:", ovs.groupby("range")["within 40+/-4"].agg(["sum", "size"]).to_dict("index"))
-print("Count not tuned, range over readings:", int(ovs["not tuned"].min()), "to", int(ovs["not tuned"].max()))
-print(ovs.groupby(["range", "w"])["not tuned"].agg(["min", "max"]).to_string())
-'''
-# insert after fig1e result cell (index 32)
-idx=None
-for i,c in enumerate(nb['cells']):
-    if c['cell_type']=='markdown' and ''.join(c['source']).startswith('## fig1f-orientation-coverage'):
-        idx=i
-new=[md(intro),code(c1,["claim:ovs-method-extra-cells"]),code(c2,["claim:ovs-method-extra-cells"]),md("**Result: PLACEHOLDER.**\n")]
-nb['cells'][idx:idx]=new
-json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
-print(idx)
-EOF
-```
-
-```
-33
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; $TMPDIR/venv/bin/python -m ipykernel install --prefix $TMPDIR/venv --name tmpq0fg >/dev/null 2>&1; mkdir -p $TMPDIR/exec; for f in 01 02 03 04 05 06; do nb=$(ls ${f}_*.ipynb); (JUPYTER_PATH=$TMPDIR/venv/share/jupyter $TMPDIR/venv/bin/python -m jupyter nbconvert --to notebook --execute --ExecutePreprocessor.timeout=7200 --ExecutePreprocessor.kernel_name=tmpq0fg --output-dir $TMPDIR/exec --output $nb $nb > $TMPDIR/exec/$f.log 2>&1; echo "$nb done $?" >> $TMPDIR/exec/status) & done; wait; cat $TMPDIR/exec/status
-```
-
-```
-06_words.ipynb done 0
-03_population_decoding.ipynb done 0
-05_subsets.ipynb done 0
-04_distance_tuning.ipynb done 0
-02_single_cell_changes.ipynb done 0
-01_single_cells.ipynb done 0
+wrote entries/ebrains-q0fg-1x8-nagelhus-2023/requirements.lock.txt
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/01_single_cells.ipynb
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/02_single_cell_changes.ipynb
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/03_population_decoding.ipynb
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/04_distance_tuning.ipynb
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/05_subsets.ipynb
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/06_words.ipynb
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py
+ M questions/ebrains-q0fg-1x8.yaml
+?? .bash_profile
+?? .bashrc
+?? .gitconfig
+?? .idea
+?? .mcp.json
+?? .profile
+?? .ripgreprc
+?? .vscode
+?? .zprofile
+?? .zshrc
+?? scripts
+[... 10 more lines not kept]
 ```
 
 **Agent**
 
-All six notebooks ran without errors under the paper's rate-map method. Now reading the new numbers, starting with notebook 01.
+All six notebooks pass, 706 s at most (notebook 01), well under the 30-minute limit. Now checking the executed outputs against the run my conclusions were written from:
 
 **Agent calls Bash**
 
 ```bash
-cat > $TMPDIR/show.py <<'EOF'
-import json,sys
-nb=json.load(open(sys.argv[1]))
-sel=set(int(x) for x in sys.argv[2].split(',')) if len(sys.argv)>2 else None
+cd  for n in 01_single_cells 02_single_cell_changes 03_population_decoding 04_distance_tuning 05_subsets 06_words; do python $TMPDIR/show.py executed/ebrains-q0fg-1x8-nagelhus-2023/$n.ipynb | grep -v "^(.* s)\|in [0-9]* s\|Total time\|so far\|read in\|shuffles in\|total [0-9]* s\|^([0-9]* s)" > $TMPDIR/new_$n.txt; python $TMPDIR/show.py $TMPDIR/exec/$n.ipynb | grep -v "^(.* s)\|in [0-9]* s\|Total time\|so far\|read in\|shuffles in\|total [0-9]* s\|^([0-9]* s)" > $TMPDIR/old_$n.txt; echo "== $n"; diff $TMPDIR/old_$n.txt $TMPDIR/new_$n.txt | head -40; done
+```
+
+```
+== 01_single_cells
+264a265,270
+> Control counts against the paper's chance level (11 of 219, 0.0503), two-sided binomial test:
+>   w a, CON2-CON3: 26 of 219, p = 6.14e-05
+>   w a, CON1-CON2: 37 of 219, p = 1.15e-10
+>   w b, CON2-CON3: 9 of 219, p = 0.643
+>   w b, CON1-CON2: 16 of 219, p = 0.122
+> 
+== 02_single_cell_changes
+== 03_population_decoding
+27c27
+< main decoder run under 2 readings (51 s)
+---
+> main decoder run under 2 readings (28 s)
+97d96
+< 
+191d189
+< 
+== 04_distance_tuning
+== 05_subsets
+[... 13 more lines not kept]
+```
+
+**Agent**
+
+The numbers are identical; the only differences are the binomial check I added and the renamed figs7cd columns. Now the attempt record:
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml",
+ "offset": 40,
+ "limit": 300
+}
+```
+
+```
+40	  notebook: 01_single_cells.ipynb
+41	  output: claim:fig1c-object-tuned-fraction
+42	  notes: The rate-map readings give different outcomes. Under rm a with the Methods' variances (w b), 224 of 1189
+43	    CA1 cells (0.188) are object-tuned against 11 of 219 controls (0.0502) under both control readings, binomial
+44	    p = 7.3e-65, so every part of the criterion is met. Under rm b no reading meets it. With w b the CA1 fraction
+45	    is 0.183, but the chance level is 0.0365 (CON2-CON3) or 0.0822 (CON1-CON2). With the code's SDs (w a) 0.266
+46	    to 0.275 of CA1 cells and 0.110 to 0.169 of controls are tuned under either rm. In every reading the CA1 fraction
+47	    exceeds the control level (p at most 6.5e-20).
+48	  deviations:
+49	  - The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike
+50	    and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.
+51	  - The template is an isotropic Gaussian at bin centres correlated with all 2500 bins, the claims file's reading.
+52	- claim: fig1d-field-distances
+53	  outcome: blocked
+54	  blocked_by: methods_underspecified
+55	  notebook: 01_single_cells.ipynb
+56	  output: claim:fig1d-field-distances
+57	  notes: Depends on fig1c-object-tuned-fraction, which is blocked as methods_underspecified, so it is blocked for
+58	    the same reason (protocol, Author 1.5). Under every reading, the fields of tuned cells cover all eight 45 degree
+59	    sectors and the smallest distances are 2.2 to 7.6 cm. The mean is within 37.7 +/- 3.77 cm under several readings
+[... 280 more lines not kept]
+```
+
+**Agent calls Read**
+
+```json
+{
+ "file_path": "attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml",
+ "offset": 339,
+ "limit": 290
+}
+```
+
+```
+339	- claim: figs5e-shuffled-labels
+340	  outcome: blocked
+341	  blocked_by: methods_underspecified
+342	  notebook: 03_population_decoding.ipynb
+343	  output: claim:figs5e-shuffled-labels
+344	  notes: With labels shuffled 50 times per session the mean accuracy is within 0.49 to 0.51 in every bin under every
+345	    reading (0.498 to 0.503). The t tests against 0.5 give different outcomes by reading. The smallest p is 0.052
+346	    (speed a, rm a) and 0.22 (speed b, rm a), where the criterion holds, and 0.022 (speed a, rm b) and 0.0054 (speed
+347	    b, rm b), where it fails.
+348	- claim: figs5f-random-partition
+349	  outcome: reproduced
+350	  notebook: 03_population_decoding.ipynb
+351	  output: claim:figs5f-random-partition
+352	  notes: With 1 s bins partitioned at random (reading a) the Kruskal-Wallis test gives H = 26.0 to 30.4, p at most
+353	    3.2e-5, with accuracy highest in bin 1 (0.84 to 0.85) and lowest in bin 5 (0.71 to 0.73) under every reading.
+354	    Reading (b) was not run, as the claims file does not say how testing samples would be formed (asked) and (a)
+355	    meets the criterion.
+356	- claim: figs5ghi-fields-and-rates
+357	  outcome: not_reproduced
+358	  notebook: 03_population_decoding.ipynb
+[... 262 more lines not kept]
+```
+
+**Agent**
+
+The executed outputs match. I'll rewrite the attempt record's outcomes through a script. First, a check that loading and dumping the YAML leaves unchanged parts byte-identical:
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import yaml
+p='attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml'
+t=open(p).read()
+d=yaml.safe_load(t)
+for w in (110,112,115,120):
+    out=yaml.safe_dump(d,sort_keys=False,width=w,allow_unicode=True)
+    print(w, out==t)
+EOF
+```
+
+```
+110 True
+112 False
+115 False
+120 False
+```
+
+**Agent**
+
+Width 110 reproduces the file exactly. Writing the outcome updates:
+
+**Agent calls Bash**
+
+```bash
+cd  cat > $TMPDIR/upd.py <<'EOF'
+import yaml
+p='attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml'
+d=yaml.safe_load(open(p))
+O={o['claim']:o for o in d['outcomes']}
+OLD_RM=("The claims file does not say how unvisited bins enter the smoothing of a rate map; two readings (rm a, spike "
+        "and time maps smoothed separately then divided; rm b, rate per bin then smoothed) are run and asked.")
+for o in d['outcomes']:
+    if 'deviations' in o:
+        o['deviations']=[x for x in o['deviations'] if x!=OLD_RM]
+        if not o['deviations']: del o['deviations']
+SC_DEV=("The single-cell rate maps use the method of calculateRateMap.m that the claims file now gives; the paper's "
+        "code for those maps is not given.")
+RM=("The answer of 2026-10-21 on rate maps (the rate per bin, unvisited bins 0, then smoothed, as calculateRateMap.m "
+    "does) leaves one map reading in place of two.")
+def setc(cid, outcome, notes, measured=None, blocked_by=None, deviations=None, add_dev=None, output=None):
+    o=O[cid]
+    new={'claim':cid,'outcome':outcome}
+    if blocked_by: new['blocked_by']=blocked_by
+    new['notebook']=o['notebook']; new['output']=output or o['output']
+    if measured is not None: new['measured']=measured
+    new['notes']=' '.join(notes.split())
+    dev=deviations if deviations is not None else o.get('deviations',[])
+    if add_dev: dev=list(dev)+[x for x in add_dev if x not in dev]
+    if dev: new['deviations']=dev
+    for k in ('proposed',):
+        if k in o: new[k]=o[k]
+    o.clear(); o.update(new)
+
+setc('fig1c-object-tuned-fraction','partially_reproduced',f"""{RM} Before, the outcome was blocked because the two map
+readings disagreed; now no reading meets the whole criterion. With the Methods' variances (w b) 222 of 1189 CA1 cells
+(0.1867) are object-tuned, within 0.199 +/- 0.0199, and far above the controls (binomial p = 6.2e-79 for CON2-CON3,
+2.0e-37 for CON1-CON2). The control level is 9 of 219 (0.0411, CON2-CON3) or 16 of 219 (0.0731, CON1-CON2), outside
+0.0503 +/- 0.00503. The 9 of 219 does not differ from the paper's 11 of 219 by a binomial test (p = 0.64), so the
+procedure's chance level agrees with the paper's within sampling error and the outcome is not blocked on that
+ground. With the code's SDs (w a) 331 cells (0.278) and 26 or 37 controls (0.119, 0.169) are tuned, both outside.
+The measured values are those of w b, CON2-CON3.""", measured=[0.1867,0.0411], add_dev=[SC_DEV])
+setc('fig1d-field-distances','partially_reproduced',f"""{RM} The field answer (the paper does not say where the 1 Hz
+rule applies) allows both field readings, which give the same outcome. fig1c-object-tuned-fraction is now tested, so
+this claim is no longer blocked by it. Under every reading the fields of tuned cells cover all eight 45 degree sectors
+(10 to 24 cells in the sector with fewest), and the mean distance is within 37.7 +/- 3.77 cm under 8 of 12 readings
+(29.8 to 40.8 cm over all). The largest distance is 104.2 to 125.3 cm under every reading, beyond the widened bound of
+88.8 cm, and the smallest is 3.3 to 9.4 cm, so no reading meets the whole criterion. The measured values are those of
+w a, field a, distance b (mean 34.4 cm, within tolerance).""", measured=[34.43,3.68,106.1],
+deviations=['Both field readings are run, as the criterion now allows.', SC_DEV])
+setc('fig1e-object-cells-and-object-vector-cells','partially_reproduced',f"""{RM} Both field readings are allowed by
+the field answer. fig1c-object-tuned-fraction is now tested. No reading puts all three values within tolerance. Under
+w a, field a, distance a, 45 object cells (0.038) and 30 tuned cells without a field are within tolerance, but 256
+object-vector cells (0.215) are far above 0.133 +/- 0.0133. Under w b the object-vector fraction is within tolerance
+under three readings (0.121 to 0.144), with 0.022 to 0.032 object cells. Over all readings the object-cell fraction is
+0.019 to 0.038, the object-vector fraction 0.119 to 0.251, and the cells without a field 2 to 72. Before, under rm a,
+w b, field a, distance a, the two fractions were both within tolerance.""", measured=[0.0379,0.2153,30],
+deviations=['Both field readings are run, as the criterion now allows.', SC_DEV])
+setc('fig1f-orientation-coverage','reproduced',f"""{RM} fig1c-object-tuned-fraction is now tested, so this claim is no
+longer blocked by it. Under every w and field reading at least one distance reading gives a negative Pearson
+correlation of orientation coverage with field distance at p < 0.05. With distance reading a, r = -0.52 to -0.73,
+p below 1e-12. One combination (w b, field b, distance c) gives r = -0.10, p = 0.19.""",
+add_dev=[SC_DEV])
+setc('figs2e-within-trial-stability','reproduced',f"""{RM} Before, r was within tolerance under one of four readings
+(0.46 under rm b with w b, as the earlier rm b left unvisited bins out of the kernel) and 0.35 to 0.38 under the
+others, so the outcome was blocked. Now within-trial stability of the O trial correlates with the object-tuning score
+with r = 0.409 (w a, 330 of 331 tuned cells) and 0.424 (w b, 221 of 222), both within 0.45 +/- 0.045, p below 1e-10.
+fig1c-object-tuned-fraction is now tested.""", measured=0.4091, deviations=[SC_DEV])
+setc('figs3a-ca3-object-tuned','not_reproduced',f"""{RM} The outcome is unchanged. Over the 341 CA3 cells of the file,
+0.191 are object-tuned with the Methods' variances (w b) and 0.326 with the code's SDs (w a); both are outside 0.23
++/- 0.023. The file holds 341 cells from 4 rats (221 Neuropixels), against the paper's 313; tetrode cells alone give
+0.083 (w b) and 0.283 (w a). Which 313 cells the paper used cannot be told.""", measured=0.3255,
+deviations=['Run on the 341 CA3 cells of the file, not the paper\'s 313.', SC_DEV])
+setc('fig2d-spatial-change-no-o','reproduced',f"""{RM} The outcome is unchanged. NO-O spatial correlations (median
+0.454) are lower than CON1-CON2 correlations (0.795), z = -12.1, p = 6.2e-34. The NO-O median is below the control
+median in all 9 rats (0.36 to 0.79).""", deviations=[SC_DEV])
+setc('fig2d-rate-overlap-no-o-unchanged','blocked',f"""{RM} The rate-overlap readings, which the answers do not
+address, still give different outcomes of the paper's test. With speed-filtered rates (a) NO-O overlaps are lower than
+CON1-CON2 overlaps, median 0.684 against 0.737, z = -2.48, p = 0.013. With whole-trial rates (b), 0.718 against 0.748,
+z = -1.18, p = 0.24.""", blocked_by='methods_underspecified')
+setc('fig2-fraction-changed-no-o','reproduced',f"""{RM} Before, one of the four map and rate-overlap readings (rm a,
+whole-trial rates, 894 cells, 0.752) was outside tolerance, so the outcome was blocked. Now 789 (0.664, rate overlap a)
+and 793 (0.667, rate overlap b) of 1189 cells change between NO and O, both within 0.675 +/- 0.0675. The fraction
+differs between rats (0.35 in 25371 to 0.77 in 25450).""", measured=0.6636, add_dev=[SC_DEV])
+setc('fig2d-o-om-change','reproduced',f"""{RM} The outcome is unchanged. Under both rate-overlap readings O-OM spatial
+correlations (median 0.488 against 0.847) and rate overlaps (0.698 and 0.731 against 0.781 and 0.789) are lower than
+CON2-CON3 values, rank-sum p at most 0.00037, and 778 and 814 cells (0.654 and 0.685) change between O and OM, within
+0.697 +/- 0.0697.""", measured=0.6543, deviations=[SC_DEV])
+setc('fig2d-om-no-prime-change','reproduced',f"""{RM} The outcome is unchanged. OM-NO' spatial correlations (median
+0.588) are lower than CON3-CON4 correlations (0.838), z = -12.7, p = 3.5e-37, and the rate-overlap test gives p = 1.00
+(a) and 0.75 (b), over the 1090 cells with a No Object' trial. The part on retained fields is tested by
+figs4-object-traces.""", deviations=[SC_DEV])
+setc('fig2d-no-no-prime-change','reproduced',f"""{RM} The outcome is unchanged. NO-NO' spatial correlations (median
+0.317) are lower than CON1-CON4 correlations (0.698), z = -11.3, p = 8.6e-30. The paper's identical statistics for this
+pair and OM-NO' are not reproduced; the two tests give different z here.""", deviations=[SC_DEV])
+setc('figs3f-ca3-changes','blocked',f"""{RM} The rate-overlap readings, which the answers do not address, still give
+different outcomes. All four spatial-correlation tests give p at most 1.6e-6. With whole-trial rates (b) no rate-overlap
+test is significant (p = 0.066 to 0.46), so the claim is reproduced; with speed-filtered rates (a) the OM-NO' test gives
+p = 0.0081, so it is partially reproduced. The file holds 341 CA3 cells, not 313; with the 120 tetrode cells the NO-O
+and O-OM spatial tests are significant (p = 0.023 and 0.0059) and the other two are not.""",
+blocked_by='methods_underspecified', deviations=['341 CA3 cells, not the paper\'s 313.', SC_DEV])
+setc('figs4-object-traces','partially_reproduced',f"""{RM} Both field readings are allowed by the field answer. The
+outcome is unchanged. 908 and 916 cells change between NO and NO', within 919 +/- 91.9. Under every field, ROI and
+rate-overlap reading 72 to 117 cells (0.061 to 0.098 of 1189) have an object-trace field, far above the 1% chance level
+(binomial p below 1e-32) but fewer than 0.183 +/- 0.0183. The measured values are those of field a, ROI a, rate overlap
+a.""", measured=[0.074,908], deviations=['The ROI is the claims file\'s two readings, as the Methods refer to a section the paper does not contain.', SC_DEV])
+setc('figs2d-traces-no-interference','blocked',f"""{RM} fig1c-object-tuned-fraction is now tested, but the
+template-width readings of the claims file still give different outcomes of the paper's test. With the Methods'
+variances (w b) the count after removal is 226 to 240 (0.190 to 0.202), binomial p = 0.47 to 1 against 0.199, so the
+claim holds; with the code's SDs (w a) it is 340 to 355 (0.286 to 0.299), p below 1e-12, a level that reading reaches
+before removal too (331).""", blocked_by='methods_underspecified', deviations=[SC_DEV])
+setc('ovs-method-extra-cells','blocked',"""The answer of 2026-10-21 gives the vector map's bins and smoothing (reference
+12, 2 cm and 10 degree bins, Gaussian SD 1.5 bins, circular in direction) and two readings of its range of distances,
+so the claim is now run; before, it was not run. fig1c-object-tuned-fraction is now tested. The count now depends on a
+detail the criterion does not give, which fields decide the exclusion of cells whose fields would fall outside the
+arena in OM, asked in the questions file. Excluding a cell when any O field, moved with the object, would leave the
+arena (x-a) excludes 0.59 to 0.70 of CA1 cells and gives 9 to 15 cells found by the method and not by template
+matching, never within 40 +/- 4. Excluding it only when all would (x-b) excludes 0.19 to 0.21 and gives 34 to 53,
+within tolerance under 27 of the 48 x-b readings, under both range readings (r-a 13, r-b 14 readings). Neither reading
+excludes the paper's 0.288. The object-vector score is above the 99th percentile of 500 shuffles for 133 (r-a) and 132
+(r-b) of the 1113 cells with fields in both trials, and the range readings change the count by at most 1 cell. The
+field rule, the field that must be 15 cm from the object and the lambda of spatial information are run as the fig1d
+and fig7 readings. The manual inspection is not repeated.""", blocked_by='methods_underspecified',
+output='claim:ovs-method-extra-cells', deviations=['The exclusion rule, the field readings and the lambda of spatial information are not given by the criterion and are run as readings (asked).',
+'Shuffles are run only for the 1113 cells with a field in both trials under some field reading; the others fail criterion 3 under every reading.', SC_DEV])
+NP='The two Neuropixels sessions\' tracking is taken from the CA1 file, as y is a copy of x in their population files.'
+setc('fig3b-decode-presence','reproduced',f"""{RM} The outcome is unchanged. Under both speed readings the whole-arena
+decoder tells NO from O above 0.5 and above the mean of 50 label shuffles in all 16 sessions; accuracies 0.62 to 0.76,
+shuffle means 0.49 to 0.51.""", deviations=[NP,'Trials last 913 to 2334 s, not the 1800 s the Methods assume.'])
+setc('fig3c-bin-size','reproduced',f"""{RM} The outcome is unchanged. Under both speed readings the median accuracy rises
+at each step from 10 ms (0.51) to 1000 ms (0.69), and its gain from 1 to 10 s (0.027 and 0.036) is smaller than its
+gain from 100 ms to 1 s (0.113).""")
+setc('fig3d-number-of-cells','reproduced',f"""{RM} The outcome is unchanged. On the 620-cell session (reading a) mean
+accuracy rises from 0.53 with one cell to 0.74 and 0.75 with 500 cells, Pearson r = 0.58 and 0.60 over 1100 subsets,
+p below 1e-97, under both speed readings. Reading (b) was not run, as the criterion is met under (a).""")
+setc('fig4b-distance-decline','reproduced',f"""{RM} The outcome is unchanged. Under both speed readings the
+Kruskal-Wallis test across the five distance bins gives H = 47.3 and 48.9 (paper 44.6), p at most 1.3e-9, with medians
+falling at every step from 0.79 and 0.80 (bin 1) to 0.60 (bin 5). Signed-rank tests of bins 1 vs 2 (p at most 0.0019),
+2 vs 3 (6.1e-5) and 4 vs 5 (at most 0.0034) each find the nearer bin higher. The mean of bin 1 minus bin 5 is 0.18
+(paper 0.19). The session readings S-methods and S-legends give the same 16 sessions.""",
+deviations=['The dataset holds 16 decoding sessions (14 tetrode), the legends\' count; the Methods\' text says 15 tetrode sessions.','The two Neuropixels sessions\' tracking is taken from the CA1 file.'])
+setc('fig4c-each-session-decreasing','reproduced',f"""{RM} The outcome is unchanged. Under both speed readings all 16
+sessions have a negative slope (-0.070 to -0.014) and a positive bin 1 minus bin 5 difference (0.056 to 0.315).""")
+setc('fig4e-angle-flat','blocked',f"""{RM} The sector-start readings, which the answers do not address, still give
+different outcomes of the paper's test. With sectors from 0 degrees the Kruskal-Wallis test finds a difference with
+speed-filtered maps (H = 10.3, p = 0.036) and not without the filter (H = 8.9, p = 0.065); with sectors from 36 degrees
+it finds none (H = 5.9 and 6.0, p = 0.21 and 0.20).""", blocked_by='methods_underspecified')
+setc('fig4h-population-vector-correlation','reproduced',"""The answer of 2026-10-21 names as readings maps
+speed-filtered or not (pv-a, pv-b) and blanked or not (bl-a, bl-b); before, only maps not blanked were run. With the
+rate-map answer as well, the outcome is unchanged. Under all four readings, with fixed 20 cm rings (reading a), the
+Kruskal-Wallis test gives H = 28.2 to 31.4, p at most 1.1e-5, correlations rise from 0.46 to 0.47 (bin 1) to 0.77 to
+0.79 (bin 5), and the rises from bin 1 to 2, 2 to 3 and 3 to 4 are significant (p at most 0.025). Blanking leaves out
+up to 667 of 2500 spatial bins in a session and makes the 3 to 4 step stronger (p = 0.00043 against 0.025). With
+equal-count bins (b) the rise from bin 3 to 4 is not significant under any reading.""", deviations=[])
+setc('figs5a-decode-no-from-no-prime','reproduced',f"""{RM} The outcome is unchanged. NO is told from NO' above 0.5 and
+above the shuffle mean in all 16 sessions under both speed readings, 0.51 to 0.79 in tetrode sessions and 0.96 to 0.98
+in the Neuropixels sessions.""")
+setc('figs5b-fixed-distance-bins','reproduced',f"""{RM} The outcome is unchanged. With bins of 0-20 to 80-100 cm the
+Kruskal-Wallis test gives H = 50.7 and 52.9, p at most 2.5e-10, with accuracy highest in bin 1 (0.81 and 0.82) and
+lowest in bin 5 (0.61 and 0.60) under both speed readings.""")
+setc('figs5c-half-trial-control','reproduced',f"""{RM} The outcome is unchanged. Decoding the first from the second
+half of NO gives Kruskal-Wallis H = 0.35 and 0.43, p at least 0.98, under both speed readings.""")
+setc('figs5d-control-sessions','blocked',"""The criterion uses control sessions with at least 25 simultaneously recorded
+cells; the control file holds each cell once and only one of its 14 sessions has 25 or more cells (30), so no test over
+sessions can be formed. As a variant over all 14 control sessions (6 to 30 cells), with the rate maps the claims file
+now gives, the Kruskal-Wallis p is 0.14 to 0.22 across readings.""", blocked_by='other')
+setc('figs5e-shuffled-labels','blocked',f"""{RM} The speed readings still give different outcomes. With labels shuffled
+50 times per session the mean accuracy is within 0.49 to 0.51 in every bin under both speed readings (0.498 to 0.504).
+The smallest t-test p against 0.5 is 0.063 with speed-filtered maps (a), where the criterion holds, and 0.0094 without
+the filter (b), where it fails. Before, the outcome differed between the map readings too.""",
+blocked_by='methods_underspecified')
+setc('figs5f-random-partition','reproduced',"""The answer of 2026-10-21 makes the permuted timepoints the 1 s spike-count
+vectors, the reading run before (a); reading (b), which was not run, no longer applies. With the rate-map answer as
+well, the outcome is unchanged. With 1 s bins partitioned at random the Kruskal-Wallis test gives H = 29.7 and 31.4, p
+at most 5.8e-6, with accuracy highest in bin 1 (0.83 and 0.84) and lowest in bin 5 (0.72) under both speed
+readings.""")
+setc('figs5ghi-fields-and-rates','not_reproduced',f"""{RM} Both field readings are allowed by the field answer. The
+outcome is unchanged. One of the three parts holds. (i) Fields are not more concentrated within 20 cm of the object in
+O than in NO (rank-sum p = 0.24 and 0.060 under the two field readings). (ii) The mean rate peaks in distance bin 2 in
+both trials, not bin 3. (iii) NO and O rates differ in bins 3 and 4 (signed-rank p = 0.0042 and 0.013).""",
+deviations=['The tests are the claims file\'s; the paper reports none.', SC_DEV])
+setc('figs6hij-behaviour-matched','blocked',f"""{RM} After matching speed or occupancy the neural decoder's accuracy
+still falls with distance under both speed readings and both matching readings (Kruskal-Wallis H = 28.7 to 46.6, p at
+most 9.0e-6, bin 1 highest). Head direction, needed for the third match, is not in the dataset.""",
+blocked_by='data_missing')
+setc('figs6k-uniform-prior','reproduced',f"""{RM} The outcome is unchanged. With a uniform prior the Kruskal-Wallis test
+gives H = 47.3 and 47.2 (paper 42.92), p at most 1.4e-9, with bin 1 highest, under both speed readings.""")
+setc('figs6l-sampling-thresholds','reproduced',"""The answer of 2026-10-21 (the paper does not say) makes the four
+combinations of occupancy (whole trial or training half) and testing samples (kept or dropped) readings of the
+criterion; they were run before. With the rate-map answer as well, the outcome is unchanged. Under every combination
+and both speed readings all four thresholds give Kruskal-Wallis p at most 1.0e-6 (H = 33.4 to 43.6) with bin 1
+highest.""", deviations=[])
+setc('tables1-without-bin-1','reproduced',f"""{RM} The outcome is unchanged. Over bins 2 to 5 the Kruskal-Wallis test
+gives p at most 3.7e-6 with bin 2 highest under both speed readings. H is 28.0 and 28.2, just above 25.06 +/- 2.506, so
+the effect is a little stronger than the paper's (before, H was 28.4 to 32.8).""", measured=27.96)
+setc('fig6ab-single-cell-distance-tuning','partially_reproduced',f"""{RM} The outcome is unchanged. Under every speed and
+cell reading, the mean tuning (0.016 to 0.017), the fraction within -0.2 to 0.2 (0.977 to 0.985) and the fraction with
+significant positive tuning (0.124 to 0.129) are within tolerance, while the fraction with significant negative tuning
+(0.047 to 0.056) is above 0.038 +/- 0.0038, which is the criterion's partial case. The measured values are those of
+speed a, cell reading a.""", measured=[0.016,0.9773,0.1245,0.0505],
+deviations=['The 897 decoding-session cells that are also in the CA1 file take their values from it (same recording and tracking).'])
+setc('figs5l-without-positively-tuned','reproduced',f"""{RM} Before, bin 2 was highest under one of the four readings
+(speed b, rm a), so the outcome was blocked. Now, without the 149 or 151 positively tuned cells, the Kruskal-Wallis test
+gives H = 25.4 and 23.9, p at most 8.3e-5, with bin 1 highest under both speed readings (median 0.705 against 0.673 and
+0.684 in bin 2).""")
+setc('figs5m-without-object-tuned','reproduced',f"""{RM} fig1c-object-tuned-fraction is now tested, so this claim is no
+longer blocked by it. Removing the object-tuned cells among the 897 linked cells (277 under w a, 186 under w b) leaves
+Kruskal-Wallis H = 42.3 to 44.1, p at most 1.5e-8, bin 1 highest, under both width and both speed readings. The 283
+tetrode cells of unknown status stay in. Removing them too leaves bin 1 highest with p = 0.032 to 0.044 under three
+readings and 0.065 under w a, speed a.""")
+setc('fig6c-subsets-decline','blocked',f"""{RM} The speed and size-list readings still give different outcomes. The
+single-cell curve shows no decline in any reading (signed-rank p = 0.29 and 0.33, Kruskal-Wallis p at least 0.70).
+Every size from 100 cells up declines (both tests p at most 0.0012). Without the speed filter, with the legend's sizes
+and the signed-rank test, every other size gives p < 0.05, so the criterion is met there; with the filter, 5 cells give
+signed-rank p = 0.14 and it is met under no size list.""", blocked_by='methods_underspecified')
+setc('fig6d-reorganization-grows-with-cells','blocked',f"""{RM} The speed readings still give different outcomes.
+Without the speed filter both Kruskal-Wallis tests give p < 0.05 and the largest mean difference and most negative mean
+slope are at 500 cells under every size list, so the criterion is met; with the filter both extremes are at 400 cells
+and the slope test gives p = 0.040 to 0.078. It also depends on fig6c-subsets-decline, which is blocked.""",
+blocked_by='methods_underspecified')
+setc('figs8-smaller-datasets','reproduced',f"""{RM} The outcome is unchanged. In the 14 tetrode sessions pooled and in
+the 135-cell session both Kruskal-Wallis tests across sizes give p at most 6.4e-18 under both speed readings (H = 528
+to 587 tetrode, 84 to 93 for the 135-cell session), with the mean difference rising and the mean slope falling with
+size.""")
+setc('fig6ef-least-tuned-cells','not_reproduced',f"""{RM} The outcome is unchanged. The 124 cells (20%) of the 620-cell
+session with the lowest distance tuning give a bin 1 minus bin 5 difference of -0.346 and -0.344 and a slope of +0.081
+and +0.077 under the two speed readings, against 0.121 and -0.0267, so accuracy rises with distance. All 620 cells give
+0.064 and 0.082 and slopes of -0.014 and -0.016, and keeping the lowest 80% already reverses the sign. The cells kept
+by the rule (lowest values first) are those with negative tuning.""", measured=[-0.3458,0.0809])
+setc('fig7-single-cell-properties','partially_reproduced',f"""{RM} The answer on lambda (the paper does not say) names
+two readings, si-a (speed-filtered spikes over time) and si-b (the occupancy-weighted mean of the smoothed map); before,
+only si-a was run. fig1c-object-tuned-fraction is now tested, so the claim is no longer blocked by it. No reading meets
+the whole criterion, because spatial information is not correlated with distance tuning under either lambda reading (r
+= -0.038 to -0.002, p at least 0.23, against -0.13); the lambda readings change spatial information (median 0.90 and
+1.72 bits per spike) but not this. Over the 1189 cells the other three correlations are within 0.05 of the printed
+values with p < 0.05 under every reading: object-tuning score r = 0.11 to 0.15, spatial correlation -0.081 and -0.089,
+rate overlap -0.154 to -0.160. Over the 897 linked cells the object-tuning score under w a (0.067, 0.069) and the rate
+overlap (-0.117 to -0.124) fall outside. Every |r| is below 0.3. The measured values are those of speed a, w a, rate
+overlap a, si-a, cell reading a.""", measured=[0.1177,-0.002,-0.0813,-0.1596],
+deviations=['Spatial information is run under both lambda readings of the criterion.'])
+setc('fig7-slope-variant','partially_reproduced',f"""{RM} fig7-single-cell-properties is now tested, so this claim is no
+longer blocked by it; the lambda readings are run as there. With the slope, the object-tuning score (r = -0.071 to
+-0.150, every reading) and rate overlap (r = 0.148 to 0.156 over the 1189 cells) are within 0.05 of the printed values;
+spatial information (r = -0.011 to 0.023, printed 0.10) is not under either lambda reading, and spatial correlation has
+the opposite sign (r = +0.065 to +0.088, printed -0.08).""")
+setc('figs5jk-walls-no-pivot','not_reproduced',f"""{RM} The outcome is unchanged. All 6 signed-rank tests (2 speed
+readings x 3 measures) find a difference between near and far from the walls (p = 6.1e-5 to 0.0010). Position errors
+are 8.2 to 9.7 cm larger near the walls (medians 36 to 38 against 27 to 29 cm), and population vector correlations
+between the halves of NO are 0.08 lower.""")
+setc('figs8eh-least-tuned-smaller-datasets','reproduced',f"""{RM} The outcome is unchanged. With all cells the bin 1
+minus bin 5 difference is positive and the slope negative in both datasets (tetrode mean 0.176 and 0.184, slopes -0.043
+and -0.044; 135-cell session 0.291 and 0.273, slopes -0.068 and -0.066), both shrink as fewer of the least-tuned cells
+are kept, and the largest kept fraction with a mean slope of zero or above is 0.4 in both under both speed readings,
+within 0.6 +/- 0.2 and 0.5 +/- 0.2. The 20% values are negative differences (tetrode -0.075 and -0.088, 135-cell -0.15
+and -0.10).""", measured=[0.4,0.4])
+o=O['figs7cd-number-of-words']
+o['notes']=("The answer of 2026-10-21 (the paper does not say) names the two readings run before, now w-a (distinct "
+ "words of each session's whole trial, 16 against 16) and w-b (the 80 session and distance bin values). The outcome is "
+ "unchanged. The number of distinct words does not differ across distance bins (NO p = 0.91 and 0.90, O p = 0.78) or "
+ "between NO and O (w-a p = 0.94, w-b p = 0.85).")
+o.pop('deviations',None)
+d['findings'].append({'kind':'methods_unavailable','statement':' '.join("""The paper's code holds no single-cell rate maps,
+field detection, object-vector score, population vector correlation or sampling analysis. The object-vector method
+cites references 11 and 12 for its vector maps and does not say which cells its exclusion before the criteria removes
+(28.8% of CA1 cells).""".split())})
+for o in d['outcomes']:
+    for k,v in o.items():
+        if isinstance(v,str) and ': ' in v and k=='notes': print('colon in', o['claim'])
+open(p,'w').write(yaml.safe_dump(d,sort_keys=False,width=110,allow_unicode=True))
+EOF
+python $TMPDIR/upd.py && git diff --stat attempts/
+```
+
+```
+colon in fig7-single-cell-properties
+ attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml | 563 ++++++++++++++----------
+ 1 file changed, 333 insertions(+), 230 deletions(-)
+```
+
+**Agent calls Bash**
+
+```bash
+cd  python - <<'EOF'
+import yaml
+p='attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml'
+d=yaml.safe_load(open(p))
+for o in d['outcomes']:
+    if o['claim']=='fig7-single-cell-properties':
+        o['notes']=o['notes'].replace("under every reading: object-tuning score r = 0.11 to 0.15, spatial correlation -0.081 and -0.089, rate overlap -0.154 to -0.160.",
+          "under every reading (object-tuning score r = 0.11 to 0.15, spatial correlation -0.081 and -0.089, rate overlap -0.154 to -0.160).")
+def walk(x,path=''):
+    if isinstance(x,dict):
+        for k,v in x.items(): walk(v,path+'/'+str(k))
+    elif isinstance(x,list):
+        for i,v in enumerate(x): walk(v,path+f'[{i}]')
+    elif isinstance(x,str):
+        if ': ' in x: print('COLON', path, x[:80])
+        if '—' in x or 'rather' in x: print('STYLE', path)
+walk(d)
+open(p,'w').write(yaml.safe_dump(d,sort_keys=False,width=110,allow_unicode=True))
+EOF
+grep -n "—\|rather" entries/ebrains-q0fg-1x8-nagelhus-2023/*.ipynb entries/ebrains-q0fg-1x8-nagelhus-2023/README.md questions/ebrains-q0fg-1x8.yaml | head; python tools/entry.py check entries/ebrains-q0fg-1x8-nagelhus-2023 2>&1 | tail -5
+```
+
+```
+/opt/hostedtoolcache/Python/3.13.16/x64/lib/python3.13/site-packages/nbformat/validator.py:434: MissingIDFieldWarning: Cell is missing an id field, this will become a hard error in future nbformat versions. You may want to use `normalize()` on your notebooks before validations (available since nbformat 5.1.4). Previous versions of nbformat are fixing this issue transparently, and will stop doing so in the future.
+  _validate(nbdict, ref, version, version_minor, relax_add_props)
+0 error(s)
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; python -c "
+import json,glob
+for f in sorted(glob.glob('*.ipynb')):
+    nb=json.load(open(f)); print(f, nb['nbformat'], nb['nbformat_minor'], sum('id' not in c for c in nb['cells']), len(nb['cells']))
+"; git show HEAD~1:entries/ebrains-q0fg-1x8-nagelhus-2023/01_single_cells.ipynb | python -c "import json,sys; nb=json.load(sys.stdin); print(nb['nbformat_minor'], sum('id' not in c for c in nb['cells']))"
+```
+
+```
+01_single_cells.ipynb 4 5 4 57
+02_single_cell_changes.ipynb 4 5 0 18
+03_population_decoding.ipynb 4 5 0 66
+04_distance_tuning.ipynb 4 5 0 21
+05_subsets.ipynb 4 5 0 14
+06_words.ipynb 4 5 0 27
+5 0
+```
+
+**Agent calls Bash**
+
+```bash
+cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
+import json, uuid
+f='01_single_cells.ipynb'; nb=json.load(open(f))
+ids={c.get('id') for c in nb['cells']}
 for i,c in enumerate(nb['cells']):
-    if sel is not None and i not in sel: continue
-    if c['cell_type']!='code': continue
-    print(f"==== [{i}] {c['metadata'].get('tags','')}")
-    for o in c.get('outputs',[]):
-        if 'text' in o: print(''.join(o['text']))
-        elif 'data' in o and 'text/plain' in o['data'] and 'image/png' not in o['data']: print(''.join(o['data']['text/plain']))
-EOF
-cd $TMPDIR/exec; python $TMPDIR/show.py 01_single_cells.ipynb 3,5,7,13,15,17
-```
-
-```
-==== [3] ['sanity']
-Files in the dataset (data proxy listing):
-                                        name     bytes                                hash       last_modified
-                           Licence-CC-BY.pdf    127919    ae9e06da3622c4bd40eb47bab3babaa7 2025-01-25T10:56:23
-            data-descriptor_40440db5bc0c.pdf     95516    fa730dad65457d20f5952fe26d93975f 2025-01-25T10:56:23
-       datasets/populationanalyses_25987.mat  13219155    15c72d61ca2dc101007cb35be02079b2 2025-01-25T10:56:23
-       datasets/populationanalyses_26186.mat   9516833    10a99b3a1a5379dfa72dd52fa84a923d 2025-01-25T10:56:23
-       datasets/populationanalyses_27012.mat  15701304    d7bcc9c86d72136cafc825042b772a5f 2025-01-25T10:56:23
-       datasets/populationanalyses_27207.mat  34148928    c754cefc15d563bcfc1c3d56e5ba01f6 2025-01-25T10:56:23
-         datasets/singlecellanalyses_CA1.mat 237595229 8aee9c461e94bf5d783b882540dcb3b9-46 2025-01-25T10:56:26
-         datasets/singlecellanalyses_CA3.mat  71256175    22dbf2a6606df23ba8abe015c48ed02b 2025-01-25T10:56:23
-datasets/singlecellanalyses_controls_CA1.mat  41783771    a110e91d88c9dddc468b7d95f1e745be 2025-01-25T10:56:23
-datasets/singlecellanalyses_controls_CA3.mat  10396188    356055f5fc86f1780263ba79a460f0a6 2025-01-25T10:56:23
-                    file  sessions  rats                                               rat ids           techniques  units            trial sets unit strings
-                     CA1        60     9 25224 25371 25387 25450 25770 25987 26186 27012 27207 neuropixels tetrodes   1189 NO-O-OM | NO-O-OM-NOp  centimeters
-                     CA3        13     4                               25987 26186 27013 27207 neuropixels tetrodes    341           NO-O-OM-NOp  centimeters
-                 CON_CA1        14     3                                     25770 25987 26186             tetrodes    219   CON1-CON2-CON3-CON4  centimeters
-                 CON_CA3         4     2                                           2
-[... 171 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/exec; python $TMPDIR/show.py 01_single_cells.ipynb 20,23,24,27,28,31,34,35,38,41,44
-```
-
-```
-==== [20] ['claim:cell-counts']
-CA1 object sessions: 1189 cells from 9 rats, 60 sessions; passing both inclusion rules as computed here: 1178
-CA1 control sessions: 219 cells from 3 rats, 14 sessions; passing: 218
-Largest number of CA1 cells in one session: 620 (rat 27207)
-CA1 cells per rat: {'25224': 43, '25371': 26, '25387': 39, '25450': 13, '25770': 33, '25987': 151, '26186': 129, '27012': 135, '27207': 620}
-Reading (a), each cell once: the file holds each cell once, 1189 cells.
-Reading (b), every session: cell-sessions are not deposited. The population files add 283 tetrode units with no match in the CA1 file, for 2 of the 9 rats only.
-  unique CA1 cells: 1189 against 1189 +/- 118.9: within
-  control CA1 cells: 219 against 219 +/- 21.9: within
-  largest simultaneous: 620 against 620 +/- 62.0: within
-
-==== [23] ['claim:fig1c-object-tuned-fraction']
-rm w  controls  tuned  cells  fraction  control tuned  control cells  chance  binomial p  fraction within 0.199+/-0.0199  chance within 0.0503+/-0.00503  significant  reproduced
- b a CON2-CON3    331   1189    0.2784             26            219  0.1187   5.438e-50                           False                           False         True       False
- b a CON1-CON2    331   1189    0.2784             37            219  0.1689   4.823e-21                           False                           False         True       False
- b b CON2-CON3    222   1189    0.1867              9            219  0.0411   6.236e-79                            True                           False         True       False
- b b CON1-CON2    222   1189    0.1867             16            219 0.07306   1.957e-37                            True                           False         True       False
-rm b: readings (w x controls) meeting the criterion: 0 of 4; CA1 fraction within tolerance in 2, chance within in 0
-
-(1723 s)
-[... 206 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd $TMPDIR/exec; python $TMPDIR/show.py 01_single_cells.ipynb 47,48,54 ; grep -n "Total time" -A2 <(python $TMPDIR/show.py 01_single_cells.ipynb)
-```
-
-```
-==== [47] ['claim:fig2d-spatial-change-no-o', 'claim:fig2d-rate-overlap-no-o-unchanged', 'claim:fig2d-om-no-prime-change', 'claim:fig2d-no-no-prime-change']
-rm   pair   control measure  n obj  n con  median obj  median con  difference      z         p
- b   NO-O CON1-CON2      sc   1189    219      0.4543      0.7951     -0.3408 -12.14 6.221e-34
- b   O-OM CON2-CON3      sc   1189    219      0.4879      0.8467     -0.3587 -13.94 3.568e-44
- b OM-NOp CON3-CON4      sc   1090    219      0.5879      0.8376     -0.2497 -12.74 3.547e-37
- b NO-NOp CON1-CON4      sc   1090    219      0.3169       0.698     -0.3811 -11.34 8.572e-30
-Cells with a No Object' trial: 1090 of 1189
-
-==== [48] ['claim:fig2d-spatial-change-no-o']
-NO-O spatial correlation by rat (median, cells); control CON1-CON2 median 0.795
-rat     25224  25371  25387  25450  25770  25987  26186  27012  27207
-median 0.7892 0.6688 0.6792 0.4631 0.5897 0.7119 0.4587 0.4798 0.3568
-size       43     26     39     13     33    151    129    135    620
-
-Spatial correlation range: -0.21 to 0.99 ; rate overlap range: 0.01 to 1.0
-
-==== [54] ['claim:figs3f-ca3-changes']
-rm   pair   control measure  n obj  n con  median obj  median con  difference      z         p
- b   NO-O CON1-CON2      sc    341     59      0.4906      0.8611     -0.3705 -5.651 1.595e-08
- b   O-OM CON2-CON3      sc    341     59      0.4208      0.8425     -0.4216 -6.092 1.112e-09
-[... 18 more lines not kept]
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-import json
-f='01_single_cells.ipynb'
-nb=json.load(open(f))
-n=0
-for c in nb['cells']:
-    s=''.join(c['source'])
-    old='''            for meas in ("sc", "ro_a", "ro_b"):
-                if meas != "sc" and rm == "b":
-                    continue      # rate overlap does not depend on the map reading
-                x, y'''
-    if old in s:
-        s=s.replace(old,'''            for meas in ("sc", "ro_a", "ro_b"):
-                x, y''')
-        s=s.replace('''rows.append({"rm": rm if meas == "sc" else "-", "pair"''','''rows.append({"rm": rm, "pair"''')
-        c['source']=s.splitlines(True); n+=1
+    if 'id' not in c:
+        new={'cell_type':c['cell_type'],'execution_count':c.get('execution_count'),'id':f"ovs{i:04d}",'metadata':c['metadata'],'outputs':c.get('outputs'),'source':c['source']}
+        if c['cell_type']=='markdown':
+            new={'cell_type':'markdown','id':f"ovs{i:04d}",'metadata':c['metadata'],'source':c['source']}
+        nb['cells'][i]=new
 json.dump(nb,open(f,'w'),indent=1,ensure_ascii=False); open(f,'a').write('\n')
-print(n)
 EOF
-grep -n '"rm": rm, "pair"' 01_single_cells.ipynb
+git diff 01_single_cells.ipynb | grep '"id"' | head
 ```
 
 ```
-1
+"id": "2a0b6fc4",
+    "id": "3f9c7375",
+    "id": "bf12e168",
+    "id": "ab6863a1",
++   "id": "ovs0033",
++   "id": "ovs0034",
++   "id": "ovs0035",
++   "id": "ovs0036",
+    "id": "21530029",
+    "id": "2be526cd",
 ```
 
 **Agent calls Bash**
 
 ```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; grep -n 'rows.append({\\"rm\\"' 01_single_cells.ipynb | head; grep -n 'meas == ' 01_single_cells.ipynb
+cd  python -c "
+import yaml,collections
+d=yaml.safe_load(open('attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml'))
+print(collections.Counter((o['outcome'],o.get('blocked_by')) for o in d['outcomes']))
+print(len(d['outcomes']))"
 ```
 
 ```
-563:    "            rows.append({\"rm\": rm, \"w\": w, \"controls\": ctl, \"tuned\": k, \"cells\": len(ca1), \"fraction\": k / len(ca1),\n",
-594:    "    rows.append({\"rm\": rm, \"w\": w, **{r: f\"{int(a)}/{int(b)}\" for r, (a, b) in per.iterrows()}})\n",
-699:    "                rows.append({\"rm\": rm, \"w\": w, \"field\": field, \"distance\": rd, \"tuned\": len(tuned), \"with field\": len(d),\n",
-779:    "        rows.append({\"rm\": rm, \"w\": w, \"field\": field, \"distance\": rd, \"object cells\": oc_n, \"frac OC\": oc_n / 1189,\n",
-984:    "        rows.append({\"rm\": rm, \"w\": w, \"field\": field, \"distance\": rd, \"cells\": len(x), \"r\": r, \"p\": p,\n",
-1041:    "        rows.append({\"rm\": rm, \"w\": w, \"tuned cells\": len(cells), \"used\": int(ok.sum()), \"r\": r, \"p\": p,\n",
-1089:    "        rows.append({\"rm\": rm, \"w\": w, \"tuned\": k, \"cells\": len(df), \"fraction\": k / len(df),\n",
-1167:    "                rows.append({\"rm\": rm, \"pair\": f\"{a}-{b}\", \"control\": f\"{ca}-{cb}\", \"measure\": meas,\n",
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-p='objcode.py'
-s=open(p).read()
-old='''    spk = np.bincount(k[keep] * B + bidx[j[keep]], minlength=R * B).reshape(R, B).astype(float)
-    maps = rate_maps_batch(np.broadcast_to(occ, spk.shape), spk, "b")
-    ok = np.isfinite(maps[0]) & (occ > 0)
-    l = np.where(ok[None], np.nan_to_num(maps), 0.0)
-'''
-new='''    nb = nbins(2.5)
-    spk = np.bincount(k[keep] * B + bidx[j[keep]], minlength=R * B).reshape(R, nb, nb).astype(np.float32)
-    raw, visited = _raw_rate(occ.reshape(nb, nb), spk)
-    K = _kernel(nb)
-    l = np.where(visited.ravel()[None], (K @ raw.astype(np.float32) @ K.T).reshape(R, B), 0.0).astype(float)
-'''
-assert old in s; s=s.replace(old,new)
-old='''    sm = ndimage.gaussian_filter(raw, (0, OV_SIGMA, OV_SIGMA), mode=("reflect", "reflect", "wrap"), truncate=4.0)
-'''
-new='''    sm = _kernel(nd, OV_SIGMA) @ raw.astype(np.float32) @ _kernel(na, OV_SIGMA, "wrap").T
-'''
-assert old in s; s=s.replace(old,new)
-old='''def _kernel(nb, sigma=2.0):
-    """Gaussian smoothing as a matrix (edges mirrored, truncated at 4 SD, as _gauss): K @ M @ K.T."""
-    if (nb, sigma) not in _KERNELS:
-        _KERNELS[(nb, sigma)] = ndimage.gaussian_filter1d(np.eye(nb), sigma, axis=0, mode="reflect",
-                                                         truncate=4.0).astype(np.float32)
-    return _KERNELS[(nb, sigma)]'''
-new='''def _kernel(nb, sigma=2.0, mode="reflect"):
-    """Gaussian smoothing as a matrix (edges mirrored, truncated at 4 SD, as _gauss; or circular,
-    mode "wrap"): K @ M @ K.T."""
-    if (nb, sigma, mode) not in _KERNELS:
-        _KERNELS[(nb, sigma, mode)] = ndimage.gaussian_filter1d(np.eye(nb), sigma, axis=0, mode=mode,
-                                                               truncate=4.0).astype(np.float32)
-    return _KERNELS[(nb, sigma, mode)]'''
-assert old in s; s=s.replace(old,new)
-open(p,'w').write(s)
-EOF
-cat > $TMPDIR/t2.py <<'EOF'
-import time, numpy as np
-import objcode as oc
-CA1,_=oc.load(oc.SINGLE_FILES["CA1"])
-for si in (5, 59):
-    s=CA1[si]; tr=s.trial("O"); tm=s.trial("OM")
-    m,occ=oc.single_maps(tr,"b")
-    rng=np.random.default_rng(0)
-    t1=time.time(); n=min(10,s.n_units)
-    for u in range(n):
-        a,b=oc.spatial_information_shuffled(tr,u,np.r_[0, oc.shift_values(tr,1000,rng)])
-        a2,b2=oc.spatial_information_shuffled(tm,u,np.r_[0, oc.shift_values(tm,1000,rng)])
-        sa=oc.spatial_information(m[u],occ,oc.mean_rate(tr,u,True)); sb=oc.spatial_information(m[u],occ,None,duration=tr.duration)
-        shO=np.r_[0,oc.shift_values(tr,500,rng)]; shM=np.r_[0,oc.shift_values(tm,500,rng)]
-        for dmax in (max(oc.max_object_distance(tr,tr.obj),oc.max_object_distance(tm,tm.obj)), min(oc.max_object_distance(tr,tr.obj),oc.max_object_distance(tm,tm.obj))):
-            r=oc.pearson_rows(oc.vector_maps(tr,u,shO,tr.obj,dmax),oc.vector_maps(tm,u,shM,tm.obj,dmax))
-        if u<3: print(si,u, round(a[0],4), round(sa,4), round(b[0],4), round(sb,4), r[0].round(3), np.percentile(r[1:],99).round(3))
-    print("per cell", si, (time.time()-t1)/n)
-EOF
-PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/t2.py
-```
-
-```
-Exit code 1
-Traceback (most recent call last):
-  File "/tmp/claude-1001/t2.py", line 10, in <module>
-    a,b=oc.spatial_information_shuffled(tr,u,np.r_[0, oc.shift_values(tr,1000,rng)])
-        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py", line 1265, in spatial_information_shuffled
-    terms = np.where(l > 0, P[None] * l * np.log2(l / rate[:, None]), 0.0)
-                                                  ~~^~~~~~~~~~~~~~~
-ValueError: operands could not be broadcast together with shapes (1001,3600) (1001,1,60)
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; sed -i 's|    for P, rate in ((occ / occ.sum(), spk.sum(1) / occ.sum()), (occ / trial.duration, None)):|    for P, rate in ((occ / occ.sum(), spk.sum((1, 2)) / occ.sum()), (occ / trial.duration, None)):|' objcode.py && PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/t2.py
-```
-
-```
-5 0 3.149 3.149 3.8052 3.8052 -0.001 0.427
-5 1 1.9021 1.9021 2.7691 2.7691 -0.077 0.395
-5 2 1.8404 1.8404 3.5361 3.5361 0.254 0.399
-per cell 5 0.617645001411438
-59 0 0.592 0.592 1.535 1.535 -0.23 0.359
-59 1 2.2609 2.2609 3.1965 3.1965 0.015 0.352
-59 2 0.4346 0.4346 0.9718 0.9718 -0.361 0.399
-per cell 59 2.332785415649414
-```
-
-**Agent calls Bash**
-
-```bash
-cd entries/ebrains-q0fg-1x8-nagelhus-2023; cat > $TMPDIR/t3.py <<'EOF'
-import time, numpy as np, cProfile, pstats
-import objcode as oc
-CA1,_=oc.load(oc.SINGLE_FILES["CA1"])
-s=CA1[59]; tr=s.trial("O"); tm=s.trial("OM")
-rng=np.random.default_rng(0)
-def f():
-    for u in range(5):
-        a=oc.spatial_information_shuffled(tr,u,np.r_[0, oc.shift_values(tr,1000,rng)])
-        shO=np.r_[0,oc.shift_values(tr,500,rng)]; shM=np.r_[0,oc.shift_values(tm,500,rng)]
-        r=oc.pearson_rows(oc.vector_maps(tr,u,shO,tr.obj,150),oc.vector_maps(tm,u,shM,tm.obj,150))
-cProfile.run('f()', '/tmp/claude-1001/prof')
-pstats.Stats('/tmp/claude-1001/prof').sort_stats('tottime').print_stats(12)
-print(np.mean([len(x) for x in tr.spikes]))
-EOF
-PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/t3.py 2>&1 | head -40
-```
-
-```
-Wed Oct 21 17:10:46 2026    /tmp/claude-1001/prof
-
-         2156 function calls (2152 primitive calls) in 7.088 seconds
-
-   Ordered by: internal time
-   List reduced from 188 to 12 due to restriction <12>
-
-   ncalls  tottime  percall  cumtime  percall filename:lineno(function)
-       15    3.658    0.244    3.658    0.244 {method 'searchsorted' of 'numpy.ndarray' objects}
-       15    0.928    0.062    5.325    0.355 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:1231(shifted_samples)
-        5    0.900    0.180    3.753    0.751 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:1244(spatial_information_shuffled)
-       15    0.563    0.038    4.328    0.289 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:147(_sample_index)
-       10    0.497    0.050    2.785    0.279 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:1276(vector_maps)
-       25    0.109    0.004    0.109    0.004 /tmp/claude-1001/venv/lib/python3.12/site-packages/numpy/_core/_methods.py:96(_clip)
-       83    0.095    0.001    0.095    0.001 {method 'astype' of 'numpy.ndarray' objects}
-        5    0.075    0.015    0.075    0.015 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:318(_raw_rate)
-       15    0.069    0.005    0.069    0.005 {method 'repeat' of 'numpy.ndarray' objects}
-       48    0.047    0.001    0.047    0.001 {method 'reduce' of 'numpy.ufunc' objects}
-        4    0.045    0.011    0.462    0.116 {method 'poll' of 'select.epoll' objects}
-        5    0.026    0.005    0.031    0.006 entries/ebrains-q0fg-1x8-nagelhus-2023/objcode.py:266(bin_index)
-[... 3 more lines not kept]
+Counter({('reproduced', None): 30, ('blocked', 'methods_underspecified'): 8, ('partially_reproduced', None): 7, ('not_reproduced', None): 7, ('blocked', 'data_missing'): 4, ('blocked', 'other'): 1})
+57
 ```
 
 **Agent calls Bash**
 
 ```bash
 cd entries/ebrains-q0fg-1x8-nagelhus-2023; python - <<'EOF'
-p='objcode.py'
-s=open(p).read()
-old='''        if len(self.t) == 0:
-            return np.full(len(s), -1)
-        tr = self._t_raw
-        j = np.searchsorted(tr, s, side="right") - 1
-        out = np.where(j >= 0, self._raw2valid[np.clip(j, 0, len(tr) - 1)], -1)
-        out = np.where((j == len(tr) - 1) & (s > tr[-1]), -1, out)
-        return out
-'''
-new='''        if len(self.t) == 0:
-            return np.full(len(s), -1)
-        tr = self._t_raw
-        if getattr(self, "_lut", None) is None:
-            # last sample at or before each point of a 10 ms grid, to start the search from
-            start = tr[0]
-            grid = start + LUT_STEP * np.arange(int(np.ceil((tr[-1] - start) / LUT_STEP)) + 2)
-            self._lut = (start, (np.searchsorted(tr, grid, side="right") - 1).astype(np.int64))
-        start, lut = self._lut
-        c = np.clip(np.floor((s - start) / LUT_STEP).astype(np.int64), 0, len(lut) - 1)
-        j = lut[c]
-        while True:
-            nxt = j + 1 < len(tr)
-            nxt[nxt] = tr[j[nxt] + 1] <= s[nxt]
-            if not nxt.any():
-                break
-            j = j + nxt
-        out = np.where((s >= start) & (s <= tr[-1]), self._raw2valid[j], -1)
-        return out
-'''
-assert old in s; s=s.replace(old,new)
-s=s.replace('''        new._raw2valid = np.where(r2v >= 0, remap[np.maximum(r2v, 0)], -1)
-''','''        new._raw2valid = np.where(r2v >= 0, remap[np.maximum(r2v, 0)], -1)
-        new._lut = None
-''')
-s=s.replace('''MAX_INTERP_GAP = 0.2     # s, standard choice (see docstring)''','''MAX_INTERP_GAP = 0.2     # s, standard choice (see docstring)
-LUT_STEP = 0.01          # s, grid of the spike-to-sample lookup (speed only; the result is exact)''')
+p='README.md'; s=open(p).read()
+a="""Many claims are blocked because the readings of a method detail that the claims file does not fix
+give different outcomes; the questions are in
+[`questions/ebrains-q0fg-1x8.yaml`](../../questions/ebrains-q0fg-1x8.yaml)."""
+assert a in s
+s=s.replace(a,"""Of the 57 claims, 30 are reproduced, 7 partially reproduced and 7 not reproduced; 13 are blocked, 8
+of them because the readings of a method detail that the claims file does not fix give different
+outcomes. Every rate map follows the paper's calculateRateMap.m, as the claims file gives it since
+the answers of 2026-10-21. The questions and answers are in
+[`questions/ebrains-q0fg-1x8.yaml`](../../questions/ebrains-q0fg-1x8.yaml).""")
+open(p,'w').write(s)
+p='entry.yaml'; s=open(p).read()
+for nbk,old,new in [('01_single_cells',5,12),('02_single_cell_changes',20,7),('03_population_decoding',8,3),('04_distance_tuning',19,5),('05_subsets',10,3),('06_words',6,4)]:
+    a=f"- path: {nbk}.ipynb\n"; i=s.index(a); j=s.index("runtime_minutes:",i); k=s.index("\n",j)
+    s=s[:j]+f"runtime_minutes: {new}"+s[k:]
 open(p,'w').write(s)
 EOF
-cat > $TMPDIR/t4.py <<'EOF'
-import numpy as np, time
-import objcode as oc
-CA1,_=oc.load(oc.SINGLE_FILES["CA1"])
-rng=np.random.default_rng(1)
-for si in (5,59,58):
-    for tr in CA1[si].trials:
-        s=np.sort(np.r_[rng.uniform(tr.t0-5, tr.t1+5, 200000), tr.t[:1000], tr._t_raw[-3:]])
-        tr._lut=None
-        a=tr._sample_index(s)
-        j=np.searchsorted(tr._t_raw,s,side="right")-1
-        ref=np.where(j>=0, tr._raw2valid[np.clip(j,0,None)], -1); ref=np.where((j==len(tr._t_raw)-1)&(s>tr._t_raw[-1]),-1,ref)
-        print(si, tr.name, np.array_equal(a,ref), np.isfinite(tr._t_raw).all())
-EOF
-PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/t4.py && PYTHONPATH=. $TMPDIR/venv/bin/python $TMPDIR/t2.py
+git diff entry.yaml | grep runtime
 ```
+
+```
+-  runtime_minutes: 5
++  runtime_minutes: 12
+-  runtime_minutes: 20
++  runtime_minutes: 7
+-  runtime_minutes: 8
++  runtime_minutes: 3
+-  runtime_minutes: 19
++  runtime_minutes: 5
+-  runtime_minutes: 10
++  runtime_minutes: 3
+-  runtime_minutes: 6
++  runtime_minutes: 4
+```
+
+**Agent**
+
+The attempt record, README and runtimes are updated. Running lock and all a final time, because I added cell ids to notebook 01, then the handover:
+
+**Agent calls Bash**
+
+```bash
+cd  python tools/entry.py lock entries/ebrains-q0fg-1x8-nagelhus-2023 && python tools/entry.py all entries/ebrains-q0fg-1x8-nagelhus-2023 2>&1 | grep -v Warning | tail -9 && python tools/entry.py handover entries/ebrains-q0fg-1x8-nagelhus-2023 2>&1 | tail -5
+```
+
+```
+wrote entries/ebrains-q0fg-1x8-nagelhus-2023/requirements.lock.txt
+Installed kernelspec registry-ebrains-q0fg-1x8-nagelhus-2023 in executed/ebrains-q0fg-1x8-nagelhus-2023/.venv/share/jupyter/kernels/registry-ebrains-q0fg-1x8-nagelhus-2023
+0 error(s)
+pass  01_single_cells.ipynb  (707 s)
+pass  02_single_cell_changes.ipynb  (396 s)
+pass  03_population_decoding.ipynb  (145 s)
+pass  04_distance_tuning.ipynb  (257 s)
+pass  05_subsets.ipynb  (163 s)
+pass  06_words.ipynb  (230 s)
+wrote executed/ebrains-q0fg-1x8-nagelhus-2023/handover
+```
+
+**Agent calls Bash**
+
+```bash
+cd  for n in 01_single_cells 02_single_cell_changes 03_population_decoding 04_distance_tuning 05_subsets 06_words; do python $TMPDIR/show.py executed/ebrains-q0fg-1x8-nagelhus-2023/$n.ipynb | grep -v "^(.* s)\|in [0-9]* s\|Total time\|so far\|read in\|shuffles in\|total [0-9]* s\|^([0-9]* s)\|readings (.*s)" > $TMPDIR/final_$n.txt; echo "== $n $(diff $TMPDIR/new_$n.txt $TMPDIR/final_$n.txt | wc -l)"; done; ls executed/ebrains-q0fg-1x8-nagelhus-2023/handover; git status --short | grep -v '^??'
+```
+
+```
+== 01_single_cells 2
+== 02_single_cell_changes 0
+== 03_population_decoding 2
+== 04_distance_tuning 0
+== 05_subsets 0
+== 06_words 0
+01_single_cells.ipynb
+02_single_cell_changes.ipynb
+03_population_decoding.ipynb
+04_distance_tuning.ipynb
+05_subsets.ipynb
+06_words.ipynb
+10.1016-j.neuron.2023.04.008.yaml
+objcode.py
+ M attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/01_single_cells.ipynb
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/02_single_cell_changes.ipynb
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/03_population_decoding.ipynb
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/04_distance_tuning.ipynb
+ M entries/ebrains-q0fg-1x8-nagelhus-2023/05_subsets.ipynb
+[... 5 more lines not kept]
+```
+
+**Agent calls Bash**
+
+```bash
+cd  diff $TMPDIR/new_01_single_cells.txt $TMPDIR/final_01_single_cells.txt; diff $TMPDIR/new_03_population_decoding.txt $TMPDIR/final_03_population_decoding.txt; python - <<'EOF'
+import json
+for f in ['entries/ebrains-q0fg-1x8-nagelhus-2023/'+n for n in ('01_single_cells.ipynb',)]:
+    nb=json.load(open(f)); print(sum(len(c.get('outputs',[])) for c in nb['cells']))
+EOF
+```
+
+```
+254d253
+< rm b: readings (w x controls) meeting the criterion: 0 of 4; CA1 fraction within tolerance in 2, chance within in 0
+27d26
+< main decoder run under 2 readings (28 s)
+0
+```
+
+**Agent**
+
+Every question is taken up, the entry passes its check, all six notebooks run from a clean environment (01 is the longest at 12 minutes), and the handover is built in `executed/ebrains-q0fg-1x8-nagelhus-2023/handover/`. Nothing is committed or pushed, and I did not verify my own work.
+
+An earlier run on these answers had been cancelled partway. It had already switched the code to the paper's rate-map method and started the object-vector analysis; I checked that code, finished it and re-ran everything. A second full run gave the same numbers.
+
+### 1. How unvisited bins are smoothed (fig1c and the claims that use rate maps)
+**Answer:** the paper's `calculateRateMap.m` computes the rate per bin, puts 0 in unvisited bins, then smooths. Time per position sample is capped at 0.1 s, and a spike counts at the last position sample at or before it. This one method now replaces the two I ran before, in every notebook.
+
+| Claim | Before | Now |
+|---|---|---|
+| fig1c-object-tuned-fraction | blocked (methods underspecified) | **partially reproduced**: 18.7% of CA1 cells tuned (within tolerance, p = 6e-79 against controls), but the control level is 4.11% against 5.03% ± 0.5%. That is 9 of 219 against the paper's 11 of 219, which a binomial test does not tell apart (p = 0.64). |
+| figs2e-within-trial-stability | blocked | **reproduced** (r = 0.41 and 0.42) |
+| fig2-fraction-changed-no-o | blocked | **reproduced** (66.4% and 66.7%) |
+| figs5l-without-positively-tuned | blocked | **reproduced** (bin 1 highest under both speed readings) |
+| figs5m-without-object-tuned | blocked (depended on fig1c) | **reproduced** |
+| fig1f-orientation-coverage | blocked (depended on fig1c) | **reproduced** |
+| fig1d-field-distances | blocked (depended on fig1c) | **partially reproduced**: the largest distance (104 to 125 cm) is beyond the bound under every reading |
+| fig1e-object-cells-and-object-vector-cells | blocked (depended on fig1c) | **partially reproduced**: no reading has all three values within tolerance |
+| figs3f, fig2d-rate-overlap, figs2d-traces, figs5e, fig4e, fig6c, fig6d | blocked | still **blocked**: other readings, which these answers don't cover, still disagree |
+| The other 23 rate-map claims (CA3 tuning, whole-trial changes, traces, decoders, distance tuning) | as before | **unchanged** (numbers updated) |
+
+### 2. Where the 1 Hz field rule applies
+**Answer:** the paper does not say, so both readings are allowed.
+- fig1d, fig1e and figs4-object-traces now have the outcomes in the table above. figs4 is still **partially reproduced**, with trace cells at 6.1 to 9.8%.
+- figs5ghi-fields-and-rates is still **not reproduced**.
+- The two field readings give the same outcome for each of these claims.
+
+### 3. ovs-method-extra-cells: the vector map's bins
+**Answer:** 2 cm and 10° bins with smoothing of SD 1.5 bins, plus two readings of the distance range. The claim now runs, but it stays **blocked (methods underspecified)** for a different reason. The count depends on which fields decide the exclusion of cells before the criteria, and the claims file doesn't say:
+- If a cell is excluded when any of its fields would leave the arena, the count is 9 to 15, never within 40 ± 4.
+- If only when all of them would, the count is 34 to 53, within tolerance under 27 of 48 readings.
+- Neither rule excludes the paper's 28.8% of cells.
+
+I added this as a new question in `questions/ebrains-q0fg-1x8.yaml`, and added a finding that the paper's code lacks several of these analyses.
+
+### 4. figs6l-sampling-thresholds
+**Answer:** the paper does not say; the four combinations I already ran are now the criterion's readings. Still **reproduced**.
+
+### 5. figs5f-random-partition
+**Answer:** the shuffled timepoints are the 1 s spike-count windows, which was the reading I had run. The second reading no longer applies. Still **reproduced**.
+
+### 6. figs7cd-number-of-words
+**Answer:** the paper does not say; both readings are allowed and are now labelled w-a and w-b. Still **reproduced** (p = 0.94 and 0.85).
+
+### 7. fig4h-population-vector-correlation
+**Answer:** the paper does not say. I added the blanked-map readings, so four are now run. Still **reproduced** under all four.
+
+### 8. fig7: the mean rate in spatial information
+**Answer:** the paper does not say; both definitions are allowed and both are run.
+- fig7-single-cell-properties was blocked (depended on fig1c) and is now **partially reproduced**. Spatial information does not correlate with distance tuning under either definition (r between -0.04 and 0, against -0.13). The other three correlations are within 0.05 of the printed values over the 1,189 cells.
+- fig7-slope-variant was blocked and is now **partially reproduced**: two of its four correlations match.
+
+### Totals
+Of the 57 claims, 30 are reproduced, 7 partially reproduced, 7 not reproduced and 13 blocked. Eight of the blocked claims are blocked because the claims file's own readings still disagree.
+
+Files changed:
+- **Entry:** the six notebooks, `objcode.py`, `README.md` and `entry.yaml`.
+- **Attempt record:** `attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml`.
+- **Questions:** `questions/ebrains-q0fg-1x8.yaml`, with the new question.
+
+## End of run
+
+68 turns, 126 minutes, result: success.

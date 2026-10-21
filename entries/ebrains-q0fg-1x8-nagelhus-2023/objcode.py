@@ -38,6 +38,12 @@ questions/ebrains-q0fg-1x8.yaml, and each claim's criterion):
 - `speed`: for the decoders, "a" rate maps and occupancy from epochs above 2.5 cm/s, "b" no speed
   filter (claims file, distance decoder).
 - `field`: "a" a field's peak is at least 1 Hz; "b" every bin of a field is at least 1 Hz.
+- `si` (spatial information, fig7 criterion): lambda "a" the trial's speed-filtered spikes over
+  speed-filtered time; "b" the occupancy-weighted mean of the smoothed map.
+- Object-vector score (ovs-method-extra-cells criterion): vector-map bins of 2 cm and 10 degrees,
+  smoothing SD 1.5 bins (reference 12, Andersson et al. 2021); range "r-a" to the largest distance
+  sampled in either trial, "r-b" in both. Which fields decide the exclusion of cells whose fields
+  would leave the arena in OM is not given (asked); the notebook runs "x-a" any field, "x-b" all.
 
 Standard choices for details that cannot change a result (stated here once): speed from the
 gradient of position over time; tracking samples without a position are dropped with their time,
