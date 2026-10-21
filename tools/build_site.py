@@ -444,6 +444,31 @@ PIPELINE_STEPS = [("paper", "Paper"), ("claims", "Claims"), ("check", "Claims ch
                   ("attempt", "Attempt"), ("questions", "Questions"), ("verified", "Verified")]
 
 
+def queue_estimates(q: dict) -> dict[str, dict]:
+    """Each queued dataset's place in its runner's queue, and how many hours from now it should be done.
+
+    The lanes take the datasets in order, each taking the median time of a recent chain (the runs' times,
+    `tools/runner/describe.py queue`), and the attempts they have going now are taken to be half done.
+    A dataset in both queues gets the full runner's estimate."""
+    out = {}
+    for kind in ("claims", "full"):
+        hours = (q.get("hours") or {}).get(kind)
+        free = [hours / 2 if hours else 0.0] * max(1, (q.get("lanes") or {}).get(kind, 1))
+        for place, folder in enumerate(q.get(kind, []), 1):
+            lane = free.index(min(free))
+            free[lane] += hours or 0.0
+            out[key_of_dir(folder)] = {"kind": kind, "place": place, "hours": free[lane] if hours else None}
+    return out
+
+
+def in_hours(hours: float | None) -> str:
+    if hours is None:
+        return ""
+    if hours < 1:
+        return "within the hour"
+    return f"about {round(hours)} hours" if hours < 48 else f"about {round(hours / 24)} days"
+
+
 def pipeline_rows(data: dict) -> list[dict]:
     """One row per target: the state of each step of docs/pipeline.md, read from the repository.
 
@@ -451,6 +476,8 @@ def pipeline_rows(data: dict) -> list[dict]:
     pass), "todo", "deprecated", or "none" (a step that does not apply)."""
     inputs = data.get("pipeline") or {"papers": {}, "checks": {}, "questions": {}}
     current = current_attempts(data)
+    queued = queue_estimates(data.get("queue") or {})
+    branches = {key_of_dir(f) for f in (data.get("queue") or {}).get("branches", [])}
     out = []
     for t in data["targets"]:
         d = t["key"]
@@ -484,7 +511,8 @@ def pipeline_rows(data: dict) -> list[dict]:
         out.append({"dataset": t["label"], "key": d, "name": t["name"], "state": state, "next": nxt,
                     "issue": data.get("issues", {}).get(t["label"]),
                     "waiting": [label for key, label in PIPELINE_STEPS if state[key][0] == "waiting"],
-                    "missing": missing, "page": page_of(d) if atts or d in data.get("claim_files", {}) else None})
+                    "missing": missing, "page": page_of(d) if atts or d in data.get("claim_files", {}) else None,
+                    "queue": queued.get(d), "branch": d in branches})
     return out
 
 
@@ -1073,6 +1101,7 @@ var rank={done:0,waiting:1,deprecated:2,todo:3,none:4};
 var state={q:'',step:'',st:'',col:-1,dir:1,page:1,size:50};
 var $=function(id){return document.getElementById(id);};
 function key(tr,col){var td=tr.cells[col],t=td.textContent.trim();
+  if(td.dataset.sort!==undefined)return [0,td.dataset.sort];
   return td.classList.contains('ps')?[rank[td.className.split(' ')[1]],t]:[0,t];}
 function cmp(a,b){return a[0]-b[0]||a[1].localeCompare(b[1],undefined,{numeric:true,sensitivity:'base'});}
 function shown(tr){
@@ -1140,9 +1169,20 @@ def page_pipeline(data: dict) -> str:
         cells = "".join(f'<td class="ps {e(r["state"][key][0])}" title="{e(r["state"][key][0])}">'
                         f'{e(r["state"][key][1])}</td>' for key, _ in PIPELINE_STEPS)
         states = " ".join(f'data-{key}="{e(r["state"][key][0])}"' for key, _ in PIPELINE_STEPS)
+        q = r["queue"]
+        if r["branch"]:
+            place, sort, when, hours = "branch open", 0, "", -1
+        elif q:
+            place = f'{q["place"]:,} for {"an attempt" if q["kind"] == "full" else "claims"}'
+            sort = q["place"] + (0 if q["kind"] == "full" else 100000)
+            when, hours = in_hours(q["hours"]), q["hours"]
+        else:
+            place, sort, when, hours = "", 999999, "", None
         body += (f'<tr {states}><td>{name}</td>'
                  f'<td class="pname">{e(r["name"])}</td>{cells}<td class="small">{e(r["next"])}'
-                 + (f' · <a href="{e(r["issue"])}">waiting on you</a>' if r["issue"] else "") + '</td></tr>')
+                 + (f' · <a href="{e(r["issue"])}">waiting on you</a>' if r["issue"] else "") + '</td>'
+                 f'<td class="small" data-sort="{sort}">{e(place)}</td>'
+                 f'<td class="small" data-sort="{999999 if hours is None else round(hours * 10)}">{e(when)}</td></tr>')
     waiting = [r for r in rows if r["waiting"]]
     papers_missing = sum(len(r["missing"]) for r in waiting)
     charted = {key: {} for key, _ in PIPELINE_STEPS}
@@ -1154,6 +1194,19 @@ def page_pipeline(data: dict) -> str:
     step_opts = "".join(f'<option value="{key}">{e(label)}</option>' for key, label in PIPELINE_STEPS)
     state_opts = "".join(f'<option value="{st}">{e(name)}</option>' for st, name in TABLE_STATES)
     updated = datetime.datetime.fromisoformat(data["generated"]).strftime("%Y-%m-%d %H:%M UTC")
+    q = data.get("queue") or {}
+    queue_note = ""
+    if q.get("full") is not None:
+        hours, lanes = q.get("hours") or {}, q.get("lanes") or {}
+        def part(kind: str, what: str) -> str:
+            n, h, k = len(q.get(kind, [])), hours.get(kind), lanes.get(kind, 1)
+            each = (f", at about {h:.1f} hours each" if h and h >= 1 else f", at about {round(h * 60)} minutes each" if h
+                    else "")
+            return (f'{n:,} dataset{" waits" if n == 1 else "s wait"} for {what} on {k} lane{"s" if k != 1 else ""}{each}'
+                    + (f', about {in_hours(n * h / k).removeprefix("about ")} in all' if h and n else ""))
+        queue_note = (f' {part("full", "an attempt")}, and {part("claims", "their claims to be read")}. '
+                      'The Queue and Done in columns give each dataset’s place and a rough estimate of when it '
+                      'will be done, counted from the last update.')
     n_issues = len(data.get("issues", {}))
     issues_note = (f' The runner has stopped on <a href="{REPO_URL}/issues?q=is%3Aissue+is%3Aopen+label%3Aneeds-you">'
                    f'{n_issues:,} dataset{"s" if n_issues != 1 else ""}</a> that need a person.' if n_issues else "")
@@ -1163,7 +1216,7 @@ def page_pipeline(data: dict) -> str:
   <a href="{REPO_URL}/blob/main/docs/pipeline.md">pipeline</a>: its paper, the claims read from it and their
   check, the attempt, the questions it raised, and verification. {len(waiting):,} targets are waiting on a person,
   with {papers_missing:,} papers to supply; the list of missing papers is in
-  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.{issues_note}</p>
+  <a href="{REPO_URL}/blob/main/papers/manifest.yaml">papers/manifest.yaml</a>.{issues_note}{queue_note}</p>
   <p class="small muted">Last updated <time id="updated" datetime="{e(data["generated"])}">{e(updated)}</time>.
   The page is rebuilt whenever main changes.</p>
 </header>
@@ -1175,7 +1228,7 @@ def page_pipeline(data: dict) -> str:
   <strong id="pcount" aria-live="polite"></strong>
 </div>
 <div class="panel pipeline-wrap"><table class="pipeline">
-<thead><tr><th>{sort_button("Dataset")}</th><th>{sort_button("Name")}</th>{head}<th>{sort_button("Next")}</th></tr></thead>
+<thead><tr><th>{sort_button("Dataset")}</th><th>{sort_button("Name")}</th>{head}<th>{sort_button("Next")}</th><th>{sort_button("Queue")}</th><th>{sort_button("Done in")}</th></tr></thead>
 <tbody>{body}</tbody></table></div>
 <nav class="pager" id="ppager" aria-label="Pages"></nav></main>
 <script>
@@ -1765,6 +1818,8 @@ def main() -> int:
                         help="build from N made-up attempts, to test the site at scale; never publish")
     parser.add_argument("--issues", type=Path, metavar="JSON",
                         help="the open needs-you issues (gh issue list --json title,url), to link from the pipeline")
+    parser.add_argument("--queue", type=Path, metavar="JSON",
+                        help="the runners' queues and chain times (tools/runner/describe.py queue), for the pipeline")
     parser.add_argument("--noindex", action="store_true",
                         help="keep the pages out of search results, for a preview of a pull request")
     args = parser.parse_args()
@@ -1773,6 +1828,8 @@ def main() -> int:
     if args.demo:
         data = demo(data, args.demo)
     data["noindex"] = args.noindex
+    if args.queue and args.queue.is_file():
+        data["queue"] = json.loads(args.queue.read_text())
     if args.issues and args.issues.is_file():
         # An issue's title is "<dataset label>: waiting on you" (tools/notify.py).
         data["issues"] = {i["title"].rsplit(": waiting on you", 1)[0]: i["url"]
