@@ -1,0 +1,928 @@
+schema_version: 2
+id: 000061-girardeau-2017-02
+dataset:
+  archive: dandi
+  id: "000061"
+  version: 0.250624.0426
+  doi: 10.48324/dandi.000061/0.250624.0426
+paper: doi:10.1038/nn.4637
+date: 2026-10-20
+entry: 000061-girardeau-2017
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+outcomes:
+- claim: unit-counts
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:unit-counts
+  measured: [40, 4702, 2317, 515, 440, 1430, 1118, 482, 935, 829]
+  notes: The dandiset holds 40 sessions (33 with a units table) and 4702 units, against 61 sessions
+    and 7,390 units, both outside the 10% tolerance, so the criterion's totals fail. Only Rat08,
+    taken as rat 1, is within tolerance (2317 against 2,444); Rat09, Rat10 and Rat11 hold 515, 440
+    and 1430 against 1,294, 1,138 and 2,514. By label there are 1118 BLA (bla and BLA), 482 central
+    nuclei, 935 piriform and 829 hippocampal units against 2,038, 782, 1,560 and 1,210; the wider
+    amygdala labels (bla, blv, bmp, ladl) give 1977. The difference is in the data deposited, fewer
+    days and units than the paper reports. No outcome in the earlier attempt, which had no such claim.
+  deviations:
+  - The dandiset does not say which of Rat08 to Rat11 are the paper's rats 1 to 4. Rat09, the rat
+    without hippocampal units, is taken as rat 2 (whose hippocampal probe failed) and the others in
+    order; this is an assumption.
+  - Units are counted as stored, one per session, including units 0 and 1 of the ten files whose
+    spike index is wrong; location counts use the dandiset's labels read as the paper's structures.
+- claim: rats-learn-puff-location
+  outcome: blocked
+  blocked_by: too_large
+  notes: The criterion needs the rat's speed in the 20 cm before the day's and the previous day's
+    air puff location, so it needs position on the track and the puff locations. The dandiset holds
+    neither, only puff times and the raw video frames (40 run videos, 1920573 frames, 1328 GB
+    uncompressed); streaming 20 frames took 8.3 s in the final run, about 222 hours for the run
+    frames alone, before any tracking, and the video timestamps are not on the session clock. No
+    file has a Position, SpatialSeries or other behavioural time series group (the data check lists
+    the groups of every file). Same outcome as the earlier attempt, which blocked it for the same
+    reason.
+- claim: each-rat-learns-puff-location
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on rats-learn-puff-location (speed ratios from position), which is blocked as too
+    large. No outcome in the earlier attempt.
+- claim: dz-speed-slower-post-run
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on rats-learn-puff-location (danger-zone speeds from position), which is blocked as
+    too large. No outcome in the earlier attempt.
+- claim: puff-location-no-speed-bias
+  outcome: blocked
+  blocked_by: too_large
+  notes: Depends on rats-learn-puff-location and needs the puff location on the track, which the
+    dandiset does not hold (only puff times). No outcome in the earlier attempt.
+- claim: habituation-over-days
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:habituation-over-days
+  notes: Under O1 reading c, over 40 sessions of four rats, the habituation index rises with
+    training day for each lap count, pooled Spearman rho 0.383 (p = 0.015) for all laps, 0.331 (p =
+    0.046, 37 sessions with a puff direction) for air puff laps and 0.397 (p = 0.011) for
+    left-to-right laps. The correlation is positive in all four rats for each count, with p < 0.05
+    in Rat08, Rat09 and Rat10 and not in Rat11 (rho 0.32 to 0.33). Both readings of "gradually
+    diminished" hold for all three counts, so the outcome holds under every reading the dandiset
+    allows. The answer to this attempt's question (questions/000061.yaml) confirmed that the claim
+    is judged on O1 reading c alone when the dataset holds neither lap intervals nor position, and
+    the criterion now says so; the outcome, reproduced before the answer, is unchanged. No outcome in
+    the earlier attempt.
+  deviations:
+  - Laps are O1 reading c, the intervals between consecutive rewards at opposite ends with both
+    rewards inside the run. Reading a has no lap intervals in the dandiset (its trials table is not
+    laps) and reading b needs position, which it lacks. As answered, the claim is judged on reading
+    c alone; the hand-picked 150-cm window of ClassifyLaps.m is not reproduced by any reading.
+    A reading c lap runs from reward to reward, so it includes the time on the starting platform
+    and any stop, which the M8 laps leave out; the count of laps is the same either way.
+  - The air puff direction of a day is the lap direction holding most puffs (1153 of 1197 puffs
+    fall in run laps of that direction); the dandiset gives no direction. Rat08-20130709 has no
+    puff inside a run lap and has no air puff count.
+  - Training day is the rank of the recording date within each rat, over the 40 files; the paper's
+    55 behaviour sessions include days the dandiset does not hold.
+- claim: bla-pyr-sleep-firing-increase
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:bla-pyr-sleep-firing-increase
+  notes: On the 152 identified excitatory BLA units of five Rat08 sessions, the REM/wake ratio has
+    a median of 0.39 (positive in 120, p = 7.0e-15) and the NREM/wake ratio a median of 0.18
+    (positive in 108, p = 7.2e-12); both are positive and the REM median exceeds the NREM median. By
+    session the REM ratio reaches p < 0.05 in four of five sessions and the NREM ratio in three
+    (Rat08-20130713, 22 cells, reaches neither). The paper had 675 cells from four rats; these 152
+    come from one rat, a smaller sample. The answer to this attempt's question
+    (questions/000061.yaml) confirmed that the claim is judged on O4 reading a alone, the identified
+    cells of the Fig. 2c legend, and O4 now says so; the outcome, reproduced before the answer, is
+    unchanged. No outcome in the earlier attempt.
+  deviations:
+  - Cells are the units the dandiset's cell_type column marks excitatory, read as the paper's
+    monosynaptically identified pyramidal cells (O4 reading a). The column exists in five Rat08
+    files only, so the test uses one rat and about a fifth of the paper's cells. Reading b (all
+    putative pyramidal cells) cannot be formed; as answered, it is not needed for the outcome.
+  - Units 0 and 1 of files with a wrong spike index are left out (Rat08-20130710 and 20130711).
+- claim: bla-int-sleep-firing
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:bla-int-sleep-firing
+  notes: On the 36 identified inhibitory BLA units of five Rat08 sessions, the REM/wake ratio has a
+    median of 0.029 (positive in 22) with two-sided Wilcoxon p = 0.020, so the paper's test finds a
+    REM change the claim says is absent. The NREM/wake ratio has a negative median (-0.035, positive
+    in 16) with p = 0.26, so the decrease is not significant. Neither part holds, which the criterion
+    calls not reproduced. By session only Rat08-20130711 (12 cells) has a REM ratio with p < 0.05.
+    The paper had 175 interneurons from four rats; the REM effect here is small (median 0.029) and
+    rests on one rat. The answer to this attempt's question (questions/000061.yaml) confirmed that
+    the claim is judged on O4 reading a alone; the outcome, not reproduced before the answer, is
+    unchanged. As context (decides nothing), the REM effect size r is 0.39 against the paper's 0.09
+    and the bootstrap 95% interval of the REM median is -0.015 to 0.109; the NREM r is -0.19 against
+    the paper's -0.45, and with 36 cells a NREM shift of about 0.068 would be detected with 80%
+    power. A short-latency cross-correlogram check finds an inhibitory partner at p < 1e-6 for 34
+    of the 36 inhibitory units (94.4%), against 2.0% of excitatory and 7.9% of unclassified BLA
+    units, consistent with the column marking identified interneurons. No outcome in the earlier
+    attempt.
+  deviations:
+  - Cells are the units marked inhibitory in the five typed Rat08 files, read as the paper's
+    identified interneurons (O4 reading a, which as answered decides alone); reading b cannot be
+    formed.
+- claim: hpc-bla-reactivation-post-sleep
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion computes EV and REV over hippocampus-BLA putative pyramidal pairs. The
+    dandiset has no putative cell types; its cell_type column (five Rat08 files) marks only
+    identified cells, and no file has six hippocampal units marked excitatory. The earlier attempt
+    reproduced this id with another measure (singular-vector joint patterns over all units at 0.1 Hz
+    or more); the claim now uses the paper's EV against REV on pyramidal pairs, which the dandiset
+    cannot select. The same test with all cells is reactivation-all-cell-pairs, reproduced here (15
+    sessions, p = 0.00031).
+- claim: reactivation-all-cell-pairs
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:reactivation-all-cell-pairs
+  notes: Over 15 sessions (9 Rat08, 3 Rat10, 3 Rat11; the paper had 27), EV exceeds REV in 13, mean
+    EV - REV 3.48% (s.e.m. 0.99), two-sided Wilcoxon p = 0.00031. EV exceeds REV in all 9 Rat08 and
+    all 3 Rat11 sessions and in 1 of 3 Rat10 sessions (median -0.023%). The wider amygdala labels
+    give 22 sessions, 17 with EV above REV, p = 0.0005. Reported only, EV - REV in successive 20-min
+    periods of post-NREM has means of 2.49, 1.27 and 0.52% (p = 0.018, 0.035 and 1). No outcome in
+    the earlier attempt.
+  deviations:
+  - BLA is the bla label (case ignored); the wider amygdala labels are a variant.
+  - Units 0 and 1 of the files with a wrong spike index are left out.
+  - A 50-ms bin belongs to an epoch when its centre does, a standard choice.
+- claim: reactivation-decay
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Pyramidal pairs, and depends on hpc-bla-reactivation-post-sleep, which is blocked. The
+    all-cell 20-min periods are reported under reactivation-all-cell-pairs (means 2.49, 1.27 and
+    0.52%). No outcome in the earlier attempt.
+- claim: no-rem-reactivation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Both tests of the criterion use pyramidal pairs (hippocampus-BLA and hippocampus-piriform).
+    The criterion's variant, hippocampus-BLA with all cells in REM, is shown as a description, 14
+    sessions, EV above REV in 8, p = 0.43. No outcome in the earlier attempt.
+- claim: piriform-weaker-reactivation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Pyramidal pairs, and depends on hpc-bla-reactivation-post-sleep, which is blocked. No
+    outcome in the earlier attempt.
+- claim: cen-no-reactivation
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:cen-no-reactivation
+  notes: Hippocampus-central nuclei EV does not differ from REV in NREM (9 sessions, median EV - REV
+    0.60%, EV above REV in 7, p = 0.30) or in REM (8 sessions, median 0.085%, 6 of 8, p = 0.25), so
+    the paper's test finds no reactivation. The paper had 19 sessions in each; with 9 and 8 the test
+    has less power, and the NREM median is positive. As context (decides nothing), the effect sizes
+    r are 0.34 (NREM) and 0.41 (REM) against the paper's 0.08 and -0.09; with these sessions a
+    shift of the median EV - REV of about 3.0% (NREM) or 0.95% (REM) would be detected with 80%
+    power, and the bootstrap 95% interval of the NREM median, -2.4 to 4.1%, includes the
+    hippocampus-BLA median of 1.96%. Resampling the hippocampus-BLA sessions at 9 and 8, a
+    reactivation distributed as the BLA's reaches p < 0.05 in 92% and 93% of samples. The absence
+    holds on the paper's test and is weak evidence. No outcome in the earlier attempt.
+  deviations:
+  - Central nuclei are the cen label. Units 0 and 1 of files with a wrong spike index are left out.
+- claim: intra-structure-reactivation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion needs four NREM tests, two on putative pyramidal pairs, so it cannot be
+    decided. As a description, with all pairs the hippocampus reactivates in NREM (23 sessions, EV
+    above REV in 19, p = 0.0054) and the BLA does not reach p < 0.05 (16 sessions, 9, p = 0.14); in
+    REM neither does (p = 0.83 and 0.21). Since the BLA all-pairs NREM test fails, the claim could
+    at best be partially reproduced even with putative types. A BLA-only variant on the identified
+    excitatory units (five Rat08 sessions, each with at least six) gives EV above REV in 4 of 5, p
+    = 0.44, and five sessions cannot reach p < 0.05 (smallest two-sided p 0.0625); no file has six
+    identified excitatory hippocampal units. No outcome in the earlier attempt.
+- claim: bla-ripple-up-subgroup
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The claim gives the fractions of putative BLA interneurons and pyramidal cells that are
+    upmodulated, and the dandiset has no putative types. As a description, the paper's Poisson test
+    (M6) on all 822 BLA units of 17 sessions finds 105 (12.8%) upmodulated under O2 reading a (110
+    under b); among the identified units of five files, 8 of 36 inhibitory (22.2%) and 9 of 152
+    excitatory (5.9%). The earlier attempt reproduced this id with another test (spikes in ripple
+    windows against shifted windows, all BLA units) on the abstract's statement; the claim now
+    states fractions by cell type, which the dandiset cannot give.
+- claim: bla-ripple-down-subgroup
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Fractions by putative cell type, and depends on bla-ripple-up-subgroup. As a description,
+    85 of 822 BLA units (10.3%) are downmodulated under O2 reading a. No outcome in the earlier
+    attempt.
+- claim: ripple-modulated-cells-larger-reactivation
+  outcome: not_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:ripple-modulated-cells-larger-reactivation
+  notes: With all cells over 12 sessions (the paper had 19), EV - REV is larger with the modulated
+    BLA units in 7, mean 4.18% against 1.68% for the non-modulated units, two-sided rank sum p =
+    0.27 under O2 reading a and 0.3 under reading b, so the all-cell test does not hold. The
+    non-modulated mean is within the expected 1.76 +/- 0.56%; the modulated mean is below the
+    expected 6.07 +/- 1.3%. By rat the modulated units give the larger value in 4 of 7 Rat08, 0 of
+    2 Rat10 and 3 of 3 Rat11 sessions; 12 of the 23 sessions with sleep and ripples have more than 5
+    hippocampal and 5 modulated BLA units. The pyramidal test cannot be run (no putative types). Before the answer
+    to this attempt's question (questions/000061.yaml) the claim was blocked as
+    metadata_insufficient through bla-ripple-up-subgroup; the answer removed that dependency, M6
+    needing no cell type, and the criterion now judges the all-cell test alone when the pyramidal
+    test cannot be run, not reproduced when it does not hold. No outcome in the earlier attempt.
+  deviations:
+  - Only the all-cell test is run; the pyramidal-pair test needs putative types the dandiset lacks.
+  - BLA is the bla label (case ignored); units 0 and 1 of the files with a wrong spike index are
+    left out.
+- claim: run-correlated-pair-fractions
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Fractions of hippocampus-BLA putative pyramidal pairs, which the dandiset cannot select. No
+    outcome in the earlier attempt.
+- claim: reactivation-involves-ripple-up-cells
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion crosses putative pyramidal pairs with the ripple modulation of their BLA
+    partner, and the dandiset has no putative types. The earlier attempt reproduced this id with the
+    weights of BLA units in singular-vector joint patterns, a measure the claim no longer uses; the
+    claim now tests the nine pair groups of the paper's Fig. 5a, which cannot be formed here.
+- claim: pair-group-ev
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on reactivation-involves-ripple-up-cells (pyramidal pair groups). No outcome in the
+    earlier attempt.
+- claim: contributing-up-cells-gain-increase
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Contributions are computed over pooled putative pyramidal pairs, and the cells are
+    upmodulated by bla-ripple-up-subgroup, both of which need putative types. No outcome in the
+    earlier attempt.
+- claim: ev-independent-of-firing-rate
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Uses the pooled pyramidal pairs of run-correlated-pair-fractions. No outcome in the earlier
+    attempt.
+- claim: reactivation-peaks-at-ripples
+  outcome: partially_reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:reactivation-peaks-at-ripples
+  notes: With all cells, the ripple-peak strength of the whole-run template is higher in post-NREM
+    than in pre-NREM in 11 of 15 sessions (median difference 0.0224, one-tailed p = 0.0042; the
+    paper 0.00189 over 27 sessions); post exceeds pre in 7 of 9 Rat08, 2 of 3 Rat10 and 2 of 3 Rat11
+    sessions. The pyramidal test cannot be run, so the pyramidal part of the
+    statement is not tested. R leaves out units silent in the template or in a sleep epoch's NREM,
+    5 of all units entering (1 hippocampal in Rat08-20130713, 2 in Rat11-20150326, 2 BLA in
+    Rat11-20150325). Before the answer to this attempt's question (questions/000061.yaml)
+    the claim was blocked as metadata_insufficient through hpc-bla-reactivation-post-sleep; the
+    answer removed that dependency, sessions entering by the M7 cell minimum alone, and the
+    criterion now judges the all-cell test alone when the pyramidal test cannot be run, partially
+    reproduced when it has p < 0.05. The earlier attempt reproduced this id with singular-vector
+    patterns and two readings of the abstract; the claim now uses the paper's reactivation strength
+    R.
+  deviations:
+  - Only the all-cell test is run; the pyramidal test needs putative types the dandiset lacks.
+  - BLA is the bla label (case ignored); units 0 and 1 of the files with a wrong spike index are
+    left out.
+- claim: airpuff-trajectory-ripple-reactivation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Pyramidal cells. As a description, the all-cell air puff template gives post above pre in
+    10 of 14 sessions, one-tailed p = 0.01 (under direction-all-cell-pairs). No outcome in the
+    earlier attempt.
+- claim: safe-trajectory-no-ripple-reactivation
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Pyramidal cells. As a description, the all-cell safe template gives post above pre in 12
+    of 14 sessions, one-tailed p = 0.0043. No outcome in the earlier attempt.
+- claim: aversive-direction-stronger
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: The criterion compares the post minus pre ripple-peak strength R of air puff and safe
+    templates of pyramidal cells. The earlier attempt found this id not reproduced (p = 0.11) with
+    singular-vector patterns over all units, a measure the paper does not use; the claim now uses R
+    on pyramidal cells, which the dandiset cannot select. As a description, with all cells the air
+    puff change does not exceed the safe one (8 of 14 sessions, one-tailed p = 0.48).
+- claim: direction-all-cell-pairs
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:direction-all-cell-pairs
+  notes: With all cells over 14 sessions (the paper had 27), the air puff template is more
+    reactivated around post-NREM than pre-NREM ripples in 10 (one-tailed p = 0.01), the safe
+    template in 12 (p = 0.0043), and the air puff change exceeds the safe change in 8 (one-tailed p =
+    0.48), so both within-trajectory tests have p < 0.05 and the between-trajectory test has p >=
+    0.05. By rat the air puff template rises in 7 of 8 Rat08, 2 of 3 Rat10 and 1 of 3 Rat11
+    sessions, so its result rests mostly on Rat08. Reading c laps include the time on the starting
+    platform and stops (median lap 22.6 s, but minutes long in early Rat08 sessions); leaving out
+    Rat08-20130708, the only session with fewer than 3 laps in a template (one safe lap of 23 s),
+    gives air puff p = 0.0052, safe p = 0.0052 and air puff greater than safe p = 0.37 (13
+    sessions). Long laps are not limited to that session (median air puff laps of 660 s in
+    Rat08-20130711, 192 s in Rat08-20130710 and 46 to 115 s in four other Rat08 sessions), so two
+    further variants, with values of the author's that decide nothing, limit the platform time and
+    stops. With laps of at most 30 s (11 sessions) the result is the same (air puff p = 0.034, safe
+    p = 0.021, air puff greater than safe p = 0.71). With each lap cut to its last 10 s (14
+    sessions) the air puff test holds (p = 0.034) but the safe test does not reach p < 0.05 (10 of
+    14, p = 0.052), and air puff greater than safe has p = 0.36. The result under the criterion's
+    laps thus depends in part on the time around the run that reading c laps hold; the criterion
+    fixes reading c, so the outcome is unchanged. Before the answers to this attempt's questions (questions/000061.yaml) the claim was
+    blocked as metadata_insufficient through aversive-direction-stronger; the answers removed that
+    dependency, the claim using that claim's procedure but not its result, and confirmed that laps
+    are judged on O1 reading c alone here. No outcome in the earlier attempt.
+  deviations:
+  - Laps are O1 reading c (between rewards at opposite ends); the dandiset has no lap intervals or
+    position. The air puff direction of a day is the lap direction holding most puffs. These laps
+    include the time on the starting platform after each reward and any stop, so the air puff and
+    safe templates hold awake activity off the track that the M8 laps (position inside a 150-cm
+    window) leave out.
+  - BLA is the bla label (case ignored); units 0 and 1 of the files with a wrong spike index are
+    left out.
+- claim: bla-rate-same-across-directions
+  outcome: blocked
+  blocked_by: too_large
+  notes: The criterion gives not reproduced when either test (BLA pyramidal cells, all BLA cells)
+    has p < 0.05 under every reading, and its readings include O7 reading b, the mean of each
+    cell's position firing-rate curve, which needs position that only tracking the raw video would
+    give (too large, as for rats-learn-puff-location). Under the readings that can be run (O7
+    reading a, rates over laps from reward times), the all-cell test has p < 0.05 under both
+    session readings, median air puff minus safe 0.0036 Hz, p = 0.022 (739 cells, 14 sessions) and
+    0.0032 Hz, p = 0.0048 (1033 cells, 21 sessions), the direction of not reproduced; only O7
+    reading b keeps the claim from that outcome. The pyramidal test cannot be run (no putative
+    types) and is not needed for not reproduced. The difference may come from the platform time
+    and stops these laps hold, not from the trajectory. With laps of at most 30 s it remains
+    (0.0050 Hz, p = 0.016, 466 cells in 11 sessions; 0.0030 Hz, p = 0.0043, 760 cells in 18
+    sessions), but with each lap cut to its last 10 s it is gone (median 0.0000 Hz, p = 0.75 and
+    0.82); these variants are the author's and decide nothing. Blocked as metadata_insufficient before the
+    verifier's round 1, which pointed out that the all-cell test alone can decide. No outcome in
+    the earlier attempt.
+- claim: ripple-rate-unchanged
+  outcome: reproduced
+  notebook: reproduce_girardeau_2017.ipynb
+  output: claim:ripple-rate-unchanged
+  notes: Over 23 sessions (the paper had 41), the median ripple rate is 0.611 Hz in pre-NREM and
+    0.587 Hz in post-NREM; post minus pre has a median of 0.0315 Hz, is positive in 15, and the
+    two-sided Wilcoxon p is 0.26, so the paper's test finds no difference. By rat the median change
+    is 0.089 Hz in Rat08 (8 of 9 higher in post), -0.008 Hz in Rat10 and 0.007 Hz in Rat11. As
+    context (decides nothing), the effect size r is 0.24 against the paper's 0.20, the bootstrap 95%
+    interval of the median change is -0.008 to 0.051 Hz (-1.4% to 8.4% of the median pre-NREM rate
+    of 0.611 Hz), and 23 sessions detect a change of about 0.068 Hz (11% of the rate) with 80% power
+    (0.050 Hz with the paper's 41); a change larger than about a tenth of the rate is excluded, a
+    smaller one is not. No outcome in the earlier attempt.
+  deviations:
+  - Ripples are the dandiset's rip annotations, counted in NREM when their peak is, a standard
+    choice.
+- claim: contributing-pairs-run-sleep-coupling
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on contributing-up-cells-gain-increase (pair contributions over putative pyramidal
+    pairs). No outcome in the earlier attempt.
+- claim: contributing-quartiles-run-sleep-coupling
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notes: Depends on contributing-pairs-run-sleep-coupling. No outcome in the earlier attempt.
+findings:
+- kind: metadata_insufficient
+  statement: New in this attempt. The putative cell types the paper uses (pyramidal cell or
+    interneuron for every unit, from monosynaptic connections and then k-means on the waveform) are
+    not in the dandiset, and there are no spike waveforms. Five of the 33 files with units
+    (Rat08-20130709 to 20130713) have a cell_type column with the values excitatory, inhibitory and
+    unclassified, described only as "Type of cell this has been classified as."; it marks 152
+    excitatory and 36 inhibitory BLA units and 9 excitatory hippocampal units, consistent with the
+    paper's monosynaptic identification alone. A short-latency cross-correlogram check supports
+    this reading of the column. At p < 1e-6, 99.3% of the excitatory BLA units excite and 94.4% of
+    the inhibitory ones inhibit another loaded unit at 1 to 4 ms, against 44% and 7.9% of the
+    unclassified ones. Most of the paper's reactivation analyses cannot be repeated (17 claims
+    blocked for this alone). The earlier attempt did not read this column.
+- kind: data_missing
+  statement: New in this attempt. The dandiset holds 40 recording days with 4702 units, where the
+    paper reports 61 sessions with 7,390 units; per rat it holds 2317, 515, 440 and 1430 units
+    (Rat08 to Rat11) against 2,444, 1,294, 1,138 and 2,514. Which rat is which of the paper's rats
+    1 to 4 is not stated.
+- kind: metadata_error
+  statement: New in this attempt. The archive's asset metadata (variableMeasured) is wrong for all
+    40 files on two entries. It lists ElectricalSeries for the 24 files that hold no raw voltage
+    and not for the 16 that hold it (acquisition/ElectricalSeries in Rat08-20130708 to 20130713
+    and all Rat09 files), and ProcessingModule for the 16 files without a behavior module and not
+    for the 24 with one. Its Units entries agree with the files.
+- kind: metadata_error
+  statement: Still present (found by 000061-girardeau-2017-01; the version and the files are
+    unchanged, and the draft holds the same assets). The epochs table is stored in milliseconds
+    although its columns say seconds; in all 40 files its last stop time is exactly 1000 times the
+    LFP duration.
+- kind: metadata_error
+  statement: Still present (found by 000061-girardeau-2017-01). Video timestamps are stated in
+    seconds but are in milliseconds and are not on the session clock; the first timestamp matches
+    the start of the video's epoch in 1 of 114 videos, while the spans match the epoch durations in
+    93 of 114.
+- kind: format_error
+  statement: Still present (found by 000061-girardeau-2017-01). In ten files the spike_times_index
+    is wrong at the first units; unit 1's spike times fall back once, after 65536 times k spikes,
+    and unit 0 stops where unit 1 starts, so the first part of unit 1 is the end of unit 0. Units 0
+    and 1 of these files were left out of the analyses.
+- kind: data_missing
+  statement: Still present (found by 000061-girardeau-2017-01). Seven files have no units table,
+    sixteen have no sleep states and fourteen have no ripple events; the Rat09 files have no
+    hippocampal units and no ripples.
+- kind: data_missing
+  statement: Still present (found by 000061-girardeau-2017-01). There is no position tracking and no
+    air puff location, only the puff times and the raw video frames, so behaviour on the track
+    cannot be measured without tracking about 1.9 million frames; laps and the air puff direction
+    can only be inferred from reward and puff times.
+- kind: metadata_insufficient
+  statement: Still present in the dandiset (found by 000061-girardeau-2017-01). Unit region labels
+    are undescribed short codes (bla, blv, bmp, ladl, cen, den, ven, pir, plc01, PLCo1, cpu, hpc,
+    HIP, no label), some in two cases, Rat09-20140328 has no location column, and the electrode
+    table gives every channel as unknown. The paper's Supplementary Fig. 3 names the structures the
+    codes match (BLA, BLV, LaDL, BMA, BMP, Pir, VEn, DEn), which lets this attempt read them; the
+    dandiset still does not describe them.
+- kind: metadata_insufficient
+  statement: Still present (found by 000061-girardeau-2017-01). The trials table of the Rat08 and
+    Rat09 files is described only as "experimental trials"; its intervals of 3 to 5 s fall partly
+    outside the run and are not laps.
+- kind: metadata_insufficient
+  statement: Still present (found by 000061-girardeau-2017-01). The ripple annotations carry an
+    undescribed number in each label (for example "Ripple peak 156"), one per file, presumably the
+    detection channel; ripples, puffs and rewards are stored as annotation series under stimulus
+    presentation.
+- kind: methods_unavailable
+  statement: Partly fixed (found by 000061-girardeau-2017-01, when the paper's text was not
+    available). The full text was supplied for this attempt and the paper links its code
+    (github.com/buzsakilab/papers, GGirardeau-BLAHpcInteractions-Package), which the claims file's
+    reader read; the dandiset itself still links no analysis code, its related resources naming
+    only the paper.
+verifications:
+- date: '2026-10-20'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 1. The executed notebook with the conclusion cells and the summary removed, the helper
+    module and the claims file, with the paper. The verifier queried the archive''s asset metadata and
+    tested helper functions on synthetic inputs (EV and REV, pair correlations, the Poisson tails, the
+    peri-ripple bins, the interval helpers), finding them correct. Its report had no attempt record and
+    gave its own outcome for each claim; all 32 agree with the record, and for bla-rate-same-across-directions
+    it gave another blocking reason. Points not tied to one claim: the raw voltage reported in 16 files
+    disagrees with the asset metadata (24 other files); the author printed the groups of every file, which
+    confirm the 16 files, and recorded the asset metadata as wrong for ElectricalSeries and ProcessingModule
+    in all 40 files (new finding). M3''s rule dropping spikes after the last run epoch is not implemented;
+    the author kept it so and says in the helper docstring why it cannot change any bin used.'
+  results:
+  - claim: unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 40 sessions against 61, and 4,702 units against 7,390. Only rat 1 is within tolerance; the
+      totals fail, so the criterion gives not reproduced. The cause is an incomplete deposit (7 of 40
+      files have no units table), not a contradiction of the paper. Rat08 to Rat11 are mapped to the paper's
+      rats 1 to 4 by assumption; the unit totals do not depend on that mapping.
+    response: No change needed; the mapping is already recorded as an assumption in the deviations.
+  - claim: rats-learn-puff-location
+    agrees: true
+    outcome: blocked
+    reason: No position or puff location in the data, only gzip video frames, about 227 h of streaming
+      plus tracking. DANDI asset metadata lists no SpatialSeries or Position in any of the 40 assets.
+      Whether any file holds position or a processed behaviour module could not be checked, since the
+      loader opens only processing/behavior/states.
+    response: 'No change to the outcome. Added the output the verifier asked for: the data check now lists
+      the groups of every file with their NWB types and finds no Position, SpatialSeries or other behavioural
+      time series in any file.'
+  - claim: each-rat-learns-puff-location
+    agrees: true
+    outcome: blocked
+    reason: Same data gap.
+    response: 'No change to the outcome. Added the output the verifier asked for: the data check now lists
+      the groups of every file with their NWB types and finds no Position, SpatialSeries or other behavioural
+      time series in any file.'
+  - claim: dz-speed-slower-post-run
+    agrees: true
+    outcome: blocked
+    reason: Same data gap.
+    response: 'No change to the outcome. Added the output the verifier asked for: the data check now lists
+      the groups of every file with their NWB types and finds no Position, SpatialSeries or other behavioural
+      time series in any file.'
+  - claim: puff-location-no-speed-bias
+    agrees: true
+    outcome: blocked
+    reason: Same; it also needs the puff location on the track.
+    response: 'No change to the outcome. Added the output the verifier asked for: the data check now lists
+      the groups of every file with their NWB types and finds no Position, SpatialSeries or other behavioural
+      time series in any file.'
+  - claim: habituation-over-days
+    agrees: true
+    outcome: reproduced
+    reason: Pooled Spearman rho 0.38, 0.33, 0.40 with p = 0.015, 0.046, 0.011 for the three lap counts;
+      4 of 4 rats have rho > 0 under every lap count. Laps use O1 reading (c) only, which the criterion
+      allows, recorded as a deviation.
+    response: Outcome unchanged. The verifier raised the platform time of reading c laps for the air puff
+      and safe templates (direction-all-cell-pairs), not for this claim; the analysis cell and the deviation
+      here also say that a reading c lap includes the platform time and stops, and the lap count is
+      unaffected.
+  - claim: bla-pyr-sleep-firing-increase
+    agrees: true
+    outcome: reproduced
+    reason: 152 identified excitatory BLA cells (one rat, 5 sessions). REM median 0.39 (p = 7e-15) and
+      NREM median 0.18 (p = 7e-12); the REM median is above the NREM median. Nothing checks whether the
+      cell_type labels equal the paper's monosynaptically identified cells beyond firing rate; the outcome
+      rests on that unverified mapping.
+    response: 'Outcome unchanged. Added a short-latency cross-correlogram check of the typed files (data
+      check): at p < 1e-6, 99.3% of the excitatory BLA units excite another loaded unit at 1 to 4 ms against
+      44% of unclassified ones, consistent with monosynaptic identification. It is a standard check, not
+      the paper''s procedure, and decides nothing.'
+  - claim: bla-int-sleep-firing
+    agrees: true
+    outcome: not_reproduced
+    reason: n = 36. The REM/wake ratio is significant (median +0.029, p = 0.020), so the absence fails.
+      The NREM/wake ratio is not significant (median -0.035, p = 0.26). Neither part holds. The sample
+      is much smaller than the paper's 175, from one rat, and the notebook gives no power or effect-size
+      context. The identified-interneuron ripple fractions differ strongly from the paper's, and the inhibitory
+      label is checked only by firing rate.
+    response: 'Outcome unchanged. Added effect sizes against the paper''s (REM r 0.39 against 0.09, NREM
+      -0.19 against -0.45), bootstrap intervals of the medians and the NREM shift detectable with 80%
+      power (0.068). Added the cross-correlogram check: 94.4% of the inhibitory BLA units inhibit another
+      unit at p < 1e-6, against 2.0% of excitatory and 7.9% of unclassified units.'
+  - claim: hpc-bla-reactivation-post-sleep
+    agrees: true
+    outcome: blocked
+    reason: No putative cell types. The identified excitatory hippocampal units reach at most 4 per file,
+      below the minimum of 6. Confirmed.
+    response: No change needed.
+  - claim: reactivation-all-cell-pairs
+    agrees: true
+    outcome: reproduced
+    reason: EV > REV in 13 of 15 sessions, two-sided Wilcoxon p = 0.00031.
+    response: No change needed.
+  - claim: reactivation-decay
+    agrees: true
+    outcome: blocked
+    reason: Pyramidal pairs. The all-cell periods (means 2.49, 1.27, 0.52%) are descriptive only.
+    response: No change needed.
+  - claim: no-rem-reactivation
+    agrees: true
+    outcome: blocked
+    reason: Pyramidal pairs. The all-cell variant has p = 0.43.
+    response: No change needed.
+  - claim: piriform-weaker-reactivation
+    agrees: true
+    outcome: blocked
+    reason: Pyramidal pairs. Piriform spike trains are not even loaded (KEEP_LABELS).
+    response: No change needed.
+  - claim: cen-no-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: NREM p = 0.30 (9 sessions) and REM p = 0.25 (8 sessions); neither reaches p < 0.05. This is
+      a claim of absence tested with about half the paper's n (19), so the reproduced outcome is weak
+      evidence of absence; the notebook gives no power or effect-size context.
+    response: Outcome unchanged, as the criterion decides on p. Added effect sizes against the paper's,
+      bootstrap intervals, the shifts detectable with 80% power (3.0% NREM, 0.95% REM) and the power to
+      detect a reactivation distributed as the hippocampus-BLA one (92% and 93%); the NREM interval (-2.4
+      to 4.1%) includes the hippocampus-BLA median. The conclusion, notes, summary and README now call
+      the absence weak evidence.
+  - claim: intra-structure-reactivation
+    agrees: true
+    outcome: blocked
+    reason: Pyramidal tests are missing. However, the BLA all-pairs NREM test already fails (p = 0.14),
+      so the claim can at best be partially reproduced. Whether a BLA-only pyramidal test could be formed
+      as a variant was not shown; per-session counts of identified excitatory BLA units against the M4
+      minimum would show it.
+    response: 'Outcome unchanged. The conclusion now says the claim could at best be partially reproduced.
+      Added the per-file counts against the M4 minimum (all five typed files have at least six) and the
+      BLA-only variant on identified excitatory units: EV above REV in 4 of 5 sessions, p = 0.44, where
+      five sessions cannot reach p < 0.05.'
+  - claim: bla-ripple-up-subgroup
+    agrees: true
+    outcome: blocked
+    reason: 'The denominators are putative cell types. Descriptive (identified) results: inhibitory 22.2%
+      (paper 25.8 +/- 2.58), excitatory 5.9% (paper 11.1).'
+    response: No change to the outcome; the cross-correlogram check added for the identified cells bears
+      on the descriptive fractions.
+  - claim: bla-ripple-down-subgroup
+    agrees: true
+    outcome: blocked
+    reason: Same. Identified inhibitory down 47% (paper 14.7%), excitatory down 15% (paper 8.3%); far
+      from the paper, descriptive only.
+    response: No change needed.
+  - claim: ripple-modulated-cells-larger-reactivation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'All-cell test judged alone as the criterion directs: rank-sum p = 0.27 (reading a) and 0.30
+      (reading b), 12 sessions; modulated larger in 7 of 12.'
+    response: No change needed.
+  - claim: run-correlated-pair-fractions
+    agrees: true
+    outcome: blocked
+    reason: Needs hippocampus-BLA pyramidal pairs.
+    response: No change needed.
+  - claim: reactivation-involves-ripple-up-cells
+    agrees: true
+    outcome: blocked
+    reason: Same (hippocampus-BLA pyramidal pairs).
+    response: No change needed.
+  - claim: pair-group-ev
+    agrees: true
+    outcome: blocked
+    reason: Same (hippocampus-BLA pyramidal pairs).
+    response: No change needed.
+  - claim: contributing-up-cells-gain-increase
+    agrees: true
+    outcome: blocked
+    reason: Same (hippocampus-BLA pyramidal pairs).
+    response: No change needed.
+  - claim: ev-independent-of-firing-rate
+    agrees: true
+    outcome: blocked
+    reason: Same (hippocampus-BLA pyramidal pairs).
+    response: No change needed.
+  - claim: reactivation-peaks-at-ripples
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'All-cell test alone: post > pre in 11 of 15, one-tailed p = 0.0042. The criterion gives partially
+      reproduced when the pyramidal test cannot be run. The per-rat line for Rat11 is truncated in the
+      output, and per-session lists of excluded units (hpc_used and bla_used against the totals) would
+      let the inputs to R be audited.'
+    response: Outcome unchanged. The per-rat results are now a printed table, and a per-session table
+      gives the units available, used and left out (5 left out in all, in three sessions).
+  - claim: airpuff-trajectory-ripple-reactivation
+    agrees: true
+    outcome: blocked
+    reason: Pyramidal cells.
+    response: No change needed.
+  - claim: safe-trajectory-no-ripple-reactivation
+    agrees: true
+    outcome: blocked
+    reason: Pyramidal cells.
+    response: No change needed.
+  - claim: aversive-direction-stronger
+    agrees: true
+    outcome: blocked
+    reason: Pyramidal cells.
+    response: No change needed.
+  - claim: direction-all-cell-pairs
+    agrees: true
+    outcome: reproduced
+    reason: '14 sessions: air puff p = 0.010 and safe p = 0.0043 (both < 0.05); air puff > safe p = 0.48.
+      The O1 (c) laps include the reward-consumption time on the starting platform, so the air puff and
+      safe templates include awake platform activity; this is allowed as the O1(c) deviation but is not
+      flagged in the analysis cells. Rat08-20130708''s safe template is a single lap of 463 bins (23 s).'
+    response: Outcome unchanged. The analysis cells, conclusion and deviation now flag the platform time;
+      added a table of laps per template and session (median lap 22.6 s, minutes long in early Rat08 sessions)
+      and a variant without Rat08-20130708, the only session with fewer than 3 laps in a template, which
+      gives the same result (p = 0.0052, 0.0052 and 0.37, 13 sessions).
+  - claim: bla-rate-same-across-directions
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as other: O7 reading (b) needs position. The notebook says the criterion needs both
+      the pyramidal-cell test and the all-cell test, which misreads it: not reproduced when either test
+      has p < 0.05 under every reading. Every reading that can be run gives p < 0.05 on the all-cell test
+      (0.022 and 0.0048), the not reproduced direction; only O7 reading (b) keeps the claim from not reproduced,
+      and the blocking reason should say so.'
+    response: Outcome kept as blocked; the reason is corrected. blocked_by changed from metadata_insufficient
+      to too_large (the verifier gave other), because position, which O7 reading b needs, could come only
+      from tracking the raw video, the reason the behaviour claims are blocked as too_large. The notebook
+      section, conclusion, summary, README and notes now give the criterion's rule and say that only O7
+      reading b keeps the claim from not reproduced.
+  - claim: ripple-rate-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 23 sessions, two-sided p = 0.26 (paper n = 41). A claim of absence on a much smaller sample
+      than the paper's; weak evidence of absence, with no power or effect-size context in the notebook.
+    response: Outcome unchanged, as the criterion decides on p. Added the effect size (r 0.24 against
+      the paper's 0.20), the bootstrap interval of the median change (-1.4% to 8.4% of the rate) and the
+      change detectable with 80% power (11% of the rate at 23 sessions, 8% at 41); the conclusion says
+      a change larger than about a tenth of the rate is excluded, a smaller one is not.
+  - claim: contributing-pairs-run-sleep-coupling
+    agrees: true
+    outcome: blocked
+    reason: Pyramidal pairs; it would also need pre-run and post-run correlations.
+    response: No change needed.
+  - claim: contributing-quartiles-run-sleep-coupling
+    agrees: true
+    outcome: blocked
+    reason: Same.
+    response: No change needed.
+- date: '2026-10-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook with its conclusions and summary, the helper
+    module, the claims file, the attempt record and the README, with the paper. The verifier
+    agreed with all 32 outcomes and found no place where the claims file misreads the paper.
+    Points not tied to one claim. The README''s run time (10.0 min, six of them streaming)
+    did not match cell 77 (7.2 min) and cell 1 (302 s of loading); the README now gives the
+    final run of this revision (10.2 min, 366 s of loading). The round-1 reasons were found
+    faithful, except that the platform-time point was attributed to habituation-over-days;
+    that entry is corrected.'
+  results:
+  - claim: unit-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Follows from the printed outputs (cell 30) under the claims-file criteria. Cell 31''s
+      Result paragraph ends with a stray bold marker, formatting only.'
+    response: 'Outcome unchanged; the stray marker is removed.'
+  - claim: rats-learn-puff-location
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Position would come only from video tracking, the reason the
+      behaviour claims are too_large. The notes say streaming 20 frames took 8.1 s, about 216
+      hours, and the README says about 216 hours, where cell 13 prints 7.0 s and about 186
+      hours. The outcome does not change.'
+    response: 'Outcome unchanged. The notes and README now give the rate of the final run of this
+      revision (8.3 s for 20 frames, about 222 hours), which varies between runs.'
+  - claim: each-rat-learns-puff-location
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Position would come only from video tracking, the reason the
+      behaviour claims are too_large.'
+    response: 'No change needed.'
+  - claim: dz-speed-slower-post-run
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Position would come only from video tracking, the reason the
+      behaviour claims are too_large.'
+    response: 'No change needed.'
+  - claim: puff-location-no-speed-bias
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with the outcome. Position would come only from video tracking, the reason the
+      behaviour claims are too_large.'
+    response: 'No change needed.'
+  - claim: habituation-over-days
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 34). The record adds the round-1 platform-time
+      point to this claim, where it was raised about the air puff and safe templates (cells 51
+      and 52), not about habituation; harmless, because the lap counts are unaffected.'
+    response: 'Outcome unchanged. The round-1 entry of this claim no longer gives the platform-time
+      point as the verifier''s reason here, and its response says where it was raised.'
+  - claim: bla-pyr-sleep-firing-increase
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 38) under the claims-file criteria.'
+    response: 'No change needed.'
+  - claim: bla-int-sleep-firing
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Follows from the printed outputs (cell 41). Cell 43''s sentence that, with an effect
+      size r of 0.39 against the paper''s 0.09, these cells differ from the paper''s in REM,
+      not only in number, is not supported. No test compares the two samples; a significant
+      result here next to a non-significant one in the paper does not show the samples differ,
+      and the bootstrap interval of the REM median (-0.015 to 0.109) includes zero.'
+    response: 'Outcome unchanged. The sentence is replaced; cell 43 now gives the effect sizes and
+      says that no test here compares the two samples and that the interval of the median
+      includes zero.'
+  - claim: hpc-bla-reactivation-post-sleep
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: reactivation-all-cell-pairs
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 46) under the claims-file criteria. Cell 48''s
+      Result paragraph ends with a stray bold marker, formatting only.'
+    response: 'Outcome unchanged; the stray marker is removed.'
+  - claim: reactivation-decay
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: no-rem-reactivation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: piriform-weaker-reactivation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: cen-no-reactivation
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 53). It stays reproduced only on the paper''s p
+      threshold with 9 and 8 sessions, which the notebook now says; the NREM interval (-2.4 to
+      4.1%) includes the hippocampus-BLA median of 1.96%.'
+    response: 'Outcome unchanged, as the criterion decides on p. The conclusion, notes, summary and
+      README already call the absence weak evidence and give the interval; no further
+      change.'
+  - claim: intra-structure-reactivation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: bla-ripple-up-subgroup
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: bla-ripple-down-subgroup
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: ripple-modulated-cells-larger-reactivation
+    agrees: true
+    outcome: not_reproduced
+    reason: 'Follows from the printed outputs (cell 64) under the claims-file criteria.'
+    response: 'No change needed.'
+  - claim: run-correlated-pair-fractions
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: reactivation-involves-ripple-up-cells
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: pair-group-ev
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: contributing-up-cells-gain-increase
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: ev-independent-of-firing-rate
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: reactivation-peaks-at-ripples
+    agrees: true
+    outcome: partially_reproduced
+    reason: 'Follows from the printed outputs (cell 68) under the claims-file criteria.'
+    response: 'No change needed.'
+  - claim: airpuff-trajectory-ripple-reactivation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: safe-trajectory-no-ripple-reactivation
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: aversive-direction-stronger
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: direction-all-cell-pairs
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 70) under the claims-file criteria. The
+      templates still include platform time and stops; early Rat08 air puff laps have median
+      durations up to 998 s (Rat08-20130708; 660 s in Rat08-20130711) against a median lap of
+      22.6 s. The robustness variant removes only Rat08-20130708, so it does not address the
+      other long-lap sessions. The air puff result rests mostly on Rat08, 7 of 8 sessions
+      against 1 of 3 for Rat11.'
+    response: 'Outcome unchanged, and no change proposed, because the criterion fixes O1 reading c
+      laps. Added two variants that limit the platform time and stops in every session
+      (values of the author''s, deciding nothing). With laps of at most 30 s (11 sessions)
+      the result is the same (p = 0.034, 0.021 and 0.71). With each lap cut to its last 10 s
+      (14 sessions) the air puff test holds (p = 0.034) but the safe test has p = 0.052 and
+      air puff greater than safe p = 0.36. The conclusion, notes, summary and README say the
+      result depends in part on the time around the run that reading c laps hold.'
+  - claim: bla-rate-same-across-directions
+    agrees: true
+    outcome: blocked
+    reason: 'Agrees with blocked, and with too_large in place of its round-1 other; O7 reading b
+      needs position, which only video tracking would give. The readings that find a
+      difference (median 0.0036 and 0.0032 Hz, cell 73) use the same reward-to-reward laps, so
+      the difference may come from platform time and not the trajectory; the README and notes
+      present it as the direction of not reproduced without this caveat.'
+    response: 'Outcome unchanged. Added the rates over the two trimmed lap variants. With laps of at
+      most 30 s the difference remains (p = 0.016 and 0.0043); with each lap cut to its last
+      10 s it is gone (median 0.0000 Hz, p = 0.75 and 0.82). The conclusion, notes, summary
+      and README now carry the caveat.'
+  - claim: ripple-rate-unchanged
+    agrees: true
+    outcome: reproduced
+    reason: 'Follows from the printed outputs (cell 76). The Summary row''s excludes changes above
+      about 11% is wrong, as 11% is the change detected with 80% power (cell 77), not an
+      exclusion bound; the bootstrap interval is -1.4% to 8.4%, and cell 78''s about a tenth
+      of the rate is closer. It stays reproduced only on the paper''s p threshold with 23
+      sessions, which the notebook says.'
+    response: 'Outcome unchanged. The Summary row now gives the bootstrap interval of the change
+      (-1.4% to 8.4% of the rate).'
+  - claim: contributing-pairs-run-sleep-coupling
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'
+  - claim: contributing-quartiles-run-sleep-coupling
+    agrees: true
+    outcome: blocked
+    reason: 'Blocked as metadata_insufficient, correctly. No file has 6 identified excitatory
+      hippocampal units (at most 4, cell 5).'
+    response: 'No change needed.'

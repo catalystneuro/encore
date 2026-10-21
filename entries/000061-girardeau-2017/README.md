@@ -1,30 +1,50 @@
 # Girardeau, Inema & Buzsaki (2017) from dandiset 000061
 
-Tests the findings stated in the abstract of [Girardeau et al. (2017)](https://doi.org/10.1038/nn.4637)
-on [DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426), which holds sorted units
-of the hippocampus and the amygdala, sleep states and ripple, air-puff and reward events from four
-rats. The paper is not open access, so only its abstract was used, and the methods are common
-choices fixed before the analysis.
+Tests the claims of [Girardeau et al. (2017)](https://doi.org/10.1038/nn.4637), written by a reader
+from the full text, the supplement and the paper's code
+(`claims/000061/10.1038-nn.4637.yaml`), on
+[DANDI:000061](https://dandiarchive.org/dandiset/000061/0.250624.0426) version 0.250624.0426,
+which holds sorted units of the hippocampus and the amygdala, sleep states and ripple, air puff and
+reward events from four rats. The attempt record is
+[`attempts/000061-girardeau-2017-02.yaml`](../../attempts/000061-girardeau-2017-02.yaml); it
+replaces [`000061-girardeau-2017-01`](../../attempts/000061-girardeau-2017-01.yaml), whose claims
+were written from the abstract alone.
+
+Of 32 claims, 10 are tested: 6 reproduced, 1 partially reproduced, 3 not reproduced. The other
+22 are blocked: 17 because the dandiset has no putative cell types (pyramidal cell or interneuron),
+on which most of the paper's reactivation analyses rest, and 5 because it has no position tracking.
+Two claims with a pyramidal test and an all-cell test are judged on the all-cell test alone, as
+their criteria allow when the pyramidal test cannot be run.
 
 | Claim | Outcome |
 |---|---|
-| Joint hippocampus and BLA patterns of the run reactivate in post-sleep Non-REM | Reproduced |
-| The reactivations peak during sharp wave-ripples | Reproduced |
-| A subgroup of BLA cells is positively modulated during ripples | Reproduced |
-| The reactivations involve those BLA cells | Reproduced |
-| Reactivation is stronger for the air-puff direction than the safe one | Not reproduced |
-| Rats learned the location of the air puff | Blocked: too large |
+| `unit-counts` | Not reproduced: 40 of 61 sessions, 4702 of 7,390 units |
+| `habituation-over-days` | Reproduced (laps from reward times) |
+| `bla-pyr-sleep-firing-increase` | Reproduced (identified cells of five Rat08 files) |
+| `bla-int-sleep-firing` | Not reproduced (REM/wake change p = 0.020) |
+| `reactivation-all-cell-pairs` | Reproduced |
+| `cen-no-reactivation` | Reproduced |
+| `ripple-rate-unchanged` | Reproduced |
+| `reactivation-peaks-at-ripples` | Partially reproduced (all-cell test alone, p = 0.0042) |
+| `direction-all-cell-pairs` | Reproduced (laps from reward times; with laps cut to their last 10 s, a variant, the safe test has p = 0.052) |
+| `ripple-modulated-cells-larger-reactivation` | Not reproduced (all-cell test alone, p = 0.27) |
+| 17 claims on putative pyramidal cells or interneurons | Blocked: metadata insufficient |
+| `rats-learn-puff-location` and the three behaviour claims that depend on it | Blocked: too large (position only in raw video frames) |
+| `bla-rate-same-across-directions` | Blocked: too large (one reading of the rate needs position; the readings that run find a difference, which is gone with laps cut to their last 10 s) |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-The dandiset has no position tracking, so run direction comes from the reward times. Position
-could only come from tracking the raw video frames stored in the files, which would take about
-190 hours to stream at the rate measured in the last run. The attempt
-record, with the reasons and the differences from the paper's method, is
-[`attempts/000061-girardeau-2017-01.yaml`](../../attempts/000061-girardeau-2017-01.yaml).
+The two claims of absence judged on smaller samples than the paper's (`cen-no-reactivation`, 9 and
+8 sessions against 19; `ripple-rate-unchanged`, 23 against 41) are reproduced on the paper's test;
+the notebook gives their power and bounds, and the central nuclei result is weak evidence of
+absence.
 
-- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 14 minutes (13.9 in the last
-  run, as printed at its end), six of them streaming the files.
-- `hpcbla.py`: loading the files, sleep epochs, laps, joint patterns and their reactivation, and
-  ripple modulation. Other notebooks on this dandiset can import it.
+Position could only come from tracking the raw video frames stored in the files, which would take
+about 222 hours to stream at the rate measured in the final run (8.3 s for 20 frames; the rate varies between runs). Five Rat08 files have a `cell_type` column, which marks
+only cells identified as excitatory or inhibitory.
+
+- `reproduce_girardeau_2017.ipynb`: the analysis. It takes about 10 minutes (10.2 in the final run), about six of
+  them loading the files (366 s in the final run); the notebook prints its run time at the end.
+- `hpcbla.py`: loading the files, sleep epochs, laps, EV and REV, ripple modulation, reactivation
+  strength around ripples, firing rates by state. Other notebooks on this dandiset can import it.

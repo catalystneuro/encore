@@ -70,7 +70,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000044](https://dandiarchive.org/dandiset/000044) | [Grosmark et al. 2016](https://doi.org/10.1126/science.aad1935) | 3 | 3 | 6 | 8 | [`000044-grosmark-2016`](entries/000044-grosmark-2016) |
 | [000056](https://dandiarchive.org/dandiset/000056) | [Peyrache et al. 2015](https://doi.org/10.1038/nn.3968) | 6 | 2 | 0 | 13 | [`000056-peyrache-2015`](entries/000056-peyrache-2015) |
 | [000059](https://dandiarchive.org/dandiset/000059) | [Petersen et al. 2020](https://doi.org/10.1016/j.neuron.2020.05.023) | 12 | 15 | 10 | 1 | [`000059-petersen-2020`](entries/000059-petersen-2020) |
-| [000061](https://dandiarchive.org/dandiset/000061) | [Girardeau et al. 2017](https://doi.org/10.1038/nn.4637) | – | – | – | – | [`000061-girardeau-2017`](entries/000061-girardeau-2017) (deprecated) |
+| [000061](https://dandiarchive.org/dandiset/000061) | [Girardeau et al. 2017](https://doi.org/10.1038/nn.4637) | 6 | 1 | 3 | 22 | [`000061-girardeau-2017`](entries/000061-girardeau-2017) |
 | [000067](https://dandiarchive.org/dandiset/000067) | [Fujisawa et al. 2008](https://doi.org/10.1038/nn.2134) | 0 | 4 | 7 | 4 | [`000067-fujisawa-2008`](entries/000067-fujisawa-2008) |
 | [000070](https://dandiarchive.org/dandiset/000070) | [Churchland et al. 2012](https://doi.org/10.1038/nature11129) | 5 | 7 | 4 | 6 | [`000070-churchland-2012`](entries/000070-churchland-2012) |
 | [000121](https://dandiarchive.org/dandiset/000121) | [Even-Chen et al. 2019](https://doi.org/10.1371/journal.pcbi.1006808) | 6 | 7 | 6 | 1 | [`000121-even-chen-2019`](entries/000121-even-chen-2019) |
