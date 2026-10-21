@@ -86,6 +86,18 @@ def _subject(f) -> dict:
             "description": _s(f["session_description"][()]).replace("\n", " ")}
 
 
+def _groups(f) -> list[str]:
+    """Every object one level below acquisition/, intervals/ and each processing module, so the
+    file kinds can be compared for what they hold (nosepoke, reward or end-zone tables, say)."""
+    out = []
+    for top in ("acquisition", "intervals"):
+        if top in f:
+            out += [f"{top}/{k}" for k in f[top].keys()]
+    for mod in f.get("processing", {}).keys():
+        out += [f"processing/{mod}/{k}" for k in f[f"processing/{mod}"].keys()]
+    return out
+
+
 def _fp_meta(f) -> dict:
     loc = f.get("general/fiber_photometry/fiber_photometry_table/location")
     ind = f.get("general/fiber_photometry/fiber_photometry_indicators")
@@ -123,6 +135,7 @@ def load_oft(asset_id: str) -> dict:
     """One open field file, reduced to kinematics, motif labels and (if present) photometry."""
     f = open_asset(asset_id)
     r = _subject(f)
+    r["groups"] = _groups(f)
     r["experiment"], r["group_raw"] = parse_oft(r["description"])
     r["group"] = OFT_GROUPS.get((r["experiment"], r["group_raw"]), "")
     k = "processing/behavior/Kinematics/"
@@ -159,19 +172,48 @@ def z_on_frames(s: dict) -> tuple[np.ndarray, int]:
     return s["z"], int(round(s["z_t0"] * s["kin_rate"]))
 
 
-def frame_aligned(s: dict) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """z, speed and motif label on the frames both cover."""
+def frame_aligned(s: dict, motif_shift: int = 0) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """z, speed and motif label on the frames both cover. Kinematics and motif labels start at
+    t = 0 in every file (`kin_t0`, `motif_t0`, printed in the data check) and have 30 frames fewer
+    than the pose. With `motif_shift`, the label stored at frame i is placed at frame i +
+    motif_shift (frames left without a label get -1), a check of the label timing (data check)."""
     z, off = z_on_frames(s)
     n = min(len(z), len(s["lin"]) - off)
-    return z[:n], s["lin"][off:off + n], s["motif"][off:off + n]
+    return z[:n], s["lin"][off:off + n], shift_labels(s["motif"], motif_shift)[off:off + n]
+
+
+def shift_labels(labels: np.ndarray, shift: int) -> np.ndarray:
+    """Labels moved `shift` frames later (earlier when negative), -1 where none is left."""
+    out = np.full(len(labels), -1)
+    if shift >= 0:
+        out[shift:] = labels[:len(labels) - shift]
+    else:
+        out[:shift] = labels[-shift:]
+    return out
+
+
+def label_speed_fit(lin: np.ndarray, labels: np.ndarray, shifts) -> dict[int, float]:
+    """Fraction of the variance of linear speed explained by the motif label (eta squared), with the
+    labels shifted by each of `shifts` frames. Motifs differ in speed (Figure 4D), so the shift at
+    which the labels explain speed best estimates where on the frame grid they belong."""
+    out = {}
+    for sh in shifts:
+        m = shift_labels(labels, sh)
+        ok = np.isfinite(lin) & (m >= 0)
+        v, m = lin[ok], m[ok]
+        means = np.bincount(m, weights=v) / np.maximum(np.bincount(m), 1)
+        out[sh] = 1 - ((v - means[m]) ** 2).sum() / ((v - v.mean()) ** 2).sum()
+    return out
 
 
 def motif_onsets(labels: np.ndarray) -> dict[int, np.ndarray]:
-    """First frame of every run of a label (frame 0 left out, as it has no preceding frame)."""
+    """First frame of every run of a label (frame 0 left out, as it has no preceding frame; -1,
+    no label, left out)."""
     starts = np.flatnonzero(np.diff(labels) != 0) + 1
     out = {}
     for m in np.unique(labels):
-        out[int(m)] = starts[labels[starts] == m]
+        if m >= 0:
+            out[int(m)] = starts[labels[starts] == m]
     return out
 
 
@@ -180,6 +222,7 @@ def motif_onsets(labels: np.ndarray) -> dict[int, np.ndarray]:
 def load_opto(asset_id: str) -> dict:
     f = open_asset(asset_id)
     r = _subject(f)
+    r["groups"] = _groups(f)
     r.update(_fp_meta(f))
     d = f["processing/ophys/FiberPhotometrySeriesDfOverF"]
     r["dff"], r["t"] = d["data"][:], d["timestamps"][:]
@@ -214,6 +257,7 @@ def parse_reach(description: str) -> dict:
 def load_reach(asset_id: str) -> dict:
     f = open_asset(asset_id)
     r = _subject(f)
+    r["groups"] = _groups(f)
     r.update(parse_reach(r["description"]))
     ev = f.get("processing/behavior/reaching_events")
     rows = []
@@ -263,6 +307,7 @@ def load_maze(asset_id: str) -> dict:
     """Arrow maze session: pose of six points (pixels) and their DeepLabCut confidence."""
     f = open_asset(asset_id)
     r = _subject(f)
+    r["groups"] = _groups(f)
     r.update(parse_maze(r["description"]))
     r["group"] = {"ctrl": "Ctrl-Tdtomato", "anxa1_tet": "Anxa1-TeTx"}.get(r.get("group_raw"), r.get("group_raw"))
     p = "processing/behavior/PoseEstimationDeepLabCut/PoseEstimationSeries"
@@ -361,6 +406,26 @@ def mixed_anova(df: pd.DataFrame, dv: str, within: str, between: str, subject: s
 GEO_COUNTS = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE282nnn/GSE282753/suppl/GSE282753_counts_mitopark.txt.gz"
 
 
+GEO_SUPPL = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE282nnn/GSE282753/suppl/"
+GEO_SERIES = "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE282753&targ=self&form=text&view=brief"
+
+
+def geo_supplementary_files() -> tuple[pd.DataFrame, dict]:
+    """The supplementary files of GSE282753 (name, date, size, from the directory listing) and the
+    series' own text fields (status, last update, overall design, number of samples)."""
+    html = urllib.request.urlopen(GEO_SUPPL, timeout=60).read().decode()
+    rows = [{"file": m.group(1), "modified": m.group(2), "size": m.group(3)}
+            for m in re.finditer(r'<a href="([^"/]+)">[^<]*</a>\s+(\S+ \S+)\s+(\S+)', html)]
+    text = urllib.request.urlopen(GEO_SERIES, timeout=60).read().decode()
+    fields = {}
+    for line in text.splitlines():
+        k, _, v = line.partition(" = ")
+        if k in ("!Series_status", "!Series_last_update_date", "!Series_overall_design", "!Series_type"):
+            fields[k[8:]] = v
+    fields["samples"] = sum(line.startswith("!Series_sample_id") for line in text.splitlines())
+    return pd.DataFrame(rows), fields
+
+
 def load_geo_counts(url: str = GEO_COUNTS) -> tuple[pd.DataFrame, pd.DataFrame, str]:
     """The MitoPark and control count table of GEO GSE282753, read into memory (not written to disk).
 
@@ -424,8 +489,10 @@ def deseq2(counts: pd.DataFrame, group: np.ndarray, n_cpus: int = 4) -> pd.DataF
 
 
 def edger_exact(counts: pd.DataFrame, group: np.ndarray) -> pd.DataFrame:
-    """edgeR's classic two-group pipeline with default settings, through the port edgepy: TMM
-    factors, common and tagwise dispersions (edgepy has the GLM estimators, not estimateDisp) and
+    """edgeR's two-group exact test through the port edgepy, as near the default pipeline as the port
+    allows: TMM factors, then common and tagwise dispersions from the GLM estimators
+    (estimateGLMCommonDisp, estimateGLMTagwiseDisp), since edgepy has neither estimateDisp nor the
+    classic estimateCommonDisp and estimateTagwiseDisp; so it is not edgeR's default route. Then
     exactTest of MitoPark against Control, Benjamini-Hochberg FDR. Genes with no count in any
     library are dropped, as DGEList would leave them without a dispersion. The claims file names
     edgeR with default settings as the other reading."""

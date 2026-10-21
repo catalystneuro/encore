@@ -12,31 +12,25 @@ GSE282753, which lacks the cMfn2KO counts the same claim needs.
 |---|---|
 | Evoked dLight release is larger in dCP than in cCP (Figure S2) | Reproduced |
 | Anxa1 and DAT axons in dCP ramp to the water drop and drop after it (Figure 3D) | Not reproduced |
-| dLight in dCP follows them, cCP has a reward profile (Figure 3E) | Partially reproduced |
-| AUC changes from baseline (Figure 3F-G) | Blocked: methods underspecified |
+| dLight in dCP follows them, cCP has a reward profile (Figure 3E) | Not reproduced (cCP holds, dCP does not) |
+| AUC changes from baseline (Figure 3F-G) | Partially reproduced (holds with one of two z-scorings) |
 | Anxa1 and dLight-dCP signals correlate with speed (Figure 4B) | Partially reproduced |
 | dLight-cCP correlates negatively with speed (Figure 4B) | Reproduced |
-| VAME finds 37 motifs (Figure 4C) | Not reproduced (the dandiset's labelling has 42) |
-| Anxa1 activity at onsets of high-speed motifs (Figure 4E) | Partially reproduced |
-| Motif onset AUC of Anxa1 against dLight-dCP and dLight-cCP (Figure 4F-G) | Reproduced |
-| Motif onset AUC against motif speed, R = 0.83 (Figure 4H) | Partially reproduced |
 | Anxa1-TeTx mice are slower in the open field (Figure 5C-E) | Reproduced |
 | Their phenotype resembles the early PD models (Figure 5C-F) | Reproduced |
-| Motif usage PC1 orders the groups by PD stage (Figure 5G) | Reproduced |
-| PC1 loadings correlate with motif speed (Figure 5I) | Partially reproduced |
 | Arrow maze speed lower on day 4 (Figure 6C) | Not reproduced |
-| Reaching accuracy (Figure 6J) | Partially reproduced (controls and TeTx hold, Arch does not) |
-| Motif loadings and per-motif changes by the paper's motif numbers (Figure 5H, 5J, 5M; four claims) | Blocked: metadata insufficient |
+| Reaching accuracy (Figure 6J) | Partially reproduced (controls and TeTx hold, Arch lower but not significantly) |
+| VAME motifs, motif-onset signals, motif PCA and per-motif changes (Figure 4C-H, 5G-J, 5M; ten claims) | Blocked: data missing (the paper's motif labelling is not in the dandiset) |
 | Arrow maze preference and efficiency (Figure 6D; two claims) | Blocked: data missing |
 | RNA-seq (Figure 1B) | Blocked: GSE282753 lacks the cMfn2KO data (Anxa1 is down in MitoPark) |
-| Histology, qPCR, self-stimulation and ratio tasks (16 claims) | Blocked: data missing |
+| Histology, qPCR, self-stimulation and ratio tasks (15 claims) | Blocked: data missing |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
 and the differences from the paper's method.
 
 Groups, cohorts and days are given only in the free text of each file's `session_description`, 86
 open field sessions are labelled as `tmaze` sessions, subject genotypes conflict across files, and
-the VAME labels cannot be mapped to the paper's motif numbers. The attempt record, with the reasons
+the VAME labels are not the paper's motifs and are stored about 18 frames early. The attempt record, with the reasons
 and the differences from the paper's method, is
 [`attempts/001828-mantas-2024-01.yaml`](../../attempts/001828-mantas-2024-01.yaml); the questions for
 a reader, and their answers, are in [`questions/001828.yaml`](../../questions/001828.yaml).
