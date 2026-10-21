@@ -1,20 +1,16 @@
-I wrote no claims. The paper's text is here, but the supplement that its statistical results rest on is missing, so under the Reader section, step 1, I stopped.
+I didn't write a claims file. The response that was writing `claims/002010/10.1101-2023.04.19.537568.yaml` was stopped by a safety classifier before the file was saved. I was told not to produce that content again, so nothing is under `claims/002010/` and the quote checker was never run.
 
-**Text read:** `paper/10.1101-2023.04.19.537568.txt`, the bioRxiv preprint (version 1, from the JATS XML). It has the main text, the Methods, the figure legends and the figure supplement legends. There is no PDF and no supplement file (`papers/manifest.yaml` lists `supplements: 0`).
+**What I read before it stopped:**
+- **Text:** `paper/10.1101-2023.04.19.537568.txt`, the bioRxiv preprint, version 1, from the JATS XML. It has the main text, Methods, figure legends and figure supplement legends. It now also includes both supplement PDFs: the supplementary figures (media-1) and Supplementary Tables S1 to S18 (media-2). Those tables were missing in the earlier run, and they hold the statistics for nearly every finding. There is still no PDF of the main text.
+- **Code:** the two SourceForge projects the paper links, with files dated 2023-04-14. SourceForge shows no commit for them, so I recorded checksums instead.
+  - `gait-analysis-gui` is MATLAB. It scores footfalls on the video and turns them into stride metrics, using 119.88 fps and skipping trials with fewer than 3 strides in any limb. It exports these for GraphPad. Two functions it calls, `calcSpeed` and `calcTimeCoupling`, are not in the archive.
+  - `gait-emg-step-trigger` is a Spike2 script that fires optogenetic pulses when it detects a TA EMG burst.
+  - Neither project contains the statistics, the Z-scores or the curve fits.
 
-**What is missing:**
-1. **Supplementary Tables S1 to S18.** The paper puts the statistical results of almost every finding in these tables. The text and legends only point to them ("Table S3 for statistical details", and so on). Examples:
-   - Fig. 2b stride-velocity t-tests (S2).
-   - Slomo, shuffle and fast signature F-tests (S3, S8, S12).
-   - EMG tests (S4, S10, S13) and the Z-score correlations (S5).
-   - Laterality tests (S7, S11) and motor tests (S6, S9, S14).
-   - Bouton counts and sensory tests (S15 to S17) and optogenetics (S18).
-   - Dose and time titration (S1).
+**Still missing from the paper:**
+- **The Z-score equation.** In the Methods, section (a), the sentence ends "calculated as follows:" and no formula follows. Every subgroup in the paper is defined by Z SwT or Z StrV. I had planned to name two readings: Z = (the mouse's change − the WT mean change) / the WT SD, with the change taken either as CNO minus saline or as a relative change. Whether to pool strides across sessions or average session means is also open.
+- **The regression models behind the walking-signature F-tests.** The paper only cites its reference 36. The degrees of freedom in Tables S3, S8 and S12 imply a 2-parameter model for most metrics and a 4-parameter model for stance time. I had planned to name linear, power and semilog readings for the first, and polynomial or logistic readings for the second.
 
-   Without them, no claim could have the paper's statistics or reported values, beyond a few numbers in the text (such as p 0.016 for lamina III boutons).
-2. **The Z-score equation in the Methods** (section "a) Group definition"). The text breaks off at "Z-scores of the change in gait metrics were then calculated as follows:" and the equation is gone, probably an image that the XML extraction dropped. Every subgroup in the paper (slomo, shuffle, fast, and their opposites) is defined by Z_SwT or Z_StrV thresholds, so no criterion could fix how mice are grouped.
-3. **Figure 7-Figure supplement 3:** the legend is cut off after its title.
+**Counts:** 0 claims, so none with quotes, statistics or criteria.
 
-**To proceed:** someone needs to add the bioRxiv supplementary file with Tables S1 to S18, and the preprint PDF so the Z-score equation can be read. A reader run can then write the claims. Because I stopped, I did not read the linked code (the two SourceForge projects, gait-analysis-gui and gait-emg-step-trigger).
-
-**Counts:** 0 claims, so 0 with quotes, statistics or criteria. No open details or readings were recorded. Nothing was written under `claims/002010/`.
+To get the file written, someone needs to start a new claims run, which could reuse the reading above. Alternatively, a person can write the file.
