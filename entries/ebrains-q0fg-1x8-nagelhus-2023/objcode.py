@@ -256,8 +256,27 @@ def load(name: str) -> tuple[list[Session], dict]:
         rat = getattr(s, "rat_id", None) or getattr(d, "rat_id", "")
         tech = getattr(s, "recording_technique", None) or getattr(d, "recording_technique", "")
         out.append(Session(name, i, str(rat), str(tech), trials))
-    meta = {"description": str(d.description), "bytes": len(raw), "units_strings": sorted(set(_units_strings(mat)))}
+    meta = {"description": str(d.description), "bytes": len(raw), "units_strings": sorted(set(_units_strings(mat))),
+            "fields": struct_fields(d)}
     return out, meta
+
+
+def struct_fields(d) -> dict:
+    """Every field name at each level of the file's struct, over all sessions, trials and units."""
+    names = {k: set() for k in ("dataset", "session", "trial", "tracking", "object_position", "unit")}
+    names["dataset"] |= set(d._fieldnames)
+    for s in _L(d.sessions):
+        names["session"] |= set(s._fieldnames)
+        for tr in _L(s.trial):
+            names["trial"] |= set(tr._fieldnames)
+            names["tracking"] |= set(tr.tracking._fieldnames)
+            op = getattr(tr, "object_position", None)
+            if hasattr(op, "_fieldnames"):
+                names["object_position"] |= set(op._fieldnames)
+            for u in _L(tr.units):
+                if hasattr(u, "_fieldnames"):
+                    names["unit"] |= set(u._fieldnames)
+    return {k: sorted(v) for k, v in names.items()}
 
 
 def spike_hash(trial: Trial, u: int) -> bytes:
@@ -405,9 +424,12 @@ def spatial_information(rmap, occ, rate, duration=None):
 # ----------------------------------------------------------------------------------------------
 # Firing fields
 
-def fields(rmap, bin_cm=2.5, field="a"):
+def fields(rmap, bin_cm=2.5, field="a", connectivity=8):
     """Firing fields of a blanked map: contiguous bins above 3 x MAD of all bins, at least 225 cm2,
-    rate at least 1 Hz (reading a: the field's peak; b: every bin). Returns a list of bin-index arrays."""
+    rate at least 1 Hz (reading a: the field's peak; b: every bin). Returns a list of bin-index arrays.
+    Each region is the contour of its peak at the threshold, as the Methods describe; bins touching
+    at a corner join a region (connectivity 8), and connectivity 4 is run as a variant (not given by
+    the paper)."""
     v = rmap[np.isfinite(rmap)]
     if v.size == 0:
         return []
@@ -417,7 +439,8 @@ def fields(rmap, bin_cm=2.5, field="a"):
         thr = max(thr, 1.0)
     nb = nbins(bin_cm)
     img = np.nan_to_num(rmap, nan=-np.inf).reshape(nb, nb)
-    lab, n = ndimage.label(img > thr, structure=np.ones((3, 3)))
+    structure = np.ones((3, 3)) if connectivity == 8 else ndimage.generate_binary_structure(2, 1)
+    lab, n = ndimage.label(img > thr, structure=structure)
     out = []
     min_bins = 225.0 / bin_cm ** 2
     for k in range(1, n + 1):
