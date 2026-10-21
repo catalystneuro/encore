@@ -488,9 +488,11 @@ def rate_matrices(units, sessions, width, early="drop", outcomes=("hit", "miss")
 def selectivity_courses(rm, conds, n_pref=10, draws=20, pref_window="trial", min_trials=3,
                         per_type=True, seed=0):
     """Convention D. For each unit: preferred trial type from `n_pref` random control trials
-    (counts in `pref_window`: "trial" from sample onset to 1.3 s after the go cue, or "delay"),
-    selectivity (preferred minus non-preferred rate) on the remaining control trials and on the
-    trials of each condition; averaged over `draws` draws of the preference trials.
+    (counts in `pref_window`: "trial" (D1) from sample onset to 1.3 s after the go cue, "delay"
+    (D2) the delay epoch, or "bin" (D3) the rate in each time bin separately; claims file,
+    convention D as answered), selectivity (preferred minus non-preferred rate) on the remaining
+    control trials and on the trials of each condition; averaged over `draws` draws of the
+    preference trials.
     Units need more than `min_trials` trials in every condition (per trial type if per_type).
     Returns {cond: units x windows} and the list of units kept."""
     rng = np.random.default_rng(seed)
@@ -512,6 +514,7 @@ def selectivity_courses(rm, conds, n_pref=10, draws=20, pref_window="trial", min
         else:
             lo, hi = d["delay_on"], np.zeros(len(d["so"]))
         cnt = counts_in(d["spikes"], d["go"], lo, hi) / (hi - lo)
+        per_bin = pref_window == "bin"
         acc = {c: [] for c in res}
         for k in range(draws):
             for _ in range(100):
@@ -519,7 +522,10 @@ def selectivity_courses(rm, conds, n_pref=10, draws=20, pref_window="trial", min
                 r = d["right"][pick]
                 if r.any() and (~r).any():
                     break
-            pref_right = cnt[pick][r].mean() >= cnt[pick][~r].mean()
+            if per_bin:
+                sign = np.where(d["rate"][pick][r].mean(0) >= d["rate"][pick][~r].mean(0), 1.0, -1.0)
+            else:
+                sign = 1.0 if cnt[pick][r].mean() >= cnt[pick][~r].mean() else -1.0
             rest = np.setdiff1d(ci, pick)
             for c in res:
                 idx = rest if c == "control" else np.where(d["cond"] == c)[0]
@@ -527,7 +533,7 @@ def selectivity_courses(rm, conds, n_pref=10, draws=20, pref_window="trial", min
                 if not rr.any() or rr.all():
                     acc[c].append(np.full(d["rate"].shape[1], np.nan)); continue
                 s = d["rate"][idx][rr].mean(0) - d["rate"][idx][~rr].mean(0)
-                acc[c].append(s if pref_right else -s)
+                acc[c].append(s * sign)
         for c in res:
             res[c].append(np.nanmean(acc[c], axis=0))
         kept.append(uid)
@@ -559,6 +565,61 @@ def bootstrap_recovery(S, cond, t, offset, n_boot=1000, seed=0, until=0.0):
     return dict(point=point, boot_mean=float(np.nanmean(boots)) if np.isfinite(boots).any() else np.nan,
                 boot_sd=float(np.nanstd(boots)) if np.isfinite(boots).any() else np.nan,
                 boot_recovered=float(np.isfinite(boots).mean()), n=n)
+
+
+# ---------------------------------------------------------------- licks (ed9f-reaction-time)
+
+def lick_onsets(asset_id, go, rules, lo=-0.3, hi=1.4, rate=1e4, chunk=50000, workers=16):
+    """First lick after each go cue (s re go cue) from the analogue lick_trace, under each rule.
+
+    The files hold no lick times. lick_trace is stored in 5 s chunks (50000 samples at 10 kHz),
+    one per trial; the first and last timestamp of every chunk are read by byte range, and for each
+    go cue the samples from `lo` to `hi` s around it are read when the chunk holds them all (the
+    go cue falls 3.57 s into the chunk in most trials, so `hi` is at most 1.43 s). The pre-go part
+    (`lo` to 0) is the baseline. `rules`: {name: (kind, value)} with kind "level" (the raw signal
+    rises above `value`), "rise" (above the baseline mean plus `value`) or "sd" (above the
+    baseline mean plus `value` baseline standard deviations); the onset is the first upward
+    crossing at or after the go cue. The claims file (ed9f-reaction-time, as answered) asks for the
+    outcome over a range of such thresholds; the values are passed in by the notebook.
+    Returns a table per go cue: whether the window was read, baseline mean and s.d., the maximum
+    after the go cue, and the onset under each rule (NaN when there is none)."""
+    from concurrent.futures import ThreadPoolExecutor
+    url = s3_url(asset_id)
+    f = h5py.File(remfile.File(url), "r")
+    g = f["/acquisition/BehavioralTimeSeries/lick_trace"]
+    doff, toff, n = g["data"].id.get_offset(), g["timestamps"].id.get_offset(), g["data"].shape[0]
+    f.close()
+    first = list(range(0, n, chunk))
+    last = [min(i + chunk, n) - 1 for i in first]
+    with ThreadPoolExecutor(workers) as ex:
+        t_first = np.array(list(ex.map(lambda i: _range_read(url, toff + 8 * i, 8)[0], first)))
+        t_last = np.array(list(ex.map(lambda i: _range_read(url, toff + 8 * i, 8)[0], last)))
+    uniform = np.abs((t_last - t_first) - (np.array(last) - np.array(first)) / rate) < 2 / rate
+    go = np.asarray(go, float)
+    k = np.searchsorted(t_first, go, side="right") - 1
+    ok = (k >= 0) & np.isfinite(go)
+    kk = np.clip(k, 0, None)
+    ok &= uniform[kk] & (go + lo >= t_first[kk]) & (go + hi <= t_last[kk])
+    i0 = np.array(first)[kk] + np.round(np.where(ok, go + lo - t_first[kk], 0) * rate).astype(int)
+    m = int(round((hi - lo) * rate)); j0 = int(round(-lo * rate))
+
+    def one(q):
+        if not ok[q]:
+            return None
+        x = _range_read(url, doff + 8 * int(i0[q]), 8 * m)
+        b = x[:j0]; mu, sd = float(b.mean()), float(b.std())
+        r = {"baseline": mu, "baseline_sd": sd, "max_after": float(x[j0:].max())}
+        for name, (kind, v) in rules.items():
+            th = v if kind == "level" else mu + v if kind == "rise" else mu + v * sd
+            above = x > th
+            up = np.where(above[j0:] & ~above[j0 - 1:-1])[0]
+            r[name] = up[0] / rate if len(up) else np.nan
+        return r
+
+    with ThreadPoolExecutor(workers) as ex:
+        res = list(ex.map(one, range(len(go))))
+    rows = [{"read": r is not None, **(r or {})} for r in res]
+    return pd.DataFrame(rows), {"chunks": len(first), "chunks_nonuniform": int((~uniform).sum())}
 
 
 # ---------------------------------------------------------------- activity space (convention A)
@@ -642,6 +703,8 @@ def decision_boundary(pr, pl):
 # Parameters are those of the Methods and the Extended Data Fig. 1 legend, as the claims'
 # criteria list them. The integration step (1 ms, Euler or Euler-Maruyama), the target and
 # feedback of the FORCE network, and the random seeds are standard choices the paper does not give.
+# For the modular models the claims file (fig6-modular-models-recover, as answered) names the noise
+# readings n1 and n2 and the steps h1 (1 ms) and h2 (0.1 ms); the notebook runs all four.
 
 DT, T_END = 0.001, 2.0
 SILENCE = (0.2, 1.0)
@@ -741,13 +804,15 @@ def run_force(net, silence=None, input_kind="transient"):
     return t, out
 
 
-def modular_attractor(trial, silence=(), seed=0, tau=0.1, noise_var=0.01, noise="em", n_trials=1):
+def modular_attractor(trial, silence=(), seed=0, tau=0.1, noise_var=0.01, noise="em", n_trials=1, dt=DT):
     """Fig. 6b. Two modules of two units (right- and left-preferring); self-excitation 0.5235,
     inhibition -0.5235 within a module, 0.3 to the like-preferring unit of the other module;
     f(x) = g(x) - g(0), g(x) = 1.4 / (1 + exp(-(x - 0.5) / 0.3)); input 0.1 (0.05-0.1 s) to the
     instructed units; tonic 0.5; noise of variance 0.01. noise="em": white noise of intensity
-    0.01 integrated by Euler-Maruyama (increment sd sqrt(0.01 dt) / tau); noise="sample": a sample
-    of variance 0.01 drawn each 1 ms step and integrated like an input (increment dt / tau times it).
+    0.01 integrated by Euler-Maruyama (increment sd sqrt(0.01 dt) / tau), reading n1; noise="sample":
+    a sample of variance 0.01 drawn each step and integrated like an input (increment dt / tau
+    times it), reading n2. `dt`: integration step, 1 ms (h1) or 0.1 ms (h2); the claims file
+    names both readings, as the paper gives neither.
     Units 0, 1 are module 1 (right, left), units 2, 3 module 2. `silence`: units held at zero
     from 0.2 to 1.0 s. Returns the activity (n_trials x time x 4)."""
     rng = np.random.default_rng(seed)
@@ -755,15 +820,15 @@ def modular_attractor(trial, silence=(), seed=0, tau=0.1, noise_var=0.01, noise=
     W = np.array([[a, b, c, 0], [b, a, 0, c], [c, 0, a, b], [0, c, b, a]])
     g = lambda x: 1.4 / (1 + np.exp(-(x - 0.5) / 0.3))
     f = lambda x: g(x) - g(0)
-    t = np.arange(0, T_END, DT)
+    t = np.arange(0, T_END, dt)
     r = np.zeros((n_trials, 4)); R = np.empty((n_trials, len(t), 4))
     sel = np.array([1, 0, 1, 0]) if trial == "right" else np.array([0, 1, 0, 1])
     sig = np.sqrt(noise_var)
     for k, ti in enumerate(t):
         I = 0.1 * sel * (0.05 < ti < 0.1)
         xi = rng.standard_normal((n_trials, 4))
-        step = sig / tau * np.sqrt(DT) * xi if noise == "em" else DT / tau * sig * xi
-        r = r + DT / tau * (-r + f(r) @ W.T + I + 0.5) + step
+        step = sig / tau * np.sqrt(dt) * xi if noise == "em" else dt / tau * sig * xi
+        r = r + dt / tau * (-r + f(r) @ W.T + I + 0.5) + step
         if len(silence) and SILENCE[0] < ti < SILENCE[1]:
             r[:, list(silence)] = 0
         R[:, k] = r
@@ -792,18 +857,19 @@ W_MODULAR_INTEGRATOR = np.array([
     [0, 0, 0, 0, 1, -1, 0, 0]])   # Methods, as printed (row i receives from column j)
 
 
-def modular_integrator(trial, silence=(), tau=0.01):
+def modular_integrator(trial, silence=(), tau=0.01, dt=DT):
     """Fig. 6c. Linear units with rates kept non-negative; constant input +-0.04 (0.1-1.9 s) to the
     right- and left-preferring integrator units of both modules; tonic input 40 to the integrator
-    units. Units 0-3 module 1 (right, left, recovery, inhibitory), 4-7 module 2. Returns time x 8."""
-    t = np.arange(0, T_END, DT)
+    units. Units 0-3 module 1 (right, left, recovery, inhibitory), 4-7 module 2. `dt`: integration
+    step (h1 1 ms, h2 0.1 ms). Returns time x 8."""
+    t = np.arange(0, T_END, dt)
     s = 1 if trial == "right" else -1
     tonic = np.array([40, 40, 0, 0, 40, 40, 0, 0], float)
     r = np.array([20, 20, 0, 0, 20, 20, 0, 0], float); R = []
     for ti in t:
         on = 0.1 < ti < 1.9
         I = 0.04 * s * np.array([1, -1, 0, 0, 1, -1, 0, 0]) * on
-        r = np.maximum(r + DT / tau * (-r + W_MODULAR_INTEGRATOR @ r + I + tonic), 0)
+        r = np.maximum(r + dt / tau * (-r + W_MODULAR_INTEGRATOR @ r + I + tonic), 0)
         if len(silence) and SILENCE[0] < ti < SILENCE[1]:
             r[list(silence)] = 0
         R.append(r.copy())
@@ -829,10 +895,17 @@ def selective_sets(units, sessions, early):
     return out
 
 
+SEARCH_ENDS = {"E1": 0.0, "E2": float(GRID_END[-1])}   # convention D as answered: search to the end of
+# the delay (go cue) or to the end of the analysed windows after the go cue
+
+
 def recovery_readings(units, sessions, offsets, sel_sets, early, no_recovery=(), n_boot=200, seed=0,
-                      widths=(0.2, 0.4), pref_windows=("trial", "delay"), per_types=(True, False)):
+                      widths=(0.2, 0.4), pref_windows=("trial", "delay", "bin"), per_types=(True, False),
+                      search_ends=SEARCH_ENDS):
     """Recovery time (convention D) of each condition in `offsets` ({cond: offset re go cue, s}),
-    for every reading. Conditions in `no_recovery` are also judged by whether photoinhibition
+    for every reading: bin width (B1, B2), preference window (D1 to D3), trials rule (N1 per
+    condition, N2 per type), S reading, window label (L1 centre, L2 end) and end of the search
+    (E1, E2). Conditions in `no_recovery` are also judged by whether photoinhibition
     selectivity stays below 80% of control up to the go cue."""
     union = set().union(*sel_sets.values())
     base = units[units.uid.isin(union)]
@@ -848,17 +921,18 @@ def recovery_readings(units, sessions, offsets, sel_sets, early, no_recovery=(),
                     sub = {c: v[idx] for c, v in Sel.items()}
                     for lab in ("centre", "end"):
                         tl = labels(w, lab)
-                        row = dict(early=early, S=sk, bin=w, label=lab, pref=pw,
-                                   trials_rule="per type" if pt else "per condition", n=int(idx.sum()))
-                        for c, o in offsets.items():
-                            b = bootstrap_recovery(sub, c, tl, o, n_boot=n_boot, seed=seed, until=GRID_END[-1])
-                            row[c] = b["point"]; row[c + "_boot"] = b["boot_mean"]; row[c + "_sd"] = b["boot_sd"]
-                            if c in no_recovery:
-                                ctrl, pi = np.nanmean(sub["control"], 0), np.nanmean(sub[c], 0)
-                                ok = (tl > o) & (tl <= 0)
-                                row[c + "_max_ratio_to_go"] = float(np.nanmax(pi[ok] / ctrl[ok]))
-                                row[c + "_recovers_by_go"] = bool(np.any(pi[ok] >= 0.8 * ctrl[ok]))
-                        rows.append(row)
+                        for ename, until in search_ends.items():
+                            row = dict(early=early, S=sk, bin=w, label=lab, pref=pw, search=ename,
+                                       trials_rule="per type" if pt else "per condition", n=int(idx.sum()))
+                            for c, o in offsets.items():
+                                b = bootstrap_recovery(sub, c, tl, o, n_boot=n_boot, seed=seed, until=until)
+                                row[c] = b["point"]; row[c + "_boot"] = b["boot_mean"]; row[c + "_sd"] = b["boot_sd"]
+                                if c in no_recovery:
+                                    ctrl, pi = np.nanmean(sub["control"], 0), np.nanmean(sub[c], 0)
+                                    ok = (tl > o) & (tl <= 0)
+                                    row[c + "_max_ratio_to_go"] = float(np.nanmax(pi[ok] / ctrl[ok]))
+                                    row[c + "_recovers_by_go"] = bool(np.any(pi[ok] >= 0.8 * ctrl[ok]))
+                            rows.append(row)
                         courses[(w, pw, pt, sk, lab)] = (tl, {c: np.nanmean(v, 0) for c, v in sub.items()})
     return pd.DataFrame(rows), courses
 
@@ -914,11 +988,11 @@ def activity_session(X, t, frac, conds, ipsi, rng, ends=A_ENDS, baseline="pre-sa
     # decision boundary (training trials, last 400 ms before the go cue)
     db = decision_boundary(p[train & right, j["go"]], p[train & ~right, j["go"]])
     out["trials"] = pd.DataFrame({"cond": cond[held], "right": right[held], "hit": hit[held], "licked_right": licked_right[held],
-                                  "d": p[held, j["go"]] - db})
+                                  "d": p[held, j["go"]] - db, "go": t.go.values[held]})
     # modes
     cr = train & right; cl = train & ~right
     ir = ipsi_train & hit & right; il = ipsi_train & hit & ~right
-    out["modes"] = out["captured"] = out["m2"] = out["m4"] = None
+    out["modes"] = out["captured"] = out["captured_v2"] = out["m2"] = out["m4"] = None
     if min(ir.sum(), il.sum(), cr.sum(), cl.sum()) == 0:
         return out      # a mode cannot be built without trials of each kind
     m2 = X[ir][:, :, j["go"]].mean(0) - X[cr][:, :, j["go"]].mean(0)
@@ -948,6 +1022,17 @@ def activity_session(X, t, frac, conds, ipsi, rng, ends=A_ENDS, baseline="pre-sa
     Q15 = _orth([cd, m2, m3, m4, m5]); P15 = Q15.T @ Q15
     out["captured"] = {"sel_cd": rms(Pcd @ D) / rms(D), "var_cd": rms(Pcd @ Y) / rms(Y),
                        "sel_15": rms(P15 @ D) / rms(D), "var_15": rms(P15 @ Y) / rms(Y)}
+    # reading v2 (claims file, cd-captures-selectivity as answered): the same modes, with the
+    # trial-averaged activity of all correct control trials
+    ar, al = cc & right, cc & ~right
+    pr2 = X[ar][:, :, inside].mean(0); pl2 = X[al][:, :, inside].mean(0)
+    if baseline == "pre-sample":
+        base2 = X[cc][:, :, j["pre_sample"]].mean(0)[:, None]
+    else:
+        base2 = np.concatenate([pr2, pl2], 1).mean(1, keepdims=True)
+    Y2 = np.concatenate([pr2 - base2, pl2 - base2], 1); D2 = pr2 - pl2
+    out["captured_v2"] = {"sel_cd": rms(Pcd @ D2) / rms(D2), "var_cd": rms(Pcd @ Y2) / rms(Y2),
+                          "sel_15": rms(P15 @ D2) / rms(D2), "var_15": rms(P15 @ Y2) / rms(Y2)}
     # projections of the held-out trials on modes 2 and 4
     for name, m in (("m2", m2), ("m4", m4)):
         q = np.einsum("tnw,n->tw", X, m)
