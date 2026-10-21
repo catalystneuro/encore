@@ -74,6 +74,12 @@ def claims_ready(folder: str) -> bool:
     return False
 
 
+def latest_deprecated(folder: str, records: list[str]) -> bool:
+    """Whether the newest attempt record of a dataset is deprecated, so that it is to be done again."""
+    mine = sorted(r for r in records if r.startswith(folder + "-") and r.endswith(".yaml"))
+    return bool(mine) and bool((main_yaml(f"attempts/{mine[-1]}") or {}).get("deprecated"))
+
+
 def published(target: dict) -> bool:
     """Whether a target has a published version: a DANDI draft can still change under an attempt.
     The other archives publish every dataset they list."""
@@ -95,8 +101,10 @@ def next_target(skip: set[str], claims: bool = False) -> str | None:
     records = [Path(p).name for p in git("ls-tree", "--name-only", "origin/main", "attempts/").split()]
     branches = {line.split("refs/heads/attempt/", 1)[1] for line in git("ls-remote", "--heads", "origin",
                                                                           "attempt/*").split("\n") if line}
-    # An attempt record is named <folder>-<first author>-<year>-<nn>.yaml.
+    # An attempt record is named <folder>-<first author>-<year>-<nn>.yaml. A dataset whose latest attempt
+    # is deprecated is to be done again (its claims too, see chain.sh), so it is open.
     attempted = {t["folder"] for t in targets if any(r.startswith(t["folder"] + "-") for r in records)}
+    attempted -= {f for f in attempted if latest_deprecated(f, records)}
     open_ = [t for t in targets if t["folder"] not in attempted | branches | skip]
     if claims:
         papers = (main_yaml("papers/manifest.yaml") or {}).get("targets", {})
