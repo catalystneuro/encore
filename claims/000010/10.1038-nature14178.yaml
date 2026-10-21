@@ -191,8 +191,8 @@ claims:
   - units-classification
   criterion: As Extended Data Fig. 1f, the number of putative pyramidal neurons significantly
     selective in 200 ms windows of spike counts (two-tailed t-test, P < 0.05), correct trials.
-    Window step is not stated; a step of 200 ms (non-overlapping) is used, and a 50 ms step
-    shown as a variant. Reproduced when (1) the count in some sample-epoch window exceeds the
+    Window step is not stated; readings are a 200 ms step (non-overlapping) and a 50 ms step,
+    both run. Reproduced when, under each step, (1) the count in some sample-epoch window exceeds the
     95th percentile of a binomial count with p = 0.05 over the neurons tested (the rate the
     test gives by chance) while the windows before sample onset do not exceed it on average;
     (2) the count in the last delay window exceeds that in the first delay window; (3) the
@@ -200,22 +200,24 @@ claims:
     window after the go cue or (b) any window starting within 0.5 s after the go cue.
 - id: fig2c-population-dynamics
   statement: Individual neuron responses are dynamic although selectivity is stable at the
-    level of the population; the population response grows more similar to that at the go cue
-    as the delay proceeds.
+    level of the population (Fig. 2c, bottom, population selectivity and the correlation of the
+    population response with that at the go cue).
   source: Results, ALM contains neurons with bilateral selectivity, paragraph 1; Figure 2c,
     bottom; Methods, Electrophysiology data analyses, paragraph 2
   quote: Individualneuronresponseswere dynamic, despite stable selectivity at the level of the
     population (Fig. 2c, bottompanelandExtended Data Fig.2a)
   depends_on:
   - fig2-selective-fraction
-  criterion: As the Methods, a pseudo-population of the 912 selective neurons treated as
-    simultaneously recorded; each neuron's response (correct trials, 200 ms bins) mean-
+  criterion: As the Methods, a pseudo-population treated as simultaneously recorded, of (a) the
+    912 selective neurons (the neurons Fig. 2c shows) or (b) all 1,245 putative pyramidal
+    neurons, both run; each neuron's response (correct trials, 200 ms bins) mean-
     subtracted and normalized to its variance over the trial; Pearson correlation of the
     population vector at each time with that at go cue onset (t = 0). Population selectivity is
     the spike rate difference between preferred and non-preferred trial types, the preference
     set from 10 trials and the selectivity computed on the remaining trials. Whether the
     population vector concatenates both trial types or uses their difference is open; both
-    are run. The paper gives no number, so the claim is judged on shape. Reproduced when the
+    are run. The paper gives no number, and the curve of Fig. 2c was not read, so the claim is
+    judged on shape, a reading of "dynamic" made here. Reproduced when, under each reading, the
     mean correlation over the sample epoch is lower than over the delay epoch, which is lower
     than 1, while the population selectivity stays above 0 through the delay epoch.
 - id: ed2c-error-trials-predict-choice
@@ -261,9 +263,13 @@ claims:
     correct trials) across neurons; reproduced when it gives P >= 0.05 and not reproduced when
     P < 0.05 with a contralateral excess. The population is open; readings (a) all 1,245
     putative pyramidal neurons ("the recorded population"), (b) the 912 selective neurons
-    (Fig. 3f, "all task-selective neurons"). For equal proportions the Methods' bootstrap
-    (neurons resampled with replacement, P the fraction of resamples with more ipsi- than
-    contra-preferring neurons, one-tailed) must not find a contralateral excess at P < 0.05.
+    (Fig. 3f, "all task-selective neurons"). The spike count window is open; readings (i) the
+    three epochs together (the "overall spike count" of Results paragraph 2), (ii) and (iii) the
+    test windows of fig3f-pt-contra-selectivity, where the Results report the same P = 0.13 for
+    all task-selective neurons. The paper gives no test for the proportions of Fig. 2e; the
+    Methods' bootstrap for Fig. 3f, j (neurons resampled with replacement, P the fraction of
+    resamples with more ipsi- than contra-preferring neurons, one-tailed) is used, and must not
+    find a contralateral excess at P < 0.05.
     The 8% modulation is checked with the readings of fig3f-pt-contra-selectivity; it is
     reported, and its mismatch alone makes the claim partially reproduced.
 - id: ed1-fast-spiking-properties
@@ -340,6 +346,14 @@ claims:
   - quantity: IT-activated mean latency
     value: 9.8
     tolerance: 0.98
+    unit: ms
+  - quantity: PT-activated mean jitter
+    value: 2.8
+    tolerance: 0.28
+    unit: ms
+  - quantity: IT-activated mean jitter
+    value: 2.4
+    tolerance: 0.24
     unit: ms
   depends_on:
   - tagging-counts
@@ -432,7 +446,9 @@ claims:
     both trial types in that window or (y) divided by the lick left rate; the onset, the start
     of the earliest window from which the population contra-selectivity stays significantly
     above 0 (two-tailed t-test across neurons, P < 0.05) until the go cue, with windows stepped
-    by 10 ms. Reproduced when, under one reading, the PT test gives P < 0.05 with positive
+    by 10 ms (a standard choice; it moves the onset by at most 10 ms). The paper does not say
+    which time a 200 ms window stands for, which moves the onset by up to 200 ms; readings are
+    the window's (p) start, (q) centre and (r) end. Reproduced when, under one reading, the PT test gives P < 0.05 with positive
     selectivity, the IT test P >= 0.05, and the three expected values are within tolerance;
     partially reproduced when the two tests come out so but a value falls outside under every
     reading.
@@ -491,8 +507,9 @@ claims:
   depends_on:
   - imaging-selectivity-counts
   criterion: A claim of absence, on the paper's two tests (Methods). For the selective cells,
-    (1) the probability that each cell's nearest neighbour among selective cells has the same
-    preference, against the same probability with preference labels shuffled, P the fraction
+    (1) the probability that each cell's nearest neighbour has the same preference (the
+    neighbour searched among (a) the selective cells or (b) all cells, a non-selective
+    neighbour counting as not the same; the Methods do not say), against the same probability with preference labels shuffled, P the fraction
     of shuffles with a larger probability; (2) the mean distance from each cell to the nearest
     cell of the same preference, against shuffles, P the fraction of shuffles with a smaller
     distance. Distances from ROI centres within each field of view. Whether labels are
@@ -547,17 +564,20 @@ claims:
   - imaging-selectivity-counts
   criterion: Labelled PT (RetroBeads) and IT (CTB-647) cells imaged 450 to 700 um deep;
     selectivity and preference as imaging-selectivity-counts, with its readings. Reproduced
-    when, under one reading, the PT binomial test (two-sided, against 0.5) gives P < 0.001 with
+    when, under one reading, the PT binomial test (against 0.5; the sidedness is not stated,
+    two-sided is used and one-sided reported) gives P < 0.001 with
     a contralateral majority, the IT binomial test gives P > 0.05, the chi-squared test of PT
     against IT gives P < 0.001, and the expected values are within tolerance; partially
-    reproduced when the three tests come out so and a value falls outside.
+    reproduced when the three tests come out so and a value falls outside. The text's
+    "approximately a quarter" does not match its own counts (182/534 is 34%, 174/542 is 32%);
+    the counts are what is tested.
 - id: reaction-time
   statement: The reaction time after the go cue was 61.1 +/- 10.5 ms (mean +/- s.d. across
     mice).
   source: Results, Pyramidal tract neurons drive upcoming movements, paragraph 1
   quote: reactiontimepostcueonsetacrossmice:61.1 6 10.5 ms,mean 6 s.d.
   expected:
-    quantity: mean reaction time across mice
+  - quantity: mean reaction time across mice
     value: 61.1
     tolerance: 10.5
     unit: ms
@@ -584,9 +604,13 @@ claims:
     control trials, per hemisphere and trial type, with the hierarchical bootstrap of
     fig1d-delay-inhibition-ipsi-bias. Which powers are pooled is inconsistent in the paper;
     readings (a) 0.12 to 0.8 mW (Fig. 5 legend), (b) the subthreshold powers below 0.25 mW
-    (text). Reproduced when, under one reading, ipsilateral-trial performance falls with
-    P < 0.05 for both hemispheres; partially reproduced for one. The lowest star level of the
-    legend is recorded as the statistic; which panels carry which stars was not read.
+    (text; 0.06, 0.12 and 0.24 mW), (c) 0.12 and 0.24 mW (both bounds together). Reproduced
+    when, under one reading, ipsilateral-trial performance falls with P < 0.05 for both
+    hemispheres; partially reproduced for one. The lowest star level of the legend is recorded
+    as the statistic; which panels carry which stars was not read. Extended Data Fig. 6a shows a
+    95% interval of behavioural variability from resampling control trials only, with trial
+    numbers matched; whether the change falls outside it is shown as a variant and does not
+    decide the claim.
 - id: fig5b-pt-sample-activation-contra-bias
   statement: Stimulation of PT neurons during the sample epoch also causes a significant
     contralateral bias.
@@ -679,3 +703,21 @@ claims:
   criterion: Histology. Reproduced when double-labelled neurons are under 4.4% (4% widened by
     10%) of labelled neurons in each of the 2 mice. The projection findings are tested only if
     the images are available.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig2c-selectivity-time-course. The window step decided the claim with 200 ms and showed 50 ms as a variant; the paper fixes neither, and the step can change which window holds the maximum, so both are now readings that must agree.
+  - fig2c-population-dynamics. The statement added that the population response grows more similar to that at the go cue through the delay; no sentence of the paper says so and the curve was not read. Cut it back to the paper's sentence. Named the neurons in the pseudo-population as open (912 selective or all 1,245 putative pyramidal), since the Methods do not say, and said the shape test is a reading made here.
+  - fig2e-no-contra-bias-spikes. The criterion named no spike count window for the t-test; added the readings the text allows (the three epochs, or the windows of fig3f-pt-contra-selectivity, where the Results report the same P = 0.13). Said that the bootstrap for proportions is the Methods' test for Fig. 3f, j, since the paper gives none for Fig. 2e.
+  - antidromic-latencies. The statement gives jitters of 2.8 and 2.4 ms for activated neurons (Methods) but expected lacked them; added both with 10% tolerance.
+  - fig3f-pt-contra-selectivity. The onset of 570 ms depends on which time a 200 ms window stands for, a shift larger than the tolerance, and the paper does not say; added the readings start, centre and end. Said the 10 ms step is a standard choice that cannot move the onset beyond tolerance.
+  - fig4f-spatially-intermingled. The criterion searched nearest neighbours among selective cells only; the Methods do not say among which cells, so named both readings.
+  - fig4h-pt-contra-imaging. The binomial test was set two-sided without a source; said the sidedness is open (both give the same outcome at 122 of 182). Noted that the text's "approximately a quarter" does not match its counts (34% and 32%), and that the counts are tested.
+  - reaction-time. expected was a mapping, unlike every other claim; made it a list.
+  - fig5b-pt-delay-activation-contra-bias (and, through it, fig5b-pt-sample-activation-contra-bias). Added the reading 0.12 and 0.24 mW, which meets both the legend's lower bound and the text's subthreshold bound. Added the control-only resampling of Extended Data Fig. 6a as a variant that does not decide the claim.
+  - Open, not settled. The stars of Figs 1d and 5b, the inset fractions of Fig. 3f, j, the fractions of Fig. 3e, i and the curves of Fig. 2c and Extended Data Figs 3, 6 and 7 were not read from the figures, here or by the writer; claims that need them say so.
+  - Open, not settled. Several criteria rest on decision rules the paper does not give (binomial chance levels in fig2c-selectivity-time-course and ed7-pt-activation-persistent, the definition of "spike rate modulation" in fig3f-pt-contra-selectivity, the mouse-level rules of ed6d-it-activation-inconsistent); each names its readings, but they are readings made here. In ed7-pt-activation-persistent the change in population selectivity has no test, so that part can only be described.
+  - Coverage. Every figure and main-text finding has a claim. Minor findings without one are the conduction velocities (6.5 and 2.3 m/s) and the smaller IT jitter after a conditioning pulse (Extended Data Fig. 5g); neither is a main finding. No claim comes from outside this paper.
