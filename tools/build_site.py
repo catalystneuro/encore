@@ -448,12 +448,18 @@ def queue_estimates(q: dict) -> dict[str, dict]:
     """Each queued dataset's place in its runner's queue, and how many hours from now it should be done.
 
     The lanes take the datasets in order, each taking the median time of a recent chain (the runs' times,
-    `tools/runner/describe.py queue`), and the attempts they have going now are taken to be half done.
-    A dataset in both queues gets the full runner's estimate."""
+    `tools/runner/describe.py queue`). A lane is free when the chain it has going now should be done
+    (q["running"]), and without those times the chains going now are taken to be half done. A dataset in
+    both queues gets the full runner's estimate."""
     out = {}
     for kind in ("claims", "full"):
         hours = (q.get("hours") or {}).get(kind)
-        free = [hours / 2 if hours else 0.0] * max(1, (q.get("lanes") or {}).get(kind, 1))
+        n = max(1, (q.get("lanes") or {}).get(kind, 1))
+        if "running" in q:
+            going = sorted(r["hours"] or 0.0 for r in q["running"].values() if r["kind"] == kind)
+            free = (going + [0.0] * n)[:n]
+        else:
+            free = [hours / 2 if hours else 0.0] * n
         for place, folder in enumerate(q.get(kind, []), 1):
             lane = free.index(min(free))
             free[lane] += hours or 0.0
@@ -466,6 +472,8 @@ def in_hours(hours: float | None) -> str:
         return ""
     if hours < 1:
         return "within the hour"
+    if hours < 1.5:
+        return "about an hour"
     return f"about {round(hours)} hours" if hours < 48 else f"about {round(hours / 24)} days"
 
 
@@ -478,6 +486,7 @@ def pipeline_rows(data: dict) -> list[dict]:
     current = current_attempts(data)
     queued = queue_estimates(data.get("queue") or {})
     branches = {key_of_dir(f) for f in (data.get("queue") or {}).get("branches", [])}
+    going = {key_of_dir(f): r for f, r in ((data.get("queue") or {}).get("running") or {}).items()}
     out = []
     for t in data["targets"]:
         d = t["key"]
@@ -512,7 +521,7 @@ def pipeline_rows(data: dict) -> list[dict]:
                     "issue": data.get("issues", {}).get(t["label"]),
                     "waiting": [label for key, label in PIPELINE_STEPS if state[key][0] == "waiting"],
                     "missing": missing, "page": page_of(d) if atts or d in data.get("claim_files", {}) else None,
-                    "queue": queued.get(d), "branch": d in branches})
+                    "queue": queued.get(d), "branch": d in branches, "running": going.get(d)})
     return out
 
 
@@ -1170,8 +1179,11 @@ def page_pipeline(data: dict) -> str:
                         f'{e(r["state"][key][1])}</td>' for key, _ in PIPELINE_STEPS)
         states = " ".join(f'data-{key}="{e(r["state"][key][0])}"' for key, _ in PIPELINE_STEPS)
         q = r["queue"]
-        if r["branch"]:
-            place, sort, when, hours = "branch open", 0, "", -1
+        if r["running"]:
+            place, sort = "running now", -1
+            when, hours = in_hours(r["running"]["hours"]), r["running"]["hours"]
+        elif r["branch"]:
+            place, sort, when, hours = "branch open", 0, "", None
         elif q:
             place = f'{q["place"]:,} for {"an attempt" if q["kind"] == "full" else "claims"}'
             sort = q["place"] + (0 if q["kind"] == "full" else 100000)
@@ -1204,9 +1216,14 @@ def page_pipeline(data: dict) -> str:
                     else "")
             return (f'{n:,} dataset{" waits" if n == 1 else "s wait"} for {what} on {k} lane{"s" if k != 1 else ""}{each}'
                     + (f', about {in_hours(n * h / k).removeprefix("about ")} in all' if h and n else ""))
+        n_going = len(q.get("running") or {})
+        going_note = (f' {n_going:,} chain{" is" if n_going == 1 else "s are"} running now, and the Done in column '
+                      'estimates when each will finish from how long the rest of a chain usually takes after the '
+                      'role it is on. A branch with nothing running is waiting, on a person or a merge, and has no '
+                      'estimate.' if "running" in q else "")
         queue_note = (f' {part("full", "an attempt")}, and {part("claims", "their claims to be read")}. '
                       'The Queue and Done in columns give each dataset’s place and a rough estimate of when it '
-                      'will be done, counted from the last update.')
+                      f'will be done, counted from the last update.{going_note}')
     n_issues = len(data.get("issues", {}))
     issues_note = (f' The runner has stopped on <a href="{REPO_URL}/issues?q=is%3Aissue+is%3Aopen+label%3Aneeds-you">'
                    f'{n_issues:,} dataset{"s" if n_issues != 1 else ""}</a> that need a person.' if n_issues else "")
