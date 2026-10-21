@@ -23,11 +23,24 @@ outcomes:
 - claim: fig1b-anxa1-downregulated-rnaseq
   outcome: blocked
   blocked_by: other
-  notes: GEO GSE282753 became public on 2026-10-20. It holds counts and RPKM for MitoPark and control
-    DANs only (7 control and 6 MitoPark mice at 10 weeks, each with 3 to 12 technical libraries), not
-    the cMfn2KO-early data the claim also needs; the claims file names no other deposit. The criterion's
-    fallback readings need DESeq2 and edgeR, and edgeR (R) is not in the entry's environment. A question
-    was asked about the cMfn2KO deposit and how libraries are combined. The MitoPark counts were not analysed.
+  notebook: reproduce_mantas_2024.ipynb
+  output: claim:fig1b-anxa1-downregulated-rnaseq
+  notes: GEO GSE282753, public since 2026-10-20 and the paper's only RNA-seq deposit, holds one count
+    table, MitoPark and control DANs at 10 weeks (5 MitoPark mice, as in the legend, and 7 controls,
+    each with 3 to 12 technical libraries), and no cMfn2KO-early counts, so that half of the claim
+    cannot be tested and the claim stays blocked. The answer (2026-10-21) found no other place for the
+    cMfn2KO counts, and made the mouse the unit, with libraries summed per mouse, and the MitoPark half
+    to be run and reported. Before the answer the MitoPark counts were not analysed (the earlier note
+    counted 6 MitoPark mice; the table has 5). The MitoPark half holds under both readings, as the
+    criterion judges them, where DESeq2 and edgeR agree. Summed per mouse, Anxa1 log2 fold change
+    -1.02 at FDR 2.9e-05 (DESeq2) and -0.99 at FDR 7.5e-04 (edgeR exact test); with each library as a
+    sample, -0.93 at FDR 5.0e-08 and 6.2e-08. Anxa1 counts per million are 90 to 222 in MitoPark mice
+    and 258 to 446 in controls.
+  deviations:
+  - DESeq2 is pydeseq2 0.5.4 and edgeR is edgepy (inmoose 0.9.1), a Python port, with TMM written out
+    in the helper and the GLM common and tagwise dispersions in place of estimateDisp; R is not in the
+    entry's environment.
+  - All 7 control and 5 MitoPark mice are used; which the paper used is not given.
 - claim: fig1c-anxa1-aldh1a1-overlap
   outcome: blocked
   blocked_by: data_missing
@@ -92,16 +105,22 @@ outcomes:
   notebook: reproduce_mantas_2024.ipynb
   output: claim:figs2-evoked-da-dcp-ccp
   notes: 20 sessions, two Anxa1-Flp mice with the fiber in dCP and two in cCP, five powers each (0.1 to
-    2 mW). Under both z-scorings the dCP peak exceeds the pre-train baseline in 10 of 10 recordings and
-    the cCP peak is lower; session z-score, 0 to 1 s, 1.21 against 0.61 (t = 3.94, p = 0.0010, Cohen's
-    d 1.76); baseline z-score 2.30 against 1.19 (p = 0.0042), 1.93 against 1.03 with a 2 s baseline (p
-    = 0.0043). The 0 to 2 s window gives the same peaks. dCP is above cCP at every power in both mice
-    (per-power 2 against 2 tests p = 0.0039 to 0.16); peaks rise with power (Spearman rho 0.81 dCP, 0.985
-    cCP). The test is over sessions, five per mouse, as the claims file says per recording.
+    2 mW). The answer (2026-10-21) named two readings, (a) all powers pooled per session and (b) each
+    power alone, the session as unit in both, with baselines of 1 s and 2 s before train onset. Reading
+    (a) was the one run before; (b) as a judged reading and the 2 s baseline for the session z-score
+    are new. Under (a) the criterion holds with both z-scorings, both baselines and both windows; the
+    dCP peak exceeds the baseline in 10 of 10 sessions and the cCP peak is lower, session z-score 1.21
+    against 0.61 (t = 3.94, p = 0.0010, Cohen's d 1.76), baseline z-score 2.30 against 1.19 (p = 0.0041)
+    with 1 s and 1.93 against 1.03 (p = 0.0043) with 2 s. The 0 to 2 s window gives the same peaks.
+    Under (b), 2 sessions against 2, it holds at 3 or 4 of 5 powers (p = 0.0039 to 0.037); it fails at
+    2 mW under every combination (p = 0.16 to 0.31) and at 0.1 mW except with the baseline z-score over
+    1 s (p = 0.056 and 0.11). dCP is above cCP in both mice at every power, and peaks rise with power
+    (Spearman rho 0.81 dCP, 0.985 cCP). Per mouse, reported and not judged, the mean peak over powers
+    is 1.23 and 1.20 in dCP and 0.56 and 0.66 in cCP. The first reading the criterion lists holds in
+    full, so the outcome stays reproduced.
   deviations:
   - The dandiset holds dF/F, not the paper's z-scores; both z-score readings of the claims file are run.
-  - The pre-train baseline window (1 s, 2 s as a variant) is not given in the text read; question asked.
-  - All powers are pooled per site, 10 sessions against 10; Figure S2's selection is not known.
+  - The z-score against the baseline uses the same 1 s or 2 s window before each train as the baseline.
 - claim: fig2i-striosomal-features
   outcome: blocked
   blocked_by: data_missing
@@ -123,12 +142,15 @@ outcomes:
     (15 recordings, 6 mice) holds only with every contact as the touch, 1 s windows and the session z-score
     (ANOVA p = 0.048, window 2 above 3 at Sidak p = 0.045); with drop retrievals alone its ANOVA p = 0.0139
     to 0.109 and window 2 against 3 Sidak p = 0.107 to 0.211. The mean Anxa1 trace peaks at +0.03 s from
-    the drop retrieval (z 0.25), the DAT trace at +2.88 s. Both event readings, which come from a question,
-    give the same outcome.
+    the drop retrieval (z 0.25), the DAT trace at +2.88 s. The answers (2026-10-21) named the two event
+    readings already run, (i) drop retrievals and (ii) every contact with a drop, empty-spout events
+    excluded, and every recording with at least one event, so the numbers and the outcome are unchanged.
+    The n used is 15 Anxa1 recordings of 6 mice and 8 DAT of 5 under every reading, against the legend's
+    10 of 7 and 4 of 3. Per mouse, reported and not judged, the DAT ANOVA has p = 0.10 to 0.25, the
+    Anxa1 ANOVA p = 0.027 to 0.15 and its window 2 against 3 Sidak p = 0.032 to 0.16.
   deviations:
-  - The legend counts 10 Anxa1 and 4 DAT recordings; the dandiset holds 15 and 8, all used.
-  - The water drop touch is read from the annotated event labels in two ways (drop retrievals, or every
-    contact with a drop); question asked.
+  - The legend counts 10 Anxa1 and 4 DAT recordings; the dandiset holds 15 and 8, all used, as the
+    criterion now says.
   - The dandiset holds dF/F; both z-score readings of the claims file are run, the baseline one against
     the first window.
   - Sidak's test after the Geisser-Greenhouse corrected ANOVA is a paired t-test per pair, Sidak-adjusted
@@ -141,7 +163,10 @@ outcomes:
     = 0.0001 to 0.0014 under every reading, window 3 above window 1 at Sidak p = 0.0005 to 0.0012, and
     window 2 above window 1 at Sidak p < 0.05 in 5 of 8 combinations (drop retrievals, 1 s windows, session
     z, F = 13.42, p = 0.0006, 1 against 2 p = 0.041). dLight-dCP (21 recordings, 7 mice) has ANOVA p =
-    0.21 to 0.76 and window 2 against 3 Sidak p = 0.30 to 0.90 under every reading.
+    0.21 to 0.76 and window 2 against 3 Sidak p = 0.30 to 0.90 under every reading. The answers
+    (2026-10-21) fixed the events and recordings as already run, so the outcome is unchanged. Per
+    mouse, reported and not judged, the dCP ANOVA has p = 0.46 to 0.87 and the cCP ANOVA p = 0.0006 to
+    0.018.
   deviations:
   - The legend counts 13 dCP and 11 cCP recordings; the dandiset holds 21 and 15, all used.
   - Event and z-score readings as in fig3d-anxa1-ramp-to-touch.
@@ -156,7 +181,8 @@ outcomes:
     and the DAT second (0.13 to 0.28) and cCP third (1.43 to 1.77) changes are positive, so the claim
     holds. With the session z-score the cCP second-window change (0.29 to 0.36) is not significant under
     either correction (four tests p = 0.055 to 0.31). Under the baseline z-score the first window is the
-    baseline by construction.
+    baseline by construction. The answers (2026-10-21) fixed the events and recordings as already run;
+    they do not bear on the z-scoring, which still decides, so the outcome is unchanged.
   deviations:
   - The z-scoring of the photometry is not given; the claims file's readings disagree.
 - claim: fig3i-dat-not-anxa1-self-stimulation
@@ -338,24 +364,38 @@ outcomes:
   blocked_by: data_missing
   notes: Rewards received are not in the dandiset (see fig6d-maze-preference-learning).
 - claim: fig6j-reaching-accuracy
-  outcome: blocked
-  blocked_by: methods_underspecified
+  outcome: partially_reproduced
   notebook: reproduce_mantas_2024.ipynb
   output: claim:fig6j-reaching-accuracy
-  notes: The outcome depends on which mice are the paper's, which the dandiset does not say (question
-    asked). With every mouse scored on test1 and test4 (15 controls, 4 TeTx, 7 Arch) and 0.2 cm, the criterion
-    holds; interaction F(2, 23) = 7.55, p = 0.0030; controls 0.388 to 0.610 (Sidak p = 0.0015); day 4
-    controls above TeTx (p = 0.0002) and Arch (p = 0.016); day 1 TeTx not different (p = 0.9995); also
-    without empty-spout reaches, with the preferred limb per session, and in 25 of 26 single exclusions.
-    With the mice recorded before the preprint (8, 4 and 4) the Arch part fails (day 4 p = 0.22) while
-    the rest holds (interaction p = 0.034, controls improve p = 0.010, TeTx below controls p = 0.0014).
-    With 0.1 cm the criterion fails under every reading.
+  notes: The answers (2026-10-21) fixed the readings. Day 1 and day 4 are the first and fourth training
+    sessions (the files' test1 and test4, test4 falling 2 to 4 days after test1), the controls of both
+    cohorts are one group, and the main run is the 17 mice recorded before the preprint (8 controls, 4
+    TeTx, 5 Arch; 8 + 4 + 5 fits the legend's F(2,14)), all mice being a variant. Before the answers
+    the claim was blocked because the outcome turned on which mice were used. In the main run the
+    control and TeTx parts hold and the Arch part fails. With every labelled reach, the preferred limb
+    per mouse and 0.2 cm, interaction F(2, 13) = 4.42, p = 0.034; controls improve from 0.338 to 0.650
+    (Sidak p = 0.010); on day 4 controls exceed TeTx (0.239, p = 0.0014) but not Arch (0.428, p = 0.22);
+    on day 1 TeTx do not differ (p = 0.994). One Arch mouse (842433) has no reach with its preferred
+    limb on one day there. Without empty and unknown reaches, interaction p = 0.046, control improvement
+    p = 0.020, TeTx below controls p = 0.016, Arch p = 0.34. With the preferred limb per session all 17
+    mice enter with the legend's df (2, 14), but the interaction misses (p = 0.060 and 0.085). Arch
+    on day 4 fails in all eight readings of the main run (Sidak p = 0.044 to 0.34; the one below 0.05,
+    at 0.1 cm, has an interaction p of 0.12), and at 0.1 cm the interaction misses in every reading
+    (p = 0.069 to 0.27). Single exclusions make the criterion hold in 0 of 16 with the limb per mouse
+    and 1 of 17 with the limb per session (Arch mouse 828027 left out, interaction p = 0.016, Arch day 4
+    p = 0.035). The variant with all mice holds at 0.2 cm under all four event and limb readings
+    (interaction p = 0.0030 to 0.028).
   deviations:
-  - Grasp attempts and the preferred limb are read from the annotated events in two ways each; question
-    asked.
-  - Days 1 and 4 are taken as test phases test1 and test4; the Arch cohort's light conditions in the files
-    differ from the Methods.
-  - Controls of the TeTx and Arch cohorts are pooled; the 2025 Arch cohort post-dates the preprint.
+  - The Arch cohort's day 1 sessions are all labelled with the laser switched on after the first reach,
+    where the Methods have it off on day 1; they are used as day 1.
+  - Sessions of one mouse on one day (two mice) are pooled.
+  - Sidak's tests after the RM two-way ANOVA are t-tests with Sidak adjustment (paired over the three
+    groups for day 1 against day 4, unpaired over four comparisons between groups).
+inputs:
+- what: The MitoPark RNA-seq count table of GEO GSE282753 (GSE282753_counts_mitopark.txt.gz, 92 libraries
+    of 5 MitoPark and 7 control mice; series last updated 2026-10-20; md5 3198ec978a3b44c5a2069a832569188c,
+    printed in the notebook), read at run time for fig1b only.
+  source: GEO GSE282753, https://ftp.ncbi.nlm.nih.gov/geo/series/GSE282nnn/GSE282753/suppl/
 findings:
 - kind: data_missing
   statement: The dandiset holds only behaviour and fiber photometry. The histology, RNA-scope and tracing
@@ -393,8 +433,13 @@ findings:
     18), without saying which recordings the paper used.
 - kind: other
   statement: The dandiset holds experiments that are not in the preprint version read (6-OHDA in the tail
-    striatum in open field, reaching and arrow maze; anti-Anxa1 open field; a 2025 Arch reaching cohort
-    whose light protocol differs from the Methods), labelled only in free text.
+    striatum in open field, reaching and arrow maze; anti-Anxa1 open field; a 2025 Arch reaching cohort),
+    labelled only in free text.
+- kind: metadata_error
+  statement: All 17 Arch-cohort reaching files of the first training day, the 2024 mice included, say
+    the laser was switched on after the mouse's first reach, while the Methods say it was off during
+    the first day of reaching and on during the last three; either the label or the protocol differs
+    from the paper.
 - kind: metadata_error
   statement: The 20 evoked release sessions are described as nosepoke self-stimulation, but their 1 s
     trains come at fixed 4 s intervals in every session; the reaching photometry sessions' descriptions

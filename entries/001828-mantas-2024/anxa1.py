@@ -18,6 +18,10 @@ Kinds of file, as found in the data (the file names do not always say):
 Groups, cohorts, days and test phases are stated only in the free text of `session_description`;
 `parse_*` read them from it.
 
+One outside input: the MitoPark RNA-seq count table of GEO GSE282753, the paper's RNA-seq deposit
+(`load_geo_counts`), read into memory for the fig1b claim, with DESeq2 (pydeseq2) and edgeR (its
+Python port edgepy, with `tmm_factors`) as the claims file's two readings.
+
 Where the parameters come from:
 
 - Window edges, z-scoring readings, AUC windows, thresholds and tests are those of the claims file
@@ -350,3 +354,89 @@ def mixed_anova(df: pd.DataFrame, dv: str, within: str, between: str, subject: s
     """Two-way ANOVA with one repeated factor (Prism's RM two-way ANOVA), via pingouin."""
     import pingouin as pg
     return pg.mixed_anova(data=df, dv=dv, within=within, between=between, subject=subject)
+
+
+# --- RNA-seq (GEO GSE282753, outside the dandiset) ------------------------------
+
+GEO_COUNTS = "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE282nnn/GSE282753/suppl/GSE282753_counts_mitopark.txt.gz"
+
+
+def load_geo_counts(url: str = GEO_COUNTS) -> tuple[pd.DataFrame, pd.DataFrame, str]:
+    """The MitoPark and control count table of GEO GSE282753, read into memory (not written to disk).
+
+    Returns the counts (genes by libraries, indexed by `gene.name.unique`, which is unique where
+    `ensemblID` is not), a table of libraries (group, mouse, technical replicate, parsed from the
+    column names `<group>_<mouse>_P<replicate>`) and the md5 of the file, which pins what was read."""
+    import gzip
+    import hashlib
+    import io
+    raw = urllib.request.urlopen(url, timeout=120).read()
+    df = pd.read_csv(io.BytesIO(gzip.decompress(raw)), sep="\t")
+    libs = [c for c in df.columns if re.match(r"(Control|MitoPark)_\d+_P\d+$", c)]
+    counts = df.set_index("gene.name.unique")[libs]
+    info = pd.DataFrame([dict(zip(["group", "mouse_no", "replicate"], c.split("_")), library=c) for c in libs])
+    info["mouse"] = info.group + "_" + info.mouse_no
+    return counts, info, hashlib.md5(raw).hexdigest()
+
+
+def tmm_factors(X: np.ndarray, logratio_trim: float = 0.3, sum_trim: float = 0.05) -> np.ndarray:
+    """edgeR's calcNormFactors(method = "TMM") with its defaults (trims 0.3 and 0.05, weighting by
+    the delta-method variance, reference the library whose upper-quartile fraction is nearest the
+    mean). The Python port edgepy has no TMM, so it is written out here from the edgeR source."""
+    X = np.asarray(X, float)
+    lib = X.sum(0)
+    f75 = np.quantile(X, 0.75, axis=0) / lib
+    ref = int(np.argmin(np.abs(f75 - f75.mean())))
+    f = np.ones(X.shape[1])
+    for i in range(X.shape[1]):
+        o, r, n_o, n_r = X[:, i], X[:, ref], lib[i], lib[ref]
+        with np.errstate(divide="ignore", invalid="ignore"):
+            log_r = np.log2((o / n_o) / (r / n_r))
+            abs_e = (np.log2(o / n_o) + np.log2(r / n_r)) / 2
+            v = (n_o - o) / n_o / o + (n_r - r) / n_r / r
+        ok = np.isfinite(log_r) & np.isfinite(abs_e)
+        log_r, abs_e, v = log_r[ok], abs_e[ok], v[ok]
+        if np.max(np.abs(log_r)) < 1e-6:
+            continue
+        n = len(log_r)
+        lo_l = np.floor(n * logratio_trim) + 1
+        lo_s = np.floor(n * sum_trim) + 1
+        rl, ra = stats.rankdata(log_r), stats.rankdata(abs_e)
+        k = (rl >= lo_l) & (rl <= n + 1 - lo_l) & (ra >= lo_s) & (ra <= n + 1 - lo_s)
+        f[i] = 2 ** (np.nansum(log_r[k] / v[k]) / np.nansum(1 / v[k]))
+    return f / np.exp(np.mean(np.log(f)))
+
+
+def deseq2(counts: pd.DataFrame, group: np.ndarray, n_cpus: int = 4) -> pd.DataFrame:
+    """DESeq2 with default settings (pydeseq2): design ~ group, Wald test of MitoPark against
+    Control, Benjamini-Hochberg padj with independent filtering. The claims file names DESeq2
+    with default settings as one reading."""
+    from pydeseq2.dds import DeseqDataSet
+    from pydeseq2.default_inference import DefaultInference
+    from pydeseq2.ds import DeseqStats
+    inf = DefaultInference(n_cpus=n_cpus)
+    md = pd.DataFrame({"group": group}, index=counts.columns)
+    dds = DeseqDataSet(counts=counts.T, metadata=md, design="~group", inference=inf, quiet=True)
+    dds.deseq2()
+    st = DeseqStats(dds, contrast=["group", "MitoPark", "Control"], inference=inf, quiet=True)
+    st.summary()
+    return st.results_df
+
+
+def edger_exact(counts: pd.DataFrame, group: np.ndarray) -> pd.DataFrame:
+    """edgeR's classic two-group pipeline with default settings, through the port edgepy: TMM
+    factors, common and tagwise dispersions (edgepy has the GLM estimators, not estimateDisp) and
+    exactTest of MitoPark against Control, Benjamini-Hochberg FDR. Genes with no count in any
+    library are dropped, as DGEList would leave them without a dispersion. The claims file names
+    edgeR with default settings as the other reading."""
+    from inmoose.edgepy import DGEList, exactTest
+    from statsmodels.stats.multitest import multipletests
+    counts = counts[counts.sum(1) > 0]
+    d = DGEList(counts=counts.values, norm_factors=tmm_factors(counts.values), group=np.asarray(group))
+    design = np.column_stack([np.ones(len(group)), (np.asarray(group) == "MitoPark").astype(float)])
+    d = d.estimateGLMCommonDisp(design)
+    d = d.estimateGLMTagwiseDisp(design)
+    et = pd.DataFrame(exactTest(d, pair=("Control", "MitoPark")))
+    et.index = counts.index
+    et["FDR"] = multipletests(et.pvalue, method="fdr_bh")[1]
+    return et
