@@ -73,7 +73,8 @@ def manifest(store: Path) -> dict:
                 h = header(text)
                 row = {"doi": doi, "status": "stored", "version": h.get("version"), "source": h.get("source"),
                        "pdf": text.with_suffix(".pdf").is_file(),
-                       "supplements": len(list(store.joinpath(d).glob(f"{slug(doi)}.supp*.pdf")))}
+                       "supplements": len([f for f in store.joinpath(d).glob(f"{slug(doi)}.supp*")
+                                            if f.suffix in (".pdf", ".docx", ".doc")])}
             elif doi in unavailable:
                 row = {"doi": doi, "status": "unavailable", "note": unavailable[doi]}
             else:
