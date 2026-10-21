@@ -5,9 +5,11 @@ can be tested on [DANDI:001636](https://dandiarchive.org/dandiset/001636/draft),
 single-unit recordings from M1 of two monkeys before and after MPTP. Only monkey V can be tested:
 the monkey L files mark no torque perturbation.
 
-This entry now uses the draft of the dandiset (last modified 2026-10-21 20:16:41 UTC), which was
-asked for to test the fixes made after the first attempt. A draft can change. The first attempt
-used the published version 0.260518.1819.
+This entry now uses the draft of the dandiset, which was asked for to test the fixes made after
+the first attempt. A draft can change: it was first read when last modified at 2026-10-21 20:16:41
+UTC, every asset was uploaded again between 23:00 and 23:10 UTC, and the latest run read the draft
+as modified at 23:10:32 UTC, with every recorded number unchanged. The first attempt used the
+published version 0.260518.1819.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -32,7 +34,9 @@ The detection of torque responses here has a false-positive rate of 0.23 over th
 where the paper's threshold implies 0.01, so the claims that use the selection are blocked; their
 analyses still run, and the notebook reports them. The torque command is about four times larger
 in most post-MPTP sessions than in most pre-MPTP ones, which bears on every pre against post
-comparison of the movements and EMG.
+comparison of the movements and EMG. Compared at the same per-trial command step, movements are
+faster after MPTP for some steps and directions and slower for others, and the m2 response is
+smaller after MPTP, not larger.
 
 In the draft, the analog streams share the clock of the trials, the angle's sign convention and
 the monkey L series names are corrected, repeated files and unit copies are gone, and neurons
@@ -45,7 +49,7 @@ The attempt records, with the reasons and the differences from the paper's metho
 version) and [`attempts/001636-pasquereau-2013-01.yaml`](../../attempts/001636-pasquereau-2013-01.yaml)
 (version 0.260518.1819).
 
-- `reproduce_pasquereau_2013.ipynb`: the analysis. It took 1.8 min in the latest run (up to 4.5 min in others), most of it streaming the
+- `reproduce_pasquereau_2013.ipynb`: the analysis. It took 5.2 min in the latest run (1.8 to 4.5 min in earlier runs), most of it streaming the
   439 files of the draft and the units of the 447 files of the earlier version.
 - `stretch.py`: loading the files (with the analog streams realigned to the trials where needed,
   and each unit's perturbations taken from its own trials), the spike density functions, response

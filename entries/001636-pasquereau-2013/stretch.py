@@ -39,7 +39,9 @@ Where the parameters come from:
   in the torque's direction exceeds 5 deg/s; peak velocity is its maximum over 0 to 200 ms and
   amplitude the largest displacement over 0 to 300 ms from the mean angle of the 50 ms before
   onset. An EMG response lasts while the session-average trace, less its baseline mean, exceeds
-  2 SD of the baseline (`EMG_SD`), from its first crossing between 10 and 150 ms.
+  2 SD of the baseline (`EMG_SD`), from its first crossing between 10 and 150 ms. The DSI's P
+  and NP are the signed largest changes from baseline over 0 to 200 ms in each direction, whether
+  or not a response was detected there (the claims file does not say where they are measured).
 - Chosen here for the checks and variants added after the first verification: the torque
   command excursion threshold (`COMMAND_EXCURSION`, under half the smallest monkey V pulse), the
   window for measuring active movements (`ACTIVE_WINDOW_MS`), and the causal velocity average for
