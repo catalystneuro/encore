@@ -246,7 +246,8 @@ outcomes:
     four-spot recovery 650 to 700 ms (paper 490), contralateral 50 to 350 ms (paper 235), and a larger
     selectivity change at the go cue after bilateral one-spot (-0.38 to -0.49) than after ipsilateral
     four-spot photoinhibition (-0.10 to +0.14). With end labels the ipsilateral time is 750 ms or
-    more, outside tolerance. With per-bin preference (D3) bilateral selectivity reaches up to 0.87 of
+    more; it is within tolerance (210 to 770 ms) in 8 of 16 readings with K1 and D2 or D3, but those
+    combinations fail on the other parts. With per-bin preference (D3) bilateral selectivity reaches up to 0.87 of
     control before the go cue in half the readings. The search end does not change which combinations
     hold. The four-spot ipsilateral ROC is below the one-spot one under H1. 58 to 62 neurons are
     included, against 40. What the answers changed is the set of readings (D3 and E1 added); the
@@ -344,7 +345,7 @@ outcomes:
   notes: The side of the boundary predicts the lick in 67% to 69% of held-out control trials (1890 to
     2895) and 63% to 68% of ipsilateral trials (261 to 448), binomial p below 1e-6. Lick right
     performance rises with distance (Spearman rho +0.28 to +0.99) and lick left performance falls
-    (rho -0.76 to -0.99), under every reading. What the answers changed (questions 1 and 5) is that the
+    (rho -0.76 to -1.00), under every reading. What the answers changed (questions 1 and 5) is that the
     outcome must hold under K1 and K2 with the rule as written (T1); it does, so the outcome is
     unchanged.
 - claim: fig3d-persistent-mode
@@ -366,8 +367,9 @@ outcomes:
   outcome: not_reproduced
   notebook: reproduce_li_2016.ipynb
   output: claim:fig3e-ramping-mode
-  notes: The ramping mode is resistant to all three perturbations (differences at the go cue within 2
-    s.e.m. under every reading and either orientation), but it predicts the lick in 55% to 58% of
+  notes: The ramping mode is resistant to all three perturbations under T1 (differences at the go cue
+    within 2 s.e.m. under every reading and either orientation; under the T2 variant with K1, H1 and
+    g1 the ipsilateral difference, -0.353, is beyond its 2 s.e.m. of 0.294), but it predicts the lick in 55% to 58% of
     control trials, above chance (p below 1e-6), whatever its sign. Under g1 (positive weight sum) it
     does not rise over the delay (change -0.73 to +0.11, positive under one of four readings) and its
     ROC is near 0.5 under three of four; under g2 (each session oriented so the control projection
@@ -853,3 +855,270 @@ verifications:
       chance (0.49 to 0.51). It is labelled partial although the criterion defines no partial outcome.
     response: Stated the rule used where a criterion has no partial clause; two (n1) or three (n2) of
       four parts hold, so the outcome stays partial.
+- date: '2026-10-21'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the
+    notebook)
+  reviewed: Round 2. The full executed notebook of the author-revise-1 run (commit 5ca354b6), with
+    the conclusions and summary, the helper module, the attempt record and the claims file. The
+    verifier relied, as in round 1, on the clock checks (cells 19 and 20) for how events and
+    photostimulus records are assigned to trials. It also noted that cell 14 says the event is
+    logged up to about 2 s after the light, while cell 13 prints a maximum of 1587 ms; cell 14 now
+    says about 1.6 s (1587 ms).
+  results:
+  - claim: unit-classification
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The author applies a rule written after round 1, not in the claims file, for
+      criteria without a partial clause (partial when at least half the parts hold under every
+      reading that must agree); read strictly the claim would be not_reproduced. The claims file
+      should adopt the rule or reject it. In round 1 the verifier accepted partial here.
+    response: No change to the outcome. Asked a reader whether the claims file adopts or rejects the
+      rule for criteria without a partial clause (questions/000011.yaml).
+  - claim: selective-fraction
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Under K1 only 1 of the 4 counts is within tolerance (cell 27), and the criterion
+      has no partial clause. The author's answer on the 44 units holds; they have no identifiable
+      control trials, the variant includes their photoinhibition trials, and it also fails under K2
+      (sample count 157).
+    response: No change.
+  - claim: fig1d-late-delay-ipsilateral-bias
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: fig1d-earlier-photoinhibition-minimal
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: ed3-behaviour-recovery-interval
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: ed4-return-to-trajectory
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The included populations are still 2 to 3 times the paper's and no further
+      selection tried reproduces its counts; this is correctly recorded as selection_undocumented.
+    response: No change. Population sizes unchanged and recorded as selection_undocumented, as no
+      selection tried gives the paper's counts.
+  - claim: fig1f-spike-rate-recovery
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Now disclosed in the conclusion and the notes; the outcome is reproduced on the
+      reading without exclusion (248 neurons), the reading closest to the paper's counts fails, and
+      the criterion allows either.
+    response: No change.
+  - claim: fig1g-selectivity-recovery
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The verifier withdraws its round-1 point on E1 with end labels; a bin ending at
+      the go cue is labelled 300 ms after offset, so E1 can return a time inside the tolerance, and
+      the NaN values are empirical, not by construction (cell 42). The K1/K2 disagreement behind the
+      block is partly the K2 artefact. K2 uses events at their logged times, so the 1 to 16% of
+      trials whose light falls before its logged time enter the photoinhibition averages without
+      light; a question to the reader is pending. The included populations are still 2 to 3 times
+      the paper's and no further selection tried reproduces its counts; this is correctly recorded
+      as selection_undocumented.
+    response: No change. K2 definition unchanged while the question to the reader is pending.
+      Population sizes unchanged and recorded as selection_undocumented, as no selection tried gives
+      the paper's counts.
+  - claim: ed5-photoactivation-recovery
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: ed5-photoactivation-rate-changes
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: ed2b-silencing-strength
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The VGAT ipsilateral value fails under every reading (cell 44). The K2 artefact
+      contributes to the K2 failure, but ed2b also fails under K1, so its outcome does not depend on
+      it.
+    response: No change. K2 definition unchanged while the question to the reader is pending.
+  - claim: ed2d-spatial-extent
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: ed2e-no-rebound
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: fig2b-unilateral-performance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: fig2b-bilateral-performance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: ed6a-bilateral-inconsistent-bias
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: fig2-recordings-recovery
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The author applies a rule written after round 1, not in the claims file, for
+      criteria without a partial clause (partial when at least half the parts hold under every
+      reading that must agree); read strictly the claim would be not_reproduced. The claims file
+      should adopt the rule or reject it.
+    response: No change to the outcome. Asked a reader whether the claims file adopts or rejects the
+      rule for criteria without a partial clause (questions/000011.yaml).
+  - claim: fig2e-selectivity-recovery-times
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The included populations are still 2 to 3 times the paper's and no further
+      selection tried reproduces its counts; this is correctly recorded as selection_undocumented.
+    response: No change. Population sizes unchanged and recorded as selection_undocumented, as no
+      selection tried gives the paper's counts.
+  - claim: ed7-larger-photoinhibition
+    agrees: true
+    outcome: blocked
+    reason: Agrees. Cell 97 and the record's notes say that with end labels the ipsilateral time is
+      750 ms or more, outside tolerance; the band is 210 to 770 ms, so 750 ms is inside it. Cell 96
+      shows ipsi_ok in 8 of 16 readings for drop/bin/end and drop/delay/end; the end-label
+      combinations fail on the other parts. The outcome does not change. K2 uses events at their
+      logged times, so the 1 to 16% of trials whose light falls before its logged time enter the
+      photoinhibition averages without light; a question to the reader is pending. The included
+      populations are still 2 to 3 times the paper's and no further selection tried reproduces its
+      counts; this is correctly recorded as selection_undocumented.
+    response: Corrected the sentence in cell 97 and the notes; 750 ms is within tolerance, the
+      ipsilateral time holds in 8 of 16 readings with lick-early trials dropped and D2 or D3 with
+      end labels, and those combinations fail on the other parts. K2 definition unchanged while the
+      question to the reader is pending. Population sizes unchanged and recorded as
+      selection_undocumented, as no selection tried gives the paper's counts.
+  - claim: ed7e-roc-larger-photoinhibition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (not_reproduced in round 1). For consistency with unit-classification,
+      fig2-recordings and fig6 the verifier accepts partial; 3 of 4 hold under K1 and 2 of 4 under
+      K2 (cell 69). The author applies a rule written after round 1, not in the claims file, for
+      criteria without a partial clause (partial when at least half the parts hold under every
+      reading that must agree); read strictly the claim would be not_reproduced. The claims file
+      should adopt the rule or reject it.
+    response: No change to the outcome. Asked a reader whether the claims file adopts or rejects the
+      rule for criteria without a partial clause (questions/000011.yaml).
+  - claim: cd-stable-over-epochs
+    agrees: true
+    outcome: blocked
+    reason: Agrees. w from all correct control trials gives 0.563/0.588, inside the band; w from the
+      training subset gives 0.534 to 0.554, outside (cell 63).
+    response: No change.
+  - claim: cd-captures-selectivity
+    agrees: true
+    outcome: blocked
+    reason: Agrees. The captured fractions are in-sample; this is disclosed but not tested, since
+      the claims file names no held-out reading. The claim is blocked either way.
+    response: No change.
+  - claim: fig3c-cd-recovery-roc
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: ed8-roc-during-photoinhibition
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees (not_reproduced in round 1). For consistency the verifier accepts partial; 3 of 4
+      hold under K1 and 2 of 4 under K2 (cell 93). The author applies a rule written after round 1,
+      not in the claims file, for criteria without a partial clause (partial when at least half the
+      parts hold under every reading that must agree); read strictly the claim would be
+      not_reproduced. The claims file should adopt the rule or reject it. Cell 94 says bilateral
+      separation is not lower than ipsilateral; under K1 with H2 it is lower, 0.616 against 0.672
+      (cell 93). The outcome does not change.
+    response: Corrected cell 94; bilateral separation is lower than ipsilateral only under K1 with
+      H2 (0.616 against 0.672). No change to the outcome. Asked a reader whether the claims file
+      adopts or rejects the rule for criteria without a partial clause (questions/000011.yaml).
+  - claim: fig3c-cd-predicts-movement
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 76 gives the lick-left rho as -0.76 to -0.99, but several rows print -1.000
+      (cell 75); this is trivial.
+    response: Corrected the range to -0.76 to -1.00 in cell 76 and the notes.
+  - claim: fig3d-persistent-mode
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Per-session mode ROCs are printed, and the binomial test decides.
+    response: No change.
+  - claim: fig3e-ramping-mode
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. Cell 79 and the record say differences within 2 s.e.m. under every reading; this
+      is true for T1 only. Under the T2 variant (drop, H1, g1) the ipsilateral difference is -0.353
+      against a 2 s.e.m. of 0.294 (cell 78).
+    response: Corrected cell 79 and the notes; resistance holds under every reading with T1; under
+      the T2 variant with K1, H1 and g1 the ipsilateral difference (-0.353) is beyond its 2 s.e.m.
+      (0.294). The outcome is not_reproduced either way.
+  - claim: fig4-bilateral-cd-predicts-movement
+    agrees: true
+    outcome: reproduced
+    reason: Agrees. Cell 76 gives the lick-left rho as -0.76 to -0.99, but several rows print -1.000
+      (cell 75); this is trivial.
+    response: Corrected the range in cell 76.
+  - claim: ed6b-session-bias-predicted
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: ed9f-reaction-time
+    agrees: true
+    outcome: blocked
+    reason: Agrees, as data_missing; the experiment-2 lick trace rises a median of 0.0013 to 0.0022,
+      the same as on no-response trials (cell 86).
+    response: No change.
+  - claim: ed9c-cd-window-robust
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: fig5b-callosotomy-control-performance
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: fig5b-callosotomy-unilateral-sensitivity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: ed10-callosotomy-preparatory-activity
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: fig5-callosotomy-no-recovery
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: fig5f-callosotomy-cd-reduced
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: ed1-monolithic-models-fail
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome, as in round 1.
+    response: No change.
+  - claim: fig6-modular-models-recover
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. The author applies a rule written after round 1, not in the claims file, for
+      criteria without a partial clause (partial when at least half the parts hold under every
+      reading that must agree); read strictly the claim would be not_reproduced. The claims file
+      should adopt the rule or reject it. In round 1 the verifier accepted partial here.
+    response: No change to the outcome. Asked a reader whether the claims file adopts or rejects the
+      rule for criteria without a partial clause (questions/000011.yaml).
