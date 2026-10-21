@@ -200,6 +200,35 @@ def load_session(asset_id, laser=True):
     return meta, tr, units
 
 
+def light_onsets(asset_id, trials, threshold=0.5, workers=16):
+    """Time of the first laser power sample above `threshold` mW in the trace chunk of each trial.
+
+    `trials`: rows with ps_site and ps_chunk (from load_session). The chunk of each trial (50000
+    samples) is read by byte range, with its timestamps. Used to measure, in lick-early trials,
+    how far the logged photostimulus event lies from the light (the 0.5 mW level is the one of the
+    data check). Returns an array of times (NaN where no sample exceeds the threshold)."""
+    from concurrent.futures import ThreadPoolExecutor
+    url = s3_url(asset_id)
+    f = h5py.File(remfile.File(url), "r")
+    offs = {}
+    for site in set(trials.ps_site.dropna()):
+        g = f[f"/stimulus/presentation/{site} ALM_laser_power"]
+        offs[site] = (g["data"].id.get_offset(), g["timestamps"].id.get_offset())
+    f.close()
+
+    def one(r):
+        doff, toff = offs[r.ps_site]
+        k = int(r.ps_chunk) * 50000
+        x = _range_read(url, doff + 8 * k, 8 * 50000)
+        on = np.where(x > threshold)[0]
+        if not len(on):
+            return np.nan
+        return float(_range_read(url, toff + 8 * (k + on[0]), 8)[0])
+
+    with ThreadPoolExecutor(workers) as ex:
+        return np.array(list(ex.map(one, list(trials.itertuples()))))
+
+
 def spike_width_ms(w, fs):
     """Trough-to-peak interval of a mean waveform (Methods), in ms.
 
@@ -209,6 +238,21 @@ def spike_width_ms(w, fs):
     i = int(np.argmin(w))
     j = i + int(np.argmax(w[i:]))
     return (j - i) / fs * 1e3
+
+
+def spike_width_upsampled_ms(w, fs, factor=10):
+    """Trough-to-peak interval of a mean waveform after cubic-spline interpolation to `factor`
+    times the stored rate, in ms. A variant for the data check of unit-classification (the
+    verifier asked whether sampling at 19.5 kHz explains the few intermediate units); the
+    criterion's measure is spike_width_ms. The factor is a standard choice."""
+    from scipy.interpolate import CubicSpline
+    w = np.asarray(w, float)
+    x = np.arange(len(w))
+    xf = np.linspace(0, len(w) - 1, (len(w) - 1) * factor + 1)
+    wf = CubicSpline(x, w)(xf)
+    i = int(np.argmin(wf))
+    j = i + int(np.argmax(wf[i:]))
+    return (xf[j] - xf[i]) / fs * 1e3
 
 
 def unit_trials(obs, starts, stops):
@@ -582,7 +626,19 @@ def lick_onsets(asset_id, go, rules, lo=-0.3, hi=1.4, rate=1e4, chunk=50000, wor
     crossing at or after the go cue. The claims file (ed9f-reaction-time, as answered) asks for the
     outcome over a range of such thresholds; the values are passed in by the notebook.
     Returns a table per go cue: whether the window was read, baseline mean and s.d., the maximum
-    after the go cue, and the onset under each rule (NaN when there is none)."""
+    after the go cue, and the onset under each rule (NaN when there is none). With `traces`, the
+    table also holds the raw window of each trial (for the example traces of the notebook)."""
+    return _lick_read(asset_id, go, rules, lo, hi, rate, chunk, workers)
+
+
+def lick_windows(asset_id, go, lo=-0.3, hi=1.4):
+    """Raw lick_trace windows (`lo` to `hi` s around each go cue), as read by lick_onsets; a list
+    with None where the window could not be read."""
+    df, _ = _lick_read(asset_id, go, {}, lo, hi, traces=True)
+    return list(df["trace"]) if "trace" in df else [None] * len(go)
+
+
+def _lick_read(asset_id, go, rules, lo=-0.3, hi=1.4, rate=1e4, chunk=50000, workers=16, traces=False):
     from concurrent.futures import ThreadPoolExecutor
     url = s3_url(asset_id)
     f = h5py.File(remfile.File(url), "r")
@@ -609,6 +665,8 @@ def lick_onsets(asset_id, go, rules, lo=-0.3, hi=1.4, rate=1e4, chunk=50000, wor
         x = _range_read(url, doff + 8 * int(i0[q]), 8 * m)
         b = x[:j0]; mu, sd = float(b.mean()), float(b.std())
         r = {"baseline": mu, "baseline_sd": sd, "max_after": float(x[j0:].max())}
+        if traces:
+            r["trace"] = x
         for name, (kind, v) in rules.items():
             th = v if kind == "level" else mu + v if kind == "rise" else mu + v * sd
             above = x > th
@@ -618,7 +676,8 @@ def lick_onsets(asset_id, go, rules, lo=-0.3, hi=1.4, rate=1e4, chunk=50000, wor
 
     with ThreadPoolExecutor(workers) as ex:
         res = list(ex.map(one, range(len(go))))
-    rows = [{"read": r is not None, **(r or {})} for r in res]
+    empty = {"trace": None} if traces else {}
+    rows = [{"read": r is not None, **(r if r is not None else empty)} for r in res]
     return pd.DataFrame(rows), {"chunks": len(first), "chunks_nonuniform": int((~uniform).sum())}
 
 
