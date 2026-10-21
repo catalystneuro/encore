@@ -11,21 +11,21 @@ photoinhibition.
 | Behaviour: 77.6% correct, 10.3% lick early, 1.1% no response | Not reproduced |
 | ALM photoinhibition biases licking to the ipsilateral side (Fig. 1c) | Reproduced |
 | Thalamus photoinhibition in VGAT mice reduces activity 0.5 to 1.1 mm from the fibre to 15.9% | Reproduced |
-| ALM and thalamic unit classes by spike width | Partially reproduced (2 claims; not reproduced proposed) |
-| 70% of ALM pyramidal neurons selective; selectivity types (Fig. 2e) | Partially reproduced (not reproduced proposed) |
+| ALM and thalamic unit classes by spike width | Not reproduced (2 claims) |
+| 70% of ALM pyramidal neurons selective; selectivity types (Fig. 2e) | Not reproduced |
 | Equal numbers of contra- and ipsi-preferring ALM neurons | Reproduced |
-| VM/VAL selectivity like ALM (Fig. 2f) | Partially reproduced (not reproduced proposed) |
+| VM/VAL selectivity like ALM (Fig. 2f) | Not reproduced |
 | Thalamus photoinhibition collapses ALM activity (Fig. 3c) | Partially reproduced |
-| Thalamus photoinhibition silences thalamus (Fig. 3f) | Partially reproduced (not reproduced proposed) |
+| Thalamus photoinhibition silences thalamus (Fig. 3f) | Not reproduced |
 | Onsets: thalamus 2.5 ms, ALM 8.2 ms | Reproduced |
 | ALM photoinhibition reduces VM/VAL activity to 25% (Fig. 6c) | Not reproduced |
 | Unmodulated VM/VAL neurons less selective | Partially reproduced |
-| Reduction localized to VM/VAL (Fig. 6d) | Partially reproduced (not reproduced proposed) |
-| SNr response to ALM photoinhibition | Partially reproduced (not reproduced proposed) |
+| Reduction localized to VM/VAL (Fig. 6d) | Not reproduced |
+| SNr response to ALM photoinhibition | Not reproduced |
 | Onsets after ALM photoinhibition (Fig. 6e) | Not reproduced |
 | Selectivity time course in ALM and VM/VAL | Reproduced |
 | ALM Vm 12.7 mV below threshold | Not reproduced |
-| ALM Vm hyperpolarized by 18.7 mV under thalamus photoinhibition; small effect of M1 photoinhibition | Partially reproduced (2 claims; not reproduced proposed) |
+| ALM Vm hyperpolarized by 18.7 mV under thalamus photoinhibition; small effect of M1 photoinhibition | Not reproduced (2 claims) |
 | Small Vm effect of contralateral ALM photoinhibition; thalamus drives ALM more strongly than cortex | Reproduced (2 claims) |
 | Equal inhibition across selectivity types; all cortical layers (3 claims) | Blocked: methods underspecified |
 | vM1 photoinhibition | Blocked: metadata insufficient |
@@ -34,8 +34,9 @@ photoinhibition.
 | Latency and network models (2 claims) | Blocked: methods underspecified |
 
 The second verification found that nine claims were given partially reproduced under criteria
-with no partial clause; no reading meets any of those criteria in full, so a change of each to not
-reproduced is proposed, for a third verification round to review.
+with no partial clause; no reading meets any of those criteria in full. A change of each to not
+reproduced was proposed, and the third verification round agreed with all nine, so they are now
+not reproduced.
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the reasoning
 and the differences from the paper's method.
