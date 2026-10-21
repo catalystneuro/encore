@@ -1,0 +1,726 @@
+# Claims for Semenov, Silkuniene, Silkunas, Pakhomova, Bixler, Ibey, Kochunov & Pakhomov (2026),
+# "Sub-microsecond optical measurements of cell membrane charging and lesioning by pulsed
+# electric fields", Bioelectrochemistry 171, 109283, doi:10.1016/j.bioelechem.2026.109283, on
+# dandiset 001518.
+#
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record, from a PDF supplied by a person, extracted to
+# paper/10.1016-j.bioelechem.2026.109283.txt (main text, Materials and methods, Results,
+# Discussion, legends of Figures 1 to 7). The paper names no supplement and none was read.
+# Figures were not opened. The paper links no code ("Data will be made available on request");
+# its analysis was done in MetaMorph 7.8.13, an Excel macro, Grapher 16 and Origin 8.0, none
+# of which is published, so no code was read. The Methods say most methods are as described in
+# Semenov et al., Bioelectrochemistry 168 (2025) 109143 (reference [20]); that paper was not
+# read for these claims.
+#
+# The dandiset's title ("Comparison of FluoVolt and Di-8-ANEPPS Responses to Plasma Membrane
+# Polarization at Varying Electric Field Strengths") and description (FluoVolt and Di-8-ANEPPS
+# responses of CHO cell membrane polarization under different electric field strengths) point
+# at the potentiometric dye experiments; whether it also holds the Gd3+, Ca2+ (Fluo-4) and
+# two-pulse experiments is the author's to find.
+#
+# Data the paper used (Methods 2.1 to 2.5, Results, legends):
+# - Cells. CHO-K1 cells plated 1 to 3 h on 35-mm glass-bottom dishes, spheroidal; loaded 30 min
+#   with FluoVolt (1:1000 with PowerLoad 1:100) or 5 uM Di-8-ANEPPS, imaged in dye-free
+#   physiological solution (1.64 S/m), room temperature 21 to 23 C. One cell per experiment.
+# - Pulses. Unipolar 1-us or 0.3-us pulses at 6 Hz through two tungsten rods 1.6 mm apart; field
+#   strengths from Sim4Life modelling, in V/cm. 1-us series 43 to 1400 V/cm; the values named in
+#   the text are 43, 150, 230, 360, 570, 780, 1000, 1200 and 1400 V/cm (Fig. 7 Results also
+#   write 560 and 760 V/cm, read here as the same 570 and 780 levels). 0.3-us series 357 to 3320
+#   V/cm.
+# - Imaging. One ~6-ns 440-nm laser flash per pulse, 900 ns after onset of 1-us pulses and 275
+#   ns after onset of 0.3-us pulses; iXon Ultra 897 camera, 60x/1.42 objective. Images in sets
+#   of 100: 40 without pulse (baseline), then 60 with the pulse at a constant amplitude; sets
+#   about 16 s long, about 10 s apart (Fig. 2D assumes 25 s between sets). Amplitude escalated
+#   set by set, or alternated (150 and 230 V/cm, Fig. 2C).
+# - Experiments and n (one cell each): Fig. 2A and 4A FluoVolt 1-us escalation, n = 4; Fig. 2B
+#   and 4B/C Di-8-ANEPPS 1-us escalation, n = 5; Fig. 2C/D Di-8-ANEPPS 150/230 V/cm alternation
+#   then 1000 V/cm, n = 8; Fig. 3 calibration from 43 to 360 V/cm sets of both dyes; Fig. 4D
+#   Di-8-ANEPPS 0.3-us escalation, n = 10; Fig. 5A Di-8-ANEPPS 1-us, 150 to 1400 V/cm, with 1 mM
+#   Gd3+ (n = 7) and parallel controls (n = 5); Fig. 7 two-pulse protocol, Di-8-ANEPPS, a 1-us
+#   conditioning pulse at 150 to 1400 V/cm then 5 us later a 1-us 150 V/cm test pulse imaged at
+#   900 ns into the test pulse, n = 5. Whether Fig. 2 and Fig. 4 used the same cells is not
+#   stated.
+# - Ca2+ imaging (Fig. 6). Fluo-4 AM 2.5 uM; images every 1 s or 2 s. (A) a single 1-us pulse at
+#   60 s, 5 min recording, 0 to 1200 V/cm, 14 cells; (B) 60 pulses at 6 Hz from 30 s, 150 s
+#   recording, each cell exposed once, 28 to 54 cells per field strength, 224 cells.
+#
+# Common method, from the Methods (2.3, 2.5), used by the criteria below.
+# - Per-image pole measure (Fig. 2 only). A 6-pixel-wide trace along the cell perimeter; mean
+#   F in the +-5 degree arcs at the cathode-facing and anode-facing poles in each image; F0 the
+#   mean of the 40 baseline images; dF = 100% x (F - F0)/F0.
+# - Collapsed profile (Fig. 3 onward). The 40 baseline and the 60 pulse images collapsed into
+#   one baseline and one polarization image (read as the mean image; a sum would not give dF = 0
+#   without a field); intensity along the 6-pixel trace, resampled to 360 points along the
+#   normalized perimeter by linear interpolation; dF per point between the two images. Pole
+#   values are the mean dF in +-5 degree arcs at each pole; averaged across cells, mean +- s.e.
+# - IMP from dF. FluoVolt 26% and Di-8-ANEPPS 9.1% dF per 100 mV (Fig. 3); measured IMP = dF
+#   divided by the sensitivity.
+# - Calculated IMP (IMPC). Eq. (1), IMPC = 1.5 E R cos(theta) (1 - exp(-t/tau)), with t = 900 ns
+#   (1-us pulses) or 275 ns (0.3-us pulses), R measured from each cell's image, and tau from the
+#   best fit of tau against cell radius in reference [20]. That fit is not given in this paper:
+#   claims that use IMPC take it from [20] (data with_inputs).
+# - Effective membrane conductivity. Eq. (2) with lambda_i 0.4 S/m, lambda_o 1.64 S/m,
+#   lambda_m 3e-7 S/m intact, R 8 um, d 5 nm; the measured fraction of IMPC equals f/1.5, solved
+#   for lambda_m (Fig. 5B).
+# - Tests. Student's t-test and one-sample t-test (2.5); the Fig. 2 legend names a 2-tailed
+#   paired t-test, the Fig. 5 legend a 2-tailed t-test, and the Fig. 7 legend a two-way
+#   (two-sided) t-test. Error bars are s.e. over cells.
+#
+# Details the paper leaves open, named once here and repeated in the criteria that need them.
+# - Pole location and sign. Theta is the angle from the cell centre to the field; the Fig. 4C
+#   legend places the equator near -90 and 270 degrees, the Results near 0 and 270 degrees.
+#   Poles are taken from the field direction recorded with the data (cathode-facing pole =
+#   depolarized side); if the data do not record it, this is open.
+# - Background subtraction of the laser images is not stated (it is stated for Ca2+ images).
+#   Readings (a) no subtraction, (b) subtraction of a cell-free region, as for Ca2+.
+# - Cell radius "measured from individual cell images", method not given. Readings (a) perimeter
+#   trace length / 2 pi, (b) radius of the circle of equal area.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001518"
+paper: doi:10.1016/j.bioelechem.2026.109283
+claims:
+- id: fig1-pole-dimming
+  statement: With Di-8-ANEPPS and 1-us pulses, polarization grows with field strength up to 570
+    V/cm; at 780 V/cm the cathodic pole stops increasing and dims, and at 1000 to 1400 V/cm the
+    poles show reduced or absent polarization while regions nearer the equator stay polarized
+    and may polarize more than the poles.
+  source: Figure 1 and its legend; Results 3.1, paragraph 1
+  quote: At a higher electric field strength of 780 V/cm, polarization at the cathodic pole does
+    not further increase but dims out, indicating a less efficient charging of the partially
+    permeabilized membrane. Still stronger electric fields produce a distinct pattern of reduced
+    or absent polarization at the poles ... while regions closer to the equator remain relatively
+    intact and may polarize more than the poles
+  criterion: Figure 1 shows images of one cell, which the paper does not identify; the test uses
+    the Di-8-ANEPPS 1-us escalation cells (Fig. 4B, n = 5), collapsed profiles and pole values as
+    in the common method. Reproduced when (1) the mean cathodic pole dF at 780 V/cm is not above
+    that at 570 V/cm, and (2) at 1400 V/cm the largest mean dF of the cathode-facing hemisphere
+    lies outside the +-5 degree polar arc. The paper gives no test or threshold for this; the
+    two conditions are read from the legend's wording. Background readings (a) and (b) both run.
+- id: fig2a-fluovolt-saturation
+  statement: With FluoVolt, pole dF rose with field strength until it saturated at 66% (255 mV)
+    at 360 V/cm at the cathodic pole and -83% (-320 mV) at 570 V/cm at the anodic pole; stronger
+    fields did not increase the anodic response and decreased the cathodic one.
+  source: Figure 2A; Results 3.2, paragraph 2
+  quote: ΔF increased proportionally to the electric field strength until reaching apparent
+    saturation at 66% ΔF (255 mV IMP) at 360 V/cm at the cathodic pole, and −83% ΔF (−320 mV IMP)
+    at 570 V/cm at the anodic pole. Further escalation of the electric field strength did not
+    increase the dye response at the anodic pole and even decreased it at the cathodic pole.
+  expected:
+  - quantity: FluoVolt cathodic pole dF at 360 V/cm
+    value: 66
+    tolerance: 6.6
+    unit: "%"
+  - quantity: FluoVolt anodic pole dF at 570 V/cm
+    value: -83
+    tolerance: 8.3
+    unit: "%"
+  criterion: Per-image pole dF (common method, Fig. 2 measure) over the 60 pulse images of each
+    set, averaged per cell and then across the 4 cells. Reproduced when both values are within
+    tolerance, the cathodic mean at 360 V/cm is the largest of the series, the anodic means at
+    780 to 1400 V/cm are not more negative than at 570 V/cm by more than the tolerance, and the
+    cathodic means at 1000 to 1400 V/cm are below that at 360 V/cm.
+- id: fig2a-fluovolt-stable
+  statement: FluoVolt measurements were stable without pulses (no significant bleaching or
+    photosensitization), and the response within each set stayed stable through the 60 pulses,
+    even at 1000 V/cm and above.
+  source: Figure 2A; Results 3.2, paragraph 2
+  quote: Without PEF (first 40 datapoints, or ~ 7 s in each set), measurements were stable,
+    indicating no significant photosensitization or dye bleaching ... but the dye response in
+    each set stayed stable through the 60 pulses applied
+  criterion: A claim of absence. The paper reports no test for it; the test it names for Fig. 2
+    is a 2-tailed paired t-test at p < 0.05 over cells (n = 4). Per set and pole, compare the
+    start and the end of the 60 pulse images, and of the 40 baseline images. The paper does
+    not say how many images form the start and the end; readings (a) the first and the last
+    image, (b) the first 10 and the last 10 images. Reproduced when no set at 1000 to 1400 V/cm,
+    and no baseline, shows a significant change; not reproduced when any does. The size of each
+    change is reported.
+- id: fig2b-di8-climbs-to-570
+  statement: Di-8-ANEPPS dF kept increasing with field strength up to 570 V/cm at both poles.
+  source: Figure 2B; Results 3.2, paragraph 3
+  quote: This dye has a lower sensitivity to membrane polarization (note the vertical scale
+    different from Fig. 2A), but ΔF kept climbing up to the electric field strength of 570 V/cm
+    at both cell poles.
+  criterion: Per-image pole dF averaged over each set's 60 pulse images, per cell, then across
+    the 5 cells. Reproduced when the mean |dF| at each pole increases at every step from 43 to
+    570 V/cm.
+- id: fig2b-di8-decline-within-set
+  statement: With Di-8-ANEPPS, responses to pulses of 780 V/cm and above decreased gradually
+    within each set of 60 images.
+  source: Figure 2B; Results 3.2, paragraph 3
+  quote: In addition, responses to PEFs at and above 780 V/cm decreased gradually in each set of
+    60 images, consistent with expectations of adding membrane damage by additional
+    electroporation pulses in each set
+  criterion: The paper gives no test; it reads a direction. Per set, the mean |dF| at the start
+    and at the end of the 60 pulse images, averaged across the 5 cells; start and end as in
+    fig2a-fluovolt-stable, readings (a) first and last image, (b) first 10 and last 10. The text
+    does not name the pole; readings (c) the cathodic pole, (d) both poles. Reproduced when the
+    end is below the start for every set from 780 to 1400 V/cm; the 2-tailed paired t-test of
+    Fig. 2 is reported for each set.
+- id: fig2cd-stable-before-electroporation
+  statement: Repeated alternating sets at 150 and 230 V/cm (480 pulses and 800 flashes) gave dF
+    responses constant within and between sets.
+  source: Figure 2C and 2D; Results 3.2, paragraph 4
+  quote: Repeated sets of PEFs at 150 and 230 V/cm, delivered in alternation, produced ΔF
+    responses that stayed constant both within each set and between the sets (Fig. 2C and D).
+  criterion: A claim of absence, judged on the paper's test, the 2-tailed paired t-test at p <
+    0.05 of the Fig. 2 legend (n = 8). Per cell and set, the mean pole dF over the 60 pulse
+    images (Fig. 2D); every set before the 1000 V/cm set is compared with the first set at the
+    same field strength (the legend's dashed lines are the first-trial means), at each pole.
+    Reproduced when none differs; not reproduced when any does. Within-set changes are shown as
+    in fig2a-fluovolt-stable, as a variant.
+- id: fig2c-1000-within-set
+  statement: At 1000 V/cm the cathodic pole dF fell from 40 +- 10% at the start of the set to
+    26.6 +- 8% at its end, a trend that was not statistically significant.
+  source: Figure 2C; Results 3.2, paragraph 4
+  quote: In contrast, at an electroporating field strength of 1000 V/cm, ΔF at the cathodic pole
+    decreased from 40 ± 10% at the beginning of the set to 26.6 ± 8% at the end of it. Although
+    not statistically significant (p > 0.05)
+  statistics:
+  - test: 2-tailed paired t-test (named in the Fig. 2 legend)
+    p: 0.05
+    p_relation: ">"
+    n: 8 cells
+  expected:
+  - quantity: cathodic pole dF at the start of the 1000 V/cm set
+    value: 40
+    tolerance: 10
+    unit: "%"
+  - quantity: cathodic pole dF at the end of the 1000 V/cm set
+    value: 26.6
+    tolerance: 8
+    unit: "%"
+  criterion: Tolerances are the paper's s.e. Per-image cathodic pole dF; start and end are not
+    defined, readings (a) the first and the last image of the 60, (b) the first 10 and the last
+    10 images. Reproduced when under one reading both values are within tolerance and the
+    2-tailed paired t-test gives p > 0.05.
+- id: fig2d-lasting-reduction
+  statement: Set-averaged dF stayed nearly constant before the 1000 V/cm exposure but was about
+    20% lower in the sets after it.
+  source: Figure 2D and legend; Results 3.2, paragraph 4
+  quote: ΔF values averaged across each set of 60 PEFs stayed nearly constant before the
+    electroporation, but dropped by about 20% in the sets acquired after it (Fig. 2D, p < 0.05).
+  statistics:
+  - test: 2-tailed paired t-test
+    p: 0.05
+    p_relation: "<"
+    n: 8 cells
+  expected:
+    quantity: reduction of set-averaged dF after 1000 V/cm, relative to the first set at the
+      same field strength
+    value: 20
+    tolerance: 2
+    unit: "%"
+  criterion: Per cell and set, the mean pole dF over the 60 pulse images; each set after the
+    1000 V/cm set compared by a 2-tailed paired t-test (n = 8) with the sets before it at the
+    same field strength. The legend's dashed lines mark the first-trial means, and the text
+    compares with the sets before electroporation, which stayed nearly constant; readings for
+    the reference (e) the first set, (f) the mean of all sets before 1000 V/cm, at the same
+    field strength. The text does not say which pole or how the 20% is pooled; readings (a)
+    cathodic pole, (b) anodic pole, (c) each post-1000 set separately, (d) the mean over the
+    post-1000 sets. Reproduced when under one reading the reduction is within tolerance and at
+    least one post-1000 set is significantly lower at p < 0.05.
+- id: fig3-dye-sensitivity
+  statement: Fitted linearly through the origin over -150 to +150 mV IMPC, FluoVolt changes by
+    26% and Di-8-ANEPPS by 9.1% dF per 100 mV, with correlation coefficients 0.96 and 0.78.
+  source: Figure 3 and legend; Results 3.3, paragraph 1
+  quote: The correlation coefficients of the fits equaled 0.96 for FluoVolt and 0.78 for Di-8
+    ANEPPS (due to a lower signal-to-noise ratio), with respective slope coefficients of 26% and
+    9.1% ΔF per 100 mV of IMP.
+  data: with_inputs
+  expected:
+  - quantity: FluoVolt slope
+    value: 26
+    tolerance: 2.6
+    unit: "% dF per 100 mV"
+  - quantity: Di-8-ANEPPS slope
+    value: 9.1
+    tolerance: 0.91
+    unit: "% dF per 100 mV"
+  - quantity: FluoVolt correlation coefficient
+    value: 0.96
+    tolerance: 0.096
+  - quantity: Di-8-ANEPPS correlation coefficient
+    value: 0.78
+    tolerance: 0.078
+  criterion: All 360 perimeter points of every cell in the 43 to 360 V/cm sets of 1-us pulses at
+    900 ns, dF against IMPC computed per cell and point (Eq. 1, tau from the fit of reference
+    [20], an outside input). Points with IMPC from -150 to +150 mV fit by least squares through
+    the origin (Grapher). Grapher's correlation coefficient for a fit through the origin is not
+    defined in the paper; readings (a) Pearson r of dF with IMPC in that range, (b) the square
+    root of the uncentred R2 of the fit through the origin. Radius readings (a) and (b) and
+    background readings (a) and (b) of the header all run. Reproduced when the slopes are within
+    tolerance and the correlation coefficients are within tolerance under one reading.
+- id: fig3-fluovolt-nonlinear
+  statement: FluoVolt departed from linearity from about +-200 mV IMPC, while Di-8-ANEPPS stayed
+    nearly linear from -500 to +500 mV; so FluoVolt's early departure reflects its dynamic range,
+    not electroporation.
+  source: Figure 3 and legend; Results 3.3, paragraph 1
+  quote: The actual measurements with FluoVolt gradually became non-linear already at ±200 mV,
+    while those for Di-8-ANEPPS stayed essentially linear throughout the tested range from −500
+    to +500 mV.
+  data: with_inputs
+  depends_on:
+  - fig3-dye-sensitivity
+  criterion: The paper judges this by eye from a LOESS smooth (Grapher, span not given) against
+    the linear fit; it gives no threshold. Measure here, as the paper's figure compares them,
+    the smoothed dF against the line through the origin of fig3-dye-sensitivity, over the same
+    points. Readings for the smooth (a) LOESS with span 0.3, (b) 0.5, (c) 0.75, (d) means in
+    50-mV IMPC bins. A departure is the smooth lying closer to zero than the line by more than
+    10% of the line's value (the protocol's default tolerance). Reproduced when under every
+    reading the FluoVolt smooth departs from the line at every |IMPC| from 220 mV (the paper's
+    200 mV plus 10%) to the end of the data on both sides, and Di-8-ANEPPS does not
+    depart anywhere from -500 to +500 mV where the data have points.
+- id: fig4a-fluovolt-limits
+  statement: FluoVolt measured and calculated IMP matched only at 43 and 150 V/cm; with stronger
+    1-us pulses the pole dF peaked at 71 +- 10% (cathodic) and -83.5 +- 5% (anodic), about +260
+    and -330 mV.
+  source: Figure 4A; Results 3.4, paragraph 1
+  quote: However, this assumption held only for the applied fields of 43 and 150 V/cm, where
+    measured and calculated IMP matched. With stronger PEFs, maximum ΔF reached 71 ± 10% and
+    −83.5 ± 5% at the cathodic and anodic poles, respectively.
+  data: with_inputs
+  expected:
+  - quantity: FluoVolt maximum cathodic pole dF
+    value: 71
+    tolerance: 10
+    unit: "%"
+  - quantity: FluoVolt maximum anodic pole dF
+    value: -83.5
+    tolerance: 5
+    unit: "%"
+  criterion: Tolerances are the paper's s.e. Collapsed pole dF per cell and field strength, mean
+    across the 4 cells; the maximum is the largest mean |dF| over field strengths at each pole.
+    Measured IMP (dF / 26%) compared with the cell's pole IMPC by Student's t-test at p < 0.05
+    (Methods 2.5, which does not say paired or unpaired; readings (a) 2-tailed paired, (b)
+    2-tailed unpaired). The paper judges the match from Fig. 4A and reports no test for it.
+    Reproduced when both maxima are within tolerance,
+    the test finds no difference at 43 and 150 V/cm at either pole, and finds measured below
+    calculated at either pole at each of 230 V/cm and above.
+- id: fig4a-fluovolt-cathodic-decline
+  statement: FluoVolt cathodic polarization fell from 71% at 360 V/cm to 45 to 50% at 1000 to
+    1400 V/cm.
+  source: Figure 4A; Results 3.4, paragraph 1
+  quote: Notably, polarization at the cathodic pole decreased from 71% at 360 V/cm to 45–50% at
+    1000–1400 V/cm, indicating that the more severe membrane damage prevented its polarization
+    to the maximum.
+  expected:
+  - quantity: FluoVolt cathodic pole dF at 360 V/cm
+    value: 71
+    tolerance: 10
+    unit: "%"
+  - quantity: FluoVolt cathodic pole dF at each of 1000, 1200 and 1400 V/cm (range 45 to 50,
+      widened by 10% of each bound to 40.5 to 55)
+    value: 47.75
+    tolerance: 7.25
+    unit: "%"
+  criterion: Collapsed cathodic pole dF, mean across the 4 cells, per field strength. The 360
+    V/cm tolerance is the paper's s.e. for the same 71% (Results 3.4, paragraph 1). Reproduced
+    when the 360 V/cm value is within tolerance and each of the 1000, 1200 and 1400 V/cm values
+    lies within 40.5 to 55%.
+- id: fig4b-di8-limits
+  statement: With Di-8-ANEPPS and 1-us pulses, measured IMP fell below the calculated value at
+    570 V/cm, where dF peaked at 57 +- 14% (cathodic) and -55 +- 4% (anodic), over 600 mV.
+  source: Figure 4B; Results 3.4, paragraph 2
+  quote: The measured IMP decreased below the calculated value when the electric field reached
+    570 V/cm, concurrently with reaching the maximum ΔF of 57 ± 14% at the cathodic pole and −
+    55 ± 4% at the anodic pole. These values corresponded to membrane polarization by over 600
+    mV, which is twice the value measured with FluoVolt.
+  data: with_inputs
+  expected:
+  - quantity: Di-8-ANEPPS maximum cathodic pole dF
+    value: 57
+    tolerance: 14
+    unit: "%"
+  - quantity: Di-8-ANEPPS maximum anodic pole dF
+    value: -55
+    tolerance: 4
+    unit: "%"
+  criterion: Tolerances are the paper's s.e. Collapsed pole dF per cell and field strength, mean
+    across the 5 cells. Reproduced when the largest mean |dF| at each pole occurs at 570 V/cm
+    and is within tolerance, and measured IMP (dF / 9.1%) is below the pole IMPC at 570 V/cm by
+    Student's t-test at p < 0.05 (at either pole) but not below it at 43 to 360 V/cm. Methods
+    2.5 does not say paired or unpaired; readings (a) 2-tailed paired, (b) 2-tailed unpaired. The
+    paper reports no test for this comparison.
+- id: fig4b-first-10-pulses
+  statement: Averaged over only the first 10 of the 60 pulses, Di-8-ANEPPS cathodic polarization
+    reached 66 +- 15% (710 +- 200 mV), so the 600-mV maximum is not the dye's limit.
+  source: Figure 4B, dotted lines; Results 3.4, paragraph 3
+  quote: Polarization measured this way reached 66 ± 15% (710 ± 200 mV) at the cathodic pole,
+    suggesting that the 600-mV maximum, averaged from 60 PEFs, was not the dye limit but the
+    actual IMP
+  expected:
+    quantity: Di-8-ANEPPS maximum cathodic pole dF over the first 10 pulse images
+    value: 66
+    tolerance: 15
+    unit: "%"
+  criterion: Tolerance is the paper's s.e. As the common method, with the polarization image
+    collapsed from the first 10 of the 60 pulse images; mean across the 5 cells, largest over
+    field strengths. Reproduced when within tolerance and above the 60-image maximum of
+    fig4b-di8-limits.
+  depends_on:
+  - fig4b-di8-limits
+- id: fig4b-cathodic-asymmetry
+  statement: Above 780 V/cm the pole IMP fell progressively with field strength, more at the
+    cathodic pole; at 1400 V/cm the cathodic pole no longer charged and the anodic pole fell to
+    about -30% dF (-330 mV).
+  source: Figure 4B; Results 3.4, paragraph 4
+  quote: As the electric field increased further, the IMP reached at the poles progressively
+    decreased, and the reduction was more pronounced at the cathodic pole ... At 1400 V/cm,
+    charging was no longer detectable at the cathodic pole (i.e., the membrane became fully
+    permeable) and dropped to ~30% ΔF (~ −330 mV) at the anodic pole.
+  expected:
+    quantity: Di-8-ANEPPS anodic pole dF at 1400 V/cm
+    value: -30
+    tolerance: 3
+    unit: "%"
+  criterion: Collapsed pole dF, mean across the 5 cells. Reproduced when (1) the mean |dF| at
+    each pole decreases from 780 to 1000, 1200 and 1400 V/cm, (2) the fraction lost between 780
+    and 1400 V/cm is larger at the cathodic pole, (3) the cathodic pole dF at 1400 V/cm does not
+    differ from zero by a one-sample t-test at p < 0.05 (the test of Methods 2.5), and (4) the
+    anodic value is within tolerance.
+- id: fig4c-equator-follows-cosine
+  statement: Membrane regions nearer the equator were unaffected by pole electroporation and
+    followed the cosine dependence of the Schwan equation up to 1000 V/cm.
+  source: Figure 4C and legend; Results 3.4, paragraph 4
+  quote: Membrane areas closer to the equator ... appeared relatively unaffected and followed
+    the cosine dependence predicted by Schwan formula up to 1000 V/cm (Fig. 4C).
+  data: with_inputs
+  criterion: A claim of absence of a deviation. The paper names no test and no angular range for
+    "closer to the equator". Measured IMP (dF / 9.1%) and IMPC per perimeter point, averaged per
+    cell within arcs about the two equator points; readings (a) +-15 degrees, (b) +-30 degrees
+    from the equator, on each side of each pole hemisphere. At 570, 780 and 1000 V/cm, measured
+    against calculated by a 2-tailed paired t-test at p < 0.05 (n = 5; Student's t-test of
+    Methods 2.5). Reproduced when no arc differs at any of these strengths; not reproduced when
+    any does. The ratio of measured to calculated is reported.
+- id: fig4d-short-pulses-same-limit
+  statement: With 0.3-us pulses at higher fields (357 to 3320 V/cm), imaged at 275 ns, the maximum
+    dF was 53 +- 4% (about 600 mV) at both poles, as with 1-us pulses, and the response changed
+    with field strength in the same way.
+  source: Figure 4D; Results 3.4, paragraph 5
+  quote: "Contrary to the expectations, the results were similar to those with 1-μs pulses in
+    Fig. 4B: the maximum ΔF reached was 53 ± 4% (~600 mV) at both cell poles. The pattern of how
+    the response changed with increasing PEF strength was not different from that with 1-μs PEFs
+    either."
+  expected:
+    quantity: Di-8-ANEPPS maximum pole dF with 0.3-us pulses, each pole (anodic as magnitude)
+    value: 53
+    tolerance: 4
+    unit: "%"
+  criterion: Tolerance is the paper's s.e. Collapsed pole dF per cell and field strength, mean
+    across the 10 cells. Reproduced when the largest mean |dF| at each pole is within tolerance,
+    and, as with 1-us pulses (fig4b-cathodic-asymmetry), the mean |dF| at both poles declines at
+    the field strengths above the one giving the maximum, more at the cathodic pole. The paper
+    gives no test for "not different"; none is applied.
+- id: fig5a-gd-extends-anodic
+  statement: With 1 mM Gd3+ the anodic pole charged to -864 +- 44 mV, against -542 +- 57 mV in
+    parallel controls (p < 0.001).
+  source: Figure 5A; Results 3.5, paragraph 1
+  quote: Indeed, we found that 1 mM Gd3+ extended the range of membrane charging at the anodic
+    pole down to −864 ± 44 mV (p < 0.001 compared to −542 ± 57 mV in parallel control
+    experiments, Fig. 5A).
+  statistics:
+  - test: 2-tailed t-test (Fig. 5 legend)
+    p: 0.001
+    p_relation: "<"
+    n: 7 cells with Gd3+, 5 control cells
+  expected:
+  - quantity: most negative anodic IMP with 1 mM Gd3+
+    value: -864
+    tolerance: 44
+    unit: mV
+  - quantity: most negative anodic IMP in controls
+    value: -542
+    tolerance: 57
+    unit: mV
+  criterion: Tolerances are the paper's s.e. Collapsed anodic pole dF converted to IMP (dF /
+    9.1%), per cell and field strength (150 to 1400 V/cm). Which datapoints are compared is not
+    stated; readings (a) the most negative group mean over field strengths in each group,
+    compared at those strengths, (b) the two groups at the same field strength, at the strength
+    giving the Gd3+ minimum, (c) each cell's own most negative value. Two-tailed unpaired
+    t-test. Reproduced when under one reading both values are within tolerance and p < 0.001.
+- id: fig5a-gd-linear
+  statement: With Gd3+, the measured IMP stayed nearly identical to IMPC down to -780 mV, so the
+    Di-8-ANEPPS calibration holds at high IMPs.
+  source: Figure 5A; Results 3.5, paragraph 1
+  quote: Furthermore, measured IMP remained nearly identical to the theoretical IMPC down to −780
+    mV, indicating that the dye response remained linear and its calibration was valid even at
+    high IMPs.
+  data: with_inputs
+  criterion: A claim of absence of a deviation. Gd3+ group, anodic pole, every field strength
+    whose mean IMPC is -780 mV or less negative; measured IMP against IMPC by a 2-tailed paired
+    t-test at p < 0.05 (n = 7; the Student's t-test of Methods 2.5). Reproduced when none
+    differs; not reproduced when any does. The ratio of measured to calculated is reported.
+- id: fig5a-gd-cathodic
+  statement: At the cathodic pole Gd3+ cells reached 647 +- 44 mV, not significantly above
+    controls, but Gd3+ prevented the decline of IMP with stronger fields.
+  source: Figure 5A; Results 3.5, paragraph 2
+  quote: At the cathodic pole, polarization in the presence of Gd3+ reached 647 ± 44 mV, a value
+    not significantly higher than that in the control group without Gd3+. However, Gd3+
+    prevented the progressive decline in IMP as the electric field was increased.
+  expected:
+    quantity: largest cathodic IMP with 1 mM Gd3+
+    value: 647
+    tolerance: 44
+    unit: mV
+  criterion: Tolerance is the paper's s.e. Collapsed cathodic pole IMP per cell and field strength.
+    The comparison with controls is a claim of absence, judged on the 2-tailed t-test of the
+    Fig. 5 legend at p < 0.05, Gd3+ (n = 7) against control (n = 5), with the readings for which
+    datapoints of fig5a-gd-extends-anodic. "Prevented the progressive decline" has no test;
+    read as the Gd3+ mean cathodic IMP at 1200 and 1400 V/cm being no lower than its maximum by
+    more than the s.e., while the control mean declines from its maximum. Reproduced when the
+    value is within tolerance, no reading finds Gd3+ significantly higher, and the decline
+    condition holds.
+- id: fig5a-gd-differences
+  statement: Gd3+ and control data differ significantly for datapoints with IMPC below -700 mV
+    and above 1200 mV.
+  source: Figure 5A legend
+  quote: Differences between Gd3+ and control group data are significant at p < 0.05 or better
+    (2-tailed t-test) for datapoints below −700 mV and above 1200 mV.
+  statistics:
+  - test: 2-tailed t-test
+    p: 0.05
+    p_relation: "<"
+    n: 7 cells with Gd3+, 5 control cells
+  data: with_inputs
+  criterion: Datapoints are field strengths, placed by their mean IMPC (the x axis of Fig. 5A,
+    which the "mV" bounds refer to). For each field strength and pole, measured IMP of the Gd3+
+    against the control cells by a 2-tailed unpaired t-test. Reproduced when every datapoint
+    with mean IMPC below -700 mV or above 1200 mV differs at p < 0.05.
+- id: fig5b-conductivity-calibration
+  statement: By Eq. (2), the effective membrane conductivity barely affects charging while it
+    stays far below cytosol and medium conductivities; a 10-fold rise reduces IMP by about 2% and
+    a 100-fold rise by 12%.
+  source: Figure 5B; Results 3.5, paragraph 3
+  quote: its 10-fold increase would go unnoticed, yielding just a ~2% IMP reduction, and a
+    100-fold increase would reduce IMP by just 12%.
+  expected:
+  - quantity: IMP reduction for a 10-fold increase from 3e-7 S/m
+    value: 2
+    tolerance: 0.2
+    unit: "%"
+  - quantity: IMP reduction for a 100-fold increase from 3e-7 S/m
+    value: 12
+    tolerance: 1.2
+    unit: "%"
+  criterion: A computation from Eq. (2) with the constants of Methods 2.3 (lambda_i 0.4 S/m,
+    lambda_o 1.64 S/m, R 8 um, d 5 nm, intact lambda_m 3e-7 S/m); it uses no recordings. The
+    reduction is relative to IMPC, readings (a) 1 - f/1.5, (b) 1 - f(lambda_m)/f(3e-7 S/m).
+    Reproduced when both values are within tolerance under one reading.
+- id: fig5c-gd-reduces-conductivity
+  statement: For most datapoints, Gd3+ reduced the electroporation-induced effective membrane
+    conductivity 2 to 3-fold.
+  source: Figure 5C; Results 3.5, paragraph 4
+  quote: For most datapoints, Gd3+ reduced the electroporation- induced effective conductivity
+    2–3-fold.
+  data: with_inputs
+  depends_on:
+  - fig5b-conductivity-calibration
+  expected:
+    quantity: control over Gd3+ effective conductivity ratio (range 2 to 3, widened to 1.8 to
+      3.3)
+    value: 2.55
+    tolerance: 0.75
+    unit: fold
+  criterion: For each field strength and pole, the ratio of mean measured to mean calculated IMP
+    in each group (Fig. 5C uses the datapoints of Fig. 5A, mean values), converted to effective
+    conductivity through Eq. (2) as in fig5b-conductivity-calibration. Datapoints whose measured
+    IMP is not below IMPC give no conductivity increase and are left out. Reproduced when more
+    than half of the remaining datapoints have a control-to-Gd3+ ratio between 1.8 and 3.3.
+- id: fig6a-ca-single-pulse
+  statement: A single 1-us pulse caused clear Ca2+ entry at 1000 and 1200 V/cm, with the signal
+    elevated through 5 min; the small rise at 780 V/cm was not significant.
+  source: Figure 6A; Results 3.6, paragraph 2
+  quote: Exposure to a single 1-μs pulse at escalating field strengths, from 0 to 1200 V/cm
+    established a clear peak of Ca2+ entry at 1000 and 1200 V/ cm, and Ca2+ signal remained
+    elevated through the 5-min observation period (Fig. 6A). A subtle ΔF increase after exposure
+    at 780 V/cm was at the detection limit and not statistically significant.
+  criterion: Fluo-4 dF (Methods 2.4), background-subtracted, F0 the mean before the pulse, 14
+    cells. The test is not named; the paper uses a one-sample t-test against zero for the
+    pulse-train Ca2+ data (Results 3.6), applied here at p < 0.05. The window is not given;
+    readings (a) the peak frame after the pulse, (b) the last 30 s of the recording. Reproduced
+    when at 1000 and 1200 V/cm dF is significantly above zero under both windows, and at 780
+    V/cm it is not under reading (a) (a claim of absence, judged on that test).
+- id: fig6b-ca-train-responders
+  statement: After a train of sixty 1-us pulses at 6 Hz, 28% of cells responded strongly at 780
+    V/cm and nearly all at higher field strengths.
+  source: Figure 6B; Results 3.6, paragraph 3
+  quote: A strong Ca2+ response was recorded in 28% of cells exposed at 780 V/cm and in nearly
+    all cells at higher intensities (Fig. 6B).
+  expected:
+    quantity: fraction of strongly responding cells at 780 V/cm
+    value: 28
+    tolerance: 2.8
+    unit: "%"
+  criterion: Each cell exposed once; Fluo-4 dF as in Methods 2.4. The paper does not define a
+    strong response. Readings (a) peak dF after the train above the mean plus 3 s.d. of the
+    pre-train baseline of the same cell, (b) peak dF above 50%, (c) peak dF above 100%. Reproduced
+    when, under one reading, the 780 V/cm fraction is within tolerance, at least 90% of cells
+    respond at each higher strength, and the 650 V/cm fraction is 2 cells (5.9%).
+- id: fig6b-ca-650
+  statement: At 650 V/cm only 2 cells (5.9%) responded strongly, yet the mean Ca2+ signal at the
+    end of recording differed from zero (p < 0.001) and was marginally higher than at 230 V/cm
+    (p < 0.05).
+  source: Figure 6B; Results 3.6, paragraph 3
+  quote: At 650 V/cm, only 2 cells (5.9%) showed a strong response, but the mean Ca2+ signal by
+    the end of recording was significantly different from zero (p < 0.001, one sample t-test)
+    and marginally higher than after exposure at 230 V/cm (p < 0.05, single-tailed t-test).
+  statistics:
+  - about: 650 V/cm mean signal at the end of recording against zero
+    test: one sample t-test
+    p: 0.001
+    p_relation: "<"
+    n: about 34 cells (2 cells are 5.9%)
+  - about: 650 against 230 V/cm
+    test: single-tailed t-test
+    p: 0.05
+    p_relation: "<"
+  criterion: Fluo-4 dF per cell (Methods 2.4). "By the end of recording" is not defined; readings
+    (a) the last frame, (b) the mean of the last 10 s, (c) the mean of the last 30 s. One-sample
+    t-test against zero at 650 V/cm; one-tailed unpaired Student's t-test of 650 against 230
+    V/cm. Reproduced when under one reading both p-values are within their bounds.
+  depends_on:
+  - fig6b-ca-train-responders
+- id: fig7b-charging-during-pulse
+  statement: Normalized to 150 V/cm, pole polarization during the conditioning pulse fell 1.5
+    times below linear scaling at 560 V/cm and 2-fold at 760 V/cm, and further at stronger
+    fields (p < 0.01 for every point from 560 V/cm).
+  source: Figure 7B, top panels; Results 3.7, paragraph 5
+  quote: Actual measurements fell 1.5 times below this line for 560 V/cm PEFs, 2- fold for 760
+    V/cm PEFs, and diverged further for more intense PEFs (p < 0.01 for all datapoints ≥560
+    V/cm, one sample t-test).
+  statistics:
+  - test: one sample t-test
+    p: 0.01
+    p_relation: "<"
+    n: 5 cells
+  expected:
+  - quantity: linear expectation over measured, 560 V/cm
+    value: 1.5
+    tolerance: 0.15
+  - quantity: linear expectation over measured, 760 V/cm
+    value: 2
+    tolerance: 0.2
+  criterion: Data are those of Fig. 4B (Di-8-ANEPPS, 1-us pulses, no test pulse), pole dF as in
+    fig4b-di8-limits, each strength as % of the 150 V/cm value, compared with the linear line
+    (100% x E / 150 V/cm). Not stated whether normalization is per cell or of the means;
+    readings (a) per cell, (b) of the means (the ratios), with the test per cell under both.
+    Which pole is not stated; readings (c) each pole, (d) the mean of the poles. One-sample
+    t-test of the per-cell values against the line. Reproduced when under one reading both
+    ratios are within tolerance, the ratio at 1000 to 1400 V/cm exceeds 2, and every datapoint
+    from 560 V/cm is below the line at p < 0.01.
+  depends_on:
+  - fig4b-di8-limits
+- id: fig7ab-test-pulse-recovery
+  statement: A 150 V/cm test pulse 5 us after the conditioning pulse charged the poles as in
+    undamaged cells after conditioning up to 760 V/cm, to about 80% (not significant) after 1000
+    V/cm, and to about 70% and 50% after 1200 and 1400 V/cm, a persistent permeabilization.
+  source: Figure 7A and 7B, bottom panels; Results 3.7, paragraphs 3 and 5
+  quote: Polarization still followed a cosine function after conditioning PEFs of up to 1000
+    V/cm. However, 1200 and 1400 V/cm conditioning PEFs markedly hindered charging by the test
+    pulse at cell poles, indicating a persistent membrane permeabilization ... In contrast,
+    measurements 6 μs later (test pulse) did not differ from the control up to 760 V/cm strength
+    of the conditioning PEF; they were at ~80% of the control reading after 1000 V/cm
+    conditioning PEF but the difference was not statistically significant. Still more intense
+    PEFs of 1200 and 1400 V/cm reduced charging by the test pulse to ~70% and ~ 50%,
+    respectively (p < 0.05 and p < 0.01, two-sided t-test).
+  statistics:
+  - about: 1200 V/cm conditioning, test pulse against control
+    test: two-sided t-test
+    p: 0.05
+    p_relation: "<"
+    n: 5 cells
+  - about: 1400 V/cm conditioning, test pulse against control
+    test: two-sided t-test
+    p: 0.01
+    p_relation: "<"
+    n: 5 cells
+  expected:
+  - quantity: test-pulse pole dF after 1000 V/cm conditioning, % of 150/150 control
+    value: 80
+    tolerance: 8
+    unit: "%"
+  - quantity: test-pulse pole dF after 1200 V/cm conditioning, % of control
+    value: 70
+    tolerance: 7
+    unit: "%"
+  - quantity: test-pulse pole dF after 1400 V/cm conditioning, % of control
+    value: 50
+    tolerance: 5
+    unit: "%"
+  criterion: Collapsed pole dF at 900 ns into the test pulse, as % of the 150/150 V/cm value.
+    The test, from the Fig. 7 legend, is a two-sided t-test of the difference from the undamaged
+    membrane; readings (a) one-sample t-test of per-cell % values against 100%, (b) paired
+    t-test of dF against the same cell's 150/150 value. Pole readings as in
+    fig7b-charging-during-pulse. The 570/760 and 1000 V/cm points are claims of absence, judged
+    on that test at p < 0.05. Reproduced when under one reading the three values are within
+    tolerance, 1200 and 1400 V/cm meet their p bounds, and no point up to 1000 V/cm differs.
+    The 1400 V/cm cathodic value that the paper drops as negative (Results 3.7, paragraph 6)
+    is reported both ways.
+- id: fig7c-fast-conductivity-drop
+  statement: Within 6 us of the electroporating pulse, effective membrane conductivity at the
+    poles fell by a factor of about 10 (range 7 to 20) for most datapoints; the cathodic pole,
+    more conductive during the pulse, no longer differed from the anodic pole at the test pulse.
+  source: Figure 7C; Results 3.7, paragraph 7
+  quote: "Fig. 7C shows a profound reduction in the λm,eff within just 6 μs after the
+    electroporating pulse. For most datapoints, it dropped by a factor of 10 (range: 7–20). While
+    the cathodic pole became more conductive than the anodic pole during the electroporating
+    pulse ... no difference between the poles was detected by the test pulse."
+  expected:
+    quantity: ratio of effective conductivity during the conditioning pulse to that at the test
+      pulse (range 7 to 20, widened to 6.3 to 22)
+    value: 14.15
+    tolerance: 7.85
+    unit: fold
+  criterion: As Methods 2.3 and Results 3.7 give it. From the mean values of
+    fig7b-charging-during-pulse and fig7ab-test-pulse-recovery, each pole and field strength, the
+    measured fraction (of the linear line, and of the 150/150 control) converted to effective
+    conductivity through Eq. (2) as in fig5b-conductivity-calibration. The 1400 V/cm cathodic
+    test value is left out if negative, and a test value above 100% is set to 100%, as the paper
+    did. Datapoints with no conductivity increase during the conditioning pulse are left out. A
+    test value of 100% maps to the intact 3e-7 S/m (full resealing, fig7c-full-reseal-mild), which
+    gives a finite ratio far above 22; the paper's "most datapoints" leaves open whether these
+    count, readings (a) left out, (b) counted as outside the range. Reproduced when more than
+    half of the counted datapoints fall within 6.3 to 22 fold, the cathodic conductivity exceeds
+    the anodic during the conditioning pulse at 1000 V/cm and above, and at the test pulse the
+    cathodic and anodic dF do not differ at any conditioning strength by a two-sided paired
+    t-test at p < 0.05 over the 5 cells (the t-test of the Fig. 7 legend, applied between the
+    poles; a claim of absence). The paper gives no test for the pole comparison; the ratio of
+    the two poles' test-pulse conductivities is reported.
+  depends_on:
+  - fig7b-charging-during-pulse
+  - fig7ab-test-pulse-recovery
+- id: fig7c-full-reseal-mild
+  statement: After mildly electroporating 570 and 760 V/cm pulses the membrane resealed fully
+    within 6 us; after stronger pulses a residual conductivity increase persisted.
+  source: Figure 7C; Results 3.7, paragraph 7
+  quote: For mildly electroporating PEFs of 570 and 760 V/cm, membrane resealed fully (within the
+    accuracy of measurements) within just 6 μs. With more intense PEFs, the residual increased
+    conductivity persisted for at least 6 μs, indicating the formation of more stable membrane
+    lesions.
+  criterion: Judged on the test of fig7ab-test-pulse-recovery. Reproduced when the test-pulse
+    pole dF after 570 and 760 V/cm conditioning does not differ from the control (so the
+    inferred effective conductivity is the intact value), and after 1200 and 1400 V/cm it is
+    significantly reduced at either pole.
+  depends_on:
+  - fig7ab-test-pulse-recovery
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: "claude-opus-5-5"
+  ready: true
+  changes:
+  - "fig2d-lasting-reduction: removed the clause accepting a 10 to 22% reduction; the 10% bound is not in the paper, and the expected 20 +- 2 already covers the legend's at most 20%."
+  - "fig2d-lasting-reduction: added readings for the reference set, the first set (legend's dashed lines) or the mean of all sets before 1000 V/cm (the text compares with the sets before electroporation)."
+  - "fig3-fluovolt-nonlinear: the departure bound was 250 mV, not from the paper; set to 220 mV (the paper's 200 mV plus the protocol's 10%) and worded as departure at every |IMPC| from there to the end of the data."
+  - "fig4a-fluovolt-limits and fig4b-di8-limits: the paired t-test was an agent choice; Methods 2.5 names Student's t-test without saying paired or unpaired, so both are now readings, and the criterion says the paper reports no test for the comparison."
+  - "fig4a-fluovolt-cathodic-decline: 360 V/cm tolerance changed from 7.1 to 10, the paper's s.e. for the same 71% in the preceding sentence; the 1000 to 1400 V/cm value and tolerance changed from 47.5 +- 7.5 to 47.75 +- 7.25 so that they span the stated 40.5 to 55%."
+  - "fig7c-fast-conductivity-drop: the pole comparison used an invented factor-of-3 bound; replaced by the two-sided t-test of the Fig. 7 legend applied between poles, as a claim of absence. Corrected the statement that a 100% test value gives no finite ratio (it maps to the intact conductivity) and named the readings for counting those datapoints."
+  - "Open, fig5b-conductivity-calibration: Eq. (2) with the Methods constants gives about 1.2 to 1.3% for a 10-fold rise against the paper's ~2%; left as written, for the attempt to report."
+  - "Open, fig4c-equator-follows-cosine and fig5a-gd-linear: claims of absence judged on a paired t-test the paper does not name for them (Methods 2.5 names only Student's t-test); paired is kept, as the comparison is within cells."
+  - "Open, fig1-pole-dimming, fig5a-gd-cathodic (decline rule), fig6b-ca-train-responders (strong response thresholds, 90% for nearly all) and fig4c (arc widths): the paper gives no rule; the criteria name readings, which remain readings and not the paper's method."
+  - "Open, IMPC needs the tau-radius fit of reference [20], which is not in this paper."
