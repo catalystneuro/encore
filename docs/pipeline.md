@@ -50,6 +50,14 @@ done from then on. The attempt goes on in its branch; when it is merged, git
 drops the claims change `main` already has. A deprecated attempt is not held
 to the claims file that replaces its own.
 
+When a dataset's paper is a preprint that has since been published in a journal,
+the publication replaces it: `papers/triage.yaml` lists the preprint under
+`not_papers` and the publication under `papers`, and the paper store holds the
+publication's text and supplement. An attempt whose claims were read from the
+preprint is deprecated, and its claims file is removed. The runner takes a
+dataset whose latest attempt is deprecated as it takes one with no attempt, and
+reads its claims again before the new attempt.
+
 ## Access
 
 The papers are kept in a private repository, `catalystneuro/registry-papers`.

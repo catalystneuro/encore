@@ -37,3 +37,13 @@ def test_only_published_datasets_are_taken():
     assert not describe.published({"archive": "dandi", "published_version": None})
     # The other archives publish every dataset they list, and have no versions of this kind.
     assert describe.published({"archive": "crcns"})
+
+
+def test_a_dataset_whose_latest_attempt_is_deprecated_is_open_again(monkeypatch):
+    records = ["000001-demo-2020-01.yaml", "000001-demo-2020-02.yaml", "000002-demo-2021-01.yaml"]
+    deprecated = {"attempts/000001-demo-2020-01.yaml", "attempts/000002-demo-2021-01.yaml"}
+    monkeypatch.setattr(describe, "main_yaml", lambda path: {"deprecated": {"date": "2026-10-21"}} if path in deprecated else {})
+    # 000001 has a newer attempt that stands; 000002's only attempt is deprecated.
+    assert not describe.latest_deprecated("000001", records)
+    assert describe.latest_deprecated("000002", records)
+    assert not describe.latest_deprecated("000003", records)
