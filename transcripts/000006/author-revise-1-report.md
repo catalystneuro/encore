@@ -1,26 +1,33 @@
-No outcome changed. The verifier agreed with all nine (four blocked, three reproduced, one partially reproduced, one not reproduced), and every new variant points the same way. The entry re-runs from a clean environment in 147 s with no errors, `check` passes, and the round is recorded under `verifications` in `attempts/000006-economo-2018-01.yaml`. Nothing is committed.
+No outcome changed in this round. The entry ran from a clean environment in 11 minutes, twice, and gave the same numbers both times; all results that were already there match the previous run exactly.
 
-**What I added or corrected, point by point**
+**Where the verifier disagreed.** The verifier gave three outcomes that differ from the record. I kept all three as blocked and recorded the disagreement:
+- **pt-upper-persistent:** the verifier says not reproduced.
+- **pt-cohort-control:** the verifier says partially reproduced.
+- **pt-types-differ-in-timing:** the verifier says partially reproduced.
 
-- **Unit counts (point 1).** I ran the paper's inclusion rule on all 14 of its processed data files from Figshare. It gives exactly the paper's 61 PTupper and 69 PTlower units. All 117 tagged units in the dandiset get the same label, the same decision and the same reasons there.
-  - The shortfall comes from 11 processed sessions with tagged units that are not in the dandiset. They hold 17 included PTupper and 13 included PTlower units (44 + 17 = 61, 56 + 13 = 69). I recorded this as a new `data_missing` finding.
-  - The 15 PTlower units left out here are also left out by the paper's code, which corrects the verifier's guess that the paper kept most of them.
-- **Same neuron on several days (point 2).** I added the depth of each unit by session: 44 of 100 units lie within 20 µm of a unit of the same animal on another day, and the files hold no waveforms. I also added a variant using one session per animal.
-- **Variants on the paper's 130 units.** Every claim now has the one-session-per-animal variant and a rerun on the paper's 130 units from the processed data.
-  - Both give the same split on pt-lower-late-and-motor: part (a) holds, part (b) does not.
-  - On pt-types-differ-in-timing, the response-epoch reversal persists on the paper's units (PTlower 0.551 against PTupper 0.770), so it does not come from the missing units.
-- **Clock in all sessions (C3, C4).** The spike times of all 1149 units in all 53 sessions equal the processed ones. This checks the clock in the seven sessions the decoding check could not settle; their five included units are listed with their p-values. The first ten trials are shifted in every session.
-- **Extended Data Fig. 9 measure (C5).** I added the single-unit sample-epoch decoding accuracy, following `decodingAccuracy.m` and `doROC.m`. It supports part (a) of pt-types-differ-in-timing:
-  - 7 of 44 PTupper against 1 of 56 PTlower units here (p = 0.012);
-  - 12 of 61 against 1 of 69 on the paper's units, where the paper reports 15 of 61 against 3 of 69.
+The verifier judged each one on its own test. The claims file makes each depend on a blocked claim (pt-upper-early-preparatory, or pt-upper-persistent through it), and the protocol blocks a claim whose dependency is blocked. The notes now give what each claim's own test shows. The other 28 outcomes agree with the verifier.
 
-  The outcome stays not reproduced, because the criterion decides it, and part (b) is reversed under every variant.
-- **Decoding check (point 7).** The z-scoring now uses only the training trials. The median accuracy is now 0.893.
-- **Header (point 9).** I removed the outcomes from the header table.
-- **Text.** I updated the conclusions, summary, README, the attempt record's notes, deviations and findings, the `inputs` entry, and a note in the claims file that the Extended Data legends were read after round 1 for variants only. The runtime in `entry.yaml` is now 3 minutes.
+**Added to the notebook** (output the verifier asked for):
+- **A new section re-running the measures on the paper's processed data for only the 100 units the dandiset holds.** This separates the two causes of failure:
+  - The failures of counts and tests come from the missing sessions: unit counts, the spike-rate test (p = 0.03 on these units too), decoding counts, late-delay counts, PTupper persistence (p = 0.060 and 0.066) and the PTupper CDgo onset.
+  - The files' clock raises every unit's baseline rate, by a median of about 1 Hz. That moves the rectified PTlower decoding mean out of tolerance (56.20% against 56.84%).
+- **CDgo onset over 0 to 0.1 s.** The PTlower onset is 37.5 ms in the files, the same units processed, and all the paper's units. So its distance from the paper's 24 ms comes from the shared method, not the data. I did not test which part of the method causes it.
+- **Lick-aligned window cut.** Only 0.16% (PTupper) and 0.17% (PTlower) of unit-trials have a last lick more than 2.5 s after the go cue, so the 3.0 s cut does not bear on pt-lower-movement-termination.
+- **AA0134.** None of its axon nodes lies in the superior colliculus.
+- **The 150 tagged units.** They are the paper's 143 of good quality plus 7 Fair-quality PTlower units, which the code's filter leaves out.
+- **Anatomy.zip images.** Each folder's image count and file sizes, read from the archive's directory.
 
-**What I did not change**
+**Text corrected or added:**
+- The conclusions now state the one-bin margin in pt-cd-change-at-go-cue and the opposite direction of the cohort difference in pt-cohort-control.
+- The summary, the README, the claim notes and one dandiset finding (the raised baseline rates) are updated to match.
+- The round is recorded under `verifications`, with the verifier's reasons and my responses.
+- I added two questions to `questions/000006.yaml` for a reader:
+  - whether the count criteria should be judged as fractions when units are missing;
+  - whether the cohort-control test should count a difference in the opposite direction as a failure.
 
-- **Spikes per trial (point 6).** I kept the division by last − first, because the paper's code does the same (`range(eventTrials)`). A comment in `alm.py` now says so.
-- **Points 3, 4 and 8.** These are the threshold sensitivity, the trial overlap and the slight baseline inflation. They were already shown in the notebook and are left as stated.
-- **Paper text.** It is saved under `paper/` (the Nature page and its text, with the abstract and Extended Data legends). The full text is still paywalled, so the criteria were not revised.
+**Not done:**
+- **Reassigning spikes to trials by stored order.** A trial boundary shows only where the time steps backwards, so the assignment would stay ambiguous. The verifier offered the processed-data comparison as an alternative, and I added that.
+- **Opening the anatomy images in the notebook.** The entry check forbids reading images. The pixel size I found while preparing (8600 by 6200, greyscale) is mentioned as not run in the notebook and decides nothing.
+- **The earlier record.** `tools/entry.py check` reports 22 errors, all in that record (`attempts/000006-economo-2018-01.yaml`), which lacks the newer claims. They were there before my changes, and I left that record as it was.
+
+There are also untracked files in the working tree that I did not create (`.bashrc`, `.gitconfig`, `.idea`, `scripts` and others). You may want to make sure the workflow doesn't commit them.
