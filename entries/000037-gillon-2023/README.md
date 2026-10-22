@@ -44,7 +44,7 @@ with the reasons and the differences from the paper's method, is
 [`attempts/000037-gillon-2023-01.yaml`](../../attempts/000037-gillon-2023-01.yaml).
 
 - `reproduce_gillon_2023.ipynb`: the analysis. It streams the 50 basic files (25 GB) once each
-  and takes about seven minutes.
+  and takes about 11 minutes.
 - `openscope_ca.py`: streaming the files, the trial tables, and the measures of the paper's code
   (SNR, smoothing, robust scaling, the Fig. 5 selection). Other notebooks on this dandiset can
   import it.

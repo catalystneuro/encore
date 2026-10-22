@@ -74,9 +74,9 @@ outcomes:
     date for 46 and the depth for 47. 43 of 50 sessions agree in every recorded field, below the 45
     the criterion asks for partial reproduction. The three sessions of 433414 are recorded at 60 um
     against 75 in Table 2. Four sessions (412933 local session 3, and 418779 sessions 1 to 3) start
-    a day later in the files than Table 2's date. Their start times are evening Pacific clock
-    values stated with a Pacific offset, and Supplementary Table 1 gives the same clock values as
-    UTC for all 50 sessions. Read as UTC and converted to Pacific time, all 50 dates agree and 47
+    a day later in the files than Table 2's date. Their start times are early-morning clock values
+    (00:18 to 03:01) stated with a Pacific offset; read as UTC they fall on the evening before in
+    Pacific time. Supplementary Table 1 gives the same clock values as UTC for all 50 sessions. Read as UTC and converted to Pacific time, all 50 dates agree and 47
     sessions agree in every field; that reading is not in the criterion and does not decide the
     outcome. The files hold no other wall-clock time to settle it, since timestamps_reference_time
     equals session_start_time and file_create_date gives the conversion dates (2022 and 2023). The
@@ -212,7 +212,8 @@ outcomes:
     90, 135, 180 and 225, always the sequence's mean plus 90. The median image lasts 300 ms. Every
     image is within 300 ms +/- 10% in 46 of 50 sessions; four sessions hold 1 to 5 images outside
     it (13 of 340000 in all, up to 604 ms), three of them the failed-QC sessions of 411400, for
-    which Supplementary Table 1 notes dropped stimulus frames. The criterion asks for every image in
+    which Supplementary Table 1's experimental notes record dropped stimulus frames (printed in the
+    notebook). The criterion asks for every image in
     every session, so that part holds in 46 of 50. The criterion names no partial outcome; the
     claim holds in part, the protocol's partially reproduced, and a strict reading that admits
     only reproduced or not would give not reproduced.
@@ -413,9 +414,11 @@ findings:
     through remfile and h5py is slow; the 22 somatic files store it contiguous. The notebook
     therefore streams each basic file whole into memory before reading it.
 - kind: other
-  statement: In two sessions the dF/F response to grey screen transitions does not exceed that at
-    shifted times (777496949, 15 ROIs; 838633305, which failed QC with the laser at 800 nm), so their
-    alignment to the trial table could not be shown. It is shown in the other 48.
+  statement: In two sessions the dF/F response to grey screen transitions does not exceed the 99th
+    percentile of the responses at shifted times (777496949, 15 ROIs, above 94.6% of them; 838633305,
+    which failed QC and whose experimental notes in Supplementary Table 1 say the laser was set to 800
+    nm, while the file states 910 nm), so their alignment to the trial table could not be shown. It is
+    shown in the other 48.
 - kind: methods_unavailable
   statement: The per-ordering ROI matching counts behind Fig. 8 are published for two mice only, and
     the paper's modified matching code is not linked, so the comparison of order dependence between
@@ -671,4 +674,251 @@ verifications:
     agrees: true
     outcome: reproduced
     reason: 33 files, 14.82 GB decimal (13.8 GB binary), within 15 +/- 1.5.
+    response: No change needed.
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: 'Round 2. The full executed notebook with the conclusion cells and summary, the helper module,
+    the claims file, the README and the attempt record, with the paper. The verifier agreed with 33 of
+    35 outcomes and kept its round-1 outcomes for the two claims blocked only by dependency. It found
+    five statements the printed outputs did not support: the evening wording of the start times, Supplementary
+    Table 1''s notes cited but not printed, the run time (about seven minutes against 664 s), finding
+    7 on the clock check, and the running speed description in cell 9; it found every other sentence supported.
+    It found round-1 points 3 to 7, 9 and C resolved, point 8 (Supplementary Table 1 against Tables 1
+    and 2, not run) unchanged, and points 1 and 2 open. In reply, the README and notebook header now give
+    the run time as about 11 minutes (670 and 665 s to stream the files in the two runs of this revision). The comparison with the repository''s
+    Fig. 5 source data was not added, as that file is not among the attempt''s inputs.'
+  results:
+  - claim: table1-subjects
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: cohorts-by-plane
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: sex-split
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: sessions-total
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: table2-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: Agrees. The start times are called evening Pacific times, but cells 6 and 29 print 00:18,
+      01:51, 03:01 and 01:06 with offsets of -07:00 or -08:00, which as stated are early-morning Pacific
+      times; they become evening Pacific times only if the clock is read as UTC, the variant the text
+      says it does not adopt. The outcome is not reproduced either way.
+    response: Cell 30 and the notes now call them early-morning clock values (00:18 to 03:01) stated with
+      a Pacific offset, and say that read as UTC they fall on the evening before in Pacific time. Outcome
+      unchanged.
+  - claim: qc-failures
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: session-schedule
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: imaging-depths
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: acquisition-rates
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: roi-noise-rejection
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: roi-count-ranges
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: tracked-roi-totals
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: tracked-sessions-overlap
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig8a-final-matches
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig8a-conflicts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig8b-final-matches
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig8b-conflicts
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig8-somata-less-order-dependent
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: gabor-sequence-structure
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agrees. 46 of 50 sessions pass, with 13 of 340000 images out of range, and the record now
+      says a strict two-way reading would give not reproduced. Supplementary Table 1's notes, cited for
+      dropped stimulus frames, are never printed.
+    response: The notebook now prints the QC result and the experimental notes of Supplementary Table
+      1 for the four sessions with images outside the range; the three 411400 sessions carry dropped stimulus
+      frames (953, 1086 and 696), and 759189643 passed QC with no note. Cell 63 and the notes cite the
+      printed column. Outcome unchanged.
+  - claim: visual-flow-structure
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: session-stimulus-durations
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: inconsistent-fractions
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: inconsistent-blocks
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig5-example-responses
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig5-consistent-vs-inconsistent
+    agrees: false
+    outcome: partially_reproduced
+    reason: Disagrees. Cell 80 gives scaled 2/4 under (a) and 3/4 under (b), and unscaled 2/4 under each.
+      Both readings give partial, so the readings agree. The only reason for the block is the claims file's
+      depends_on. If the protocol rule is as the author states it, the block follows procedure.
+    response: 'Kept blocked, with the disagreement recorded, as in round 1: the protocol (author, step
+      1.5) blocks a claim that depends on a blocked claim, for the same reason, and the claims file lists
+      fig5-example-responses under depends_on. No change is proposed, since the dependency block still
+      applies. The notes, cell 81 and the README give the outcome the claim''s own test would have.'
+  - claim: fig6-behaviour-all-mice
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs. Separately, cell 9 describes running
+      speed as a median near a few cm/s where cell 8 prints a median of 0.081 cm/s across the session
+      medians (data check, not a conclusion).
+    response: 'Cell 9 now gives the printed values: session medians of 0.007 to 33 cm/s, a median of 0.08
+      cm/s over sessions, and 99th percentiles of 2 to 68 cm/s. Outcome unchanged.'
+  - claim: fig7a-snr-above-1
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig7a-snr-stable
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig7b-signal-stable
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig7c-correlations-similar
+    agrees: true
+    outcome: blocked
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig7c-high-correlation-fraction
+    agrees: false
+    outcome: not_reproduced
+    reason: Disagrees. Cell 92 gives (a) 0.0178% (134 of 752101 pairs), (b) 0.0176%, and (c) 0.0211, 0.0276
+      and 0.0043% by session. None is inside 0.005 to 0.015%, and none depends on how similar is read.
+      If the protocol rule is as the author states it, the block follows procedure.
+    response: Kept blocked, with the disagreement recorded, as in round 1, under the same protocol rule;
+      the claims file lists fig7c-correlations-similar under depends_on. No change is proposed. The notes,
+      cell 93 and the README say its own test gives not reproduced under every reading.
+  - claim: fig7a-source-link
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: fig9-onset-offset-transients
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs. Finding 7 says the dF/F response in
+      two sessions does not exceed that at shifted times, but cell 12 shows 777496949 exceeds 94.6% of
+      the shifted contrasts (rank 0.054) and only fails the 99th-percentile test; cell 13 states this
+      correctly.
+    response: Finding 7 now says the response does not exceed the 99th percentile of the shifted responses,
+      and that 777496949 is above 94.6% of them. Cell 13 now prints and cites the experimental note of
+      838633305 (laser at 800 nm), next to the 910 nm the file states. Outcome unchanged.
+  - claim: file-sizes
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
+    response: No change needed.
+  - claim: download-33-files
+    agrees: true
+    outcome: reproduced
+    reason: Agrees with the stated outcome; the numbers behind it have not changed since round 1, and
+      the conclusion and summary sentences agree with the outputs.
     response: No change needed.
