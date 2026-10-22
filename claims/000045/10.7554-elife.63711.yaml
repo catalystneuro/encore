@@ -638,6 +638,7 @@ claims:
   data: with_labels
   depends_on:
   - fig3f-classifier-chance-basic
+  - lab-link
   criterion: >-
     As fig3f-classifier-chance-basic with the lab's time zone as a fourth feature (the code's
     offsets, Europe 0, New York -5, Los Angeles -7, from the lab's location). Reproduced when the
@@ -660,6 +661,21 @@ claims:
     As fig3f-classifier-chance-basic with scikit-learn RandomForestClassifier (100 trees,
     random_state 424242) and LogisticRegression (solver liblinear), as in the code. Reproduced when
     neither is above chance by the same rule.
+
+- id: lab-link
+  kind: link
+  statement: >-
+    The institutions named in the dandiset's files are the paper's seven laboratories, so that the
+    code's lab numbers (Lab 1 to 7) and time zones can be given to the dataset's mice.
+  source: Claims file header, code lab numbers and time zones (paper-behavior at commit edc4531)
+  data: with_labels
+  criterion: >-
+    Each session's institution in the files is matched by name to the code's laboratories. Reproduced
+    when the seven institutions match the seven laboratories one to one. Whether the session start
+    times bear out the time zones (start hours shifted by the labs' offsets if they are in UTC, as
+    stated) is reported. Added by the author of attempt 000045-ibl-2021-01 (protocol, Author, step
+    4) for fig3f-positive-control, whose time-zone feature comes from the paper's code by
+    laboratory.
 
 - id: fig3s1a-choice-consistency-basic
   statement: >-
