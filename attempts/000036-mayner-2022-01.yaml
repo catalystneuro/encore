@@ -1,0 +1,424 @@
+schema_version: 2
+id: 000036-mayner-2022-01
+dataset:
+  archive: dandi
+  id: "000036"
+  version: 0.230515.1917
+  doi: 10.48324/dandi.000036/0.230515.1917
+paper: doi:10.1523/eneuro.0280-21.2021
+date: 2026-10-22
+entry: 000036-mayner-2022
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39715560542
+inputs:
+- what: The paper's analysis outputs. results/main.parquet identifies the 44 analysed sessions
+    (session-link) and gives the paper's per-trial ND, used to check the trial timing; the other
+    files of results/ (table-s1.csv, permutation_tests_summary.csv, the decoding scores,
+    mean_centroid_distance.parquet, stimulus_properties.parquet, stats.parquet, effect_size.parquet,
+    behavior_by_session.parquet) are printed as reference values beside the results and decide
+    no outcome.
+  source: https://github.com/wmayner/openscope-differentiation at commit
+    2d959bd71b47055d2a3fd306091fe9254ceb86fb
+- what: The paper's processed data, streamed in memory from its single tar file in the arousal
+    notebook. Used are the running artifact parameters (run/preprocessing_params.yaml) for reading
+    (b) of fig4-locomotion-effect-size, the sync files (vsync to 2p frame alignment), the pupil
+    area and its parameters for the variant of fig4-pupil-effect-size, and run_speed to check the
+    dandiset's running velocity.
+  source: Zenodo doi:10.5281/zenodo.5781567 (record 5781567, the version of concept
+    doi:10.5281/zenodo.4734580 that the code's README names)
+outcomes:
+- claim: session-link
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:session-link
+  notes: All 44 sessions of main.parquet match one dandiset session each on mouse id and start
+    time (NWB session_start_time minus 7 hours, to the millisecond; no other whole-hour offset
+    matches any session). All 44 agree on Cre line, layer, area and depth, and on the number of
+    cells once the 14 ROIs whose dF/F is NaN at every frame are left out (37 of 44 agree with
+    them counted). With the trial start moved by 0 to -6 frames, the dandiset's dF/F gives the
+    paper's unnormalised per-trial ND to a relative 1e-6 in all 5280 trials (5279 at one shift,
+    1 at two). With the trial windows the NWB times give, per-trial log10 ND correlates with the
+    paper's at r = 0.9974 (difference SD 0.0465). Thirteen dandiset sessions are unmatched; the
+    one in L5 AL (mouse 402796, 741889312) has 63586 frames at 15.08 Hz and fits the session the
+    paper excluded, which the deposit's metadata.csv also marks invalid (seen while preparing,
+    not in the notebook).
+  deviations:
+  - The 7 hour offset was found while preparing the attempt; the criterion was written after it.
+- claim: design-sessions
+  outcome: partially_reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:design-sessions
+  measured:
+  - 57
+  - 9
+  - 25
+  - 11
+  notes: The dandiset holds 57 sessions from 9 mice, 3 mice per Cre line; sessions per line are
+    25 Cux2, 15 Rorb and 17 Rbp4 (measured gives the Cux2 count), and per area 11 to 13
+    (measured gives V1, 11), with 5 per layer and area pair in L2/3, 3 in L4, and 3 in L5 except
+    5 in PM. The 44 linked sessions plus the half-rate L5 AL session give the paper's design
+    exactly (45 sessions, 15 per line, 9 per area, 3 per pair, 4 to 6 per mouse). The other 12
+    (10 second recordings in Cux2 mice 389014 and 389020, and one more PM session in each of Rbp4
+    mice 402796 and 405808) are not described in the paper. The files hold no sex; the code's
+    table gives 2, 3 and 1 males for Cux2, Rorb and Rbp4, as the paper states. The excluded
+    session is identified by its absence from main.parquet and its half frame rate.
+  deviations:
+  - The criterion does not anticipate a dataset that holds more sessions than the paper; the
+    outcome is partial because the deposited counts do not match, while the paper's 45 sessions
+    are all present.
+- claim: ext1-2-cell-counts
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:ext1-2-cell-counts
+  measured:
+  - 4018
+  - 1683
+  - 1781
+  - 554
+  notes: Over the 44 linked sessions there are 4032 ROIs, 14 of them NaN at every frame; the 4018
+    others are 1683, 1781 and 554 per layer, and all 15 layer and area totals equal
+    table-s1.csv (15 of 15 within 10%). With the NaN ROIs counted, the totals (4032; 1687, 1790,
+    555) are also within tolerance. The files carry no validity flag.
+- claim: ext1-3-kinetics-no-difference
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The dandiset holds no L0 events. The criterion's detector, l0_analysis.py of
+    github.com/AllenInstitute/visual_coding_2p_analysis (commit 3ceca10), is Python 2 code
+    (cPickle) that imports allensdk and FastLZeroSpikeInference. That package is not on PyPI; its
+    repository (github.com/jewellsean/FastLZeroSpikeInference, commit cdfaade) fails to build with
+    pip from git because its setup.py expects the C++ sources copied into the python directory,
+    and its current Python API has no arfpop, which l0_analysis.py calls. The detector also
+    expects corrected fluorescence, which the dandiset does not hold. The paper's own events are in
+    its Zenodo deposit (events/, 4.1 GB), which the criterion does not name.
+- claim: fig3a-layer-specific
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:fig3a-layer-specific
+  measured:
+  - 14.09
+  - 0.163
+  notes: 2200 contrast trials of 44 sessions. Interaction chi2(2) = 14.09, p = 0.00087. Post hoc
+    L2/3 z = 3.83, adjusted p = 0.0002, lower bound 0.050 (paper 0.051); L4 z = 0.10, p = 0.84; L5
+    z = -1.35, p = 0.999. Cohen's d L2/3 0.163, L4 0.006, L5 -0.079 (paper 0.164, 0.011, -0.067).
+    The L2/3 effect is positive in all three Cux2 mice (d 0.15, 0.43, 0.29). Variant on all 56
+    complete dandiset sessions, chi2(2) = 8.74, p = 0.013, L2/3 the only significant layer.
+  deviations:
+  - Trials are cut where the NWB stimulus times put them, 0 to 6 frames later than the paper's
+    stimulus table (the shift grows through the session).
+  - ROIs with all-NaN dF/F are left out (none in the paper's counts).
+  - LME, likelihood ratio and glht tests are run with statsmodels and scipy, not R; on the
+    paper's own per-trial values they give its printed chi2, z, p and interval bounds.
+- claim: fig3b-area-specific
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:fig3b-area-specific
+  measured:
+  - 15.58
+  - 0.181
+  - 0.132
+  notes: Interaction chi2(4) = 15.58, p = 0.0036. AL z = 2.65, adjusted p = 0.020; AM z = 2.54,
+    p = 0.028; V1, LM and PM p 0.81 to 1.0. Cohen's d AL 0.181 (within tolerance of 0.200) and AM
+    0.132, outside the tolerance of 0.268. The paper's own per-trial values give AM d = 0.127 and
+    the code's printed Figure 3 output 0.128; the paper's text prints d = 0.268 with interval
+    [0.128, inf), where the code prints the interval bound 0.0048, so 0.268 looks like a
+    transcription slip in the paper and the dataset agrees with the paper's computation. The
+    criterion's rule rests on the significance pattern, which holds. Variant on all 56 complete
+    dandiset sessions, chi2(4) = 14.39, p = 0.006, AM significant but AL not (p = 0.072).
+  deviations:
+  - As fig3a-layer-specific (trial windows from the NWB times, NaN ROIs left out, statistics in
+    Python).
+- claim: ext3-1-natural-artificial
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:ext3-1-natural-artificial
+  measured:
+  - 16.09
+  - 0.147
+  - 0.140
+  - 0.216
+  - 0.156
+  notes: 5280 trials. Layer chi2(2) = 16.09, p = 0.0003; area chi2(4) = 21.84, p = 0.0002 (the
+    code prints 22.213). L2/3 (adjusted p < 0.0001) and L5 (p = 0.0004) significant, L4 not (p =
+    0.98); AL and AM significant (p <= 0.0001), V1, LM and PM not (p 0.28 to 1.0). All four Cohen's
+    d within tolerance.
+  deviations:
+  - As fig3a-layer-specific.
+- claim: ext3-2-sensitivity
+  outcome: not_reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:ext3-2-sensitivity
+  notes: 36 of 108 parameter sets meet the agreement rule (33.3%), below 90% and 80%; the looser
+    rule also gives 36. L2/3 is the only significant layer in all 108 sets and the layer and area
+    interactions are significant in 108 and 102. The areas vary; AL and AM both significant in
+    36 sets, AL alone in 41, AM alone in 24, neither in 7. Agreement by window is rectangular 39%,
+    Kaiser 33%, Tukey 28%; by state length 0% at 10 s and 72% at 2 s. The same rule on the paper's
+    own results/stats.parquet gives 28 of 108 (25.9%), so the paper's outputs do not meet this
+    reading of "nearly all" either; the difference is between the claims file's rule and the
+    paper's sentence, not between the dataset and the paper's computation.
+  deviations:
+  - As fig3a-layer-specific.
+- claim: ext3-5-arousal-covariates
+  outcome: blocked
+  blocked_by: data_missing
+  notes: The criterion crosses the readings of pupil diameter, and the Methods reading (twice the
+    semi-major axis of the fitted ellipse) is in no public file. The dandiset has no eye tracking
+    at all; the Zenodo deposit holds pupil area per session (eye/*_area.npy), from which only the
+    code's reading can be computed. For fig4-pupil-effect-size the two computable artifact
+    readings already disagree in sign. Locomotion per trial is available under both readings.
+- claim: ext3-8-events-spectral
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs L0 events; see ext1-3-kinetics-no-difference.
+- claim: ext3-9-no-transients
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs L0 events to mark the 200 ms to remove; see ext1-3-kinetics-no-difference.
+- claim: mediation-event-magnitude
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: The mediator is the mean L0 event magnitude, which cannot be computed (see
+    ext1-3-kinetics-no-difference). The pupil covariate also needs the Methods' diameter, which is
+    in no public file (data_missing).
+- claim: table1-permutation
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:table1-permutation
+  measured:
+  - 3
+  - 3
+  - 8
+  - 1
+  - 0
+  notes: Methods rule, log10 ND, 20,000 permutations per session (own seed). L2/3 AL 3 of 3, AM 3
+    of 3, L2/3 8 of 15, L4 1 of 15, L5 0 of 14; the 15-cell table equals the code's printed table
+    cell by cell, and the code's rule gives the same. The six L2/3 AL and AM sessions have p 0.00005
+    to 0.029. Untransformed ND (variant) gives 5 of 15 in L2/3 (2 of 3 in AL and in AM).
+  deviations:
+  - As fig3a-layer-specific; random permutations are not the paper's.
+- claim: fig4-locomotion-effect-size
+  outcome: reproduced
+  notebook: arousal_mayner_2022.ipynb
+  output: claim:fig4-locomotion-effect-size
+  measured: 0.842
+  notes: Over the six L2/3 AL and AM sessions, reading (a) r = 0.842, t(4) = 3.13, p = 0.035;
+    reading (b) r = 0.844, p = 0.035; both within tolerance (0.792 to 1) and significant. Reading
+    (b) gives the code's printed locomotion fractions to within 0.0001 and reading (a) to within
+    0.0008, so the lower r comes from the effect sizes (one session d = 1.111 against the code's
+    stored 1.258). Over all 44 sessions r = -0.03. The deposit stream reached the running
+    parameters after 1105 s in the recorded run (1036 to 1264 s while preparing).
+  deviations:
+  - Reading (b) uses the deposit's parameters and vsync alignment on the dandiset's running
+    velocity, whose first sample is dropped (the rest equal the deposit's run_speed).
+  - Effect sizes use trial windows from the NWB times, as fig3a-layer-specific.
+- claim: fig4-pupil-effect-size
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: arousal_mayner_2022.ipynb
+  output: claim:fig4-pupil-effect-size
+  notes: The dandiset has no pupil data. With the deposit's pupil area and the code's diameter
+    (2*sqrt(area/pi)), reading (b) of artifact removal reproduces the code's printed per-session
+    pupil values exactly and gives r = 0.651, p = 0.16 (positive, within tolerance of 0.716);
+    reading (a), without artifact removal, gives r = -0.647, p = 0.17, because unremoved
+    artifacts set the maximum the diameter is normalised by. The readings disagree, which the
+    criterion blocks as methods_underspecified; the Methods' semi-major axis reading cannot be
+    computed from any public file (data_missing).
+- claim: discussion-session-effect-sizes
+  outcome: partially_reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:discussion-session-effect-sizes
+  measured:
+  - 0.572
+  - 1.111
+  - 0.340
+  notes: Per-session d 0.572 to 1.111, all six within 0.513 to 1.375; smallest and pooled (0.340)
+    within tolerance; the largest is below the tolerance of 1.25 (1.125 to 1.375). For that
+    session (719080059, paper 719334668) the paper's main.parquet gives 1.155 and its
+    effect_size.parquet 1.258; the paper's range 0.57 to 1.25 is the latter's, which does not
+    follow from the committed main.parquet.
+  deviations:
+  - As fig3a-layer-specific.
+  - The criterion gives no partial rule; partial is used because two of three values and the
+    range hold and one extreme is 0.014 outside its tolerance.
+- claim: fig5-multivariate-layer
+  outcome: reproduced
+  notebook: multivariate_mayner_2022.ipynb
+  output: claim:fig5-multivariate-layer
+  measured:
+  - 18.99
+  - 0.194
+  notes: Interaction chi2(2) = 18.99, p = 7.5e-5. L2/3 z = 5.19, adjusted p < 0.0001; L4 p = 0.107;
+    L5 p = 0.997. Cohen's d L2/3 0.194 (paper 0.194). Per-trial values correlate with the paper's
+    at r = 0.995. umap-learn 0.5.12 with numba 0.68.0.
+  deviations:
+  - UMAP version differs from the paper's run; trial windows from the NWB times.
+- claim: fig5-multivariate-area
+  outcome: reproduced
+  notebook: multivariate_mayner_2022.ipynb
+  output: claim:fig5-multivariate-area
+  measured:
+  - 16.20
+  - 0.181
+  - 0.275
+  notes: Interaction chi2(4) = 16.20, p = 0.0028. AL adjusted p = 0.0098, AM p < 0.0001; V1, LM, PM
+    p 0.92 to 0.96. Cohen's d AL 0.181, AM 0.275 (paper 0.184, 0.277).
+  deviations:
+  - As fig5-multivariate-layer.
+- claim: ext5-1-events-multivariate
+  outcome: blocked
+  blocked_by: not_runnable
+  notes: Needs L0 events; see ext1-3-kinetics-no-difference.
+- claim: fig6-category-decoding
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:fig6-category-decoding
+  notes: Mean balanced accuracy is at least 0.75 in 14 of 15 populations and at least 0.9 in 12;
+    per layer 0.86 to 0.95, per area 0.83 to 0.96, all above 0.5; per session 0.575 to 1.0. Lowest
+    populations L4 AM 0.66 and L4 PM 0.75. Per-session scores correlate with the paper's at r =
+    0.990 (mean difference -0.005). The populations with the ND effect are not the best decoded
+    (L2/3 AL and AM 0.93, L2/3 LM 0.98).
+  deviations:
+  - Trial windows from the NWB times; fold order follows the code's stacking (trial, then
+    stimulus name).
+- claim: ext6-1-identity-decoding
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:ext6-1-identity-decoding
+  notes: At least 0.75 in 14 of 15 populations and at least 0.9 in 10; per layer 0.83 to 0.97, per
+    area 0.79 to 0.95, chance 0.083; L4 AM lowest at 0.51. Per-session scores correlate with the
+    paper's at r = 0.998.
+  deviations:
+  - As fig6-category-decoding.
+- claim: fig7-stimulus-effect
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:fig7-stimulus-effect
+  measured: 31.55
+  notes: 2200 trials of the five continuous natural clips over 44 sessions; chi2(4) = 31.55, p =
+    2.4e-6 (paper 32.115).
+  deviations:
+  - As fig3a-layer-specific.
+- claim: fig7-snake-highest
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:fig7-snake-highest
+  measured:
+  - 0.154
+  - 0.181
+  - 0.227
+  - 0.154
+  notes: Tukey-adjusted p for snake against conspecifics 0.012, crickets 0.0008, man writing
+    2.8e-6, and mousecam against man writing 0.006; none of the other six pairs below 0.05
+    (smallest 0.18). Estimated differences 0.096, 0.118, 0.154 and 0.103 lie inside the paper's
+    intervals. emmeans' Tukey adjustment is computed from the studentized range with infinite
+    degrees of freedom.
+  deviations:
+  - As fig3a-layer-specific.
+- claim: ext7-1-arousal-mediation
+  outcome: blocked
+  blocked_by: data_missing
+  notes: One of the two mediators is pupil diameter, and the other analysis uses it as covariate;
+    the Methods' diameter is in no public file, and the code's diameter from the deposit's area
+    gives readings that disagree (see fig4-pupil-effect-size). The dandiset has no eye tracking.
+- claim: fig8-nd-sd-correlation
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:fig8-nd-sd-correlation
+  measured:
+  - 0.746
+  - 2.113
+  notes: r = 0.746, t(10) = 3.55, one-sided p = 0.0027 over 12 stimuli and the six L2/3 AL and AM
+    sessions (720 trials); noise has the largest Cook's distance, 2.113 (next 0.219). Stimulus
+    differentiation from the files' movies equals the code's printed values (max difference 0.0
+    in log10), so the movies are the paper's.
+  deviations:
+  - Mean ND per stimulus uses trial windows from the NWB times.
+- claim: fig8-no-sd-relation-controlled
+  outcome: reproduced
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:fig8-no-sd-relation-controlled
+  notes: Without noise r = 0.271, one-sided p = 0.21 (paper 0.258); five contrast stimuli r =
+    -0.423, two-sided p = 0.48 (paper -0.378). Neither test finds a relation.
+  deviations:
+  - As fig8-nd-sd-correlation.
+- claim: ext8-1-no-low-level-relation
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_mayner_2022.ipynb
+  output: claim:ext8-1-no-low-level-relation
+  notes: Two-sided, no property has p < 0.05 (luminance r = -0.26, p = 0.42; contrast r = 0.26, p =
+    0.42; spectral energy r = 0.51, p = 0.087 with per-pixel DC removal and r = 0.55, p = 0.066
+    with the code's global mean). One-sided, spectral energy has p = 0.044 and 0.033 under the two
+    DC readings. The readings differ, which the criterion blocks. The code's spectral energy values
+    are reproduced to 2e-15.
+findings:
+- kind: selection_undocumented
+  statement: The dandiset holds 57 sessions where the paper analysed 44 and excluded one. The 12
+    extra sessions (second recordings of each area in Cux2 mice 389014 and 389020, and a second PM
+    session in Rbp4 mice 402796 and 405808) are not described in the paper, and nothing in the
+    files or the dandiset metadata says which sessions the paper used or that the L5 AL session
+    741889312 was excluded. They can be identified only through the paper's code outputs. Run on
+    all complete sessions, the area result changes (AL no longer significant).
+- kind: identifier_missing
+  statement: The NWB identifier is not the session id the paper and its code use (for example
+    717235570 against 717911143); it is the id that names the deposit's pupil files. The paper's
+    ids appear nowhere in the dandiset, so the sessions can be linked to the paper only by start
+    time.
+- kind: metadata_error
+  statement: session_start_time is 7 hours later than the start times of the paper's metadata in
+    all 57 files while labelled -07:00; recordings appear to start between 15:00 and 00:46 local
+    time, against 08:00 to 17:44 in the paper. The times look like UTC labelled as Pacific time
+    (consistent with the data, not shown).
+- kind: metadata_error
+  statement: Against the 2p frame times, the NWB stimulus and running timestamps run late by an
+    amount that grows through each session, compared with the vsync-to-frame alignment of the
+    paper's sync files, from about 0 frames in the first minute to 1.3 to 4.4 frames (40 to 146 ms)
+    in the last; the
+    paper's trials start 0 to 6 frames earlier than the NWB stimulus times give. The frame
+    timestamps themselves equal the paper's 2p vsync times.
+- kind: format_error
+  statement: Every running_velocity series has one sample more than its timestamps; the extra
+    sample is the first (the rest equal the deposit's run_speed, shifted by one), and in one
+    session it is an artifact of -742.7 cm/s. In 39 of 57 files the dF/F timestamps have one entry
+    more than the data has frames.
+- kind: metadata_insufficient
+  statement: 15 ROIs (14 in the paper's sessions) have dF/F that is NaN at every frame, with no
+    flag or description; without them the cell counts equal the paper's. The PlaneSegmentation
+    table holds only image masks, with no validity or cell id columns.
+- kind: metadata_error
+  statement: The imaging plane states an imaging rate of 30.0 Hz; the frame timestamps step by
+    33.17 ms (30.15 Hz), and by 66.33 ms (15.08 Hz) in the excluded session 741889312, which was
+    imaged at half the rate.
+- kind: data_missing
+  statement: The dandiset holds no L0 calcium events, no eye tracking or pupil data, and no sex,
+    age or date of birth of the mice, all of which the paper uses or reports. The events and pupil
+    area are in the paper's Zenodo deposit (doi:10.5281/zenodo.5781567); the fitted pupil ellipse
+    whose semi-major axis the Methods define as the diameter is in neither. Eight claims are
+    blocked for these data.
+- kind: methods_unavailable
+  statement: The L0 event detector the paper names (l0_analysis.py of
+    AllenInstitute/visual_coding_2p_analysis) is Python 2 code that needs allensdk and the
+    compiled FastLZeroSpikeInference, which is not on PyPI, does not build with pip from its
+    repository, and no longer has the arfpop function the detector calls.
+- kind: code_mismatch
+  statement: For area AM in Figure 3 the paper prints Cohen's d = 0.268, 95% CI [0.128, inf); its
+    code's printed output gives d = 0.128 and a lower bound of 0.0048. The paper's value looks
+    like a transcription slip.
+- kind: code_mismatch
+  statement: The per-session effect sizes in the code's results/effect_size.parquet (0.570 to
+    1.258 in L2/3 AL and AM, the paper's 0.57 to 1.25) do not follow from its committed
+    results/main.parquet, which gives 0.592 to 1.155 with the code's own Cohen's d; the figure 4
+    correlation (r = 0.896) uses the former.
+- kind: code_mismatch
+  statement: The paper says that for nearly all parameter combinations unscrambled stimuli elicit
+    increased ND specifically in L2/3 of AL and AM; in its own sensitivity statistics
+    (results/stats.parquet) AL and AM are both significant in 28 of 108 sets, AL alone in 50 and
+    AM alone in 24, while L2/3 is the only significant layer in all of them.
