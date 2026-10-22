@@ -9,14 +9,14 @@ central sulcus and Sylvian fissure are not in the dandiset.
 | Claim | Outcome |
 |---|---|
 | Data composition (subjects, syllables, renditions, rate) | Partially reproduced |
-| About 30 active vSMC electrodes per subject | Not reproduced |
+| About 30 active vSMC electrodes per subject | Blocked: methods underspecified |
 | Named electrodes of Fig. 1c-e | Blocked: metadata insufficient |
 | Lips electrode active for /ju/ only (Fig. 1h) | Not reproduced |
 | Spatial maps and their statistics (Fig. 2, Supplementary Figures 3, 5 and 7; seven claims) | Blocked: metadata insufficient |
 | Mixed tuning at single electrodes | Reproduced |
 | Timing sequence of articulator correlations | Not reproduced |
 | Nine PCs explain about 60% of variance | Blocked: methods underspecified |
-| Three k-means clusters most parsimonious | Not reproduced |
+| Three k-means clusters most parsimonious | Blocked: methods underspecified |
 | Co-clustering with articulators and vowels | Blocked: methods underspecified |
 | Hierarchical clustering | Blocked: methods underspecified |
 | Feature correlations, early and late | Blocked: methods underspecified |
@@ -28,13 +28,15 @@ central sulcus and Sylvian fissure are not in the dandiset.
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
 
-Most claims blocked as methods underspecified depend on two details the claims file does not fix
-and that were asked as questions (`questions/000019.yaml`): how the state-space input is z-scored,
-and whether syllables with fewer than 15 renditions are kept. The attempt record, with the reasons
+The claims blocked as methods underspecified depend on details the paper does not fix: which
+syllables are averaged (all, or only those with 15 or more renditions), the baseline of the
+z-scores, how the state-space input is z-scored, and which input is projected onto the PCs. They
+were asked as questions (`questions/000019.yaml`), and the reader's answers, from the paper, left
+them open, so every reading is run and the outcomes differ between readings. The attempt record, with the reasons
 and the differences from the paper's method, is
 [`attempts/000019-bouchard-2013-01.yaml`](../../attempts/000019-bouchard-2013-01.yaml).
 
-- `reproduce_bouchard_2013.ipynb`: the analysis. It takes about 15 minutes, 11 of them streaming
+- `reproduce_bouchard_2013.ipynb`: the analysis. It takes about 20 minutes, 14 of them streaming
   about 42 GB of raw ECoG and computing high gamma.
 - `bouchard.py`: streaming the files, high gamma, the paper's articulator and phonetic feature
   matrices, and the measures (partial correlation, GLM, state space, co-clustering, separability).

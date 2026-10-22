@@ -29,9 +29,10 @@ Where the parameters come from:
   400 Hz); this is a computational shortcut, not a change of method. The mean amplitude over the
   eight bands is interpolated onto a 200 Hz grid (5 ms steps, Methods).
 - z-scoring per channel against baseline data (Methods). The claims file leaves the baseline open
-  and names two readings, both computed: `pre`, the 500 ms windows from -1000 to -500 ms before each
-  C-V transition, pooled over the block's trials; `whole`, the whole block. The dataset's rest
-  period (`rest`) is computed as a variant only. Statistics are per block and channel.
+  and names three readings, all computed: (a) `pre`, the 500 ms windows from -1000 to -500 ms before
+  each C-V transition, pooled over the block's trials; (b) `whole`, the whole block; (c) `rest`, the
+  rest period the dataset marks as baseline (reading (c) was added to the claims file on 2026-10-22
+  in answer to a question). Statistics are per block and channel.
 - Epoch -500 to +750 ms around the C-V transition (claims header), 251 samples at 5 ms.
 - Syllable labels: the dataset spells syllables as consonant + `aa`, `ee` or `oo` (/a/, /i/, /u/),
   and /j/ as `y`. Two labels differ only in spelling (`she` for `shee`, `ha` for `haa`) and are
@@ -440,18 +441,24 @@ def zscore_for_pca(Hv: np.ndarray, mode: str) -> np.ndarray:
     return (Hv - m) / s
 
 
+def project(M: np.ndarray, X: np.ndarray) -> np.ndarray:
+    """States K (CV, n_pc, time) = M' X (Methods Eq. 5), X (CV, electrode, time)."""
+    return np.einsum("ep,cet->cpt", M, X)
+
+
 def state_space(Hv: np.ndarray, mode: str, window=(EPOCH_MS[0], EPOCH_MS[-1]), n_pc: int = 9):
     """PCA of the (electrode x concatenated CV-time) matrix (Methods, PCA and Cortical-State
     Space). Returns M (electrode, n_pc), the fraction of variance of every PC, and the states
-    K (CV, n_pc, time) of every CV at every epoch time."""
+    K (CV, n_pc, time) of every CV at every epoch time, projected from the z-scored matrix given
+    to the PCA (the claims header's projection reading (i); reading (ii), Hv itself as Eq. 5
+    writes it, is `project(M, Hv)`)."""
     Z = zscore_for_pca(Hv, mode)
     sel = (EPOCH_MS >= window[0]) & (EPOCH_MS <= window[1])
     X = Z[:, :, sel].transpose(1, 0, 2).reshape(Z.shape[1], -1)
     U, s, _ = np.linalg.svd(X, full_matrices=False)
     frac = s ** 2 / (s ** 2).sum()
     M = U[:, :n_pc]
-    K = np.einsum("ep,cet->cpt", M, Z)
-    return M, frac, K
+    return M, frac, project(M, Z)
 
 
 def kmeans(X: np.ndarray, k: int, seed: int, n_init: int = 100) -> np.ndarray:
@@ -483,9 +490,15 @@ def separability(D: np.ndarray, labels: np.ndarray, weights: np.ndarray | None =
     if weights is None:
         weights = np.ones((1, n))
     w = np.asarray(weights, float)
+
+    def quad(A):
+        """sum over i, j of w[b, i] A[t, i, j] w[b, j], as one matrix product: (B, time)."""
+        X = (w @ A.transpose(1, 0, 2).reshape(n, -1)).reshape(len(w), A.shape[0], n)
+        return np.einsum("btj,bj->bt", X, w)
+
     total_pairs = w.sum(1) ** 2 - w.sum(1)                          # (B,)
-    within_pairs = np.einsum("bi,tij,bj->bt", w, same, w, optimize=True) - w.sum(1)[:, None]
-    within_sum = np.einsum("bi,tij,bj->bt", w, same * D, w, optimize=True)
-    all_sum = np.einsum("bi,tij,bj->bt", w, D, w, optimize=True)
+    within_pairs = quad(same) - w.sum(1)[:, None]
+    within_sum = quad(same * D)
+    all_sum = quad(D)
     between = (all_sum - within_sum) / (total_pairs[:, None] - within_pairs)
     return between - within_sum / within_pairs
