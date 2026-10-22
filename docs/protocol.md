@@ -176,6 +176,14 @@ decides what is tested and how: do not change a claim's statement, expected
 values or criterion, and do not apply a method detail the claims file lacks,
 even one the paper gives. Ask for it (step 6).
 
+**Time.** An author run is stopped five hours after it starts, and whatever
+is not recorded by then is lost. The prompt says when the run started and the
+time by which to finish. Check the clock (`date -u`) between steps. When that
+time comes, stop analysing and finish: record each claim not yet tested as
+blocked, `too_large` where the computation is what stopped it, saying how far
+it got, then write the attempt record and run the entry's checks. A record
+with some claims blocked for time is worth more than a run that is cut off.
+
 ### 1. Establish what can be tested
 
 Do this before any analysis.
@@ -309,6 +317,13 @@ module.
 - **Keep it fast.** Reduce the data to what the analysis needs as it loads.
   Aim for under ten minutes; CI fails a notebook over thirty. If the analysis
   runs many small model fits, limit linear-algebra threads to one.
+- **Develop on a subset.** Build and debug each analysis on one or two
+  sessions, or a few units, and run it on the whole dataset once, when it
+  works; do not re-run whole notebooks to test a change. Time the subset and
+  estimate the whole. If the estimate is over the notebook limit, or over the
+  time left (see "Time" above), record the claim as blocked, `too_large`, with
+  the estimate, and do not run it. To survey the dataset, read each file's
+  metadata and array shapes, not its data.
 
 The notebook has these parts, in this order:
 

@@ -6,4 +6,4 @@ Write prose plainly: no em dashes, never the word "rather". YAML plain scalars m
 
 Your final message is a short report of which outcomes changed and which proposals stand.
 
-Run every command in the foreground and wait for it to finish, however long it takes: the run ends when you stop, and anything still running is lost.
+Run every command in the foreground and wait for it to finish: the run ends when you stop, and anything still running is lost. Before a command that may take long, time it on a subset and estimate the whole (docs/protocol.md, "Develop on a subset").

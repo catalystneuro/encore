@@ -106,6 +106,24 @@ def protocol_version() -> str:
 
 
 def fill(role: str, dandiset: str, model: str, version: str | None = None) -> str:
+    """The prompt for a role. An author's ends with its time: the run is stopped at AGENT_TIME_LIMIT_MIN minutes
+    (300, the workflow's limit), and the author is told to finish by AGENT_TIME_BUDGET_MIN (255), leaving time to
+    write the record and run the entry's checks (docs/protocol.md, "Author", "Time")."""
+    prompt = _fill(role, dandiset, model, version)
+    if role.startswith("author"):
+        limit = int(os.environ.get("AGENT_TIME_LIMIT_MIN", "300"))
+        budget = int(os.environ.get("AGENT_TIME_BUDGET_MIN", "255"))
+        start = datetime.datetime.now(datetime.timezone.utc)
+        finish, stop = (start + datetime.timedelta(minutes=m) for m in (budget, limit))
+        prompt += (f"\n\nTime: this run started at {start:%H:%M} UTC and is stopped at {stop:%H:%M} UTC, {limit // 60} h "
+                   f"{limit % 60:02d} min after it started; work not recorded by then is lost. Check the clock with "
+                   f"`date -u` between steps. At {finish:%H:%M} UTC stop analysing and finish, as docs/protocol.md says "
+                   f"under \"Author\", \"Time\": record each claim not yet tested as blocked (`too_large` where the "
+                   f"computation stopped it, with how far it got), write the record, and run the entry's checks.\n")
+    return prompt
+
+
+def _fill(role: str, dandiset: str, model: str, version: str | None = None) -> str:
     key = datasets.key_of_folder(dandiset)
     # `dandiset` and `folder` name the dataset's folder in the repository; `dataset` is how it is shown.
     details = {"dandiset": dandiset, "folder": dandiset, "dataset": datasets.label(key),
