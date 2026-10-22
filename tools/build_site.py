@@ -48,10 +48,14 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = Path(__file__).resolve().parent / "site_assets"
-REPO_URL = "https://github.com/catalystneuro/reproduction-registry"
-SITE_URL = "https://catalystneuro.github.io/reproduction-registry/"
-SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of neuroscience papers from their open data on the "
-                    "DANDI Archive, and record every outcome and what they find about the data.")
+REPO_URL = "https://github.com/catalystneuro/encore"
+CN_URL = "https://www.catalystneuro.com"
+# Encore Science is the project: the `encore` tool (docs/encore.md) and this site, the Encore registry.
+SITE_NAME = "Encore Science"
+ENCORE_DOCS = REPO_URL + "/blob/main/docs/encore.md"
+SITE_URL = "https://encorescience.org/"
+SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of papers from their open data, and record every "
+                    "outcome and what they find about the data.")
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from datasets import ARCHIVES, archive_name, key_of, split_key, targets as all_targets  # noqa: E402
@@ -65,6 +69,14 @@ def page_of(key: str) -> str:
 
 
 # GitHub's mark (Octicons, mark-github), drawn in the text colour.
+# The site's mark, drawn like the favicon: a loop that comes back round, a result run again, with a tick inside it.
+# The loop takes the text colour and the tick the brand colour, so it suits both themes.
+ENCORE_MARK = ('<svg class="mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">'
+               '<path d="M21.6 8.3A9.5 9.5 0 1 0 25.5 16" fill="none" stroke="currentColor" stroke-width="2.8" '
+               'stroke-linecap="round"/><path d="M18.9 10.7 24.1 5.5 24.7 11.3z" fill="currentColor" '
+               'stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/><path class="tick" '
+               'd="M11.3 16.3l3.3 3.3 5.9-6.8" fill="none" stroke-width="3" stroke-linecap="round" '
+               'stroke-linejoin="round"/></svg>')
 GITHUB_MARK = ('<svg viewBox="0 0 16 16" aria-hidden="true" focusable="false"><path d="M8 0c4.42 0 8 3.58 8 8a8.013 '
                '8.013 0 0 1-5.45 7.59c-.4.08-.55-.17-.55-.38 0-.27.01-1.13.01-2.2 0-.75-.25-1.23-.54-1.48 1.78-.2 '
                '3.65-.88 3.65-3.95 0-.88-.31-1.59-.82-2.15.08-.2.36-1.02-.08-2.12 0 0-.67-.22-2.2.82-.64-.18-1.32-.27-2'
@@ -661,6 +673,18 @@ def statistic_text(s: dict) -> str:
     return text + (f' (n = {s["n"]})' if s.get("n") else "")
 
 
+def by_outcome(outcomes: list[dict], root: str, attempt: dict | None = None) -> str:
+    """Claims under a heading for each outcome, reproduced first, then partially, not reproduced and blocked."""
+    html = ""
+    for outcome in ("reproduced", "partially_reproduced", "not_reproduced", "blocked"):
+        mine = [o for o in outcomes if o["outcome"] == outcome]
+        if mine:
+            html += (f'<div class="outcome-group" data-outcome="{outcome}"><h4 class="outcome-head">{chip(outcome)}'
+                     f'<span class="count">{len(mine)}</span></h4>'
+                     f'<ul class="claims">{"".join(claim_item(o, root, attempt) for o in mine)}</ul></div>')
+    return html
+
+
 def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
     """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
@@ -726,14 +750,14 @@ def head_tags(data: dict, title: str, path: str, description: str, structured: d
         f'<meta name="description" content="{e(description)}">',
         f'<link rel="canonical" href="{e(url)}">',
         '<meta property="og:type" content="website">',
-        '<meta property="og:site_name" content="Reproduction registry">',
+        f'<meta property="og:site_name" content="{SITE_NAME}">',
         f'<meta property="og:title" content="{e(title)}">',
         f'<meta property="og:description" content="{e(description)}">',
         f'<meta property="og:url" content="{e(url)}">',
         f'<meta property="og:image" content="{card}">',
         '<meta property="og:image:width" content="1200">',
         '<meta property="og:image:height" content="630">',
-        '<meta property="og:image:alt" content="Reproduction registry: can the findings of a paper be reproduced '
+        f'<meta property="og:image:alt" content="{SITE_NAME}: can the findings of a paper be reproduced '
         'from its open data?">',
         '<meta name="twitter:card" content="summary_large_image">',
         f'<meta name="twitter:title" content="{e(title)}">',
@@ -772,14 +796,15 @@ def shell(data: dict, title: str, root: str, active: str, body: str, scripts: st
 <link rel="apple-touch-icon" href="{root}assets/favicon-180.png">
 <link rel="stylesheet" href="{root}{asset("app.css")}"></head><body>
 {banner}<nav class="top" aria-label="Sections"><div class="wrap">
-  <a class="brand" href="{home}">Reproduction registry</a>{nav}
+  <a class="brand" href="{home}">{ENCORE_MARK}<span>{SITE_NAME}</span></a><a class="by" href="{CN_URL}">by CatalystNeuro</a>{nav}
   <a class="tab icon" href="{REPO_URL}" aria-label="The registry on GitHub" title="The registry on GitHub">{GITHUB_MARK}</a>
+  <a class="tab ext" href="{ENCORE_DOCS}" title="Run the same check on your own data with the encore command">Check your data</a>
   <a class="tab ext" href="{REPO_URL}/actions" title="The workflows that run the agents and check the entries">Agent runs</a>
   <button class="theme" id="theme" type="button" aria-label="Colour theme: auto. Change theme" title="Colour theme"><span aria-hidden="true">◐</span><span class="t">Auto</span></button>
 </div></nav>
 <div class="wrap">
 {body}
-<footer>Generated {e(data["generated"][:10])} from the registry's files ·
+<footer>{SITE_NAME} is developed by <a href="{CN_URL}">CatalystNeuro</a>. Generated {e(data["generated"][:10])} from the registry's files ·
 <a href="{root}registry.json">Data as JSON</a> · <a href="{REPO_URL}">Repository</a> ·
 <a href="{REPO_URL}/blob/main/docs/design.md">How it works</a>. Outcomes describe what one attempt could reproduce from
 the data in the dataset, with the methods available. A failure to reproduce may be a failure of the agent, and is not
@@ -1008,10 +1033,12 @@ def page_overview(data: dict) -> str:
     dashboard = progress_panel(data)
     redirect = json.dumps({a["id"]: a["key"] for a in data["attempts"]})
     body = f'''<header class="page" id="top">
+  <div class="eyebrow">The Encore registry</div>
   <h1>Can the findings of a paper be reproduced from its open data?</h1>
-  <p class="lede">AI agents try to reproduce the key findings of papers from their open data on the
-  <a href="https://dandiarchive.org">DANDI Archive</a>. Independent agents check each attempt, and every finding gets
-  an outcome, whether or not it reproduced. <a href="about/">How it works</a></p>
+  <p class="lede">AI agents try to reproduce the key findings of papers from their open data. Independent agents check
+  each attempt, and every finding gets
+  an outcome, whether or not it reproduced. <a href="about/">How it works</a> ·
+  <a href="{ENCORE_DOCS}">Run the same check on your own data</a></p>
   {"" if dashboard else f'<div class="tiles">{tile_html}</div>'}
 </header>
 <main>
@@ -1031,11 +1058,11 @@ def page_overview(data: dict) -> str:
                'if(h&&m[h[1]])location.replace(m[h[1]]);})();</script>'
                + (f'<script src="{asset("progress.js")}"></script>' if dashboard else ""))
     structured = {
-        "@context": "https://schema.org", "@type": "WebSite", "name": "Reproduction registry",
+        "@context": "https://schema.org", "@type": "WebSite", "name": SITE_NAME, "alternateName": "The Encore registry",
         "url": SITE_URL, "description": SITE_DESCRIPTION,
         "publisher": {"@type": "Organization", "name": "CatalystNeuro", "url": "https://www.catalystneuro.com"},
     }
-    return shell(data, "Reproduction registry: can the findings of a paper be reproduced from its open data?", "",
+    return shell(data, f"{SITE_NAME}: can the findings of a paper be reproduced from its open data?", "",
                  "overview", body, scripts, path="", structured=structured)
 
 
@@ -1293,7 +1320,7 @@ def page_about(data: dict) -> str:
       claims and the reasoning behind each outcome.</p></div>
   </div>
 </main>'''
-    return shell(data, "How the registry works · Reproduction registry", root, "about", body, path="about/",
+    return shell(data, f"How the registry works · {SITE_NAME}", root, "about", body, path="about/",
                  description="How AI agents attempt to reproduce papers from their open data on the DANDI Archive: "
                              "the claims, the author and verifier roles, and where the agents run.")
 
@@ -1357,7 +1384,7 @@ def page_list(data: dict, kind: str) -> str:
 </main>'''
     scripts = (f'<script type="application/json" id="list-config">{json.dumps(config)}</script>'
                f'<script src="../{asset("list.js")}"></script>')
-    return shell(data, f'{spec["title"]} · Reproduction registry', "../", kind, body, scripts, path=f"{kind}/",
+    return shell(data, f'{spec["title"]} · {SITE_NAME}', "../", kind, body, scripts, path=f"{kind}/",
                  description=spec["intro"])
 
 
@@ -1375,7 +1402,7 @@ return '<button type="button" data-f="'+l[0]+'">'+l[1]+' <span class="count">'+n
 function draw(){var shown=items.filter(match),pages=Math.max(1,Math.ceil(shown.length/PER));
 if(state.p>=pages)state.p=pages-1;var page=shown.slice(state.p*PER,(state.p+1)*PER);
 items.forEach(function(li){li.hidden=page.indexOf(li)<0;});
-[].slice.call(panel.querySelectorAll('.claim-group')).forEach(function(g){
+[].slice.call(panel.querySelectorAll('.claim-group,.outcome-group')).forEach(function(g){
 g.hidden=!g.querySelector('li.claim:not([hidden])');});
 [].slice.call(bar.querySelectorAll('button')).forEach(function(b){b.setAttribute('aria-pressed',b.dataset.f===state.f);});
 if(pages<2){pager.innerHTML='';return;}
@@ -1442,7 +1469,7 @@ def dandiset_title(dandiset: str, atts: list[dict]) -> str:
     """The page title: the paper when there is one, then the dandiset."""
     titles = {a["paper_title"] for a in atts if a.get("paper_title")}
     paper = titles.pop() if len(titles) == 1 else None
-    return f"{paper} ({dataset_label(dandiset)}) · Reproduction registry" if paper else f"{dataset_label(dandiset)} · Reproduction registry"
+    return f"{paper} ({dataset_label(dandiset)}) · {SITE_NAME}" if paper else f"{dataset_label(dandiset)} · {SITE_NAME}"
 
 
 def dandiset_description(dandiset: str, atts: list[dict]) -> str:
@@ -1470,7 +1497,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
     target = next((t for t in data["targets"] if t["key"] == dandiset), None)
     counts = outcome_counts(atts)
     n = sum(counts.values())
-    order = {"not_reproduced": 0, "partially_reproduced": 1, "reproduced": 2}
+    order = {"reproduced": 0, "partially_reproduced": 1, "not_reproduced": 2}
 
     # Claims, grouped by paper when the dandiset has attempts on more than one.
     claims_html = ""
@@ -1493,7 +1520,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
                             f'<span class="count">{len(mine)}</span></h3>'
                             f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
-                            f'</p><ul class="claims">{"".join(claim_item(o, root, a) for o in mine)}</ul></div>')
+                            f'</p>{by_outcome(mine, root, a)}</div>')
         listed = {n["path"] for n in a["notebooks"]}
         blocked = [o for o in a["outcomes"] if o.get("notebook") not in listed]
         if blocked:
@@ -1504,7 +1531,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
             claims_html += (f'<details class="group claim-group" open><summary><h3>Not tested in a notebook '
                             f'<span class="count">{len(blocked)}</span></h3>'
                             f'<span class="muted small">{e(why)}</span></summary>'
-                            f'<ul class="claims">{"".join(claim_item(o, root, a) for o in blocked)}</ul></details>')
+                            f'{by_outcome(blocked, root, a)}</details>')
 
     all_findings = [f for a in atts for f in a["findings"]]
     findings_html = "".join(
@@ -1747,7 +1774,7 @@ def page_claims(data: dict, key: str) -> str:
   <section class="panel"><h2>Claims <span class="count">{n}</span></h2>{claims_html}</section>
   <section class="panel" style="margin-top:28px"><h2>Pipeline</h2><dl class="kv" style="margin-top:14px">{steps}</dl></section>
 </main>'''
-    return shell(data, f"{dataset_label(key)} · Reproduction registry", root, "datasets", body, path=page_of(key),
+    return shell(data, f"{dataset_label(key)} · {SITE_NAME}", root, "datasets", body, path=page_of(key),
                  description=f"The claims read from the paper of dataset {dataset_label(key)} on "
                              f"{archive_name(key)}, before an attempt to reproduce them.")
 

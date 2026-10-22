@@ -1,0 +1,133 @@
+# Questions from attempt 000013-hires-2015-01 (author, 2026-10-21) about the claims file
+# claims/000013/10.7554-elife.06619.yaml. Each is asked under docs/protocol.md, Author, step 1.6; the
+# attempt runs every reading it can see, and a claim whose readings disagree is blocked as
+# methods_underspecified until the answer.
+dandiset: "000013"
+paper: doi:10.7554/elife.06619
+questions:
+- claim: fig3c-touch-spikes-l4c2
+  asked: 2026-10-21
+  question: Where does the search for the touch response cutoff t_on start? Read literally, t_on is
+    the first t_i, counted from t = 1 ms, at which the increment of the smoothed curve falls below
+    the 95th percentile of the surrogates. The degree-11 polynomial dips at the start of a steep
+    curve, so this stops at 1 ms in many cells before the response has risen. The Results describe
+    a transition where the curve levels off, which reads as the first t_i at which the increment,
+    having been above chance, falls below it. Which is meant? The same rule decides t_w for the
+    phase windows (fig3d-touch-phase-l4c2), and the touch window feeds spikes per touch (Table 1,
+    fig5c-modulation-index, l4-outside-weaker-touch).
+  passage: Results, paragraph on Figure 3, "At some window size, the curve levels off as the
+    proportion of touch spikes increases no faster than expected for a random spike train at the
+    neuron's mean spike rate. This transition point defines the proportion of touch-coupled
+    spikes." Methods, Spikes accounted by active sensation, "the first time point t_i = t_on in
+    which the rate of increase ... is below chance level of the overall firing rate".
+  why: Over the 31 L4 C2 cells the touch-coupled fraction is 66.9 to 75.8% in 14.6 to 17.6% of
+    exploration time under the transition reading and 38.6 to 64.5% in 8.5 to 13.4% under the
+    literal one (paper 70.6 +- 20.9% in 14.9%). The two readings give different outcomes for
+    fig3c-touch-spikes-l4c2, fig3c-touch-spikes-l5, the fig3d claims and Table 1.
+  answered: 2026-10-21
+  answer: The paper means the transition. The Results describe "an initially steep curve" that
+    "levels off" and call "This transition point" the cutoff, the Methods say the curves "rise
+    steeply and then plateau", and the example cell's window is 8 to 40 ms. The literal search
+    from 1 ms, which stops in a dip of the polynomial before the rise, does not fit that
+    description. Written into the criteria of fig3c-touch-spikes-l4c2 and fig3d-touch-phase-l4c2
+    (for t_w) as the first t_i at which the increment, having been above chance, falls below it;
+    the literal reading is a variant only. The statement and expected values are unchanged.
+- claim: fig3c-touch-spikes-l4c2
+  asked: 2026-10-21
+  question: Over what range of window sizes t_i is the curve y_ton(t_i) built and fitted with the
+    degree-11 polynomial (the longest window searched)? The fit, and so the cutoff, depend on it.
+    The attempt runs 0 to 100 ms (the limit for prolonged touches) and 0 to 200 ms.
+  passage: Methods, Spikes accounted by active sensation, "The derivative was calculated from
+    these curves smoothed with a polynomial fit (degree 11)." No passage gives the range.
+  why: For L4 C2 under the transition reading, the fraction of exploration time in touch windows
+    is 14.6 to 16.3% with 100 ms and 16.0 to 17.6% with 200 ms; the tolerance is 13.4 to 16.4%.
+  answered: 2026-10-21
+  answer: The paper does not give it. The Methods say only "The derivative was calculated from
+    these curves smoothed with a polynomial fit (degree 11)", and Figure 3C, whose axis might show
+    it, was not supplied as an image. Written into the criterion of fig3c-touch-spikes-l4c2 as
+    open detail (4), readings (r100) 0 to 100 ms and (r200) 0 to 200 ms, both run.
+- claim: fig4a-touch-detection-c2
+  asked: 2026-10-21
+  question: Under reading (1a), non-touch epochs taken from the 30 ms before touch in the same
+    responses, which 10 ms integration window is the non-touch sample, the one ending at onset
+    (-10 to 0 ms), the earliest (-30 to -20 ms), or all pre-touch windows? And is the fraction of
+    touches detected (reading 2a) taken with the threshold that maximises percent correct?
+  passage: Methods, Population decoding, "At each time point t_j we built a different decoder
+    that was trained to discriminate between the pooled population response at t_j and the
+    population response at epochs without touch".
+  why: The population size that first detects 95% of touches is 1 or 2 neurons under (2a) with
+    either pre-touch window, 18 or 30 under (2b), and 11 with exploration windows; the paper
+    gives 15.
+  answered: 2026-10-21
+  answer: Neither is given. The Methods say only "the population response at epochs without
+    touch" and "We used half of the data to find the optimal threshold", without defining
+    "optimal". Written into the criterion of fig4a-touch-detection-c2 as readings (a1) the window
+    ending at onset, (a2) -30 to -20 ms and (a3) all pre-touch windows under (1a); the threshold
+    stays the one maximising percent correct, the only reading of "optimal" the paper supports.
+- claim: fig4b-touch-time-precision
+  asked: 2026-10-21
+  question: Which times does the naive Bayes decoder choose among, every 1 ms over the whole -30
+    to +50 ms response, or only after touch onset? And what smoothing of zero counts was used?
+  passage: Methods, Population decoding, "We trained a multinomial naive Bayes classifier ... to
+    report for every time point what was the most likely time elapsed from touch onset".
+  why: The minimum RMS error near 10 ms is 1.31 to 1.40 ms with classes from -21 ms and 1.09 to
+    1.12 ms with classes from 0 ms; the paper gives 0.55 ms. No reading tried reaches it, but the
+    class set moves the value by 0.3 ms.
+  answered: 2026-10-21
+  answer: Neither is given. The Methods say "for every time point what was the most likely time
+    elapsed from touch onset" and the Results "integrating in 10 ms windows after touch"; no
+    smoothing is named. Written into the criterion of fig4b-touch-time-precision as readings
+    (c-all) every 1 ms over the sampled response and (c-post) from onset on, both run, with
+    add-one smoothing and a smaller pseudocount as a variant.
+- claim: fig4c-phase-decoding
+  asked: 2026-10-21
+  question: For the phase decoder, which whisk cycles are used (all complete cycles with peak
+    amplitude above 2.5 deg, or only those of exploration without touch, as for the phase
+    tuning), what is the response to a phase (the count in one 3 deg bin of one cycle, or a
+    rate), and how are bins with no spikes handled in the naive Bayes likelihood?
+  passage: Methods, Population decoding, "For each neuron we aligned the spikes to the whisking
+    phase of each whisking cycle (minimum peak whisking amplitude >2.5 deg) and binned the
+    response in 120 bins between pi and -pi."
+  why: With counts of single cycles the decoder does not reach 76% correct in most runs; with
+    Poisson rates it reaches it at 58.6 to 60.0 deg in C2; the paper gives 24 deg.
+  answered: 2026-10-21
+  answer: The cycles are given, the rest is not. The Methods' Whisker analysis defines whisking
+    cycles for the whole paper outside touch epochs, with "Whisking cycles during licking or
+    within 70 ms after touch were excluded" and "Whisking epochs used for phase analysis had
+    monotonic phase for a complete whisking cycle", so the decoder uses the same cycles as phase
+    tuning. Whether the response is a single-cycle count or a rate, and how empty bins are
+    handled, is not said. Written into the criterion of fig4c-phase-decoding, with readings (1a)
+    and (1b) kept and add-one smoothing or a floor rate for empty bins.
+- claim: fig6d-not-refractory
+  asked: 2026-10-21
+  question: Was the rate of the refractory Poisson model raised to make up for the spikes the
+    refractory period removes, so that the model's mean count matches the data, or was the cell's
+    PSTH used as the rate directly?
+  passage: Methods, Analysis of spike count variance, "We also computed FFs using a Poisson
+    process with absolute refractory period, with average touch response matched to the data".
+  why: Without compensation the model's mean count is lower than the data's, which raises its
+    FF towards 1 less than the data; the comparison of data and model FF is within the sum of
+    their s.e.m. under reading (2a) and significant under (2b), so a matched mean could move it.
+  answered: 2026-10-21
+  answer: The rate was compensated. The Methods say "a Poisson process with absolute refractory
+    period, with average touch response matched to the data (Berry II and Meister, 1998)", so the
+    model's output PSTH, not its input rate, matches the cell's. The criterion of
+    fig6d-not-refractory said the rate equals the PSTH, which misreads the Methods; it now raises
+    the rate (the free rate of Berry and Meister, or adjusted until the simulated PSTH matches),
+    with the uncompensated model a variant only. The statement is unchanged.
+- claim: whisking-rate-l5-increase
+  asked: 2026-10-21
+  question: Does "with the median whisking rate higher" in the criterion mean the median of the
+    per-cell differences (whisking minus non-whisking) is positive, or that the median of the
+    whisking rates is above the median of the non-whisking rates?
+  passage: Results, paragraph 6, "whereas L5 showed a modest, but significant increase with
+    whisking (p = 0.019, Wilcoxon signed rank)".
+  why: The signed-rank test gives p = 0.024 and 0.014, 9 and 10 of 11 cells fire more when
+    whisking and the median difference is +1.8 spikes/s, but the median whisking rate (11.0
+    spikes/s) is below the median non-whisking rate (12.9).
+  answered: 2026-10-21
+  answer: The median of the per-cell differences. The paper's test is paired, "a modest, but
+    significant increase with whisking (p = 0.019, Wilcoxon signed rank)", so the increase is the
+    sign of the paired differences. Table 1 also gives group medians for L5 of 12.8 (non-whisking)
+    and 13.5 spikes/s (whisking), but they are not the measure. Written into the criterion of
+    whisking-rate-l5-increase.

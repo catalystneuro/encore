@@ -50,8 +50,22 @@
 # - Basic proficiency (P1). The session at which a mouse first meets the Appendix 1, table 1d
 #   'Trained 1a/1b' criteria over its last three sessions; the code reads it as the first session
 #   with training status trained_1a or trained_1b in the IBL pipeline. Readings: the status the
-#   dataset carries, if any; otherwise recomputed from the trials with the 1a criteria, and with
-#   the 1b criteria from their introduction (Methods: September 2019, no day given).
+#   dataset carries, if any; otherwise recomputed from the trials (answers of 2026-10-22). The
+#   status is computed by SessionTrainingStatus in ibl_pipeline/analyses/behavior.py
+#   (github.com/int-brain-lab/IBL-pipeline, read at commit 7abec78, February 2021), which the
+#   paper's code imports. At each session it takes that session and the two before it (any
+#   protocol); "trials completed" is the session's n_trials, all trials including no-response
+#   ones (ibl_pipeline/behavior.py, n_trials = len(trials['choice'])); percent correct is over
+#   contrasts of 50% or more, no-response counted as incorrect (compute_performance_easy).
+#   "All contrasts introduced": Appendix 1, table 1d, lists it under "For each of the last three
+#   sessions", so the main reading (a) is that each of the three sessions presents 100, 25, 12.5,
+#   6.25 and 0%; the pipeline checks only the current session, which must present 0% and a
+#   contrast between 0.1 and 6.5% (6.25%); that is variant (c). Pooling the three sessions is
+#   given by neither. 1a and 1b: the pipeline tests the 1b criteria and then the 1a criteria at
+#   every session with no date, so P1 is the first session meeting either set, at any date; that
+#   is the main reading (the Methods do not say 1b replaced 1a). The 1b implementation date is
+#   2019-09-12 (code text_trained1a_to_1b_sessions.py, DATE_IMPL, "Date at which trained_1b was
+#   implemented in DJ pipeline"); 1b replacing 1a from that day is a variant.
 # - Basic sessions (S1). The basic (training protocol) sessions of the P1 training day and the two
 #   training days before it (Figure 3 legend "the three sessions at which mice achieved
 #   proficiency"; code days_from_criterion [2, 0]). One value per mouse from the pooled trials.
@@ -60,8 +74,19 @@
 #   ready4recording. Readings as for P1.
 # - Full sessions (S2). The full task (biased protocol) sessions of the P2 training day and the two
 #   days before (code days_from_criterion [2, 0]); n = 98 mice.
-# - First full-task session (P1b). The code's "biased" criterion: the first biased-protocol
-#   session with status trained_1b.
+# - First full-task session (P1b). Main reading, from the Figure 3, figure supplement 5 legend
+#   ("the first three sessions of the full task") and the Methods ("Once an animal was proficient
+#   in the basic task, it proceeded to the full task"): the first biased-protocol session on or
+#   after P1. Variant, the code's "biased" criterion: the first biased-protocol session with
+#   status trained_1b. In the pipeline a biased session has that status when the mouse had it
+#   before or its last three sessions (any protocol, trials of all blocks pooled) meet the 1b
+#   criteria; a mouse that met only 1a has trained_1a until then, and no P1b if never (answer of
+#   2026-10-22).
+# - 50:50 sessions are the basic-task (training protocol) sessions with all their trials, repeat
+#   trials included. The pipeline (BehavioralSummaryByDate) gives prob_left 0.5 to every trial of
+#   a training-protocol day ("0.5 for trainingChoiceWorld") and does not read the trial's
+#   probability; the code's prob_left == 0.5 (figure2af_learning_curves_all_parameters.py) thus
+#   selects those days (answer of 2026-10-22).
 # - Lab test (code figure3cde and others). Each variable is first tested for normality over all
 #   mice (scipy normaltest); the code runs a Kruskal-Wallis test across labs when p < 0.05 and a
 #   one-way ANOVA otherwise. Where the paper names the test, the named test is the main reading and
@@ -71,7 +96,12 @@
 #   2000 times; leave-one-out cross-validation over the 56 mice; accuracy = fraction correctly
 #   classified; a null from shuffling the lab labels in each subsample; positive control adds the
 #   lab's time zone as a feature. Code seed 424242; Random Forest with 100 trees and
-#   random_state 424242; Logistic Regression with solver liblinear.
+#   random_state 424242; Logistic Regression with solver liblinear. Subsample size: the Methods
+#   give a rule, "eight mice was the lowest number of mice over all different datasets for which
+#   classification was performed"; the code hard-codes N_MICE = 8, the rule's value on the
+#   paper's data. Where a lab here holds fewer than 8 mice, the rule gives one size for every
+#   classifier claim, the lowest lab count over all the datasets classified; that is the main
+#   reading, and 8 (blocked where a lab has fewer) is the code's (answer of 2026-10-22).
 #
 # Tolerances. Where the paper gives mean +- s.d. over mice, the s.d. describes the spread across
 # mice and not the uncertainty of the mean, so the mean gets 10% of its value and the s.d. its own
@@ -103,7 +133,11 @@ claims:
   criterion: >-
     Counts of distinct mice under the paper's selection (project mice, criterion reached by
     2020-03-23, code query_subjects), proficiency as P1 and P2 under each reading. A dataset that
-    holds fewer mice is reported with the counts it holds; the claim is judged on the counts.
+    holds fewer mice is reported with the counts it holds; the claim is judged on the counts. P1
+    per the header (answers of 2026-10-22): trials completed are all trials; a mouse is proficient
+    at the first session meeting the 1a or the 1b criteria, at any date (the pipeline's
+    SessionTrainingStatus); 1b replacing 1a from 2019-09-12 (code text_trained1a_to_1b_sessions.py)
+    is a variant.
 
 - id: fig2g-days-to-proficiency
   statement: >-
@@ -235,8 +269,11 @@ claims:
     mouse's last status is neither, so mice still in training at the cutoff date are censored.
     The code leaves out mice still in training after the cutoff date; that is a variant. Without
     status labels in the dataset, time = training days to P1 for proficient mice and their total
-    training days otherwise. Reproduced when the cumulative proportion at day 40 is within the
-    tolerance and higher at the last day than at day 40.
+    training days otherwise, with P1 as in the header (answer of 2026-10-22): "all contrasts
+    introduced" in each of the three sessions (Appendix 1, table 1d) is the main reading, and the
+    pipeline's check of the last session only (0% and 6.25% present) a variant. Reproduced when
+    the cumulative proportion at day 40 is within the tolerance and higher at the last day than
+    at day 40.
 
 - id: fig2bc-threshold-bias-iqr
   statement: >-
@@ -285,7 +322,8 @@ claims:
     unit: "%"
   criterion: >-
     Per-session psychometric threshold and bias of the 140 proficient mice, as plotted in Figure
-    2b,c (code figure2af_learning_curves_all_parameters.py): 50:50 sessions with more than 100
+    2b,c (code figure2af_learning_curves_all_parameters.py): 50:50 sessions (the basic-task
+    sessions with all their trials, header; answer of 2026-10-22) with more than 100
     trials, threshold and bias only from sessions with six or more signed contrasts (legend: from
     the first session with 12% contrast), each mouse's series median-filtered over 3 sessions,
     training day counted from 0 at the mouse's first session (the code), so the first 10 training
@@ -624,6 +662,9 @@ claims:
     not above chance when the 2.5th percentile of its 2000 accuracies is at or below the mean
     shuffled accuracy. Reproduced when that holds, not reproduced when the 2.5th percentile is
     above chance. The accuracy tolerance is the paper's stated s.d. of the subsample distribution.
+    Subsample size per the Methods' rule (header, Lab classifier; answer of 2026-10-22): the
+    lowest lab count over all datasets classified when it is below 8, the same for every
+    classifier claim; 8 as in the code is a variant.
 
 - id: fig3f-positive-control
   statement: >-
@@ -638,6 +679,7 @@ claims:
   data: with_labels
   depends_on:
   - fig3f-classifier-chance-basic
+  - lab-link
   criterion: >-
     As fig3f-classifier-chance-basic with the lab's time zone as a fourth feature (the code's
     offsets, Europe 0, New York -5, Los Angeles -7, from the lab's location). Reproduced when the
@@ -660,6 +702,21 @@ claims:
     As fig3f-classifier-chance-basic with scikit-learn RandomForestClassifier (100 trees,
     random_state 424242) and LogisticRegression (solver liblinear), as in the code. Reproduced when
     neither is above chance by the same rule.
+
+- id: lab-link
+  kind: link
+  statement: >-
+    The institutions named in the dandiset's files are the paper's seven laboratories, so that the
+    code's lab numbers (Lab 1 to 7) and time zones can be given to the dataset's mice.
+  source: Claims file header, code lab numbers and time zones (paper-behavior at commit edc4531)
+  data: with_labels
+  criterion: >-
+    Each session's institution in the files is matched by name to the code's laboratories. Reproduced
+    when the seven institutions match the seven laboratories one to one. Whether the session start
+    times bear out the time zones (start hours shifted by the labs' offsets if they are in UTC, as
+    stated) is reported. Added by the author of attempt 000045-ibl-2021-01 (protocol, Author, step
+    4) for fig3f-positive-control, whose time-zone feature comes from the paper's code by
+    laboratory.
 
 - id: fig3s1a-choice-consistency-basic
   statement: >-
@@ -775,7 +832,9 @@ claims:
   criterion: >-
     Per mouse and block, psychometric fits to the pooled trials of the first three full-task
     sessions, and performance on 100% contrast trials (legend; the code's correct_easy, which also
-    counts any 50% contrast trials, is a variant). Sessions per the legend, the first three biased sessions;
+    counts any 50% contrast trials, is a variant). Sessions per the legend, the first three biased
+    sessions from P1b, the first biased session on or after P1 (header; answer of 2026-10-22),
+    with the code's P1b (first biased session with status trained_1b) a variant;
     the code (suppfig_variability_over_labs_first_biased.py) takes the biased sessions on training
     days 1 to 3 after P1b, and its classifier script days -1 to 3; both shown as variants.
     Kruskal-Wallis across labs for each of the seven variables, as the legend names it (the code
@@ -1028,6 +1087,10 @@ claims:
     training days P1b-2 to P1b+3, split into basic and full by protocol; the Methods say three
     sessions per mouse, read as (b) the last three basic sessions before P1b and the first three
     full sessions. Contrasts per the Methods include 50%; the code drops 50% trials (variant).
+    The paper does not say what is done for a mouse shown no 50% trials in the sessions used;
+    readings (answer of 2026-10-22): (a) the Methods' model with W50 left out for that mouse,
+    (b) the code's model, 50% trials dropped for every mouse ("only rarely present (should not
+    be its own regressor)", figure5_GLM_modelfit.py, fit_glm).
     Means over mice of each weight. Reproduced when the 100% weight's mean exceeds 3 in both tasks,
     the visual weights increase with contrast, and the four history weights are within tolerance
     under one reading.
