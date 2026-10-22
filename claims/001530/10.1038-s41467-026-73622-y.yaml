@@ -1,0 +1,1203 @@
+# Claims for Ghaderi, Crochet & Petersen (2026), "Contextual gating of whisker-evoked responses by
+# frontal cortex supports flexible decision making", Nature Communications 17, 5982, on dandiset
+# 001530.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21, protocol
+# pilot-10 as stated in docs/protocol.md (Reader).
+#
+# Text read: the version of record as served by Europe PMC (PMC13346651), corrected publication
+# (a correction, doi:10.1038/s41467-026-75986-7, is noted in the text; its content was not
+# supplied): main text, figure legends, Methods, Data and Code availability
+# (paper/10.1038-s41467-026-73622-y.txt). No PDF was supplied. The Supplementary Information
+# (Supplementary Figures 1 to 19), the Reporting Summary, the peer review file and the Source Data
+# file were not in the text and were not read. Every claim below rests on a sentence of the main
+# text or a main figure legend; where the main text cites a supplementary figure for a finding
+# (Supplementary Figs. 3, 17, 18), the claim is written from the main-text sentence and its
+# method from the code that draws that supplementary figure.
+#
+# Code read: the paper's Zenodo record doi:10.5281/zenodo.17973874 (one archive,
+# 2026_Ghaderi_NCOMMS_Zenodo_data_code.zip, 21212076245 bytes, holding the data, the processed
+# data and the code). Only its code files were read (README.txt, processed_data_code/,
+# Main_figures_codes/, Supplementary_figures_codes/, functions/*.m), by range requests; no data
+# file was opened. The same code is on GitHub at LSENS-BMI-EPFL/Ghaderi_et_al_NCOMMS_2026, commit
+# 20cf10c7b95069c12f762b7dd89817beedcc382f (2026-06-05); its processed_data_code and
+# Main_figures_codes files are byte-identical to the Zenodo copies. The code is MATLAB (libsvm,
+# matnwb, subspaceID of Hasnain et al., manopt) and two Python notebooks (clustering, layer
+# analysis). It reads the 35 ephys NWB files (data_electrophysiology/*-processed-behavior.nwb),
+# the 91 optogenetics NWB files (data_optogenetics/*-opto-behavior.nwb) and three helper files
+# (data_helpers/Area_list.mat, the Allen CCF acronyms that make up each of the five areas;
+# Area_Top_Coordinates.mat; Lick_times.mat, spontaneous lick times, a lick mask and the continuous
+# jaw trace per session). Criteria cite it as "code, <file>".
+#
+# Conventions the code fixes for every claim unless the claim says otherwise (code,
+# psth_10ms.m, psth_5ms.m, nwb_findQuietTrial.m, trial_typeMaker.m):
+#   - Time zero is the trial start (auditory cue onset, or its expected time on No-tone trials);
+#     the whisker stimulus is at 1.0 s. Spike counts are binned from -1 to 2 s in 10 ms (or 5 ms)
+#     bins; a bin labelled t holds spikes in (t - bin, t].
+#   - Trial types 1 to 5 are Go-tone Whisker, Go-tone No-Whisker, Nogo-tone Whisker, Nogo-tone
+#     No-Whisker, No-tone Whisker. Correct trials are Hit (type 1 with lick) and correct
+#     rejections (types 2 to 5 without lick); Miss is type 1 without lick; False Alarm is a lick
+#     in types 2 to 5. Early-lick (aborted) trials are always excluded.
+#   - Quiet trials (Methods, Quantification of orofacial movements): per session and signal, the
+#     mean of the signal over 0.8 to 1.0 s is at or below the median plus one MAD of the per-trial
+#     means over -1 to 0 s, taken over all trials of the session; whisker speed (absolute
+#     frame-to-frame change of C2 whisker angle) and jaw displacement (distance from the modal jaw
+#     position) must both pass. The code calls MATLAB mad() with its default, the mean absolute
+#     deviation, where the Methods say median absolute deviation. Every claim that uses quiet
+#     trials follows the Methods (median absolute deviation) for its outcome and shows the code's
+#     mean absolute deviation as a variant.
+#   - A neuron belongs to an area when it was recorded on a probe targeted to that area and its
+#     own CCF label is one of the area's CCF acronyms (code, Area_list.mat); sessions with fewer
+#     than 5 such neurons are skipped in population analyses. "Sessions" in the paper's n are
+#     area-by-session recordings.
+#
+# Where the Methods and the code disagree (Methods followed, code as variant, unless the claim
+# says why not):
+#   - Optogenetics bootstrap: Methods and Fig. 2 legend say 1,000 iterations; the code uses
+#     10,000 (Ghaderi2025_Figure2_d_Plick_Sessions.m). With 1,000 the smallest attainable p is
+#     0.002 before FDR, so the reported 0.0003 and 0.0004 fit the code's 10,000.
+#   - Clustering: the Methods describe 10 ms PSTHs (1500 bins) and a Gaussian similarity
+#     exp(-d^2/2 sigma^2); the code clusters 100 ms PSTHs (Neuronal_data_100ms.m, 150 bins), uses
+#     exp(-d/sigma) and labels sigma = 0.07975 as its 100 ms value. The Methods are followed for
+#     the outcome and the code is shown as a variant (protocol, Reader step 2), though the code
+#     is likely what produced the 29 clusters.
+#   - Context coding direction: Methods say it is computed from 20% of trials; the code
+#     (Coding_direction_10ms.m, Coding_direction_5ms.m) trains on 30% (cvpartition HoldOut 0.7,
+#     the held-out 70% projected).
+#   - Decoding: Methods name a grid search of SVM parameters with nested cross-validation and a
+#     baseline of -1 to 0 s; the code trains libsvm nu-SVC ("-s 1 -t 0", default nu 0.5) with no
+#     search, z-scores the balanced trial matrix before the 5 folds, and takes the baseline over
+#     -0.8 to 0 s.
+#   - Fig. 6a legend says the PCs are computed on correct Go-tone Whisker and Nogo-tone Whisker
+#     trials and other trials projected; the Methods and the code compute them on all four
+#     conditions (Hit, Nogo CR, Go-tone No-Whisker CR, Miss) concatenated.
+#
+# A paper inconsistency: the Results and Fig. 1c give 35 recording sessions in 14 mice and the
+# Zenodo record holds 35 ephys files; the Methods say "Across 34 sessions in 14 mice" and list
+# 12 + 3 + 1 + 16 + 2 = 34 sessions.
+#
+# The data the paper used, as it reports them:
+#   - Mice: VGAT-ChR2 (Slc32a1-COP4*H134R/EYFP) for optogenetics, some reused for recordings, and
+#     C57BL/6 for recordings only; male and female, at least 6 weeks old. Go-tone 4 or 8 kHz
+#     (100 ms) per mouse, delay 1 s, right C2 whisker deflection (5 ms), 1 s response window,
+#     five equiprobable trial types.
+#   - Optogenetics: 470 nm light (100 Hz, 50% duty, 12 to 15 mW) on one area per session (A1 9
+#     mice, wS1 10, wS2 10, wM2 9, ALM 8, fpS1 8), 30% of trials, in one of three windows
+#     (Auditory -0.05 to 0.3 s; Delay 0.4 to 0.85 s; Whisker 0.95 to 1.2 s; each plus a 100 ms
+#     ramp). 91 sessions on Zenodo.
+#   - Electrophysiology: Neuropixels Phase 3A, 2 to 5 probes per session, 35 sessions in 14 mice,
+#     10,294 units after Kilosort 2.0, Bombcell and CCF registration (A1 780, wS1 1938, wS2 2064,
+#     wM2 2749, ALM 2763); RS (> 0.46 ms), FS (< 0.36 ms) and unclassified by spike width; layer
+#     and depth from the Allen CCF.
+#   - Behaviour: piezo lick sensor (2 kHz), 200 Hz video (100 Hz in mouse PG019) with
+#     DeepLabCut tracking of C2 whisker angle, jaw, tongue and snout.
+#
+# The dandiset's own description (title and description on the archive only; its files were not
+# opened): "Data related to the publication Ghaderi et al., Nature Communications, 2026", 196
+# assets from 21 subjects, about 2.6 TB, pointing to the same Zenodo record and GitHub repository
+# for processed data and code. Which recordings and variables it holds is the author's to find.
+#
+# Outside data. Claims about named clusters (cluster 1, 4, 11, 25, 29) need the paper's cluster
+# labels, which a new clustering would not number the same way; those labels are on Zenodo
+# (doi:10.5281/zenodo.17973874, processed_data/Data_Clustering.mat, Cluster_Counter_Ordered and
+# Id_Ordered, keyed to the code's global unit index built from the order of probes in
+# psth_10ms.m), so those claims are data with_inputs. The lick coding direction (Fig. 8b,
+# Supplementary Fig. 18) uses spontaneous lick times and the continuous jaw trace from
+# data_helpers/Lick_times.mat on the same record; whether the dandiset holds them is the
+# author's to find.
+#
+# Tolerances. Where the paper gives a spread (plus or minus SEM), the tolerance is that spread;
+# otherwise 10% of the value.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001530"
+paper: doi:10.1038/s41467-026-73622-y
+claims:
+- id: fig1c-lick-probabilities
+  statement: Mice lick in the response window on 78 +/- 2% of Go-tone Whisker trials and withhold
+    licking in the other trial types (Go-tone No-Whisker 10 +/- 1%, Nogo-tone Whisker 13 +/- 2%,
+    Nogo-tone No-Whisker 1 +/- 0.3%, No-tone Whisker 15 +/- 2%), mean +/- SEM over 35 recording
+    sessions in 14 mice.
+  source: Results, A short-term memory context-dependent whisker detection task, paragraph 1;
+    Figure 1c
+  quote: 'Mice learned to lick correctly in the reward-predicting trials including the Go-tone and whisker deflection (probability of licking correctly in the reporting window, P(lick) = 78 ± 2%, mean ± standard error of the mean, SEM, n = 35 sessions across N = 14 mice during electrophysiological recordings described later) ... i) Go-tone without whisker deflection, P(lick) = 10 ± 1%; ii) Nogo-tone with whisker deflection, P(lick) = 13 ± 2%; iii) Nogo-tone without whisker deflection, P(lick) = 1 ± 0.3%; and iv) No-tone with whisker deflection, P(lick) = 15 ± 2%'
+  expected:
+  - quantity: P(lick), Go-tone Whisker
+    value: 78
+    tolerance: 2
+    unit: percent
+  - quantity: P(lick), Go-tone No-Whisker
+    value: 10
+    tolerance: 1
+    unit: percent
+  - quantity: P(lick), Nogo-tone Whisker
+    value: 13
+    tolerance: 2
+    unit: percent
+  - quantity: P(lick), Nogo-tone No-Whisker
+    value: 1
+    tolerance: 0.3
+    unit: percent
+  - quantity: P(lick), No-tone Whisker
+    value: 15
+    tolerance: 2
+    unit: percent
+  criterion: As code, Ghaderi2025_Figure1_c_Performance.m. Per recording session and trial type,
+    the fraction of completed (non early-lick) trials with a lick in the response window (the
+    NWB lick flag, first lick within 1 s after the whisker time, Methods Behavioral data
+    analysis), all trials (no quiet selection); mean and SEM over the 35 sessions. Reproduced
+    when all five means are within tolerance; partially reproduced when the Go-tone Whisker mean
+    exceeds every other trial type's by at least 50 points but some value is out of tolerance.
+- id: fig1f-movement-latencies
+  statement: In quiet Hit trials the whisker deflection is followed by whisker protraction (time to
+    20% of maximum 58 +/- 8 ms), jaw opening (115 +/- 17 ms) and tongue protrusion (231 +/- 29
+    ms), and tongue-spout contact at 330 +/- 20 ms.
+  source: Results, A short-term memory context-dependent whisker detection task, paragraph 3;
+    Figure 1f
+  quote: 'In quiet Hit trials, following the whisker deflection in Go-tone trials, mice rapidly initiated a sequence of movements starting with whisker protraction after ~30 ms (time to 20% max = 58 ± 8 ms), followed by jaw opening (115 ± 17 ms) and then protrusion of the tongue (231 ± 29 ms) (Fig. 1f ) resulting in tongue-spout contact triggering water reward delivery with latency 330 ± 20 ms ( n = 35 sessions during electrophysiological recordings)'
+  expected:
+  - quantity: whisker time to 20% of maximum after whisker stimulus
+    value: 58
+    tolerance: 8
+    unit: ms
+  - quantity: jaw time to 20% of maximum
+    value: 115
+    tolerance: 17
+    unit: ms
+  - quantity: tongue time to 20% of maximum
+    value: 231
+    tolerance: 29
+    unit: ms
+  - quantity: first tongue-spout contact latency
+    value: 330
+    tolerance: 20
+    unit: ms
+  criterion: Movement traces as code, Ghaderi2025_Figure1_f_Movements_Hit.m (quiet, completed Hit
+    trials; whisker speed, jaw and tongue displacement in 10 ms bins, each trial minus its mean
+    over 0.8 to 1.0 s, averaged per session). The lick latency as code,
+    Ghaderi2025_Sup_Figure1_b_SpoutReactionTime.m (first lick time minus 1 s, licks outside 1 to
+    2 s dropped, mean per session over completed Hit trials, all trials; mean and SEM over
+    sessions). Open detail, none of the code computes "time to 20% max". Readings (a) per session,
+    the first bin after 1.0 s where the session-mean trace reaches 20% of its maximum over 1.0 to
+    1.2 s, then mean and SEM over sessions; (b) the same on each trial, averaged per session.
+    Reproduced when, under a reading, the three movement latencies and the lick latency are within
+    tolerance; partially reproduced when the order whisker, jaw, tongue, spout contact holds but a
+    value is out of tolerance. Since the reading is a measure detail, the outcome is the one both
+    readings give; if they differ, blocked as methods_underspecified.
+- id: quiet-trials-half
+  statement: Selecting quiet trials (no whisker or jaw movement in the last 200 ms of the delay)
+    rejects about half of the recorded trials.
+  source: Results, Decoding context from neuronal activity during the delay period, paragraph 5
+  quote: This precludes the involvement of orofacial motor or sensory reafference signals from
+    contributing to our decoding analyses, but rejects around half of the recorded trials
+  expected:
+    quantity: fraction of completed trials that are not quiet, over all sessions
+    value: 50
+    tolerance: 5
+    unit: percent
+  criterion: The quiet rule of the header (median absolute deviation, Methods; the code's mean
+    absolute deviation as variant). The fraction of trials failing it, pooled over the 35
+    sessions and also as the median over sessions. "Recorded trials" leaves the denominator
+    open; readings (a) completed trials, (b) all trials including early-lick aborted ones,
+    each judged by the same rule. Reproduced when the pooled fraction is within tolerance under a
+    reading; partially reproduced when it lies between 30% and 70%. The tolerance is 10% of the
+    value.
+- id: fig2-auditory-window
+  statement: Inactivation during the Auditory epoch reduces licking on Go-tone Whisker trials most
+    for A1 (39 +/- 4%), and also for wM2 (33 +/- 6%), wS2 (26 +/- 4%) and wS1 (19 +/- 6%), while
+    ALM and fpS1 inactivation causes no significant decrease.
+  source: Results, Spatiotemporally-specific optogenetic inactivation, paragraph 3; Figure 2b-d
+  quote: 'For Go-tone Whisker trials, the largest impact of inactivation during the Auditory epoch was found for A1 (39 ± 4% reduction in lick probability, p = 0.0004, n = 17 sessions across N = 9 mice), but significant reductions were also found for inactivation of wM2 (33 ± 6% reduction in lick probability, p = 0.0004, n = 14 sessions across N = 9 mice), wS2 (26 ± 4% reduction in lick probability, p = 0.0004, n = 18 sessions across N = 10 mice) and wS1 (19 ± 6% reduction in lick probability, p = 0.002, n = 16 sessions across N = 10 mice). Importantly, inactivation of either ALM or fpS1 during the Auditory window did not cause any significant decrease in licking during the reporting period.'
+  statistics:
+  - about: A1, light against no light
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.0004
+    corrected: FDR
+    n: 17 sessions, 9 mice
+  - about: wM2
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.0004
+    corrected: FDR
+    n: 14 sessions, 9 mice
+  - about: wS2
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.0004
+    corrected: FDR
+    n: 18 sessions, 10 mice
+  - about: wS1
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.002
+    corrected: FDR
+    n: 16 sessions, 10 mice
+  expected:
+  - quantity: reduction in Go-tone Whisker P(lick), A1, Auditory window
+    value: 39
+    tolerance: 4
+    unit: percent
+  - quantity: reduction, wM2, Auditory window
+    value: 33
+    tolerance: 6
+    unit: percent
+  - quantity: reduction, wS2, Auditory window
+    value: 26
+    tolerance: 4
+    unit: percent
+  - quantity: reduction, wS1, Auditory window
+    value: 19
+    tolerance: 6
+    unit: percent
+  criterion: The optogenetic test of code, Ghaderi2025_Figure2_d_Plick_Sessions.m, used by all
+    three window claims. Per session, P(lick) over completed Go-tone Whisker trials with no light
+    and with light in the window. The reduction is the mean over sessions of no-light minus light
+    P(lick), in percentage points. Test (Methods and code), on paired sessions, draw 9 sessions
+    with replacement (9 is the minimum session count over areas and windows), take the
+    difference of means, p = (number of draws on the wrong side of zero + 1) / iterations,
+    two-tailed as 2 min(p, 1 - p); Benjamini-Hochberg FDR over the six areas within each window,
+    significant at 0.05. Iterations 1,000 (Methods) with 10,000 (code) as variant. Open details.
+    (1) The plus-or-minus spread is SEM over sessions (Results, "Data are presented as mean ±
+    SEM") or SD (Fig. 2d legend); both are reported, the value is judged on the mean. (2) The
+    reduction may be relative (percent of the no-light P(lick)); readings (a) absolute points,
+    (b) relative percent. Reproduced when under a reading of (2) the four means are within
+    tolerance, the four areas are significant and ALM and fpS1 are not; partially reproduced when
+    the pattern of significance holds and a value is out of tolerance, or when one area's
+    significance differs.
+- id: fig2-delay-window
+  statement: Inactivation during the Delay epoch reduces Go-tone Whisker licking strongly for wM2
+    (45 +/- 7%) and ALM (32 +/- 5%), more modestly for wS1 (16 +/- 3%), and not significantly for
+    A1, wS2 or fpS1.
+  source: Results, Spatiotemporally-specific optogenetic inactivation, paragraph 3; Figure 2b-d
+  quote: 'Inactivation during the Delay epoch of Go-tone Whisker trials caused a significant and large reduction in lick probability during the reporting window for wM2 (45 ± 7% reduction in lick probability, p = 0.0004, n = 14 sessions across N = 9 mice) and ALM (32 ± 5% reduction in lick probability, p = 0.0004, n = 9 sessions across N = 8 mice). Inactivation of wS1 also appeared to significantly, albeit more modestly, reduce licking (16 ± 3% reduction in lick probability, p = 0.0004, n = 16 sessions across N = 10 mice). On the other hand, inactivation of A1, wS2 or fpS1 during the Delay epoch did not significantly change lick probability in the reporting window.'
+  statistics:
+  - about: wM2, light against no light
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.0004
+    corrected: FDR
+    n: 14 sessions, 9 mice
+  - about: ALM
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.0004
+    corrected: FDR
+    n: 9 sessions, 8 mice
+  - about: wS1
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.0004
+    corrected: FDR
+    n: 16 sessions, 10 mice
+  expected:
+  - quantity: reduction in Go-tone Whisker P(lick), wM2, Delay window
+    value: 45
+    tolerance: 7
+    unit: percent
+  - quantity: reduction, ALM, Delay window
+    value: 32
+    tolerance: 5
+    unit: percent
+  - quantity: reduction, wS1, Delay window
+    value: 16
+    tolerance: 3
+    unit: percent
+  criterion: As fig2-auditory-window, for the Delay window. Reproduced when under a reading the
+    three means are within tolerance, wM2, ALM and wS1 are significant and A1, wS2 and fpS1 are
+    not; partially reproduced as in fig2-auditory-window.
+- id: fig2-whisker-window
+  statement: Inactivation during the Whisker epoch reduces Go-tone Whisker licking for every area
+    except fpS1, most for ALM (52 +/- 4%) and wM2 (48 +/- 4%), then wS1 (38 +/- 3%), wS2 (35 +/-
+    4%) and A1 (13 +/- 3%).
+  source: Results, Spatiotemporally-specific optogenetic inactivation, paragraph 3; Figure 2b-d
+  quote: 'Finally, all tested cortical regions, except fpS1, showed a significant reduction in licking probability when inactivation occurred during the Whisker stimulus epoch. The largest effects were found for inactivation of ALM (52 ± 4% reduction in lick probability, p = 0.0003, n = 9 sessions across N = 8 mice) and wM2 (48 ± 4% reduction in lick probability, p = 0.0003, n = 14 sessions across N = 9 mice), followed by wS1 (38 ± 3% reduction in lick probability, p = 0.0003, n = 20 sessions across N = 10 mice), wS2 (35 ± 4% reduction in lick probability, p = 0.0003, n = 18 sessions across N = 10 mice), and A1 (13 ± 3% reduction in lick probability, p = 0.01, n = 17 sessions across N = 9 mice).'
+  statistics:
+  - about: ALM, light against no light
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.0003
+    corrected: FDR
+    n: 9 sessions, 8 mice
+  - about: wM2
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.0003
+    corrected: FDR
+    n: 14 sessions, 9 mice
+  - about: wS1
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.0003
+    corrected: FDR
+    n: 20 sessions, 10 mice
+  - about: wS2
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.0003
+    corrected: FDR
+    n: 18 sessions, 10 mice
+  - about: A1
+    test: paired bootstrap resampling, FDR within stimulation window
+    p: 0.01
+    corrected: FDR
+    n: 17 sessions, 9 mice
+  expected:
+  - quantity: reduction in Go-tone Whisker P(lick), ALM, Whisker window
+    value: 52
+    tolerance: 4
+    unit: percent
+  - quantity: reduction, wM2, Whisker window
+    value: 48
+    tolerance: 4
+    unit: percent
+  - quantity: reduction, wS1, Whisker window
+    value: 38
+    tolerance: 3
+    unit: percent
+  - quantity: reduction, wS2, Whisker window
+    value: 35
+    tolerance: 4
+    unit: percent
+  - quantity: reduction, A1, Whisker window
+    value: 13
+    tolerance: 3
+    unit: percent
+  criterion: As fig2-auditory-window, for the Whisker window. Reproduced when under a reading the
+    five means are within tolerance, those five areas are significant and fpS1 is not; partially
+    reproduced as in fig2-auditory-window.
+- id: fig2-wm2-vs-alm-auditory
+  statement: Inactivation during the auditory window reduces licking significantly more for wM2
+    than for ALM (33 +/- 6% against 8 +/- 5%).
+  source: Results, Spatiotemporally-specific optogenetic inactivation, paragraph 3
+  quote: 'The effect of inactivation during the auditory window was significantly stronger for wM2 than ALM (reduction in lick probabilities for wM2 = 33 ± 6 % vs ALM = 8 ± 5 %; bootstrap comparison, FDR-corrected, p = 0.009).'
+  statistics:
+  - test: bootstrap comparison
+    p: 0.009
+    corrected: FDR
+  expected:
+  - quantity: reduction, wM2, Auditory window
+    value: 33
+    tolerance: 6
+    unit: percent
+  - quantity: reduction, ALM, Auditory window
+    value: 8
+    tolerance: 5
+    unit: percent
+  depends_on:
+  - fig2-auditory-window
+  criterion: Reductions as fig2-auditory-window. The code does not hold this comparison and the
+    paper does not describe it beyond "bootstrap comparison, FDR-corrected". Readings (a) an
+    unpaired bootstrap of the difference of the two areas' per-session reductions (sessions
+    resampled with replacement within each area, 9 per area as in the Methods' subsampling),
+    two-tailed as in the code's p rule; (b) the same with all sessions of each area resampled.
+    The family for FDR is not given; the uncorrected p is reported with each reading, and FDR over
+    the 15 area pairs of the Auditory window as a variant. Reproduced when both means are within
+    tolerance and both readings give p < 0.05 with wM2 larger; blocked as methods_underspecified
+    if the readings disagree.
+- id: fig2-other-trial-types
+  statement: Inactivation has little impact on licking in the trial types other than Go-tone
+    Whisker.
+  source: Results, Spatiotemporally-specific optogenetic inactivation, paragraph 2
+  quote: whereas inactivation had little impact upon other trial types
+  criterion: The finding is shown in Supplementary Fig. 3, which was not read; its code
+    (Ghaderi2025_Sup_Figure3_a_Heatmaps.m, Sup_Figure3_b_Brainmaps.m) draws per-area, per-window
+    changes in P(lick) for the other four trial types and runs no test. Measure as
+    fig2-auditory-window for trial types 2 to 5 (6 areas, 3 windows, 4 trial types, 72 changes).
+    "Little impact" is not defined. Readings (a) the bootstrap test of fig2-auditory-window, FDR
+    within each window and trial type, finds no significant change in more than 7 of the 72 (10%);
+    (b) no change exceeds 13 points, the smallest reduction the paper calls significant on Go-tone
+    Whisker trials (A1, Whisker window). Reproduced when both readings hold; not reproduced when
+    neither does; blocked as methods_underspecified when they differ. Every change and its p are
+    reported.
+- id: units-recorded
+  statement: Across 35 sessions in 14 mice, 10,294 well-isolated units were recorded in the five
+    areas (A1 780, wS1 1938, wS2 2064, wM2 2749, ALM 2763).
+  source: Results, Spatiotemporal dynamics of neocortical activity, paragraph 1
+  quote: 'Altogether, across 35 sessions in 14 mice, we recorded 10,294 well-isolated units located in: i) A1 - 780 units across 14 sessions in 6 mice; ii) wS1 - 1938 units across 24 sessions in 12 mice; iii) wS2 - 2064 units across 24 sessions in 11 mice; iv) wM2 - 2749 units across 18 sessions in 8 mice; and v) ALM - 2763 units across 16 sessions in 6 mice.'
+  expected:
+  - quantity: units, all five areas
+    value: 10294
+    tolerance: 1029
+  - quantity: units, A1
+    value: 780
+    tolerance: 78
+  - quantity: units, wS1
+    value: 1938
+    tolerance: 194
+  - quantity: units, wS2
+    value: 2064
+    tolerance: 206
+  - quantity: units, wM2
+    value: 2749
+    tolerance: 275
+  - quantity: units, ALM
+    value: 2763
+    tolerance: 276
+  criterion: Units the dataset marks as included (Bombcell single somatic units, well isolated),
+    assigned to areas as in the header (probe target area and CCF label in the area's acronyms).
+    The session and mouse counts per area (A1 14 and 6, wS1 24 and 12, wS2 24 and 11, wM2 18 and
+    8, ALM 16 and 6) are reported against the paper. Reproduced when all six unit counts are
+    within tolerance; a count that matches only without the CCF filter is reported as such.
+- id: fig3a-activity-maps
+  statement: In quiet Hit trials, probe-averaged activity changes are largest in A1 in the first
+    30 ms after the tone, in wM2 and ALM in the last 200 ms of the delay, in wS1 and wS2 in the
+    first 30 ms after the whisker deflection, and in frontal areas 300 to 500 ms after it.
+  source: Results, Spatiotemporal dynamics of neocortical activity, paragraph 2; Figure 3a
+  quote: Averaged across the first 30 ms after the onset of the tone, the auditory cue evoked a
+    fast excitation of neurons primarily in A1. Averaged across the last 200 ms of the delay
+    period, elevated neuronal activity appeared most prominent in frontal areas wM2 and ALM. In
+    the 30 ms following whisker deflection, sensory-evoked activity was primarily localized to
+    wS1 and wS2. The period 300-500 ms after whisker stimulation was used to assess
+    licking-related neuronal activity, which was most prominent in frontal regions.
+  depends_on:
+  - units-recorded
+  criterion: As Methods (Receiver operating characteristic analysis and activity maps) and the
+    Fig. 3a legend. Per probe assigned to one of the five areas, the trial- and cell-averaged
+    change in firing rate of all cortical neurons on the probe over quiet completed Hit trials,
+    in the Auditory (0 to 0.03 s) and Delay (0.8 to 1.0 s) windows relative to the
+    pre-auditory baseline, and in the Whisker (1.0 to 1.03 s) and Lick (1.3 to 1.5 s) windows
+    relative to the pre-whisker baseline; per area, the mean over its probes. The baseline
+    lengths are not given. Pre-auditory, -1 to 0 s, the baseline the Methods use elsewhere.
+    Pre-whisker, readings (a) 0.95 to 1.0 s (the 50 ms of Fig. 7a), (b) 0.8 to 1.0 s; the
+    outcome is the one both give, methods_underspecified when they differ. Reproduced when A1 has
+    the largest area mean in the Auditory window, wM2 and ALM the two largest in the Delay
+    window, wS1 and wS2 the two largest in the Whisker window, and wM2 and ALM the two largest
+    in the Lick window; partially reproduced when three of the four hold. The paper reports no
+    test; the per-probe values are shown.
+- id: fig3b-delay-and-response-psth
+  statement: In grand-average PSTHs of correct quiet trials, firing in wM2 and ALM is elevated
+    during the delay of Go-tone trials compared with Nogo-tone trials, and after the whisker
+    stimulus activity rises in Go-tone Whisker Hit trials compared with all other trial types in
+    wS1, wS2, wM2 and ALM.
+  source: Results, Spatiotemporal dynamics of neocortical activity, paragraph 3; Figure 3b
+  quote: 'there were two obvious differences comparing Go-tone and Nogo-tone trials: i) there was a prominent elevation in firing rate in wM2 and ALM during the delay period of Go-tone trials compared to Nogo-tone trials; and ii) after the whisker stimulus there was a clear increase of activity in correct Go-tone Whisker trials compared to all other trial types in wS1, wS2, wM2 and ALM'
+  criterion: PSTHs as code, Ghaderi2025_Figure3_b_PSTH_brainareas.m and Neuronal_data_10ms.m,
+    per neuron, the mean over quiet, correct trials of each type, baseline (-1 to 0 s)
+    subtracted. The figure carries no test, so the test is fixed from the paper's Statistics
+    section (paired comparisons by Wilcoxon signed-rank over neurons). (i) For wM2 and ALM, the
+    per-neuron mean over 0.8 to 1.0 s, Go-tone (types 1 and 2 pooled, and type 1 alone) against
+    Nogo-tone (types 3 and 4 pooled, and type 3 alone); (ii) for wS1, wS2, wM2 and ALM, the mean
+    over the paper's Licking window, 1.3 to 1.5 s (Results, Fig. 3c; Methods, activity maps),
+    Hit against each of the four other correct trial types. The paper gives no window for "after
+    the whisker stimulus"; it ties the increase to licking, so its Licking window is used, with
+    1.0 to 1.5 s shown as a variant. Reproduced when every comparison of (i) and (ii) is higher
+    in the Go-tone (or Hit) condition with p < 0.05 under both pairings of (i); partially
+    reproduced when (i) holds and (ii) fails for one area. The quiet rule follows the
+    code of each figure (whisker speed only in Neuronal_data_10ms.m) as a variant.
+- id: fig3c-delay-modulation-wm2-alm
+  statement: In the last 200 ms of the delay of quiet Hit trials, more wM2 than ALM neurons are
+    up-modulated relative to baseline (16.0% against 14.2%, p = 0.0499) and fewer are
+    down-modulated (14.3% against 17.0%, p = 0.0062), by chi-squared tests.
+  source: Results, Spatiotemporal dynamics of neocortical activity, paragraph 4; Figure 3c
+  quote: 'The fraction of up-modulated neurons was slightly but significantly higher in wM2 (16.0%) than in ALM (14.2%) ( p = 0.0499, chi-squared test), whereas the fraction of down-modulated neurons was significantly lower in wM2 (14.3 %) compared to ALM (17.0 %) ( p = 0.0062, chi-squared test).'
+  statistics:
+  - about: up-modulated fraction, wM2 against ALM
+    test: chi-squared test
+    p: 0.0499
+    n: all wM2 and ALM neurons
+  - about: down-modulated fraction, wM2 against ALM
+    test: chi-squared test
+    p: 0.0062
+  expected:
+  - quantity: up-modulated fraction, wM2
+    value: 16.0
+    tolerance: 1.6
+    unit: percent
+  - quantity: up-modulated fraction, ALM
+    value: 14.2
+    tolerance: 1.42
+    unit: percent
+  - quantity: down-modulated fraction, wM2
+    value: 14.3
+    tolerance: 1.43
+    unit: percent
+  - quantity: down-modulated fraction, ALM
+    value: 17.0
+    tolerance: 1.7
+    unit: percent
+  criterion: As code, Modulation.m and Ghaderi2025_Figure3_c_roc_hit.m. Per neuron, over quiet
+    completed Hit trials, the spike count in 0.8 to 1.0 s against the count in -0.2 to 0 s of
+    the same trials (two samples, labels window and baseline), AUC by perfcurve, selectivity
+    index 2(AUC - 0.5); p is the fraction of 200 label permutations with |SI| at least the
+    observed; up-modulated when SI > 0 and p < 0.05, down-modulated when SI < 0 and p < 0.05.
+    Fractions over all neurons of the area; 2 x 2 Pearson chi-squared without continuity
+    correction (MATLAB crosstab) for up against not-up and down against not-down. Reproduced
+    when the four fractions are within tolerance and both tests give p < 0.05 in the stated
+    directions; partially reproduced when both directions hold but a test or a value fails (the
+    up-modulation p is near 0.05, so the result of each permutation seed is reported).
+- id: fig3d-wm2-infragranular-delay
+  statement: During the late delay of Go-tone Whisker trials, wM2 infragranular neurons change
+    their firing more than supragranular neurons (1.2 +/- 0.1 Hz against 0.03 +/- 0.10 Hz, p = 1.7 x
+    10^-7, two-sample t-test), while no layer difference is detected in A1, wS2 or ALM.
+  source: Results, Spatiotemporal dynamics of neocortical activity, paragraph 5; Figure 3d
+  quote: 'Statistical tests indicated that neuronal activity during the late delay period of Go-tone trials differed significantly across cortical layers in wM2, with infragranular neurons having larger changes in firing rates than supragranular neurons (1.2 ± 0.1 Hz vs 0.03 ± 0.10 Hz; two-sample t-test, p = 1.7 × 10⁻⁷), whereas no significant differences were detected in A1, wS2, or ALM.'
+  statistics:
+  - about: wM2 infragranular against supragranular
+    test: two-sample t-test
+    p: 1.7e-7
+  expected:
+  - quantity: change in firing, wM2 infragranular, late delay
+    value: 1.2
+    tolerance: 0.1
+    unit: Hz
+  - quantity: change in firing, wM2 supragranular, late delay
+    value: 0.03
+    tolerance: 0.1
+    unit: Hz
+  criterion: As code, Neuronal_data_10ms.m, Ghaderi2025_Figure3_d_PSTH_depth.ipynb and
+    compute_layer_stats_pg.m. Per neuron, the mean 10 ms PSTH over quiet completed Hit trials
+    (quiet by jaw and whisker, Methods; the code's whisker-speed-only rule here is a variant), minus its
+    mean over -1 to 0 s, averaged over 0.8 to 1.0 s, in Hz. Layers from the CCF label, layer 1
+    and 2/3 supragranular, 4 granular, 5 and 6 infragranular. Unpaired equal-variance t-tests
+    between the three layer pairs in each area. Reproduced when the two wM2 values are within
+    tolerance, the wM2 infragranular against supragranular test gives p < 0.05, and no layer pair
+    in A1, wS2 or ALM gives p < 0.05; partially reproduced when the wM2 result holds and one layer
+    pair elsewhere is significant. The claim of no difference in A1, wS2 and ALM is judged by the
+    same t-test at 0.05, uncorrected, as the code runs it.
+- id: fig4-29-clusters
+  statement: Clustering all 10,294 neurons on their average activity in the five correct trial
+    types (PCA, spectral embedding, Gaussian mixture model) gives 29 clusters at the minimum of
+    the Bayesian Information Criterion.
+  source: Results, Spatiotemporal dynamics of neocortical activity, paragraph 6; Figure 4a; Methods,
+    Clustering of neuronal responses
+  quote: The BIC analysis indicated that 29 clusters provided the best trade-off between accuracy
+    and parsimony.
+  expected:
+    quantity: number of clusters at the BIC minimum
+    value: 29
+    tolerance: 3
+  criterion: As Methods (Clustering of neuronal responses), with the code (Neuronal_data_100ms.m
+    and Data_Clustering.ipynb) for what the Methods leave open. Per neuron, the mean over quiet
+    correct trials of each of the five types in 10 ms bins over -1 to 2 s (300 bins, Methods),
+    baseline (-1 to 0 s) subtracted, sessions with fewer than 3 trials of a type or 5 neurons
+    skipped (code), the five PSTHs concatenated (1500 bins) and divided by their range; neurons
+    mean-centred; 17 PCs (Methods; the code's shuffle rule, PCs whose variance exceeds the mean
+    of 1000 row shuffles with Bonferroni p < 0.05/N, is shown); similarity exp(-d^2/2 sigma^2)
+    on Euclidean distances with sigma tuned to a mean similarity of 0.5 (Methods); normalized
+    Laplacian eigenvectors 2 to 17; diagonal-covariance GMM (1000 initializations, seed 0, code)
+    for k in 10, 15, 20, 25 to 44, 45, 50, 55 (code); the k of lowest BIC. The code's version
+    (100 ms bins, 150 per type, quiet by whisker speed only, exp(-d/0.07975)) is a variant and
+    its k is reported. Reproduced when the BIC minimum is within tolerance (10% of 29, rounded);
+    partially reproduced when it is between 20 and 38.
+- id: fig4b-named-clusters
+  statement: Some clusters represent sensory responses (cluster 1, fast auditory response, mostly
+    A1 neurons; cluster 29, fast whisker response, mostly wS1 and wS2), clusters 11 and 25 fire
+    during the delay only on Go-tone trials and consist mainly of wM2 and ALM neurons, and cluster
+    4 decreases its firing during the Go-tone delay and is spread over the five areas.
+  source: Results, Spatiotemporal dynamics of neocortical activity, paragraph 7; Figure 4a-b
+  quote: 'Cluster #1 had a large and fast response to the auditory cue and mostly consisted of neurons in A1, whereas Cluster #29 responded strongly and rapidly to whisker deflection and mostly consisted of neurons in wS1 and wS2. A few clusters showed strong context-dependent firing selectivity comparing Go-tone and Nogo-tone trials, most notably Clusters #11 and #25, which showed prominent delay period firing only in Go-tone trials and mainly consisted of neurons in wM2 and ALM ( Fig. 4b ). Interestingly, another cluster, Cluster #4, showed a prominent decrease in firing rate during the delay period selectively for Go-tone trials and neurons in this cluster were widely distributed across the five recorded cortical areas'
+  data: with_inputs
+  criterion: Cluster membership from the paper's labels (Zenodo doi:10.5281/zenodo.17973874,
+    processed_data/Data_Clustering.mat), linked to the dataset's units by the code's global unit
+    index; the author adds the link claim. PSTHs as fig3b-delay-and-response-psth. Reproduced
+    when (1) cluster 1 consists mostly of A1 neurons and has a mean response over 0 to 30 ms
+    above its baseline; (2) cluster 29 consists mostly of wS1 and wS2 neurons and has a mean
+    response over 1.0 to 1.03 s above baseline; (3) clusters 11 and 25 each consist mostly of
+    wM2 and ALM neurons and have a higher mean over 0.8 to 1.0 s in Hit than in Nogo-tone
+    Whisker CR trials; (4) cluster 4 has a lower mean over 0.8 to 1.0 s in Hit than in Nogo CR
+    trials and at least 5% of its neurons in each area. The windows are the paper's Auditory,
+    Whisker and Delay windows (Fig. 3c). The paper defines neither "mostly" nor "widely
+    distributed". "Mostly" is open, with readings (a) more than half of the cluster's neurons,
+    (b) the largest share of any area (for a pair, the two largest shares); the outcome is the
+    one both give, and methods_underspecified when they differ. The 5% bound for "widely
+    distributed" is the reader's and is a variant only; the fractions are reported. Partially
+    reproduced when three of the four parts hold.
+- id: fig5a-single-neuron-context
+  statement: Comparing Hit with Nogo-tone Whisker correct rejection trials in the last 200 ms of
+    the delay, wM2 and ALM have the highest proportions of context-modulated neurons (wM2, 20%
+    increase firing by 8 Hz on average, 14% decrease by 3 Hz; ALM, 17% increase by 8 Hz, 16%
+    decrease by 3 Hz), and wM2 has the largest proportion of Go-tone excited neurons.
+  source: Results, Decoding context from neuronal activity during the delay period, paragraph 1;
+    Figure 5a
+  quote: 'Overall, we found the highest proportion of significantly modulated neurons in wM2 (20% of neurons increased firing on average by 8 Hz and 14% decreased firing by 3 Hz) and ALM (17% increased firing by 8 Hz and 16% decreased firing by 3 Hz). Thus, wM2 contained the largest proportion of Go-tone excited neurons during the delay period.'
+  expected:
+  - quantity: wM2 fraction with higher firing in Hit
+    value: 20
+    tolerance: 2
+    unit: percent
+  - quantity: wM2 mean increase of those neurons
+    value: 8
+    tolerance: 0.8
+    unit: Hz
+  - quantity: wM2 fraction with lower firing in Hit
+    value: 14
+    tolerance: 1.4
+    unit: percent
+  - quantity: wM2 mean decrease of those neurons
+    value: 3
+    tolerance: 0.5
+    unit: Hz
+  - quantity: ALM fraction higher
+    value: 17
+    tolerance: 1.7
+    unit: percent
+  - quantity: ALM mean increase
+    value: 8
+    tolerance: 0.8
+    unit: Hz
+  - quantity: ALM fraction lower
+    value: 16
+    tolerance: 1.6
+    unit: percent
+  - quantity: ALM mean decrease
+    value: 3
+    tolerance: 0.5
+    unit: Hz
+  criterion: As code, Roc_hit_cr3.m and Ghaderi2025_Figure5_a_SingleNeuron.m. Per neuron, spike
+    counts in 0.8 to 1.0 s on quiet completed Hit trials against Nogo-tone Whisker CR trials;
+    AUC, SI and 200-permutation p as in fig3c-delay-modulation-wm2-alm; modulated when p < 0.05;
+    the change in firing is the Hit minus CR mean rate (Hz). The two 3 Hz values are printed as
+    whole numbers, so their tolerance is the rounding interval, 0.5 Hz, wider than 10% (0.3).
+    Reproduced when the eight values are within tolerance, the wM2 up-modulated fraction is the
+    largest of the five areas, and the total modulated fractions of wM2 and ALM each exceed
+    those of A1, wS1 and wS2; partially reproduced when the wM2 up-modulated fraction is the
+    largest and some value is out of tolerance.
+- id: fig5b-context-decoding-delay
+  statement: With 50 neurons per area, context (Hit against Nogo-tone Whisker CR) is decoded in the
+    last 200 ms of the delay above baseline in every area, but far better in wM2 (64 +/- 1%) and
+    ALM (61 +/- 1%) than in A1 (52 +/- 1%), wS1 (52 +/- 1%) and wS2 (52 +/- 0.4%).
+  source: Results, Decoding context from neuronal activity during the delay period, paragraph 2;
+    Figure 5b
+  quote: 'Focusing on the last 200 ms of the delay period, during which orofacial movements are absent, the auditory context could be decoded from the firing of 50 neurons in each area with accuracy varying across cortical regions: i) A1, 52 ± 1%, p = 0.008, n = 8 sessions across N = 6 mice; ii) wS1, 52 ± 1%, p = 0.0003, n = 17 sessions across N = 9 mice; iii) wS2, 52 ± 0.4%, p = 0.0003, n = 19 sessions across N = 9 mice; iv) wM2, 64 ± 1%, p = 0.0002, n = 18 sessions across N = 8 mice; and v) ALM, 61 ± 1%, p = 0.0004, n = 16 sessions across N = 6 mice.'
+  statistics:
+  - about: A1, delay against baseline accuracy
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.008
+    n: 8 sessions, 6 mice
+  - about: wS1
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.0003
+    n: 17 sessions, 9 mice
+  - about: wS2
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.0003
+    n: 19 sessions, 9 mice
+  - about: wM2
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.0002
+    n: 18 sessions, 8 mice
+  - about: ALM
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.0004
+    n: 16 sessions, 6 mice
+  expected:
+  - quantity: decoding accuracy, A1, 0.8 to 1.0 s
+    value: 52
+    tolerance: 1
+    unit: percent
+  - quantity: decoding accuracy, wS1
+    value: 52
+    tolerance: 1
+    unit: percent
+  - quantity: decoding accuracy, wS2
+    value: 52
+    tolerance: 0.4
+    unit: percent
+  - quantity: decoding accuracy, wM2
+    value: 64
+    tolerance: 1
+    unit: percent
+  - quantity: decoding accuracy, ALM
+    value: 61
+    tolerance: 1
+    unit: percent
+  criterion: As Methods (Population decoding) and code, Decoding_NbNeurons5_50.m and
+    Ghaderi2025_Figure5_b_Decoding.m. Area-sessions with at least 50 neurons; quiet completed Hit
+    against Nogo-tone Whisker CR trials; per 10 ms bin a linear SVM on spike counts, majority
+    class randomly undersampled, features z-scored, 5-fold stratified cross-validation, accuracy
+    the mean over folds; 100 random subsets of 50 neurons (seed = repetition), averaged. Delay
+    accuracy is the mean over bins in 0.8 to 1.0 s; baseline the mean over -1 to 0 s (Methods),
+    with -0.8 to 0 s (code) as variant; two-sided Wilcoxon signed-rank over sessions. For the SVM,
+    the Methods choose its parameters by grid search with nested cross-validation and give no
+    grid; the code trains libsvm nu-SVC with default nu and no search. Since a grid would be the
+    agent's choice and the parameter can change the outcome, both are run, (a) Methods, a linear
+    C-SVM with C chosen by nested 5-fold search over 10^-3 to 10^3 in decades (a standard grid),
+    (b) code; the outcome is the one both give, methods_underspecified when they differ. This
+    applies to every claim that decodes as this one. Reproduced when the five accuracies are
+    within tolerance, all five tests give p < 0.05, and wM2 and ALM each exceed A1, wS1 and wS2;
+    partially reproduced when the ordering and the tests hold and a value is out of tolerance.
+- id: fig5b-decoding-time-course
+  statement: Context decoding is at chance in the baseline, highest in A1 right after the cue, and
+    during the delay falls in A1, wS1 and wS2 but rises in wM2 and ALM; with fewer neurons
+    accuracy drops but wM2 and ALM stay above A1, wS1 and wS2.
+  source: Results, Decoding context from neuronal activity during the delay period, paragraph 2;
+    Figure 5b left and right
+  quote: Decoding in the baseline period was at chance level (50%) for all cortical regions, as
+    expected. Immediately, upon presentation of the auditory contextual cue, the decoding of Go vs
+    Nogo trials was highest in A1, but context could also be decoded from all other recorded
+    cortical regions. The ability to decode context during the delay period rapidly decreased in
+    A1, wS1 and wS2, but increased for wM2 and ALM. ... Decreasing the number of neurons per
+    cortical region through further subsampling reduced decoding accuracy but maintained the
+    overall conclusion that wM2 and ALM more strongly encode context compared to A1, wS1 and wS2.
+  depends_on:
+  - fig5b-context-decoding-delay
+  criterion: Decoding as fig5b-context-decoding-delay, for 5, 10, ..., 50 neurons. Reproduced when
+    (1) the mean baseline accuracy (-1 to 0 s) of each area is within 50 +/- 5% (10% of the
+    value; the paper gives no test of chance); (2) the mean accuracy over the early cue window
+    is highest in A1; (3) for A1, wS1 and wS2 the mean over 0.8 to 1.0 s is lower than over the
+    early cue window, and for wM2 and ALM it is higher; (4) at every neuron count run, the wM2
+    and ALM delay accuracies exceed those of A1, wS1 and wS2 (Fig. 5b legend, "independent of
+    the number of considered neurons"). The early cue window is not given for decoding; readings
+    (a) the paper's Auditory window, 0 to 0.03 s (Fig. 3c, Methods activity maps), (b) 0 to 0.2
+    s; the outcome is the one both give, methods_underspecified when they differ. The full time
+    courses are shown. Partially reproduced when (1), (2) and (4) hold and (3) fails for one
+    area.
+- id: fig5c-cluster-removal
+  statement: Removing cluster 11 reduces late-delay context decoding in wM2 (by 3.8 +/- 1.0%) and
+    ALM (4.5 +/- 1.4%) with no significant effect in A1, wS1 and wS2; removing cluster 25 also
+    reduces it in wM2 (1.6 +/- 0.6%) and ALM (2.0 +/- 0.6%); removing any other cluster does not
+    significantly decrease decoding.
+  source: Results, Decoding context from neuronal activity during the delay period, paragraph 3;
+    Figure 5c
+  quote: 'Removal of Cluster #11 reduced decoding accuracy by 3.8 ± 1.0% ( p = 0.008) for wM2 and by 4.5 ± 1.4% ( p = 0.008) for ALM, with no significant effect upon A1, wS1 and wS2. Removal of Cluster #25 also reduced significantly the decoding accuracy by 1.6 ± 0.6% ( p = 0.03) for wM2 and by 2.0 ± 0.6% ( p = 0.03) for ALM.'
+  statistics:
+  - about: cluster 11, wM2
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.008
+    corrected: FDR
+    n: 18 sessions
+  - about: cluster 11, ALM
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.008
+    corrected: FDR
+    n: 16 sessions
+  - about: cluster 25, wM2
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.03
+    corrected: FDR
+  - about: cluster 25, ALM
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.03
+    corrected: FDR
+  expected:
+  - quantity: decrease in accuracy, cluster 11 removed, wM2
+    value: 3.8
+    tolerance: 1.0
+    unit: percentage points
+  - quantity: decrease, cluster 11, ALM
+    value: 4.5
+    tolerance: 1.4
+    unit: percentage points
+  - quantity: decrease, cluster 25, wM2
+    value: 1.6
+    tolerance: 0.6
+    unit: percentage points
+  - quantity: decrease, cluster 25, ALM
+    value: 2.0
+    tolerance: 0.6
+    unit: percentage points
+  data: with_inputs
+  depends_on:
+  - fig4b-named-clusters
+  criterion: Cluster labels as fig4b-named-clusters. As code, Decoding_delay.m,
+    Decoding_clusters_random_dropout.m and Ghaderi2025_Figure5_c_Dropcluster11.m. Decoding as
+    fig5b-context-decoding-delay but with all neurons of each area-session (at least 5; 14 A1, 24
+    wS1, 19 wS2, 18 wM2, 16 ALM sessions), once with all and once without the cluster's neurons;
+    the change is without minus with, averaged over 0.8 to 1.0 s; two-sided Wilcoxon
+    signed-rank against zero over sessions, Benjamini-Hochberg FDR over the five areas for each
+    cluster. Reproduced when the four decreases are within tolerance and significant, cluster 11
+    is not significant in A1, wS1 or wS2, and no cluster other than 11 and 25 gives a significant
+    decrease in any area; partially reproduced when clusters 11 and 25 behave as stated and up to
+    two other cluster-area pairs are significant.
+- id: fig5d-null-space-decoding
+  statement: Using only movement-null-space activity of all trials, context is decoded in the
+    late delay much better in wM2 (74 +/- 2%) and ALM (71 +/- 3%) than in A1 (52 +/- 0.8%, not
+    significant), wS1 (52 +/- 0.4%) and wS2 (53 +/- 0.5%).
+  source: Results, Decoding context from neuronal activity during the delay period, paragraph 4;
+    Figure 5d
+  quote: 'During the late delay period, in the 200 ms before whisker stimulus and using only ‘null’ space neuronal activity, we were again able to decode the context with varying success across cortical regions: i) A1, 52 ± 0.8%, p = 0.09; ii) wS1, 52 ± 0.4%, p = 0.0003; iii) wS2, 53 ± 0.5%, p = 0.0004; iv) wM2, 74 ± 2%, p = 0.0002; and v) ALM, 71 ± 3%, p = 0.0004.'
+  statistics:
+  - about: A1, delay against baseline
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.09
+    n: 12 sessions
+  - about: wS1
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.0003
+    n: 23 sessions
+  - about: wS2
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.0004
+    n: 19 sessions
+  - about: wM2
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.0002
+    n: 18 sessions
+  - about: ALM
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.0004
+    n: 16 sessions
+  expected:
+  - quantity: null-space decoding accuracy, A1
+    value: 52
+    tolerance: 0.8
+    unit: percent
+  - quantity: wS1
+    value: 52
+    tolerance: 0.4
+    unit: percent
+  - quantity: wS2
+    value: 53
+    tolerance: 0.5
+    unit: percent
+  - quantity: wM2
+    value: 74
+    tolerance: 2
+    unit: percent
+  - quantity: ALM
+    value: 71
+    tolerance: 3
+    unit: percent
+  criterion: As Methods and code, Movement_subspace_Define.m, pg_decompose.m,
+    Movement_subspace_Decoding_null.m and Ghaderi2025_Figure5_d_DecodingSubspaces.m.
+    Area-sessions with more than 20 neurons; all completed trials (no quiet selection); spike
+    counts in 10 ms bins z-scored per neuron over all bins and trials; a bin is movement when
+    whisker speed exceeds the session's mean plus one SD over -1 to 0 s; orthogonal 10-dimensional
+    potent and null subspaces from the movement and non-movement covariances (subspaceID
+    orthogonal_subspaces, alpha 0, seed 101); decoding of Hit against Nogo-tone Whisker CR on the
+    10 null dimensions as fig5b-context-decoding-delay, without neuron subsampling; delay 0.8 to
+    1.0 s against baseline (-1 to 0 s Methods, -0.8 to 0 s code). Reproduced when the five
+    accuracies are within tolerance, wS1, wS2, wM2 and ALM give p < 0.05 and A1 does not;
+    partially reproduced when wM2 and ALM exceed 60% and every other area is below 56% but a
+    value or a test differs.
+- id: fig6a-pca-delay-states
+  statement: In the first two PCs, A1, wS1 and wS2 activity returns near its start by the end of
+    the delay, while in correct Go-tone trials wM2 and ALM settle within about 200 ms into a state
+    far from the origin, reached with and without the whisker stimulus; Nogo correct rejections
+    return to baseline and Miss trials fail to reach the Go-tone state. PC1 explains 11% (A1, wS1,
+    wS2), 17% (wM2) and 14% (ALM) of variance, PC2 6% (A1, wS1, wS2) and 8% (wM2, ALM).
+  source: Results, Context-dependent neuronal dynamics during the delay period, paragraph 1;
+    Figure 6a
+  quote: 'Neuronal activity in each cortical area exhibited a rapid response after tone onset in PC1 (explained variance: A1, 11%; wS1, 11%; wS2, 11%; wM2, 17%; and ALM 14%) and PC2 (explained variance: A1, 6%; wS1, 6%; wS2, 6%; wM2, 8%; and ALM 8%). Activity in A1, wS1 and wS2 followed an apparently cyclic trajectory, returning near to the start point by the end of the delay period. However, in correct Go-tone trials, neuronal activity in wM2 and ALM settled rapidly (within ~200 ms) into an apparent fixed point far from the origin ... Interestingly, in error trials where the mouse did not lick in response to the whisker stimulus preceded by a Go-tone (i.e., Miss trials), the neural activity in wM2 and ALM failed to reach the apparent attractor state of correct Go-tone trials.'
+  expected:
+  - quantity: PC1 explained variance, A1
+    value: 11
+    tolerance: 1.1
+    unit: percent
+  - quantity: PC1, wS1
+    value: 11
+    tolerance: 1.1
+    unit: percent
+  - quantity: PC1, wS2
+    value: 11
+    tolerance: 1.1
+    unit: percent
+  - quantity: PC1, wM2
+    value: 17
+    tolerance: 1.7
+    unit: percent
+  - quantity: PC1, ALM
+    value: 14
+    tolerance: 1.4
+    unit: percent
+  - quantity: PC2, A1
+    value: 6
+    tolerance: 0.6
+    unit: percent
+  - quantity: PC2, wS1
+    value: 6
+    tolerance: 0.6
+    unit: percent
+  - quantity: PC2, wS2
+    value: 6
+    tolerance: 0.6
+    unit: percent
+  - quantity: PC2, wM2
+    value: 8
+    tolerance: 0.8
+    unit: percent
+  - quantity: PC2, ALM
+    value: 8
+    tolerance: 0.8
+    unit: percent
+  criterion: As code, Ghaderi2025_Figure6_a_pca.m. Per area, a pseudo-population of all its
+    neurons; per neuron, the mean over quiet completed trials of Hit, Nogo-tone Whisker CR,
+    Go-tone No-Whisker CR and Miss in 50 ms bins over -1 to 2 s, baseline (-1 to 0 s) subtracted,
+    the four conditions' first 60 bins concatenated, neurons with zero range dropped, each neuron
+    divided by its range; PCA with time bins as observations; explained variance of PC1 and PC2.
+    The legend's reading (PCs fitted on Hit and Nogo CR only, the other two projected) is a
+    variant. The state at the end of the delay is the mean of PC1 and PC2 over 0.8 to 1.0 s; its
+    distance from the baseline point (mean over -1 to 0 s) is compared across conditions.
+    Reproduced when the ten values are within tolerance and, for wM2 and ALM, the end-of-delay
+    distance of Hit and Go-tone No-Whisker CR each exceeds that of Nogo CR and Miss, while for A1,
+    wS1 and wS2 the Hit distance at 1.0 s is below half its maximum over 0 to 1 s. Partially
+    reproduced when the geometry holds and some explained variances are out of tolerance.
+- id: fig6b-context-coding-direction
+  statement: Projected on a context coding direction, late-delay activity in wM2 and ALM is high in
+    Hit trials and significantly lower in Nogo-tone, Go-tone No-Whisker and Miss trials.
+  source: Results, Context-dependent neuronal dynamics during the delay period, paragraph 2;
+    Figure 6b
+  quote: Activity in the context coding dimension was high in wM2 and ALM throughout the delay
+    period in correct Go-tone Hit trials, but strongly reduced in the incorrect Go-tone Miss
+    trials.
+  statistics:
+  - about: wM2, Hit against Nogo
+    test: two-sided Wilcoxon signed-rank test, Bonferroni for each area
+    p: 0.0006
+    corrected: Bonferroni
+    n: 18 sessions
+  - about: wM2, Hit against NoW
+    test: two-sided Wilcoxon signed-rank test, Bonferroni for each area
+    p: 0.001
+    corrected: Bonferroni
+    n: 18 sessions
+  - about: wM2, Hit against Miss
+    test: two-sided Wilcoxon signed-rank test, Bonferroni for each area
+    p: 0.0006
+    corrected: Bonferroni
+    n: 18 sessions
+  - about: ALM, Hit against Nogo
+    test: two-sided Wilcoxon signed-rank test, Bonferroni for each area
+    p: 0.001
+    corrected: Bonferroni
+    n: 16 sessions
+  - about: ALM, Hit against NoW
+    test: two-sided Wilcoxon signed-rank test, Bonferroni for each area
+    p: 0.002
+    corrected: Bonferroni
+    n: 16 sessions
+  - about: ALM, Hit against Miss
+    test: two-sided Wilcoxon signed-rank test, Bonferroni for each area
+    p: 0.001
+    corrected: Bonferroni
+    n: 16 sessions
+  criterion: As Methods (Principal component analysis and coding directions) and code,
+    Coding_direction_10ms.m and Ghaderi2025_Figure6_b_CD_context.m. Per area-session (at least 5
+    neurons), quiet completed trials in 10 ms bins; CD context is the mean over 0.8 to 1.0 s of
+    the per-bin difference of Hit and Nogo CR mean spike-count vectors, from a random 20% of each
+    class's trials (Methods; 30% in the code, a variant), unit length, Gram-Schmidt orthogonalized
+    with the whisker and lick directions after it (the context direction first, so unchanged);
+    the held-out trials are projected; per session, the mean projection over 0.8 to 1.0 s for Hit,
+    Nogo CR, Go-tone No-Whisker CR and Miss; two-sided Wilcoxon signed-rank Hit against each, p
+    times 3. Reproduced when in wM2 and ALM all three comparisons give corrected p < 0.05 with Hit
+    higher; partially reproduced when two of three hold in each. The legend's p-values for the
+    other areas are reported against the result, not judged.
+- id: fig6c-temporal-correlation
+  statement: In wM2 and ALM the Go-tone induces a long-lasting increase in correlated population
+    activity during the delay in Hit and Go-tone No-Whisker trials, absent in Nogo-tone and Miss
+    trials, while in A1, wS1 and wS2 the cue evokes only a brief increase.
+  source: Results, Context-dependent neuronal dynamics during the delay period, paragraph 3;
+    Figure 6c
+  quote: Presentation of the auditory cue evoked a brief increase in correlated neuronal activity
+    in A1, wS1 and wS2. However, in wM2 and ALM, the Go-tone induced a long-lasting increase in
+    correlated neuronal activity during the delay period in both Hit and Go-tone No-Whisker Correct
+    Rejection trials. In contrast, presentation of the Nogo-tone failed to induce network states
+    with high temporal correlation. Importantly, the highly-correlated network state during the
+    delay period was also absent in Miss trials
+  statistics:
+  - about: wM2, Hit against Nogo
+    test: two-sided Wilcoxon signed-rank test, Bonferroni for each area
+    p: 0.0006
+    corrected: Bonferroni
+    n: 18 sessions
+  - about: wM2, Hit against NoW
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.02
+    corrected: Bonferroni
+  - about: wM2, Hit against Miss
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.0009
+    corrected: Bonferroni
+  - about: ALM, Hit against Nogo
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.002
+    corrected: Bonferroni
+    n: 16 sessions
+  - about: ALM, Hit against NoW
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.001
+    corrected: Bonferroni
+  - about: ALM, Hit against Miss
+    test: two-sided Wilcoxon signed-rank test
+    p: 0.0004
+    corrected: Bonferroni
+  criterion: As Methods (Temporal correlation analysis) and code, Temporal_corrrelation_10ms.m and
+    Ghaderi2025_Figure6_c_temporalCorrelation.m. Per area-session and quiet completed trial, the
+    300 x 300 Pearson correlation matrix of the population spike-count vectors of 10 ms bins over
+    -1 to 2 s; averaged over trials of a type; minus the mean of the off-diagonal entries of the
+    baseline block (-1 to 0 s); the mean over the delay block (0 to 1 s by 0 to 1 s, bins 100 to
+    200 as in the code) per session; Hit against Nogo CR, Go-tone No-Whisker CR and Miss by
+    two-sided Wilcoxon signed-rank, p times 3. The code drops one A1 Hit session (the fourth) by
+    hand; the result is given with and without it. The brief cue-evoked increase in A1, wS1 and
+    wS2 is shown in the matrices and not judged, as the paper gives no measure of it. Reproduced when in wM2 and ALM all three
+    comparisons give corrected p < 0.05 with Hit higher; partially reproduced when the Nogo and
+    Miss comparisons hold in both areas. The legend's other p-values (wS1 Hit against Miss 0.006,
+    wS2 Hit against Nogo 0.047) are reported, not judged.
+- id: fig7b-early-whisker-response
+  statement: Whisker-evoked activity in the Go-tone context is transiently reduced in wS1 and wS2
+    around 15 ms after the deflection and higher from about 30 ms on in most areas, compared with
+    the Nogo-tone context.
+  source: Results, Context-dependent processing of the whisker stimulus, paragraph 1; Figure 7b
+  quote: we found significant changes in evoked activity, with an early transient reduction in the
+    whisker response in wS1 and wS2 for Go-tone trials, followed by an overall increased activity
+    in most cortical regions at later times
+  criterion: As code, psth_5ms.m and Ghaderi2025_Figure7_b_DeltaFR.m. Per neuron, the mean 5 ms
+    PSTH over quiet completed Hit trials and over Nogo-tone Whisker CR trials, each minus its mean
+    over 0.95 to 1.0 s, in Hz; the Hit minus CR difference per bin from 0.955 to 1.1 s; two-sided
+    Wilcoxon signed-rank against zero over the area's neurons. FDR (Benjamini-Hochberg) is
+    applied for each area as the legend says, with the code's FDR over all 5 areas x 30 bins as
+    variant. Reproduced when wS1 and wS2 each have a significant negative bin between 1.010 and
+    1.020 s, and at least three of the five areas have significant positive bins from 1.030 s
+    onward; partially reproduced when only one of wS1 and wS2 shows the early reduction.
+- id: fig7c-no-whisker-cd-change
+  statement: Activity projected on a whisker coding direction, defined from the first 30 ms of
+    No-tone Whisker responses, shows no significant difference between Go-tone and Nogo-tone
+    contexts.
+  source: Results, Context-dependent processing of the whisker stimulus, paragraph 1; Figure 7c
+  quote: However, no significant context differences were found in analyses of a whisker sensory
+    response coding direction based on the 30 ms of activity evoked by whisker stimuli without a
+    preceding tone cue and without subsequent licking
+  criterion: A claim of absence. As code, Coding_direction_5ms.m and Ghaderi2025_Figure7_c_StimCD.m.
+    Per area-session (at least 5 neurons), 5 ms bins; CD whisker is the mean over 1.0 to 1.03 s
+    minus the mean over -1 to 0 s of the No-tone Whisker CR trial-averaged population vector, from
+    30% of those trials, Gram-Schmidt orthogonalized to CD context and unit length; held-out quiet
+    completed Hit and Nogo-tone Whisker CR trials projected; per session the mean projection in
+    the bin at 1.03 s; the code's test, Kruskal-Wallis of Hit against CR over sessions followed by
+    LSD comparisons, at 0.05. Reproduced when the test does not find a difference in any area;
+    not reproduced when it does in some area. The difference and the paired Wilcoxon signed-rank
+    p are given for each area either way.
+- id: fig7d-context-decoding-after-whisker
+  statement: Decoding context from baseline-subtracted activity in 5 ms bins after the whisker
+    stimulus, significant decoding appears transiently in A1 and wS2 at 15 ms for one bin, and
+    persistently in wM2 from 20 ms and in ALM from 25 ms after the stimulus.
+  source: Results, Context-dependent processing of the whisker stimulus, paragraph 2; Figure 7d
+  quote: we found that significant context-dependent sensory processing transiently appeared in A1
+    and wS2 at 15 ms after whisker stimulus for a single 5 ms-time bin; and appeared in a more
+    lasting manner in wM2 at 20 ms after whisker stimulus (and all later time bins) and in ALM at
+    25 ms after whisker stimulus (and all later times)
+  criterion: As code, Decoding_afterwhisker_runX.m and Ghaderi2025_Figure7_d_ContextDecoding_WS.m.
+    Per area-session (at least 5 neurons, all neurons), quiet completed Hit against Nogo-tone
+    Whisker CR trials in 5 ms bins from 0.955 to 1.1 s; each trial's counts minus its count in one
+    baseline bin, repeated for each of the 10 bins from 0.955 to 1.0 s and the accuracies averaged;
+    SVM, balancing and folds as fig5b-context-decoding-delay; 5 runs (seeds 1 to 5) averaged.
+    Per bin, accuracy against the mean over 0.955 to 1.0 s by two-sided Wilcoxon signed-rank over
+    sessions, FDR over the area's bins (legend), with the code's FDR over all areas and bins as
+    variant. Reproduced when the first bin of wM2 after which every bin up to 1.1 s is significant
+    is at 1.015 to 1.025 s, the same for ALM is 5 to 10 ms later than wM2, and no such persistent
+    run starts before 1.03 s in A1, wS1 or wS2; partially reproduced when wM2 precedes ALM but
+    the onsets differ from the paper by more than one bin. The single-bin results in A1 and wS2
+    are reported.
+- id: fig8a-wm2-lick-divergence
+  statement: In the first 30 ms after the whisker stimulus, only wM2 activity diverges into
+    separate states for lick and no-lick trials, mainly along the context coding direction, and at
+    30 ms distinguishes lick from no-lick trials both in correct Go-tone and error Nogo-tone
+    conditions; ALM shows a weaker effect and A1, wS1 and wS2 none.
+  source: Results, Context-dependent processing of the whisker stimulus, paragraph 3; Figure 8a
+  quote: Only wM2 showed a clear divergence of trajectories into two distinct states corresponding
+    to lick vs no-lick outcomes. This separation was primarily along the context coding direction.
+    Single-session analyses confirmed that wM2 activity at 30 ms significantly distinguished lick
+    from no-lick trials both in correct Go-tone and error Nogo-tone conditions ( Supplementary Fig.
+    17 ). ALM showed a weaker effect, and no significant differences were observed in A1, wS1, or
+    wS2.
+  depends_on:
+  - fig7c-no-whisker-cd-change
+  criterion: The test is in Supplementary Fig. 17, not read; its code
+    (Ghaderi2025_Sup_Figure17_Context_CD_LickvsNolick.m with Coding_direction_5ms.m) fixes it.
+    Per area-session, held-out quiet completed trials projected on CD context (5 ms bins, as
+    fig6b-context-coding-direction at 5 ms) and averaged per trial group, Go-tone Whisker lick and
+    no lick, Nogo-tone Whisker lick and no lick, No-tone Whisker lick and no lick; the value in
+    the bin at 1.03 s; Kruskal-Wallis over the six groups across sessions, then LSD comparisons.
+    Reproduced when in wM2 the Kruskal-Wallis p < 0.05 and both Go-tone lick against no lick and
+    Nogo-tone lick against no lick are significant with lick higher, while A1, wS1 and wS2 show no
+    significant lick against no lick comparison; partially reproduced when wM2 holds for one of the
+    two contexts. ALM's comparisons are reported.
+- id: fig8b-lick-coding-direction
+  statement: At 30 ms after the whisker stimulus, activity along a lick coding direction defined
+    from spontaneous licking separates lick from no-lick trials in wM2 for Go-tone, Nogo-tone (false
+    alarm) and No-tone trials, in ALM only for correct trials, and not in A1, wS1 or wS2.
+  source: Results, Context-dependent processing of the whisker stimulus, paragraph 4; Figure 8b
+  quote: Projecting neuronal activity in the lick coding direction revealed separation between lick
+    and no-lick trials for both correct and false alarm cases in wM2 at 30 ms after delivery of the
+    whisker stimulus ( Fig. 8b ). The lick coding direction did not separate between lick and
+    no-lick trials in A1, wS1 or wS2 at this early time point. Neuronal activity in ALM was higher
+    in the lick coding direction only for correct trials, but false alarm lick trials were not
+    different from no-lick trials at 30 ms post whisker stimulus time.
+  statistics:
+  - about: wM2, six trial groups
+    test: Kruskal-Wallis test
+    p: 0.001
+    n: 10 to 12 sessions
+  - about: wM2, Go-tone lick against no-lick trials, comparison 1 of 3
+    test: Kruskal-Wallis followed by LSD-corrected post hoc paired comparisons
+    p: 0.01
+    n: 10 to 12 sessions
+  - about: wM2, Go-tone lick against no-lick trials, comparison 2 of 3
+    test: Kruskal-Wallis followed by LSD-corrected post hoc paired comparisons
+    p: 0.006
+    n: 10 to 12 sessions
+  - about: wM2, Go-tone lick against no-lick trials, comparison 3 of 3
+    test: Kruskal-Wallis followed by LSD-corrected post hoc paired comparisons
+    p: 0.02
+    n: 10 to 12 sessions
+  - about: wM2, Nogo-tone lick against no-lick trials, comparison 1 of 3
+    test: Kruskal-Wallis followed by LSD-corrected post hoc paired comparisons
+    p: 0.004
+    n: 10 to 12 sessions
+  - about: wM2, Nogo-tone lick against no-lick trials, comparison 2 of 3
+    test: Kruskal-Wallis followed by LSD-corrected post hoc paired comparisons
+    p: 0.002
+    n: 10 to 12 sessions
+  - about: wM2, Nogo-tone lick against no-lick trials, comparison 3 of 3
+    test: Kruskal-Wallis followed by LSD-corrected post hoc paired comparisons
+    p: 0.005
+    n: 10 to 12 sessions
+  - about: wM2, No-tone lick against no-lick trials, comparison 1 of 3
+    test: Kruskal-Wallis followed by LSD-corrected post hoc paired comparisons
+    p: 0.03
+    n: 10 to 12 sessions
+  - about: wM2, No-tone lick against no-lick trials, comparison 2 of 3
+    test: Kruskal-Wallis followed by LSD-corrected post hoc paired comparisons
+    p: 0.02
+    n: 10 to 12 sessions
+  - about: wM2, No-tone lick against no-lick trials, comparison 3 of 3
+    test: Kruskal-Wallis followed by LSD-corrected post hoc paired comparisons
+    p: 0.04
+    n: 10 to 12 sessions
+  criterion: As Methods and code, Coding_direction_SpontLick.m and
+    Ghaderi2025_Figure8_b_SpontLick_CD_LickvsNolick.m. Spontaneous licks are licks outside 0 to 6
+    s of any trial start, in bouts (lick mask, from Lick_times.mat) longer than 0.5 s, whose mean
+    jaw position over 0 to 0.1 s after the lick exceeds 3 times its mean over -1 to 0 s;
+    sessions with fewer than 2 such licks are dropped. CD lick is the mean over spontaneous
+    licks and neurons' 5 ms counts in 0.2 to 0.5 s minus those in -1 to -0.5 s, unit length.
+    Quiet completed trials are projected and averaged per session in six groups (Go-tone, Nogo-tone
+    and No-tone Whisker, each lick and no lick); the value in the bin at 1.03 s; Kruskal-Wallis
+    over the six groups across sessions, then Fisher LSD comparisons (MATLAB multcompare on the
+    Kruskal-Wallis ranks). The legend's three p-values per context are read as that context's
+    lick group against the three no-lick groups, which the paper does not state. Reproduced when
+    in wM2 the Kruskal-Wallis p < 0.05 and each context's lick group exceeds that context's no-lick
+    group significantly; in ALM the Go-tone lick group exceeds no lick and the Nogo-tone lick group
+    does not; and A1, wS1 and wS2 show no significant lick against no-lick comparison. Partially
+    reproduced when wM2 holds for two of the three contexts.
+- id: figs18-later-lick-coding
+  statement: Later, at 0.2 to 0.4 s after the whisker stimulus, the lick coding direction
+    separates lick from no-lick trials in ALM, wM2, wS2 and wS1, with the effect largest in ALM and
+    ranked in that order.
+  source: Results, Context-dependent processing of the whisker stimulus, paragraph 4
+    (Supplementary Fig. 18)
+  quote: at later times, neuronal activity in the lick coding direction showed significant
+    differentiation between lick and no-lick trials in ALM, wM2, wS2 and wS1 ranked according to
+    the effect size quantified at 0.2-0.4 s after the whisker stimulus with ALM being largest
+  depends_on:
+  - fig8b-lick-coding-direction
+  criterion: Supplementary Fig. 18 was not read; its code
+    (Ghaderi2025_Sup_Figure18_SpontLick_CD_LickvsNolick_200mswindow.m) takes the projection of
+    fig8b-lick-coding-direction averaged over 1.2 to 1.4 s with the same Kruskal-Wallis and LSD
+    test. The effect size is not defined in the paper or the code. Readings (a) the difference of
+    the mean projection of all lick groups and all no-lick groups divided by their pooled SD over
+    sessions (Cohen's d); (b) the Kruskal-Wallis chi-squared statistic. Reproduced when ALM, wM2,
+    wS2 and wS1 each give Kruskal-Wallis p < 0.05 with at least one lick group above its no-lick
+    group, and under both readings ALM has the largest effect; the full ranking is reported. If
+    the readings disagree on which area is largest, blocked as methods_underspecified.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Header, quiet trials. The rule was run under both MAD readings with no outcome rule; the Methods (median absolute deviation) and the code (mean) disagree, so the Methods now decide the outcome and the code is a variant (protocol, Reader step 2).
+  - fig4-29-clusters. The criterion took the code (100 ms bins, exp(-d/sigma)) as main and the Methods (10 ms bins, 1500 columns, Gaussian similarity, sigma tuned to mean similarity 0.5, 17 PCs) as variant; the protocol puts the Methods first, so this is reversed. The code's k is still reported.
+  - fig3d-wm2-infragranular-delay. Quiet trials by whisker speed only (code) was main against the Methods' jaw and whisker rule; reversed.
+  - fig5b-context-decoding-delay (and fig5b-decoding-time-course, fig5c-cluster-removal, fig5d-null-space-decoding, fig7d-context-decoding-after-whisker, which decode as it). The code's nu-SVC was main and the Methods' grid search a variant with a grid the reader chose. The grid is not in the paper, so both are now run and the outcome is the one both give, methods_underspecified when they differ.
+  - fig3b-delay-and-response-psth. The post-whisker window 1.0 to 1.5 s was the reader's; now the paper's Licking window 1.3 to 1.5 s (Fig. 3c, Methods activity maps), with 1.0 to 1.5 s as variant. The pooled and type-alone Go and Nogo pairings must now both hold.
+  - fig4b-named-clusters. "Mostly" was read as largest share for cluster 1 and as more than half for the others, both the reader's; now both readings for all, with the all-readings rule. The 5% bound for "widely distributed" is marked as the reader's.
+  - fig5a-single-neuron-context. The statement ranked wM2 above ALM in total modulated neurons ("followed by ALM"); the paper puts both as highest and ranks wM2 first only for Go-tone excited neurons, and the statement now says that. The criterion now also checks that wM2 and ALM have larger total modulated fractions than A1, wS1 and wS2. The 3 Hz tolerances go from 0.3 to 0.5 Hz, since the paper prints whole numbers.
+  - fig5b-decoding-time-course. Chance band 50 +/- 2% was the reader's; now 10% of the value. The early windows 0 to 0.2 s and 0.3 to 0.5 s were the reader's; now readings (a) the paper's Auditory window 0 to 0.03 s, (b) 0 to 0.2 s, with the all-readings rule. The neuron counts judged now include 5, as the legend says "independent of the number of considered neurons".
+  - quiet-trials-half. Named the denominator of "recorded trials" as open (completed or all trials).
+  - fig6c-temporal-correlation. The statement's brief increase in A1, wS1 and wS2 had no rule; the criterion now says it is shown and not judged.
+  - New claim fig3a-activity-maps. The Fig. 3a findings (Results, Spatiotemporal dynamics, paragraph 2) had no claim. Baseline lengths are not in the paper; the pre-whisker baseline is named as open with two readings. The Fig. 3a code was not read by this checker.
+  - Open, not settled. The code citations (file names, the 30% CD split, 10,000 iterations, nu-SVC, the -0.8 s baseline, the spontaneous-lick rule) could not be checked; the code was not available to this checker. If the Fig. 3a script fixes the baselines of fig3a-activity-maps, the criterion should follow it.
+  - Open, not settled. fig6a-pca-delay-states judges "settled far from the origin" and "returning near the start point" by distances and a half-maximum rule the reader chose; the paper gives no measure.
+  - Open, not settled. fig2-other-trial-types reads "little impact" by a 10% count and a 13-point bound, both the reader's; the paper gives no test.
+  - Open, not settled. figs18-later-lick-coding has no defined effect size; its two readings are the reader's.
+  - Open, not settled. Paragraph numbers in sources could not be checked, as the text has no paragraph breaks.
+  - Open, not settled. The Supplementary Information was not supplied; claims resting on Supplementary Figs. 3, 17 and 18 use the main-text sentence and the code.

@@ -1,0 +1,869 @@
+# Claims for Gillespie, Astudillo Maya, Denovellis, Liu, Kastner, Coulter, Roumis, Eden & Frank
+# (2021), Neuron 109, 3149-3163, on dandiset 000115.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC8497431, NIHMS1731801), in
+# paper/10.1016-j.neuron.2021.07.029.txt: Summary, Introduction, Results, Discussion, STAR
+# Methods, all figure legends, and the Supplemental Information PDF (Supplementary Figures 1
+# to 8 with legends), extracted into the same file. The version of record was not read; the
+# bioRxiv preprint (version 2, paper/10.1101-2021.03.09.434621.txt) was not used for claims.
+# The PDF was not needed: every claim rests on a sentence or a legend.
+#
+# Code read: the analysis code the paper links (doi:10.5281/zenodo.5140706), which is the
+# GitHub repository LorenFrankLab/Gillespie_Neuron_2021, tag v1.0, commit
+# 1be6a6a7dbd806154a544d6f509452617e52d8c3 (the later head 48108d8 changes only the README).
+# MATLAB scripts in the Frank lab filter framework. dfs_ripcontent.m, parts 1 to 16, makes
+# Figures 1D to 8 and Supplementary Figures 1, 3G-H, 5 to 8 (its README maps parts to
+# panels); dfa_ripcontent.m labels trials and assigns each SWR to a trial phase;
+# utilities/label_trial_interval.m codes each trial's task phase; dfa_makeFFripdecodes.m
+# summarises the decoder posterior over each SWR; dfs_decodequant_movement.m makes
+# Supplementary Figure 3A-F; dfa_ripcontent_ripspeed.m and dfs_ripcontent_ripspeed.m make
+# Supplementary Figure 8A-D; dfs_muacontent.m, dfs_likcontent.m, dfs_ripcontent_3state.m and
+# dfs_ripcontent_contentthresh.m are the controls. The SWR detector (filterframework_shared),
+# the linearisation and the clusterless state space decoder itself (Spykshrk,
+# github.com/LorenFrankLab/spykshrk_realtime, and replay_trajectory_classification,
+# github.com/Eden-Kramer-Lab/replay_trajectory_classification) are not in the repository.
+# Details the code settles, used in the criteria below:
+#   - Sessions: full-task ("goal") sessions without forage assist and with a good decode.
+#     Subjects 1 to 4 of every legend are, in the code's order, jaq, roquefort, despereaux and
+#     montague.
+#   - Trial task phase (label_trial_interval.m): 0 or -0.2 for search trials before the goal
+#     is found; an integer n for a rewarded visit, the n-th reward of the block (1 is the
+#     search trial that finds the goal); n + 0.3, 0.5 or 0.8 for a repeat error after n
+#     rewards; n + 0.9 for the final unrewarded visit to the old goal. Search is phase <= 1,
+#     repeat is phase > 1. Lockout (timeout) trials are dropped; the past arm is the last arm
+#     visited, lockouts included (prevarm column 2), except in Figure 7 (column 1).
+#   - Replay events: SWRs during immobility (< 4 cm/s) inside a trial's home, center port
+#     (delay and reward) or outer port interval. A SWR is spatially continuous when the
+#     continuous state has more 2 ms bins above 0.8 than the fragmented state (ties go to
+#     fragmented), and its maze segment is the one with the largest mean posterior, kept only
+#     when that share is > 0.3. Box events are those at the home and center ports; a box
+#     event is remote when its segment is an arm. An outer event is local when its segment is
+#     the arm the rat is on.
+#   - Correct repeat trials include the final n + 0.9 trial; error trials are the n + 0.3,
+#     0.5 and 0.8 trials.
+#
+# Data the paper used: four male Long-Evans rats, each with a 30-tetrode bilateral drive in
+# dorsal CA1, recorded during 45 to 90 min sessions of an eight-arm win-stay lose-switch task
+# (home port, two center ports with a 2 to 20 s delay, eight outer arm ports, one rewarded
+# goal arm changing after 4 to 15 rewards). 24, 32, 23 and 33 sessions per subject after two
+# sessions of subject 1 were excluded for poor decoding. Measured: continuous 30 kHz tetrode
+# data (LFP 0.1 to 300 Hz, spikes above 100 uV with four-channel amplitudes), port beam
+# breaks, lights and reward delivery, head LED position at 30 Hz, and the task log with goal
+# arm and trial structure. Dandiset 000115 says it holds the CA1 tetrode electrophysiology
+# and the behavioural data (port triggers, reward delivery, position tracking) of this paper.
+# The SWR times, the linearised position and the decoder output are derived; every claim on
+# replay content needs them recomputed with the paper's methods (data: dataset; the decoder
+# software is cited above).
+#
+# Not claimed: the Discussion's interpretation (storage, not planning) and its readings of
+# earlier studies; Supplementary Figure 5 (SWR features by event class), shown without a
+# finding stated in the text; Supplementary Figure 2 and 4 (schematic and examples).
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000115"
+paper: doi:10.1016/j.neuron.2021.07.029
+claims:
+- id: fig1d-sessions-blocks
+  statement: The analysis includes 24, 32, 23 and 33 behavioural sessions and 89, 85, 105 and
+    166 trial blocks for the four subjects.
+  source: Figure 1D and 1E-F legends
+  quote: n = 24, 32, 23, and 33 sessions per subject, respectively ... n = 89, 85, 105, and 166
+    trial blocks per subject, respectively
+  expected:
+  - quantity: sessions, subject 1
+    value: 24
+    tolerance: 2.4
+  - quantity: sessions, subject 2
+    value: 32
+    tolerance: 3.2
+  - quantity: sessions, subject 3
+    value: 23
+    tolerance: 2.3
+  - quantity: sessions, subject 4
+    value: 33
+    tolerance: 3.3
+  - quantity: trial blocks, subject 1
+    value: 89
+    tolerance: 8.9
+  - quantity: trial blocks, subject 2
+    value: 85
+    tolerance: 8.5
+  - quantity: trial blocks, subject 3
+    value: 105
+    tolerance: 10.5
+  - quantity: trial blocks, subject 4
+    value: 166
+    tolerance: 16.6
+  criterion: Sessions are the full-task sessions of each subject, less sessions 1 and 3 of
+    subject 1 (Methods, Spatial decoding). Trial blocks are counted as in dfs_ripcontent.m part
+    2, blocks with at least four rewards at the goal (a trial of task phase >= 4, the code's
+    any(ctphase>=4)). Reproduced when
+    all eight counts are within tolerance; partially reproduced when the session counts are and
+    the block counts are not.
+- id: fig1ef-reward-rate
+  statement: Aligned to the goal change, the outer-arm reward rate starts at chance (0.125) and
+    rises; aligned to the first reward at the new goal, it is well above chance, so all subjects
+    keep visiting a goal once found.
+  source: Results, Rats learn to perform a flexible spatial memory task, paragraph 5; Figure 1E
+    and 1F
+  quote: Aligned to the first search trial of each trial block, the reward rate at the outer arms
+    for all subjects began at chance (0.125) and rose (Figure 1E) ... the outer reward rate was
+    well above chance, indicating that all subjects preferentially visited the goal location
+    consistently after finding it (Figure 1F)
+  depends_on:
+  - fig1d-sessions-blocks
+  criterion: As dfs_ripcontent.m part 2, per subject over trial blocks with at least four
+    rewards, the final unrewarded trial of the block dropped; a trial scores 1 when rewarded;
+    binomial S.E.M. sqrt(p(1-p)/n), trials 1 to 15. The paper gives no test, so the figure's
+    S.E.M. band is read. Reproduced when, in all four subjects, the band on trial 1 of Figure 1E
+    reaches 0.125 or lies below it, the rate rises over trials 1 to 15, and every point of
+    Figure 1F (trials 1 to 15 after the first reward) has its band above 0.125.
+- id: figs1c-swr-reward-consumption
+  statement: SWRs occur mainly during reward consumption at the home port, the center ports and
+    the rewarded goal arm, and are rarely detected at unrewarded outer ports.
+  source: Results, Most SWRs contain interpretable spatial content, paragraph 1; Supplementary
+    Figure 1C
+  quote: SWRs occurred primarily during reward consumption (Supplementary Figure 1C) ... As
+    expected, SWRs were rarely detected at non-goal outer arm ports, which did not provide reward
+  criterion: SWRs detected as in the Methods (consensus ripple envelope, 150 to 250 Hz, over all
+    CA1 cell-layer tetrodes, above 2 SD of the session mean for at least 15 ms, bounds at the
+    mean crossing, immobility below 4 cm/s). Per session, time, SWR count and SWR rate in each
+    trial phase (home port, center port before and after reward, rewarded outer port,
+    unrewarded outer port), as dfs_ripcontent.m part 12. Reproduced when, in all four subjects,
+    the median over sessions of the SWR count at unrewarded outer ports is the lowest of the
+    five phases and its SWR rate is below that of each reward phase.
+- id: figs3abc-decode-accuracy
+  statement: During movement the decoded position (posterior maximum) is usually on the same or
+    an adjacent maze segment as the real position, and the median deviation between them is
+    less than one 5 cm bin, on every maze segment.
+  source: Results, Most SWRs contain interpretable spatial content, paragraph 3; Supplementary
+    Figure 3A-C; Methods, Spatial decoding, paragraph 5
+  quote: The median deviation between predicted and real position was less than a single spatial
+    bin (5 cm), indicating that the maximum of the posterior and the subject's real position most
+    often corresponded to the same spatial bin, and this was consistent across all segments of
+    the maze
+  criterion: Decoding as the Methods give it (clusterless, encoding on spikes above 100 uV at
+    > 4 cm/s with a 20 uV Gaussian kernel on the four amplitudes and 5 cm bins, 2 ms steps, a
+    continuous and a uniform fragmented movement state, 0.98 probability of staying in a state,
+    acausal smoother, each session decoded alone, a spike's own position not used to decode it).
+    For 30 Hz frames during movement, the frame is same/adjacent when the real and decoded
+    segments match or one is the box; for those frames the deviation in 5 cm bins.
+    Reproduced when, in every subject, the median deviation is 0 bins (less than one bin) on
+    the pooled frames and on each of the nine segments. dfs_decodequant_movement.m part 2 plots
+    the mean deviation per segment; it is shown as a variant.
+- id: figs3df-goal-arm-no-remapping
+  statement: Decoding error on the goal arm shows no systematic change over the course of a
+    trial block, so repeated reward does not change spatial coding at the ensemble level.
+  source: Results, Most SWRs contain interpretable spatial content, paragraph 3; Supplementary
+    Figure 3D-F
+  quote: We found no systematic changes in the deviation over the course of the trial block,
+    indicating that the changing reward location did not alter overall spatial coding at the
+    ensemble level
+  depends_on:
+  - figs3abc-decode-accuracy
+  criterion: A claim of absence. The legend names no test; dfs_decodequant_movement.m part 6
+    compares the mean deviation in the last 5 bins (25 cm) of the goal arm on the first against
+    the last rewarded goal visit of each block with a Wilcoxon rank-sum test, and fits a line to
+    the per-visit deviations of each block with at least 4 visits. Reproduced when the rank-sum
+    test gives p >= 0.05 in each subject; the slope distributions (median and its sign) are
+    reported either way.
+- id: figs3g-continuous-fraction
+  statement: About 95% of SWRs contain spatially continuous representations.
+  source: Results, Most SWRs contain interpretable spatial content, paragraph 4; Supplementary
+    Figure 3G
+  quote: We found that the vast majority of SWRs (~95%) contained spatially continuous
+    representations of the environment
+  depends_on:
+  - figs3abc-decode-accuracy
+  expected:
+    quantity: fraction of SWRs that are spatially continuous, mean over sessions, each subject
+    value: 0.95
+    tolerance: 0.095
+  criterion: Per session, spatially continuous SWRs (as in the opening comment, with the 0.3
+    single-segment share) over all SWRs inside trial intervals, as dfs_ripcontent.m part 3
+    (fraccohall). Reproduced when the session mean of each subject is within tolerance.
+- id: likelihood-decode-same-segment
+  statement: A history-independent Bayesian decoder with 20 ms bins and no movement model
+    assigns more than 90% of SWRs to the same maze segment as the state space decoder.
+  source: Results, Most SWRs contain interpretable spatial content, paragraph 4
+  quote: We found that >90% of SWRs decoded to the same maze segment and our main results were
+    unchanged with the use of this simplified decoding approach
+  depends_on:
+  - figs3abc-decode-accuracy
+  expected:
+    quantity: fraction of SWRs assigned the same segment by both decoders
+    value: 0.9
+    tolerance: 0.09
+  criterion: The comparison is not described beyond the sentence. Readings, each run, (a) over
+    all SWRs, the segment with the largest summed posterior during the SWR under each decoder;
+    (b) over spatially continuous SWRs only. Reproduced when the fraction is above 0.9 under one
+    reading, pooled over subjects and in each subject. The "main results unchanged" part is
+    tested in robustness-controls.
+- id: fig2f-remote-fraction
+  statement: A substantial fraction of all detected SWRs contain remote replay, 35.1%, 41.1%,
+    34.5% and 47.2% for the four subjects.
+  source: Results, Most SWRs contain interpretable spatial content, paragraph 6; Figure 2F
+  quote: Across all animals, we found that a substantial fraction of detected SWRs contained
+    remote replay ... 35.1%, 41.1%, 34.5%, and 47.2% for the 4 subjects (Figure 2F)
+  depends_on:
+  - figs3abc-decode-accuracy
+  expected:
+  - quantity: remote fraction of SWRs, subject 1
+    value: 0.351
+    tolerance: 0.0351
+  - quantity: remote fraction of SWRs, subject 2
+    value: 0.411
+    tolerance: 0.0411
+  - quantity: remote fraction of SWRs, subject 3
+    value: 0.345
+    tolerance: 0.0345
+  - quantity: remote fraction of SWRs, subject 4
+    value: 0.472
+    tolerance: 0.0472
+  criterion: Per session, remote continuous events (segment other than the current one) over all
+    SWRs in the trial intervals, then the mean over sessions, as dfs_ripcontent.m part 3
+    (fracremoteall, whose printed means are the reported values). Reproduced when all four are
+    within tolerance; partially reproduced when two or three are.
+- id: fig3a-box-majority
+  statement: The large majority of spatially continuous replay events occur in the box area,
+    before the arm choice, and include local and remote events.
+  source: Results, Replay content is enriched for previous goal locations, paragraph 1; Figure 3A
+  quote: The large majority of spatially continuous replay events occurred in the box area,
+    before arm choice, and included both local and remote representations (Figure 3A)
+  depends_on:
+  - figs3abc-decode-accuracy
+  criterion: Pooled over sessions per subject, the shares of continuous events that are box
+    local, box remote, outer local, outer box and outer remote arm, as dfs_ripcontent.m part 3
+    (totalnums). Reproduced when, in all four subjects, box events are more than half of all
+    continuous events and box local and box remote are each above zero. "Large majority" is
+    not given a number; the box share is reported.
+- id: fig3b-search-prevgoal-enriched
+  statement: In search trials where the past, future and previous goal arms are distinct, the
+    previous goal arm is consistently and strongly over-represented in pre-choice remote replay,
+    about 20% of these events, in all subjects.
+  source: Results, Replay content is enriched for previous goal locations, paragraph 2; Figure 3B
+  quote: In contrast, we saw consistent and strong enrichment for replay of the previous goal arm
+    ... such replay accounted for roughly 20% of all pre-choice remote replay events during these
+    search trials (Figure 3B, previous goal)
+  statistics:
+  - test: Wilcoxon rank-sum test against a random distribution matched for remote event numbers
+      per session
+    p: 0.05
+    p_relation: "<"
+    n: 22, 23, 16 and 26 sessions per subject
+  depends_on:
+  - fig2f-remote-fraction
+  expected:
+    quantity: previous goal fraction of box remote replay, search, session median, each subject
+    value: 0.2
+    tolerance: 0.02
+  criterion: As the Methods (Quantification of replay content) and dfs_ripcontent.m part 4. Box
+    remote events, sessions after the first trial block, search trials with past, future and
+    previous goal all distinct, sessions with at least 5 such trials; per session the count of
+    events of each category over all remote events. The null is the open detail; readings, each
+    run, (a) Methods, per session 5000 draws of a random arm 1 to 8 for each event, the null
+    values of all included sessions pooled; (b) dfs_ripcontent.m, 100 draws per session pooled;
+    (c) 5000 draws over the subject's events pooled across sessions. Per subject, a two-sided
+    Wilcoxon rank-sum test of session fractions against the null. "Roughly 20%" does not say
+    which summary; the session median (the boxplot's) and the session mean are both read.
+    Reproduced when the previous goal fraction is above the null at p < 0.05 in all four
+    subjects under every null reading and the median or the mean is within tolerance; partially
+    reproduced when it is enriched in all four but neither is within tolerance.
+- id: fig3b-search-past-depleted
+  statement: In those search trials the immediately past arm is replayed far less often than
+    chance.
+  source: Results, Replay content is enriched for previous goal locations, paragraph 2; Figure 3B
+  quote: we found far fewer replays of the immediate past arm than would be expected by chance
+    (Figure 3B, past)
+  statistics:
+  - test: Wilcoxon rank-sum test against a random distribution
+    p: 0.05
+    p_relation: "<"
+    n: 22, 23, 16 and 26 sessions per subject
+  depends_on:
+  - fig3b-search-prevgoal-enriched
+  criterion: Selection, measure, null readings and test as fig3b-search-prevgoal-enriched.
+    Reproduced when the past fraction is below the null at p < 0.05 in all four subjects under
+    every reading; partially reproduced in two or three.
+- id: fig3b-search-future-inconsistent
+  statement: In those search trials the upcoming (future) arm shows a small but significant
+    enrichment in two of the four subjects only.
+  source: Results, Replay content is enriched for previous goal locations, paragraph 2; Figure 3B
+  quote: while we did see a small but significant enrichment for the upcoming arm in two out of
+    four subjects, this enrichment was not consistent across animals (Figure 3B, future)
+  statistics:
+  - test: Wilcoxon rank-sum test against a random distribution
+    p: 0.05
+    p_relation: "<"
+    n: 22, 23, 16 and 26 sessions per subject
+  depends_on:
+  - fig3b-search-prevgoal-enriched
+  criterion: Selection, measure, null readings and test as fig3b-search-prevgoal-enriched.
+    Reproduced when the future fraction is significantly above the null (p < 0.05) in fewer than
+    four subjects and its session median is below that of the previous goal in every subject.
+    The count of subjects with significant enrichment is reported; the paper's count is two.
+- id: fig3b-search-other
+  statement: Each of the other arms is replayed at about chance per arm, yet the other arms
+    together make up the majority of pre-choice remote replay.
+  source: Results, Replay content is enriched for previous goal locations, paragraph 2; Figure 3B
+    right
+  quote: Finally, replay of other arms occurred at roughly chance levels per arm (Figure 3B,
+    other), but the total fraction of "other" events comprised the majority of replay events
+    overall (Figure 3B, right)
+  depends_on:
+  - fig3b-search-prevgoal-enriched
+  criterion: Per session, other-arm events over all remote events divided by 5 (per arm) and
+    not divided (total), as the Methods and dfs_ripcontent.m part 4. "Roughly chance" has no
+    test in the text; the per-arm session median is compared with 0.125 using the protocol's
+    10% tolerance (0.1125 to 0.1375) and the rank-sum p against the null is reported.
+    Reproduced when, in all four subjects, the per-arm median is within that range and the
+    total-other median is above 0.5.
+- id: fig3c-repeat-prevgoal
+  statement: In repeat trials where past, future and current goal are the same arm and the
+    previous goal is distinct, all animals still strongly over-replay the previous goal, while
+    the future (past and goal) arm shows only a small and variable effect; other arms together
+    are again the majority.
+  source: Results, Replay content is enriched for previous goal locations, paragraph 3; Figure 3C
+  quote: During the large subset of repeat trials in which the past, future, and goal arm refer to
+    the same location, distinct from the previous goal arm, all animals still showed a strong and
+    highly significant tendency to replay the previous goal location (Figure 3C, previous goal).
+    In contrast, replay of the future arm still showed only a small and variable effect
+  statistics:
+  - test: Wilcoxon rank-sum test against a random distribution
+    p: 0.05
+    p_relation: "<"
+    n: 23, 30, 22 and 31 sessions per subject
+  depends_on:
+  - fig3b-search-prevgoal-enriched
+  criterion: As fig3b-search-prevgoal-enriched, for repeat trials (task phase > 1) after the
+    first block where past, future and current goal are one arm and the previous goal differs;
+    other arms per arm are divided by 6. Reproduced when, under every null reading, the previous
+    goal fraction is above the null at p < 0.01 ("highly significant", the figure's ** level)
+    in all four subjects, the future/past/goal fraction is significantly above the null in
+    fewer than four subjects or has a median below that of the previous goal in every subject,
+    and the total-other median exceeds 0.5 in all four.
+- id: fig3d-glm-search
+  statement: In a Poisson GLM over all search trials, being the previous goal roughly doubles an
+    arm's replay rate, the strongest effect; the past arm is consistently replayed less; the
+    future arm has a small increase significant in three of four subjects.
+  source: Results, Replay content is enriched for previous goal locations, paragraph 5; Figure 3D
+  quote: During search trials, previous goal arm status had the strongest impact on replay, such
+    that if an arm was the previous goal, there was an approximately two-fold increase in replay
+    rate from baseline (Figure 3D). The past arm showed a significant and consistent reduction in
+    the rate of replay. The future category showed a small increase in replay rate that was
+    significant in three of the four subjects but not in the fourth
+  depends_on:
+  - fig2f-remote-fraction
+  expected:
+    quantity: previous goal fold change, search GLM, each subject
+    value: 2
+    tolerance: 0.2
+  criterion: As the Methods (Generalized linear models to measure the effect of arm category)
+    and dfs_ripcontent.m part 5. Per subject, eight rows per search trial (task phase <= 1),
+    response the count of box remote continuous events of that arm, binary predictors future,
+    past and previous goal, Poisson log link, 99% Wald intervals, exponentiated. The trial set
+    is the open detail; (a) Methods, trials after the first block of each session (main);
+    (b) dfs_ripcontent.m, all search trials with the previous goal predictor zero in the first
+    block, whose trial counts appear to be those of the legend (711 here against 534 search
+    trials after the first block in Figure 5A), run as a variant. Reproduced under (a) when, in
+    all four subjects, the previous goal fold change has its interval above 1 and is the largest
+    of the three, the past fold change has its interval below 1, and the future interval is
+    above 1 in at most three subjects; the previous goal values are compared with 2 within
+    tolerance, and partially reproduced when only that fails. The pooled
+    fit of the code is shown too. The legend gives 711, 848, 725 and 1065 trials per subject.
+- id: fig3e-glm-repeat
+  statement: In a Poisson GLM over all repeat trials the previous goal arm is again the strongest
+    and most consistent driver of replay and the past arm is reliably replayed less.
+  source: Results, Replay content is enriched for previous goal locations, paragraph 5; Figure 3E
+  quote: Applying the GLM approach to repeat trials yielded similar results (Figure 3E),
+    confirming that for both search and repeat phase, the previous goal arm was the strongest and
+    most consistent driver of replay content, while the replay of the past arm was reliably
+    reduced
+  depends_on:
+  - fig3d-glm-search
+  criterion: As fig3d-glm-search with a fourth predictor, current goal, over repeat trials (task
+    phase > 1), with the same two trial-set readings. In dfs_ripcontent.m part 5 the current goal
+    on the final unrewarded trial of a block is already the new goal; this is kept. Reproduced
+    when, in all four subjects, the previous goal interval is above 1 and its fold change is
+    the largest of the four predictors, and the past interval is below 1. The legend gives 1347,
+    1661, 1154 and 1730 trials per subject.
+- id: fig4ab-current-goal-late
+  statement: Replay of the current goal is consistently enhanced only late in the repeat phase
+    (five or more rewards at the goal), while the effects of the other three categories do not
+    differ much between early and late repeat trials.
+  source: Results, Replay of current goal location increases with experience, paragraph 2;
+    Figure 4A-B
+  quote: Indeed, we found a consistent enhancement of current goal replay only in the late portion
+    of the repeat phase. In contrast, the three other categories did not differ substantially
+    between early and late conditions
+  depends_on:
+  - fig3e-glm-repeat
+  criterion: The repeat GLM of fig3e-glm-repeat fit separately to early and late repeat trials.
+    Early is task phase > 1 and < 5, as dfs_ripcontent.m part 5 (the Figure 4A n equal the early
+    correct plus early error counts of Supplementary Figure 7 for subjects 1 to 3, and differ by
+    one trial for subject 4, 793 against 515 + 277).
+    Late is open; readings, each run, (a) task phase >= 5, the complement of early; (b) the
+    code's task phase > 4, under which errors after four rewards (4.3, 4.5, 4.8) enter both
+    sets. The trial-set readings of fig3d-glm-search also apply. Reproduced when, under each
+    reading, the current goal interval is above 1 in all four subjects for late trials and in
+    fewer than four for early trials, and for future, past and previous goal the early and late
+    99% intervals overlap in at least three of four subjects. The legends give 594, 801, 573
+    and 793 early and 801, 895, 600 and 967 late trials per subject.
+- id: fig4c-current-goal-reward-correlation
+  statement: On correct repeat trials, the number of current goal replays correlates positively
+    with the number of rewards already received at that goal in every subject, with low R2.
+  source: Results, Replay of current goal location increases with experience, paragraph 2;
+    Figure 4C
+  quote: Quantified on a trial-by-trial basis, we found significant positive correlations between
+    the number of replays of the current goal and the number of rewards already received at that
+    location, although there was substantial variability across trials, as indicated by the low
+    R2 values (R2=0.033, 0.015, 0.012, and 0.025; p=1.54e-6, 0.0003, 0.0004, and 2.87e-11;
+    n=923, 1007, 847, and 1340 trials per subject, respectively)
+  statistics:
+  - about: subject 1
+    test: correlation
+    statistic: R2 = 0.033
+    p: 1.54e-6
+    n: 923 trials
+  - about: subject 2
+    test: correlation
+    statistic: R2 = 0.015
+    p: 0.0003
+    n: 1007 trials
+  - about: subject 3
+    test: correlation
+    statistic: R2 = 0.012
+    p: 0.0004
+    n: 847 trials
+  - about: subject 4
+    test: correlation
+    statistic: R2 = 0.025
+    p: 2.87e-11
+    n: 1340 trials
+  depends_on:
+  - fig3d-glm-search
+  expected:
+  - quantity: R2, subject 1
+    value: 0.033
+    tolerance: 0.0033
+  - quantity: R2, subject 2
+    value: 0.015
+    tolerance: 0.0015
+  - quantity: R2, subject 3
+    value: 0.012
+    tolerance: 0.0012
+  - quantity: R2, subject 4
+    value: 0.025
+    tolerance: 0.0025
+  criterion: As dfs_ripcontent.m part 6. Correct repeat trials after the first block (task
+    phase integer > 1 or n + 0.9, with the old goal kept on the n + 0.9 trial), per subject
+    pooled over sessions (n = 923 is the Figure 5B correct count, so the first-block variant of
+    fig5b-future-correct-error is run too); Pearson correlation (corrcoef) of the count of box
+    remote events of the current goal with reward experience. Reward experience is open; (a) the code's
+    ceil(task phase), the reward count including the current trial's (n + 1 on the final
+    trial); (b) rewards received before the trial (n - 1 for a rewarded trial, n on the final
+    trial). Reproduced when, under one reading, r > 0 with p < 0.05 in all four subjects and
+    the R2 values are within tolerance; partially reproduced when the correlations are
+    significant and positive but some R2 is outside tolerance. The Figure 4C means per reward
+    count (groups of at least 10 trials) are shown.
+- id: fig5a-future-replay-rate
+  statement: Replay of the future arm occurs on average less than once per trial, and more often
+    in search than in repeat trials for three of the four subjects.
+  source: Results, Subsequent arm choice is not biased by replay, paragraph 2; Figure 5A
+  quote: Future replay per trial tends to occur less than once per trial, and more often during
+    search trials than repeat trials for three of the four subjects ... Search vs repeat rate p =
+    0.001, 5.002e-11, 0.264, and 4.111e-5 for each subject, respectively, using Wilcoxon rank-sum
+    test
+  statistics:
+  - about: subject 1
+    test: Wilcoxon rank-sum test
+    p: 0.001
+    n: 534 search and 924 repeat trials
+  - about: subject 2
+    test: Wilcoxon rank-sum test
+    p: 5.002e-11
+    n: 617 search and 1019 repeat trials
+  - about: subject 3
+    test: Wilcoxon rank-sum test
+    p: 0.264
+    n: 570 search and 894 repeat trials
+  - about: subject 4
+    test: Wilcoxon rank-sum test
+    p: 4.111e-5
+    n: 879 search and 1302 repeat trials
+  depends_on:
+  - fig3d-glm-search
+  criterion: As dfs_ripcontent.m part 7. Per trial after the first block, the count of box
+    remote continuous events of the arm visited on that trial; per subject the mean over search
+    and over repeat trials, and a Wilcoxon rank-sum test of the pooled trial counts. Reproduced
+    when all eight means are below 1 and the search mean is above the repeat mean at p < 0.05 in
+    three subjects (any three); partially reproduced in two or four.
+- id: fig5b-future-correct-error
+  statement: On repeat trials, future arm replay does not differ between correct and error
+    trials in two subjects and is higher on error trials in the other two, the opposite of what
+    planning predicts.
+  source: Results, Subsequent arm choice is not biased by replay, paragraph 2; Figure 5B
+  quote: However, we found no difference in future replay rate between correct and incorrect
+    repeat trials for two out of the four subjects (Figure 5B). For the other two subjects, future
+    arm replay was actually higher, on average, for error as compared to correct trials
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.01
+    p_relation: "<"
+    n: 923, 1007, 847 and 1340 correct and 424, 654, 307 and 390 error trials per subject
+  depends_on:
+  - fig5a-future-replay-rate
+  criterion: As dfs_ripcontent.m part 6. Repeat trials after the first block, correct and error
+    as in the opening comment; per trial the count of box remote events of the visited arm;
+    per subject a Wilcoxon rank-sum test of correct against error trials pooled over sessions.
+    The trial set is open; (a) after the first block, as the Methods (Quantification of replay
+    content) and part 6 (~isnan of the previous goal), the main reading; (b) all repeat trials,
+    first block included, run as a variant, because the legend's correct plus error counts
+    (1347, 1661, 1154, 1730) equal the Figure 3E counts, which part 5 takes with the first block
+    included. Reproduced when no subject has significantly (p < 0.05) more future replay on correct than on
+    error trials, and the number of subjects with significantly more on error trials is two.
+    Partially reproduced when no subject is higher on correct trials but the count is not two.
+    The p entry above records the figure's lowest marked level (**).
+- id: fig5c-current-goal-correct-error
+  statement: Current goal replay does not differ consistently between correct and error repeat
+    trials for three subjects, and the fourth has more current goal replay on error trials.
+  source: Results, Subsequent arm choice is not biased by replay, paragraph 4; Figure 5C
+  quote: Again, we found no consistent significant difference between the amount of current goal
+    replay on correct compared to error trials for three subjects (Figure 5C), and the fourth
+    subject showed a significant increase
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.01
+    p_relation: "<"
+    n: 923, 1007, 847 and 1340 correct and 424, 654, 307 and 390 error trials per subject
+  depends_on:
+  - fig5b-future-correct-error
+  criterion: As fig5b-future-correct-error, counting box remote events of the current goal arm
+    (the old goal on the final unrewarded trial, as dfs_ripcontent.m part 6). Reproduced when no
+    subject has significantly more current goal replay on correct trials and exactly one has
+    significantly more on error trials; partially reproduced when none is higher on correct
+    trials but the count of subjects higher on error trials is not one.
+- id: figs7-early-late-correct-error
+  statement: The lack of a correct over error difference in future and current goal replay holds
+    both early and late in the repeat phase.
+  source: Results, Subsequent arm choice is not biased by replay, paragraph 4; Supplementary
+    Figure 7A-D
+  quote: Importantly, these results were consistent for trials that occurred both early and late
+    in the repeat phase of the trial block, indicating that familiarity with the goal location did
+    not modulate the effect (Supplementary Figure 7A-D)
+  depends_on:
+  - fig5c-current-goal-correct-error
+  criterion: As fig5b and fig5c, split into early (task phase < 5) and late (task phase >= 5)
+    repeat trials, as dfs_ripcontent.m part 6 (its counts, 268 early correct and 326 early error
+    trials for subject 1, are in the legend). Reproduced when, in both halves, for future and
+    for current goal replay, no subject has significantly (rank-sum p < 0.05) more replay on
+    correct than on error trials.
+- id: figs7e-remote-rate-error
+  statement: Error trials have more remote replay than correct trials regardless of content,
+    while SWR amplitude, event duration and spike rate of remote events do not differ.
+  source: Results, Subsequent arm choice is not biased by replay, paragraph 4; Supplementary
+    Figure 7E
+  quote: We also examined features of remote events on correct and error trials, independent of
+    their content, and found that while characteristics such as SWR amplitude, event duration, and
+    spike rate did not differ, the rate of remote replay was consistently higher on error trials
+  statistics:
+  - test: Wilcoxon rank-sum test
+    p: 0.05
+    p_relation: "<"
+    n: 881, 963, 829 and 1319 correct and 404, 626, 301 and 384 error trials per subject
+  depends_on:
+  - fig5b-future-correct-error
+  criterion: As dfs_ripcontent.m part 14. Repeat trials (task phase > 1), error trials the
+    n + 0.3, 0.5 and 0.8 trials; per trial the number of box remote continuous events, and the
+    mean amplitude (SD threshold at which the event would still be detected), duration and
+    spike rate of those events. The legend says number per trial; the code also shows events
+    per second in the box, a variant. Per subject a Wilcoxon rank-sum test. Reproduced when the
+    number per trial is significantly higher on error trials in all four subjects; the
+    amplitude, duration and spike rate comparisons are judged as absence on the same test
+    (p >= 0.05) and partially reproduce the claim when one of them differs in some subject.
+- id: fig5d-glm-predict-chance
+  statement: Binomial GLMs predicting correct or error repeat trials from the counts of future
+    arm, current goal, or all four category replays perform at or very near chance (50%
+    misclassification), far worse than the animals.
+  source: Results, Subsequent arm choice is not biased by replay, paragraph 6; Figure 5D
+  quote: In all cases the models performed at or very close to chance levels, far worse than the
+    animals (Figure 5D)
+  depends_on:
+  - fig5b-future-correct-error
+  expected:
+    quantity: mean misclassification rate, each subject and model
+    value: 0.5
+    tolerance: 0.05
+  criterion: As the Methods (Generalized linear models to predict correct and incorrect repeat
+    phase trials). Per subject, repeat trials pooled, correct trials subsampled to the number
+    of error trials, five folds, a binomial GLM (logit) on counts of future replay, of current
+    goal replay, or of future, past, current goal and previous goal replay; misclassification is
+    the mean over folds of the test-set error. Open details, each run, (a) number of subsamples,
+    1000 (Methods, main) or 100 (dfs_ripcontent.m part 6, variant); (b) how a test trial is
+    classified, a draw from the fitted probability (the code's random(mdl, ...)) or a threshold
+    at 0.5. Reproduced when every subject and model mean lies within tolerance under every
+    reading; when readings differ, the claim is methods_underspecified with all results shown.
+    The legend gives 848, 1308, 614 and 780 trials per subset per subject, twice the error
+    trial counts of Figure 5B; the trial-set readings of fig5b-future-correct-error apply.
+- id: pg-replay-visits-correlation
+  statement: Across trial blocks, the rate of previous goal replay shows no consistent
+    correlation with the number of visits to the previous goal during that block.
+  source: Results, Subsequent arm choice is not biased by replay, paragraph 8
+  quote: "There was no consistent correlation between the rate of previous goal replay with the
+    number of subsequent visits to the previous goal location during the subsequent trial block
+    (for each subject: R2=0.008, 0.019, 0.021, and 0.023; p=0.49, 0.32, 0.18, and 0.08,
+    respectively)"
+  statistics:
+  - about: subject 1
+    test: correlation
+    statistic: R2 = 0.008
+    p: 0.49
+  - about: subject 2
+    test: correlation
+    statistic: R2 = 0.019
+    p: 0.32
+  - about: subject 3
+    test: correlation
+    statistic: R2 = 0.021
+    p: 0.18
+  - about: subject 4
+    test: correlation
+    statistic: R2 = 0.023
+    p: 0.08
+  depends_on:
+  - fig3d-glm-search
+  criterion: A claim of absence, on the paper's test as dfs_ripcontent.m part 16. Per trial
+    block from the second on (trailing blocks with no trial of task phase above 3 dropped),
+    previous goal replay rate is the count of box remote events of the previous goal over all
+    the block's trials divided by its number of trials, and visits are the block's visits to
+    the previous goal arm, search and repeat together; Pearson correlation across blocks per
+    subject. Reproduced when p >= 0.05 in every subject; not reproduced when p < 0.05 with the
+    same sign in all four ("consistent", as the paper uses it); otherwise partially reproduced.
+    R2 and p are reported.
+- id: fig5e-pg-replay-no-avoidance
+  statement: Pre-choice replay of the previous goal is no more or less likely to precede a visit
+    to the previous goal than a visit to any other arm.
+  source: Results, Subsequent arm choice is not biased by replay, paragraph 8; Figure 5E
+  quote: However, we found that previous goal replay was no more or less likely to precede visits
+    to the previous goal as it was to precede visits to any other arm (Figure 5E)
+  depends_on:
+  - fig3d-glm-search
+  criterion: A claim of absence, per subject a Wilcoxon rank-sum test over sessions at p < 0.05.
+    The measure is open; readings, each run, (a) dfs_ripcontent.m part 8, per session the
+    fraction of trials visiting the previous goal that have at least one box remote event of
+    the previous goal, against the same fraction among trials visiting any other arm; (b) the
+    legend's "fraction of all trials", the count of trials with previous goal replay and a
+    previous goal visit, and of those with previous goal replay and another visit, each over
+    all trials with a defined previous goal. Trials after the first block, search and repeat.
+    Reproduced when p >= 0.05 in every subject under reading (a), the code's; (b) is shown and
+    its outcome recorded. The legend gives 23, 32, 23 and 33 sessions per subject and no p.
+- id: fig6a-pg-replay-persists
+  statement: Replay of a goal arm stays enriched long after it stops being rewarded, peaking
+    several trials after the switch, extended and significant in all subjects; two subjects
+    also show elevated replay before the switch.
+  source: Results, Previous goal replay persists through multiple trial blocks, paragraph 2;
+    Figure 6A
+  quote: The enrichment for replay of a goal location peaked several trials after it ceased to
+    provide reward and continued for many subsequent trials. This enrichment was extended and
+    significant for all subjects (Figure 6A). We also saw elevated replay before the transition
+    for two out of the four subjects
+  statistics:
+  - test: Wilcoxon rank-sum test per trial
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni (80 comparisons)
+    n: 89, 85, 104 and 161 goal arms and 347, 437, 268 and 397 unrewarded arms per subject
+  depends_on:
+  - fig3d-glm-search
+  criterion: As the Methods (Trial-wise replay rate) and dfs_ripcontent.m part 9. Per session,
+    count of box remote events per arm per trial, smoothed with a Gaussian kernel of five trials
+    and SD one trial; for each block (blocks 1 to 8) the goal arm's trace from 40 trials before
+    to 40 after the last rewarded trial, NaN beyond the session; the same window for every arm
+    never a goal in the session. Per trial a Wilcoxon rank-sum test of goal against non-goal
+    traces, Bonferroni corrected. The number of tests is 80 in the legend and 81 (0.05/81) in
+    the code; both are run. Reproduced when, in all four subjects, the mean goal curve peaks
+    after trial 0, some trials after 0 are significant with goal above non-goal, and two
+    subjects (any two) have significant trials with goal above non-goal before trial 0. The
+    number of significant trials after 0 is reported per subject.
+- id: fig6b-visits-decay
+  statement: The behavioural bias to the previously rewarded arm decays very quickly after the
+    switch, returning to baseline within a few trials.
+  source: Results, Previous goal replay persists through multiple trial blocks, paragraph 2;
+    Figure 6B
+  quote: In contrast, behavioral bias to the previously rewarded arm decays extremely quickly
+    after the switch, returning to baseline levels within a few trials (Figure 6B)
+  statistics:
+  - test: Wilcoxon rank-sum test per trial
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni (80 comparisons)
+  depends_on:
+  - fig6a-pg-replay-persists
+  criterion: As fig6a-pg-replay-persists for visits (1 if the arm was visited on that trial),
+    unsmoothed. "A few trials" has no number; readings, (a) no significant trial after trial
+    +3, (b) after trial +5. Reproduced when, in all four subjects, the last trial after 0 with a
+    significant goal over non-goal visit difference is no later than the bound under one reading
+    and the replay enrichment of fig6a extends beyond it.
+- id: fig6c-pg-replay-two-blocks
+  statement: Enhanced replay of a previous goal persists for at least two complete trial blocks
+    after it served as the goal, in all four animals.
+  source: Results, Previous goal replay persists through multiple trial blocks, paragraph 3;
+    Figure 6C
+  quote: This analysis revealed that the enhanced replay of a previous goal location persisted for
+    at least two complete trial blocks for all four animals (Figure 6C)
+  statistics:
+  - test: Wilcoxon rank-sum test per sub-block
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni (6 comparisons)
+  depends_on:
+  - fig6a-pg-replay-persists
+  criterion: As dfs_ripcontent.m part 9. Per session, blocks 1 to 8, each block split into
+    search (task phase <= 1) and repeat (> 1) sub-blocks; a repeat sub-block counts only when
+    the block reached a fourth reward; per sub-block the unsmoothed count of box remote events
+    per arm over its number of trials. For each goal arm, the rates in the search and repeat
+    sub-blocks of the three following blocks, against the same sub-blocks for arms never a goal
+    in the session; per sub-block a Wilcoxon rank-sum test at 0.05/6. Reproduced when, in all
+    four subjects, the first four sub-blocks (s1, r1, s2, r2) are each significant with goal
+    above non-goal.
+- id: fig7-recency
+  statement: During search, never-rewarded arms not visited for 5 trials are replayed more than
+    those visited one or two trials ago, and replay rate correlates with how long ago the arm
+    was visited (1 to 5 trials) in every subject.
+  source: Results, Pre-choice replay is biased toward non-recent past, paragraph 1; Figure 7
+  quote: "We found consistently higher replay rates for arms that had not been visited within 5
+    trials compared to those visited within one or two trials (Figure 7). Although highly
+    variable, the replay rate of arms visited within 1-5 trials was strongly correlated with
+    visit recency (for each subject: R2=0.011, 0.028, 0.012, and 0.018; p=1.04e-4, 4.04e-13,
+    7.94e-5, and 2.76e-8, respectively)"
+  statistics:
+  - about: 5 against 1 and 2 trials ago, each subject
+    test: Wilcoxon rank-sum test (from the code; the legend names none)
+    p: 0.05
+    p_relation: "<"
+    n: 159-433, 212-555, 144-386 and 198-520 trials per bar per subject
+  - about: correlation, subject 1
+    test: correlation
+    statistic: R2 = 0.011
+    p: 1.04e-4
+  - about: correlation, subject 2
+    test: correlation
+    statistic: R2 = 0.028
+    p: 4.04e-13
+  - about: correlation, subject 3
+    test: correlation
+    statistic: R2 = 0.012
+    p: 7.94e-5
+  - about: correlation, subject 4
+    test: correlation
+    statistic: R2 = 0.018
+    p: 2.76e-8
+  depends_on:
+  - fig3d-glm-search
+  expected:
+  - quantity: R2, subject 1
+    value: 0.011
+    tolerance: 0.0011
+  - quantity: R2, subject 2
+    value: 0.028
+    tolerance: 0.0028
+  - quantity: R2, subject 3
+    value: 0.012
+    tolerance: 0.0012
+  - quantity: R2, subject 4
+    value: 0.018
+    tolerance: 0.0018
+  criterion: As dfs_ripcontent.m part 8. Search trials (task phase <= 1) of all blocks; for each
+    trial and each arm last visited k trials ago (lockout trials not counted), the count of box
+    remote events of that arm. Open details, each run, (a) "never rewarded", the code's arms
+    that were not a previous goal up to that trial, or the Results' arms never a goal in the
+    session; (b) the "5 trials ago" bar, exactly 5 (the code's plotted and tested bar) or 5 or
+    more (the Results' "not been visited within 5 trials"). Per subject, Wilcoxon rank-sum of
+    the 5 bar against the 1 and the 2 bars, pooled trials, and Pearson correlation of count with
+    k over k = 1 to 5. Reproduced when, under every reading, the 5 bar is significantly above
+    the 1 and 2 bars (p < 0.05) and replay rises with k at p < 0.05 in all four subjects, with
+    R2 within tolerance under one reading; partially reproduced when only R2 fails.
+- id: fig8-outer-prevgoal
+  statement: Replay at the rewarded outer arm port also favours the previous goal; beyond the
+    expected strong over-representation of the current arm, the previous goal arm is replayed
+    more than other arms, consistently in a GLM over all rewarded trials.
+  source: Results, Enhanced replay of previous goal at outer arms, paragraph 2; Figure 8A-B
+  quote: However, we also observed greater replay of the previous goal compared to other arms
+    (Figure 8A). We used a Poisson GLM to quantify these effects during all rewarded trials and
+    found that in addition to overrepresentation of the current arm (the goal arm), we also saw
+    consistent, strong enrichment for replay of the previous goal arm (Figure 8B)
+  depends_on:
+  - fig3d-glm-search
+  criterion: Figure 8A as dfs_ripcontent.m part 10, outer events on rewarded trials (task phase
+    >= 1) after the first block where past, current and goal arm are one arm distinct from the
+    previous goal, sessions with at least 5 such trials, fractions over all continuous outer
+    events (local included); other arms per arm divided by 6. Figure 8B as part 5, all rewarded
+    trials (integer task phase >= 1), counts of outer continuous events per arm, predictors
+    past, current goal and previous goal, Poisson GLM with 99% intervals; the trial-set
+    readings of fig3d-glm-search apply. Reproduced when, in all four subjects, the session mean
+    previous goal fraction exceeds the per-arm other fraction, and the previous goal and current
+    arm intervals are above 1. The legends give 333, 958, 1161 and 3316 events (8A) and 948, 1026,
+    868 and 1372 trials (8B) per subject.
+- id: figs8-outbound-final-events
+  statement: Among outbound remote events, and among the final remote event before each choice,
+    the previous goal is still the most consistently enriched arm, and future and current goal
+    replay still do not differ consistently between correct and error trials.
+  source: Results, Subsequent arm choice is not biased by replay, paragraph 5; Supplementary
+    Figure 8
+  quote: For neither of these subsets of events did we see any difference in the relationships
+    between content and behavior ... previous goal replay remained more strongly and consistently
+    enriched compared to future arm or current goal replay and we still did not observe
+    consistent differences between correct and error trials (Supplementary Figure 8)
+  depends_on:
+  - fig3e-glm-repeat
+  - fig5c-current-goal-correct-error
+  criterion: Outbound events as the Methods and dfa_ripcontent_ripspeed.m, the slope of a line
+    fit through the posterior-maximum bin of each 2 ms step after correcting for linearisation,
+    positive for box to arm; final events as dfs_ripcontent.m part 15, the last box remote event
+    before the arm choice. For each subset, the search and repeat GLMs of fig3d and fig3e, and
+    the correct against error rank-sum tests of fig5b and fig5c. Reproduced when, for both
+    subsets, the previous goal interval is above 1 in all four subjects for search and repeat,
+    no subject has significantly more future or current goal replay on correct than on error
+    trials, and the future and current goal effects are not significant (p < 0.05) in the same
+    direction in all four subjects.
+- id: robustness-controls
+  statement: The main results are unchanged with MUA-based event detection, with a more
+    permissive definition of remote events, after excluding stationary events identified by a
+    three-state decoder, and with a simple 20 ms Bayesian decoder.
+  source: Results, Most SWRs contain interpretable spatial content, paragraphs 1, 4 and 5;
+    Methods, Spatial decoding, paragraphs 4 and 7
+  quote: Additionally, we verified that our conclusions were unchanged by using a multiunit
+    activity-based event detection strategy ... instead of a SWR-based one ... Use of this
+    alternative definition did not alter any of our conclusions
+  depends_on:
+  - fig3d-glm-search
+  - fig3e-glm-repeat
+  - fig5b-future-correct-error
+  criterion: The paper does not say which results were compared. Read as the patterns of Figures
+    3D and 3E (previous goal interval above 1 in all subjects, past interval below 1 in all
+    subjects) and Figure 5B (no subject with more future replay on correct trials). Each control
+    as the Methods give it and its script (dfs_muacontent.m, MUA 1 ms bins smoothed with a 15 ms
+    Gaussian, events above 3 SD of the immobility mean; dfs_ripcontent_contentthresh.m, a
+    local-majority event is remote when at least 30% of its density is on one remote segment;
+    dfs_ripcontent_3state.m, the three-state decoder with stationary events excluded;
+    dfs_likcontent.m, 20 ms non-overlapping bins without a movement model). Reproduced when the
+    three patterns hold under all four controls; partially reproduced when they hold under some.
+    The share of remote events classed stationary (paper, < 30%) is reported.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - checker. 33 claims, 33 quotes, 27 statistical values, 0 problems before the changes. Quotes, sources, statistics and expected values were read against the text and legends. The code criteria were checked against LorenFrankLab/Gillespie_Neuron_2021 at 1be6a6a (dfs_ripcontent.m parts 2 to 10, 14 and 16, dfa_ripcontent.m, label_trial_interval.m, dfs_decodequant_movement.m), and they match except where noted below.
+  - fig1d-sessions-blocks. The criterion said a block counts when it has a trial of task phase 4. The code keeps blocks with any task phase >= 4 (any(ctphase>=4)), which also keeps a block whose fourth reward is followed only by errors. Corrected to match the code.
+  - fig3b-search-prevgoal-enriched. The criterion compared only the session median with 0.2. The text says "roughly 20%" without naming the summary, so the session mean is now read too, and either one within tolerance passes.
+  - fig4ab-current-goal-late. The criterion said the Figure 4A counts equal the early correct plus early error counts of Supplementary Figure 7. They do for subjects 1 to 3 but differ by one trial for subject 4 (793 against 792). Corrected the wording.
+  - fig5b-future-correct-error. Added the trial set as an open detail. The Methods and part 6 of the code exclude the first block. However, the legend's correct plus error counts (923 + 424 = 1347, and so on for each subject) equal the Figure 3E counts, and part 5 of the code takes those with the first block included. So the first-block-included set is run as a variant. fig5c-current-goal-correct-error and figs7-early-late-correct-error inherit this. fig4c-current-goal-reward-correlation (n = 923, the same correct count) and fig5d-glm-predict-chance now say so as well.
+  - open. fig4ab-current-goal-late. "Did not differ substantially" has no test in the paper. Overlapping 99% intervals in at least three of four subjects is the reader's reading, and the paper gives no number to replace it.
+  - open. fig6a-pg-replay-persists and fig6b-visits-decay. "Elevated replay before the transition" and "within a few trials" have no test or number in the paper. The criteria use the figure's Bonferroni-corrected tests and two bounds (+3, +5) as readings.
+  - open. fig5a-future-replay-rate. The Results say future replay is less prevalent in repeat trials "for all subjects", but the legend says three of four (subject 3, p = 0.264). The claim follows the legend, which gives the test.
+  - open. The legend counts of Figure 5A (repeat 924, 1019, 894, 1302) differ from the repeat trials in Figure 5B (1347 and so on), although parts 6 and 7 of the code apply the same filter. The code does not explain the difference.

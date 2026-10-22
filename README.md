@@ -59,7 +59,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000625](https://dandiarchive.org/dandiset/000625) | [Geiller et al. 2020](https://doi.org/10.1016/j.neuron.2020.09.013) | 4 | 4 | 6 | 12 | [`000625-geiller-2020`](entries/000625-geiller-2020) |
 | [000035](https://dandiarchive.org/dandiset/000035) | [Scala et al. 2021](https://doi.org/10.1038/s41586-020-2907-3) | 3 (+1) | 1 | 0 | 9 (+1) | [`000035-scala-2021`](entries/000035-scala-2021) |
 | [001453](https://dandiarchive.org/dandiset/001453) | [Fouke et al. 2025](https://doi.org/10.1016/j.cub.2025.04.027) | 6 | 1 | 2 | 10 | [`001453-fouke-2025`](entries/001453-fouke-2025) |
-| [000006](https://dandiarchive.org/dandiset/000006) | [Economo et al. 2018](https://doi.org/10.1038/s41586-018-0642-9) | – | – | – | – | [`000006-economo-2018`](entries/000006-economo-2018) (deprecated) |
+| [000006](https://dandiarchive.org/dandiset/000006) | [Economo et al. 2018](https://doi.org/10.1038/s41586-018-0642-9) | 7 | 5 | 3 | 8 | [`000006-economo-2018`](entries/000006-economo-2018) |
 | [001754](https://dandiarchive.org/dandiset/001754) | [Knierim et al. 2000](https://doi.org/10.1038/72910) | 1 | 2 | 2 | 5 | [`001754-knierim-2000`](entries/001754-knierim-2000) |
 | [000130](https://dandiarchive.org/dandiset/000130) | [Sohn et al. 2019](https://doi.org/10.1016/j.neuron.2019.06.012) | 9 | 4 | 7 | 3 | [`000130-sohn-2019`](entries/000130-sohn-2019) |
 | [001616](https://dandiarchive.org/dandiset/001616) | [Gerken et al. 2025](https://doi.org/10.7554/elife.106758.1) | 6 | 5 | 0 | 9 | [`001616-gerken-2025`](entries/001616-gerken-2025) |
@@ -81,7 +81,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000213](https://dandiarchive.org/dandiset/000213) | [Tingley et al. 2018](https://doi.org/10.1016/j.neuron.2018.04.028) | 3 | 8 | 9 | 5 | [`000213-tingley-2018`](entries/000213-tingley-2018) |
 | [000218](https://dandiarchive.org/dandiset/000218) | [Tingley et al. 2019](https://doi.org/10.1016/j.neuron.2019.10.012) | 4 | 7 | 10 | 10 | [`000218-tingley-2019`](entries/000218-tingley-2019) |
 | [000226](https://dandiarchive.org/dandiset/000226) | [Severson et al. 2017](https://doi.org/10.1016/j.neuron.2017.03.045) | 11 (+2) | 2 (+1) | 0 | 11 | [`000226-severson-2017`](entries/000226-severson-2017) |
-| [000232](https://dandiarchive.org/dandiset/000232) | [Chang et al. 2023](https://doi.org/10.1101/2023.08.21.554194) | 19 | 7 | 2 | 1 | [`000232-chang-2023`](entries/000232-chang-2023) |
+| [000232](https://dandiarchive.org/dandiset/000232) | [Chang et al. 2023](https://doi.org/10.1101/2023.08.21.554194) | – | – | – | – | [`000232-chang-2023`](entries/000232-chang-2023) (deprecated) |
 | [000239](https://dandiarchive.org/dandiset/000239) | [Xu et al. 2022](https://doi.org/10.1038/s41586-022-04478-7) | 20 | 5 | 3 | 11 | [`000239-xu-2022`](entries/000239-xu-2022) |
 | [000350](https://dandiarchive.org/dandiset/000350) | [Mu et al. 2019](https://doi.org/10.1016/j.cell.2019.05.050) | 2 | 3 | 4 | 10 | [`000350-mu-2019`](entries/000350-mu-2019) |
 | [000409](https://dandiarchive.org/dandiset/000409) | [Ibl et al. 2025](https://doi.org/10.1038/s41586-025-09235-0) | 17 | 3 | 3 | 7 | [`000409-ibl-2025`](entries/000409-ibl-2025) |
@@ -90,7 +90,7 @@ please [open an issue](https://github.com/catalystneuro/reproduction-registry/is
 | [000559](https://dandiarchive.org/dandiset/000559) | [Markowitz et al. 2023](https://doi.org/10.1038/s41586-022-05611-2) | 7 | 3 | 2 | 12 | [`000559-markowitz-2023`](entries/000559-markowitz-2023) |
 | [000718](https://dandiarchive.org/dandiset/000718) | [Zaki et al. 2024](https://doi.org/10.1038/s41586-024-08168-4) | 2 | 0 | 2 | 21 | [`000718-zaki-2024`](entries/000718-zaki-2024) |
 | [000691](https://dandiarchive.org/dandiset/000691) | [Scherrer et al. 2023](https://doi.org/10.1038/s41592-023-01806-1) | 2 | 0 | 1 | 15 | [`000691-scherrer-2023`](entries/000691-scherrer-2023) |
-| [000727](https://dandiarchive.org/dandiset/000727) | [Brezovec et al. 2022](https://doi.org/10.1101/2022.03.20.485047) | 8 | 5 | 1 | 6 | [`000727-brezovec-2022`](entries/000727-brezovec-2022) |
+| [000727](https://dandiarchive.org/dandiset/000727) | [Brezovec et al. 2022](https://doi.org/10.1101/2022.03.20.485047) | – | – | – | – | [`000727-brezovec-2022`](entries/000727-brezovec-2022) (deprecated) |
 | [000947](https://dandiarchive.org/dandiset/000947) | [Schwab et al. 2020](https://doi.org/10.1371/journal.pbio.3000829) | 6 | 4 | 7 | 1 | [`000947-schwab-2020`](entries/000947-schwab-2020) |
 | [000971](https://dandiarchive.org/dandiset/000971) | [Seiler et al. 2022](https://doi.org/10.1016/j.cub.2022.01.055) | 17 | 9 | 6 | 5 | [`000971-seiler-2022`](entries/000971-seiler-2022) |
 | [001038](https://dandiarchive.org/dandiset/001038) | [Azcorra et al. 2023](https://doi.org/10.1038/s41593-023-01401-9) | 16 | 7 | 1 | 0 | [`001038-azcorra-2023`](entries/001038-azcorra-2023) |
@@ -174,7 +174,11 @@ the README row and the pilot notes, and merges the pull request once its
 checks pass. With `CLAIMS_ONLY=1`, a runner only reads claims: for each target
 whose papers are in the store, it runs the claims and their check and puts the
 checked claims on main, and a later attempt on the dataset starts from them.
-The scripts say how to start and stop it.
+When a chain stops for a reason a person can fix (a supplement the reader needs, a
+claims file that did not pass its check, a failed run), it opens an issue for the
+dataset, labelled `needs-you`, that says what stopped it and @-mentions whoever
+runs the runner; the issue closes when the dataset is merged, and the Pipeline
+page links it. The scripts say how to start and stop it.
 
 ## Working on an entry
 

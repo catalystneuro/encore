@@ -47,15 +47,17 @@ def row(dandiset: str) -> str:
     if found is None:
         raise SystemExit(f"error: no attempt on {datasets.label(datasets.key_of_folder(dandiset))}")
     record, entry_dir = found
-    kinds = claim_kinds(dandiset, record["paper"])
-    cells = []
-    for outcome in COLUMNS:
-        mine = [o for o in record["outcomes"] if o["outcome"] == outcome]
-        n = sum(1 for o in mine if kinds.get(o["claim"], "dataset") in ("dataset", "with_labels"))
-        m = sum(1 for o in mine if kinds.get(o["claim"]) == "with_inputs")
-        cells.append(f"{n} (+{m})" if m else str(n))
     if record.get("deprecated"):
+        # No counts, and its claims file may be gone (replaced when the paper behind the data changed).
         cells = ["–"] * len(COLUMNS)
+    else:
+        kinds = claim_kinds(dandiset, record["paper"])
+        cells = []
+        for outcome in COLUMNS:
+            mine = [o for o in record["outcomes"] if o["outcome"] == outcome]
+            n = sum(1 for o in mine if kinds.get(o["claim"], "dataset") in ("dataset", "with_labels"))
+            m = sum(1 for o in mine if kinds.get(o["claim"]) == "with_inputs")
+            cells.append(f"{n} (+{m})" if m else str(n))
     _, surname, year = entry_dir.name.rsplit("-", 2)
     doi = record["paper"].removeprefix("doi:")
     note = " (deprecated)" if record.get("deprecated") else ""

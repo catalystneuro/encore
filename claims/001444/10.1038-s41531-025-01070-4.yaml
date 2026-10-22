@@ -1,0 +1,922 @@
+# Claims for Doherty, Chen, Smith, Wichmann, Chu & Lytton (2025), npj Parkinson's Disease 11, 230,
+# "Enhanced beta power emerges from simulated parkinsonian primary motor cortex", on dandiset 001444.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21, protocol
+# pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record as served by Europe PMC (PMC12325672), main text, figure legends
+# and Methods. The supplement (Supplementary Tables 1 to 3, Supplementary Figs. 1 to 5) was not in
+# the text supplied and was not read. The main text reports every result below from one set of
+# simulations; the supplement holds the analyses of the three other sets (Supplementary Table 2),
+# the PT5B current-frequency curves (Supplementary Fig. 1) and the conductance changes
+# (Supplementary Table 3). The bioRxiv preprint (doi:10.1101/2024.05.23.595566) was also supplied;
+# it is an earlier version with another title and was not used for claims.
+#
+# Code read: github.com/suny-downstate-medical-center/pd_m1_6ohda at commit 0a1f0e8 (2025-08-20, the
+# head of main; the paper cites Zenodo 10.5281/zenodo.12399983). It holds the NetPyNE simulation
+# (sim/cfg.py, sim/netParams.py, cells, mechanisms) and four notebooks that stream one file each
+# from dandiset 001444 and plot the LFP, a raster and five PT5B voltage traces. It holds no code for
+# rates, statistics, CV, duty cycle, spectrograms, coincidences or unitary events. The README gives
+# the four parameter settings (control or parkinsonian PT5B BK and NaT conductances; rest or
+# activated Ih factor and thalamic rates).
+#
+# The data the paper used. A simulation of a 300 um diameter, 1350 um deep cylinder of mouse M1 with
+# 10,073 neurons in 15 populations (IT2, PV2, SOM2, IT4, IT5A, PV5A, SOM5A, IT5B, PT5B, PV5B, SOM5B,
+# IT6, CT6, PV6, SOM6; cfg.py), driven by Poisson spike generators standing for thalamic and
+# cortical inputs. Four sets of four simulations, each 4.3 s long; each set holds the control and
+# parkinsonian conditions in the rest (quiet wakefulness) and activated (movement) states, and each
+# set used its own random seeds (Methods, paragraph 2). The paper's results come from set
+# sM1_12-12-2023. The paper's notebooks name its files sub-001/sub-001_ses-sM1-12-12-2023-01.nwb
+# (control rest), -02 (parkinsonian rest), -03 (control activated) and -04 (parkinsonian
+# activated). Measured variables: spike times of every neuron (units named "<population> <index>",
+# including the input generators), somatic membrane potential of some PT5B neurons (the notebooks
+# plot "Segment 0 PT5B 5401 5" and four others), and the LFP at 11 electrodes at depths 200 to
+# 1200 um in 100 um steps (cfg.recordLFP), sampled every 0.025 ms (40 samples per ms; cfg.recordStep
+# and the notebooks). The dandiset description says it holds the main and supplemental data.
+#
+# Definitions used by several criteria, each from the paper or its code as cited:
+# - Analysis window W. Rates are "calculated from the last 2.3 s of 4.3 s simulation to avoid
+#   initialization transients" (Fig. 2C and 5C legends), so 2.0 to 4.3 s. The spectrograms show
+#   "2.3 s of activity starting 2 s after simulation initiation" (Fig. 3 and 6 legends), the same
+#   window. The 250 ms panels of Figs. 2A,B and 5A,B are 2.0 to 2.25 s (the notebooks).
+# - Rate of a neuron is its spike count in W divided by 2.3 s; a population is given as mean and
+#   standard deviation over its neurons (legends of Figs. 2C and 5C, "mean, std dev"). Open is
+#   whether neurons silent in W are counted. Readings R1, all neurons of the population; R2, only
+#   neurons with at least one spike in W. The IT5A and IT5B rates of 0 spikes/s in the activated
+#   state suggest R1, but the text does not say.
+# - The paper names no test for any firing-rate p-value. The same network (same seeds) is run in
+#   all four simulations of a set, so the neurons can be paired. Readings T1, Wilcoxon signed-rank
+#   on paired neurons; T2, paired t-test; T3, Mann-Whitney U on the two groups; T4, Welch's t-test.
+#   Two-sided, at the p bound the paper prints.
+# - Spectra. The Methods say the LFP was computed with the method built into NetPyNE; they name no
+#   spectral method or electrode. Readings S1, the spectrogram of NetPyNE 1.0.5 (the version the
+#   Methods name; netpyne.analysis plotLFP, Morlet wavelets, its default parameters); S2, a
+#   short-time Fourier transform (NetPyNE's fft option). Electrode readings E1, electrode 0
+#   (y = 200 um), the one the paper's notebooks plot as the LFP of Figs. 2 and 5; E2, the mean
+#   over the 11 electrodes (NetPyNE's "avg" electrode). Time-averaged power spectra for peak
+#   frequencies are taken by Welch's method with 1 s segments, a standard choice that sets only
+#   the frequency resolution (1 Hz), well inside every tolerance below.
+# - PT5B spike count histogram (SCH): spikes of all PT5B neurons in 2 ms bins (Fig. 2 and 5
+#   legends).
+# Where the readings of a claim give different outcomes, the claim is blocked as
+# methods_underspecified, with every result shown (docs/protocol.md, Reader, step 3).
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001444"
+paper: doi:10.1038/s41531-025-01070-4
+claims:
+- id: fig1-network-size
+  statement: The simulated M1 network is composed of 10,073 neurons of seven excitatory pyramidal
+    cell types (IT, PT5B, CT) and two interneuron cell types (PV, SOM).
+  source: Figure 1 legend; Methods, Microcircuit composition, paragraph 1
+  quote: Simulated primary motor cortex (M1) is composed of 10,073 neurons.
+  expected:
+  - quantity: number of M1 neurons (input generators excluded)
+    value: 10073
+    tolerance: 0
+    unit: neurons
+  criterion: In each of the four files of set sM1_12-12-2023, count the units whose population is
+    one of the 15 M1 populations of sim/cfg.py (allpops), leaving out the input spike generators.
+    Reproduced when the count is 10,073 in each file. The tolerance is zero because the number is
+    a count of a fixed model, not a measurement.
+- id: model-pt5b-excitability-decrease
+  statement: In the parkinsonian condition the PT5B neuron model was changed (BK and NaT
+    conductances) so that its spike count across current injections fell by 64%, as in 6-OHDA
+    mouse slices.
+  source: Methods, paragraph 2 and Morphology and physiology of neuron classes, paragraph 3;
+    Supplementary Fig. 1 (not read)
+  quote: In the simulated parkinsonian mouse M1 PT5B currents (BK and NaT) were modified so that
+    they showed a 64% decrease in excitability as reported by Chen et al.
+  expected:
+  - quantity: PT5B spike count decrease across current injections, parkinsonian against control
+    value: 64
+    tolerance: 6.4
+    unit: percent
+  criterion: Needs single-neuron current-injection simulations of the control and parkinsonian
+    PT5B model (README parameter settings; cfg.gpeak and cfg.gnafbar). The current amplitudes,
+    step duration and averaging behind the 64% are those of Fig. 1D of Chen et al. 2021 (J.
+    Neurosci. 41, 5553) and Supplementary Fig. 1, which was not available to this reader. The
+    claim can be tested only if the dataset holds these current-injection simulations and the
+    supplement or the question process supplies the protocol; otherwise the detail is open and
+    the claim is blocked as methods_underspecified.
+- id: robustness-four-sets
+  statement: The results hold across four sets of four simulations with different random seeds;
+    set sM1_12-12-2023 is a typical example and the other three sets are analysed in
+    Supplementary Table 2.
+  source: Methods, paragraph 2; Supplementary Table 2 and Supplementary Figs. 2 to 5 (not read)
+  quote: To demonstrate robustness, we ran 4 sets of 4 simulations (Supplementary Table 2 ), each
+    set including the control and parkinsonian conditions in rest state and in the activated
+    (movement) state.
+  criterion: Supplementary Table 2, which gives the measures and values for the other three sets,
+    was not in the text supplied, so this reader cannot fix the measures, the expected values or
+    what counts as holding. The claim is blocked as methods_underspecified until a reader with the
+    supplement completes it. The author may report, for each set the dataset holds, the measures
+    of the claims below, without an outcome.
+- id: fig2-control-rest-beta
+  statement: In the control condition at rest, M1 activity is dominated by beta-band activity of
+    about 20 Hz, particularly clear in the PT5B spike count histogram.
+  source: Figure 2A legend; Results, Control simulations, paragraph 1
+  quote: Resting state (250 ms at midpoint of 4.3 s simulation) displayed dominant beta-band
+    activity (~20 Hz; particularly clear in the PT5B spike count histogram).
+  expected:
+  - quantity: dominant frequency, control rest
+    value: 20
+    tolerance: 2
+    unit: Hz
+  criterion: File -01. The frequency of the largest peak of the time-averaged power spectrum in W
+    of (a) the PT5B SCH (the legend's measure) and (b) the LFP under E1 and E2. The paper reports
+    separate 2 Hz activity in the rest LFP (Fig. 3A), so the peak is searched (i) above 0 Hz and
+    (ii) above 5 Hz, a range the paper does not fix. Reproduced when the peak is within 18 to
+    22 Hz under every reading of the SCH; the LFP readings are reported as variants, since the
+    legend names the SCH.
+- id: fig2-control-activated-gamma
+  statement: In the control condition, the activated state shifts M1 activity to gamma-band
+    activity of about 44 Hz.
+  source: Figure 2B legend; Results, Control simulations, paragraph 1
+  quote: Activated state showed change to high-frequency gamma-band activity (~44 Hz).
+  expected:
+  - quantity: dominant frequency, control activated
+    value: 44
+    tolerance: 4.4
+    unit: Hz
+  criterion: File -03, the measure and readings of fig2-control-rest-beta. Reproduced when the
+    largest spectral peak of the PT5B SCH in W is within 39.6 to 48.4 Hz under every reading; the
+    LFP readings (E1, E2) are reported as variants.
+- id: fig2c-control-pt5b-rate-activated
+  statement: In the control condition PT5B neurons fire more in the activated state than at rest
+    (11.7 +/- 9.4 against 26.8 +/- 18.2 spikes/s, p < 0.001).
+  source: Figure 2C legend; Results, Control simulations, paragraph 5
+  quote: 'Pyramidal tract neurons had the highest spike rate of any neuron population during the
+    rest state, and increased further in the activated state (rest: 11.7 ± 9.4 spikes/s; activated:
+    26.8 ± 18.2 spikes/s; p < 0.001; Fig. 2C ).'
+  statistics:
+  - test: not named
+    p: 0.001
+    p_relation: "<"
+    n: PT5B neurons of the control rest and activated simulations
+  expected:
+  - quantity: PT5B mean rate, control rest
+    value: 11.7
+    tolerance: 1.17
+    unit: spikes/s
+  - quantity: PT5B rate standard deviation, control rest
+    value: 9.4
+    tolerance: 0.94
+    unit: spikes/s
+  - quantity: PT5B mean rate, control activated
+    value: 26.8
+    tolerance: 2.68
+    unit: spikes/s
+  - quantity: PT5B rate standard deviation, control activated
+    value: 18.2
+    tolerance: 1.82
+    unit: spikes/s
+  criterion: Files -01 and -03, rates in W, readings R1 and R2. Reproduced when, under one rate
+    reading, all four values are within tolerance and the activated rates are higher with p <
+    0.001 under every test reading T1 to T4.
+- id: fig2c-control-it23-rate-activated
+  statement: In the control condition IT2/3 neurons fire more in the activated state than at rest
+    (1.2 +/- 1.6 against 6.7 +/- 8.9 spikes/s, p < 0.001).
+  source: Figure 2C legend; Results, Control simulations, paragraph 5
+  quote: 'IT2/3 neurons significantly increased their firing rate (rest: 1.2 spikes/s; activated:
+    6.6 spikes/s; p < 0.001).'
+  statistics:
+  - test: not named
+    p: 0.001
+    p_relation: "<"
+    n: IT2/3 neurons of the control rest and activated simulations
+  expected:
+  - quantity: IT2/3 mean rate, control rest
+    value: 1.2
+    tolerance: 0.12
+    unit: spikes/s
+  - quantity: IT2/3 rate standard deviation, control rest
+    value: 1.6
+    tolerance: 0.16
+    unit: spikes/s
+  - quantity: IT2/3 mean rate, control activated
+    value: 6.7
+    tolerance: 0.67
+    unit: spikes/s
+  - quantity: IT2/3 rate standard deviation, control activated
+    value: 8.9
+    tolerance: 0.89
+    unit: spikes/s
+  criterion: Files -01 and -03, population IT2, rates in W, readings R1 and R2. The legend gives
+    6.7 and the text 6.6 spikes/s for the activated mean; the tolerance of 6.7 covers both.
+    Reproduced when, under one rate reading, all four values are within tolerance and the
+    activated rates are higher with p < 0.001 under every test reading T1 to T4.
+- id: fig2c-control-it6-rate-activated
+  statement: In the control condition IT6 neurons fire less in the activated state than at rest
+    (5.8 +/- 5.8 against 3.5 +/- 5.2 spikes/s, p < 0.001).
+  source: Figure 2C legend; Results, Control simulations, paragraph 5
+  quote: IT6 firing rates decreased from 5.8 spikes/s at rest to 3.5 spikes/s in the activated
+    state ( p < 0.001).
+  statistics:
+  - test: not named
+    p: 0.001
+    p_relation: "<"
+    n: IT6 neurons of the control rest and activated simulations
+  expected:
+  - quantity: IT6 mean rate, control rest
+    value: 5.8
+    tolerance: 0.58
+    unit: spikes/s
+  - quantity: IT6 rate standard deviation, control rest
+    value: 5.8
+    tolerance: 0.58
+    unit: spikes/s
+  - quantity: IT6 mean rate, control activated
+    value: 3.5
+    tolerance: 0.35
+    unit: spikes/s
+  - quantity: IT6 rate standard deviation, control activated
+    value: 5.2
+    tolerance: 0.52
+    unit: spikes/s
+  criterion: Files -01 and -03, rates in W, readings R1 and R2. Reproduced when, under one rate
+    reading, all four values are within tolerance and the activated rates are lower with p <
+    0.001 under every test reading T1 to T4.
+- id: control-it5-silenced-activated
+  statement: In the control condition IT5A and IT5B neurons fire at about 3 spikes/s at rest (3.3
+    and 3.1 spikes/s) and stop firing (0 spikes/s) in the activated state.
+  source: Results, Control simulations, paragraph 5; Figure 2B
+  quote: In contrast, IT5A and IT5B firing rates decreased from 3 Hz (IT5A... 3.3 spikes/s; IT5B...
+    3.1 spikes/s) at rest, to 0 spikes/s in the activated state
+  expected:
+  - quantity: IT5A mean rate, control rest
+    value: 3.3
+    tolerance: 0.33
+    unit: spikes/s
+  - quantity: IT5B mean rate, control rest
+    value: 3.1
+    tolerance: 0.31
+    unit: spikes/s
+  - quantity: IT5A mean rate, control activated
+    value: 0
+    tolerance: 0.05
+    unit: spikes/s
+  - quantity: IT5B mean rate, control activated
+    value: 0
+    tolerance: 0.05
+    unit: spikes/s
+  criterion: Files -01 and -03, rates in W, reading R1 (under R2 an activated mean is undefined
+    when no neuron fires; if some fire, R2 is reported as a variant). The tolerance of the zero
+    rates is 0.05 spikes/s, the rounding of the paper's one decimal place, since 10% of zero is
+    zero. Reproduced when all four values are within tolerance.
+- id: control-it4-rate-activated
+  statement: In the control condition the IT4 population rate rises from 2.6 spikes/s at rest to
+    4.7 spikes/s in the activated state.
+  source: Results, Control simulations, paragraph 5
+  quote: The IT4 neuron population firing rate increased from 2.6 Hz during rest to 4.7 Hz during
+    the activated state.
+  expected:
+  - quantity: IT4 mean rate, control rest
+    value: 2.6
+    tolerance: 0.26
+    unit: spikes/s
+  - quantity: IT4 mean rate, control activated
+    value: 4.7
+    tolerance: 0.47
+    unit: spikes/s
+  criterion: Files -01 and -03, rates in W, readings R1 and R2. Reproduced when, under one
+    reading, both values are within tolerance. The paper reports no test.
+- id: pt5b-highest-rate
+  statement: PT5B neurons have the highest mean spike rate of any population in the control rest
+    state and in both the parkinsonian rest and activated states.
+  source: Results, Control simulations, paragraph 5; Results, Parkinsonian condition, paragraph 5
+  quote: Pyramidal tract neurons had the highest spike rate of any neuronal population during the
+    rest and activated states in the parkinsonian condition
+  criterion: Files -01, -02 and -04, mean rates in W of every M1 population. "Any neuron
+    population" can be read as (a) all 15 M1 populations, interneurons included, or (b) the seven
+    excitatory pyramidal cell types (Methods, Morphology and physiology of neuron classes,
+    paragraph 1), the excitatory cell types of Figs. 2C and 5C. Reproduced when the PT5B mean is the highest
+    in all three simulations under one rate reading (R1 or R2) and both population readings;
+    when the population readings disagree, the claim is blocked as methods_underspecified with
+    both shown.
+- id: control-cv-isi
+  statement: In the control condition PT5B interspike-interval CV is highly variable at rest (0.59
+    +/- 0.37; 47.8% regular with CV <= 0.5, 52.2% irregular) and mainly irregular in the activated
+    state (0.61 +/- 0.30; 25.7% regular, 74.3% irregular).
+  source: Results, Control simulations, paragraph 2
+  quote: The CV was found to be highly variable across the PT5B population during rest (0.59 +
+    /−0.37), indicating the presence of both regular (CV < = 0.5; 47.8%) and irregular activity
+    (CV > 0.5; 52.2%).
+  expected:
+  - quantity: mean PT5B ISI CV, control rest
+    value: 0.59
+    tolerance: 0.059
+  - quantity: standard deviation of PT5B ISI CV, control rest
+    value: 0.37
+    tolerance: 0.037
+  - quantity: percent of PT5B neurons with CV <= 0.5, control rest
+    value: 47.8
+    tolerance: 4.78
+    unit: percent
+  - quantity: mean PT5B ISI CV, control activated
+    value: 0.61
+    tolerance: 0.061
+  - quantity: standard deviation of PT5B ISI CV, control activated
+    value: 0.30
+    tolerance: 0.030
+  - quantity: percent of PT5B neurons with CV <= 0.5, control activated
+    value: 25.7
+    tolerance: 2.57
+    unit: percent
+  criterion: Files -01 and -03. CV of each PT5B neuron's ISIs (standard deviation over mean), mean
+    and standard deviation over neurons, and the share with CV <= 0.5 (regular) and > 0.5
+    (irregular), as in the Results. Open, with readings - the window, (a) W (the window of the
+    rates in the same figure) or (b) the whole 4.3 s; which neurons, (i) neurons with at least
+    two ISIs or (ii) at least one ISI (a single ISI gives CV 0). Reproduced when, under one
+    combination of readings, all six values are within tolerance.
+- id: control-subthreshold-oscillations
+  statement: In the control condition subthreshold membrane-potential oscillations appear in 57.4%
+    of PT5B neurons in the activated state and not at rest.
+  source: Results, Control simulations, paragraph 3; Figure 2A,B
+  quote: Oscillations in subthreshold membrane potentials appeared frequently during the activated
+    state (57.4% of PT5B neurons) but not during rest
+  expected:
+    quantity: percent of PT5B neurons with subthreshold oscillations, control activated
+    value: 57.4
+    tolerance: 5.74
+    unit: percent
+  criterion: Files -01 and -03, somatic membrane potentials of the PT5B neurons recorded. Neither
+    the paper nor its code says how a subthreshold oscillation is detected or over which neurons
+    the 57.4% is taken, and no reading follows from the text. The claim is blocked as
+    methods_underspecified unless a question to a reader settles it; the number of PT5B neurons
+    with recorded voltage is reported.
+- id: control-duty-cycle
+  statement: In the control condition the PT5B duty cycle, the share of each oscillation period
+    with activity above half-height, is 31% at rest and 48% in the activated state.
+  source: Results, Control simulations, paragraph 4; Figure 2A,B; Methods, Duty cycle
+  quote: The duty cycle was 31% during rest (Fig. 2A ) and 48% during activated state (Fig. 2B ;
+    dashed vertical lines not shown).
+  expected:
+  - quantity: PT5B duty cycle, control rest
+    value: 31
+    tolerance: 3.1
+    unit: percent
+  - quantity: PT5B duty cycle, control activated
+    value: 48
+    tolerance: 4.8
+    unit: percent
+  criterion: Files -01 and -03, the PT5B SCH (2 ms bins, unsmoothed, as the legends describe it).
+    A period runs from one rising crossing of half-height to the next, and the duty cycle is the
+    time above half-height divided by the period (Results, paragraph 4; the Methods sentence that
+    a period runs from the rising to the falling crossing would make every duty cycle 100% and is
+    read as defining the time on). Open, with readings - half-height, (a) halfway between the
+    minimum and maximum of the window shown (one line per panel, Fig. 2 legend) or (b) halfway
+    between the trough and peak of each period (Methods); the window, (i) the 250 ms of Fig. 2A,B,
+    2.0 to 2.25 s (the notebooks) or (ii) W; the summary over periods, which the paper does not
+    give, (x) the mean of the per-period duty cycles or (y) the total time above half-height over
+    the total time of complete periods. Reproduced when, under one combination, both values are
+    within tolerance.
+- id: fig3a-control-rest-spectrogram
+  statement: In the control rest state the LFP spectrogram shows virtually continuous power around
+    2 Hz and 15 to 25 Hz beta bursts recurring every 600 ms (1.7 Hz).
+  source: Figure 3A legend; Results, Control simulations, paragraph 6
+  quote: The rest state simulation revealed virtually continuous power around 2 Hz, as well as
+    15–25 Hz beta-band bursts (Fig. 3A ), occurring every 600 ms (or with a burst-rate of 1.7 Hz).
+  expected:
+  - quantity: beta (15 to 25 Hz) burst rate, control rest
+    value: 1.7
+    tolerance: 0.17
+    unit: Hz
+  criterion: File -01, LFP spectrogram in W, readings S1, S2 and E1, E2. Power around 2 Hz is
+    present when the time-averaged spectrum has a local maximum within 1 to 3 Hz, the reading of
+    "power around 2 Hz" as a spectral peak. The paper does not define a burst. The one reading the
+    paper's text offers is its own half-height convention (Methods, Duty cycle) applied to the
+    15 to 25 Hz band power over time - a burst is an epoch above halfway between the minimum and
+    maximum of that band power in W. Reproduced when the 2 Hz peak is present and the burst rate
+    is within tolerance under every reading; the author may ask a reader for a burst definition.
+- id: fig3b-control-activated-spectrogram
+  statement: In the control activated state the 2 Hz activity disappears, 15 to 20 Hz power is no
+    longer visible except 15 Hz bursts of about 100 to 500 ms at about 1.5 Hz, and brief (about
+    50 ms) 25 to 35 Hz bursts occur at about 1 Hz.
+  source: Figure 3B legend; Results, Control simulations, paragraph 6
+  quote: During the activated state the 2 Hz activity disappeared and beta bursts shifted to 15 Hz
+    bursts ~100–500 ms in duration or about 1.5 Hz. Beta-band power between 15–20 Hz was no longer
+    visible (Fig. 3B ).
+  expected:
+  - quantity: 15 Hz burst rate, control activated
+    value: 1.5
+    tolerance: 0.15
+    unit: Hz
+  - quantity: 25 to 35 Hz burst rate, control activated
+    value: 1.0
+    tolerance: 0.1
+    unit: Hz
+  - quantity: median 25 to 35 Hz burst duration, control activated
+    value: 50
+    tolerance: 5
+    unit: ms
+  criterion: File -03 against file -01, the spectrogram readings and the 2 Hz and burst readings
+    of fig3a-control-rest-spectrogram, with 15 Hz bursts taken in the 14 to 16 Hz band (a band
+    this reader chose; the paper gives no width) and 25 to 35 Hz bursts in that band. Reproduced
+    when the time-averaged spectrum has no local maximum within 1 to 3 Hz, the mean 15 to 20 Hz
+    power is lower than at rest, the burst rates and the median 25 to 35 Hz burst duration are
+    within tolerance and the 15 Hz burst durations fall within 90 to 550 ms (the reported range
+    widened by 10% of each bound), under every reading.
+- id: control-coincident-spikes
+  statement: In the control condition 1% of PT5B spikes are coincident with another PT5B spike
+    within 1 ms at rest, and 3% in the activated state.
+  source: Results, Control simulations, paragraph 7; Figure 4
+  quote: PT5B spike coincident firing was observed in 1% of spikes at rest and increased to 3%
+    during the activated state
+  expected:
+  - quantity: percent of PT5B spikes coincident within 1 ms, control rest
+    value: 1
+    tolerance: 0.1
+    unit: percent
+  - quantity: percent of PT5B spikes coincident within 1 ms, control activated
+    value: 3
+    tolerance: 0.3
+    unit: percent
+  criterion: Files -01 and -03, PT5B spikes. A spike is coincident when another PT5B neuron fires
+    "within a 1 ms time window" (Results, paragraph 7). Open, with readings - (a) a spike of
+    another PT5B neuron within 1 ms either side, or (b) a spike of another PT5B neuron in the same
+    1 ms bin ("2 or more
+    spikes firing in 1 ms", Results, Parkinsonian condition, paragraph 7); the window, (i) W, (ii)
+    0.3 to 4.3 s or (iii) 0 to 4.0 s (the unitary-event analysis covers 4.0 s, Fig. 4 legend, and
+    the paper does not say which). Reproduced when, under one combination, both values are within
+    tolerance.
+- id: fig4-control-unitary-events
+  statement: In the control condition, PT5B coincident firing above that expected from
+    rate-matched Poisson processes occurs at rest in 100 to 275 ms clusters with 15 to 24 Hz
+    periodicity (mean 19 Hz), totalling 0.7 of 4.0 s (17.5%), and in the activated state in more
+    frequent 125 to 250 ms clusters totalling 1.1 of 4.0 s (27.5%).
+  source: Figure 4B,D legends; Results, Control simulations, paragraph 7
+  quote: The total duration of significant synchronous activity increased from 0.7 s out of 4.0 s
+    (17.5%) at rest to 1.1 s out of 4.0 s (27.5%).
+  expected:
+  - quantity: duration of significant synchrony, control rest
+    value: 0.7
+    tolerance: 0.07
+    unit: s
+  - quantity: duration of significant synchrony, control activated
+    value: 1.1
+    tolerance: 0.11
+    unit: s
+  - quantity: mean periodicity within significant periods, control rest
+    value: 19
+    tolerance: 1.9
+    unit: Hz
+  criterion: Files -01 and -03, all PT5B spikes. Unitary event analysis (Methods, Identifying
+    synchronous spiking; Grün et al. 1999 and 2002, refs. 77, 24, 87) - coincidences are 2 or more
+    PT5B spikes within 1 ms; the expected count comes from Poisson processes matched to the
+    neurons' rates in a 100 ms window (Fig. 4D legend); a window is significant when the
+    joint-surprise p < 0.05; significant periods are the union of significant windows. Open,
+    with readings - window placement, (a) 100 ms windows slid in 1 ms steps or (b) non-overlapping
+    100 ms windows; the 4.0 s analysed, (i) 0.3 to 4.3 s or (ii) 0 to 4.0 s; the periodicity of a
+    significant period, (x) the peak of the PT5B SCH spectrum within it or (y) the inverse of the
+    mean interval between SCH peaks. Reproduced when, under one combination, the three values are
+    within tolerance, the rest cluster durations fall within 90 to 302.5 ms and the activated
+    within 112.5 to 275 ms (reported ranges widened by 10% of each bound), and the activated
+    state has more significant periods than rest.
+- id: fig5-pd-rest-beta
+  statement: In the parkinsonian condition at rest, M1 activity shows focused beta-band activity at
+    15 Hz.
+  source: Figure 5A legend; Results, Parkinsonian condition, paragraph 1
+  quote: Resting state (250 ms shown at midpoint of 4.3 s simulation) displayed focused 15 Hz
+    beta-band activity.
+  expected:
+    quantity: dominant frequency, parkinsonian rest
+    value: 15
+    tolerance: 1.5
+    unit: Hz
+  criterion: File -02, the measure and readings of fig2-control-rest-beta. Reproduced when the
+    largest spectral peak of the PT5B SCH in W is within 13.5 to 16.5 Hz under every reading; the
+    LFP readings (E1, E2) are reported as variants.
+- id: fig5-pd-activated-gamma
+  statement: In the parkinsonian condition the activated state shifts M1 activity to gamma-band
+    activity of about 43 Hz.
+  source: Figure 5B legend; Results, Parkinsonian condition, paragraph 1
+  quote: Activated state showed change to high-frequency gamma-band activity (~43 Hz).
+  expected:
+    quantity: dominant frequency, parkinsonian activated
+    value: 43
+    tolerance: 4.3
+    unit: Hz
+  criterion: File -04, the measure and readings of fig2-control-rest-beta. Reproduced when the
+    largest spectral peak of the PT5B SCH in W is within 38.7 to 47.3 Hz under every reading; the
+    LFP readings (E1, E2) are reported as variants. The Results (Parkinsonian condition, paragraph
+    1) give ~44 Hz for the LFP excursions; the tolerance covers both numbers.
+- id: fig5c-pd-pt5b-rate-activated
+  statement: In the parkinsonian condition PT5B neurons fire more in the activated state than at
+    rest (14.2 +/- 7.1 against 29.7 +/- 12.7 spikes/s, p < 0.001).
+  source: Figure 5C legend; Results, Parkinsonian condition, paragraph 5
+  quote: 'Pyramidal tract neurons had the highest spike rate of any neuronal population during the
+    rest and activated states in the parkinsonian condition (rest: 14.2 ± 7.1 spikes/s; activated:
+    29.7 ± 12.7 spikes/s; p < 0.001; Fig. 5C ).'
+  statistics:
+  - test: not named
+    p: 0.001
+    p_relation: "<"
+    n: PT5B neurons of the parkinsonian rest and activated simulations
+  expected:
+  - quantity: PT5B mean rate, parkinsonian rest
+    value: 14.2
+    tolerance: 1.42
+    unit: spikes/s
+  - quantity: PT5B rate standard deviation, parkinsonian rest
+    value: 7.1
+    tolerance: 0.71
+    unit: spikes/s
+  - quantity: PT5B mean rate, parkinsonian activated
+    value: 29.7
+    tolerance: 2.97
+    unit: spikes/s
+  - quantity: PT5B rate standard deviation, parkinsonian activated
+    value: 12.7
+    tolerance: 1.27
+    unit: spikes/s
+  criterion: Files -02 and -04, rates in W, readings R1 and R2. Reproduced when, under one rate
+    reading, all four values are within tolerance and the activated rates are higher with p <
+    0.001 under every test reading T1 to T4.
+- id: fig5c-pd-it23-rate-activated
+  statement: In the parkinsonian condition IT2/3 neurons fire more in the activated state than at
+    rest (0.78 +/- 1.1 against 4.3 +/- 7.1 spikes/s, p < 0.001).
+  source: Figure 5C legend; Results, Parkinsonian condition, paragraph 5
+  quote: 'In contrast, superficial layer IT2/3 neurons significantly increased their average firing
+    rates with activation (rest: 0.8 spikes/s; activated: 4.3 spikes/s; p < 0.001).'
+  statistics:
+  - test: not named
+    p: 0.001
+    p_relation: "<"
+    n: IT2/3 neurons of the parkinsonian rest and activated simulations
+  expected:
+  - quantity: IT2/3 mean rate, parkinsonian rest
+    value: 0.78
+    tolerance: 0.078
+    unit: spikes/s
+  - quantity: IT2/3 rate standard deviation, parkinsonian rest
+    value: 1.1
+    tolerance: 0.11
+    unit: spikes/s
+  - quantity: IT2/3 mean rate, parkinsonian activated
+    value: 4.3
+    tolerance: 0.43
+    unit: spikes/s
+  - quantity: IT2/3 rate standard deviation, parkinsonian activated
+    value: 7.1
+    tolerance: 0.71
+    unit: spikes/s
+  criterion: Files -02 and -04, population IT2, rates in W, readings R1 and R2. Reproduced when,
+    under one rate reading, all four values are within tolerance and the activated rates are
+    higher with p < 0.001 under every test reading T1 to T4.
+- id: pd-it5-silenced-activated
+  statement: In the parkinsonian condition IT5A and IT5B neurons fire at 2.2 and 1.2 spikes/s at
+    rest and stop firing (0 spikes/s) in the activated state.
+  source: Results, Parkinsonian condition, paragraph 5
+  quote: IT5A and IT5B firing rates decreased from 2.2 and 1.2 spikes/s, respectively, at rest to 0
+    spikes/s in the activated state.
+  expected:
+  - quantity: IT5A mean rate, parkinsonian rest
+    value: 2.2
+    tolerance: 0.22
+    unit: spikes/s
+  - quantity: IT5B mean rate, parkinsonian rest
+    value: 1.2
+    tolerance: 0.12
+    unit: spikes/s
+  - quantity: IT5A mean rate, parkinsonian activated
+    value: 0
+    tolerance: 0.05
+    unit: spikes/s
+  - quantity: IT5B mean rate, parkinsonian activated
+    value: 0
+    tolerance: 0.05
+    unit: spikes/s
+  criterion: Files -02 and -04, as in control-it5-silenced-activated. Reproduced when all four
+    values are within tolerance.
+- id: pd-it6-rate-unchanged
+  statement: In the parkinsonian condition the IT6 firing rate does not change with activation (6.0
+    spikes/s at rest and in the activated state).
+  source: Results, Parkinsonian condition, paragraph 5
+  quote: 'The firing rates of IT6 neurons did not change (rest and activated: 6.0 spikes/s).'
+  expected:
+  - quantity: IT6 mean rate, parkinsonian rest
+    value: 6.0
+    tolerance: 0.6
+    unit: spikes/s
+  - quantity: IT6 mean rate, parkinsonian activated
+    value: 6.0
+    tolerance: 0.6
+    unit: spikes/s
+  criterion: A claim of absence. Files -02 and -04, IT6 rates in W, readings R1 and R2. The paper
+    names neither the test nor the threshold for this comparison; its other rate comparisons use
+    bounds down to p < 0.05, so the threshold is p < 0.05 and the test readings are T1 to T4.
+    Reproduced when both means are within tolerance under one rate reading and no test reading
+    finds a difference at p < 0.05; not reproduced when a test does. The difference of means and
+    every p-value are reported.
+- id: pd-cv-isi
+  statement: In the parkinsonian condition PT5B spiking is mainly regular at rest (CV 0.34 +/- 0.27;
+    80.6% with CV <= 0.5) and more regular in the activated state (CV 0.18 +/- 0.19; 93.8% regular).
+  source: Results, Parkinsonian condition, paragraph 2
+  quote: In the activated state, PT5B population analysis showed regular spiking that included a
+    small number of irregular spiking neurons (CV 0.18 + /- 0.19; 93.8% CV < = 0.5 regular; 6.2% CV
+    > 0.5 irregular).
+  expected:
+  - quantity: mean PT5B ISI CV, parkinsonian rest
+    value: 0.34
+    tolerance: 0.034
+  - quantity: standard deviation of PT5B ISI CV, parkinsonian rest
+    value: 0.27
+    tolerance: 0.027
+  - quantity: percent of PT5B neurons with CV <= 0.5, parkinsonian rest
+    value: 80.6
+    tolerance: 8.06
+    unit: percent
+  - quantity: mean PT5B ISI CV, parkinsonian activated
+    value: 0.18
+    tolerance: 0.018
+  - quantity: standard deviation of PT5B ISI CV, parkinsonian activated
+    value: 0.19
+    tolerance: 0.019
+  - quantity: percent of PT5B neurons with CV <= 0.5, parkinsonian activated
+    value: 93.8
+    tolerance: 9.38
+    unit: percent
+  criterion: Files -02 and -04, the measure and readings of control-cv-isi. Reproduced when, under
+    one combination of readings, all six values are within tolerance.
+- id: pd-no-subthreshold-oscillations
+  statement: No subthreshold membrane-potential oscillations are seen in PT5B neurons in the
+    parkinsonian rest or activated states.
+  source: Results, Parkinsonian condition, paragraph 3; Figure 5A,B
+  quote: No subthreshold membrane potential oscillations were observed in the parkinsonian rest or
+    active states.
+  depends_on:
+  - control-subthreshold-oscillations
+  criterion: Files -02 and -04, with the detection rule of control-subthreshold-oscillations,
+    which the paper does not give. Blocked as methods_underspecified with that claim unless a
+    question settles the rule; then reproduced when no recorded PT5B neuron meets it in either
+    state.
+- id: pd-activated-vm-more-negative
+  statement: In the activated state, PT5B membrane potential is on average more negative in the
+    parkinsonian than in the control condition, which the paper gives as the reason the EPSPs
+    look larger.
+  source: Results, Parkinsonian condition, paragraph 3
+  quote: Activated state EPSPs appear larger in the parkinsonian in contrast with the control
+    condition due to the greater driving force on EPSP since, on average, the membrane potential is
+    more negative in the parkinsonian condition with its reduced excitability.
+  criterion: Files -03 and -04, somatic membrane potential of the PT5B neurons recorded in both, in
+    W. The paper gives no measure. Readings (a) the mean of each neuron's trace, spikes included,
+    and (b) its median, which spikes barely move. Reproduced when the mean over neurons is lower
+    in the parkinsonian file under both readings; the per-neuron differences are reported.
+- id: pd-duty-cycle
+  statement: In the parkinsonian condition the PT5B duty cycle is 29% at rest and 25% in the
+    activated state.
+  source: Results, Parkinsonian condition, paragraph 4; Figure 5A,B; Methods, Duty cycle
+  quote: The duty cycle was 29% during the parkinsonian rest state (Fig. 5A ) and 25% during
+    activated state (Fig. 5B ; dashed vertical lines not shown).
+  expected:
+  - quantity: PT5B duty cycle, parkinsonian rest
+    value: 29
+    tolerance: 2.9
+    unit: percent
+  - quantity: PT5B duty cycle, parkinsonian activated
+    value: 25
+    tolerance: 2.5
+    unit: percent
+  criterion: Files -02 and -04, the measure and readings of control-duty-cycle. Reproduced when,
+    under one combination, both values are within tolerance.
+- id: fig6a-pd-rest-spectrogram
+  statement: In the parkinsonian rest state the LFP spectrogram shows continuous high-power 15 Hz
+    beta with 25 to 35 Hz bursts of about 50 to 250 ms recurring about every 200 ms (about 5 Hz).
+  source: Figure 6A legend; Results, Parkinsonian condition, paragraph 6
+  quote: LFP spectrograms of resting oscillatory power displayed continuous high-power 15 Hz
+    beta-band power with bursts of power in the ~25–35 Hz (~50–250 ms duration) occurring about
+    once every 200 ms (~5.0 Hz; Fig. 6A ).
+  expected:
+    quantity: 25 to 35 Hz burst rate, parkinsonian rest
+    value: 5.0
+    tolerance: 0.5
+    unit: Hz
+  criterion: File -02, spectrogram readings S1, S2 and E1, E2 in W, bursts as in
+    fig3a-control-rest-spectrogram in the 25 to 35 Hz band. "Continuous" 15 Hz power is read with
+    the same half-height convention - the 14 to 16 Hz band power stays above halfway between its
+    minimum and maximum in W for at least 90% of the time, a share the paper does not give (the
+    90% is this reader's, so it is reported, not decisive). Reproduced when the burst rate is
+    within tolerance and the burst durations fall within 45 to 275 ms (reported range widened by
+    10% of each bound) under every reading; the share of time the 15 Hz band is above half-height
+    is reported.
+- id: fig6b-pd-activated-spectrogram
+  statement: In the parkinsonian activated state the LFP spectrogram shows 20 to 35 Hz bursts of
+    about 25 to 100 ms recurring every 50 to 100 ms (about 10 to 20 Hz).
+  source: Figure 6B legend; Results, Parkinsonian condition, paragraph 6
+  quote: In the activated state, ~20–35 Hz bursts ~25–100 ms in duration were seen that occurred
+    every ~50–100 ms (~10–20 Hz; Fig. 6B ).
+  criterion: File -04, the readings of fig6a-pd-rest-spectrogram, bursts in the 20 to 35 Hz band.
+    Reproduced when, under every reading, the burst rate is within 9 to 22 Hz and the median
+    burst duration within 22.5 to 110 ms (the reported ranges widened by 10% of each bound).
+- id: pd-coincident-spikes
+  statement: In the parkinsonian condition 2% of PT5B spikes are coincident (2 or more spikes in 1
+    ms) at rest and 3% in the activated state.
+  source: Results, Parkinsonian condition, paragraph 7; Figure 7
+  quote: PT5B spike coincident firing (2 or more spikes firing in 1 ms) was observed in 2% of spikes
+    at rest and increased to 3% during the activated state
+  expected:
+  - quantity: percent of PT5B spikes coincident within 1 ms, parkinsonian rest
+    value: 2
+    tolerance: 0.2
+    unit: percent
+  - quantity: percent of PT5B spikes coincident within 1 ms, parkinsonian activated
+    value: 3
+    tolerance: 0.3
+    unit: percent
+  criterion: Files -02 and -04, the measure and readings of control-coincident-spikes. Reproduced
+    when, under one combination, both values are within tolerance.
+- id: fig7-pd-unitary-events
+  statement: In the parkinsonian condition, significant PT5B coincident firing occurs at rest in
+    400 to 1100 ms clusters of 6 to 16 periods at 14 to 15 Hz (mean 15 Hz), totalling 3.1 of 4.0 s
+    (77.5%), and in the activated state in 100 to 350 ms epochs totalling 1.4 of 4.0 s (35.0%).
+  source: Figure 7B,D legends; Results, Parkinsonian condition, paragraph 7
+  quote: The total duration of significant synchronous activity during rest was 3.1 s out of 4.0 s
+    (77.5%). During the activated state, 1.4 s of 4.0 s (35.0%), was significantly synchronous.
+  expected:
+  - quantity: duration of significant synchrony, parkinsonian rest
+    value: 3.1
+    tolerance: 0.31
+    unit: s
+  - quantity: duration of significant synchrony, parkinsonian activated
+    value: 1.4
+    tolerance: 0.14
+    unit: s
+  - quantity: mean periodicity within significant periods, parkinsonian rest
+    value: 15
+    tolerance: 1.5
+    unit: Hz
+  criterion: Files -02 and -04, the method and readings of fig4-control-unitary-events.
+    Reproduced when, under one combination, the three values are within tolerance, the rest
+    cluster durations fall within 360 to 1210 ms and the activated within 90 to 385 ms (reported
+    ranges widened by 10% of each bound).
+- id: rest-pt5b-rate-pd-vs-control
+  statement: At rest, PT5B firing rate is higher and less variable in the parkinsonian than in the
+    control condition (14.2 +/- 7.1 against 11.7 +/- 9.4 spikes/s, p < 0.001), a paradoxical
+    increase given the reduced PT5B excitability.
+  source: Results, Control vs parkinsonian comparison, paragraph 1; Discussion, paragraph 1
+  quote: 'The most substantial changes in firing between conditions were seen in the simulated rest
+    state, where there was a significant increase in PT5B firing rate and a decrease in firing rate
+    variability in the parkinsonian condition as compared with control condition (control: 11.7 ±
+    9.4 spikes/s; parkinsonian: 14.2 ± 7.1 spikes/s; p < 0.001).'
+  statistics:
+  - test: not named
+    p: 0.001
+    p_relation: "<"
+    n: PT5B neurons of the control and parkinsonian rest simulations
+  depends_on:
+  - fig2c-control-pt5b-rate-activated
+  - fig5c-pd-pt5b-rate-activated
+  criterion: Files -01 and -02, rates in W, readings R1 and R2, with the expected values of the
+    two claims it depends on. Reproduced when, under one rate reading, the four rest values are
+    within tolerance, the parkinsonian mean is higher with p < 0.001 under every test reading T1
+    to T4 (paired readings pair neurons by index, the network being the same), and the
+    parkinsonian standard deviation is lower. The paper names no test of the variability; the
+    standard deviations are compared as numbers.
+- id: rest-it4-rate-pd-vs-control
+  statement: At rest, IT4 firing rate is higher in the parkinsonian than in the control condition
+    (14.1 against 2.6 spikes/s, p < 0.05).
+  source: Results, Control vs parkinsonian comparison, paragraph 1
+  quote: 'There was also an increase in IT4 firing rate (control: 2.6 spikes/s; parkinsonian: 14.1
+    spikes/s; p < 0.05)'
+  statistics:
+  - test: not named
+    p: 0.05
+    p_relation: "<"
+    n: IT4 neurons of the control and parkinsonian rest simulations
+  expected:
+  - quantity: IT4 mean rate, control rest
+    value: 2.6
+    tolerance: 0.26
+    unit: spikes/s
+  - quantity: IT4 mean rate, parkinsonian rest
+    value: 14.1
+    tolerance: 1.41
+    unit: spikes/s
+  criterion: Files -01 and -02, rates in W, readings R1 and R2. Reproduced when, under one rate
+    reading, both values are within tolerance and the parkinsonian rate is higher with p < 0.05
+    under every test reading T1 to T4.
+- id: rest-it5a-rate-pd-vs-control
+  statement: At rest, IT5A firing rate is lower in the parkinsonian than in the control condition
+    (2.2 against 3.3 spikes/s, p < 0.01).
+  source: Results, Control vs parkinsonian comparison, paragraph 1
+  quote: 'a decrease in IT5A firing rate (control: 3.3 spikes/s; parkinsonian: 2.2 spikes/s; p <
+    0.01)'
+  statistics:
+  - test: not named
+    p: 0.01
+    p_relation: "<"
+    n: IT5A neurons of the control and parkinsonian rest simulations
+  expected:
+  - quantity: IT5A mean rate, control rest
+    value: 3.3
+    tolerance: 0.33
+    unit: spikes/s
+  - quantity: IT5A mean rate, parkinsonian rest
+    value: 2.2
+    tolerance: 0.22
+    unit: spikes/s
+  criterion: Files -01 and -02, rates in W, readings R1 and R2. Reproduced when, under one rate
+    reading, both values are within tolerance and the parkinsonian rate is lower with p < 0.01
+    under every test reading T1 to T4.
+- id: activated-pt5b-rate-pd-vs-control
+  statement: In the activated state, PT5B firing rate is higher and less variable in the
+    parkinsonian than in the control condition (29.7 +/- 12.7 against 26.8 +/- 18.2 spikes/s, p <
+    0.001).
+  source: Results, Control vs parkinsonian comparison, paragraph 1
+  quote: 'Activated (movement-associated) cortical dynamics also showed a significant increase in
+    PT5B firing rate and a decrease in firing rate variability in the parkinsonian condition as
+    compared with control condition (control: 26.8 ± 18.2 spikes/s; parkinsonian: 29.7 ± 12.7
+    spikes/s; p < 0.001).'
+  statistics:
+  - test: not named
+    p: 0.001
+    p_relation: "<"
+    n: PT5B neurons of the control and parkinsonian activated simulations
+  depends_on:
+  - fig2c-control-pt5b-rate-activated
+  - fig5c-pd-pt5b-rate-activated
+  criterion: Files -03 and -04, as in rest-pt5b-rate-pd-vs-control, with the four activated
+    values. The Discussion (paragraph 1) says the opposite, that there was no significant change
+    in PT5B population firing rate in the activated state; this claim follows the Results, which
+    give the numbers, and the outcome under every test reading is reported for both.
+- id: activated-it6-rate-pd-vs-control
+  statement: In the activated state, IT6 firing rate is higher in the parkinsonian than in the
+    control condition (6.0 against 3.5 spikes/s, p < 0.001).
+  source: Results, Control vs parkinsonian comparison, paragraph 1
+  quote: 'The firing rate of IT6 neurons also increased in the parkinsonian condition (control: 3.5
+    spikes/s; parkinsonian: 6.0 spikes/s; p < 0.001).'
+  statistics:
+  - test: not named
+    p: 0.001
+    p_relation: "<"
+    n: IT6 neurons of the control and parkinsonian activated simulations
+  expected:
+  - quantity: IT6 mean rate, control activated
+    value: 3.5
+    tolerance: 0.35
+    unit: spikes/s
+  - quantity: IT6 mean rate, parkinsonian activated
+    value: 6.0
+    tolerance: 0.6
+    unit: spikes/s
+  criterion: Files -03 and -04, rates in W, readings R1 and R2. Reproduced when, under one rate
+    reading, both values are within tolerance and the parkinsonian rate is higher with p < 0.001
+    under every test reading T1 to T4.
+- id: rest-beta-power-order-of-magnitude
+  statement: At rest, LFP beta power around 15 Hz is an order of magnitude larger in the
+    parkinsonian than in the control condition.
+  source: Discussion, paragraph 3; Figures 3A and 6A (colour bars x 10^-5 and x 10^-4)
+  quote: In the resting state, an order of magnitude increase in beta power was observed around 15
+    Hz.
+  criterion: Files -01 and -02, LFP in W, readings S1, S2 and E1, E2. The paper shows the increase
+    by the colour scales of Figs. 3 and 6 and gives no band; "around 15 Hz" is read as (a) the
+    power at 15 Hz and (b) the mean power over 14 to 16 Hz, a band centred on 15 Hz that the paper
+    does not give (the parkinsonian rest periodicity of Results, Parkinsonian condition, paragraph
+    7, is 14 to 15 Hz). The ratio of time-averaged
+    parkinsonian to control power is computed. "An order of magnitude" is read as a ratio that
+    rounds to 10 on a log scale, from 10^0.5 (3.16) to 10^1.5 (31.6), since the paper gives no
+    number. Reproduced when the ratio lies in that range under every reading; not reproduced
+    when it is below 3.16 under every reading.
+- id: activated-20-35hz-power-pd-vs-control
+  statement: In the activated state, the parkinsonian condition shows more power at 20 to 35 Hz than
+    the control condition.
+  source: Discussion, paragraph 1; Figures 3B and 6B
+  quote: Parkinsonism-associated changes were less marked in the activated (movement) state, where
+    we found no significant change in PT5B population firing rate but did see a change in PT5B
+    activity pattern with an increase in power of 20–35 Hz activity
+  criterion: Files -03 and -04, LFP in W, readings S1, S2 and E1, E2, and the PT5B SCH spectrum
+    (the sentence speaks of PT5B activity, the figures of the LFP). The paper gives no size or
+    test. Reproduced when the mean 20 to 35 Hz power is higher in the parkinsonian file under
+    every reading; the ratios are reported.
+- id: rest-synchrony-increase
+  statement: At rest, PT5B spike synchrony is substantially larger in the parkinsonian than in the
+    control condition (significant synchrony 3.1 against 0.7 of 4.0 s).
+  source: Discussion, paragraphs 1 and 6; Figures 4B and 7B
+  quote: We found a substantial increase in synchronous spiking in our simulations of the
+    parkinsonian rest state.
+  depends_on:
+  - fig4-control-unitary-events
+  - fig7-pd-unitary-events
+  criterion: Files -01 and -02, the unitary-event method and readings of
+    fig4-control-unitary-events. Reproduced when the total duration of significant synchrony at
+    rest is larger in the parkinsonian file under every reading; the durations come from the two
+    claims it depends on, with their expected values.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1-network-size, the statement named 15 populations, a number from cfg.py that the paper does not give; it now says seven excitatory pyramidal and two interneuron cell types, as the Methods do. The criterion still counts the 15 populations of the code.
+  - fig4-control-unitary-events and fig7-pd-unitary-events, removed the statistics entries; the joint-surprise p < 0.05 marks which windows count as significant, so it is a threshold used to count, not a result.
+  - fig3b-control-activated-spectrogram, added the ~50 ms duration of the 25 to 35 Hz bursts (Fig. 3B legend and Results) as an expected value with 10% tolerance, since the statement holds it and the criterion did not test it; the 14 to 16 Hz band for the 15 Hz bursts is now said to be the first reader's choice.
+  - fig5-pd-activated-gamma, noted that the Results give ~44 Hz where the legend gives ~43 Hz; the tolerance covers both.
+  - rest-beta-power-order-of-magnitude, the 14 to 16 Hz band was justified as the parkinsonian rest periodicity, which the paper gives as 14 to 15 Hz; it is now said to be a band the paper does not give.
+  - control-duty-cycle (and pd-duty-cycle through it), the mean over periods was a choice the paper does not make; the total-time summary is added as a second reading.
+  - control-coincident-spikes (and pd-coincident-spikes), the readings now say a spike of another PT5B neuron, as the Results do ("coincident with that of other PT5B neurons").
+  - pt5b-highest-rate, the excitatory reading now cites the Methods for the seven excitatory cell types; the figure panels were not seen.
+  - Open, the burst definitions of the spectrogram claims (fig3a, fig3b, fig6a, fig6b) and the band widths are not in the paper; the half-height reading borrows the duty-cycle convention, and these claims may be blocked as methods_underspecified.
+  - Open, pd-it6-rate-unchanged is a claim of absence for which the paper names no test or threshold; p < 0.05 under T1 to T4 is a reading from the paper's other bounds, not the paper's test.
+  - Open, the supplement (Supplementary Tables 2 and 3, Supplementary Figs. 1 to 5) was not in the text supplied, so model-pt5b-excitability-decrease and robustness-four-sets cannot be completed; control-subthreshold-oscillations and pd-no-subthreshold-oscillations have no detection rule in the paper.
+  - Not covered by a claim, the phase relations of IT5A and IT5B to the PT5B SCH (Results, Control simulations and Parkinsonian condition, paragraph 1) and the antiphase of LFP and PT5B SCH; these are qualitative descriptions of Figs. 2A and 5A, not main findings, so no claim was added.
