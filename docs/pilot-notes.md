@@ -5975,3 +5975,356 @@ forbids `data_missing` for data that are public nowhere; the section on repeat
 attempts assumes the dandiset changed, where here the claims file changed and
 the data did not; and no selection is designated when neither reading
 matches, the gap behind most of the blocks before the answers.
+
+### 000011, Li et al. 2016
+
+Six claims reproduced, five partially, nine not reproduced and eighteen
+blocked, all on the dandiset. It pins version 0.220126.1907, the only
+published version, as the paper cites none. The author put ten questions to a
+reader, and nine of the answers were that the paper does not give the detail,
+so each open detail became a set of readings under which the outcome must be
+the same; the answers changed two outcomes. `cd-captures-selectivity` moved
+from not reproduced to blocked as `methods_underspecified`, as the cd values
+are within tolerance with all correct control trials (66.2% and 34.6%) and
+outside with the training trials (73.7% to 88.0%), and `ed9f-reaction-time`
+stayed blocked but moved from `methods_underspecified` to `data_missing`.
+Round 1 gave its own outcome for each claim from the notebook with its
+conclusions and summary removed and agreed with 34 of 38. `selective-fraction`
+and `ed2b-silencing-strength` moved from partially reproduced to not
+reproduced, as with lick-early trials dropped only 1 of 4 counts holds in the
+first and with them kept only 1 of 4 parts in the second, and
+`cd-stable-over-epochs` moved from reproduced to blocked, since taking w from
+all correct control trials (0.563 and 0.588) was the author's choice and the
+training subset gives 0.534 to 0.554. The author kept
+`ed7e-roc-larger-photoinhibition` and `ed8-roc-during-photoinhibition` as
+partially reproduced, where round 1 gave not reproduced, under a rule written
+after round 1 for criteria without a partial clause (partial when at least
+half the parts hold under every reading that must agree); round 2 accepted it
+for consistency and agreed with all 38, so there was no third round. The paper, "Robust neuronal
+dynamics in premotor cortex during motor planning" in Nature, records units in
+left ALM of mice in a delayed-response task while one or both hemispheres are
+photoinhibited, and reports that preparatory activity and behaviour recover
+after unilateral but not bilateral silencing, that the recovery needs the
+other hemisphere, as shown by callosotomy, and that modular network models
+recover where single-module models do not. The unit classes, selective counts,
+recovery of rates and selectivity after silencing, the coding direction and
+its modes, the session biases and the network models were tested. The
+behavioural photoinhibition claims, the photoactivation claims and the spatial
+extent of silencing are blocked as `data_missing`, the four callosotomy claims
+on the recordings as `metadata_insufficient`, and `fig1g-selectivity-recovery`
+and `ed7-larger-photoinhibition` as `methods_underspecified` because their
+readings disagree (12, 9 and 3 of 24 combinations with three, two and no
+times within tolerance for fig1g). `fig2e-selectivity-recovery-times` is not
+reproduced because ipsilateral selectivity does not reach 80% of control
+before the go cue under any of the 24 combinations, against the paper's 538
+ms, and `fig3d-persistent-mode` and `fig3e-ramping-mode` because both modes
+predict the lick on control trials above chance (59% to 62% and 55% to 58%).
+Some outcomes rest on weak ground: `fig1f-spike-rate-recovery` holds only on
+the reading without exclusion, which tests 248 neurons per condition against
+the paper's 168 to 175, while the reading close to the paper's counts fails;
+and the partial outcomes of `unit-classification`, `fig2-recordings-recovery`,
+ed7e, ed8 and `fig6-modular-models-recover` rest on the author's rule, which
+the claims file does not contain and under which, read strictly, they would be
+not reproduced. A question asks a reader whether the claims file adopts it.
+
+The dandiset holds only the recording sessions: the behavioural
+photoinhibition sessions (Figs 1d, 2b, 5b and Extended Data Fig. 3), the
+photoactivation mice (Extended Data Fig. 5), the untrained mice used to map
+photoinhibition (Extended Data Fig. 2d) and any session before callosotomy are
+not in it, so nine of the paper's findings cannot be tested, and its
+genotypes are VGAT-ChR2-EYFP and PV-ires-Cre x ReaChR only. 33 sessions of 7
+mice, the callosotomy group by genotype and delay, and 3 experiment-1 sessions
+of mouse 255200 have no photostimulus record, though most of them contain
+trials whose activity is silenced in the light window of the other sessions,
+so their photoinhibition and control trials cannot be told apart; no file
+says which mice were callosotomised, on which side or when. The trial table
+has no photostimulus column, so the site, number of laser spots and timing of
+a trial can be recovered only from the per-site laser power traces and the
+photostim_start_time events, and the number of spots is stated nowhere. In
+lick-early trials the photostimulus events are logged at the restarted delay,
+after the light seen in the laser trace; over all labelled sessions 339
+lick-early photostimulus trials have the event more than 0.1 s after the
+light, with the light up to 10 s before the logged go cue, so with lick-early
+trials kept these trials enter the photoinhibition averages without light (3%
+to 16% of each condition's trials in experiment 1, 6.5% to 7.5% in experiment
+2). No file holds lick times, only the analogue lick_trace, which in the 24
+experiment-2 sessions used for the activity space holds no licks, so reaction
+times cannot be computed there. The control mice hold 979 units against the
+paper's 1012, with 15 of intermediate spike width against 50, so about 33
+intermediate units were not deposited (widths from upsampled waveforms give
+11), and the units' cell_type labels intermediate-width units as FS, where the
+Methods exclude them (45 units in all). The paper's neuron and session counts
+for its selectivity and population analyses (55, 143 and 40 selective
+neurons; 16 sessions with 6 to 20 neurons) cannot be reached with the
+criteria the paper states, the dataset giving 138 to 173, 221 to 293, 58 to 62
+and 24 sessions with 6 to 37 neurons, and experiment 1 holds 4 mice where the
+paper reports 6. Other findings: session 258250_20141202 holds two
+interleaved sequences of trial ids (1 to 24 and 105 to 160) whose times
+overlap (98 overlapping pairs), in 28 units of 3 sessions the spike times are
+not in time order and two sessions have trials out of time order; and the
+asset sub-255200_ses-20140910_behavior.nwb holds only metadata.
+
+The notebook ran in about 11.5 minutes in the first run, 1042 s after the
+answers, 791 s after round 1 and about 19 minutes after round 2, and
+`entry.py all` passed with no errors. One run failed after a regex that
+stripped bold markup also removed `**` operators from the code; they were
+restored and the outputs matched the earlier run. Round 1's points led to
+spike widths from waveforms interpolated to ten times the stored rate, the
+size of the lick-early artefact, per-neuron trial counts and epoch
+selectivity of the included populations (no simple further selection gives
+the paper's counts), per-session ROCs of the modes, raw lick-trace levels
+above the experiment-2 baseline with the ed9f test run on the 6 experiment-3
+sessions as a variant (it holds under 18 of 26 combinations), reference
+numbers on the recording sessions for the blocked behaviour and callosotomy
+claims, and three more questions to a reader, which are unanswered. Round 2
+found statements the outputs did not support, among them a time of 750 ms
+called outside a tolerance of 210 to 770 ms in ed7, the event said to be
+logged up to about 2 s after the light where the maximum printed is 1587 ms,
+and differences within 2 s.e.m. under every reading in fig3e where that holds
+for T1 only, and these were corrected; a typo fix in a markdown cell came
+after the last run and was applied to the executed copy by hand. Untracked
+files in the repository root that the author did not create were left alone.
+The author's points on the protocol: it does not say how the claims file's
+rule that any reading may reproduce combines with readings of details the
+author finds open; it gives no guidance on reporting up to 256 combinations
+per claim; the claims file's "trials per condition" could not be left open;
+there is no `data` kind for simulations that use no data; unlabelled
+photoinhibition trials fit both `data_missing` and `metadata_insufficient`;
+there is no channel to pass back a point the data settle in the claims file;
+its rule for selections covers only chance levels; it does not say whether a
+measured recovery time is the point estimate or the bootstrap mean; the
+header table allows only "tested" or "blocked" for claims that ran but are
+blocked; and question files name a single claim where questions apply to
+many.
+
+### 000013, Hires et al. 2015
+
+Twenty-two claims reproduced, one partially, eight not reproduced and
+fourteen blocked, all on the dandiset and all blocked as
+`methods_underspecified`. It pins version 0.220126.2143, the only published
+version, as the paper predates the dandiset and cites none; the draft holds
+the same 52 blobs. The claims check added `example-cell-phase-modulation`, so
+the file has 45 claims. The author put seven questions to a reader; the
+answers changed four outcomes. They set the start of the touch response
+cutoff search at the transition where the curve levels off, keeping the
+literal search from 1 ms only as a variant, so `table1-l4-c2` moved from
+blocked to reproduced and `table1-l5` from blocked to partially reproduced;
+they made the phase decoder use the phase-tuning cycles, so
+`fig4c-phase-decoding` moved from not reproduced to blocked; and they made
+"median higher" the median of the per-cell differences, so
+`whisking-rate-l5-increase` moved from partially reproduced to reproduced.
+Round 1 gave its own outcome for each claim from the executed notebook with
+its conclusions and summary removed and agreed with 36 of 45.
+`behavior-whisking-bouts`, `behavior-touches-reaction` and
+`example-cell-touch-window` moved from partially reproduced to not
+reproduced, as their criteria need every value within tolerance and give no
+rule for a partial match. With the whisking periods corrected,
+`whisking-rate-l4-no-change` moved from partially reproduced to blocked (L4
+C2 p = 0.595 with touch epochs left out of whisking, p = 1.28e-7 with them
+in), and with phase cycles taken from the whole trial fig4c moved from
+blocked to not reproduced. The author kept `example-cell-ff-around-touch`,
+`table1-l4-outside` and `fig5-modulation-correlations` blocked because their
+readings disagree, and `fig3c-touch-spikes-outside`,
+`fig3d-touch-phase-outside` and `fig4a-touch-detection-outside` blocked
+because they depend on blocked claims; round 2 accepted these and agreed
+with all 45, so there was no third round. The paper, "Low-noise encoding of
+active touch by layer 4 in the somatosensory cortex" in eLife, describes 52
+loose-seal cell-attached recordings from L4 cells in the C2 barrel, L4 cells
+outside C2 and L5 cells near C2 in mice trimmed to the C2 whisker and
+localizing a pole in a go/no-go task, and reports that L4 C2 touch responses
+are temporally precise, that 15 L4 C2 neurons detect 95% of touches, that 200
+of them decode the time since touch with a minimum uncertainty of 0.55 ms,
+and that the Fano factor after touch lies close to the binomial limit. No
+claim is blocked for lack of data, so the recordings, behaviour, the example
+cell, Table 1, phase modulation, whisking rates, touch-coupled spikes, the
+decoders, modulation indices and Fano factors were all tested.
+`recordings-mice` is not reproduced because the files hold 23 subjects
+against 21 mice, `latency-determinable` because 7 (first touches) or 10 (all
+touches) L4 cells outside C2 have a latency against 4,
+`fig4b-touch-time-precision` because the RMS error is 1.09 to 1.40 ms against
+0.55 +/- 0.055, `text-whisking-rates` because no reading puts both rates in
+tolerance, and fig4c because C2 is far from 24 +/- 2.4 deg and worse than
+outside C2 under every reading. `fig3c-touch-spikes-l4c2`, on which the
+other Figure 3 claims depend, `fig4a-touch-detection-c2` (12 to 30 neurons,
+only one reading at 14 within 15 +/- 1.5) and `fig6d-not-refractory` are
+blocked because their readings disagree. Some
+outcomes rest on weak ground: table1-l4-c2 sits exactly at its threshold, 15
+of 18; the criterion's latency rule gives noise latencies of 0 and 1 ms that
+count as determined; fig4c's criterion ends "else methods_underspecified",
+which the record reads as its rule for readings that disagree, a reading
+round 2 called reasonable but not the literal text; and among the claims
+blocked by dependency, the fig3c and fig3d outside claims fail under every
+reading and fig4a-touch-detection-outside holds under every reading.
+
+All 52 recordings are present and none is deposited twice. In 36 files the
+SpikeTrain timestamps run 10 ms before the CurrentClampSeries timestamps of
+the same samples; under the spike timestamps the median L4 C2 touch-response
+peak is 8 ms in the files without the offset and 12 ms in those with it (rank
+sum p = 0.016), and 8 and 22 ms under the voltage timestamps, so the data are
+consistent with the voltage timestamps of the 36 files being 10 ms late, and
+a residual 4 ms difference is not explained. In 38 files the
+CurrentClampSeries data, with the stated conversion of 0.001 to volts, span
+only 2 to 26 microvolts, so the conversion is off by 1000 (the other 14 span
+3 to 28 mV). In 38 files theta_filt, described as theta_at_base filtered 6 to
+60 Hz, is not the signal the stored amplitude and phase come from (up to 46
+deg apart), while in 14 it equals amplitude times cos(phase); the stored
+amplitude and phase match a 6 to 60 Hz Butterworth band-pass and Hilbert
+transform of theta_at_base. set_point is described as the amplitude of the
+Hilbert transform but follows theta minus its band-passed part (r 0.96 to
+1.00) and holds missing values in 23 files. pole_position is described in mm,
+but its values range from 0.2 to 1.6 in some files, 992 to 13888 (motor
+steps) in others, about 1e8 in others and up to 1.4e12 in one. Three subjects
+(anm211295, anm215592, anm217330; six cells) have no genotype, the paper's
+VGAT-ChR2 mice by their counts, and the files hold 23 subjects where the
+paper reports 21 mice, with the C57BL6 and Ai32 x PV-Cre counts off by one
+cell each, so the mapping of subjects to the paper's animals is not given.
+Other findings: 30 files are named with an ogen suffix, but no file holds an
+optogenetic stimulus series and stim_present is 0 in every trial;
+first_lick_time disagrees with the lick onset series by up to 3.1 s, with 47
+trials having licks and no first_lick_time and 136 a first_lick_time and no
+lick; and the paper's analysis code is not public, the repository it links
+holding only the contact detection.
+
+The notebook ran in 8.7 minutes (530 s) in three runs through `entry.py all`,
+all passing, 8.7 minutes after the answers, 12.1 minutes after round 1 and
+7.5 minutes in the last of two runs after round 2. During development the
+first loader took 13 minutes, until loading in separate processes cut it to
+80 s. Round 1's points led to whisking periods that leave out licking cycles
+and the 70 ms after each touch, phase tuning over every phase-analysis cycle
+of the trial and not only the sample epoch, a touch detector that reads the
+fraction detected at the time point of best percent correct with ties broken
+at the middle threshold (the earlier rule counted every sample as a touch),
+50 repetitions in place of 20, the zero-median checks counted in Table 1, and
+per-file touch-peak latencies by clock offset, per-cell touch windows and the
+rows where cell 11 matches. Round 2 could not check the dependency rule, as
+the protocol was not among its materials, and found statements the outputs
+did not support, among them l5-higher-rates medians from the earlier
+whisking mask, p = 0.971 where the output printed 0.798, fig4c medians that
+hold only over the 42 and 38 of 100 runs reaching 76% correct, a README run
+time of twelve minutes against 8.8 printed, and a synthetic detector value of
+0.15 that no output showed, which a new cell now gives as 0.329 at 0.541
+percent correct; these were corrected. Untracked dotfiles in the repository
+root that the author did not create were left alone. The author's points on
+the protocol: one literal reading can block many claims, as ten claims hinge
+on two readings of the cutoff rule, one of them degenerate; a blocked
+dependency hides a clear failure, as in fig3c-touch-spikes-outside; a
+criterion's fallback can conflict with the protocol, as fig4c's does; Table
+1's 256 combinations of readings make an agreed outcome nearly impossible;
+"any cell" criteria let chance decide, as cell 11 matches in 2 of 394 tries;
+`measured` has no slot for a value never reached; the suggested clock check
+does not fit continuous trial data; no published version is cited; the
+no-download rule left the author caching reduced arrays in `$TMPDIR` while
+developing; and the advice that h5py with remfile serialises reads across
+threads, so loading needs separate processes, belongs in `docs/archives.md`.
+
+### 000015, Chen et al. 2017
+
+Eleven claims reproduced, three partially, seven not reproduced and eight
+blocked on the dandiset, with one more reproduced on the dandiset together with
+the Li et al. 2015 units of dandiset 000010; the two claims on the silicon
+probe recordings, which the claims file places at CRCNS, are blocked. It pins
+version 0.220126.1914, the only published version, whose draft has the same
+210 assets. The claims were written from the extracted text of the paper,
+which lacks its Supplemental Information, with no figure looked at, so the
+five claims on Figures S1, S4, S5, S7 and S9 rest on the main text alone; the
+claims check added `alm-pt-it-lick-fraction-below-20` and the author added the
+link claim `li2015-tagged-units-link`, so the file has 33 claims. The author
+put five questions to a reader, every answer was that the paper does not say,
+and each added readings to the criteria; two outcomes changed:
+`ephys-pt-it-onset-not-detected` moved from blocked to reproduced, and
+`fig8d-pt-earlier-than-it` from not reproduced to reproduced, as the new onset
+rule S2 gives 1.801 s. Round 1 gave its own outcome for each claim from the
+notebook with its conclusions and summary removed and agreed with 32 of 33; it
+gave not reproduced for `fig8d-error-outnumber-correct`, whose reading (b)
+reaches only 1.81 bootstrap SD against a bound of 2 and whose criterion names
+no partial outcome, and the author changed it from partially reproduced. Round
+2 agreed with all 33, so there was no third round. The paper, "A Map of
+Anticipatory Activity in Mouse Motor Cortex" in Neuron, images 15,431 neurons
+in ALM and MM of six mice in a tactile delayed-response task, and reports that
+object location is represented mainly in MM and preparatory lick direction
+activity in ALM, and that lick direction selectivity is stronger and earlier
+in PT than in IT neurons, labelled in three of the mice. The sample, trial and
+neuron counts, the selectivity of single neurons and its timing, the area
+comparisons and the PT and IT analyses were tested. Four claims that need
+plane depth are blocked as `metadata_insufficient`, the wide-field,
+photoinhibition and whisking claims as `data_missing`, and the two silicon
+probe claims as `other`, as the registry's check does not allow
+`data_missing` for data placed in another archive. `fraction-selective-alm-mm`
+is not reproduced because MM is above tolerance under every reading (closest
+1,736, 26.3%, against at most 1,675 and 25.3%), `fig4c-outcome-after-lick`
+because 41.3% of outcome-selective ROIs are first selective after the go cue
+against more than half, `fig6-outcome-response-uniform` because its part (a)
+fails in MM, and `fig8d-pt-contra-bias` and `fig8d-mm-posterior-preferring`
+because their direction holds but they reach 1.71 and 1.87 bootstrap SD
+against 2. `figs4-peak-shift` is not reproduced because over the whole window
+MM peaks after ALM (6.09 against 4.52 s), but before the go cue MM peaks first
+under every reading (2.08 against 4.16 s, V1, T1); round 2 called the
+criterion a misreading of the paper, which places the shift over the delay
+epoch, and a question on the window is unanswered. Some outcomes rest on weak
+ground: `figs5-single-coefficient`, `fig4a-lick-direction-epochs` and
+`fig4b-object-location-memory` are met by permuted trial types as well;
+`fig8d-pt-earlier-than-it` passes in 2 of 16 combinations, both with rule S2,
+T2 bins interpolated from frames and the bootstrap over cells; and in
+`ephys-pt-it-onset-not-detected` the two baselines are the same two windows and
+the IT baseline SD is 0.0004, so the test carries little information.
+
+Every one of the 105 image planes is deposited twice, as two files whose
+contents are identical except the identifier and creation date, so the 210
+files are 105 recordings. The files hold no plane depth, no stereotactic
+coordinates and no identifier of the imaging location within a mouse, and no
+text value in any plane names a depth, a coordinate or a layer, so four of the
+paper's findings and the depth parts of three others cannot be tested, nor can
+the 12 imaging locations be counted. The dandiset holds only the two-photon
+imaging: the wide-field imaging, the whisker tracking, the lick times, the
+photoinhibition behaviour and the silicon probe recordings (567 units) are not
+in it, and the CRCNS DOI the paper names, 10.6080/K0S180F9, resolves to a
+placeholder record ("CRCNS.org ssc-8TBD", "not yet available"); a search of
+DANDI by the paper's DOI and its authors finds only dandiset 000015.
+ImagingPlane.location is "ALM" in every file, including the 47 planes whose
+experiment_description says left_vm1 (the paper's MM); with
+experiment_description as the area, the ROI, area, PT and IT counts, the
+trials and the early-lick fraction all match the paper (15,431 ROIs, 8,837 in
+ALM and 6,594 in MM, 719 PT and 2,631 IT). With the stored ROI and neuropil
+traces and the paper's r = 0.7, the baseline F0 is zero or negative on 0.26% of
+ROI-trials, in 1,262 ROIs, and dF/F reaches thousands, dominating the MM mean
+dF/F; the paper does not say how these were treated, and two outcomes
+(`fig8d-error-outnumber-correct` at 2.20 SD and `fig8d-pt-contra-bias` at 1.97
+SD without those ROIs) stay sensitive to them. Other findings: the ROI table's
+`included` column marks 8,655 of 15,431 ROIs without saying what excluded the
+others, where the paper's counts use all of them; the trial table's start_time
+is 0.623 s before the sample event, the paper's trial start, in every trial,
+an offset that is not described; early-lick trials do not record the pole
+position; and the tagged PT and IT units of Li et al. 2015 that the paper
+compares with are on DANDI as dandiset 000010, version 0.220126.1905, which
+labels exactly 45 PT and 27 IT units, matched by label and count only.
+
+`entry.py all` passed with 0 errors, the notebook running in 11.2 min in the
+first run, about 18 min after the answers, 15 min after round 1 and 20.4 min
+after round 2. One preparation script, not part of the entry, crashed on JSON
+serialisation and was fixed, and one shell command was refused for lack of
+approval and replaced by the search tool. Round 1's points led to a search of
+every text value of every plane for depth (none found), a listing of the
+behavioural events of all 105 planes (sample, delay and go only, so no lick
+times), three duplicate pairs compared in full, the permuted-label null for
+figs5 (0.845 to 0.911), the figs4 peak before the go cue and within the delay
+with a sixth question to a reader, the PT part of `fig8d-mm-object-location`
+(0.623 against 0.033) and the variance explained by area and projection type
+for `fig8ef-area-explains-variance` (projection type 0.0013 against area
+0.0005, not separated by the bootstrap), and the DataCite record of the CRCNS
+DOI; no outcome changed apart from fig8d-error-outnumber-correct. Round 2
+found statements the outputs did not support, among them window W1 given as the closest reading in
+`fraction-selective-alm-mm` where W3 is closer, a README row that left out the
+T2 bins on which fig8d-pt-earlier-than-it rests, a README run time of about fifteen
+minutes against 19.7 printed, and silicon probe data called never made public
+where the notebook showed only the placeholder DOI, and these were corrected;
+the markdown cells were changed after the last run, so the git-ignored
+executed copy still shows the old conclusion text. The author's points
+on the protocol: it has no rule for a multi-part criterion with an untestable
+part; it forbids `data_missing` for an `elsewhere` claim whose data were never
+public while the author cannot change the claim's `data` field; blocking every
+claim that depends on a blocked claim is coarse; it has no rule for criteria
+that chance alone satisfies; its two reading rules, any reading may match and
+all readings must agree, are easy to confuse; it does not cover `measured`
+when no reading matches; it does not say whether mapping a data event to the
+claims file's trial start counts as a method choice; and it does not say
+whether to write a link claim when its only dependent is blocked.
