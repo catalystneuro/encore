@@ -1,0 +1,909 @@
+# Claims for Ishii et al. (2025), "Post-ejaculatory inhibition of female sexual drive via
+# heterogeneous neuronal ensembles in the medial preoptic area", eLife 12, RP91765, on dandiset
+# 001249.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22,
+# protocol as stated in docs/protocol.md.
+#
+# Text read: the version of record (eLife RP91765, published 5 March 2025) as served by Europe
+# PMC: main text, all figure legends and figure supplement legends, Materials and methods, and
+# the authors' response to the reviewed preprint. Supplementary files 1 to 3 (tables of every
+# statistical result; files 2 and 3 hold the per-region ANOVA and Tukey values of Figure 2) are
+# not in the text, so the region-level statistics of Figure 2 are not recorded here.
+# Code read: github.com/stuberlab/Ishii-MPOA-Ejaculation-2023, commit 4e98c43 (2025-02-24). Its
+# notebooks are named by the preprint's figure numbers; "Figure 2.ipynb" is the whole-brain
+# analysis of the published Figure 2. It starts from a table of densities (tdTomato_summary.csv,
+# on Figshare) and holds the per-region one-way ANOVA (scipy f_oneway over the three groups),
+# the Benjamini-Hochberg correction (statsmodels fdrcorrection, alpha 0.1 at both atlas levels),
+# and Tukey's HSD (scipy tukey_hsd) for every region. The image processing (ClearMap
+# registration, ilastik cell classifier) is not in the repository.
+#
+# The dandiset ("FosTRAP dataset used in Ishii et al 2023", 14 assets) holds the whole-brain
+# activity mapping of Figure 2 only (Data availability). As the paper reports it: TRAP2::Ai14
+# (Fos-2A-iCreERT2 x Rosa26-LSL-tdTomato) females, ovariectomized and primed with estradiol,
+# given 4-OHT (50 mg/kg i.p.) immediately after the male was removed in one of three phases:
+# appetitive (sniffing only, n=4), consummatory (mount or intromission, no ejaculation, n=5),
+# post-ejaculatory (just after male ejaculation, n=5). Two weeks later brains were cleared
+# (SHIELD) and imaged on a SmartSPIM light-sheet microscope (3.6x objective, 4 um z step;
+# 594 nm signal channel, 488 or 647 nm background channel used for registration), downsampled
+# to 3.6 x 3.6 x 4 um, registered to the Unified Anatomical Atlas of the Kim lab (Chon et al.
+# 2019; 20 x 20 x 50 um) with ClearMap, and tdTomato+ cells segmented with an ilastik
+# classifier. The measured variable is the tdTomato+ cell density (cells per mm3) per atlas
+# region per brain, at hierarchy level 4 (Figure 2C) and level 6 (Figure 2H, Figure 2-figure
+# supplement 2).
+# All other experiments (self-paced and home cage mating behavior, HCR in situ, calcium imaging
+# of Vgat-Cre and Vglut2-Cre MPOA neurons, chemogenetics) are on Figshare,
+# doi:10.6084/m9.figshare.27642768.v1, and their claims are marked data elsewhere.
+#
+# Method choices for Figure 2 taken from the code where the Methods are silent: level-4 regions
+# are the ten of the code's level_4_order (CTXpl, CTXsp, STR, PAL, TH, HY, MBsen, MBmot, MBsta,
+# P); the level-6 family is the level-6 regions whose level-4 ancestor is one of these ten; the
+# group mean is np.nanmean over brains; Tukey's HSD is scipy's tukey_hsd on the three groups.
+# Where the Methods and the code disagree the Methods are followed and the code is a variant.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001249"
+  doi: 10.48324/dandi.001249/0.241109.2357
+paper: doi:10.7554/elife.91765
+claims:
+- id: fig2-density-link
+  kind: link
+  statement: The tdTomato+ cell densities computed from the dandiset's whole-brain images agree,
+    brain by brain, with the densities in the paper's deposited table (tdTomato_summary.csv on
+    Figshare) that its Figure 2 code reads.
+  source: Data availability; Figure 2.ipynb at GitHub commit 4e98c43, cell 4
+  quote: Whole brain FosTRAP activity mapping data is available on DANDI
+  data: with_inputs
+  criterion: Densities computed here as in fig2c-brain-wide-increase (ClearMap registration to the
+    Unified Anatomical Atlas, ilastik segmentation, count per region over region volume). The
+    trained classifier is not deposited, so it is retrained as the Methods describe (10 random
+    chunks of 1.8 x 1.8 mm x 100 um from four subjects). The link holds (reproduced) when the 14
+    brains fall into groups of 4, 5 and 5 matching the table's Stim labels and, for each brain,
+    the median over level-6 regions of the absolute relative difference from the table's density
+    of the matched subject is within 10% (the protocol's default tolerance). Partially reproduced
+    when the groups match but fewer than 10 of the 14 brains meet the 10% bound. The per-brain
+    correlation over regions is reported. The table is outside data (Figshare
+    doi:10.6084/m9.figshare.27642768.v1).
+- id: fig2c-brain-wide-increase
+  statement: TRAP-labeled (tdTomato+) cell density increases brain-wide when 4-OHT is given after
+    male ejaculation, compared with the appetitive phase.
+  source: Results, Brain-wide mapping of neural response to male ejaculation, paragraph 1; Figure
+    2C and 2D
+  quote: As a result, we found the level of tdTomato expression increased in a brain-wide manner
+    during the post-ejaculatory period when compared to the appetitive phase
+  data: with_inputs
+  criterion: Method from the Methods (Brain-wide analysis) and the Figure 2 legend, with the code
+    where they are silent. Per brain, tdTomato+ cells per atlas region (Unified Anatomical Atlas,
+    Kim lab, outside data; Figure 2.ipynb reads its label table
+    atlas_info_KimRef_FPbasedLabel_v2.9) divided by region volume (cells per mm3), at hierarchy
+    level 4. Per region a one-way ANOVA over the three groups (appetitive n=4, consummatory n=5,
+    post-ejaculatory n=5), Benjamini-Hochberg correction at FDR 0.05 (Methods and legend; the
+    code uses 0.1, shown as a variant), then Tukey's HSD (FWER 0.05) post-ejaculatory against
+    appetitive for regions significant in the ANOVA. Open, and named here because it could change
+    the outcome; (1) the level-4 family is the ten regions of the code or the twelve of the Figure
+    2C legend (adding VERM and HEM); (2) region volume is the atlas volume or the region's volume
+    in each brain's own space; the paper gives neither. Supplementary file 2, which lists which
+    regions were significant, is not in the text read, so "brain-wide" is read as follows,
+    stated before analysis. Reproduced when the post-ejaculatory mean exceeds the appetitive mean
+    in at least 80% of the level-4 regions of the family and at least half of the family is
+    significant (ANOVA q < 0.05 and Tukey p < 0.05, post-ejaculatory higher). Partially
+    reproduced when the direction holds in at least 80% but fewer than half are significant. Not
+    reproduced otherwise. Every reading is run; when they give different outcomes the claim is
+    blocked as methods_underspecified.
+- id: fig2ei-social-regions-higher
+  statement: Regions known for social behavior, including the paraventricular hypothalamic areas
+    (PVHd, PVH, PaV), the medial amygdala and the BNST, have significantly higher tdTomato+
+    density in the post-ejaculatory group than in the appetitive group.
+  source: Results, Brain-wide mapping of neural response to male ejaculation, paragraph 1; Figure
+    2E to 2H; Figure 2-figure supplement 2
+  quote: regions well known to be related to social behavior had significantly higher tdTomato
+    density in the post-ejaculatory group compared to appetitive group ... This includes
+    paraventricular hypothalamic areas (PVHd, PVH, PaV) which are important for endocrinological
+    regulations, medial amygdala (MeA) which is critical for olfactory sensory information
+    processing, and the BNST
+  data: with_inputs
+  depends_on:
+  - fig2c-brain-wide-increase
+  criterion: Densities as in fig2c-brain-wide-increase, at hierarchy level 6. Per region a one-way
+    ANOVA over the three groups with Benjamini-Hochberg correction at FDR 0.10 over the level-6
+    family (Methods; Figure 2-figure supplement 2 legend), then Tukey's HSD at FWER 0.05 (Methods;
+    p-values from scipy tukey_hsd as in Figure 2.ipynb). A region is significantly higher when q <
+    0.10, Tukey p < 0.05 and the post-ejaculatory mean is higher. The medial amygdala is the
+    atlas label Me (Figure 2H legend); the other names are matched to atlas acronyms at level 6,
+    or at the nearest level that holds them when level 6 does not (open; named before analysis).
+    The level-6 family is (a) the code's, regions under the ten level-4 regions, or (b) all
+    level-6 regions. Reproduced when all five regions (PVHd, PVH, PaV, Me, BNST) are
+    significantly higher under the readings; partially reproduced for three or four; not
+    reproduced below three. Per-region q and Tukey p are reported.
+- id: fig2-mpn-higher
+  statement: The medial preoptic nucleus (MPN) has significantly higher tdTomato+ density in the
+    post-ejaculatory group than in the appetitive group.
+  source: Results, Brain-wide mapping of neural response to male ejaculation, paragraph 1; Figure
+    2F and 2H
+  quote: The medial preoptic area nucleus (MPN), a subregion of the MPOA, had significantly higher
+    tdTomato density in the post-ejaculatory group compared to the appetitive group
+  data: with_inputs
+  depends_on:
+  - fig2c-brain-wide-increase
+  criterion: As in fig2ei-social-regions-higher, for the atlas region MPN. Reproduced when the
+    level-6 ANOVA q < 0.10 (under both family readings) and Tukey's HSD post-ejaculatory against
+    appetitive p < 0.05 with the post-ejaculatory mean higher. Partially reproduced when Tukey p
+    < 0.05 but q >= 0.10. The density ratio of the two group means is reported.
+- id: fig2f-mpn-fourth-largest
+  statement: The MPN shows the fourth largest difference in mean tdTomato+ density between the
+    post-ejaculatory and appetitive groups among all brain regions.
+  source: Results, Brain-wide mapping of neural response to male ejaculation, paragraph 1; Figure
+    2F
+  quote: The MPN also had the fourth largest difference of density between the post-ejaculatory
+    group and appetitive group among all the brain regions
+  data: with_inputs
+  depends_on:
+  - fig2c-brain-wide-increase
+  expected:
+  - quantity: rank of the MPN by post-ejaculatory minus appetitive mean density
+    value: 4
+    tolerance: 0
+  criterion: Difference is the post-ejaculatory group mean minus the appetitive group mean of
+    density (Figure 2F, "difference of average tdTomato density"). The set ranked is open; the
+    readings the text allows are (a) the level-6 family of the code, (b) all level-6 regions,
+    (c) all atlas regions at every level. The rank is a reported count (tolerance 0); the claim
+    is reproduced when the MPN ranks fourth under one reading. The ranks under every reading and
+    the three regions above the MPN are shown.
+- id: fig2gh-consummatory-tendency
+  statement: The consummatory group tends to have higher MPN tdTomato+ density than the appetitive
+    group, without reaching significance.
+  source: Results, Brain-wide mapping of neural response to male ejaculation, paragraph 1; Figure
+    2G and 2H
+  quote: While it was not statistically significant, the consummatory group also tended to have a
+    larger tdTomato density than the appetitive group in the MPN as well
+  data: with_inputs
+  depends_on:
+  - fig2c-brain-wide-increase
+  criterion: For the MPN, Tukey's HSD consummatory against appetitive (FWER 0.05), as in Figure 2G
+    and Figure 2.ipynb. The absence part is judged on that test alone; the claim is reproduced
+    when Tukey p >= 0.05 and the consummatory mean is above the appetitive mean; partially
+    reproduced when p >= 0.05 and the mean is not higher; not reproduced when p < 0.05. The mean
+    difference and p are reported.
+- id: fig2s-dorsal-raphe
+  statement: The whole-brain mapping indicates increased TRAP labeling in the dorsal raphe after
+    male ejaculation.
+  source: Discussion, Neural circuitry for female sexual behavior regulation, last paragraph;
+    Figure 2-figure supplement 1 and 2
+  quote: Our whole brain activity mapping data also indicates increased Fos activity in the
+    dorsal raphe
+  data: with_inputs
+  depends_on:
+  - fig2c-brain-wide-increase
+  criterion: For the atlas dorsal raphe region at level 6 (DR, or the label the atlas gives it),
+    as in fig2ei-social-regions-higher. Reproduced when the post-ejaculatory mean exceeds the
+    appetitive mean and the ANOVA q < 0.10 (the significance marked in Figure 2-figure supplement
+    2); partially reproduced when the mean is higher but q >= 0.10.
+- id: fig1gh-transitions-isolation
+  statement: In hormone-primed females, zone transitions decrease and time in the isolation zone
+    increases after male ejaculation, compared with before ejaculation and with the control trial.
+  source: Figure 1G and 1H; Results, Female sexual motivation is suppressed after male
+    ejaculation, paragraph 2
+  quote: we found that there was a significant decrease in the number of zone transitions as well
+    as a significant increase in the time spent in the isolation zone after male ejaculation
+  statistics:
+  - about: transitions per 10 min, three epochs
+    test: RM ANOVA
+    statistic: F(2,16)=10.89
+    p: 0.001035889
+    n: 9 mice
+  - about: transitions, post against pre
+    test: Tukey's HSD
+    p: 0.0142
+    n: 9 mice
+  - about: transitions, control against post
+    test: Tukey's HSD
+    p: 0.0015
+    n: 9 mice
+  - about: time in isolation zone, three epochs
+    test: RM ANOVA
+    statistic: F(2,16)=14.34
+    p: 0.00027
+    n: 9 mice
+  - about: time in isolation zone, post against pre
+    test: Tukey's HSD
+    p: 0.0057
+    n: 9 mice
+  - about: time in isolation zone, control against post
+    test: Tukey's HSD
+    p: 0.0004
+    n: 9 mice
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: As in the Figure 1 legend and Figure 1.ipynb; repeated-measures ANOVA (statsmodels
+    AnovaRM) over control, pre- and post-ejaculation, then Tukey's HSD (FWER 0.05). Reproduced
+    when both ANOVAs have p < 0.05 and post differs from pre and from control in the stated
+    direction at p < 0.05.
+- id: fig1i-latency-return
+  statement: Latency to return to the interaction zone is longest after male ejaculation, longer
+    than after sniffing or mounting.
+  source: Figure 1I; Results, Female sexual motivation is suppressed after male ejaculation,
+    paragraph 2
+  quote: This was the largest after the female experienced male ejaculation when compared to after
+    sniffing or after mounting
+  statistics:
+  - test: RM ANOVA
+    statistic: F(2,16)=11.87
+    p: 0.00069052
+    n: 9 mice
+  - about: ejaculation against sniff
+    test: Tukey's HSD
+    p: 0.0016
+  - about: ejaculation against mount
+    test: Tukey's HSD
+    p: 0.0077
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: RM ANOVA then Tukey's HSD as in the Figure 1 legend. Reproduced when ejaculation
+    latency exceeds both others at p < 0.05.
+- id: fig1jm-behaviors-after-ejaculation
+  statement: After ejaculation, female-to-male sniffing does not change, while mounting and
+    intromission decrease and self-grooming increases (hormone-primed females).
+  source: Figure 1J to 1M; Results, Female sexual motivation is suppressed after male ejaculation,
+    paragraph 2
+  quote: while there was no change in the amount of female-to-male sniffing, there was a
+    significant decrease in the number of mounting and intromission episodes ... There was also a
+    significant increase in the number of self-grooming behavioral episodes
+  statistics:
+  - about: sniffing
+    test: Wilcoxon signed-rank test
+    p: 0.65234375
+    n: 9 mice
+  - about: mounting
+    test: Wilcoxon signed-rank test
+    p: 0.00390625
+    n: 9 mice
+  - about: intromission
+    test: Wilcoxon signed-rank test
+    p: 0.00390625
+    n: 9 mice
+  - about: self-grooming
+    test: Wilcoxon signed-rank test
+    p: 0.025061844
+    n: 9 mice
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Two-sided Wilcoxon signed-rank test pre against post on counts per 10 min (legend;
+    Figure 1.ipynb, scipy wilcoxon). Reproduced when mounting and intromission decrease and
+    grooming increases at p < 0.05, and sniffing is not significant (the absence judged on this
+    test).
+- id: fig1nt-natural-estrus
+  statement: Naturally cycling estrus females show the same post-ejaculatory changes, with a strong
+    reduction of sniffing and no change in self-grooming.
+  source: Figure 1N to 1T; Results, Female sexual motivation is suppressed after male ejaculation,
+    paragraph 2
+  quote: Animals that were in their natural estrus cycle showed similar behavior changes after
+    experiencing male ejaculation ... showed a strong reduction of sniffing after experiencing
+    male ejaculation but no changes in self-grooming behaviors
+  statistics:
+  - about: transitions
+    test: RM ANOVA
+    statistic: F(2,10) = 7.54
+    p: 0.01007
+    n: 6 mice
+  - about: transitions, post against pre
+    test: Tukey's HSD
+    p: 0.0038
+  - about: time in isolation zone
+    test: RM ANOVA
+    statistic: F(2,10) = 15.71
+    p: 0.00082
+    n: 6 mice
+  - about: latency to return
+    test: RM ANOVA
+    statistic: F(2,10) = 38.36
+    p: 0.00002
+    n: 6 mice
+  - about: sniffing
+    test: Wilcoxon signed-rank test
+    p: 0.03125
+  - about: mounting
+    test: Wilcoxon signed-rank test
+    p: 0.03125
+  - about: intromission
+    test: Wilcoxon signed-rank test
+    p: 0.03125
+  - about: self-grooming
+    test: Wilcoxon signed-rank test
+    p: 0.3452
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Tests as in the Figure 1 legend (RM ANOVA and Tukey's HSD for N to P; Wilcoxon
+    signed-rank for Q to T). Reproduced when the three ANOVAs, sniffing, mounting and intromission
+    are significant at p < 0.05 (counts lower after ejaculation) and grooming is not (the absence
+    judged on the Wilcoxon signed-rank test).
+- id: fig1s1-experience
+  statement: Virgin females spend more time in the isolation zone than sexually experienced
+    females; the number of isolation zone entries also differs between the two groups.
+  source: Figure 1-figure supplement 1; Results, Female sexual motivation is suppressed after male
+    ejaculation, paragraph 2
+  quote: the virgin female mice stayed in the isolation zone significantly longer than sexually
+    experienced females
+  statistics:
+  - about: isolation zone entries
+    test: Mann-Whitney U test
+    p: 0.041125541
+    n: 6 virgin and 6 experienced mice
+  - about: time in isolation zone
+    test: Mann-Whitney U test
+    p: 0.025974026
+    n: 6 virgin and 6 experienced mice
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Two-sided Mann-Whitney U test (legend; Figure S1.ipynb, scipy mannwhitneyu). The
+    legend does not say which part of the session is compared; Figure S1.ipynb (cell 8) compares
+    the pre-ejaculation epoch of the sexual interaction trial, which is followed. Reproduced when
+    the time difference is significant at p < 0.05 with virgin females higher and the entries
+    difference is significant at p < 0.05. The text does not state the direction of the entries
+    difference, which is reported.
+- id: fig1s2-novel-male
+  statement: The post-ejaculatory reduction in sexual motivation does not depend on the state of
+    the male; with a novel sexually active male after ejaculation, females still make fewer
+    isolation zone entries and spend more time there.
+  source: Figure 1-figure supplement 2; Results, Female sexual motivation is suppressed after male
+    ejaculation, paragraph 2
+  quote: When the female animal was introduced to a novel sexually motivated male animal
+    immediately after they experienced male ejaculation from another mouse, they showed a similar
+    reduction in zone transition and an increase in the time spent in the isolation zone
+  statistics:
+  - about: isolation zone entries
+    test: Wilcoxon signed-rank test
+    p: 0.027281171
+    n: 7 mice
+  - about: time in isolation zone
+    test: Wilcoxon signed-rank test
+    p: 0.027707849
+    n: 7 mice
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Two-sided Wilcoxon signed-rank test, pre- against post-ejaculation assay (legend;
+    Figure S2.ipynb). Reproduced when both are significant at p < 0.05 in the stated direction.
+- id: fig3d-mpn-fos
+  statement: By HCR, the proportion of Fos+ cells is higher after ejaculation than in the
+    appetitive group in the MPN but not in nearby regions (MPA, BNST, LPO, VLPO).
+  source: Figure 3D; Results, Male ejaculation is represented by both inhibitory and excitatory
+    cell types in the MPOA, paragraph 2
+  quote: we found that the number of Fos + cells in the post-ejaculatory group was significantly
+    higher than the appetitive group in the MPN but not in the nearby regions
+  statistics:
+  - about: MPN
+    test: Student's t-test
+    statistic: t(8)=-4.2709
+    p: 0.0136
+    corrected: Bonferroni
+    n: 5 appetitive and 5 post-ejaculatory mice
+  - about: MPA
+    test: Student's t-test
+    statistic: t(8)=-1.841
+    p: 0.514
+    corrected: Bonferroni
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Per mouse and region, the proportion of Fos+ cells averaged over sections (Figure
+    S5.ipynb groupby mean). Student's t-test with Bonferroni correction over the five regions
+    (legend; Figure S5.ipynb, scipy ttest_ind and multipletests). Reproduced when only the MPN is significant at
+    corrected p < 0.05, higher after ejaculation.
+- id: fig3i-vgat-vglut2-fos
+  statement: In the MPN, both Vglut2+ and Vgat+ cells expressing Fos increase after ejaculation,
+    with a higher proportion of Fos+ cells in the Vgat population.
+  source: Figure 3I; Results, Male ejaculation is represented by both inhibitory and excitatory
+    cell types in the MPOA, paragraph 2
+  quote: Vglut2 and Vgat cells expressing Fos were significantly higher in the post-ejaculatory
+    group than in the appetitive group, suggesting that male ejaculation activates both
+    excitatory and inhibitory neurons ... The proportion of Fos+ cells was higher in the Vgat
+    population
+  statistics:
+  - about: Vglut2
+    test: Student's t-test
+    statistic: t(8)=-3.3885
+    p: 0.019
+    corrected: Bonferroni
+  - about: Vgat
+    test: Student's t-test
+    statistic: t(8)=-3.5361
+    p: 0.0153
+    corrected: Bonferroni
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: As in the Figure 3 legend. Reproduced when both are significant at corrected p < 0.05
+    and the post-ejaculatory Fos+ proportion is higher in Vgat than in Vglut2 cells (no test is
+    reported for the latter, so it is judged on the means).
+- id: fig3jm-cell-types
+  statement: Fos induction after ejaculation is found in Vglut2 cells only when they co-express
+    Calcr, and in Vgat cells co-expressing Calcr, Gal or Prlr; among clusters, the Vglut2, Vgat
+    and Gal types have more Fos+ cells after ejaculation, while the Nts type does not.
+  source: Figure 3J to 3M; Results, Male ejaculation is represented by both inhibitory and
+    excitatory cell types in the MPOA, paragraph 2
+  quote: in the Vglut2 cells, we found that Fos induction was only observed in the cells that
+    co-expressed Calcr ... Type 1 ... and type 3 ... had significantly more Fos+ cells from the
+    post-ejaculatory group compared to the appetitive group ... In contrast, Fos+ cells were not
+    induced in type 4
+  statistics:
+  - about: Vgat+ Calcr+
+    test: Student's t-test
+    statistic: t(8)=-3.6646
+    p: 0.0318
+    corrected: Bonferroni
+  - about: Vgat+ Gal+
+    test: Student's t-test
+    statistic: t(8)=-4.0896
+    p: 0.0174
+    corrected: Bonferroni
+  - about: Vgat+ Prlr+
+    test: Student's t-test
+    p: 0.0212
+    corrected: Bonferroni
+  - about: Vglut2+ Calcr+
+    test: Student's t-test
+    p: 0.0146
+    corrected: Bonferroni
+  - about: cluster Vglut2
+    test: Student's t-test
+    statistic: t(8)=-4.1631
+    p: 0.0189
+    corrected: Bonferroni
+  - about: cluster Vgat
+    test: Student's t-test
+    statistic: t(8)=-5.9018
+    p: 0.0022
+    corrected: Bonferroni
+  - about: cluster Gal
+    test: Student's t-test
+    statistic: t(8)=-3.9208
+    p: 0.0265
+    corrected: Bonferroni
+  - about: cluster Nts
+    test: Student's t-test
+    statistic: t(8)=-2.1595
+    p: 0.377
+    corrected: Bonferroni
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Student's t-tests with Bonferroni correction as in the Figure 3 legend; clusters from
+    Seurat 3.1.1 as in the Methods and Figure S5_Seurat clustering.R. The legend prints t(8)=-3.9487
+    for every Vglut2 row and for Vgat+ Prlr+, so those statistics are not recorded. Reproduced
+    when the named groups are significant at corrected p < 0.05 and the Nts cluster is not.
+- id: fig4h-response-magnitude
+  statement: Vgat cells show higher average response magnitude than Vglut2 cells after sniffing,
+    self-grooming, male anogenital sniffing and ejaculation, but not after mounting or
+    intromission.
+  source: Figure 4H; Results, A subpopulation of MPOA Vgat cells responds to male ejaculation,
+    paragraph 1
+  quote: Vgat cells showed significantly higher average response magnitude after sniffing,
+    self-grooming, anogenital sniffing, and male ejaculation than the Vglut2 cells
+  statistics:
+  - about: ejaculation
+    test: Student's t-test
+    statistic: t(791)=4.00
+    p: 0.00042
+    corrected: Bonferroni
+    n: 522 Vgat and 271 Vglut2 cells
+  - about: sniff
+    test: Student's t-test
+    statistic: t(791)=6.46
+    p: 1.08e-09
+    corrected: Bonferroni
+  - about: male anogenital sniffing
+    test: Student's t-test
+    statistic: t(791)=6.64
+    p: 3.41e-10
+    corrected: Bonferroni
+  - about: self-grooming
+    test: Student's t-test
+    statistic: t(791)=-7.25
+    p: 5.89e-12
+    corrected: Bonferroni
+  - about: mount
+    test: Student's t-test
+    statistic: t(791)=0.34
+    p: 1
+    corrected: Bonferroni
+  - about: intromission
+    test: Student's t-test
+    statistic: t(791)=-0.32
+    p: 1
+    corrected: Bonferroni
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Per cell, z-scored signal (z-scored on the background period) from -5 to +15 s around
+    each onset, averaged over events, baseline (-5 to 0 s) subtracted, magnitude the mean of 0 to
+    +5 s (Methods; the code's parameter_dict also sets after_window_for_quantification to 5 s).
+    The Results say "for 15 s after behavior onset"; the Methods' 0 to 5 s is followed. Sniffs
+    after the first mount are excluded (Methods). Student's t-test per behavior over the six
+    behaviors with Bonferroni correction (legend; Figure 3, 4, 5, S6, S7, S8.ipynb, scipy
+    ttest_ind and multipletests). Grooming has t = -7.25, that is Vgat lower, against the Results
+    sentence; the sign is reported and grooming is left out of the outcome. Reproduced when
+    ejaculation, sniff and anogenital sniffing are significant with Vgat higher and mount and
+    intromission are not.
+- id: fig4i-ejaculation-responders
+  statement: A larger proportion of Vgat than Vglut2 cells respond positively to ejaculation
+    (184/522 against 35/271) and to sniffing (29/522 against 1/271).
+  source: Figure 4I; Results, A subpopulation of MPOA Vgat cells responds to male ejaculation,
+    paragraph 1
+  quote: Vgat cells also contained a significantly higher proportion of cells that positively
+    respond (>2δ) to sniff and male ejaculation onset
+  statistics:
+  - about: ejaculation
+    test: chi-square test
+    p: 1.52e-10
+    corrected: Bonferroni
+    n: 522 Vgat and 271 Vglut2 cells
+  - about: sniff
+    test: chi-square test
+    p: 0.00169
+    corrected: Bonferroni
+  expected:
+  - quantity: Vgat cells responding positively to ejaculation
+    value: 184
+    tolerance: 18.4
+    unit: cells
+  - quantity: Vglut2 cells responding positively to ejaculation
+    value: 35
+    tolerance: 3.5
+    unit: cells
+  - quantity: Vgat cells responding positively to sniff
+    value: 29
+    tolerance: 2.9
+    unit: cells
+  - quantity: Vglut2 cells responding positively to sniff
+    value: 1
+    tolerance: 0.1
+    unit: cells
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  depends_on:
+  - fig4h-response-magnitude
+  criterion: Responding when the magnitude of fig4h-response-magnitude exceeds 2 (Methods; abs
+    value above 2 in the code, sign giving positive or negative). Chi-square test of proportions
+    (statsmodels proportions_chisquare) over the six behaviors with Bonferroni correction (legend
+    and Figure 3, 4, 5, S6, S7, S8.ipynb). Reproduced when the counts match and ejaculation and
+    sniff differ at corrected p < 0.05 with Vgat higher.
+- id: fig5-ejaculation-specific
+  statement: Among cells responding to sniff, mount or ejaculation, ejaculation-specific cells are
+    the most numerous (177, against 46 mount and 12 sniff), and most ejaculation responders are
+    specific (Vgat 80%, Vglut2 82%).
+  source: Results, A subpopulation of MPOA Vgat cells responds to male ejaculation, paragraph 2;
+    Figure 5A to 5D
+  quote: the number of cells that specifically responded was largest to male ejaculation with 177
+    cells, next to mount with 46 cells, and to sniff with 12 cells
+  expected:
+  - quantity: ejaculation-specific cells
+    value: 177
+    tolerance: 17.7
+  - quantity: mount-specific cells
+    value: 46
+    tolerance: 4.6
+  - quantity: sniff-specific cells
+    value: 12
+    tolerance: 1.2
+  - quantity: proportion of Vgat ejaculation responders that are specific
+    value: 0.80
+    tolerance: 0.08
+  - quantity: proportion of Vglut2 ejaculation responders that are specific
+    value: 0.82
+    tolerance: 0.082
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: The Figure 5 legend gives n=48 mount and 178 ejaculation cells, against 46 and 177 in
+    the Results; both are readings. "Specific" is read as (a) positive (>2) to that behavior only,
+    among sniff, mount and ejaculation, recomputed from the per-behavior positive responder flags
+    of fig4i-ejaculation-responders, or (b) the precomputed magnitude_cell_types column of
+    male_analysis_magnitude.csv, whose values Sniff_only_cells, Mount_only_cells and
+    Ejaculation_only_cells the code uses for Figure 5 (the legend says the cells "were categorized
+    based on response magnitude"). The counts hold if they match under one reading.
+- id: fig5c-class-selectivity
+  statement: Sniff-specific and ejaculation-specific cells respond more strongly than the other
+    classes only to sniff and to ejaculation, respectively; mount-specific cells respond more
+    strongly than the other classes to mount, intromission and anogenital sniffing, but not to
+    sniff or ejaculation.
+  source: Results, A subpopulation of MPOA Vgat cells responds to male ejaculation, paragraph 2;
+    Figure 5C
+  quote: sniff cells and completion cells only showed significantly stronger responses than the
+    other cells to sniff and male ejaculation, respectively ... Mount responsive cells showed
+    significantly stronger response than the other cells to mount, intromission and anogenital
+    sniffing, but not to sniffing and male ejaculation
+  statistics:
+  - about: response to sniff, three classes
+    test: one-way ANOVA
+    statistic: F(2,235)=73.35
+    p: 1.77e-25
+    n: 12 sniff, 48 mount and 178 ejaculation cells
+  - about: response to sniff, ejaculation cells against sniff cells
+    test: Tukey's HSD
+    p: 0
+  - about: response to sniff, mount cells against sniff cells
+    test: Tukey's HSD
+    p: 0
+  - about: response to mount, three classes
+    test: one-way ANOVA
+    statistic: F(2,235)=68.32
+    p: 4.1e-24
+  - about: response to mount, ejaculation cells against mount cells
+    test: Tukey's HSD
+    p: 0
+  - about: response to mount, mount cells against sniff cells
+    test: Tukey's HSD
+    p: 0
+  - about: response to intromission, three classes
+    test: one-way ANOVA
+    statistic: F(2,235)=15.72
+    p: 3.9e-07
+  - about: response to anogenital sniffing, three classes
+    test: one-way ANOVA
+    statistic: F(2,235)=12.34
+    p: 8.01e-06
+  - about: response to ejaculation, three classes
+    test: one-way ANOVA
+    statistic: F(2,235)=49.59
+    p: 1.08e-18
+  - about: response to ejaculation, ejaculation cells against mount cells
+    test: Tukey's HSD
+    p: 0
+  - about: response to ejaculation, ejaculation cells against sniff cells
+    test: Tukey's HSD
+    p: 0.0001
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  depends_on:
+  - fig5-ejaculation-specific
+  - fig4h-response-magnitude
+  criterion: Cells are the sniff, mount and ejaculation-specific classes of
+    fig5-ejaculation-specific; the measure is the response magnitude of fig4h-response-magnitude
+    for each of the six behaviors. Per behavior a one-way ANOVA over the three classes and Tukey's
+    HSD (FWER 0.05), as the panel C entries of the Figure 5 legend give them and as Figure 3, 4, 5,
+    S6, S7, S8.ipynb runs them (statsmodels ols with anova_lm, pairwise_tukeyhsd). The legend's
+    closing line names Student's t-test with Bonferroni correction for C; the reported F and
+    Tukey values and the code both use ANOVA and Tukey, which is followed. Reproduced when, at
+    p < 0.05, sniff cells exceed both other classes for sniff, ejaculation cells exceed both for
+    ejaculation, mount cells exceed both for mount and exceed ejaculation cells for intromission
+    and anogenital sniffing, and mount cells do not exceed sniff cells for sniff nor ejaculation
+    cells for ejaculation.
+- id: fig6c-decay-length
+  statement: Ejaculation-responding Vgat cells have a longer decay length than Vglut2 cells.
+  source: Figure 6C; Results, MPOA Vgat cells display prolonged activity, paragraph 1
+  quote: Vgat cells had significantly longer decay length compared to the Vglut2 cells
+  statistics:
+  - test: Student's t-test
+    statistic: t(217)=3.039653717
+    p: 0.002659548
+    n: 184 Vgat and 35 Vglut2 cells
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  depends_on:
+  - fig4i-ejaculation-responders
+  criterion: Signal from -5 to +120 s around ejaculation onset, baseline (-5 to 0 s) subtracted
+    (Methods). Decay length is "the time the z-scored signal was smaller than 0" (Methods) or
+    "the time for the increased calcium signal to return to baseline" (Results); the code reads
+    it precomputed. Readings, (a) time from onset to the first sample below 0, (b) total time
+    below 0 in 0 to 120 s. Student's t-test (scipy ttest_ind). Reproduced when Vgat is longer at p
+    < 0.05 under the readings.
+- id: fig6k-late-cluster-vgat
+  statement: Spectral clustering of ejaculation responses gives five types; the late-response type
+    3 has the longest decay length and contains only Vgat cells, while Vglut2 cells are more
+    often fast responders.
+  source: Figure 6D to 6K; Results, MPOA Vgat cells display prolonged activity, paragraph 1
+  quote: all the cells in type 3 were Vgat cells, suggesting that the increased activity in the
+    MPOA late after the onset of male ejaculation is mediated by inhibitory neurons
+  statistics:
+  - about: type 3
+    test: chi-square test
+    p: 0.018
+    corrected: Bonferroni
+    n: 37/184 Vgat and 0/35 Vglut2 cells
+  - about: type 1
+    test: chi-square test
+    p: 6.80e-05
+    corrected: Bonferroni
+    n: 26/184 Vgat and 16/35 Vglut2 cells
+  expected:
+  - quantity: Vglut2 cells in the late-response cluster
+    value: 0
+    tolerance: 0
+    unit: cells
+  - quantity: Vgat cells in the late-response cluster
+    value: 37
+    tolerance: 3.7
+    unit: cells
+  depends_on:
+  - fig4i-ejaculation-responders
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Cells are the ejaculation responders of fig4i-ejaculation-responders (184 Vgat, 35
+    Vglut2). PCA of the -5 to +120 s traces (whitened in Figure 5 Spectral clustering.ipynb), 4
+    components (Methods; the code picks the number at the elbow of the scree plot), spectral
+    clustering (scikit-learn, nearest_neighbors affinity) with the number of clusters (2 to 11 in
+    the code) and nearest neighbours (10 to 70 in steps of 5 in the code) chosen by maximal
+    silhouette score, computed with the cosine metric in the code (the paper reports 5 clusters,
+    55 neighbours, silhouette 0.405). Proportions compared by chi-square test with Bonferroni
+    correction over the five types (legend). Reproduced when the cluster with the latest response
+    and longest decay holds no Vglut2 cells and its Vgat proportion differs at corrected p < 0.05,
+    and the fast-response cluster holds a larger proportion of Vglut2 than of Vgat cells at
+    corrected p < 0.05. The clustering has no fixed random seed in the code; cluster membership
+    may vary between runs, which is reported.
+- id: fig7fg-activation-suppresses
+  statement: CNO activation of post-ejaculatory TRAP-labeled MPOA neurons reduces zone transitions
+    and increases time in the isolation zone; activation of appetitive or consummatory ensembles
+    and eYFP controls do not.
+  source: Figure 7F and 7G; Results, An activity-defined subset of neurons in the MPOA, paragraph 4
+  quote: only post-ejaculatory-hM3Dq group showed significantly fewer number of transitions and
+    spent more time in the isolation zone on the CNO trial than on the saline trial
+  statistics:
+  - about: transitions, post-ejaculatory-hM3Dq
+    test: Wilcoxon rank sum test
+    p: 0.03125
+    corrected: Bonferroni
+    n: 8 mice
+  - about: isolation time, post-ejaculatory-hM3Dq
+    test: Wilcoxon rank sum test
+    p: 0.03125
+    corrected: Bonferroni
+    n: 8 mice
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Saline against CNO trial within each group, Bonferroni over the four groups. The
+    legend names a Wilcoxon rank sum test; Figure 6.ipynb runs scipy wilcoxon (paired signed-rank),
+    and 0.03125 is 4 times the smallest two-sided signed-rank p for 8 mice. Methods first; the
+    rank-sum test is the main reading and the signed-rank test is the variant. Reproduced when
+    only post-ejaculatory-hM3Dq is significant at corrected p < 0.05 in both measures.
+- id: fig7kl-activation-intromission
+  statement: Activation of post-ejaculatory TRAP neurons lowers intromissions and receptivity in
+    the self-paced assay; the text also reports fewer self-grooming and mounting episodes, which
+    the legend gives as p = 0.0625.
+  source: Figure 7H to 7L; Results, An activity-defined subset of neurons in the MPOA, paragraph 4
+  quote: post-ejaculatory-hM3Dq group displayed fewer numbers of self-grooming, mounting,
+    intromission and lower receptivity score on the CNO trial than on the saline trial
+  statistics:
+  - about: intromission
+    test: Wilcoxon rank sum test
+    p: 0.03125
+    corrected: Bonferroni
+  - about: receptive score
+    test: Wilcoxon rank sum test
+    p: 0.03125
+    corrected: Bonferroni
+  - about: self-grooming
+    test: Wilcoxon rank sum test
+    p: 0.0625
+    corrected: Bonferroni
+  - about: mount
+    test: Wilcoxon rank sum test
+    p: 0.0625
+    corrected: Bonferroni
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Tests as in fig7fg-activation-suppresses. Reproduced when intromission and receptive
+    score are lower on CNO at corrected p < 0.05; grooming and mounting are reported.
+- id: fig7s1-mpn-proportion
+  statement: The number of TRAP-labeled cells does not differ between groups, but the proportion
+    located in the MPN is higher in the post-ejaculatory group; most MPN TRAP cells are Vgat (0.76)
+    and few Vglut2 (0.15).
+  source: Figure 7-figure supplement 1B, 1C and 1G; Results, An activity-defined subset of neurons
+    in the MPOA, paragraph 1
+  quote: "while the overall number of TRAP-labeled cells had no difference between the
+    post-ejaculatory groups, consummatory group and appetitive group, the proportion of cells
+    located in the MPN was significantly higher in the post-ejaculatory group ... most
+    TRAP-labeled cells in the MPN were Vgat (Vgat: 0.76±0.16. Vglut2: 0.15±0.13)"
+  statistics:
+  - about: number of TRAP cells
+    test: one-way ANOVA
+    statistic: F(2,24)=0.3072
+    p: 0.7383
+  - about: proportion in the MPN
+    test: one-way ANOVA
+    statistic: F(2,24)=4.3335
+    p: 0.0247
+  - about: proportion in the MPN, appetitive against post-ejaculatory
+    test: Tukey HSD
+    p: 0.0471
+    n: 7 appetitive and 14 post-ejaculatory mice
+  - about: proportion of MPN TRAP cells, Vgat against Vglut2, appetitive group
+    test: t-test (the legend names Student's t-test for E and F and Student's relative t-test for
+      H; the test of G is not named)
+    statistic: t(10)=6.6154
+    p: 0.0024
+    n: 6 mice
+  - about: proportion of MPN TRAP cells, Vgat against Vglut2, post-ejaculatory group
+    test: t-test (the legend names Student's t-test for E and F and Student's relative t-test for
+      H; the test of G is not named)
+    statistic: t(12)=13.9477
+    p: 1.69e-05
+    n: 7 mice
+  expected:
+  - quantity: proportion of MPN TRAP cells that are Vgat
+    value: 0.76
+    tolerance: 0.16
+  - quantity: proportion of MPN TRAP cells that are Vglut2
+    value: 0.15
+    tolerance: 0.13
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: One-way ANOVA and Tukey HSD as in the legend (Figure S9.ipynb, pairwise_tukeyhsd).
+    Tolerances are the stated spread. The text does not say over which mice the 0.76 and 0.15
+    are taken; the readings are (a) the appetitive-hM3Dq and post-ejaculatory-hM3Dq mice of panel
+    G pooled (13), (b) the post-ejaculatory mice alone (7). The Vgat against Vglut2 test of G is
+    not named; the degrees of freedom (2n - 2) fit an unpaired Student's t-test, which is the main
+    reading, with the paired test as a variant. Reproduced when the count ANOVA is not
+    significant, the MPN proportion ANOVA is, post-ejaculatory above appetitive at p < 0.05, the
+    Vgat proportion exceeds the Vglut2 proportion at p < 0.05 in both groups, and the
+    proportions match under one reading.
+- id: fig7s2-home-cage-activation
+  statement: In the home cage, activation of post-ejaculatory TRAP neurons reduces sniffing and
+    intromission compared with post-ejaculatory eYFP controls, without changing mounting; it does
+    not induce place preference or aversion.
+  source: Figure 7-figure supplement 2C to 2J; Results, An activity-defined subset of neurons in the
+    MPOA, paragraphs 3 and 4
+  quote: post-ejaculatory-hM3Dq group but not the appetitive-hM3Dq and consummatory-hM3Dq group
+    showed significantly fewer sniffing events compared to post-ejaculatory-eYFP group ... there
+    were significantly less intromission episodes
+  statistics:
+  - about: sniff
+    test: Mann-Whitney U test
+    p: 0.0072
+    corrected: Bonferroni
+  - about: intromission
+    test: Mann-Whitney U test
+    p: 0.0165
+    corrected: Bonferroni
+  - about: mounting
+    test: Mann-Whitney U test
+    p: 0.4116
+    corrected: Bonferroni
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Each hM3Dq group against post-ejaculatory-eYFP by Mann-Whitney U test with Bonferroni
+    correction (legend; Figure S10.ipynb). Reproduced when sniff and intromission are significant
+    for post-ejaculatory-hM3Dq only, and mounting and the place preference measures are not.
+- id: fig7s3-inhibition
+  statement: Chemogenetic inhibition of post-ejaculatory TRAP neurons does not change behavior in
+    the self-paced assay, but increases intromission and receptivity in the home cage assay.
+  source: Figure 7-figure supplement 3; Results, An activity-defined subset of neurons in the MPOA,
+    paragraph 5
+  quote: the post-ejaculatory-hM4Di group experienced did not show significant changes in
+    sniffing, self-grooming, or mounting, but showed more intromission and higher sexual
+    receptivity than in the post-ejaculatory-eYFP group
+  statistics:
+  - about: home cage intromission
+    test: Mann-Whitney U test
+    p: 0.0045
+    n: 6 eYFP and 8 hM4Di mice
+  - about: home cage receptive score
+    test: Mann-Whitney U test
+    p: 0.01998
+    n: 6 eYFP and 8 hM4Di mice
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.27642768.v1
+  criterion: Home cage, post-ejaculatory-hM4Di against post-ejaculatory-eYFP by two-sided
+    Mann-Whitney U test without correction (legend, O to R; Figure S11.ipynb, scipy
+    mannwhitneyu). Self-paced assay, saline against CNO trial within each group with Bonferroni
+    correction (E to L); the legend names a Wilcoxon rank sum test and Figure S11.ipynb runs scipy
+    wilcoxon (paired signed-rank), so, as in fig7fg-activation-suppresses, the rank-sum test is
+    the main reading and the signed-rank test the variant. The absence in the self-paced assay is
+    judged on the main reading. Reproduced when both home cage measures are higher in hM4Di at p <
+    0.05, sniffing and mounting are not, and no self-paced measure is significant.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - All quotes found. The five p-values the checker could not match (0.001035889, 0.65234375, 0.027281171, 0.002659548, 6.8e-05) are in the legends of Figures 1G, 1J, 1-figure supplement 2B, 6C and 6K as recorded; the checker prints values to six digits and misses "6.80E-05".
+  - Code checked at github.com/stuberlab/Ishii-MPOA-Ejaculation-2023, commit 4e98c43. The Figure 2 method notes (ten level-4 regions, BH alpha 0.1 at both levels, f_oneway, tukey_hsd) match it.
+  - fig1s1-experience, statement said virgin females make fewer isolation zone entries; the paper does not give the direction of the entries difference, so the statement now says only that it differs. Criterion now names the pre-ejaculation epoch that Figure S1.ipynb compares and requires the entries difference to be significant.
+  - fig1nt-natural-estrus, added the mounting and intromission tests (Figure 1R, 1S) that the "similar behavior changes" rests on, and added them to the criterion.
+  - fig2s-dorsal-raphe, quote had a spurious "..." where the text is continuous; removed.
+  - fig3d-mpn-fos, criterion now says the measure is the per-mouse proportion averaged over sections, as Figure S5.ipynb computes it.
+  - fig4h-response-magnitude, added the anogenital sniffing, self-grooming and intromission tests of the legend; anogenital sniffing, which the statement names, is now part of the criterion; noted the code's 5 s window and the Methods' exclusion of sniffs after the first mount.
+  - fig4i-ejaculation-responders, added expected sniff counts (29 and 1) the statement gives, the outcome rule, and depends_on fig4h-response-magnitude.
+  - fig5-ejaculation-specific, criterion said the code has BEHAVIOR_only_cells columns; in the code these are values of the magnitude_cell_types column. Reading (a) is now recomputed from the positive responder flags.
+  - fig5c-class-selectivity, new claim; Figure 5C and its Results sentence had no claim. The legend's closing line names Student's t-test while the panel entries and the code use ANOVA and Tukey; the latter is followed and the conflict is stated.
+  - fig6c-decay-length, added depends_on fig4i-ejaculation-responders (its 184 and 35 cells).
+  - fig6k-late-cluster-vgat, criterion said the clustering used a cosine metric; in the code only the silhouette score uses it. Added the code's whitening, search ranges and elbow rule, the chi-square test with Bonferroni correction, the fast-response part of the statement, an expected 37 Vgat cells, depends_on fig4i-ejaculation-responders, and that the code fixes no random seed.
+  - fig7s1-mpn-proportion, added the Figure 7-figure supplement 1G tests of Vgat against Vglut2 proportion; criterion now names the unnamed test of G and the two readings of which mice the 0.76 and 0.15 are taken over.
+  - fig7s3-inhibition, criterion named only "Wilcoxon" for the self-paced assay; it now names the legend's rank-sum test as main reading and the code's signed-rank test as variant, as fig7fg does, and the uncorrected two-sided Mann-Whitney U test of the home cage that Figure S11.ipynb runs.
+  - Open, fig2-density-link is a link claim written by the reader; the protocol gives link claims to the author. It is left in place; its thresholds (10% median difference, 10 of 14 brains) are the registry's, not the paper's.
+  - Open, fig2c-brain-wide-increase, the thresholds for "brain-wide" (80% of regions higher, half significant) are the reader's, because Supplementary file 2 is not in the text read; they stand as stated before analysis.
+  - Open, the Figure 7-figure supplement 2 pup tests (no change in parenting behavior) and the TRAP accuracy and efficiency tests of Figure 7-figure supplement 1I to 1L have no claim; both are secondary and no claim was added.

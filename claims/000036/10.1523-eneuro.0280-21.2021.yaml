@@ -114,7 +114,29 @@ dataset:
   id: "000036"
 paper: doi:10.1523/eneuro.0280-21.2021
 claims:
+- id: session-link
+  kind: link
+  statement: The dandiset's sessions can be matched to the 44 sessions the paper analysed (the
+    results/main.parquet of the paper's code), and matched sessions agree on mouse, Cre line,
+    area, depth and number of cells, and give the paper's per-trial ND.
+  source: Code accessibility; results/main.parquet of github.com/wmayner/openscope-differentiation
+    at commit 2d959bd
+  data: with_labels
+  criterion: Added by the author of attempt 000036-mayner-2022-01. Sessions are matched on mouse id
+    and start time, the NWB session_start_time minus 7 hours being equal to the start_time of
+    main.parquet to the millisecond (the session identifiers differ; the offset was found while
+    preparing the attempt). The link holds (reproduced) when all 44 paper sessions match one
+    dandiset session each, every matched session agrees on Cre line, area, depth and the number of
+    cells with a dF/F trace, and the dandiset's dF/F gives the paper's unnormalised per-trial ND to
+    a relative 1e-6 for at least 90% of trials when the trial start may move by -8 to +3 frames
+    from where the NWB stimulus times put it. Partially reproduced when all sessions match but an
+    agreement holds for fewer sessions or fewer trials; not reproduced when fewer than 44 sessions
+    match. The unmatched dandiset sessions are listed, and the one that fits the excluded L5 AL
+    session is named.
 - id: design-sessions
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Data come from 45 two-photon sessions in nine mice (three per Cre line for L2/3,
     L4 and L5), 15 sessions per line and 9 per area over V1, LM, AL, PM and AM, with one L5 AL
     session excluded for recording problems.
@@ -146,6 +168,9 @@ claims:
     are reported. Whether the excluded L5 AL session can be identified (by its absence from
     the code's results/main.parquet) is reported.
 - id: ext1-2-cell-counts
+  data: with_labels
+  depends_on:
+  - session-link
   statement: 4018 cells were recorded over the 44 analysed sessions, 1683 in L2/3, 1781 in L4
     and 554 in L5, with per layer and area totals from 62 (L4 AM) to 649 (L4 V1).
   source: Extended Data Figure 1-2
@@ -173,6 +198,9 @@ claims:
     10% reported. If the dataset holds more ROIs than the paper used (for example invalid
     ROIs), the count after any validity flag the dataset gives is shown too.
 - id: ext1-3-kinetics-no-difference
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Calcium indicator kinetics, measured as the half-life of an exponential fit to each
     cell's mean isolated-event-locked dF/F, do not differ across layers, areas or their
     interaction.
@@ -204,6 +232,9 @@ claims:
     linked l0_analysis.py run on the dataset's dF/F. The median R2 of the fits and the lowest
     R2 (0.61 in the paper) are reported.
 - id: fig3a-layer-specific
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Unscrambled stimuli evoke higher ND than their phase-scrambled versions in L2/3
     but not in L4 or L5, with a significant layer by stimulus category interaction.
   source: Results, Increased differentiation for unscrambled stimuli is specific to excitatory
@@ -248,6 +279,9 @@ claims:
     L5 fails. Cohen's d per layer over pooled trials (code fig_3 notebook, effect_sizes) is
     compared with the expected value; the post hoc z values and CI bounds are reported.
 - id: fig3b-area-specific
+  data: with_labels
+  depends_on:
+  - session-link
   statement: The higher ND for unscrambled than scrambled stimuli is specific to areas AL and
     AM, with a significant area by stimulus category interaction.
   source: Results, Increased differentiation for unscrambled stimuli is specific to areas AL and
@@ -304,6 +338,9 @@ claims:
     both are and another area is too. Cohen's d per area over pooled trials is compared with
     the expected values.
 - id: ext3-1-natural-artificial
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Over all 12 stimuli, naturalistic stimuli evoke higher ND than artificial ones in
     L2/3 and L5 (not L4) and in AL and AM (not V1, LM or PM), with significant interactions with
     layer and with area.
@@ -364,6 +401,9 @@ claims:
     not L4 are significant, and AL and AM but not V1, LM or PM are. The area chi2 is compared
     with the code's 22.213 and not with the legend's value, which repeats the layer test.
 - id: ext3-2-sensitivity
+  data: with_labels
+  depends_on:
+  - session-link
   statement: The L2/3, AL and AM specificity of the unscrambled against scrambled ND difference
     holds for nearly all choices of distance metric, state length, frequency spacing and
     spectral window.
@@ -385,6 +425,7 @@ claims:
     differ. The share is also reported per window type, and for the looser rule that L2/3, AL
     and AM are each significant.
 - id: ext3-5-arousal-covariates
+  data: with_inputs
   statement: With locomotion and pupil diameter as covariates in the LME models, L2/3 of AL and
     AM remain the populations where ND is greater for unscrambled than scrambled stimuli, for
     nearly all parameter combinations.
@@ -394,6 +435,7 @@ claims:
     AM emerged as the cell populations in which ND is greater for unscrambled versus scrambled
     stimuli
   depends_on:
+  - session-link
   - ext3-2-sensitivity
   criterion: As ext3-2-sensitivity with per-trial locomotion fraction and mean normalized pupil
     diameter added as fixed effects to the full and reduced models (code stats.ipynb, Figures
@@ -402,6 +444,9 @@ claims:
     opening comment. The main parameter set (1 s, Euclidean, linear, rectangular) is reported
     on its own.
 - id: ext3-8-events-spectral
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Spectral ND of L0 calcium events gives results similar to dF/F, with greater ND for
     unscrambled than scrambled stimuli in L2/3 and in AL, while AM is at the threshold (p =
     0.050).
@@ -449,6 +494,9 @@ claims:
     0.05, L2/3 is significant and L4 and L5 are not, AL is significant and V1, LM and PM are
     not; the AM result (adjusted p near 0.05 in the paper) is reported and not judged.
 - id: ext3-9-no-transients
+  data: with_labels
+  depends_on:
+  - session-link
   statement: With the 200 ms after each L0 event removed from dF/F, ND remains greater for
     unscrambled than scrambled stimuli in L2/3 and in AL, with significant interactions; AM is
     not significant (p = 0.0958).
@@ -493,6 +541,9 @@ claims:
     significant and L4 and L5 are not, and AL is significant and V1, LM and PM are not; the AM
     result is reported and not judged.
 - id: mediation-event-magnitude
+  data: with_inputs
+  depends_on:
+  - session-link
   statement: Part of the effect of stimulus category on ND is mediated by mean calcium event
     magnitude and part is direct (mediated 0.1351, direct 0.0951, proportion mediated 0.59).
   source: Results, Increased differentiation for unscrambled stimuli is specific to areas AL and
@@ -548,6 +599,9 @@ claims:
     reproduced when both effects are significant and a value falls outside. Readings of
     artifact removal and pupil diameter as in the opening comment.
 - id: table1-permutation
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Per-session permutation tests find ND greater for unscrambled than scrambled
     stimuli in all 6 sessions of L2/3 AL and AM, in 8 of 15 L2/3 sessions, 1 of 15 L4 and 0 of 14
     L5 sessions.
@@ -579,6 +633,9 @@ claims:
     match under the Methods rule; partially reproduced when the L2/3 AL and AM counts match
     and another differs by one session. The full 15-cell table is reported.
 - id: fig4-locomotion-effect-size
+  data: with_inputs
+  depends_on:
+  - session-link
   statement: In L2/3 of AL and AM, the per-session effect size of unscrambled against scrambled
     ND is positively correlated with the fraction of time spent running (r = 0.896).
   source: Results, Arousal is correlated with effect size; Figure 4, top left
@@ -608,6 +665,9 @@ claims:
     methods_underspecified when the readings disagree. The per-session values and the
     correlation over all 44 sessions (Fig. 4, bottom) are reported.
 - id: fig4-pupil-effect-size
+  data: with_inputs
+  depends_on:
+  - session-link
   statement: In L2/3 of AL and AM, the per-session effect size is positively but not
     significantly correlated with mean normalized pupil diameter (r = 0.716, p = 0.109).
   source: Results, Arousal is correlated with effect size; Figure 4, top right
@@ -632,6 +692,9 @@ claims:
     2*sqrt(area/pi) as a variant) and artifact removal; blocked as methods_underspecified when
     they disagree. The p-value is reported.
 - id: discussion-session-effect-sizes
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Within single L2/3 AL and AM sessions effect sizes are medium to very large (Cohen's
     d 0.57 to 1.25), while the effect over these sessions pooled is 0.34.
   source: Discussion, paragraph 6
@@ -653,6 +716,9 @@ claims:
     per-session values lie in the range widened by 10% of each bound (0.513 to 1.375), the
     extremes are within tolerance, and the pooled d is within tolerance.
 - id: fig5-multivariate-layer
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Multivariate ND (mean distance to the centroid in an 8-dimensional UMAP embedding)
     is higher for unscrambled than scrambled stimuli specifically in L2/3.
   source: Results, Multivariate analysis also shows increased differentiation for unscrambled
@@ -695,6 +761,7 @@ claims:
     and L4 and L5 are not. UMAP results depend on the library version; the version used is
     reported.
 - id: fig5-multivariate-area
+  data: with_labels
   statement: Multivariate ND is higher for unscrambled than scrambled stimuli specifically in AL
     and AM.
   source: Results, Multivariate analysis also shows increased differentiation for unscrambled
@@ -732,6 +799,7 @@ claims:
     p: 0.945
     corrected: single-step (multcomp)
   depends_on:
+  - session-link
   - fig5-multivariate-layer
   expected:
   - quantity: likelihood ratio chi2, area x category
@@ -747,6 +815,9 @@ claims:
     fig3b-area-specific. Reproduced when the interaction has p < 0.05, AL and AM are
     significant and V1, LM and PM are not.
 - id: ext5-1-events-multivariate
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Multivariate ND of L0 events is also higher for unscrambled than scrambled stimuli
     in L2/3 and in AL and AM, and in V1 as well.
   source: Results, Multivariate analysis also shows increased differentiation for unscrambled
@@ -801,6 +872,9 @@ claims:
     and V1, AL and AM are significant while LM and PM are not; partially reproduced when L2/3,
     AL and AM hold and V1 does not.
 - id: fig6-category-decoding
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Stimulus category (unscrambled or scrambled) can be decoded accurately from most
     layers and areas, well above chance, without the layer and area specificity of ND.
   source: Results, Decoding analysis does not reveal layer or area specificity; Figure 6
@@ -820,6 +894,9 @@ claims:
     "remarkably similar", Discussion), so the absence of specificity is shown, as accuracies
     by layer, area and pair, and is not judged.
 - id: ext6-1-identity-decoding
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Stimulus identity among all 12 stimuli can be decoded accurately from most layers
     and areas (chance 1/12).
   source: Extended Data Figure 6-1 legend; Results, Decoding analysis does not reveal layer or
@@ -831,6 +908,9 @@ claims:
     "high" (mean balanced accuracy at least 0.75, and at least 0.9); reproduced when both
     readings agree that most populations are high and every layer and area is above 1/12.
 - id: fig7-stimulus-effect
+  data: with_labels
+  depends_on:
+  - session-link
   statement: ND differs among the five continuous naturalistic clips, over all layers and areas.
   source: Results, Differences in ND among individual stimuli
   quote: We fitted an LME model with stimulus as a fixed effect and found it was significant
@@ -850,6 +930,7 @@ claims:
     fig_7,7-1.ipynb). Reproduced when p < 0.05 and chi2 is within tolerance; partially
     reproduced when p < 0.05 only.
 - id: fig7-snake-highest
+  data: with_labels
   statement: The snake (predator) clip evokes higher ND than the conspecifics, crickets and man
     writing clips, and the mousecam clip higher ND than man writing.
   source: Results, Differences in ND among individual stimuli; Figure 7
@@ -895,6 +976,7 @@ claims:
       low: 0.020
       high: 0.185
   depends_on:
+  - session-link
   - fig7-stimulus-effect
   expected:
   - quantity: Cohen's d, snake against conspecifics
@@ -918,6 +1000,7 @@ claims:
     different levels of ND"); partially reproduced when three or more of the four hold. The
     estimated differences are checked against the CIs and reported.
 - id: ext7-1-arousal-mediation
+  data: with_inputs
   statement: Arousal alone does not account for the differences among continuous clips, with a
     mixture of direct and arousal-mediated effects; for the
     largest contrast, snake against man writing, there is evidence only for a direct effect of
@@ -926,6 +1009,7 @@ claims:
   quote: Notably, for the largest contrast (predator vs man writing), for both locomotion and pupil
     diameter we found evidence only for a direct effect
   depends_on:
+  - session-link
   - fig7-snake-highest
   criterion: Per-trial data of fig7-stimulus-effect. For each arousal variable as mediator with
     the other as covariate, mediator model mediator ~ stimulus + covariate + (1 | session) and
@@ -937,6 +1021,9 @@ claims:
     reproduced when this holds for one. The other three significant pairs are reported.
     Readings of artifact removal and pupil diameter as in the opening comment.
 - id: fig8-nd-sd-correlation
+  data: with_labels
+  depends_on:
+  - session-link
   statement: Within L2/3 of AL and AM, mean ND per stimulus is positively correlated with
     stimulus differentiation across the 12 stimuli, but the noise stimulus is highly
     influential (Cook's D 2.318).
@@ -972,6 +1059,7 @@ claims:
     with p < 0.05 and noise has the largest Cook's D, within tolerance. Movies from the dataset
     if it holds the stimulus frames; otherwise from the Zenodo deposit, a variant to record.
 - id: fig8-no-sd-relation-controlled
+  data: with_labels
   statement: Without the noise stimulus the ND and SD correlation is weak and not significant
     (r = 0.258), and among the scrambled stimuli and their unscrambled counterparts there is no
     evidence of a relation (r = -0.378); so ND is not inherited from SD.
@@ -998,6 +1086,7 @@ claims:
       low: -0.945
       high: 0.756
   depends_on:
+  - session-link
   - fig8-nd-sd-correlation
   criterion: A claim of absence, judged on the paper's tests with the values of
     fig8-nd-sd-correlation. Pearson correlation of mean log10 ND on log10 SD over the 11
@@ -1005,11 +1094,13 @@ claims:
     two-sided. Reproduced when neither has p < 0.05; not reproduced when either does. Both r
     values are reported against the paper's (0.258 and -0.378).
 - id: ext8-1-no-low-level-relation
+  data: with_labels
   statement: ND in L2/3 of AL and AM is not explained by stimulus luminance, contrast or
     spectral energy.
   source: Extended Data Figure 8-1 legend; Results, SD does not explain ND
   quote: We also did not find a relationship with stimulus luminance, contrast, or spectral energy
   depends_on:
+  - session-link
   - fig8-nd-sd-correlation
   criterion: A claim of absence. Per stimulus, mean luminance is the mean pixel intensity and
     contrast the SD of pixel intensities of the unblurred movie; spectral energy is the sum of
