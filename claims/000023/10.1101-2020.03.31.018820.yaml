@@ -292,7 +292,8 @@ claims:
   criterion: Method per the Methods (80 cells per type, 80 most variable genes, 100 repeats
     against gene-shuffled data). Not tested on the dandiset.
 - id: fig1g-deep-types-de-genes
-  statement: CARM1P1 and COL22A1 have many more differentially expressed genes against the
+  statement: The homologous types are similarly discrete from one another in mouse and in human,
+    while CARM1P1 and COL22A1 have many more differentially expressed genes against the
     homologous types than the homologous types have against one another, in either species.
   source: Results, Human supragranular cortex is more diverse than in mouse, paragraph 3; Figure 1g
   quote: Homologous types are similarly discrete from one another in both mouse in human, whereas
@@ -416,11 +417,13 @@ claims:
     neuropathologists), low being at most 1 and high above 1 (the code; the text gives 0-1 and
     1-3). The test is the code's, scipy's Mann-Whitney U with its default of scipy 1.4 (the
     pinned version), whose p is half the two-sided p, at the Bonferroni level 0.05/18 per marker
-    (Figure 2f legend and the code). Reproduced when, under one reading, RMP under IBA1 is the only
-    significant comparison of the 36, with the high group more hyperpolarized and the difference
-    of group medians or of group means (the paper does not say which; both are shown) within
-    tolerance; partially reproduced when the significance pattern holds but the size is outside
-    tolerance; not reproduced when any other comparison is significant or RMP under IBA1 is not.
+    (Figure 2f legend and the code). The paper does not say whether the 5 mV is a difference of
+    group medians or of group means; both are computed, and the size part of the outcome is the
+    one both give (methods_underspecified for the size when they differ). Reproduced when, under
+    one reading of the cells, RMP under IBA1 is the only significant comparison of the 36, with
+    the high group more hyperpolarized and the difference within tolerance; partially reproduced
+    when the significance pattern holds but the size is outside tolerance; not reproduced when
+    any other comparison is significant or RMP under IBA1 is not.
     The two-sided Mann-Whitney test is shown as a variant, as is the updated notebook's result.
 # --- Depth by t-type ------------------------------------------------------------------------
 - id: fig3d-depth-by-type
@@ -442,7 +445,9 @@ claims:
     median is below 0.575; FREM3 includes cells shallower than the LTK median and cells deeper
     than 1; and, for CARM1P1 and COL22A1 each, "almost entirely" holds. The paper gives no number
     for "almost entirely"; the readings are (a) at least 90% and (b) at least 80% of cells deeper
-    than 0.575. Partially reproduced when the order of medians holds but not the rest. All cells
+    than 0.575. They are thresholds, so the outcome is the one both give, and the claim is
+    methods_underspecified when they differ. Partially reproduced when the order of medians
+    holds but not the rest. All cells
     of the code's table with a depth are used, whether or not they have features.
 # --- Homologous types ----------------------------------------------------------------------
 - id: fig4e-human-ephys-anova
@@ -532,8 +537,8 @@ claims:
     tolerance: 1.2
   criterion: The t-type ANOVA on morphological features. Not tested on the dandiset.
 - id: fig4-glp2r-sag
-  statement: GLP2R neurons, like LTK neurons, lack firing rate adaptation, but unlike LTK neurons
-    (which have no sag) they have pronounced sag.
+  statement: GLP2R neurons, like LTK neurons, lack firing rate adaptation and have higher input
+    resistance, but unlike LTK neurons (which have no sag) they have pronounced sag.
   source: Results, Increased morpho-electric specialization in human L2-3 t-types, paragraphs 1 and
     2; Figure 4a
   quote: Electrophysiologically, GLP2R neurons exhibited LTK -like electrophysiology, lacking
@@ -546,18 +551,15 @@ claims:
     GLP2R with the pairwise test over the three homologous types (the paper's post hoc test for
     Figure 4e; the paper shows this finding only as traces). Reproduced when GLP2R sag is
     significantly higher than LTK sag (FDR below 0.05) and adaptation does not differ between
-    them; partially reproduced when sag is higher but adaptation also differs.
+    them; partially reproduced when sag is higher but adaptation also differs. The higher input
+    resistance is not judged, since the paper does not say what it is higher than (FREM3 is the
+    likely comparison); the input resistance of the three types is reported.
 - id: edtable1-species-ephys
   statement: Between human and mouse homologous t-types, 17 of 18 electrophysiological features
     differ at FDR below 0.05.
   source: Extended Data Table 1 legend
   quote: For homologous t-types, results are shown for unpaired t-tests across species for each
     feature ... 17out of 18 features are significant at FDR<0.05.
-  statistics:
-  - test: unpaired t-test per feature
-    p: 0.05
-    p_relation: "<"
-    corrected: FDR
   data: with_inputs
   depends_on:
   - features-and-labels-link
@@ -568,7 +570,9 @@ claims:
   criterion: Human LTK, GLP2R and FREM3 cells against mouse Adamts2, Rrad and Agmat cells (mouse
     features from the code's table), one test per feature, Benjamini-Hochberg over 18. The
     legend does not say whether the t-test assumes equal variances; readings are (a) Student's
-    and (b) Welch's. Reproduced when either gives 17. The code's test (scipy's Mann-Whitney with
+    and (b) Welch's. A feature counts when its BH-corrected p is below 0.05 (the legend).
+    Reproduced when both readings give 17; the claim is methods_underspecified when they differ
+    in outcome. The code's test (scipy's Mann-Whitney with
     the scipy 1.4 default, on cells with all 18 features; AP width the one feature not
     significant) is shown as a variant, as is Cohen's d per feature.
 - id: edfig6-classifier-human-ephys
@@ -592,6 +596,8 @@ claims:
     (sklearn, with the code's settings class_weight balanced, max_features sqrt, min_samples_leaf
     2), accuracy on the test set averaged over the splits. Reproduced when the mean accuracy is
     within tolerance. Accuracy with shuffled t-type labels (Methods) is reported for comparison.
+    The code runs 10 splits (n_repeats = 10), not the Methods' 1000; the Methods are followed,
+    and the number of splits changes only the precision of the mean.
 - id: edfig6-classifier-mouse-ephys
   statement: The same classifier predicts mouse L2/3 t-types from electrophysiological features
     with 54% accuracy, lower than for human.
@@ -640,11 +646,6 @@ claims:
     depth were the increase in sag and AP (Action Potential) upstroke / downstroke ratio and the
     decrease in AP latency at rheobase ( Fig. 5c ).
   statistics:
-  - about: features correlated with depth
-    test: linear regression on normalized L2/3 depth, heteroscedasticity-robust (HC3) F test
-    p: 0.05
-    p_relation: "<"
-    corrected: FDR (Benjamini-Hochberg)
   - about: the three regressions shown in Figure 5c
     test: linear regression, HC3 F test
     p: 0.0000001
@@ -674,11 +675,6 @@ claims:
   source: Results, Human FREM3 t-type exhibits depth-dependent morpho-electro-transcriptomic
     variation, paragraph 2; Figure 5b
   quote: 37 out of 58 morphological features were correlated with depth (FDR<0.05, 28/58 FDR<0.01).
-  statistics:
-  - test: linear regression on normalized L2/3 depth, HC3 F test
-    p: 0.05
-    p_relation: "<"
-    corrected: FDR (Benjamini-Hochberg)
   data: elsewhere
   where: Morphological features in GitHub AllenInstitute/patchseq_human_L23
     data/All_L23_Lockdown_all_raw_features.csv at commit 3daf9f0803ea0c220a040ea523f23af5f93c56ac
@@ -699,11 +695,6 @@ claims:
   quote: 790 genes were correlated with depth (FDR<0.05) and GO (gene ontology) enrichment analysis
     on this gene set revealed a variety of significantly enriched functional categories ( Fig. 5d ,
     Supplementary Data 1)
-  statistics:
-  - test: linear regression on normalized L2/3 depth, HC3 F test
-    p: 0.05
-    p_relation: "<"
-    corrected: FDR (Benjamini-Hochberg)
   data: elsewhere
   where: Patch-seq transcriptomes at the Allen Brain Map Human Patch-seq L2/3 project; per-gene
     results in GitHub AllenInstitute/patchseq_human_L23 data/frem_genes_depth.csv at commit
@@ -725,12 +716,6 @@ claims:
     large effect sizes, with the variance explained by type surpassing 40% ( R 2 >0.4) for 4
     electrophysiological and 20 morphological features, while no features met this threshold for the
     three homologous types (maximum R 2 =0.26).
-  statistics:
-  - test: one-way ANOVA, heteroscedasticity-robust (HC3) F test
-    p: 0.05
-    p_relation: "<"
-    corrected: FDR (Benjamini-Hochberg)
-    n: 21 deep FREM3, 17 CARM1P1 and 37 COL22A1 neurons (Figure 6b legend)
   data: with_labels
   depends_on:
   - features-and-labels-link
@@ -742,7 +727,9 @@ claims:
   - quantity: electrophysiological features with R2 above 0.4
     value: 4
     tolerance: 0.4
-  criterion: The t-type ANOVA on deep FREM3, CARM1P1 and COL22A1 cells. Reproduced when both counts
+  criterion: The t-type ANOVA on deep FREM3, CARM1P1 and COL22A1 cells (21, 17 and 37 neurons in
+    the Figure 6b legend; CARM1P1 and COL22A1 are not cut by depth, as in the code). A feature
+    differs when its BH-corrected p is below 0.05. Reproduced when both counts
     are within tolerance and no electrophysiological feature has R2 above 0.4 in
     fig4e-human-ephys-anova; partially reproduced when one count is within tolerance. The
     maximum R2 of 0.26 for the homologous types is not tested, as the text does not say which
@@ -784,7 +771,8 @@ claims:
   criterion: The pairwise test over the three deep types (Figure 6c legend; BH over the three pairs
     of a feature, as the code's plot_mw_bars). "Faster upstroke" is read as (a) the AP upstroke
     rate (upstroke_long_square) or (b) the upstroke/downstroke ratio, the feature the code plots
-    for the deep types; both are run. Reproduced when, under one reading, CARM1P1 is significantly
+    for the deep types; both are run. The upstroke part is the one both readings give, and is
+    methods_underspecified when they differ. Reproduced when CARM1P1 upstroke is significantly
     higher than both deep FREM3 and COL22A1, and CARM1P1 input resistance is significantly higher
     than deep FREM3; partially reproduced when one of the two parts holds.
 - id: fig6c-col22a1-rin-fi-sag
@@ -800,8 +788,10 @@ claims:
   depends_on:
   - features-and-labels-link
   criterion: The pairwise test over the three deep types, for input resistance, f-I slope and sag.
-    The sag finding is shown in the paper only as traces (Figure 6b); the Figure 6c test is used
-    for it too. Reproduced when COL22A1 input resistance and f-I slope are each significantly
+    The sag and f-I gain findings are shown in the paper only in Figure 6b (traces, and f-I curves
+    normalized to rheobase), with no test; the post hoc Mann-Whitney test of the Methods
+    (Analysis of features by t-type and species, paragraph 2) and Figure 6c is used for them
+    too, on the sag and fi_fit_slope features. Reproduced when COL22A1 input resistance and f-I slope are each significantly
     higher than both deep FREM3 and CARM1P1, and COL22A1 sag is significantly lower than CARM1P1
     sag; partially reproduced when at least two of the three features hold.
 - id: fig6a-deep-dendrites
@@ -867,3 +857,24 @@ claims:
   where: The mFISH and SMI-32 images are not deposited in any archive the paper or the code names;
     NEFH expression from the Allen Brain Map RNA-seq data, not pinned
   criterion: Not tested on the dandiset. The paper gives no counts of labelled cells.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Read the code at AllenInstitute/patchseq_human_L23 3daf9f0 and confirmed the details the criteria cite (HC3 type-2 F test and BH in run_cluster_anova, two-sided pairwise Mann-Whitney with BH over pairs, deep FREM3 as depth above 0.575 with CARM1P1 and COL22A1 not cut by depth, non-positive input resistance, f-I slope and sag set missing, scipy 1.4 one-sided mannwhitneyu at 0.05/18 per marker with low at most 1 and high above 1 in pathology_analysis.ipynb, random forest settings and drop of cells with any missing feature).
+  - edtable1-species-ephys. Removed the statistics entry (FDR below 0.05); it is the threshold used to count the 17 features, a method, not a result. Student's and Welch's t-test are method readings, so the outcome must now be the one both give, blocked as methods_underspecified when they differ, not either.
+  - fig5c-frem3-ephys-depth. Removed the first statistics entry (FDR below 0.05), the threshold used to count the 9 features; kept the FDR below 1e-7 of the three regressions shown, which the Figure 5 legend reports as their result.
+  - fig5b-frem3-morph-depth and fig5d-frem3-gene-depth. Removed the statistics entries (FDR below 0.05), the thresholds used to count the 37 features and 790 genes.
+  - fig6-deep-ephys-anova. Removed the statistics entry (FDR below 0.05), the threshold used to count the 15 features; the cell counts it held and the counting rule are now in the criterion, with the code's choice of not cutting CARM1P1 and COL22A1 by depth.
+  - fig6c-carm1p1-upstroke-rin. The two readings of "faster upstroke" (upstroke rate, upstroke/downstroke ratio) are a choice of measure, so the upstroke part must hold under both, methods_underspecified when they differ, not under one.
+  - fig3d-depth-by-type. The 90% and 80% readings of "almost entirely" are thresholds the paper does not give, so the outcome must be the one both give, not either.
+  - fig2ef-pathology-ephys. Medians and means of the 5 mV difference are a choice of measure; the size part must now agree under both, not either.
+  - fig4-glp2r-sag. The statement left out the paper's "higher input resistance"; added, and said in the criterion that it is not judged because the paper does not say what it is higher than.
+  - fig1g-deep-types-de-genes. The statement left out that the homologous types are similarly discrete in both species, which the quoted sentence says; added.
+  - fig6c-col22a1-rin-fi-sag. Said that the f-I gain, like sag, is shown only in Figure 6b with no test, and that the Methods' post hoc Mann-Whitney test is applied to fi_fit_slope and sag.
+  - edfig6-classifier-human-ephys. Noted that the code runs 10 splits against the Methods' 1000; the Methods are followed.
+  - Checker. The two VALUE NOT FOUND lines (fig6e-deep-de-genes, 3.5e-06 and 5.3e-05) are the text's "3.5 10 −6" and "5.3 10 −5", read and correct.
+  - Open. The paper names no test for the pathology comparison and no reading of the 5 mV; the criterion relies on the code, whose cell table (human_distillery_selection_new.csv) is not in the repository.
+  - Open. Smaller findings have no claim (Fig. 1d-e UMAP compactness, the mouse depth order in Fig. 3d, Extended Data Fig. 2 metadata UMAP, Extended Data Fig. 5 VISp against TEa); they are qualitative or shown only in figures, and the main findings are covered.
