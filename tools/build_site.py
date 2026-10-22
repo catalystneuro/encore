@@ -673,6 +673,18 @@ def statistic_text(s: dict) -> str:
     return text + (f' (n = {s["n"]})' if s.get("n") else "")
 
 
+def by_outcome(outcomes: list[dict], root: str, attempt: dict | None = None) -> str:
+    """Claims under a heading for each outcome, reproduced first, then partially, not reproduced and blocked."""
+    html = ""
+    for outcome in ("reproduced", "partially_reproduced", "not_reproduced", "blocked"):
+        mine = [o for o in outcomes if o["outcome"] == outcome]
+        if mine:
+            html += (f'<div class="outcome-group" data-outcome="{outcome}"><h4 class="outcome-head">{chip(outcome)}'
+                     f'<span class="count">{len(mine)}</span></h4>'
+                     f'<ul class="claims">{"".join(claim_item(o, root, attempt) for o in mine)}</ul></div>')
+    return html
+
+
 def claim_item(o: dict, root: str, attempt: dict | None = None) -> str:
     """One claim as an accordion: the outcome and statement show, the explanation opens on a click."""
     blocked = f'<span class="why">· {e(BLOCKED_BY.get(o["blocked_by"], o["blocked_by"]))}</span>' \
@@ -1390,7 +1402,7 @@ return '<button type="button" data-f="'+l[0]+'">'+l[1]+' <span class="count">'+n
 function draw(){var shown=items.filter(match),pages=Math.max(1,Math.ceil(shown.length/PER));
 if(state.p>=pages)state.p=pages-1;var page=shown.slice(state.p*PER,(state.p+1)*PER);
 items.forEach(function(li){li.hidden=page.indexOf(li)<0;});
-[].slice.call(panel.querySelectorAll('.claim-group')).forEach(function(g){
+[].slice.call(panel.querySelectorAll('.claim-group,.outcome-group')).forEach(function(g){
 g.hidden=!g.querySelector('li.claim:not([hidden])');});
 [].slice.call(bar.querySelectorAll('button')).forEach(function(b){b.setAttribute('aria-pressed',b.dataset.f===state.f);});
 if(pages<2){pager.innerHTML='';return;}
@@ -1485,7 +1497,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
     target = next((t for t in data["targets"] if t["key"] == dandiset), None)
     counts = outcome_counts(atts)
     n = sum(counts.values())
-    order = {"not_reproduced": 0, "partially_reproduced": 1, "reproduced": 2}
+    order = {"reproduced": 0, "partially_reproduced": 1, "not_reproduced": 2}
 
     # Claims, grouped by paper when the dandiset has attempts on more than one.
     claims_html = ""
@@ -1508,7 +1520,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
             claims_html += (f'<div class="claim-group"><h3 style="margin-top:18px">{title} '
                             f'<span class="count">{len(mine)}</span></h3>'
                             f'<p class="sub small" style="margin:2px 0 0">Notebook <code>{e(nb["path"])}</code>'
-                            f'</p><ul class="claims">{"".join(claim_item(o, root, a) for o in mine)}</ul></div>')
+                            f'</p>{by_outcome(mine, root, a)}</div>')
         listed = {n["path"] for n in a["notebooks"]}
         blocked = [o for o in a["outcomes"] if o.get("notebook") not in listed]
         if blocked:
@@ -1519,7 +1531,7 @@ def page_dandiset(data: dict, dandiset: str, attempt: dict | None = None) -> str
             claims_html += (f'<details class="group claim-group" open><summary><h3>Not tested in a notebook '
                             f'<span class="count">{len(blocked)}</span></h3>'
                             f'<span class="muted small">{e(why)}</span></summary>'
-                            f'<ul class="claims">{"".join(claim_item(o, root, a) for o in blocked)}</ul></details>')
+                            f'{by_outcome(blocked, root, a)}</details>')
 
     all_findings = [f for a in atts for f in a["findings"]]
     findings_html = "".join(
