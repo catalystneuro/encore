@@ -1,0 +1,458 @@
+schema_version: 2
+id: 000115-gillespie-2021-01
+dataset:
+  archive: dandi
+  id: '000115'
+  version: 0.210914.1732
+  doi: 10.48324/dandi.000115/0.210914.1732
+paper: doi:10.1016/j.neuron.2021.07.029
+date: '2026-10-22'
+entry: 000115-gillespie-2021
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39800733929
+outcomes:
+- claim: fig1d-sessions-blocks
+  outcome: reproduced
+  notebook: reproduce_gillespie_2021.ipynb
+  output: claim:fig1d-sessions-blocks
+  measured:
+  - 25
+  - 32
+  - 24
+  - 33
+  - 88
+  - 85
+  - 109
+  - 167
+  notes: >-
+    Under both readings of which jaq sessions are excluded and both readings of the block's final trial,
+    all eight counts are within 10%. Sessions 25, 32, 24 and 33 against 24, 32, 23 and 33. Blocks with
+    a trial of task phase 4 or more are 88 (sessions 1 and 3 in order of recording left out) or 91 (day
+    6 epochs 2 and 4 left out) for jaq against 89, 85 against 85 for roquefort, 109 against 105 for despereaux,
+    and 167 or 166 (final-trial readings) against 166 for montague. Measured values are reading (a) with
+    the old-goal-visit final trial. With no session excluded (a variant), jaq has 27 sessions, outside
+    tolerance, and 96 blocks. The files hold one more run epoch for jaq and for despereaux than the paper
+    counts; all run epochs are the goal_delay task, and none sets forage assist where the log header states
+    it (111 of 116).
+  deviations:
+  - >-
+    Trials are rebuilt from the StateScript logs in the files (port entries, the printed goal, reward
+    and timeout lines), not from the paper's preprocessed trial structures; rewards match the DIO pump
+    onsets in 115 of 116 epochs.
+  - >-
+    Which jaq sessions are the excluded sessions 1 and 3 is not marked in the files; two readings are
+    run (in order of recording, day 6 epochs 2 and 5; or day 6 epochs 2 and 4, the only jaq session with
+    fewer than eight arms visited). Both give the same outcome. A question was asked.
+  - >-
+    Which trial closes a block when the rat does not return to the old goal right after the switch is
+    not given by the claims file; both readings are run and give the same outcome. A question was asked.
+  - >-
+    Session selection by decode quality (the code's gooddecode) cannot be applied without decoding; all
+    run epochs are counted, less the two excluded for jaq.
+- claim: fig1ef-reward-rate
+  outcome: reproduced
+  notebook: reproduce_gillespie_2021.ipynb
+  output: claim:fig1ef-reward-rate
+  notes: >-
+    Under every session and final-trial reading, in all four subjects, the reward rate on the first trial
+    after the goal change is 0.068 to 0.133 with its lower S.E.M. bound at or below 0.125 (0.041 to 0.106),
+    it rises to 0.584 to 0.696 by trial 15 (bands not overlapping trial 1; Spearman rho 0.94 to 0.996,
+    p < 2e-7), and after the first reward at the new goal every point of trials 1 to 15 has its band above
+    0.125 (lowest lower bound 0.234, roquefort, under readings a and b). Blocks are 88, 85, 109 and 167
+    under reading (a).
+  deviations:
+  - >-
+    Trials are rebuilt from the StateScript logs, as for fig1d-sessions-blocks, with the same two session
+    readings and two final-trial readings.
+  - >-
+    The criterion's "rises" is judged as trial 15 above trial 1 with non-overlapping S.E.M. bands and
+    a positive Spearman correlation of rate with trial number; both are printed.
+- claim: figs1c-swr-reward-consumption
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripples detected on the raw broadband across the CA1
+    cell-layer tetrodes. The electrode table also gives every channel's location as None, so the CA1 cell-layer
+    tetrodes and the corpus callosum reference tetrode the Methods use cannot be identified.
+- claim: figs3abc-decode-accuracy
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs the clusterless state space decoder, run on spikes detected
+    above 100 uV from the raw broadband of every CA1 tetrode for whole sessions. The electrode table also
+    gives every channel's location as None, so the CA1 cell-layer tetrodes and the corpus callosum reference
+    tetrode the Methods use cannot be identified.
+- claim: figs3df-goal-arm-no-remapping
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs the clusterless state space decoder, run on spikes detected
+    above 100 uV from the raw broadband of every CA1 tetrode for whole sessions. It depends on figs3abc-decode-accuracy.
+- claim: figs3g-continuous-fraction
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    figs3abc-decode-accuracy.
+- claim: likelihood-decode-same-segment
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs both the state space decoder and a 20 ms Bayesian decoder
+    run on clusterless spikes from the raw broadband.
+- claim: fig2f-remote-fraction
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    figs3abc-decode-accuracy.
+- claim: fig3a-box-majority
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    figs3abc-decode-accuracy.
+- claim: fig3b-search-prevgoal-enriched
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig2f-remote-fraction.
+- claim: fig3b-search-past-depleted
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3b-search-prevgoal-enriched.
+- claim: fig3b-search-future-inconsistent
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3b-search-prevgoal-enriched.
+- claim: fig3b-search-other
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3b-search-prevgoal-enriched.
+- claim: fig3c-repeat-prevgoal
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3b-search-prevgoal-enriched.
+- claim: fig3d-glm-search
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig2f-remote-fraction.
+- claim: fig3e-glm-repeat
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3d-glm-search.
+- claim: fig4ab-current-goal-late
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3e-glm-repeat.
+- claim: fig4c-current-goal-reward-correlation
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3d-glm-search.
+- claim: fig5a-future-replay-rate
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3d-glm-search.
+- claim: fig5b-future-correct-error
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig5a-future-replay-rate.
+- claim: fig5c-current-goal-correct-error
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig5b-future-correct-error.
+- claim: figs7-early-late-correct-error
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig5c-current-goal-correct-error.
+- claim: figs7e-remote-rate-error
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig5b-future-correct-error.
+- claim: fig5d-glm-predict-chance
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig5b-future-correct-error.
+- claim: pg-replay-visits-correlation
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3d-glm-search.
+- claim: fig5e-pg-replay-no-avoidance
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3d-glm-search.
+- claim: fig6a-pg-replay-persists
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3d-glm-search.
+- claim: fig6b-visits-decay
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The visit curves could be computed from the task logs, but the criterion
+    compares the visit decay with the replay enrichment of fig6a-pg-replay-persists, which needs ripples
+    and decoding, so the claim is blocked with it.
+- claim: fig6c-pg-replay-two-blocks
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig6a-pg-replay-persists.
+- claim: fig7-recency
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3d-glm-search.
+- claim: fig8-outer-prevgoal
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3d-glm-search.
+- claim: figs8-outbound-final-events
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. The claim needs ripple events detected on the raw broadband (consensus
+    150 to 250 Hz envelope over the CA1 cell-layer tetrodes) and their decoded content. It depends on
+    fig3e-glm-repeat, fig5c-current-goal-correct-error.
+- claim: robustness-controls
+  outcome: blocked
+  blocked_by: too_large
+  notes: >-
+    The dandiset holds only the raw 30 kHz broadband of 128 channels, about 9.1 TB over 57 files stored
+    one channel per chunk, and no spikes, LFP, ripple times, linearised position or decoder output. The
+    notebook measures about 5 MB/s when streaming it (data check), at which one 90-minute run epoch takes
+    over two hours and the whole dandiset hundreds of hours, far beyond the 30-minute limit, before any
+    spike detection or decoding. Each control (MUA events, a permissive remote definition, a three-state
+    decoder, a 20 ms decoder) needs spikes and decoding from the raw broadband.
+findings:
+- kind: data_missing
+  statement: >-
+    The dandiset holds the raw 30 kHz broadband, port events, position and task logs, but none of the
+    derived data the paper's findings rest on: no spike times or waveform features, LFP, ripple or multiunit
+    event times, linearised position or decoder output. 31 of the paper's 33 claims need ripples or clusterless
+    decoding recomputed from about 9.1 TB of raw data, which cannot be streamed within the registry's
+    limits.
+- kind: metadata_insufficient
+  statement: >-
+    The electrode table gives the location of all 128 channels as None in every file, so the CA1 cell-layer
+    tetrodes used for ripple detection and decoding, and the corpus callosum tetrode used as LFP reference,
+    cannot be identified from the data.
+- kind: selection_undocumented
+  statement: >-
+    The files do not mark which run sessions the paper analysed. They hold 27, 32, 24 and 33 run epochs
+    for jaq, roquefort, despereaux and montague, where the paper used 26 (24 after excluding sessions
+    1 and 3 of subject 1), 32, 23 and 33, and the excluded sessions are named only by number. The paper's
+    code repository (LorenFrankLab/Gillespie_Neuron_2021) holds a saved filter output with per-animal
+    epoch lists that may identify them; it was not used here.
+- kind: other
+  statement: >-
+    The draft version's files were rewritten in January 2022 (NWB 2.4.0). In the file compared (montague
+    day 4) the DIO timestamps agree with the published version to within a microsecond, but the draft's
+    position timestamps are shifted by about -1.59e9 s and no longer share the DIO clock; in the published
+    version they do. The README of the paper's code links the draft.
+- kind: metadata_error
+  statement: >-
+    Position is sampled at 32.9 to 33.0 Hz, where the Methods state 30 Hz, and 110 of 116 run epochs end
+    with 1 to 4 NaN position timestamps; two epochs have non-increasing timestamps (up to 200).
+- kind: other
+  statement: >-
+    In montague day 16 epoch 2 the StateScript log's clock steps by about 3.4 s twice against the DIO
+    pump times early in the epoch, and in jaq day 6 epoch 4 the DIO holds one more reward pump (arm 8)
+    226 s after the last logged reward, so that log appears to end before the epoch. Elsewhere the log
+    and the DIO agree to a few milliseconds and on every reward.
+- kind: metadata_insufficient
+  statement: >-
+    The task logs (StateScript, embedded as text in processing/associated_files) are the only record of
+    the goal arm, trial structure and timeouts; there is no trials table. Five run epochs carry the log
+    without the Python observer header that states the task parameters (rewards per goal, forage assist).
