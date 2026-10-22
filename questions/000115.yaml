@@ -20,6 +20,16 @@ questions:
     count (88 with day 6 epochs 2 and 5 left out, 91 with day 6 epochs 2 and 4, against 89).
     Both readings were run and give the same outcome here (reproduced), but a later claim that
     uses jaq's sessions could differ.
+  answered: 2026-10-22
+  answer: >-
+    The paper does not say. The Methods name the sessions only as "sessions 1 and 3 of subject
+    1" and describe them ("a much lower fraction of samples was on the same segment (<75%)",
+    "not all arms were visited during the session"). The code (dfs_ripcontent.m at 1be6a6a)
+    selects sessions with "$gooddecode==1" and has a per-animal "$session" field (for example
+    "$session==27"), both from task records not in the repository, so it does not fix the
+    numbering either. The criterion of fig1d-sessions-blocks now names two readings, (a) the
+    first and third run sessions in order of recording and (b) the two sessions that match the
+    Methods' description; both are run, and (b) decides when they differ.
 - claim: fig1d-sessions-blocks
   asked: 2026-10-22
   question: >-
@@ -39,3 +49,13 @@ questions:
     The two readings move one trial between blocks at some switches (montague has 167 or 166
     full blocks, against 166). No outcome of this attempt changes, but block lengths, search
     lengths and the trial sets of the replay claims would.
+  answered: 2026-10-22
+  answer: >-
+    The code settles it as reading (b). In label_trial_interval.m the block bounds are
+    "goalbounds = [0; 1+find(diff(valoutersgoals(:,2))~=0); sum(valtrials)]", so each block
+    keeps the first trial whose goal field holds the new goal, and dfa_ripcontent.m does the
+    same with "[1 ctemp(1:end-1)]". That trial is n + 0.9 when it visits the old goal and an
+    error (n + 0.3, 0.5 or 0.8) when it visits another arm; the next trial starts the search.
+    The Methods only say the unrewarded visit to the old goal "are considered correct trials".
+    Written into the opening comment and the criterion of fig1d-sessions-blocks; statement and
+    expected values unchanged.
