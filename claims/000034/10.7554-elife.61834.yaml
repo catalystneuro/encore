@@ -1,0 +1,647 @@
+# Claims for Buccino, Hurwitz, Garcia, Magland, Siegle, Hurwitz & Hennig (2020), eLife 9:e61834,
+# on dandiset 000034.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the version of record, full text from Europe PMC (PMC7704107): main text, figure and
+# figure-supplement legends, Materials and methods, the decision letter and author response. The
+# one supplementary file is eLife's transparent reporting form, which says "The manuscript does
+# not contain any statistical analysis"; so no claim has `statistics`. No PDF of the main text was
+# supplied: numbers drawn only in figures (Figure 1, figure supplements 3 and 4; the dots of
+# Figure 3, figure supplement 1) could not be read and are not used.
+#
+# Code read: the notebooks the paper links, in github.com/SpikeInterface/spikeinterface.github.io
+# (clone at 657c6d8; the four notebooks were last changed at ee08fb6, 2020-09-29, before
+# publication): posts/ensemble-sorting-of-a-neuropixels-recording.ipynb (Figures 1 and 4),
+# ground-truth-comparison-and-ensemble-sorting-of-a-synthetic-neuropixels-recording.ipynb
+# (Figures 2 and 3), ensemble-sorting-of-a-neuropixels-recording-2.ipynb (Figure 1, figure
+# supplement 3) and ensemble-sorting-of-a-3brain-biocam-recording-from-a-retina.ipynb (Figure 1,
+# figure supplement 4). They hold the sorter runs, the comparisons, the plots and printed counts.
+# No code was found for Figure 3, figure supplements 1 and 2. The library code read is
+# spikecomparison 0.2.6 (tag, 6ad882a) and spikesorters 0.3.3 (tag, cfdc973), the versions the
+# notebooks printed.
+#
+# Data the paper used (all four recordings are said to be in dandiset 000034, in NWB):
+# 1. Real Neuropixels: a head-fixed mouse from the Allen Brain Observatory (Siegle et al. 2019;
+#    session 766640955, probe 77359232; mouse 412804 in the notebook), V1, CA1, dentate gyrus and
+#    LP, visual stimuli while running on a disk; trimmed to 15 min, 30 kHz, 246 active channels
+#    (the notebook's file printed 248 channels and 27,000,000 frames). Notebook file
+#    sub-mouse412804_ecephys.nwb. Two manual curations of its Kilosort2 output in Phy by experts C1
+#    and C2: sub-mouse412804_ses-20200824T155542.nwb (read as curated 1) and
+#    sub-mouse412804_ses-20200824T155543.nwb (curated 2).
+# 2. Simulated Neuropixels (MEArec): 10 min, 250 neurons (200 excitatory, 50 inhibitory, from the
+#    Neocortical Micro Circuit Portal), independent Poisson firing, additive Gaussian noise of 10 uV
+#    SD; ground-truth spike trains in the same file, sub-MEAREC-250neuron-Neuropixels_ecephys.nwb.
+# 3. Rat cortex Neuropixels (Marques-Smith et al. 2018, dataset spe-c1), spontaneous activity in
+#    motor and somatosensory cortex; sub-c1_ecephys.nwb (notebook printed 384 channels, 30 kHz,
+#    270.0 s).
+# 4. Mouse retina on a 3Brain Biocam (Hilgen et al. 2017), 1024 channels, 23199 Hz;
+#    sub-P29-16-05-14-retina02-left_ecephys.nwb (notebook printed 135.7 s).
+# The measured variables are the spike trains the sorters output, the ground-truth spike trains of
+# recording 2 and the two curated sortings of recording 1. The sorters' own outputs are not said to
+# be deposited, so the attempt runs the sorters.
+#
+# Method fixed here for every claim, from the paper and, where it is silent, the code:
+# - Sorters (Results, Spike sorters show low agreement, paragraph 2): HerdingSpikes2 0.3.7,
+#   Kilosort2 at commit 48bf2b81d8ad, IronClust 5.9.8, Tridesclous 1.6.0, SpyKING Circus 0.9.7,
+#   HDSort 1.0.1, all with default parameters, the same on the simulated recording. The notebooks
+#   printed HDSort 1.0.2 (a variant). They pass SpyKING Circus adjacency_radius 50 under the key
+#   'spyking_circus', which run_sorters in spikesorters 0.3.3 does not match to the sorter name
+#   'spykingcircus', so it ran on its default (100); HerdingSpikes filter=True is its default. So
+#   code and Methods agree on defaults. For the Biocam recording the code applies
+#   spiketoolkit.preprocessing.blank_saturation before sorting (the paper is silent; the code is
+#   followed). The paper names spikeinterface 0.10.0; the notebooks ran spikeinterface 0.9.9
+#   (spikeextractors 0.8.4, spiketoolkit 0.6.3, spikesorters 0.3.3, spikecomparison 0.2.6). The
+#   code's versions are used; 0.10.0 is a variant.
+# - Agreement among sorters (Methods, SpikeComparison; compare_multiple_sorters in spikecomparison
+#   0.2.6): agreement score = matches / (n1 + n2 - matches); spikes match within 0.4 ms; each pair
+#   of sorters is matched by the Hungarian method with a minimum score of 0.5; the units of all
+#   sorters form a graph with the matched pairs as edges; where a connected component holds two
+#   units of one sorter the code removes the weaker edge; each remaining connected component is one
+#   agreement unit, and k is the number of sorters in it.
+# - Ground-truth comparison (Methods, SpikeComparison; notebook cell run_comparisons): Hungarian
+#   matching, 0.4 ms, exhaustive_gt=True, match_score=0.1, chance_score 0.1; accuracy, precision
+#   and recall per ground-truth unit as the Methods define them; units well detected above 0.8,
+#   false positive when unmatched or best score below 0.2, redundant and overmerged at 0.2 (the
+#   Methods' thresholds, which equal the code's defaults).
+# - True and false positive agreement units on the simulation (Figure 3C; notebook cell after the
+#   multicomparison, the paper is silent): an agreement unit is a true positive when every member
+#   unit is the best match (best_match_12, chance score 0.1) of some ground-truth unit in its
+#   sorter's ground-truth comparison, and otherwise a false positive; each member unit is counted
+#   for its sorter at that k.
+# - Ground-truth SNR (notebook): spiketoolkit.validation.compute_snrs(gt sorting, recording,
+#   apply_filter=False, memmap=True, max_spikes_per_unit_for_snr=500), other arguments default.
+# - Comparisons with the curated sortings (Figure 4; notebook): compare_two_sorters(sorter units,
+#   curated sorting) with its defaults (0.4 ms, minimum score 0.5); a sorter's percentage is the
+#   number of its units with a match over its number of units. Consensus units of a sorter are its
+#   units in agreement units with k >= 2; non-consensus units those with k = 1.
+# - Spike sorters do not give the same output twice (the author response shows this for
+#   Kilosort2), so counts are held to the 10% tolerance and never to exact values, and the
+#   curators worked on the paper's own Kilosort2 run, which a new run will not repeat exactly.
+# The Methods' descriptions of the software (file formats, sorters supported, widgets, the GUI)
+# are descriptions, not findings, and have no claims.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: '000034'
+paper: doi:10.7554/elife.61834
+claims:
+- id: recordings-as-described
+  kind: link
+  statement: The dandiset holds the recordings the paper analyses and the files its notebooks name, with
+    the properties the paper and the notebooks give.
+  source: Results, opening paragraph; Data availability; the four notebooks at ee08fb6
+  quote: The datasets are publicly available in NWB format on the DANDI archive
+  criterion: Each of the six files named in the opening comment is present. The real Neuropixels recording
+    has a sampling rate of 30 kHz and lasts 15 min (27,000,000 frames), with 246 channels (the paper)
+    or 248 (the notebook); the simulated recording lasts 10 min and its ground truth has 250 units; the
+    rat recording has 384 channels at 30 kHz; the Biocam recording has 1024 channels at about 23199 Hz.
+    Reproduced when all hold under one of the two channel counts; partially reproduced when a file is
+    missing or a property differs, naming which.
+- id: fig1b-unit-counts
+  statement: 'On the real Neuropixels recording the six sorters return very different numbers of units:
+    Tridesclous the fewest (187) and SpyKING Circus the most (628); HerdingSpikes2 210, Kilosort2 446,
+    IronClust 233 and HDSort 317.'
+  source: Results, Spike sorters show low agreement for the same high-density dataset, paragraph 3; Figure
+    1B
+  quote: with Tridesclous (TDC) finding the least units (187) and SpyKING Circus (SC) finding the most
+    units (628). HerdingSpikes2 finds 210 units; Kilosort2 finds 446 units; IronClust finds 233 units;
+    and HDSort finds 317 units
+  expected:
+  - quantity: Tridesclous units
+    value: 187
+    tolerance: 18.7
+    unit: units
+  - quantity: SpyKING Circus units
+    value: 628
+    tolerance: 62.8
+    unit: units
+  - quantity: HerdingSpikes2 units
+    value: 210
+    tolerance: 21.0
+    unit: units
+  - quantity: Kilosort2 units
+    value: 446
+    tolerance: 44.6
+    unit: units
+  - quantity: IronClust units
+    value: 233
+    tolerance: 23.3
+    unit: units
+  - quantity: HDSort units
+    value: 317
+    tolerance: 31.7
+    unit: units
+  criterion: Sorters, versions and parameters as in the opening comment, on the real Neuropixels recording.
+    Reproduced when all six counts are within tolerance; partially reproduced when Tridesclous has the
+    fewest units and SpyKING Circus the most but some count is outside tolerance. The notebook printed
+    448 for Kilosort2 and 234 for IronClust.
+- id: fig1c-low-agreement
+  statement: Of the 2031 units detected on the real recording, all six sorters agree on only 33, and two
+    or more sorters agree on only 263.
+  source: Results, Spike sorters show low agreement for the same high-density dataset, paragraph 4; Figure
+    1C
+  quote: Of the 2031 total detected units, all six sorters agree on just 33 of the units ... We also find
+    that two or more sorters agree on just 263 of the total units
+  expected:
+  - quantity: total detected units
+    value: 2031
+    tolerance: 203.1
+    unit: units
+  - quantity: agreement units with k = 6
+    value: 33
+    tolerance: 3.3
+    unit: units
+  - quantity: agreement units with k >= 2
+    value: 263
+    tolerance: 26.3
+    unit: units
+  depends_on:
+  - fig1b-unit-counts
+  criterion: Sorters, agreement graph and k as in the opening comment. The counts of agreement units with
+    k = 6 and with k >= 2 are compared with 33 and 263. The total is the sum of the six sorters' unit
+    counts, the only reading the text allows ("total detected units"); the counts the paper gives in Figure
+    1B sum to 2021, not 2031, which is within tolerance. The number of agreement units (components) is
+    reported as well. Reproduced when the three values are within tolerance.
+- id: fig1d-most-units-unmatched
+  statement: For most sorters more than half of their units match no other sorter; IronClust and Tridesclous
+    are the exceptions.
+  source: Results, Spike sorters show low agreement for the same high-density dataset, paragraph 4; Figure
+    1D
+  quote: For most sorters, over 50% of the units that they find do not match with any other sorter (with
+    the exceptions of Ironclust and Tridesclous)
+  depends_on:
+  - fig1b-unit-counts
+  criterion: Sorters, agreement graph and k as in the opening comment. Per sorter, the fraction of the
+    agreement units holding one of its units that have k = 1, as the notebook's per-sorter table computes
+    it. Reproduced when the fraction exceeds 0.5 for HerdingSpikes2, Kilosort2, SpyKING Circus and HDSort
+    and is below 0.5 for IronClust and Tridesclous; partially reproduced when it exceeds 0.5 for at least
+    four sorters but the exceptions are other sorters. The notebook printed 50.7% for Kilosort2, close
+    to the boundary.
+- id: fig1s2-agreement-scores-high
+  statement: 'Matched units mostly agree closely: around 80% of the agreement scores of agreed-upon units
+    are 0.8 or higher.'
+  source: Results, Spike sorters show low agreement for the same high-density dataset, paragraph 4; Figure
+    1, figure supplement 2
+  quote: For agreed-upon units, around 80% of the agreement scores are 0.8 or higher, indicating that
+    matched units typically have high spike train agreement
+  expected:
+    quantity: fraction of agreement scores of 0.8 or higher
+    value: 80
+    tolerance: 8
+    unit: percent
+  criterion: 'Sorters, agreement graph and k as in the opening comment. Two details are open. The recording:
+    the Results cite the supplement in the paragraph on the real recording, while its legend and the author
+    response say it shows the simulated ground-truth recording; both are read. The scores: (a) the agreement
+    scores of all matched pairs (the graph''s edges, all at least 0.5), or (b) the average agreement of
+    each agreement unit with k >= 2 (the code''s avg_agreement). The legend says "over 80%" and "greater
+    than 0.8"; the Results "around 80%" and "0.8 or higher"; the tolerance covers both. Reproduced when
+    the fraction is within tolerance under one reading.'
+- id: fig1s3-s4-other-recordings-disagree
+  statement: On a rat cortex Neuropixels recording (six sorters) and a mouse retina Biocam recording (the
+    four sorters able to process it, HerdingSpikes2, Kilosort2, IronClust and HDSort) the sorters disagree
+    as much as on the first recording.
+  source: Results, Spike sorters show low agreement for the same high-density dataset, paragraph 5; Figure
+    1, figure supplements 3 and 4
+  quote: In both cases, we find similar disagreement among the sorters
+  criterion: 'Sorters, agreement graph and k as in the opening comment. The Biocam recording is first
+    passed through blank_saturation, as in its notebook. The paper does not say how similarity was judged
+    and its figures could not be read here, so the readings are the two measures it uses for the first
+    recording: (a) Figure 1D, more than half of the sorters have over 50% of their units at k = 1 (the
+    legends of both supplements say most sorters find many units that other sorters do not); (b) Figure
+    1C, agreement units found by all sorters are at most 8% of all detected units (the 7.24% of the simulated
+    recording, which the paper calls a large disagreement, widened by 10%). Reproduced when, for both
+    recordings, one reading holds; partially reproduced when it holds for one recording only.'
+- id: fig2c-sim-unit-counts
+  statement: 'On the simulated recording with 250 ground-truth units the sorters again return very different
+    numbers of units: Tridesclous 189, HDSort 458, HerdingSpikes2 233, Kilosort2 415, IronClust 283 and
+    SpyKING Circus 343.'
+  source: Results, Evaluating spike sorters on a simulated dataset, paragraph 2; Figure 2C
+  quote: The number of detected units range from the 189 units found by Tridesclous to the 458 units found
+    by HDSort. HerdingSpikes2 finds 233 units; Kilosort2 finds 415 units; IronClust finds 283 units; and
+    SpyKING Circus finds 343 units
+  expected:
+  - quantity: Tridesclous units
+    value: 189
+    tolerance: 18.9
+    unit: units
+  - quantity: HDSort units
+    value: 458
+    tolerance: 45.8
+    unit: units
+  - quantity: HerdingSpikes2 units
+    value: 233
+    tolerance: 23.3
+    unit: units
+  - quantity: Kilosort2 units
+    value: 415
+    tolerance: 41.5
+    unit: units
+  - quantity: IronClust units
+    value: 283
+    tolerance: 28.3
+    unit: units
+  - quantity: SpyKING Circus units
+    value: 343
+    tolerance: 34.3
+    unit: units
+  criterion: Sorters as in the opening comment, with the same parameters as on the real recording, on
+    the simulated recording. Reproduced when all six counts are within tolerance; partially reproduced
+    when Tridesclous has the fewest and HDSort the most but some count is outside tolerance.
+- id: fig2s1a-precision-recall-bias
+  statement: 'Sorters trade precision against recall differently: HerdingSpikes2, SpyKING Circus and HDSort
+    favour precision, IronClust recall, Kilosort2 scores well on both, and Tridesclous shows no bias.'
+  source: Figure 2, figure supplement 1A legend; Results, Evaluating spike sorters on a simulated dataset,
+    paragraph 2
+  quote: Some sorters seem to favor precision (HerdingSpikes, SpyKING Circus, HDSort), others instead
+    have higher recall (Ironclust) or score well on both measures (Kilosort2). Tridesclous does not show
+    a bias towards precision or recall
+  depends_on:
+  - fig2c-sim-unit-counts
+  criterion: Precision and recall per ground-truth unit from the ground-truth comparison of the opening
+    comment (the notebook's perf_by_units). The paper shows scatter plots and does not say how a bias
+    is summarized, so the readings are the per-sorter median precision and median recall over (a) all
+    250 ground-truth units or (b) the ground-truth units with a Hungarian match. Under a reading, the
+    claim holds when median precision exceeds median recall for HerdingSpikes2, SpyKING Circus and HDSort;
+    median recall exceeds median precision for IronClust; both Kilosort2 medians are at least 0.8 (the
+    Methods' well-detected score); and Tridesclous has a smaller absolute difference between the two than
+    each of those four. Reproduced when all hold under one reading; partially reproduced when the directions
+    for HerdingSpikes2, SpyKING Circus, HDSort and IronClust hold.
+- id: fig2s1b-accuracy-snr
+  statement: Accuracy depends on the SNR of the ground-truth units for every sorter except Kilosort2,
+    which reaches almost perfect accuracy on low-SNR units.
+  source: Results, Evaluating spike sorters on a simulated dataset, paragraph 2; Figure 2, figure supplement
+    1B
+  quote: Moreover, the accuracy is modulated by the SNR of the ground-truth units for all spike sorters
+    except Kilosort2 which achieves an almost perfect performance on the low-SNR units
+  depends_on:
+  - fig2c-sim-unit-counts
+  criterion: Accuracy per ground-truth unit as in fig2s1a-precision-recall-bias; ground-truth SNR as in
+    the opening comment. The paper reports no test (its reporting form says it has none), so dependence
+    is read as a Spearman correlation of accuracy with SNR over the 250 ground-truth units, positive with
+    p < 0.05. Low-SNR units are open, read as (a) those below the median ground-truth SNR or (b) those
+    below the mode of the ground-truth SNR histogram (bins of 1, a standard choice), the reference Figure
+    3, figure supplement 2 uses. Reproduced when, under one reading, the correlation is positive with
+    p < 0.05 for HerdingSpikes2, IronClust, Tridesclous, SpyKING Circus and HDSort, Kilosort2 has the
+    weakest correlation of the six, and Kilosort2's median accuracy on low-SNR units is at least 0.8 and
+    above every other sorter's; partially reproduced when the Kilosort2 parts hold but the correlation
+    fails for one other sorter.
+- id: fig2d-ks2-highest-scores
+  statement: Kilosort2 scores higher than the other sorters for most ground-truth units.
+  source: Results, Evaluating spike sorters on a simulated dataset, paragraph 2; Figure 2D
+  quote: Kilosort2 attains significantly higher scores than the rest of the spike sorters for most ground-truth
+    units
+  depends_on:
+  - fig2c-sim-unit-counts
+  criterion: 'Scores per ground-truth unit as in fig2s1a-precision-recall-bias. The paper reports no test
+    behind "significantly", so the claim is judged by its words "for most ground-truth units": for each
+    of the five other sorters, Kilosort2''s score exceeds that sorter''s for more than half of the 250
+    ground-truth units. "Scores" is read as (a) accuracy or (b) each of accuracy, precision and recall,
+    the three metrics of Figure 2D. Reproduced when this holds for all five sorters under one reading;
+    partially reproduced when it holds for three or four. A paired Wilcoxon signed-rank test per pair
+    is shown, not used.'
+- id: fig2e-ks2-unit-types
+  statement: Kilosort2 has the most well-detected units (245) but also many false positive (147) and redundant
+    (21) units, and two overmerged units.
+  source: Results, Evaluating spike sorters on a simulated dataset, paragraph 3; Figure 2E
+  quote: While Kilosort2 has the most well-detected units (245), this comes at the cost of a high percentage
+    of false positive (147) and redundant (21) units ... In both cases two overmerged units are found
+  expected:
+  - quantity: Kilosort2 well-detected units
+    value: 245
+    tolerance: 24.5
+    unit: units
+  - quantity: Kilosort2 false positive units
+    value: 147
+    tolerance: 14.7
+    unit: units
+  - quantity: Kilosort2 redundant units
+    value: 21
+    tolerance: 2.1
+    unit: units
+  - quantity: Kilosort2 overmerged units
+    value: 2
+    tolerance: 1
+    unit: units
+  depends_on:
+  - fig2c-sim-unit-counts
+  criterion: Unit classes from the ground-truth comparison of the opening comment. The tolerance for the
+    overmerged count is one unit, since 10% of 2 is below the smallest difference a count can show. Reproduced
+    when the four counts are within tolerance and Kilosort2 has more well-detected units than each other
+    sorter; partially reproduced when it has the most well-detected units but a count is outside tolerance.
+- id: fig2e-ks2-curated-unit-types
+  statement: 'With Kilosort2''s own curation, which removes units with an estimated contamination above
+    20%, false positive and redundant units are fewer but persist: 241 well detected, 93 false positive,
+    18 redundant and 2 overmerged.'
+  source: Results, Evaluating spike sorters on a simulated dataset, paragraph 3 (parenthesis)
+  quote: In that case the number of well-detected units is 241, false positives are 93, and redundant
+    units are 18. In both cases two overmerged units are found
+  expected:
+  - quantity: well-detected units
+    value: 241
+    tolerance: 24.1
+    unit: units
+  - quantity: false positive units
+    value: 93
+    tolerance: 9.3
+    unit: units
+  - quantity: redundant units
+    value: 18
+    tolerance: 1.8
+    unit: units
+  - quantity: overmerged units
+    value: 2
+    tolerance: 1
+    unit: units
+  depends_on:
+  - fig2e-ks2-unit-types
+  criterion: Kilosort2's automated curation is the sorter wrapper's keep_good_only=True (spikesorters
+    0.3.3, the line commented out in the notebooks), which keeps the units Kilosort2 labels good. Applied
+    to (a) the same Kilosort2 run as fig2e-ks2-unit-types, or (b) a run with keep_good_only=True; the
+    paper does not say which. Classes as in fig2e-ks2-unit-types, overmerged tolerance one unit for the
+    reason given there. Reproduced when the four counts are within tolerance under one reading; partially
+    reproduced when false positive and redundant counts fall below those of fig2e-ks2-unit-types but stay
+    above zero.
+- id: fig2e-tdc-few-fp-hds-many-fp
+  statement: Tridesclous detects very few false positive or redundant units while finding many well-detected
+    units, and HDSort finds many more false positive units than any other sorter.
+  source: Results, Evaluating spike sorters on a simulated dataset, paragraph 3; Figure 2E
+  quote: Notably, Tridesclous detects very few false positive/redundant units while still finding many
+    well-detected units. HDSort, on the flip side, finds many more false positive units than any other
+    spike sorter
+  depends_on:
+  - fig2c-sim-unit-counts
+  criterion: Unit classes as in fig2e-ks2-unit-types. Reproduced when HDSort's false positive count is
+    the highest of the six sorters, Tridesclous has the lowest fraction of its units that are false positive
+    or redundant, and at least half of Tridesclous's units are well detected ("many"); partially reproduced
+    when the HDSort part or the Tridesclous part holds alone.
+- id: fig3a-sim-low-agreement
+  statement: On the simulated recording only 139 of the 1921 detected units (7.24%) are agreed upon by
+    all six sorters.
+  source: Results, Low-agreement units are mainly false positives, paragraph 1; Figure 3A
+  quote: Again, we observe a large disagreement among the spike sorting outputs with only 139 units of
+    the 1921 total units (7.24%) being in agreement among all sorters
+  expected:
+  - quantity: agreement units with k = 6
+    value: 139
+    tolerance: 13.9
+    unit: units
+  - quantity: total detected units
+    value: 1921
+    tolerance: 192.1
+    unit: units
+  - quantity: k = 6 units over total detected units
+    value: 7.24
+    tolerance: 0.72
+    unit: percent
+  depends_on:
+  - fig2c-sim-unit-counts
+  criterion: Sorters, agreement graph and k as in the opening comment. The 7.24% is 139 over 1921, the
+    sum of the six sorters' unit counts, not over the number of agreement units; it is computed that way.
+    Reproduced when the three values are within tolerance.
+- id: fig3b-sorters-prone-to-low-agreement
+  statement: HDSort, SpyKING Circus and Kilosort2 are more prone to finding low-agreement units than HerdingSpikes2,
+    IronClust and Tridesclous.
+  source: Results, Low-agreement units are mainly false positives, paragraph 1; Figure 3B
+  quote: highlighting that some sorters are more prone to finding low agreement units (HDSort, SpyKING
+    Circus, Kilosort2) than other sorters (HerdingSpikes2, Ironclust, Tridesclous)
+  depends_on:
+  - fig3a-sim-low-agreement
+  criterion: Sorters, agreement graph and k as in the opening comment. Per sorter, the fraction of its
+    agreement units with k = 1, as in fig1d-most-units-unmatched. Reproduced when each of HDSort, SpyKING
+    Circus and Kilosort2 has a higher fraction than each of HerdingSpikes2, IronClust and Tridesclous;
+    partially reproduced when two of the three named sorters are among the three highest.
+- id: fig3c-fp-found-by-one-sorter
+  statement: Almost all false positive units are found by a single sorter, while most real units are matched
+    by more than one sorter; false positives found by two or more sorters number 4 for HerdingSpikes2,
+    Kilosort2 and IronClust, 2 for SpyKING Circus and HDSort and 1 for Tridesclous.
+  source: Results, Low-agreement units are mainly false positives, paragraph 2; Figure 3C legend
+  quote: The plots show that (almost) all false positive units are ones that are found by only a single
+    sorter (not matched with any other sorters), while most real units are matched by more than one sorter
+  expected:
+  - quantity: HerdingSpikes2 false positive units with k >= 2
+    value: 4
+    tolerance: 1
+    unit: units
+  - quantity: Kilosort2 false positive units with k >= 2
+    value: 4
+    tolerance: 1
+    unit: units
+  - quantity: IronClust false positive units with k >= 2
+    value: 4
+    tolerance: 1
+    unit: units
+  - quantity: SpyKING Circus false positive units with k >= 2
+    value: 2
+    tolerance: 1
+    unit: units
+  - quantity: Tridesclous false positive units with k >= 2
+    value: 1
+    tolerance: 1
+    unit: units
+  - quantity: HDSort false positive units with k >= 2
+    value: 2
+    tolerance: 1
+    unit: units
+  depends_on:
+  - fig3a-sim-low-agreement
+  criterion: Sorters, agreement graph and k as in the opening comment. True and false positive agreement
+    units as in the opening comment (the notebook's rule; the Methods do not define them for this figure).
+    The counts are from the legend; their tolerance is one unit, since 10% of a count below 5 is less
+    than one unit. Reproduced when, for every sorter, the false positive units with k >= 2 are within
+    tolerance and at most 10% of its false positive units, and its true positive units with k >= 2 outnumber
+    those with k = 1; partially reproduced when this holds for four or five sorters.
+- id: fig3s1-ks2-ic-best-pair
+  statement: With two sorters, combining Kilosort2 and IronClust identified true positives most reliably,
+    with false positive and true positive detection rates of 96% and 95%.
+  source: Results, Low-agreement units are mainly false positives, paragraph 2; Figure 3, figure supplement
+    1 legend
+  quote: For two sorters, the most reliable identification of true positives for this dataset was achieved
+    by combining Kilosort2 and Ironclust (96% and 95% false positive and true positive detection rate,
+    respectively)
+  expected:
+  - quantity: false positive detection rate, Kilosort2 and IronClust
+    value: 96
+    tolerance: 9.6
+    unit: percent
+  - quantity: true positive detection rate, Kilosort2 and IronClust
+    value: 95
+    tolerance: 9.5
+    unit: percent
+  depends_on:
+  - fig3c-fp-found-by-one-sorter
+  criterion: 'No code for this figure was found; the legend gives the method: for each subset of sorters,
+    the units of the other sorters are removed from the full comparison of fig3a, the units of the subset
+    found by one sorter (k = 1) are predicted false positive and the others true positive, against the
+    truth of fig3c-fp-found-by-one-sorter. The false positive detection rate is the fraction of false
+    positive units predicted so, the true positive rate likewise. Open, with readings: removal (a) drops
+    the nodes and recomputes connected components, or (b) keeps the full comparison''s components and
+    counts the subset''s sorters in each; the rate is (i) pooled over the units of the subset''s sorters
+    or (ii) the mean of the per-sorter rates. The legend says the best pairs combine two of Kilosort2,
+    IronClust and HDSort; the Results name Kilosort2 and IronClust. Reproduced when, under one reading,
+    both rates are within tolerance and Kilosort2 with IronClust has the highest true positive rate of
+    the 15 pairs; partially reproduced when the rates are within tolerance and the best pair is another
+    pair of Kilosort2, IronClust and HDSort.'
+- id: fig3s1-pairs-remove-fp-four-keep-tp
+  statement: A pair of sorters suffices to isolate almost all false positive units, but with fewer than
+    four sorters a significant fraction of true positive units, found by only one sorter, are wrongly
+    classed as false positives; four or more sorters reliably identify most true positives.
+  source: Results, Low-agreement units are mainly false positives, paragraph 2; Figure 3, figure supplement
+    1 legend
+  quote: This analysis showed that using a pair of sorters is sufficient to isolate almost all false positive
+    units in each sorter, yet when fewer than four sorter outputs are compared, a significant fraction
+    of true positive units found by only one sorter can be wrongly classified as false positives with
+    this approach
+  depends_on:
+  - fig3s1-ks2-ic-best-pair
+  criterion: 'Subsets of two to five sorters and the rates as in fig3s1-ks2-ic-best-pair, under the same
+    readings. "Almost all" is read against the paper''s own example of a pair, 96%, widened by 10%: the
+    median false positive detection rate over the 15 pairs is at least 86.4%. "Most" true positives is
+    more than half: every subset of four or five sorters has a true positive rate above 0.5. The loss
+    with fewer sorters: the lowest true positive rate over pairs and over triples is below the lowest
+    over subsets of four. Reproduced when all three hold under one reading; partially reproduced when
+    the false positive part holds and one true positive part fails.'
+- id: fig3d-snr-rises-with-agreement
+  statement: Ground-truth units with higher SNR are found by more sorters.
+  source: Results, Low-agreement units are mainly false positives, paragraph 3; Figure 3D
+  quote: This shows, as expected, that higher SNR units have higher agreement among sorters
+  depends_on:
+  - fig3c-fp-found-by-one-sorter
+  criterion: Sorters, agreement graph and k as in the opening comment. For each sorter, its true positive
+    units (as in fig3c-fp-found-by-one-sorter) with the SNR of the ground-truth unit each matches (ground-truth
+    SNR as in the opening comment), as the notebook's Figure 3D cell pairs them. The paper reports no
+    test; the claim is read as a positive Spearman correlation between k and SNR. Reproduced when the
+    correlation is positive for all six sorters; partially reproduced when positive for four or five.
+- id: fig3s2-snr-does-not-separate-ks2-fp
+  statement: 'For Kilosort2, SNR is not a good predictor of false positives: many of its false positive
+    units have an SNR above the mode of the ground-truth SNR.'
+  source: Results, Low-agreement units are mainly false positives, paragraph 3; Figure 3, figure supplement
+    2 legend
+  quote: Many detected false positive units have an SNR above the mode of the ground-truth SNR, indicating
+    that SNR is not a good measure to separate false and true positives in this case
+  depends_on:
+  - fig2e-ks2-unit-types
+  criterion: No code for this figure was found. The SNR of each Kilosort2 unit is computed with the same
+    function and arguments as the ground-truth SNR (opening comment); the mode of the ground-truth SNR
+    is the peak of its histogram in bins of 1 (a standard choice). Units "without matches" are read as
+    (a) the Methods' false positive class (fig2e-ks2-unit-types) or (b) units that are the best match
+    of no ground-truth unit (the rule of fig3c-fp-found-by-one-sorter). "Many" is open, read as more than
+    half or as at least a quarter of those units above the mode. Reproduced when every reading holds;
+    not reproduced when none does; blocked as methods_underspecified when they differ.
+- id: fig4a-curators-agree
+  statement: The two experts' manual curations of the Kilosort2 output agree on most curated units (226
+    of 351, 64.2%), and 174 Kilosort2 units are discarded by both.
+  source: Results, Consensus units highly overlap with manually curated ones, paragraph 1; Figure 4A
+  quote: most of the curated units (226 out of 351–64.2%) are agreed upon by both experts. Notably, 174
+    units found by Kilosort2 are discarded by both experts
+  expected:
+  - quantity: curated units agreed by both curators
+    value: 226
+    tolerance: 22.6
+    unit: units
+  - quantity: curated units in all
+    value: 351
+    tolerance: 35.1
+    unit: units
+  - quantity: agreed curated units over all curated units
+    value: 64.2
+    tolerance: 6.42
+    unit: percent
+  - quantity: Kilosort2 units discarded by both curators
+    value: 174
+    tolerance: 17.4
+    unit: units
+  depends_on:
+  - fig1b-unit-counts
+  criterion: 'As the notebook''s Venn diagram: compare_multiple_sorters on curated 1, curated 2 and the
+    Kilosort2 run (defaults), and the counts of agreement units by which of the three they hold. Read
+    as 226 = units holding both curators, 351 = units holding either curator, 174 = units holding Kilosort2
+    alone. For 226 and 351 a second reading is the pairwise compare_two_sorters(curated 1, curated 2):
+    matched pairs, and the two counts summed less the matched pairs. Curated counts do not depend on a
+    sorter run; 174 does, as the curators worked on the paper''s run. Reproduced when the values are within
+    tolerance under one reading; partially reproduced when 226, 351 and 64.2% are and 174 is not.'
+- id: fig4b-single-sorter-match-curated
+  statement: Only a small percentage of each sorter's units match the curated units; IronClust matches
+    best (59.83% and 61.1%), above Kilosort2 (50.67% and 56.25%), from whose output the curations were
+    made.
+  source: Results, Consensus units highly overlap with manually curated ones, paragraph 2; Figure 4B
+  quote: The highest percentage match is actually IronClust which is surprising given that the initial
+    sorting output was curated from Kilosort2’s output (IC ∩ C1 = 59.83%, IC ∩ C2 = 61.1%, KS ∩ C1 = 50.67%,
+    KS ∩ C2 = 56.25%)
+  expected:
+  - quantity: IronClust units matched to C1
+    value: 59.83
+    tolerance: 5.98
+    unit: percent
+  - quantity: IronClust units matched to C2
+    value: 61.1
+    tolerance: 6.11
+    unit: percent
+  - quantity: Kilosort2 units matched to C1
+    value: 50.67
+    tolerance: 5.07
+    unit: percent
+  - quantity: Kilosort2 units matched to C2
+    value: 56.25
+    tolerance: 5.63
+    unit: percent
+  depends_on:
+  - fig1b-unit-counts
+  criterion: Percentages as in the opening comment (comparisons with the curated sortings), for all of
+    each sorter's units. Reproduced when the four values are within tolerance and IronClust has the highest
+    percentage of the six sorters for both curators; partially reproduced when IronClust is highest but
+    a value is outside tolerance.
+- id: fig4c-consensus-match-curated
+  statement: Consensus units (found by at least two sorters) match the curated units at above 70% for
+    every sorter; Kilosort2 is highest (84.55% and 89.55%), slightly above IronClust (82.63% and 83.83%).
+  source: Results, Consensus units highly overlap with manually curated ones, paragraph 2; Figure 4C
+  quote: The average match percentage is above 70% for all sorters showing that there is a large agreement
+    between the manually curated outputs and the consensus-based output. Kilosort2 has the highest match
+    (KS c ∩ C1 = 84.55%, KS c ∩ C2 = 89.55%), slightly higher than Ironclust (IC c ∩ C1 = 82.63%, IC c
+    ∩ C2 = 83.83%)
+  expected:
+  - quantity: Kilosort2 consensus units matched to C1
+    value: 84.55
+    tolerance: 8.46
+    unit: percent
+  - quantity: Kilosort2 consensus units matched to C2
+    value: 89.55
+    tolerance: 8.96
+    unit: percent
+  - quantity: IronClust consensus units matched to C1
+    value: 82.63
+    tolerance: 8.26
+    unit: percent
+  - quantity: IronClust consensus units matched to C2
+    value: 83.83
+    tolerance: 8.38
+    unit: percent
+  depends_on:
+  - fig1c-low-agreement
+  criterion: Consensus units and percentages as in the opening comment. "The average match percentage
+    is above 70%" is read as (a) the mean of the two curators' percentages for each sorter, or (b) each
+    curator's percentage (the legend says the percent is above 70% for all sorters). Reproduced when,
+    under one reading, every sorter is above 70%, the four values are within tolerance and Kilosort2 is
+    highest for both curators; partially reproduced when every sorter is above 70% but the Kilosort2 parts
+    fail.
+- id: fig4d-nonconsensus-rarely-curated
+  statement: Units found by only one sorter rarely match the curated units; the only notable overlap is
+    Kilosort2's (18.58% with C1 and 24.34% with C2).
+  source: Results, Consensus units highly overlap with manually curated ones, paragraph 2; Figure 4D legend
+  quote: The only significant overlap is between Curator one and Kilosort2, with a percent around 18%
+    (KS nc ∩ C1 = 18.58%, KS nc ∩ C2 = 24.34%)
+  expected:
+  - quantity: Kilosort2 non-consensus units matched to C1
+    value: 18.58
+    tolerance: 1.86
+    unit: percent
+  - quantity: Kilosort2 non-consensus units matched to C2
+    value: 24.34
+    tolerance: 2.43
+    unit: percent
+  depends_on:
+  - fig4c-consensus-match-curated
+  criterion: Non-consensus units and percentages as in the opening comment. Reproduced when the two Kilosort2
+    values are within tolerance, every other sorter's percentage is below Kilosort2's for the same curator,
+    and every sorter's non-consensus percentage is below its consensus percentage (fig4c), the contrast
+    the Results draw; partially reproduced when the last two hold but a Kilosort2 value is outside tolerance.
