@@ -184,7 +184,8 @@ claims:
     for distal apical dendritic recordings (50–75 μ m depth for layer 2/3 and 20 μ m depth for
     layer 5)
   criterion: From the imaging depth the dataset records per session. Reproduced when every
-    session's depth equals the value for its line and plane (any of 50, 75 for L2/3 dendrites);
+    session's depth equals the value for its line and plane (for L2/3 dendrites, any depth from 50 to 75 um
+    inclusive, since the Methods give a range; answer of 2026-10-22, questions/000037.yaml);
     partially reproduced when all but up to two sessions do. Blocked if no depth is recorded.
 - id: acquisition-rates
   statement: Calcium movies were recorded at 30 Hz over a 400 um field of view at 512 x 512
@@ -513,7 +514,12 @@ claims:
     variant. Reproduced when in all four planes the selection yields ROIs for the Gabor
     sequences and for each flow direction, and in each plane the mean over selected ROIs of
     their mean trace is higher after the reference onset (0 to 0.6 s for Gabor, 0 to 2 s for
-    flow) than before it. Partially reproduced when this holds in at least two planes.
+    flow) than before it. Partially reproduced when this holds in at least two planes. Which
+    Gabor panel enters the rule is not given by the paper (answer of 2026-10-22,
+    questions/000037.yaml); the sentence cites Figure 5 as a whole, and the code selects panel a
+    and panel b ROIs separately (get_sess_ex_traces, unexp 0 or 1). Readings are (a) panel a,
+    (b) panel b, and (c) both panels, each required to hold. The outcome is the one all three
+    readings give; methods_underspecified if they differ.
 - id: fig5-consistent-vs-inconsistent
   statement: Responses to consistent and inconsistent stimuli differed clearly in the example
     ROIs.
@@ -621,8 +627,14 @@ claims:
   criterion: The correlations of fig7c-correlations-similar, L2/3 dendritic sessions. Tolerance
     0.005 percentage points, the range of values that round to the stated one significant
     figure (0.005 to 0.015%), since the paper gives the value as approximate with one figure.
-    Readings for the denominator are (a) all pairs pooled over the three sessions and three
-    mice, (b) the mean of per-session fractions, and (c) each session separately. Above 0.8 is
+    Readings for the denominator are (a) all pairs pooled over the three sessions and the two
+    analysed mice (413663 and 433414; 412933 is not included, its sessions 1 to 3 having failed
+    QC, and its sessions 4 to 6 are outside the paper's analyses, as the code's Fig. 7c source
+    data list only the first two), (b) the mean of the three per-session fractions, and (c)
+    each of the three local sessions separately, pairs pooled over the two mice as Fig. 7c
+    plots them; under (c) every session must be within tolerance, since the paper gives one
+    value for L2/3 dendrites and names no session. Per-mouse sessions are not a reading the
+    paper allows (answer of 2026-10-22, questions/000037.yaml). Above 0.8 is
     read as r > 0.8; r >= 0.8 (the code's histogram bin) is shown as a variant. Reproduced when
     one reading is within tolerance.
 - id: fig7a-source-link
