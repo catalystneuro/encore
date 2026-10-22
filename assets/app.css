@@ -111,6 +111,11 @@ a.chip:hover{background:var(--hover)}
 .chip .icon{display:inline-grid;place-items:center;width:18px;height:18px;border-radius:50%;color:#fff;font-size:.7rem}
 .chip.good .icon{background:var(--good)}.chip.warning .icon{background:var(--warning);color:#0b0b0b}
 .chip.critical .icon{background:var(--critical)}.chip.blocked .icon{background:var(--blocked)}
+/* An outcome chip is tinted in its colour, and a claim carries a stripe in its outcome's colour. */
+.chip.good{background:color-mix(in srgb,var(--good) 14%,var(--surface));border-color:color-mix(in srgb,var(--good) 50%,var(--surface))}
+.chip.warning{background:color-mix(in srgb,var(--warning) 18%,var(--surface));border-color:color-mix(in srgb,var(--warning) 60%,var(--surface))}
+.chip.critical{background:color-mix(in srgb,var(--critical) 13%,var(--surface));border-color:color-mix(in srgb,var(--critical) 50%,var(--surface))}
+.chip.blocked{background:color-mix(in srgb,var(--blocked) 16%,var(--surface));border-color:color-mix(in srgb,var(--blocked) 50%,var(--surface))}
 .tier{font-size:.78rem;font-weight:600;border-radius:999px;padding:1px 10px;white-space:nowrap;border:1px solid var(--line);
 color:var(--text);text-decoration:none;display:inline-block}
 .tier.pending{color:var(--text2);border-style:dashed}
@@ -189,8 +194,18 @@ padding:10px 12px;cursor:pointer;white-space:nowrap}
 .js .tabpanel>h2{display:none}
 .claims,.findings,.plain{list-style:none;padding:0;margin:0}
 .claim{border-top:1px solid var(--line);padding:14px 0;scroll-margin-top:70px}
+.claim[data-outcome]{border-left:4px solid transparent;padding-left:12px}
+.claim[data-outcome=reproduced]{border-left-color:var(--good)}
+.claim[data-outcome=partially_reproduced]{border-left-color:var(--warning)}
+.claim[data-outcome=not_reproduced]{border-left-color:var(--critical)}
+.claim[data-outcome=blocked]{border-left-color:var(--blocked)}
+#claim-filter button[data-f]:not([data-f=all])::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;vertical-align:.05em}
+#claim-filter button[data-f=reproduced]::before{background:var(--good)}
+#claim-filter button[data-f=partially_reproduced]::before{background:var(--warning)}
+#claim-filter button[data-f=not_reproduced]::before{background:var(--critical)}
+#claim-filter button[data-f=blocked]::before{background:var(--blocked)}
 .claims .claim:first-child{border-top:0}
-.claim:target{background:var(--hover);margin:0 -12px;padding:14px 12px;border-radius:8px}
+.claim:target{background:var(--hover);border-radius:0 8px 8px 0}
 .claim-head{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-bottom:4px}
 .statement{margin:0 0 4px;font-weight:550;max-width:84ch}
 .notes{color:var(--text2);font-size:.92rem;margin:0;max-width:84ch}
