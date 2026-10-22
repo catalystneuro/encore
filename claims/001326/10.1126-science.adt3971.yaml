@@ -1,0 +1,1424 @@
+# Claims for Kauvar, Richman, Liu et al. (2025), Science 388, eadt3971, on dandiset 001326.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21, protocol
+# pilot-10 (docs/protocol.md), Reader section.
+#
+# Text read: the accepted author manuscript as served by Europe PMC (PMC12286656, NIHMS2090574),
+# main text and Materials and Methods, with its two supplements from the PMC Open Access set: the
+# Supplementary Materials PDF (Supplemental Note 1, figs. S1 to S38, tables S1 to S3, the last being
+# the summary of statistical analyses) and the MDAR checklist. Not the version of record. Figures
+# were not opened; every number below is from the text, the legends or table S3.
+#
+# Code read:
+# - Mouse electrophysiology and recorded-session behavior, the paper's ref. 103 at Zenodo
+#   doi:10.5281/zenodo.14876694 (published 2025-02-15), a single file analysis.py (md5
+#   6cc7aa5059737c3bd753aad1f116019d). It holds the analysis functions (unit selection, Leiden
+#   clustering, regional rise and decay, emotion-like and coding dimensions, timescales, coupling,
+#   the first-order model) but not the driver that calls them, so the list of excluded sessions,
+#   the loading of z-scored rates and some window alignments are not in it.
+# - brainwide-npix (refs. 17, 94), github.com/erichamc/brainwide-npix at commit 97cdf58 (tag v0.1,
+#   Zenodo doi:10.5281/zenodo.14768678): loading, unit quality masks, binned firing rates with a
+#   causal moving average.
+# - Human electrophysiology, human behavior and mouse behavior, ref. 101 at Zenodo
+#   doi:10.5281/zenodo.14920570 (git commit b873ca5 inside the archive), read only for the windows
+#   of the eye-closure and human coding-dimension analyses.
+#
+# Where the data are. The paper deposits the mouse electrophysiology (ref. 104) in DANDI 001326,
+# "Brain-wide mouse electrophysiology during aversive stimuli and ketamine" (13 files, 10 subjects
+# on the archive). Human iEEG, human behavior and mouse behavior-only experiments (ref. 102) are in
+# DANDI 001347, so those claims are `data: elsewhere`. The eye closure of the recorded mice (Fig. 4B,
+# Fig. 5B, figs. S28 and S34C) is read by the electrophysiology code (ref. 103) but the data
+# statement puts "mouse behavior" in ref. 102; whether 001326 holds it is for the author to find.
+#
+# Data the paper describes for this dataset (Methods, Neuropixels recording and processing; table S3):
+# - Subjects. C57BL/6J mice, 8 to 20 weeks old, predominantly female; 13 sessions from 10 mice
+#   (Fig. 4). For cross-puff and population analyses (Figs. 5 and 6) one animal with a stress
+#   response (Harderian gland secretion) is excluded, leaving 11 sessions from 9 mice; the paper
+#   does not name it. Tone series were recorded in 7 sessions from 7 mice (fig. S34).
+# - Recording. Three to four Neuropixels 1.0 probes per session; Kilosort3; BombCell "somatic"
+#   units with ISI violations below 0.1, SNR above 2 and more than 500 spikes (brainwide-npix's
+#   mask uses SNR >= 1.5); units placed in Allen CCFv3 regions. Firing rates binned at 10 ms and
+#   smoothed with a causal 50 ms moving average; the code works on session z-scored rates.
+# - Task. Head-fixed eyepuff series: 8 puffs of 250 ms at 3 s intervals (onsets 0 to 21 s), trials
+#   45 to 90 s apart; 20 series before ketamine (100 mg/kg through a subcutaneous cannula, given
+#   after series 20) and at least 20 after. Tone series in some sessions (16 kHz, 250 ms on, 2750 ms
+#   off, 8 times). Eye closure from video by DeepLabCut.
+# - Epochs (Methods, "Comparison of rates"). Pre is series 1 to 20; the Methods name the Ketamine
+#   epoch "trials 22 to 32" and Post "trials 34 to 40". The code takes, counting series from 1,
+#   series 23 to 32 (10 series) as Ketamine and 35 to 40 (6 series) as Post, which matches the
+#   trial counts of table S3 (Pre 20, Ketamine 10, Post 6); these are the main reading below and
+#   the literal 1-based reading of the Methods (22 to 32, 34 to 40) is a variant.
+# - Unit selection used by most analyses ("puff-modulated"). Methods, Significant modulation, and
+#   analysis.py selective(): over the 20 Pre series, a paired t-test across puffs with p <= 0.01 in
+#   any of 1 s pre-puff against 0 to 200 ms, against 300 to 800 ms, against 1 to 2 s after the puff;
+#   1 s before the first against 1 s before the last puff of a series; 0 to 1 s after the first
+#   against 0 to 1 s after the last puff. The code also requires a summed Pre activity above 250
+#   (has_min_spikes, on all_fr, whose units the released code does not fix: 250 spikes, or a
+#   summed 10 ms rate of 250 Hz, i.e. 2.5 spikes). Figs. 5 and 6 keep sessions with at least 20
+#   such units (get_affective_projections, min_cells=20).
+#
+# Tolerances. Where table S3 gives mean +- s.e.m., the tolerance is 1.96 x s.e.m., the paper's own
+# 95% interval of the mean (its figures plot mean +- 1.96 s.e.m.). Otherwise 10% of the value.
+# Projections onto the emotion-like dimension (Fig. 5E) depend on how the weights are scaled
+# (unit vector in the Methods, sum of absolute values in the code), so their expected values are
+# checked under each scaling.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001326"
+paper: doi:10.1126/science.adt3971
+claims:
+# ---------------------------------------------------------------- human behavior and iEEG
+- id: fig1e-human-ketamine-late-closure
+  statement: In four non-implanted participants, late eye closure after the eyepuff (0.3 to 0.8 s),
+    normalized by early closure (0.1 to 0.2 s), was lower during ketamine (0.43) than during saline
+    (0.71).
+  source: Figure 1E; table S3, Fig. 1E
+  quote: Late eye closure, normalized by early eye closure (0.1 to 0.2 s after airpuff onset),
+    decreases during ketamine ( n = 4 human participants
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - test: Paired t-test
+    statistic: "t = 3.703"
+    p: 0.0342
+    n: 4 participants, 38 trials each
+  expected:
+  - quantity: normalized late eye closure, saline
+    value: 0.71
+    tolerance: 0.16
+  - quantity: normalized late eye closure, ketamine
+    value: 0.43
+    tolerance: 0.24
+  criterion: Per participant, the mean over trials (the first two excluded, table S3 and fig. S1A)
+    of late closure (0.3 to 0.8 s) divided by early closure (0.1 to 0.2 s), as in the Fig. 1
+    legend. Reproduced when both group means are within tolerance and a paired t-test of saline
+    against ketamine gives p < 0.05 with ketamine lower.
+- id: figs1b-human-early-closure-unchanged
+  statement: Ketamine did not change the early reflexive eye closure of the same participants
+    (0.84 against 0.78).
+  source: Figure S1B; table S3, fig. S1 B
+  quote: Early eye closure (during 0.1 to 0.2 s after puff onset) does not
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - test: Paired t-test
+    statistic: "t = 1.622"
+    p: 0.2032
+    n: 4 participants, 38 trials each
+  expected:
+  - quantity: early eye closure, saline
+    value: 0.84
+    tolerance: 0.02
+  - quantity: early eye closure, ketamine
+    value: 0.78
+    tolerance: 0.08
+  criterion: A claim of absence, judged on the paper's test, a paired t-test of per-participant
+    mean early closure (sum over 0.1 to 0.2 s, table S3) under saline against ketamine. Reproduced
+    when p >= 0.05; the difference is reported either way.
+- id: fig1f-human-reports
+  statement: Under saline the participants described the eyepuffs as unpleasant and arousing; under
+    ketamine they remained aware of the puffs but the aversive quality was largely gone.
+  source: Figure 1F; fig. S1F; Results, Precisely timed affective behavior in mice and humans
+  quote: subjective reports of the aversive quality of the stimulus were largely abolished by
+    ketamine without blocking awareness of the eyepuffs
+  data: elsewhere
+  where: DANDI 001347
+  criterion: Judged on the participants' reports if the deposit holds them. Reproduced when every
+    saline report describes the puffs as aversive and the ketamine reports of most participants
+    (three or four of four) describe awareness of the puffs without aversion, as fig. S1F tabulates.
+    The paper gives no measure beyond the table.
+- id: fig2d-cadss-ketamine
+  statement: In the seven iEEG participants who met the inclusion criteria, dissociation (CADSS)
+    rose from 0.86 before infusion to 22.43 during ketamine and returned to 0.86 after.
+  source: Figure 2D; table S3, Fig. 2D
+  quote: the iEEG-recorded participants also reported fully reversible induction of dissociation
+    (measured with the CADSS instrument) during recordings
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: preinfusion against ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 4.807"
+    p: 0.004
+    corrected: FDR (Benjamini-Hochberg)
+    n: 7 participants
+  - about: postinfusion against ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 4.512"
+    p: 0.004
+    corrected: FDR (Benjamini-Hochberg)
+    n: 7 participants
+  expected:
+  - quantity: CADSS, preinfusion
+    value: 0.86
+    tolerance: 0.9
+  - quantity: CADSS, ketamine
+    value: 22.43
+    tolerance: 9.3
+  - quantity: CADSS, postinfusion
+    value: 0.86
+    tolerance: 0.9
+- id: fig2g-six-factors
+  statement: Nonnegative matrix factorization of the preinfusion puff-triggered spectrograms of 458
+    channels from seven participants is best described by six factors, which explain 0.47 of the
+    variance on held-out trials.
+  source: Figure 2G; fig. S17; table S3, Fig. 2G
+  quote: Factoring the responses into six components ( Fig. 2G ) was found to be optimal, with an
+    explained variance of 0.47 on held-out trials and diminishing returns with more components
+  data: elsewhere
+  where: DANDI 001347
+  expected:
+  - quantity: held-out explained variance with six factors
+    value: 0.47
+    tolerance: 0.047
+  criterion: As in the Methods (Factorization) and table S3, Fig. 2G. Puff-triggered z-scored
+    spectrograms, 0 to 1.4 s after onset, averaged over every other preinfusion and postinfusion
+    trial (training half), split into positive and negative parts, each factored with k = 3; the
+    other half of the trials is the test set. Reproduced when the held-out explained variance at
+    six factors is within tolerance and the test-set curve shows its elbow at six.
+- id: fig2i-factors-1-2-ketamine
+  statement: Factors 1 and 2 (a fast high-frequency rise and a delayed low-frequency fall) were
+    less represented during ketamine than the average of pre- and postinfusion.
+  source: Figure 2I; table S3, Fig. 2I
+  quote: Two of these factors (1 and 2) showed decreased representation during ketamine followed by
+    post infusion recovery
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: factor 1, (pre + post)/2 against infusion
+    test: Mixed-effect linear model, grouped by subject, with fdr-bh correction across factors
+    statistic: coefficient -0.125
+    p: 2.56e-05
+    corrected: FDR (Benjamini-Hochberg) across factors
+    n: 7 participants, 260 channels
+  - about: factor 2, (pre + post)/2 against infusion
+    test: Mixed-effect linear model, grouped by subject, with fdr-bh correction across factors
+    statistic: coefficient -0.115
+    p: 5.51e-08
+    corrected: FDR (Benjamini-Hochberg) across factors
+    n: 7 participants, 185 channels
+  expected:
+  - quantity: factor 1 loading, preinfusion
+    value: 0.51
+    tolerance: 0.04
+  - quantity: factor 1 loading, infusion
+    value: 0.32
+    tolerance: 0.04
+  - quantity: factor 2 loading, preinfusion
+    value: 0.35
+    tolerance: 0.04
+  - quantity: factor 2 loading, infusion
+    value: 0.21
+    tolerance: 0.02
+  depends_on:
+  - fig2g-six-factors
+  criterion: Channels with a mean loading of at least 0.1 on the factor over the pre- and
+    postinfusion test trials; infusion loading against the mean of pre- and postinfusion loadings
+    by a mixed-effects linear model grouped by participant, FDR across the six factors, as table
+    S3 gives. Reproduced when factors 1 and 2 both have a negative coefficient with corrected
+    p < 0.05.
+- id: fig3b-cluster-test-networks
+  statement: Permutation cluster tests found ketamine-altered spectrotemporal clusters in the
+    limbic, ventral attention and somatomotor networks, and in regions including insula, cingulate,
+    orbitofrontal and posteromedial cortex, supramarginal gyrus, motor cortex, hippocampus, basal
+    ganglia and thalamus, while many other regions were not changed.
+  source: Figure 3B and 3C; Results, Brain-wide activity screen during emergence of affect in
+    human beings
+  quote: Permutation cluster testing resolved ketamine-altered spectrotemporal clusters which
+    reached statistical significance in the limbic, ventral attention, and somatomotor Yeo7
+    resting-state networks
+  data: elsewhere
+  where: DANDI 001347
+  criterion: As in the Methods (Permutation cluster test) and table S3, Fig. 3B and 3C. Regional
+    (or network) spectrograms per trial, trials paired by position in the puff sequence, a
+    one-sample t-test of infusion minus preinfusion with mne permutation_cluster_1samp_test,
+    cluster-forming threshold 0.01, the lowest cluster p of each region or network FDR-corrected
+    across regions, significance at corrected p < 0.01; regions sampled in at least two
+    participants. Reproduced when limbic, ventral attention and somatomotor networks are
+    significant, and partially reproduced when one or two of them are.
+- id: figs12-erp-not-blink
+  statement: The eyepuff-evoked potentials are not a signature of eyelid closure; spontaneous
+    blinks of the same magnitude evoke much smaller potentials, and the sound of the puff directed
+    away from the participant does not evoke the brain-wide pattern.
+  source: Figure S12A to S12D; fig. S13D; Results, Brain-wide activity screen during emergence of
+    affect in human beings
+  quote: Despite similar magnitude of measured eyelid closure in spontaneous versus puff-triggered
+    eyeblinks, the ERP pattern was not seen in spontaneous eyeblinks
+  data: elsewhere
+  where: DANDI 001347
+  criterion: As in table S3, fig. S12 C and D. Mean absolute baseline-subtracted LFP across 773
+    channels from 7 participants, triggered on 52 puff-triggered and 52 spontaneous blinks.
+    Reproduced when the puff-triggered magnitude exceeds the spontaneous one with non-overlapping
+    mean +- 1.96 s.e.m. bands in the first 0.5 s after blink onset while the eye-closure traces of
+    the two kinds of blink overlap. The paper reports no test; the window is a reading of the
+    figure range.
+- id: figs14g-cadss-correlation
+  statement: Across participants, the dissociation score was correlated with the ketamine-induced
+    loss of affective eye closure (Spearman 0.744).
+  source: Figure S14G; table S3, fig. S14 G
+  quote: We observed that the overall CADSS dissociation score was correlated at the individual
+    participant level with inhibition of the affective eyepuff response
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - test: Spearman rank-order correlation coefficient
+    statistic: rho = 0.744
+    p: 0.014
+    n: 10 participants
+  expected:
+    quantity: Spearman correlation, CADSS against change in normalized affective closure
+    value: 0.744
+    tolerance: 0.074
+  criterion: Participants with preinfusion normalized affective closure above 0.5 (fig. S14G
+    legend); change defined as infusion minus the mean of pre- and postinfusion (legend) or as
+    ketamine minus preinfusion (table S3), both shown. Reproduced when, under either, rho is within
+    tolerance with p < 0.05, taking the sign of the change so that a larger loss scores higher.
+- id: fig6c-human-persistent
+  statement: In the human participants, activity along the persistent (0.5 to 1.5 s) beta-power
+    coding dimension fell during ketamine (1.36 to 0.41) and recovered after infusion (0.72).
+  source: Figure 6C; table S3, Fig. 6C
+  quote: Across species we observed a decrease, caused by ketamine, in eyepuff-triggered
+    persistence that recovered post infusion
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: preinfusion against ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 5.887"
+    p: 0.002
+    corrected: FDR (Benjamini-Hochberg)
+    n: 7 participants
+  - about: postinfusion against ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 3.171"
+    p: 0.019
+    corrected: FDR (Benjamini-Hochberg)
+    n: 7 participants
+  expected:
+  - quantity: persistent projection, preinfusion
+    value: 1.36
+    tolerance: 0.31
+  - quantity: persistent projection, ketamine
+    value: 0.41
+    tolerance: 0.14
+  - quantity: persistent projection, postinfusion
+    value: 0.72
+    tolerance: 0.22
+- id: fig6e-human-fast-unchanged
+  statement: In the human participants, activity along the fast (50 to 100 ms) coding dimension was
+    not changed by ketamine.
+  source: Figure 6E; table S3, Fig. 6E
+  quote: Fast population activity is not significantly altered by ketamine in humans
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: preinfusion against ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 0.432"
+    p: 0.681
+    corrected: FDR (Benjamini-Hochberg)
+    n: 7 participants
+  - about: postinfusion against ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 0.576"
+    p: 0.585
+    corrected: FDR (Benjamini-Hochberg)
+    n: 7 participants
+  expected:
+  - quantity: fast projection, preinfusion
+    value: 4.12
+    tolerance: 0.61
+  - quantity: fast projection, ketamine
+    value: 4.0
+    tolerance: 0.8
+  - quantity: fast projection, postinfusion
+    value: 3.86
+    tolerance: 0.74
+  criterion: A claim of absence, judged on the paper's test (paired t-tests with FDR correction).
+    Reproduced when neither corrected p is below 0.05.
+- id: fig6g-human-timescale
+  statement: In the human participants, the intrinsic timescale of the persistent dimension at
+    baseline was shorter during ketamine (0.09 s) than before (0.11 s).
+  source: Figure 6G; table S3, Fig. 6G
+  quote: In both humans and mice, we observed that ketamine robustly accelerated the baseline
+    intrinsic timescale of the population
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - test: Paired t-test
+    statistic: "t = 4.74"
+    p: 0.0032
+    n: 7 participants
+  expected:
+  - quantity: intrinsic timescale, preinfusion
+    value: 0.11
+    tolerance: 0.02
+    unit: s
+  - quantity: intrinsic timescale, ketamine
+    value: 0.09
+    tolerance: 0.02
+    unit: s
+  criterion: The Methods (Intrinsic timescale) take an eight-minute period before the eyepuff
+    assay; table S3 says the ten minutes before. Both are shown. Exponential a*exp(-x/b) + c fitted
+    from the autocorrelation peak to 2.5 s, initial a=1, b=0.2, c=0. Reproduced when, under either
+    period, both means are within tolerance and the paired t-test gives p < 0.05 with ketamine
+    shorter.
+- id: fig6i-human-phase-locking
+  statement: In the human participants, beta phase locking among the most persistent channels at
+    baseline fell during ketamine (0.979 of preinfusion).
+  source: Figure 6I; table S3, Fig. 6I
+  quote: in both mice and humans, we discovered that ketamine decreased coupling among these sites
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - test: Paired t-test
+    statistic: "t = 3.344"
+    p: 0.0155
+    n: 7 participants
+  expected:
+    quantity: phase locking during ketamine, normalized to preinfusion
+    value: 0.979
+    tolerance: 0.012
+  criterion: The top 10% of sites per participant by persistent-dimension weight, white matter
+    excluded (Methods, Phase-locking Value); table S3 says channels above the 90th percentile.
+    Sliding 5 s windows, preinfusion 25 min before infusion and the final 25 min of infusion
+    outside the assay; the Methods also name the ten minutes before the eyepuff assay (table S3),
+    shown as a variant. Reproduced when the normalized value is within tolerance and the paired
+    t-test gives p < 0.05 with ketamine lower.
+# ---------------------------------------------------------------- mouse behavior without recording
+- id: fig1k-mouse-ketamine-late-closure
+  statement: In mice, ketamine (50 mg/kg) reduced late eye closure normalized by early closure on
+    the first puff of each series (0.26 under saline, -0.07 under ketamine).
+  source: Figure 1K; table S3, Fig. 1K
+  quote: Late eye closure, normalized by early eye closure (0.1 to 0.2 s afterpuff onset), decreases
+    during ketamine ( n = 5 mice
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - test: Paired t-test
+    statistic: "t = 4.737"
+    p: 0.009
+    n: 5 mice, 15 trials each
+  expected:
+  - quantity: normalized late closure, saline
+    value: 0.26
+    tolerance: 0.12
+  - quantity: normalized late closure, ketamine
+    value: -0.07
+    tolerance: 0.12
+- id: fig1l-dissociatives-preinfusion
+  statement: Compared with preinfusion, normalized late closure was unchanged by saline but reduced
+    by ketamine (50 mg/kg) and PCP (20 mg/kg).
+  source: Figure 1L; table S3, Fig. 1L
+  quote: dissociative drugs such as ketamine and phencyclidine [(PCP), uniquely enabled for mice]
+    similarly reduced late but not early eye closure
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: pre-saline against saline
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 0.73"
+    p: 0.504
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice
+  - about: pre-ketamine against ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 9.53"
+    p: 0.002
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice
+  - about: pre-PCP against PCP
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 3.41"
+    p: 0.041
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice
+  expected:
+  - quantity: normalized late closure, pre-saline
+    value: 0.29
+    tolerance: 0.16
+  - quantity: normalized late closure, saline
+    value: 0.26
+    tolerance: 0.12
+  - quantity: normalized late closure, pre-ketamine
+    value: 0.37
+    tolerance: 0.12
+  - quantity: normalized late closure, ketamine
+    value: -0.07
+    tolerance: 0.12
+  - quantity: normalized late closure, pre-PCP
+    value: 0.35
+    tolerance: 0.2
+  - quantity: normalized late closure, PCP
+    value: -0.03
+    tolerance: 0.1
+- id: figs2bc-mouse-early-late
+  statement: Under ketamine the early (reflexive) closure of mice was reduced but present (0.78 to
+    0.45), while late (affective) closure was abolished (0.34 to -0.02).
+  source: Figure S2B and S2C; table S3, fig. S2 B and C
+  quote: Late eye ... closure (during 0.3 to 0.8 s after puff onset) is abolished by ketamine
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: early closure, saline against ketamine
+    test: Paired t-test
+    statistic: "t = 6.854"
+    p: 0.002
+    n: 5 mice, 15 trials each
+  - about: late closure, saline against ketamine
+    test: Paired t-test
+    statistic: "t = 4.951"
+    p: 0.008
+    n: 5 mice, 15 trials each
+  expected:
+  - quantity: early closure, saline
+    value: 0.78
+    tolerance: 0.1
+  - quantity: early closure, ketamine
+    value: 0.45
+    tolerance: 0.12
+  - quantity: late closure, saline
+    value: 0.34
+    tolerance: 0.14
+  - quantity: late closure, ketamine
+    value: -0.02
+    tolerance: 0.04
+- id: fig1m-accumulation-persistence
+  statement: Late eye closure accumulated across the eight puffs of a series and decayed slowly
+    after the last puff, with a Kaplan-Meier median persistence of 15.16 s.
+  source: Figure 1M; fig. S2E; table S3, fig. S2 E
+  quote: We found that late-phase eye closure in mice accumulated across a sequence of eyepuffs and
+    decayed slowly after the final eyepuff in the sequence
+  data: elsewhere
+  where: DANDI 001347
+  expected:
+    quantity: Kaplan-Meier median survival time of eye closure after the final puff
+    value: 15.16
+    tolerance: 1.5
+    unit: s
+  criterion: Preinfusion trials, 20 per mouse in 5 mice (table S3, fig. S2 E). Reproduced when the
+    Kaplan-Meier median is within tolerance and the mean late closure (0.3 to 0.8 s) after the
+    eighth puff exceeds that after the first, with non-overlapping mean +- 1.96 s.e.m. across mice.
+    The paper does not state the event that ends survival; that detail is open.
+- id: figs2g-scaling-puff-number
+  statement: In mice, normalized late eye closure was larger after the eighth puff of a series than
+    after the first at each of three puff pressures (8, 18 and 28 PSI), while it did not differ
+    between pressures at the eighth puff.
+  source: Figure S2F and S2G; table S3, fig. S2 G
+  quote: Late (normed by early) eye closure scales with puff number but not puff intensity,
+    comparing air puffs of different pressure
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: 8 PSI, puff 1 against puff 8
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 4.834"
+    p: 0.0038
+    corrected: FDR (Benjamini-Hochberg)
+    n: 8 mice, 15 trials each
+  - about: 18 PSI, puff 1 against puff 8
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 9.243"
+    p: 0.0001
+    corrected: FDR (Benjamini-Hochberg)
+    n: 8 mice, 15 trials each
+  - about: 28 PSI, puff 1 against puff 8
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 11.633"
+    p: 0.0001
+    corrected: FDR (Benjamini-Hochberg)
+    n: 8 mice, 15 trials each
+  - about: puff 8, 8 PSI against 18 PSI
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 0.024"
+    p: 0.982
+    corrected: FDR (Benjamini-Hochberg)
+    n: 8 mice, 15 trials each
+  - about: puff 8, 8 PSI against 28 PSI
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 1.106"
+    p: 0.458
+    corrected: FDR (Benjamini-Hochberg)
+    n: 8 mice, 15 trials each
+  - about: puff 8, 18 PSI against 28 PSI
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 0.718"
+    p: 0.596
+    corrected: FDR (Benjamini-Hochberg)
+    n: 8 mice, 15 trials each
+  expected:
+  - quantity: normalized late closure, puff 1, 8 PSI
+    value: 0.256
+    tolerance: 0.13
+  - quantity: normalized late closure, puff 8, 8 PSI
+    value: 0.517
+    tolerance: 0.11
+  - quantity: normalized late closure, puff 1, 18 PSI
+    value: 0.239
+    tolerance: 0.063
+  - quantity: normalized late closure, puff 8, 18 PSI
+    value: 0.515
+    tolerance: 0.073
+  - quantity: normalized late closure, puff 1, 28 PSI
+    value: 0.286
+    tolerance: 0.13
+  - quantity: normalized late closure, puff 8, 28 PSI
+    value: 0.447
+    tolerance: 0.12
+  criterion: The paper's tests (table S3, fig. S2 G), paired t-tests across 8 mice with FDR
+    correction over the six comparisons, on per-mouse means of late (0.3 to 0.8 s) divided by
+    early (0.1 to 0.2 s) closure, preinfusion. Reproduced when the three puff 1 against puff 8
+    tests give corrected p < 0.05 with puff 8 higher and the three pressure comparisons give
+    corrected p >= 0.05 (the absence is judged on the paper's test); the differences are reported
+    either way.
+- id: figs2h-dose-response
+  statement: The dissociative reduction of normalized late eye closure began around 35 mg/kg
+    ketamine and 10 mg/kg PCP; lower doses did not significantly reduce it.
+  source: Figure S2H to S2J; table S3, fig. S2 H; Results, Precisely timed affective behavior in
+    mice and humans
+  quote: Dose-response investigation showed that these robust dissociative effects begin around 35
+    mg/kg ketamine and 10 mg/kg PCP
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: ketamine 50 mg/kg, pre against infusion
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 8.488"
+    p: 0.011
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  - about: ketamine 35 mg/kg, pre against infusion
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 3.843"
+    p: 0.0159
+    corrected: FDR (Benjamini-Hochberg)
+    n: 8 mice, 15 trials each
+  - about: ketamine 25 mg/kg, pre against infusion
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 1.232"
+    p: 0.357
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  - about: ketamine 13 mg/kg, pre against infusion
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 1.270"
+    p: 0.357
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  - about: ketamine 6 mg/kg, pre against infusion
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 0.329"
+    p: 0.759
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  - about: PCP 20 mg/kg, pre against infusion
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 6.080"
+    p: 0.016
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  - about: PCP 10 mg/kg, pre against infusion
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 5.404"
+    p: 0.016
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  - about: PCP 5 mg/kg, pre against infusion
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 2.682"
+    p: 0.11
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  - about: PCP 1 mg/kg, pre against infusion
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 2.064"
+    p: 0.18
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  expected:
+  - quantity: normalized late closure, eighth puff, ketamine 35 mg/kg
+    value: 0.17
+    tolerance: 0.14
+  - quantity: normalized late closure, eighth puff, PCP 10 mg/kg
+    value: 0.2
+    tolerance: 0.25
+  criterion: The paper's tests (table S3, fig. S2 H), paired t-tests of preinfusion against
+    infusion of normalized late closure after the eighth puff at each dose, FDR-corrected. The
+    family of the correction is not given; the readings are (a) all ten comparisons of the table
+    together (saline included), (b) each drug apart. Reproduced when, under both readings,
+    ketamine 35 and 50 mg/kg and PCP 10 and 20 mg/kg give corrected p < 0.05 with a decrease and
+    the lower doses give corrected p >= 0.05.
+- id: fig1p-anesthesia-abolishes-both
+  statement: A general anesthetic dose of ketamine with xylazine abolished both reflexive and
+    affective eye closure, while ketamine or PCP alone kept the reflexive blink.
+  source: Figure 1N to 1P; fig. S5D and S5E; Results, Precisely timed affective behavior in mice
+    and humans
+  quote: By contrast, general anesthesia, achieved through addition of xylazine to ketamine ...
+    abolished both reflexive and affective responses
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: reflexive closure, eighth puff, pre-K/X against K/X
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 8.6017"
+    p: 0.006
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  - about: affective closure, eighth puff, pre-K/X against K/X
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 12.0602"
+    p: 0.0016
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  expected:
+  - quantity: reflexive closure, eighth puff, pre-K/X
+    value: 0.77
+    tolerance: 0.18
+  - quantity: reflexive closure, eighth puff, K/X
+    value: 0.03
+    tolerance: 0.04
+  - quantity: affective closure, eighth puff, pre-K/X
+    value: 0.47
+    tolerance: 0.06
+  - quantity: affective closure, eighth puff, K/X
+    value: 0.02
+    tolerance: 0.02
+  - quantity: reflexive closure, eighth puff, ketamine
+    value: 0.44
+    tolerance: 0.12
+  - quantity: reflexive closure, eighth puff, PCP
+    value: 0.43
+    tolerance: 0.02
+  criterion: The paper's tests (table S3, fig. S5 D and E), paired t-tests with FDR correction of
+    reflexive (0.1 to 0.2 s) and affective (0.3 to 0.8 s) closure after the eighth puff, 5 mice,
+    15 trials each. Reproduced when both K/X tests give corrected p < 0.05 with K/X lower, the K/X
+    values are within tolerance, and the reflexive closure under ketamine and under PCP is within
+    tolerance (present, unlike K/X). Fig. 1N to 1P themselves carry no test.
+- id: figs5-other-drugs
+  statement: Buprenorphine and diazepam did not reduce normalized late closure, unlike ketamine and
+    PCP.
+  source: Figure S5C; table S3, fig. S5 C
+  quote: Only ketamine (50 mg/kg) and PCP (20 mg/kg) decrease late normalized by early eye closure
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: pre-ketamine against ketamine, eighth puff
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 8.4882"
+    p: 0.0053
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice
+  - about: pre-PCP against PCP, eighth puff
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 6.0804"
+    p: 0.0092
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice
+  - about: pre-buprenorphine against buprenorphine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 0.0878"
+    p: 0.9342
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice
+  - about: pre-diazepam against diazepam
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 1.6120"
+    p: 0.3038
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice
+  criterion: The paper's test, paired t-tests with FDR correction on normalized late closure of the
+    eighth puff. Reproduced when ketamine and PCP give corrected p < 0.05 with a decrease and
+    buprenorphine and diazepam give corrected p >= 0.05.
+- id: figs6-vpm-muscimol
+  statement: Inhibiting VPM thalamus with muscimol reduced normalized affective closure (0.60 after
+    saline injection, 0.11 after muscimol) while the fast early closure remained.
+  source: Figure S6B, S6C and S6H; table S3, fig. S6 C
+  quote: With muscimol, there is early eye closure after each puff, but no accumulating late eye
+    closure
+  data: elsewhere
+  where: DANDI 001347
+  statistics:
+  - about: saline against muscimol
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 3.85"
+    p: 0.0289
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  - about: no injection against muscimol
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 3.79"
+    p: 0.0289
+    corrected: FDR (Benjamini-Hochberg)
+    n: 5 mice, 15 trials each
+  expected:
+  - quantity: normalized affective closure, saline injection
+    value: 0.6
+    tolerance: 0.1
+  - quantity: normalized affective closure, muscimol
+    value: 0.11
+    tolerance: 0.24
+- id: figs4-reward-licking
+  statement: Eyepuff series persistently reduced licking for a liquid reward, which recovered slowly
+    after the last puff.
+  source: Figure S4B
+  quote: Lick probability decreased persistently during the air puff sequences and slowly recovered
+    after the final air puff of the sequence
+  data: elsewhere
+  where: DANDI 001347
+  criterion: Lick probability in 3 s bins, both series per mouse combined, averaged over 6 mice
+    (Methods and fig. S4B). Reproduced when the mean lick probability over the series (0 to 24 s
+    from the first puff) is below that of the 24 s before it, with non-overlapping mean +- 1.96
+    s.e.m. across mice. The paper reports no test.
+- id: fig5hi-behavior-model-doses
+  statement: Varying only the persistence timescale of the two-phase model explained much of the
+    variation in affective eye closure across doses of ketamine and of PCP.
+  source: Figure 5H and 5I; table S3, Fig. 5H, I
+  quote: We found that varying τ PERSIST alone across different doses of ketamine explained
+    substantial variance across doses
+  data: elsewhere
+  where: DANDI 001347
+  depends_on:
+  - fig5g-tau-persist-model
+  criterion: Fit as for fig5g-tau-persist-model on the dose series (ketamine 6, 13, 25, 35 mg/kg;
+    PCP 1, 5, 10 mg/kg; 5 mice), 750 ms after each puff masked (Methods, Model fitting, behavioral
+    data; analysis.py filter_reflex). Variance explained is 1 - MSE_model/MSE_null against the
+    fit with no parameter varying. The paper gives no value and no threshold; reproduced when the
+    variance explained is positive for each drug and the fitted persistence timescale falls with
+    dose.
+# ---------------------------------------------------------------- mouse electrophysiology (this dataset)
+- id: fig4-recordings-scale
+  statement: Many thousands of single units were recorded across 13 sessions from 10 mice, with
+    dozens of regions recorded simultaneously.
+  source: Figure 4C; fig. S29A and S29B; table S2; table S3, Fig. 4E
+  quote: We obtained recordings from many thousands of single units throughout the brain, with
+    simultaneous recording of dozens of regions
+  expected:
+  - quantity: sessions
+    value: 13
+    tolerance: 0
+  - quantity: mice
+    value: 10
+    tolerance: 0
+  - quantity: puff-modulated units entering the clustering (sum of table S3 cluster sizes)
+    value: 6969
+    tolerance: 697
+  criterion: Counts of sessions and mice must match exactly. Units counted after the paper's
+    quality criteria (Methods); "dozens of regions" holds when the median session has units in at
+    least 24 Allen CCFv3 regions at the finest level, a reading of "dozens" as two dozen since the
+    paper gives no count. The puff-modulated count uses the selection
+    in the opening comment and depends on it.
+- id: fig4b-recorded-eye-closure-ketamine
+  statement: The recorded mice showed affective eye closure after the first puff of each series,
+    and ketamine reduced it.
+  source: Figure 4B; fig. S28A; table S3, Fig. 4B
+  quote: In response to eyepuffs, mice showed affective eye closure that was reduced by ketamine
+  criterion: Eye closure of the 13 recorded sessions, baseline-subtracted with the 1 s before the
+    puff (table S3), first puff of each series, Pre series 1 to 20 against Ketamine series 23 to 32
+    (code; Methods-literal 22 to 32 as a variant); the code normalizes each session's trace by its
+    maximum before averaging, shown with and without. Late closure is the mean over 0.3 to 0.8 s
+    (the paper's late window). Reproduced when the across-session mean of Pre minus Ketamine late
+    closure has a 95% interval (1.96 s.e.m., table S3) above zero. The paper reports no test.
+- id: fig5b-recorded-accumulation
+  statement: In the recorded mice, eye closure accumulated across each puff series, and ketamine
+    abolished the accumulation.
+  source: Figure 5B; table S3, Fig. 5B
+  quote: recorded animals exhibited progressively accumulating eye closure behavior during each
+    eyepuff series, which was abolished by ketamine
+  criterion: 11 sessions from 9 mice (the excluded animal is open, see fig5d-emotion-dimension-accumulates),
+    eye closure baseline-subtracted with the 1 s before each series (table S3). Accumulation is
+    the late closure (0.3 to 0.8 s) after puff 8 minus that after puff 1. Reproduced when the 95%
+    interval (1.96 s.e.m. across sessions) of accumulation is above zero for Pre and includes zero
+    or lies below the Pre mean for Ketamine (series 23 to 32). The paper reports no test.
+- id: fig4de-response-clusters
+  statement: Unsupervised clustering of peri-puff responses of puff-modulated units from all
+    sessions gave twelve clusters spread over many regions, some responding rapidly and briefly and
+    others persistently after rapid (clusters 0 and 1) or delayed (cluster 2) onset.
+  source: Figure 4D and 4E; fig. S31A; table S3, Fig. 4E
+  quote: Some clusters responded rapidly and briefly to the eyepuff whereas others responded
+    persistently after either rapid (clusters 0 and 1) or delayed onset (cluster 2)
+  expected:
+  - quantity: number of clusters
+    value: 12
+    tolerance: 1
+  - quantity: cells in cluster 0
+    value: 1070
+    tolerance: 107
+  - quantity: cells in cluster 1
+    value: 832
+    tolerance: 83
+  - quantity: cells in cluster 2
+    value: 803
+    tolerance: 80
+  - quantity: cells in cluster 3
+    value: 663
+    tolerance: 66
+  - quantity: cells in cluster 4
+    value: 639
+    tolerance: 64
+  - quantity: cells in cluster 5
+    value: 597
+    tolerance: 60
+  - quantity: cells in cluster 6
+    value: 547
+    tolerance: 55
+  - quantity: cells in cluster 7
+    value: 508
+    tolerance: 51
+  - quantity: cells in cluster 8
+    value: 473
+    tolerance: 47
+  - quantity: cells in cluster 9
+    value: 344
+    tolerance: 34
+  - quantity: cells in cluster 10
+    value: 317
+    tolerance: 32
+  - quantity: cells in cluster 11
+    value: 176
+    tolerance: 18
+  criterion: Method from the Methods (Unsupervised clustering) and analysis.py get_cell_clusters.
+    Puff-modulated units of all 13 sessions; per unit, the z-scored rate from -1 to 2 s around each
+    puff averaged over the 160 Pre puffs, minus its mean over -1 to 0 s; scanpy PCA (arpack),
+    neighbors (n_neighbors 30, n_pcs 20), UMAP, Leiden with default resolution, seeds 42. The
+    Methods say Leiden runs on the UMAP embedding; scanpy's leiden, as the code calls it, runs on
+    the neighbor graph, which is followed. Cluster sizes are compared in descending order, since
+    the numbering of table S3 is by size while the figure numbers clusters top to bottom after a
+    hierarchical reordering; which numbering the text's "clusters 0, 1 and 2" uses is open, and
+    the response shapes are judged under both. Rapid and brief means the cluster mean decays to
+    25% of its post-puff peak (Methods, Cumulative fraction of cells, and code find_decay) within
+    0.25 s of onset; persistent means it is still above 25% of its peak over 1 to 2 s, the window
+    the Methods use to quantify persistent activity. The 25% level is the paper's; the 0.25 s
+    bound and the use of the 1 to 2 s window for "persistent" are readings, since the paper gives
+    no cut-off for "rapidly and briefly" or "persistently". Reproduced when the cluster count and sizes
+    are within tolerance and at least one cluster is rapid and brief while three are persistent,
+    two with peaks in the first 250 ms and one later.
+- id: figs31b-cluster-overrepresentation
+  statement: Clusters overrepresented in the periaqueductal gray and VPM thalamus had fast, sharp
+    responses, while clusters overrepresented in frontal cortex and limbic regions responded more
+    slowly and persistently.
+  source: Figure 4G; fig. S31A and S31B; table S3, fig. S31 B
+  quote: Indeed, clusters overrepresented in midbrain (PAG) and thalamus (VPM) exhibited fast and
+    sharp response dynamics, whereas clusters overrepresented in frontal cortex and limbic regions
+    responded more slowly and persistently following the eyepuff
+  depends_on:
+  - fig4de-response-clusters
+  criterion: As in table S3, fig. S31 B and analysis.py get_cluster_null_distribution. Regions
+    with more than 30 clustered cells; for each region and cluster, the fraction of the region's
+    cells in the cluster against 20,000 draws of uniformly random labels, two-sided, FDR across
+    regions. The threshold is 0.05 in the Methods and the code and 0.01 in table S3; both are
+    shown. Clusters are ranked by the time their mean falls to 25% of its post-puff peak.
+    Reproduced when PAG and VPM are each significantly overrepresented in a cluster from the
+    faster half, and at least one frontal cortical or limbic region (ORB, ACA, PL, ILA, MOs, AI,
+    as Supplemental Note 1 maps them) in a cluster from the slower half.
+- id: fig4g-ketamine-alters-slow-clusters
+  statement: Ketamine substantially changed the responses of clusters with slow, persistent
+    preinfusion dynamics but left fast clusters little changed.
+  source: Figure 4G; fig. S31C; table S3, Fig 4G
+  quote: Clusters with more rapid preinfusion dynamics were minimally altered or unaltered by
+    ketamine, whereas clusters with slower and more persistent preinfusion dynamics were
+    substantially altered
+  depends_on:
+  - fig4de-response-clusters
+  criterion: Cluster means as in table S3 (all cells of the cluster pooled, baseline-subtracted
+    with the 1 s before the puff, z-scored over the peri-puff window within cluster and condition),
+    Pre series 1 to 20 against Ketamine series 23 to 32 (code plot_avg_psth_prepost_ket, 10 series).
+    Table S3 gives 64 Ketamine puffs per cluster (8 series), which the code does not reproduce and
+    the paper does not place; the code is followed and the conflict is a deviation. The paper gives no
+    measure of change. The
+    readings are (a) the cosine distance between the Pre and Ketamine mean traces from -1 to 2 s,
+    the similarity measure of the Methods (Analysis of similarity); (b) the absolute difference of
+    the means over 1 to 2 s. Reproduced when, under both, the change correlates positively with
+    the Pre decay time (to 25% of peak) across clusters by Spearman correlation at p < 0.05.
+- id: fig4i-rise-times-unchanged
+  statement: Most regions responded to the puff with fast rise times, and ketamine did not change
+    regional rise times.
+  source: Figure 4I; fig. S31D to S31F; table S3, Fig. 4H, I
+  quote: On a regional basis as well, the rise times of average neural activity were not altered by
+    ketamine
+  depends_on:
+  - fig4de-response-clusters
+  criterion: Method from the Methods (Regional rise and decay time), table S3 and analysis.py
+    region_time_course. Regions merged across cortical layers (code reduce_region) with more than
+    30 puff-modulated units (code; the Methods say at least 30, shown as a variant); per region and cluster (cluster 11 skipped, as the code does) the
+    first two puffs of each series, baseline-subtracted, turned into d' against the 1 s before the
+    puff; rise is the time to 25% of the peak, combined across clusters weighted by the region's
+    cell fractions; regions whose peak comes after 750 ms dropped; 1000 bootstraps over puffs;
+    Ketamine series 23 to 32. Regions are excluded when their peak d' is below 1.3 (Methods and
+    code) or below 2 (table S3); both are shown. The paper reports no test of absence. Reproduced
+    when, under both thresholds, the median over regions of the bootstrap median change in rise
+    time (Ketamine minus Pre, as fig. S31F) lies within one 10 ms bin of zero and the Pre median
+    rise time is below 0.1 s in most regions.
+- id: fig4h-decay-shortened
+  statement: Ketamine shortened the time for regional puff responses to decay from their peak.
+  source: Figure 4H; fig. S31G
+  quote: whereas regional times to decay from peak response were shortened
+  depends_on:
+  - fig4i-rise-times-unchanged
+  criterion: Decay time is the time from the d' peak to fall to 25% of the peak, computed as for
+    fig4i-rise-times-unchanged, under both d' thresholds. Reproduced when the median of the
+    distribution of bootstrapped changes (Ketamine minus Pre) across regions, as fig. S31G draws
+    it, is below zero and more than half the regions have a Ketamine median decay below their Pre
+    median. The paper reports no test.
+- id: fig4h-decay-anatomical-progression
+  statement: Before ketamine, regional decay times followed a progression from subcortical to
+    frontal cortical regions, with long decays in frontal and limbic cortex and in VPM and MD
+    thalamus.
+  source: Figure 4H; Results, Brain-wide activity screen during emergence of affect in mice
+  quote: decay times of regional neural activity were more variable and followed a general
+    anatomical progression from subcortical to frontal cortical regions
+  depends_on:
+  - fig4i-rise-times-unchanged
+  criterion: Pre decay medians per region, computed as for fig4i-rise-times-unchanged under both d'
+    thresholds. Frontal and limbic cortex is ORB, ACA, PL, ILA, MOs, MOp and AI (the mouse regions
+    Supplemental Note 1 maps to the human frontal and limbic regions); midbrain is the regions
+    under MB in the Allen hierarchy. Reproduced when the median decay of the frontal and limbic
+    regions exceeds that of the midbrain regions, and VPM and MD each lie above the median decay of
+    all regions. The paper reports no test.
+- id: fig5d-emotion-dimension-accumulates
+  statement: Population activity along an emotion-like dimension (after the series against before
+    it) rose and saturated across the puff series and decayed over tens of seconds afterwards;
+    under ketamine it did not accumulate.
+  source: Figure 5C and 5D; table S3, Fig. 5D
+  quote: Measuring neural activity along this dimension revealed emotion-like properties of
+    scalability through a saturating rise across the series of eyepuffs and of persistence through
+    a decay lasting tens of seconds following each eyepuff series before returning to baseline
+  criterion: Sessions. 11 sessions from 9 mice; the paper does not name the excluded animal, so
+    each mouse with more than one session whose removal leaves 11 sessions from 9 mice is a
+    reading, and the outcome must hold under all of them. Dimension (Methods, Emotion-like neural
+    dimension, and analysis.py get_affective_projections), per session from puff-modulated units
+    (sessions with at least 20). Target window is the 1 s starting 5 s after the last puff onset
+    (Methods); the code's window falls 3 to 4 s after it (bins 400 to 500 of a post-series window
+    that its plotting places 1 s before the last puff), shown as a variant. Reference is the 750
+    ms ending 250 ms before the first puff. Weights are mean differences normalized by per-unit
+    variance (Methods; the code divides by the variance pooled over all units, a variant), made
+    orthogonal by QR to an eye-reflex dimension from the last four puffs (200 ms after against 200
+    ms before onset), signed so that puff 8 exceeds puff 1 (code). Projections are baseline-
+    subtracted per series with the 250 ms before the first puff. Reproduced when, for Pre, the 95%
+    interval across sessions (1.96 s.e.m., table S3) of the mean projection in the 250 ms before
+    puff 8 is above zero and higher than before puff 2, the projection 10 to 11 s after the last
+    puff onset is still above zero and the last 5 s of the 45 s shown after the series include
+    zero; and, for Ketamine (series 23 to 32), the interval before puff 8 includes zero or lies
+    below the Pre mean.
+- id: fig5e-late-reduced
+  statement: On the first puff of a series, late emotion-like activity (2 to 3 s after onset) was
+    reduced by ketamine (0.546 to 0.005).
+  source: Figure 5E; table S3, Fig. 5E
+  quote: late changes along the emotion-like dimension (seconds after each eyepuff) were reduced
+  depends_on:
+  - fig5d-emotion-dimension-accumulates
+  statistics:
+  - test: Paired t-test with fdr-bh correction
+    statistic: "t = 2.874"
+    p: 0.033
+    corrected: FDR (Benjamini-Hochberg) over the two windows
+    n: 11 sessions from 9 mice
+  expected:
+  - quantity: mean projection 2 to 3 s after the first puff, Pre
+    value: 0.546
+    tolerance: 0.34
+  - quantity: mean projection 2 to 3 s after the first puff, Ketamine
+    value: 0.005
+    tolerance: 0.084
+  criterion: Dimension and readings as in fig5d-emotion-dimension-accumulates; per session the mean
+    over series of the first-puff projection in 2 to 3 s, baseline the 250 ms before the puff
+    (analysis.py plot_affective_firstpuff_persist); two-sided paired t-test across sessions, FDR
+    over the two windows. Reproduced when corrected p < 0.05 with Ketamine lower. The expected
+    values are met when, under one weight scaling (unit vector or sum of absolute values), both are
+    within tolerance; otherwise the claim is partially reproduced if the test holds.
+- id: fig5e-rapid-unchanged
+  statement: The rapid emotion-like response to the first puff (0 to 0.25 s) did not differ between
+    preinfusion and ketamine.
+  source: Figure 5E; table S3, Fig. 5E
+  quote: These transient increases on ketamine were not different from those prior to ketamine
+  depends_on:
+  - fig5d-emotion-dimension-accumulates
+  statistics:
+  - test: Paired t-test with fdr-bh correction
+    statistic: "t = 1.209"
+    p: 0.254
+    corrected: FDR (Benjamini-Hochberg) over the two windows
+    n: 11 sessions from 9 mice
+  expected:
+  - quantity: mean projection 0 to 0.25 s after the first puff, Pre
+    value: 0.601
+    tolerance: 0.55
+  - quantity: mean projection 0 to 0.25 s after the first puff, Ketamine
+    value: 0.332
+    tolerance: 0.27
+  criterion: A claim of absence, judged on the paper's test, the two-sided paired t-test with FDR
+    over the two windows, as for fig5e-late-reduced. Reproduced when corrected p >= 0.05; the
+    difference is reported either way.
+- id: fig5g-tau-persist-model
+  statement: A two-phase first-order model in which only the persistence timescale differs between
+    preinfusion and ketamine closely matched the emotion-like population activity.
+  source: Figure 5F and 5G; table S3, Fig. 5G
+  quote: Despite only varying the single parameter τ PERSIST across preinfusion and ketamine
+    conditions, we observed a close match between the model and the experimental data
+  depends_on:
+  - fig5d-emotion-dimension-accumulates
+  criterion: Model and fit from the Methods (Theoretical model) and analysis.py (model_system,
+    theoretical_persist, compare_model). Inputs are eight 250 ms steps 3 s apart; broadcast phase
+    x = (S - x0)(1 - exp(-t/tauB)) + x0, persistence phase x = x0 exp(-t/tauP). Fitted with
+    scipy curve_fit to the across-session mean of Pre and Ketamine traces concatenated, from
+    -0.25 to 23 s and 25 to 70 s after the first puff (the dimension's training window left out),
+    S and tauB shared, tauP times a factor in [0, 1] per condition (null factor in [0.99999, 1]),
+    bounds [0, 100]. Variance explained is 1 - MSE_model/MSE_null. The paper gives no value for
+    "close match". Reproduced when the variance explained is positive and the fitted Ketamine
+    persistence timescale is shorter than the Pre one, under each reading of the dimension.
+- id: figs33-alternative-models
+  statement: Alternative models in which ketamine changes the input scale S or the broadcast rate,
+    or a symmetric single-timescale model, fit the ketamine puff-series activity worse than the
+    model in which ketamine changes the persistence timescale.
+  source: Figure S33A to S33D; Results, Brain-wide activity screen during emergence of affect in
+    mice
+  quote: other alternative models in which ketamine modulated the input scale S or the broadcast
+    rate τ BROADCAST instead of τ PERSIST also did not fit the data well
+  depends_on:
+  - fig5g-tau-persist-model
+  criterion: The same fit with the factor on S (theoretical_saturation), on tauB
+    (theoretical_broadcast), or a single timescale (theoretical_symmetric). Variance explained on
+    the Ketamine puff-series segment (fig. S33D). Reproduced when the tauP model has the highest
+    variance explained there of the four.
+- id: figs32c-regional-emotion-dimension
+  statement: Emotion-like dimensions computed within each high-level brain area all showed
+    accumulating persistent dynamics before ketamine that ketamine abolished.
+  source: Figure S32C
+  quote: All high-level brain areas ... exhibit some ... degree of accumulating persistent
+    dynamics during preinfusion that is abolished by ketamine
+  depends_on:
+  - fig5d-emotion-dimension-accumulates
+  criterion: As fig5d-emotion-dimension-accumulates, with units restricted per session to one
+    high-level area (Methods, emotion-like dimension, last sentences); areas and sessions with at
+    least 20 simultaneously recorded puff-modulated units (code min_cells). High-level areas are
+    the Allen top-level divisions; the paper does not list them. Reproduced when every area that
+    has at least two qualifying sessions meets the Pre and Ketamine conditions of that criterion
+    for the value before puff 8; partially reproduced when most do.
+- id: fig6b-persistent-dimension-distributed
+  statement: The neurons carrying the persistent peri-puff dimension were not focally localized
+    but distributed over much of the brain.
+  source: Figure 6B; fig. S36A
+  quote: We found that the persistent dimension was not focally localized in either mice or humans;
+    instead, a distribution spanning much of the brain was observed across both species
+  depends_on:
+  - fig6d-mouse-persistent
+  criterion: Persistent-dimension weights as in fig6d-mouse-persistent. The paper gives no measure.
+    Reproduced when the units with the top 10% of absolute weight in each session (the paper's
+    "persistent neurons", table S3, Fig. 6J) are found in every Allen top-level division that
+    holds at least 30 included units (the Methods' regional minimum) and no single division holds
+    more than half of them.
+- id: fig6d-mouse-persistent
+  statement: In mice, activity along the persistent (0.5 to 1 s) coding dimension 1 to 2 s after
+    the puff fell during ketamine (0.86 to 0.02) and partly recovered afterwards (0.52).
+  source: Figure 6D; table S3, Fig. 6D
+  quote: Across species we observed a decrease, caused by ketamine, in eyepuff-triggered
+    persistence that recovered post infusion
+  statistics:
+  - about: Pre against Ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 5.662"
+    p: 0.0004
+    corrected: FDR (Benjamini-Hochberg)
+    n: 11 sessions from 9 mice
+  - about: Post against Ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 2.657"
+    p: 0.024
+    corrected: FDR (Benjamini-Hochberg)
+    n: 11 sessions from 9 mice
+  expected:
+  - quantity: persistent projection 1 to 2 s, Pre
+    value: 0.86
+    tolerance: 0.1
+  - quantity: persistent projection 1 to 2 s, Ketamine
+    value: 0.02
+    tolerance: 0.25
+  - quantity: persistent projection 1 to 2 s, Post
+    value: 0.52
+    tolerance: 0.41
+  criterion: Method from the Methods (Coding dimension, mouse peri-puff), table S3 and analysis.py
+    plot_coding_dimension_early_late. Per session (sessions as in fig5d-emotion-dimension-accumulates),
+    weights from Pre puffs of puff-modulated units, mean over 0.5 to 1 s against the 1 s before the
+    puff, normalized by variance (per unit, Methods; pooled, code variant). The projection is
+    averaged over series, z-scored over -1 to 2 s within session and condition and baseline-
+    subtracted over -1 to 0 s (code); quantified as its mean over 1 to 2 s. The code projects the
+    first puff of each series only; all eight puffs is a variant. Pre series 1 to 20, Ketamine 23
+    to 32, Post 35 to 40. Two paired t-tests, FDR over the two. Reproduced when both corrected
+    p < 0.05 with Ketamine lowest and the means are within tolerance; partially reproduced when
+    only Pre against Ketamine holds.
+- id: fig6f-mouse-fast-unchanged
+  statement: In mice, activity along the fast (0 to 70 ms) coding dimension was not changed by
+    ketamine.
+  source: Figure 6F; table S3, Fig. 6F
+  quote: whereas similar analysis of a dimension encoding fast eyepuff-triggered activity exhibited
+    no decrease during infusion
+  statistics:
+  - about: Pre against Ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = -0.548"
+    p: 0.595
+    corrected: FDR (Benjamini-Hochberg)
+    n: 11 sessions from 9 mice
+  - about: Post against Ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 2.468"
+    p: 0.066
+    corrected: FDR (Benjamini-Hochberg)
+    n: 11 sessions from 9 mice
+  expected:
+  - quantity: fast projection 0 to 70 ms, Pre
+    value: 4.48
+    tolerance: 0.25
+  - quantity: fast projection 0 to 70 ms, Ketamine
+    value: 4.59
+    tolerance: 0.36
+  - quantity: fast projection 0 to 70 ms, Post
+    value: 4.32
+    tolerance: 0.36
+  criterion: A claim of absence, judged on the paper's test, two-sided paired t-tests with FDR over
+    the two comparisons. Target window 0 to 70 ms after onset; the Methods compare it with the 1 s
+    before the puff, the code (cd_end 107) with the 70 ms before, and the Methods are followed with
+    the code as a variant. Projection over all series and all eight puffs, z-scored over -1 to 2 s
+    within session and condition, quantified over 0 to 70 ms (code). Reproduced when the Pre
+    against Ketamine corrected p >= 0.05; the differences are reported either way.
+- id: fig6h-mouse-timescale
+  statement: In mice, the intrinsic timescale of the persistent dimension in the 30 s before each
+    series was shorter during ketamine (0.14 s) than before (0.45 s).
+  source: Figure 6H; fig. S34B; table S3, Fig. 6H
+  quote: In both humans and mice, we observed that ketamine robustly accelerated the baseline
+    intrinsic timescale of the population
+  depends_on:
+  - fig6d-mouse-persistent
+  statistics:
+  - test: Paired t-test
+    statistic: "t = 3.357"
+    p: 0.0073
+    n: 11 sessions from 9 mice, 10 series per condition
+  expected:
+  - quantity: intrinsic timescale, Pre
+    value: 0.45
+    tolerance: 0.14
+    unit: s
+  - quantity: intrinsic timescale, Ketamine
+    value: 0.14
+    tolerance: 0.12
+    unit: s
+  criterion: Method from the Methods (Intrinsic timescale analysis, mouse) and analysis.py
+    stimulus_timescales and extract_timescale. Rates in the 30 s before the first puff of each
+    series projected on the persistent weights of fig6d-mouse-persistent; autocorrelation
+    (scipy.signal.correlate) normalized to its maximum, a*exp(-x/b) + c fitted over the 2.5 s after
+    the peak, initial a=1, b=0.2, c=0; b is the timescale. Series used are Pre 11 to 20 and
+    Ketamine 23 to 32 (code, ten each as table S3). Two readings of how series are combined
+    (a) per series fits averaged within session (Methods and table S3); (b) one fit to the
+    series concatenated (code). Reproduced when, under both, the paired t-test gives p < 0.05
+    with Ketamine shorter and both means are within tolerance; partially reproduced when the test
+    holds but the means do not.
+- id: fig6j-mouse-coupling
+  statement: In mice, correlations among the most persistent neurons in the 30 s before each series
+    fell during ketamine to 0.49 of their preinfusion value.
+  source: Figure 6J; table S3, Fig. 6J
+  quote: in both mice and humans, we discovered that ketamine decreased coupling among these sites
+  depends_on:
+  - fig6d-mouse-persistent
+  statistics:
+  - test: Paired t-test
+    statistic: "t = 7.463"
+    p: 2.2e-05
+    n: 11 sessions from 9 mice, 10 series per condition
+  expected:
+    quantity: pairwise correlation among persistent neurons, Ketamine, normalized to Pre
+    value: 0.49
+    tolerance: 0.14
+  criterion: Persistent neurons and coupling. The Methods take edges between neurons in the top 10%
+    of absolute persistent weight, Pearson correlation averaged within session; the code
+    (plot_coding_dimension_early_late) takes neurons whose signed weight exceeds the 90th
+    percentile of absolute weights and the median absolute correlation of z-scored rates over the
+    concatenated 30 s windows of Pre series 1 to 10 and Ketamine series 23 to 32. Readings are (a)
+    the Methods, per-series 30 s windows, mean r over edges, averaged over series (table S3), on
+    the code's series (Pre 1 to 10, Ketamine 23 to 32), since table S3 gives ten series per
+    condition without naming them; (b) the code. Ketamine values divided by Pre within session; paired t-test across sessions.
+    Reproduced when, under both, p < 0.05 with Ketamine lower; the expected value is met under
+    either.
+- id: figs34c-tone-no-eye-closure
+  statement: Mice did not close their eyes appreciably to a series of auditory tones, before or
+    during ketamine.
+  source: Figure S34C; table S3, fig. S34 C
+  quote: mice do not increase eye closure during tone presentation
+  criterion: Eye closure across the tone series, 7 sessions from 7 mice, Pre 10 series, Ketamine 5
+    (table S3). Reproduced when the 95% interval across sessions (1.96 s.e.m.) of the mean closure
+    from 0.3 to 0.8 s after each tone, averaged over the eight tones, lies below the corresponding
+    eyepuff value of the same sessions and below 0.1 of full closure. The 0.1 bound is a reading of
+    "not substantial"; the paper reports no test.
+- id: figs34d-tone-fast-unchanged
+  statement: Fast tone-related population activity (0 to 70 ms) was not changed by ketamine.
+  source: Figure S34D; table S3, fig. S34 D
+  quote: Whereas fast tone-related neural activity was unchanged on ketamine
+  statistics:
+  - about: Pre against Ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 1.088"
+    p: 0.318
+    corrected: FDR (Benjamini-Hochberg)
+    n: 7 sessions from 7 mice
+  - about: Post against Ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 1.438"
+    p: 0.318
+    corrected: FDR (Benjamini-Hochberg)
+    n: 7 sessions from 7 mice
+  expected:
+  - quantity: fast tone projection, Pre
+    value: 2.49
+    tolerance: 0.48
+  - quantity: fast tone projection, Ketamine
+    value: 1.83
+    tolerance: 0.78
+  - quantity: fast tone projection, Post
+    value: 1.56
+    tolerance: 0.54
+  criterion: A claim of absence, judged on the paper's test, as fig6f-mouse-fast-unchanged with tone
+    onsets, puff-modulated units (code selects units by their puff responses), tone series Pre
+    (first 10 before infusion), Ketamine and Post. Table S3 gives 5 Ketamine and 3 Post series and
+    the code takes post-infusion tone series 2 to 6 and 8 to 10 (1-based); the code is followed.
+    Reproduced when the Pre against Ketamine corrected p >= 0.05.
+- id: figs34e-tone-persistent
+  statement: Persistent tone-related activity (350 to 500 ms) fell during ketamine (1.531 to 0.392)
+    and recovered (1.385).
+  source: Figure S34E; table S3, fig. S34 E
+  quote: persistent tone-related activity decreased on ketamine and then recovered
+  statistics:
+  - about: Pre against Ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = 6.942"
+    p: 0.0009
+    corrected: FDR (Benjamini-Hochberg)
+    n: 7 sessions from 7 mice
+  - about: Post against Ketamine
+    test: Paired t-test with fdr-bh correction
+    statistic: "t = -3.753"
+    p: 0.009
+    corrected: FDR (Benjamini-Hochberg)
+    n: 7 sessions from 7 mice
+  expected:
+  - quantity: persistent tone projection, Pre
+    value: 1.531
+    tolerance: 0.16
+  - quantity: persistent tone projection, Ketamine
+    value: 0.392
+    tolerance: 0.35
+  - quantity: persistent tone projection, Post
+    value: 1.385
+    tolerance: 0.66
+  criterion: As fig6d-mouse-persistent with tone onsets. Weights from 150 to 350 ms (Methods and
+    table S3) against the 1 s before the tone; the code uses bins 115 to 135 (150 to 350 ms after
+    onset), the same. Quantified over 350 to 500 ms (Methods and table S3); the code's window is
+    bins 135 to 150, the same. The code averages the projection over all eight tones (limit 8).
+    Reproduced when both corrected p < 0.05, with Ketamine lowest.
+- id: figs34f-tone-shorter-than-puff
+  statement: Persistent responses to the neutral tone were shorter than those to the eyepuff.
+  source: Figure S34F; table S3, fig. S34 F
+  quote: The affectively salient eyepuff elicits substantially longer persistent dynamics than the
+    neutral tone
+  depends_on:
+  - fig6d-mouse-persistent
+  - figs34e-tone-persistent
+  criterion: As analysis.py compare_tone_puff_late_proj. Per session, the Pre projection on each
+    stimulus's persistent dimension averaged over the eight stimuli of a series, turned into d'
+    against the 1 s before onset. Reproduced when the time at which the across-session mean d'
+    falls back below half its peak is later for the puff than for the tone, and the puff mean d'
+    over 1 to 2 s lies above the tone's with non-overlapping 95% intervals. The half-peak measure is
+    a reading of "longer"; the paper reports no test.
+- id: figs34g-tone-timescale
+  statement: The baseline intrinsic timescale of the persistent tone population was shorter during
+    ketamine (0.089 s) than before (0.268 s).
+  source: Figure S34G; table S3, fig. S34 G
+  quote: we still could detect a ketamine-mediated acceleration in the intrinsic timescale of
+    populations that (prior to ketamine) exhibited modestly persistent responses to the tone
+  depends_on:
+  - figs34e-tone-persistent
+  statistics:
+  - test: Paired t-test
+    statistic: "t = 5.479"
+    p: 0.0015
+    n: 7 sessions from 7 mice
+  expected:
+  - quantity: tone intrinsic timescale, Pre
+    value: 0.268
+    tolerance: 0.073
+    unit: s
+  - quantity: tone intrinsic timescale, Ketamine
+    value: 0.089
+    tolerance: 0.024
+    unit: s
+  criterion: As fig6h-mouse-timescale with the tone dimension and the 30 s before each tone series.
+    The code takes Pre tone series 5 to 10 and Ketamine 2 to 6 (1-based); table S3 gives 10 and 5;
+    both are shown, as are the two readings of how series are combined.
+- id: figs34h-tone-coupling
+  statement: Correlations among the persistent tone neurons before the tone series fell during
+    ketamine to 0.460 of their preinfusion value.
+  source: Figure S34H; table S3, fig. S34 H
+  quote: under ketamine these populations exhibited reduced functional coupling even before tone
+    presentation
+  depends_on:
+  - figs34e-tone-persistent
+  statistics:
+  - test: Paired t-test
+    statistic: "t = 6.217"
+    p: 0.0008
+    n: 7 sessions from 7 mice
+  expected:
+    quantity: pairwise correlation among persistent tone neurons, Ketamine, normalized to Pre
+    value: 0.46
+    tolerance: 0.16
+  criterion: As fig6j-mouse-coupling, with the tone dimension and the 30 s before each tone series,
+    under both readings.
+- id: figs30-correlation-structure
+  statement: Ketamine changed the correlation structure of single units at rest, increasing
+    correlations within regions such as retrosplenial/posteromedial and orbitofrontal cortex while
+    reducing correlations between regions.
+  source: Figure S30A; Results, Brain-wide activity screen during emergence of affect in mice
+  quote: ketamine altered single-unit correlation structure at rest by increasing within-region
+    correlations such as within PMC and ORB (while also reducing correlations between regions
+  criterion: Method from the Methods (Regional correlation analysis). Pearson correlations between
+    all units of a session over the whole preinfusion period and over the 10 minutes from
+    ketamine onset (taken as 30 s after the last puff of series 20, as the code's ket_start). The
+    paper shows one example session and no test. Per session, the mean within-region and the mean
+    between-region change (Ketamine minus Pre), regions at the finest Allen level. Reproduced when,
+    across the 13 sessions, the within-region change is above zero and the between-region change
+    below zero by paired t-tests at p < 0.05 (the paper's test for session-level comparisons in
+    table S3, Fig. 6J), and RSP and ORB within-region changes are positive in most sessions that
+    record them.
+- id: figs29-rsp-oscillations
+  statement: Ketamine brought low-frequency oscillations into the population activity, especially
+    strong in retrosplenial cortex.
+  source: Figure S29C and S29D; Results, Brain-wide activity screen during emergence of affect in
+    mice
+  quote: noted the prominent appearance of low frequency oscillations as we previously reported (
+    28 ), with especially strong low frequency oscillations in PMC/retrosplenial cortex (RSP)
+  criterion: Method from the Methods (Example-session unsupervised clustering and spectral
+    analysis) and analysis.py plot_session_rastermap. Welch power spectra (nperseg 2048, 100 Hz)
+    of each unit's z-scored rate, z-scored across frequency, over 0 to 7.5 Hz (the plotted range).
+    The paper gives the windows only as "the given 1 minute windows" of an example; the readings
+    are the minute before infusion against (a) the minute starting 5 min after it and (b) the
+    minute starting 10 min after it. The peak of the z-scored spectrum below 7.5 Hz, averaged per
+    region. Reproduced when, under both, it rises after ketamine in RSP units in most sessions
+    that record RSP and RSP has the largest rise of all regions with at least 30 units in the
+    pooled data. The paper reports no test.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig1p-anesthesia-abolishes-both. The criterion said the paper reports no test; table S3 (fig. S5 D and E) gives paired t-tests with FDR for K/X on reflexive and affective closure at the eighth puff. Those tests and their values are now the statistics, expected values and criterion, and fig. S5D and S5E are added to the source.
+  - fig4g-ketamine-alters-slow-clusters. Table S3 gives 64 Ketamine puffs per cluster (8 series) while the code takes series 23 to 32 (10 series); the conflict is now named in the criterion, the code is followed.
+  - fig4de-response-clusters. The 0.25 s bound for "rapidly and briefly" and the 1 to 2 s test for "persistently" are not in the paper; the criterion now says they are readings.
+  - fig4i-rise-times-unchanged. The Methods keep regions with at least 30 modulated units, the code more than 30; the Methods count is now named as a variant.
+  - fig6j-mouse-coupling. Reading (a) did not say which ten series per condition it uses; table S3 gives ten without naming them, so the criterion now takes the code's series (Pre 1 to 10, Ketamine 23 to 32).
+  - figs6-vpm-muscimol. The statement's fast early closure rests on fig. S6B and S6H, now in the source.
+  - figs2g-scaling-puff-number. Added; the scalability of late closure with puff number but not pressure (fig. S2 F and G, cited in the Results) had no claim.
+  - figs2h-dose-response. Added; the dose thresholds of the Results (fig. S2 H to J) had no claim. The FDR family is not given, so two readings are named.
+  - Checked against analysis.py from Zenodo doi:10.5281/zenodo.14876694 (md5 6cc7aa5059737c3bd753aad1f116019d). The epochs (Pre 1 to 20, Ketamine 23 to 32, Post 35 to 40, tone series), unit selection, the 250 summed-rate minimum, clustering parameters, coding-dimension windows and pooled-variance weights, emotion-like dimension windows, timescale and coupling series, model fitting and the S31B 0.05 threshold match what the file says the code does.
+  - Open. The animal excluded from Figs. 5 and 6 is not named (Methods say one animal with Harderian secretion); the file runs every mouse whose removal leaves 11 sessions from 9 mice.
+  - Open. Several qualitative claims (fig4-recordings-scale "dozens", fig4de, fig4g, fig4i, fig4h, fig5d, fig6b, figs12, figs29, figs30, figs34c, figs34f) rest on cut-offs the paper does not give; each is named as a reading in its criterion, and outcomes may depend on them.
+  - Open. figs30-correlation-structure takes ketamine onset as 30 s after the last puff of series 20 (code ket_start in the clustering functions); the rastermap code uses 10 s before the first puff of series 21, and the correlation analysis itself is not in the released code.
+  - Open. fig5g-tau-persist-model and figs33-alternative-models depend on the model's input timing, a global the released code does not define; the fitting windows in the criterion are read from the plotting code.
