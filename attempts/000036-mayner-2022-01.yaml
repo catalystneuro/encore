@@ -21,20 +21,28 @@ provenance:
     url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39715560542
 inputs:
 - what: The paper's analysis outputs. results/main.parquet identifies the 44 analysed sessions
-    (session-link) and gives the paper's per-trial ND, used to check the trial timing; the other
-    files of results/ (table-s1.csv, permutation_tests_summary.csv, the decoding scores,
-    mean_centroid_distance.parquet, stimulus_properties.parquet, stats.parquet, effect_size.parquet,
-    behavior_by_session.parquet) are printed as reference values beside the results and decide
-    no outcome.
+    (session-link) and gives the paper's per-trial ND, used to check the trial timing;
+    results/sensitivity_analysis.parquet gives the paper's per-trial ND for the 108 parameter sets,
+    used to check the spectra of ext3-2-sensitivity; the other files of results/ (table-s1.csv,
+    permutation_tests_summary.csv, the decoding scores, mean_centroid_distance.parquet,
+    stimulus_properties.parquet, stats.parquet, effect_size.parquet, behavior_by_session.parquet)
+    are printed as reference values beside the results and decide no outcome.
   source: https://github.com/wmayner/openscope-differentiation at commit
     2d959bd71b47055d2a3fd306091fe9254ceb86fb
 - what: The paper's processed data, streamed in memory from its single tar file in the arousal
-    notebook. Used are the running artifact parameters (run/preprocessing_params.yaml) for reading
+    notebook (parallel byte-range requests, decompressed in order). Used are the running artifact parameters (run/preprocessing_params.yaml) for reading
     (b) of fig4-locomotion-effect-size, the sync files (vsync to 2p frame alignment), the pupil
     area and its parameters for the variant of fig4-pupil-effect-size, and run_speed to check the
     dandiset's running velocity.
   source: Zenodo doi:10.5281/zenodo.5781567 (record 5781567, the version of concept
     doi:10.5281/zenodo.4734580 that the code's README names)
+- what: The sources of the L0 event detector the event criteria name, read (not built or run) to
+    show why it cannot be installed. l0_analysis.py, and setup.py, make.sh, fast.py and
+    FitSegmentModel.cpp of FastLZeroSpikeInference at its latest commit and at the latest commit
+    that defines arfpop.
+  source: https://github.com/AllenInstitute/visual_coding_2p_analysis at commit 3ceca10;
+    https://github.com/jewellsean/FastLZeroSpikeInference at commits
+    cdfaade68ceb6aa15ec5003c460de4e0575f1d5f and 7b80ccd8ea5e05354c4c73775b3faf645b87f37f
 outcomes:
 - claim: session-link
   outcome: reproduced
@@ -54,27 +62,26 @@ outcomes:
   deviations:
   - The 7 hour offset was found while preparing the attempt; the criterion was written after it.
 - claim: design-sessions
-  outcome: partially_reproduced
+  outcome: reproduced
   notebook: reproduce_mayner_2022.ipynb
   output: claim:design-sessions
   measured:
-  - 57
+  - 45
   - 9
-  - 25
-  - 11
-  notes: The dandiset holds 57 sessions from 9 mice, 3 mice per Cre line; sessions per line are
-    25 Cux2, 15 Rorb and 17 Rbp4 (measured gives the Cux2 count), and per area 11 to 13
-    (measured gives V1, 11), with 5 per layer and area pair in L2/3, 3 in L4, and 3 in L5 except
-    5 in PM. The 44 linked sessions plus the half-rate L5 AL session give the paper's design
-    exactly (45 sessions, 15 per line, 9 per area, 3 per pair, 4 to 6 per mouse). The other 12
-    (10 second recordings in Cux2 mice 389014 and 389020, and one more PM session in each of Rbp4
-    mice 402796 and 405808) are not described in the paper. The files hold no sex; the code's
-    table gives 2, 3 and 1 males for Cux2, Rorb and Rbp4, as the paper states. The excluded
-    session is identified by its absence from main.parquet and its half frame rate.
+  - 15
+  - 9
+  notes: The 44 linked sessions plus the half-rate L5 AL session give the paper's design exactly
+    (45 sessions from 9 mice, 3 mice and 15 sessions per line, 9 per area, 3 per layer and area
+    pair, 4 to 6 per mouse). The dandiset holds 12 more, 57 sessions in all (25 Cux2, 15 Rorb and
+    17 Rbp4; 11 to 13 per area); the 12 (10 second recordings in Cux2 mice 389014 and 389020, and
+    one more PM session in each of Rbp4 mice 402796 and 405808) are not described in the paper
+    and are recorded as a finding. The files hold no sex; the code's table gives 2, 3 and 1 males
+    for Cux2, Rorb and Rbp4, as the paper states. The excluded session is identified by its
+    absence from main.parquet and its half frame rate.
   deviations:
-  - The criterion does not anticipate a dataset that holds more sessions than the paper; the
-    outcome is partial because the deposited counts do not match, while the paper's 45 sessions
-    are all present.
+  - The criterion does not anticipate a dataset that holds more sessions than the paper. The
+    outcome is judged on the paper's 45 sessions, which are all present, found through the link
+    claim; the round-1 version of this record gave partially_reproduced on the deposited counts.
 - claim: ext1-2-cell-counts
   outcome: reproduced
   notebook: reproduce_mayner_2022.ipynb
@@ -96,9 +103,13 @@ outcomes:
     (cPickle) that imports allensdk and FastLZeroSpikeInference. That package is not on PyPI; its
     repository (github.com/jewellsean/FastLZeroSpikeInference, commit cdfaade) fails to build with
     pip from git because its setup.py expects the C++ sources copied into the python directory,
-    and its current Python API has no arfpop, which l0_analysis.py calls. The detector also
-    expects corrected fluorescence, which the dandiset does not hold. The paper's own events are in
-    its Zenodo deposit (events/, 4.1 GB), which the criterion does not name.
+    and its current Python API has no arfpop, which l0_analysis.py calls. The latest commit that
+    defines arfpop (7b80ccd) has a Python 2 fast.py (a SyntaxError under Python 3) and a
+    FitSegmentModel.cpp that uses std::numeric_limits without including <limits>; the notebook's
+    section on the L0 detector prints each of these from the published sources. Running the
+    detector would mean patching the package and porting l0_analysis.py to Python 3. The NWB files
+    hold no path naming events (listing of all 57 files in the notebook). The paper's own events
+    are in its Zenodo deposit (events/, 4125 members, 4.1 GB), which the criterion does not name.
 - claim: fig3a-layer-specific
   outcome: reproduced
   notebook: reproduce_mayner_2022.ipynb
@@ -132,7 +143,10 @@ outcomes:
     [0.128, inf), where the code prints the interval bound 0.0048, so 0.268 looks like a
     transcription slip in the paper and the dataset agrees with the paper's computation. The
     criterion's rule rests on the significance pattern, which holds. Variant on all 56 complete
-    dandiset sessions, chi2(4) = 14.39, p = 0.006, AM significant but AL not (p = 0.072).
+    dandiset sessions, chi2(4) = 14.39, p = 0.006, AM significant but AL not (p = 0.072). With the
+    pooled SD as the code computes it (variant), the paper's per-trial values give AL 0.200 and AM
+    0.128, and this dataset 0.184 and 0.133. A question asks a reader whether 0.268 is a misprint
+    (questions/000036.yaml).
   deviations:
   - As fig3a-layer-specific (trial windows from the NWB times, NaN ROIs left out, statistics in
     Python).
@@ -163,7 +177,13 @@ outcomes:
     Kaiser 33%, Tukey 28%; by state length 0% at 10 s and 72% at 2 s. The same rule on the paper's
     own results/stats.parquet gives 28 of 108 (25.9%), so the paper's outputs do not meet this
     reading of "nearly all" either; the difference is between the claims file's rule and the
-    paper's sentence, not between the dataset and the paper's computation.
+    paper's sentence, not between the dataset and the paper's computation. The spectra are the
+    paper's. For six sets, one per window and frequency spacing, this dF/F at the start shift found
+    for the main set gives the paper's per-trial ND (results/sensitivity_analysis.parquet) to a
+    relative 1.1e-14 in all 2199 contrast trials with a single matching shift, and over all 108
+    sets per-trial log10 ND with the NWB windows correlates with the paper's at r = 0.993 to
+    0.9999. A question asks a reader whether the paper supports a different agreement rule
+    (questions/000036.yaml).
   deviations:
   - As fig3a-layer-specific.
 - claim: ext3-5-arousal-covariates
@@ -213,29 +233,28 @@ outcomes:
     reading (b) r = 0.844, p = 0.035; both within tolerance (0.792 to 1) and significant. Reading
     (b) gives the code's printed locomotion fractions to within 0.0001 and reading (a) to within
     0.0008, so the lower r comes from the effect sizes (one session d = 1.111 against the code's
-    stored 1.258). Over all 44 sessions r = -0.03. The deposit stream reached the running
-    parameters after 1105 s in the recorded run (1036 to 1264 s while preparing). In the
-    author-answers run (no questions were asked, so nothing was re-analysed) the entry was run
-    twice and the stream reached its 26 min deadline first both times (after 1527 s at the dF/F
-    and after 1467 s at the start of data/run), so the executed copy handed over shows reading (a)
-    only and prints "reading (b) not available". The reading (b) numbers above come from the
-    author run's executed copy, and the outcome under both readings rests on it.
+    stored 1.258). With d computed with the pooled SD as the paper's code computes it (variant), r
+    = 0.892 (p = 0.017) under reading (a) and 0.894 (p = 0.016) under reading (b). Over all 44
+    sessions r = -0.03. The deposit is now streamed over parallel range requests and reached all
+    required members after 210 s, so the executed copy shows both readings.
   deviations:
   - Reading (b) uses the deposit's parameters and vsync alignment on the dandiset's running
     velocity, whose first sample is dropped (the rest equal the deposit's run_speed).
   - Effect sizes use trial windows from the NWB times, as fig3a-layer-specific.
 - claim: fig4-pupil-effect-size
   outcome: blocked
-  blocked_by: methods_underspecified
+  blocked_by: data_missing
   notebook: arousal_mayner_2022.ipynb
   output: claim:fig4-pupil-effect-size
   notes: The dandiset has no pupil data. With the deposit's pupil area and the code's diameter
     (2*sqrt(area/pi)), reading (b) of artifact removal reproduces the code's printed per-session
     pupil values exactly and gives r = 0.651, p = 0.16 (positive, within tolerance of 0.716);
     reading (a), without artifact removal, gives r = -0.647, p = 0.17, because unremoved
-    artifacts set the maximum the diameter is normalised by. The readings disagree, which the
-    criterion blocks as methods_underspecified; the Methods' semi-major axis reading cannot be
-    computed from any public file (data_missing).
+    artifacts set the maximum the diameter is normalised by. The criterion requires every reading
+    of pupil diameter, and the Methods' semi-major axis reading cannot be computed from any public
+    file. The deposit's data/eye/ holds 45 pupil area files and a parameter file, and no ellipse
+    fit (listed in the arousal notebook). That is the main reason (data_missing); the two
+    computable readings also disagree, which the criterion would block as methods_underspecified.
 - claim: discussion-session-effect-sizes
   outcome: partially_reproduced
   notebook: reproduce_mayner_2022.ipynb
@@ -244,11 +263,16 @@ outcomes:
   - 0.572
   - 1.111
   - 0.340
-  notes: Per-session d 0.572 to 1.111, all six within 0.513 to 1.375; smallest and pooled (0.340)
-    within tolerance; the largest is below the tolerance of 1.25 (1.125 to 1.375). For that
-    session (719080059, paper 719334668) the paper's main.parquet gives 1.155 and its
-    effect_size.parquet 1.258; the paper's range 0.57 to 1.25 is the latter's, which does not
-    follow from the committed main.parquet.
+  notes: With the Methods' pooled SD, per-session d 0.572 to 1.111, all six within 0.513 to 1.375;
+    smallest and pooled (0.340) within tolerance; the largest is below the tolerance of 1.25 (1.125
+    to 1.375), printed as a failed check in the notebook. For that session (719080059, paper
+    719334668) the paper's main.parquet gives 1.155 and its effect_size.parquet 1.258. The
+    effect_size.parquet values equal, to 4e-15 in all 44 sessions, Cohen's d from main.parquet with
+    the pooled SD as the code's analysis.pooled_std_dev computes it, each group's SD weighted by
+    the other group's n - 1; the paper's 0.57 to 1.25 and 0.34 come from that. With that SD
+    (variant) this dataset gives 0.584 to 1.194 and a pooled 0.343, all within tolerance. The
+    claims file and the Methods give the standard formula, so the outcome rests on it; a question
+    asks a reader which the criterion means (questions/000036.yaml).
   deviations:
   - As fig3a-layer-specific.
   - The criterion gives no partial rule; partial is used because two of three values and the
@@ -258,11 +282,13 @@ outcomes:
   notebook: multivariate_mayner_2022.ipynb
   output: claim:fig5-multivariate-layer
   measured:
-  - 18.99
-  - 0.194
-  notes: Interaction chi2(2) = 18.99, p = 7.5e-5. L2/3 z = 5.19, adjusted p < 0.0001; L4 p = 0.107;
-    L5 p = 0.997. Cohen's d L2/3 0.194 (paper 0.194). Per-trial values correlate with the paper's
-    at r = 0.995. umap-learn 0.5.12 with numba 0.68.0.
+  - 18.535
+  - 0.192
+  notes: Interaction chi2(2) = 18.535, p = 9.4e-5. L2/3 z = 5.12, adjusted p < 0.0001; L4 p =
+    0.112; L5 p = 0.997. Cohen's d L2/3 0.192 (paper 0.194). Per-trial values correlate with the
+    paper's at r = 0.995. umap-learn 0.5.12 with numba 0.68.0. The first version of this record
+    gave 18.99 and 0.194 from the author run; the author-answers run and both runs of this
+    revision give 18.535 and 0.192.
   deviations:
   - UMAP version differs from the paper's run; trial windows from the NWB times.
 - claim: fig5-multivariate-area
@@ -270,11 +296,11 @@ outcomes:
   notebook: multivariate_mayner_2022.ipynb
   output: claim:fig5-multivariate-area
   measured:
-  - 16.20
+  - 16.142
   - 0.181
-  - 0.275
-  notes: Interaction chi2(4) = 16.20, p = 0.0028. AL adjusted p = 0.0098, AM p < 0.0001; V1, LM, PM
-    p 0.92 to 0.96. Cohen's d AL 0.181, AM 0.275 (paper 0.184, 0.277).
+  - 0.274
+  notes: Interaction chi2(4) = 16.142, p = 0.0028. AL adjusted p = 0.0094, AM p < 0.0001; V1, LM,
+    PM p 0.94 to 0.95. Cohen's d AL 0.181, AM 0.274 (paper 0.184, 0.277).
   deviations:
   - As fig5-multivariate-layer.
 - claim: ext5-1-events-multivariate
@@ -324,7 +350,10 @@ outcomes:
     2.8e-6, and mousecam against man writing 0.006; none of the other six pairs below 0.05
     (smallest 0.18). Estimated differences 0.096, 0.118, 0.154 and 0.103 lie inside the paper's
     intervals. emmeans' Tukey adjustment is computed from the studentized range with infinite
-    degrees of freedom.
+    degrees of freedom. On the paper's own per-trial values the same code gives the paper's
+    chi2(4) = 32.115, p = 1.812e-6, and its printed z, adjusted p and intervals for the four named
+    pairs (z 3.229, 3.928, 5.249 and 3.396; p 0.0109, 0.00082, 2e-6 and 0.0061), with the other
+    six pairs not significant.
   deviations:
   - As fig3a-layer-specific.
 - claim: ext7-1-arousal-mediation
@@ -418,12 +447,245 @@ findings:
     code's printed output gives d = 0.128 and a lower bound of 0.0048. The paper's value looks
     like a transcription slip.
 - kind: code_mismatch
-  statement: The per-session effect sizes in the code's results/effect_size.parquet (0.570 to
-    1.258 in L2/3 AL and AM, the paper's 0.57 to 1.25) do not follow from its committed
-    results/main.parquet, which gives 0.592 to 1.155 with the code's own Cohen's d; the figure 4
-    correlation (r = 0.896) uses the former.
+  statement: The code's pooled SD (analysis.pooled_std_dev) weights each group's SD by the other
+    group's n - 1, where the Methods give the standard formula; its groupby sorts the labels, so
+    s1 is the SD of "artificial" while n1 counts "natural". The per-session effect sizes of
+    results/effect_size.parquet (0.570 to 1.258 in L2/3 AL and AM, the paper's 0.57 to 1.25, and
+    the figure 4 correlation r = 0.896) come from this. They equal Cohen's d from
+    results/main.parquet with the swapped weights to 4e-15, while the Methods' formula gives 0.592
+    to 1.155.
 - kind: code_mismatch
   statement: The paper says that for nearly all parameter combinations unscrambled stimuli elicit
     increased ND specifically in L2/3 of AL and AM; in its own sensitivity statistics
     (results/stats.parquet) AL and AM are both significant in 28 of 108 sets, AL alone in 50 and
     AM alone in 24, while L2/3 is the only significant layer in all of them.
+verifications:
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 1. The executed notebooks of the author-answers run with the conclusion cells and
+    the summaries removed, the helper module and the claims file, with the paper. The verifier
+    checked the archive's asset metadata for the blocked claims and tested helper functions on
+    synthetic inputs. Its report had no attempt record and gave its own outcome for each of the 27
+    claims; it agreed with 26 and gave reproduced for design-sessions, recorded as partially
+    reproduced. For blocked claims it agreed on the outcome and named another reason for the L0
+    claims (other) and for fig4-pupil-effect-size (data_missing).
+  results:
+  - claim: session-link
+    agrees: true
+    outcome: reproduced
+    reason: All 44 paper sessions match on mouse id and start time minus 7 h, and no other offset
+      matches. Cre line, area, layer, depth and non-NaN cell count agree 44/44; the unnormalised ND
+      matches to 1e-6 for 5280/5280 trials at a shift within -8..+3 frames. The excluded session is
+      741889312, L5 AL, at half frame rate. The author wrote the criterion after finding the 7-hour
+      offset, and the shift window brackets the observed -6..0, but the evidence is still strong
+      (problem 5).
+    response: No change; the timing of the criterion stays recorded as a deviation.
+  - claim: design-sessions
+    agrees: false
+    outcome: reproduced
+    reason: The dandiset holds 57 sessions (12 extra Cux2/Rbp4 recordings). The 44 linked sessions
+      plus the excluded one give exactly 45 sessions, 9 mice, 3 mice and 15 sessions per line, 9 per
+      area and 3 per layer x area. Sex (2/3/1 males, from the paper's table) and 4-6 sessions per
+      mouse fit.
+    response: Outcome changed to reproduced, with measured 45, 9, 15 and 9. The claim is about the
+      paper's design, and its 45 sessions are all in the dataset with the paper's counts; the 12
+      extra sessions stay recorded as a finding (selection_undocumented). Conclusion, README and
+      summary updated.
+  - claim: ext1-2-cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Non-NaN ROIs give 4018, and 1683/1781/554 per layer; all 15 layer x area totals equal
+      table-s1. Raw ROIs (4032) are also within tolerance.
+    response: No change needed.
+  - claim: ext1-3-kinetics-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). Needs L0 events; the archive's asset metadata list only
+      BehavioralTimeSeries and PlaneSegmentation, so no events exist. The named detector could not
+      be installed. The detector's failure was not worked around, for example by building it from
+      source; the criterion says to run it on dF/F, so the objection about corrected fluorescence is
+      beside the point (problem 7). It asked for the build log or an attempt from copied sources,
+      and a listing of the NWB groups.
+    response: Added a listing of every group and dataset of one NWB file and a search of all 57 for
+      paths naming events, eye, pupil or ellipse (none), and a section that reads the detector's
+      published sources and prints why they cannot be installed (setup.py does not find its C++
+      sources, the latest version has no arfpop, the last version with arfpop is Python 2 and its
+      C++ lacks an include a current compiler needs). Dropped the corrected-fluorescence argument.
+      Kept not_runnable, the reason the protocol gives for software that cannot be installed; the
+      verifier's other is recorded here.
+  - claim: fig3a-layer-specific
+    agrees: true
+    outcome: reproduced
+    reason: chi2(2) = 14.090, inside 13.379 +/- 1.338, p = 8.7e-4. L2/3 adjusted p = 2e-4; L4 0.84
+      and L5 0.999 not significant. d(L2/3) = 0.163, inside tolerance.
+    response: No change needed.
+  - claim: fig3b-area-specific
+    agrees: true
+    outcome: reproduced
+    reason: chi2(4) = 15.576, p = 0.0036. AL p = 0.020 and AM p = 0.028; V1, LM and PM not
+      significant. d(AL) = 0.181 is just inside tolerance; d(AM) = 0.132 against 0.268 is outside,
+      but the rule does not use d. The paper's main.parquet gives d(AM) = 0.127 and the contrast's
+      lower bound is 0.0048, not 0.128, which looks like a misprint the claims file did not record
+      (problem 2).
+    response: Added Cohen's d with the code's pooled SD (paper's data AL 0.200, AM 0.128; this
+      dataset 0.184, 0.133) and asked a reader whether 0.268 is a misprint (questions/000036.yaml).
+      Outcome kept.
+  - claim: ext3-1-natural-artificial
+    agrees: true
+    outcome: reproduced
+    reason: Layer chi2 = 16.093 (tolerance +/- 1.634), area chi2 = 21.839 (code value 22.213). L2/3
+      and L5 significant, L4 not; AL and AM significant, V1, LM and PM not. All four d values within
+      tolerance.
+    response: No change needed.
+  - claim: ext3-2-sensitivity
+    agrees: true
+    outcome: not_reproduced
+    reason: 36 of 108 sets agree (33%), below both 90% and 80%; the looser rule also gives 33%. The
+      same rule gives 28/108 on the paper's own stats.parquet, so the claims file seems to misread
+      what the sensitivity figures test, and the outcome reflects the rule as much as the data
+      (problem 1). It could not check the windowed and log-frequency spectra against the paper's
+      code and asked for a per-set comparison of per-trial ND with the paper's values.
+    response: Added the comparison with results/sensitivity_analysis.parquet. For six sets, one per
+      window and frequency spacing, the dF/F gives the paper's per-trial ND to a relative 1.1e-14 in
+      all 2199 contrast trials with a single matching shift; over all 108 sets per-trial log10 ND
+      with the NWB windows correlates with the paper's at r = 0.993 to 0.9999. Asked a reader
+      whether the paper supports another agreement rule (questions/000036.yaml). Outcome kept.
+  - claim: ext3-5-arousal-covariates
+    agrees: true
+    outcome: blocked
+    reason: The Methods' pupil diameter (semi-major axis) is not in the dandiset, which has no eye
+      tracking in the archive metadata; per the notebook the Zenodo deposit holds only pupil area. The
+      code's reading was available but not run as a variant; it would not decide the claim (problem
+      8). It asked for a listing of data/eye/.
+    response: The arousal notebook now lists data/eye/ (45 pupil area files and one parameter file,
+      no ellipse fit). The code's reading was not added as a variant for this claim, since it cannot
+      decide it and its two artifact readings already disagree for fig4-pupil-effect-size. Outcome
+      kept.
+  - claim: ext3-8-events-spectral
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). Same as ext1-3, no events in the archive, detector not run.
+    response: As ext1-3-kinetics-no-difference.
+  - claim: ext3-9-no-transients
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). Same as ext1-3.
+    response: As ext1-3-kinetics-no-difference.
+  - claim: mediation-event-magnitude
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). Needs L0 events and the Methods' pupil diameter, neither available.
+    response: As ext1-3-kinetics-no-difference.
+  - claim: table1-permutation
+    agrees: true
+    outcome: reproduced
+    reason: Methods rule on log10 ND gives L2/3 AL 3/3, AM 3/3, L2/3 8/15, L4 1/15, L5 0/14. The code
+      rule gives the same, and it equals the code's printed table.
+    response: No change needed.
+  - claim: fig4-locomotion-effect-size
+    agrees: true
+    outcome: reproduced
+    reason: r = 0.842 with p = 0.035 for artifact reading (a), and r = 0.844 with p = 0.035 for (b).
+      Both within 0.896 +/- 0.104 with p < 0.05. Locomotion fractions equal the code's to 1e-4.
+    response: The deposit is now streamed over parallel range requests and arrives in about 210 s,
+      so the executed copy shows reading (b). Added the variant with the code's pooled SD (r = 0.892
+      and 0.894). Outcome kept.
+  - claim: fig4-pupil-effect-size
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). The Methods' diameter is unavailable. The code's diameter alone
+      gives r = -0.647 under reading (a) and +0.651 under (b), so even the available variant would be
+      methods_underspecified. The blocked reason is inconsistent between the main header
+      (methods_underspecified) and the arousal notebook (data_missing) (problem 6).
+    response: blocked_by changed to data_missing, the main reason, since the Methods' reading cannot
+      be computed from any public file; the disagreement of the code's readings is in the notes.
+      Header, conclusion, summaries and README now agree.
+  - claim: discussion-session-effect-sizes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Range 0.572-1.111 lies within 0.513-1.375; smallest (0.572) and pooled d (0.340) are within
+      tolerance. The largest, 1.111, is outside 1.25 +/- 0.125. The criterion's formula on the paper's
+      main.parquet gives 1.155, while effect_size.parquet gives 1.258 with identical mean
+      differences; none of three SDs it tried reproduces it, so the claims file names a formula that
+      is not the one behind the paper's numbers (problem 3). The cell printed only the widened-range
+      check and never tested the extremes against their tolerance.
+    response: The cell now tests each extreme and the pooled d against its tolerance. Found the
+      code's SD, analysis.pooled_std_dev weighting each group's SD by the other group's n - 1, which
+      reproduces effect_size.parquet to 4e-15 in all 44 sessions; with it, as a variant, this dataset
+      gives 0.584 to 1.194 and 0.343, all within tolerance. Recorded as a code_mismatch finding and
+      asked a reader which formula the criterion means (questions/000036.yaml). Outcome kept, on the
+      Methods' formula.
+  - claim: fig5-multivariate-layer
+    agrees: true
+    outcome: reproduced
+    reason: chi2(2) = 18.535 (tolerance +/- 1.814), p = 9e-5. L2/3 p < 1e-4, L4 0.112, L5 0.997.
+      d(L2/3) = 0.192. umap-learn 0.5.12.
+    response: The record gave 18.99 and 0.194 from the author run; it now gives the handed-over and
+      re-run values, 18.535 and 0.192. Outcome kept.
+  - claim: fig5-multivariate-area
+    agrees: true
+    outcome: reproduced
+    reason: chi2(4) = 16.142, p = 0.0028. AL p = 0.009 and AM p < 1e-4; V1, LM and PM p about
+      0.94-0.95. d(AL) = 0.181 and d(AM) = 0.274 within tolerance.
+    response: Record updated to these values (it gave 16.20 and 0.275 from the author run). Outcome
+      kept.
+  - claim: ext5-1-events-multivariate
+    agrees: true
+    outcome: blocked
+    reason: Blocked (other). Needs L0 events.
+    response: As ext1-3-kinetics-no-difference.
+  - claim: fig6-category-decoding
+    agrees: true
+    outcome: reproduced
+    reason: 14/15 populations reach 0.75 or more and 12/15 reach 0.9, so both readings give "most".
+      Every layer and area mean is 0.83 or more, above chance 0.5. Accuracies correlate r = 0.990 with
+      the paper's per-session scores. No train/test leakage; PCA sits inside the CV pipeline.
+    response: No change needed.
+  - claim: ext6-1-identity-decoding
+    agrees: true
+    outcome: reproduced
+    reason: 14/15 populations 0.75 or more and 10/15 0.9 or more. Layer and area means 0.79-0.97,
+      above chance 1/12. r = 0.998 with the paper's scores.
+    response: No change needed.
+  - claim: fig7-stimulus-effect
+    agrees: true
+    outcome: reproduced
+    reason: chi2(4) = 31.545, inside 32.115 +/- 3.212, p = 2.4e-6. The likelihood ratio test was not
+      validated against R on the paper's data.
+    response: Added the Figure 7 model on the paper's per-trial values, which gives the paper's chi2(4)
+      = 32.115, p = 1.812e-6. Outcome kept.
+  - claim: fig7-snake-highest
+    agrees: true
+    outcome: reproduced
+    reason: The four named pairs have Tukey p 0.012, 8e-4, 3e-6 and 0.006 in the stated direction;
+      the other six are not significant. All four d values and estimates fall within tolerance or the
+      paper's CIs. emmeans_pairwise_tukey was not validated against R on the paper's data.
+    response: Added the Tukey tests on the paper's per-trial values; they give the paper's printed z,
+      adjusted p and intervals for the four named pairs, and the other six pairs are not
+      significant. Outcome kept.
+  - claim: ext7-1-arousal-mediation
+    agrees: true
+    outcome: blocked
+    reason: Blocked (data_missing). Pupil diameter (Methods reading) is needed as mediator or
+      covariate.
+    response: No change; see ext3-5-arousal-covariates for the code's reading.
+  - claim: fig8-nd-sd-correlation
+    agrees: true
+    outcome: reproduced
+    reason: r = 0.746, one-sided p = 0.0027. Noise has the largest Cook's D, 2.113, inside 2.318 +/-
+      0.232 (near the lower bound 2.086). SD values equal the code's printed values exactly.
+    response: No change needed.
+  - claim: fig8-no-sd-relation-controlled
+    agrees: true
+    outcome: reproduced
+    reason: Without noise r = 0.271, p = 0.21; over the 5 contrast stimuli r = -0.423, p = 0.48.
+      Neither is significant.
+    response: No change needed.
+  - claim: ext8-1-no-low-level-relation
+    agrees: true
+    outcome: blocked
+    reason: Blocked (methods_underspecified). Spectral energy is significant one-sided (p = 0.033
+      global DC, 0.044 per-pixel DC) but not two-sided (0.066, 0.087). The readings disagree, so the
+      claim's rule gives blocked.
+    response: No change needed.

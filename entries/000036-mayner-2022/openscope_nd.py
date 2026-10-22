@@ -39,7 +39,10 @@ Where the parameters come from (the claims file is claims/000036/10.1523-eneuro.
 
 from __future__ import annotations
 
+import io
 import itertools
+import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 
 import h5py
@@ -112,6 +115,20 @@ def _open(url):
 
 def _str(x):
     return x.decode() if isinstance(x, bytes) else str(x)
+
+
+def nwb_tree(url):
+    """Every group and dataset of one file, with the shape of each dataset (data check)."""
+    rows = []
+
+    def visit(name, obj):
+        rows.append({"path": "/" + name, "kind": "dataset" if isinstance(obj, h5py.Dataset) else "group",
+                     "shape": obj.shape if isinstance(obj, h5py.Dataset) else None,
+                     "neurodata_type": _str(obj.attrs.get("neurodata_type", ""))})
+
+    with _open(url) as f:
+        f.visititems(visit)
+    return pd.DataFrame(rows)
 
 
 def read_metadata(url):
@@ -276,12 +293,22 @@ MAIN_SET = {"state_length": 1, "metric": "euclidean", "log_frequency": False, "w
             "window_param": -1.0, "overlap": 0.0}
 
 
-def cohens_d(values, labels, a="natural", b="artificial"):
-    """analysis.cohens_d: mean difference over the pooled SD (sample SDs)."""
+def cohens_d(values, labels, a="natural", b="artificial", code_sd=False):
+    """Cohen's d: mean difference over the pooled SD (sample SDs), as the Methods give it.
+
+    With `code_sd`, the pooled SD as analysis.pooled_std_dev of the paper's code computes it: n1
+    and n2 are the counts of `a` and `b`, but s1 and s2 come from a groupby, which sorts the
+    labels by name, so for a = "natural" and b = "artificial" each group's SD is weighted by the
+    other group's n - 1. This reproduces the code's results/effect_size.parquet (shown in the
+    main notebook); it is a variant, not the Methods' formula.
+    """
     values, labels = np.asarray(values, float), np.asarray(labels)
     x, y = values[labels == a], values[labels == b]
     n1, n2 = len(x), len(y)
-    pooled = np.sqrt(((n1 - 1) * x.var(ddof=1) + (n2 - 1) * y.var(ddof=1)) / (n1 + n2 - 2))
+    v1, v2 = x.var(ddof=1), y.var(ddof=1)
+    if code_sd and sorted([a, b])[0] == b:
+        v1, v2 = v2, v1
+    pooled = np.sqrt(((n1 - 1) * v1 + (n2 - 1) * v2) / (n1 + n2 - 2))
     return (x.mean() - y.mean()) / pooled if pooled else 0.0
 
 
@@ -342,11 +369,13 @@ TIMING_SHIFTS_S = [-34.0, -1.0, 1.0]   # data check: identity decoding with shif
 PAPER_OFFSETS = range(-8, 4)                            # data check: frames searched against the paper
 
 
-def process_session(url, full=True, paper_nd=None):
+def process_session(url, full=True, paper_nd=None, paper_sens=None):
     """Everything the main notebook needs from one session, so the dF/F is read once.
 
     `paper_nd` maps (stimulus, trial) to the paper's unnormalised ND for the same session (from
     the code's results/main.parquet); it is used only for the data check of trial timing.
+    `paper_sens` maps a parameter set's index in SENSITIVITY_SETS to such a mapping for that
+    set (from results/sensitivity_analysis.parquet); it checks the spectra of other sets.
     """
     import os
     import warnings
@@ -424,6 +453,32 @@ def process_session(url, full=True, paper_nd=None):
             found.append({"stimulus": r.stimulus, "trial": r.trial, "start_t": r.start_t,
                           "offset": hits[0] if len(hits) == 1 else np.nan, "n_hits": len(hits)})
         out["paper_offsets"] = pd.DataFrame(found)
+        if paper_sens:
+            # The spectra of other parameter sets against the paper's per-trial values
+            # (results/sensitivity_analysis.parquet), at the start shift found above. The paper's
+            # trial length is not known exactly, so this trial's length -2 to +2 frames and 900
+            # are tried, until one matches to a relative 1e-6.
+            offs = out["paper_offsets"].set_index(["stimulus", "trial"]).offset
+            check = []
+            for k, values in paper_sens.items():
+                for _, r in contrast.iterrows():
+                    target, shift = values.get((r.stimulus, r.trial)), offs.get((r.stimulus, r.trial))
+                    if target is None or shift is None or not np.isfinite(shift):
+                        continue
+                    a = r.start_frame + int(shift)
+                    best = np.inf
+                    for length in [r.n_frames, r.n_frames - 1, r.n_frames + 1, 900, r.n_frames - 2, r.n_frames + 2]:
+                        if a + length > dff.shape[1]:
+                            continue
+                        try:
+                            nd = nd_trial(dff[:, a:a + length], **SENSITIVITY_SETS[k])
+                        except ValueError:
+                            continue
+                        best = min(best, abs(nd - target) / target)
+                        if best <= 1e-6:
+                            break
+                    check.append({"set": k, "stimulus": r.stimulus, "trial": r.trial, "rel_diff": best})
+            out["sensitivity_check"] = pd.DataFrame(check)
     return out
 
 
@@ -636,23 +691,74 @@ def umap_session(url):
 ZENODO_URL = "https://zenodo.org/api/records/5781567/files/data.tar.gz/content"   # doi:10.5281/zenodo.5781567
 
 
+class _RangeStream(io.RawIOBase):
+    """A read-only, in-order byte stream of a remote file, fetched as byte ranges by several
+    threads at once (a single connection to Zenodo gives 2 to 3 MB/s, several give more). The
+    chunks are handed on in order and dropped once read; nothing is written to disk."""
+
+    def __init__(self, url, chunk=16 * 2**20, workers=16):
+        import requests
+        self.url, self.chunk = url, chunk
+        self.size = int(requests.head(url, allow_redirects=True, timeout=60).headers["content-length"])
+        self.n_chunks = -(-self.size // chunk)
+        self.window = workers + 8
+        self.pool = ThreadPoolExecutor(workers)
+        self.local = threading.local()
+        self.futures, self.next_submit, self.index = {}, 0, 0
+        self.buf, self.offset = b"", 0
+
+    def _fetch(self, i):
+        import requests
+        if not hasattr(self.local, "session"):
+            self.local.session = requests.Session()
+        start, end = i * self.chunk, min(self.size, (i + 1) * self.chunk) - 1
+        for attempt in range(6):
+            try:
+                r = self.local.session.get(self.url, headers={"Range": f"bytes={start}-{end}"}, timeout=120)
+                if r.status_code == 206 and len(r.content) == end - start + 1:
+                    return r.content
+            except requests.RequestException:
+                pass
+            time.sleep(2 * (attempt + 1))
+        raise OSError(f"bytes {start}-{end} could not be fetched")
+
+    def readable(self):
+        return True
+
+    def readinto(self, b):
+        if self.offset >= len(self.buf):
+            if self.index >= self.n_chunks:
+                return 0
+            while self.next_submit < min(self.n_chunks, self.index + self.window):
+                self.futures[self.next_submit] = self.pool.submit(self._fetch, self.next_submit)
+                self.next_submit += 1
+            self.buf, self.offset = self.futures.pop(self.index).result(), 0
+            self.index += 1
+        n = min(len(b), len(self.buf) - self.offset)
+        b[:n] = self.buf[self.offset:self.offset + n]
+        self.offset += n
+        return n
+
+    def close(self):
+        self.pool.shutdown(wait=False, cancel_futures=True)
+        super().close()
+
+
 def stream_zenodo(wanted, deadline, log):
     """Read members of the Zenodo tarball into memory as they stream past, until every
     member in `wanted` (a function of the member name returning True when needed, and a set of
     names that must all be seen) has been read, or until time.time() passes `deadline`.
 
     The tarball is gzip-compressed and cannot be read out of order: reaching a member means
-    decompressing everything before it. Nothing is written to disk.
+    decompressing everything before it. The bytes are fetched as parallel range requests
+    (`_RangeStream`) and decompressed in order. Nothing is written to disk.
     """
     import tarfile
-    import time
-    import requests
     want, required = wanted
     got, seen = {}, []
     t0 = time.time()
-    with requests.get(ZENODO_URL, stream=True, timeout=120) as r:
-        r.raise_for_status()
-        tf = tarfile.open(fileobj=r.raw, mode="r|gz")
+    with _RangeStream(ZENODO_URL) as raw:
+        tf = tarfile.open(fileobj=io.BufferedReader(raw, buffer_size=2**20), mode="r|gz")
         for m in tf:
             seen.append((m.name, m.size, time.time() - t0))
             if want(m.name):
