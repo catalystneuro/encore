@@ -76,6 +76,13 @@
 #    days of the first (empirical_priors.py). The trials of sessions 1 to 7 and the non-imaged trials
 #    of imaging days are needed; the paper says its data are in DANDI; the 2026 code downloads extra
 #    VR data from figshare article 31974756 (notebooks/01_DOWNLOAD_DATASETS.ipynb, no version given).
+#    Answer of 2026-10-22: that deposit is the authors' "Unprocessed VR data"
+#    (doi:10.6084/m9.figshare.31974756.v1, published 2026-04-09, morph_vr_data.zip, one VR sqlite file
+#    per session), described as "All virtual reality behavior for reproducing empirical prior
+#    distributions over morph values". It is public and pinned, so the priors are built from it; its
+#    mice are named by alias (e.g. 4139265.3), mapped to R1 to F6 in the 2026 code (mouse_metadata.py).
+#    Claims that use the priors are `data: with_inputs`; claims that use nothing but the deposit are
+#    `data: elsewhere`.
 # M8 Likelihood and posterior. Gaussian centred at f_h with variance 8.23 (Methods); posterior
 #    proportional to likelihood times group prior, normalised over f_h for each observed f_h; MAP is
 #    its argmax. The code disagrees: it uses exp(-d^2/sigma^2) with sigma 0.3 units (8.23 f_h, s.d.
@@ -157,12 +164,16 @@ claims:
     during the first 7 training sessions (<4% of trials with intermediate morph values before session
     8 ... mice were frequently exposed to trials with intermediate morph values (60% of trials with
     intermediate morph values before session 8
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.31974756.v1 (Unprocessed VR data, the authors' deposit of
+    all VR behaviour)
   expected:
   - quantity: frequent morph fraction of intermediate trials before session 8
     value: 0.6
     tolerance: 0.06
   criterion: Per mouse, the fraction of all trials run in sessions 1 to 7 (imaged and not, M7) with
-    S-tilde 0.25, 0.5 or 0.75. The paper does not say whether the fraction is pooled over mice or
+    S-tilde 0.25, 0.5 or 0.75, counted from the figshare deposit of M7 (the dataset holds only the
+    imaged trials of the imaging sessions). The paper does not say whether the fraction is pooled over mice or
     per mouse; readings (a) pooled over trials of the group, (b) every mouse. Reproduced when, under
     a reading, the rare morph fraction is below 4% and the frequent morph fraction is within 0.06
     of 60%.
@@ -283,11 +294,18 @@ claims:
     position bin of peak trial-averaged activity in S-tilde = 0 trials and in S-tilde = 1 trials
     (Extended Data Fig. 4b,c). The paper shows this only as scatter plots; it gives no region or
     test. The reward zone is 250 to 400 cm (Methods, Morphed environments); "end points" is read as
-    (a) the first and last bin and (b) the first and last 50 cm. The reference is (a) the share of
-    the track those regions cover and (b) the peak locations of all S-tilde = 0 place cells.
-    Reproduced when, in both conditions, the share of overlap cells with peaks in the end points or
-    reward zone exceeds the reference under every combination of readings; the counts are judged by
-    their tolerances.
+    (a) the first and last bin and (b) the first and last 50 cm. How the two peaks of a cell are
+    counted is not in the paper or the code (answer of 2026-10-22). The figure and the code
+    (PlaceCellAnalysis.common_cell_remap_heatmap) show the joint histogram of the two peaks and a
+    marginal histogram for each environment, so the paper allows (i) each environment's peaks
+    separately, the S-tilde = 0 peaks and the S-tilde = 1 peaks each against their own reference,
+    and (ii) cells with both peaks in the regions against the product of the two references. The
+    reference is (a) the share of the track the regions cover and (b) the share of the peaks of all
+    place cells of the same environment in the regions (S-tilde = 0 place cells for the S-tilde = 0
+    peaks, S-tilde = 1 place cells for the S-tilde = 1 peaks). Reproduced when, in both conditions,
+    the share of overlap cells in the end points or reward zone exceeds the reference under every
+    combination of readings (end points, peaks, reference); the counts are judged by their
+    tolerances.
   depends_on:
   - edf4a-overlap-above-chance
 - id: fig2eh-place-cell-similarity-differs
@@ -471,6 +489,7 @@ claims:
   - quantity: frequent morph across-mouse mean Delta D_KL
     value: 0.50
     tolerance: 0.11
+  data: with_inputs
   criterion: Per session 8 to N, SF (M9), Q (M10) and Delta D_KL (M11) against the ideal rare and
     frequent posteriors (M6 to M8); per-mouse mean over sessions; test M12. Tolerances are the
     paper's s.e.m. for the means and 10% for the counts. Reproduced when the test gives the
@@ -496,6 +515,7 @@ claims:
   - quantity: pooled frequent morph Delta D_KL
     value: 0.42
     tolerance: 0.042
+  data: with_inputs
   criterion: Per mouse, the across-session Q estimate is the average of its session Q estimates,
     renormalised (Fig. 6b legend); the group Q sums the mouse Q estimates and renormalises
     (Methods, Estimating posterior distributions, "weighting mice equally"); Delta D_KL as M11.
@@ -527,6 +547,7 @@ claims:
   - quantity: frequent morph across-mouse mean prior Delta D_KL
     value: 0.46
     tolerance: 0.07
+  data: with_inputs
   criterion: Methods, Reconstructing prior distributions. Per mouse, transformed SF values of all
     sessions 8 to N pooled into one unnormalised Q (M10); R = sum over f-hat_h of Q(f_h | f-hat_h)
     divided by sum over f-hat_h of the likelihood P(f-hat_h | f_h) / Z(f-hat_h), Z the row sum of
@@ -557,6 +578,7 @@ claims:
   - quantity: frequent MAP, S-tilde = 1 trials
     value: 37.30
     tolerance: 3.73
+  data: with_inputs
   criterion: Argmax over f_h of the group posteriors (M6 to M8) at the f-hat_h of each S-tilde = 0
     or 1 trial, averaged over trials. Which trials is not stated; readings (a) all such trials of
     sessions 8 to N of both groups, (b) of each group's own sessions. Reproduced when all four are
@@ -568,6 +590,7 @@ claims:
     paragraph 5; Extended Data Fig. 9a-i
   quote: Of note, these remapping patterns observed in rare morph versus frequent morph conditions
     were stable over sessions and emerged early in training in most animals
+  data: with_inputs
   criterion: Delta D_KL (M9 to M11) of each mouse's session 3 (R6 has none, Extended Data Fig. 9c),
     and per session for sessions 3 and 8 to N (Extended Data Fig. 9c,d). The ideal posteriors for
     session 3 are not stated; readings (a) the group posteriors of M8, (b) posteriors from the
@@ -605,6 +628,7 @@ claims:
     test: Wilcoxon signed-rank test
     p: 1.82e-5
     n: 24 sessions
+  data: with_inputs
   criterion: Per rare morph session 8 to N, the mean over f-hat_h (M11 rows) of D_KL(P || Q) for the
     rare posterior and for each null; Wilcoxon signed-rank of null minus rare over sessions (code
     NullModels4GrumpyPantsReviewer). Null priors not in the Methods, taken from the code (cell 3)
@@ -642,6 +666,7 @@ claims:
     test: Wilcoxon signed-rank test
     p: 6.0e-5
     n: 21 sessions
+  data: with_inputs
   criterion: As edf9k-null-models-rare, for the frequent morph sessions 8 to N against the frequent
     posterior. Reproduced when all five tests give p < 0.05 with the frequent posterior closer.
   depends_on:
@@ -653,6 +678,7 @@ claims:
     paragraph 6; Extended Data Fig. 10
   quote: The remapping patterns were similar to those observed in frequent morph mice that did not
     perform this task
+  data: with_inputs
   criterion: Extended Data Fig. 10f-h. SF, Q and Delta D_KL as in fig6a-dkl-sign and the prior
     reconstruction as in fig6d-prior-reconstruction, for FD mice; FD sessions are read as in
     session-and-trial-counts. The comparison is not stated; readings (a) the Q estimate pooled
@@ -693,16 +719,31 @@ claims:
     neural populations, paragraph 1; Figure 7b-f
   quote: model-derived SF values and Q estimates were good matches to the appropriate posterior
     distributions
-  criterion: Methods, Hebbian learning model (the parameter list says "For Fig. 4", read as Fig. 7).
-    M = 100 inputs with radial basis tuning exp(-(mu_j - f_h)^2/sigma^2) (the Methods drop the
-    minus sign), sigma^2 = 4.11, centres tiling the stimulus axis; N = 100 outputs, K = 20, c_y =
-    0.01, sigma_y 0.01 N(0,1), sigma_S 2.74 N(0,1), eta = 0.1, tau = 0.001, W_max = 5, W initial
-    U(0, 0.1). The Methods also list sigma_w 0.05 N(0,1) but place it in no equation; readings (a)
-    added to each weight update, (b) left out; both are run. 1,000 training stimuli drawn from the group prior of M7; 50 models per condition
-    (Fig. 7c legend). Not in the Methods, from the code (KWTA_EmpiricalPrior), testing on the
-    1,000-point grid of M6, SF centroids from test stimuli below 0.05 and above 0.9 units, the
-    affine map on medians of [-0.1, 0.1] and [0.9, 1.1], then Q and Delta D_KL as M10 and M11. Seeds
-    are a standard choice. Reproduced when the median Delta D_KL of the 50 rare-trained models is
+  data: elsewhere
+  where: figshare doi:10.6084/m9.figshare.31974756.v1 (Unprocessed VR data; the model needs
+    only the priors of M7)
+  criterion: Methods, Hebbian learning model (the parameter list says "For Fig. 4", read as Fig. 7),
+    with the code (notebooks/KWTA_EmpiricalPrior.ipynb at dca5a57, kwta_network_model and d_def)
+    for what the Methods leave open (answer of 2026-10-22). The model is run in the code's rescaled
+    unit of M6 (1 unit = 27.42 f_h); the Methods' values are the same numbers in f_h, and the two
+    are one model. M = 100 inputs with tuning exp(-(mu_j - x)^2/sigma^2) (the Methods drop the minus
+    sign; code utilities.gaussian), sigma = 0.15 units (4.11 f_h; the Methods' "sigma^2 = 4.11" is
+    the code's width sigma, so the denominator is 0.0225 units^2, 16.9 f_h^2), centres evenly spaced
+    from -0.1 to 1.1 units (5.5 to 38.5 f_h, code THETA). N = 100 outputs, K = 20, c_y = 0.01 (code
+    alpha = 1/M), eta = 0.1, tau = 0.001, W_max = 5, W initial U(0, 0.1). Noise as in the code, in
+    training and in testing alike. Stimulus noise 0.1 units N(0,1) (sigma_S, 2.74 f_h) added to the
+    stimulus before the inputs; 0.01 N(0,1) (sigma_y) added to every z before the K winners are
+    chosen; winners y = c_y z; each other output y = 0.01 times the (K+1)-th largest z times N(0,1);
+    all rectified at 0. Weight noise 0.05 N(0,1) (sigma_w, code dW noise) added to every weight
+    update before the decay and the clipping; the earlier reading (b), without it, is dropped. The
+    code's loser indexing (sort[-k:0:-1]) also gives noise to the K-th winner and leaves the weakest
+    output at 0, a slip; the Methods' reading (all N - K losers) is followed. 1,000 training stimuli
+    drawn from the group prior of M7 on the M6 grid; 50 models per condition (Fig. 7c legend).
+    Testing, from the code, on the f_h of 1,000 evenly spaced S from -0.3 to 1.3 (code
+    ut.wallmorphx(np.linspace(-.3, 1.3)), all between 5.5 and 38.5 f_h); SF centroids from test
+    stimuli below 0.05 and above 0.9 units; the affine map sends the median SF of test stimuli with
+    S in [-0.1, 0.1] and in [0.9, 1.1] to 0.094 and 1.073 units; then Q and Delta D_KL as M10 and
+    M11. Seeds are a standard choice. Reproduced when the median Delta D_KL of the 50 rare-trained models is
     below 0 and that of the 50 frequent-trained models above 0 (Fig. 7f). The model uses no
     recorded activity; it needs only the trial morph values for the prior.
 - id: fig7g-model-prior-reconstruction
@@ -713,6 +754,7 @@ claims:
   quote: These unsupervised reconstructions were quantitatively more similar to the prior of the
     matching condition, but the match between the reconstruction and the true priors was not as
     compelling as the match seen in the neural data.
+  data: with_inputs
   criterion: Models as in fig7-model-reproduces-remapping; R per model as in
     fig6d-prior-reconstruction, averaged over the 50 models (Fig. 7g legend, "Delta D_KL is for the
     averaged reconstructed prior"), in bits (the code's nats are a variant). Reproduced when the
@@ -729,10 +771,17 @@ claims:
     paragraph 6; Extended Data Fig. 3
   quote: Simulating neural populations that were designed to stochastically encode the posterior
     distributions also reproduced the remapping patterns described above
+  data: with_inputs
   criterion: Methods, Simulating a neural posterior distribution. Per trial, samples s from the
     group posterior (M8) at the trial's f-hat_h; neuron i has gamma activity with theta = 1 and
     kappa_i(s) = alpha exp(-(s - mu_i)^2/sigma^2) + beta, sigma = 4.11, alpha = 2, beta = 0, mu_i
-    tiling f_h; 1,000 simulations (Extended Data Fig. 3g,h). The trials are those of the recorded
+    evenly spaced over the M6 grid, 0.06 to 43.9 f_h (answer of 2026-10-22; the paper says only
+    "possible f h values", and the code spaces the centres over the grid on which the posterior is
+    sampled, SimulatedSimMats.simulate_session, xx_lims (-.3, 1.3)); 1,000 simulations (Extended
+    Data Fig. 3g,h). The simulated difference is that of the mean over the 1,000 simulations, each
+    simulation's trial-by-trial matrix z-scored over its off-diagonal entries before averaging
+    (Extended Data Fig. 3j legend; code TheoreticalSimMats), and the mean z-scored matrices are
+    averaged within the S-tilde blocks of fig3f-zscored-difference-at-025 for the comparison. The trials are those of the recorded
     sessions 8 to N (code TheoreticalSimMats uses a session's morph values and its cell count; the
     code's rbf_sigma 0.4, alpha 1 and beta 0.25 are a variant). Open, the samples per trial
     (Methods "several times", code 1) and the number of neurons, read as (a) one sample, the

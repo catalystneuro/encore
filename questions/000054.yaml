@@ -24,6 +24,18 @@ questions:
     against fewer than 4% in the paper. The claim is blocked for now, and every posterior is built
     from a rare prior with more intermediate mass than the paper's, which may explain why the rare
     and frequent Delta D_KL values here are smaller than the paper's (fig6a, fig6bc, fig6d).
+  answer: >-
+    Yes. The Methods build each prior from "previously seen f h or S values", and the paper's Data
+    availability names only DANDI, which holds the imaged trials alone. The figshare deposit
+    (doi:10.6084/m9.figshare.31974756.v1) is the authors', public and pinned, and says it holds
+    "All virtual reality behavior for reproducing empirical prior distributions over morph values";
+    the 2026 code builds the priors from it (empirical_priors.py, one VR sqlite file per session,
+    mice named by alias and mapped in mouse_metadata.py). Header M7 now names it. The claims whose
+    posteriors or priors use M7 and that also use the dataset's activity (fig6a, fig6bc, fig6d,
+    map-estimate-values, edf9, edf9k, edf9l, edf10, fig7g, edf3) are `data: with_inputs`. This
+    claim and fig7-model-reproduces-remapping use nothing but the deposit, so they are `data:
+    elsewhere` with the deposit under `where`. Statements and expected values are unchanged.
+  answered: 2026-10-22
 - claim: fig7-model-reproduces-remapping
   asked: 2026-10-22
   question: >-
@@ -45,6 +57,18 @@ questions:
     reproduced under any of the four readings run (weight noise with or without, test noise with
     or without). A width that lets the weights grow could change the outcome of this claim and of
     fig7g-model-prior-reconstruction.
+  answer: >-
+    The code's scale, which is the Methods' in other units. The code (KWTA_EmpiricalPrior, d_def)
+    has "'sigma': .15", "'stim noise': .1" and "THETA = np.linspace(-.1,1.1,num=d['nInputs'])", and
+    its utilities.gaussian is "np.exp(-(mu-x)**2/sigma**2)". So the Methods' "σ 2 = 4.11" is the
+    width sigma (0.15 units = 4.11 f_h, denominator 16.9 f_h^2), with centres from -0.1 to 1.1 units
+    (5.5 to 38.5 f_h); run in units or in f_h, it is the same model. The model is trained and tested
+    with stimulus noise and output noise (0.01 N(0,1) added to z before the K winners are chosen,
+    losers set to 0.01 times the (K+1)-th largest z times N(0,1), rectified), and with weight noise
+    0.05 N(0,1) added to every update ("'dW noise': .05"), which settles reading (a). Test stimuli
+    are the f_h of 1,000 evenly spaced S from -0.3 to 1.3 (code ut.wallmorphx), not the M6 grid as
+    the criterion said. The criterion is rewritten with these; statement and outcome rule unchanged.
+  answered: 2026-10-22
 - claim: edf4bc-overlap-cells-at-ends-and-reward
   asked: 2026-10-22
   question: >-
@@ -63,6 +87,15 @@ questions:
     of all S-tilde = 0 place cells (0.585 to 0.871), so whether a reading requires both cells' peaks
     in the regions, or compares S-tilde = 1 peaks with S-tilde = 1 place cells, could move the
     outcome.
+  answer: >-
+    The paper does not give it. It shows Extended Data Fig. 4b,c as scatter plots with "Marginal
+    histograms ... for occupancy of position bins in the S ~ = 0 trials (bottom) and S ~ = 1 trials
+    (right)", with no measure or test, and the code only draws them
+    (PlaceCellAnalysis.common_cell_remap_heatmap). The criterion now names two readings the figure
+    allows, (i) each environment's peaks separately and (ii) cells with both peaks in the regions
+    against the product of the two references, and reference (b) is now taken per environment
+    (S-tilde = 1 peaks against S-tilde = 1 place cells); the claim needs every combination to hold.
+  answered: 2026-10-22
 - claim: edf3-simulated-posterior-population
   asked: 2026-10-22
   question: >-
@@ -76,3 +109,13 @@ questions:
   why: >-
     The simulated rare minus frequent difference at S-tilde 0.25 against 1.0 is +0.009 here, near
     zero, against a recorded -0.367; a different tiling could change its sign and the outcome.
+  answer: >-
+    The M6 grid (0.06 to 43.9 f_h). The paper says only that "μ i were chosen to evenly tile
+    possible f h values"; the code spaces the centres over the grid on which the posterior is
+    sampled ("_mun = np.linspace(xx_lims[0],xx_lims[1],num=n_neurons)" with xx_lims (-.3,1.3) in
+    SimulatedSimMats.simulate_session; simmat_distribution does not pass its own xx_lims on, so the
+    default always holds). Yes, the difference is judged from the mean over the 1,000 simulations,
+    with each simulation's matrix z-scored before averaging ("similarity matrices are z-scored
+    prior to averaging (diagonal elements excluded)", Extended Data Fig. 3j legend). Both are now in
+    the criterion.
+  answered: 2026-10-22
