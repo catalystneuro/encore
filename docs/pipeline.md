@@ -80,7 +80,8 @@ naming the usage policy means the run was flagged. A flagged run commits
 nothing and fails with `FLAGGED`. The runner then puts the branch back and
 runs the role again on the verified account, along with the dataset's
 remaining roles. A missing unverified token (`UNVERIFIED-UNAVAILABLE`) is
-treated the same way. The recorder always runs on the verified account. Each
+treated the same way. The recorder reads no paper, so it starts on the unverified account even for a
+dataset whose paper was flagged. Each
 run's commit records its account.
 
 ## The paper store
