@@ -236,6 +236,41 @@ def read_metadata(h5: h5py.File) -> dict:
     return meta
 
 
+def describe_file(h5: h5py.File) -> dict:
+    """What a file holds besides the trial and electrode tables: every object under
+    `acquisition` and `processing` (path, neurodata type, shape), the subject fields, the
+    electrode groups and the session and experiment descriptions."""
+    objects = []
+    for top in ("acquisition", "processing", "analysis", "stimulus"):
+        if top not in h5:
+            continue
+
+        def visit(name, obj, top=top):
+            objects.append((f"{top}/{name}", _text(obj.attrs.get("neurodata_type", "")),
+                            obj.shape if isinstance(obj, h5py.Dataset) else None))
+        h5[top].visititems(visit)
+    G = h5["general"]
+    subject = {k: _text(v[()]) for k, v in G["subject"].items()} if "subject" in G else {}
+    groups = {}
+    if "extracellular_ephys" in G:
+        for k, v in G["extracellular_ephys"].items():
+            if isinstance(v, h5py.Group) and "location" in v.attrs:
+                groups[k] = {a: _text(v.attrs[a]) for a in ("location", "description") if a in v.attrs}
+    text = {k: _text(G[k][()]) for k in ("experiment_description", "institution", "lab") if k in G}
+    text["session_description"] = _text(h5["session_description"][()])
+    E = G["extracellular_ephys/electrodes"]
+    columns = {}
+    for k, v in E.items():
+        if k == "group":                     # object references to the electrode groups above
+            continue
+        if isinstance(v, h5py.Dataset) and v.dtype.kind in "OSU":
+            columns[k] = sorted({_text(x) for x in v[:]})[:6]
+        elif isinstance(v, h5py.Dataset):
+            columns[k] = str(v.dtype)
+    return {"objects": objects, "subject": subject, "electrode_groups": groups, "text": text,
+            "electrode_columns": columns}
+
+
 # ----------------------------------------------------------------------------------------------
 # High gamma
 
@@ -276,7 +311,7 @@ def resample_to(env: np.ndarray, env_rate: float, times: np.ndarray) -> np.ndarr
 def process_block(asset: dict, buf: bytes | None = None) -> dict:
     """One block: metadata, and per trial the z-scored high gamma in the epoch, per baseline.
 
-    Returns metadata plus `epochs[baseline]` (trials, channels, 251) float32 for the trials whose
+    Returns metadata, `contents` (describe_file), plus `epochs[baseline]` (trials, channels, 251) float32 for the trials whose
     window from -1000 to +750 ms lies inside the recording, `kept` (their trial indices), and
     `hg_stats` (per-channel baseline mean and SD of the 200 Hz high gamma, per baseline).
     """
@@ -284,6 +319,7 @@ def process_block(asset: dict, buf: bytes | None = None) -> dict:
         buf = fetch(asset["url"], asset["size"])
     with h5py.File(io.BytesIO(buf), "r") as h5:
         meta = read_metadata(h5)
+        meta["contents"] = describe_file(h5)
         raw = h5["acquisition/ElectricalSeries/data"][:]
     del buf
     good = ~meta["bad"]
@@ -307,14 +343,22 @@ def process_block(asset: dict, buf: bytes | None = None) -> dict:
         rest |= (grid >= a - meta["t0"]) & (grid < b - meta["t0"])
     stats["rest"] = (np.nanmean(hg[rest], axis=0), np.nanstd(hg[rest], axis=0))
     labels = [parse_label(c) for c in meta["condition"][kept]]
-    sums = {}
+    # Kept trials whose epoch (-500 to +750 ms) overlaps an interval the file marks invalid
+    # ("ECoG artifact"). They are in the analysis (the claims file does not say to leave them
+    # out); their sums are kept apart too, so that a variant can leave them out.
+    in_invalid = np.zeros(len(kept), bool)
+    for a0, a1 in meta["invalid"] - meta["t0"]:
+        in_invalid |= (cv[kept] + EPOCH_MS[-1] / 1000 > a0) & (cv[kept] + EPOCH_MS[0] / 1000 < a1)
+    sums, sums_invalid = {}, {}
     keys = sorted({p for p in labels if p is not None})
     for name, (m, s) in stats.items():
         z = ((ep - m) / s).transpose(0, 2, 1)
         sums[name] = {p: z[[i for i, q in enumerate(labels) if q == p]].sum(axis=0, dtype=np.float64)
                       for p in keys}
-    meta.update(sums=sums, labels=labels, kept=kept, hg_stats=stats, duration=duration,
-                rest_seconds=float(rest.sum() / HG_HZ), env_rate=env_rate)
+        sums_invalid[name] = {p: z[[i for i, q in enumerate(labels) if q == p and in_invalid[i]]].sum(axis=0, dtype=np.float64)
+                              for p in keys if any(q == p and in_invalid[i] for i, q in enumerate(labels))}
+    meta.update(sums=sums, sums_invalid=sums_invalid, in_invalid=in_invalid, labels=labels, kept=kept,
+                hg_stats=stats, duration=duration, rest_seconds=float(rest.sum() / HG_HZ), env_rate=env_rate)
     return meta
 
 
@@ -333,24 +377,30 @@ def process_blocks(block_assets: list[dict], log=print) -> list[dict]:
     return out
 
 
-def load_subject(blocks: list[dict]) -> dict:
+def load_subject(blocks: list[dict], exclude_invalid: bool = False) -> dict:
     """Pool the blocks of one subject into per-syllable mean z-scored high gamma.
 
     Electrodes flagged bad in any block are left out of the subject's analyses (`good`). Returns
     `cvs` (sorted (consonant, vowel) pairs), `counts` (renditions per CV), `H[baseline]`
     (CV, channel, 251) means over renditions, and the electrode metadata of the first block.
+    With exclude_invalid, the trials whose epoch overlaps an invalid interval are left out of the
+    means (a variant; the baseline statistics are unchanged).
     """
     first = blocks[0]
     good = ~np.any([b["bad"] for b in blocks], axis=0)
     cvs = sorted({p for b in blocks for p in b["labels"] if p is not None},
                  key=lambda p: (CONSONANTS.index(p[0]), "aiu".index(p[1])))
-    counts = np.array([sum(q == p for b in blocks for q in b["labels"]) for p in cvs])
+    counts = np.array([sum(q == p and not (exclude_invalid and b["in_invalid"][i])
+                           for b in blocks for i, q in enumerate(b["labels"])) for p in cvs])
     H = {}
     for name in BASELINES:
         total = np.zeros((len(cvs), first["n_channels"], len(EPOCH_MS)))
         for b in blocks:
             for p, v in b["sums"][name].items():
                 total[cvs.index(p)] += np.nan_to_num(v)
+            if exclude_invalid:
+                for p, v in b["sums_invalid"][name].items():
+                    total[cvs.index(p)] -= np.nan_to_num(v)
         H[name] = (total / counts[:, None, None]).astype(np.float32)
         H[name][:, ~good] = np.nan
     return {
@@ -483,7 +533,8 @@ def co_clustering(nc: np.ndarray, ac: np.ndarray) -> np.ndarray:
 def separability(D: np.ndarray, labels: np.ndarray, weights: np.ndarray | None = None) -> np.ndarray:
     """Mean between-cluster distance minus mean within-cluster distance (Methods, Cluster
     Separability). D (time, n, n) pairwise distances; labels per token, per time when 2-D
-    (time, n). weights (B, n) are bootstrap counts of each token; returns (B, time) then."""
+    (time, n). weights (B, n) are bootstrap counts of each token; returns (B, time) then. Pairs
+    are of distinct tokens: copies of one token in a bootstrap sample are not counted as a pair."""
     n = D.shape[1]
     lab = labels if labels.ndim == 2 else np.broadcast_to(labels, (D.shape[0], n))
     same = (lab[:, :, None] == lab[:, None, :]).astype(float)
@@ -496,8 +547,11 @@ def separability(D: np.ndarray, labels: np.ndarray, weights: np.ndarray | None =
         X = (w @ A.transpose(1, 0, 2).reshape(n, -1)).reshape(len(w), A.shape[0], n)
         return np.einsum("btj,bj->bt", X, w)
 
-    total_pairs = w.sum(1) ** 2 - w.sum(1)                          # (B,)
-    within_pairs = quad(same) - w.sum(1)[:, None]
+    # A token drawn more than once in a bootstrap sample is not paired with itself: the pairs
+    # (i, i), at distance 0, are left out, whatever the token's weight.
+    self_pairs = (w ** 2).sum(1)
+    total_pairs = w.sum(1) ** 2 - self_pairs                        # (B,)
+    within_pairs = quad(same) - self_pairs[:, None]
     within_sum = quad(same * D)
     all_sum = quad(D)
     between = (all_sum - within_sum) / (total_pairs[:, None] - within_pairs)
