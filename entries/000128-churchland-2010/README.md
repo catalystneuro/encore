@@ -14,10 +14,14 @@ recordings (monkey J) and EMG are not in it.
 | The correlation declines from about 200 ms before movement onset to near zero | Reproduced |
 | Population averages lose their relation to preparatory tuning by movement onset | Reproduced |
 | 7 to 10 dimensions capture 90% of preparatory variance | Not reproduced |
+| Most maze neurons do not keep their tuning | Reproduced |
+| PD performance is highest in the peri-movement space | Reproduced |
+| The peri-movement space wins at almost every dimensionality | Reproduced |
+| PD performance peaks near 10 dimensions and then declines | Not reproduced (still rising at 14) |
+| The shuffled peri-movement space performs poorly | Reproduced |
 | Starting the peri-movement window at onset keeps about 97% of PD performance | Reproduced |
 | The PD is most stable in the peri-movement space | Reproduced |
 | The oscillator model: low tuning correlation, PD captures tuning perfectly | Reproduced (2 claims) |
-| Most maze neurons do not keep their tuning; the peri-movement space performs best; performance against dimensionality; the shuffled control | Blocked: methods underspecified (5 claims; the trial selection readings disagree, a question is asked) |
 | Anterior against posterior sites | Blocked: metadata insufficient (2 claims) |
 | Speed task, single-electrode and EMG data | Blocked: data missing (5 claims) |
 
@@ -27,7 +31,10 @@ reasoning and the differences from the paper's method.
 The attempt record, with the reasons and the differences from the paper's method, is
 [`attempts/000128-churchland-2010-01.yaml`](../../attempts/000128-churchland-2010-01.yaml).
 
-- `reproduce_churchland_2010.ipynb`: the analysis. It takes about three minutes, most of it computing
+The outcomes follow the answers of 2026-10-22 to the attempt's questions (`questions/000128.yaml`): the
+proto-trial selection is reading T2 and the tuning measure reading S1.
+
+- `reproduce_churchland_2010.ipynb`: the analysis. It takes about two minutes, most of it computing
   smoothed firing rates.
 - `mcmaze.py`: streaming the files, the trial selection, condition-mean firing rates, the PD fits and
   the kinematic and task spaces. Other notebooks on this dandiset can import it.

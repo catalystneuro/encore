@@ -32,7 +32,7 @@ PERI_WIN = (-100, 350)     # M4, ms from movement onset
 TMAT_WIN = (-150, 800)     # M5, maze peri-movement T-matrix, ms from movement onset
 MIN_DELAY_MS = 400         # M1, trials with delay > 400 ms
 PROTO_R = 0.9              # M1, correlation with the proto-trial
-PROTO_WIN = (-150, 800)    # M1 (T1, T2), window of the velocity profiles, ms from movement onset
+PROTO_WIN = (-150, 800)    # M1 (reading T2), window of the velocity profiles, ms from movement onset
 PREP_TUNING_MIN = 5.0      # M6, J-array, more than 5 spikes/s of preparatory tuning
 PERI_TUNING_RATIO = 1.5    # M6, peri-movement tuning at least 1.5 times the preparatory tuning
 
@@ -129,7 +129,8 @@ def proto_trial_keep(vel: np.ndarray, cond: np.ndarray, base: np.ndarray, readin
 
     vel: trials x time x 2 over PROTO_WIN; base: trials eligible (delay > 400 ms), which also form
     the proto-trial (T1, T2: the condition's mean velocity over its trials). T1: each component at
-    r > 0.9; T2: the two components concatenated.
+    r > 0.9; T2: the two components concatenated. The claims file's answer of 2026-10-22 keeps T2
+    alone; T1 stays here so its count can be shown.
     """
     keep = np.zeros(len(cond), bool)
     for c in np.unique(cond):
@@ -199,7 +200,10 @@ def window_mean(rates: np.ndarray, times: np.ndarray, win: tuple[int, int]) -> n
 
 
 def tuning(x: np.ndarray, reading: str) -> np.ndarray:
-    """M6 tuning of condition rates (units x conditions). S1 range, S2 SD over conditions."""
+    """M6 tuning of condition rates (units x conditions). S1 range, S2 SD over conditions.
+
+    The claims file's answer of 2026-10-22 keeps S1 alone; S2 is not used by the notebook.
+    """
     if reading == "S1":
         return x.max(1) - x.min(1)
     if reading == "S2":
