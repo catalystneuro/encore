@@ -89,8 +89,9 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
       log "$role: waiting for run $id, already going"
     else
       before=${id:-}
-      # The recorder reads no paper and writes only the README row and the pilot notes.
-      acct=$account; [ "$role" = recorder ] && acct=verified
+      # The recorder reads no paper, so it starts on the unverified account even for a dataset whose paper
+      # was flagged; only a flag on the recorder's own run moves it to the verified one.
+      acct=$account; [ "$role" = recorder ] && acct=${recorder_account:-${RUNNER_ACCOUNT:-unverified}}
       if [ "$role" = author ] && [ -n "$VERSION" ]; then
         gh workflow run attempt.yml -f dataset="$d" -f role="$role" -f version="$VERSION" -f account="$acct" || { sleep 60; continue; }
       else
@@ -114,7 +115,7 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
         touch "$STATE/flagged-$d"; log "STOPPED at $role: $last_why"; return 1
       fi
       log "$role: $why; on the verified account from here"
-      account=verified; touch "$STATE/verified-$d"
+      account=verified; recorder_account=verified; touch "$STATE/verified-$d"
       continue
     fi
     if echo "$runlog" | grep -qE "session limit|weekly limit" && [ $tries -lt 100 ]; then
