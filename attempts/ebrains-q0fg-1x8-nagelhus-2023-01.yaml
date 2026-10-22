@@ -268,7 +268,7 @@ outcomes:
   - The single-cell rate maps use the method of calculateRateMap.m that the claims file now gives; the paper's code for
     those maps is not given.
 - claim: figs4-object-traces
-  outcome: partially_reproduced
+  outcome: not_reproduced
   notebook: 02_single_cell_changes.ipynb
   output: claim:figs4-object-traces
   measured:
@@ -282,12 +282,10 @@ outcomes:
     Round 2 addition. The trace counts are 0.33 to 0.54 of the paper's 218, and a two-sided binomial test against 0.183
     gives p at most 1.4e-16 under every reading. Fields are taken as the regions above 3 x MAD; whether the Methods'
     iterative contour splits them is asked in the questions file, and the trace fraction may depend on it.
-  proposed:
-    outcome: not_reproduced
-    reason: The claim's main quantity, the trace fraction, is 0.061 to 0.098 under every field, ROI and rate-overlap reading,
-      0.33 to 0.54 of the paper's 218 cells, and differs from 0.183 by a binomial test (p at most 1.4e-16). Unlike fig1c,
-      the miss is far outside sampling error, and being above the 1% chance level and the NO-NO' count within tolerance
-      do not make up for it. The criterion has no partial case. The second verifier gave not_reproduced for this reason.
+    Changed after round 3 from partially_reproduced, as the verifier agreed. The trace fraction misses under every reading,
+    far outside sampling error, and the criterion has no partial case. Only 814 to 886 of the changing cells have a NO'
+    field, against all 919 in the paper, but among cells with fields the trace fraction is still 10 to 14% against the
+    paper's 23.7%. If the field question is answered, this outcome should be checked again.
   deviations:
   - The ROI is the claims file's two readings, as the Methods refer to a section the paper does not contain.
   - The single-cell rate maps use the method of calculateRateMap.m that the claims file now gives; the paper's code for
@@ -1444,6 +1442,27 @@ verifications:
     outcome: reproduced
     reason: I agree, as in round 1.
     response: No change.
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebooks)
+  reviewed: Round 3. The one proposed change of the author-revise-2 run (commit d81db038), figs4-object-traces, with the
+    re-executed notebook 02, objcode.py, the claims file and the paper under paper/. The verifier did not download the
+    data or re-run anything.
+  results:
+  - claim: figs4-object-traces
+    agrees: true
+    outcome: not_reproduced
+    reason: I agree with the proposed change to not_reproduced. Under all eight combinations of the field, ROI and
+      rate-overlap readings, 72 to 117 cells (0.061 to 0.098 of 1189) have a trace field, against a lower bound of 0.165,
+      and "fraction ok" is False in every one (nb02 c12); nothing was picked from among the readings. My recomputed
+      two-sided binomial tests against 0.183 agree with the printed p values, so "p at most 1.4e-16" holds. The criterion
+      has no partially reproduced case, so no reading meets it and the outcome is not reproduced. Caveat, which does not
+      change the outcome. Only 814 to 886 of the 908 to 916 changing cells have a NO' field, against all 919 in the paper,
+      so the field detection probably finds fewer fields; among cells with fields the trace fraction is about 10 to 14%
+      against the paper's 23.7%, so this accounts for only a small part of the gap. If the field question is answered, it
+      should be checked again. The claims file does not misread the paper for this claim.
+    response: Changed to not_reproduced and removed `proposed`. Added the verifier's caveat on field detection to the notes
+      and to the conclusion of notebook 02.
 findings:
 - kind: format_error
   statement: In the two Neuropixels population files (populationanalyses_27012.mat and populationanalyses_27207.mat)

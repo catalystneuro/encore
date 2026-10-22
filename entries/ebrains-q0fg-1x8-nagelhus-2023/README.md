@@ -8,13 +8,13 @@ the No Object and Object trials of the 16 decoding sessions.
 
 The outcomes, with the reasons and the differences from the paper's method, are in the attempt record
 [`attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml`](../../attempts/ebrains-q0fg-1x8-nagelhus-2023-01.yaml).
-Of the 57 claims, 30 are reproduced, 5 partially reproduced and 9 not reproduced; 13 are blocked, 8
+Of the 57 claims, 30 are reproduced, 4 partially reproduced and 10 not reproduced; 13 are blocked, 8
 of them because the readings of a method detail that the claims file does not fix give different
 outcomes. Every rate map follows the paper's calculateRateMap.m, as the claims file gives it since
 the answers of 2026-10-21. After the first verification round the figs7e downsampling was corrected
 and two outcomes changed (fig1e and fig7-slope-variant, now not reproduced). After the second round the
-attempt proposes one change, for a third round to settle: figs4-object-traces from partially
-reproduced to not reproduced, as its trace fraction is under half the paper's. The questions and answers are in
+attempt proposed one change, and the third round agreed with it: figs4-object-traces is now not
+reproduced, as its trace fraction is under half the paper's. The questions and answers are in
 [`questions/ebrains-q0fg-1x8.yaml`](../../questions/ebrains-q0fg-1x8.yaml).
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
