@@ -146,7 +146,7 @@ outcomes:
   output: claim:fig2s2-variability-decreases
   measured: [86.13, 91.11, 15.17, 7.98]
   notes: The mean rises and the s.d. falls between days 15 and 40 under every reading, and the means
-    are within tolerance under most, but no reading has both s.d.s within tolerance (15.03 to 17.12%
+    are within tolerance under every reading, but no reading has both s.d.s within tolerance (15.03 to 17.12%
     at day 15 against 19.1%; 6.86 to 12.19% at day 40 against 10.1%). The answers changed P1 and
     confirm the 50:50 sessions of reading (2); earlier outcome the same (partially_reproduced).
   deviations:
@@ -278,7 +278,7 @@ outcomes:
     2 h for the 2000 subsamples of the criterion, so the first 50 of the same sequence are run; its
     accuracy is 0.130 +- 0.055, 2.5th percentile 0.035 (bootstrap 95% interval 0.029 to 0.057)
     against a shuffled mean of 0.100, so it is not above chance; the first 25 give the same (0.046
-    against 0.098). A run of 100 subsamples while preparing, not in the notebook, agreed. Earlier
+    against 0.098). Earlier
     outcome blocked (not_runnable), with 6 subsamples; the verifier's round 1 noted the run time is
     not a data limit and asked for a larger run. Measured is the Random Forest's 2.5th percentile
     and shuffled mean.
@@ -438,7 +438,7 @@ outcomes:
     all readings, rewarded t = 8.91 to 10.69, unrewarded 3.54 to 3.79). On the sessions of reading
     (b) the unrewarded difference is not significant (p = 0.10 to 0.39). The criterion takes its
     weights from fig5cf-glm-weights, whose sessions are the code's with (b) a reading of the
-    Methods, and which matches under one reading; the code's sessions match here. The answers
+    Methods, and which allows a match under one reading; the code's sessions match here. The answers
     changed P1 and named the 50% readings, which agree; earlier outcome the same (reproduced). The
     verifier's round 1 gave partially_reproduced (see verifications).
 - claim: fig5s2-glm-accuracy
@@ -450,8 +450,8 @@ outcomes:
     83.5% (full), within tolerance, and the full-task condition number 3.14 is within 3.2 +- 0.32.
     The basic-task condition number is 2.38 under reading (b), 50% trials dropped (within 2.4 +-
     0.24), and 2.89 under reading (a), the 50% weight kept for the 7 mice shown 50% trials
-    (outside). The criterion takes the fits of fig5cf-glm-weights, which match under one reading,
-    and all four values are within tolerance under reading (b). The code's accuracy reading gives
+    (outside). The criterion takes the fits of fig5cf-glm-weights and allows a match under one
+    reading, and all four values are within tolerance under reading (b). The code's accuracy reading gives
     74.3% and 76.4%, also within tolerance; accuracy varies by less than 0.1% over fold seeds. The
     revision before round 1 had blocked the claim under the notebook's own rule that readings of an
     open detail must agree, which the criterion does not state; the verifier's round 1 gave
@@ -499,7 +499,10 @@ outcomes:
   notes: The project mice have 6,539 sessions (against 10,903). 5,698 met an end criterion and 841
     ended earlier (13%, against 5,316 of 10,903, 49%). Extra trials median 16.0, m.a.d. 14.0,
     against 19 +- 1.9 and 16 +- 1.6. Only the count of sessions meeting a criterion is within
-    tolerance, while the share differs. Per training day, 5,683 of 6,435 met a criterion.
+    tolerance, while the share differs. Per training day, counting a day as met when a session met
+    a criterion or the day's sessions lasted 90 minutes or more, 5,683 of 6,435 days met one. The
+    criterion defines the count per training day, but the outcome is decided on the per-session
+    count; the outcome is the same either way.
     Recomputing the criteria also for the 722 sessions whose status is False, a variant, gives
     5,734 of 6,539 (88%), with the same extra trials. Not affected by the answers.
   deviations:
@@ -527,7 +530,7 @@ findings:
     labs, from London to Berkeley, have median start hours between 11.0 and 14.4 h.
 - kind: format_error
   statement: In 807 files the wheel position data and its timestamps differ in length (for example
-    181,623 samples against 340,799 timestamps), and the timestamps are not monotonic; 16 files have
+    181,623 samples against 340,799 timestamps); 16 files have
     no wheel series. In one session checked (ibl_witten_07), the wheel moves the opposite way to the
     choice on every trial.
 - kind: other
@@ -553,7 +556,8 @@ verifications:
   reviewed: The executed notebook of the run after the answers of 2026-10-22 (commit 64c34593), with the
     conclusion cells and the summary removed, the helper module, the claims file and the paper. The verifier
     tested helper functions on synthetic inputs and checked the archive's versions and file lists. Report
-    in transcripts/000045/verifier-1-report.md.
+    in transcripts/000045/verifier-1-report.md. The cell numbers in the reasons below refer to that
+    notebook, not to the current one.
   results:
   - claim: cohort-counts
     agrees: true
@@ -824,3 +828,246 @@ verifications:
     response: 'No change of outcome. Added a variant that recomputes the criteria also for the 722 project-mouse
       sessions with status False: 5,734 of 6,539 (88%) meet a criterion, extra trials median 16.0, m.a.d.
       14.0.'
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: The full executed notebook of the run after the first revision (commit 93266b68), the helper module, the claims
+    file, the paper and this record. Report in transcripts/000045/verifier-2-report.md. Points not tied to a claim were
+    fixed as follows. The loading time is now given as three to four minutes in the README and cells 0 and 2 (cell 3
+    prints 3.4 min in the reviewed run, 3.6 min in the re-run). The round-1 record now says its cell numbers refer to
+    the round-1 notebook. The entry was re-run; every conclusion matches the new outputs.
+  results:
+  - claim: cohort-counts
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees. B1 resolved, cell 12 shows 0 windows that fail only on an undefined reaction time,
+      under every reading and for P2; B2 resolved, cell 9 shows 5 whole-training mice start on 2019-06-11 and
+      6 in the first week; B8 resolved, at most 7 mice could change (cell 12), which cannot close the gap of
+      60 against 98."
+    response: "No change of outcome. The data finding on the wheel no longer says the timestamps are not
+      monotonic, which no output shows (the verifier noted that cell 7 prints only the length mismatch)."
+  - claim: fig2g-days-to-proficiency
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. B2 resolved, cell 15: dropping the 2 early-start mice that reach P1 leaves two of four
+      values in tolerance; the five fastest mice start between August and November."
+    response: "No change of outcome."
+  - claim: fig2g-days-differ-across-labs
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees, as in round 1. Cell 18, p = 0.029. Lab 2 IQR is 7.75 (in tolerance), Lab 6 IQR is 5.75
+      (not)."
+    response: "No change of outcome."
+  - claim: fig2s1-trials-to-proficiency
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig2h-proportion-learned-40-days
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees. B6 resolved; censoring now uses the same day count as the events (cell 24)."
+    response: "No change of outcome."
+  - claim: fig2bc-threshold-bias-iqr
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. Cell 28 says the bias ranges are shifted to the left; the early range is shifted, but
+      the later range (-8.6 to 7.1 against -5.6 to 6.5) is wider, not just shifted, with its upper bound above
+      the paper's."
+    response: "No change of outcome. The conclusion now says the early bias range is shifted to the left and
+      the later one is wider than the paper's, with its upper bound above it."
+  - claim: fig2-abs-bias-threshold-during-training
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig2s2-variability-decreases
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. Cell 34 and the record say the two means are within tolerance under most readings; cell
+      33 shows both means within tolerance under every reading, all 20 rows, so the sentence understates the
+      result."
+    response: "No change of outcome. The conclusion and the record now say the means are within tolerance
+      under every reading (cell 33, all 20 rows)."
+  - claim: early-sessions-predict-slow-learners
+    agrees: true
+    outcome: blocked
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3c-easy-errors-basic
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3de-threshold-bias-basic
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3cde-no-lab-difference-medians
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3cde-no-lab-difference-variances
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s2a-trial-duration
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. Cell 52, median 420.45 ms, s.d. 219 ms, Kruskal-Wallis p = 0.061."
+    response: "No change of outcome."
+  - claim: fig3s2b-trials-per-session
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. B5 resolved; the column is now p_kw_fdr (cell 55)."
+    response: "No change of outcome."
+  - claim: fig3f-classifier-chance-basic
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3f-positive-control
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s3-other-classifiers
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; in round 1 it gave partially_reproduced. Logistic Regression ran the full 2000
+      subsamples (2.5th percentile 0.000 against a shuffled mean of 0.070). The Random Forest ran 50 of the
+      2000 (cell 101); its 2.5th percentile is 0.035 and the bootstrap 95% interval tops out at 0.057, well
+      under the shuffled mean of 0.100, so more subsamples are very unlikely to change the result; the 50 are
+      recorded as a deviation. B4 resolved. The record's sentence that a run of 100 subsamples while preparing
+      agreed is supported by no printed output."
+    response: "No change of outcome. The sentence on the run of 100 subsamples is removed from the record.
+      The 50 subsamples remain a deviation; 2000 would take about 122 min (cell 101)."
+  - claim: lab-link
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s1a-choice-consistency-basic
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s1bc-choice-consistency-full
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s4-looser-criterion
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. Cell 69, 91 mice; trials per minute has corrected p = 0.0022. Cell 99, the classifier
+      is not above chance."
+    response: "No change of outcome."
+  - claim: fig3s5-first-full-sessions
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig3s5a-prior-used-from-first-sessions
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: full-task-training-time
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4cd-biasshift-largest-at-zero
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4de-biasshift-no-lab-difference
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4f-threshold-unchanged-by-block
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4gh-lapses-change-with-block
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4i-bias-shifts-with-block
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4fi-no-lab-difference
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig4j-classifier-chance-full
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig5cf-glm-weights
+    agrees: true
+    outcome: partially_reproduced
+    reason: "Agrees. B3 resolved, cell 112: over the 7 mice that have every weight, 0.93, 1.55, 2.35, 8.05
+      and 3.25 for 6.25% to 100%; the 50% weight is above the 100% weight, so the failure to increase is real.
+      Under the main reading of P1b it meets every part under no reading; it passes only under variants (rows
+      6, 7 and 9)."
+    response: "No change of outcome. The notes of fig5dg and fig5s2-glm-accuracy no longer say fig5cf
+      matches under one reading (see those claims)."
+  - claim: fig5dg-history-weights-higher-full
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; in round 1 it said partially_reproduced. The criterion takes the weights from fig5cf,
+      whose criterion names the code's sessions first and treats (b) as a reading of the Methods; on the
+      code's sessions both t-tests pass under every reading of P1 and both 50% readings (cell 115). It
+      accepted a match under one reading for fig5s2-glm-accuracy in round 1, so the same rule applies; the
+      failure under (b) (p = 0.10 to 0.39) is disclosed. Cell 119 and the record say fig5cf is one which
+      matches under one reading; under the main reading of P1b fig5cf meets every part under no reading, so
+      the sentence should say the criterion allows a match under one reading. The outcome does not depend on
+      this wording."
+    response: "No change of outcome. The conclusion and the record now say the criterion allows a match
+      under one reading, not that fig5cf matched."
+  - claim: fig5s2-glm-accuracy
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees, as in round 1. Cell 118, code's sessions with 50% trials dropped, 81.9, 83.5, 2.38 and
+      3.14, all in tolerance. The same wording point as fig5dg applies to its sentence that fig5cf matches
+      under one reading; the outcome does not depend on it."
+    response: "No change of outcome. The conclusion and the record now say the criterion takes the fits of
+      fig5cf-glm-weights and allows a match under one reading."
+  - claim: fig5s2-weights-similar-across-labs
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig5s1b-win-stay-lose-switch
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: fig5s1c-updating-by-contrast
+    agrees: true
+    outcome: reproduced
+    reason: "Agrees; the outcome matches round 1 and the re-executed outputs support it."
+    response: "No change of outcome."
+  - claim: session-end-criteria
+    agrees: true
+    outcome: not_reproduced
+    reason: "Agrees. B7 resolved by a variant, 5,734 of 6,539 meet a criterion (cell 130). The record's
+      \"Per training day, 5,683 of 6,435 met a criterion\" uses a count that cell 130 labels \"met (status or
+      90 min)\", so the 90-minute rule is included; also the criterion defines the count per training day
+      while the notebook decides on the per-session count. The outcome is the same either way."
+    response: "No change of outcome. The record now says the per-day count includes days whose sessions
+      lasted 90 minutes or more, and that the outcome is decided on the per-session count, with the same
+      outcome either way."

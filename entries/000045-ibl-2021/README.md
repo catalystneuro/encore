@@ -23,7 +23,7 @@ asked were answered (`questions/000045.yaml`). The per-claim outcomes, the reaso
 paper's method are in the attempt record,
 [`attempts/000045-ibl-2021-01.yaml`](../../attempts/000045-ibl-2021-01.yaml).
 
-- `reproduce_ibl_2021.ipynb`: the analysis. It streams every file (about six minutes) and runs in
+- `reproduce_ibl_2021.ipynb`: the analysis. It streams every file (three to four minutes) and runs in
   about twenty-seven minutes.
 - `ibl_behavior.py`: loading the files, the proficiency criteria, the psychometric fit (with the
   paper's `psychofit`), the lab tests and classifiers, the choice model and the history analysis.
