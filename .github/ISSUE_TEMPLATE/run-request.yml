@@ -1,0 +1,40 @@
+name: Request a run
+description: Ask for an attempt on a dataset, for example a repeat attempt after its conversion was fixed.
+title: "Run request: "
+labels: [run-request]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        A run is a full attempt (docs/pipeline.md): claims from the paper, the author, two verification rounds and their revisions. It takes several hours once it starts. The queue and each request's place in it are in the issue labelled `queue-board`. Requests from people outside the list in `queue/priority.yaml` wait for one of them to approve (docs/queue.md).
+  - type: input
+    id: dataset
+    attributes:
+      label: Dataset
+      description: "A DANDI id (000147), or <archive>:<id> for another archive (CRCNS:ret-1)."
+      placeholder: "000147"
+    validations:
+      required: true
+  - type: dropdown
+    id: version
+    attributes:
+      label: Version
+      description: "The draft, for a repeat attempt on a conversion fixed but not yet published; otherwise a published version."
+      options:
+        - draft
+        - latest published
+        - the published version below
+    validations:
+      required: true
+  - type: input
+    id: published-version
+    attributes:
+      label: Published version
+      description: "Only with \"the published version below\": the version id, such as 0.260521.2201."
+  - type: textarea
+    id: why
+    attributes:
+      label: Why
+      description: "What changed, and links to the conversion's issue or pull request, if any."
+    validations:
+      required: true
