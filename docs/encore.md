@@ -12,7 +12,7 @@ encore check s3://bucket/smith-2024/ --paper paper.pdf   # files at a URL
 encore check DANDI:001234 --draft --paper paper.pdf      # a dataset in an archive
 ```
 
-Encore follows the same protocol ([protocol.md](protocol.md)) as the [registry](https://catalystneuro.github.io/reproduction-registry/), the public record of these checks on published datasets. A check you run yourself stays on your machine; to put a dataset on the record, ask for a run with `encore request`.
+Encore follows the same protocol ([protocol.md](https://github.com/catalystneuro/reproduction-registry/blob/main/docs/protocol.md)) as the [registry](https://encorescience.org/), the public record of these checks on published datasets. A check you run yourself stays on your machine; to put a dataset on the record, ask for a run with `encore request`.
 
 ## What you need
 
@@ -47,4 +47,4 @@ encore request DANDI:001234 --draft --why "Fixed the units, see lab-to-nwb#12"
 encore queue
 ```
 
-`request` asks for an attempt on the registry's shared queue ([queue.md](queue.md)): a repeat attempt after a conversion was fixed, or a first one on a dataset with a paper. It needs the [GitHub CLI](https://cli.github.com), signed in. `queue` shows the queue in order.
+`request` asks for an attempt on the registry's shared queue ([queue.md](https://github.com/catalystneuro/reproduction-registry/blob/main/docs/queue.md)): a repeat attempt after a conversion was fixed, or a first one on a dataset with a paper. It needs the [GitHub CLI](https://cli.github.com), signed in. `queue` shows the queue in order.
