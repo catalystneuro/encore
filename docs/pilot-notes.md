@@ -376,3 +376,4 @@ the claims file, and report where it misreads the paper.
 - [000019, Bouchard et al. 2013](pilot-notes/000019-bouchard-2013-01.md)
 - [000034, Buccino et al. 2020](pilot-notes/000034-buccino-2020-01.md)
 - [000128, Churchland et al. 2010](pilot-notes/000128-churchland-2010-01.md)
+- [000036, Mayner et al. 2022](pilot-notes/000036-mayner-2022-01.md)
