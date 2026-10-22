@@ -262,7 +262,7 @@ jobs:
             git add -A -- "${paths[@]}" && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
           elif [ "$ROLE" = recorder ]; then
-            git add -A -- README.md docs/pilot-notes.md && git diff --cached --binary > "$out/changes.patch"
+            git add -A -- docs/pilot-notes.md && git diff --cached --binary > "$out/changes.patch"
             git diff --cached --stat
           fi
           python "$tool" "$RUNNER_TEMP/run.jsonl" "$out/transcripts/$FOLDER/$ROLE.md" --omit paper/ \
@@ -325,7 +325,7 @@ jobs:
           fi
           if [ -s out/changes.patch ]; then
             allowed="^((attempts|claims|entries|questions)/.*$FOLDER|README\.md$)"
-            [ "$ROLE" != recorder ] || allowed="^(README\.md|docs/pilot-notes\.md)$"
+            [ "$ROLE" != recorder ] || allowed="^docs/pilot-notes\.md$"
             stray=$(git apply --numstat out/changes.patch | cut -f3 | grep -vE "$allowed" || true)
             [ -z "$stray" ] || { echo "::error::Changes outside dataset $FOLDER: $stray"; exit 1; }
             git apply --index out/changes.patch

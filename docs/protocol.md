@@ -443,6 +443,29 @@ recorded under `dataset: modified`, since a draft can change. The author is star
 `-f version=draft` (or a version number), and `docs/agents/author-again.md`
 is its prompt.
 
+## Local and remote datasets
+
+`encore check` ([encore.md](encore.md)) runs this protocol on someone's own
+machine, on a dataset that may be in no archive: a directory of files on that
+machine (archive `local`), or files at a URL (archive `remote`). The paper
+comes from the person running it and is put under `paper/` as usual. Such an
+attempt is never deposited in the registry, and every rule here applies to it,
+with these exceptions:
+
+- **Reading the data.** For a `local` dataset, read the files in place, at the
+  path the prompt gives. Never copy, move or change them. Naming that path in
+  the notebooks is allowed; naming any other local path is not. For a
+  `remote` dataset, stream the files from the URL the prompt gives. In
+  neither case look for the dataset in an archive, even when it looks like
+  one you know.
+- **The version.** There is none to choose or pin. The prompt gives the
+  fingerprint of the files; record it wherever a version is asked for: in the
+  entry's relation (`local:<id>/<fingerprint>`), the notebook header and the
+  record's `dataset: version`.
+- **Checking against the archive.** Where a step says to check the archive's
+  file list or metadata, check the directory's listing, or the URL's, and the
+  metadata inside the files.
+
 ## Verifier
 
 Be skeptical. Do not assume the analysis is right.

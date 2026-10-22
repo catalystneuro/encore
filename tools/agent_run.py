@@ -11,7 +11,7 @@ functions below take its folder name.
 ROLE is one of author, verifier-1, author-revise-1, verifier-2, author-revise-2,
 the order in which an attempt goes through docs/protocol.md, and verifier-3 and
 author-revise-3, the third round that settles changes proposed after the second. A last role,
-recorder, adds the finished attempt to README.md and docs/pilot-notes.md. The prompts are
+recorder, adds the finished attempt to docs/pilot-notes.md. The prompts are
 docs/agents/<role>.md with the target's details filled in. A run's transcript
 and final report are kept as transcripts/<folder>/<role>.md and
 <role>-report.md (tools/transcript.py writes them).
@@ -119,6 +119,12 @@ def fill(role: str, dandiset: str, model: str, version: str | None = None) -> st
     else:
         details["version_rule"] = ("Use a pinned published version of the dataset and record in the notebook "
                                    "header why you chose it.")
+    if datasets.split_key(key)[0] in ("local", "remote"):
+        # A dataset `encore check` runs on has no versions: its files as they are, named by their fingerprint.
+        fingerprint = next((t.get("fingerprint") for t in datasets.targets() if t["key"] == key), None) or "unversioned"
+        details["version_rule"] = (f"The dataset has no versions: use its files as they are now, and give "
+                                   f"`{fingerprint}`, the fingerprint of its files, wherever the protocol asks for "
+                                   f"the version.")
     if role == "author" and attempt_of(dandiset):
         # A repeat attempt: the dandiset changed since the last one.
         record, entry_dir = attempt_of(dandiset)
@@ -192,7 +198,8 @@ def package(role: str, dandiset: str, dest: Path) -> None:
         shutil.copy(executed / n["path"], dest / n["path"])
     for h in entry.get("helpers", []):
         shutil.copy(entry_dir / h, dest / h)
-    shutil.copy(entry_dir / "README.md", dest / "README.md")
+    if (entry_dir / "README.md").is_file():   # the protocol does not require one
+        shutil.copy(entry_dir / "README.md", dest / "README.md")
     for path in (ROOT / "claims" / dandiset).glob("*.yaml"):
         shutil.copy(path, dest / path.name)
     shutil.copy(ROOT / "attempts" / f"{record['id']}.yaml", dest / f"{record['id']}.yaml")

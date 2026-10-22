@@ -1,6 +1,7 @@
 """The run queue: requests for attempts, made as issues from the "Request a run" form (docs/queue.md).
 
     python tools/runner/run_requests.py check NUMBER          # validate a request and label its state
+    python tools/runner/run_requests.py sweep                 # check every open request that has no state yet
     python tools/runner/run_requests.py board                 # rewrite the queue-board issue
     python tools/runner/run_requests.py next                  # take the next request: "FOLDER [VERSION]"
     python tools/runner/run_requests.py finish FOLDER STATUS  # report a chain's last line on its request
@@ -175,6 +176,14 @@ def check(number: int) -> None:
         comment(number, "\n".join(notes))
 
 
+def sweep() -> None:
+    """Check every open request without a state label. The workflow's runs share one concurrency group, in which
+    GitHub keeps only one waiting run and cancels the rest, so requests opened together can miss their check."""
+    for issue in open_requests():
+        if not {lab["name"] for lab in issue["labels"]} & set(STATES):
+            check(issue["number"])
+
+
 def board() -> None:
     """Rewrite the queue-board issue: what runs now, and the queued requests in order."""
     issues = open_requests()
@@ -234,6 +243,8 @@ def main(argv: list[str]) -> int:
     cmd, *rest = argv or ["help"]
     if cmd == "check" and len(rest) == 1:
         check(int(rest[0]))
+    elif cmd == "sweep" and not rest:
+        sweep()
     elif cmd == "board" and not rest:
         board()
     elif cmd == "next" and not rest:
