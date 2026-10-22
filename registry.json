@@ -7920,7 +7920,7 @@
       "statement": "Somata were imaged at 175 um (L2/3) and 375 um (L5) depth, and distal apical dendrites at 50 to 75 um (L2/3) and 20 um (L5).",
       "source": "Methods, Experimental animals and calcium imaging, paragraph 1",
       "quote": "two-photon calcium imaging was performed in either the cell body layer for somatic recordings (175 \u03bc m depth for layer 2/3 and 375 \u03bc m depth for layer 5) or in cortical layer 1 for distal apical dendritic recordings (50\u201375 \u03bc m depth for layer 2/3 and 20 \u03bc m depth for layer 5)",
-      "criterion": "From the imaging depth the dataset records per session. Reproduced when every session's depth equals the value for its line and plane (any of 50, 75 for L2/3 dendrites); partially reproduced when all but up to two sessions do. Blocked if no depth is recorded."
+      "criterion": "From the imaging depth the dataset records per session. Reproduced when every session's depth equals the value for its line and plane (for L2/3 dendrites, any depth from 50 to 75 um inclusive, since the Methods give a range; answer of 2026-10-22, questions/000037.yaml); partially reproduced when all but up to two sessions do. Blocked if no depth is recorded."
      },
      {
       "id": "acquisition-rates",
@@ -8032,7 +8032,7 @@
       "statement": "Both somatic and dendritic ROIs responded clearly to the Gabor and visual flow stimuli, many with increased fluorescence at stimulus onset.",
       "source": "Overview of data, paragraph 1; Figure 5",
       "quote": "Both the somatic and dendritic ROIs showed clear responses to both the Gabor and visual flow stimuli, with many showing increased fluorescence responses to the onset of the stimuli (Fig. 5 ).",
-      "criterion": "Session 1 (local, passing QC; 11 mice), each line and plane. Selection as in the Figure 5 legend (\"for the session\") and the code (analysis/seq_analys.py get_sess_ex_traces, identify_gabor_roi_ns, identify_visflow_roi_ns), made within each mouse's session; the selected ROIs are then pooled over mice per line and plane (get_ex_traces_df, which draws 6 random examples from the pool for plotting; all selected ROIs are used here). Gabor, ROIs with SNR (claim fig7a-snr-above-1) above the session median; among them, those whose median pairwise correlation between individual sequence responses (each smoothed with a 4-point moving average), and the standard deviation and skew of their mean response, all exceed the 75th percentile of those ROIs; sequences are the -0.9 to 0.6 s window around D (consistent, panel a) or U (inconsistent, panel b) onset. Visual flow, per direction, the -2 to 2 s window around inconsistent flow onset; ROIs above the median SNR whose median pairwise correlation of post-onset responses and mean post-minus-pre difference exceed the 75th percentile. Traces are dF/F robust-scaled per ROI over the session ((x - median) / (95th - 5th percentile)), as in the code; unscaled dF/F is a variant. Reproduced when in all four planes the selection yields ROIs for the Gabor sequences and for each flow direction, and in each plane the mean over selected ROIs of their mean trace is higher after the reference onset (0 to 0.6 s for Gabor, 0 to 2 s for flow) than before it. Partially reproduced when this holds in at least two planes."
+      "criterion": "Session 1 (local, passing QC; 11 mice), each line and plane. Selection as in the Figure 5 legend (\"for the session\") and the code (analysis/seq_analys.py get_sess_ex_traces, identify_gabor_roi_ns, identify_visflow_roi_ns), made within each mouse's session; the selected ROIs are then pooled over mice per line and plane (get_ex_traces_df, which draws 6 random examples from the pool for plotting; all selected ROIs are used here). Gabor, ROIs with SNR (claim fig7a-snr-above-1) above the session median; among them, those whose median pairwise correlation between individual sequence responses (each smoothed with a 4-point moving average), and the standard deviation and skew of their mean response, all exceed the 75th percentile of those ROIs; sequences are the -0.9 to 0.6 s window around D (consistent, panel a) or U (inconsistent, panel b) onset. Visual flow, per direction, the -2 to 2 s window around inconsistent flow onset; ROIs above the median SNR whose median pairwise correlation of post-onset responses and mean post-minus-pre difference exceed the 75th percentile. Traces are dF/F robust-scaled per ROI over the session ((x - median) / (95th - 5th percentile)), as in the code; unscaled dF/F is a variant. Reproduced when in all four planes the selection yields ROIs for the Gabor sequences and for each flow direction, and in each plane the mean over selected ROIs of their mean trace is higher after the reference onset (0 to 0.6 s for Gabor, 0 to 2 s for flow) than before it. Partially reproduced when this holds in at least two planes. Which Gabor panel enters the rule is not given by the paper (answer of 2026-10-22, questions/000037.yaml); the sentence cites Figure 5 as a whole, and the code selects panel a and panel b ROIs separately (get_sess_ex_traces, unexp 0 or 1). Readings are (a) panel a, (b) panel b, and (c) both panels, each required to hold. The outcome is the one all three readings give; methods_underspecified if they differ."
      },
      {
       "id": "fig5-consistent-vs-inconsistent",
@@ -8081,7 +8081,7 @@
       "statement": "About 0.01% of possible pairs of L2/3 dendritic ROIs have correlations above 0.8.",
       "source": "Technical Validation, paragraph 3",
       "quote": "To be more conservative, ROIs with correlations above 0.8 (e.g., approximately 0.01% of possible pairs of L2/3 dendrites)",
-      "criterion": "The correlations of fig7c-correlations-similar, L2/3 dendritic sessions. Tolerance 0.005 percentage points, the range of values that round to the stated one significant figure (0.005 to 0.015%), since the paper gives the value as approximate with one figure. Readings for the denominator are (a) all pairs pooled over the three sessions and three mice, (b) the mean of per-session fractions, and (c) each session separately. Above 0.8 is read as r > 0.8; r >= 0.8 (the code's histogram bin) is shown as a variant. Reproduced when one reading is within tolerance."
+      "criterion": "The correlations of fig7c-correlations-similar, L2/3 dendritic sessions. Tolerance 0.005 percentage points, the range of values that round to the stated one significant figure (0.005 to 0.015%), since the paper gives the value as approximate with one figure. Readings for the denominator are (a) all pairs pooled over the three sessions and the two analysed mice (413663 and 433414; 412933 is not included, its sessions 1 to 3 having failed QC, and its sessions 4 to 6 are outside the paper's analyses, as the code's Fig. 7c source data list only the first two), (b) the mean of the three per-session fractions, and (c) each of the three local sessions separately, pairs pooled over the two mice as Fig. 7c plots them; under (c) every session must be within tolerance, since the paper gives one value for L2/3 dendrites and names no session. Per-mouse sessions are not a reading the paper allows (answer of 2026-10-22, questions/000037.yaml). Above 0.8 is read as r > 0.8; r >= 0.8 (the code's histogram bin) is shown as a variant. Reproduced when one reading is within tolerance."
      },
      {
       "id": "fig7a-source-link",
@@ -37669,7 +37669,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-22T15:43:32+00:00",
+ "generated": "2026-10-22T15:45:04+00:00",
  "queue_generated": "2026-10-22T11:52:56+00:00",
  "queue_counts": {
   "public_dandisets": 661,
@@ -92406,11 +92406,11 @@
    },
    "000115": {
     "kind": "full",
-    "hours": 2.898791184166667
+    "hours": 2.874120600277778
    },
-   "000036": {
+   "000037": {
     "kind": "full",
-    "hours": 0.027124517499999997
+    "hours": 0.026898378055555554
    }
   }
  },
