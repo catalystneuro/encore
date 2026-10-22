@@ -19,7 +19,7 @@ dataset per step, and the dashboard's Pipeline page shows them.
 | 6 | Verification | yes | agents (verifier rounds, revisions), `papers` environment | the record's verifications |
 | 7 | Questions | yes | a reader, `papers` environment | answers in `questions/<folder>.yaml`, and in the claims |
 | 8 | Confirmation | no | CI | executed notebooks, passing checks |
-| 9 | Record | no | agent (recorder) | README row, pilot notes; merged |
+| 9 | Record | no | agent (recorder) | pilot notes; merged |
 | 10 | Report | no | script, sent by a person | issues to the dataset's owners |
 | 11 | Upkeep | depends | runner | deprecation; repeat attempts |
 
