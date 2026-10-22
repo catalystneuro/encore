@@ -1,0 +1,1155 @@
+# Claims for The International Brain Laboratory (2021), "Standardized and reproducible measurement
+# of decision-making in mice", eLife 10:e63711, on dandiset 000045 ("IBL behavioral data").
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22, under
+# docs/protocol.md version pilot-10.
+#
+# Text read: the version of record (eLife, PMC8137147, as served by Europe PMC), full text with
+# Results, figure legends and figure supplement legends, Materials and methods, Appendix 1 (table 1,
+# standardization and proficiency criteria), the decision letter and author response. The only
+# supplementary file is eLife's transparent reporting form; it holds no results. The Methods refer
+# the psychometric fitting procedure and the full training criteria to "Protocol 2" (IBL Protocol
+# for Mice Training, figshare doi:10.6084/m9.figshare.11634729.v3), which is not in paper/ and was
+# not read; the code below settles the fitting procedure.
+#
+# Code read: github.com/int-brain-lab/paper-behavior at commit
+# edc453189104a1f76f4b2ab230cd86f2140e3f63 (the commit the paper archives at Software Heritage).
+# One script per figure panel; each queries the IBL DataJoint pipeline (or CSV extracts of it) and
+# uses paper_behavior_functions.py for the shared selection, trial coding and psychometric fit. The
+# psychometric fit itself is brainbox.behavior.pyschofit (ibllib), which the repository imports.
+# The code for the Random Forest prediction of slow learners (Results, Training succeeded,
+# paragraph 4) and for Figure 5, figure supplement 1c statistics is not in the repository.
+#
+# Data the paper used. Female and male C57BL6/J mice, 3 to 7 months old, trained in seven
+# laboratories in three countries (code lab numbers: UCL Lab 1, CCU/Champalimaud Lab 2, CSHL Lab 3,
+# NYU Lab 4, Princeton Lab 5, SWC Lab 6, Berkeley Lab 7; time zones Europe 0, New York -5,
+# Los Angeles -7 hours in the code). 210 mice entered, 4 were excluded for adverse effects, 206
+# started training, 140 reached basic task proficiency and 98 full task proficiency. Mice are those
+# of project ibl_neuropixel_brainwide_01 that reached the criterion by 2020-03-23, and only
+# sessions up to that date are used (code CUTOFF_DATE); one session
+# (a9fb578a-9d7d-42b4-8dbc-3b419ce9f424) is excluded in the code. One session a day, trials with:
+# signed contrast (left or right, 100, 50, 25, 12.5, 6.25, 0%), the wheel choice (left, right or
+# no response within 60 s), feedback (reward or noise burst), stimulus onset and response times,
+# the block's probability of a left stimulus (50, 20 or 80%; full task only) and the session's
+# start and end times and task protocol (basic "training" or full "biased"). The dandiset's
+# archive description says its NWB files hold wheel movement, camera footage and trial-by-trial
+# stimulus information for this task, and names the bioRxiv version of this paper.
+#
+# Shared definitions, used by name in the criteria below. All are from the paper's Methods,
+# legends and Appendix 1 unless the code is cited.
+# - Trial coding (code dj2pandas). Signed contrast = right minus left contrast, in %. A no-response
+#   trial counts as incorrect for performance (Results: "no-response trials ... were labeled as
+#   incorrect trials") and is left out of the fraction of rightward choices. Performance on easy
+#   trials = % correct on trials with contrast of 50% or more. Trial duration (reaction time) =
+#   response time minus stimulus onset time, no-response trials left out.
+# - Psychometric fit (Methods, Psychometric curves; code fit_psychfunc). P = gamma + (1 - gamma -
+#   lambda) (erf((c - mu)/sigma) + 1)/2, fitted by maximum likelihood to the fraction of rightward
+#   choices per signed contrast; bias mu bounded by the smallest and largest contrast, threshold
+#   sigma in [5, 40], lapses gamma (left) and lambda (right) in [0, 1], start [0, 20, 0.05, 0.05];
+#   no fit (NaN) with fewer than four signed contrasts. The number of random restarts is
+#   psychofit's default (a standard choice, as is the seed).
+# - Basic proficiency (P1). The session at which a mouse first meets the Appendix 1, table 1d
+#   'Trained 1a/1b' criteria over its last three sessions; the code reads it as the first session
+#   with training status trained_1a or trained_1b in the IBL pipeline. Readings: the status the
+#   dataset carries, if any; otherwise recomputed from the trials with the 1a criteria, and with
+#   the 1b criteria from their introduction (Methods: September 2019, no day given).
+# - Basic sessions (S1). The basic (training protocol) sessions of the P1 training day and the two
+#   training days before it (Figure 3 legend "the three sessions at which mice achieved
+#   proficiency"; code days_from_criterion [2, 0]). One value per mouse from the pooled trials.
+# - Full proficiency (P2). The first session meeting the Appendix 1, table 1d 'Full task
+#   proficiency' criteria; the code reads it as the first status ready4ephysrig, ready4delay or
+#   ready4recording. Readings as for P1.
+# - Full sessions (S2). The full task (biased protocol) sessions of the P2 training day and the two
+#   days before (code days_from_criterion [2, 0]); n = 98 mice.
+# - First full-task session (P1b). The code's "biased" criterion: the first biased-protocol
+#   session with status trained_1b.
+# - Lab test (code figure3cde and others). Each variable is first tested for normality over all
+#   mice (scipy normaltest); the code runs a Kruskal-Wallis test across labs when p < 0.05 and a
+#   one-way ANOVA otherwise. Where the paper names the test, the named test is the main reading and
+#   the code's switch a variant.
+# - Lab classifier (Methods, Classification of laboratory membership; code figure3f). scikit-learn
+#   classifier with default settings, 8 mice drawn at random from each lab without replacement,
+#   2000 times; leave-one-out cross-validation over the 56 mice; accuracy = fraction correctly
+#   classified; a null from shuffling the lab labels in each subsample; positive control adds the
+#   lab's time zone as a feature. Code seed 424242; Random Forest with 100 trees and
+#   random_state 424242; Logistic Regression with solver liblinear.
+#
+# Tolerances. Where the paper gives mean +- s.d. over mice, the s.d. describes the spread across
+# mice and not the uncertainty of the mean, so the mean gets 10% of its value and the s.d. its own
+# 10% entry; other tolerances are 10% unless a claim says why.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000045"
+paper: doi:10.7554/elife.63711
+claims:
+- id: cohort-counts
+  statement: >-
+    Of 206 mice that started training, 140 reached proficiency in the basic task and 98 in the
+    full task.
+  source: Results, opening section, paragraph 3
+  quote: >-
+    Out of 206 mice that started training, 140 achieved proficiency in the basic task, and 98 in
+    the full task
+  expected:
+  - quantity: mice that started training
+    value: 206
+    tolerance: 20.6
+  - quantity: mice reaching basic task proficiency (P1)
+    value: 140
+    tolerance: 14
+  - quantity: mice reaching full task proficiency (P2)
+    value: 98
+    tolerance: 9.8
+  criterion: >-
+    Counts of distinct mice under the paper's selection (project mice, criterion reached by
+    2020-03-23, code query_subjects), proficiency as P1 and P2 under each reading. A dataset that
+    holds fewer mice is reported with the counts it holds; the claim is judged on the counts.
+
+- id: fig2g-days-to-proficiency
+  statement: >-
+    Basic task training took 18.4 +- 13.0 days (s.d., n = 140 mice), from 3 days for the fastest
+    mouse to 59 days for the slowest.
+  source: Results, Training succeeded but with different rates across mice and laboratories,
+    paragraph 1; Figure 2g
+  quote: >-
+    The average training took 18.4 ± 13.0 days (s.d., n = 140, Figure 2g )
+  expected:
+  - quantity: mean days to basic proficiency
+    value: 18.4
+    tolerance: 1.84
+    unit: days
+  - quantity: s.d. of days to basic proficiency
+    value: 13.0
+    tolerance: 1.3
+    unit: days
+  - quantity: fastest mouse
+    value: 3
+    tolerance: 0.3
+    unit: days
+  - quantity: slowest mouse
+    value: 59
+    tolerance: 5.9
+    unit: days
+  criterion: >-
+    Per mouse, the number of training days (days with a session in the per-day summary the code
+    reads) up to P1 (code figure2g_time_to_trained.py). The code's query branch counts days up to
+    and including the P1 day, its CSV branch days before it; both readings are run. Mean and s.d.
+    over the 140 mice (or those the dataset holds), and the minimum and maximum.
+
+- id: fig2g-days-differ-across-labs
+  statement: >-
+    The number of days to basic task proficiency differed across laboratories; within-lab
+    interquartile ranges ranged from 8 days (Lab 2) to 22 days (Lab 6).
+  source: Results, Training succeeded but with different rates across mice and laboratories,
+    paragraph 1; Figure 2g
+  quote: >-
+    The number of days needed to achieve basic task proficiency was different across
+    laboratories ( Figure 2g , p<0.001, Kruskal-Wallis nonparametric test followed by a post-hoc
+    Dunn's multiple comparisons test)
+  statistics:
+  - test: Kruskal-Wallis nonparametric test, then post-hoc Dunn's multiple comparisons test
+    p: 0.001
+    p_relation: "<"
+    n: 140 mice in 7 laboratories
+  expected:
+  - quantity: Lab 2 interquartile range of days to proficiency
+    value: 8
+    tolerance: 0.8
+    unit: days
+  - quantity: Lab 6 interquartile range of days to proficiency
+    value: 22
+    tolerance: 2.2
+    unit: days
+  depends_on:
+  - fig2g-days-to-proficiency
+  criterion: >-
+    Days per mouse as in fig2g-days-to-proficiency, under both of its readings. Kruskal-Wallis test
+    across the seven labs (the code switches to a one-way ANOVA when the days pass scipy's
+    normality test; shown as a variant). Reproduced when p < 0.001. Interquartile ranges per lab
+    are pandas' default (linear) quantiles, as in the code.
+
+- id: fig2s1-trials-to-proficiency
+  statement: >-
+    Measured in trials, basic task training took 10.8 +- 8.6 thousand trials (s.d., n = 140), from
+    one thousand for the fastest mouse to 43 thousand for the slowest; reaching 80% correct on easy
+    trials took on average about 7.4 thousand trials.
+  source: Results, Training succeeded but with different rates across mice and laboratories,
+    paragraph 2; Figure 2, figure supplement 1
+  quote: >-
+    For mice that learned the task, the average training took 10.8 ± 8.6 thousands of trials
+    (s.d., n = 140) ... The fastest learner met training criteria in one thousand trials, the
+    slowest 43 thousand trials. To reach 80% on easy trials took on average ~7.4 thousand trials.
+  expected:
+  - quantity: mean trials to basic proficiency
+    value: 10800
+    tolerance: 1080
+    unit: trials
+  - quantity: s.d. of trials to basic proficiency
+    value: 8600
+    tolerance: 860
+    unit: trials
+  - quantity: fastest mouse
+    value: 1000
+    tolerance: 100
+    unit: trials
+  - quantity: slowest mouse
+    value: 43000
+    tolerance: 4300
+    unit: trials
+  - quantity: trials to reach 80% correct on easy trials
+    value: 7400
+    tolerance: 740
+    unit: trials
+  depends_on:
+  - fig2g-days-to-proficiency
+  criterion: >-
+    Per mouse, the summed trial counts of the training days counted in fig2g-days-to-proficiency
+    (code figure2g_time_to_trained.py), under both of its readings. The 7.4 thousand trials has no
+    code in the repository; readings (1) the cumulative trial count at which the mean over mice of
+    the easy-trial performance curve (Figure 2, figure supplement 1b, 1000-trial bins as in
+    suppfig_variability_over_time.py) first exceeds 80%, and (2) the mean over mice of each
+    mouse's cumulative trials at its first session above 80% correct on easy trials.
+
+- id: fig2h-proportion-learned-40-days
+  statement: >-
+    About 80% of mice that started training would learn the basic task within the 40 days usually
+    allotted (Kaplan-Meier estimate over all 206 mice).
+  source: Results, Training succeeded but with different rates across mice and laboratories,
+    paragraph 4; Figure 2h
+  quote: >-
+    there was a 80% probability that mice would learn the task within the 40 days that were
+    usually allotted, and when mice were trained for a longer duration, the success rate rose even
+    further ( Figure 2h )
+  expected:
+    quantity: Kaplan-Meier cumulative proportion proficient at training day 40
+    value: 0.8
+    tolerance: 0.08
+  criterion: >-
+    Kaplan-Meier estimate (code figure2d_training_probability.py, lifelines) over all mice that
+    started training, leaving out mice still in training at the cutoff date: time = number of
+    sessions with status in_training or untrainable; event = the mouse's last status is neither.
+    Without status labels in the dataset, time = training days to P1 for proficient mice and
+    their total training days otherwise. Reproduced when the cumulative proportion at day 40 is
+    within the tolerance and higher at the last day than at day 40.
+
+- id: fig2bc-threshold-bias-iqr
+  statement: >-
+    Contrast threshold and bias varied little during training; the threshold interquartile range
+    slightly decreased from 12-29% in the first 10 training days to 11-23% thereafter, and the bias
+    interquartile range went from -5.2 to 7.1% to -5.6 to 6.5%.
+  source: Results, Training succeeded but with different rates across mice and laboratories,
+    paragraph 1; Figure 2b,c
+  quote: >-
+    Estimates of contrast threshold did not vary much during training ( Figure 2b ), with an
+    interquartile range that slightly decreased from 12–29% during the first 10 training days, and
+    11–23% thereafter. Likewise, bias did not vary much, with an interquartile range of −5.2% to
+    7.1% during the first 10 days to −5.6% to 6.5% thereafter ( Figure 2c ).
+  expected:
+  - quantity: threshold 25th percentile, days 1-10
+    value: 12
+    tolerance: 1.2
+    unit: "%"
+  - quantity: threshold 75th percentile, days 1-10
+    value: 29
+    tolerance: 2.9
+    unit: "%"
+  - quantity: threshold 25th percentile, after day 10
+    value: 11
+    tolerance: 1.1
+    unit: "%"
+  - quantity: threshold 75th percentile, after day 10
+    value: 23
+    tolerance: 2.3
+    unit: "%"
+  - quantity: bias 25th percentile, days 1-10
+    value: -5.2
+    tolerance: 0.52
+    unit: "%"
+  - quantity: bias 75th percentile, days 1-10
+    value: 7.1
+    tolerance: 0.71
+    unit: "%"
+  - quantity: bias 25th percentile, after day 10
+    value: -5.6
+    tolerance: 0.56
+    unit: "%"
+  - quantity: bias 75th percentile, after day 10
+    value: 6.5
+    tolerance: 0.65
+    unit: "%"
+  criterion: >-
+    Per-session psychometric threshold and bias of the 140 proficient mice, as plotted in Figure
+    2b,c (code figure2af_learning_curves_all_parameters.py): 50:50 sessions with more than 100
+    trials, threshold and bias only from sessions with six or more signed contrasts (legend: from
+    the first session with 12% contrast), each mouse's series median-filtered over 3 sessions,
+    training day counted from the mouse's first session. The code does not print the
+    interquartile ranges, so the pooling is open; readings (1) all session values pooled over mice
+    within days 1-10 and after day 10, (2) as (1) without the median filter, each with "thereafter"
+    as (a) days 11 to 40 (the plotted range) and (b) all later days. Reproduced when all eight
+    bounds are within tolerance under one reading and the threshold range after day 10 is
+    narrower than in days 1-10.
+
+- id: fig2-abs-bias-threshold-during-training
+  statement: >-
+    During training mice were not systematically biased to one side; absolute bias averaged
+    9.8 +- 12.1 (s.d.), and contrast threshold, which stabilized after about 10 sessions, averaged
+    17.8 +- 11.7%.
+  source: Results, Training succeeded but with different rates across mice and laboratories,
+    paragraph 2; Figure 2b,c
+  quote: >-
+    Mice across laboratories were not systematically biased towards a particular side and the
+    absolute bias was similar across laboratories (9.8 ± 12.1 [s.d.] on average). Likewise,
+    measures of contrast threshold stabilized after the first ~10 sessions, which was on average
+    17.8 ± 11.7% on average across institutions.
+  expected:
+  - quantity: mean absolute bias during training
+    value: 9.8
+    tolerance: 0.98
+    unit: "%"
+  - quantity: s.d. of absolute bias
+    value: 12.1
+    tolerance: 1.21
+    unit: "%"
+  - quantity: mean contrast threshold after about 10 sessions
+    value: 17.8
+    tolerance: 1.78
+    unit: "%"
+  - quantity: s.d. of contrast threshold
+    value: 11.7
+    tolerance: 1.17
+    unit: "%"
+  depends_on:
+  - fig2bc-threshold-bias-iqr
+  criterion: >-
+    Same per-session values and readings as fig2bc-threshold-bias-iqr. No code computes these
+    numbers; the averaging is open, with readings (1) mean and s.d. over all session values pooled
+    over mice (absolute bias over all days; threshold after day 10), and (2) mean of the seven lab
+    means ("on average across institutions") with the s.d. over pooled values. Reproduced when the
+    two means are within tolerance under one reading.
+
+- id: fig2s2-variability-decreases
+  statement: >-
+    Variability in performance across mice decreased with training but did not disappear; between
+    training days 15 and 40, mean easy-trial performance rose from 80.7% to 91.1% while its s.d.
+    across mice fell from 19.1% to 10.1%.
+  source: Results, Training succeeded but with different rates across mice and laboratories,
+    paragraph 3; Figure 2, figure supplement 2
+  quote: >-
+    For example, between training days 15 and 40, when the average performance on easy trials of
+    the mice increased from 80.7% to 91.1%, the variation across mice (s.d.) of performance on
+    easy trials decreased from 19.1% to 10.1%.
+  expected:
+  - quantity: mean easy-trial performance, day 15
+    value: 80.7
+    tolerance: 8.07
+    unit: "%"
+  - quantity: mean easy-trial performance, day 40
+    value: 91.1
+    tolerance: 9.11
+    unit: "%"
+  - quantity: s.d. across mice of easy-trial performance, day 15
+    value: 19.1
+    tolerance: 1.91
+    unit: "%"
+  - quantity: s.d. across mice of easy-trial performance, day 40
+    value: 10.1
+    tolerance: 1.01
+    unit: "%"
+  criterion: >-
+    Easy-trial performance per mouse and training day for the 140 proficient mice. No code prints
+    these four numbers; readings (1) the Figure 2a,d data (code figure2af: 50:50 sessions with more
+    than 100 trials, median-filtered over 3 sessions) at days 15 and 40, (2) the unfiltered
+    per-day performance binned as in suppfig_variability_over_time.py (training_day strictly
+    within 2 days of the bin centre) at days 15 and 39, the nearest bin to 40. Reproduced when the
+    mean rises and the s.d. falls, with all four values within tolerance under one reading.
+
+- id: early-sessions-predict-slow-learners
+  statement: >-
+    A Random Forests decoder applied to the change in easy-trial performance over the first five
+    sessions predicted whether a mouse would be in the bottom quartile of learning speed with 53%
+    accuracy (chance 25%), and misclassified a top-quartile mouse as bottom-quartile only 7% of the
+    time.
+  source: Results, Training succeeded but with different rates across mice and laboratories,
+    paragraph 3
+  quote: >-
+    A Random Forests decoder applied to change in performance (% correct with easy, high-contrast
+    stimuli) in the first five sessions was able to predict whether a mouse would end up in the
+    bottom quartile of learning speed (the slowest learners) with accuracy of 53% (where chance is
+    25%). Conversely, the chance of misclassifying a fast-learning, top quartile mouse as a
+    slow-learning, bottom quartile mouse, was only 7%.
+  expected:
+  - quantity: accuracy for bottom-quartile mice
+    value: 0.53
+    tolerance: 0.053
+  - quantity: top-quartile mice classified as bottom quartile
+    value: 0.07
+    tolerance: 0.007
+  depends_on:
+  - fig2g-days-to-proficiency
+  criterion: >-
+    The repository at the cited commit holds no code for this analysis and the Methods do not
+    describe it. Learning-speed quartiles from days to P1 (fig2g-days-to-proficiency). Open details
+    and the readings the text allows: features (a) the four session-to-session differences in
+    easy-trial performance over sessions 1-5, (b) the five performances; labels the four
+    quartiles (chance 25% implies four classes); scikit-learn Random Forest with default settings
+    and leave-one-out cross-validation, as for the lab classifiers in the Methods; accuracy read
+    as (i) recall of the bottom-quartile class and (ii) overall four-class accuracy. If the
+    readings disagree on whether accuracy is near 53% and well above 25%, the claim is
+    methods_underspecified.
+
+- id: fig3c-easy-errors-basic
+  statement: >-
+    At basic task proficiency, errors on easy (50% and 100%) contrasts were low, 9.5 +- 3.6%, with
+    no significant difference across laboratories.
+  source: Results, Performance in the basic task was indistinguishable across laboratories,
+    paragraph 1; Figure 3c
+  quote: >-
+    The lapse rates (i.e., the errors made in response to easy contrasts of 50% and 100%) were low
+    (9.5 ± 3.6%, Figure 3c ) with no significant difference across laboratories.
+  expected:
+  - quantity: mean error rate on easy trials, S1
+    value: 9.5
+    tolerance: 0.95
+    unit: "%"
+  - quantity: s.d. over mice
+    value: 3.6
+    tolerance: 0.36
+    unit: "%"
+  criterion: >-
+    Per mouse, 100 minus the easy-trial performance over the pooled S1 trials (code figure3cde,
+    perf_easy); mice with no valid trial duration are dropped, as in the code. Mean and s.d. over
+    mice. The lab comparison is claim fig3cde-no-lab-difference-medians.
+
+- id: fig3de-threshold-bias-basic
+  statement: >-
+    At basic task proficiency the contrast threshold was similar across laboratories at
+    14.3 +- 3.8 (s.d., n = 7 laboratories) and the response bias was small at 0.3 +- 8.4.
+  source: Results, Performance in the basic task was indistinguishable across laboratories,
+    paragraph 1; Figure 3d,e
+  quote: >-
+    The slope of the curves, which measures contrast sensitivity, was also similar across
+    laboratories, at 14.3 ± 3.8 (s.d., n = 7 laboratories, Figure 3d ). Finally, the horizontal
+    displacement of the curve, which measures response bias, was small at 0.3 ± 8.4 (s.d., n = 7,
+    Figure 3e ).
+  expected:
+  - quantity: mean contrast threshold, S1
+    value: 14.3
+    tolerance: 1.43
+    unit: "%"
+  - quantity: mean bias, S1
+    value: 0.3
+    tolerance: 3.2
+    unit: "%"
+  criterion: >-
+    Per mouse, psychometric threshold and bias fitted to the pooled S1 trials (code figure3cde).
+    The code prints the mean and s.d. over mice (thres_mean, thres_std) while the text says
+    n = 7 laboratories; readings (1) mean and s.d. over mice, (2) mean and s.d. over the seven lab
+    means. The bias tolerance is 8.4/sqrt(7), the paper's s.d. over n = 7, because 10% of a value
+    near zero is below any fitting precision.
+
+- id: fig3cde-no-lab-difference-medians
+  statement: >-
+    At basic task proficiency, easy-trial performance, contrast threshold and bias did not differ
+    in median across laboratories.
+  source: Results, Performance in the basic task was indistinguishable across laboratories,
+    paragraph 1; Figure 3c-e
+  quote: >-
+    None of these measures showed a significant difference across laboratories, either in median
+    (performance: p=0.63, threshold: p=0.81, bias: p=0.81, FDR corrected Kruskal-Wallis test)
+  statistics:
+  - about: performance on easy trials
+    test: Kruskal-Wallis test
+    p: 0.63
+    corrected: FDR
+    n: 140 mice in 7 laboratories
+  - about: contrast threshold
+    test: Kruskal-Wallis test
+    p: 0.81
+    corrected: FDR
+    n: 140 mice in 7 laboratories
+  - about: bias
+    test: Kruskal-Wallis test
+    p: 0.81
+    corrected: FDR
+    n: 140 mice in 7 laboratories
+  depends_on:
+  - fig3c-easy-errors-basic
+  - fig3de-threshold-bias-basic
+  criterion: >-
+    Per-mouse values from S1 as in fig3c-easy-errors-basic and fig3de-threshold-bias-basic.
+    Kruskal-Wallis test across the seven labs for each variable, then Benjamini-Hochberg FDR over
+    the six variables the code tests together (easy-trial performance, trial duration, trials per
+    session, threshold, bias, trials per minute; code figure3cde). Reproduced when all three
+    corrected p >= 0.05, not reproduced when any is below; the effect sizes are reported. The
+    code's switch to ANOVA for normally distributed variables is shown as a variant.
+
+- id: fig3cde-no-lab-difference-variances
+  statement: >-
+    At basic task proficiency, easy-trial performance, contrast threshold and bias did not differ
+    in variance across laboratories.
+  source: Results, Performance in the basic task was indistinguishable across laboratories,
+    paragraph 1; Figure 3c-e
+  quote: >-
+    or in variance (performance: p=0.09, threshold: p=0.57, bias: p=0.57, FDR corrected Levene's
+    test)
+  statistics:
+  - about: performance on easy trials
+    test: Levene's test
+    p: 0.09
+    corrected: FDR
+    n: 140 mice in 7 laboratories
+  - about: contrast threshold
+    test: Levene's test
+    p: 0.57
+    corrected: FDR
+    n: 140 mice in 7 laboratories
+  - about: bias
+    test: Levene's test
+    p: 0.57
+    corrected: FDR
+    n: 140 mice in 7 laboratories
+  depends_on:
+  - fig3cde-no-lab-difference-medians
+  criterion: >-
+    As fig3cde-no-lab-difference-medians, with scipy's Levene test (default, median-centred) and
+    Benjamini-Hochberg FDR over the same six variables (code figure3cde). Reproduced when all three
+    corrected p >= 0.05.
+
+- id: fig3s2a-trial-duration
+  statement: >-
+    At basic task proficiency the median trial duration (stimulus onset to feedback) was
+    468 +- 221 ms, with some differences across laboratories.
+  source: Results, Performance in the basic task was indistinguishable across laboratories,
+    paragraph 4; Figure 3, figure supplement 2a
+  quote: >-
+    The median time from stimulus onset to feedback (trial duration, a coarse measure of reaction
+    time) was 468 ± 221 ms, showing some differences across laboratories ( Figure 3—figure
+    supplement 2a , p=0.004, Kruskal-Wallis nonparametric test)
+  statistics:
+  - test: Kruskal-Wallis nonparametric test
+    p: 0.004
+    n: 140 mice in 7 laboratories
+  expected:
+  - quantity: median over mice of per-mouse median trial duration
+    value: 468
+    tolerance: 46.8
+    unit: ms
+  - quantity: s.d. over mice
+    value: 221
+    tolerance: 22.1
+    unit: ms
+  criterion: >-
+    Per mouse, the median of response time minus stimulus onset time over the pooled S1 trials,
+    no-response trials left out (code figure3cde, reaction_time); the median and s.d. over mice
+    (code rt_median, rt_std). Kruskal-Wallis across labs; the code FDR-corrects this p with the
+    other five variables, the text does not say; readings uncorrected and corrected. Reproduced
+    when the values are within tolerance and p < 0.05 under one reading.
+
+- id: fig3s2b-trials-per-session
+  statement: >-
+    At basic task proficiency mice performed 719 +- 223 trials per session; the difference across
+    laboratories was significant but only in one laboratory relative to the rest.
+  source: Results, Performance in the basic task was indistinguishable across laboratories,
+    paragraph 4; Figure 3, figure supplement 2b
+  quote: >-
+    Mice on average performed 719 ± 223 trials per session ( Figure 3—figure supplement 2b ). This
+    difference was significant (p<10 −6 , one-way ANOVA) but only in one laboratory relative to the
+    rest.
+  statistics:
+  - test: one-way ANOVA
+    p: 1.0e-6
+    p_relation: "<"
+    n: 140 mice in 7 laboratories
+  expected:
+  - quantity: mean trials per session, S1
+    value: 719
+    tolerance: 71.9
+    unit: trials
+  - quantity: s.d. over mice
+    value: 223
+    tolerance: 22.3
+    unit: trials
+  criterion: >-
+    Per mouse, the mean number of trials over its S1 sessions (code figure3cde, n_trials); mean
+    and s.d. over mice. One-way ANOVA across labs (code; the FDR correction it applies is a
+    variant), then Tukey post hoc tests as in the code. Reproduced when the values are within
+    tolerance, the ANOVA gives p < 1e-6, and the significant Tukey pairs all involve one lab.
+    Partially reproduced when p < 0.05 but not below 1e-6, or the pairs involve more than one lab.
+
+- id: fig3f-classifier-chance-basic
+  statement: >-
+    A Naive Bayes classifier could not identify a mouse's laboratory from its basic-task
+    performance, threshold and bias; its accuracy was 0.12 +- 0.051 against a chance level of 0.11,
+    and the 95% range of its distribution included chance.
+  source: Results, Performance in the basic task was indistinguishable across laboratories,
+    paragraph 5; Figure 3f
+  quote: >-
+    Its mean accuracy was 0.12 ± 0.051, and a 95th percentile of its distribution included the
+    chance level of 0.11 (mean of the null distribution).
+  expected:
+  - quantity: mean decoding accuracy, mouse behavior
+    value: 0.12
+    tolerance: 0.051
+  - quantity: chance level, mean of shuffled-label accuracy
+    value: 0.11
+    tolerance: 0.011
+  depends_on:
+  - fig3c-easy-errors-basic
+  - fig3de-threshold-bias-basic
+  criterion: >-
+    Lab classifier (shared definition) with scikit-learn GaussianNB on per-mouse easy-trial
+    performance, threshold and bias from S1 (code figure3f_classifier_lab_membership_basic.py).
+    The paper's test, from the code (figure3f_plot_classifier_basic.py), is that the classifier is
+    not above chance when the 2.5th percentile of its 2000 accuracies is at or below the mean
+    shuffled accuracy. Reproduced when that holds, not reproduced when the 2.5th percentile is
+    above chance. The accuracy tolerance is the paper's stated s.d. of the subsample distribution.
+
+- id: fig3f-positive-control
+  statement: >-
+    With the laboratory's time zone added as a feature, the classifier performed above chance and
+    confused labs in the same time zone.
+  source: Results, Performance in the basic task was indistinguishable across laboratories,
+    paragraph 5; Figure 3f; Figure 3, figure supplement 3b
+  quote: >-
+    If the classifier was given this variable during training and testing it performed above
+    chance ( Figure 3f , Positive control ) and the confusion matrix showed clusters of labs
+    located in the same time zone
+  data: with_labels
+  depends_on:
+  - fig3f-classifier-chance-basic
+  criterion: >-
+    As fig3f-classifier-chance-basic with the lab's time zone as a fourth feature (the code's
+    offsets, Europe 0, New York -5, Los Angeles -7, from the lab's location). Reproduced when the
+    2.5th percentile of the control accuracies is above the mean shuffled accuracy (the code also
+    computes a 0.001th percentile, sig_control, shown as a variant) and the mean confusion matrix
+    puts more off-diagonal mass on labs in the same time zone than on labs in others.
+
+- id: fig3s3-other-classifiers
+  statement: >-
+    Random Forest and Logistic Regression classifiers also failed to predict laboratory membership
+    from basic-task behavior.
+  source: Results, Performance in the basic task was indistinguishable across laboratories,
+    paragraph 5; Figure 3, figure supplement 3d-i
+  quote: >-
+    Similar results were obtained with two other classifier algorithms ( Figure 3—figure
+    supplement 3d–i ).
+  depends_on:
+  - fig3f-classifier-chance-basic
+  criterion: >-
+    As fig3f-classifier-chance-basic with scikit-learn RandomForestClassifier (100 trees,
+    random_state 424242) and LogisticRegression (solver liblinear), as in the code. Reproduced when
+    neither is above chance by the same rule.
+
+- id: fig3s1a-choice-consistency-basic
+  statement: >-
+    In the basic task, mouse choices were no more consistent within laboratories than across
+    laboratories.
+  source: Figure 3, figure supplement 1a legend
+  quote: >-
+    This averaged consistency was not significantly higher (p=0.73) than a null distribution
+    generated by randomly shuffling lab assignments between mice and computing the average
+    within-lab choice variability 10,000 times ( violin plot ). Therefore, choices were no more
+    consistent within labs than across labs.
+  statistics:
+  - test: permutation test against 10,000 shuffles of lab labels
+    p: 0.73
+    n: 140 mice in 7 laboratories
+  criterion: >-
+    Per mouse, the fraction of rightward choices at each signed contrast; per lab, the variance
+    across mice at each contrast, its mean over contrasts, and the inverse (consistency); the mean
+    over labs compared with 10,000 shuffles of lab labels across mice; p = fraction of shuffles
+    above the data (legend; code suppfig_choicevariability_withinacrosslabs.py, where 50% contrast
+    trials are dropped). Sessions per the legend, S1 ("same data as in Figure 3"); the code instead
+    uses the P1 day and the two days after (days_from_criterion [0, 2]), shown as a variant.
+    Reproduced when p >= 0.05.
+
+- id: fig3s1bc-choice-consistency-full
+  statement: >-
+    In the full task, neither choice fractions nor the bias shift between blocks were more
+    consistent within laboratories than expected by chance.
+  source: Figure 3, figure supplement 1b,c legend; Results, Performance in the full task was
+    indistinguishable across laboratories, paragraph 4
+  quote: >-
+    Within-lab choice consistency on the full task was not higher than expected by chance,
+    p=0.25. ... Within-lab consistency in bias shift was not higher than expected by chance
+    (p=0.31).
+  statistics:
+  - about: choice consistency, full task
+    test: permutation test against 10,000 shuffles of lab labels
+    p: 0.25
+    n: 98 mice in 7 laboratories
+  - about: bias shift consistency
+    test: permutation test against 10,000 shuffles of lab labels
+    p: 0.31
+    n: 98 mice in 7 laboratories
+  depends_on:
+  - fig3s1a-choice-consistency-basic
+  criterion: >-
+    As fig3s1a-choice-consistency-basic on S2 trials (legend "same data as in Figure 4"; code),
+    with consistency computed per signed contrast and block before averaging (b), and for the bias
+    shift (c) per mouse and contrast the fraction rightward in 20:80 blocks minus 80:20 blocks.
+    Reproduced when both p >= 0.05.
+
+- id: fig3s4-looser-criterion
+  statement: >-
+    With a looser proficiency criterion (80% correct on easy trials over three sessions, n = 150
+    mice), behavior was again consistent across laboratories; only the number of trials per
+    session differed slightly, and a classifier failed to identify a mouse's laboratory.
+  source: Results, Performance in the basic task was indistinguishable across laboratories,
+    paragraph 6; Figure 3, figure supplement 4
+  quote: >-
+    there was a small but significant difference in the number of trials per session across
+    laboratories. All other measured parameters were similar.
+  expected:
+    quantity: mice meeting the looser criterion
+    value: 150
+    tolerance: 15
+  depends_on:
+  - fig3cde-no-lab-difference-medians
+  - fig3f-classifier-chance-basic
+  criterion: >-
+    Sessions per the code (query_session_around_performance, suppfig_3-4a-f.py): for each mouse,
+    the first three consecutive basic sessions each with more than 80% correct on easy trials;
+    sessions with five or more signed contrasts kept; mice with three such sessions. Lab tests and
+    FDR as in fig3cde-no-lab-difference-medians on the same six variables; Naive Bayes classifier
+    on performance, threshold and bias as in fig3f-classifier-chance-basic
+    (suppfig_classifier_lab_membership_perf.py). Reproduced when trials per session has corrected
+    p < 0.05, the other five have p >= 0.05, and the classifier is not above chance.
+
+- id: fig3s5-first-full-sessions
+  statement: >-
+    In the first three sessions of the full task, bias in each block, contrast threshold in each
+    block and performance on 100% contrast trials did not vary significantly across
+    laboratories, and a classifier could not predict lab membership.
+  source: Figure 3, figure supplement 5 legend; Results, Performance in the basic task was
+    indistinguishable across laboratories, paragraph 6
+  quote: >-
+    Bias for each block prior did not vary significantly over labs (Kruskal-Wallis test, 20:80
+    blocks; p=0.96, 50:50 block; p=0.96, 80:20 block; p=0.89). ( b ) The contrast thresholds also
+    did not vary systematically over labs (Kruskal-Wallis test, 20:80 block; p=0.078, 50:50 block;
+    p=0.12, 80:20 block; p=0.17). ( c ) Performance on 100% contrast trials neither
+    (Kruskal-Wallis test, p=0.15).
+  statistics:
+  - about: bias, 20:80 blocks
+    test: Kruskal-Wallis test
+    p: 0.96
+  - about: bias, 50:50 block
+    test: Kruskal-Wallis test
+    p: 0.96
+  - about: bias, 80:20 block
+    test: Kruskal-Wallis test
+    p: 0.89
+  - about: contrast threshold, 20:80 block
+    test: Kruskal-Wallis test
+    p: 0.078
+  - about: contrast threshold, 50:50 block
+    test: Kruskal-Wallis test
+    p: 0.12
+  - about: contrast threshold, 80:20 block
+    test: Kruskal-Wallis test
+    p: 0.17
+  - about: performance on 100% contrast trials
+    test: Kruskal-Wallis test
+    p: 0.15
+  criterion: >-
+    Per mouse and block, psychometric fits to the pooled trials of the first three full-task
+    sessions, and easy-trial performance. Sessions per the legend, the first three biased sessions;
+    the code (suppfig_variability_over_labs_first_biased.py) takes the biased sessions on training
+    days 1 to 3 after P1b, and its classifier script days -1 to 3; both shown as variants.
+    Kruskal-Wallis across labs for each of the seven variables, as the legend names it (the code
+    corrects the seven p values with statsmodels' default Holm-Sidak method; variant). Naive Bayes
+    classifier on the seven variables as in fig3f-classifier-chance-basic. Reproduced when all
+    seven p >= 0.05 and the classifier is not above chance.
+
+- id: fig3s5a-prior-used-from-first-sessions
+  statement: >-
+    Mice incorporated the block priors into their choices from the first sessions of the full
+    task.
+  source: Results, Performance in the full task was indistinguishable across laboratories,
+    paragraph 2; Figure 3, figure supplement 5a
+  quote: >-
+    Mice incorporated block priors into their choices already from the first sessions in which they
+    were exposed to this full task
+  depends_on:
+  - fig3s5-first-full-sessions
+  criterion: >-
+    Per-mouse bias in 80:20 and 20:80 blocks from the sessions of fig3s5-first-full-sessions
+    (both readings). The paper reports no test for this; the full-task proficiency criterion
+    (Appendix 1, table 1d) defines use of the prior as bias[80:20] - bias[20:80] > 5. Reproduced
+    when the median over mice of that difference exceeds 5 and the Wilcoxon signed-rank test used
+    for Figure 4i (fig4i-bias-shifts-with-block) gives p < 0.05.
+
+- id: full-task-training-time
+  statement: >-
+    Mice that reached full task proficiency took 31.5 +- 16.1 days, or 20,494 +- 10,980 trials
+    (s.d., n = 98), from the start of training; the fastest took 8 days (4691 trials), the slowest
+    81 days (61,316 trials).
+  source: Results, Performance in the full task was indistinguishable across laboratories,
+    paragraph 2
+  quote: >-
+    For mice that reached full task proficiency, the average training from start to finish took
+    31.5 ± 16.1 days, or 20,494 ± 10,980 trials (s.d., n = 98). ... The fastest learner achieved
+    proficiency in 8 days (4691 trials), the slowest 81 days (61,316 trials).
+  expected:
+  - quantity: mean days to full proficiency
+    value: 31.5
+    tolerance: 3.15
+    unit: days
+  - quantity: s.d. of days
+    value: 16.1
+    tolerance: 1.61
+    unit: days
+  - quantity: mean trials to full proficiency
+    value: 20494
+    tolerance: 2049
+    unit: trials
+  - quantity: s.d. of trials
+    value: 10980
+    tolerance: 1098
+    unit: trials
+  - quantity: fastest mouse
+    value: 8
+    tolerance: 0.8
+    unit: days
+  - quantity: slowest mouse
+    value: 81
+    tolerance: 8.1
+    unit: days
+  criterion: >-
+    Per mouse reaching P2, the last training-day number and the summed trials over training days up
+    to and including the P2 day (code supp_queries.py, n_training_days = MAX(training_day),
+    total_trials = SUM(n_trials_date)); mean, s.d., minimum and maximum over mice.
+
+- id: fig4cd-biasshift-largest-at-zero
+  statement: >-
+    Block structure had the greatest effect on choices when sensory evidence was absent; the shift
+    in rightward choices between 20:80 and 80:20 blocks was highest at 0% contrast in every
+    laboratory, averaging 28.5%.
+  source: Results, Performance in the full task was indistinguishable across laboratories,
+    paragraph 2; Figure 4c-e
+  quote: >-
+    The average shift in rightward choices was invariably highest at 0% contrast, where rightward
+    choices in the two blocks differed by an average of 28.5%.
+  expected:
+    quantity: mean over mice of the bias shift at 0% contrast
+    value: 28.5
+    tolerance: 2.85
+    unit: "%"
+  criterion: >-
+    Per mouse, psychometric fits to the pooled S2 trials of the 20:80 and 80:20 blocks; the bias
+    shift at each signed contrast is the fitted rightward choice percentage in 20:80 minus 80:20
+    (code figure4de_psychfuncs_biased.py; the Figure 4c legend reads it from the curves). Mean over
+    mice at 0%. Reproduced when the mean is within tolerance and, in each of the seven labs, the
+    lab mean is highest at 0% contrast.
+
+- id: fig4de-biasshift-no-lab-difference
+  statement: >-
+    The bias shift at 0% contrast did not differ across laboratories more than within them.
+  source: Results, Performance in the full task was indistinguishable across laboratories,
+    paragraph 2; Figure 4d,e
+  quote: >-
+    This value did not significantly differ across laboratories any more than it differed within
+    laboratories (one-way ANOVA F(6) = 1.345, p=0.2455, Figure 4d,e ).
+  statistics:
+  - test: one-way ANOVA
+    statistic: F(6) = 1.345
+    p: 0.2455
+    n: 98 mice in 7 laboratories
+  depends_on:
+  - fig4cd-biasshift-largest-at-zero
+  criterion: >-
+    Per-mouse bias shift at 0% from fig4cd-biasshift-largest-at-zero; one-way ANOVA on lab (code,
+    statsmodels ols and type 2 anova_lm). Reproduced when p >= 0.05.
+
+- id: fig4f-threshold-unchanged-by-block
+  statement: >-
+    Block type did not significantly affect the contrast threshold.
+  source: Results, Performance in the full task was indistinguishable across laboratories,
+    paragraph 3; Figure 4f
+  quote: >-
+    Changes in block type did not significantly affect the contrast threshold (Wilcoxon
+    Signed-Rank test, p=0.85, n = 98 mice, Figure 4f ).
+  statistics:
+  - test: Wilcoxon Signed-Rank test
+    p: 0.85
+    n: 98 mice
+  criterion: >-
+    Per mouse, psychometric fits to the pooled S2 trials of 80:20 and of 20:80 blocks (code
+    figure4fghi_variability_over_labs_full.py); scipy Wilcoxon signed-rank test of threshold in
+    the two blocks. Reproduced when p >= 0.05.
+
+- id: fig4gh-lapses-change-with-block
+  statement: >-
+    Block type changed lapse rates, which were higher on the left in 20:80 blocks and higher on
+    the right in 80:20 blocks.
+  source: Results, Performance in the full task was indistinguishable across laboratories,
+    paragraph 3; Figure 4g,h
+  quote: >-
+    However, it did change the lapse rates, which were consistently higher on the left in the
+    20:80 blocks and on the right in the 80:20 blocks
+  statistics:
+  - about: left lapse, 20:80 against 80:20 blocks
+    test: Wilcoxon Signed-Rank test
+    p: 1.0e-6
+    p_relation: "<"
+    n: 98 mice
+  - about: right lapse, 20:80 against 80:20 blocks
+    test: Wilcoxon Signed-Rank test
+    p: 1.0e-7
+    p_relation: "<"
+    n: 98 mice
+  depends_on:
+  - fig4f-threshold-unchanged-by-block
+  criterion: >-
+    Fits as in fig4f-threshold-unchanged-by-block; left lapse gamma and right lapse lambda per
+    block; Wilcoxon signed-rank tests between blocks. Reproduced when the left lapse is higher in
+    20:80 and the right lapse higher in 80:20 (median of paired differences) with p < 1e-6 and
+    p < 1e-7; partially reproduced when the directions hold with p < 0.05 only.
+
+- id: fig4i-bias-shifts-with-block
+  statement: >-
+    Block type changed the overall bias consistently, with curves shifting left in 20:80 blocks
+    and right in 80:20 blocks.
+  source: Results, Performance in the full task was indistinguishable across laboratories,
+    paragraph 3; Figure 4i
+  quote: >-
+    Finally, as expected there was a highly consistent change in overall bias, with curves shifting
+    to the left in 20:80 trials and to the right in 80:20 trials
+  statistics:
+  - test: Wilcoxon Signed-Rank test
+    p: 1.0e-16
+    p_relation: "<"
+    n: 98 mice
+  depends_on:
+  - fig4f-threshold-unchanged-by-block
+  criterion: >-
+    Fits as in fig4f-threshold-unchanged-by-block; Wilcoxon signed-rank test of bias mu between
+    blocks. Reproduced when mu is lower in 20:80 than in 80:20 blocks (median of paired
+    differences) with p < 1e-16; partially reproduced when the direction holds with p < 0.05 only.
+
+- id: fig4fi-no-lab-difference
+  statement: >-
+    Threshold, lapses and bias in each block type showed no significant differences across
+    laboratories.
+  source: Results, Performance in the full task was indistinguishable across laboratories,
+    paragraph 2; Figure 4f-i
+  quote: >-
+    An analysis of the psychometric curves showed highly consistent effects of block type, with no
+    significant differences across laboratories ( Figure 4f–i ).
+  depends_on:
+  - fig4f-threshold-unchanged-by-block
+  criterion: >-
+    The paper gives no test; the code (figure4fghi) runs the lab test (shared definition) on each
+    of the eight per-block values (threshold, left lapse, right lapse, bias, in 80:20 and 20:80)
+    and corrects the eight p values with Benjamini-Hochberg FDR. Reproduced when all eight
+    corrected p >= 0.05.
+
+- id: fig4j-classifier-chance-full
+  statement: >-
+    A classifier trained on the full-task psychometric parameters could not predict the
+    laboratory of individual mice above chance.
+  source: Results, Performance in the full task was indistinguishable across laboratories,
+    paragraph 3; Figure 4j
+  quote: >-
+    Just as in the basic task ( Figure 3 ), a classifier trained on these variables could not
+    predict above chance the origin laboratory of individual mice above chance ( Figure 4j ).
+  depends_on:
+  - fig4f-threshold-unchanged-by-block
+  - fig3f-classifier-chance-basic
+  criterion: >-
+    Lab classifier with GaussianNB on the eight per-block values of fig4fi-no-lab-difference
+    from S2 (code figure4i_classifier_lab_membership_full.py); same rule as
+    fig3f-classifier-chance-basic. Reproduced when not above chance.
+
+- id: fig5cf-glm-weights
+  statement: >-
+    In a logistic choice model fitted to each mouse, visual weights grew with contrast to above 3
+    at 100% contrast, while weights for past choices were much smaller and positive after both
+    rewarded (basic 0.19, full 0.42) and unrewarded (basic 0.33, full 0.46) trials, indicating
+    perseverance.
+  source: Results, A probabilistic model reveals common strategies across mice and laboratories,
+    paragraph 2; Figure 5c,d,f,g
+  quote: >-
+    As expected, visual terms had large weights, which grew with contrast to reach values above 3
+    at 100% contrast. Weights for non-sensory factors were much lower ( Figure 5c,f , note
+    different scale). Weights for past choices were positive for both rewarded (basic 0.19, full
+    0.42) and unrewarded previous trials (basic 0.33, full 0.46)
+  expected:
+  - quantity: mean rewarded past-choice weight, basic task
+    value: 0.19
+    tolerance: 0.019
+  - quantity: mean rewarded past-choice weight, full task
+    value: 0.42
+    tolerance: 0.042
+  - quantity: mean unrewarded past-choice weight, basic task
+    value: 0.33
+    tolerance: 0.033
+  - quantity: mean unrewarded past-choice weight, full task
+    value: 0.46
+    tolerance: 0.046
+  criterion: >-
+    Model per Methods (Probabilistic choice model, equations 2-4): logistic regression of choice
+    (no-response trials left out) on signed indicators per nonzero contrast, the previous choice
+    split by its outcome (r and u), a constant, and in the full task the block (+1 for 20:80, -1
+    for 80:20, 0 for 50:50); design matrix by patsy, fit by statsmodels Logit.fit_regularized with
+    its defaults (code figure5_GLM_modelfit.py), per mouse and task. Sessions per the code:
+    training days P1b-2 to P1b+3, split into basic and full by protocol; the Methods say three
+    sessions per mouse, read as (b) the last three basic sessions before P1b and the first three
+    full sessions. Contrasts per the Methods include 50%; the code drops 50% trials (variant).
+    Means over mice of each weight. Reproduced when the 100% weight's mean exceeds 3 in both tasks,
+    the visual weights increase with contrast, and the four history weights are within tolerance
+    under one reading.
+
+- id: fig5dg-history-weights-higher-full
+  statement: >-
+    Previous choices influenced behavior more strongly in the full task than in the basic task,
+    after both rewarded and unrewarded trials.
+  source: Results, A probabilistic model reveals common strategies across mice and laboratories,
+    paragraph 2; Figure 5d,g
+  quote: >-
+    Indeed, previous choices more strongly influenced behavior in the full task, both after
+    rewarded (t(125) = 10.736, p<10 −6 ) and unrewarded trials (t(125) = 4.817, p<10 −6 ).
+  statistics:
+  - about: rewarded past-choice weight, full against basic
+    test: paired t-test
+    statistic: t(125) = 10.736
+    p: 1.0e-6
+    p_relation: "<"
+    n: 126 mice with both fits
+  - about: unrewarded past-choice weight, full against basic
+    test: paired t-test
+    statistic: t(125) = 4.817
+    p: 1.0e-6
+    p_relation: "<"
+    n: 126 mice with both fits
+  depends_on:
+  - fig5cf-glm-weights
+  criterion: >-
+    Per-mouse weights from fig5cf-glm-weights, mice with both fits; scipy ttest_rel of full
+    against basic, NaN omitted (code figure5_GLM_plot.py). Reproduced when both t are positive
+    with p < 0.05 (the code's num_star significance level). Note that t(125) = 4.817 gives a
+    two-sided p of about 4e-6, above the printed bound of 1e-6; the t value, not the bound, is the
+    reference.
+
+- id: fig5s2-glm-accuracy
+  statement: >-
+    The model predicted individual mouse choices well, with cross-validated accuracy of
+    81.03 +- 5.1% in the basic task and 82.1 +- 5.8% in the full task, similar across
+    laboratories; mean condition numbers were 2.4 and 3.2.
+  source: Results, A probabilistic model reveals common strategies across mice and laboratories,
+    paragraph 2; Figure 5, figure supplement 2c
+  quote: >-
+    Importantly, fitted weights and the model's predictive accuracy (unbiased: 81.03 + 5.1%,
+    biased 82.1 + 5.8%) ( Figure 5—figure supplement 2 ) were similar across laboratories,
+    suggesting an overall common strategy.
+  expected:
+  - quantity: mean cross-validated accuracy, basic task
+    value: 81.03
+    tolerance: 8.1
+    unit: "%"
+  - quantity: mean cross-validated accuracy, full task
+    value: 82.1
+    tolerance: 8.2
+    unit: "%"
+  - quantity: mean condition number, basic model
+    value: 2.4
+    tolerance: 0.24
+  - quantity: mean condition number, full model
+    value: 3.2
+    tolerance: 0.32
+  depends_on:
+  - fig5cf-glm-weights
+  criterion: >-
+    Fits as in fig5cf-glm-weights with 5-fold cross-validation, folds shuffled (the code sets no
+    seed; a standard seed is used and the spread over seeds shown). Accuracy readings: (1) the
+    Figure 5, figure supplement 2c legend, the fraction of test trials where the predicted
+    probability of the actual choice exceeds 50%; (2) the code, the mean predicted probability of
+    the actual choice. Condition number of the design matrix (numpy cond), as in the code.
+    "Similar across laboratories" is fig5s2-weights-similar-across-labs.
+
+- id: fig5s2-weights-similar-across-labs
+  statement: >-
+    Fitted model weights and predictive accuracy were similar across laboratories.
+  source: Results, A probabilistic model reveals common strategies across mice and laboratories,
+    paragraph 2; Figure 5, figure supplement 2
+  quote: >-
+    The model fit the mouse choices well and captured the relative importance of sensory and
+    non-sensory information across mice and laboratories
+  depends_on:
+  - fig5s2-glm-accuracy
+  criterion: >-
+    The paper reports no test; the code (figure5_GLM_plot.py) runs the lab test (shared
+    definition, uncorrected) on each weight (6.25, 12.5, 25, 100, rewarded, unrewarded, bias, and
+    block in the full task), pseudo-R2 and accuracy, per task. Reproduced when no test gives
+    p < 0.05; partially reproduced when one or two of the up to 20 tests do; the p values are
+    reported.
+
+- id: fig5s1b-win-stay-lose-switch
+  statement: >-
+    After correcting for slow fluctuations in decision bound, most mice used a win-stay
+    lose-switch strategy, in both the basic and full tasks.
+  source: Figure 5, figure supplement 1b legend; Results, A probabilistic model reveals common
+    strategies across mice and laboratories, paragraph 3
+  quote: >-
+    When taking these slow state-changes into account, the majority of animals use a win-stay
+    lose-switch strategy.
+  criterion: >-
+    Code suppfig_history_strategy.py: trials from training days P1b-2 to P1b+3, split by task;
+    signed contrasts with fewer than 100 trials over all mice dropped; per mouse, task, previous
+    choice and previous outcome a psychometric fit; the history shift = fitted rightward % at 0%
+    contrast after a right choice minus after a left choice, separately after rewarded and
+    unrewarded trials, from fits with more than 50 trials; the same with the next trial's choice
+    and outcome; corrected shift = history shift minus next-trial shift (Lak et al., 2020a).
+    Reproduced when, in each task, more than half the mice have a positive corrected post-reward
+    shift and a negative corrected post-error shift.
+
+- id: fig5s1c-updating-by-contrast
+  statement: >-
+    After rewarded trials, choice updating was largest when the previous stimulus had low contrast
+    and much smaller after high-contrast rewarded trials.
+  source: Figure 5, figure supplement 1c legend
+  quote: >-
+    After rewarded trials, choice updating is largest when the visual stimulus was highly uncertain
+    (i.e. had low contrast) but strongly diminished after more certain, rewarded trials.
+  depends_on:
+  - fig5s1b-win-stay-lose-switch
+  criterion: >-
+    Corrected updating as in fig5s1b-win-stay-lose-switch, computed separately by the previous
+    trial's absolute contrast (code suppfig_history_bycontrast.py; read only in outline here).
+    The paper reports no test. Reproduced when, after rewarded trials, the mean corrected updating
+    after 0% and 6.25% contrast exceeds that after 100% contrast in both tasks.
+
+- id: session-end-criteria
+  statement: >-
+    The session-ending criterion was not mandatory; 5,316 of 10,903 sessions ended earlier and
+    5,587 later, the latter continuing for a median of 19 +- 16 extra trials (m.a.d.).
+  source: Results, Training progression in the basic task, paragraph 2; Figure 1, figure
+    supplement 2
+  quote: >-
+    The criterion to end a session was not mandatory: some sessions were ended earlier
+    (5,316/10,903 sessions) and others ended later (5,587/10,903 sessions). The latter sessions
+    typically continued for an extra 19 ± 16 trials (median ±m.a.d., 5,587 sessions) longer.
+  expected:
+  - quantity: sessions in total
+    value: 10903
+    tolerance: 1090
+  - quantity: sessions that met an end criterion
+    value: 5587
+    tolerance: 559
+  - quantity: median extra trials after the end criterion
+    value: 19
+    tolerance: 1.9
+    unit: trials
+  - quantity: m.a.d. of extra trials
+    value: 16
+    tolerance: 1.6
+    unit: trials
+  criterion: >-
+    Code supp_queries.py: all mice that started training; per training day, an end criterion is
+    met when a session that day has an end status (from the pipeline's
+    SessionEndCriteriaImplemented table) or the day's summed session durations reach 90 minutes;
+    extra trials = trials after the end-status trial. Without an end status in the dataset, it is
+    recomputed from the three criteria of the Figure 1, figure supplement 2 legend (fewer than 400
+    trials in 45 min; over 400 trials and 90 min; over 400 trials and median reaction time over
+    the last 20 trials above 5 times the session median), taking the first trial at which one is
+    met.
