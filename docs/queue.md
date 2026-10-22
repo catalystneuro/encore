@@ -1,6 +1,6 @@
 # The run queue
 
-Anyone can ask for an attempt on a dataset by opening a [run request](https://github.com/catalystneuro/reproduction-registry/issues/new?template=run-request.yml): a repeat attempt on a draft after its conversion was fixed ([fixing-conversions.md](fixing-conversions.md), step 6), a first attempt on a dataset the runner has not reached, or a repeat on a new published version. The queue, and each request's place in it, is the open issue labelled `queue-board`, rewritten whenever a request changes.
+Anyone can ask for an attempt on a dataset by opening a [run request](https://github.com/catalystneuro/encore/issues/new?template=run-request.yml): a repeat attempt on a draft after its conversion was fixed ([fixing-conversions.md](fixing-conversions.md), step 6), a first attempt on a dataset the runner has not reached, or a repeat on a new published version. The queue, and each request's place in it, is the open issue labelled `queue-board`, rewritten whenever a request changes.
 
 The record stays where it is: claims, attempts, entries and verifications are files in this repository, and each run is a GitHub Actions job ([pipeline.md](pipeline.md)). The queue is how runs are asked for, ordered and reported on.
 

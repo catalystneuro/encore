@@ -48,7 +48,7 @@ import yaml
 
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = Path(__file__).resolve().parent / "site_assets"
-REPO_URL = "https://github.com/catalystneuro/reproduction-registry"
+REPO_URL = "https://github.com/catalystneuro/encore"
 CN_URL = "https://www.catalystneuro.com"
 # Encore Science is the project: the `encore` tool (docs/encore.md) and this site, the Encore registry.
 SITE_NAME = "Encore Science"

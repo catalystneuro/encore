@@ -28,7 +28,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO_URL = "https://github.com/catalystneuro/reproduction-registry.git"
+REPO_URL = "https://github.com/catalystneuro/encore.git"
 TOOLS = "Bash,Read,Write,Edit,Glob,Grep,WebFetch,WebSearch,Agent,TodoWrite"
 NOT_TOOLS = "ScheduleWakeup,CronCreate,CronDelete,CronList,Monitor,RemoteTrigger,Workflow"
 QUICK = ("claims", "claims-check", "author")

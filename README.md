@@ -28,7 +28,7 @@ independent agent, but neither is infallible. Each attempt records its reasoning
 analysis differs from the paper's, and its code, so that anyone can check it.
 
 If you are an author of a paper listed here and think an attempt is wrong,
-please [open an issue](https://github.com/catalystneuro/reproduction-registry/issues).
+please [open an issue](https://github.com/catalystneuro/encore/issues).
 
 ## What is here
 

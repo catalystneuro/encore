@@ -20,7 +20,7 @@ from pathlib import Path
 from . import __version__
 from .run import Dataset, Run, Stop, dataset_of, slug
 
-REPO = "catalystneuro/reproduction-registry"
+REPO = "catalystneuro/encore"
 MODEL = "claude-opus-5-5"
 
 
