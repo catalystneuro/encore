@@ -1,0 +1,62 @@
+name: Run requests
+run-name: "Run requests: ${{ github.event.issue.number && format('#{0}', github.event.issue.number) || 'board' }}"
+
+# The run queue (docs/queue.md). Whenever a `run-request` issue is opened, edited, labelled or
+# reopened, checks it and labels its state (tools/runner/run_requests.py check), then rewrites the
+# queue-board issue. The queue runner dispatches this with no issue to rewrite the board after it
+# takes a request or reports on one. The issue's text is read only by the Python script, never
+# expanded into a shell command.
+
+on:
+  issues:
+    types: [opened, edited, labeled, unlabeled, reopened, closed]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: run-requests
+  cancel-in-progress: false
+
+jobs:
+  queue:
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.issue.labels.*.name, 'run-request')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - run: pip install --no-cache-dir pyyaml
+
+      - name: The queue's labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh label create run-request --color 1D76DB --description "A request for an attempt (docs/queue.md)" 2>/dev/null || true
+          gh label create awaiting-approval --color FBCA04 --description "Run request waiting for someone in queue/priority.yaml" 2>/dev/null || true
+          gh label create approved --color 0E8A16 --description "Run request approved" 2>/dev/null || true
+          gh label create queued --color C5DEF5 --description "Run request in the queue" 2>/dev/null || true
+          gh label create running --color 5319E7 --description "Run request being attempted" 2>/dev/null || true
+          gh label create priority --color D93F0B --description "Run request ahead of the others" 2>/dev/null || true
+          gh label create invalid --color E4E669 --description "Run request that cannot be queued as written" 2>/dev/null || true
+          gh label create queue-board --color BFDADC --description "The run queue, kept up to date" 2>/dev/null || true
+
+      - name: Check the request
+        if: github.event_name == 'issues' && github.event.action != 'closed'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMBER: ${{ github.event.issue.number }}
+        run: python tools/runner/run_requests.py check "$NUMBER"
+
+      - name: Rewrite the board
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python tools/runner/run_requests.py board
