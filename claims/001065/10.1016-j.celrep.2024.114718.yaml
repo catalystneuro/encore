@@ -1,0 +1,1064 @@
+# Claims for Dembrow, Sawchuk et al. (2024), "Areal specializations in the morpho-electric and
+# transcriptomic properties of primate layer 5 extratelencephalic projection neurons", Cell
+# Reports 43:114718, on dandiset 001065.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-22,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript (NIHMS2025370, PMC11488157) as served by Europe PMC,
+# CC BY-NC-ND: main text, STAR Methods, figure legends, key resources table, and the
+# supplemental PDF (NIHMS2025370-supplement-1.pdf, legends of Figures S1 to S7). Not in the
+# text: Tables S1 to S5 (gene lists, gene statistics, means and SE of the 40 physiology
+# features, the projection-type ANOVA of Figure 4A and the L5 ET area ANOVA of Figure 6A) and
+# the figures themselves. Where a claim needs a number that only those tables hold, the paper's
+# analysis code supplies it where it printed one, and the criterion says so; the code's
+# deposited ET_cross_p.csv, ET_cross_effect.csv and ETmean_sem.csv are the area ANOVA and the
+# area means of Table S5's analysis. The projection-type ANOVA of physiology (Table S4) was
+# not deposited (the deposited ETvIT_pval.csv and ETvIT_eta.csv hold the Patch-seq gene ANOVA).
+#
+# Code read: Zenodo record 13749343 (doi:10.5281/zenodo.13749343, published 2024-09-11, one
+# version), cited in the key resources table. It holds Jupyter notebooks and their inputs:
+# UMAPprojections_020724.ipynb (physiology UMAP, classifier prediction of subclass, three-way
+# ANOVA of the 40 features on projection class, preparation and area: Figures 3 and 4),
+# classifier_features_070523.ipynb (logistic regression classifier on features and on sparse
+# PCs: Figure 3E to 3G, S3B, S3E, S3F), L5ET.ipynb (two-way ANOVA of L5 ET features on area
+# and preparation, FI curves: Figure 6A to 6H, S6A, S6B), ExtendedFI.ipynb (4 nA protocol,
+# Welch t-tests: Figure 6I to 6K, S6C, S6D, from MCx.pkl and TCx.pkl), morphology.ipynb
+# (Welch t-tests and classifier on dendritic features: Figure 5), cell_counts.ipynb (Patch-seq
+# QC and CS mapping: Figure 2, S2), the snRNA-seq and Patch-seq gene notebooks (Figure 1, S1,
+# 4H, S4, S6E), integratePS_71123.R (Seurat integration), and per-cell tables:
+# lockdown_physiology_072623.csv (per-cell features, metadata, Brain_Region, Prep, Virus,
+# Reporter_positive), cell_list_L5.csv (Patch-seq QC and mapped subclass and t-type per
+# sample), L5_physiology_121223.csv and L5ET_121223.csv (with predicted_subclass and
+# Cortical_area), RawFeatureWide.csv (dendritic features). Not deposited: the helper modules
+# data_processing.py and HCTanalysis_utils.py (feature imputation and scaling, UMAP, the
+# classifier function predict_subclass and Logistic_reg_classifier, the gain computation), the
+# feature extraction from raw traces, and the R code of the subthreshold oscillation analysis
+# (Figure 7, S7). So the code does not fix how features are computed from the recordings.
+#
+# Choices the code settles, used below: MCx is Brain_Region M1, M1-trunk, M1-Hand-wrist or SFG,
+# every other region is TCx; a cell is L5 ET when tdTomato-positive after the AAV-retro spinal
+# injection (CS), else its MTG-mapped subclass for Patch-seq samples passing QC, else the
+# subclass the classifier predicts; projection class is L5 ET against all other predicted
+# subclasses; ANOVAs are statsmodels OLS with all interactions, type II sums of squares, and
+# Benjamini-Hochberg correction across the 40 features, separately for each main effect (and,
+# in the two-way ANOVA, the interaction); the t-tests are Welch's (scipy ttest_ind with
+# equal_var False), and Cohen's d uses the pooled SD; up/down ratio is -(max dV/dt)/(min dV/dt).
+# Code against Methods: the code's "partial eta" is SS_a/(SS_total - (SS_b - SS_ab)) in the
+# two-way and an analogous sign-mixed formula in the three-way ANOVA, not the standard partial
+# eta squared SS_effect/(SS_effect + SS_residual) the Methods name. The Methods' measure is
+# the main reading below and the code's formula a variant.
+#
+# Data the paper used (Methods; Results): 58 macaques (23 male, 35 female; 48 Macaca nemestrina,
+# 10 Macaca mulatta; 2 to 19 years). Whole-cell current clamp recordings in acute or cultured
+# slices of MCx (M1, including hand-wrist and trunk areas) and TCx (MTG), 32 to 34 C, sampled
+# at 20 or 50 kHz; 300 new recordings plus 20 cells from Bakken et al. 2021 and 13 from Lee et
+# al. 2021, 333 recordings in the physiology analysis; 177 Patch-seq samples passed
+# transcriptomic QC; corticospinal (CS) neurons were labelled by AAV-retro-tdTomato in the
+# cervical cord in 3 animals (16 CS samples). Protocols: a chirp (0.2 to 40 Hz in 20 s,
+# about 10 mV peak to peak); 1 s hyperpolarizing steps (typically -200 to +50 pA by 50 pA,
+# scaled by input resistance); 1 s depolarizing steps (+50 pA per step up to 1 nA or spike
+# failure); 3 ms steps from +500 pA by +100 pA to spiking; for Figures 6I to 6K, 1 s steps by
+# 200 pA up to 4 nA (MCx n = 42, TCx n = 26 L5 ET neurons); for Figure 7, 10 s steps near
+# rheobase, some with synaptic blockers (DNQX, d-APV and gabazine or picrotoxin). Measured
+# variables: membrane voltage and injected current per sweep. Dendritic reconstructions (12 MCx,
+# 11 TCx L5 ET neurons) are in the Brain Image Library (doi:10.35077/g.1160), Patch-seq reads in
+# SRA PRJNA1088539, the snRNA-seq references in NeMO (dat-net1412, dat-ek5dbmu). The dandiset
+# (title and description) holds the current clamp NWB files of the deep layer neurons of
+# temporal and motor cortex, so the physiology claims are the ones it can test.
+#
+# Labels from outside the dataset: the physiology claims need, per cell, the area, the
+# preparation and the subclass (Patch-seq mapping, CS label or classifier prediction). The
+# paper's code gives them in L5_physiology_121223.csv, L5ET_121223.csv, cell_list_L5.csv and
+# lockdown_physiology_072623.csv (Zenodo record 13749343), keyed by cell_name or sample_id. Those
+# claims are marked with_labels; the labels are used and the tables' feature values are not.
+#
+# Feature definitions (STAR Methods, Neurophysiology features), referred to by the criteria:
+# resonant frequency fR is the frequency of the maximum of the impedance amplitude profile
+# |FFT(V)/FFT(I)| of the chirp response; the 3 dB cutoff is the frequency where the profile
+# falls to sqrt(0.5) Zmax; maximum and steady-state input resistance are slopes of the linear
+# portion of the voltage-current relation of the 1 s hyperpolarizing steps; single spike
+# properties come from the first spike at the lowest 1 s step that evokes a spike: threshold
+# where dV/dt exceeds 20 V/s, half-width at half the threshold-to-peak amplitude, fAHP the
+# minimum voltage after the spike relative to threshold, max and min dV/dt; maximum
+# instantaneous rate is 1/ISI(min) per step; gain is the slope of the FI relation, maximum gain
+# its largest step-to-step slope and initial gain the slope where the neuron starts firing
+# (the code divides spike-count differences by the current step). Details none of the paper,
+# legends or code fix, and which are standard choices that should not change the direction of
+# the large effects tested: the window of the peak and of the steady state of the
+# hyperpolarizing steps (standard choice: the most negative voltage in the step, and the mean
+# of its last 100 ms), which steps form the "linear portion" (standard choice: all steps from
+# -200 pA to 0), whether several chirp sweeps are averaged (standard choice: the mean of the
+# impedance profiles of all chirp sweeps), and the window after a spike for the fAHP
+# (standard choice: from the spike peak to the next spike or 10 ms, whichever comes first).
+# The author may compare the features computed here with the paper's per-cell table as a
+# link claim of its own.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001065"
+paper: doi:10.1016/j.celrep.2024.114718
+claims:
+# --- Cohort -------------------------------------------------------------------------------
+- id: cohort-animals
+  statement: Tissue came from 58 macaques, 23 male and 35 female, 48 Macaca nemestrina and 10
+    Macaca mulatta, aged 2 to 19 years.
+  source: STAR Methods, Experimental model and study participant details, Macaque specimens
+  quote: Male ( n = 23) and female ( n = 35) Macaca Nemestrina ( n = 48) and Macaca Mulatta (
+    n = 10) from 2 to 19 years old
+  expected:
+  - quantity: animals
+    value: 58
+    tolerance: 5.8
+  - quantity: male animals
+    value: 23
+    tolerance: 2.3
+  - quantity: female animals
+    value: 35
+    tolerance: 3.5
+  - quantity: Macaca nemestrina animals
+    value: 48
+    tolerance: 4.8
+  - quantity: Macaca mulatta animals
+    value: 10
+    tolerance: 1
+  criterion: Counted over the subjects of the dataset's files, by subject identifier, sex and
+    species. The 58 animals include donors whose tissue gave no recording in this dataset (the
+    Methods count animals used in the study); the count of animals with at least one file is
+    reported against 58.
+- id: cohort-recordings
+  statement: The physiology analysis rests on 333 recordings, 300 of them new in this study, plus
+    20 cells from a previous M1 study and 13 from a Patch-seq methods study.
+  source: Results, Patch-seq reveals subclass and areal distinctions, paragraph 2; STAR Methods,
+    Neurophysiology features, paragraph 1
+  quote: For the current study, we presented data from 300 new patch-clamp/Patch-seq experiments,
+    168 of which were included in transcriptomic analyses. We also included data from 20 cells
+    from a previously published study on M1 ... and 13 cells from a Patch-seq methods manuscript
+  expected:
+  - quantity: recordings in the physiology analysis
+    value: 333
+    tolerance: 33.3
+  - quantity: new recordings
+    value: 300
+    tolerance: 30
+  criterion: Counted as cells with current clamp data in the dataset. Two readings of what the
+    dataset should hold, both reported, are (a) all 333 cells; (b) the 300 new cells only, as the
+    33 earlier cells were published with other datasets. Reproduced when the count matches
+    either reading within tolerance.
+# --- Transcriptomic mapping and CS neurons (Patch-seq reads, SRA) ---------------------------
+- id: patchseq-qc-177
+  statement: 177 Patch-seq samples passed transcriptomic quality control (66 failed) and mapped to
+    infragranular glutamatergic types of the reference taxonomy.
+  source: Results, Patch-seq reveals subclass and areal distinctions, paragraph 1; Figure 2D, 2E;
+    Figure S2A
+  quote: Using this approach, we collected 177 high-quality Patch-seq samples
+  expected:
+  - quantity: samples passing QC
+    value: 177
+    tolerance: 17.7
+  - quantity: samples failing QC
+    value: 66
+    tolerance: 6.6
+  data: elsewhere
+  where: SRA BioProject PRJNA1088539 (Patch-seq reads); per-sample QC calls in cell_list_L5.csv,
+    Zenodo doi:10.5281/zenodo.13749343
+  criterion: QC as in STAR Methods, Patch-seq sample mapping. A sample passes when its
+    normalized marker sum (NMS) exceeds 0.7 and its correlation score to the MTG reference is
+    at least 0.525, after correlation-based mapping with scrattch.mapping to the macaque MTG
+    reference (Jorstad et al. 2023).
+- id: cs-map-to-l5et
+  statement: Retrogradely labelled corticospinal neurons map to the L5 ET subclass, 15 of 16 with
+    the MTG reference and 16 of 16 with the M1 reference.
+  source: Results, Patch-seq reveals subclass and areal distinctions, paragraph 1; Figure 2F;
+    Figure S2E
+  quote: Retrogradely labeled CS neurons mapped to the L5 ET subclass in both the MTG (15 of 16
+    samples) and M1 (16 of 16 samples) reference taxonomy
+  expected:
+  - quantity: CS samples mapped to L5 ET with the MTG reference
+    value: 15
+    tolerance: 1.5
+  - quantity: CS samples mapped to L5 ET with the M1 reference
+    value: 16
+    tolerance: 1.6
+  data: elsewhere
+  where: SRA BioProject PRJNA1088539; mapping calls in cell_list_L5.csv, Zenodo
+    doi:10.5281/zenodo.13749343
+  criterion: The CS samples are those tdTomato-positive after the spinal AAV-retro injection
+    that passed QC (cell_counts.ipynb selects projection_type CS among QC-passing samples).
+    Reproduced when the counts match within tolerance.
+# --- Physiology across subclasses (Figures 3 and 4) -----------------------------------------
+- id: fig3a-cs-with-l5et
+  statement: In the UMAP of the physiology features, CS neurons lie only among the transcriptomic
+    L5 ET neurons and overlap little with non-ET neurons, regardless of preparation, area and
+    species.
+  source: Results, Patch-seq reveals subclass and areal distinctions, paragraph 3; Figure 3A to
+    3C; Figure S3A
+  quote: CS neurons (triangles) exclusively distributed with the transcriptomically defined L5 ET
+    neurons ( Figure 3A ) and had little overlap with non-L5 ET neurons. This separation did not
+    depend upon slice preparation type
+  data: with_labels
+  criterion: >-
+    The embedding as in STAR Methods, Physiology UMAP and classification, and
+    UMAPprojections_020724.ipynb: the 40 features of the code's list; cells with more than 75%
+    of features missing excluded; missing values imputed as the mean of the 2 nearest
+    neighbours (KNNImputer) and features z-scored, separately for acute and cultured cells;
+    PCA, keeping components that explain at least 1% of variance; UMAP with 25 neighbours,
+    min_dist 0.1, Euclidean metric, random_state 20. The paper gives no measure of
+    "exclusively distributed with". Two readings, both the reader's, both run: (a) in the
+    two-dimensional embedding, the nearest transcriptomically labelled non-CS neighbour of
+    every CS neuron is an L5 ET neuron; (b) in the space of the retained PCs, at least 9 of the
+    10 nearest labelled non-CS neighbours of each CS neuron are L5 ET, for at least 90% of CS
+    neurons. Reproduced when both hold; partially when one does. The same rule is reported
+    within each preparation, area and species.
+- id: fig3e-classifier-accuracy
+  statement: A logistic regression classifier trained on physiology predicts transcriptomic
+    subclass (L5 ET, L5 IT, L5/6 NP, L6 IT) with 92.8% accuracy weighted across subclasses on the
+    whole dataset, 87.9% holding out 50% and 82.2% holding out 75%; for L5 ET it is 98.6% and
+    93.8% (75% held out).
+  source: Results, Patch-seq reveals subclass and areal distinctions, paragraph 4; Figure 3E to 3G
+  quote: Classifiers trained and tested on 100% of the dataset had an average accuracy of 92.8%
+    weighted across subclasses ... Classification was especially robust for the L5 ET subclass,
+    where accuracy was 98.6% when trained on 100% of the dataset and dropped to 93.8% when
+    holding out 75% of the dataset for cross-validation.
+  expected:
+  - quantity: weighted score, trained and tested on all cells
+    value: 92.8
+    tolerance: 9.28
+    unit: percent
+  - quantity: weighted score, 50% held out
+    value: 87.9
+    tolerance: 8.79
+    unit: percent
+  - quantity: weighted score, 75% held out
+    value: 82.2
+    tolerance: 8.22
+    unit: percent
+  - quantity: L5 ET score, all cells
+    value: 98.6
+    tolerance: 9.86
+    unit: percent
+  - quantity: L5 ET score, 75% held out
+    value: 93.8
+    tolerance: 9.38
+    unit: percent
+  data: with_labels
+  criterion: >-
+    Training cells are QC-passing Patch-seq samples and CS neurons (labelled L5 ET); subclasses
+    with 5 or fewer cells are dropped (classifier_features_070523.ipynb), leaving L5 ET, L5 IT,
+    L5/6 NP and L6 IT. Features preprocessed as in fig3a-cs-with-l5et. Multiclass logistic
+    regression on the feature z-scores; 100 repeats each of training on 100%, a random 50% and
+    a random 25% of cells, testing on the held-out cells (on all cells for 100%), predictions
+    aggregated. Open, as predict_subclass was not deposited: the regularization and solver
+    (standard choice: scikit-learn defaults, L2 with C = 1, lbfgs, max_iter raised until
+    convergence) and whether the random split is stratified (both run). The score: the
+    Results say "average accuracy weighted across subclasses", the Methods "average f1
+    scores", and the code prints per-class f1 (0.986 for L5 ET at 100%, matching the 98.6%).
+    Readings, all run: (a) support-weighted mean of per-class f1; (b) per-class recall
+    (diagonal of the row-normalized confusion matrix) averaged with class weights. Reproduced
+    when, under one reading, every value is within tolerance.
+- id: fig3-spc-classifier
+  statement: Classifiers built on sparse principal components of the physiology features perform
+    similarly to those built on the features.
+  source: Results, Patch-seq reveals subclass and areal distinctions, paragraph 4; Figure S3B
+  quote: Similar results were obtained by building classifiers using sparse principal components
+    (sPC) of physiology features
+  data: with_labels
+  depends_on:
+  - fig3e-classifier-accuracy
+  criterion: Sparse PCA with 8 components, alpha 7, random_state 0 on the preprocessed features
+    (classifier_features_070523.ipynb), then the procedure of fig3e-classifier-accuracy on
+    the 8 component scores. "Similar" has no measure in the paper; the reader's reading is
+    that each of the five scores of fig3e is within 10 percentage points of the
+    feature-based score computed here. Reproduced when all five are; partially when three or
+    four are.
+- id: fig3h-projection-largest-effect
+  statement: In three-way ANOVAs of each physiological feature on projection type, preparation
+    and cortical area, effect sizes are on average largest for projection type.
+  source: Results, Patch-seq reveals subclass and areal distinctions, paragraph 5; Figure 3H
+  quote: While preparation type and cortical area contributed to some variance, effect sizes, on
+    average, were largest for neuronal projection type
+  data: with_labels
+  criterion: >-
+    Cells with a subclass (transcriptomic, CS, or predicted by the classifier trained on all
+    labelled cells; predicted_subclass in L5_physiology_121223.csv), projection class L5 ET
+    against all others. For each of the 40 features, OLS with projection class, preparation,
+    area and all their interactions, type II sums of squares (UMAPprojections_020724.ipynb);
+    Figure 3H plots the median effect size per factor over the 40 features. Effect size as in
+    the Methods, partial eta squared SS_effect/(SS_effect + SS_residual); the code's formula
+    (opening comment) is run as a variant. Reproduced when the median partial eta squared over
+    features is larger for projection class than for preparation and for area.
+- id: fig4a-top-subthreshold
+  statement: Among features differing between L5 ET and non-ET neurons, the largest effect sizes
+    are for subthreshold, HCN-related properties, resonant frequency, input resistance and the
+    3 dB cutoff.
+  source: Results, L5 ET and non-ET neurons are differentiated, paragraph 1; Figure 4A
+  quote: The features with the largest effect size were those related to subthreshold membrane
+    properties and HCN conductance (resonant frequency, input resistance, and 3dB cutoff).
+  data: with_labels
+  depends_on:
+  - fig3h-projection-largest-effect
+  criterion: From the ANOVAs of fig3h-projection-largest-effect, the features whose projection
+    effect has BH-corrected p at most 0.05 (the code corrects across the 40 features for each
+    main effect) ranked by the projection effect size. "Input resistance" can be the maximum
+    or the steady-state input resistance (both are features); either counts. Reproduced when
+    the three highest-ranked features are resonant frequency, an input resistance and the 3 dB
+    cutoff; partially when two of them are in the top three and the third in the top five.
+- id: fig4c-et-higher-resonance
+  statement: L5 ET neurons have a higher resonant frequency than non-ET neurons in both the MCx and
+    the TCx, and in both acute and cultured slices.
+  source: Results, L5 ET and non-ET neurons are differentiated, paragraph 1; Figure 4B, 4C; Figure
+    S3C
+  quote: L5 ET neurons had a higher resonant frequency ... and a lower input resistance than
+    non-L5 ET neurons regardless of other factors
+  data: with_labels
+  depends_on:
+  - fig3h-projection-largest-effect
+  criterion: Resonant frequency as defined in the opening comment, on the cells of Figure 4C (147
+    L5 ET and 177 non-ET with the feature). Reproduced when the projection effect in the
+    three-way ANOVA of fig3h has BH-corrected p < 0.05 and the L5 ET mean exceeds the non-ET
+    mean within each area and within each preparation; partially when the effect holds but
+    the direction fails in one area or preparation. Cell counts are reported against 147 and
+    177.
+- id: fig4e-et-lower-rin
+  statement: Maximum input resistance is lower in L5 ET than in non-ET neurons in both the MCx and
+    the TCx, and in both preparations.
+  source: Figure 4D, 4E legend; Figure S3C
+  quote: Maximum input resistance is lower in L5 ET neurons ( n = 145) than non-ET neurons ( n =
+    173) in both the MCx and TCx.
+  data: with_labels
+  depends_on:
+  - fig3h-projection-largest-effect
+  criterion: Maximum input resistance as defined in the opening comment, on 145 L5 ET and 173
+    non-ET cells. Reproduced when the projection effect of the three-way ANOVA has
+    BH-corrected p < 0.05 and the L5 ET mean is below the non-ET mean within each area and
+    each preparation; partially when the effect holds but the direction fails in one group.
+- id: fig4g-et-faster-spikes
+  statement: L5 ET neurons have faster action potential kinetics than non-ET neurons, with larger
+    maximum and minimum dV/dt and a shorter half-width, and faster repolarization in both areas
+    and preparations.
+  source: Results, L5 ET and non-ET neurons are differentiated, paragraph 1; Figure 4F, 4G;
+    Figure S3C
+  quote: exhibiting faster action potential kinetics ... Action potential repolarization was
+    faster in L5 ET neurons compared with non-ET neurons in both neocortical areas and
+    preparations
+  data: with_labels
+  depends_on:
+  - fig3h-projection-largest-effect
+  criterion: Max dV/dt, min dV/dt and half-width of the first spike at rheobase of the 1 s steps,
+    as defined in the opening comment; Figure 4G has 148 L5 ET and 176 non-ET cells. For each
+    of the three features the projection effect of the three-way ANOVA (BH-corrected p <
+    0.05) with L5 ET faster (larger max dV/dt, more negative min dV/dt, shorter half-width).
+    Reproduced when all three hold and min dV/dt is faster in L5 ET within each area and each
+    preparation; partially when min dV/dt holds and one of the other two does not.
+- id: fig4-interaction-small
+  statement: Projection type by area interactions are small; no feature differs strongly between
+    L5 ET and non-ET neurons in one area and not the other.
+  source: Results, L5 ET and non-ET neurons are differentiated, paragraph 1; Figure S3D
+  quote: Notably, projection type-by-area interactions were small, suggesting that no features
+    were strongly different between L5 ET and non-ET neurons in one area and not the other
+  data: with_labels
+  depends_on:
+  - fig3h-projection-largest-effect
+  criterion: A claim stated as small effect sizes, not as a test. From the three-way ANOVAs of
+    fig3h, the projection by area interaction effect size of each feature. The paper gives no
+    threshold; the reader's readings, both run, are (a) every interaction partial eta squared
+    is below the median projection main effect over the 40 features; (b) for every feature
+    whose interaction has p < 0.05 (uncorrected, as the code selects them for Figure S3D),
+    L5 ET and non-ET differ in the same direction in both areas. Reproduced when both hold.
+- id: species-no-effect
+  statement: A four-way ANOVA on species, preparation, area and subclass finds no significant
+    effect of species on any of the 40 physiological features.
+  source: STAR Methods, Neurophysiology features, last paragraph
+  quote: Initial analyses involving a 4-way ANOVA with species, preparation, area, and subclass as
+    the factors revealed no significant effects of species on any of the 40 physiological
+    features extracted for analysis.
+  data: with_labels
+  criterion: >-
+    A claim of absence on the paper's test, a four-way ANOVA per feature. The code for it was
+    not deposited. Taken from the code's other ANOVAs: OLS with all interactions, type II sums
+    of squares, BH correction across the 40 features for the species main effect (the Methods
+    say p values were FDR adjusted). "Subclass" is open: (a) projection class, L5 ET against
+    non-ET, as in the three-way ANOVA; (b) the predicted subclass. Species from the subject
+    metadata. Reproduced when the corrected species p is at least 0.05 for every feature under
+    the reading run; when the readings differ the claim is blocked as methods_underspecified.
+    The smallest species p and its feature are reported, and the uncorrected count is shown as
+    a variant.
+- id: tcx-et-types-no-difference
+  statement: Within TCx, physiological features do not differ significantly between L5 ET
+    transcriptomic types (FDR-corrected p > 0.066), though some effect sizes are large.
+  source: Results, L5 ET and non-ET neurons are differentiated, paragraph 2; Figure S3G, S3H
+  quote: Although we did not detect statistically significant differences between L5 ET types
+    (FDR-corrected p > 0.066), effect sizes for some features were large
+  statistics:
+  - test: not named; FDR-corrected
+    p: 0.066
+    p_relation: ">"
+    corrected: FDR (Benjamini-Hochberg)
+    n: TCx L5 ET neurons of two types (ET_1 n = 25, ET_2 n = 19, Figure S3H)
+  data: with_labels
+  criterion: >-
+    A claim of absence. TCx L5 ET neurons with a t-type from the MTG mapping
+    (cluster_Corr_label_MTG in cell_list_L5.csv), the types with enough cells (Figure S3H names
+    ET_1 with 25 and ET_2 with 19). The test is not named; the Methods list ANOVAs, t-tests,
+    Mann-Whitney U tests and BH correction. Readings, all run: (a) two-sided Welch t-test per
+    feature, as the code's other two-group comparisons, BH across the 40 features; (b) two-way
+    ANOVA on type and preparation, type effect, BH across features. Reproduced when no feature
+    reaches corrected p < 0.05 under every reading; not reproduced when one does under every
+    reading; blocked as methods_underspecified when the readings differ. The smallest
+    corrected p and the largest Cohen's d are reported.
+- id: fig4h-patchseq-genes-et
+  statement: In the Patch-seq data, 47 ion channel, neurofilament and axonal targeting genes
+    differ between L5 ET and non-ET neurons (partial eta squared at least 0.05), 21 of them also
+    found in the snRNA-seq data, including HCN1 and PEX5L higher in L5 ET.
+  source: Results, L5 ET and non-ET neurons are differentiated, paragraph 3; Figure 4H; Figure S4A
+    to S4C
+  quote: we identified 47 ion channel, neurofilament, and axonal targeting genes from our
+    Patch-seq data with significantly different expression between L5 ET and non-ET neurons
+  expected:
+  - quantity: genes differing between L5 ET and non-ET, Patch-seq
+    value: 47
+    tolerance: 4.7
+  - quantity: of these, genes also found in snRNA-seq
+    value: 21
+    tolerance: 2.1
+  data: elsewhere
+  where: SRA BioProject PRJNA1088539 (Patch-seq reads)
+  criterion: As in STAR Methods, Gene expression analysis, and
+    Interareal_Project_Patch_seq_Tdata_Comparisons_wStats.ipynb. log2(CPM + 1) of the 442
+    curated genes (gene_list.csv); genes with at least 0.5 log2 difference of medians between
+    L5 ET and non-ET; three-way ANOVA on area, projection type and preparation; projection
+    effect FDR-corrected p < 0.05 and effect size at least 0.05 (standard partial eta
+    squared, the code's formula as variant). Reproduced when the counts are within tolerance.
+- id: patchseq-genes-area
+  statement: In the Patch-seq data, 43 curated genes differ between L5 ET neurons of MCx and TCx
+    (partial eta squared at least 0.05), 10 of them also found in the snRNA-seq data, among
+    them KCNN2, KCNN3, KCNC2, DPP6 and CACNA1A.
+  source: Results, Regional morpho-electric specializations in the L5 ET subclass, paragraphs 1
+    and 5; Figure S4D to S4F; Figure S6E
+  quote: We identified 43 genes with significantly different expression and with η 2 ≥ 0.05
+    between L5 ET neurons from the MCx versus TCx
+  expected:
+  - quantity: genes differing between MCx and TCx L5 ET, Patch-seq
+    value: 43
+    tolerance: 4.3
+  - quantity: of these, genes also found in snRNA-seq
+    value: 10
+    tolerance: 1
+  data: elsewhere
+  where: SRA BioProject PRJNA1088539 (Patch-seq reads)
+  depends_on:
+  - fig1-snrna-genes-area
+  criterion: As fig4h-patchseq-genes-et, restricted to L5 ET samples, with the 0.5 log2
+    difference between areas and a two-way ANOVA on area and preparation (Figure S4E), area
+    effect, BH-corrected p < 0.05 and effect size at least 0.05. The overlap is counted
+    against the genes of fig1-snrna-genes-area. Reproduced when both counts are within
+    tolerance.
+# --- snRNA-seq references (NeMO) -----------------------------------------------------------
+- id: fig1-snrna-genes-et
+  statement: In the human and macaque snRNA-seq references, 29 curated genes differ between L5 ET
+    and non-ET subclasses (at least 0.5 log2-fold, partial eta squared at least 0.05), including
+    KCNN1, KCNN2, SCN4B, HCN1 and NEFH.
+  source: Results, Differences in ion channel- and neurofilament-related gene expression,
+    paragraph 3; Figure 1D; Figure S1E, S1F
+  quote: we identified 29 genes with ... between L5 ET and non-ET neuronal subclasses
+  expected:
+    quantity: genes differing between L5 ET and non-ET, snRNA-seq
+    value: 29
+    tolerance: 2.9
+  data: elsewhere
+  where: NeMO dat-net1412 (human and macaque MTG 10x) and dat-ek5dbmu (human and macaque M1 10x)
+  criterion: As in STAR Methods, Gene expression analysis, and RNA_seq10x_human and
+    macaque.ipynb. 50 nuclei sampled per subclass, species and area (random_state 1);
+    log2(CPM + 1); at least 0.5 log2 difference of medians; three-way ANOVA (area, projection
+    type, species), type II; projection effect BH-corrected p < 0.05 and effect size at least
+    0.05 (standard partial eta squared, the code's formula as variant). Reproduced when the
+    count is within tolerance.
+- id: fig1-snrna-genes-area
+  statement: Within the L5 ET subclass, 30 curated genes differ between M1 and MTG in the
+    snRNA-seq references, including SK channel genes, KCNC2 and KCNIP1.
+  source: Results, Differences in ion channel- and neurofilament-related gene expression,
+    paragraph 4; Figure 1E; Figure S1G
+  quote: We identified 30 genes with significantly different expression and with ... between L5
+    ET neurons in M1 versus MTG datasets
+  expected:
+    quantity: genes differing between M1 and MTG L5 ET, snRNA-seq
+    value: 30
+    tolerance: 3
+  data: elsewhere
+  where: NeMO dat-net1412 and dat-ek5dbmu
+  criterion: As fig1-snrna-genes-et, restricted to L5 ET nuclei, with the 0.5 log2 difference
+    between areas and a two-way ANOVA on area and species, area effect.
+# --- Morphology (Brain Image Library) -------------------------------------------------------
+- id: fig5-tap-root-dendrites
+  statement: Several MCx L5 ET neurons, including CS neurons, have long "tap root" basal dendrites
+    reaching about 1.4 mm from the soma; TCx L5 ET neurons have none but have more complex
+    apical tufts.
+  source: Results, Regional morpho-electric specializations in the L5 ET subclass, paragraph 2;
+    Figure 5A; Figure S5A, S5B
+  quote: possessed prominent ... basal dendrites that, in the most extreme cases, extended ~1.4
+    mm from the soma
+  expected:
+    quantity: largest basal dendrite extent from the soma, MCx
+    value: 1.4
+    tolerance: 0.14
+    unit: mm
+  data: elsewhere
+  where: Brain Image Library doi:10.35077/g.1160 (dendritic reconstructions)
+  criterion: On the 12 MCx and 11 TCx reconstructions. The paper defines no measure of a tap
+    root, and "extended ~1.4 mm from the soma" can be read as (a) the maximum Euclidean
+    distance of a basal dendrite tip from the soma or (b) the maximum basal path distance
+    (basal_dendrite_max_path_distance, a feature of the morphology code); both are run.
+    Reproduced when, under one reading, the MCx maximum is within tolerance of 1.4 mm and
+    every TCx value is below the MCx median (the reader's measure of "lacked tap root
+    dendrites altogether"; the paper gives none).
+- id: fig5b-dendrite-depth
+  statement: L5 ET neurons in TCx have more dendrite in L1, those in MCx more dendrite in deeper
+    layers.
+  source: Results, Regional morpho-electric specializations in the L5 ET subclass, paragraph 2;
+    Figure 5B
+  quote: The total length of dendrites in each layer differed between neocortical areas, with L5
+    ET neurons in the TCx having more dendrites in L1 and L5 ET neurons in the MCx having more
+    dendrites in deeper layers
+  data: elsewhere
+  where: Brain Image Library doi:10.35077/g.1160
+  criterion: Dendrite length per layer from the reconstructions aligned to the pia-white matter
+    axis (skeleton_keys). Layer boundaries are not given for these slices; the paper's own
+    layer-aligned features are the reading. The paper reports no test; reproduced when the
+    mean L1 dendrite length is larger in TCx and the mean length in L5 and L6 is larger in MCx.
+- id: fig5c-basal-apical-features
+  statement: MCx L5 ET neurons have longer basal dendrites extending farther horizontally, and
+    TCx L5 ET neurons have more apical branches and a higher maximum apical branch order.
+  source: Results, Regional morpho-electric specializations in the L5 ET subclass, paragraph 2;
+    Figure 5C, 5D
+  quote: Basal dendrites were longer (FDR-corrected p = 0.0008, two-sided t test, d = 2.22) and
+    extended farther in the horizontal direction (FDR-corrected p = 0.0006, two-sided t test, d
+    = 2.65) in the MCx compared to the TCx, and L5 ET neurons in the TCx had both more apical
+    dendrite branches (FDR-corrected p = 0.009, two-sided t test, d = 1.56) and higher-order
+    apical dendrite branches
+  statistics:
+  - about: basal dendrite length
+    test: two-sided t test
+    p: 0.0008
+    corrected: FDR
+    n: 12 MCx and 11 TCx reconstructions
+  - about: basal dendrite horizontal extent
+    test: two-sided t test
+    p: 0.0006
+    corrected: FDR
+    n: 12 MCx and 11 TCx reconstructions
+  - about: apical dendrite number of branches
+    test: two-sided t test
+    p: 0.009
+    corrected: FDR
+    n: 12 MCx and 11 TCx reconstructions
+  - about: apical dendrite maximum branch order
+    test: two-sided t test
+    p: 0.009
+    corrected: FDR
+    n: 12 MCx and 11 TCx reconstructions
+  expected:
+  - quantity: Cohen's d, basal length
+    value: 2.22
+    tolerance: 0.222
+  - quantity: Cohen's d, basal horizontal extent
+    value: 2.65
+    tolerance: 0.265
+  - quantity: Cohen's d, apical branches
+    value: 1.56
+    tolerance: 0.156
+  - quantity: Cohen's d, apical maximum branch order
+    value: 1.55
+    tolerance: 0.155
+  data: elsewhere
+  where: Brain Image Library doi:10.35077/g.1160; features also in RawFeatureWide.csv, Zenodo
+    doi:10.5281/zenodo.13749343
+  criterion: >-
+    Features from skeleton_keys and neuron_morphology after shrinkage correction (STAR
+    Methods, Morphology feature analysis). As in morphology.ipynb, Welch t-test per feature,
+    BH correction across all features (apical depth PCs and axon features excluded), absolute
+    Cohen's d with pooled SD. The features are read as basal_dendrite_max_path_distance (or
+    total length, both run) for "longer", basal_dendrite_extent_x for "horizontal",
+    apical_dendrite_num_branches and apical_dendrite_max_branch_order. The deposited notebook
+    printed other values (extent_x corrected p 0.0015, d 2.79; max branch order d 2.11), so the
+    paper's numbers came from another run. Reproduced when all four differ at corrected p <
+    0.05 in the stated direction; the d values are compared with tolerance.
+- id: fig5e-morph-classifier
+  statement: A classifier predicts the area of an L5 ET neuron from dendritic features with 100%
+    accuracy on the whole dataset, 91.9% weighted f1 holding out 50% and 76.1% holding out 75%.
+  source: Results, Regional morpho-electric specializations in the L5 ET subclass, paragraph 3;
+    Figure 5E
+  quote: the classifier obtained an accuracy of 100% when trained and tested on the whole
+    dataset and maintained better-than-chance levels of performance when holding out 50%
+    (average weighted f1 score = 91.9%) or 75% (average weighted f1 score = 76.1%)
+  expected:
+  - quantity: accuracy, whole dataset
+    value: 100
+    tolerance: 10
+    unit: percent
+  - quantity: weighted f1, 50% held out
+    value: 91.9
+    tolerance: 9.19
+    unit: percent
+  - quantity: weighted f1, 75% held out
+    value: 76.1
+    tolerance: 7.61
+    unit: percent
+  data: elsewhere
+  where: Brain Image Library doi:10.35077/g.1160; RawFeatureWide.csv, Zenodo
+    doi:10.5281/zenodo.13749343
+  criterion: As in morphology.ipynb, imputation and scaling as for physiology, logistic regression,
+    100 repeats per training fraction (100%, 50%, 25%), weighted f1. Classifier settings open
+    as in fig3e-classifier-accuracy. The deposited notebook printed 0.900 and 0.741.
+# --- L5 ET physiology between areas (Figure 6, S6) ------------------------------------------
+- id: fig6a-area-variation
+  statement: Two-way ANOVAs (preparation and area) show substantial cross-areal variation in
+    subthreshold and suprathreshold properties of L5 ET neurons.
+  source: Results, Regional morpho-electric specializations in the L5 ET subclass, paragraph 4;
+    Figure 6A
+  quote: This analysis revealed substantial cross-areal variation in subthreshold and
+    suprathreshold properties
+  data: with_labels
+  criterion: >-
+    L5 ET neurons as in the code (predicted_subclass L5 ET, L5ET_121223.csv; Figure 6 has 77
+    or 78 MCx and 70 TCx cells). For each of the 40 features, OLS on area, preparation and
+    their interaction, type II, BH correction across features per term (L5ET.ipynb; its
+    feature list now also holds three AHP features, AHP_area, AHP_duration and AHP, which the
+    deposited ET_cross_p.csv does not hold, so the 40 are the reading). The code's corrected
+    area p values (ET_cross_p.csv) are below 0.05 for 19 of the 40 features, among them Fr, cutoff, zap_tau,
+    initial_ifreq_gain, max_ifreq_gain, up_down_ratio, f_AHP, MaxRn, SSRn, MaxZ, AP_HW,
+    min_dvdt and threshold_current. "Substantial" has no measure; reproduced when at least one
+    subthreshold (chirp or input resistance) and one suprathreshold (spike or firing) feature
+    have corrected area p < 0.05, and the count of such features is reported against 19.
+- id: fig6b-mcx-higher-resonance
+  statement: L5 ET neurons in the MCx have a higher resonant frequency and a higher 3 dB cutoff
+    than those in the TCx.
+  source: Results, Regional morpho-electric specializations in the L5 ET subclass, paragraph 4;
+    Figure 6B
+  quote: Resonant frequency and the 3dB cutoff in response to the chirp stimulus were higher in
+    L5 ET neurons in the MCx compared to the TCx
+  data: with_labels
+  depends_on:
+  - fig6a-area-variation
+  criterion: From the two-way ANOVAs of fig6a, the area effects for resonant frequency (77 MCx, 70
+    TCx in Figure 6B) and 3 dB cutoff. Reproduced when both have BH-corrected p < 0.05 with
+    the MCx mean higher; partially when one does. The paper's code obtained means of 5.16
+    and 3.30 Hz (fR) and 10.99 and 8.10 Hz (cutoff), MCx and TCx, corrected p 5.7e-5 and
+    3.1e-4 (ETmean_sem.csv, ET_cross_p.csv); these are reported alongside, not as targets.
+- id: fig6d-mcx-deeper-fahp-symmetric
+  statement: L5 ET neurons in the MCx have a more pronounced fast AHP and faster, more symmetrical
+    action potentials (lower ratio of max to min dV/dt) than those in the TCx.
+  source: Results, Regional morpho-electric specializations in the L5 ET subclass, paragraph 4;
+    Figure 6C to 6E
+  quote: L5 ET neurons in the MCx had a more pronounced fast afterhyperpolarization (fAHP) and
+    exhibited faster, more symmetrical ... action potentials compared to those in the TCx
+  data: with_labels
+  depends_on:
+  - fig6a-area-variation
+  criterion: >-
+    The Figure 6D and 6E legend says the opposite for the fAHP and for symmetry ("TCx ... have
+    a deeper fast AHP ... than ... MCx ... and are more symmetrical"); the Results and the
+    code's means (fAHP -14.18 mV MCx, -10.74 mV TCx; up/down ratio 2.84 and 3.57) agree with
+    each other, so the Results are tested and the legend is recorded as a paper inconsistency.
+    From the ANOVAs of fig6a: fAHP (more negative relative to threshold in MCx), up/down ratio
+    (lower in MCx), and "faster" read as (a) shorter half-width and (b) more negative min
+    dV/dt (the code finds max dV/dt not different, corrected p 0.13). Reproduced when fAHP, the
+    up/down ratio and one reading of "faster" have corrected area p < 0.05 in the stated
+    direction; partially when two of the three do.
+- id: figs6b-mcx-lower-rin
+  statement: The input resistance of L5 ET neurons is lower in MCx than in TCx, in both acute and
+    cultured slices.
+  source: Figure S6B legend, left
+  quote: the input resistance of L5 ET neurons is lower in MCx (n = 76) compared with TCx (n =
+    68) in both acute and culture preparations (FDR corrected p = 0.003, area effect, 2-way
+    ANOVA)
+  statistics:
+  - test: two-way ANOVA, area effect
+    p: 0.003
+    corrected: FDR
+    n: 76 MCx and 68 TCx L5 ET neurons
+  data: with_labels
+  depends_on:
+  - fig6a-area-variation
+  criterion: The legend does not say which input resistance; the code's corrected area p is
+    0.0033 for steady-state (SSRn) and 0.0081 for maximum input resistance (MaxRn), so SSRn
+    matches the printed p. Both are run. Reproduced when the area effect has corrected p <
+    0.05 with MCx lower, and MCx is lower within each preparation, for SSRn; MaxRn is shown as
+    a variant.
+- id: figs6b-mcx-higher-rheobase
+  statement: MCx L5 ET neurons need more current to start spiking than TCx L5 ET neurons.
+  source: Figure S6B legend, middle; Results, Regional morpho-electric specializations, paragraph 5
+  quote: the current required to generate spiking in L5 ET neurons is higher in MCx (n = 78)
+    compared to TCx (n = 70; FDR corrected p = 0.0496, area effect 2-way ANOVA)
+  statistics:
+  - test: two-way ANOVA, area effect
+    p: 0.0496
+    corrected: FDR
+    n: 78 MCx and 70 TCx L5 ET neurons
+  data: with_labels
+  depends_on:
+  - fig6a-area-variation
+  criterion: Rheobase as the lowest 1 s step amplitude that evokes a spike (the code's
+    threshold_current; its corrected area p is 0.049). Reproduced when the area effect has
+    corrected p < 0.05 with MCx higher. As p is near 0.05, the uncorrected p and the effect
+    size are reported.
+- id: figs6b-avg-gain-no-difference
+  statement: The slope of the average-rate FI curve (maximum gain) does not differ between MCx and
+    TCx L5 ET neurons.
+  source: Figure S6B legend, right; Results, Regional morpho-electric specializations, paragraph 5
+  quote: the slope of the average firing rate FI curve (max gain) is not different between areas
+    (MCx, n = 78; TCx, n = 70; FDR corrected p = 0.869, area effect 2-way ANOVA)
+  statistics:
+  - test: two-way ANOVA, area effect
+    p: 0.869
+    corrected: FDR
+    n: 78 MCx and 70 TCx L5 ET neurons
+  data: with_labels
+  depends_on:
+  - fig6a-area-variation
+  criterion: A claim of absence on the paper's test, the area effect of the two-way ANOVA with BH
+    correction across features. Maximum gain as in the code, the largest step-to-step
+    increase in spike count of the 1 s steps divided by the current step (Hz/pA). The code's
+    corrected p is 0.850, not the printed 0.869. Reproduced when corrected p is at least 0.05;
+    the means and partial eta squared are reported either way.
+- id: fig6h-tcx-steeper-instantaneous-fi
+  statement: TCx L5 ET neurons fire onset doublets or bursts, so both the initial and the maximum
+    slope of the maximum instantaneous FI curve are higher in TCx than in MCx.
+  source: Results, Regional morpho-electric specializations in the L5 ET subclass, paragraph 5;
+    Figure 6F to 6H
+  quote: In the TCx, L5 ET neurons exhibited doublets or high-frequency bursts of action
+    potentials at the onset of the current that were rarely observed elsewhere in the sweep or
+    in MCx L5 ET neurons
+  data: with_labels
+  depends_on:
+  - fig6a-area-variation
+  criterion: >-
+    The paper quantifies the bursts through the slopes of the maximum instantaneous rate
+    (1/ISI min) against current on the 1 s steps: initial gain is the slope where the neuron
+    begins firing (the first suprathreshold step and the step before it) and maximum gain
+    the largest step-to-step slope, each divided by the current step (Figure 6H has 69 TCx and
+    78 MCx). From the ANOVAs of fig6a, reproduced when both have corrected area p < 0.05 with
+    TCx higher; partially when only the initial slope does. The code obtained corrected p
+    5.7e-5 and 4.7e-4 and initial-slope means of 0.28 (TCx) and 0.10 (MCx) Hz/pA.
+# --- Extended FI to 4 nA (Figure 6I to 6K, S6C, S6D) ----------------------------------------
+- id: figs6c-mcx-higher-max-rate
+  statement: At maximal current injections MCx L5 ET neurons sustain higher average firing rates
+    than TCx L5 ET neurons.
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 2; Figure S6C
+  quote: L5 ET neurons in the MCx sustained higher average spike counts compared to L5 ET
+    neurons in the TCx at maximal current injections ... maximal average firing rate, p =
+    0.0002, two-sided t test, d = 1.0
+  statistics:
+  - test: two-sided t test
+    p: 0.0002
+    n: 42 MCx and 26 TCx L5 ET neurons
+  expected:
+    quantity: Cohen's d, maximal average firing rate
+    value: 1.0
+    tolerance: 0.1
+  data: with_labels
+  criterion: >-
+    Cells: the L5 ET neurons recorded with 1 s steps increasing by 200 pA up to 4 nA (STAR
+    Methods), 42 MCx and 26 TCx (keys of MCx.pkl and TCx.pkl). Per cell the maximum over
+    steps of the spike count in the 1 s step; Welch t-test and pooled-SD Cohen's d
+    (ExtendedFI.ipynb, which printed means 101.6 MCx and 76.0 TCx, p 0.00024, d 1.00).
+    Reproduced when p < 0.05 with MCx higher and d within tolerance; partially when only the
+    test holds.
+- id: figs6d-equal-max-instantaneous
+  statement: TCx L5 ET neurons reach higher instantaneous rates below 1 nA, but at up to 4 nA MCx
+    L5 ET neurons fire at equivalent maximal instantaneous rates.
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 2; Figure S6D
+  quote: MCx neurons were capable of firing equivalently at higher current injection amplitudes
+    ... maximal instantaneous firing rate, p = 0.99, two-sided t test, d = 0.003
+  statistics:
+  - test: two-sided t test
+    p: 0.99
+    n: 42 MCx and 26 TCx L5 ET neurons
+  data: with_labels
+  depends_on:
+  - figs6c-mcx-higher-max-rate
+  criterion: A claim of absence on the paper's test. Per cell the maximum over all steps of the
+    maximum instantaneous rate 1/ISI(min); Welch t-test (ExtendedFI.ipynb printed 243.8 Hz TCx
+    and 244.1 Hz MCx, p 0.99). Reproduced when p is at least 0.05; Cohen's d is reported. The
+    first clause (TCx higher below 1 nA) rests on Figure S6D alone with no test; the mean
+    maximum instantaneous rate per area at each step below 1 nA is shown and does not decide
+    the outcome.
+- id: fig6-depolarization-block
+  statement: At high current amplitudes, TCx L5 ET neurons undergo depolarization block far more
+    often than MCx L5 ET neurons (14 of 26 against 1 of 42).
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 2; Figure 6J, 6K
+    and S6C, S6D (arrows)
+  quote: L5 ET neurons in the TCx were more likely to undergo depolarization-induced block of
+    action potential generation in response to these higher current injection amplitudes (MCx =
+    1 of 42 neurons; TCx = 14 of 26 neurons)
+  expected:
+  - quantity: MCx neurons with depolarization block
+    value: 1
+    tolerance: 0.1
+  - quantity: TCx neurons with depolarization block
+    value: 14
+    tolerance: 1.4
+  data: with_labels
+  depends_on:
+  - figs6c-mcx-higher-max-rate
+  criterion: Block is "a negative slope in the average rate FI curves" (STAR Methods). The readings
+    are (a) any decrease of spike count from one step to the next; (b) the spike count at the
+    largest step below the maximum of the curve. Reproduced when, under one reading, both
+    counts are within tolerance (1 of 42 exactly, 13 to 15 of 26); partially when, under one
+    reading, the TCx proportion exceeds the MCx proportion but a count is outside tolerance.
+    The paper reports no test; a Fisher exact test is shown as a variant and does not decide
+    the outcome.
+- id: fig6j-spike-width-ratio
+  statement: At the maximal average firing rate, spike width more than doubles from first to last
+    spike in TCx L5 ET neurons but increases only 1.5 times in MCx L5 ET neurons.
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 2; Figure 6J
+  quote: At the maximal average firing rates, the spike width in TCx L5 ET neurons more than
+    doubled, whereas MCx L5 ET neuron spike widths only increased 1.5 times ... p = 1.7e−09,
+    two-sided t test, d = 2.02
+  statistics:
+  - test: two-sided t test
+    p: 1.7e-09
+    n: 42 MCx and 26 TCx L5 ET neurons
+  expected:
+  - quantity: last-to-first spike width ratio, MCx
+    value: 1.5
+    tolerance: 0.15
+  - quantity: Cohen's d
+    value: 2.02
+    tolerance: 0.202
+  data: with_labels
+  depends_on:
+  - figs6c-mcx-higher-max-rate
+  criterion: >-
+    Per cell, the step with the most spikes; at that step the ratio of the half-width of the
+    last spike to that of the first; Welch t-test and Cohen's d (ExtendedFI.ipynb printed
+    2.27 TCx, 1.53 MCx). The code takes the argmax over steps with nonzero spike counts and
+    uses that index into the full array; when steps without spikes precede firing this
+    picks a later step. Readings, both run: (a) the step with the most spikes; (b) the
+    code's indexing. Reproduced when the TCx mean exceeds 2, the MCx mean is within
+    tolerance of 1.5, p < 0.05 and d within tolerance, under one reading.
+- id: fig6k-upstroke-ratio
+  statement: At the maximal average firing rate, max dV/dt of the last spike falls to about 20% of
+    the first in TCx L5 ET neurons but only to about 50% in MCx.
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 2; Figure 6K
+  quote: Similarly, the maximum dVdt decreased to ~20% of the first spike value in TCx neurons
+    versus only ~50% in the MCx ... p = 3.2e−10, two-sided t test, d = 1.69
+  statistics:
+  - test: two-sided t test
+    p: 3.2e-10
+    n: 42 MCx and 26 TCx L5 ET neurons
+  expected:
+  - quantity: last-to-first max dV/dt ratio, TCx
+    value: 0.2
+    tolerance: 0.02
+  - quantity: last-to-first max dV/dt ratio, MCx
+    value: 0.5
+    tolerance: 0.05
+  - quantity: Cohen's d
+    value: 1.69
+    tolerance: 0.169
+  data: with_labels
+  depends_on:
+  - figs6c-mcx-higher-max-rate
+  criterion: As fig6j-spike-width-ratio, for the ratio of max dV/dt of the last to the first
+    spike (ExtendedFI.ipynb printed 0.221 TCx and 0.520 MCx, p 3.2e-10, d 1.69). The values
+    are "~20%" and "~50%"; reproduced when both means and d are within tolerance and p <
+    0.05 under one reading; partially when the test holds and one mean is outside tolerance.
+# --- Irregular firing and subthreshold oscillations (Figure 7, S7) ---------------------------
+- id: figs7-cv-isi-higher-mcx
+  statement: During 10 s near-rheobase steps, MCx L5 ET neurons fire more irregularly (higher CV
+    of ISIs) than TCx L5 ET neurons across a wide range of firing rates.
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 3; Figure S7F, S7G
+  quote: which revealed more variable ISIs in MCx L5 ET neurons across a wide range of average
+    firing rates during the 10-s current step
+  statistics:
+  - test: two-way ANOVA, area effect
+    p: 0.001
+    p_relation: "<"
+    n: MCx 273 observations from 64 cells, TCx 131 observations from 65 cells
+  data: with_labels
+  criterion: >-
+    Sweeps of the 10 s steps with at least 10 spikes; spikes in the first 100 ms excluded; CV
+    = SD/mean of the ISIs (STAR Methods); each sweep is an observation. The second factor of
+    the two-way ANOVA is not named; Figure S7G bins CV by the number of spikes in the sweep,
+    so the reading is area by spike-count bin. The bin edges are not given; readings, both
+    run: (a) bins of 10 spikes; (b) bins of 25 spikes. The code was not deposited. Reproduced
+    when the area effect has p < 0.001 with MCx higher under both readings; partially when p <
+    0.05; observation and cell counts are reported against the legend's.
+- id: fig7-oscillation-frequency-vm
+  statement: The peak frequency of subthreshold oscillations between spikes increases with
+    membrane potential in MCx L5 ET neurons but not in TCx, by autocorrelation and by Fourier
+    analysis.
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 3; Figure 7I, 7J
+  quote: However, the peak frequency of these oscillations increased with membrane potential only
+    in the MCx, whether measured from autocorrelation
+  statistics:
+  - about: autocorrelation frequency against Vm, MCx
+    test: Pearson correlation
+    statistic: r2 = 0.31
+    p: 0.001
+    p_relation: "<"
+    n: 79 observations from 52 neurons
+  - about: autocorrelation frequency against Vm, TCx
+    test: Pearson correlation
+    statistic: r2 = 0.002
+    p: 0.75
+    n: 66 observations from 49 neurons
+  - about: FFT peak frequency against Vm, MCx
+    test: Pearson correlation
+    statistic: r2 = 0.32
+    p: 0.001
+    p_relation: "<"
+    n: 91 observations from 59 neurons
+  - about: FFT peak frequency against Vm, TCx
+    test: Pearson correlation
+    statistic: r2 < 0.001
+    p: 0.146
+    n: 82 observations from 53 neurons
+  expected:
+  - quantity: r2, autocorrelation frequency against Vm, MCx
+    value: 0.31
+    tolerance: 0.031
+  - quantity: r2, FFT peak frequency against Vm, MCx
+    value: 0.32
+    tolerance: 0.032
+  data: with_labels
+  criterion: >-
+    Method from STAR Methods (the R code was not deposited): sweeps of the 10 s steps with at
+    least one spike and at most 200; interspike segments from the return to baseline after
+    the AHP (found by fitting a curve) to 50 ms before the next spike; filtered 3 to 50 Hz;
+    segments longer than 650 ms analysed by FFT (peak frequency and strength per segment) and
+    a smoothing spline over segments for the sweep's peak frequency and strength;
+    autocorrelogram over the last 1 s of segments longer than 1 s, frequency from its peaks and
+    troughs; segments aggregated into 5 mV bins of membrane potential per cell, each cell-bin
+    an observation; Pearson correlation over observations. Open, with standard choices: the
+    curve fitted to find the return to baseline (standard: an exponential fit to the AHP
+    decay, baseline reached within 1 mV of its asymptote), the filter (standard: zero-phase
+    4th-order Butterworth band-pass), the spline (standard: R smooth.spline defaults), and the
+    autocorrelogram frequency (standard: 1 over the lag of the first peak after zero lag).
+    These could change the values; the readings are run as stated and the counts of
+    observations reported against the legend's. Reproduced when the MCx correlations are
+    positive with p < 0.001 and the TCx correlations have p at least 0.05, for both measures;
+    the r2 values are compared with tolerance. TCx r2 below 0.001 with p 0.146 on 82
+    observations is not self-consistent (such an r2 gives p near 0.8), so only p is used for
+    TCx.
+- id: fig7k-oscillation-power-vm
+  statement: Oscillation strength increases modestly with membrane potential, significantly in
+    MCx L5 ET neurons and not significantly in TCx.
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 3; Figure 7K
+  quote: increased in power modestly as a function of membrane potential
+  statistics:
+  - about: FFT strength against Vm, MCx
+    test: Pearson correlation
+    statistic: r2 = 0.08
+    p: 0.001
+    p_relation: "<"
+    n: 91 observations from 59 neurons
+  - about: FFT strength against Vm, TCx
+    test: Pearson correlation
+    statistic: r2 = 0.04
+    p: 0.078
+    n: 82 observations from 53 neurons
+  expected:
+  - quantity: r2, FFT strength against Vm, MCx
+    value: 0.08
+    tolerance: 0.008
+  - quantity: r2, FFT strength against Vm, TCx
+    value: 0.04
+    tolerance: 0.004
+  data: with_labels
+  depends_on:
+  - fig7-oscillation-frequency-vm
+  criterion: Method as fig7-oscillation-frequency-vm, with the spline-fitted FFT peak strength.
+    Reproduced when the MCx correlation is positive with p < 0.001 and the TCx correlation is
+    positive with p at least 0.05; partially when the MCx part holds only; the r2 values are
+    compared with tolerance.
+- id: figs7-oscillations-with-blockers
+  statement: Subthreshold oscillations persist with fast synaptic transmission blocked, at a
+    slightly reduced frequency, so they are intrinsic to the neuron.
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 3; Figure S7D, S7E
+  quote: Oscillations occurred in the presence of blockers of fast synaptic transmission, albeit
+    at a slightly reduced frequency
+  statistics:
+  - test: two-way ANOVA
+    p: 0.0496
+    n: 55 neurons with and 64 without blockers
+  data: with_labels
+  depends_on:
+  - fig7-oscillation-frequency-vm
+  criterion: Blockers (DNQX with d-APV and gabazine or picrotoxin) per cell from the recording
+    metadata. Oscillation frequency as in fig7-oscillation-frequency-vm. The legend bins by
+    number of spikes in the sweep; the two-way ANOVA is read as blocker by spike-count bin,
+    with the bin edges open (bins of 10 and of 25 spikes, both run). Reproduced when
+    oscillations are detected in cells with blockers and the blocker effect has p < 0.05 with
+    lower frequency under both readings; partially when oscillations are present but the
+    effect is not significant.
+- id: fig7l-firing-tracks-oscillation
+  statement: In MCx L5 ET neurons the modal instantaneous firing rate during spiking epochs is
+    well correlated with the subthreshold oscillation frequency; in TCx it is not.
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 4; Figure 7L
+  quote: Consequently, the instantaneous firing rate during spiking epochs was well correlated
+    with the prominent subthreshold oscillatory frequency in L5 ET neurons in the MCx
+  statistics:
+  - about: MCx
+    test: Pearson correlation
+    statistic: r2 = 0.63
+    p: 0.001
+    p_relation: "<"
+    n: 122 observations from 42 neurons
+  - about: TCx
+    test: Pearson correlation
+    statistic: r2 < 0.001
+    p: 0.683
+    n: 42 observations from 29 neurons
+  expected:
+    quantity: r2, modal firing rate against FFT peak frequency, MCx
+    value: 0.63
+    tolerance: 0.063
+  data: with_labels
+  depends_on:
+  - fig7-oscillation-frequency-vm
+  criterion: Modal firing rate is the most common value of 1/ISI over the 10 s step (STAR
+    Methods); the binning of instantaneous rates to find a mode is not given (readings, both
+    run, 1 Hz and 2 Hz bins). Observations as in Figure 7L, each a sweep with an FFT peak
+    frequency. Reproduced when the MCx correlation is positive with p < 0.001 and r2 within
+    tolerance and the TCx p is at least 0.05; partially when the MCx correlation holds with r2
+    outside tolerance.
+- id: figs7g-modal-rates-long-isis
+  statement: MCx L5 ET neurons reach modal firing rates near 30 Hz while still having ISIs longer
+    than 650 ms, whereas no TCx neuron with such ISIs has a modal rate above about 8 Hz.
+  source: Results, Functional specializations of MCx L5 ET neurons, paragraph 4; Figure S7G
+  quote: In the MCx, L5 ET modal firing rates were as high as ~30 Hz, accompanied with ISIs
+    longer than 650 ms
+  expected:
+  - quantity: highest modal rate with an ISI over 650 ms, MCx
+    value: 30
+    tolerance: 3
+    unit: Hz
+  - quantity: highest modal rate with an ISI over 650 ms, TCx
+    value: 8
+    tolerance: 0.8
+    unit: Hz
+  data: with_labels
+  depends_on:
+  - fig7l-firing-tracks-oscillation
+  criterion: Over the 10 s sweeps that contain at least one ISI longer than 650 ms, the largest
+    modal firing rate per area, modal rate as in fig7l. The TCx value is a bound in the paper
+    ("no TCx neurons had modal firing rates greater than ~8 Hz"), so reproduced when, under
+    one binning reading, the MCx maximum is within tolerance of 30 Hz and the TCx maximum is
+    at most 8.8 Hz (8 Hz plus its tolerance).
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - cohort-animals. Removed the comparison with the 57 subjects the archive lists; it comes from the dataset's metadata, not from the paper.
+  - fig4h-patchseq-genes-et, fig1-snrna-genes-et, fig1-snrna-genes-area. Removed the statistics entries; FDR p < 0.05 is the threshold used to count the genes, a method and not a result. The criteria keep it.
+  - fig6a-area-variation. The deposited ET_cross_p.csv (Zenodo 13749343, read) has corrected area p < 0.05 for 19 of its 40 features, not 21; corrected the count. Also said that the deposited table holds the 40 features without the three AHP features now in the notebook's list, so the 40 are the reading.
+  - fig5-tap-root-dendrites. "Extended ~1.4 mm from the soma" does not say Euclidean or path distance; named both readings. Marked the TCx rule as the reader's, since the paper gives no measure.
+  - figs6d-equal-max-instantaneous. The statement's first clause (TCx higher below 1 nA) had no criterion; said it is shown from Figure S6D and does not decide the outcome, as the paper reports no test for it.
+  - fig6-depolarization-block. The partial outcome rested on a Fisher exact test the paper does not report; made it a variant that does not decide the outcome.
+  - figs7g-modal-rates-long-isis. The paper gives the TCx value as a bound ("no TCx neurons ... greater than ~8 Hz"); the criterion now requires the TCx maximum to be at most 8.8 Hz, not within 7.2 to 8.8 Hz.
+  - patchseq-genes-area. Added; the Patch-seq comparison of L5 ET neurons between areas (43 genes, 10 shared with snRNA-seq) is a finding of the paper with no claim.
+  - Checked against the deposited code and tables (Zenodo 13749343) the values the criteria quote from them (ET_cross_p.csv, ETmean_sem.csv, ExtendedFI.ipynb, morphology.ipynb classifier output, the uncorrected interaction p in UMAPprojections_020724.ipynb); they match.
+  - Open. fig3a-cs-with-l5et, fig3-spc-classifier, fig4-interaction-small and fig5-tap-root-dendrites judge qualitative words ("exclusively distributed with", "similar", "small", "lacked") by measures the reader chose, since the paper gives none; they are named as such but remain the reader's.
+  - Open. figs7-cv-isi-higher-mcx and figs7-oscillations-with-blockers read the unnamed second ANOVA factor as spike-count bins with bin edges the paper does not give; fig7 claims rest on R code that was not deposited, with standard choices named.
