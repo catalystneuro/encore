@@ -8559,7 +8559,7 @@
       "statement": "Of 206 mice that started training, 140 reached proficiency in the basic task and 98 in the full task.",
       "source": "Results, opening section, paragraph 3",
       "quote": "Out of 206 mice that started training, 140 achieved proficiency in the basic task, and 98 in the full task",
-      "criterion": "Counts of distinct mice under the paper's selection (project mice, criterion reached by 2020-03-23, code query_subjects), proficiency as P1 and P2 under each reading. A dataset that holds fewer mice is reported with the counts it holds; the claim is judged on the counts."
+      "criterion": "Counts of distinct mice under the paper's selection (project mice, criterion reached by 2020-03-23, code query_subjects), proficiency as P1 and P2 under each reading. A dataset that holds fewer mice is reported with the counts it holds; the claim is judged on the counts. P1 per the header (answers of 2026-10-22): trials completed are all trials; a mouse is proficient at the first session meeting the 1a or the 1b criteria, at any date (the pipeline's SessionTrainingStatus); 1b replacing 1a from 2019-09-12 (code text_trained1a_to_1b_sessions.py) is a variant."
      },
      {
       "id": "fig2g-days-to-proficiency",
@@ -8587,14 +8587,14 @@
       "statement": "About 80% of mice that started training would learn the basic task within the 40 days usually allotted (Kaplan-Meier estimate over all 206 mice).",
       "source": "Results, Training succeeded but with different rates across mice and laboratories, paragraph 4; Figure 2h",
       "quote": "there was a 80% probability that mice would learn the task within the 40 days that were usually allotted, and when mice were trained for a longer duration, the success rate rose even further ( Figure 2h )",
-      "criterion": "Kaplan-Meier estimate (code figure2d_training_probability.py, lifelines) over all 206 mice that started training (Figure 2 legend, \"Data in h is for all mice that started training (n = 206)\"): time = number of sessions with status in_training or untrainable; event = the mouse's last status is neither, so mice still in training at the cutoff date are censored. The code leaves out mice still in training after the cutoff date; that is a variant. Without status labels in the dataset, time = training days to P1 for proficient mice and their total training days otherwise. Reproduced when the cumulative proportion at day 40 is within the tolerance and higher at the last day than at day 40."
+      "criterion": "Kaplan-Meier estimate (code figure2d_training_probability.py, lifelines) over all 206 mice that started training (Figure 2 legend, \"Data in h is for all mice that started training (n = 206)\"): time = number of sessions with status in_training or untrainable; event = the mouse's last status is neither, so mice still in training at the cutoff date are censored. The code leaves out mice still in training after the cutoff date; that is a variant. Without status labels in the dataset, time = training days to P1 for proficient mice and their total training days otherwise, with P1 as in the header (answer of 2026-10-22): \"all contrasts introduced\" in each of the three sessions (Appendix 1, table 1d) is the main reading, and the pipeline's check of the last session only (0% and 6.25% present) a variant. Reproduced when the cumulative proportion at day 40 is within the tolerance and higher at the last day than at day 40."
      },
      {
       "id": "fig2bc-threshold-bias-iqr",
       "statement": "Contrast threshold and bias varied little during training; the threshold interquartile range slightly decreased from 12-29% in the first 10 training days to 11-23% thereafter, and the bias interquartile range went from -5.2 to 7.1% to -5.6 to 6.5%.",
       "source": "Results, Training succeeded but with different rates across mice and laboratories, paragraph 1; Figure 2b,c",
       "quote": "Estimates of contrast threshold did not vary much during training ( Figure 2b ), with an interquartile range that slightly decreased from 12\u201329% during the first 10 training days, and 11\u201323% thereafter. Likewise, bias did not vary much, with an interquartile range of \u22125.2% to 7.1% during the first 10 days to \u22125.6% to 6.5% thereafter ( Figure 2c ).",
-      "criterion": "Per-session psychometric threshold and bias of the 140 proficient mice, as plotted in Figure 2b,c (code figure2af_learning_curves_all_parameters.py): 50:50 sessions with more than 100 trials, threshold and bias only from sessions with six or more signed contrasts (legend: from the first session with 12% contrast), each mouse's series median-filtered over 3 sessions, training day counted from 0 at the mouse's first session (the code), so the first 10 training days are code days 0 to 9. The code does not print the interquartile ranges, so the pooling is open; readings (1) all session values pooled over mice within days 1-10 and after day 10, (2) as (1) without the median filter, each with \"thereafter\" as (a) days 11 to 40 (the plotted range) and (b) all later days. Reproduced when all eight bounds are within tolerance under one reading and the threshold range after day 10 is narrower than in days 1-10."
+      "criterion": "Per-session psychometric threshold and bias of the 140 proficient mice, as plotted in Figure 2b,c (code figure2af_learning_curves_all_parameters.py): 50:50 sessions (the basic-task sessions with all their trials, header; answer of 2026-10-22) with more than 100 trials, threshold and bias only from sessions with six or more signed contrasts (legend: from the first session with 12% contrast), each mouse's series median-filtered over 3 sessions, training day counted from 0 at the mouse's first session (the code), so the first 10 training days are code days 0 to 9. The code does not print the interquartile ranges, so the pooling is open; readings (1) all session values pooled over mice within days 1-10 and after day 10, (2) as (1) without the median filter, each with \"thereafter\" as (a) days 11 to 40 (the plotted range) and (b) all later days. Reproduced when all eight bounds are within tolerance under one reading and the threshold range after day 10 is narrower than in days 1-10."
      },
      {
       "id": "fig2-abs-bias-threshold-during-training",
@@ -8664,7 +8664,7 @@
       "statement": "A Naive Bayes classifier could not identify a mouse's laboratory from its basic-task performance, threshold and bias; its accuracy was 0.12 +- 0.051 against a chance level of 0.11, and the 95% range of its distribution included chance.",
       "source": "Results, Performance in the basic task was indistinguishable across laboratories, paragraph 5; Figure 3f",
       "quote": "Its mean accuracy was 0.12 \u00b1 0.051, and a 95th percentile of its distribution included the chance level of 0.11 (mean of the null distribution).",
-      "criterion": "Lab classifier (shared definition) with scikit-learn GaussianNB on per-mouse easy-trial performance, threshold and bias from S1 (code figure3f_classifier_lab_membership_basic.py). The paper's test, from the code (figure3f_plot_classifier_basic.py), is that the classifier is not above chance when the 2.5th percentile of its 2000 accuracies is at or below the mean shuffled accuracy. Reproduced when that holds, not reproduced when the 2.5th percentile is above chance. The accuracy tolerance is the paper's stated s.d. of the subsample distribution."
+      "criterion": "Lab classifier (shared definition) with scikit-learn GaussianNB on per-mouse easy-trial performance, threshold and bias from S1 (code figure3f_classifier_lab_membership_basic.py). The paper's test, from the code (figure3f_plot_classifier_basic.py), is that the classifier is not above chance when the 2.5th percentile of its 2000 accuracies is at or below the mean shuffled accuracy. Reproduced when that holds, not reproduced when the 2.5th percentile is above chance. The accuracy tolerance is the paper's stated s.d. of the subsample distribution. Subsample size per the Methods' rule (header, Lab classifier; answer of 2026-10-22): the lowest lab count over all datasets classified when it is below 8, the same for every classifier claim; 8 as in the code is a variant."
      },
      {
       "id": "fig3f-positive-control",
@@ -8679,6 +8679,13 @@
       "source": "Results, Performance in the basic task was indistinguishable across laboratories, paragraph 5; Figure 3, figure supplement 3d-i",
       "quote": "Similar results were obtained with two other classifier algorithms ( Figure 3\u2014figure supplement 3d\u2013i ).",
       "criterion": "As fig3f-classifier-chance-basic with scikit-learn RandomForestClassifier (100 trees, random_state 424242) and LogisticRegression (solver liblinear), as in the code. Reproduced when neither is above chance by the same rule."
+     },
+     {
+      "id": "lab-link",
+      "statement": "The institutions named in the dandiset's files are the paper's seven laboratories, so that the code's lab numbers (Lab 1 to 7) and time zones can be given to the dataset's mice.",
+      "source": "Claims file header, code lab numbers and time zones (paper-behavior at commit edc4531)",
+      "quote": "",
+      "criterion": "Each session's institution in the files is matched by name to the code's laboratories. Reproduced when the seven institutions match the seven laboratories one to one. Whether the session start times bear out the time zones (start hours shifted by the labs' offsets if they are in UTC, as stated) is reported. Added by the author of attempt 000045-ibl-2021-01 (protocol, Author, step 4) for fig3f-positive-control, whose time-zone feature comes from the paper's code by laboratory."
      },
      {
       "id": "fig3s1a-choice-consistency-basic",
@@ -8706,7 +8713,7 @@
       "statement": "In the first three sessions of the full task, bias in each block, contrast threshold in each block and performance on 100% contrast trials did not vary significantly across laboratories, and a classifier could not predict lab membership.",
       "source": "Figure 3, figure supplement 5 legend; Results, Performance in the basic task was indistinguishable across laboratories, paragraph 6",
       "quote": "Bias for each block prior did not vary significantly over labs (Kruskal-Wallis test, 20:80 blocks; p=0.96, 50:50 block; p=0.96, 80:20 block; p=0.89). ( b ) The contrast thresholds also did not vary systematically over labs (Kruskal-Wallis test, 20:80 block; p=0.078, 50:50 block; p=0.12, 80:20 block; p=0.17). ( c ) Performance on 100% contrast trials neither (Kruskal-Wallis test, p=0.15).",
-      "criterion": "Per mouse and block, psychometric fits to the pooled trials of the first three full-task sessions, and performance on 100% contrast trials (legend; the code's correct_easy, which also counts any 50% contrast trials, is a variant). Sessions per the legend, the first three biased sessions; the code (suppfig_variability_over_labs_first_biased.py) takes the biased sessions on training days 1 to 3 after P1b, and its classifier script days -1 to 3; both shown as variants. Kruskal-Wallis across labs for each of the seven variables, as the legend names it (the code corrects the seven p values with statsmodels' default Holm-Sidak method; variant). Naive Bayes classifier on the seven variables as in fig3f-classifier-chance-basic. Reproduced when all seven p >= 0.05 and the classifier is not above chance."
+      "criterion": "Per mouse and block, psychometric fits to the pooled trials of the first three full-task sessions, and performance on 100% contrast trials (legend; the code's correct_easy, which also counts any 50% contrast trials, is a variant). Sessions per the legend, the first three biased sessions from P1b, the first biased session on or after P1 (header; answer of 2026-10-22), with the code's P1b (first biased session with status trained_1b) a variant; the code (suppfig_variability_over_labs_first_biased.py) takes the biased sessions on training days 1 to 3 after P1b, and its classifier script days -1 to 3; both shown as variants. Kruskal-Wallis across labs for each of the seven variables, as the legend names it (the code corrects the seven p values with statsmodels' default Holm-Sidak method; variant). Naive Bayes classifier on the seven variables as in fig3f-classifier-chance-basic. Reproduced when all seven p >= 0.05 and the classifier is not above chance."
      },
      {
       "id": "fig3s5a-prior-used-from-first-sessions",
@@ -8776,7 +8783,7 @@
       "statement": "In a logistic choice model fitted to each mouse, visual weights grew with contrast to above 3 at 100% contrast, while weights for past choices were much smaller and positive after both rewarded (basic 0.19, full 0.42) and unrewarded (basic 0.33, full 0.46) trials, indicating perseverance.",
       "source": "Results, A probabilistic model reveals common strategies across mice and laboratories, paragraph 2; Figure 5c,d,f,g",
       "quote": "As expected, visual terms had large weights, which grew with contrast to reach values above 3 at 100% contrast. Weights for non-sensory factors were much lower ( Figure 5c,f , note different scale). Weights for past choices were positive for both rewarded (basic 0.19, full 0.42) and unrewarded previous trials (basic 0.33, full 0.46)",
-      "criterion": "Model per Methods (Probabilistic choice model, equations 2-4): logistic regression of choice (no-response trials left out) on signed indicators per nonzero contrast, the previous choice split by its outcome (r and u), a constant, and in the full task the block (+1 for 20:80, -1 for 80:20, 0 for 50:50); design matrix by patsy, fit by statsmodels Logit.fit_regularized with its defaults (code figure5_GLM_modelfit.py), per mouse and task. Sessions per the code: training days P1b-2 to P1b+3, split into basic and full by protocol; the Methods say three sessions per mouse, read as (b) the last three basic sessions before P1b and the first three full sessions. Contrasts per the Methods include 50%; the code drops 50% trials (variant). Means over mice of each weight. Reproduced when the 100% weight's mean exceeds 3 in both tasks, the visual weights increase with contrast, and the four history weights are within tolerance under one reading."
+      "criterion": "Model per Methods (Probabilistic choice model, equations 2-4): logistic regression of choice (no-response trials left out) on signed indicators per nonzero contrast, the previous choice split by its outcome (r and u), a constant, and in the full task the block (+1 for 20:80, -1 for 80:20, 0 for 50:50); design matrix by patsy, fit by statsmodels Logit.fit_regularized with its defaults (code figure5_GLM_modelfit.py), per mouse and task. Sessions per the code: training days P1b-2 to P1b+3, split into basic and full by protocol; the Methods say three sessions per mouse, read as (b) the last three basic sessions before P1b and the first three full sessions. Contrasts per the Methods include 50%; the code drops 50% trials (variant). The paper does not say what is done for a mouse shown no 50% trials in the sessions used; readings (answer of 2026-10-22): (a) the Methods' model with W50 left out for that mouse, (b) the code's model, 50% trials dropped for every mouse (\"only rarely present (should not be its own regressor)\", figure5_GLM_modelfit.py, fit_glm). Means over mice of each weight. Reproduced when the 100% weight's mean exceeds 3 in both tasks, the visual weights increase with contrast, and the four history weights are within tolerance under one reading."
      },
      {
       "id": "fig5dg-history-weights-higher-full",
@@ -37669,7 +37676,7 @@
    "verifier-2.md"
   ]
  },
- "generated": "2026-10-22T15:46:41+00:00",
+ "generated": "2026-10-22T15:48:42+00:00",
  "queue_generated": "2026-10-22T11:52:56+00:00",
  "queue_counts": {
   "public_dandisets": 661,
@@ -92406,11 +92413,11 @@
    },
    "000115": {
     "kind": "full",
-    "hours": 2.848709226666667
+    "hours": 2.815265780555556
    },
-   "001828": {
+   "000045": {
     "kind": "full",
-    "hours": 0.02593144888888889
+    "hours": 0.026932447222222218
    }
   }
  },
