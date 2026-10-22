@@ -388,7 +388,8 @@ def session_summary(T: pd.DataFrame, S: pd.DataFrame) -> pd.DataFrame:
 
 
 def training_status(SS: pd.DataFrame, T: pd.DataFrame, contrasts: str = "each",
-                    replace_from: str | None = None, perf: str = "easy") -> pd.DataFrame:
+                    replace_from: str | None = None, perf: str = "easy",
+                    nan_rt_passes: bool = False) -> pd.DataFrame:
     """Per mouse, the first session of trained_1a or trained_1b status (P1) and
     the first session meeting the 1b criteria, recomputed from the trials.
 
@@ -398,7 +399,13 @@ def training_status(SS: pd.DataFrame, T: pd.DataFrame, contrasts: str = "each",
     the 1b criteria apply, and before which only the 1a criteria (variant).
     contrasts: 'each' or 'last' (see ALL_CONTRASTS). The fits of the windows
     that pass the per-session criteria are run in parallel and kept across
-    calls. Columns: p1_session, p1_date, p1_status, b1_session, b1_date."""
+    calls. nan_rt_passes: a window whose median reaction time at 0% contrast
+    is undefined (no 0% trial with both a stimulus onset time and a response)
+    passes the 1b reaction-time criterion; a sensitivity, as the table gives no
+    rule for it. Columns: p1_session, p1_date, p1_status, b1_session, b1_date,
+    and n_rt_nan_1b, the windows evaluated that meet every 1b criterion but the
+    reaction time, which is undefined; attrs["rt_nan_windows"] is their total
+    over all mice, with or without P1."""
     pcol = "perf_easy" if perf == "easy" else "perf_100"
     cand = []   # (subject, window session ids, criteria names, last date)
     for sid, d in SS.groupby("subject_id", sort=False):
@@ -437,7 +444,7 @@ def training_status(SS: pd.DataFrame, T: pd.DataFrame, contrasts: str = "each",
     # Windows are evaluated in order, a few per mouse at a time, until the mouse
     # has both its first 1a-or-1b session and its first 1b session; later
     # windows cannot change either and are not fitted.
-    out = {sid: {} for sid in by_mouse}
+    out = {sid: {"n_rt_nan_1b": 0} for sid in by_mouse}
     pos = dict.fromkeys(by_mouse, 0)
     chunk = 15
     while True:
@@ -456,7 +463,9 @@ def training_status(SS: pd.DataFrame, T: pd.DataFrame, contrasts: str = "each",
                     ok = (abs(f["bias"]) < crit["bias"] and f["threshold"] < crit["thr"]
                           and f["lapselow"] < crit["lapse"] and f["lapsehigh"] < crit["lapse"])
                     if crit["rt"] is not None:
-                        ok = ok and f["rt0"] < crit["rt"]
+                        if ok and np.isnan(f["rt0"]):
+                            r["n_rt_nan_1b"] += 1
+                        ok = ok and (f["rt0"] < crit["rt"] or (nan_rt_passes and np.isnan(f["rt0"])))
                     if not ok:
                         continue
                     if "p1_session" not in r:
@@ -466,16 +475,23 @@ def training_status(SS: pd.DataFrame, T: pd.DataFrame, contrasts: str = "each",
                         r.update(b1_session=w[-1], b1_date=date)
                     break
             pos[s] += chunk
-    out = {k: v for k, v in out.items() if v}
-    return pd.DataFrame.from_dict(out, orient="index")
+    n_nan = sum(v["n_rt_nan_1b"] for v in out.values())
+    out = {k: v for k, v in out.items() if "p1_session" in v}
+    df = pd.DataFrame.from_dict(out, orient="index")
+    df.attrs["rt_nan_windows"] = n_nan
+    return df
 
 
-def full_proficiency(Dfull: pd.DataFrame, T: pd.DataFrame, S: pd.DataFrame) -> pd.DataFrame:
+def full_proficiency(Dfull: pd.DataFrame, T: pd.DataFrame, S: pd.DataFrame,
+                     nan_rt_passes: bool = False) -> pd.DataFrame:
     """P2 per mouse (Appendix 1, table 1d, 'Full task proficiency'): each of
     three consecutive full-task days > 400 trials and > 90% correct on 100%
     contrast; the three combined: all four lapse rates (left and right, 20:80
     and 80:20 blocks) < 0.1, bias[80:20] - bias[20:80] > 5, median reaction
-    time at 0% contrast < 2 s. Dfull is daily() over biased-protocol sessions."""
+    time at 0% contrast < 2 s. Dfull is daily() over biased-protocol sessions.
+    nan_rt_passes: as in training_status. attrs["rt_nan_windows"] counts the
+    windows evaluated (up to each mouse's P2) that meet every criterion but
+    the reaction time, which is undefined."""
     ses = S[S.task == "biased"][["session_id", "subject_id", "date"]]
     t = T.merge(ses, on="session_id")
     tg = {k: v for k, v in t.groupby(["subject_id", "date"])}
@@ -490,18 +506,23 @@ def full_proficiency(Dfull: pd.DataFrame, T: pd.DataFrame, S: pd.DataFrame) -> p
             b = tt[np.isclose(tt.probabilityLeft, pl)]
             pairs.append((b.signed_contrast.to_numpy(), b.choice_right.to_numpy()))
     fits = fit_many(pairs)
-    out = {}
+    out, n_nan = {}, 0
     for k, (sid, d, tt) in enumerate(cand):
         if sid in out:
             continue
         f2080, f8020 = fits[2 * k], fits[2 * k + 1]
         lapses = [f[l] for f in (f2080, f8020) for l in ("lapselow", "lapsehigh")]
-        ok = (np.all(np.array(lapses) < 0.1)
-              and f8020["bias"] - f2080["bias"] > 5
-              and np.nanmedian(tt.rt[tt.signed_contrast == 0]) < 2.0)
+        ok = np.all(np.array(lapses) < 0.1) and f8020["bias"] - f2080["bias"] > 5
+        rt0 = tt.rt[tt.signed_contrast == 0]
+        rt0 = float(np.nanmedian(rt0)) if rt0.notna().any() else np.nan
+        if ok and np.isnan(rt0):
+            n_nan += 1
+        ok = ok and (rt0 < 2.0 or (nan_rt_passes and np.isnan(rt0)))
         if ok:
             out[sid] = dict(p2_date=d.date.iloc[-1], p2_tday0=int(d.tday0.iloc[-1]))
-    return pd.DataFrame.from_dict(out, orient="index")
+    df = pd.DataFrame.from_dict(out, orient="index")
+    df.attrs["rt_nan_windows"] = n_nan
+    return df
 
 
 # ---------------------------------------------------------------------------
@@ -595,40 +616,53 @@ def loo_ovr_logistic(X: np.ndarray, y: np.ndarray, C: float = 1.0, n_newton: int
     return classes[np.argmax(dec, axis=1)]
 
 
+def _loo_predict(kind, Xs, ys):
+    if kind == "nb":
+        return loo_gaussian_nb(Xs, ys)
+    if kind == "lr":
+        return loo_ovr_logistic(Xs, ys)
+    from sklearn.ensemble import RandomForestClassifier
+    from sklearn.model_selection import LeaveOneOut, cross_val_predict
+    m = RandomForestClassifier(n_estimators=100, random_state=424242)
+    return cross_val_predict(m, Xs, ys, cv=LeaveOneOut())
+
+
+def _loo_pair(args):
+    kind, Xs, ys, ysh = args
+    return _loo_predict(kind, Xs, ys), _loo_predict(kind, Xs, ysh)
+
+
 def classify_labs(X: np.ndarray, labs: np.ndarray, kind: str = "nb", n_iter: int = 2000,
-                  per_lab: int = 8, seed: int = 424242, return_confusion: bool = False):
+                  per_lab: int = 8, seed: int = 424242, return_confusion: bool = False,
+                  workers: int = 1):
     """Accuracy over n_iter subsamples of per_lab mice per lab, leave-one-out,
     and the same with lab labels shuffled within each subsample (Methods;
     code seed 424242). kind: 'nb' GaussianNB, 'rf' RandomForest (100 trees,
     random_state 424242), 'lr' LogisticRegression (solver liblinear, one-vs-rest;
-    loo_ovr_logistic)."""
-    from sklearn.ensemble import RandomForestClassifier
-    from sklearn.model_selection import LeaveOneOut, cross_val_predict
+    loo_ovr_logistic). The subsamples and shuffles are drawn in the same order
+    whatever the number of worker processes, so workers cannot change a result."""
     rng = np.random.default_rng(seed)
     labs = np.asarray(labs)
     names = np.array(sorted(set(labs)))
     acc, null = np.empty(n_iter), np.empty(n_iter)
     conf = np.zeros((len(names), len(names)))
-
-    def predict(Xs, ys):
-        if kind == "nb":
-            return loo_gaussian_nb(Xs, ys)
-        if kind == "lr":
-            return loo_ovr_logistic(Xs, ys)
-        m = RandomForestClassifier(n_estimators=100, random_state=424242)
-        return cross_val_predict(m, Xs, ys, cv=LeaveOneOut())
-
+    draws = []
     for k in range(n_iter):
         idx = np.concatenate([rng.choice(np.flatnonzero(labs == l), per_lab, replace=False)
                               for l in names])
-        Xs, ys = X[idx], labs[idx]
-        p = predict(Xs, ys)
+        draws.append((kind, X[idx], labs[idx], rng.permutation(labs[idx])))
+    if workers > 1:
+        if workers not in _POOLS:
+            _POOLS[workers] = ProcessPoolExecutor(workers)
+        preds = _POOLS[workers].map(_loo_pair, draws)
+    else:
+        preds = map(_loo_pair, draws)
+    for k, ((_, Xs, ys, ysh), (p, psh)) in enumerate(zip(draws, preds)):
         acc[k] = np.mean(p == ys)
         if return_confusion:
             for a, b in zip(ys, p):
                 conf[np.searchsorted(names, a), np.searchsorted(names, b)] += 1
-        ysh = rng.permutation(ys)
-        null[k] = np.mean(predict(Xs, ysh) == ysh)
+        null[k] = np.mean(psh == ysh)
     if return_confusion:
         return acc, null, names, conf / conf.sum(1, keepdims=True)
     return acc, null

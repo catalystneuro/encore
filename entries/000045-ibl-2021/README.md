@@ -9,11 +9,10 @@ dandiset, against 206 in the paper.
 
 | Outcome | Claims |
 |---|---|
-| Reproduced | 17, and the link claim that matches the labs |
-| Partially reproduced | 10 |
-| Not reproduced | 8 |
-| Blocked: the readings disagree (methods underspecified) | 2 |
-| Blocked: the Random Forest cannot run in the time limit (not runnable) | 1 |
+| Reproduced | 19, and the link claim that matches the labs |
+| Partially reproduced | 13 |
+| Not reproduced | 5 |
+| Blocked: the readings disagree (methods underspecified) | 1 |
 
 A failure to reproduce here may be a failure of this attempt, not of the paper: see the
 reasoning and the differences from the paper's method.
@@ -25,7 +24,7 @@ paper's method are in the attempt record,
 [`attempts/000045-ibl-2021-01.yaml`](../../attempts/000045-ibl-2021-01.yaml).
 
 - `reproduce_ibl_2021.ipynb`: the analysis. It streams every file (about six minutes) and runs in
-  about twenty-five minutes.
+  about twenty-seven minutes.
 - `ibl_behavior.py`: loading the files, the proficiency criteria, the psychometric fit (with the
   paper's `psychofit`), the lab tests and classifiers, the choice model and the history analysis.
   Other notebooks on this dandiset can import it.
