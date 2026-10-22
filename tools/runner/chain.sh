@@ -23,8 +23,8 @@
 # the chain stops there instead, leaving $RUNNER_STATE/flagged-<dataset>, and the lane goes on to the
 # next dataset: for when the verified account has no budget left.
 #
-# Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time is rebased on
-# main, recorded (the recorder role adds the README row and the pilot notes) and merged once its
+# Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time has main
+# merged in, recorded (the recorder role adds the README row and the pilot notes) and merged once its
 # checks pass; each lands on a main that has the ones before it.
 #
 # A new attempt skips the claims and their check when main already has a claims file whose check
@@ -193,10 +193,18 @@ trap 'rmdir "$STATE/finalize.lock" 2>/dev/null; notify' EXIT
 log "finishing"
 fetch
 git checkout -q -B "attempt/$d" origin/attempt/"$d"
-if ! git rebase -q origin/main; then
-  git rebase --abort; end "$d STOPPED: the branch does not rebase on main"; exit 1
+# Merge main in, not rebase: main already has the checked claims (the checkpoint), so a rebase replays
+# the branch's claims, claims-check and answer commits onto them and stops on an add/add conflict. The
+# branch's claims file is the same or later (the reader's answers), so it is kept; any other conflict
+# stops the chain.
+if ! git merge -q --no-edit -m "Merge main into attempt/$d" origin/main >/dev/null; then
+  git checkout -q HEAD -- "claims/$d" 2>/dev/null
+  if [ -n "$(git diff --name-only --diff-filter=U)" ]; then
+    git merge --abort; end "$d STOPPED: the branch does not merge with main"; exit 1
+  fi
+  git commit -q --no-edit
 fi
-git push -q --force-with-lease origin "attempt/$d"
+git push -q origin "attempt/$d"
 is_done recorder || run_role recorder || { end "$d STOPPED at recorder"; exit 1; }
 fetch; git checkout -q -B "attempt/$d" origin/attempt/"$d"
 title=$(python "$here/describe.py" title "$d")
