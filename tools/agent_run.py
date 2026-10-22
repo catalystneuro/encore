@@ -198,7 +198,8 @@ def package(role: str, dandiset: str, dest: Path) -> None:
         shutil.copy(executed / n["path"], dest / n["path"])
     for h in entry.get("helpers", []):
         shutil.copy(entry_dir / h, dest / h)
-    shutil.copy(entry_dir / "README.md", dest / "README.md")
+    if (entry_dir / "README.md").is_file():   # the protocol does not require one
+        shutil.copy(entry_dir / "README.md", dest / "README.md")
     for path in (ROOT / "claims" / dandiset).glob("*.yaml"):
         shutil.copy(path, dest / path.name)
     shutil.copy(ROOT / "attempts" / f"{record['id']}.yaml", dest / f"{record['id']}.yaml")

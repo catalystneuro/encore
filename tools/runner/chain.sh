@@ -14,7 +14,8 @@
 # are skipped, and a run of the next role that is still going is waited for. When a new attempt starts, a
 # branch already merged into main belongs to an earlier attempt and is deleted first, so the attempt
 # starts from main; a branch merged while its attempt is going is kept. A run that fails on the subscription's session or weekly limit is retried after
-# 30 minutes from where it started; any other failure stops the chain.
+# 30 minutes from where it started; one that fails on the network or the machine (a dropped connection, a runner
+# shut down, no log) is retried twice after 5 minutes; any other failure stops the chain.
 #
 # Each role runs first on the unverified account (RUNNER_ACCOUNT=verified skips it). A run that
 # account's safety checks flag (FLAGGED), or that has no token for it (UNVERIFIED-UNAVAILABLE), is
@@ -81,7 +82,7 @@ reset_branch(){ local start=$1
   else git push -q origin --delete "attempt/$d" 2>/dev/null || true; fi
   [ "$(remote_branch)" = "$start" ]; }
 
-run_role(){ local role=$1 tries=0 start before id st runlog acct
+run_role(){ local role=$1 tries=0 flaky=0 start before id st runlog acct
   while true; do
     fetch; start=$(remote_branch)
     read -r id st <<<"$(run_of "$role")"
@@ -123,6 +124,15 @@ run_role(){ local role=$1 tries=0 start before id st runlog acct
       reset_branch "$start" || { last_why="could not reset attempt/$d after the usage limit"; log "STOPPED: $last_why"; return 1; }
       log "$role hit a usage limit; branch reset, retry $tries in 30 minutes"
       sleep 1800; continue
+    fi
+    # A failure of the network or of the machine, not of the agent: a connection dropped or timed out, the runner
+    # was shut down, or the run left no log. Tried twice more; an agent that ran out of time is not.
+    if { [ -z "$runlog" ] || echo "$runlog" | grep -qE "ReadTimeout|ConnectionError|Connection (reset|aborted)|exit code 143|shutdown signal|lost communication"; } \
+       && ! echo "$runlog" | grep -q "timed out after" && [ $flaky -lt 2 ]; then
+      flaky=$((flaky+1))
+      reset_branch "$start" || { last_why="could not reset attempt/$d after a failed run"; log "STOPPED: $last_why"; return 1; }
+      log "$role failed on the network or the machine (run $id); branch reset, retry $flaky in 5 minutes"
+      sleep 300; continue
     fi
     last_why="the run of $role failed"; log "STOPPED at $role (run $id)"; return 1
   done; }
