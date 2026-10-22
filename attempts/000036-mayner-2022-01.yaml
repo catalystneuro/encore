@@ -107,7 +107,13 @@ outcomes:
     defines arfpop (7b80ccd) has a Python 2 fast.py (a SyntaxError under Python 3) and a
     FitSegmentModel.cpp that uses std::numeric_limits without including <limits>; the notebook's
     section on the L0 detector prints each of these from the published sources. Running the
-    detector would mean patching the package and porting l0_analysis.py to Python 3. The NWB files
+    detector would mean patching the package and porting l0_analysis.py to Python 3. While
+    preparing the round-1 revision, outside the notebook and not run there, the 7b80ccd sources
+    were patched that way (<limits> added, without which g++ stopped at std::numeric_limits, and
+    the print statements of fast.py rewritten for Python 3); the package then built and arfpop ran
+    on a synthetic trace. l0_analysis.py was not ported and no events were computed from this
+    dataset, so the build decides nothing; the published software still cannot be installed as
+    released, which is the reason given. The NWB files
     hold no path naming events (listing of all 57 files in the notebook). The paper's own events
     are in its Zenodo deposit (events/, 4125 members, 4.1 GB), which the criterion does not name.
 - claim: fig3a-layer-specific
@@ -138,9 +144,10 @@ outcomes:
   - 0.132
   notes: Interaction chi2(4) = 15.58, p = 0.0036. AL z = 2.65, adjusted p = 0.020; AM z = 2.54,
     p = 0.028; V1, LM and PM p 0.81 to 1.0. Cohen's d AL 0.181 (within tolerance of 0.200) and AM
-    0.132, outside the tolerance of 0.268. The paper's own per-trial values give AM d = 0.127 and
-    the code's printed Figure 3 output 0.128; the paper's text prints d = 0.268 with interval
-    [0.128, inf), where the code prints the interval bound 0.0048, so 0.268 looks like a
+    0.132, outside the tolerance of 0.268. The paper's own per-trial values give AM d = 0.127, and
+    0.128 with the pooled SD as the code computes it; the paper's text prints d = 0.268 with
+    interval [0.128, inf), where the post hoc test on the paper's per-trial values gives the
+    interval bound 0.0048, so 0.268 looks like a
     transcription slip in the paper and the dataset agrees with the paper's computation. The
     criterion's rule rests on the significance pattern, which holds. Variant on all 56 complete
     dandiset sessions, chi2(4) = 14.39, p = 0.006, AM significant but AL not (p = 0.072). With the
@@ -175,7 +182,9 @@ outcomes:
     interactions are significant in 108 and 102. The areas vary; AL and AM both significant in
     36 sets, AL alone in 41, AM alone in 24, neither in 7. Agreement by window is rectangular 39%,
     Kaiser 33%, Tukey 28%; by state length 0% at 10 s and 72% at 2 s. The same rule on the paper's
-    own results/stats.parquet gives 28 of 108 (25.9%), so the paper's outputs do not meet this
+    own results/stats.parquet gives 28 of 108 (25.9%); there L2/3 is also the only significant
+    layer in all 108 sets, and AL and AM are both significant in 28, AL alone in 50, AM alone in
+    24, neither in 6. So the paper's outputs do not meet this
     reading of "nearly all" either; the difference is between the claims file's rule and the
     paper's sentence, not between the dataset and the paper's computation. The spectra are the
     paper's. For six sets, one per window and frequency spacing, this dF/F at the start shift found
@@ -236,7 +245,8 @@ outcomes:
     stored 1.258). With d computed with the pooled SD as the paper's code computes it (variant), r
     = 0.892 (p = 0.017) under reading (a) and 0.894 (p = 0.016) under reading (b). Over all 44
     sessions r = -0.03. The deposit is now streamed over parallel range requests and reached all
-    required members after 210 s, so the executed copy shows both readings.
+    required members after 176 s in the final run (217 s in the run reviewed in round 2), so the
+    executed copy shows both readings.
   deviations:
   - Reading (b) uses the deposit's parameters and vsync alignment on the dandiset's running
     velocity, whose first sample is dropped (the rest equal the deposit's run_speed).
@@ -443,8 +453,9 @@ findings:
     compiled FastLZeroSpikeInference, which is not on PyPI, does not build with pip from its
     repository, and no longer has the arfpop function the detector calls.
 - kind: code_mismatch
-  statement: For area AM in Figure 3 the paper prints Cohen's d = 0.268, 95% CI [0.128, inf); its
-    code's printed output gives d = 0.128 and a lower bound of 0.0048. The paper's value looks
+  statement: For area AM in Figure 3 the paper prints Cohen's d = 0.268, 95% CI [0.128, inf). Its
+    own per-trial values (results/main.parquet) give d = 0.128 with the pooled SD as its code
+    computes it, and the post hoc test on them a lower bound of 0.0048. The paper's value looks
     like a transcription slip.
 - kind: code_mismatch
   statement: The code's pooled SD (analysis.pooled_std_dev) weights each group's SD by the other
@@ -457,8 +468,8 @@ findings:
 - kind: code_mismatch
   statement: The paper says that for nearly all parameter combinations unscrambled stimuli elicit
     increased ND specifically in L2/3 of AL and AM; in its own sensitivity statistics
-    (results/stats.parquet) AL and AM are both significant in 28 of 108 sets, AL alone in 50 and
-    AM alone in 24, while L2/3 is the only significant layer in all of them.
+    (results/stats.parquet) AL and AM are both significant in 28 of 108 sets, AL alone in 50, AM
+    alone in 24 and neither in 6, while L2/3 is the only significant layer in all of them.
 verifications:
 - date: '2026-10-22'
   kind: agent
@@ -588,7 +599,10 @@ verifications:
     outcome: reproduced
     reason: r = 0.842 with p = 0.035 for artifact reading (a), and r = 0.844 with p = 0.035 for (b).
       Both within 0.896 +/- 0.104 with p < 0.05. Locomotion fractions equal the code's to 1e-4.
-    response: The deposit is now streamed over parallel range requests and arrives in about 210 s,
+      Problem 3 also bears on the effect size in fig4, since the criterion's formula for Cohen's d does
+      not give the code's per-session values in effect_size.parquet.
+    response: The deposit is now streamed over parallel range requests and arrives in about three
+      minutes (217 s in the run reviewed in round 2),
       so the executed copy shows reading (b). Added the variant with the code's pooled SD (r = 0.892
       and 0.894). Outcome kept.
   - claim: fig4-pupil-effect-size
@@ -688,4 +702,193 @@ verifications:
     reason: Blocked (methods_underspecified). Spectral energy is significant one-sided (p = 0.033
       global DC, 0.044 per-pixel DC) but not two-sided (0.066, 0.087). The readings disagree, so the
       claim's rule gives blocked.
+    response: No change needed.
+- date: '2026-10-22'
+  kind: agent
+  by: Independent agent run by CatalystNeuro (same harness, separate context, did not write the notebook)
+  reviewed: Round 2. The full executed notebooks of the author-revise-1 run, the helper module, the
+    claims file, the attempt record and the README, with the paper and the round-1 report. The
+    verifier agreed with all 27 outcomes. It listed six sentences the printed outputs did not
+    support and one gap in how its round-1 reasons were recorded, and left three points open
+    (ext3-2-sensitivity, discussion-session-effect-sizes, the L0 claims).
+  results:
+  - claim: session-link
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1, and the new checks of the
+      statistics code on the paper's own data (cell 26) back the outcome further.
+    response: No change needed.
+  - claim: design-sessions
+    agrees: true
+    outcome: reproduced
+    reason: Agreed; this was its round-1 outcome. The criterion asks for the paper's 45 sessions
+      with its counts, and cell 29 prints them. The 12 extra sessions are rightly recorded as a
+      finding.
+    response: No change needed.
+  - claim: ext1-2-cell-counts
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1.
+    response: No change needed.
+  - claim: ext1-3-kinetics-no-difference
+    agrees: true
+    outcome: blocked
+    reason: Agreed it is blocked, and accepts not_runnable in place of its round-1 other, since the
+      protocol uses that reason for software that cannot be installed. Open point - main cell 79
+      says a build of the detector with patches was made outside the notebook, which the record
+      does not mention, and its sentence that a current compiler rejects FitSegmentModel.cpp is not
+      shown (cell 78 shows only that the header is missing). If the patched detector runs, the
+      reason for blocking is weaker than the record states; the record should either show the
+      build or say what it found.
+    response: The record and cell 79 now say what the build found. With <limits> added (g++
+      stopped at std::numeric_limits without it) and the Python 2 prints of fast.py rewritten, the
+      7b80ccd package built and arfpop ran on a synthetic trace; l0_analysis.py was not ported and
+      no events were computed from this dataset. The build stays outside the notebook and decides
+      nothing. The compiler sentence in cell 79 and the header now state only what cell 78 prints
+      (the include is missing). Outcome and blocked_by kept, since the published software still
+      cannot be installed as released.
+  - claim: fig3a-layer-specific
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1.
+    response: No change needed.
+  - claim: fig3b-area-specific
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The record's notes and main cell 40 cite "the code's printed Figure 3 output
+      0.128", but no such output is printed; what is printed is 0.128 from the code-SD variant on
+      the paper's data (cell 39), which is consistent with the sentence but not the same evidence.
+    response: Cell 40, the notes and the code_mismatch finding now cite the printed evidence, d =
+      0.128 with the code's pooled SD on the paper's per-trial values (cell 39) and the lower bound
+      0.0048 from the post hoc test on them (cell 26). Outcome kept.
+  - claim: ext3-1-natural-artificial
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1.
+    response: No change needed.
+  - claim: ext3-2-sensitivity
+    agrees: true
+    outcome: not_reproduced
+    reason: Agreed under the claims file's rule, 36 of 108 sets (cell 46). The rule gives 28 of 108
+      on the paper's own outputs, so the outcome reflects the claims file's reading of "nearly all
+      ... specifically in L2/3 of AL and AM" more than the data, which may be a misread of the
+      paper; a question is filed and the outcome should be read with that caveat. The last
+      code_mismatch finding gives AL alone in 50 and AM alone in 24, with L2/3 the only
+      significant layer, for the paper's stats.parquet, but no output prints these.
+    response: Cell 46 now prints the significant layers and areas per set on the paper's
+      stats.parquet (L2/3 alone in 108; AL and AM 28, AL alone 50, AM alone 24, neither 6), and
+      the conclusion, notes and finding give them. The question to a reader stays open. Outcome
+      kept.
+  - claim: ext3-5-arousal-covariates
+    agrees: true
+    outcome: blocked
+    reason: Agreed (data_missing). Arousal cell 4 now lists data/eye/ - 45 <id>_area.npy files and
+      one yaml, with no ellipse fit.
+    response: No change needed.
+  - claim: ext3-8-events-spectral
+    agrees: true
+    outcome: blocked
+    reason: As ext1-3-kinetics-no-difference.
+    response: As ext1-3-kinetics-no-difference.
+  - claim: ext3-9-no-transients
+    agrees: true
+    outcome: blocked
+    reason: As ext1-3-kinetics-no-difference.
+    response: As ext1-3-kinetics-no-difference.
+  - claim: mediation-event-magnitude
+    agrees: true
+    outcome: blocked
+    reason: As ext1-3-kinetics-no-difference.
+    response: As ext1-3-kinetics-no-difference.
+  - claim: table1-permutation
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1.
+    response: No change needed.
+  - claim: fig4-locomotion-effect-size
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The record's notes and round-1 response say the deposit "reached all required
+      members after 210 s" and "arrives in about 210 s"; arousal cell 2 prints 217 s. Its round-1
+      problem 3 also bore on the effect size in fig4, and the recorded round-1 reason did not
+      mention it, though the response addressed it.
+    response: The notes give the time of the final run (176 s) and of the run reviewed (217 s), and
+      the round-1 response says about three minutes. The round-1 reason now includes problem 3's
+      bearing on fig4. Outcome kept.
+  - claim: fig4-pupil-effect-size
+    agrees: true
+    outcome: blocked
+    reason: Agreed (data_missing). The reason is now the same in the header, the conclusion, both
+      summaries, the README and the record.
+    response: No change needed.
+  - claim: discussion-session-effect-sizes
+    agrees: true
+    outcome: partially_reproduced
+    reason: Agreed on the Methods formula; cell 53 prints the failed check (largest d 1.111, not
+      within 1.25 +/- 0.125). The outcome depends on which pooled SD the criterion means. With the
+      code's SD it is reproduced, at 0.584 to 1.194 with a pooled 0.343. The claims file is itself
+      inconsistent, since its opening comment and criterion point to the code (analysis.py
+      cohens_d, fig_4.ipynb) while the Methods state the standard formula; the attempt's choice of
+      the Methods formula is defensible. The paper's printed AL (0.200) and PM (-0.122) values in
+      Fig. 3 also match the code's SD.
+    response: No change; the question to a reader on which formula the criterion means stays
+      open, and the outcome is kept as verified.
+  - claim: fig5-multivariate-layer
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1.
+    response: No change needed.
+  - claim: fig5-multivariate-area
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1.
+    response: No change needed.
+  - claim: ext5-1-events-multivariate
+    agrees: true
+    outcome: blocked
+    reason: As ext1-3-kinetics-no-difference.
+    response: As ext1-3-kinetics-no-difference.
+  - claim: fig6-category-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1. Main cell 21 says identity
+      decoding "falls below chance (about 0.04)" when the windows are moved one presentation back,
+      but cell 20 prints a mean of 0.085 at -34 s, which is chance (0.083); the point that the
+      windows share a clock with the dF/F still holds and no conclusion depends on it.
+    response: Cell 21 now says it falls to chance (mean 0.085, chance 0.083).
+  - claim: ext6-1-identity-decoding
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1.
+    response: No change needed.
+  - claim: fig7-stimulus-effect
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The likelihood ratio test on the paper's data gives chi2(4) = 32.115 (cell 26).
+    response: No change needed.
+  - claim: fig7-snake-highest
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The Tukey tests on the paper's data give z of 3.229, 3.928, 5.249 and 3.396
+      (cell 26).
+    response: No change needed.
+  - claim: ext7-1-arousal-mediation
+    agrees: true
+    outcome: blocked
+    reason: Agreed (data_missing), as ext3-5-arousal-covariates.
+    response: No change needed.
+  - claim: fig8-nd-sd-correlation
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1.
+    response: No change needed.
+  - claim: fig8-no-sd-relation-controlled
+    agrees: true
+    outcome: reproduced
+    reason: Agreed. The printed values are the same as in round 1.
+    response: No change needed.
+  - claim: ext8-1-no-low-level-relation
+    agrees: true
+    outcome: blocked
+    reason: Agreed (methods_underspecified).
     response: No change needed.
