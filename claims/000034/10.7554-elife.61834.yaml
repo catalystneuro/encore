@@ -25,8 +25,9 @@
 # 1. Real Neuropixels: a head-fixed mouse from the Allen Brain Observatory (Siegle et al. 2019;
 #    session 766640955, probe 77359232; mouse 412804 in the notebook), V1, CA1, dentate gyrus and
 #    LP, visual stimuli while running on a disk; trimmed to 15 min, 30 kHz, 246 active channels
-#    (the notebook's file printed 248 channels and 27,000,000 frames). Notebook file
-#    sub-mouse412804_ecephys.nwb. Two manual curations of its Kilosort2 output in Phy by experts C1
+#    (the notebook's file printed 248 channels and 27,000,000 frames). The notebook loads a local
+#    file, mouse412804_probeC_15min.nwb; neither it nor the paper gives the recording's file name in
+#    the dandiset. Two manual curations of its Kilosort2 output in Phy by experts C1
 #    and C2: sub-mouse412804_ses-20200824T155542.nwb (read as curated 1) and
 #    sub-mouse412804_ses-20200824T155543.nwb (curated 2).
 # 2. Simulated Neuropixels (MEArec): 10 min, 250 neurons (200 excitatory, 50 inhibitory, from the
@@ -92,7 +93,8 @@ claims:
     the properties the paper and the notebooks give.
   source: Results, opening paragraph; Data availability; the four notebooks at ee08fb6
   quote: The datasets are publicly available in NWB format on the DANDI archive
-  criterion: Each of the six files named in the opening comment is present. The real Neuropixels recording
+  criterion: Each of the five files named in the opening comment is present, and a recording of mouse
+    412804 with the properties below (the notebook's own file name is local). The real Neuropixels recording
     has a sampling rate of 30 kHz and lasts 15 min (27,000,000 frames), with 246 channels (the paper)
     or 248 (the notebook); the simulated recording lasts 10 min and its ground truth has 250 units; the
     rat recording has 384 channels at 30 kHz; the Biocam recording has 1024 channels at about 23199 Hz.
@@ -210,8 +212,10 @@ claims:
     recording: (a) Figure 1D, more than half of the sorters have over 50% of their units at k = 1 (the
     legends of both supplements say most sorters find many units that other sorters do not); (b) Figure
     1C, agreement units found by all sorters are at most 8% of all detected units (the 7.24% of the simulated
-    recording, which the paper calls a large disagreement, widened by 10%). Reproduced when, for both
-    recordings, one reading holds; partially reproduced when it holds for one recording only.'
+    recording, which the paper calls a large disagreement, widened by 10%). The two readings are choices
+    of measure, so each recording''s outcome is the one both give, and the claim is blocked as
+    methods_underspecified when they differ. Reproduced when both readings hold for both recordings;
+    partially reproduced when they hold for one recording only.'
 - id: fig2c-sim-unit-counts
   statement: 'On the simulated recording with 250 ground-truth units the sorters again return very different
     numbers of units: Tridesclous 189, HDSort 458, HerdingSpikes2 233, Kilosort2 415, IronClust 283 and
@@ -281,11 +285,12 @@ claims:
     is read as a Spearman correlation of accuracy with SNR over the 250 ground-truth units, positive with
     p < 0.05. Low-SNR units are open, read as (a) those below the median ground-truth SNR or (b) those
     below the mode of the ground-truth SNR histogram (bins of 1, a standard choice), the reference Figure
-    3, figure supplement 2 uses. Reproduced when, under one reading, the correlation is positive with
-    p < 0.05 for HerdingSpikes2, IronClust, Tridesclous, SpyKING Circus and HDSort, Kilosort2 has the
-    weakest correlation of the six, and Kilosort2's median accuracy on low-SNR units is at least 0.8 and
-    above every other sorter's; partially reproduced when the Kilosort2 parts hold but the correlation
-    fails for one other sorter.
+    3, figure supplement 2 uses. The two cuts are thresholds the paper does not give, so the outcome is
+    the one both give, blocked as methods_underspecified when they differ. Reproduced when the correlation
+    is positive with p < 0.05 for HerdingSpikes2, IronClust, Tridesclous, SpyKING Circus and HDSort, Kilosort2
+    has the weakest correlation of the six, and, under both cuts, Kilosort2's median accuracy on low-SNR
+    units is at least 0.8 and above every other sorter's; partially reproduced when the Kilosort2 parts
+    hold but the correlation fails for one other sorter.
 - id: fig2d-ks2-highest-scores
   statement: Kilosort2 scores higher than the other sorters for most ground-truth units.
   source: Results, Evaluating spike sorters on a simulated dataset, paragraph 2; Figure 2D
@@ -297,8 +302,9 @@ claims:
     behind "significantly", so the claim is judged by its words "for most ground-truth units": for each
     of the five other sorters, Kilosort2''s score exceeds that sorter''s for more than half of the 250
     ground-truth units. "Scores" is read as (a) accuracy or (b) each of accuracy, precision and recall,
-    the three metrics of Figure 2D. Reproduced when this holds for all five sorters under one reading;
-    partially reproduced when it holds for three or four. A paired Wilcoxon signed-rank test per pair
+    the three metrics of Figure 2D. The two readings are choices of measure, so the outcome is the one
+    both give, blocked as methods_underspecified when they differ. Reproduced when this holds for all
+    five sorters; partially reproduced when it holds for three or four. A paired Wilcoxon signed-rank test per pair
     is shown, not used.'
 - id: fig2e-ks2-unit-types
   statement: Kilosort2 has the most well-detected units (245) but also many false positive (147) and redundant
@@ -449,8 +455,7 @@ claims:
     units as in the opening comment (the notebook's rule; the Methods do not define them for this figure).
     The counts are from the legend; their tolerance is one unit, since 10% of a count below 5 is less
     than one unit. Reproduced when, for every sorter, the false positive units with k >= 2 are within
-    tolerance and at most 10% of its false positive units, and its true positive units with k >= 2 outnumber
-    those with k = 1; partially reproduced when this holds for four or five sorters.
+    tolerance, and its true positive units with k >= 2 outnumber those with k = 1; partially reproduced when this holds for four or five sorters.
 - id: fig3s1-ks2-ic-best-pair
   statement: With two sorters, combining Kilosort2 and IronClust identified true positives most reliably,
     with false positive and true positive detection rates of 96% and 95%.
@@ -478,8 +483,9 @@ claims:
     the nodes and recomputes connected components, or (b) keeps the full comparison''s components and
     counts the subset''s sorters in each; the rate is (i) pooled over the units of the subset''s sorters
     or (ii) the mean of the per-sorter rates. The legend says the best pairs combine two of Kilosort2,
-    IronClust and HDSort; the Results name Kilosort2 and IronClust. Reproduced when, under one reading,
-    both rates are within tolerance and Kilosort2 with IronClust has the highest true positive rate of
+    IronClust and HDSort; the Results name Kilosort2 and IronClust. The four combinations of readings
+    are choices of method, so the outcome is the one they all give, blocked as methods_underspecified
+    when they differ. Reproduced when both rates are within tolerance and Kilosort2 with IronClust has the highest true positive rate of
     the 15 pairs; partially reproduced when the rates are within tolerance and the best pair is another
     pair of Kilosort2, IronClust and HDSort.'
 - id: fig3s1-pairs-remove-fp-four-keep-tp
@@ -499,8 +505,9 @@ claims:
     median false positive detection rate over the 15 pairs is at least 86.4%. "Most" true positives is
     more than half: every subset of four or five sorters has a true positive rate above 0.5. The loss
     with fewer sorters: the lowest true positive rate over pairs and over triples is below the lowest
-    over subsets of four. Reproduced when all three hold under one reading; partially reproduced when
-    the false positive part holds and one true positive part fails.'
+    over subsets of four. The outcome is the one all the readings give, blocked as methods_underspecified
+    when they differ. Reproduced when all three hold; partially reproduced when the false positive part
+    holds and one true positive part fails.'
 - id: fig3d-snr-rises-with-agreement
   statement: Ground-truth units with higher SNR are found by more sorters.
   source: Results, Low-agreement units are mainly false positives, paragraph 3; Figure 3D
@@ -645,3 +652,19 @@ claims:
     values are within tolerance, every other sorter's percentage is below Kilosort2's for the same curator,
     and every sorter's non-consensus percentage is below its consensus percentage (fig4c), the contrast
     the Results draw; partially reproduced when the last two hold but a Kilosort2 value is outside tolerance.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Read the four notebooks at spikeinterface.github.io 657c6d8 and the sources of spikesorters 0.3.3 and spikecomparison 0.2.6; confirmed the printed unit counts, the agreement tables, the Figure 3C false positive counts by k (sums 4, 4, 4, 2, 1, 2), the Figure 4 percentages, the comparison defaults, the graph cleaning, and that run_sorters looks parameters up by sorter_name ('spykingcircus'), so the 'spyking_circus' parameters were not applied.
+  - Opening comment and recordings-as-described. The notebook for the real recording loads mouse412804_probeC_15min.nwb, not sub-mouse412804_ecephys.nwb as the comment said; the comment now says the dandiset file name is not given, and the link criterion asks for the five named files and a mouse 412804 recording with the stated properties.
+  - fig1s3-s4-other-recordings-disagree. The two readings of "similar disagreement" (Figure 1D and Figure 1C measures) are choices of measure, so the outcome must be the one both give, methods_underspecified when they differ, not either.
+  - fig2s1b-accuracy-snr. The two low-SNR cuts (median, histogram mode) are thresholds the paper does not give, so the Kilosort2 part must hold under both, methods_underspecified when they differ, not under one.
+  - fig2d-ks2-highest-scores. The readings of "scores" (accuracy alone, or each of the three metrics) are choices of measure, so the outcome must be the one both give, not either.
+  - fig3c-fp-found-by-one-sorter. Removed the condition that false positives with k >= 2 are at most 10% of a sorter's false positives; the paper gives no such threshold, and its legend counts, held in expected, are its statement of "almost all".
+  - fig3s1-ks2-ic-best-pair and fig3s1-pairs-remove-fp-four-keep-tp. The removal and pooling readings are choices of method for a figure with no code, so the outcome must be the one all four combinations give, methods_underspecified when they differ, not any one.
+  - Open. fig2s1b-accuracy-snr and fig3d-snr-rises-with-agreement judge dependence by a Spearman correlation the paper does not use (it reports no tests); no other reading is given by the paper, so this stays as the criterion's operational reading.
+  - Open. The 2031 total units of fig1c-low-agreement matches neither the Figure 1B counts (2021) nor the notebook's (2024); the tolerance covers all three.
+  - Open. recordings-as-described is a link claim written by the reader, while the protocol leaves link claims to the author; it is kept, as it only checks the paper's own recordings are present.
