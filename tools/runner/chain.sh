@@ -25,7 +25,7 @@
 # next dataset: for when the verified account has no budget left.
 #
 # Finishing takes a lock ($RUNNER_STATE/finalize.lock), so that one attempt at a time has main
-# merged in, recorded (the recorder role adds the README row and the pilot notes) and merged once its
+# merged in, recorded (the recorder role adds the pilot notes) and merged once its
 # checks pass; each lands on a main that has the ones before it.
 #
 # A new attempt skips the claims and their check when main already has a claims file whose check

@@ -11,7 +11,7 @@ functions below take its folder name.
 ROLE is one of author, verifier-1, author-revise-1, verifier-2, author-revise-2,
 the order in which an attempt goes through docs/protocol.md, and verifier-3 and
 author-revise-3, the third round that settles changes proposed after the second. A last role,
-recorder, adds the finished attempt to README.md and docs/pilot-notes.md. The prompts are
+recorder, adds the finished attempt to docs/pilot-notes.md. The prompts are
 docs/agents/<role>.md with the target's details filled in. A run's transcript
 and final report are kept as transcripts/<folder>/<role>.md and
 <role>-report.md (tools/transcript.py writes them).
