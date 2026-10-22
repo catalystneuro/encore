@@ -1,0 +1,395 @@
+schema_version: 2
+id: 000037-gillon-2023-01
+dataset:
+  archive: dandi
+  id: "000037"
+  version: 0.230426.0054
+  doi: 10.48324/dandi.000037/0.230426.0054
+paper: doi:10.1038/s41597-023-02214-y
+date: 2026-10-22
+entry: 000037-gillon-2023
+provenance:
+  kind: agent
+  accountable:
+    name: CatalystNeuro
+  agent:
+    harness: Claude Code (GitHub Actions)
+    model: claude-opus-5-5
+    protocol: pilot-10
+  runner:
+    platform: GitHub Actions
+    url: https://github.com/catalystneuro/reproduction-registry/actions/runs/39725948617
+inputs:
+- what: Supplementary Table 1 of the paper (metadata.csv), for the values of Tables 1 and 2, the
+    local session numbers and the QC result of each session, which select the 33 sessions of the
+    paper's analyses. It agrees with Tables 1 and 2 of the paper text in every field (checked while
+    preparing, not run in the notebook).
+  source: https://github.com/jeromelecoq/allen_openscope_metadata at commit
+    0e9c7aca3d67cbab7c493ab824b7287fb9508f47
+- what: ROI matching files roi_tracking/nway-matched-dfs (union counts and the fewest and most
+    matches over session orderings for the two Fig. 8 example mice), from the paper's repository.
+  source: https://github.com/colleenjg/OpenScope_CA_Analysis at commit
+    046e7fef5f452cdc0775fe54040b0f13aeae1e57
+- what: Source data of Figure 7a (paper_figures/dataset_paper/Fig7/data_files/panel_A.json, per-ROI
+    SNRs of the 33 analysed sessions), from the paper's repository.
+  source: https://github.com/colleenjg/OpenScope_CA_Analysis at commit
+    046e7fef5f452cdc0775fe54040b0f13aeae1e57
+outcomes:
+- claim: table1-subjects
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:table1-subjects
+  notes: All 13 subjects of Table 1 are in the dataset, and sex and genotype (cell type) agree for all
+    13. The files record no date of birth and no plane. As variants, the plane implied by the
+    recorded depth matches for 13 of 13, and the date of birth implied by the recorded age for 12
+    of 13; for 418779 it is one day late, and matches when the start clock is read as UTC.
+  deviations:
+  - Table 1 values are read from Supplementary Table 1, which holds the same values.
+- claim: cohorts-by-plane
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:cohorts-by-plane
+  measured: [3, 3, 4, 3]
+  notes: 3 L2/3 dendritic, 3 L2/3 somatic, 4 L5 dendritic and 3 L5 somatic mice, with 3 to 6 sessions
+    each. Line is read from the genotype and plane from the recorded depth; both agree with
+    Supplementary Table 1 for every session.
+- claim: sex-split
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:sex-split
+  measured: [7, 6, 1]
+  notes: 7 male and 6 female mice; one L2/3 dendritic mouse (433414) is female.
+- claim: sessions-total
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:sessions-total
+  measured: 50
+  notes: 50 distinct sessions in 13 subject folders, three files per session (150 NWB files), each
+    file in its subject's folder.
+- claim: table2-sessions
+  outcome: not_reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:table2-sessions
+  notes: All 50 sessions are present; subject, ROI count and tracked ROI count agree for all 50, the
+    date for 46 and the depth for 47. 43 of 50 sessions agree in every recorded field, below the 45
+    the criterion asks for partial reproduction. The three sessions of 433414 are recorded at 60 um
+    against 75 in Table 2. Four sessions (412933 local session 3, and 418779 sessions 1 to 3) start
+    a day later in the files than Table 2's date. Their start times are evening Pacific clock
+    values stated with a Pacific offset, and Supplementary Table 1 gives the same clock values as
+    UTC for all 50 sessions. Read as UTC and converted to Pacific time, all 50 dates agree and 47
+    sessions agree in every field. QC and stimulus seed are not recorded in the files.
+  deviations:
+  - The date of a session is taken from its start time as the file states it; the reading of the
+    clock as UTC is shown as a variant. The claims file does not say how a date is read from a time.
+  - Table 2 values are read from Supplementary Table 1, which holds the same values.
+- claim: qc-failures
+  outcome: blocked
+  blocked_by: metadata_insufficient
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:qc-failures
+  notes: The files hold no QC status (no QC field in the subject, session or trial table metadata), and
+    the dandiset metadata gives none; the criterion blocks the claim in that case. For reference,
+    Supplementary Table 1 marks failed sessions in three mice (411400 and 412933 sessions 1 to 3,
+    440889 sessions 5 and 6), so (a) gives 3 and (b) gives 2. Mice with more than three sessions in
+    the files are 411400, 412933, 433448, 433458 and 440889.
+- claim: session-schedule
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:session-schedule
+  notes: Under combination (i)(b), local sessions 1 to 3 with calendar days counted inclusively, all
+    13 mice span 3 to 6 days and no mouse has two sessions on one date; this holds with the dates as
+    stated and with the clock read as UTC. With the dates as stated, (i)(a) fails for 6 mice (2-day
+    spans), (ii)(a) for 5, and (ii)(b) for 411400 (7 days). Sessions last 70.06 to 70.37 min by the
+    stimulus table and 70.22 to 70.53 min by the imaging.
+  deviations:
+  - Local session numbers are the order of the start times in each subject, which equals
+    Supplementary Table 1's numbering; the selection of reading (ii) uses its QC results.
+- claim: imaging-depths
+  outcome: not_reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:imaging-depths
+  notes: 47 of 50 sessions are at the depth the criterion allows (175, 375, 20, or 50 or 75 um). The
+    three sessions of L2/3 dendritic mouse 433414 are recorded at 60 um, one more exception than the
+    two the criterion allows for partial reproduction. 60 um is within the 50 to 75 um range of the
+    statement, which all 50 sessions meet; the outcome follows the criterion, which admits only 50
+    or 75, and a question was asked about it. Table 2 gives 75 um for these sessions.
+- claim: acquisition-rates
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:acquisition-rates
+  measured: [30.1, 59.95, 512]
+  notes: Imaging at 30.08 to 30.15 Hz by the timestamps (stated 30 Hz), running at 59.95 Hz in cm/s in
+    every session, and 512 x 512 pixel masks and projection images. The statement's 400 um field of
+    view is not recorded in the files and was not tested.
+- claim: roi-noise-rejection
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:roi-noise-rejection
+  notes: 0 of 19115 ROIs over the 50 sessions have a mean dF/F below 0 or a median above the
+    mid-range; the lowest ROI mean is 0.0006. The duplicate, union and motion-border rules were not
+    tested, as the criterion says.
+- claim: roi-count-ranges
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:roi-count-ranges
+  measured: [15, 224, 159, 1636]
+  notes: Under reading (a), the 33 analysed sessions, somatic planes hold 15 to 224 ROIs and dendritic
+    planes 159 to 1636. Reading (b), sessions passing QC, gives the same, and reading (c), all 50
+    sessions, gives 15 to 227 and 159 to 1636; all three are within tolerance.
+- claim: tracked-roi-totals
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:tracked-roi-totals
+  measured: [254, 261, 516, 129, 32.9, 75.0]
+  notes: Summed over the 11 mice of the paper's analyses, 254, 261, 516 and 129 tracked ROIs, equal to
+    the stated totals. With the theoretical maximum read as (a), the smallest ROI count of each
+    mouse's three tracked sessions, the plane percentages run from 32.9 to 75.0%; reading (b), the
+    mean count, gives 25.4 to 65.7%, outside. Over all 13 tracked mice the dendritic totals are 352
+    and 678.
+- claim: tracked-sessions-overlap
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:tracked-sessions-overlap
+  notes: All 13 tracked mice have three tracked sessions with equal counts (12 to 353), each index once
+    per session, and the same indices in the three sessions. In an added check on the mask centroids
+    (masks not registered), the same index lies a median of 1.9 to 14.5 pixels apart across
+    sessions against 11.5 to 62.4 pixels to the nearest other tracked ROI, and is the closest for
+    55% (411400) to 100% of ROIs.
+  deviations:
+  - The mask centroid check is added; it is not in the criterion and decides nothing.
+- claim: fig8a-final-matches
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig8a-final-matches
+  measured: 136
+  notes: Mouse 413663 has 136 tracked ROIs in each of its three sessions.
+- claim: fig8a-conflicts
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig8a-conflicts
+  measured: 4
+  notes: The repository's matching files give a union of 140 matches for 413663; 140 - 136 tracked ROIs
+    in the dataset = 4. The files of its three sessions agree.
+- claim: fig8b-final-matches
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig8b-final-matches
+  measured: 47
+  notes: Mouse 411771 has 47 tracked ROIs in each of its three sessions.
+- claim: fig8b-conflicts
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig8b-conflicts
+  measured: 2
+  notes: The repository's matching files give a union of 49 matches for 411771; 49 - 47 = 2.
+- claim: fig8-somata-less-order-dependent
+  outcome: blocked
+  blocked_by: data_missing
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig8-somata-less-order-dependent
+  notes: Of the 39 matching files in the repository (13 mice), only those of 413663 and 411771 hold
+    counts per session ordering; the dataset holds only the final matches, and the paper's modified
+    matching code is not linked. In the two examples the range over orderings is 3 matches for the
+    dendritic mouse (129 to 132, 2.2% of 136) and 1 for the somatic mouse (47 to 48, 2.1% of 47),
+    smaller for somata in absolute terms and about equal as a fraction.
+- claim: gabor-sequence-structure
+  outcome: partially_reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:gabor-sequence-structure
+  measured: [0.300, 30]
+  notes: In all 50 sessions the 1360 sequences follow A-B-C-D-G or A-B-C-U-G, every non-grey image
+    holds 30 patches (kappa 16), A to D take mean orientations 0, 45, 90 and 135 degrees, and U takes
+    90, 135, 180 and 225, always the sequence's mean plus 90. The median image lasts 300 ms. Every
+    image is within 300 ms +/- 10% in 46 of 50 sessions; four sessions hold 1 to 5 images outside
+    it (13 of 340000 in all, up to 604 ms), three of them the failed-QC sessions of 411400, for
+    which Supplementary Table 1 notes dropped stimulus frames. The criterion asks for every image in
+    every session, so that part holds in 46 of 50.
+- claim: visual-flow-structure
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:visual-flow-structure
+  notes: In all 50 sessions the table records 105 squares and a reversed proportion of 0.25, and the
+    directions run as two consecutive periods (rightward first in 26). Reversals last 1.99 to 4.01
+    s. At the first frame of each session's first reversal a median of 24.8% of squares move against
+    the flow (15.2 to 32.4%). Size and speed in degrees are not testable, as the table gives the
+    unwarped stimulus in pixels (128 pixels, 780 pixels/s); their ratio, 6.09 per second, is within
+    3% of the paper's 50/8 = 6.25.
+- claim: session-stimulus-durations
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:session-stimulus-durations
+  measured: [34.03, 17.01, 30.0]
+  notes: In all 50 sessions the Gabor period lasts 34.03 to 34.31 min, each flow period 17.01 to 17.04
+    min, and each of four grey periods 29.98 to 30.04 s.
+- claim: inconsistent-fractions
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:inconsistent-fractions
+  measured: [6.96, 4.68]
+  notes: Mean over sessions 6.96% of Gabor sequences (6.03 to 7.94% per session) and 4.68% of flow time
+    (3.92 to 5.49%).
+- claim: inconsistent-blocks
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:inconsistent-blocks
+  measured: 31.5
+  notes: Under reading (b), per stimulus, a mean of 31.5 Gabor blocks and 32.3 flow blocks per session,
+    both within 30 +/- 3; reading (a) gives 63.8 and reading (c) 16.0 and 16.3 per direction. Every
+    block has 30.0 to 91.0 s of consistent stimulus and 3.0 to 6.1 s (2 to 4 Gabor sequences) or 2.0
+    to 4.0 s (2 to 4 flow trials) of inconsistent stimulus.
+  deviations:
+  - The measured value is the Gabor count of reading (b); the flow count of the same reading is
+    32.3.
+- claim: fig5-example-responses
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig5-example-responses
+  notes: The analysis ran. The selection yields ROIs in all four planes for each panel (7 to 116 per
+    plane). With robust-scaled dF/F, the flow panels (c, d) are higher after inconsistent flow onset
+    in 4 of 4 planes; panel a (consistent Gabor, around D) in 2 of 4 (L2/3 and L5 somata lower, by
+    0.063 and 0.020); panel b (inconsistent, around U) in 3 of 4 (L5 dendrites -0.001). The
+    criterion's per-plane rule does not say which Gabor panel it uses. With panel a it holds in 2
+    planes and with panel b in 3 (both partially reproduced), with both panels in 1 (not
+    reproduced). The readings disagree, so the claim is blocked, and a question was asked. Unscaled,
+    panel a is higher in 2 of 4 and panel b in 4 of 4.
+  deviations:
+  - Windows are whole two-photon frames from the trial table's frame numbers (27 before and 18 after D
+    or U onset, 60 either side of flow onset), a standard choice.
+  - Session 1 of each mouse is selected with Supplementary Table 1's QC and local numbers.
+- claim: fig5-consistent-vs-inconsistent
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig5-consistent-vs-inconsistent
+  notes: Blocked because it depends on fig5-example-responses, which is blocked (protocol, author step
+    1.5); the ambiguity there is in its decision rule, not in the selection used here. Its own test
+    ran. With robust-scaled traces, the D and U responses differ by more than the sum of their SEMs
+    in 2 of 4 planes under reading (a) and 3 of 4 under reading (b), which by its criterion would be
+    partially reproduced under both. Unscaled, 2 of 4 under each. The flow differences (0.030 to
+    0.206 post minus pre) are reported, not judged.
+- claim: fig6-behaviour-all-mice
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig6-behaviour-all-mice
+  measured: 11
+  notes: All 33 analysed sessions, from 11 mice, hold running velocity in cm/s and pupil diameter in
+    mm; at least 99.99% of running and 97.7% of pupil samples are finite.
+  deviations:
+  - The 33 sessions are selected with Supplementary Table 1's QC and local numbers.
+- claim: fig7a-snr-above-1
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig7a-snr-above-1
+  notes: Holds under all three readings. Group medians are 2.37 to 3.43, group 5th percentiles 2.27 to
+    2.41, and all 10736 ROIs exceed 1 (lowest 2.16). No ROI has a negative median dF/F.
+  deviations:
+  - The 33 sessions are selected with Supplementary Table 1's QC and local numbers.
+- claim: fig7a-snr-stable
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig7a-snr-stable
+  notes: The readings disagree, for which the criterion names methods_underspecified. Under reading
+    (b), every session's median lies within the other sessions' interquartile ranges in 4 of 4
+    planes (reproduced). Under reading (a), the notches overlap pairwise in 2 of 4 (not reproduced).
+    In L2/3 and L5 dendrites, with 648 to 2807 ROIs per group, the notches are narrow and the
+    medians fall by 0.016 and 0.033 over the three sessions.
+- claim: fig7b-signal-stable
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig7b-signal-stable
+  notes: The readings disagree, for which the criterion names methods_underspecified. Reading (b)
+    holds in 4 of 4 planes and reading (a) in 1 of 4 (only L2/3 somata). Signal is 0.10 to 2.88 dF/F
+    over ROIs.
+- claim: fig7c-correlations-similar
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig7c-correlations-similar
+  notes: The readings disagree, for which the criterion names methods_underspecified. Dendritic and
+    somatic medians differ by 0.006 to 0.025 and 95th percentiles by 0.049 to 0.089. That is similar
+    in 6 of 6 comparisons under reading (b), 0.1 (reproduced), and in 1 of 6 under reading (a), 0.05
+    (not reproduced). Pairs with r above 0.8 are 0 to 0.028% per group.
+  deviations:
+  - Correlations are computed in float32; the 33 sessions are selected with Supplementary Table 1.
+- claim: fig7c-high-correlation-fraction
+  outcome: blocked
+  blocked_by: methods_underspecified
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig7c-high-correlation-fraction
+  notes: Blocked because it depends on fig7c-correlations-similar, which is blocked; its own test ran.
+    Of L2/3 dendritic pairs, 0.0178% exceed 0.8 pooled (134 of 752101, reading a), 0.0176% as the
+    mean of the three sessions (reading b), and 0.0211, 0.0276 and 0.0043% per session (reading c),
+    all outside 0.005 to 0.015%; it would be not reproduced. Per mouse session two of six values are
+    inside (0.0054 and 0.0067%). r >= 0.8 gives the same counts. A question was asked about reading
+    (c) and the number of mice.
+  deviations:
+  - The analysed L2/3 dendritic sessions come from two mice (413663, 433414), where the criterion's
+    reading (a) says three mice.
+- claim: fig7a-source-link
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig7a-source-link
+  notes: All 33 sessions of the Fig. 7a source data are in the dataset with the same ROI counts, and
+    every ROI's SNR is within 1% of the source value (largest relative difference 3.4e-05). The
+    sessions are matched by session id and ROIs by order.
+- claim: fig9-onset-offset-transients
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:fig9-onset-offset-transients
+  notes: All 12 line, plane and session groups show a transient at onset and at offset under every
+    reading (all or Gabor-only transitions, k of 1 or 2). The largest deviations are 2.3 to 35.3
+    SEM. Unscaled dF/F gives the same, and each mouse session alone deviates by 4.1 to 30.2 SEM
+    (reading a).
+  deviations:
+  - The 33 sessions are selected with Supplementary Table 1's QC and local numbers.
+- claim: file-sizes
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:file-sizes
+  measured: [136.7, 1.70, 1.49, 45.5]
+  notes: Every session has the three versions. Decimal units, basic files 136.7 MB to 1.70 GB, stimulus
+    images add a median of 1.49 GB (1.39 to 1.57), the stack a median of 45.5 GB (41.3 to 47.6).
+    Binary units give 130.3 MB, 1.59, 1.39 and 42.3 GB, also within tolerance.
+- claim: download-33-files
+  outcome: reproduced
+  notebook: reproduce_gillon_2023.ipynb
+  output: claim:download-33-files
+  measured: [33, 14.82]
+  notes: The 33 basic files of local sessions 1 to 3 passing QC total 14.82 GB (13.80 GiB).
+  deviations:
+  - The sessions are selected with Supplementary Table 1's QC and local numbers.
+findings:
+- kind: metadata_error
+  statement: The session start times are stated with a Pacific offset (-07:00 or -08:00), but their
+    clock values are those Supplementary Table 1 gives as UTC, for all 50 sessions. For four sessions
+    (412933 session 765427689, and 418779's three sessions) the stated date is a day after the
+    imaging date of Table 2, and the date of birth implied by 418779's age is a day after Table 1's.
+- kind: metadata_error
+  statement: The three sessions of mouse 433414 are recorded at a depth of 60 um; Table 2 and
+    Supplementary Table 1 give 75 um. Which is right is not known from the files.
+- kind: metadata_insufficient
+  statement: The files hold no QC result, local session number or stimulus seed. The paper's analyses
+    use only sessions 1 to 3 that passed QC, and the dandiset's description points to an outside
+    table (the metadata repository) for which sessions were excluded.
+- kind: metadata_insufficient
+  statement: The imaging plane (somata or distal apical dendrites) is not recorded; it follows from
+    the depth. The field of view in um is not recorded.
+- kind: metadata_insufficient
+  statement: Visual flow square size and position are given in pixels of the unwarped stimulus, with
+    no screen geometry to convert them to the degrees the paper states (8 degrees, 50 degrees/s).
+- kind: other
+  statement: The dF/F of the 28 dendritic sessions is stored gzip-compressed in small chunks (991 to
+    1994 frames by 5 to 26 ROIs), and the chunk index is spread through the file, so streaming it
+    through remfile and h5py is slow; the 22 somatic files store it contiguous. The notebook
+    therefore streams each basic file whole into memory before reading it.
+- kind: other
+  statement: In two sessions the dF/F response to grey screen transitions does not exceed that at
+    shifted times (777496949, 15 ROIs; 838633305, which failed QC with the laser at 800 nm), so their
+    alignment to the trial table could not be shown. It is shown in the other 48.
+- kind: methods_unavailable
+  statement: The per-ordering ROI matching counts behind Fig. 8 are published for two mice only, and
+    the paper's modified matching code is not linked, so the comparison of order dependence between
+    somata and dendrites cannot be repeated.
