@@ -11,7 +11,7 @@ here: the notebooks when it works, and the reason when it does not.
 Status: pilot. All eight pilot targets have been attempted and checked by an
 independent agent.
 
-**Dashboard:** <https://catalystneuro.github.io/reproduction-registry/>
+**Dashboard:** <https://encorescience.org/>
 
 ## Reading the outcomes
 

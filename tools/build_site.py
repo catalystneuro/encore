@@ -49,7 +49,7 @@ import yaml
 ROOT = Path(__file__).resolve().parents[1]
 ASSETS = Path(__file__).resolve().parent / "site_assets"
 REPO_URL = "https://github.com/catalystneuro/reproduction-registry"
-SITE_URL = "https://catalystneuro.github.io/reproduction-registry/"
+SITE_URL = "https://encorescience.org/"
 SITE_DESCRIPTION = ("AI agents try to reproduce the key findings of neuroscience papers from their open data on the "
                     "DANDI Archive, and record every outcome and what they find about the data.")
 
