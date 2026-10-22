@@ -72,6 +72,32 @@ def open_nwb(path: str, version: str = DANDISET_VERSION) -> h5py.File:
     return h5py.File(remfile.File(s3), "r")
 
 
+def hdf5_tree(f: h5py.File, skip: str = "specifications") -> list[str]:
+    """Every group and dataset of a file (shape and type of datasets), without the cached schema."""
+    out = []
+
+    def visit(name, obj):
+        if name.startswith(skip):
+            return
+        out.append(f"{name} {obj.shape} {obj.dtype}" if isinstance(obj, h5py.Dataset) else f"{name}/")
+
+    f.visititems(visit)
+    return out
+
+
+def bulk_read_rate(path: str, n_bytes: int, version: str = DANDISET_VERSION) -> dict:
+    """Time one ranged GET of the first n_bytes of an asset, held in memory and discarded."""
+    asset = next(a for a in list_assets(version) if a["path"] == path)
+    s3 = requests.head(f"{API}/assets/{asset['asset_id']}/download/", allow_redirects=True, timeout=60).url
+    got, t0 = 0, time.time()
+    with requests.get(s3, headers={"Range": f"bytes=0-{n_bytes - 1}"}, stream=True, timeout=300) as r:
+        r.raise_for_status()
+        for block in r.iter_content(8 * 2**20):
+            got += len(block)
+    secs = time.time() - t0
+    return {"bytes": got, "seconds": secs, "mb_per_s": got / 2**20 / secs, "file_bytes": asset["size"]}
+
+
 def _text(x):
     return x.decode() if isinstance(x, bytes) else str(x)
 
