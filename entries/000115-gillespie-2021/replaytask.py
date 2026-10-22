@@ -27,11 +27,12 @@ Where the parameters come from:
   for the n-th reward of the block, n + 0.5 for an error at an arm next to the goal (arm number
   differs by 1), n + 0.3 for an error at the previous goal, n + 0.8 for other errors, and
   n + 0.9 for the final unrewarded visit to the old goal after the goal changes.
-- Which trial is the final trial of a block is not fixed by the claims file when the rat does
-  not go back to the old goal right after the switch. `FINAL_TRIAL_READINGS` names the two
-  readings run: "old_goal_visit" (only a visit to the old goal closes the block, as the claims
-  file words it) and "first_after_switch" (the first trial after the switch always closes the
-  old block, as dfa_ripcontent.m shifts `contingency` by one trial).
+- The trial that closes a block: the claims file's opening comment (after a reader's answer)
+  gives the first valid trial after each goal change to the old block, whatever arm it visits,
+  as label_trial_interval.m (goalbounds) and dfa_ripcontent.m ("[1 ctemp(1:end-1)]") do. This
+  is `FINAL_TRIAL` = "first_after_switch". The other value of `FINAL_TRIAL_READINGS`,
+  "old_goal_visit" (only a visit to the old goal closes the block), was the second reading run
+  before the answer; it is kept to show what the answer changed and decides nothing.
 - A block counts for Figure 1D to 1F when it has a trial of task phase >= 4 (claims file,
   fig1d-sessions-blocks, from dfs_ripcontent.m part 2, `any(ctphase>=4)`).
 - The reward-rate curves (fig1ef-reward-rate) take trials 1 to 15 and the binomial S.E.M.
@@ -57,7 +58,8 @@ DANDISET_VERSION = "0.210914.1732"
 SUBJECTS = ["jaq", "roquefort", "despereaux", "montague"]  # subjects 1 to 4 of the legends
 OUTER_ARMS = list(range(1, 9))
 HOME_PORT, CENTER_PORTS = 10, (11, 12)
-FINAL_TRIAL_READINGS = ("old_goal_visit", "first_after_switch")
+FINAL_TRIAL_READINGS = ("first_after_switch", "old_goal_visit")
+FINAL_TRIAL = "first_after_switch"   # claims file, opening comment
 FULL_BLOCK_PHASE = 4          # any(ctphase>=4), dfs_ripcontent.m part 2
 CURVE_TRIALS = np.arange(1, 16)
 CHANCE = 1 / 8
@@ -138,7 +140,7 @@ def trials_from_events(events):
     return pd.DataFrame(rows, columns=["t_ms", "t_goal_ms", "outer", "goal", "rewarded", "lockout"])
 
 
-def label_task_phase(trials, final="old_goal_visit"):
+def label_task_phase(trials, final=FINAL_TRIAL):
     """Block number and task phase for the valid (non-lockout) trials of one session.
 
     Returns a copy of the valid trials with columns block (1, 2, ...), block_goal, prev_goal,
