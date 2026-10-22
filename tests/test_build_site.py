@@ -509,3 +509,38 @@ def test_a_dataset_waiting_on_a_person_links_its_issue():
     page = site.page_pipeline(data)
     assert f'<a href="{data["issues"][label]}">waiting on you</a>' in page
     assert "has stopped on" in page and "1 dataset</a>" in page
+
+
+def test_the_queue_estimates_fill_the_lanes_in_order():
+    q = {"full": ["000001", "000002", "000003", "000004"], "claims": ["000004", "000005"],
+         "lanes": {"full": 2, "claims": 1}, "hours": {"full": 4.0, "claims": 0.5}}
+    est = site.queue_estimates(q)
+    # The lanes' current attempts are half done: the first two start in 2 hours, the next two in 6.
+    assert [est[site.key_of_dir(f)]["hours"] for f in q["full"]] == [6.0, 6.0, 10.0, 10.0]
+    assert est[site.key_of_dir("000005")] == {"kind": "claims", "place": 2, "hours": 1.25}
+    # A dataset in both queues gets the full runner's estimate.
+    assert est[site.key_of_dir("000004")]["kind"] == "full"
+    # With the running chains' times, a lane is free when its chain should be done.
+    q["running"] = {"000009": {"kind": "full", "hours": 1.0}}
+    assert [site.queue_estimates(q)[site.key_of_dir(f)]["hours"] for f in q["full"]] == [4.0, 5.0, 8.0, 9.0]
+    assert site.in_hours(0.4) == "within the hour" and site.in_hours(10.2) == "about 10 hours"
+    assert site.in_hours(100) == "about 4 days" and site.in_hours(None) == ""
+
+
+def test_the_pipeline_shows_each_queued_dataset_and_when_it_should_be_done():
+    data = site.collect()
+    first, second = (t["key"] for t in data["targets"][:2])
+    third, fourth = (t["key"] for t in data["targets"][2:4])
+    data["queue"] = {"full": [site.dir_of(first)], "claims": [],
+                     "branches": [site.dir_of(second), site.dir_of(third), site.dir_of(fourth)],
+                     "lanes": {"full": 3, "claims": 1}, "hours": {"full": 4.0, "claims": 0.25},
+                     "running": {site.dir_of(third): {"kind": "full", "hours": 2.4},
+                                 site.dir_of(fourth): {"kind": "full", "hours": 0.5}}}
+    rows = {r["key"]: r for r in site.pipeline_rows(data)}
+    assert rows[first]["queue"]["place"] == 1 and rows[second]["branch"] and rows[third]["running"]
+    page = site.page_pipeline(data)
+    # The first in the queue takes the lane that is free now.
+    assert ">1 for an attempt</td>" in page and ">about 4 hours</td>" in page and ">branch open</td>" in page
+    assert page.count(">running now</td>") == 2 and ">about 2 hours</td>" in page and ">within the hour</td>" in page
+    assert "2 chains are running now" in page
+    assert "1 dataset waits for an attempt on 3 lanes, at about 4.0 hours each" in page

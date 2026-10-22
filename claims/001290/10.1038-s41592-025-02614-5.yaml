@@ -1,0 +1,627 @@
+# Claims for Windolf et al. (2025), "DREDge: robust motion correction for high-density
+# extracellular recordings across species", Nature Methods, doi:10.1038/s41592-025-02614-5, on
+# dandiset 001290.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21,
+# protocol pilot-10 as stated in docs/protocol.md.
+#
+# Text read: the accepted author manuscript in PubMed Central (PMC13055889, NIHMS2068114), main
+# text, Methods, figure and Extended Data legends, Extended Data Table 1, and the supplement
+# (NIHMS2068114-supplement-supplementary.pdf, supplementary text and the legends of
+# Supplementary Figs. 1 to 18), as stored in paper/10.1038-s41592-025-02614-5.txt. The Extended
+# Data figures themselves were not available as images; only their legends were read. No PDF
+# of the main text was available.
+#
+# Code read: github.com/evarol/dredge at commit ed236113 (DREDge AP and LFP registration,
+# motion_util, demo notebooks); github.com/williamunoz/InterpolationAfterDREDge at commit
+# 0041079b (MATLAB LFP interpolation); github.com/Center-For-Neurotechnology/
+# HumanNeuropixelsPipeline at commit d74413cb (human data pipeline). None of them holds the
+# spline-based fast motion method (HDBSCAN clustering and spline fit) of Extended Data Fig. 3,
+# and the paper links no code for it. The code settles one detail the Methods give differently:
+# dredge_ap.register applies no Gaussian smoothing to the raster by default
+# (gaussian_smoothing_sigma_um and _s are None), while the Methods say the raster is smoothed
+# at 1 um and 1 s scale; the Methods are followed and the code's choice is a variant.
+#
+# What the dandiset is meant to hold. The Data availability says "the fast-motion NHP dataset of
+# Extended Data Fig. 3 is available at DANDI (https://dandiarchive.org/dandiset/001290/)". The
+# archive's title is "Neuropixels pulsation datasets", Macaca nemestrina, one subject, one NWB
+# file; its description names a recording by RT Raghavan in the Movshon lab, "Studied in Supp.
+# Fig. 3" (the preprint's numbering). The Methods describe this recording: an anesthetized,
+# paralyzed macaque (ketamine induction, sufentanil infusion, vecuronium neuromuscular
+# blockade), with a Neuropixels array or a two-shank 128-channel NeuroNex silicon array
+# inserted through a craniotomy and durotomy, during visual noise stimulation at 40 Hz on a CRT.
+# The paper gives no session length, probe channel map or spike counts for it. The measured
+# variable is the extracellular voltage; spikes are detected and localized from it, and their
+# positions along the probe over time are the input to motion estimation.
+#
+# One inconsistency is left open. The Results tie the spline method of Extended Data Fig. 3 to
+# Fig. 2b, a "human recording" from ref. 13 (Paulk et al. 2022), and the Fig. 2b legend calls it
+# "a human intraoperative recording snippet"; the Methods and the Data availability place
+# Extended Data Fig. 3 in this macaque recording. The claims on Fig. 2b are therefore recorded
+# as data elsewhere (the human recording of ref. 13), and only the Extended Data Fig. 3 claims
+# use this dandiset.
+#
+# All other findings of the paper rest on data deposited elsewhere (human recordings on Dryad
+# and DANDI:000397, IBL data on AWS, Figshare imposed-motion data, DANDI:000957 NP Ultra,
+# DANDI:001282 macaque insertion, G-node rat data, MEArec simulations). They are listed so the
+# paper's main findings are covered, with data elsewhere.
+#
+# Pipeline for the Extended Data Fig. 3 claims, as the paper and code fix it (each criterion
+# below refers to it as "the pipeline"):
+#  1. AP band 300 to 6,000 Hz (Methods, Preprocessing of AP band data, paragraph 1). The
+#     Methods say the filtering, detection and localization "were chosen to suit each data
+#     source" and do not say what was chosen for this recording. The only spike pipeline they
+#     describe is the IBL one (high-pass filtering, phase shift correction, dead and noisy
+#     channel detection, spatial high-pass filtering, channel-wise standardization) run in
+#     SpikeInterface, then spike detection, denoising and point-source localization with
+#     DARTsort (ref. 37, 38) (Methods, Mouse brain activity in vivo data). Since detection and
+#     localization can change the spike positions every later step uses, two readings are run:
+#     (i) that pipeline; (ii) SpikeInterface detect_peaks (locally_exclusive, threshold 6, both
+#     signs) and localize_peaks (monopolar_triangulation, radius 75 um), as in the dredge
+#     repository's notebook/ap_registration.ipynb. Every "combination of readings" in the
+#     criteria below includes readings (i) and (ii) of this step.
+#  2. Spike raster of 1 um by 1 s bins of log(1 + x)-transformed amplitudes summed and
+#     transformed again with log(1 + x), smoothed with a Gaussian at 1 um and 1 s (Methods,
+#     Preprocessing of AP band data, and Setting parameters, paragraph 4). Correlation threshold
+#     0.1 (AP), time horizon 1,000 s (Setting parameters, paragraphs 3 and 4); lambda_T and
+#     lambda_S set to 1 (Methods, Robust decentralized registration). Extended Data Table 1 has
+#     no row for this recording, so rigid against nonrigid registration and the window
+#     parameters are open; the readings are (a) nonrigid with the code defaults (win_step_um
+#     400, win_scale_um 450, max_disp_um win_scale_um / 4) and (b) rigid. The legend says only
+#     "AP DREDge displacement estimate".
+#  3. Fast motion (Methods, Tracking fast motion from spikes using clustering and splines):
+#     HDBSCAN clusters high-amplitude spikes on DREDge-corrected locations and amplitude
+#     features; each cluster's centroid is subtracted; points more than five standard
+#     deviations from the cluster mean are removed; one smoothing spline with 2.5 knots per
+#     second is fit to all centered positions at once. Open, with no source fixing them: the
+#     amplitude cut for "high-amplitude" spikes (readings: the top 10% and the top 25% of
+#     amplitudes); which location coordinates enter HDBSCAN (readings: depth and lateral
+#     position with amplitude, or depth with amplitude); feature scaling (z-scored features as
+#     the standard choice); HDBSCAN min_cluster_size (readings: 25 and 100 spikes); the spline
+#     degree (cubic, a standard choice) and whether a roughness penalty is added (readings: a
+#     least-squares cubic spline with interior knots every 0.4 s; a penalized cubic spline on the
+#     same knots with the penalty chosen by generalized cross-validation). The spline models the
+#     depth coordinate only, the axis along which the motion is estimated. Whether the paper used
+#     the whole recording or a snippet is not said; the whole recording is used, and the
+#     snippet length shown cannot be known from the text.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "001290"
+paper: doi:10.1038/s41592-025-02614-5
+claims:
+- id: edf3a-ap-dredge-slow-trend
+  statement: In the fast-motion macaque recording, DREDge's spike-based (AP) motion estimate
+    follows the drift visible in the unregistered spike raster.
+  source: Extended Data Fig. 3a legend; Methods, Tracking fast motion from spikes using
+    clustering and splines
+  quote: a Spike raster before registration, with AP DREDge displacement estimate overlaid in red.
+  data: dataset
+  criterion: The legend shows the estimate over the raster and states no result in words; that
+    it follows the slow drift is read from the Methods ("First, slower timescale motion is
+    estimated using DREDge"). Run the pipeline (opening comment, steps 1 and 2) on the whole recording. The paper
+    shows this only as a figure, so the measure is the paper's own registration quality metric,
+    the mean template correlation (Methods, Spike registration quality metrics) on a 1 um by 1 s
+    raster of mean spike amplitudes, bins outside the probe after correction masked. Reproduced
+    when, under readings (a) and (b) of step 2 and (i) and (ii) of step 1, the mean template correlation after DREDge
+    correction exceeds that of the unregistered raster; not reproduced when it is lower under
+    all; methods_underspecified when the readings disagree. The size of the estimated
+    displacement (range and s.d. in um) and the plot of the trace over the raster are reported.
+    That a small improvement may reflect little drift in an anesthetized, paralyzed animal is
+    noted, not judged.
+- id: edf3b-hdbscan-clusters
+  statement: After AP DREDge registration, high-amplitude spikes form clusters that HDBSCAN
+    isolates using their registered positions and amplitudes.
+  source: Extended Data Fig. 3b legend; Results, DREDge rescues spike sorting and LFP features
+    in human brain activity, paragraph 1
+  quote: Colored spikes represent high amplitude spikes that were clustered by HDBSCAN using their
+    registered positions and amplitudes.
+  data: dataset
+  depends_on:
+  - edf3a-ap-dredge-slow-trend
+  criterion: Pipeline step 3, HDBSCAN on the DREDge-registered spikes, under each combination of
+    the open readings named there (amplitude cut, coordinates, min_cluster_size) and of
+    registration readings (a) and (b). The legend shows several colored clusters and gives no
+    count, so the claim holds when HDBSCAN returns at least two clusters other than noise.
+    Reproduced when every combination does; not reproduced when none does;
+    methods_underspecified otherwise. The number of clusters and spikes per cluster are
+    reported for each.
+- id: edf3c-spline-subsecond
+  statement: A smoothing spline fit to the centered positions of the clustered spikes captures
+    sub-second displacement left after AP DREDge registration.
+  source: Extended Data Fig. 3c legend; Methods, Tracking fast motion from spikes using
+    clustering and splines
+  quote: Left, centered positions of the clustered spikes (blue) with the spline fit, that captures
+    the sub-second displacement, overlaid in red.
+  data: dataset
+  depends_on:
+  - edf3b-hdbscan-clusters
+  criterion: Pipeline step 3 under each combination of its open readings. The paper gives no
+    number and no test for this panel. The control is borrowed from another panel of the paper,
+    the "randomly permuted or 'scrambled'" motion estimate of Fig. 2e (legend), which the paper
+    uses for ISI violations, not for this figure, and whose permutation unit it does not give.
+    For each combination, the pooled within-cluster s.d. of corrected depth of the clustered
+    spikes is computed after correction by the spline and after correction by the same spline
+    trace with its time bins randomly permuted. The permutation bin (0.4 s, the knot spacing),
+    the 100 permutations with a fixed seed and the one-sided 5% level are choices of this file,
+    not of the paper. Reproduced when, in every combination, the spline-corrected s.d. is below
+    the 5th percentile of the scrambled s.d. values; not reproduced when in none;
+    methods_underspecified otherwise. The spline
+    trace's range and s.d. (um) and its power spectrum are reported, as is the noted
+    circularity that the spline is fit to the spikes it is evaluated on.
+- id: edf3de-spline-improves-registration
+  statement: Correcting the AP-registered spikes with the spline estimate of sub-second
+    displacement gives a more stable spike raster and tighter spike localizations than AP
+    DREDge registration alone.
+  source: Extended Data Fig. 3d and 3e legends; Results, DREDge rescues spike sorting and LFP
+    features in human brain activity, paragraph 1
+  quote: d Top, AP registered spike raster. Bottom, AP registered spike raster corrected using the
+    spline estimate of sub-second displacement. e Localizations of detected spikes after AP
+    DREDge registration (left), and spline correction (right).
+  data: dataset
+  depends_on:
+  - edf3c-spline-subsecond
+  criterion: The legends show the comparison and state no result in words; the improvement is
+    read from the Results, which call the spline estimate "a faster timescale AP-based
+    estimate". Two measures, one per panel, both from the paper. Panel d, the mean template
+    correlation (Methods, Spike registration quality metrics) of all detected spikes, on the 1
+    um by 1 s raster of mean amplitudes, after AP DREDge correction and after AP DREDge plus
+    spline correction (the spline displacement subtracted from each spike's registered depth at
+    its time). Panel e, the pooled within-cluster s.d. of corrected depth over the HDBSCAN
+    clusters, before and after spline correction; the paper names no measure for panel e, so
+    this one is the file's choice, and since the spline is fit to minimize these residuals it
+    is reported with that circularity noted. The 1 s bins of the template correlation are the
+    Methods' and cannot show motion faster than 1 s, so the panel d measure is also reported
+    at 0.1 s bins as a variant that does not enter the outcome. Reproduced when both measures improve (higher
+    correlation, lower s.d.) under every combination of the open readings of steps 2 and 3;
+    not reproduced when neither improves under any; partially reproduced when one measure
+    improves under every combination and the other does not; methods_underspecified when the
+    readings disagree. The size of each change is reported.
+- id: fig2b-ap-misses-fast-motion
+  statement: In a human recording with large fast motion, DREDge's AP-based estimate captures
+    the slow trend of the motion but not the faster motion from heartbeats and other sub-second
+    brain motion.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity,
+    paragraph 1; Fig. 2b
+  quote: DREDge’s AP-based motion estimation was able to capture the slow trend of the true motion,
+    but not the faster motion due to heartbeats and other sub-second brain motions
+  data: elsewhere
+  where: The human recording of ref. 13 (Paulk et al. 2022, Nat. Neurosci.), deposited at Dryad
+    doi:10.5061/dryad.d2547d840 and DANDI:000397. The paper calls it a human recording; the
+    Methods tie the same spline method to the macaque recording of Extended Data Fig. 3, which
+    is the one in this dandiset.
+  criterion: Judged on the recording the paper names. Not tested on this dandiset, since the
+    paper places Fig. 2b in a human recording.
+- id: fig2b-spline-lfp-overlap
+  statement: In the Fig. 2b human recording, the spline-based AP motion trace and the
+    LFP-based DREDge trace overlap strongly, and the LFP-corrected spike raster aligns visually
+    with the spline-corrected raster.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity,
+    paragraph 1; Fig. 2b
+  quote: We found that the motion traces estimated using the spline-based AP method and DREDge-LFP
+    overlapped strongly and that the LFP-corrected spike raster visually aligned with the
+    spline-corrected raster
+  data: elsewhere
+  where: The human recording of ref. 13, Dryad doi:10.5061/dryad.d2547d840 and DANDI:000397.
+  criterion: Not tested here. The paper reports no number for the overlap.
+- id: fig2-lfp-vs-manual
+  statement: DREDge's LFP-based motion estimate is highly correlated with manual LFP-based
+    tracking in three human participants (Pt01 r = 0.98, Pt02 r = 0.99, Pt03 r = 0.85).
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity,
+    paragraph 1; Extended Data Fig. 2b
+  quote: DREDge’s estimate was highly correlated with manual LFP-based tracking (Pt01, r = 0.98;
+    Pt02, r = 0.99; Pt03, r = 0.85; Pearson’s r , P < 0.000001 for all three instances
+  statistics:
+  - test: Pearson correlation
+    statistic: r = 0.98, 0.99 and 0.85
+    p: 0.000001
+    p_relation: "<"
+    n: three participants, one recording each
+  expected:
+  - quantity: Pearson r, Pt01
+    value: 0.98
+    tolerance: 0.098
+  - quantity: Pearson r, Pt02
+    value: 0.99
+    tolerance: 0.099
+  - quantity: Pearson r, Pt03
+    value: 0.85
+    tolerance: 0.085
+  data: elsewhere
+  where: Human recordings of ref. 13, Dryad doi:10.5061/dryad.d2547d840 and DANDI:000397, with
+    manual traces from that study.
+- id: fig2e-isi-violations
+  statement: In human recordings, the inter-spike interval violation proportion of sorted
+    clusters decreases as the temporal resolution of LFP-based motion tracking used for
+    interpolation increases from 1 Hz to 250 Hz.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity,
+    paragraph 3; Fig. 2e
+  quote: the clusters’ inter-spike interval violation proportions decreased as the temporal
+    resolution of LFP-based motion tracking increased from 1 Hz to 250 Hz
+  data: elsewhere
+  where: Human recordings of refs. 13 and 14 (Dryad doi:10.5061/dryad.d2547d840, DANDI:000397,
+    Dryad doi:10.7272/Q6ST7N3B).
+- id: fig2-sorted-units
+  statement: After LFP-based motion correction, the number of sorted units in the human
+    recording falls from more than 500 to around 50, unregistered clusters being oversplit.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity,
+    paragraph 3; Fig. 2d and 2h
+  quote: the number of sorted units decreased from more than 500 without correction to around 50
+  expected:
+  - quantity: sorted units after correction
+    value: 50
+    tolerance: 5
+  data: elsewhere
+  criterion: The count before correction is a bound ("more than 500"); it holds when the
+    unregistered sort gives more than 500 units, and the corrected count is within the
+    expected value's tolerance.
+  where: One of the N > 20 human cortical recordings of Fig. 2d to h; the paper does not say
+    which recording or which deposit holds it (human data from MGH, ref. 13, at Dryad
+    doi:10.5061/dryad.d2547d840 and DANDI:000397; from UCSF, ref. 14, at Dryad
+    doi:10.7272/Q6ST7N3B).
+- id: fig3b-evoked-potentials
+  statement: After motion correction and Zapline-plus, the dmPFC LFP shows depth-specific evoked
+    potentials that differ between black and white squares.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity,
+    paragraph 4; Fig. 3b
+  quote: the preprocessed dmPFC LFP showed depth-specific evoked potential responses to the visual
+    stimuli that differentiated between the black and white squares ( n = 1; P < 0.01, Wilcoxon
+    rank-sum test per time point, false discovery rate-corrected for multiple comparisons)
+  statistics:
+  - test: Wilcoxon rank-sum test per time point
+    p: 0.01
+    p_relation: "<"
+    corrected: false discovery rate
+    n: one participant, 51 and 49 trials
+  data: elsewhere
+  where: Human recording of an awake DBS participant at MGH; the paper does not say whether it
+    is among the deposited human data.
+- id: fig3e-trial-variance
+  statement: Before correction, motion produces significantly higher voltage variance across
+    visual trials (channel average at 0.25 s after image onset) than after correction.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity,
+    paragraph 4; Fig. 3e
+  quote: significantly higher motion-induced voltage across trials with visual presentations
+    (averaged across channels at 0.25 s after image onset; n = 1; P < 0.000001, Kruskal–Wallis
+    test;
+  statistics:
+  - test: Kruskal-Wallis test
+    p: 0.000001
+    p_relation: "<"
+    n: one participant, 51 and 49 trials
+  data: elsewhere
+  where: Same human recording as fig3b-evoked-potentials.
+- id: fig3f-baseline-variance
+  statement: In baseline data without stimuli, the correction pipeline decreases voltage
+    variance over time and channels in each of six participants.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity,
+    paragraph 4; Fig. 3f
+  quote: this correction pipeline decreased voltage variance over time and channels ( n = 6; P <
+    0.000001, pairwise Wilcoxon rank-sum test per participant;
+  statistics:
+  - test: pairwise two-sided Wilcoxon rank-sum test per participant
+    p: 0.000001
+    p_relation: "<"
+    n: six participants, 384 channels each
+  data: elsewhere
+  where: Human recordings of refs. 13 and 14.
+- id: edf8-burst-suppression
+  statement: Burst suppression detections in the common median LFP are highly correlated before
+    and after correction (Pt01 r = 0.93, Pt03 r = 0.95).
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity,
+    paragraph 5; Extended Data Fig. 8
+  quote: with high correlation in burst detections before and after correction in the common median
+    voltage (Pt01, r = 0.93, P < 0.00001; Pt03, r = 0.95, P < 0.00001)
+  statistics:
+  - test: Pearson correlation
+    statistic: r = 0.93 and 0.95
+    p: 0.00001
+    p_relation: "<"
+    n: two participants
+  expected:
+  - quantity: r, Pt01
+    value: 0.93
+    tolerance: 0.093
+  - quantity: r, Pt03
+    value: 0.95
+    tolerance: 0.095
+  data: elsewhere
+  where: Human recordings of ref. 13.
+- id: fig4-nhp-insertion
+  statement: During deep NP1-NHP insertions in macaques, DREDge tracks motion across centimeters
+    where Kilosort's template-based tracking fails, and spike positions resolve into
+    well-isolated clusters after registration.
+  source: Results, Tracking drift during deep probe insertions in nonhuman primates, paragraphs
+    1 and 2; Fig. 4a and 4b; Supplementary Fig. 6
+  quote: While single-unit clusters were completely obscured before correction, spike positions
+    resolved into well-isolated clusters after registration.
+  data: elsewhere
+  where: DANDI:001282 (NP1-NHP insertion datasets).
+- id: fig5b-ibl
+  statement: In 47 IBL recordings, DREDge improves the mean template correlation over no
+    registration (mean difference 0.04) and over Kilosort (0.01), and scores higher than
+    Kilosort in every recording.
+  source: Results, Estimating motion in acute mouse recordings, paragraph 2; Fig. 5b
+  quote: DREDge consistently improved over both no registration and KS in n = 47 recordings (metric
+    mean differences 0.04 and 0.01 respectively; two-sided paired t -test P = 2.1 × 10 −9 and 2.9 ×
+    10 −18 with 46 d.f.;
+  statistics:
+  - about: DREDge against no registration
+    test: two-sided paired t-test
+    p: 2.1e-9
+    n: 47 recordings, 46 d.f.
+  - about: DREDge against Kilosort
+    test: two-sided paired t-test
+    p: 2.9e-18
+    n: 47 recordings, 46 d.f.
+  expected:
+  - quantity: mean metric difference, DREDge minus unregistered
+    value: 0.04
+    tolerance: 0.004
+  - quantity: mean metric difference, DREDge minus Kilosort
+    value: 0.01
+    tolerance: 0.001
+  data: elsewhere
+  where: IBL reproducible electrophysiology data, AWS Open Data registry ibl-reproducible-ephys,
+    tag 2022_Q2_IBL_et_al_RepeatedSite.
+- id: fig5c-np-ultra-metric
+  statement: In 12 NP Ultra recordings, DREDge improves the template correlation metric by 0.1
+    over no correction and 0.07 over Kilosort, while Kilosort does not improve over no
+    correction.
+  source: Results, Estimating motion in acute mouse recordings, paragraph 3; Fig. 5c
+  quote: mean differences 0.1 and 0.07 relative to uncorrected and KS; two-sided paired t -test P
+    =0.0004 and P = 0.015), whereas KS did not improve over no correction (two-sided paired t
+    -test P = 0.27)
+  statistics:
+  - about: DREDge against uncorrected
+    test: two-sided paired t-test
+    p: 0.0004
+    n: 12 recordings
+  - about: DREDge against Kilosort
+    test: two-sided paired t-test
+    p: 0.015
+    n: 12 recordings
+  - about: Kilosort against uncorrected
+    test: two-sided paired t-test
+    p: 0.27
+    n: 12 recordings
+  expected:
+  - quantity: mean metric difference, DREDge minus uncorrected
+    value: 0.1
+    tolerance: 0.01
+  - quantity: mean metric difference, DREDge minus Kilosort
+    value: 0.07
+    tolerance: 0.007
+  data: elsewhere
+  where: DANDI:000957 (NP Ultra imposed motion datasets).
+- id: fig5d-np-ultra-jumps
+  statement: In the NP Ultra recordings, DREDge produces fewer physically implausible jumps
+    (time bins with drift above 10 um/s) than Kilosort, 392 fewer per recording on average.
+  source: Results, Estimating motion in acute mouse recordings, paragraph 3; Fig. 5d
+  quote: DREDge also produced fewer physically implausible jump artifacts than KS on these datasets
+    (392 fewer per recording on average; paired t -test P = 7.1 × 10 −5 with 11 d.f.;
+  statistics:
+  - test: paired t-test
+    p: 7.1e-5
+    n: 12 recordings, 11 d.f.
+  expected:
+  - quantity: mean jump count difference per recording, Kilosort minus DREDge
+    value: 392
+    tolerance: 39.2
+  data: elsewhere
+  where: DANDI:000957.
+- id: supp13-simulated-short-probe
+  statement: In six simulated recordings on a shortened NP2-like layout, DREDge improves over
+    Kilosort.
+  source: Results, Estimating motion in acute mouse recordings, paragraph 4; Supplementary
+    Fig. 13
+  quote: We replicated these improvements in a diverse set of six simulated extracellular
+    recordings created with a shortened NP2-like layout
+  statistics:
+  - test: Wilcoxon signed-rank test, per recording
+    p: 1.0e-10
+    p_relation: "<"
+    n: six simulated recordings
+  data: elsewhere
+  where: MEArec simulations generated with github.com/cwindolf/mearec_drift_simulations.
+- id: supp14-probe-density
+  statement: In simulation, spike-based motion estimation stays reliable as channels are
+    subsampled until the interchannel distance reaches about 50 um.
+  source: Results, Estimating motion in acute mouse recordings, paragraph 4; Supplementary
+    Fig. 14
+  quote: Motion estimation was consistently reliable until the probe density became too low to
+    localize spikes (interchannel distance ≈ 50 μm)
+  data: elsewhere
+  where: MEArec simulation (Methods, Simulated multi-electrode array data).
+- id: fig6-chronic-first-sessions
+  statement: In ten chronic datasets, restricted to the first four sessions, DREDge improves the
+    template correlation metric over Kilosort by 2.6% on average (s.e. 0.47%).
+  source: Results, Estimating motion in chronic mouse recordings, paragraph 3; Fig. 6e
+  quote: corresponding to a quantitative improvement in the correlation metric when restricted to
+    the first four sessions of the ten datasets (mean improvement 2.6%, s.e. 0.47% over n = 40
+    sessions; two-sided paired t -test P < 1.95 × 10 −6 with 39 d.f.)
+  statistics:
+  - test: two-sided paired t-test
+    p: 1.95e-6
+    p_relation: "<"
+    n: 40 sessions, 39 d.f.
+  expected:
+  - quantity: mean improvement in template correlation, DREDge over Kilosort
+    value: 2.6
+    tolerance: 0.47
+    unit: percent
+  criterion: The tolerance on the mean improvement is the paper's stated s.e. (0.47%).
+  data: elsewhere
+  where: Chronic NP2.4 recordings of ref. 6 (AL032, AL036) and chronic NP1 recordings of ref. 56
+    (MM007, MM008); the Data availability gives no deposit for them.
+- id: fig6e-chronic-jumps
+  statement: In the chronic datasets DREDge always reduces jumps relative to Kilosort (by 0.5 to
+    22.2 per minute, eight on average) and has no jumps in 74% of sessions against 30% for
+    Kilosort.
+  source: Results, Estimating motion in chronic mouse recordings, paragraph 3; Fig. 6e
+  quote: DREDge always reduced jumps, with differences in mean jumps per minute ranging from 0.5 to
+    22.2, with an average of eight more jumps per minute in the KS motion trace. DREDge had no
+    jumps in 74% of sessions versus 30% for KS.
+  expected:
+  - quantity: smallest per-dataset difference in mean jumps per minute, Kilosort minus DREDge
+    value: 0.5
+    tolerance: 0.05
+  - quantity: largest per-dataset difference in mean jumps per minute, Kilosort minus DREDge
+    value: 22.2
+    tolerance: 2.22
+  - quantity: mean extra jumps per minute in Kilosort
+    value: 8
+    tolerance: 0.8
+  - quantity: sessions with no jumps, DREDge
+    value: 74
+    tolerance: 7.4
+    unit: percent
+  - quantity: sessions with no jumps, Kilosort
+    value: 30
+    tolerance: 3
+    unit: percent
+  criterion: The paper does not say over what unit the differences in mean jumps per minute
+    are taken; the readings are (a) per dataset, the mean over its sessions (ten values), and
+    (b) per session. The reported range 0.5 to 22.2 holds when every difference lies within it
+    widened by 10% of each bound (0.45 to 24.42).
+  data: elsewhere
+  where: Same chronic recordings as fig6-chronic-first-sessions.
+- id: edf1-lfp-runtime
+  statement: Online nonrigid LFP motion estimation at 250 Hz runs at roughly one quarter of real
+    time.
+  source: Extended Data Fig. 1b legend
+  quote: Online nonrigid motion estimation at 250Hz temporal resolution ran at roughly one quarter
+    of real time (right).
+  data: elsewhere
+  where: Seven human tip-layout recordings of ref. 13; hardware-dependent (Intel Xeon Gold 6126,
+    NVIDIA V100).
+- id: fig2c-lfp-tracking-clusters
+  statement: In a human NP1-S recording with millimeters of drift, LFP-based DREDge tracks
+    features of both the LFP and the spike raster, and offsetting spike positions by the tracked
+    motion reveals isolated clusters with well-stereotyped waveforms.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity; Fig. 2c
+  quote: Offsetting spike positions to compensate for the tracked motion revealed isolated
+    clusters of spike activity ( Fig. 2c(ii , iii )).
+  data: elsewhere
+  where: Human NP1-S recording of ref. 14 (UCSF), Dryad doi:10.7272/Q6ST7N3B.
+- id: edf4a-nonrigid-human
+  statement: In human recordings, nonrigid LFP-based correction gives more stable spiking activity
+    than rigid correction, visibly and in a metric of spike activity stability.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity; Extended Data Fig. 4a and 4c
+  quote: it led to visible improvements in the stability of spiking activity over rigid
+    correction, as well as improvements in a metric of spike activity stability
+  data: elsewhere
+  where: Human recordings of ref. 14 (Dryad doi:10.7272/Q6ST7N3B) and the three human recordings
+    of Extended Data Fig. 4c, whose deposit the paper does not name.
+- id: supp2-rat-spike-tracking
+  statement: In ketamine-xylazine-anesthetized rats, LFP-based tracking gives an artifactually
+    oscillatory motion estimate, while spike-based tracking is stable.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity; Supplementary Fig. 2
+  quote: were dominated by global slow-wave activity, leading to an artifactually oscillatory
+    motion estimate; however, spike-based tracking was stable in this case.
+  data: elsewhere
+  where: Neuroseeker rat recordings on G-node (gin.g-node.org/UlbertLab/High_Resolution_Cortical_Spikes).
+- id: fig2fg-unit-spatial-spread
+  statement: After 250 Hz LFP-based motion-corrected interpolation, the spatial distribution of
+    voltage in each sorted human unit is more concentrated, with higher amplitudes.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity; Fig. 2f and 2g; Extended Data Fig. 5b
+  quote: the spatial distribution of voltages in each unit was more concentrated with higher
+    amplitudes with this correction
+  statistics:
+  - test: two-sided two sample t-test at each distance from center
+    p: 0.05
+    p_relation: "<"
+    corrected: Bonferroni
+    n: sorted units of one human recording, per distance from center
+  data: elsewhere
+  where: Same recording as fig2-sorted-units; the paper does not say which deposit holds it.
+- id: edf6-128-channel
+  statement: In three human awake intraoperative recordings with a 128-channel probe of 30 um
+    vertical spacing, DREDge's tracking stabilizes the spike rasters.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity; Extended Data Fig. 6
+  quote: In three such recordings, DREDge’s tracking yielded stabilized spike rasters after motion
+    correction of spike locations
+  data: elsewhere
+  where: Human recordings with a 128-channel probe; the paper does not say whether they are
+    among the deposited human data.
+- id: fig3gh-iids
+  statement: Epileptiform interictal discharges are detectable in the median signal over
+    channels both before and after correction, and are not obscured by the preprocessing.
+  source: Results, DREDge rescues spike sorting and LFP features in human brain activity; Fig. 3g and 3h; Supplementary Fig. 4
+  quote: was large enough to be detected in the median signal over channels before and after
+    correction ( Fig. 3h ) and was not obscured by this preprocessing
+  data: elsewhere
+  where: Human recording of participant Pt03; the paper does not say which deposit holds it
+    (human data at Dryad doi:10.5061/dryad.d2547d840, DANDI:000397 and Dryad
+    doi:10.7272/Q6ST7N3B).
+- id: fig4f-insertion-anatomy
+  statement: During the deep macaque insertion, averages of waveform features as a function of
+    motion-corrected spike depth vary in a way that roughly aligns with the expected anatomical
+    boundaries along the trajectory.
+  source: Results, Tracking drift during deep probe insertions in nonhuman primates;
+    Fig. 4d to 4f
+  quote: Visualizing averages of these features as a function of motion-corrected spike depth
+    revealed variations that roughly aligned with expected anatomical boundaries along the
+    insertion trajectory
+  data: elsewhere
+  where: DANDI:001282 (NP1-NHP insertion datasets).
+- id: fig5a-imposed-zigzag
+  statement: In NP1 and NP2 recordings with imposed zigzag motion of about 50 um, DREDge
+    recapitulates the performance of Kilosort.
+  source: Results, Estimating motion in acute mouse recordings; Fig. 5a(i, ii)
+  quote: In these recordings, DREDge recapitulated the performance of KS
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.14024495.v1 (dataset 1 of ref. 6).
+- id: edf4d-nonrigid-ibl
+  statement: In nine further IBL recordings across brain regions, DREDge's nonrigid correction
+    gives higher template correlation scores than its rigid correction.
+  source: Results, Estimating motion in acute mouse recordings; Extended Data Fig. 4b
+    and 4d
+  quote: it led to visual improvements ( Extended Data Fig. 4b ) and higher correlation scores
+    when compared to rigid correction
+  data: elsewhere
+  where: IBL data, AWS Open Data registry ibl-reproducible-ephys; the paper does not name the
+    nine recordings.
+- id: supp10-11-simulated-drift
+  statement: In MEArec simulations mimicking the IBL recordings, DREDge and Kilosort both track
+    the simulated motion accurately, with DREDge better under discontinuous bump drift.
+  source: Results, Estimating motion in acute mouse recordings; Supplementary Figs. 10
+    and 11
+  quote: DREDge and KS accurately tracked simulated motion ( Supplementary Figs. 10 and 11 ), with
+    DREDge showing improvements
+  data: elsewhere
+  where: MEArec simulations generated with github.com/cwindolf/mearec_drift_simulations.
+- id: supp12-subsetted-channels
+  statement: When the NP1 and NP2 recordings of Fig. 5a are subsetted to the 282 um span of the
+    Ultra probe, DREDge improves over Kilosort as in the NP Ultra data.
+  source: Results, Estimating motion in acute mouse recordings; Supplementary Fig. 12
+  quote: we spatially subsetted the channels of the NP1 and NP2 recordings of Fig. 5a to fit inside
+    the 282-μm span of the Ultra probe and found similar improvements of DREDge over KS
+  data: elsewhere
+  where: Figshare doi:10.6084/m9.figshare.14024495.v1.
+- id: fig6cd-chronic-clusters
+  statement: In a chronic NP2 recording (AL032, shank 1), clusters isolated on DREDge-corrected
+    positions have well-stereotyped waveforms across sessions, while the Kilosort estimate gives
+    them drifting, jumpy trajectories, evidence that DREDge tracks the probe more accurately.
+  source: Results, Estimating motion in chronic mouse recordings; Fig. 6c and 6d;
+    Supplementary Fig. 16
+  quote: This provided evidence that DREDge was tracking the probe trajectory more accurately
+    than KS.
+  data: elsewhere
+  where: Chronic NP2.4 recording AL032 of ref. 6; the Data availability gives no deposit for it.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Opening comment, pipeline step 1. Spike detection and localization were a standard choice with a variant, but the Methods leave them open per data source and they set every spike position used later; made them readings (i) and (ii), included in every combination of readings.
+  - edf3a-ap-dredge-slow-trend. Criterion now requires agreement across the step 1 readings as well as the step 2 readings, and "not reproduced" now reads "under all".
+  - edf3c-spline-subsecond. The criterion presented the scrambled control as the paper's own; the paper uses it for ISI violations in Fig. 2e, not for this panel, and gives no permutation unit. Said so, and named the 0.4 s permutation bin, 100 permutations and 5% level as choices of the file.
+  - edf3de-spline-improves-registration. The panel e measure (within-cluster s.d.) is not in the paper; said so and noted that the spline is fit to minimize it. Noted that the 1 s template correlation bins cannot resolve sub-second motion and added a 0.1 s variant that does not enter the outcome.
+  - fig2-sorted-units. The where named ref. 13 only; the paper places the result in one of the N > 20 human cortical recordings without naming it, so all human deposits are named. Added a criterion for the bound "more than 500".
+  - fig6e-chronic-jumps. The paper does not say whether the 0.5 to 22.2 range is over datasets or sessions; named both readings.
+  - Added claims fig2c-lfp-tracking-clusters, edf4a-nonrigid-human, supp2-rat-spike-tracking, fig2fg-unit-spatial-spread, edf6-128-channel, fig3gh-iids, fig4f-insertion-anatomy, fig5a-imposed-zigzag, edf4d-nonrigid-ibl, supp10-11-simulated-drift, supp12-subsetted-channels and fig6cd-chronic-clusters, findings of the Results with no claim. All use data elsewhere.
+  - Open, not settled. The Results and the Fig. 2b legend place the spline method in a human recording, while the Methods and Data availability place Extended Data Fig. 3 in the macaque recording of this dandiset. The file follows the Methods and Data availability for the Extended Data Fig. 3 claims.
+  - Open, not settled. The Extended Data Fig. 3 claims rest on panels with no number or test; their criteria use the paper's template correlation where it applies, but the spline measures and thresholds (edf3b at least two clusters, edf3c scrambled control, edf3de panel e) are the file's readings, and edf3c and edf3de panel e are close to circular.
+  - Open, not settled. Fig. 3e gives the Kruskal-Wallis P as < 0.0000001 in the legend and < 0.000001 in the Results; the Results value is recorded.
+  - Open, not settled. The Extended Data figure images and the supplement PDF were not read; panel-level details (cluster count in Extended Data Fig. 3b, snippet length) could not be checked.

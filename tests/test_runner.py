@@ -58,3 +58,34 @@ def test_a_target_with_a_journal_paper_has_a_publication():
     assert describe.has_publication(preprint, {"not_papers": {"10.1101/2024.01.01.000001": ""},
                                                "papers": {"10.7554/elife.00001": ""}})
     assert not describe.has_publication(journal, {"not_papers": {"10.1038/s41586-024-00001-1": ""}})
+
+
+def test_a_chain_takes_from_its_first_run_to_its_last():
+    def run(dataset, role, start, end, conclusion="success"):
+        return {"displayTitle": f"Agent run: {dataset} {role}", "createdAt": f"2026-10-21T{start}:00Z",
+                "updatedAt": f"2026-10-21T{end}:00Z", "conclusion": conclusion}
+    runs = [run("000001", "author", "01:00", "02:00"), run("000001", "recorder", "04:00", "05:00"),
+            run("000002", "claims", "01:00", "01:10"), run("000002", "claims-check", "01:10", "01:20")]
+    runs[3]["displayTitle"] = "Paper run: 000002 claims-check (unverified)"
+    assert describe.chain_hours(runs) == {"full": 4.0, "claims": 20 / 60}
+    # Two lists written one after the other, as two `gh run list` calls write them.
+    assert describe.json_lists('[1, 2]\n[3]\n') == [1, 2, 3]
+
+
+def test_a_running_chain_has_left_what_the_rest_of_a_chain_usually_takes():
+    import datetime
+    def run(dataset, role, start, end, status="completed"):
+        return {"displayTitle": f"Agent run: {dataset} {role}", "createdAt": f"2026-10-21T{start}:00Z",
+                "updatedAt": f"2026-10-21T{end}:00Z", "conclusion": "success" if status == "completed" else "",
+                "status": status}
+    runs = [run("000001", "author", "01:00", "02:00"), run("000001", "verifier-1", "02:00", "03:00"),
+            run("000001", "recorder", "04:00", "05:00"),
+            run("000002", "author", "10:00", "11:00"), run("000002", "verifier-1", "11:00", "11:30", "in_progress"),
+            run("000003", "claims", "11:00", "11:10", "in_progress"), run("000004", "claims", "11:00", "11:10", "queued")]
+    now = datetime.datetime(2026, 10, 21, 11, 30, tzinfo=datetime.timezone.utc)
+    going = describe.running(runs, {"000002", "000003"}, {"full": 1, "claims": 1}, now)
+    # A finished chain's end came 3 hours after its verifier started; this verifier has run half an hour.
+    assert going["000002"] == {"kind": "full", "hours": 2.5}
+    # The one full lane is taken, so a chain only reading claims is the claims runner's; with no finished
+    # claims chain to go by, it has no estimate. A dataset with no open branch is left out.
+    assert going["000003"] == {"kind": "claims", "hours": None} and "000004" not in going
