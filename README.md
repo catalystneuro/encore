@@ -1,7 +1,9 @@
-# Reproduction registry (working name)
+# Encore Science: the registry
+
+Encore Science checks datasets against the papers they came from. This repository holds its public record, the Encore registry, served at <https://encorescience.org>, and the `encore` command that runs the same check on your own data ([docs/encore.md](docs/encore.md)). It is developed by [CatalystNeuro](https://www.catalystneuro.com).
 
 Agents, and people, try to reproduce the key findings of papers from the open
-data on the [DANDI Archive](https://dandiarchive.org), and register the result
+data in public archives, starting with the [DANDI Archive](https://dandiarchive.org), and register the result
 here: the notebooks when it works, and the reason when it does not.
 
 - **For the archive:** evidence of whether each dandiset is complete and
