@@ -163,12 +163,16 @@ claims:
   source: Methods, Experimental animals and calcium imaging, paragraph 1
   quote: Following habituation, they underwent three 70-minute optical imaging sessions within a
     span of three to six days, with no more than one session occurring per day
-  criterion: For each mouse, the three sessions are those of the paper's analyses, the local
-    sessions 1 to 3 that passed QC, or for mice 411400 and 412933 their tracked sessions 4 to 6
-    (Supplementary Table 1). Dates from the sessions' start times. The span can be read as (a)
-    days from the first to the third session (allowed 3 to 6) or (b) calendar days counted
-    inclusively (allowed 3 to 6). Reproduced when, under one reading, every mouse's span is in
-    range and no two sessions of a mouse share a date; partially reproduced when all but one
+  criterion: For each mouse, the three sessions can be read as (i) its local sessions 1 to 3
+    (Supplementary Table 1), the first three after habituation, whatever their QC, or (ii) the
+    sessions of the paper's analyses, the local sessions 1 to 3 that passed QC, or for mice
+    411400 and 412933 their tracked sessions 4 to 6. Dates from the sessions' start times. The
+    span can be read as (a) days from the first to the third session (allowed 3 to 6) or (b)
+    calendar days counted inclusively (allowed 3 to 6). By the dates of Table 2, reading (a)
+    gives 2 days for five mice under (ii) and seven under (i), and reading (ii)(b) gives 7 days
+    for mouse 411400; the notebook
+    shows all four combinations. Reproduced when, under one combination, every mouse's span is
+    in range and no two sessions of a mouse share a date; partially reproduced when all but one
     mouse meet it; not reproduced otherwise. Session durations are reported, with 70 min +/- 10%
     as the check.
 - id: imaging-depths
@@ -493,9 +497,11 @@ claims:
   quote: Both the somatic and dendritic ROIs showed clear responses to both the Gabor and visual
     flow stimuli, with many showing increased fluorescence responses to the onset of the stimuli
     (Fig. 5 ).
-  criterion: Session 1 (local, passing QC; 11 mice), each line and plane, ROIs pooled over mice
-    as in the code. Selection as in the Figure 5 legend and the code (analysis/seq_analys.py
-    get_sess_ex_traces). Gabor, ROIs with SNR (claim fig7a-snr-above-1) above the session median;
+  criterion: Session 1 (local, passing QC; 11 mice), each line and plane. Selection as in the
+    Figure 5 legend ("for the session") and the code (analysis/seq_analys.py get_sess_ex_traces,
+    identify_gabor_roi_ns, identify_visflow_roi_ns), made within each mouse's session; the
+    selected ROIs are then pooled over mice per line and plane (get_ex_traces_df, which draws 6
+    random examples from the pool for plotting; all selected ROIs are used here). Gabor, ROIs with SNR (claim fig7a-snr-above-1) above the session median;
     among them, those whose median pairwise correlation between individual sequence responses
     (each smoothed with a 4-point moving average), and the standard deviation and skew of their
     mean response, all exceed the 75th percentile of those ROIs; sequences are the -0.9 to 0.6 s
@@ -555,7 +561,8 @@ claims:
     "SNR (>1)" can be read as (a) the median of each group above 1, (b) the 5th percentile of
     each group (the lower whisker) above 1, or (c) every ROI above 1. By this construction an
     ROI's SNR exceeds 1.645 whenever its median dF/F is at least 0, which bears on reading (c).
-    Reproduced when the claim holds under every reading; the notebook shows each.
+    These are readings of a reported number (docs/protocol.md, Reader, step 3), so the claim is
+    reproduced when it holds under one reading; the notebook shows each and names those that hold.
 - id: fig7a-snr-stable
   statement: ROI SNR is stable over the three days.
   source: Technical Validation, paragraph 2; Figure 7a
@@ -701,3 +708,15 @@ claims:
   criterion: Sessions 1 to 3 are local session numbers (Supplementary Table 1, as in the code's
     session table); passing QC as recorded in the dataset or Table 2. Tolerance 0 on the count
     because it is a count. Sizes from the asset list, decimal or binary GB as in file-sizes.
+checks:
+- date: 2026-10-22
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - fig5-example-responses, criterion now says the SNR and 75th percentile selection is made within each mouse's session and the selected ROIs are then pooled per line and plane, as the legend ("for the session") and the code (get_sess_ex_traces, get_ex_traces_df at the commit cited) do; the old wording could be read as pooling ROIs over mice before selecting.
+  - session-schedule, added the reading of local sessions 1 to 3 of every mouse whatever their QC (the first three sessions after habituation, which the Methods sentence describes); with the old readings only, the paper's own Table 2 dates fail (2-day spans for five mice under first-to-third days, 7 days for mouse 411400 sessions 4 to 6 counted inclusively). The criterion now names these counts and asks for all four combinations.
+  - fig7a-snr-above-1, decision changed from "holds under every reading" to "holds under one reading", since the readings are of a reported number (protocol, Reader, step 3), and the old rule gave no outcome when the readings disagree.
+  - Open, fig7c-high-correlation-fraction, the header notes that the repository's Fig. 7c source data give 0.018% of L2/3 dendritic pairs with r of 0.8 or more over sessions 1 to 3, outside the claim's 0.005 to 0.015% band under pooled reading (a); the paper's "approximately 0.01%" fixes neither the denominator nor the rounding, so the tolerance was left as written.
+  - Open, inconsistent-blocks, "approximately 30 blocks" per 70-minute session does not fit the stated block durations if all stimuli are counted together (about 60); readings (b) and (c) are kept and the paper does not settle which is meant.
+  - Checked against the paper and left unchanged, the counts in table1-subjects, cohorts-by-plane, sex-split, sessions-total, roi-count-ranges, tracked-roi-totals (Table 2 sums match only without mice 411400 and 412933, as the criterion says), fig8a and fig8b example mice, and download-33-files.
