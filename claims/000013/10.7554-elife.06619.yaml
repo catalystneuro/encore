@@ -1,0 +1,1264 @@
+# Claims for Hires, Gutnisky, Yu, O'Connor & Svoboda (2015), eLife 4, e06619, "Low-noise encoding
+# of active touch by layer 4 in the somatosensory cortex", on dandiset 000013.
+# Written by an agent (model "claude-opus-5-5", Claude Code in GitHub Actions), 2026-10-21, protocol
+# pilot-10 as stated in docs/protocol.md (Reader).
+#
+# Text read: the version of record (PMC4525079) as served by Europe PMC
+# (paper/10.7554-elife.06619.txt): Introduction, Results, Discussion, Materials and methods, Table 1,
+# the legends of Figures 1 to 6 and of their figure supplements (Figure 1, supplements 1 and 2;
+# Figure 2, supplement 1; Figure 3, supplements 1 and 2; Figure 4, supplement 1; Figure 6,
+# supplement 1), the decision letter and the author response. eLife has no supplement beyond
+# these figure supplements, whose legends are in the text. No PDF was supplied, so the figure
+# images were not read. Table 1 came through as one run of text; its columns were read in order
+# (9 measures, rows of mean +- s.d., median and range for each of three populations). One cell of
+# it is garbled, the L5 "Spikes evoked (touch)" mean printed "24.0-18.6%", read as 24.0 +- 18.6%
+# from Results, paragraph on Figure 3C.
+#
+# Code read: the paper links the Janelia Whisker Tracker (openwiki.janelia.org, not code for the
+# analyses) and https://github.com/hireslab/HLab_Whiskers for the detection of contact periods.
+# Read at HEAD, commit cdbc9148da6c505ba940b971fbe419b11cb80049 (2020-12-11); the last commit
+# before publication is 0eb360a (2014-11-19). It holds MATLAB classes for behaviour trials (+Solo),
+# whisker tracking output and curvature (+Whisker), ephys sweeps and trial arrays (+LCA) and the
+# semi-automatic contact detector and curation GUI (Contacts/autoContactAnalyzerSi.m,
+# trialContactBrowser). It holds none of the paper's analyses (no whisking-phase decomposition with
+# a 6 to 60 Hz filter and Hilbert transform, no touch windows, Fano factors, OPTICS clustering or
+# decoders). It therefore settles no criterion below; touch onsets and offsets are taken as given
+# by the contact detection. Its WhiskerSignalTrial.get_whisk_peaks uses a 10 to 25 Hz filter; the
+# paper does not use it, and the Methods' 6 to 60 Hz filter is followed.
+#
+# The dandiset's archive description: data from a study of the precision of cortical spike trains
+# during active tactile behaviour in mice performing whisker-based object localization, with
+# recordings from excitatory neurons of layer 4 of barrel cortex (this paper).
+#
+# The data the paper used, as it reports them:
+#   - 21 mice (7 C57BL/6, 3 VGAT-ChR2(H134R), 8 PV-ires-cre, 3 PV-ires-cre x Ai32), trimmed to the
+#     C2 whisker, performing a go/no-go pole localization task (lick for the posterior pole).
+#   - 52 loose-seal cell-attached (juxtacellular) single-unit recordings, one per session (52
+#     sessions), 10 kHz: 31 L4 cells in C2, 10 L4 cells outside C2 (>200 um from the C2 centre,
+#     in the barrel field), 11 L5 cells near C2 (98 to 324 um from the C2 centre). 115 +- 60 trials
+#     per neuron. Layer is assigned from manipulator depth and pipette shape; barrel from a DiI
+#     track. 7 of the recordings were reported in O'Connor et al. 2013.
+#   - Per trial, whisker video at 1000 fps for 4 to 5 s, tracked for azimuthal angle (theta) and
+#     curvature (kappa, change Delta kappa); contact (touch) periods detected and curated to 1 ms;
+#     pole timing (sample epoch, pole in reach), licks, trial outcome.
+#
+# Definitions used throughout, from the Methods (Whisker analysis; Spike analysis; Spikes
+# accounted by active sensation; Analysis of spike count variance) and legends:
+#   - Touch epochs are periods of contact. For other epochs theta is band-passed 6 to 60 Hz
+#     (fourth-order Butterworth) and Hilbert transformed; whisking epochs have amplitude >2.5 deg;
+#     whisking cycles during licking or within 70 ms after touch are excluded, and phase analyses
+#     use cycles with monotonic phase over a full cycle. Non-whisking periods are contiguous
+#     periods of at least 100 ms with no touch or licking and amplitude <1.25 deg.
+#   - Exploration time is whisking epochs including touch epochs, excluding touches >100 ms.
+#   - The touch spike window of a cell runs from its onset latency to its touch response cutoff
+#     t_on. Latency is where the 1 ms PCTH rises above the pre-touch mean (-50 to 0 ms) by two
+#     standard deviations. t_on is the first window size, after the curve's rise, at which the
+#     increase of the cumulative count of spikes indexed to the closest touch onset falls below the 95th percentile of the
+#     slopes of 1000 spike-time shuffles, the curves smoothed by a degree-11 polynomial.
+#   - Phase tuning is a 12-bin histogram fitted by A[1 + cos(theta - phi_pref)] + B, A, B > 0;
+#     modulation depth A / (A + B).
+#   - The Fano factor (FF) is the variance of the spike count over its mean, across trials or
+#     touches; the binomial limit for a mean count m < 1 is 1 - m.
+# Unless a criterion says otherwise, a population value is the mean (or median) across the cells
+# of that population, each cell contributing one value, as Table 1 is laid out.
+#
+# Tolerances. Where the paper gives mean +- s.d., the tolerance is the s.d., the paper's stated
+# spread (protocol, Reader, step 3); otherwise 10% of the value. Counts of animals, sessions and
+# cells are given tolerance 0, as they are counts the dataset either holds or does not.
+schema_version: 2
+dataset:
+  archive: dandi
+  id: "000013"
+paper: doi:10.7554/elife.06619
+claims:
+- id: recordings-counts
+  statement: The study holds 52 single-unit recordings, 31 L4 cells in the C2 barrel, 10 L4 cells
+    outside C2 and 11 L5 cells near C2, with 115 +- 60 (mean +- s.d.) trials per neuron.
+  source: Results, L4 responses are temporally precise, paragraph 2; Materials and methods,
+    Animals and Electrophysiology
+  quote: We targeted recordings to excitatory neurons in L4 of the principal barrel corresponding
+    to the spared whisker (31 cells in C2; 10 additional outside C2) and L5 near the principal
+    barrel (11 cells), guided by intrinsic signal imaging (number of trials per neuron 115 ± 60
+  expected:
+  - quantity: L4 cells in C2
+    value: 31
+    tolerance: 0
+  - quantity: L4 cells outside C2
+    value: 10
+    tolerance: 0
+  - quantity: L5 cells near C2
+    value: 11
+    tolerance: 0
+  - quantity: trials per neuron, mean over the 52 neurons
+    value: 115
+    tolerance: 60
+    unit: trials
+  criterion: Cells are assigned to the three groups by the paper's rules (Methods,
+    Electrophysiology), L4 or L5 by manipulator depth and pipette shank, inside C2 when the DiI
+    track midpoint is <160 um from the C2 centre and outside when >200 um, or by whatever labels
+    of these groups the dataset carries. The number of trials can be read as (a) all trials
+    recorded or (b) the performing trials analysed (Figure 1, figure supplement 1A says "performing
+    trials analyzed per session"); both are shown, and the claim holds under either.
+- id: recordings-mice
+  statement: The 52 recordings come from 21 mice of four lines, 21 neurons from 7 C57BL/6 mice, 6
+    from 3 VGAT-ChR2(H134R) mice, 17 from 8 PV-ires-cre mice and 8 from 3 PV-ires-cre x Ai32 mice.
+  source: Materials and methods, Animals
+  quote: We report recordings from a total of 21 mice. 52 loose-seal cell-attached recordings were
+    made in the following mice ... 21 recorded neurons from 7 C57BL/6 mice, 6 recorded neurons
+    from 3 VGAT-ChR2(H134R) mice
+  expected:
+  - quantity: mice
+    value: 21
+    tolerance: 0
+  - quantity: recordings
+    value: 52
+    tolerance: 0
+  - quantity: neurons from C57BL/6 mice
+    value: 21
+    tolerance: 0
+  - quantity: neurons from PV-ires-cre mice
+    value: 17
+    tolerance: 0
+  criterion: Counted from the subject identifiers and genotypes. Reproduced when the counts of
+    mice and recordings match and, where genotypes are given, the counts per line match (7, 3, 8
+    and 3 mice; 21, 6, 17 and 8 neurons).
+- id: behavior-performance
+  statement: Across the 52 sessions the fraction of trials correct was 0.740 +- 0.086 (mean +-
+    s.d.).
+  source: Results, L4 responses are temporally precise, paragraph 1; Figure 1, figure supplement
+    1B
+  quote: n = 21 mice, 52 sessions; fraction of trials correct, 0.740 ± 0.086; mean ± s.d.
+  expected:
+    quantity: fraction of trials correct, mean over sessions
+    value: 0.740
+    tolerance: 0.086
+  criterion: Per session, correct trials (hits and correct rejections) over trials. The trials can
+    be read as (a) all trials of the session or (b) the performing trials analysed (Figure 1,
+    figure supplement 1A); the paper does not say how performing trials were chosen, so under (b)
+    the dataset's own marking of trials used, if it has one, is taken. Both are shown.
+- id: behavior-sample-epoch
+  statement: The sample epoch, when the pole is presented, lasted 1.54 to 4.05 s, 2.39 s on
+    average.
+  source: Results, L4 responses are temporally precise, paragraph 1
+  quote: during a sample epoch lasting a few seconds (1.54–4.05, mean 2.39 s), a pole appeared in
+    one of two locations on the right side of the head
+  expected:
+  - quantity: mean sample epoch duration
+    value: 2.39
+    tolerance: 0.239
+    unit: s
+  - quantity: shortest sample epoch
+    value: 1.54
+    tolerance: 0.154
+    unit: s
+  - quantity: longest sample epoch
+    value: 4.05
+    tolerance: 0.405
+    unit: s
+  criterion: The sample epoch is the period the pole is in reach (Figure 1C legend, Figure 6E
+    legend). Open detail, the unit of the range and mean, read as (a) over all trials pooled or
+    (b) over per-session means. Both are shown; reproduced when all three values are within
+    tolerance under one reading.
+- id: behavior-whisking-bouts
+  statement: Mice whisked in bouts with a mean duration of 261 ms, a peak-to-peak amplitude of
+    15.7 deg and a frequency of 15.4 Hz, separated by rest.
+  source: Results, L4 responses are temporally precise, paragraph 1; Figure 1, figure supplement
+    1E-G
+  quote: Mice whisked in bouts (mean bout duration, 261 ms; peak-to-peak amplitude, 15.7°;
+    frequency, 15.4 Hz) interspersed with periods of rest
+  expected:
+  - quantity: mean whisking bout duration
+    value: 261
+    tolerance: 26.1
+    unit: ms
+  - quantity: mean peak-to-peak amplitude of bouts
+    value: 15.7
+    tolerance: 1.57
+    unit: deg
+  - quantity: mean whisking frequency
+    value: 15.4
+    tolerance: 1.54
+    unit: Hz
+  criterion: Whisking epochs as defined in the Methods (6 to 60 Hz band-pass, Hilbert amplitude
+    >2.5 deg); a bout is a contiguous whisking epoch. As in Figure 1, figure supplement 1E-G, the
+    amplitude is the maximum amplitude of each bout, the duration that of each bout, and the
+    frequency 1/cycle length of each whisk cycle, pooled across all sessions. Open details, (1)
+    whether "peak-to-peak" is twice the Hilbert amplitude or the range of band-passed theta within
+    a cycle, and (2) whether touch periods break a bout. All four combinations are shown;
+    reproduced when all three values are within tolerance under one.
+- id: behavior-touches-reaction
+  statement: Mice touched the pole 2.33 times on average before responding, and the reaction time
+    from first touch to first lick was 367 +- 234 ms (mean +- s.d.).
+  source: Results, L4 responses are temporally precise, paragraph 1; Figure 1, figure supplement
+    1C-D
+  quote: Mice touched the pole multiple times (mean number of touches, 2.33) before reporting
+    perceived object location with licking (mean reaction time 367 ± 234 ms; mean ± s.d.)
+  expected:
+  - quantity: mean number of touches before the response
+    value: 2.33
+    tolerance: 0.233
+  - quantity: mean reaction time
+    value: 367
+    tolerance: 234
+    unit: ms
+  criterion: Reaction time is the time from the first touch onset to the first lick, for every
+    trial with licks (Methods, Whisker analysis), pooled over all sessions (Figure 1, figure
+    supplement 1D). The number of touches is counted before the response time per trial (figure
+    supplement 1C). Open detail, which trials count touches, read as (a) trials with a lick, the
+    count before the first lick, or (b) all trials with at least one touch, counting touches in
+    the sample epoch when there is no lick. Both are shown.
+- id: example-cell-rates
+  statement: The example L4 C2 neuron of Figure 1 fired at 0.73 spikes/s in the 500 ms before the
+    sample epoch and 1.91 spikes/s during it, a 2.6-fold increase (Wilcoxon rank sum, p =
+    3.38e-7).
+  source: Results, L4 responses are temporally precise, paragraph 3; Figure 1C-D
+  quote: The neuron had a low baseline firing (0.73 spk/s; 500 ms before start of sample epoch)
+    that increased substantially during the sample epoch (2.6 fold; to 1.91 spk/s; p = 3.38e-7,
+    Wilcoxon rank sum)
+  statistics:
+  - test: Wilcoxon rank sum
+    p: 3.38e-7
+    n: trials of one neuron
+  expected:
+  - quantity: baseline rate, 500 ms before the sample epoch
+    value: 0.73
+    tolerance: 0.073
+    unit: spikes/s
+  - quantity: rate during the sample epoch
+    value: 1.91
+    tolerance: 0.191
+    unit: spikes/s
+  - quantity: fold increase
+    value: 2.6
+    tolerance: 0.26
+  criterion: The paper does not identify the example cell. It is one of the 31 L4 C2 cells; the
+    values are computed for every L4 C2 cell, and the claim holds when one cell matches all three
+    within tolerance and its per-trial baseline and sample-epoch rates differ by a Wilcoxon rank
+    sum test at p < 0.05 (the trials of the cell are the samples, as the test is named). The cell
+    so found is the example cell for the claims that depend on this one. If no cell matches,
+    example-cell claims are judged on the cell nearest in these values, and that is said.
+- id: example-cell-sample-ff
+  statement: The Fano factor of spike counts over the whole sample epoch was large, 7.51, in the
+    paragraph on the example neuron, which does not say whose value it is.
+  source: Results, L4 responses are temporally precise, paragraph 4
+  quote: FF computed by counting spikes over the entire sample epoch (stimulus presentation), was
+    huge (FF = 7.51)
+  depends_on:
+  - example-cell-rates
+  expected:
+    quantity: Fano factor of sample-epoch spike counts
+    value: 7.51
+    tolerance: 0.751
+  criterion: The variance over the mean of the per-trial spike count in the sample epoch (pole in
+    reach), across trials. The paragraph follows the example cell but does not say whose FF this
+    is, and the L4 C2 population mean for the same count is 6.57 (fig6e-sample-epoch-ff).
+    Readings, (a) the cell identified in example-cell-rates; (b) the mean over all 41 L4 cells;
+    (c) the mean over all 52 cells. Reproduced when the value is within tolerance under one
+    reading; the readings that match are said.
+- id: example-cell-touch-window
+  statement: For the example neuron, 74.4% of spikes fell in a window 8 to 40 ms after touch
+    onset, which covers 15.3% of exploration time.
+  source: Results, L4 responses are temporally precise, paragraph 8; Figure 3A-C
+  quote: For the neuron illustrated in Figure 3A , 74.4% spikes fall into a time window spanning 8
+    to 40 ms after touch onset, comprising 15.3% of overall exploration time
+  depends_on:
+  - example-cell-rates
+  expected:
+  - quantity: fraction of exploration-time spikes in the touch window
+    value: 74.4
+    tolerance: 7.44
+    unit: '%'
+  - quantity: touch window start (onset latency)
+    value: 8
+    tolerance: 0.8
+    unit: ms
+  - quantity: touch window end
+    value: 40
+    tolerance: 4
+    unit: ms
+  - quantity: fraction of exploration time inside touch windows
+    value: 15.3
+    tolerance: 1.53
+    unit: '%'
+  criterion: As fig3c-touch-spikes-l4c2, for the cell identified in example-cell-rates. Since a
+    window end is a whole number of ms, the tolerance on 8 and 40 ms is read as at least 1 ms.
+- id: example-cell-ff-around-touch
+  statement: For the example neuron, the 10 ms sliding-window Fano factor is about 1 before and
+    after touch, where the mean spike count is about 0.03, and falls near the peak of the touch
+    response, where the mean count is about 0.7.
+  source: Figure 6B legend; Results, Low spike count variability, paragraph 5
+  quote: Since the spike rate is very low outside of the touch window, the mean spike count is
+    also very low (∼0.03), implying FF of ∼1 for both the binomial and Poisson models. In
+    contrast, around the peak of the touch response the mean spike count is high (∼0.7)
+  depends_on:
+  - example-cell-rates
+  expected:
+  - quantity: mean 10 ms spike count before touch
+    value: 0.03
+    tolerance: 0.003
+  - quantity: mean 10 ms spike count around the touch-response peak
+    value: 0.7
+    tolerance: 0.07
+  criterion: Figure 6A and B call this neuron "an example neuron" and do not say it is the cell of
+    Figures 1, 3 and 5. Readings, (a) the cell identified in example-cell-rates; (b) any L4 C2
+    cell, the number of cells that match being reported. Spike counts in 10 ms windows slid in
+    1 ms steps around touch onset (Figure 6B), across touches with inter-contact interval >250 ms
+    (Methods, Analysis of spike count variance). Reproduced when the mean counts match, the FF
+    before touch is within 0.1 of 1, and the FF at the window of peak mean count is below 1.
+    Open detail, the touches used, read as (a) the >250 ms touches pooled or (b) one of the five
+    clustered groups; both are shown. Reproduced under reading (a) of the cell when it matches
+    there; otherwise the cells that match under (b) are reported, and the claim is reproduced only
+    if one does, with the difference from the Figure 1 cell recorded.
+- id: text-spikes-per-touch
+  statement: Each touch evoked on the order of one spike (1.51 spikes per first touch, 0.31 per
+    later touch) with an onset latency of 8 ms.
+  source: Results, L4 responses are temporally precise, paragraph 4; Table 1
+  quote: Each touch evoked on the order of one spike (1.51 spikes/first touch; 0.31/later touches)
+    with short latency (onset, 8 ms)
+  expected:
+  - quantity: spikes per first touch
+    value: 1.51
+    tolerance: 0.151
+  - quantity: spikes per later touch
+    value: 0.31
+    tolerance: 0.031
+  - quantity: onset latency
+    value: 8
+    tolerance: 0.8
+    unit: ms
+  depends_on:
+  - example-cell-rates
+  criterion: The sentence cites Table 1, whose L4 C2 values (mean 1.36 and 0.74, median 0.87 and
+    0.33, median latency 8 ms) do not match 1.51 and 0.31, and it sits in the paragraph on the
+    example cell. Readings, (a) the example cell identified in example-cell-rates; (b) the L4 C2
+    population mean; (c) the L4 C2 population median. Spikes per touch is the mean spike count in
+    the cell's touch spike window (Methods, Spike analysis), first touches of trials apart from
+    later ones. Reproduced when all three values are within tolerance under one reading (latency
+    tolerance at least 1 ms).
+- id: text-whisking-rates
+  statement: Spike rates were low in both whisking (0.67 spikes/s) and non-whisking (0.23
+    spikes/s) periods.
+  source: Results, L4 responses are temporally precise, paragraph 5
+  quote: Firing rates were low in both whisking (0.67 spikes/s) and non-whisking (0.23 spikes/s)
+    periods
+  expected:
+  - quantity: whisking spike rate
+    value: 0.67
+    tolerance: 0.067
+    unit: spikes/s
+  - quantity: non-whisking spike rate
+    value: 0.23
+    tolerance: 0.023
+    unit: spikes/s
+  depends_on:
+  - example-cell-rates
+  criterion: Whisking and non-whisking periods as in the Methods (Whisker analysis). The sentence
+    does not say whose rates these are, and Table 1 (L4 C2 means 1.39 and 1.31, medians 0.33 and
+    0.32) does not give them. Readings, (a) the example cell identified in example-cell-rates;
+    (b) the L4 C2 mean; (c) the L4 C2 median; (d) the rate over all L4 C2 spikes and time pooled.
+    Open detail, whether whisking periods include touch epochs, read both ways. Reproduced when
+    both values are within tolerance under one reading.
+- id: example-cell-phase-modulation
+  statement: During exploration the example neuron's spikes are coupled to whisking phase, with a
+    modulation depth close to 1 and near zero spiking at phase 0.
+  source: Results, L4 responses are temporally precise, paragraph 5; Figure 1G-H
+  quote: Yet during active exploration, the timing of spikes was coupled to the phase of rhythmic
+    whisker movement ( Fee et al., 1997 ; Curtis and Kleinfeld, 2009 ), with a modulation depth
+    close to 1
+  depends_on:
+  - example-cell-rates
+  expected:
+    quantity: phase modulation depth, example cell
+    value: 1
+    tolerance: 0.1
+  criterion: Methods, Spike analysis, and Figure 1G-H legends. For the cell identified in
+    example-cell-rates, spikes in whisking bouts (amplitude >2.5 deg) of exploration periods
+    excluding touch, assigned a phase by linear interpolation, in a 12-bin histogram of rate
+    (Figure 3, figure supplement 1C; Figure 1H uses 30 deg bins, the same); fitted with A[1 +
+    cos(theta - phi_pref)] + B, A, B > 0; depth A / (A + B). The tolerance is the protocol's 10%
+    of the paper's value 1. The rate in the bin at phase 0 is reported. Fitting as table1-l4-c2.
+- id: table1-l4-c2
+  statement: For the 31 L4 C2 cells Table 1 gives, as mean +- s.d. (median), spikes per first
+    touch 1.36 +- 1.32 (0.87), per later touch 0.74 +- 0.87 (0.33), touch-evoked spikes 70.6 +-
+    20.9% (74.7%), touch and whisking spikes 75.2 +- 19.0% (80.3%), phase modulation depth 0.67
+    +- 0.32 (0.70), non-whisking rate 1.31 +- 2.88 (0.32) spikes/s, whisking rate 1.39 +- 2.33
+    (0.33) spikes/s, onset latency 7.8 +- 3.0 (8) ms and minimum ISI 2.9 +- 1.9 (2.3) ms.
+  source: Table 1, row L4 Inside C2 (n=31)
+  inferred: Numbers from Table 1, row L4 Inside C2; no sentence states them all.
+  expected:
+  - quantity: spikes per first touch, mean
+    value: 1.36
+    tolerance: 1.32
+  - quantity: spikes per first touch, median
+    value: 0.87
+    tolerance: 0.087
+  - quantity: spikes per later touch, mean
+    value: 0.74
+    tolerance: 0.87
+  - quantity: spikes per later touch, median
+    value: 0.33
+    tolerance: 0.033
+  - quantity: spikes evoked by touch, mean
+    value: 70.6
+    tolerance: 20.9
+    unit: '%'
+  - quantity: spikes evoked by touch, median
+    value: 74.7
+    tolerance: 7.47
+    unit: '%'
+  - quantity: spikes evoked by touch and whisking, mean
+    value: 75.2
+    tolerance: 19.0
+    unit: '%'
+  - quantity: spikes evoked by touch and whisking, median
+    value: 80.3
+    tolerance: 8.03
+    unit: '%'
+  - quantity: phase modulation depth, mean
+    value: 0.67
+    tolerance: 0.32
+  - quantity: phase modulation depth, median
+    value: 0.70
+    tolerance: 0.07
+  - quantity: non-whisking spike rate, mean
+    value: 1.31
+    tolerance: 2.88
+    unit: spikes/s
+  - quantity: non-whisking spike rate, median
+    value: 0.32
+    tolerance: 0.032
+    unit: spikes/s
+  - quantity: whisking spike rate, mean
+    value: 1.39
+    tolerance: 2.33
+    unit: spikes/s
+  - quantity: whisking spike rate, median
+    value: 0.33
+    tolerance: 0.033
+    unit: spikes/s
+  - quantity: onset latency, mean
+    value: 7.8
+    tolerance: 3.0
+    unit: ms
+  - quantity: onset latency, median
+    value: 8
+    tolerance: 1
+    unit: ms
+  - quantity: minimum ISI, mean
+    value: 2.9
+    tolerance: 1.9
+    unit: ms
+  - quantity: minimum ISI, median
+    value: 2.3
+    tolerance: 0.23
+    unit: ms
+  criterion: Each measure per cell as defined in the Methods (see the opening comment), then the
+    mean, s.d. and median over the 31 cells. Spikes per touch, mean count in the touch spike
+    window, first touches of trials and later touches apart. Spikes evoked, as
+    fig3c-touch-spikes-l4c2 and fig3d-touch-phase-l4c2. Modulation depth from the cosine fit to
+    the 12-bin phase histogram of spike rate (Figure 3, figure supplement 1C), fitted by least
+    squares with A, B > 0 (the fitting method is not given; least squares is the standard choice
+    and is not expected to change the outcome). Rates in whisking and non-whisking periods. The
+    minimum ISI is the shortest interspike interval of the cell (Figure 2, figure supplement 1C).
+    Latency tolerance for the median is 1 ms, the bin size. Reproduced when at least 15 of the 18
+    values are within tolerance, partially reproduced for 10 to 14, not reproduced below 10; the
+    medians, which carry the tighter tolerances, are reported apart. Open detail for latency, the
+    PCTH used, read as (a) first touches or (b) all touches (Figure 3, figure supplement 1A shows
+    both); both are shown.
+- id: table1-l4-outside
+  statement: For the 10 L4 cells outside C2 Table 1 gives, as mean +- s.d. (median), spikes per
+    first touch 0.08 +- 0.19 (0), per later touch 0.02 +- 0.04 (0), touch-evoked spikes 9.2 +-
+    13.7% (3.6%), touch and whisking spikes 33.0 +- 30.2% (23.8%), modulation depth 0.58 +- 0.36
+    (0.61), non-whisking rate 2.20 +- 2.91 (1.10) spikes/s, whisking rate 2.41 +- 3.48 (1.31)
+    spikes/s, onset latency 18.5 +- 6.0 (18) ms and minimum ISI 3.3 +- 1.3 (2.8) ms.
+  source: Table 1, row L4 Outside C2 (n=10)
+  inferred: Numbers from Table 1, row L4 Outside C2; no sentence states them all.
+  expected:
+  - quantity: spikes per first touch, mean
+    value: 0.08
+    tolerance: 0.19
+  - quantity: spikes per later touch, mean
+    value: 0.02
+    tolerance: 0.04
+  - quantity: spikes evoked by touch, mean
+    value: 9.2
+    tolerance: 13.7
+    unit: '%'
+  - quantity: spikes evoked by touch, median
+    value: 3.6
+    tolerance: 0.36
+    unit: '%'
+  - quantity: spikes evoked by touch and whisking, mean
+    value: 33.0
+    tolerance: 30.2
+    unit: '%'
+  - quantity: spikes evoked by touch and whisking, median
+    value: 23.8
+    tolerance: 2.38
+    unit: '%'
+  - quantity: phase modulation depth, mean
+    value: 0.58
+    tolerance: 0.36
+  - quantity: phase modulation depth, median
+    value: 0.61
+    tolerance: 0.061
+  - quantity: non-whisking spike rate, mean
+    value: 2.20
+    tolerance: 2.91
+    unit: spikes/s
+  - quantity: non-whisking spike rate, median
+    value: 1.10
+    tolerance: 0.11
+    unit: spikes/s
+  - quantity: whisking spike rate, mean
+    value: 2.41
+    tolerance: 3.48
+    unit: spikes/s
+  - quantity: whisking spike rate, median
+    value: 1.31
+    tolerance: 0.131
+    unit: spikes/s
+  - quantity: onset latency, mean over the cells with a latency
+    value: 18.5
+    tolerance: 6.0
+    unit: ms
+  - quantity: minimum ISI, mean
+    value: 3.3
+    tolerance: 1.3
+    unit: ms
+  - quantity: minimum ISI, median
+    value: 2.8
+    tolerance: 0.28
+    unit: ms
+  criterion: As table1-l4-c2, over the 10 cells. The medians of spikes per touch (0 and 0) are
+    checked as exact. Latency is over the cells for which one can be determined (four, Figure 2,
+    figure supplement 1A). The Results give 8.4 +- 13.3% for touch-evoked spikes of this group
+    where Table 1 gives 9.2 +- 13.7%; both are within each other's tolerance, and the Table 1
+    value is used here (fig3c-touch-spikes-outside uses the text). Reproduced when at least 13 of
+    the 17 values are within tolerance, partially for 9 to 12, not reproduced below 9.
+- id: table1-l5
+  statement: For the 11 L5 cells near C2 Table 1 gives, as mean +- s.d. (median), spikes per first
+    touch 1.95 +- 2.96 (0.98), per later touch 1.28 +- 1.88 (0.42), touch-evoked spikes 24.0 +-
+    18.6% (24.4%), touch and whisking spikes 31.5 +- 16.4% (36.0%), modulation depth 0.18 +- 0.12
+    (0.13), non-whisking rate 12.0 +- 9.87 (12.8) spikes/s, whisking rate 16.2 +- 15.3 (13.5)
+    spikes/s, onset latency 9.7 +- 5.2 (8) ms and minimum ISI 3.7 +- 2.5 (2.7) ms.
+  source: Table 1, row L5 Near C2 (n=11)
+  inferred: Numbers from Table 1, row L5 Near C2, with the garbled mean of touch-evoked spikes
+    read from Results, paragraph on Figure 3C; no sentence states them all.
+  expected:
+  - quantity: spikes per first touch, mean
+    value: 1.95
+    tolerance: 2.96
+  - quantity: spikes per first touch, median
+    value: 0.98
+    tolerance: 0.098
+  - quantity: spikes per later touch, mean
+    value: 1.28
+    tolerance: 1.88
+  - quantity: spikes per later touch, median
+    value: 0.42
+    tolerance: 0.042
+  - quantity: spikes evoked by touch, mean
+    value: 24.0
+    tolerance: 18.6
+    unit: '%'
+  - quantity: spikes evoked by touch, median
+    value: 24.4
+    tolerance: 2.44
+    unit: '%'
+  - quantity: spikes evoked by touch and whisking, mean
+    value: 31.5
+    tolerance: 16.4
+    unit: '%'
+  - quantity: spikes evoked by touch and whisking, median
+    value: 36.0
+    tolerance: 3.6
+    unit: '%'
+  - quantity: phase modulation depth, mean
+    value: 0.18
+    tolerance: 0.12
+  - quantity: phase modulation depth, median
+    value: 0.13
+    tolerance: 0.013
+  - quantity: non-whisking spike rate, mean
+    value: 12.0
+    tolerance: 9.87
+    unit: spikes/s
+  - quantity: non-whisking spike rate, median
+    value: 12.8
+    tolerance: 1.28
+    unit: spikes/s
+  - quantity: whisking spike rate, mean
+    value: 16.2
+    tolerance: 15.3
+    unit: spikes/s
+  - quantity: whisking spike rate, median
+    value: 13.5
+    tolerance: 1.35
+    unit: spikes/s
+  - quantity: onset latency, mean
+    value: 9.7
+    tolerance: 5.2
+    unit: ms
+  - quantity: onset latency, median
+    value: 8
+    tolerance: 1
+    unit: ms
+  - quantity: minimum ISI, mean
+    value: 3.7
+    tolerance: 2.5
+    unit: ms
+  - quantity: minimum ISI, median
+    value: 2.7
+    tolerance: 0.27
+    unit: ms
+  criterion: As table1-l4-c2, over the 11 cells (latency over the cells for which it can be
+    determined, see latency-determinable). Reproduced when at least 15 of the 18 values are within
+    tolerance, partially for 10 to 14, not reproduced below 10.
+- id: latency-determinable
+  statement: A touch-response latency could be determined for all 31 L4 C2 cells but for only four
+    of the 10 L4 cells outside C2, for lack of a touch response.
+  source: Figure 2, figure supplement 1A legend
+  quote: Latency from touch onset to onset of spiking response for 31 L4 cells in C2 (red), four L4
+    outside C2 (grey) and eleven L5 near C2 (yellow). Latencies could not be determined for six L4
+    outside cells and one L5 cell due to lack of touch response
+  expected:
+  - quantity: L4 C2 cells with a latency
+    value: 31
+    tolerance: 0
+  - quantity: L4 outside C2 cells with a latency
+    value: 4
+    tolerance: 0
+  criterion: Latency as in the Methods (Spike analysis), the first 1 ms PCTH bin after touch onset
+    above the pre-touch mean (-50 to 0 ms) plus two standard deviations; a cell has no latency
+    when no bin crosses. The legend contradicts itself for L5 (eleven plotted, one undetermined,
+    of 11 cells), so L5 is read as 10 or 11 and not judged. Open details, (1) the PCTH used (first
+    touches, or all touches), (2) the standard deviation (across the 50 pre-touch bins), (3) the
+    window searched after onset, not given, read as 0 to 50 ms, the post-touch span of the
+    touch-aligned responses in the Methods (Population decoding). The cell's touch response cutoff
+    cannot bound the search, as it is computed from spikes indexed after the latency. Both
+    readings of (1) are shown; the outcome is the one they both give, else
+    methods_underspecified.
+- id: l4-outside-weaker-touch
+  statement: L4 neurons outside C2 respond much more weakly to touch than L4 neurons in C2, for
+    first and for later touches.
+  source: Results, L4 responses are temporally precise, paragraph 6; Figure 2B
+  quote: In L4, but outside of C2, touch responses were much weaker (first touch, p = 1.4e-5; later
+    touches, p = 6.32e-6; Wilcoxon rank sum)
+  statistics:
+  - about: spikes per first touch, L4 C2 against L4 outside C2
+    test: Wilcoxon rank sum
+    p: 1.4e-5
+    n: 31 and 10 cells
+  - about: spikes per later touch, L4 C2 against L4 outside C2
+    test: Wilcoxon rank sum
+    p: 6.32e-6
+    n: 31 and 10 cells
+  criterion: Spikes per touch per cell as in table1-l4-c2. Reproduced when both rank-sum tests
+    give p < 0.05 with the C2 median higher; partially when one does. Open detail, the measure
+    tested, read as (a) spikes per touch (Table 1 columns 1 and 2) or (b) the peak touch rate
+    (Figure 2C); both are shown, the outcome being the one they agree on, else
+    methods_underspecified.
+- id: l5-higher-rates
+  statement: L5 neurons near C2 have much higher spike rates than L4 neurons, with more diverse
+    touch responses.
+  source: Results, L4 responses are temporally precise, paragraph 6; Figure 2B-D; Table 1
+  quote: Layer 5 neurons near C2 had much higher firing rates, with touch responses that were more
+    diverse
+  criterion: The paper reports no test. From Table 1, the L5 median non-whisking and whisking
+    rates (12.8 and 13.5 spikes/s) are many times those of L4 C2 (0.32 and 0.33) and of L4
+    outside C2 (1.10 and 1.31). The sentence compares L5 with the L4 neurons of the paragraph,
+    inside and outside C2. Reproduced when the L5 median is above the median of each L4 group for
+    both rates and a Wilcoxon rank sum (the paper's test for group comparisons) gives p < 0.05
+    for all four comparisons; partially when only those against L4 C2 do. Diversity is not judged; the touch PSTHs
+    are shown.
+- id: phase-mod-l4-inside-outside
+  statement: Modulation by whisking phase does not differ between L4 neurons inside and outside
+    C2.
+  source: Results, L4 responses are temporally precise, paragraph 6; Figure 2, figure supplement
+    1B
+  quote: Modulation by whisking phase was not significantly different between L4 neurons inside and
+    outside the C2 barrel (p = 0.68)
+  statistics:
+  - test: Wilcoxon rank sum
+    p: 0.68
+    n: 31 and 10 cells
+  criterion: A claim of absence, judged on the paper's test, a Wilcoxon rank sum of per-cell
+    modulation depth (as in table1-l4-c2) between the 31 L4 C2 and 10 L4 outside cells. The
+    paper states no alpha; 0.05 is used, the conventional level and consistent with the p values
+    it calls significant (up to 0.019). Reproduced when p >= 0.05; the medians are reported.
+- id: phase-mod-l4-vs-l5
+  statement: L4 neurons, inside and outside C2, are more modulated by whisking phase than L5
+    neurons.
+  source: Results, L4 responses are temporally precise, paragraph 6; Figure 2, figure supplement
+    1B
+  quote: but both were significantly more phase modulated than L5 (p = 4.3e-5 and p = 0.012
+    respectively, Wilcoxon rank sum)
+  statistics:
+  - about: L4 C2 against L5
+    test: Wilcoxon rank sum
+    p: 4.3e-5
+    n: 31 and 11 cells
+  - about: L4 outside C2 against L5
+    test: Wilcoxon rank sum
+    p: 0.012
+    n: 10 and 11 cells
+  criterion: Modulation depth per cell as in table1-l4-c2. Reproduced when both rank-sum tests give
+    p < 0.05 with the L4 median higher; partially when one does.
+- id: whisking-rate-l4-no-change
+  statement: Across L4 neurons, inside and outside C2, spike rate does not change between whisking
+    and non-whisking periods.
+  source: Results, L4 responses are temporally precise, paragraph 6; Figure 2D
+  quote: There were no significant changes in firing rate between whisking and non-whisking across
+    the L4 population (L4 inside C2, p = 0.75; L4 outside C2, p = 0.92)
+  statistics:
+  - about: L4 inside C2
+    test: Wilcoxon signed rank
+    p: 0.75
+    n: 31 cells
+  - about: L4 outside C2
+    test: Wilcoxon signed rank
+    p: 0.92
+    n: 10 cells
+  criterion: A claim of absence, judged on the paper's test, a Wilcoxon signed-rank test of
+    per-cell whisking against non-whisking rate (the test named for L5 in the same sentence),
+    each group apart, at alpha 0.05 (not stated; see phase-mod-l4-inside-outside). Reproduced
+    when both p >= 0.05, partially when one is. Periods as in text-whisking-rates, with whisking
+    read with and without touch epochs; the outcome is the one both give, else
+    methods_underspecified. The median difference is reported.
+- id: whisking-rate-l5-increase
+  statement: L5 neurons fire modestly but significantly more during whisking than during
+    non-whisking periods.
+  source: Results, L4 responses are temporally precise, paragraph 6; Figure 2D
+  quote: whereas L5 showed a modest, but significant increase with whisking (p = 0.019, Wilcoxon
+    signed rank)
+  statistics:
+  - test: Wilcoxon signed rank
+    p: 0.019
+    n: 11 cells
+  criterion: As whisking-rate-l4-no-change, for the 11 L5 cells. Reproduced when p < 0.05 with the
+    median of the per-cell differences (whisking minus non-whisking) positive, under both readings
+    of whisking periods; the increase is the direction of the paired signed-rank test. The group
+    medians are not the measure; Table 1 gives them (13.5 and 12.8 spikes/s) and they are shown
+    only for comparison.
+- id: fig3c-touch-spikes-l4c2
+  statement: In L4 C2 neurons 70.6 +- 20.9% (mean +- s.d.) of spikes during exploration are coupled
+    to touch, within an average of 14.9% of exploration time.
+  source: Results, L4 responses are temporally precise, paragraph 8; Figure 3C
+  quote: Over the L4 C2 population, 70.6% ± 20.9% (mean, s.d.) of spikes were coupled to touch in
+    an average of 14.9% of exploration time
+  expected:
+  - quantity: touch-coupled fraction of exploration spikes, mean over 31 cells
+    value: 70.6
+    tolerance: 20.9
+    unit: '%'
+  - quantity: fraction of exploration time in touch windows, mean
+    value: 14.9
+    tolerance: 1.49
+    unit: '%'
+  criterion: Methods, Spikes accounted by active sensation. Exploration time is whisking epochs
+    with touch epochs, leaving out touches >100 ms, within the sample epoch (Results, paragraph
+    7, "during whisking or touch in the sample epoch (exploration time)"). Each spike in exploration time is indexed by
+    the time since the closest touch onset, less the cell's latency; y_ton(t_i) is the number of
+    spikes within t_i of onset; the cutoff t_on is the first t_i where the increment falls below
+    the 95th percentile of the increments of 1000 surrogate curves from shuffled spike times,
+    curves smoothed by a degree-11 polynomial before differencing. The cutoff is the point where
+    the curve levels off after its rise (Results, paragraph 7, "At some window size, the curve
+    levels off ... This transition point defines the proportion of touch-coupled spikes"; Methods,
+    "these curves rise steeply and then plateau"; the example cell's window is 8 to 40 ms), so
+    t_on is the first t_i at which the smoothed increment, having been above the surrogates' 95th
+    percentile at an earlier t_i, falls below it. A dip of the polynomial before the rise is not
+    the cutoff; the literal search from t_i = 1 ms is shown as a variant only. The touch-coupled fraction is
+    y_ton(t_on) over all exploration spikes; the time fraction is the time within [latency,
+    latency + t_on] after touch onsets over exploration time. Open details, (1) the step of t_i,
+    taken as 1 ms (the paper's bin for touch analyses); (2) the shuffle, read as (a) spike times
+    drawn uniformly over exploration time or (b) the cell's spike times circularly shifted within
+    each trial's exploration time; (3) "closest touch onset", read as (a) the nearest onset before
+    the spike or (b) the nearest onset either side; (4) the range of t_i over which y_ton is built
+    and fitted, which the paper does not give, read as (r100) 0 to 100 ms (the limit for prolonged
+    touches) or (r200) 0 to 200 ms. All combinations of (2), (3) and (4) are run; reproduced when
+    both values are within tolerance under all, methods_underspecified when they disagree.
+- id: fig3c-touch-spikes-outside
+  statement: L4 neurons outside C2 have far fewer touch-coupled spikes, 8.4 +- 13.3%, in 3.5% of
+    exploration time.
+  source: Results, L4 responses are temporally precise, paragraph 8; Figure 3C
+  quote: L4 neurons outside of C2 had significantly less touch-evoked spikes, 8.4% ± 13.3% in 3.5%
+    of exploration time (p = 6.53e-6, Wilcoxon rank sum)
+  statistics:
+  - about: touch-coupled fraction, L4 C2 against L4 outside C2
+    test: Wilcoxon rank sum
+    p: 6.53e-6
+    n: 31 and 10 cells
+  expected:
+  - quantity: touch-coupled fraction, mean over 10 cells
+    value: 8.4
+    tolerance: 13.3
+    unit: '%'
+  - quantity: fraction of exploration time in touch windows, mean
+    value: 3.5
+    tolerance: 0.35
+    unit: '%'
+  depends_on:
+  - fig3c-touch-spikes-l4c2
+  criterion: As fig3c-touch-spikes-l4c2, with its readings. The paper does not say how the touch
+    window is placed for the six cells without a touch latency (latency-determinable). Table 1
+    gives this group a median of 3.6% and a range of 0 to 41.0%, so at most four of the 10 cells
+    are at 0%, and those six were not all set to 0%. Readings, (a) the latency taken as 0 ms
+    (window from touch onset) for cells without one; (b) the latency from the all-touch PCTH where
+    the first-touch PCTH gives none, then (a) for any cell still without one. Both are run; the
+    outcome is the one both give, else methods_underspecified. Setting those cells to 0% is shown
+    as a variant. Reproduced when both values are within tolerance and the rank-sum test against L4 C2 gives p < 0.05 with
+    the outside median lower.
+- id: fig3c-touch-spikes-l5
+  statement: L5 neurons have fewer touch-coupled spikes than L4 C2 neurons, 24.0 +- 18.6%, in
+    19.0% of exploration time.
+  source: Results, L4 responses are temporally precise, paragraph 8; Figure 3C
+  quote: L5 neurons in C2 also showed significantly less touch-evoked spikes, 24.0% ± 18.6% touch
+    spikes in 19.0% of exploration time (p = 2.30e-5, Wilcoxon rank sum)
+  statistics:
+  - about: touch-coupled fraction, L4 C2 against L5
+    test: Wilcoxon rank sum
+    p: 2.30e-5
+    n: 31 and 11 cells
+  expected:
+  - quantity: touch-coupled fraction, mean over 11 cells
+    value: 24.0
+    tolerance: 18.6
+    unit: '%'
+  - quantity: fraction of exploration time in touch windows, mean
+    value: 19.0
+    tolerance: 1.9
+    unit: '%'
+  depends_on:
+  - fig3c-touch-spikes-l4c2
+  criterion: As fig3c-touch-spikes-outside, for the 11 L5 cells.
+- id: fig3d-touch-phase-l4c2
+  statement: In L4 C2 neurons 75.2 +- 19.0% of exploration spikes are coupled to touch or to
+    whisking phase, within an average of 22.0% of exploration time.
+  source: Results, L4 responses are temporally precise, paragraph 9; Figure 3D
+  quote: Overall, for neurons in C2 75.2 ± 19.0% of spikes were coupled to touch or whisking phase
+    in an average of 22.0% of exploration time
+  expected:
+  - quantity: touch or phase coupled fraction, mean over 31 cells
+    value: 75.2
+    tolerance: 19.0
+    unit: '%'
+  - quantity: fraction of exploration time in touch or phase windows, mean
+    value: 22.0
+    tolerance: 2.2
+    unit: '%'
+  depends_on:
+  - fig3c-touch-spikes-l4c2
+  criterion: After fig3c-touch-spikes-l4c2, the spikes not attributed to touch are indexed by the
+    time to the closest preferred phase of a whisk cycle (preferred phase from the cosine fit;
+    whisking epochs including those with non-monotonic phase, phase circular), y_whisk(t_i) built
+    and its cutoff t_w found by the same shuffle rule (Methods), with the same start of the search
+    (the first t_i at which the increment, having been above chance, falls below it). The fraction is (touch spikes +
+    phase spikes) over exploration spikes; the time is the union of touch windows and windows of
+    +-t_w around each cycle's preferred phase, truncated at cycle margins (Figure 3B legend), over
+    exploration time. Open details as fig3c-touch-spikes-l4c2, plus (5) whether the phase window
+    is +-t_w or t_w wide in total; all combinations are run, with the same rule for disagreement.
+- id: fig3d-touch-phase-outside
+  statement: L4 neurons outside C2 have fewer touch or phase coupled spikes than L4 C2, 33.0 +-
+    30.2% in 16.9% of exploration time.
+  source: Results, L4 responses are temporally precise, paragraph 9; Figure 3D
+  quote: significantly more than outside of C2 (33.0 ± 30.2 in 16.9% of time; p = 2.88e-4)
+  statistics:
+  - about: touch or phase coupled fraction, L4 C2 against L4 outside C2
+    test: Wilcoxon rank sum
+    p: 2.88e-4
+    n: 31 and 10 cells
+  expected:
+  - quantity: touch or phase coupled fraction, mean over 10 cells
+    value: 33.0
+    tolerance: 30.2
+    unit: '%'
+  - quantity: fraction of exploration time, mean
+    value: 16.9
+    tolerance: 1.69
+    unit: '%'
+  depends_on:
+  - fig3d-touch-phase-l4c2
+  criterion: As fig3d-touch-phase-l4c2, with its readings; reproduced when both values are within
+    tolerance and the rank-sum test gives p < 0.05 with the outside median lower.
+- id: fig3d-touch-phase-l5
+  statement: L5 neurons have fewer touch or phase coupled spikes than L4 C2, 31.5 +- 16.4% in 26.1%
+    of exploration time.
+  source: Results, L4 responses are temporally precise, paragraph 9; Figure 3D
+  quote: or in L5 (31.5 ± 16.4 in 26.1% of time; p = 2.96e-5, Wilcoxon rank sum)
+  statistics:
+  - about: touch or phase coupled fraction, L4 C2 against L5
+    test: Wilcoxon rank sum
+    p: 2.96e-5
+    n: 31 and 11 cells
+  expected:
+  - quantity: touch or phase coupled fraction, mean over 11 cells
+    value: 31.5
+    tolerance: 16.4
+    unit: '%'
+  - quantity: fraction of exploration time, mean
+    value: 26.1
+    tolerance: 2.61
+    unit: '%'
+  depends_on:
+  - fig3d-touch-phase-l4c2
+  criterion: As fig3d-touch-phase-outside, for the 11 L5 cells.
+- id: fig3d-phase-only
+  statement: Spikes coupled to whisking phase alone are 4.6 +- 8.7% in L4 C2, 23.8 +- 27.9% in L4
+    outside C2 and 7.6 +- 14.9% in L5.
+  source: Results, L4 responses are temporally precise, paragraph 9; Figure 3D
+  quote: Subtraction of the touch spikes from touch and phase spikes reveals that 4.6 ± 8.7% of
+    spikes were purely phase coupled in L4 C2, vs 23.8 ± 27.9% outside of C2 and 7.6 ± 14.9% in L5
+  expected:
+  - quantity: phase-only fraction, L4 C2
+    value: 4.6
+    tolerance: 8.7
+    unit: '%'
+  - quantity: phase-only fraction, L4 outside C2
+    value: 23.8
+    tolerance: 27.9
+    unit: '%'
+  - quantity: phase-only fraction, L5
+    value: 7.6
+    tolerance: 14.9
+    unit: '%'
+  depends_on:
+  - fig3d-touch-phase-l4c2
+  criterion: Per cell, the touch or phase fraction less the touch fraction (fig3d-touch-phase-l4c2
+    and fig3c-touch-spikes-l4c2, same readings), then mean and s.d. per group. Reproduced when all
+    three means are within tolerance and the L4 outside mean is the largest of the three.
+- id: fig4a-touch-detection-c2
+  statement: Pooling the activity of only 15 L4 C2 neurons, integrated over 10 ms, is enough to
+    detect 95% of touches.
+  source: Results, Decoding touch, paragraph 1; Figure 4A
+  quote: Pooling activity from only fifteen L4 neurons (out of approximately 1600 [ Lefort et al.,
+    2009 ]) in C2 was sufficient to detect 95% of touches (integration time, 10 ms)
+  expected:
+    quantity: L4 C2 population size reaching 95% touch detection
+    value: 15
+    tolerance: 1.5
+    unit: neurons
+  criterion: Methods, Population decoding. Per neuron, touch-aligned responses from 30 ms before
+    to 50 ms after each touch, leaving out touches with a second touch within 50 ms. For a
+    population of N neurons drawn at random, 1000 responses per neuron drawn with replacement,
+    each spike train causally integrated over 10 ms and pooled across neurons; at each time point
+    a one-dimensional threshold decoder separates the pooled response from that in epochs without
+    touch, the threshold chosen on half the data and performance measured on the other half;
+    repeated to give 95% bounds. Open details, (1) the non-touch epochs, read as (a) the 30 ms
+    before touch in the same responses or (b) 10 ms windows drawn from exploration time away from
+    touch, under (a) with the sample taken, as the paper does not say which, as (a1) the 10 ms
+    window ending at onset, (a2) the earliest full window (-30 to -20 ms) or (a3) all pre-touch
+    windows; (2) the performance measure, read as (a) the fraction of touches detected at the best
+    post-touch time point or (b) the percent correct over touch and non-touch samples, at the
+    best post-touch time point, in both cases with the threshold that maximizes percent correct
+    on the training half (the Methods' "optimal threshold", which they do not define further; no
+    other criterion for it is in the paper); (3) whether the 1000 draws pair across neurons by touch
+    (they cannot, as neurons were recorded apart; independent draws are used, as the Methods
+    imply). The number of neurons where the mean performance first reaches 95% is found for each
+    reading of (1) and (2); reproduced when it is within tolerance under all, else
+    methods_underspecified with every result shown.
+- id: fig4a-touch-detection-outside
+  statement: Touch detection by neurons from surrounding barrels, outside C2, is poor.
+  source: Results, Decoding touch, paragraph 1; Figure 4A
+  quote: Touch detection by neurons from surrounding barrels (>200 µm from the principal whisker)
+    was poor
+  depends_on:
+  - fig4a-touch-detection-c2
+  criterion: As fig4a-touch-detection-c2, sampling from the 10 L4 outside cells (with
+    replacement, as for C2). Reproduced when, under every reading, performance with 15 neurons is
+    below that of C2 and its 95% bound excludes 95% detection; the Methods' note of "several-fold
+    more information about touch in C2" is shown as the ratio of the population sizes needed for
+    equal performance.
+- id: fig4b-touch-time-precision
+  statement: A naive Bayes decoder reading 200 L4 C2 neurons integrated over 10 ms decodes the time
+    elapsed since touch with high precision, a minimum uncertainty of 0.55 ms (95% confidence) at
+    10 ms after touch onset.
+  source: Results, Decoding touch, paragraph 1; Figure 4B; Figure 4, figure supplement 1
+  quote: a group of 200 neurons in C2, integrating in 10 ms windows after touch, also allowed
+    decoding of elapsed time from touch with high precision (minimum 0.55 ms uncertainty with 95%
+    confidence at 10 ms post-touch onset using a naïve Bayes decoder
+  expected:
+    quantity: minimum decoding uncertainty of time since touch, 200 neurons
+    value: 0.55
+    tolerance: 0.055
+    unit: ms
+  criterion: Methods, Population decoding. Responses sampled as fig4a-touch-detection-c2, each
+    neuron's spike train integrated in a 10 ms sliding window; a multinomial naive Bayes
+    classifier reports the most likely time since onset at each 1 ms time point, with the RMS
+    time error from 100 bootstrap runs (Figure 4, figure supplement 1). Open details, (1) the
+    uncertainty, read as (a) the RMS error, (b) the half width of the 95% bound of decoded time
+    or (c) 1.96 times the RMS error; (2) train and test split, read as (a) half and half as for
+    touch detection or (b) independent resampled sets for training and testing; (3) the times the
+    decoder chooses among, which the paper does not give ("for every time point what was the most
+    likely time elapsed from touch onset"), read as (c-all) every 1 ms over the sampled -30 to +50
+    ms response where a full window fits or (c-post) every 1 ms from onset on (the Results'
+    "integrating in 10 ms windows after touch"); (4) the smoothing of zero counts in the
+    likelihood, not given, read as add-one (Laplace) smoothing, a smaller pseudocount shown as a
+    variant. Reproduced when the minimum over time points, at or near 10 ms after onset, is within
+    tolerance under one reading of (1) for both readings of (2) and both of (3); the readings that
+    match are said. Also shown, that
+    the error falls with population size (Figure 4B inset).
+- id: fig4c-phase-decoding
+  statement: Even 1000 L4 neurons give only a rough estimate of whisking phase, a resolution of 24
+    deg in C2 and 33 deg outside C2 at d' = 1 (76% correct discrimination).
+  source: Results, Decoding touch, paragraph 2; Figure 4C
+  quote: a large population of neurons (1000) was required to provide even a rough estimate of
+    whisking phase (24° in C2, 33° outside at d′ = 1 performance, equivalent to 76% correct
+    discrimination)
+  expected:
+  - quantity: phase resolution at 76% correct, 1000 L4 C2 neurons
+    value: 24
+    tolerance: 2.4
+    unit: deg
+  - quantity: phase resolution at 76% correct, 1000 L4 outside C2 neurons
+    value: 33
+    tolerance: 3.3
+    unit: deg
+  criterion: Methods, Population decoding. Per neuron, spikes aligned to the phase of each whisk
+    cycle with peak amplitude >2.5 deg, binned in 120 bins over -pi to pi; the cycles are the
+    whisking cycles of Methods, Whisker analysis, as for phase tuning (whisking epochs lie outside
+    touch epochs, "Whisking cycles during licking or within 70 ms after touch were excluded", and
+    "Whisking epochs used for phase analysis had monotonic phase for a complete whisking cycle"); neurons drawn with
+    replacement and their responses circularly shifted to give uniformly distributed preferred
+    phases; a naive Bayes classifier discriminates the population response at two phases; the
+    phase difference reaching 76% correct is found, median over 100 runs (Figure 4C legend).
+    Open details, (1) the response per cycle, read as (a) the spike count in each phase bin of one
+    cycle (Poisson or multinomial likelihood over cycles) or (b) the cycle-averaged rate per bin
+    used as a Poisson mean; (2) the shifts, read as (a) random uniform shifts or (b) shifts that
+    place preferred phases evenly; (3) bins with no spikes in the likelihood, which the paper
+    does not treat, read as add-one (Laplace) smoothing of counts or a floor rate under (1)(b), the
+    paper giving no value for either. Reproduced when both values are within tolerance and C2 is
+    better than outside under all readings, else methods_underspecified.
+- id: fig5c-modulation-index
+  statement: Touch response magnitude of L4 C2 neurons is strongly modulated by touch order,
+    whisker velocity before touch and maximum curvature during touch, with mean modulation indices
+    of 0.71 +- 0.25, 0.71 +- 0.27 and 0.72 +- 0.23.
+  source: Results, Low spike count variability, paragraph 2; Figure 5A-C
+  quote: Touch response magnitude was highly modulated by each of the three variables (mean
+    modulation index ... touch order, 0.71 ± 0.25; velocity, 0.71 ± 0.27; max curvature, 0.72 ±
+    0.23; mean ± std
+  expected:
+  - quantity: modulation index by touch order, mean over 31 cells
+    value: 0.71
+    tolerance: 0.25
+  - quantity: modulation index by pre-touch velocity, mean
+    value: 0.71
+    tolerance: 0.27
+  - quantity: modulation index by maximum curvature, mean
+    value: 0.72
+    tolerance: 0.23
+  criterion: Figure 5 legend. Per L4 C2 cell, touches sorted by the property and split into 10
+    bins with equal numbers of touches; the mean spikes per touch in the cell's spike integration
+    window (touch spike window) per bin; modulation index (max bin - min bin)/(max bin + min bin).
+    Properties, order of the touch in its trial; whisker velocity at touch onset (d theta/dt);
+    maximum curvature change during the touch. Open details, (1) velocity, read as (a) the
+    velocity at the onset frame ("at touch onset", Figure 5A legend) or (b) the velocity in the
+    frame before onset ("just before touch", Results; "pretouch velocity", Methods); (2) curvature,
+    read as (a) max |Delta kappa| over the whole touch or (b) over 0 to 20 ms after onset (the
+    window of the Methods for clustering); (3) touch order, where ties make equal bins
+    impossible, read as (a) ranks with ties broken at random or (b) bins of whole order values
+    as near equal as they can be. Reproduced when all three means are within tolerance under all
+    readings, else methods_underspecified.
+- id: fig5-modulation-correlations
+  statement: Across cells, responsiveness to pre-touch velocity and to maximum curvature covary
+    strongly (r = 0.80), and responsiveness to touch order is somewhat less correlated with both
+    (r = 0.70 and 0.65).
+  source: Results, Low spike count variability, paragraph 2; Figure 5B-C
+  quote: Responsiveness to pretouch velocity and max curvature covaried strongly (pairwise
+    correlation coefficient 0.80, p = 4.3e-8), whereas touch order response was somewhat less
+    correlated with velocity and curvature (correlation coefficients 0.70, 0.65, p = 1.0e-5, p =
+    8.2e-5)
+  statistics:
+  - about: velocity against curvature
+    test: correlation
+    statistic: r = 0.80
+    p: 4.3e-8
+  - about: touch order against velocity
+    test: correlation
+    statistic: r = 0.70
+    p: 1.0e-5
+  - about: touch order against curvature
+    test: correlation
+    statistic: r = 0.65
+    p: 8.2e-5
+  expected:
+  - quantity: correlation, velocity and curvature responsiveness
+    value: 0.80
+    tolerance: 0.08
+  - quantity: correlation, touch order and velocity responsiveness
+    value: 0.70
+    tolerance: 0.07
+  - quantity: correlation, touch order and curvature responsiveness
+    value: 0.65
+    tolerance: 0.065
+  depends_on:
+  - fig5c-modulation-index
+  criterion: The paper does not say what is correlated. Readings, (a) Pearson correlation across
+    the 31 L4 C2 cells of the modulation indices of fig5c-modulation-index (the reported p values
+    are those of Pearson r with 29 degrees of freedom, e.g. r = 0.70 gives p near 1e-5); (b)
+    Pearson correlation of the peak-normalized 10-bin tuning curves (Figure 5B) pooled over cells
+    and bins. Reproduced when all three r are within tolerance with p < 0.05 under one reading,
+    with velocity-curvature the largest; the readings that match are said.
+- id: fig6s1b-clusters-less-variable
+  statement: The clustering of touches into five groups finds subsets with significantly less
+    variability in touch properties than random samples of touches.
+  source: Figure 6, figure supplement 1B legend
+  quote: The procedure finds subset of points with significantly less behavioral variability than
+    in the full dataset
+  criterion: Methods, Analysis of spike count variance. Per L4 C2 cell, touches with inter-contact
+    interval >250 ms; z-scored pre-touch velocity and maximum curvature change 0 to 20 ms after
+    touch; OPTICS ordering; the run of N consecutive ordered touches with the smallest sum of
+    pairwise distances is the first group, removed, and repeated for five groups, N being 20% of
+    the touches (Figure 6, figure supplement 1A) and at least 20. Open details, (1) OPTICS
+    parameters (minimum points, maximum radius), not given, read as (a) minimum points 5 with
+    unbounded radius (the scikit-learn default) or (b) minimum points N; (2) inter-contact
+    interval, read as (a) time since the previous touch offset or (b) since the previous onset;
+    (3) N, read as 20% of the selected touches at the start, fixed for all five groups. The
+    standard deviation of z-scored velocity in each group is compared with that of 1000 random
+    samples of N touches; reproduced when, under all readings, the group standard deviation is
+    below the 5th percentile of the random ones for the first group in most (>50%) cells.
+- id: fig6cd-ff-near-binomial
+  statement: Across L4 C2 neurons, the Fano factor following touch drops below one, lying close to
+    the binomial limit (the theoretical minimum) for most cells.
+  source: Results, Low spike count variability, paragraph 4; Figure 6C-D
+  quote: Across the population of neurons within C2 the FF following touch dropped below one, with
+    the FF lying close to the binomial limit for most cells
+  depends_on:
+  - fig6s1b-clusters-less-variable
+  criterion: Figure 6C legend and Methods. Per cell and per touch group (fig6s1b, same readings),
+    FF of spike counts in 10 ms windows starting 0 to 20 ms after touch in 1 ms steps; the
+    minimum over windows per group, and the minimum across the five groups. Open details, (1)
+    which minimum, read as (a) per group (Figure 6C red circles) or (b) across groups (blue
+    circles); (2) "close", which the paper does not define, read as (a) the binomial limit 1 - m
+    lies inside the cell's 95% resampling interval of the FF (1000 resamples, Methods) or (b) the
+    FF lies nearer the binomial limit than the Poisson value 1. Reproduced when the population mean
+    of the minimum FF is below 1 and, for more than half of the cells, the FF is close under the
+    reading in force; every combination is run, the outcome being the one they all give, else
+    methods_underspecified.
+- id: fig6d-not-refractory
+  statement: The low Fano factor after touch cannot be explained by a Poisson process with a 2.3
+    ms refractory period and rates matched to each neuron.
+  source: Results, Low spike count variability, paragraph 6; Figure 6D
+  quote: Comparing the simulations with actual spike trains revealed that L4 neuron response
+    precision could not be explained by the refractory period alone
+  depends_on:
+  - fig6cd-ff-near-binomial
+  criterion: Methods, last paragraph, and Figure 6D. Per L4 C2 cell, spike trains simulated as a
+    Poisson process with an absolute refractory period of 2.3 ms (the median minimum ISI) whose
+    average touch response is matched to the data (Methods, "with average touch response matched
+    to the data"), so the output PSTH, not the input rate, equals the cell's touch PSTH (1 ms bins),
+    so the rate is raised to make up for the spikes the refractory period removes, as the free
+    rate lambda(t) = r(t) / (1 - integral of r over [t - 2.3 ms, t)) of Berry and Meister (1998),
+    the paper's cited method, or by adjusting the rate until the simulated PSTH matches; using
+    the PSTH directly as the rate is not the paper's model and is shown as a variant only. One
+    simulated train per real touch; FF computed as for the data in 10 ms sliding windows. Open details, (1) which touches,
+    read as all >250 ms touches pooled, or per group as fig6cd; (2) the comparison, which the
+    paper gives only as a figure, read as (a) the population mean data FF below the model's at
+    the window of the data minimum, by more than the sum of the two s.e.m. (Figure 6D error
+    bars), or (b) the per-cell data FF below the model's in more than half of the cells by a
+    sign test at p < 0.05. Every combination is run; the outcome is the one they all give, else
+    methods_underspecified.
+- id: fig6e-sample-epoch-ff
+  statement: Counting spikes over the whole sample epoch, ignoring the millisecond structure of
+    behavior, gives a very large Fano factor of 6.57 +- 5.41 (mean +- s.d. over L4 C2 cells).
+  source: Results, Low spike count variability, paragraph 7; Figure 6E, condition 1
+  quote: Response variability was very large (FF = 6.57 mean ± 5.41 s.d.) when we ignored the
+    millisecond time scale of behavior
+  expected:
+    quantity: sample-epoch FF, mean over L4 C2 cells
+    value: 6.57
+    tolerance: 5.41
+  criterion: Figure 6E legend, condition 1. Per L4 C2 cell, FF across trials of the spike count
+    while the pole is within reach; mean and s.d. over the 31 cells. Reproduced when the mean is
+    within tolerance and above 1.
+- id: fig6e-random-38ms-ff
+  statement: Counting spikes in random 38 ms windows, as many per trial as there are touches, gives
+    a Fano factor of 1.59 +- 0.49.
+  source: Results, Low spike count variability, paragraph 7; Figure 6E, condition 2
+  quote: Integrating activity in time windows as wide as average touch response periods (38 ms)
+    gave a FF of 1.59 ± 0.49
+  expected:
+    quantity: random 38 ms window FF, mean over L4 C2 cells
+    value: 1.59
+    tolerance: 0.49
+  criterion: Figure 6E legend, condition 2. Per cell, in each trial as many 38 ms windows at random
+    times as the trial has touches; FF across all windows of the cell; mean over the 31 cells.
+    Open detail, where windows are drawn, read as (a) within the sample epoch or (b) anywhere in
+    the trial ("randomly sampling from the trial"); both are run with 100 random draws, the mean
+    reported. Reproduced when the mean is within tolerance under both, else
+    methods_underspecified.
+- id: fig6e-touch-38ms-ff
+  statement: Counting spikes in 38 ms windows aligned to touch onset (after a 6 ms latency) gives
+    a Fano factor of 1.37 +- 0.74.
+  source: Results, Low spike count variability, paragraph 7; Figure 6E, condition 3
+  quote: and FF of 1.37 ± 0.74 ( Figures 6E, 3 ) when aligned to touch onset
+  expected:
+    quantity: touch-aligned 38 ms window FF, mean over L4 C2 cells
+    value: 1.37
+    tolerance: 0.74
+  criterion: Figure 6E legend, condition 3. Per cell, spike counts in the window 6 to 44 ms after
+    each touch onset; FF across touches; mean over the 31 cells. Open detail, the touches, read
+    as (a) all touches or (b) touches with inter-contact interval >250 ms; both are run, and the
+    outcome is the one both give, else methods_underspecified.
+- id: fig6e-touch-10ms-ff
+  statement: A narrower 10 ms window after touch reduces the Fano factor to 0.73 +- 0.19.
+  source: Results, Low spike count variability, paragraph 7; Figure 6E, condition 4
+  quote: Using a narrower touch window of 10 ms reduced the FF to 0.73 ± 0.19
+  expected:
+    quantity: minimum 10 ms window FF after touch, mean over L4 C2 cells
+    value: 0.73
+    tolerance: 0.19
+  criterion: Figure 6E legend, condition 4. Per cell, the minimum over 10 ms windows starting 0 to
+    20 ms after touch onset (1 ms steps) of the FF across touches; mean over the 31 cells. Open
+    details, (1) the touches, as fig6e-touch-38ms-ff; (2) the window starts, read as (a) 0 to 20
+    ms or (b) 0 to 10 ms so that windows lie within 0 to 20 ms. Every combination is run; the
+    outcome is the one they all give, else methods_underspecified.
+- id: fig6e-similar-touch-ff
+  statement: Computed only across similar touches, the 10 ms Fano factor falls further to 0.54 +-
+    0.27, so that L4 responses to touch are almost noiseless.
+  source: Results, Low spike count variability, paragraph 7; Figure 6E, condition 5
+  quote: The FF was further reduced to 0.54 ± 0.27 when calculated only across similar touches
+  depends_on:
+  - fig6s1b-clusters-less-variable
+  expected:
+    quantity: minimum 10 ms window FF within touch groups, mean over L4 C2 cells
+    value: 0.54
+    tolerance: 0.27
+  criterion: Figure 6E legend, condition 5. As fig6e-touch-10ms-ff, within each of the five touch
+    groups of fig6s1b-clusters-less-variable (same readings). Open detail, the per-cell value,
+    read as (a) the minimum across the five groups (Figure 6C blue circles) or (b) the mean over
+    groups of each group's minimum. Every combination is run; reproduced when the mean is within
+    tolerance under all and, as the paragraph states, the five conditions of Figure 6E fall in
+    order (1 > 2 > 3 > 4 > 5) under the same readings; else methods_underspecified.
+- id: whisk-cycle-spikes
+  statement: L4 neurons fire few spikes during whisker movements, on average fewer than 0.15 spikes
+    per whisk cycle, which hinders decoding of whisking phase.
+  source: Discussion, paragraph 7; Figure 4
+  quote: their low spike rates during whisker movements (mean <0.15 spikes/whisk cycle) hinders
+    efficient decoding of whisking phase from population activity
+  criterion: Per L4 cell (inside and outside C2), spikes per whisk cycle over the whisking cycles
+    used for phase analysis (amplitude >2.5 deg, monotonic phase, not during licking or within 70
+    ms after touch). Open detail, the population, read as (a) L4 C2 cells or (b) all 41 L4 cells,
+    and the mean as (a) over cells or (b) over all cycles pooled. Reproduced when the mean is
+    below 0.15 under all readings, else methods_underspecified.
+checks:
+- date: 2026-10-21
+  kind: agent
+  model: claude-opus-5-5
+  ready: true
+  changes:
+  - Checker. The two values flagged as not found (fig3c-touch-spikes-l5 p = 2.30e-5, fig5-modulation-correlations p = 1.0e-5) are in the text as printed with trailing zeros; both are correct and unchanged.
+  - fig3c-touch-spikes-l4c2. Exploration time was not limited to the sample epoch; the Results define it as whisking or touch in the sample epoch. Added.
+  - fig3c-touch-spikes-outside (and, through it, fig3c-touch-spikes-l5, fig3d claims and table1 rows). The rule that cells without a latency count as 0% was not in the paper and is contradicted by Table 1 (outside C2 median 3.6% with six of ten cells lacking a latency). Replaced with two readings for the window of such cells; the 0% rule is kept as a variant.
+  - latency-determinable. Reading (b) of the search window, up to the touch response cutoff, is circular, as the cutoff is computed after the latency. Removed; the 0 to 50 ms reading remains.
+  - fig4a-touch-detection-c2. The "equal error" threshold was not in the paper; the Methods use an optimal threshold found on half the data. Both performance readings now use the threshold that maximizes percent correct on the training half.
+  - fig5c-modulation-index. Velocity reading (b), a mean over 1 to 5 ms before onset, was invented. Replaced with the frame before onset, from "just before touch" and "pretouch velocity".
+  - example-cell-ff-around-touch. Figure 6 calls its neuron "an example neuron" and does not say it is the Figure 1 cell. Named this open, with the Figure 1 cell as the first reading and any L4 C2 cell as the second.
+  - example-cell-sample-ff. The paper does not say whose FF 7.51 is. Statement and expected quantity no longer say example cell; readings (example cell, mean over L4 cells, mean over all cells) added.
+  - l5-higher-rates. The sentence compares L5 with L4 inside and outside C2; the criterion compared only with L4 C2. Added L4 outside C2.
+  - example-cell-phase-modulation. New claim, the example neuron's phase modulation depth close to 1 (Results, paragraph 5; Figure 1G-H), which had no claim.
+  - Open. table1-l4-c2, table1-l4-outside, table1-l5. The counting rules (15 of 18, 13 of 17 values within tolerance) are the claim writer's, not the paper's.
+  - Open. fig6s1b-clusters-less-variable. The paper shows the cluster variability test for one example neuron only; judging it on more than half of the cells, and on the first group, is the claim writer's choice.
+  - Open. fig6d-not-refractory. The paper compares data and model only in a figure; both comparison rules (s.e.m. separation, sign test) are the claim writer's.
+  - Open. fig4a-touch-detection-outside. The 95% bound rule for "poor" is not from the paper.
+  - Open. whisking-rate-l4-no-change. The paper names the Wilcoxon signed rank test only for L5 in the sentence; the same test is assumed for L4.

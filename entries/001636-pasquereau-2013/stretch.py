@@ -2,17 +2,21 @@
 
 Pasquereau & Turner (2013), Frontiers in Systems Neuroscience 7:98, doi:10.3389/fnsys.2013.00098.
 
-Each NWB file holds one recording session of one or two single units in M1 of monkey Venus (V,
+Each NWB file holds one recording session of one or more single units in M1 of monkey Venus (V,
 elbow task) or Leu (L, wrist task): a trials table with the task events and the torque
 perturbations, the manipulandum angle, the torque command and, in many Venus sessions, rectified
 EMG. Files are streamed from the archive at the pinned version; nothing is written to disk.
 
+Sessions. In the draft of 2026-10-21, source files recorded on the same day and linked in the
+lab's metadata table are merged into one session, and a unit is observed only during the trials
+of its own source files (its obs_intervals). A unit's perturbations are therefore the perturbation
+trials inside its obs_intervals (`load_session` stores them per unit).
+
 Clocks. The source files were trialized; the conversion placed the trials one after another with
-3 s gaps. The trials table and the spike times use the trial durations of the behavioural
-software, but the analog streams (angle, torque, EMG) use their own sample counts, which are a
-few ms shorter per trial, so the stored analog clock falls further behind the trials table with
-every trial. `realign` puts each analog segment back at the start time of its trial. The notebook
-checks this against the torque command and the joint angle.
+3 s gaps. In version 0.260518.1819 the analog streams (angle, torque, EMG) were laid end to end by
+their own sample counts and fell further behind the trials table with every trial. `realign` puts
+each analog segment back at the start time of its trial; in the draft it moves nothing, which the
+notebook shows (the lag it would correct is printed in the data check).
 
 Where the parameters come from:
 
@@ -35,7 +39,9 @@ Where the parameters come from:
   in the torque's direction exceeds 5 deg/s; peak velocity is its maximum over 0 to 200 ms and
   amplitude the largest displacement over 0 to 300 ms from the mean angle of the 50 ms before
   onset. An EMG response lasts while the session-average trace, less its baseline mean, exceeds
-  2 SD of the baseline (`EMG_SD`), from its first crossing between 10 and 150 ms.
+  2 SD of the baseline (`EMG_SD`), from its first crossing between 10 and 150 ms. The DSI's P
+  and NP are the signed largest changes from baseline over 0 to 200 ms in each direction, whether
+  or not a response was detected there (the claims file does not say where they are measured).
 - Chosen here for the checks and variants added after the first verification: the torque
   command excursion threshold (`COMMAND_EXCURSION`, under half the smallest monkey V pulse), the
   window for measuring active movements (`ACTIVE_WINDOW_MS`), and the causal velocity average for
@@ -54,7 +60,7 @@ from dandi.dandiapi import DandiAPIClient
 from scipy import signal, stats
 
 DANDISET_ID = "001636"
-DANDISET_VERSION = "0.260518.1819"
+DANDISET_VERSION = "draft"            # asked for; its modification time is printed by the notebook
 
 MIN_REPS = 5
 GAMMA_K, GAMMA_THETA_MS = 1.5, 20.0
@@ -84,12 +90,23 @@ COMMAND_EXCURSION = 20.0        # torque command units from rest; the smallest m
 CAUSAL_MS = 10                  # causal moving average of the unfiltered velocity (latency variant)
 
 
-def asset_urls() -> list[tuple[str, str]]:
-    """(path, streaming URL) of every NWB file at the pinned version."""
+EARLIER_VERSION = "0.260518.1819"  # used by attempt 001636-pasquereau-2013-01; compared in the data check
+
+
+def asset_urls(version: str = DANDISET_VERSION) -> list[tuple[str, str]]:
+    """(path, streaming URL) of every NWB file at a version (the pinned one by default)."""
     with DandiAPIClient() as client:
-        dandiset = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
+        dandiset = client.get_dandiset(DANDISET_ID, version)
         return sorted((a.path, a.get_content_url(follow_redirects=1, strip_query=True))
                       for a in dandiset.get_assets() if a.path.endswith(".nwb"))
+
+
+def version_info() -> dict:
+    """The pinned version's identifier, modification time and asset count, from the archive."""
+    with DandiAPIClient() as client:
+        d = client.get_dandiset(DANDISET_ID, DANDISET_VERSION)
+        v = d.version
+        return {"version": v.identifier, "modified": str(v.modified), "assets": v.asset_count}
 
 
 def _text(value) -> str:
@@ -130,6 +147,8 @@ def load_session(path: str, url: str) -> dict:
             "lateral_on": tr["lateral_target_appearance_time"][:],
             "reward": tr["reward_time"][:],
             "torque": [_text(v) for v in tr["torque_perturbation_type"][:]],
+            "source_file": ([_text(v) for v in tr["source_file"][:]] if "source_file" in tr
+                            else [path] * len(tr["start_time"])),
             "onset": tr["torque_perturbation_onset_time"][:],
             "movement": [_text(v) for v in tr["movement_type"][:]],
             "end_position": tr["derived_end_position"][:],
@@ -141,18 +160,25 @@ def load_session(path: str, url: str) -> dict:
         un = f["units"]
         data, index = un["spike_times"][:], un["spike_times_index"][:]
         spikes = np.split(data, index[:-1])
-        units = [{"unit_name": int(un["unit_name"][i]),
+        obs = np.split(un["obs_intervals"][:], un["obs_intervals_index"][:-1]) if "obs_intervals" in un else None
+        units = [{"unit_name": _text(un["unit_name"][i]),
                   "type": _text(un["neuron_projection_type"][i]),
                   "antidromic_latency_ms": float(un["antidromic_latency_ms"][i]),
-                  "also_in": _text(un["unit_also_in_session_id"][i]),
+                  "also_in": _text(un["unit_also_in_session_id"][i]) if "unit_also_in_session_id" in un else "",
                   "is_post_mptp": bool(un["is_post_mptp"][i]),
+                  "obs": obs[i] if obs is not None else None,
                   "spikes": spikes[i]} for i in range(len(un["id"]))]
+        has_also_in = "unit_also_in_session_id" in un
         acq = sorted(f["acquisition"].keys())
         raw = {}
-        if "ElbowAngle" in acq:
-            raw["t"] = f["acquisition/ElbowAngle/timestamps"][:]
-            raw["angle"] = f["acquisition/ElbowAngle/data"][:, 0]
-            raw["torque_cmd"] = f["acquisition/ElbowTorque/data"][:]
+        joint = "Elbow" if "ElbowAngle" in acq else "Wrist" if "WristAngle" in acq else None
+        frame = None
+        if joint:
+            raw["t"] = f[f"acquisition/{joint}Angle/timestamps"][:]
+            raw["angle"] = f[f"acquisition/{joint}Angle/data"][:, 0]
+            raw["torque_cmd"] = f[f"acquisition/{joint}Torque/data"][:]
+            if "reference_frame" in f[f"acquisition/{joint}Angle"]:
+                frame = _text(f[f"acquisition/{joint}Angle/reference_frame"][()])
             raw["emg_same_clock"] = True
             for name in EMG_CHANNELS:
                 if name in acq:
@@ -161,8 +187,9 @@ def load_session(path: str, url: str) -> dict:
                     raw["emg_same_clock"] &= bool(np.array_equal(ts, raw["t"]))
     subject, _, state, depth, date = session_id.split("++")
     s = {"path": path, "session_id": session_id, "subject": subject, "post": state == "PostMPTP",
-         "date": pd.Timestamp(date), "acq": acq, "trials": trials, "units": units}
-    pert = trials[trials.torque != "none"]
+         "date": pd.Timestamp(date), "acq": acq, "trials": trials, "units": units,
+         "has_also_in_column": has_also_in, "joint": joint, "angle_reference_frame": frame}
+    pert = trials[trials.torque.isin(["flexion", "extension"])]
     for u in units:
         sp = u["spikes"]
         u["sorted"] = bool(np.all(np.diff(sp) >= 0))
@@ -170,8 +197,23 @@ def load_session(path: str, url: str) -> dict:
         u["outside_trials"] = int(np.sum((k < 0) | (sp > trials.stop.values[np.clip(k, 0, None)] + 1e-6)))
         isi = np.diff(sp)[np.diff(k) == 0]
         u["isi_below_2ms"] = float(np.mean(isi < 0.002)) if len(isi) else np.nan
+        # trials inside the unit's observation intervals (all trials when the file gives none)
+        if u["obs"] is None or len(u["obs"]) == 0:
+            seen = np.ones(len(trials), bool)
+        else:
+            seen = np.zeros(len(trials), bool)
+            for a, b in u["obs"]:
+                seen |= (trials.start.values >= a - 1e-6) & (trials.stop.values <= b + 1e-6)
+            inside = np.zeros(len(sp), bool)
+            for a, b in u["obs"]:
+                inside |= (sp >= a - 1e-6) & (sp <= b + 1e-6)
+            u["outside_obs"] = int((~inside).sum())
+        u["observed_trials"] = seen
+        p = pert[seen[pert.index.values]]
+        u["pert_direction"] = p.torque.values
+        u["pert_trial"] = p.index.values
         u["pert"] = [np.round((sp[(sp >= t0 + SPIKE_WINDOW_S[0]) & (sp < t0 + SPIKE_WINDOW_S[1])] - t0) * 1000)
-                     for t0 in pert.onset.values]
+                     for t0 in p.onset.values]
     s["pert_direction"] = pert.torque.values
     s["pert_trial"] = pert.index.values
     if not raw:
@@ -236,6 +278,45 @@ def command_excursions(t: np.ndarray, cmd: np.ndarray, trials: pd.DataFrame) -> 
         "in_hold": (rel_center >= HOLD_WINDOW_S[0]) & (rel_center < HOLD_WINDOW_S[1])
                    & ~(rel_lateral >= 0),
         "torque_label": trials.torque.values[k]})
+
+
+def load_units_brief(path: str, url: str) -> list[dict]:
+    """Units of one file with their perturbations per direction, without spikes or analog data
+    (for comparing versions). Perturbations are counted within the unit's obs_intervals when the
+    file merges source files (a trials column source_file), and over the whole file otherwise."""
+    with h5py.File(remfile.File(url), "r") as f:
+        session_id = _text(f["general/session_id"][()])
+        tr = f["intervals/trials"]
+        torque = np.array([_text(v) for v in tr["torque_perturbation_type"][:]])
+        start, stop = tr["start_time"][:], tr["stop_time"][:]
+        merged = "source_file" in tr
+        un = f["units"]
+        obs = np.split(un["obs_intervals"][:], un["obs_intervals_index"][:-1]) if merged else None
+        out = []
+        for i in range(len(un["id"])):
+            seen = np.ones(len(start), bool)
+            if merged:
+                seen = np.zeros(len(start), bool)
+                for a, b in obs[i]:
+                    seen |= (start >= a - 1e-6) & (stop <= b + 1e-6)
+            name = _text(un["unit_name"][i])
+            code = session_id.split("++")[1]
+            out.append({"path": path, "code": code, "subject": session_id.split("++")[0],
+                        "post": session_id.split("++")[2] == "PostMPTP",
+                        "unit_name": name if merged else f"{code}.{name}",
+                        "type": _text(un["neuron_projection_type"][i]),
+                        "n_flex": int((torque[seen] == "flexion").sum()),
+                        "n_ext": int((torque[seen] == "extension").sum())})
+    return out
+
+
+def _load_brief(pu):
+    return load_units_brief(*pu)
+
+
+def load_all_brief(paths_urls, workers: int = 16) -> list[dict]:
+    with ProcessPoolExecutor(workers) as pool:
+        return [u for f in pool.map(_load_brief, paths_urls, chunksize=4) for u in f]
 
 
 def _load(pu):
